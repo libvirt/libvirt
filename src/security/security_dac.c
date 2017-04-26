@@ -968,21 +968,13 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
         char *vfiodev = NULL;
-        virMediatedDevicePtr mdev = virMediatedDeviceNew(mdevsrc->uuidstr,
-                                                         mdevsrc->model);
 
-        if (!mdev)
+        if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
             goto done;
-
-        if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdev))) {
-            virMediatedDeviceFree(mdev);
-            goto done;
-        }
 
         ret = virSecurityDACSetHostdevLabelHelper(vfiodev, &cbdata);
 
         VIR_FREE(vfiodev);
-        virMediatedDeviceFree(mdev);
         break;
     }
 
@@ -1144,21 +1136,13 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
         char *vfiodev = NULL;
-        virMediatedDevicePtr mdev = virMediatedDeviceNew(mdevsrc->uuidstr,
-                                                         mdevsrc->model);
 
-        if (!mdev)
+        if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
             goto done;
-
-        if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdev))) {
-            virMediatedDeviceFree(mdev);
-            goto done;
-        }
 
         ret = virSecurityDACRestoreFileLabel(virSecurityManagerGetPrivateData(mgr),
                                              vfiodev);
         VIR_FREE(vfiodev);
-        virMediatedDeviceFree(mdev);
         break;
     }
 

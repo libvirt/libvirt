@@ -65,10 +65,10 @@ virMediatedDeviceSetUsedBy(virMediatedDevicePtr dev,
                            const char *domname);
 
 char *
-virMediatedDeviceGetIOMMUGroupDev(virMediatedDevicePtr dev);
+virMediatedDeviceGetIOMMUGroupDev(const char *uuidstr);
 
 int
-virMediatedDeviceGetIOMMUGroupNum(virMediatedDevicePtr dev);
+virMediatedDeviceGetIOMMUGroupNum(const char *uuidstr);
 
 char *
 virMediatedDeviceGetSysfsPath(const char *uuidstr);
