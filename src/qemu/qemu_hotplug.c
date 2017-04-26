@@ -2578,13 +2578,8 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (qemuHostdevPrepareSCSIVHostDevices(driver, vm->def->name, &hostdev, 1) < 0) {
-        virDomainHostdevSubsysSCSIVHostPtr hostsrc = &hostdev->source.subsys.u.scsi_host;
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to prepare scsi_host hostdev: %s"),
-                       hostsrc->wwpn);
+    if (qemuHostdevPrepareSCSIVHostDevices(driver, vm->def->name, &hostdev, 1) < 0)
         return -1;
-    }
 
     if (qemuDomainNamespaceSetupHostdev(driver, vm, hostdev) < 0)
         goto cleanup;
