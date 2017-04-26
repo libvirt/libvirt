@@ -6437,6 +6437,10 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virBitmapFree(priv->autoCpuset);
     priv->autoCpuset = NULL;
 
+    /* remove address data */
+    virDomainUSBAddressSetFree(priv->usbaddrs);
+    priv->usbaddrs = NULL;
+
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
         char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
