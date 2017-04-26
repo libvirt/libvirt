@@ -4914,10 +4914,13 @@ qemuMigrationPerformPhase(virQEMUDriverPtr driver,
         goto endjob;
 
  endjob:
-    if (ret < 0)
+    if (ret < 0) {
+        qemuMigrationReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT);
         qemuMigrationJobFinish(driver, vm);
-    else
+    } else {
         qemuMigrationJobContinue(vm);
+    }
+
     if (!virDomainObjIsActive(vm))
         qemuDomainRemoveInactive(driver, vm);
 
