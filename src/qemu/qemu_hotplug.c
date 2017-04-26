@@ -2468,7 +2468,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     }
 
     if (qemuHostdevPrepareSCSIDevices(driver, vm->def->name,
-                                      &hostdev, 1)) {
+                                      &hostdev, 1) < 0) {
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
             virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
