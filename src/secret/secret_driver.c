@@ -72,12 +72,12 @@ secretDriverLock(void)
     virMutexLock(&driver->lock);
 }
 
+
 static void
 secretDriverUnlock(void)
 {
     virMutexUnlock(&driver->lock);
 }
-
 
 
 static virSecretObjPtr
@@ -108,6 +108,7 @@ secretConnectNumOfSecrets(virConnectPtr conn)
                                         virConnectNumOfSecretsCheckACL,
                                         conn);
 }
+
 
 static int
 secretConnectListSecrets(virConnectPtr conn,
@@ -279,6 +280,7 @@ secretDefineXML(virConnectPtr conn,
     return ret;
 }
 
+
 static char *
 secretGetXMLDesc(virSecretPtr secret,
                  unsigned int flags)
@@ -303,6 +305,7 @@ secretGetXMLDesc(virSecretPtr secret,
 
     return ret;
 }
+
 
 static int
 secretSetValue(virSecretPtr secret,
@@ -340,6 +343,7 @@ secretSetValue(virSecretPtr secret,
     return ret;
 }
 
+
 static unsigned char *
 secretGetValue(virSecretPtr secret,
                size_t *value_size,
@@ -376,6 +380,7 @@ secretGetValue(virSecretPtr secret,
 
     return ret;
 }
+
 
 static int
 secretUndefine(virSecretPtr secret)
@@ -415,6 +420,7 @@ secretUndefine(virSecretPtr secret)
     return ret;
 }
 
+
 static int
 secretStateCleanup(void)
 {
@@ -434,6 +440,7 @@ secretStateCleanup(void)
 
     return 0;
 }
+
 
 static int
 secretStateInitialize(bool privileged,
@@ -486,6 +493,7 @@ secretStateInitialize(bool privileged,
     return -1;
 }
 
+
 static int
 secretStateReload(void)
 {
@@ -499,6 +507,7 @@ secretStateReload(void)
     secretDriverUnlock();
     return 0;
 }
+
 
 static int
 secretConnectSecretEventRegisterAny(virConnectPtr conn,
@@ -520,6 +529,7 @@ secretConnectSecretEventRegisterAny(virConnectPtr conn,
  cleanup:
     return callbackID;
 }
+
 
 static int
 secretConnectSecretEventDeregisterAny(virConnectPtr conn,
@@ -564,6 +574,7 @@ static virStateDriver stateDriver = {
     .stateCleanup = secretStateCleanup,
     .stateReload = secretStateReload,
 };
+
 
 int
 secretRegister(void)
