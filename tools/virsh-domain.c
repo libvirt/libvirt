@@ -5658,6 +5658,26 @@ virshDomainJobToString(int type)
     return str ? _(str) : _("unknown");
 }
 
+VIR_ENUM_DECL(virshDomainJobOperation);
+VIR_ENUM_IMPL(virshDomainJobOperation,
+              VIR_DOMAIN_JOB_OPERATION_LAST,
+              N_("Unknown"),
+              N_("Start"),
+              N_("Save"),
+              N_("Restore"),
+              N_("Incoming migration"),
+              N_("Outgoing migration"),
+              N_("Snapshot"),
+              N_("Snapshot revert"),
+              N_("Dump"))
+
+static const char *
+virshDomainJobOperationToString(int op)
+{
+    const char *str = virshDomainJobOperationTypeToString(op);
+    return str ? _(str) : _("unknown");
+}
+
 static bool
 cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
 {
@@ -5671,6 +5691,7 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     unsigned long long value;
     unsigned int flags = 0;
     int ivalue;
+    int op;
     int rc;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
@@ -5739,6 +5760,14 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
         ret = true;
         goto cleanup;
     }
+
+    op = VIR_DOMAIN_JOB_OPERATION_UNKNOWN;
+    if ((rc = virTypedParamsGetInt(params, nparams,
+                                   VIR_DOMAIN_JOB_OPERATION, &op)) < 0)
+        goto save_error;
+
+    vshPrint(ctl, "%-17s %-12s\n", _("Operation:"),
+             virshDomainJobOperationToString(op));
 
     vshPrint(ctl, "%-17s %-12llu ms\n", _("Time elapsed:"), info.timeElapsed);
     if ((rc = virTypedParamsGetULLong(params, nparams,

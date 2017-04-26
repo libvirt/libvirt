@@ -3117,6 +3117,31 @@ int virDomainGetJobStats(virDomainPtr domain,
                          unsigned int flags);
 int virDomainAbortJob(virDomainPtr dom);
 
+typedef enum {
+    VIR_DOMAIN_JOB_OPERATION_UNKNOWN = 0,
+    VIR_DOMAIN_JOB_OPERATION_START = 1,
+    VIR_DOMAIN_JOB_OPERATION_SAVE = 2,
+    VIR_DOMAIN_JOB_OPERATION_RESTORE = 3,
+    VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN = 4,
+    VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT = 5,
+    VIR_DOMAIN_JOB_OPERATION_SNAPSHOT = 6,
+    VIR_DOMAIN_JOB_OPERATION_SNAPSHOT_REVERT = 7,
+    VIR_DOMAIN_JOB_OPERATION_DUMP = 8,
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_JOB_OPERATION_LAST
+# endif
+} virDomainJobOperation;
+
+/**
+ * VIR_DOMAIN_JOB_OPERATION:
+ *
+ * virDomainGetJobStats field: the operation which started the job as
+ * VIR_TYPED_PARAM_INT. The values correspond to the items in
+ * virDomainJobOperation enum.
+ */
+# define VIR_DOMAIN_JOB_OPERATION                "operation"
+
 /**
  * VIR_DOMAIN_JOB_TIME_ELAPSED:
  *
