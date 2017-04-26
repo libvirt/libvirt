@@ -9461,6 +9461,8 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     char *nodeset = NULL;
     int ret = -1;
     virDomainDefPtr def = NULL;
+    bool live = false;
+    virBitmapPtr autoNodeset = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -9473,8 +9475,11 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
     if (virDomainGetNumaParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(def = virDomainObjGetOneDef(vm, flags)))
+    if (!(def = virDomainObjGetOneDefState(vm, flags, &live)))
         goto cleanup;
+
+    if (live)
+        autoNodeset = priv->autoNodeset;
 
     if ((*nparams) == 0) {
         *nparams = QEMU_NB_NUMA_PARAM;
@@ -9496,8 +9501,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
             break;
 
         case 1: /* fill numa nodeset here */
-            nodeset = virDomainNumatuneFormatNodeset(def->numa,
-                                                     priv->autoNodeset, -1);
+            nodeset = virDomainNumatuneFormatNodeset(def->numa, autoNodeset, -1);
             if (!nodeset ||
                 virTypedParameterAssign(param, VIR_DOMAIN_NUMA_NODESET,
                                         VIR_TYPED_PARAM_STRING, nodeset) < 0)
