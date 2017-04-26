@@ -6441,6 +6441,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virDomainUSBAddressSetFree(priv->usbaddrs);
     priv->usbaddrs = NULL;
 
+    /* clean up migration data */
+    VIR_FREE(priv->migTLSAlias);
+
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
         char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
