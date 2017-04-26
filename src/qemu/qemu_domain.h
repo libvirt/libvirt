@@ -103,6 +103,7 @@ typedef struct _qemuDomainJobInfo qemuDomainJobInfo;
 typedef qemuDomainJobInfo *qemuDomainJobInfoPtr;
 struct _qemuDomainJobInfo {
     virDomainJobType type;
+    virDomainJobOperation operation;
     unsigned long long started; /* When the async job started */
     unsigned long long stopped; /* When the domain's CPUs were stopped */
     unsigned long long sent; /* When the source sent status info to the
@@ -433,7 +434,8 @@ int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
     ATTRIBUTE_RETURN_CHECK;
 int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
-                               qemuDomainAsyncJob asyncJob)
+                               qemuDomainAsyncJob asyncJob,
+                               virDomainJobOperation operation)
     ATTRIBUTE_RETURN_CHECK;
 int qemuDomainObjBeginNestedJob(virQEMUDriverPtr driver,
                                 virDomainObjPtr obj,

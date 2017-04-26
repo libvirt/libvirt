@@ -436,6 +436,11 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
     int maxpar = 0;
     int npar = 0;
 
+    if (virTypedParamsAddInt(&par, &npar, &maxpar,
+                             VIR_DOMAIN_JOB_OPERATION,
+                             jobInfo->operation) < 0)
+        goto error;
+
     if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_TIME_ELAPSED,
                                 jobInfo->timeElapsed) < 0)
@@ -3736,13 +3741,18 @@ int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
 
 int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
-                               qemuDomainAsyncJob asyncJob)
+                               qemuDomainAsyncJob asyncJob,
+                               virDomainJobOperation operation)
 {
+    qemuDomainObjPrivatePtr priv;
+
     if (qemuDomainObjBeginJobInternal(driver, obj, QEMU_JOB_ASYNC,
                                       asyncJob) < 0)
         return -1;
-    else
-        return 0;
+
+    priv = obj->privateData;
+    priv->job.current->operation = operation;
+    return 0;
 }
 
 int

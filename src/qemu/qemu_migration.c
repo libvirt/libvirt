@@ -5629,18 +5629,23 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
                       qemuDomainAsyncJob job)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-
-    if (qemuDomainObjBeginAsyncJob(driver, vm, job) < 0)
-        return -1;
+    virDomainJobOperation op;
+    unsigned long long mask;
 
     if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
-        qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
+        op = VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN;
+        mask = QEMU_JOB_NONE;
     } else {
-        qemuDomainObjSetAsyncJobMask(vm, (QEMU_JOB_DEFAULT_MASK |
-                                          JOB_MASK(QEMU_JOB_SUSPEND) |
-                                          JOB_MASK(QEMU_JOB_MIGRATION_OP)));
+        op = VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT;
+        mask = QEMU_JOB_DEFAULT_MASK |
+               JOB_MASK(QEMU_JOB_SUSPEND) |
+               JOB_MASK(QEMU_JOB_MIGRATION_OP);
     }
 
+    if (qemuDomainObjBeginAsyncJob(driver, vm, job, op) < 0)
+        return -1;
+
+    qemuDomainObjSetAsyncJobMask(vm, mask);
     priv->job.current->type = VIR_DOMAIN_JOB_UNBOUNDED;
 
     return 0;

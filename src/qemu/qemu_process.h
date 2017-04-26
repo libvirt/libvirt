@@ -59,7 +59,8 @@ qemuProcessIncomingDefPtr qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
 void qemuProcessIncomingDefFree(qemuProcessIncomingDefPtr inc);
 
 int qemuProcessBeginJob(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm);
+                        virDomainObjPtr vm,
+                        virDomainJobOperation operation);
 void qemuProcessEndJob(virQEMUDriverPtr driver,
                        virDomainObjPtr vm);
 
