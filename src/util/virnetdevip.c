@@ -551,6 +551,8 @@ virNetDevIPCheckIPv6ForwardingCallback(const struct nlmsghdr *resp,
     int ret = 0;
     int len = RTM_PAYLOAD(resp);
     int oif = -1;
+    size_t i;
+    bool hasDevice;
 
     /* Ignore messages other than route ones */
     if (resp->nlmsg_type != RTM_NEWROUTE)
@@ -587,7 +589,13 @@ virNetDevIPCheckIPv6ForwardingCallback(const struct nlmsghdr *resp,
     accept_ra = virNetDevIPGetAcceptRA(ifname);
     VIR_DEBUG("Checking route for device %s, accept_ra: %d", ifname, accept_ra);
 
-    if (accept_ra != 2 && VIR_APPEND_ELEMENT(data->devices, data->ndevices, ifname) < 0)
+    hasDevice = false;
+    for (i = 0; i < data->ndevices && !hasDevice; i++) {
+        if (STREQ(data->devices[i], ifname))
+            hasDevice = true;
+    }
+    if (accept_ra != 2 && !hasDevice &&
+        VIR_APPEND_ELEMENT(data->devices, data->ndevices, ifname) < 0)
         goto error;
 
  cleanup:
