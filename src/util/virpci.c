@@ -2618,7 +2618,6 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link)
     virPCIDeviceAddressPtr bdf = NULL;
     char *config_address = NULL;
     char *device_path = NULL;
-    char errbuf[64];
 
     if (!virFileExists(device_link)) {
         VIR_DEBUG("'%s' does not exist", device_link);
@@ -2627,7 +2626,6 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link)
 
     device_path = canonicalize_file_name(device_link);
     if (device_path == NULL) {
-        memset(errbuf, '\0', sizeof(errbuf));
         virReportSystemError(errno,
                              _("Failed to resolve device link '%s'"),
                              device_link);
