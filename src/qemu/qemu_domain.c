@@ -3268,9 +3268,12 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
             } else if (ARCH_IS_PPC64(def->os.arch)) {
                 /* To not break migration we need to set default USB controller
                  * for ppc64 to pci-ohci if we cannot change ABI of the VM.
-                 * The nec-usb-xhci controller is used as default only for
-                 * newly defined domains or devices. */
+                 * The nec-usb-xhci or qemu-xhci controller is used as default
+                 * only for newly defined domains or devices. */
                 if ((parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE) &&
+                    virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI)) {
+                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
+                } else if ((parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE) &&
                     virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI)) {
                     cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
                 } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI)) {
@@ -3280,7 +3283,9 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
                     cont->model = -1;
                 }
             } else if (def->os.arch == VIR_ARCH_AARCH64) {
-                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
+                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
+                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
+                else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
                     cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
             }
         }

@@ -2472,6 +2472,15 @@ mymain(void)
             QEMU_CAPS_PCI_OHCI);
     DO_TEST("ppc64-usb-controller-legacy",
             QEMU_CAPS_PIIX3_USB_UHCI);
+    DO_TEST_FULL("ppc64-usb-controller-qemu-xhci", NULL, -1, 0,
+                 VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, GIC_NONE,
+                 QEMU_CAPS_NEC_USB_XHCI,
+                 QEMU_CAPS_DEVICE_QEMU_XHCI);
+
+    DO_TEST("aarch64-usb-controller-qemu-xhci",
+            QEMU_CAPS_OBJECT_GPEX,
+            QEMU_CAPS_NEC_USB_XHCI,
+            QEMU_CAPS_DEVICE_QEMU_XHCI);
 
     DO_TEST("aarch64-usb-controller-nec-xhci",
             QEMU_CAPS_OBJECT_GPEX,
