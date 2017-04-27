@@ -3254,11 +3254,17 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
              * when the relevant device is not available.
              *
              * See qemuBuildControllerDevCommandLine() */
-            if (ARCH_IS_S390(def->os.arch) &&
-                cont->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-                /* set the default USB model to none for s390 unless an
-                 * address is found */
-                cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
+
+            /* Default USB controller is piix3-uhci if available. */
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
+                cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+
+            if (ARCH_IS_S390(def->os.arch)) {
+                if (cont->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+                    /* set the default USB model to none for s390 unless an
+                     * address is found */
+                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
+                }
             } else if (ARCH_IS_PPC64(def->os.arch)) {
                 /* To not break migration we need to set default USB controller
                  * for ppc64 to pci-ohci if we cannot change ABI of the VM.
@@ -3269,11 +3275,10 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
                     cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
                 } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI)) {
                     cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+                } else {
+                    /* Explicitly fallback to legacy USB controller for PPC64. */
+                    cont->model = -1;
                 }
-            } else {
-                /* Default USB controller for anything else is piix3-uhci */
-                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
-                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
             }
         }
         /* forbid usb model 'qusb1' and 'qusb2' in this kind of hyperviosr */
