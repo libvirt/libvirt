@@ -1,0 +1,19 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-aarch64 \
+-name QEMUGuest1 \
+-S \
+-M virt \
+-m 214 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
+-no-acpi \
+-boot c \
+-device nec-usb-xhci,id=usb,bus=pcie.0,addr=0x1

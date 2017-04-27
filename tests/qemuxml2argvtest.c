@@ -2469,6 +2469,10 @@ mymain(void)
     DO_TEST("ppc64-usb-controller-legacy",
             QEMU_CAPS_PIIX3_USB_UHCI);
 
+    DO_TEST("aarch64-usb-controller-nec-xhci",
+            QEMU_CAPS_OBJECT_GPEX,
+            QEMU_CAPS_NEC_USB_XHCI);
+
     DO_TEST_PARSE_FLAGS_ERROR("missing-machine",
                               VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS,
                               NONE);

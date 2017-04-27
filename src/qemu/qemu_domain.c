@@ -3279,6 +3279,9 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
                     /* Explicitly fallback to legacy USB controller for PPC64. */
                     cont->model = -1;
                 }
+            } else if (def->os.arch == VIR_ARCH_AARCH64) {
+                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
+                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
             }
         }
         /* forbid usb model 'qusb1' and 'qusb2' in this kind of hyperviosr */
