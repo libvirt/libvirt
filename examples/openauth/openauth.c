@@ -216,7 +216,7 @@ static virConnectAuth auth = {
     credTypes,
     sizeof(credTypes) / sizeof(int),
     authCallback,
-    NULL, // cbdata will be initialized in main
+    NULL, /* cbdata will be initialized in main */
 };
 
 

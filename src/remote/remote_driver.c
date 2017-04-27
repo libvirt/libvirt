@@ -1145,7 +1145,7 @@ doRemoteOpen(virConnectPtr conn,
 
     if (!(priv->closeCallback = virNewConnectCloseCallbackData()))
         goto failed;
-    // ref on behalf of netclient
+    /* ref on behalf of netclient */
     virObjectRef(priv->closeCallback);
     virNetClientSetCloseCallback(priv->client,
                                  remoteClientCloseFunc,

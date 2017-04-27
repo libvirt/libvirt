@@ -958,7 +958,7 @@ virVBoxSnapshotConfRemoveHardDisk(virVBoxSnapshotConfMediaRegistryPtr mediaRegis
         goto cleanup;
     }
     if (hardDisk->parent == NULL) {
-        //it means that the hard disk is in 'root'
+        /* it means that the hard disk is in 'root' */
         for (i = 0; i < mediaRegistry->ndisks; i++) {
             if (hardDisk == mediaRegistry->disks[i])
                 break;

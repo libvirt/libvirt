@@ -158,8 +158,8 @@ virHostMemGetStatsLinux(FILE *meminfo,
     char meminfo_hdr[VIR_NODE_MEMORY_STATS_FIELD_LENGTH];
     unsigned long val;
     struct field_conv {
-        const char *meminfo_hdr;  // meminfo header
-        const char *field;        // MemoryStats field name
+        const char *meminfo_hdr;  /* meminfo header */
+        const char *field;        /* MemoryStats field name */
     } field_conv[] = {
         {"MemTotal:", VIR_NODE_MEMORY_STATS_TOTAL},
         {"MemFree:",  VIR_NODE_MEMORY_STATS_FREE},

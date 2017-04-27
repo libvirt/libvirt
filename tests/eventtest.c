@@ -523,7 +523,7 @@ mymain(void)
     if (finishJob("Write duplicate", 1, -1) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
-    //pthread_kill(eventThread, SIGTERM);
+    /* pthread_kill(eventThread, SIGTERM); */
 
     return EXIT_SUCCESS;
 }

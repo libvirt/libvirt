@@ -795,8 +795,8 @@ virHostCPUGetStatsLinux(FILE *procstat,
 
         if (STRPREFIX(buf, cpu_header)) { /* aka logical CPU time */
             if (sscanf(buf,
-                       "%*s %llu %llu %llu %llu %llu" // user ~ iowait
-                       "%llu %llu %llu %llu %llu",    // irq  ~ guest_nice
+                       "%*s %llu %llu %llu %llu %llu" /* user ~ iowait */
+                       "%llu %llu %llu %llu %llu",    /* irq  ~ guest_nice */
                        &usr, &ni, &sys, &idle, &iowait,
                        &irq, &softirq, &steal, &guest, &guest_nice) < 4) {
                 continue;

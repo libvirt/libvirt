@@ -128,7 +128,7 @@ static void virNetServerMDNSGroupCallback(AvahiEntryGroup *g ATTRIBUTE_UNUSED,
                   avahi_strerror(avahi_client_errno(group->mdns->client)));
 
         /* Some kind of failure happened while we were registering our services */
-        //avahi_simple_poll_quit(simple_poll);
+        /* avahi_simple_poll_quit(simple_poll); */
         break;
 
     case AVAHI_ENTRY_GROUP_UNCOMMITED:

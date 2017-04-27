@@ -210,7 +210,7 @@ virSecurityStackGenLabel(virSecurityManagerPtr mgr,
     if (virSecurityManagerGenLabel(virSecurityStackGetPrimary(mgr), vm) < 0)
         rc = -1;
 
-// TODO
+/* TODO */
 #if 0
     /* We don't allow secondary drivers to generate labels.
      * This may have to change in the future, but requires
@@ -235,7 +235,7 @@ virSecurityStackReleaseLabel(virSecurityManagerPtr mgr,
     if (virSecurityManagerReleaseLabel(virSecurityStackGetPrimary(mgr), vm) < 0)
         rc = -1;
 
-// TODO
+/* TODO */
 #if 0
     /* XXX See note in GenLabel */
     if (virSecurityManagerReleaseLabel(priv->secondary, vm) < 0)
@@ -255,7 +255,7 @@ virSecurityStackReserveLabel(virSecurityManagerPtr mgr,
 
     if (virSecurityManagerReserveLabel(virSecurityStackGetPrimary(mgr), vm, pid) < 0)
         rc = -1;
-// TODO
+/* TODO */
 #if 0
     /* XXX See note in GenLabel */
     if (virSecurityManagerReserveLabel(priv->secondary, vm, pid) < 0)
@@ -460,7 +460,7 @@ virSecurityStackGetProcessLabel(virSecurityManagerPtr mgr,
 {
     int rc = 0;
 
-// TODO
+/* TODO */
 #if 0
     if (virSecurityManagerGetProcessLabel(priv->secondary, vm, pid, seclabel) < 0)
         rc = -1;

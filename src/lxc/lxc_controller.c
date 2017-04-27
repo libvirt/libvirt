@@ -1800,7 +1800,7 @@ virLXCControllerSetupHostdevCaps(virDomainDefPtr vmDef,
                                                     securityDriver);
 
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
-        return 0; // case is handled in virLXCControllerMoveInterfaces
+        return 0; /* case is handled in virLXCControllerMoveInterfaces */
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
