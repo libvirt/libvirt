@@ -48,6 +48,17 @@
           ease handling such breaks if they happen in the future.
        </description>
       </change>
+      <change>
+        <summary>
+          Add support for nested HVM domains in the libxl driver
+        </summary>
+        <description>
+          Xen has supported nested HVM domains since version 4.4. The
+          libvirt libxl driver now supports nested HVM domains by
+          specifying the host-passthrough CPU mode when defining a
+          domain.
+       </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
