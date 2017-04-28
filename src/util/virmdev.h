@@ -86,7 +86,7 @@ virMediatedDeviceListNew(void);
 
 int
 virMediatedDeviceListAdd(virMediatedDeviceListPtr list,
-                         virMediatedDevicePtr dev);
+                         virMediatedDevicePtr *dev);
 
 virMediatedDevicePtr
 virMediatedDeviceListGet(virMediatedDeviceListPtr list,

@@ -312,16 +312,19 @@ virMediatedDeviceListDispose(void *obj)
 }
 
 
+/* The reason for @dev to be double pointer is that VIR_APPEND_ELEMENT clears
+ * the pointer and we need to clear the original not a copy on the stack
+ */
 int
 virMediatedDeviceListAdd(virMediatedDeviceListPtr list,
-                         virMediatedDevicePtr dev)
+                         virMediatedDevicePtr *dev)
 {
-    if (virMediatedDeviceListFind(list, dev)) {
+    if (virMediatedDeviceListFind(list, *dev)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("device %s is already in use"), dev->path);
+                       _("device %s is already in use"), (*dev)->path);
         return -1;
     }
-    return VIR_APPEND_ELEMENT(list->devs, list->count, dev);
+    return VIR_APPEND_ELEMENT(list->devs, list->count, *dev);
 }
 
 
@@ -457,7 +460,7 @@ virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
          * - caller is responsible for NOT freeing devices in @src on success
          * - we're responsible for performing a rollback on failure
          */
-        if (virMediatedDeviceListAdd(dst, mdev) < 0)
+        if (virMediatedDeviceListAdd(dst, &mdev) < 0)
             goto rollback;
 
         VIR_DEBUG("'%s' added to list of active mediated devices used by '%s'",
