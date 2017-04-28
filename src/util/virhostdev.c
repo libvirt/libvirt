@@ -1294,7 +1294,7 @@ virHostdevUpdateActiveMediatedDevices(virHostdevManagerPtr mgr,
 
         virMediatedDeviceSetUsedBy(mdev, drv_name, dom_name);
 
-        if (virMediatedDeviceListAdd(mgr->activeMediatedHostdevs, mdev) < 0)
+        if (virMediatedDeviceListAdd(mgr->activeMediatedHostdevs, &mdev) < 0)
             goto cleanup;
     }
 
@@ -1790,7 +1790,7 @@ virHostdevPrepareMediatedDevices(virHostdevManagerPtr mgr,
         if (!(mdev = virMediatedDeviceNew(src->uuidstr, src->model)))
             goto cleanup;
 
-        if (virMediatedDeviceListAdd(list, mdev) < 0) {
+        if (virMediatedDeviceListAdd(list, &mdev) < 0) {
             virMediatedDeviceFree(mdev);
             goto cleanup;
         }
