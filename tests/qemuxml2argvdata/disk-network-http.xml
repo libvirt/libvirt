@@ -38,6 +38,7 @@
       <driver name='qemu' type='raw'/>
       <source protocol='https' name='test4.img'>
         <host name='example.org' port='1234'/>
+        <ssl verify='no'/>
       </source>
       <target dev='vdd' bus='virtio'/>
     </disk>
