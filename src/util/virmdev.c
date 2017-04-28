@@ -447,20 +447,21 @@ virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
     virObjectLock(dst);
     for (i = 0; i < count; i++) {
         virMediatedDevicePtr mdev = virMediatedDeviceListGet(src, i);
+        const char *mdev_path = mdev->path;
 
         if (virMediatedDeviceIsUsed(mdev, dst) ||
             virMediatedDeviceSetUsedBy(mdev, drvname, domname) < 0)
             goto cleanup;
 
         /* Copy mdev references to the driver list:
-         * - caller is responsible for NOT freeing devices in @list on success
+         * - caller is responsible for NOT freeing devices in @src on success
          * - we're responsible for performing a rollback on failure
          */
         if (virMediatedDeviceListAdd(dst, mdev) < 0)
             goto rollback;
 
         VIR_DEBUG("'%s' added to list of active mediated devices used by '%s'",
-                  mdev->path, domname);
+                  mdev_path, domname);
     }
 
     ret = 0;
