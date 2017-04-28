@@ -314,6 +314,26 @@
         Richard Jones' guide to working with open source projects</a>.
     </p>
 
+    <h2><a name="tooling">Tooling</a></h2>
+
+    <p>
+      libvirt includes support for some useful development tools right in its
+      source repository, meaning users will be able to take advantage of them
+      without little or no configuration. Examples include:
+    </p>
+
+    <ul>
+      <li>
+        <a href="https://github.com/jeaye/color_coded">color_coded</a>,
+        a vim plugin for libclang-powered semantic syntax highlighting;
+      </li>
+
+      <li>
+        <a href="http://valloric.github.io/YouCompleteMe/">YouCompleteMe</a>,
+        a vim plugin for libclang-powered semantic code completion.
+      </li>
+    </ul>
+
     <h2><a name="naming">Naming conventions</a></h2>
 
     <p>
