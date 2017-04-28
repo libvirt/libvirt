@@ -1001,6 +1001,7 @@ mymain(void)
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Opteron-6282", false);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Pentium-P6100", false);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Phenom-B95", true);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Ryzen-7-1800X-Eight-Core", true);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-5110", false);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E3-1245", true);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E5-2630", true);
