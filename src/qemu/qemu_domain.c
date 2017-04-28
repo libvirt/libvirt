@@ -7418,6 +7418,8 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
 
 struct qemuDomainCreateDeviceData {
     const char *path;     /* Path to temp new /dev location */
+    char * const *devMountsPath;
+    size_t ndevMountsPath;
 };
 
 
@@ -7471,17 +7473,34 @@ qemuDomainCreateDeviceRecursive(const char *device,
      * For now, lets hope callers play nice.
      */
     if (STRPREFIX(device, DEVPREFIX)) {
-        if (virAsprintf(&devicePath, "%s/%s",
-                        data->path, device + strlen(DEVPREFIX)) < 0)
-            goto cleanup;
+        size_t i;
 
-        if (virFileMakeParentPath(devicePath) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to create %s"),
-                                 devicePath);
-            goto cleanup;
+        for (i = 0; i < data->ndevMountsPath; i++) {
+            if (STREQ(data->devMountsPath[i], "/dev"))
+                continue;
+            if (STRPREFIX(device, data->devMountsPath[i]))
+                break;
         }
-        create = true;
+
+        if (i == data->ndevMountsPath) {
+            /* Okay, @device is in /dev but not in any mount point under /dev.
+             * Create it. */
+            if (virAsprintf(&devicePath, "%s/%s",
+                            data->path, device + strlen(DEVPREFIX)) < 0)
+                goto cleanup;
+
+            if (virFileMakeParentPath(devicePath) < 0) {
+                virReportSystemError(errno,
+                                     _("Unable to create %s"),
+                                     devicePath);
+                goto cleanup;
+            }
+            VIR_DEBUG("Creating dev %s", device);
+            create = true;
+        } else {
+            VIR_DEBUG("Skipping dev %s because of %s mount point",
+                      device, data->devMountsPath[i]);
+        }
     }
 
     if (isLink) {
@@ -8030,6 +8049,8 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     }
 
     data.path = devPath;
+    data.devMountsPath = devMountsPath;
+    data.ndevMountsPath = ndevMountsPath;
 
     if (virProcessSetupPrivateMountNS() < 0)
         goto cleanup;
