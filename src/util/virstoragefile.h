@@ -281,6 +281,7 @@ struct _virStorageSource {
     virStorageEncryptionPtr encryption;
     bool encryptionInherited;
     virStoragePRDefPtr pr;
+    virTristateBool sslverify;
 
     virStorageSourceNVMeDefPtr nvme; /* type == VIR_STORAGE_TYPE_NVME */
 

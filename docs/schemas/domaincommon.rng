@@ -1808,12 +1808,39 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkProtocolSSLVerify">
+    <element name="ssl">
+      <attribute name="verify">
+        <ref name="virYesNo"/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="diskSourceNetworkProtocolHTTPS">
+    <element name="source">
+      <attribute name="protocol">
+        <choice>
+          <value>https</value>
+        </choice>
+      </attribute>
+      <attribute name="name"/>
+      <ref name="diskSourceCommon"/>
+      <ref name="diskSourceNetworkHost"/>
+      <optional>
+        <ref name="encryption"/>
+      </optional>
+      <optional>
+        <ref name="diskSourceNetworkProtocolSSLVerify"/>
+      </optional>
+    </element>
+  </define>
+
   <define name="diskSourceNetworkProtocolHTTP">
     <element name="source">
       <attribute name="protocol">
         <choice>
           <value>http</value>
-          <value>https</value>
         </choice>
       </attribute>
       <attribute name="name"/>
@@ -1825,13 +1852,31 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkProtocolFTPS">
+    <element name="source">
+      <attribute name="protocol">
+        <choice>
+          <value>ftps</value>
+        </choice>
+      </attribute>
+      <attribute name="name"/>
+      <ref name="diskSourceCommon"/>
+      <ref name="diskSourceNetworkHost"/>
+      <optional>
+        <ref name="encryption"/>
+      </optional>
+      <optional>
+        <ref name="diskSourceNetworkProtocolSSLVerify"/>
+      </optional>
+    </element>
+  </define>
+
   <define name="diskSourceNetworkProtocolSimple">
     <element name="source">
       <attribute name="protocol">
         <choice>
           <value>sheepdog</value>
           <value>ftp</value>
-          <value>ftps</value>
           <value>tftp</value>
         </choice>
       </attribute>
@@ -1909,6 +1954,8 @@
       <ref name="diskSourceNetworkProtocolRBD"/>
       <ref name="diskSourceNetworkProtocolISCSI"/>
       <ref name="diskSourceNetworkProtocolHTTP"/>
+      <ref name="diskSourceNetworkProtocolHTTPS"/>
+      <ref name="diskSourceNetworkProtocolFTPS"/>
       <ref name="diskSourceNetworkProtocolSimple"/>
       <ref name="diskSourceNetworkProtocolVxHS"/>
     </choice>

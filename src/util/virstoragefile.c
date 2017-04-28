@@ -2270,6 +2270,7 @@ virStorageSourceCopy(const virStorageSource *src,
     def->cachemode = src->cachemode;
     def->discard = src->discard;
     def->detect_zeroes = src->detect_zeroes;
+    def->sslverify = src->sslverify;
 
     /* storage driver metadata are not copied */
     def->drv = NULL;

@@ -9350,6 +9350,7 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
     g_autofree char *protocol = NULL;
     g_autofree char *haveTLS = NULL;
     g_autofree char *tlsCfg = NULL;
+    g_autofree char *sslverifystr = NULL;
 
     if (!(protocol = virXMLPropString(node, "protocol"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -9421,6 +9422,19 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
     virStorageSourceNetworkAssignDefaultPorts(src);
 
     virStorageSourceInitiatorParseXML(ctxt, &src->initiator);
+
+    if ((src->protocol == VIR_STORAGE_NET_PROTOCOL_HTTPS ||
+         src->protocol == VIR_STORAGE_NET_PROTOCOL_FTPS) &&
+        (sslverifystr = virXPathString("string(./ssl/@verify)", ctxt))) {
+        int verify;
+        if ((verify = virTristateBoolTypeFromString(sslverifystr)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid ssl verify mode '%s'"), sslverifystr);
+            return -1;
+        }
+
+        src->sslverify = verify;
+    }
 
     return 0;
 }
@@ -24530,6 +24544,11 @@ virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
     virBufferEscapeString(childBuf, "<config file='%s'/>\n", src->configFile);
 
     virStorageSourceInitiatorFormatXML(&src->initiator, childBuf);
+
+    if (src->sslverify != VIR_TRISTATE_BOOL_ABSENT) {
+        virBufferAsprintf(childBuf, "<ssl verify='%s'/>\n",
+                          virTristateBoolTypeToString(src->sslverify));
+    }
 
     return 0;
 }

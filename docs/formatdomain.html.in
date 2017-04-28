@@ -2857,6 +2857,7 @@
     &lt;driver name='qemu' type='raw'/&gt;
     &lt;source protocol="https" name="url_path"&gt;
       &lt;host name="hostname" port="443"/&gt;
+      &lt;ssl verify="no"/&gt;
     &lt;/source&gt;
     &lt;target dev='hdf' bus='ide' tray='open'/&gt;
     &lt;readonly/&gt;
@@ -3382,6 +3383,14 @@
 
             The <code>offset</code> and <code>size</code> values are in bytes.
             <span class="since">Since 6.1.0</span>
+          </dd>
+          <dt><code>ssl</code></dt>
+          <dd>
+            For <code>https</code> and <code>ftps</code> accessed storage it's
+            possible to tweak the SSL transport parameters with this element.
+            The <code>verify</code> attribute allows to turn on or off SSL
+            certificate validation. Supported values are <code>yes</code> and
+            <code>no</code>. <span class="since">Since 6.2.0</span>
           </dd>
         </dl>
 
