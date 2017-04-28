@@ -5919,6 +5919,11 @@ qemuMigrationReset(virQEMUDriverPtr driver,
         goto cleanup;
 
     for (cap = 0; cap < QEMU_MONITOR_MIGRATION_CAPS_LAST; cap++) {
+        /* "events" capability is set (when supported) in qemuConnectMonitor
+         * and should never be cleared */
+        if (cap == QEMU_MONITOR_MIGRATION_CAPS_EVENTS)
+            continue;
+
         if (qemuMigrationSetOption(driver, vm, cap, false, job) < 0)
             goto cleanup;
     }
