@@ -2301,17 +2301,25 @@ virNodeDeviceDeleteVport(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
+        goto cleanup;
+
     /* If at startup time we provided a parent, then use that to
      * get the parent_host value; otherwise, we have to determine
      * the parent scsi_host which we did not save at startup time
      */
     if (fchost->parent) {
+        /* Someone provided a parent string at startup time that
+         * was the same as the scsi_host - meaning we have a pool
+         * backed to an HBA, so there won't be a vHBA to delete */
+        if (STREQ(scsi_host_name, fchost->parent)) {
+            ret = 0;
+            goto cleanup;
+        }
+
         if (virSCSIHostGetNumber(fchost->parent, &parent_host) < 0)
             goto cleanup;
     } else {
-        if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
-            goto cleanup;
-
         if (!(vhba_parent = virNodeDeviceGetParentName(conn, scsi_host_name)))
             goto cleanup;
 
