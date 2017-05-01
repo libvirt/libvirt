@@ -396,6 +396,10 @@ static const vshCmdOptDef opts_domblkinfo[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("block device")
     },
+    {.name = "human",
+     .type = VSH_OT_BOOL,
+     .help = N_("Human readable output")
+    },
     {.name = NULL}
 };
 
@@ -405,6 +409,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
     virDomainBlockInfo info;
     virDomainPtr dom;
     bool ret = false;
+    bool human = false;
     const char *device = NULL;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
@@ -416,9 +421,23 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
     if (virDomainGetBlockInfo(dom, device, &info, 0) < 0)
         goto cleanup;
 
-    vshPrint(ctl, "%-15s %llu\n", _("Capacity:"), info.capacity);
-    vshPrint(ctl, "%-15s %llu\n", _("Allocation:"), info.allocation);
-    vshPrint(ctl, "%-15s %llu\n", _("Physical:"), info.physical);
+    human = vshCommandOptBool(cmd, "human");
+
+    if (!human) {
+        vshPrint(ctl, "%-15s %llu\n", _("Capacity:"), info.capacity);
+        vshPrint(ctl, "%-15s %llu\n", _("Allocation:"), info.allocation);
+        vshPrint(ctl, "%-15s %llu\n", _("Physical:"), info.physical);
+    } else {
+        double val;
+        const char *unit;
+
+        val = vshPrettyCapacity(info.capacity, &unit);
+        vshPrint(ctl, "%-15s %-.3lf %s\n", _("Capacity:"), val, unit);
+        val = vshPrettyCapacity(info.allocation, &unit);
+        vshPrint(ctl, "%-15s %-.3lf %s\n", _("Allocation:"), val, unit);
+        val = vshPrettyCapacity(info.physical, &unit);
+        vshPrint(ctl, "%-15s %-.3lf %s\n", _("Physical:"), val, unit);
+    }
 
     ret = true;
 

@@ -841,12 +841,13 @@ B<domstate> command says that a domain was paused due to I/O error.
 The B<domblkerror> command lists all block devices in error state and
 the error seen on each of them.
 
-=item B<domblkinfo> I<domain> I<block-device>
+=item B<domblkinfo> I<domain> I<block-device> [I<--human>]
 
 Get block device size info for a domain.  A I<block-device> corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
 file='name'/>) for one of the disk devices attached to I<domain> (see
-also B<domblklist> for listing these names).
+also B<domblklist> for listing these names). If I<--human> is set, the
+output will have a human readable output.
 
 =item B<domblklist> I<domain> [I<--inactive>] [I<--details>]
 
