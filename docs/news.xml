@@ -35,6 +35,29 @@
 <libvirt>
   <release version="v3.3.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          net: Add support for coalesce settings
+        </summary>
+        <description>
+          Enabling data batching through these settings can improve network
+          performance for guests.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Add support for guest CPU cache specification
+        </summary>
+        <description>
+          This features allows fine-grained control of the cache behavior
+          of the guest CPU.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Add support for the qemu-xhci USB controller
+        </summary>
+      </change>
     </section>
     <section title="Improvements">
       <change>
@@ -59,8 +82,100 @@
           domain.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Implement ACPI support for aarch64 guests
+        </summary>
+        <description>
+          Up until this point, ACPI support was only advertised for x86_64
+          guests and disabling it for aarch64 guests was not possible at all.
+        </description>
+      </change>
+      <change>
+        <summary>
+          vz: Add support for changing the number of vCPUs
+        </summary>
+      </change>
+      <change>
+        <summary>
+          qemu: Automatically choose the best USB controller for guests
+        </summary>
+        <description>
+          The recently introduced qemu-xhci USB controller is the best choice
+          for both ppc64 and aarch64 guests, so use it by default on those
+          architectures if available.
+        </description>
+      </change>
+      <change>
+        <summary>
+          daemon: Increase default task limit for libvirtd
+        </summary>
+        <description>
+          The default number of tasks for the pids cgroup controller is 512,
+          which libvirtd can quickly bump into when starting lots of guests.
+          Raise the limit to a more reasonable 32768.
+        </description>
+      </change>
+      <change>
+        <summary>
+          docs: Include man pages describing key code names and values
+        </summary>
+      </change>
+      <change>
+        <summary>
+          virsh: Report initialization errors
+        </summary>
+        <description>
+          Sometimes virsh might be unable to start: when that happens, report
+          useful diagnostics instead of failing silently.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          nss: Don't require a network restart for libvirt_guest
+        </summary>
+        <description>
+          Previously, the libvirt_guest NSS module would only work properly
+          after the corresponding network had been restarted; now newly
+          started guests will be reported correctly right away.
+        </description>
+      </change>
+      <change>
+        <summary>
+          storage: Remove unavailable transient pools after restart
+        </summary>
+        <description>
+          Solve an issue where transient storage pools would be stuck in an
+          unmanageable state if the source disappeared and libvirtd was
+          subsequently restarted.
+        </description>
+      </change>
+      <change>
+        <summary>
+          storage: Fix capacity value for LUKS encrypted volumes
+        </summary>
+        <description>
+          The 'capacity' value (e.g. guest logical size) for a LUKS volume is
+          smaller than the 'physical' value of the file in the file system, so
+          we need to account for that.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Fix regression when hyperv/vendor_id feature is used
+        </summary>
+        <description>
+          Guests using the feature would not be started at all; it is now
+          possible to start them as expected.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Do not crash on USB address with no port and invalid bus
+        </summary>
+      </change>
     </section>
   </release>
   <release version="v3.2.0" date="2017-04-02">
