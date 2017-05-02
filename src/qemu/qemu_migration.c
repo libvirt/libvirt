@@ -3640,15 +3640,15 @@ qemuMigrationRun(virQEMUDriverPtr driver,
 
     if (flags & VIR_MIGRATE_PERSIST_DEST) {
         if (persist_xml) {
-            persistDef = qemuMigrationPrepareDef(driver, persist_xml,
-                                                 NULL, NULL);
-        } else {
-            persistDef = qemuDomainDefCopy(driver, vm->newDef,
-                                           VIR_DOMAIN_XML_SECURE |
-                                           VIR_DOMAIN_XML_MIGRATABLE);
+            if (!(persistDef = qemuMigrationPrepareDef(driver, persist_xml,
+                                                       NULL, NULL)))
+                goto cleanup;
+        } else if (vm->newDef) {
+            if (!(persistDef = qemuDomainDefCopy(driver, vm->newDef,
+                                                 VIR_DOMAIN_XML_SECURE |
+                                                 VIR_DOMAIN_XML_MIGRATABLE)))
+                goto cleanup;
         }
-        if (!persistDef)
-            goto cleanup;
     }
 
     mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
