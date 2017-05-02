@@ -152,8 +152,14 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
     uint8_t *ciphertext;
     size_t ciphertextlen;
 
-    /* Allocate a padded buffer, copy in the data */
-    ciphertextlen = VIR_ROUND_UP(datalen, 16);
+    /* Allocate a padded buffer, copy in the data.
+     *
+     * NB, we must *always* have at least 1 byte of
+     * padding - we can't skip it on multiples of
+     * 16, otherwise decoder can't distinguish padded
+     * data from non-padded data. Hence datalen + 1
+     */
+    ciphertextlen = VIR_ROUND_UP(datalen + 1, 16);
     if (VIR_ALLOC_N(ciphertext, ciphertextlen) < 0)
         return -1;
     memcpy(ciphertext, data, datalen);
