@@ -3927,13 +3927,8 @@ prlsdkDomainSetUserPassword(virDomainObjPtr dom,
                             const char *user,
                             const char *password)
 {
-    int ret = -1;
     vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
-
-    job = PrlVm_BeginEdit(privdom->sdkdom);
-    if (PRL_FAILED(waitDomainJob(job, dom)))
-        goto cleanup;
 
     job = PrlVm_SetUserPasswd(privdom->sdkdom,
                               user,
@@ -3941,16 +3936,9 @@ prlsdkDomainSetUserPassword(virDomainObjPtr dom,
                               0);
 
     if (PRL_FAILED(waitDomainJob(job, dom)))
-        goto cleanup;
+        return -1;
 
-    job = PrlVm_CommitEx(privdom->sdkdom, 0);
-    if (PRL_FAILED(waitDomainJob(job, dom)))
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
