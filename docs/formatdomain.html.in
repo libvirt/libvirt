@@ -7449,6 +7449,16 @@ qemu-kvm -net nic,model=? /dev/null
               <span class="since">Since 3.4.0</span> (QEMU/KVM only)
             </p>
           </dd>
+          <dt><code>iotlb</code></dt>
+          <dd>
+            <p>
+              The <code>iotlb</code> attribute with possible values
+              <code>on</code> and <code>off</code> can be used to
+              turn on the IOTLB used to cache address translation
+              requests from devices.
+              <span class="since">Since 3.5.0</span> (QEMU/KVM only)
+            </p>
+          </dd>
         </dl>
       </dd>
     </dl>

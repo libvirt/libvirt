@@ -1128,6 +1128,7 @@ mymain(void)
     DO_TEST("intel-iommu-ioapic", NONE);
     DO_TEST("intel-iommu-caching-mode", NONE);
     DO_TEST("intel-iommu-eim", NONE);
+    DO_TEST("intel-iommu-device-iotlb", NONE);
 
     DO_TEST("cpu-check-none", NONE);
     DO_TEST("cpu-check-partial", NONE);

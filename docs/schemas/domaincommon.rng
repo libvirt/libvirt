@@ -3964,6 +3964,11 @@
               <ref name="virOnOff"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="iotlb">
+              <ref name="virOnOff"/>
+            </attribute>
+          </optional>
         </element>
       </optional>
     </element>

@@ -14222,6 +14222,14 @@ virDomainIOMMUDefParseXML(xmlNodePtr node,
         }
         iommu->caching_mode = val;
     }
+    VIR_FREE(tmp);
+    if ((tmp = virXPathString("string(./driver/@iotlb)", ctxt))) {
+        if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, _("unknown iotlb value: %s"), tmp);
+            goto cleanup;
+        }
+        iommu->iotlb = val;
+    }
 
     VIR_FREE(tmp);
     if ((tmp = virXPathString("string(./driver/@eim)", ctxt))) {
@@ -19950,6 +19958,14 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDefPtr src,
                        virTristateSwitchTypeToString(src->eim));
         return false;
     }
+    if (src->iotlb != dst->iotlb) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device iotlb value '%s' "
+                         "does not match source '%s'"),
+                       virTristateSwitchTypeToString(dst->iotlb),
+                       virTristateSwitchTypeToString(src->iotlb));
+        return false;
+    }
     return true;
 }
 
@@ -24264,7 +24280,8 @@ virDomainIOMMUDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
 
     if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT ||
-        iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT) {
+        iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT ||
+        iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAddLit(&childBuf, "<driver");
         if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT) {
             virBufferAsprintf(&childBuf, " intremap='%s'",
@@ -24277,6 +24294,10 @@ virDomainIOMMUDefFormat(virBufferPtr buf,
         if (iommu->eim != VIR_TRISTATE_SWITCH_ABSENT) {
             virBufferAsprintf(&childBuf, " eim='%s'",
                               virTristateSwitchTypeToString(iommu->eim));
+        }
+        if (iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(&childBuf, " iotlb='%s'",
+                              virTristateSwitchTypeToString(iommu->iotlb));
         }
         virBufferAddLit(&childBuf, "/>\n");
     }

@@ -2213,6 +2213,7 @@ struct _virDomainIOMMUDef {
     virTristateSwitch intremap;
     virTristateSwitch caching_mode;
     virTristateSwitch eim;
+    virTristateSwitch iotlb;
 };
 /*
  * Guest VM main configuration
