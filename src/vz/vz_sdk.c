@@ -4952,7 +4952,7 @@ int prlsdkResizeImage(virDomainObjPtr dom, virDomainDiskDefPtr disk,
 
     job = PrlVmDev_ResizeImage(prldisk, newsize,
                                PRIF_RESIZE_LAST_PARTITION);
-    if (PRL_FAILED(waitJob(job)))
+    if (PRL_FAILED(waitDomainJob(job, dom)))
         goto cleanup;
 
     ret = 0;
