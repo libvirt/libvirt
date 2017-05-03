@@ -6698,6 +6698,13 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
                              "with this QEMU binary"));
             return -1;
         }
+        if (iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iommu: device IOTLB is not supported "
+                             "with this QEMU binary"));
+            return -1;
+        }
         break;
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
         break;
@@ -6734,6 +6741,10 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
         if (iommu->eim != VIR_TRISTATE_SWITCH_ABSENT) {
             virBufferAsprintf(&opts, ",eim=%s",
                               virTristateSwitchTypeToString(iommu->eim));
+        }
+        if (iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(&opts, ",device-iotlb=%s",
+                              virTristateSwitchTypeToString(iommu->iotlb));
         }
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
         break;

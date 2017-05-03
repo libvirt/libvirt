@@ -215,6 +215,7 @@
   <flag name='intel-iommu.intremap'/>
   <flag name='intel-iommu.caching-mode'/>
   <flag name='intel-iommu.eim'/>
+  <flag name='intel-iommu.device-iotlb'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.9.0)</package>

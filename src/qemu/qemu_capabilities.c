@@ -372,6 +372,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "intel-iommu.intremap",
               "intel-iommu.caching-mode",
               "intel-iommu.eim",
+
+              "intel-iommu.device-iotlb", /* 260 */
     );
 
 
@@ -1730,6 +1732,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsIntelIOMMU[] = {
     { "intremap", QEMU_CAPS_INTEL_IOMMU_INTREMAP },
     { "caching-mode", QEMU_CAPS_INTEL_IOMMU_CACHING_MODE },
     { "eim", QEMU_CAPS_INTEL_IOMMU_EIM },
+    { "device-iotlb", QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB },
 };
 
 /* see documentation for virQEMUCapsQMPSchemaGetByPath for the query format */
