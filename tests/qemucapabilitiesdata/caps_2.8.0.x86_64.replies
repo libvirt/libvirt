@@ -3692,6 +3692,29 @@
 {
   "return": [
     {
+      "name": "eim",
+      "description": "on/off/auto",
+      "type": "OnOffAuto"
+    },
+    {
+      "name": "x-buggy-eim",
+      "type": "bool"
+    },
+    {
+      "name": "intremap",
+      "type": "bool"
+    },
+    {
+      "name": "version",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-41"
+}
+
+{
+  "return": [
+    {
       "hotpluggable-cpus": true,
       "name": "pc-0.12",
       "cpu-max": 255
@@ -3855,7 +3878,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -4061,21 +4084,21 @@
       "static": false
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -5198,7 +5221,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -5236,7 +5259,7 @@
       "capability": "x-colo"
     }
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -14006,7 +14029,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {

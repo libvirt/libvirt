@@ -6685,6 +6685,20 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
     if (!iommu)
         return 0;
 
+    switch (iommu->model) {
+    case VIR_DOMAIN_IOMMU_MODEL_INTEL:
+        if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_INTREMAP)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iommu: interrupt remapping is not supported "
+                             "with this QEMU binary"));
+            return -1;
+        }
+        break;
+    case VIR_DOMAIN_IOMMU_MODEL_LAST:
+        break;
+    }
+
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU))
         return 0; /* Already handled via -machine */
 
@@ -6705,6 +6719,10 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
             return -1;
         }
         virBufferAddLit(&opts, "intel-iommu");
+        if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(&opts, ",intremap=%s",
+                              virTristateSwitchTypeToString(iommu->intremap));
+        }
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
         break;
     }

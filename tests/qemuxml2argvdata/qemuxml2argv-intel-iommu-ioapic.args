@@ -16,4 +16,4 @@ QEMU_AUDIO_DRV=none \
 -monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
--device intel-iommu
+-device intel-iommu,intremap=on

@@ -3123,6 +3123,16 @@
 {
   "return": [
     {
+      "name": "version",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-41"
+}
+
+{
+  "return": [
+    {
       "name": "pc-i440fx-2.4",
       "is-default": true,
       "cpu-max": 255,
@@ -3246,7 +3256,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -3336,21 +3346,21 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -4358,7 +4368,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -4388,7 +4398,7 @@
       "capability": "events"
     }
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
