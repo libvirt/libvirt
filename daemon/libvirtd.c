@@ -262,50 +262,47 @@ daemonUnixSocketPaths(struct daemonConfig *config,
                       char **rosockfile,
                       char **admsockfile)
 {
+    int ret = -1;
+    char *rundir = NULL;
+
     if (config->unix_sock_dir) {
         if (virAsprintf(sockfile, "%s/libvirt-sock", config->unix_sock_dir) < 0)
-            goto error;
+            goto cleanup;
 
         if (privileged) {
-            if (virAsprintf(rosockfile, "%s/libvirt-sock-ro", config->unix_sock_dir) < 0)
-                goto error;
-            if (virAsprintf(admsockfile, "%s/libvirt-admin-sock", config->unix_sock_dir) < 0)
-                goto error;
+            if (virAsprintf(rosockfile, "%s/libvirt-sock-ro", config->unix_sock_dir) < 0 ||
+                virAsprintf(admsockfile, "%s/libvirt-admin-sock", config->unix_sock_dir) < 0)
+                goto cleanup;
         }
     } else {
         if (privileged) {
             if (VIR_STRDUP(*sockfile, LOCALSTATEDIR "/run/libvirt/libvirt-sock") < 0 ||
                 VIR_STRDUP(*rosockfile, LOCALSTATEDIR "/run/libvirt/libvirt-sock-ro") < 0 ||
                 VIR_STRDUP(*admsockfile, LOCALSTATEDIR "/run/libvirt/libvirt-admin-sock") < 0)
-                goto error;
+                goto cleanup;
         } else {
-            char *rundir = NULL;
             mode_t old_umask;
 
             if (!(rundir = virGetUserRuntimeDirectory()))
-                goto error;
+                goto cleanup;
 
             old_umask = umask(077);
             if (virFileMakePath(rundir) < 0) {
                 umask(old_umask);
-                VIR_FREE(rundir);
-                goto error;
+                goto cleanup;
             }
             umask(old_umask);
 
             if (virAsprintf(sockfile, "%s/libvirt-sock", rundir) < 0 ||
-                virAsprintf(admsockfile, "%s/libvirt-admin-sock", rundir) < 0) {
-                VIR_FREE(rundir);
-                goto error;
-            }
-
-            VIR_FREE(rundir);
+                virAsprintf(admsockfile, "%s/libvirt-admin-sock", rundir) < 0)
+                goto cleanup;
         }
     }
-    return 0;
 
- error:
-    return -1;
+    ret = 0;
+ cleanup:
+    VIR_FREE(rundir);
+    return ret;
 }
 
 
