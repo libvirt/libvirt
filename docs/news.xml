@@ -176,6 +176,16 @@
           qemu: Do not crash on USB address with no port and invalid bus
         </summary>
       </change>
+      <change>
+        <summary>
+          crypto: Always pad data before encrypting it
+        </summary>
+        <description>
+          If this step is not performed, when the data length matches the
+          chunk size the decryption routines will misinterpret the last byte
+          of data as the padding lenght and fail to decode it correctly.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.2.0" date="2017-04-02">
