@@ -1,0 +1,114 @@
+[
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 1073741824,
+        "filename": "json:{\"driver\": \"raw\", \"file\": {\"lun\": \"0\", \"portal\": \"example.com:3260\", \"driver\": \"iscsi\", \"transport\": \"tcp\", \"target\": \"iqn.2016-09.com.example:server\"}}",
+        "format": "raw",
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block301",
+      "backing_file_depth": 0,
+      "drv": "raw",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "json:{\"driver\": \"raw\", \"file\": {\"lun\": \"0\", \"portal\": \"example.com:3260\", \"driver\": \"iscsi\", \"transport\": \"tcp\", \"target\": \"iqn.2016-09.com.example:server\"}}",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 1073741824,
+        "filename": "json:{\"lun\": \"0\", \"portal\": \"example.com:3260\", \"driver\": \"iscsi\", \"transport\": \"tcp\", \"target\": \"iqn.2016-09.com.example:server\"}",
+        "format": "iscsi",
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block250",
+      "backing_file_depth": 0,
+      "drv": "iscsi",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "json:{\"lun\": \"0\", \"portal\": \"example.com:3260\", \"driver\": \"iscsi\", \"transport\": \"tcp\", \"target\": \"iqn.2016-09.com.example:server\"}",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 1073741824,
+        "filename": "json:{\"driver\": \"raw\", \"file\": {\"lun\": \"0\", \"portal\": \"example.com:3260\", \"driver\": \"iscsi\", \"transport\": \"tcp\", \"target\": \"iqn.2016-09.com.example:server\"}}",
+        "format": "raw",
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block169",
+      "backing_file_depth": 0,
+      "drv": "raw",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "json:{\"driver\": \"raw\", \"file\": {\"lun\": \"0\", \"portal\": \"example.com:3260\", \"driver\": \"iscsi\", \"transport\": \"tcp\", \"target\": \"iqn.2016-09.com.example:server\"}}",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 1073741824,
+        "filename": "json:{\"lun\": \"0\", \"portal\": \"example.com:3260\", \"driver\": \"iscsi\", \"transport\": \"tcp\", \"target\": \"iqn.2016-09.com.example:server\"}",
+        "format": "iscsi",
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block038",
+      "backing_file_depth": 0,
+      "drv": "iscsi",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "json:{\"lun\": \"0\", \"portal\": \"example.com:3260\", \"driver\": \"iscsi\", \"transport\": \"tcp\", \"target\": \"iqn.2016-09.com.example:server\"}",
+      "encryption_key_missing": false
+    }
+]

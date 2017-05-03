@@ -1,0 +1,13 @@
+drive-scsi0-0-1
+filename    : 'json:{"lun": "0", "portal": "example.com:3260", "driver": "iscsi", "transport": "tcp", "target": "iqn.2016-09.com.example:server"}'
+format node : '#block301'
+format drv  : 'raw'
+storage node: '#block250'
+storage drv : 'iscsi'
+
+drive-virtio-disk0
+filename    : 'json:{"lun": "0", "portal": "example.com:3260", "driver": "iscsi", "transport": "tcp", "target": "iqn.2016-09.com.example:server"}'
+format node : '#block169'
+format drv  : 'raw'
+storage node: '#block038'
+storage drv : 'iscsi'

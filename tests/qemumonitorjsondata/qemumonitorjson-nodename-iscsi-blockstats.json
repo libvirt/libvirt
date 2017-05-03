@@ -1,0 +1,113 @@
+[
+    {
+      "device": "drive-virtio-disk0",
+      "parent": {
+        "stats": {
+          "flush_total_time_ns": 0,
+          "wr_highest_offset": 0,
+          "wr_total_time_ns": 0,
+          "failed_wr_operations": 0,
+          "failed_rd_operations": 0,
+          "wr_merged": 0,
+          "wr_bytes": 0,
+          "timed_stats": [
+
+          ],
+          "failed_flush_operations": 0,
+          "account_invalid": false,
+          "rd_total_time_ns": 0,
+          "flush_operations": 0,
+          "wr_operations": 0,
+          "rd_merged": 0,
+          "rd_bytes": 0,
+          "invalid_flush_operations": 0,
+          "account_failed": false,
+          "rd_operations": 0,
+          "invalid_wr_operations": 0,
+          "invalid_rd_operations": 0
+        },
+        "node-name": "#block038"
+      },
+      "stats": {
+        "flush_total_time_ns": 0,
+        "wr_highest_offset": 0,
+        "wr_total_time_ns": 0,
+        "failed_wr_operations": 0,
+        "failed_rd_operations": 0,
+        "wr_merged": 0,
+        "wr_bytes": 0,
+        "timed_stats": [
+
+        ],
+        "failed_flush_operations": 0,
+        "account_invalid": true,
+        "rd_total_time_ns": 995504,
+        "flush_operations": 0,
+        "wr_operations": 0,
+        "rd_merged": 0,
+        "rd_bytes": 512,
+        "invalid_flush_operations": 0,
+        "account_failed": true,
+        "idle_time_ns": 117550038551,
+        "rd_operations": 1,
+        "invalid_wr_operations": 0,
+        "invalid_rd_operations": 0
+      },
+      "node-name": "#block169"
+    },
+    {
+      "device": "drive-scsi0-0-1",
+      "parent": {
+        "stats": {
+          "flush_total_time_ns": 0,
+          "wr_highest_offset": 0,
+          "wr_total_time_ns": 0,
+          "failed_wr_operations": 0,
+          "failed_rd_operations": 0,
+          "wr_merged": 0,
+          "wr_bytes": 0,
+          "timed_stats": [
+
+          ],
+          "failed_flush_operations": 0,
+          "account_invalid": false,
+          "rd_total_time_ns": 0,
+          "flush_operations": 0,
+          "wr_operations": 0,
+          "rd_merged": 0,
+          "rd_bytes": 0,
+          "invalid_flush_operations": 0,
+          "account_failed": false,
+          "rd_operations": 0,
+          "invalid_wr_operations": 0,
+          "invalid_rd_operations": 0
+        },
+        "node-name": "#block250"
+      },
+      "stats": {
+        "flush_total_time_ns": 0,
+        "wr_highest_offset": 0,
+        "wr_total_time_ns": 0,
+        "failed_wr_operations": 0,
+        "failed_rd_operations": 0,
+        "wr_merged": 0,
+        "wr_bytes": 0,
+        "timed_stats": [
+
+        ],
+        "failed_flush_operations": 0,
+        "account_invalid": true,
+        "rd_total_time_ns": 0,
+        "flush_operations": 0,
+        "wr_operations": 0,
+        "rd_merged": 0,
+        "rd_bytes": 0,
+        "invalid_flush_operations": 0,
+        "account_failed": true,
+        "rd_operations": 0,
+        "invalid_wr_operations": 0,
+        "invalid_rd_operations": 0
+      },
+      "node-name": "#block301"
+    }
+]
