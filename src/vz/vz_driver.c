@@ -3977,12 +3977,6 @@ vzDomainBlockResize(virDomainPtr domain,
         size /= 1024;
     size /= 1024;
 
-    if (!(disk = virDomainDiskByName(dom->def, path, false))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid path: %s"), path);
-        goto cleanup;
-    }
-
     if (vzDomainObjBeginJob(dom) < 0)
         goto cleanup;
     job = true;
@@ -3993,6 +3987,12 @@ vzDomainBlockResize(virDomainPtr domain,
     if (!virDomainObjIsActive(dom)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    if (!(disk = virDomainDiskByName(dom->def, path, false))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid path: %s"), path);
         goto cleanup;
     }
 
