@@ -297,7 +297,7 @@ virPerfEventDisable(virPerfPtr perf,
 bool virPerfEventIsEnabled(virPerfPtr perf,
                            virPerfEventType type)
 {
-    return perf->events[type].enabled;
+    return perf && perf->events[type].enabled;
 }
 
 int
