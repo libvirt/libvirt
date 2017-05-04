@@ -449,13 +449,8 @@ virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
 
     virObjectLock(dst);
     for (i = 0; i < count; i++) {
-        const char *mdev_path = NULL;
         virMediatedDevicePtr mdev = virMediatedDeviceListGet(src, i);
 
-        if (!mdev)
-            goto cleanup;
-
-        mdev_path = mdev->path;
         if (virMediatedDeviceIsUsed(mdev, dst) ||
             virMediatedDeviceSetUsedBy(mdev, drvname, domname) < 0)
             goto cleanup;
@@ -464,11 +459,11 @@ virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
          * - caller is responsible for NOT freeing devices in @src on success
          * - we're responsible for performing a rollback on failure
          */
+        VIR_DEBUG("Add '%s' to list of active mediated devices used by '%s'",
+                  mdev->path, domname);
         if (virMediatedDeviceListAdd(dst, &mdev) < 0)
             goto rollback;
 
-        VIR_DEBUG("'%s' added to list of active mediated devices used by '%s'",
-                  mdev_path, domname);
     }
 
     ret = 0;
