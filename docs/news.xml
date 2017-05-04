@@ -183,7 +183,7 @@
         <description>
           If this step is not performed, when the data length matches the
           chunk size the decryption routines will misinterpret the last byte
-          of data as the padding lenght and fail to decode it correctly.
+          of data as the padding length and fail to decode it correctly.
         </description>
       </change>
     </section>
