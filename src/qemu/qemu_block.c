@@ -680,6 +680,7 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src,
 {
     qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     const char *passwordalias = NULL;
+    const char *cookiealias = NULL;
     const char *username = NULL;
     virJSONValuePtr ret = NULL;
     g_autoptr(virURI) uri = NULL;
@@ -704,9 +705,15 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src,
     if (!(uristr = virURIFormat(uri)))
         return NULL;
 
-    if (!onlytarget && src->auth) {
-        username = src->auth->username;
-        passwordalias = srcPriv->secinfo->s.aes.alias;
+    if (!onlytarget) {
+        if (src->auth) {
+            username = src->auth->username;
+            passwordalias = srcPriv->secinfo->s.aes.alias;
+        }
+
+        if (srcPriv &&
+            srcPriv->httpcookie)
+            cookiealias = srcPriv->httpcookie->s.aes.alias;
     }
 
     ignore_value(virJSONValueObjectCreate(&ret,
@@ -714,6 +721,7 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src,
                                           "S:username", username,
                                           "S:password-secret", passwordalias,
                                           "T:sslverify", src->sslverify,
+                                          "S:cookie-secret", cookiealias,
                                           NULL));
 
     return ret;
