@@ -449,9 +449,13 @@ virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
 
     virObjectLock(dst);
     for (i = 0; i < count; i++) {
+        const char *mdev_path = NULL;
         virMediatedDevicePtr mdev = virMediatedDeviceListGet(src, i);
-        const char *mdev_path = mdev->path;
 
+        if (!mdev)
+            goto cleanup;
+
+        mdev_path = mdev->path;
         if (virMediatedDeviceIsUsed(mdev, dst) ||
             virMediatedDeviceSetUsedBy(mdev, drvname, domname) < 0)
             goto cleanup;
