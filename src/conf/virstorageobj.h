@@ -70,11 +70,51 @@ typedef bool
 (*virStoragePoolObjListFilter)(virConnectPtr conn,
                                virStoragePoolDefPtr def);
 
-static inline int
-virStoragePoolObjIsActive(virStoragePoolObjPtr obj)
-{
-    return obj->active;
-}
+virStoragePoolDefPtr
+virStoragePoolObjGetDef(virStoragePoolObjPtr obj);
+
+void
+virStoragePoolObjSetDef(virStoragePoolObjPtr obj,
+                        virStoragePoolDefPtr def);
+
+virStoragePoolDefPtr
+virStoragePoolObjGetNewDef(virStoragePoolObjPtr obj);
+
+void
+virStoragePoolObjDefUseNewDef(virStoragePoolObjPtr obj);
+
+char *
+virStoragePoolObjGetConfigFile(virStoragePoolObjPtr obj);
+
+void
+virStoragePoolObjSetConfigFile(virStoragePoolObjPtr obj,
+                               char *configFile);
+
+char *
+virStoragePoolObjGetAutostartLink(virStoragePoolObjPtr obj);
+
+bool
+virStoragePoolObjIsActive(virStoragePoolObjPtr obj);
+
+void
+virStoragePoolObjSetActive(virStoragePoolObjPtr obj,
+                           bool active);
+
+bool
+virStoragePoolObjIsAutostart(virStoragePoolObjPtr obj);
+
+void
+virStoragePoolObjSetAutostart(virStoragePoolObjPtr obj,
+                              int autostart);
+
+unsigned int
+virStoragePoolObjGetAsyncjobs(virStoragePoolObjPtr obj);
+
+void
+virStoragePoolObjIncrAsyncjobs(virStoragePoolObjPtr obj);
+
+void
+virStoragePoolObjDecrAsyncjobs(virStoragePoolObjPtr obj);
 
 int
 virStoragePoolObjLoadAllConfigs(virStoragePoolObjListPtr pools,
