@@ -396,6 +396,7 @@ storageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
                         virStorageVolDefPtr inputvol,
                         unsigned int flags)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int ret = -1;
     int fd = -1;
     int operation_flags;
@@ -431,7 +432,7 @@ storageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     operation_flags = VIR_FILE_OPEN_FORCE_MODE | VIR_FILE_OPEN_FORCE_OWNER;
-    if (pool->def->type == VIR_STORAGE_POOL_NETFS)
+    if (def->type == VIR_STORAGE_POOL_NETFS)
         operation_flags |= VIR_FILE_OPEN_FORK;
 
     if (vol->target.perms->mode != (mode_t) -1)
@@ -597,6 +598,7 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
                                    virStorageVolDefPtr vol,
                                    virCommandPtr cmd)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     struct stat st;
     gid_t gid;
     uid_t uid;
@@ -606,7 +608,7 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     bool filecreated = false;
     int ret = -1;
 
-    if ((pool->def->type == VIR_STORAGE_POOL_NETFS)
+    if ((def->type == VIR_STORAGE_POOL_NETFS)
         && (((geteuid() == 0)
              && (vol->target.perms->uid != (uid_t) -1)
              && (vol->target.perms->uid != 0))
@@ -1029,6 +1031,7 @@ storageBackendCreateQemuImgSetBacking(virStoragePoolObjPtr pool,
                                       virStorageVolDefPtr inputvol,
                                       struct _virStorageBackendQemuImgInfo *info)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int accessRetCode = -1;
     char *absolutePath = NULL;
 
@@ -1071,7 +1074,7 @@ storageBackendCreateQemuImgSetBacking(virStoragePoolObjPtr pool,
      * validation.
      */
     if ('/' != *(info->backingPath) &&
-        virAsprintf(&absolutePath, "%s/%s", pool->def->target.path,
+        virAsprintf(&absolutePath, "%s/%s", def->target.path,
                     info->backingPath) < 0)
         return -1;
     accessRetCode = access(absolutePath ? absolutePath :
@@ -1921,7 +1924,7 @@ virStorageBackendPoolPathIsStable(const char *path)
 
 /*
  * Given a volume path directly in /dev/XXX, iterate over the
- * entries in the directory pool->def->target.path and find the
+ * entries in the directory def->target.path and find the
  * first symlink pointing to the volume path.
  *
  * If, the target.path is /dev/, then return the original volume
@@ -1940,6 +1943,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
                             const char *devpath,
                             bool loop)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     DIR *dh;
     struct dirent *dent;
     char *stablepath;
@@ -1948,8 +1952,8 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
     int direrr;
 
     /* Logical pools are under /dev but already have stable paths */
-    if (pool->def->type == VIR_STORAGE_POOL_LOGICAL ||
-        !virStorageBackendPoolPathIsStable(pool->def->target.path))
+    if (def->type == VIR_STORAGE_POOL_LOGICAL ||
+        !virStorageBackendPoolPathIsStable(def->target.path))
         goto ret_strdup;
 
     /* We loop here because /dev/disk/by-{id,path} may not have existed
@@ -1957,7 +1961,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
      * get created.
      */
  reopen:
-    if (virDirOpenQuiet(&dh, pool->def->target.path) < 0) {
+    if (virDirOpenQuiet(&dh, def->target.path) < 0) {
         opentries++;
         if (loop && errno == ENOENT && opentries < 50) {
             usleep(100 * 1000);
@@ -1965,7 +1969,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
         }
         virReportSystemError(errno,
                              _("cannot read dir '%s'"),
-                             pool->def->target.path);
+                             def->target.path);
         return NULL;
     }
 
@@ -1981,8 +1985,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
  retry:
     while ((direrr = virDirRead(dh, &dent, NULL)) > 0) {
         if (virAsprintf(&stablepath, "%s/%s",
-                        pool->def->target.path,
-                        dent->d_name) < 0) {
+                        def->target.path, dent->d_name) < 0) {
             VIR_DIR_CLOSE(dh);
             return NULL;
         }
@@ -2020,6 +2023,7 @@ createFileDir(virConnectPtr conn ATTRIBUTE_UNUSED,
               virStorageVolDefPtr inputvol,
               unsigned int flags)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int err;
 
     virCheckFlags(0, -1);
@@ -2044,7 +2048,7 @@ createFileDir(virConnectPtr conn ATTRIBUTE_UNUSED,
                              vol->target.perms->mode),
                             vol->target.perms->uid,
                             vol->target.perms->gid,
-                            (pool->def->type == VIR_STORAGE_POOL_NETFS
+                            (def->type == VIR_STORAGE_POOL_NETFS
                              ? VIR_DIR_CREATE_AS_UID : 0))) < 0) {
         return -1;
     }
@@ -2064,6 +2068,8 @@ virStorageBackendVolCreateLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virStoragePoolObjPtr pool,
                                 virStorageVolDefPtr vol)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+
     if (vol->target.format == VIR_STORAGE_FILE_DIR)
         vol->type = VIR_STORAGE_VOL_DIR;
     else if (vol->target.format == VIR_STORAGE_FILE_PLOOP)
@@ -2081,8 +2087,7 @@ virStorageBackendVolCreateLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
-                    pool->def->target.path,
-                    vol->name) < 0)
+                    def->target.path, vol->name) < 0)
         return -1;
 
     if (virFileExists(vol->target.path)) {
@@ -2768,6 +2773,7 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
 int
 virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int ret = -1;
     char *parent = NULL;
     char *p = NULL;
@@ -2775,12 +2781,12 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
     bool needs_create_as_uid;
     unsigned int dir_create_flags;
 
-    if (VIR_STRDUP(parent, pool->def->target.path) < 0)
+    if (VIR_STRDUP(parent, def->target.path) < 0)
         goto cleanup;
     if (!(p = strrchr(parent, '/'))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("path '%s' is not absolute"),
-                       pool->def->target.path);
+                       def->target.path);
         goto cleanup;
     }
 
@@ -2796,11 +2802,11 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
     }
 
     dir_create_flags = VIR_DIR_CREATE_ALLOW_EXIST;
-    needs_create_as_uid = (pool->def->type == VIR_STORAGE_POOL_NETFS);
-    mode = pool->def->target.perms.mode;
+    needs_create_as_uid = (def->type == VIR_STORAGE_POOL_NETFS);
+    mode = def->target.perms.mode;
 
     if (mode == (mode_t) -1 &&
-        (needs_create_as_uid || !virFileExists(pool->def->target.path)))
+        (needs_create_as_uid || !virFileExists(def->target.path)))
         mode = VIR_STORAGE_DEFAULT_POOL_PERM_MODE;
     if (needs_create_as_uid)
         dir_create_flags |= VIR_DIR_CREATE_AS_UID;
@@ -2808,10 +2814,10 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
     /* Now create the final dir in the path with the uid/gid/mode
      * requested in the config. If the dir already exists, just set
      * the perms. */
-    if (virDirCreate(pool->def->target.path,
+    if (virDirCreate(def->target.path,
                      mode,
-                     pool->def->target.perms.uid,
-                     pool->def->target.perms.gid,
+                     def->target.perms.uid,
+                     def->target.perms.gid,
                      dir_create_flags) < 0)
         goto cleanup;
 
@@ -2836,14 +2842,16 @@ virStorageBackendDeleteLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
                              virStoragePoolObjPtr pool,
                              unsigned int flags)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+
     virCheckFlags(0, -1);
 
     /* XXX delete all vols first ? */
 
-    if (rmdir(pool->def->target.path) < 0) {
+    if (rmdir(def->target.path) < 0) {
         virReportSystemError(errno,
                              _("failed to remove pool '%s'"),
-                             pool->def->target.path);
+                             def->target.path);
         return -1;
     }
 
@@ -3575,6 +3583,7 @@ int
 virStorageBackendRefreshLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
                               virStoragePoolObjPtr pool)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     DIR *dir;
     struct dirent *ent;
     struct statvfs sb;
@@ -3584,15 +3593,15 @@ virStorageBackendRefreshLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     int direrr;
     int fd = -1, ret = -1;
 
-    if (virDirOpen(&dir, pool->def->target.path) < 0)
+    if (virDirOpen(&dir, def->target.path) < 0)
         goto cleanup;
 
-    while ((direrr = virDirRead(dir, &ent, pool->def->target.path)) > 0) {
+    while ((direrr = virDirRead(dir, &ent, def->target.path)) > 0) {
         int err;
 
         if (virStringHasControlChars(ent->d_name)) {
             VIR_WARN("Ignoring file with control characters under '%s'",
-                     pool->def->target.path);
+                     def->target.path);
             continue;
         }
 
@@ -3604,8 +3613,7 @@ virStorageBackendRefreshLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
 
         vol->type = VIR_STORAGE_VOL_FILE;
         if (virAsprintf(&vol->target.path, "%s/%s",
-                        pool->def->target.path,
-                        vol->name) < 0)
+                        def->target.path, vol->name) < 0)
             goto cleanup;
 
         if (VIR_STRDUP(vol->key, vol->target.path) < 0)
@@ -3633,17 +3641,17 @@ virStorageBackendRefreshLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (VIR_ALLOC(target))
         goto cleanup;
 
-    if ((fd = open(pool->def->target.path, O_RDONLY)) < 0) {
+    if ((fd = open(def->target.path, O_RDONLY)) < 0) {
         virReportSystemError(errno,
                              _("cannot open path '%s'"),
-                             pool->def->target.path);
+                             def->target.path);
         goto cleanup;
     }
 
     if (fstat(fd, &statbuf) < 0) {
         virReportSystemError(errno,
                              _("cannot stat path '%s'"),
-                             pool->def->target.path);
+                             def->target.path);
         goto cleanup;
     }
 
@@ -3651,24 +3659,24 @@ virStorageBackendRefreshLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
 
     /* VolTargetInfoFD doesn't update capacity correctly for the pool case */
-    if (statvfs(pool->def->target.path, &sb) < 0) {
+    if (statvfs(def->target.path, &sb) < 0) {
         virReportSystemError(errno,
                              _("cannot statvfs path '%s'"),
-                             pool->def->target.path);
+                             def->target.path);
         goto cleanup;
     }
 
-    pool->def->capacity = ((unsigned long long)sb.f_frsize *
-                           (unsigned long long)sb.f_blocks);
-    pool->def->available = ((unsigned long long)sb.f_bfree *
-                            (unsigned long long)sb.f_frsize);
-    pool->def->allocation = pool->def->capacity - pool->def->available;
+    def->capacity = ((unsigned long long)sb.f_frsize *
+                     (unsigned long long)sb.f_blocks);
+    def->available = ((unsigned long long)sb.f_bfree *
+                      (unsigned long long)sb.f_frsize);
+    def->allocation = def->capacity - def->available;
 
-    pool->def->target.perms.mode = target->perms->mode;
-    pool->def->target.perms.uid = target->perms->uid;
-    pool->def->target.perms.gid = target->perms->gid;
-    VIR_FREE(pool->def->target.perms.label);
-    if (VIR_STRDUP(pool->def->target.perms.label, target->perms->label) < 0)
+    def->target.perms.mode = target->perms->mode;
+    def->target.perms.uid = target->perms->uid;
+    def->target.perms.gid = target->perms->gid;
+    VIR_FREE(def->target.perms.label);
+    if (VIR_STRDUP(def->target.perms.label, target->perms->label) < 0)
         goto cleanup;
 
     ret = 0;
@@ -3738,6 +3746,7 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
                             uint32_t lun,
                             const char *dev)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virStorageVolDefPtr vol = NULL;
     char *devpath = NULL;
     int retval = -1;
@@ -3749,12 +3758,12 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
      * path to the device if the virDirRead loop to search the
      * target pool path for our devpath had failed.
      */
-    if (!virStorageBackendPoolPathIsStable(pool->def->target.path) &&
-        !(STREQ(pool->def->target.path, "/dev") ||
-          STREQ(pool->def->target.path, "/dev/"))) {
+    if (!virStorageBackendPoolPathIsStable(def->target.path) &&
+        !(STREQ(def->target.path, "/dev") ||
+          STREQ(def->target.path, "/dev/"))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unable to use target path '%s' for dev '%s'"),
-                       NULLSTR(pool->def->target.path), dev);
+                       NULLSTR(def->target.path), dev);
         goto cleanup;
     }
 
@@ -3788,11 +3797,11 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
         goto cleanup;
 
     if (STREQ(devpath, vol->target.path) &&
-        !(STREQ(pool->def->target.path, "/dev") ||
-          STREQ(pool->def->target.path, "/dev/"))) {
+        !(STREQ(def->target.path, "/dev") ||
+          STREQ(def->target.path, "/dev/"))) {
 
         VIR_DEBUG("No stable path found for '%s' in '%s'",
-                  devpath, pool->def->target.path);
+                  devpath, def->target.path);
 
         retval = -2;
         goto cleanup;
@@ -3807,8 +3816,8 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
     if (!(vol->key = virStorageBackendSCSISerial(vol->target.path)))
         goto cleanup;
 
-    pool->def->capacity += vol->target.capacity;
-    pool->def->allocation += vol->target.allocation;
+    def->capacity += vol->target.capacity;
+    def->allocation += vol->target.allocation;
 
     if (virStoragePoolObjAddVol(pool, vol) < 0)
         goto cleanup;
@@ -4085,6 +4094,7 @@ int
 virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
                               uint32_t scanhost)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int retval = 0;
     uint32_t bus, target, lun;
     const char *device_path = "/sys/bus/scsi/devices";
@@ -4126,7 +4136,7 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
     if (retval < 0)
         return -1;
 
-    VIR_DEBUG("Found %d LUs for pool %s", found, pool->def->name);
+    VIR_DEBUG("Found %d LUs for pool %s", found, def->name);
 
     return found;
 }
