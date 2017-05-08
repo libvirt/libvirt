@@ -885,7 +885,10 @@ storagevolxml2argvtest_SOURCES = \
     testutils.c testutils.h
 storagevolxml2argvtest_LDADD = \
 	$(LIBXML_LIBS) \
-	../src/libvirt_driver_storage_impl.la $(LDADDS)
+	../src/libvirt_driver_storage_impl.la \
+	../src/libvirt_conf.la \
+	../src/libvirt_util.la \
+	$(LDADDS)
 
 else ! WITH_STORAGE
 EXTRA_DIST += storagevolxml2argvtest.c

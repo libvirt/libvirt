@@ -50,18 +50,21 @@ testCompareXMLToArgvFiles(bool shouldFail,
     virConnectPtr conn;
 
     virStorageVolDefPtr vol = NULL, inputvol = NULL;
-    virStoragePoolDefPtr pool = NULL;
+    virStoragePoolDefPtr def = NULL;
     virStoragePoolDefPtr inputpool = NULL;
-    virStoragePoolObj poolobj = {.def = NULL };
-
+    virStoragePoolObjPtr obj = NULL;
 
     if (!(conn = virGetConnect()))
         goto cleanup;
 
-    if (!(pool = virStoragePoolDefParseFile(poolxml)))
+    if (!(def = virStoragePoolDefParseFile(poolxml)))
         goto cleanup;
 
-    poolobj.def = pool;
+    if (!(obj = virStoragePoolObjNew())) {
+        virStoragePoolDefFree(def);
+        goto cleanup;
+    }
+    virStoragePoolObjSetDef(obj, def);
 
     if (inputpoolxml) {
         if (!(inputpool = virStoragePoolDefParseFile(inputpoolxml)))
@@ -71,17 +74,17 @@ testCompareXMLToArgvFiles(bool shouldFail,
     if (inputvolxml)
         parse_flags |= VIR_VOL_XML_PARSE_NO_CAPACITY;
 
-    if (!(vol = virStorageVolDefParseFile(pool, volxml, parse_flags)))
+    if (!(vol = virStorageVolDefParseFile(def, volxml, parse_flags)))
         goto cleanup;
 
     if (inputvolxml &&
         !(inputvol = virStorageVolDefParseFile(inputpool, inputvolxml, 0)))
         goto cleanup;
 
-    testSetVolumeType(vol, pool);
+    testSetVolumeType(vol, def);
     testSetVolumeType(inputvol, inputpool);
 
-    cmd = virStorageBackendCreateQemuImgCmdFromVol(conn, &poolobj, vol,
+    cmd = virStorageBackendCreateQemuImgCmdFromVol(conn, obj, vol,
                                                    inputvol, flags,
                                                    create_tool, imgformat,
                                                    NULL);
@@ -102,12 +105,13 @@ testCompareXMLToArgvFiles(bool shouldFail,
     ret = 0;
 
  cleanup:
-    virStoragePoolDefFree(pool);
     virStoragePoolDefFree(inputpool);
     virStorageVolDefFree(vol);
     virStorageVolDefFree(inputvol);
     virCommandFree(cmd);
     VIR_FREE(actualCmdline);
+    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjFree(obj);
     virObjectUnref(conn);
     return ret;
 }

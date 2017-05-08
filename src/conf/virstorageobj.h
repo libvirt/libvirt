@@ -70,6 +70,9 @@ typedef bool
 (*virStoragePoolObjListFilter)(virConnectPtr conn,
                                virStoragePoolDefPtr def);
 
+virStoragePoolObjPtr
+virStoragePoolObjNew(void);
+
 virStoragePoolDefPtr
 virStoragePoolObjGetDef(virStoragePoolObjPtr obj);
 
