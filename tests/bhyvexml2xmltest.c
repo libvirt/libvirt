@@ -104,6 +104,7 @@ mymain(void)
     DO_TEST_DIFFERENT("serial");
     DO_TEST_DIFFERENT("serial-grub");
     DO_TEST_DIFFERENT("serial-grub-nocons");
+    DO_TEST_DIFFERENT("vnc");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");
@@ -127,7 +128,7 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/bhyvexml2argvmock.so")
 
 #else
 
