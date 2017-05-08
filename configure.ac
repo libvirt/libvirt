@@ -624,9 +624,12 @@ fi
 
 dnl Allow perl/python overrides
 AC_PATH_PROGS([PYTHON], [python2 python])
+if test -z "$PYTHON"; then
+         AC_MSG_ERROR(['python' or 'python2' binary is required to build libvirt])
+fi
 AC_PATH_PROG([PERL], [perl])
 if test -z "$PERL"; then
-         AC_MSG_ERROR([Failed to find perl.])
+         AC_MSG_ERROR(['perl' binary is required to build libvirt])
 fi
 
 LIBVIRT_ARG_WITH([TEST_SUITE], [build test suite by default], [check])

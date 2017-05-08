@@ -54,6 +54,7 @@ BuildRequires:  mingw64-portablexdr
 BuildRequires:  pkgconfig
 # Need native version for msgfmt
 BuildRequires:  gettext
+BuildRequires:  python
 BuildRequires:  perl
 BuildRequires:  perl(Getopt::Long)
 %if 0%{?enable_autotools}
