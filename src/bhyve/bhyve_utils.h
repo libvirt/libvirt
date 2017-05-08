@@ -28,6 +28,7 @@
 # include "virdomainobjlist.h"
 # include "virthread.h"
 # include "virclosecallbacks.h"
+# include "virportallocator.h"
 
 # define BHYVE_AUTOSTART_DIR    SYSCONFDIR "/libvirt/bhyve/autostart"
 # define BHYVE_CONFIG_DIR       SYSCONFDIR "/libvirt/bhyve"
@@ -57,6 +58,8 @@ struct _bhyveConn {
     virObjectEventStatePtr domainEventState;
 
     virCloseCallbacksPtr closeCallbacks;
+
+    virPortAllocatorPtr remotePorts;
 
     unsigned bhyvecaps;
     unsigned grubcaps;

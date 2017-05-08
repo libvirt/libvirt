@@ -330,15 +330,19 @@ bhyveBuildLPCArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
 }
 
 static int
-bhyveBuildGraphicsArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
+bhyveBuildGraphicsArgStr(const virDomainDef *def,
                          virDomainGraphicsDefPtr graphics,
                          virDomainVideoDefPtr video,
                          virConnectPtr conn,
-                         virCommandPtr cmd)
+                         virCommandPtr cmd,
+                         bool dryRun)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     virDomainGraphicsListenDefPtr glisten = NULL;
     bool escapeAddr;
+    unsigned short port;
+
+    bhyveConnPtr driver = conn->privateData;
 
     if (!(bhyveDriverGetCaps(conn) & BHYVE_CAP_LPC_BOOTROM) ||
         def->os.bootloader ||
@@ -399,6 +403,20 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
                 virBufferAsprintf(&opt, "[%s]", glisten->address);
             else
                 virBufferAdd(&opt, glisten->address, -1);
+        }
+
+        if (!dryRun) {
+            if (graphics->data.vnc.autoport) {
+                if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
+                    return -1;
+                graphics->data.vnc.port = port;
+            } else {
+                if (virPortAllocatorSetUsed(driver->remotePorts,
+                                            graphics->data.vnc.port,
+                                            true) < 0)
+                    VIR_WARN("Failed to mark VNC port '%d' as used by '%s'",
+                             graphics->data.vnc.port, def->name);
+            }
         }
 
         virBufferAsprintf(&opt, ":%d", graphics->data.vnc.port);
@@ -557,7 +575,8 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
 
     if (def->ngraphics && def->nvideos) {
         if (def->ngraphics == 1 && def->nvideos == 1) {
-            if (bhyveBuildGraphicsArgStr(def, def->graphics[0], def->videos[0], conn, cmd) < 0)
+            if (bhyveBuildGraphicsArgStr(def, def->graphics[0], def->videos[0],
+                                         conn, cmd, dryRun) < 0)
                 goto error;
             add_lpc = true;
         } else {

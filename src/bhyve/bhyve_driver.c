@@ -52,6 +52,7 @@
 #include "viraccessapicheck.h"
 #include "virhostcpu.h"
 #include "virhostmem.h"
+#include "virportallocator.h"
 #include "conf/domain_capabilities.h"
 
 #include "bhyve_conf.h"
@@ -1219,6 +1220,7 @@ bhyveStateCleanup(void)
     virObjectUnref(bhyve_driver->closeCallbacks);
     virObjectUnref(bhyve_driver->domainEventState);
     virObjectUnref(bhyve_driver->config);
+    virObjectUnref(bhyve_driver->remotePorts);
 
     virMutexDestroy(&bhyve_driver->lock);
     VIR_FREE(bhyve_driver);
@@ -1263,6 +1265,9 @@ bhyveStateInitialize(bool privileged,
         goto cleanup;
 
     if (!(bhyve_driver->domainEventState = virObjectEventStateNew()))
+        goto cleanup;
+
+    if (!(bhyve_driver->remotePorts = virPortAllocatorNew(_("display"), 5900, 65535, 0)))
         goto cleanup;
 
     bhyve_driver->hostsysinfo = virSysinfoRead();

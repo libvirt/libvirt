@@ -145,6 +145,11 @@ mymain(void)
     if ((driver.xmlopt = virBhyveDriverCreateXMLConf(&driver)) == NULL)
         return EXIT_FAILURE;
 
+    if (!(driver.remotePorts = virPortAllocatorNew("display", 5900, 65535,
+                                                   VIR_PORT_ALLOCATOR_SKIP_BIND_CHECK)))
+        return EXIT_FAILURE;
+
+
 # define DO_TEST_FULL(name, flags)                             \
     do {                                                       \
         static struct testInfo info = {                        \
@@ -196,6 +201,7 @@ mymain(void)
     DO_TEST("vnc-vgaconf-on");
     DO_TEST("vnc-vgaconf-off");
     DO_TEST("vnc-vgaconf-io");
+    DO_TEST("vnc-autoport");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");
@@ -234,6 +240,7 @@ mymain(void)
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
+    virObjectUnref(driver.remotePorts);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
