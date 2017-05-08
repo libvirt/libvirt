@@ -40,8 +40,8 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
                               const char *path)
     ATTRIBUTE_NONNULL(2);
 
-char *virStoragePoolObjBuildTempFilePath(virStoragePoolObjPtr pool,
-                                         virStorageVolDefPtr vol)
+char *virStoragePoolObjBuildTempFilePath(virStoragePoolObjPtr obj,
+                                         virStorageVolDefPtr voldef)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int storageRegister(void);
