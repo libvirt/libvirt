@@ -404,13 +404,13 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
                     pool->def->source.name,
-                    vol->name) == -1)
+                    vol->name) < 0)
         goto cleanup;
 
     VIR_FREE(vol->key);
     if (virAsprintf(&vol->key, "%s/%s",
                     pool->def->source.name,
-                    vol->name) == -1)
+                    vol->name) < 0)
         goto cleanup;
 
     ret = 0;
@@ -662,13 +662,13 @@ virStorageBackendRBDCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
                     pool->def->source.name,
-                    vol->name) == -1)
+                    vol->name) < 0)
         return -1;
 
     VIR_FREE(vol->key);
     if (virAsprintf(&vol->key, "%s/%s",
                     pool->def->source.name,
-                    vol->name) == -1)
+                    vol->name) < 0)
         return -1;
 
     return 0;

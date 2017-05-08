@@ -249,7 +249,7 @@ virStorageBackendSheepdogCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_FREE(vol->key);
     if (virAsprintf(&vol->key, "%s/%s",
-                    pool->def->source.name, vol->name) == -1)
+                    pool->def->source.name, vol->name) < 0)
         return -1;
 
     VIR_FREE(vol->target.path);
@@ -374,7 +374,7 @@ virStorageBackendSheepdogRefreshVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_FREE(vol->key);
     if (virAsprintf(&vol->key, "%s/%s",
-                    pool->def->source.name, vol->name) == -1)
+                    pool->def->source.name, vol->name) < 0)
         goto cleanup;
 
     VIR_FREE(vol->target.path);

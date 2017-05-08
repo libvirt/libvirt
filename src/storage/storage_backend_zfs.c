@@ -89,7 +89,7 @@ virStorageBackendZFSCheckPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
     char *devpath;
 
     if (virAsprintf(&devpath, "/dev/zvol/%s",
-                    pool->def->source.name) == -1)
+                    pool->def->source.name) < 0)
         return -1;
     *isActive = virFileIsDir(devpath);
     VIR_FREE(devpath);
@@ -322,7 +322,7 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
-                    pool->def->target.path, vol->name) == -1)
+                    pool->def->target.path, vol->name) < 0)
         return -1;
 
     if (VIR_STRDUP(vol->key, vol->target.path) < 0)

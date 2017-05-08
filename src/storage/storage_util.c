@@ -1982,7 +1982,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
     while ((direrr = virDirRead(dh, &dent, NULL)) > 0) {
         if (virAsprintf(&stablepath, "%s/%s",
                         pool->def->target.path,
-                        dent->d_name) == -1) {
+                        dent->d_name) < 0) {
             VIR_DIR_CLOSE(dh);
             return NULL;
         }
@@ -2082,7 +2082,7 @@ virStorageBackendVolCreateLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
                     pool->def->target.path,
-                    vol->name) == -1)
+                    vol->name) < 0)
         return -1;
 
     if (virFileExists(vol->target.path)) {
@@ -3555,7 +3555,7 @@ virStorageBackendRefreshLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
         vol->target.format = VIR_STORAGE_FILE_RAW; /* Real value is filled in during probe */
         if (virAsprintf(&vol->target.path, "%s/%s",
                         pool->def->target.path,
-                        vol->name) == -1)
+                        vol->name) < 0)
             goto cleanup;
 
         if (VIR_STRDUP(vol->key, vol->target.path) < 0)

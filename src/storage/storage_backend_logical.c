@@ -948,7 +948,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
                     pool->def->target.path,
-                    vol->name) == -1)
+                    vol->name) < 0)
         return -1;
 
     cmd = virCommandNewArgList(LVCREATE,
