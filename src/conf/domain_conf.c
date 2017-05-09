@@ -8106,6 +8106,101 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
 }
 
 
+static int
+virDomainDiskSourceNetworkParse(xmlNodePtr node,
+                                xmlXPathContextPtr ctxt,
+                                virStorageSourcePtr src,
+                                unsigned int flags)
+{
+    char *protocol = NULL;
+    char *haveTLS = NULL;
+    char *tlsCfg = NULL;
+    int tlsCfgVal;
+    int ret = -1;
+
+    if (!(protocol = virXMLPropString(node, "protocol"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing network source protocol type"));
+        goto cleanup;
+    }
+
+    if ((src->protocol = virStorageNetProtocolTypeFromString(protocol)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown protocol type '%s'"), protocol);
+        goto cleanup;
+    }
+
+    if (!(src->path = virXMLPropString(node, "name")) &&
+        src->protocol != VIR_STORAGE_NET_PROTOCOL_NBD) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing name for disk source"));
+        goto cleanup;
+    }
+
+    /* Check tls=yes|no domain setting for the block device
+     * At present only VxHS. Other block devices may be added later */
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
+        (haveTLS = virXMLPropString(node, "tls"))) {
+        if ((src->haveTLS =
+            virTristateBoolTypeFromString(haveTLS)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown disk source 'tls' setting '%s'"),
+                       haveTLS);
+            goto cleanup;
+        }
+    }
+
+    if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
+        (tlsCfg = virXMLPropString(node, "tlsFromConfig"))) {
+        if (virStrToLong_i(tlsCfg, NULL, 10, &tlsCfgVal) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid tlsFromConfig value: %s"),
+                           tlsCfg);
+            goto cleanup;
+        }
+        src->tlsFromConfig = !!tlsCfgVal;
+    }
+
+    /* for historical reasons the volume name for gluster volume is stored
+     * as a part of the path. This is hard to work with when dealing with
+     * relative names. Split out the volume into a separate variable */
+    if (src->path && src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
+        char *tmp;
+        if (!(tmp = strchr(src->path, '/')) ||
+            tmp == src->path) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("missing volume name or file name in "
+                             "gluster source path '%s'"), src->path);
+            goto cleanup;
+        }
+
+        src->volume = src->path;
+
+        if (VIR_STRDUP(src->path, tmp) < 0)
+            goto cleanup;
+
+        tmp[0] = '\0';
+    }
+
+    /* snapshot currently works only for remote disks */
+    src->snapshot = virXPathString("string(./snapshot/@name)", ctxt);
+
+    /* config file currently only works with remote disks */
+    src->configFile = virXPathString("string(./config/@file)", ctxt);
+
+    if (virDomainStorageNetworkParseHosts(node, &src->hosts, &src->nhosts) < 0)
+        goto cleanup;
+
+    virStorageSourceNetworkAssignDefaultPorts(src);
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(protocol);
+    return ret;
+}
+
+
 int
 virDomainDiskSourceParse(xmlNodePtr node,
                          xmlXPathContextPtr ctxt,
@@ -8113,11 +8208,7 @@ virDomainDiskSourceParse(xmlNodePtr node,
                          unsigned int flags)
 {
     int ret = -1;
-    char *protocol = NULL;
     xmlNodePtr saveNode = ctxt->node;
-    char *haveTLS = NULL;
-    char *tlsCfg = NULL;
-    int tlsCfgVal;
 
     ctxt->node = node;
 
@@ -8132,81 +8223,8 @@ virDomainDiskSourceParse(xmlNodePtr node,
         src->path = virXMLPropString(node, "dir");
         break;
     case VIR_STORAGE_TYPE_NETWORK:
-        if (!(protocol = virXMLPropString(node, "protocol"))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("missing network source protocol type"));
+        if (virDomainDiskSourceNetworkParse(node, ctxt, src, flags) < 0)
             goto cleanup;
-        }
-
-        if ((src->protocol = virStorageNetProtocolTypeFromString(protocol)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown protocol type '%s'"), protocol);
-            goto cleanup;
-        }
-
-        if (!(src->path = virXMLPropString(node, "name")) &&
-            src->protocol != VIR_STORAGE_NET_PROTOCOL_NBD) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("missing name for disk source"));
-            goto cleanup;
-        }
-
-        /* Check tls=yes|no domain setting for the block device
-         * At present only VxHS. Other block devices may be added later */
-        if (src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
-            (haveTLS = virXMLPropString(node, "tls"))) {
-            if ((src->haveTLS =
-                virTristateBoolTypeFromString(haveTLS)) <= 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown disk source 'tls' setting '%s'"),
-                           haveTLS);
-                goto cleanup;
-            }
-        }
-
-        if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
-            (tlsCfg = virXMLPropString(node, "tlsFromConfig"))) {
-            if (virStrToLong_i(tlsCfg, NULL, 10, &tlsCfgVal) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid tlsFromConfig value: %s"),
-                               tlsCfg);
-                goto cleanup;
-            }
-            src->tlsFromConfig = !!tlsCfgVal;
-        }
-
-        /* for historical reasons the volume name for gluster volume is stored
-         * as a part of the path. This is hard to work with when dealing with
-         * relative names. Split out the volume into a separate variable */
-        if (src->path && src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
-            char *tmp;
-            if (!(tmp = strchr(src->path, '/')) ||
-                tmp == src->path) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("missing volume name or file name in "
-                                 "gluster source path '%s'"), src->path);
-                goto cleanup;
-            }
-
-            src->volume = src->path;
-
-            if (VIR_STRDUP(src->path, tmp) < 0)
-                goto cleanup;
-
-            tmp[0] = '\0';
-        }
-
-        /* snapshot currently works only for remote disks */
-        src->snapshot = virXPathString("string(./snapshot/@name)", ctxt);
-
-        /* config file currently only works with remote disks */
-        src->configFile = virXPathString("string(./config/@file)", ctxt);
-
-        if (virDomainStorageNetworkParseHosts(node, &src->hosts, &src->nhosts) < 0)
-            goto cleanup;
-
-        virStorageSourceNetworkAssignDefaultPorts(src);
-
         break;
     case VIR_STORAGE_TYPE_VOLUME:
         if (virDomainDiskSourcePoolDefParse(node, &src->srcpool) < 0)
@@ -8229,9 +8247,6 @@ virDomainDiskSourceParse(xmlNodePtr node,
     ret = 0;
 
  cleanup:
-    VIR_FREE(protocol);
-    VIR_FREE(haveTLS);
-    VIR_FREE(tlsCfg);
     ctxt->node = saveNode;
     return ret;
 }
