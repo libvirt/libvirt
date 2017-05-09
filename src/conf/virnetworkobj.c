@@ -151,6 +151,21 @@ virNetworkObjGetMacMap(virNetworkObjPtr obj)
 }
 
 
+unsigned long long
+virNetworkObjGetFloorSum(virNetworkObjPtr obj)
+{
+    return obj->floor_sum;
+}
+
+
+void
+virNetworkObjSetFloorSum(virNetworkObjPtr obj,
+                         unsigned long long floor_sum)
+{
+    obj->floor_sum = floor_sum;
+}
+
+
 void
 virNetworkObjSetMacMap(virNetworkObjPtr obj,
                        virMacMapPtr macmap)

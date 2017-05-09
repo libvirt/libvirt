@@ -5271,7 +5271,7 @@ networkCheckBandwidth(virNetworkObjPtr obj,
 {
     int ret = -1;
     virNetDevBandwidthPtr netBand = obj->def->bandwidth;
-    unsigned long long tmp_floor_sum = obj->floor_sum;
+    unsigned long long tmp_floor_sum = virNetworkObjGetFloorSum(obj);
     unsigned long long tmp_new_rate = 0;
     char ifmac[VIR_MAC_STRING_BUFLEN];
 
@@ -5365,6 +5365,7 @@ networkPlugBandwidthImpl(virNetworkObjPtr obj,
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
     virBitmapPtr classIdMap = virNetworkObjGetClassIdMap(obj);
+    unsigned long long tmp_floor_sum = virNetworkObjGetFloorSum(obj);
     ssize_t class_id = 0;
     int plug_ret;
     int ret = -1;
@@ -5386,17 +5387,19 @@ networkPlugBandwidthImpl(virNetworkObjPtr obj,
     /* QoS was set, generate new class ID */
     iface->data.network.actual->class_id = class_id;
     /* update sum of 'floor'-s of attached NICs */
-    obj->floor_sum += ifaceBand->in->floor;
+    tmp_floor_sum += ifaceBand->in->floor;
+    virNetworkObjSetFloorSum(obj, tmp_floor_sum);
     /* update status file */
     if (virNetworkObjSaveStatus(driver->stateDir, obj) < 0) {
         ignore_value(virBitmapClearBit(classIdMap, class_id));
-        obj->floor_sum -= ifaceBand->in->floor;
+        tmp_floor_sum -= ifaceBand->in->floor;
+        virNetworkObjSetFloorSum(obj, tmp_floor_sum);
         iface->data.network.actual->class_id = 0;
         ignore_value(virNetDevBandwidthUnplug(obj->def->bridge, class_id));
         goto cleanup;
     }
     /* update rate for non guaranteed NICs */
-    new_rate -= obj->floor_sum;
+    new_rate -= tmp_floor_sum;
     if (virNetDevBandwidthUpdateRate(obj->def->bridge, 2,
                                      obj->def->bandwidth, new_rate) < 0)
         VIR_WARN("Unable to update rate for 1:2 class on %s bridge",
@@ -5454,6 +5457,7 @@ networkUnplugBandwidth(virNetworkObjPtr obj,
                        virDomainNetDefPtr iface)
 {
     virBitmapPtr classIdMap = virNetworkObjGetClassIdMap(obj);
+    unsigned long long tmp_floor_sum = virNetworkObjGetFloorSum(obj);
     virNetworkDriverStatePtr driver = networkGetDriver();
     int ret = 0;
     unsigned long long new_rate;
@@ -5477,19 +5481,22 @@ networkUnplugBandwidth(virNetworkObjPtr obj,
         if (ret < 0)
             goto cleanup;
         /* update sum of 'floor'-s of attached NICs */
-        obj->floor_sum -= ifaceBand->in->floor;
+        tmp_floor_sum -= ifaceBand->in->floor;
+        virNetworkObjSetFloorSum(obj, tmp_floor_sum);
+
         /* return class ID */
         ignore_value(virBitmapClearBit(classIdMap,
                                        iface->data.network.actual->class_id));
         /* update status file */
         if (virNetworkObjSaveStatus(driver->stateDir, obj) < 0) {
-            obj->floor_sum += ifaceBand->in->floor;
+            tmp_floor_sum += ifaceBand->in->floor;
+            virNetworkObjSetFloorSum(obj, tmp_floor_sum);
             ignore_value(virBitmapSetBit(classIdMap,
                                          iface->data.network.actual->class_id));
             goto cleanup;
         }
         /* update rate for non guaranteed NICs */
-        new_rate -= obj->floor_sum;
+        new_rate -= tmp_floor_sum;
         if (virNetDevBandwidthUpdateRate(obj->def->bridge, 2,
                                          obj->def->bandwidth, new_rate) < 0)
             VIR_WARN("Unable to update rate for 1:2 class on %s bridge",
@@ -5581,6 +5588,7 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
     virNetworkObjPtr obj = NULL;
+    unsigned long long tmp_floor_sum;
     virNetDevBandwidthPtr ifaceBand = virDomainNetGetActualBandwidth(iface);
     unsigned long long new_rate = 0;
     int plug_ret;
@@ -5621,16 +5629,19 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
                                          newBandwidth->in->floor) < 0)
             goto cleanup;
 
-        obj->floor_sum -= ifaceBand->in->floor;
-        obj->floor_sum += newBandwidth->in->floor;
-        new_rate -= obj->floor_sum;
+        tmp_floor_sum = virNetworkObjGetFloorSum(obj);
+        tmp_floor_sum -= ifaceBand->in->floor;
+        tmp_floor_sum += newBandwidth->in->floor;
+        virNetworkObjSetFloorSum(obj, tmp_floor_sum);
+        new_rate -= tmp_floor_sum;
 
         if (virNetDevBandwidthUpdateRate(obj->def->bridge, 2,
                                          obj->def->bandwidth, new_rate) < 0 ||
             virNetworkObjSaveStatus(driver->stateDir, obj) < 0) {
             /* Ouch, rollback */
-            obj->floor_sum -= newBandwidth->in->floor;
-            obj->floor_sum += ifaceBand->in->floor;
+            tmp_floor_sum -= newBandwidth->in->floor;
+            tmp_floor_sum += ifaceBand->in->floor;
+            virNetworkObjSetFloorSum(obj, tmp_floor_sum);
 
             ignore_value(virNetDevBandwidthUpdateRate(obj->def->bridge,
                                                       iface->data.network.actual->class_id,

@@ -70,6 +70,13 @@ virNetworkObjSetRadvdPid(virNetworkObjPtr obj,
 virBitmapPtr
 virNetworkObjGetClassIdMap(virNetworkObjPtr obj);
 
+unsigned long long
+virNetworkObjGetFloorSum(virNetworkObjPtr obj);
+
+void
+virNetworkObjSetFloorSum(virNetworkObjPtr obj,
+                         unsigned long long floor_sum);
+
 void
 virNetworkObjSetMacMap(virNetworkObjPtr obj,
                        virMacMapPtr macmap);
