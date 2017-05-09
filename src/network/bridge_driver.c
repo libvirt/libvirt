@@ -484,12 +484,15 @@ networkUpdateState(virNetworkObjPtr obj,
 
     /* Try and read dnsmasq/radvd pids of active networks */
     if (obj->active && obj->def->ips && (obj->def->nips > 0)) {
+        pid_t radvdPid;
+        pid_t dnsmasqPid;
         char *radvdpidbase;
 
         ignore_value(virPidFileReadIfAlive(driver->pidDir,
                                            obj->def->name,
-                                           &obj->dnsmasqPid,
+                                           &dnsmasqPid,
                                            dnsmasqCapsGetBinaryPath(dnsmasq_caps)));
+        virNetworkObjSetDnsmasqPid(obj, dnsmasqPid);
 
         radvdpidbase = networkRadvdPidfileBasename(obj->def->name);
         if (!radvdpidbase)
@@ -497,7 +500,8 @@ networkUpdateState(virNetworkObjPtr obj,
 
         ignore_value(virPidFileReadIfAlive(driver->pidDir,
                                            radvdpidbase,
-                                           &obj->radvdPid, RADVD));
+                                           &radvdPid, RADVD));
+        virNetworkObjSetRadvdPid(obj, radvdPid);
         VIR_FREE(radvdpidbase);
     }
 
@@ -1480,7 +1484,7 @@ networkBuildDhcpDaemonCommandLine(virNetworkDriverStatePtr driver,
     char *configstr = NULL;
     char *leaseshelper_path = NULL;
 
-    obj->dnsmasqPid = -1;
+    virNetworkObjSetDnsmasqPid(obj, -1);
 
     if (networkDnsmasqConfContents(obj, pidfile, &configstr,
                                    dctx, dnsmasq_caps) < 0)
@@ -1533,6 +1537,7 @@ networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
     bool needDnsmasq = false;
     virCommandPtr cmd = NULL;
     char *pidfile = NULL;
+    pid_t dnsmasqPid;
     int ret = -1;
     dnsmasqContext *dctx = NULL;
 
@@ -1601,9 +1606,10 @@ networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
      * pid
      */
 
-    ret = virPidFileRead(driver->pidDir, obj->def->name, &obj->dnsmasqPid);
+    ret = virPidFileRead(driver->pidDir, obj->def->name, &dnsmasqPid);
     if (ret < 0)
         goto cleanup;
+    virNetworkObjSetDnsmasqPid(obj, dnsmasqPid);
 
     ret = 0;
  cleanup:
@@ -1627,6 +1633,7 @@ networkRefreshDhcpDaemon(virNetworkDriverStatePtr driver,
 {
     int ret = -1;
     size_t i;
+    pid_t dnsmasqPid;
     virNetworkIPDefPtr ipdef, ipv4def, ipv6def;
     dnsmasqContext *dctx = NULL;
 
@@ -1635,7 +1642,8 @@ networkRefreshDhcpDaemon(virNetworkDriverStatePtr driver,
         return 0;
 
     /* if there's no running dnsmasq, just start it */
-    if (obj->dnsmasqPid <= 0 || (kill(obj->dnsmasqPid, 0) < 0))
+    dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
+    if (dnsmasqPid <= 0 || (kill(dnsmasqPid, 0) < 0))
         return networkStartDhcpDaemon(driver, obj);
 
     VIR_INFO("Refreshing dnsmasq for network %s", obj->def->bridge);
@@ -1676,7 +1684,8 @@ networkRefreshDhcpDaemon(virNetworkDriverStatePtr driver,
     if ((ret = dnsmasqSave(dctx)) < 0)
         goto cleanup;
 
-    ret = kill(obj->dnsmasqPid, SIGHUP);
+    dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
+    ret = kill(dnsmasqPid, SIGHUP);
  cleanup:
     dnsmasqContextFree(dctx);
     return ret;
@@ -1694,10 +1703,12 @@ static int
 networkRestartDhcpDaemon(virNetworkDriverStatePtr driver,
                          virNetworkObjPtr obj)
 {
+    pid_t dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
+
     /* if there is a running dnsmasq, kill it */
-    if (obj->dnsmasqPid > 0) {
-        networkKillDaemon(obj->dnsmasqPid, "dnsmasq", obj->def->name);
-        obj->dnsmasqPid = -1;
+    if (dnsmasqPid > 0) {
+        networkKillDaemon(dnsmasqPid, "dnsmasq", obj->def->name);
+        virNetworkObjSetDnsmasqPid(obj, -1);
     }
     /* now start dnsmasq if it should be started */
     return networkStartDhcpDaemon(driver, obj);
@@ -1837,13 +1848,14 @@ networkStartRadvd(virNetworkDriverStatePtr driver,
                   virNetworkObjPtr obj)
 {
     dnsmasqCapsPtr dnsmasq_caps = networkGetDnsmasqCaps(driver);
+    pid_t radvdPid;
     char *pidfile = NULL;
     char *radvdpidbase = NULL;
     char *configfile = NULL;
     virCommandPtr cmd = NULL;
     int ret = -1;
 
-    obj->radvdPid = -1;
+    virNetworkObjSetRadvdPid(obj, -1);
 
     /* Is dnsmasq handling RA? */
     if (DNSMASQ_RA_SUPPORT(dnsmasq_caps)) {
@@ -1907,8 +1919,9 @@ networkStartRadvd(virNetworkDriverStatePtr driver,
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if (virPidFileRead(driver->pidDir, radvdpidbase, &obj->radvdPid) < 0)
+    if (virPidFileRead(driver->pidDir, radvdpidbase, &radvdPid) < 0)
         goto cleanup;
+    virNetworkObjSetRadvdPid(obj, radvdPid);
 
     ret = 0;
  cleanup:
@@ -1927,26 +1940,29 @@ networkRefreshRadvd(virNetworkDriverStatePtr driver,
 {
     dnsmasqCapsPtr dnsmasq_caps = networkGetDnsmasqCaps(driver);
     char *radvdpidbase;
+    pid_t radvdPid;
 
     /* Is dnsmasq handling RA? */
     if (DNSMASQ_RA_SUPPORT(dnsmasq_caps)) {
         virObjectUnref(dnsmasq_caps);
-        if (obj->radvdPid <= 0)
+        radvdPid = virNetworkObjGetRadvdPid(obj);
+        if (radvdPid <= 0)
             return 0;
         /* radvd should not be running but in case it is */
-        if ((networkKillDaemon(obj->radvdPid, "radvd", obj->def->name) >= 0) &&
+        if ((networkKillDaemon(radvdPid, "radvd", obj->def->name) >= 0) &&
             ((radvdpidbase = networkRadvdPidfileBasename(obj->def->name))
              != NULL)) {
             virPidFileDelete(driver->pidDir, radvdpidbase);
             VIR_FREE(radvdpidbase);
         }
-        obj->radvdPid = -1;
+        virNetworkObjSetRadvdPid(obj, -1);
         return 0;
     }
     virObjectUnref(dnsmasq_caps);
 
     /* if there's no running radvd, just start it */
-    if (obj->radvdPid <= 0 || (kill(obj->radvdPid, 0) < 0))
+    radvdPid = virNetworkObjGetRadvdPid(obj);
+    if (radvdPid <= 0 || (kill(radvdPid, 0) < 0))
         return networkStartRadvd(driver, obj);
 
     if (!virNetworkDefGetIPByIndex(obj->def, AF_INET6, 0)) {
@@ -1957,7 +1973,7 @@ networkRefreshRadvd(virNetworkDriverStatePtr driver,
     if (networkRadvdConfWrite(driver, obj, NULL) < 0)
         return -1;
 
-    return kill(obj->radvdPid, SIGHUP);
+    return kill(radvdPid, SIGHUP);
 }
 
 
@@ -1967,21 +1983,22 @@ static int
 networkRestartRadvd(virNetworkObjPtr obj)
 {
     char *radvdpidbase;
+    pid_t radvdPid = virNeworkObjGetRadvdPid(obj);
 
     /* if there is a running radvd, kill it */
-    if (obj->radvdPid > 0) {
+    if (radvdPid > 0) {
         /* essentially ignore errors from the following two functions,
          * since there's really no better recovery to be done than to
          * just push ahead (and that may be exactly what's needed).
          */
-        if ((networkKillDaemon(obj->radvdPid, "radvd",
+        if ((networkKillDaemon(radvdPid, "radvd",
                                obj->def->name) >= 0) &&
             ((radvdpidbase = networkRadvdPidfileBasename(obj->def->name))
              != NULL)) {
             virPidFileDelete(driver->pidDir, radvdpidbase);
             VIR_FREE(radvdpidbase);
         }
-        obj->radvdPid = -1;
+        virNetworkObjSetRadvdPid(obj, -1);
     }
     /* now start radvd if it should be started */
     return networkStartRadvd(obj);
@@ -2265,6 +2282,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     virMacMapPtr macmap;
     char *macMapFile = NULL;
     int tapfd = -1;
+    pid_t dnsmasqPid;
 
     /* Check to see if any network IP collides with an existing route */
     if (networkCheckRouteCollision(obj->def) < 0)
@@ -2432,9 +2450,10 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     if (!save_err)
         save_err = virSaveLastError();
 
-    if (obj->dnsmasqPid > 0) {
-        kill(obj->dnsmasqPid, SIGTERM);
-        obj->dnsmasqPid = -1;
+    dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
+    if (dnsmasqPid > 0) {
+        kill(dnsmasqPid, SIGTERM);
+        virNetworkObjSetDnsmasqPid(obj, -1);
     }
 
  err3:
@@ -2477,15 +2496,19 @@ static int
 networkShutdownNetworkVirtual(virNetworkDriverStatePtr driver,
                               virNetworkObjPtr obj)
 {
+    pid_t radvdPid;
+    pid_t dnsmasqPid;
+
     if (obj->def->bandwidth)
         virNetDevBandwidthClear(obj->def->bridge);
 
     virNetworkObjUnrefMacMap(obj);
 
-    if (obj->radvdPid > 0) {
+    radvdPid = virNetworkObjGetRadvdPid(obj);
+    if (radvdPid > 0) {
         char *radvdpidbase;
 
-        kill(obj->radvdPid, SIGTERM);
+        kill(radvdPid, SIGTERM);
         /* attempt to delete the pidfile we created */
         if ((radvdpidbase = networkRadvdPidfileBasename(obj->def->name))) {
             virPidFileDelete(driver->pidDir, radvdpidbase);
@@ -2493,8 +2516,9 @@ networkShutdownNetworkVirtual(virNetworkDriverStatePtr driver,
         }
     }
 
-    if (obj->dnsmasqPid > 0)
-        kill(obj->dnsmasqPid, SIGTERM);
+    dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
+    if (dnsmasqPid > 0)
+        kill(dnsmasqPid, SIGTERM);
 
     if (obj->def->mac_specified) {
         char *macTapIfName = networkBridgeDummyNicName(obj->def->bridge);
@@ -2512,15 +2536,17 @@ networkShutdownNetworkVirtual(virNetworkDriverStatePtr driver,
     ignore_value(virNetDevBridgeDelete(obj->def->bridge));
 
     /* See if its still alive and really really kill it */
-    if (obj->dnsmasqPid > 0 &&
-        (kill(obj->dnsmasqPid, 0) == 0))
-        kill(obj->dnsmasqPid, SIGKILL);
-    obj->dnsmasqPid = -1;
+    dnsmasqPid = virNetworkObjGetDnsmasqPid(obj);
+    if (dnsmasqPid > 0 &&
+        (kill(dnsmasqPid, 0) == 0))
+        kill(dnsmasqPid, SIGKILL);
+    virNetworkObjSetDnsmasqPid(obj, -1);
 
-    if (obj->radvdPid > 0 &&
-        (kill(obj->radvdPid, 0) == 0))
-        kill(obj->radvdPid, SIGKILL);
-    obj->radvdPid = -1;
+    radvdPid = virNetworkObjGetRadvdPid(obj);
+    if (radvdPid > 0 &&
+        (kill(radvdPid, 0) == 0))
+        kill(radvdPid, SIGKILL);
+    virNetworkObjSetRadvdPid(obj, -1);
 
     return 0;
 }

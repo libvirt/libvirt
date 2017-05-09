@@ -53,6 +53,20 @@ virNetworkObjNew(void);
 virMacMapPtr
 virNetworkObjGetMacMap(virNetworkObjPtr obj);
 
+pid_t
+virNetworkObjGetDnsmasqPid(virNetworkObjPtr obj);
+
+void
+virNetworkObjSetDnsmasqPid(virNetworkObjPtr obj,
+                           pid_t dnsmasqPid);
+
+pid_t
+virNetworkObjGetRadvdPid(virNetworkObjPtr obj);
+
+void
+virNetworkObjSetRadvdPid(virNetworkObjPtr obj,
+                         pid_t radvdPid);
+
 void
 virNetworkObjSetMacMap(virNetworkObjPtr obj,
                        virMacMapPtr macmap);

@@ -107,6 +107,36 @@ virNetworkObjEndAPI(virNetworkObjPtr *net)
 }
 
 
+pid_t
+virNetworkObjGetDnsmasqPid(virNetworkObjPtr obj)
+{
+    return obj->dnsmasqPid;
+}
+
+
+void
+virNetworkObjSetDnsmasqPid(virNetworkObjPtr obj,
+                           pid_t dnsmasqPid)
+{
+    obj->dnsmasqPid = dnsmasqPid;
+}
+
+
+pid_t
+virNetworkObjGetRadvdPid(virNetworkObjPtr obj)
+{
+    return obj->radvdPid;
+}
+
+
+void
+virNetworkObjSetRadvdPid(virNetworkObjPtr obj,
+                         pid_t radvdPid)
+{
+    obj->radvdPid = radvdPid;
+}
+
+
 virMacMapPtr
 virNetworkObjGetMacMap(virNetworkObjPtr obj)
 {
