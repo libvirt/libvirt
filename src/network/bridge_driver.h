@@ -60,7 +60,7 @@ networkGetActualType(virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1);
 
 int
-networkDnsmasqConfContents(virNetworkObjPtr network,
+networkDnsmasqConfContents(virNetworkObjPtr obj,
                            const char *pidfile,
                            char **configstr,
                            dnsmasqContext *dctx,
