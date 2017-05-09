@@ -247,8 +247,9 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
 {
     libxl_numainfo *numa_info = NULL;
     libxl_cputopology *cpu_topo = NULL;
-    int nr_nodes = 0, nr_cpus = 0;
+    int nr_nodes = 0, nr_cpus = 0, nr_siblings = 0;
     virCapsHostNUMACellCPUPtr *cpus = NULL;
+    virCapsHostNUMACellSiblingInfoPtr siblings = NULL;
     int *nr_cpus_node = NULL;
     size_t i;
     int ret = -1;
@@ -322,10 +323,23 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
         if (numa_info[i].size == LIBXL_NUMAINFO_INVALID_ENTRY)
             continue;
 
+        nr_siblings = numa_info[i].num_dists;
+        if (nr_siblings) {
+            size_t j;
+
+            if (VIR_ALLOC_N(siblings, nr_siblings) < 0)
+                goto cleanup;
+
+            for (j = 0; j < nr_siblings; j++) {
+                siblings[j].node = j;
+                siblings[j].distance = numa_info[i].dists[j];
+            }
+        }
+
         if (virCapabilitiesAddHostNUMACell(caps, i,
                                            numa_info[i].size / 1024,
                                            nr_cpus_node[i], cpus[i],
-                                           0, NULL,
+                                           nr_siblings, siblings,
                                            0, NULL) < 0) {
             virCapabilitiesClearHostNUMACellCPUTopology(cpus[i],
                                                         nr_cpus_node[i]);
@@ -343,6 +357,7 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
         for (i = 0; cpus && i < nr_nodes; i++)
             VIR_FREE(cpus[i]);
         virCapabilitiesFreeNUMAInfo(caps);
+        VIR_FREE(siblings);
     }
 
     VIR_FREE(cpus);
