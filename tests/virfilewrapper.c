@@ -177,6 +177,7 @@ int access(const char *path, int mode)
     return ret;
 }
 
+#ifdef HAVE___LXSTAT
 int __lxstat(int ver, const char *path, struct stat *sb)
 {
     int ret = -1;
@@ -190,6 +191,7 @@ int __lxstat(int ver, const char *path, struct stat *sb)
 
     return ret;
 }
+#endif /* HAVE___LXSTAT */
 
 int lstat(const char *path, struct stat *sb)
 {
@@ -205,6 +207,7 @@ int lstat(const char *path, struct stat *sb)
     return ret;
 }
 
+#ifdef HAVE___XSTAT
 int __xstat(int ver, const char *path, struct stat *sb)
 {
     int ret = -1;
@@ -218,6 +221,7 @@ int __xstat(int ver, const char *path, struct stat *sb)
 
     return ret;
 }
+#endif /* HAVE___XSTAT */
 
 int stat(const char *path, struct stat *sb)
 {
