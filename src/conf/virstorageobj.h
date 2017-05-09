@@ -147,6 +147,24 @@ virStoragePoolObjRemoveVol(virStoragePoolObjPtr obj,
 size_t
 virStoragePoolObjGetVolumesCount(virStoragePoolObjPtr obj);
 
+typedef int
+(*virStorageVolObjListIterator)(virStorageVolDefPtr voldef,
+                                const void *opaque);
+
+int
+virStoragePoolObjForEachVolume(virStoragePoolObjPtr obj,
+                               virStorageVolObjListIterator iter,
+                               const void *opaque);
+
+typedef bool
+(*virStorageVolObjListSearcher)(virStorageVolDefPtr voldef,
+                                const void *opaque);
+
+virStorageVolDefPtr
+virStoragePoolObjSearchVolume(virStoragePoolObjPtr obj,
+                              virStorageVolObjListSearcher iter,
+                              const void *opaque);
+
 virStorageVolDefPtr
 virStorageVolDefFindByKey(virStoragePoolObjPtr obj,
                           const char *key);

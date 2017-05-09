@@ -319,6 +319,38 @@ virStoragePoolObjGetVolumesCount(virStoragePoolObjPtr obj)
 }
 
 
+int
+virStoragePoolObjForEachVolume(virStoragePoolObjPtr obj,
+                               virStorageVolObjListIterator iter,
+                               const void *opaque)
+{
+    size_t i;
+
+    for (i = 0; i < obj->volumes.count; i++) {
+        if (iter(obj->volumes.objs[i], opaque) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+virStorageVolDefPtr
+virStoragePoolObjSearchVolume(virStoragePoolObjPtr obj,
+                              virStorageVolObjListSearcher iter,
+                              const void *opaque)
+{
+    size_t i;
+
+    for (i = 0; i < obj->volumes.count; i++) {
+        if (iter(obj->volumes.objs[i], opaque))
+            return obj->volumes.objs[i];
+    }
+
+    return NULL;
+}
+
+
 virStorageVolDefPtr
 virStorageVolDefFindByKey(virStoragePoolObjPtr obj,
                           const char *key)

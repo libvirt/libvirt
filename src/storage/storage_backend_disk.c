@@ -43,6 +43,17 @@ VIR_LOG_INIT("storage.storage_backend_disk");
 
 #define SECTOR_SIZE 512
 
+static bool
+virStorageVolPartFindExtended(virStorageVolDefPtr def,
+                              const void *opaque ATTRIBUTE_UNUSED)
+{
+    if (def->source.partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED)
+        return true;
+
+    return false;
+}
+
+
 static int
 virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
                                  char **const groups,
@@ -191,16 +202,13 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
 
     /* Find the extended partition and increase the allocation value */
     if (vol->source.partType == VIR_STORAGE_VOL_DISK_TYPE_LOGICAL) {
-        size_t i;
+        virStorageVolDefPtr voldef;
 
-        for (i = 0; i < pool->volumes.count; i++) {
-            if (pool->volumes.objs[i]->source.partType ==
-                VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
-                pool->volumes.objs[i]->target.allocation +=
-                    vol->target.allocation;
-                break;
-            }
-        }
+        voldef = virStoragePoolObjSearchVolume(pool,
+                                               virStorageVolPartFindExtended,
+                                               NULL);
+        if (voldef)
+            voldef->target.allocation += vol->target.allocation;
     }
 
     if (STRNEQ(groups[2], "metadata"))
@@ -523,6 +531,25 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     return ret;
 }
 
+
+struct virStorageVolNumData {
+    int count;
+};
+
+static int
+virStorageVolNumOfPartTypes(virStorageVolDefPtr def,
+                            const void *opaque)
+{
+    struct virStorageVolNumData *data = (struct virStorageVolNumData *)opaque;
+
+    if (def->source.partType == VIR_STORAGE_VOL_DISK_TYPE_PRIMARY ||
+        def->source.partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED)
+        data->count++;
+
+    return 0;
+}
+
+
 /**
  * Decides what kind of partition type that should be created.
  * Important when the partition table is of msdos type
@@ -530,19 +557,16 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 virStorageBackendDiskPartTypeToCreate(virStoragePoolObjPtr pool)
 {
+    struct virStorageVolNumData data = { .count = 0 };
+
     if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
         /* count primary and extended partitions,
            can't be more than 3 to create a new primary partition */
-        size_t i;
-        int count = 0;
-        for (i = 0; i < pool->volumes.count; i++) {
-            int partType = pool->volumes.objs[i]->source.partType;
-            if (partType == VIR_STORAGE_VOL_DISK_TYPE_PRIMARY ||
-                partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED)
-                count++;
+        if (virStoragePoolObjForEachVolume(pool, virStorageVolNumOfPartTypes,
+                                           &data) == 0) {
+            if (data.count >= 4)
+                return VIR_STORAGE_VOL_DISK_TYPE_LOGICAL;
         }
-        if (count >= 4)
-            return VIR_STORAGE_VOL_DISK_TYPE_LOGICAL;
     }
 
     /* for all other cases, all partitions are primary */
@@ -554,7 +578,6 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
                                 virStorageVolDefPtr vol,
                                 char** partFormat)
 {
-    size_t i;
     if (pool->def->source.format == VIR_STORAGE_POOL_DISK_DOS) {
         const char *partedFormat;
         partedFormat = virStoragePartedFsTypeToString(vol->target.format);
@@ -565,13 +588,12 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
         }
         if (vol->target.format == VIR_STORAGE_VOL_DISK_EXTENDED) {
             /* make sure we don't have an extended partition already */
-            for (i = 0; i < pool->volumes.count; i++) {
-                if (pool->volumes.objs[i]->source.partType ==
-                    VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
+            if (virStoragePoolObjSearchVolume(pool,
+                                              virStorageVolPartFindExtended,
+                                              NULL)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("extended partition already exists"));
                     return -1;
-                }
             }
             if (VIR_STRDUP(*partFormat, partedFormat) < 0)
                 return -1;
@@ -587,18 +609,16 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
                 break;
             case VIR_STORAGE_VOL_DISK_TYPE_LOGICAL:
                 /* make sure we have an extended partition */
-                for (i = 0; i < pool->volumes.count; i++) {
-                    if (pool->volumes.objs[i]->source.partType ==
-                        VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
-                        if (virAsprintf(partFormat, "logical %s",
-                                        partedFormat) < 0)
-                            return -1;
-                        break;
-                    }
-                }
-                if (i == virStoragePoolObjGetVolumesCount(pool)) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("no extended partition found and no primary partition available"));
+                if (virStoragePoolObjSearchVolume(pool,
+                                                  virStorageVolPartFindExtended,
+                                                  NULL)) {
+                    if (virAsprintf(partFormat, "logical %s",
+                                    partedFormat) < 0)
+                        return -1;
+                } else {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("no extended partition found and no "
+                                     "primary partition available"));
                     return -1;
                 }
                 break;
