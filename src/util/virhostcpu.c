@@ -188,10 +188,15 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
 
 #endif /* __FreeBSD__ */
 
+/*
+ * Even though it doesn't exist on some platforms, the code is adjusted for
+ * graceful handling of that so that we don't have too many stub functions.
+ */
+#define SYSFS_SYSTEM_PATH "/sys/devices/system"
+
 #ifdef __linux__
 # define CPUINFO_PATH "/proc/cpuinfo"
 # define PROCSTAT_PATH "/proc/stat"
-# define SYSFS_SYSTEM_PATH "/sys/devices/system"
 # define VIR_HOST_CPU_MASK_LEN 1024
 
 # define LINUX_NB_CPU_STATS 4
