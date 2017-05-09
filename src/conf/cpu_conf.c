@@ -915,6 +915,16 @@ virCPUDefIsEqual(virCPUDefPtr src,
         }
     }
 
+    if ((src->cache && !dst->cache) ||
+        (!src->cache && dst->cache) ||
+        (src->cache && dst->cache &&
+         (src->cache->level != dst->cache->level ||
+          src->cache->mode != dst->cache->mode))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target CPU cache does not match source"));
+        goto cleanup;
+    }
+
     identical = true;
 
  cleanup:
