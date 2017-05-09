@@ -107,6 +107,28 @@ virNetworkObjEndAPI(virNetworkObjPtr *net)
 }
 
 
+virNetworkDefPtr
+virNetworkObjGetDef(virNetworkObjPtr obj)
+{
+    return obj->def;
+}
+
+
+void
+virNetworkObjSetDef(virNetworkObjPtr obj,
+                    virNetworkDefPtr def)
+{
+    obj->def = def;
+}
+
+
+virNetworkDefPtr
+virNetworkObjGetNewDef(virNetworkObjPtr obj)
+{
+    return obj->newDef;
+}
+
+
 pid_t
 virNetworkObjGetDnsmasqPid(virNetworkObjPtr obj)
 {
