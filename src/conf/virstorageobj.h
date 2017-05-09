@@ -136,6 +136,17 @@ virStoragePoolObjPtr
 virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
                             const char *name);
 
+int
+virStoragePoolObjAddVol(virStoragePoolObjPtr obj,
+                        virStorageVolDefPtr voldef);
+
+void
+virStoragePoolObjRemoveVol(virStoragePoolObjPtr obj,
+                           virStorageVolDefPtr voldef);
+
+size_t
+virStoragePoolObjGetVolumesCount(virStoragePoolObjPtr obj);
+
 virStorageVolDefPtr
 virStorageVolDefFindByKey(virStoragePoolObjPtr obj,
                           const char *key);

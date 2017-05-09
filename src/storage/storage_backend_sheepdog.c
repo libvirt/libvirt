@@ -130,10 +130,8 @@ virStorageBackendSheepdogAddVolume(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virStorageBackendSheepdogRefreshVol(conn, pool, vol) < 0)
         goto error;
 
-    if (VIR_EXPAND_N(pool->volumes.objs, pool->volumes.count, 1) < 0)
+    if (virStoragePoolObjAddVol(pool, vol) < 0)
         goto error;
-
-    pool->volumes.objs[pool->volumes.count - 1] = vol;
 
     return 0;
 

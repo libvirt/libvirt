@@ -282,6 +282,43 @@ virStoragePoolObjClearVols(virStoragePoolObjPtr obj)
 }
 
 
+int
+virStoragePoolObjAddVol(virStoragePoolObjPtr obj,
+                        virStorageVolDefPtr voldef)
+{
+    if (VIR_APPEND_ELEMENT(obj->volumes.objs, obj->volumes.count, voldef) < 0)
+        return -1;
+    return 0;
+}
+
+
+void
+virStoragePoolObjRemoveVol(virStoragePoolObjPtr obj,
+                           virStorageVolDefPtr voldef)
+{
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
+    size_t i;
+
+    for (i = 0; i < obj->volumes.count; i++) {
+        if (obj->volumes.objs[i] == voldef) {
+            VIR_INFO("Deleting volume '%s' from storage pool '%s'",
+                     voldef->name, def->name);
+            virStorageVolDefFree(voldef);
+
+            VIR_DELETE_ELEMENT(obj->volumes.objs, i, obj->volumes.count);
+            return;
+        }
+    }
+}
+
+
+size_t
+virStoragePoolObjGetVolumesCount(virStoragePoolObjPtr obj)
+{
+    return obj->volumes.count;
+}
+
+
 virStorageVolDefPtr
 virStorageVolDefFindByKey(virStoragePoolObjPtr obj,
                           const char *key)

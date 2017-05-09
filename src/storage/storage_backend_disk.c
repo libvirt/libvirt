@@ -65,8 +65,7 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
         if (VIR_ALLOC(vol) < 0)
             return -1;
         if (VIR_STRDUP(vol->name, partname) < 0 ||
-            VIR_APPEND_ELEMENT_COPY(pool->volumes.objs,
-                                    pool->volumes.count, vol) < 0) {
+            virStoragePoolObjAddVol(pool, vol) < 0) {
             virStorageVolDefFree(vol);
             return -1;
         }
@@ -597,7 +596,7 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
                         break;
                     }
                 }
-                if (i == pool->volumes.count) {
+                if (i == virStoragePoolObjGetVolumesCount(pool)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("no extended partition found and no primary partition available"));
                     return -1;

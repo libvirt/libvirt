@@ -71,8 +71,9 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
     if (VIR_STRDUP(vol->key, vol->target.path) < 0)
         goto cleanup;
 
-    if (VIR_APPEND_ELEMENT_COPY(pool->volumes.objs, pool->volumes.count, vol) < 0)
+    if (virStoragePoolObjAddVol(pool, vol) < 0)
         goto cleanup;
+
     pool->def->capacity += vol->target.capacity;
     pool->def->allocation += vol->target.allocation;
     ret = 0;
