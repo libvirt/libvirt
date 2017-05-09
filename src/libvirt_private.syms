@@ -3147,6 +3147,7 @@ virStorageSourceIsEmpty;
 virStorageSourceIsLocalStorage;
 virStorageSourceIsRelative;
 virStorageSourceIsSameLocation;
+virStorageSourceNetCookiesValidate;
 virStorageSourceNetworkAssignDefaultPorts;
 virStorageSourceNew;
 virStorageSourceNewFromBacking;

@@ -9340,6 +9340,62 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
 }
 
 
+static virStorageNetCookieDefPtr
+virDomainStorageNetCookieParse(xmlNodePtr node,
+                               xmlXPathContextPtr ctxt)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    g_autoptr(virStorageNetCookieDef) cookie = NULL;
+
+    ctxt->node = node;
+
+    cookie = g_new0(virStorageNetCookieDef, 1);
+
+    if (!(cookie->name = virXPathString("string(./@name)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s", _("missing cookie name"));
+        return NULL;
+    }
+
+    if (!(cookie->value = virXPathString("string(.)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, _("missing value for cookie '%s'"),
+                       cookie->name);
+        return NULL;
+    }
+
+    return g_steal_pointer(&cookie);
+}
+
+
+static int
+virDomainStorageNetCookiesParse(xmlNodePtr node,
+                                xmlXPathContextPtr ctxt,
+                                virStorageSourcePtr src)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    g_autofree xmlNodePtr *nodes = NULL;
+    ssize_t nnodes;
+    size_t i;
+
+    ctxt->node = node;
+
+    if ((nnodes = virXPathNodeSet("./cookie", ctxt, &nodes)) < 0)
+        return -1;
+
+    src->cookies = g_new0(virStorageNetCookieDefPtr, nnodes);
+    src->ncookies = nnodes;
+
+    for (i = 0; i < nnodes; i++) {
+        if (!(src->cookies[i] = virDomainStorageNetCookieParse(nodes[i], ctxt)))
+            return -1;
+    }
+
+    if (virStorageSourceNetCookiesValidate(src) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 virDomainDiskSourceNetworkParse(xmlNodePtr node,
                                 xmlXPathContextPtr ctxt,
@@ -9351,6 +9407,7 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
     g_autofree char *haveTLS = NULL;
     g_autofree char *tlsCfg = NULL;
     g_autofree char *sslverifystr = NULL;
+    xmlNodePtr tmpnode;
 
     if (!(protocol = virXMLPropString(node, "protocol"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -9434,6 +9491,13 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
         }
 
         src->sslverify = verify;
+    }
+
+    if ((src->protocol == VIR_STORAGE_NET_PROTOCOL_HTTP ||
+         src->protocol == VIR_STORAGE_NET_PROTOCOL_HTTPS) &&
+        (tmpnode = virXPathNode("./cookies", ctxt))) {
+        if (virDomainStorageNetCookiesParse(tmpnode, ctxt, src) < 0)
+            return -1;
     }
 
     return 0;
@@ -24500,6 +24564,22 @@ virDomainSourceDefFormatSeclabel(virBufferPtr buf,
 }
 
 
+static void
+virDomainDiskSourceFormatNetworkCookies(virBufferPtr buf,
+                                        virStorageSourcePtr src)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    size_t i;
+
+    for (i = 0; i < src->ncookies; i++) {
+        virBufferEscapeString(&childBuf, "<cookie name='%s'>", src->cookies[i]->name);
+        virBufferEscapeString(&childBuf, "%s</cookie>\n", src->cookies[i]->value);
+    }
+
+    virXMLFormatElement(buf, "cookies", NULL, &childBuf);
+}
+
+
 static int
 virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
                                  virBufferPtr childBuf,
@@ -24549,6 +24629,8 @@ virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
         virBufferAsprintf(childBuf, "<ssl verify='%s'/>\n",
                           virTristateBoolTypeToString(src->sslverify));
     }
+
+    virDomainDiskSourceFormatNetworkCookies(childBuf, src);
 
     return 0;
 }

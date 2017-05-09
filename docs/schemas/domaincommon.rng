@@ -1817,6 +1817,24 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkProtocolHTTPCookies">
+    <element name="cookies">
+      <oneOrMore>
+        <element name="cookie">
+          <attribute name="name">
+            <data type="string">
+              <param name="pattern">[!#$%&amp;'*+\-.0-9A-Z\^_`a-z|~]+</param>
+            </data>
+          </attribute>
+          <data type="string">
+            <param name="pattern">[!#$%&amp;'()*+\-./0-9:&gt;=&lt;?@A-Z\^_`\[\]a-z|~]+</param>
+          </data>
+        </element>
+      </oneOrMore>
+      <empty/>
+    </element>
+  </define>
+
   <define name="diskSourceNetworkProtocolHTTPS">
     <element name="source">
       <attribute name="protocol">
@@ -1833,6 +1851,9 @@
       <optional>
         <ref name="diskSourceNetworkProtocolSSLVerify"/>
       </optional>
+      <optional>
+        <ref name="diskSourceNetworkProtocolHTTPCookies"/>
+      </optional>
     </element>
   </define>
 
@@ -1848,6 +1869,9 @@
       <ref name="diskSourceNetworkHost"/>
       <optional>
         <ref name="encryption"/>
+      </optional>
+      <optional>
+        <ref name="diskSourceNetworkProtocolHTTPCookies"/>
       </optional>
     </element>
   </define>

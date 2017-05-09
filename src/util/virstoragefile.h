@@ -161,6 +161,17 @@ struct _virStorageNetHostDef {
     char *socket;  /* path to unix socket */
 };
 
+typedef struct _virStorageNetCookieDef virStorageNetCookieDef;
+typedef virStorageNetCookieDef *virStorageNetCookieDefPtr;
+struct _virStorageNetCookieDef {
+    char *name;
+    char *value;
+};
+
+void virStorageNetCookieDefFree(virStorageNetCookieDefPtr def);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageNetCookieDef, virStorageNetCookieDefFree);
+
 /* Information for a storage volume from a virStoragePool */
 
 /*
@@ -275,6 +286,8 @@ struct _virStorageSource {
                          the source definition */
     size_t nhosts;
     virStorageNetHostDefPtr hosts;
+    size_t ncookies;
+    virStorageNetCookieDefPtr *cookies;
     virStorageSourcePoolDefPtr srcpool;
     virStorageAuthDefPtr auth;
     bool authInherited;
@@ -475,6 +488,8 @@ int virStorageSourceUpdateCapacity(virStorageSourcePtr src,
 
 int virStorageSourceNewFromBacking(virStorageSourcePtr parent,
                                    virStorageSourcePtr *backing);
+
+int virStorageSourceNetCookiesValidate(virStorageSourcePtr src);
 
 virStorageSourcePtr virStorageSourceCopy(const virStorageSource *src,
                                          bool backingChain)
