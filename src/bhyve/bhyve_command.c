@@ -408,6 +408,10 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
                        _("Unsupported listen type"));
     }
 
+    if (video->driver)
+        virBufferAsprintf(&opt, ",vga=%s",
+                          virDomainVideoVGAConfTypeToString(video->driver->vgaconf));
+
     virCommandAddArg(cmd, "-s");
     virCommandAddArgBuffer(cmd, &opt);
     return 0;

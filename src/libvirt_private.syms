@@ -530,6 +530,8 @@ virDomainVideoDefaultType;
 virDomainVideoDefFree;
 virDomainVideoTypeFromString;
 virDomainVideoTypeToString;
+virDomainVideoVGAConfTypeFromString;
+virDomainVideoVGAConfTypeToString;
 virDomainVirtTypeFromString;
 virDomainVirtTypeToString;
 virDomainWatchdogActionTypeFromString;

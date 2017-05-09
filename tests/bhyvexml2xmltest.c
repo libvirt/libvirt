@@ -105,6 +105,9 @@ mymain(void)
     DO_TEST_DIFFERENT("serial-grub");
     DO_TEST_DIFFERENT("serial-grub-nocons");
     DO_TEST_DIFFERENT("vnc");
+    DO_TEST_DIFFERENT("vnc-vgaconf-on");
+    DO_TEST_DIFFERENT("vnc-vgaconf-off");
+    DO_TEST_DIFFERENT("vnc-vgaconf-io");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");

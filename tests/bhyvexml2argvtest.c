@@ -193,6 +193,9 @@ mymain(void)
     DO_TEST("net-e1000");
     DO_TEST("uefi");
     DO_TEST("vnc");
+    DO_TEST("vnc-vgaconf-on");
+    DO_TEST("vnc-vgaconf-off");
+    DO_TEST("vnc-vgaconf-io");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");

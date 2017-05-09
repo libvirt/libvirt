@@ -1359,6 +1359,16 @@ typedef enum {
 } virDomainVideoType;
 
 
+typedef enum {
+    VIR_DOMAIN_VIDEO_VGACONF_IO = 0,
+    VIR_DOMAIN_VIDEO_VGACONF_ON,
+    VIR_DOMAIN_VIDEO_VGACONF_OFF,
+
+    VIR_DOMAIN_VIDEO_VGACONF_LAST
+} virDomainVideoVGAConf;
+
+VIR_ENUM_DECL(virDomainVideoVGAConf)
+
 typedef struct _virDomainVideoAccelDef virDomainVideoAccelDef;
 typedef virDomainVideoAccelDef *virDomainVideoAccelDefPtr;
 struct _virDomainVideoAccelDef {
@@ -1366,6 +1376,12 @@ struct _virDomainVideoAccelDef {
     int accel3d; /* enum virTristateBool */
 };
 
+
+typedef struct _virDomainVideoDriverDef virDomainVideoDriverDef;
+typedef virDomainVideoDriverDef *virDomainVideoDriverDefPtr;
+struct _virDomainVideoDriverDef {
+   virDomainVideoVGAConf vgaconf;
+};
 
 struct _virDomainVideoDef {
     int type;
@@ -1376,6 +1392,7 @@ struct _virDomainVideoDef {
     unsigned int heads;
     bool primary;
     virDomainVideoAccelDefPtr accel;
+    virDomainVideoDriverDefPtr driver;
     virDomainDeviceInfo info;
     virDomainVirtioOptionsPtr virtio;
 };

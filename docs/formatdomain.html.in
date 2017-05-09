@@ -6156,7 +6156,14 @@ qemu-kvm -net nic,model=? /dev/null
           <dt>virtio options</dt>
           <dd>
           <a href="#elementsVirtio">Virtio-specific options</a> can also be
-          set. (<span class="since">Since 3.5.0</span>)
+          set (<span class="since">Since 3.5.0</span>)
+          </dd>
+          <dt>VGA configuration</dt>
+          <dd>
+          Control how the video devices exposed to the guest using the
+          <code>vgaconf</code> attribute which takes the value "io", "on" or "off".
+          At present, it's only applicable to the bhyve's "gop" video model type
+          (<span class="since">Since 3.5.0</span>)
           </dd>
         </dl>
       </dd>

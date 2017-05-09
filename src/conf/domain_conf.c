@@ -560,6 +560,11 @@ VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "virtio",
               "gop")
 
+VIR_ENUM_IMPL(virDomainVideoVGAConf, VIR_DOMAIN_VIDEO_VGACONF_LAST,
+              "io",
+              "on",
+              "off")
+
 VIR_ENUM_IMPL(virDomainInput, VIR_DOMAIN_INPUT_TYPE_LAST,
               "mouse",
               "tablet",
@@ -2355,6 +2360,7 @@ void virDomainVideoDefFree(virDomainVideoDefPtr def)
 
     VIR_FREE(def->accel);
     VIR_FREE(def->virtio);
+    VIR_FREE(def->driver);
     VIR_FREE(def);
 }
 
@@ -13598,6 +13604,43 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
     return def;
 }
 
+static virDomainVideoDriverDefPtr
+virDomainVideoDriverDefParseXML(xmlNodePtr node)
+{
+    xmlNodePtr cur;
+    virDomainVideoDriverDefPtr def;
+    char *vgaconf = NULL;
+    int val;
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (!vgaconf &&
+                xmlStrEqual(cur->name, BAD_CAST "driver")) {
+                vgaconf = virXMLPropString(cur, "vgaconf");
+            }
+        }
+        cur = cur->next;
+    }
+
+    if (!vgaconf)
+        return NULL;
+
+    if (VIR_ALLOC(def) < 0)
+        goto cleanup;
+
+    if ((val = virDomainVideoVGAConfTypeFromString(vgaconf)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown vgaconf value '%s'"), vgaconf);
+        goto cleanup;
+    }
+    def->vgaconf = val;
+
+ cleanup:
+    VIR_FREE(vgaconf);
+    return def;
+}
+
 static virDomainVideoDefPtr
 virDomainVideoDefParseXML(xmlNodePtr node,
                           xmlXPathContextPtr ctxt,
@@ -13720,6 +13763,8 @@ virDomainVideoDefParseXML(xmlNodePtr node,
 
     if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
         goto error;
+
+    def->driver = virDomainVideoDriverDefParseXML(node);
 
  cleanup:
     ctxt->node = saved;
@@ -23455,7 +23500,6 @@ virDomainVideoAccelDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "/>\n");
 }
 
-
 static int
 virDomainVideoDefFormat(virBufferPtr buf,
                         virDomainVideoDefPtr def,
@@ -23475,9 +23519,13 @@ virDomainVideoDefFormat(virBufferPtr buf,
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
     if (virBufferCheckError(&driverBuf) < 0)
         return -1;
-    if (virBufferUse(&driverBuf)) {
+    if (virBufferUse(&driverBuf) || (def->driver && def->driver->vgaconf)) {
         virBufferAddLit(buf, "<driver");
-        virBufferAddBuffer(buf, &driverBuf);
+        if (virBufferUse(&driverBuf))
+            virBufferAddBuffer(buf, &driverBuf);
+        if (def->driver && def->driver->vgaconf)
+            virBufferAsprintf(buf, " vgaconf='%s'",
+                              virDomainVideoVGAConfTypeToString(def->driver->vgaconf));
         virBufferAddLit(buf, "/>\n");
     }
     virBufferAsprintf(buf, "<model type='%s'",
@@ -23497,7 +23545,8 @@ virDomainVideoDefFormat(virBufferPtr buf,
     if (def->accel) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
-        virDomainVideoAccelDefFormat(buf, def->accel);
+        if (def->accel)
+            virDomainVideoAccelDefFormat(buf, def->accel);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</model>\n");
     } else {

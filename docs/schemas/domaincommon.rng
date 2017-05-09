@@ -3220,7 +3220,18 @@
     <element name="video">
       <optional>
         <element name="driver">
-          <ref name="virtioOptions"/>
+          <optional>
+            <ref name="virtioOptions"/>
+          </optional>
+          <optional>
+            <attribute name="vgaconf">
+              <choice>
+                <value>io</value>
+                <value>on</value>
+                <value>off</value>
+              </choice>
+            </attribute>
+          </optional>
         </element>
       </optional>
       <optional>
