@@ -107,6 +107,91 @@ virNetworkObjEndAPI(virNetworkObjPtr *net)
 }
 
 
+virMacMapPtr
+virNetworkObjGetMacMap(virNetworkObjPtr obj)
+{
+    return obj->macmap;
+}
+
+
+void
+virNetworkObjSetMacMap(virNetworkObjPtr obj,
+                       virMacMapPtr macmap)
+{
+    obj->macmap = macmap;
+}
+
+
+void
+virNetworkObjUnrefMacMap(virNetworkObjPtr obj)
+{
+    if (!virObjectUnref(obj->macmap))
+        obj->macmap = NULL;
+}
+
+
+int
+virNetworkObjMacMgrAdd(virNetworkObjPtr obj,
+                       const char *dnsmasqStateDir,
+                       const char *domain,
+                       const virMacAddr *mac)
+{
+    char macStr[VIR_MAC_STRING_BUFLEN];
+    char *file = NULL;
+    int ret = -1;
+
+    if (!obj->macmap)
+        return 0;
+
+    virMacAddrFormat(mac, macStr);
+
+    if (!(file = virMacMapFileName(dnsmasqStateDir, obj->def->bridge)))
+        goto cleanup;
+
+    if (virMacMapAdd(obj->macmap, domain, macStr) < 0)
+        goto cleanup;
+
+    if (virMacMapWriteFile(obj->macmap, file) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(file);
+    return ret;
+}
+
+
+int
+virNetworkObjMacMgrDel(virNetworkObjPtr obj,
+                       const char *dnsmasqStateDir,
+                       const char *domain,
+                       const virMacAddr *mac)
+{
+    char macStr[VIR_MAC_STRING_BUFLEN];
+    char *file = NULL;
+    int ret = -1;
+
+    if (!obj->macmap)
+        return 0;
+
+    virMacAddrFormat(mac, macStr);
+
+    if (!(file = virMacMapFileName(dnsmasqStateDir, obj->def->bridge)))
+        goto cleanup;
+
+    if (virMacMapRemove(obj->macmap, domain, macStr) < 0)
+        goto cleanup;
+
+    if (virMacMapWriteFile(obj->macmap, file) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(file);
+    return ret;
+}
+
+
 virNetworkObjListPtr
 virNetworkObjListNew(void)
 {
