@@ -196,11 +196,12 @@ virStorageVolDefFindByName(virStoragePoolObjPtr obj,
 
 
 int
-virStoragePoolObjNumOfVolumes(virStorageVolDefListPtr volumes,
+virStoragePoolObjNumOfVolumes(virStoragePoolObjPtr obj,
                               virConnectPtr conn,
-                              virStoragePoolDefPtr pooldef,
                               virStoragePoolVolumeACLFilter aclfilter)
 {
+    virStoragePoolDefPtr pooldef = obj->def;
+    virStorageVolDefListPtr volumes = &obj->volumes;
     int nvolumes = 0;
     size_t i;
 
@@ -216,13 +217,14 @@ virStoragePoolObjNumOfVolumes(virStorageVolDefListPtr volumes,
 
 
 int
-virStoragePoolObjVolumeGetNames(virStorageVolDefListPtr volumes,
+virStoragePoolObjVolumeGetNames(virStoragePoolObjPtr obj,
                                 virConnectPtr conn,
-                                virStoragePoolDefPtr pooldef,
                                 virStoragePoolVolumeACLFilter aclfilter,
                                 char **const names,
                                 int maxnames)
 {
+    virStoragePoolDefPtr pooldef = obj->def;
+    virStorageVolDefListPtr volumes = &obj->volumes;
     int nnames = 0;
     size_t i;
 
@@ -247,11 +249,12 @@ virStoragePoolObjVolumeGetNames(virStorageVolDefListPtr volumes,
 
 int
 virStoragePoolObjVolumeListExport(virConnectPtr conn,
-                                  virStorageVolDefListPtr volumes,
-                                  virStoragePoolDefPtr pooldef,
+                                  virStoragePoolObjPtr obj,
                                   virStorageVolPtr **vols,
                                   virStoragePoolVolumeACLFilter aclfilter)
 {
+    virStoragePoolDefPtr pooldef = obj->def;
+    virStorageVolDefListPtr volumes = &obj->volumes;
     int ret = -1;
     size_t i;
     virStorageVolPtr *tmp_vols = NULL;

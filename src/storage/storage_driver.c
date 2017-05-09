@@ -1339,7 +1339,7 @@ storagePoolNumOfVolumes(virStoragePoolPtr pool)
         goto cleanup;
     }
 
-    ret = virStoragePoolObjNumOfVolumes(&obj->volumes, pool->conn, obj->def,
+    ret = virStoragePoolObjNumOfVolumes(obj, pool->conn,
                                         virStoragePoolNumOfVolumesCheckACL);
 
  cleanup:
@@ -1368,7 +1368,7 @@ storagePoolListVolumes(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    n = virStoragePoolObjVolumeGetNames(&obj->volumes, pool->conn, obj->def,
+    n = virStoragePoolObjVolumeGetNames(obj, pool->conn,
                                         virStoragePoolListVolumesCheckACL,
                                         names, maxnames);
  cleanup:
@@ -1399,8 +1399,7 @@ storagePoolListAllVolumes(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    ret = virStoragePoolObjVolumeListExport(pool->conn, &obj->volumes,
-                                            obj->def, vols,
+    ret = virStoragePoolObjVolumeListExport(pool->conn, obj, vols,
                                             virStoragePoolListAllVolumesCheckACL);
 
 

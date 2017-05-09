@@ -114,23 +114,20 @@ typedef bool
                                  virStorageVolDefPtr def);
 
 int
-virStoragePoolObjNumOfVolumes(virStorageVolDefListPtr volumes,
+virStoragePoolObjNumOfVolumes(virStoragePoolObjPtr obj,
                               virConnectPtr conn,
-                              virStoragePoolDefPtr pooldef,
                               virStoragePoolVolumeACLFilter aclfilter);
 
 int
-virStoragePoolObjVolumeGetNames(virStorageVolDefListPtr volumes,
+virStoragePoolObjVolumeGetNames(virStoragePoolObjPtr obj,
                                 virConnectPtr conn,
-                                virStoragePoolDefPtr pooldef,
                                 virStoragePoolVolumeACLFilter aclfilter,
                                 char **const names,
                                 int maxnames);
 
 int
 virStoragePoolObjVolumeListExport(virConnectPtr conn,
-                                  virStorageVolDefListPtr volumes,
-                                  virStoragePoolDefPtr pooldef,
+                                  virStoragePoolObjPtr obj,
                                   virStorageVolPtr **vols,
                                   virStoragePoolVolumeACLFilter aclfilter);
 
