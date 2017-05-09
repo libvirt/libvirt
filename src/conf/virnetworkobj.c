@@ -137,6 +137,13 @@ virNetworkObjSetRadvdPid(virNetworkObjPtr obj,
 }
 
 
+virBitmapPtr
+virNetworkObjGetClassIdMap(virNetworkObjPtr obj)
+{
+    return obj->classIdMap;
+}
+
+
 virMacMapPtr
 virNetworkObjGetMacMap(virNetworkObjPtr obj)
 {

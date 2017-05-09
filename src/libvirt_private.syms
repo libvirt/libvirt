@@ -942,6 +942,7 @@ virNetworkObjDeleteConfig;
 virNetworkObjEndAPI;
 virNetworkObjFindByName;
 virNetworkObjFindByUUID;
+virNetworkObjGetClassIdMap;
 virNetworkObjGetDnsmasqPid;
 virNetworkObjGetMacMap;
 virNetworkObjGetPersistentDef;

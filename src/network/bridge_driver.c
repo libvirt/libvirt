@@ -5346,10 +5346,11 @@ static ssize_t
 networkNextClassID(virNetworkObjPtr obj)
 {
     ssize_t ret = 0;
+    virBitmapPtr classIdMap = virNetworkObjGetClassIdMap(obj);
 
-    ret = virBitmapNextClearBit(obj->classIdMap, -1);
+    ret = virBitmapNextClearBit(classIdMap, -1);
 
-    if (ret < 0 || virBitmapSetBit(obj->classIdMap, ret) < 0)
+    if (ret < 0 || virBitmapSetBit(classIdMap, ret) < 0)
         return -1;
 
     return ret;
@@ -5363,6 +5364,7 @@ networkPlugBandwidthImpl(virNetworkObjPtr obj,
                          unsigned long long new_rate)
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
+    virBitmapPtr classIdMap = virNetworkObjGetClassIdMap(obj);
     ssize_t class_id = 0;
     int plug_ret;
     int ret = -1;
@@ -5387,7 +5389,7 @@ networkPlugBandwidthImpl(virNetworkObjPtr obj,
     obj->floor_sum += ifaceBand->in->floor;
     /* update status file */
     if (virNetworkObjSaveStatus(driver->stateDir, obj) < 0) {
-        ignore_value(virBitmapClearBit(obj->classIdMap, class_id));
+        ignore_value(virBitmapClearBit(classIdMap, class_id));
         obj->floor_sum -= ifaceBand->in->floor;
         iface->data.network.actual->class_id = 0;
         ignore_value(virNetDevBandwidthUnplug(obj->def->bridge, class_id));
@@ -5451,6 +5453,7 @@ static int
 networkUnplugBandwidth(virNetworkObjPtr obj,
                        virDomainNetDefPtr iface)
 {
+    virBitmapPtr classIdMap = virNetworkObjGetClassIdMap(obj);
     virNetworkDriverStatePtr driver = networkGetDriver();
     int ret = 0;
     unsigned long long new_rate;
@@ -5476,12 +5479,12 @@ networkUnplugBandwidth(virNetworkObjPtr obj,
         /* update sum of 'floor'-s of attached NICs */
         obj->floor_sum -= ifaceBand->in->floor;
         /* return class ID */
-        ignore_value(virBitmapClearBit(obj->classIdMap,
+        ignore_value(virBitmapClearBit(classIdMap,
                                        iface->data.network.actual->class_id));
         /* update status file */
         if (virNetworkObjSaveStatus(driver->stateDir, obj) < 0) {
             obj->floor_sum += ifaceBand->in->floor;
-            ignore_value(virBitmapSetBit(obj->classIdMap,
+            ignore_value(virBitmapSetBit(classIdMap,
                                          iface->data.network.actual->class_id));
             goto cleanup;
         }

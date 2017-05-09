@@ -67,6 +67,9 @@ void
 virNetworkObjSetRadvdPid(virNetworkObjPtr obj,
                          pid_t radvdPid);
 
+virBitmapPtr
+virNetworkObjGetClassIdMap(virNetworkObjPtr obj);
+
 void
 virNetworkObjSetMacMap(virNetworkObjPtr obj,
                        virMacMapPtr macmap);
