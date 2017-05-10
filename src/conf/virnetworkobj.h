@@ -32,7 +32,7 @@ struct _virNetworkObj {
     pid_t dnsmasqPid;
     pid_t radvdPid;
     unsigned int active : 1;
-    unsigned int autostart : 1;
+    bool autostart;
     unsigned int persistent : 1;
 
     virNetworkDefPtr def; /* The current definition */
@@ -59,6 +59,13 @@ virNetworkObjSetDef(virNetworkObjPtr obj,
 
 virNetworkDefPtr
 virNetworkObjGetNewDef(virNetworkObjPtr obj);
+
+bool
+virNetworkObjIsAutostart(virNetworkObjPtr obj);
+
+void
+virNetworkObjSetAutostart(virNetworkObjPtr obj,
+                          bool autostart);
 
 virMacMapPtr
 virNetworkObjGetMacMap(virNetworkObjPtr obj);

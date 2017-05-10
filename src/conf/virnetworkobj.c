@@ -129,6 +129,21 @@ virNetworkObjGetNewDef(virNetworkObjPtr obj)
 }
 
 
+bool
+virNetworkObjIsAutostart(virNetworkObjPtr obj)
+{
+    return obj->autostart;
+}
+
+
+void
+virNetworkObjSetAutostart(virNetworkObjPtr obj,
+                          bool autostart)
+{
+    obj->autostart = autostart;
+}
+
+
 pid_t
 virNetworkObjGetDnsmasqPid(virNetworkObjPtr obj)
 {
@@ -973,7 +988,7 @@ virNetworkLoadConfig(virNetworkObjListPtr nets,
     if (!(net = virNetworkObjAssignDef(nets, def, 0)))
         goto error;
 
-    net->autostart = autostart;
+    net->autostart = (autostart == 1);
 
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
@@ -1064,7 +1079,7 @@ virNetworkObjDeleteConfig(const char *configDir,
 
     /* Not fatal if this doesn't work */
     unlink(autostartLink);
-    net->autostart = 0;
+    net->autostart = false;
 
     if (unlink(configFile) < 0) {
         virReportSystemError(errno,

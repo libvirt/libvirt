@@ -526,7 +526,7 @@ networkAutostartConfig(virNetworkObjPtr obj,
     int ret = -1;
 
     virObjectLock(obj);
-    if (obj->autostart &&
+    if (virNetworkObjIsAutostart(obj) &&
         !virNetworkObjIsActive(obj) &&
         networkStartNetwork(driver, obj) < 0)
         goto cleanup;
@@ -3969,7 +3969,7 @@ networkGetAutostart(virNetworkPtr net,
     if (virNetworkGetAutostartEnsureACL(net->conn, virNetworkObjGetDef(obj)) < 0)
         goto cleanup;
 
-    *autostart = obj->autostart;
+    *autostart = virNetworkObjIsAutostart(obj) ? 1 : 0;
     ret = 0;
 
  cleanup:
@@ -3986,6 +3986,8 @@ networkSetAutostart(virNetworkPtr net,
     virNetworkObjPtr obj;
     virNetworkDefPtr def;
     char *configFile = NULL, *autostartLink = NULL;
+    bool new_autostart;
+    bool cur_autostart;
     int ret = -1;
 
     if (!(obj = networkObjFromNetwork(net)))
@@ -4001,9 +4003,9 @@ networkSetAutostart(virNetworkPtr net,
         goto cleanup;
     }
 
-    autostart = (autostart != 0);
-
-    if (obj->autostart != autostart) {
+    new_autostart = (autostart != 0);
+    cur_autostart = virNetworkObjIsAutostart(obj);
+    if (cur_autostart != new_autostart) {
         if ((configFile = virNetworkConfigFile(driver->networkConfigDir,
                                                def->name)) == NULL)
             goto cleanup;
@@ -4011,7 +4013,7 @@ networkSetAutostart(virNetworkPtr net,
                                                   def->name)) == NULL)
             goto cleanup;
 
-        if (autostart) {
+        if (new_autostart) {
             if (virFileMakePath(driver->networkAutostartDir) < 0) {
                 virReportSystemError(errno,
                                      _("cannot create autostart directory '%s'"),
@@ -4034,8 +4036,9 @@ networkSetAutostart(virNetworkPtr net,
             }
         }
 
-        obj->autostart = autostart;
+        virNetworkObjSetAutostart(obj, new_autostart);
     }
+
     ret = 0;
 
  cleanup:

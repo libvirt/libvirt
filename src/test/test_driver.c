@@ -3647,7 +3647,7 @@ testNetworkGetAutostart(virNetworkPtr net,
     if (!(obj = testNetworkObjFindByName(privconn, net->name)))
         goto cleanup;
 
-    *autostart = obj->autostart;
+    *autostart = virNetworkObjIsAutostart(obj) ? 1 : 0;
     ret = 0;
 
  cleanup:
@@ -3662,12 +3662,14 @@ testNetworkSetAutostart(virNetworkPtr net,
 {
     testDriverPtr privconn = net->conn->privateData;
     virNetworkObjPtr obj;
+    bool new_autostart = (autostart != 0);
     int ret = -1;
 
     if (!(obj = testNetworkObjFindByName(privconn, net->name)))
         goto cleanup;
 
-    obj->autostart = autostart ? 1 : 0;
+    virNetworkObjSetAutostart(obj, new_autostart);
+
     ret = 0;
 
  cleanup:
