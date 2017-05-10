@@ -33,7 +33,7 @@ struct _virNetworkObj {
     pid_t radvdPid;
     bool active;
     bool autostart;
-    unsigned int persistent : 1;
+    bool persistent;
 
     virNetworkDefPtr def; /* The current definition */
     virNetworkDefPtr newDef; /* New definition to activate at shutdown */
@@ -66,6 +66,9 @@ virNetworkObjIsActive(virNetworkObjPtr obj);
 void
 virNetworkObjSetActive(virNetworkObjPtr obj,
                        bool active);
+
+bool
+virNetworkObjIsPersistent(virNetworkObjPtr obj);
 
 bool
 virNetworkObjIsAutostart(virNetworkObjPtr obj);

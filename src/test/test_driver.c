@@ -3377,7 +3377,7 @@ testNetworkIsPersistent(virNetworkPtr net)
     if (!(obj = testNetworkObjFindByUUID(privconn, net->uuid)))
         goto cleanup;
 
-    ret = obj->persistent;
+    ret = virNetworkObjIsPersistent(obj);
 
  cleanup:
     virNetworkObjEndAPI(&obj);
@@ -3576,7 +3576,7 @@ testNetworkDestroy(virNetworkPtr net)
     event = virNetworkEventLifecycleNew(def->name, def->uuid,
                                         VIR_NETWORK_EVENT_STOPPED,
                                         0);
-    if (!obj->persistent)
+    if (!virNetworkObjIsPersistent(obj))
         virNetworkObjRemoveInactive(privconn->networks, obj);
 
     ret = 0;

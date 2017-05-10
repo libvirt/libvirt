@@ -145,6 +145,13 @@ virNetworkObjSetActive(virNetworkObjPtr obj,
 
 
 bool
+virNetworkObjIsPersistent(virNetworkObjPtr obj)
+{
+    return obj->persistent;
+}
+
+
+bool
 virNetworkObjIsAutostart(virNetworkObjPtr obj)
 {
     return obj->autostart;

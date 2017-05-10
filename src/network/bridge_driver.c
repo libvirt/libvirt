@@ -3100,7 +3100,7 @@ networkIsPersistent(virNetworkPtr net)
     if (virNetworkIsPersistentEnsureACL(net->conn, virNetworkObjGetDef(obj)) < 0)
         goto cleanup;
 
-    ret = obj->persistent;
+    ret = virNetworkObjIsPersistent(obj);
 
  cleanup:
     virNetworkObjEndAPI(&obj);
@@ -3598,7 +3598,7 @@ networkUndefine(virNetworkPtr net)
     if (virNetworkObjIsActive(obj))
         active = true;
 
-    if (!obj->persistent) {
+    if (!virNetworkObjIsPersistent(obj)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("can't undefine transient network"));
         goto cleanup;
@@ -3881,7 +3881,8 @@ networkDestroy(virNetworkPtr net)
                                         VIR_NETWORK_EVENT_STOPPED,
                                         0);
 
-    if (!obj->persistent && networkRemoveInactive(driver, obj) < 0) {
+    if (!virNetworkObjIsPersistent(obj) &&
+        networkRemoveInactive(driver, obj) < 0) {
         ret = -1;
         goto cleanup;
     }
@@ -3997,7 +3998,7 @@ networkSetAutostart(virNetworkPtr net,
     if (virNetworkSetAutostartEnsureACL(net->conn, def) < 0)
         goto cleanup;
 
-    if (!obj->persistent) {
+    if (!virNetworkObjIsPersistent(obj)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cannot set autostart for transient network"));
         goto cleanup;

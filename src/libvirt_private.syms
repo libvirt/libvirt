@@ -952,6 +952,7 @@ virNetworkObjGetPersistentDef;
 virNetworkObjGetRadvdPid;
 virNetworkObjIsActive;
 virNetworkObjIsAutostart;
+virNetworkObjIsPersistent;
 virNetworkObjListExport;
 virNetworkObjListForEach;
 virNetworkObjListGetNames;
