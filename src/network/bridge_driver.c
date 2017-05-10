@@ -452,7 +452,7 @@ networkUpdateState(virNetworkObjPtr obj,
     case VIR_NETWORK_FORWARD_OPEN:
         /* If bridge doesn't exist, then mark it inactive */
         if (!(def->bridge && virNetDevExists(def->bridge) == 1))
-            obj->active = 0;
+            virNetworkObjSetActive(obj, false);
 
         if (!(macMapFile = virMacMapFileName(driver->dnsmasqStateDir,
                                              def->bridge)))
@@ -468,7 +468,7 @@ networkUpdateState(virNetworkObjPtr obj,
     case VIR_NETWORK_FORWARD_BRIDGE:
         if (def->bridge) {
             if (virNetDevExists(def->bridge) != 1)
-                obj->active = 0;
+                virNetworkObjSetActive(obj, false);
             break;
         }
         /* intentionally drop through to common case for all
@@ -487,7 +487,7 @@ networkUpdateState(virNetworkObjPtr obj,
     }
 
     /* Try and read dnsmasq/radvd pids of active networks */
-    if (obj->active && def->ips && (def->nips > 0)) {
+    if (virNetworkObjIsActive(obj) && def->ips && (def->nips > 0)) {
         pid_t radvdPid;
         pid_t dnsmasqPid;
         char *radvdpidbase;
@@ -2790,7 +2790,7 @@ networkStartNetwork(virNetworkDriverStatePtr driver,
     if (virNetworkObjSaveStatus(driver->stateDir, obj) < 0)
         goto cleanup;
 
-    obj->active = 1;
+    virNetworkObjSetActive(obj, true);
     VIR_INFO("Network '%s' started up", def->name);
     ret = 0;
 
@@ -2860,7 +2860,7 @@ networkShutdownNetwork(virNetworkDriverStatePtr driver,
     networkRunHook(obj, NULL, NULL, VIR_HOOK_NETWORK_OP_STOPPED,
                    VIR_HOOK_SUBOP_END);
 
-    obj->active = 0;
+    virNetworkObjSetActive(obj, false);
     virNetworkObjUnsetDefTransient(obj);
     return ret;
 }
