@@ -11189,7 +11189,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
     path = actual;
 
     fd = qemuOpenFile(driver, vm, path, O_RDONLY, NULL, NULL);
-    if (fd == -1)
+    if (fd < 0)
         goto cleanup;
 
     /* Seek and read. */
@@ -11327,7 +11327,7 @@ qemuDomainStorageOpenStat(virQEMUDriverPtr driver,
 {
     if (virStorageSourceIsLocalStorage(src)) {
         if ((*ret_fd = qemuOpenFile(driver, vm, src->path, O_RDONLY,
-                                    NULL, NULL)) == -1)
+                                    NULL, NULL)) < 0)
             return -1;
 
         if (fstat(*ret_fd, ret_sb) < 0) {
