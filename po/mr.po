@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 2.1.0\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2016-09-02 15:18+0200\n"
+"POT-Creation-Date: 2017-05-10 16:44-0400\n"
 "PO-Revision-Date: 2015-02-27 01:03-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1052,8 +1052,8 @@ msgstr "स्रोत मार्गविना cdrom साधन समर
 msgid "Installed bhyve binary does not support UTC clock"
 msgstr ""
 
-#: src/bhyve/bhyve_command.c:264 src/qemu/qemu_command.c:5913
-#: src/qemu/qemu_command.c:6000
+#: src/bhyve/bhyve_command.c:264 src/qemu/qemu_command.c:5920
+#: src/qemu/qemu_command.c:6007
 #, c-format
 msgid "unsupported clock offset '%s'"
 msgstr "असमर्थीत क्लॉक ऑफसेट '%s'"
@@ -1114,7 +1114,7 @@ msgid "bhyve state driver is not active"
 msgstr "bhyve स्तर ड्राइव्हर सक्रीय नाही"
 
 #: src/bhyve/bhyve_driver.c:258 src/libxl/libxl_driver.c:921
-#: src/lxc/lxc_driver.c:5139 src/qemu/qemu_command.c:5775
+#: src/lxc/lxc_driver.c:5139 src/qemu/qemu_command.c:5782
 #: src/qemu/qemu_driver.c:1259 src/vz/vz_driver.c:495 src/xen/xen_driver.c:661
 msgid "Host SMBIOS information is not available"
 msgstr "यजमान SMBIOS माहिती अनुपलब्ध"
@@ -1130,21 +1130,21 @@ msgid "cannot set autostart for transient domain"
 msgstr "सक्रीय क्षेत्र करिता स्वयं प्रारंभ सेट करणे अशक्य"
 
 #: src/bhyve/bhyve_driver.c:397 src/libxl/libxl_driver.c:4425
-#: src/qemu/qemu_driver.c:8652 src/storage/storage_driver.c:1338
+#: src/qemu/qemu_driver.c:8652 src/storage/storage_driver.c:1352
 #: src/uml/uml_driver.c:2476
 #, c-format
 msgid "cannot create autostart directory %s"
 msgstr "स्वयं प्रारंभ डिरेक्ट्री %s बनवणे अशक्य"
 
-#: src/bhyve/bhyve_driver.c:404 src/network/bridge_driver.c:3709
-#: src/storage/storage_driver.c:1345
+#: src/bhyve/bhyve_driver.c:404 src/network/bridge_driver.c:3711
+#: src/storage/storage_driver.c:1359
 #, c-format
 msgid "Failed to create symlink '%s' to '%s'"
 msgstr "'%2$s' करिता symlink '%1$s' निर्माण करण्यास अपयशी"
 
 #: src/bhyve/bhyve_driver.c:411 src/libxl/libxl_driver.c:4439
-#: src/lxc/lxc_driver.c:2996 src/network/bridge_driver.c:3716
-#: src/qemu/qemu_driver.c:8668 src/storage/storage_driver.c:1353
+#: src/lxc/lxc_driver.c:2996 src/network/bridge_driver.c:3718
+#: src/qemu/qemu_driver.c:8668 src/storage/storage_driver.c:1367
 #: src/uml/uml_driver.c:2490
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -1208,7 +1208,7 @@ msgstr "क्षेत्र चालू नाही"
 #: src/lxc/lxc_driver.c:2473 src/lxc/lxc_driver.c:3229
 #: src/lxc/lxc_driver.c:3307 src/lxc/lxc_driver.c:5426
 #: src/openvz/openvz_driver.c:2011 src/openvz/openvz_driver.c:2258
-#: src/qemu/qemu_domain.c:5016 src/qemu/qemu_domain.c:5521
+#: src/qemu/qemu_domain.c:5027 src/qemu/qemu_domain.c:5532
 #: src/qemu/qemu_driver.c:1844 src/qemu/qemu_driver.c:1913
 #: src/qemu/qemu_driver.c:1991 src/qemu/qemu_driver.c:2092
 #: src/qemu/qemu_driver.c:2161 src/qemu/qemu_driver.c:2227
@@ -1258,7 +1258,7 @@ msgstr "mkdir %s अपयशी"
 msgid "unknown type '%s'"
 msgstr "अपरिचीत प्रकार '%s'"
 
-#: src/bhyve/bhyve_driver.c:1433 src/qemu/qemu_domain.c:3395
+#: src/bhyve/bhyve_driver.c:1433 src/qemu/qemu_domain.c:3406
 #: src/qemu/qemu_driver.c:12831
 msgid "cannot get host CPU capabilities"
 msgstr "यजमान CPU क्षमता प्राप्त करणे अशक्य"
@@ -1425,7 +1425,7 @@ msgstr "स्तर PID फाइल %s काढून टाकणे अश�
 msgid "Cannot write device.map '%s'"
 msgstr "साधन '%s' उघडणे अशक्य"
 
-#: src/bhyve/bhyve_process.c:208 src/qemu/qemu_process.c:5295
+#: src/bhyve/bhyve_process.c:208 src/qemu/qemu_process.c:5290
 #, c-format
 msgid "Domain %s didn't show up"
 msgstr "डोमेन %s सुरू झाले नाही"
@@ -2071,7 +2071,7 @@ msgid "'iothread' attribute only supported for controller model '%s'"
 msgstr ""
 
 #: src/conf/domain_conf.c:4330 src/conf/network_conf.c:2122
-#: src/conf/storage_conf.c:858
+#: src/conf/storage_conf.c:859
 #, c-format
 msgid "name %s cannot contain '/'"
 msgstr ""
@@ -3354,7 +3354,7 @@ msgstr "अपरिचीत कॅरेक्टर डिव्हास प
 msgid "spicevmc device type only supports virtio"
 msgstr "spicevmc साधन प्रकार फक्त virtio करिता समर्थन पुरवते"
 
-#: src/conf/domain_conf.c:10337 src/qemu/qemu_command.c:9642
+#: src/conf/domain_conf.c:10337 src/qemu/qemu_command.c:9649
 msgid "usb-serial requires address of usb type"
 msgstr "usb-serial ला usb प्रकारचा पत्ता आवश्यक आहे"
 
@@ -4341,7 +4341,7 @@ msgstr "UUID निर्माण करण्यास अपयशी"
 
 #: src/conf/domain_conf.c:15980 src/conf/network_conf.c:2137
 #: src/conf/nwfilter_conf.c:2671 src/conf/secret_conf.c:221
-#: src/conf/storage_conf.c:872 src/libxl/libxl_migration.c:209
+#: src/conf/storage_conf.c:873 src/libxl/libxl_migration.c:209
 msgid "malformed uuid element"
 msgstr "सदोषीत uuid घटक"
 
@@ -5450,7 +5450,7 @@ msgid "Unable to format guestfwd port"
 msgstr "guestfwd पोर्टचे रूपण करण्यास अशक्य"
 
 #: src/conf/domain_conf.c:21450 src/conf/domain_conf.c:21483
-#: src/qemu/qemu_command.c:8410
+#: src/qemu/qemu_command.c:8417
 #, c-format
 msgid "unexpected smartcard type %d"
 msgstr "अनपेक्षीत स्मार्टकार्ड प्रकार %d"
@@ -5778,7 +5778,7 @@ msgid "unexpected interface type %d"
 msgstr "अनपेक्षीत संवाद प्रकार %d"
 
 #: src/conf/interface_conf.c:1248 src/conf/node_device_conf.c:192
-#: src/conf/nwfilter_conf.c:3140 src/conf/storage_conf.c:1817
+#: src/conf/nwfilter_conf.c:3140 src/conf/storage_conf.c:1818
 #: src/libxl/libxl_driver.c:646 src/qemu/qemu_driver.c:636
 #: src/remote/remote_driver.c:1215 src/test/test_driver.c:391
 #: src/xen/xen_driver.c:479
@@ -7523,7 +7523,7 @@ msgstr "चैन प्राधान्यता '%s' वाचणे अश�
 msgid "Priority '%d' is outside valid range of [%d,%d]"
 msgstr "प्राधान्यता '%d', [%d,%d] च्या वैध व्याप्ति बाहेर आहे"
 
-#: src/conf/nwfilter_conf.c:2665 src/conf/storage_conf.c:866
+#: src/conf/nwfilter_conf.c:2665 src/conf/storage_conf.c:867
 #: src/storage/storage_backend.c:578
 msgid "unable to generate uuid"
 msgstr "uuid निर्माण करण्यास अपयशी"
@@ -7555,16 +7555,16 @@ msgstr "फिल्टर लूप प्रस्तुत करेल"
 msgid "network filter config filename '%s' does not match name '%s'"
 msgstr "नेटवर्क फिल्टर संरचना फाइलनाव '%s' नाव '%s' सह जुळत नाही"
 
-#: src/conf/nwfilter_conf.c:3239 src/conf/storage_conf.c:2089
+#: src/conf/nwfilter_conf.c:3239 src/conf/storage_conf.c:2090
 #, c-format
 msgid "cannot create config directory %s"
 msgstr "संयोजना डिरेक्ट्री %s बनवणे अशक्य"
 
-#: src/conf/nwfilter_conf.c:3251 src/conf/storage_conf.c:2068
+#: src/conf/nwfilter_conf.c:3251 src/conf/storage_conf.c:2069
 msgid "failed to generate XML"
 msgstr "XML निर्माण करण्यास अपयशी"
 
-#: src/conf/nwfilter_conf.c:3281 src/conf/storage_conf.c:2120
+#: src/conf/nwfilter_conf.c:3281 src/conf/storage_conf.c:2121
 #, c-format
 msgid "cannot remove config for %s"
 msgstr "%s करिता संयोजना काढून टाकू शकत नाही"
@@ -7981,152 +7981,152 @@ msgstr "सदोषीत गट घटक"
 msgid "storage pool missing type attribute"
 msgstr "स्टोरेज संग्रहमध्ये प्रकार गुणधर्म आढळले नाही"
 
-#: src/conf/storage_conf.c:832 src/storage/storage_driver.c:589
+#: src/conf/storage_conf.c:832 src/storage/storage_driver.c:612
 #: src/test/test_driver.c:4124
 #, c-format
 msgid "unknown storage pool type %s"
 msgstr "अपरिचीत साठा संग्रह प्रकार %s"
 
-#: src/conf/storage_conf.c:852
+#: src/conf/storage_conf.c:853
 msgid "missing pool source name element"
 msgstr "संग्रह स्त्रोत नाव घटक आढळले नाही"
 
-#: src/conf/storage_conf.c:880
+#: src/conf/storage_conf.c:881
 msgid "missing storage pool source host name"
 msgstr "न आढळलेले साठा संग्रह स्त्रोत यजमान नाव"
 
-#: src/conf/storage_conf.c:888
+#: src/conf/storage_conf.c:889
 msgid "missing storage pool source path"
 msgstr "न आढळलेले साठा संग्रह स्त्रोत मार्ग"
 
-#: src/conf/storage_conf.c:903
+#: src/conf/storage_conf.c:904
 msgid "missing storage pool source adapter"
 msgstr "साठा संग्रह स्त्रोत अडॅप्टर आढळले नाही"
 
-#: src/conf/storage_conf.c:912
+#: src/conf/storage_conf.c:913
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "'wwnn' व 'wwpn' निर्देशीत पाहिजे, अडॅप्टर प्रकार 'fchost'करिता"
 
-#: src/conf/storage_conf.c:925
+#: src/conf/storage_conf.c:926
 msgid "Either 'name' or 'parent' must be specified for the 'scsi_host' adapter"
 msgstr "'scsi_host' अडॅप्टरकरिता एकतर 'name' किंवा 'parent' निर्देशीत पाहिजे"
 
-#: src/conf/storage_conf.c:933
+#: src/conf/storage_conf.c:934
 msgid ""
 "Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
 msgstr "दोन्ही 'name' आणि 'parent' हे 'scsi_host' अडॅप्टरकरिता निर्देशीत करणे अशक्य"
 
-#: src/conf/storage_conf.c:944
+#: src/conf/storage_conf.c:945
 msgid "missing storage pool source device name"
 msgstr "स्टोरेज पूल स्रोत साधणाचे नाव आढळले नाही"
 
-#: src/conf/storage_conf.c:962
+#: src/conf/storage_conf.c:963
 msgid "missing storage pool target path"
 msgstr "न आढळलेले साठा संग्रह लक्ष्य मार्ग"
 
-#: src/conf/storage_conf.c:996
+#: src/conf/storage_conf.c:997
 #, c-format
 msgid "unexpected root element <%s>, expecting <pool>"
 msgstr "अनपेक्षित रूट एलिमेंट <%s>, <pool> अपेक्षीत"
 
-#: src/conf/storage_conf.c:1022
+#: src/conf/storage_conf.c:1023
 msgid "(storage_pool_definition)"
 msgstr "(storage_pool_definition)"
 
-#: src/conf/storage_conf.c:1145
+#: src/conf/storage_conf.c:1146
 #, c-format
 msgid "unknown pool format number %d"
 msgstr "अपरिचीत संग्रह स्वरूप क्रमांक %d"
 
-#: src/conf/storage_conf.c:1181 src/conf/storage_conf.c:2157
+#: src/conf/storage_conf.c:1182 src/conf/storage_conf.c:2158
 msgid "unexpected pool type"
 msgstr "अनपेक्षीत संग्रह प्रकार"
 
-#: src/conf/storage_conf.c:1268
+#: src/conf/storage_conf.c:1269
 msgid "malformed capacity element"
 msgstr "सदोषीत क्षमता घटक"
 
-#: src/conf/storage_conf.c:1309
+#: src/conf/storage_conf.c:1310
 msgid "missing volume name element"
 msgstr "न आढळलेले खंड नाव घटक"
 
-#: src/conf/storage_conf.c:1321
+#: src/conf/storage_conf.c:1322
 #, fuzzy, c-format
 msgid "unknown volume type '%s'"
 msgstr "अपरिचीत वॉल्युम प्रकार '%s'"
 
-#: src/conf/storage_conf.c:1342 src/conf/storage_conf.c:1388
+#: src/conf/storage_conf.c:1343 src/conf/storage_conf.c:1389
 #, c-format
 msgid "unknown volume format type %s"
 msgstr "अपरिचीत खंड स्वरूप प्रकार %s"
 
-#: src/conf/storage_conf.c:1363
+#: src/conf/storage_conf.c:1364
 msgid "missing capacity element"
 msgstr "क्षमता घटक आढळले नाही"
 
-#: src/conf/storage_conf.c:1430
+#: src/conf/storage_conf.c:1431
 #, fuzzy, c-format
 msgid "unsupported feature %s"
 msgstr "असमर्थीत गुणविशेष %s"
 
-#: src/conf/storage_conf.c:1465
+#: src/conf/storage_conf.c:1466
 #, c-format
 msgid "unexpected root element <%s>, expecting <volume>"
 msgstr "अनपेक्षित रूट एलिमेंट <%s>, <pool> अपेक्षीत"
 
-#: src/conf/storage_conf.c:1493
+#: src/conf/storage_conf.c:1494
 msgid "(storage_volume_definition)"
 msgstr "(storage_volume_definition)"
 
-#: src/conf/storage_conf.c:1545
+#: src/conf/storage_conf.c:1546
 #, c-format
 msgid "unknown volume format number %d"
 msgstr "अपरिचीत खंड स्वरूप क्रमांक %d"
 
-#: src/conf/storage_conf.c:1848
+#: src/conf/storage_conf.c:1849
 #, c-format
 msgid "Storage pool config filename '%s' does not match pool name '%s'"
 msgstr "स्टोरेज पूल संरचना फाइलचेनाव '%s' पूलच्या नाव '%s' सह जुळत नाही"
 
-#: src/conf/storage_conf.c:1893
+#: src/conf/storage_conf.c:1894
 msgid "(pool state)"
 msgstr ""
 
-#: src/conf/storage_conf.c:1898
+#: src/conf/storage_conf.c:1899
 msgid "Could not find any 'pool' element in state file"
 msgstr ""
 
-#: src/conf/storage_conf.c:1908
+#: src/conf/storage_conf.c:1909
 #, c-format
 msgid "Storage pool state file '%s' does not match pool name '%s'"
 msgstr ""
 
-#: src/conf/storage_conf.c:2114
+#: src/conf/storage_conf.c:2115
 #, c-format
 msgid "no config file for %s"
 msgstr "%s करिता संयोजना फाइल नाही"
 
-#: src/conf/storage_conf.c:2207
+#: src/conf/storage_conf.c:2208
 #, c-format
 msgid "pool '%s' is already defined with uuid %s"
 msgstr "पूल '%s' आधिपासूनच uuid %s सह ठरवले आहे"
 
-#: src/conf/storage_conf.c:2216
+#: src/conf/storage_conf.c:2217
 #, c-format
 msgid "pool is already active as '%s'"
 msgstr "पूल '%s' म्हणून आधिपासूनच सक्रिय आहे"
 
-#: src/conf/storage_conf.c:2230
+#: src/conf/storage_conf.c:2231
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
 msgstr "पूल '%s' आधिपासूनच uuid %s सह अस्तित्वात आहे"
 
-#: src/conf/storage_conf.c:2278
+#: src/conf/storage_conf.c:2279
 #, fuzzy, c-format
 msgid "Cannot find '%s' in node device database"
 msgstr "मार्गमध्ये '%s' शोधणे अशक्य"
 
-#: src/conf/storage_conf.c:2603
+#: src/conf/storage_conf.c:2604
 #, c-format
 msgid "Storage source conflict with pool: '%s'"
 msgstr "स्टोरेज स्रोत पूलसह मतभेद करते: '%s'"
@@ -9940,7 +9940,7 @@ msgstr "विना-ब्लॉकिंग मोड सेट करणे �
 #: src/fdstream.c:522 src/locking/lock_daemon.c:158
 #: src/locking/lock_daemon.c:207 src/logging/log_daemon.c:148
 #: src/logging/log_daemon.c:201 src/node_device/node_device_udev.c:1481
-#: src/qemu/qemu_capabilities.c:3958 src/util/vireventpoll.c:691
+#: src/qemu/qemu_capabilities.c:3941 src/util/vireventpoll.c:691
 #: src/util/virobject.c:224
 msgid "Unable to initialize mutex"
 msgstr "म्युटेक्स् सुरू करणे अशक्य"
@@ -10965,7 +10965,7 @@ msgstr "libxenlight UUID '%s' वाचण्यास अपयशी"
 msgid "unknown chrdev type"
 msgstr "अपरिचीत chrdev प्रकार"
 
-#: src/libxl/libxl_conf.c:286 src/qemu/qemu_command.c:4985
+#: src/libxl/libxl_conf.c:286 src/qemu/qemu_command.c:4992
 #, c-format
 msgid "unsupported chardev '%s'"
 msgstr "असमर्थीत chardev '%s'"
@@ -11121,12 +11121,12 @@ msgid "machine type %s too big for destination"
 msgstr "लक्ष्यकरिता मशीन प्रकार %s खूप मोठे आहे"
 
 #: src/libxl/libxl_domain.c:155 src/lxc/lxc_domain.c:123
-#: src/qemu/qemu_domain.c:3010 src/vz/vz_utils.c:649
+#: src/qemu/qemu_domain.c:3021 src/vz/vz_utils.c:649
 msgid "cannot acquire state change lock"
 msgstr "स्तर बदल कुलूपबंद प्राप्त करणे अशक्य"
 
 #: src/libxl/libxl_domain.c:158 src/lxc/lxc_domain.c:126
-#: src/qemu/qemu_domain.c:3027 src/vz/vz_utils.c:652
+#: src/qemu/qemu_domain.c:3038 src/vz/vz_utils.c:652
 msgid "cannot acquire job mutex"
 msgstr "job mutex प्राप्त करणे अशक्य"
 
@@ -11136,7 +11136,7 @@ msgid "multiple IP addresses not supported on device type %s"
 msgstr ""
 
 #: src/libxl/libxl_domain.c:324 src/openvz/openvz_driver.c:123
-#: src/qemu/qemu_domain.c:2646 src/uml/uml_driver.c:424
+#: src/qemu/qemu_domain.c:2657 src/uml/uml_driver.c:424
 #: src/xen/xen_driver.c:340 src/xenapi/xenapi_driver.c:64
 #, fuzzy, c-format
 msgid "hostdev mode 'capabilities' is not supported in %s"
@@ -11512,12 +11512,12 @@ msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3229 src/libxl/libxl_driver.c:3745
-#: src/qemu/qemu_hotplug.c:2177 src/qemu/qemu_hotplug.c:4017
+#: src/qemu/qemu_hotplug.c:2178 src/qemu/qemu_hotplug.c:4017
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "hostdev मोड '%s' समर्थीत नाही"
 
-#: src/libxl/libxl_driver.c:3249 src/qemu/qemu_hotplug.c:2203
+#: src/libxl/libxl_driver.c:3249 src/qemu/qemu_hotplug.c:2204
 #: src/qemu/qemu_hotplug.c:3985
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
@@ -13121,7 +13121,7 @@ msgstr "pid फाइल '%s/%s.pid' लिहण्यास अपयशी"
 msgid "Unable to change to root dir"
 msgstr "रूट dir करिता बदल करणे अशक्य"
 
-#: src/lxc/lxc_domain.c:221 src/qemu/qemu_domain.c:1797
+#: src/lxc/lxc_domain.c:221 src/qemu/qemu_domain.c:1808
 #: src/test/test_driver.c:225
 #, c-format
 msgid "Failed to register xml namespace '%s'"
@@ -13675,9 +13675,9 @@ msgid "no network with matching uuid '%s' (%s)"
 msgstr "जुळणाऱ्या uuid '%s' (%s) सह नेटवर्क आढळले नाही"
 
 #: src/network/bridge_driver.c:520 src/network/bridge_driver.c:654
-#: src/network/bridge_driver.c:1431 src/network/bridge_driver.c:1442
-#: src/network/bridge_driver.c:1736 src/network/bridge_driver.c:1742
-#: src/storage/storage_driver.c:264
+#: src/network/bridge_driver.c:1433 src/network/bridge_driver.c:1444
+#: src/network/bridge_driver.c:1738 src/network/bridge_driver.c:1744
+#: src/storage/storage_driver.c:287
 #, c-format
 msgid "cannot create directory %s"
 msgstr "डिरेक्ट्री %s बनवू शकत नाही"
@@ -13730,7 +13730,7 @@ msgstr ""
 msgid "For IPv6, multiple DHCP definitions cannot be specified."
 msgstr "IPv6करिता, बहु DHCP संरचना निर्देशीत करणे अशक्य."
 
-#: src/network/bridge_driver.c:1210 src/network/bridge_driver.c:1633
+#: src/network/bridge_driver.c:1210 src/network/bridge_driver.c:1635
 #, c-format
 msgid "bridge '%s' has an invalid prefix"
 msgstr "ब्रिज '%s' कडे अवैध प्रिफिक्स् आढळले"
@@ -13740,117 +13740,117 @@ msgstr "ब्रिज '%s' कडे अवैध प्रिफिक्स�
 msgid "couldn't write dnsmasq config file '%s'"
 msgstr "dnsmasq संरचना फाइल '%s' लिहणे अशक्य"
 
-#: src/network/bridge_driver.c:1689
+#: src/network/bridge_driver.c:1691
 #, c-format
 msgid "couldn't write radvd config file '%s'"
 msgstr "radvd काँफिग फाइल '%s' लिहणे अशक्य"
 
-#: src/network/bridge_driver.c:1728
+#: src/network/bridge_driver.c:1730
 #, c-format
 msgid "Cannot find %s - Possibly the package isn't installed"
 msgstr "%s शोधणे अशक्य - संभाव्यतया संकुल प्रतिष्ठापीत नाही"
 
-#: src/network/bridge_driver.c:1975
+#: src/network/bridge_driver.c:1977
 #, fuzzy, c-format
 msgid "cannot write to %s to enable/disable IPv6 on bridge %s"
 msgstr "%s करिता लिहणे अशक्य, ब्रिज %s वरील सुरू किंवा बंद करण्यासाठी"
 
-#: src/network/bridge_driver.c:1994 src/network/bridge_driver.c:2008
+#: src/network/bridge_driver.c:1996 src/network/bridge_driver.c:2010
 #, c-format
 msgid "cannot disable %s"
 msgstr "%s अकार्यक्षम करणे अशक्य"
 
-#: src/network/bridge_driver.c:2027
+#: src/network/bridge_driver.c:2029
 #, c-format
 msgid "bridge '%s' has an invalid netmask or IP address"
 msgstr "ब्रिज '%s' कडे अवैध नेटमास्क किंवा IP पत्ता आहे"
 
-#: src/network/bridge_driver.c:2074
+#: src/network/bridge_driver.c:2076
 #, c-format
 msgid "network '%s' has an invalid netmask or IP address in route definition"
 msgstr "राउट डेफिनेशनमध्ये  नेटवर्क '%s'कडे अवैध नेटमास्क किंवा IP पत्ता आढळले"
 
-#: src/network/bridge_driver.c:2140
+#: src/network/bridge_driver.c:2142
 #, c-format
 msgid "network '%s' has no bridge name defined"
 msgstr ""
 
-#: src/network/bridge_driver.c:2234
+#: src/network/bridge_driver.c:2236
 msgid "failed to enable IP forwarding"
 msgstr "IP फॉरवर्डींग कार्यान्वीत करण्यास अपयशी"
 
-#: src/network/bridge_driver.c:2412
+#: src/network/bridge_driver.c:2414
 #, c-format
 msgid "Could not get Virtual functions on %s"
 msgstr "%s वरील वर्च्युअल फंक्शन्स् प्राप्त करणे अस्कय"
 
-#: src/network/bridge_driver.c:2469
+#: src/network/bridge_driver.c:2471
 #, fuzzy, c-format
 msgid "No usable Vf's present on SRIOV PF %s"
 msgstr "SRIOV PF %s वरील वापरण्याजोगी Vf's अस्तित्वात नाही"
 
-#: src/network/bridge_driver.c:2529
+#: src/network/bridge_driver.c:2531
 msgid "network is already active"
 msgstr "नेटवर्क आधिपासूनच सक्रीय आहे"
 
-#: src/network/bridge_driver.c:2673
+#: src/network/bridge_driver.c:2675
 #, c-format
 msgid "no network with matching uuid '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:2698 src/network/bridge_driver.c:4047
-#: src/network/bridge_driver.c:4456 src/network/bridge_driver.c:4642
-#: src/network/bridge_driver.c:4789 src/network/bridge_driver.c:4875
-#: src/network/bridge_driver.c:5233 src/network/bridge_driver.c:5266
+#: src/network/bridge_driver.c:2700 src/network/bridge_driver.c:4049
+#: src/network/bridge_driver.c:4458 src/network/bridge_driver.c:4644
+#: src/network/bridge_driver.c:4791 src/network/bridge_driver.c:4877
+#: src/network/bridge_driver.c:5235 src/network/bridge_driver.c:5268
 #, c-format
 msgid "no network with matching name '%s'"
 msgstr "जुळवणीजोगी नाव '%s' सह नेटवर्क आढळले नाही"
 
-#: src/network/bridge_driver.c:2919
+#: src/network/bridge_driver.c:2921
 #, c-format
 msgid "Bridge generation exceeded max id %d"
 msgstr "ब्रीज निर्माण कमाल id %d ओलांडले"
 
-#: src/network/bridge_driver.c:2946
+#: src/network/bridge_driver.c:2948
 #, c-format
 msgid "bridge name '%s' already in use."
 msgstr "ब्रीज नाव '%s' आधिपासूनच वापरणीत आहे."
 
-#: src/network/bridge_driver.c:2996
+#: src/network/bridge_driver.c:2998
 #, fuzzy, c-format
 msgid "Unsupported <mac> element in network %s with forward mode='%s'"
 msgstr "नेटवर्क %s अंतर्गत असमर्थीत <mac> एलिमेंट, फारवर्ड मोड='%s' सह"
 
-#: src/network/bridge_driver.c:3004
+#: src/network/bridge_driver.c:3006
 #, c-format
 msgid "Unsupported <ip> element in network %s with forward mode='%s'"
 msgstr "नेटवर्क %sमध्ये फारवर्ड mode='%s'सह असमर्थीत <ip> एलिमेंट"
 
-#: src/network/bridge_driver.c:3012
+#: src/network/bridge_driver.c:3014
 #, c-format
 msgid "Unsupported <dns> element in network %s with forward mode='%s'"
 msgstr "नेटवर्क %sमध्ये फारवर्ड mode='%s'सह असमर्थीत <dns> एलिमेंट"
 
-#: src/network/bridge_driver.c:3020
+#: src/network/bridge_driver.c:3022
 #, c-format
 msgid "Unsupported <domain> element in network %s with forward mode='%s'"
 msgstr "नेटवर्क %sमध्ये फारवर्ड mode='%s'सह असमर्थीत <domain> एलिमेंट"
 
-#: src/network/bridge_driver.c:3028
+#: src/network/bridge_driver.c:3030
 #, fuzzy, c-format
 msgid ""
 "Unsupported network-wide <bandwidth> element in network %s with forward "
 "mode='%s'"
 msgstr "नेटवर्क %s अंतर्गत असमर्थीत नेटवर्कवाइड <bandwidth> एलिमेंट, फारवर्ड मोड='%s' सह"
 
-#: src/network/bridge_driver.c:3065
+#: src/network/bridge_driver.c:3067
 #, c-format
 msgid ""
 "<address>, <interface>, and <pf> elements of <forward> in network %s are "
 "mutually exclusive"
 msgstr ""
 
-#: src/network/bridge_driver.c:3081
+#: src/network/bridge_driver.c:3083
 msgid ""
 "Multiple IPv4 dhcp sections found -- dhcp is supported only for a single "
 "IPv4 address on each network"
@@ -13858,7 +13858,7 @@ msgstr ""
 "एकापेक्षा जास्त IPv4 dhcp विभाग आढळले -- प्रत्येक नेटवर्ककरिता फक्त एका IPv4 पत्ताकरिता "
 "dhcp समर्थीत आहे"
 
-#: src/network/bridge_driver.c:3094
+#: src/network/bridge_driver.c:3096
 msgid ""
 "Multiple IPv6 dhcp sections found -- dhcp is supported only for a single "
 "IPv6 address on each network"
@@ -13866,7 +13866,7 @@ msgstr ""
 "एकापेक्षा जास्त IPv6 dhcp विभाग आढळले -- प्रत्येक नेटवर्ककरिता फक्त एका IPv6 पत्ताकरिता "
 "dhcp समर्थीत आहे"
 
-#: src/network/bridge_driver.c:3139
+#: src/network/bridge_driver.c:3141
 #, c-format
 msgid ""
 "network '%s' has multiple default <portgroup> elements (%s and %s), but only "
@@ -13875,19 +13875,19 @@ msgstr ""
 "नेटवर्क '%s' कडे एकापेक्षाजास्त पूर्वनिर्धारित <portgroup> घटके (%s व %s) आहेत, परंतु "
 "पूर्वनिर्धारितच स्वीकारले जाते"
 
-#: src/network/bridge_driver.c:3151
+#: src/network/bridge_driver.c:3153
 #, c-format
 msgid "multiple <portgroup> elements with the same name (%s) in network '%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:3159
+#: src/network/bridge_driver.c:3161
 #, fuzzy, c-format
 msgid ""
 "Unsupported <bandwidth> element in network '%s' in portgroup '%s' with "
 "forward mode='%s'"
 msgstr "नेटवर्क %sमध्ये फारवर्ड mode='%s'सह असमर्थीत <ip> एलिमेंट"
 
-#: src/network/bridge_driver.c:3174
+#: src/network/bridge_driver.c:3176
 #, c-format
 msgid ""
 "<vlan> element specified for network %s, whose type doesn't support vlan "
@@ -13896,63 +13896,63 @@ msgstr ""
 "<vlan> नेटवर्क %s करिता एलिमेंट निर्देशीत केले, ज्याचे प्रकार vlan संरचनाकरिता समर्थन "
 "पुरवत नाही"
 
-#: src/network/bridge_driver.c:3184
+#: src/network/bridge_driver.c:3186
 #, c-format
 msgid ""
 "unsupported <bandwidth> element in <portgroup name='%s'> of network '%s' "
 "with forward mode='%s'"
 msgstr ""
 
-#: src/network/bridge_driver.c:3318
+#: src/network/bridge_driver.c:3320
 msgid "can't undefine transient network"
 msgstr ""
 
-#: src/network/bridge_driver.c:3573 src/network/bridge_driver.c:4055
+#: src/network/bridge_driver.c:3575 src/network/bridge_driver.c:4057
 #, fuzzy, c-format
 msgid "network '%s' is not active"
 msgstr "नेटवर्क '%s' सक्रीय नाही"
 
-#: src/network/bridge_driver.c:3638 src/test/test_driver.c:3373
+#: src/network/bridge_driver.c:3640 src/test/test_driver.c:3373
 #, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "जाळं '%s' कडे ब्रीज नाव आढळले नाही."
 
-#: src/network/bridge_driver.c:3687
+#: src/network/bridge_driver.c:3689
 msgid "cannot set autostart for transient network"
 msgstr "ट्रांजीएंट नेटवर्कसाठी autostart सेट करणे अशक्य"
 
-#: src/network/bridge_driver.c:3702
+#: src/network/bridge_driver.c:3704
 #, c-format
 msgid "cannot create autostart directory '%s'"
 msgstr "डिरेक्ट्री '%s' स्वयं प्रारंभ करण्यास अशक्य"
 
-#: src/network/bridge_driver.c:3792
+#: src/network/bridge_driver.c:3794
 #, fuzzy, c-format
 msgid "invalid json in file: %s"
 msgstr "अवैध json, फाइल: %s अंतर्गत"
 
-#: src/network/bridge_driver.c:3798 src/util/virlease.c:94
+#: src/network/bridge_driver.c:3800 src/util/virlease.c:94
 msgid "couldn't fetch array of leases"
 msgstr "लिजेसचे अर्रे प्राप्त करणे अशक्य"
 
-#: src/network/bridge_driver.c:3808 src/util/virlease.c:102
+#: src/network/bridge_driver.c:3810 src/util/virlease.c:102
 #: src/util/virlease.c:109 src/util/virlease.c:185 src/util/virlease.c:209
 msgid "failed to parse json"
 msgstr "json वाचण्यास अपयशी"
 
-#: src/network/bridge_driver.c:3816
+#: src/network/bridge_driver.c:3818
 msgid "found lease without mac-address"
 msgstr "mac-पत्ता विना लिज आढळले"
 
-#: src/network/bridge_driver.c:3826
+#: src/network/bridge_driver.c:3828
 msgid "found lease without expiry-time"
 msgstr "वेळ-समाप्ति विना लिज आढळले"
 
-#: src/network/bridge_driver.c:3843
+#: src/network/bridge_driver.c:3845
 msgid "found lease without ip-address"
 msgstr "आयपि-पत्ता विना लिज आढळले"
 
-#: src/network/bridge_driver.c:4157
+#: src/network/bridge_driver.c:4159
 #, c-format
 msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses a bridge "
@@ -13961,18 +13961,18 @@ msgstr ""
 "नेटवर्क '%s' करिता <virtualport type='%s'> समर्थीत नाही, जे ब्रिज साधनाचा वापर "
 "करतात"
 
-#: src/network/bridge_driver.c:4182 src/network/bridge_driver.c:4335
+#: src/network/bridge_driver.c:4184 src/network/bridge_driver.c:4337
 #, c-format
 msgid ""
 "network '%s' requires exclusive access to interfaces, but none are available"
 msgstr "नेटवर्क '%s' ला इंटरफेसकरिता विशेष प्रवेश आवश्यक, परंतु काहिच उपल्बध नाही"
 
-#: src/network/bridge_driver.c:4207
+#: src/network/bridge_driver.c:4209
 #, c-format
 msgid "unrecognized driver name value %d  in network '%s'"
 msgstr "अनोळखी ड्राइव्हर नाव मूल्य %d, नेटवर्क '%s'मध्ये"
 
-#: src/network/bridge_driver.c:4231
+#: src/network/bridge_driver.c:4233
 #, c-format
 msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses an SR-IOV "
@@ -13981,7 +13981,7 @@ msgstr ""
 "नेटवर्क '%s' करिता <virtualport type='%s'> समर्थीत नाही, जे PCI पासथ्रूतर्फे SR-IOV "
 "वर्च्युअल फंक्शनचा वापर करते"
 
-#: src/network/bridge_driver.c:4282
+#: src/network/bridge_driver.c:4284
 #, c-format
 msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses a macvtap "
@@ -13990,13 +13990,13 @@ msgstr ""
 "नेटवर्क '%s' करिता <virtualport type='%s'> समर्थीत नाही, जे macvtap साधनाचा वापर "
 "करते"
 
-#: src/network/bridge_driver.c:4295
+#: src/network/bridge_driver.c:4297
 #, c-format
 msgid ""
 "network '%s' uses a direct mode, but has no forward dev and no interface pool"
 msgstr "नेटवर्क '%s' डाइरेक्ट मोडचा वापर करते, परंतु फारवर्ड dev व इंटरफेस पूल आढळले नाही"
 
-#: src/network/bridge_driver.c:4370
+#: src/network/bridge_driver.c:4372
 #, c-format
 msgid ""
 "an interface connecting to network '%s' is requesting a vlan tag, but that "
@@ -14005,7 +14005,7 @@ msgstr ""
 "नेटवर्क '%s' सह जोडणी करणारी इंटरफेस vlan टॅगकरिता विनंती करत आहे, जे या नेटवर्क "
 "प्रकारकरिता समर्थन पुरवत नाही"
 
-#: src/network/bridge_driver.c:4376
+#: src/network/bridge_driver.c:4378
 #, c-format
 msgid ""
 "an interface of type '%s' is requesting a vlan tag, but that is not "
@@ -14014,11 +14014,11 @@ msgstr ""
 "प्रकार '%s' सह जोडणी करणारी इंटरफेस vlan टॅगकरिता विनंती करत आहे, परंतु ते ह्या "
 "प्रकारच्या जोडणी प्रकारकरिता समर्थीत नाही"
 
-#: src/network/bridge_driver.c:4390
+#: src/network/bridge_driver.c:4392
 msgid "bandwidth settings are not supported for hostdev interfaces"
 msgstr ""
 
-#: src/network/bridge_driver.c:4485
+#: src/network/bridge_driver.c:4487
 #, c-format
 msgid ""
 "network '%s' uses a direct or hostdev mode, but has no forward dev and no "
@@ -14027,30 +14027,30 @@ msgstr ""
 "नेटवर्क '%s' डाइरेक्ट किंवा hostdev मोडचा वापर करते, परंतु फारवर्ड dev व इंटरफेस पूल "
 "आढळले नाही"
 
-#: src/network/bridge_driver.c:4497 src/network/bridge_driver.c:4677
+#: src/network/bridge_driver.c:4499 src/network/bridge_driver.c:4679
 msgid "the interface uses a direct mode, but has no source dev"
 msgstr "इंटरफेस डाइरेक्ट मोडचा वापर करते, परंतु सोअर्स dev आढळले नाही"
 
-#: src/network/bridge_driver.c:4514 src/network/bridge_driver.c:4693
+#: src/network/bridge_driver.c:4516 src/network/bridge_driver.c:4695
 #, c-format
 msgid "network '%s' doesn't have dev='%s' in use by domain"
 msgstr "नेटवर्क '%s' कडे डोमेनतर्फे वापरणीत असलेले dev='%s' नाही"
 
-#: src/network/bridge_driver.c:4531
+#: src/network/bridge_driver.c:4533
 #, c-format
 msgid "network '%s' claims dev='%s' is already in use by a different domain"
 msgstr "नेटवर्क '%s' dev='%s' असे ठरवतो, जे आधिपासून दुसऱ्या डोमेन अंतर्गत येते"
 
-#: src/network/bridge_driver.c:4542 src/network/bridge_driver.c:4704
+#: src/network/bridge_driver.c:4544 src/network/bridge_driver.c:4706
 msgid "the interface uses a hostdev mode, but has no hostdev"
 msgstr "इंटरफेस hostdev मोडचा वापर करतो, परंतु hostdev आढळले नाही"
 
-#: src/network/bridge_driver.c:4560 src/network/bridge_driver.c:4720
+#: src/network/bridge_driver.c:4562 src/network/bridge_driver.c:4722
 #, c-format
 msgid "network '%s' doesn't have PCI device %04x:%02x:%02x.%x in use by domain"
 msgstr "नेटवर्क '%s' कडे डोमेनतर्फे वापरण्याजोगी PCI साधन %04x:%02x:%02x.%x नाही"
 
-#: src/network/bridge_driver.c:4577
+#: src/network/bridge_driver.c:4579
 #, c-format
 msgid ""
 "network '%s' claims the PCI device at domain=%d bus=%d slot=%d function=%d "
@@ -14059,7 +14059,7 @@ msgstr ""
 "नेटवर्क '%s' PCI साधन domain=%d bus=%d slot=%d function=%d चा दावा करते, जे "
 "आधिपासून दुसऱ्या डोमेन अंतर्गत येते"
 
-#: src/network/bridge_driver.c:4665
+#: src/network/bridge_driver.c:4667
 #, c-format
 msgid ""
 "network '%s' uses a direct/hostdev mode, but has no forward dev and no "
@@ -14067,17 +14067,17 @@ msgid ""
 msgstr ""
 "नेटवर्क '%s' डाइरेक्ट/hostdev मोडचा वापर करते, परंतु फारवर्ड dev व इंटरफेस पूल आढळले नाही"
 
-#: src/network/bridge_driver.c:4803
+#: src/network/bridge_driver.c:4805
 #, c-format
 msgid "network '%s' doesn't have an IP address"
 msgstr ""
 
-#: src/network/bridge_driver.c:4825
+#: src/network/bridge_driver.c:4827
 #, c-format
 msgid "network '%s' has no associated interface or bridge"
 msgstr "नेटवर्क '%s' कडे संबंधित इंटरफेस किंवा ब्रिज नाही"
 
-#: src/network/bridge_driver.c:4960
+#: src/network/bridge_driver.c:4962
 #, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
@@ -14086,7 +14086,7 @@ msgstr ""
 "MAC पत्ता %sसह संवादवरील 'floor'चा अवैध वापर - नेटवर्क '%s'कडे इंबाउंड QoS संच आढळले "
 "नाही"
 
-#: src/network/bridge_driver.c:4984
+#: src/network/bridge_driver.c:4986
 #, c-format
 msgid ""
 "Cannot plug '%s' interface into '%s' because it would overcommit 'peak' on "
@@ -14095,7 +14095,7 @@ msgstr ""
 "'%s' इंटरफेसला '%s'मध्ये प्लग करणे अशक्य कारण नेटवर्क '%s' वर 'peak' खोडून पुन्हा लिहले "
 "जाईल"
 
-#: src/network/bridge_driver.c:4995
+#: src/network/bridge_driver.c:4997
 #, c-format
 msgid ""
 "Cannot plug '%s' interface into '%s' because it would overcommit 'average' "
@@ -14104,11 +14104,11 @@ msgstr ""
 "'%s' इंटरफेसला '%s'मध्ये प्लग करणे अशक्य कारण नेटवर्क '%s' वर 'average' खोडून पुन्हा "
 "लिहले जाईल"
 
-#: src/network/bridge_driver.c:5049
+#: src/network/bridge_driver.c:5051
 msgid "Could not generate next class ID"
 msgstr "पुढील क्लास ID निर्माण करण्यास अशक्य"
 
-#: src/network/bridge_driver.c:5111
+#: src/network/bridge_driver.c:5113
 #, c-format
 msgid "Cannot set bandwidth on interface '%s' of type %d"
 msgstr "संवाद '%s' वरील %d प्रकारचे बँडविड्थ ठरवणे अशक्य"
@@ -14217,7 +14217,7 @@ msgstr "libhal_get_all_devices अपयशी"
 #: src/node_device/node_device_hal.c:713 src/qemu/qemu_migration.c:2194
 #: src/qemu/qemu_migration.c:2647 src/qemu/qemu_migration.c:2652
 #: src/qemu/qemu_migration.c:2657 src/qemu/qemu_migration.c:2712
-#: src/qemu/qemu_migration.c:4748 src/qemu/qemu_process.c:1809
+#: src/qemu/qemu_migration.c:4748 src/qemu/qemu_process.c:1805
 #: src/util/virdbus.c:1569
 #, c-format
 msgid "%s: %s"
@@ -15527,139 +15527,139 @@ msgstr "%s करिता योग्य एम्युलेटर शोध
 msgid "unable to probe for add-fd"
 msgstr "add-fd करिता चौकशी करणे अशक्य"
 
-#: src/qemu/qemu_capabilities.c:2882
+#: src/qemu/qemu_capabilities.c:2865
 #, fuzzy, c-format
 msgid "unexpected root element <%s>, expecting <qemuCaps>"
 msgstr "अनपेक्षित रूट एलिमेंट <%s>, <qemuCaps> अपेक्षित"
 
-#: src/qemu/qemu_capabilities.c:2890
+#: src/qemu/qemu_capabilities.c:2873
 msgid "missing qemuctime in QEMU capabilities XML"
 msgstr "QEMU क्षमता XML अंतर्गत qemuctime आढळले नाही"
 
-#: src/qemu/qemu_capabilities.c:2897
+#: src/qemu/qemu_capabilities.c:2880
 msgid "missing selfctime in QEMU capabilities XML"
 msgstr "QEMU क्षमता XML अंतर्गत selfctime आढळले नाही"
 
-#: src/qemu/qemu_capabilities.c:2911 src/qemu/qemu_domain.c:1613
+#: src/qemu/qemu_capabilities.c:2894 src/qemu/qemu_domain.c:1624
 msgid "failed to parse qemu capabilities flags"
 msgstr "qemu क्षमता फ्लॅग्स् वाचणे अशक्य"
 
-#: src/qemu/qemu_capabilities.c:2919
+#: src/qemu/qemu_capabilities.c:2902
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "QEMU क्षमता कॅशे अंतर्गत फ्लॅग नाव आढळले नाही"
 
-#: src/qemu/qemu_capabilities.c:2925 src/qemu/qemu_domain.c:1626
+#: src/qemu/qemu_capabilities.c:2908 src/qemu/qemu_domain.c:1637
 #, c-format
 msgid "Unknown qemu capabilities flag %s"
 msgstr "अपरिचीत qemu क्षमता फ्लॅग %s"
 
-#: src/qemu/qemu_capabilities.c:2935 src/qemu/qemu_capabilities.c:2941
+#: src/qemu/qemu_capabilities.c:2918 src/qemu/qemu_capabilities.c:2924
 msgid "missing version in QEMU capabilities cache"
 msgstr "QEMU क्षमता कॅशे अंतर्गत आवृत्ती आढळली नाही"
 
-#: src/qemu/qemu_capabilities.c:2954
+#: src/qemu/qemu_capabilities.c:2937
 msgid "missing arch in QEMU capabilities cache"
 msgstr "QEMU क्षमता कॅशे अंतर्गत आर्क आढळले नाही"
 
-#: src/qemu/qemu_capabilities.c:2959
+#: src/qemu/qemu_capabilities.c:2942
 #, c-format
 msgid "unknown arch %s in QEMU capabilities cache"
 msgstr "QEMU क्षमता कॅशे अंतर्गत आपरिचीत आर्क %s"
 
-#: src/qemu/qemu_capabilities.c:2966
+#: src/qemu/qemu_capabilities.c:2949
 msgid "failed to parse qemu capabilities cpus"
 msgstr "qemu क्षमता cpus वाचण्यास अपयशी"
 
-#: src/qemu/qemu_capabilities.c:2978
+#: src/qemu/qemu_capabilities.c:2961
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr "QEMU क्षमता कॅशे अंतर्गत cpu नाव आढळले नाही"
 
-#: src/qemu/qemu_capabilities.c:2988
+#: src/qemu/qemu_capabilities.c:2971
 msgid "failed to parse qemu capabilities machines"
 msgstr "qemu क्षमता मशीन्स वाचण्यास अपयशी"
 
-#: src/qemu/qemu_capabilities.c:2999
+#: src/qemu/qemu_capabilities.c:2982
 msgid "missing machine name in QEMU capabilities cache"
 msgstr "QEMU क्षमता कॅशे अंतर्गत मशीन नाव आढळले नाही"
 
-#: src/qemu/qemu_capabilities.c:3008
+#: src/qemu/qemu_capabilities.c:2991
 msgid "malformed machine cpu count in QEMU capabilities cache"
 msgstr "QEMU क्षमता कॅशे अंतर्गत सदोषीत मशीन cpu प्रमाण"
 
-#: src/qemu/qemu_capabilities.c:3023
+#: src/qemu/qemu_capabilities.c:3006
 msgid "failed to parse qemu capabilities gic"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3039
+#: src/qemu/qemu_capabilities.c:3022
 msgid "missing GIC version in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3045
+#: src/qemu/qemu_capabilities.c:3028
 msgid "malformed GIC version in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3054
+#: src/qemu/qemu_capabilities.c:3037
 msgid "missing in-kernel GIC information in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3060
+#: src/qemu/qemu_capabilities.c:3043
 msgid "malformed in-kernel GIC information in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3070
+#: src/qemu/qemu_capabilities.c:3053
 msgid "missing emulated GIC information in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3076
+#: src/qemu/qemu_capabilities.c:3059
 msgid "malformed emulated GIC information in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3194
+#: src/qemu/qemu_capabilities.c:3177
 #, fuzzy, c-format
 msgid "Failed to save '%s' for '%s'"
 msgstr "'%s' ला '%s' करिता साठवण्यास अपयशी"
 
-#: src/qemu/qemu_capabilities.c:3231 src/qemu/qemu_capabilities.c:3301
+#: src/qemu/qemu_capabilities.c:3214 src/qemu/qemu_capabilities.c:3284
 #, fuzzy, c-format
 msgid "Unable to create directory '%s'"
 msgstr "डिरेक्ट्री '%s' निर्माण करणे अशक्य"
 
-#: src/qemu/qemu_capabilities.c:3314
+#: src/qemu/qemu_capabilities.c:3297
 #, fuzzy, c-format
 msgid "Unable to access cache '%s' for '%s'"
 msgstr "कॅशे '%s' करिता प्रवेश अशक्य, '%s' करिता"
 
-#: src/qemu/qemu_capabilities.c:3505
+#: src/qemu/qemu_capabilities.c:3488
 #, c-format
 msgid "Unknown QEMU arch %s"
 msgstr "अपरिचीत QEMU आर्क %s"
 
-#: src/qemu/qemu_capabilities.c:3769
+#: src/qemu/qemu_capabilities.c:3752
 #, c-format
 msgid "Failed to kill process %lld: %s"
 msgstr "प्रोसेस %lld: %s नष्ट करण्यास अपयशी"
 
-#: src/qemu/qemu_capabilities.c:3798
+#: src/qemu/qemu_capabilities.c:3781
 #, fuzzy, c-format
 msgid "Failed to probe capabilities for %s: %s"
 msgstr "%s: %s करिता क्षमता शोधण्यास अपयशी"
 
-#: src/qemu/qemu_capabilities.c:3825
+#: src/qemu/qemu_capabilities.c:3808
 #, c-format
 msgid "Cannot check QEMU binary %s"
 msgstr "QEMU बाइनरि %s तपासणे अशक्य"
 
-#: src/qemu/qemu_capabilities.c:3836
+#: src/qemu/qemu_capabilities.c:3819
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU बाइनरि %s चालवण्याजोगी नाही"
 
-#: src/qemu/qemu_capabilities.c:3854
+#: src/qemu/qemu_capabilities.c:3837
 #, c-format
 msgid "Failed to probe QEMU binary with QMP: %s"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3855 src/util/virdbus.c:1570
+#: src/qemu/qemu_capabilities.c:3838 src/util/virdbus.c:1570
 #: src/util/virerror.c:287 src/xenapi/xenapi_utils.c:269
 #: tools/virsh-domain-monitor.c:57 tools/vsh.c:290
 msgid "unknown error"
@@ -15681,8 +15681,8 @@ msgstr "ह्या यजमानवर CPU ट्युनिंग उप�
 msgid "Cannot setup cgroups until process is started"
 msgstr "प्रोसेस सुरू झाल्याशिवाय cgroups ची मांडणी अशक्य"
 
-#: src/qemu/qemu_cgroup.c:1076 src/qemu/qemu_process.c:2336
-#: src/qemu/qemu_process.c:4694
+#: src/qemu/qemu_cgroup.c:1076 src/qemu/qemu_process.c:2332
+#: src/qemu/qemu_process.c:4689
 msgid "cgroup cpu is required for scheduler tuning"
 msgstr "शेड्युलर ट्युनिंगकरिता cgroup cpu आवश्यक आहे"
 
@@ -15771,7 +15771,7 @@ msgstr ""
 msgid "Unexpected network protocol '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1088 src/qemu/qemu_command.c:1336
+#: src/qemu/qemu_command.c:1088 src/qemu/qemu_command.c:1335
 #: src/uml/uml_conf.c:415
 #, c-format
 msgid "unsupported disk type '%s'"
@@ -15828,62 +15828,62 @@ msgstr "'%s' करिता असमर्थीत डिस्क ड्र�
 msgid "cannot create virtual FAT disks in read-write mode"
 msgstr "read-write मोडमध्ये वर्च्युअल FAT डिस्कस् निर्माण करणे अशक्य आहे"
 
-#: src/qemu/qemu_command.c:1344
+#: src/qemu/qemu_command.c:1343
 msgid "unexpected address type for scsi disk"
 msgstr "scsi डिस्ककरिता अनपेक्षीत पत्ता प्रकार"
 
-#: src/qemu/qemu_command.c:1353
+#: src/qemu/qemu_command.c:1352
 msgid "SCSI controller only supports 1 bus"
 msgstr "SCSI कंट्रोलर फक्त 1 बस करिता समर्थन पुरवतो"
 
-#: src/qemu/qemu_command.c:1363
+#: src/qemu/qemu_command.c:1362
 msgid "unexpected address type for ide disk"
 msgstr "ide डिस्ककरिता अनपेक्षीत पत्ता प्रकार"
 
-#: src/qemu/qemu_command.c:1369 src/qemu/qemu_command.c:1385
+#: src/qemu/qemu_command.c:1368 src/qemu/qemu_command.c:1384
 #, c-format
 msgid "Only 1 %s controller is supported"
 msgstr "फक्त 1 %s कंट्रोलर समर्थीत आहे"
 
-#: src/qemu/qemu_command.c:1379
+#: src/qemu/qemu_command.c:1378
 msgid "unexpected address type for fdc disk"
 msgstr "fdc डिस्ककरिता अनपेक्षीत पत्ता प्रकार"
 
-#: src/qemu/qemu_command.c:1391
+#: src/qemu/qemu_command.c:1390
 #, c-format
 msgid "Only 1 %s bus is supported"
 msgstr "फक्त 1 %s बस समर्थीत आहे"
 
-#: src/qemu/qemu_command.c:1396
+#: src/qemu/qemu_command.c:1395
 msgid "target must be 0 for controller fdc"
 msgstr "कंट्रोलर fdc करिता लक्ष्य 0 असायला हवे"
 
-#: src/qemu/qemu_command.c:1461
+#: src/qemu/qemu_command.c:1460
 msgid "readonly ide disks are not supported"
 msgstr "फक्तवाचनीय ide डिस्क्स समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1466
+#: src/qemu/qemu_command.c:1465
 msgid "readonly sata disks are not supported"
 msgstr "फक्तवाचनीय sata डिस्क्स समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1474 src/xenconfig/xen_sxpr.c:1808
+#: src/qemu/qemu_command.c:1473 src/xenconfig/xen_sxpr.c:1808
 #: src/xenconfig/xen_xl.c:964 src/xenconfig/xen_xm.c:338
 msgid "transient disks not supported yet"
 msgstr "ट्रांजिएंट डिस्क्स् समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1499
+#: src/qemu/qemu_command.c:1498
 msgid "scsi-block 'lun' devices do not support the serial property"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1515
+#: src/qemu/qemu_command.c:1514
 msgid "disk cache mode 'directsync' is not supported by this QEMU"
 msgstr "डिस्क कॅशे मोड 'directsync' ह्या QEMU तर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1521
+#: src/qemu/qemu_command.c:1520
 msgid "disk cache mode 'unsafe' is not supported by this QEMU"
 msgstr "डिस्क कॅशे मोड 'unsafe' ह्या QEMU तर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1530
+#: src/qemu/qemu_command.c:1529
 msgid ""
 "native I/O needs either no disk cache or directsync cache mode, QEMU will "
 "fallback to aio=threads"
@@ -15891,357 +15891,357 @@ msgstr ""
 "नेटिव्ह I/O ला एकतर डिस्क कॅशे आवश्यक किंवा directsync कॅशे मोड आवश्यक असते, QEMU हे "
 "aio=threads करिता फॉलबॅक होईल"
 
-#: src/qemu/qemu_command.c:1547
+#: src/qemu/qemu_command.c:1546
 msgid "copy_on_read is not supported by this QEMU binary"
 msgstr "QEMU बाइनरीतर्फे copy_on_read समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1558
+#: src/qemu/qemu_command.c:1557
 msgid "discard is not supported by this QEMU binary"
 msgstr "ह्या QEMU बाइनरितर्फे डिसकार्ड समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1582
+#: src/qemu/qemu_command.c:1581
 msgid "detect_zeroes is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1618
+#: src/qemu/qemu_command.c:1617
 msgid "disk aio mode not supported with this QEMU binary"
 msgstr "QEMU बाइनरीसह डिस्क aio मोड समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1633 src/qemu/qemu_driver.c:17492
+#: src/qemu/qemu_command.c:1632 src/qemu/qemu_driver.c:17492
 #: src/qemu/qemu_driver.c:17654
 msgid "block I/O throttling not supported with this QEMU binary"
 msgstr "ह्या QEMU बाइनरिसह ब्लॉक I/O थ्रॉटलिंग समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1648
+#: src/qemu/qemu_command.c:1647
 #, fuzzy
 msgid ""
 "there are some block I/O throttling parameters that are not supported with "
 "this QEMU binary"
 msgstr "ह्या QEMU बाइनरिसह ब्लॉक I/O थ्रॉटलिंग समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1667
+#: src/qemu/qemu_command.c:1666
 #, c-format
 msgid "block I/O throttle limit must be no more than %llu using QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1758
+#: src/qemu/qemu_command.c:1757
 #, fuzzy
 msgid "IOThreads only available for virtio pci and virtio ccw disk"
 msgstr "फक्त virtio pci डिस्ककरिता IOThreads उपलब्ध आहे"
 
-#: src/qemu/qemu_command.c:1774
+#: src/qemu/qemu_command.c:1773
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1782
+#: src/qemu/qemu_command.c:1781
 #, c-format
 msgid "Disk iothread '%u' not defined in iothreadid"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1816 src/qemu/qemu_command.c:1945
+#: src/qemu/qemu_command.c:1815 src/qemu/qemu_command.c:1944
 msgid "target must be 0 for ide controller"
 msgstr "ide कंट्रोलरकरिता लक्ष्य 0 असायला हवे"
 
-#: src/qemu/qemu_command.c:1823
+#: src/qemu/qemu_command.c:1822
 msgid "Setting wwn for ide disk is not supported by this QEMU"
 msgstr "ह्या QEMU तर्फे ide डिस्ककरिता wwn ठरवणे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1850
+#: src/qemu/qemu_command.c:1849
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "हे QEMU lun पासथ्रुकरिता scsi-block समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:1859
+#: src/qemu/qemu_command.c:1858
 msgid "Setting wwn for scsi disk is not supported by this QEMU"
 msgstr "ह्या QEMU तर्फे scsi डिस्ककरिता wwn ठरवणे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1870
+#: src/qemu/qemu_command.c:1869
 msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
 msgstr "ह्या QEMU तर्फे scsi डिस्ककरिता विक्रेता किंवा उत्पादन ठरवणे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:1902
+#: src/qemu/qemu_command.c:1901
 msgid "target must be 0 for controller model 'lsilogic'"
 msgstr "कंट्रोलर मॉडल 'lsilogic' करिता लक्ष्य 0 असायला हवे"
 
-#: src/qemu/qemu_command.c:1915
+#: src/qemu/qemu_command.c:1914
 msgid "This QEMU doesn't support target greater than 7"
 msgstr "लक्ष्यकरिता 7 पेक्षा जास्त हे QEMU लक्ष्य समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:1923
+#: src/qemu/qemu_command.c:1922
 msgid "This QEMU only supports both bus and unit equal to 0"
 msgstr "हे QEMU फक्त दोंही 0 सह समांतर बस व युनिटकरिता समर्थन पुरवते"
 
-#: src/qemu/qemu_command.c:1940
+#: src/qemu/qemu_command.c:1939
 msgid "bus must be 0 for ide controller"
 msgstr "ide कंट्रोलरकरिता बस 0 असायला हवे"
 
-#: src/qemu/qemu_command.c:2004
+#: src/qemu/qemu_command.c:2003
 msgid "unexpected address type for usb disk"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2009
+#: src/qemu/qemu_command.c:2008
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr "हे QEMU '-device usb-storage' करिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:2022
+#: src/qemu/qemu_command.c:2021
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "उपकरण सेटअपसह असमर्थीत डिस्क बस '%s'"
 
-#: src/qemu/qemu_command.c:2063
+#: src/qemu/qemu_command.c:2062
 msgid ""
 "This QEMU doesn't support setting the removable flag of USB storage devices"
 msgstr ""
 "हे QEMU, USB स्टोरेज साधनांच्या काढून टाकण्याजोगी फ्लॅग सेट करणेकरिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:2125
+#: src/qemu/qemu_command.c:2124
 msgid "PowerPC pseries machines do not support floppy device"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2229
+#: src/qemu/qemu_command.c:2228
 msgid "only supports mount filesystem type"
 msgstr "फक्त माउंट फाइलप्रणाली प्रकारकरिता समर्थन पुरवतो"
 
-#: src/qemu/qemu_command.c:2235
+#: src/qemu/qemu_command.c:2234
 msgid "Filesystem driver type not supported"
 msgstr "फाइलसिस्टम ड्राइव्हर प्रकार समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:2254
+#: src/qemu/qemu_command.c:2253
 msgid "only supports passthrough accessmode"
 msgstr "फक्त पासथ्रु ॲक्सेसमोडकरिता समर्थन पुरवतो"
 
-#: src/qemu/qemu_command.c:2264
+#: src/qemu/qemu_command.c:2263
 msgid "filesystem writeout not supported"
 msgstr "फाइलप्रणाली राइटआउट समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:2277
+#: src/qemu/qemu_command.c:2276
 msgid "readonly filesystem is not supported by this QEMU binary"
 msgstr "ह्या QEMU बाइनरितर्फे फक्त वाचनीय फाइलप्रणाली समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:2303
+#: src/qemu/qemu_command.c:2302
 msgid "can only passthrough directories"
 msgstr "फक्त डिरेक्ट्रिज् पासथ्रु करणे शक्य आहे"
 
-#: src/qemu/qemu_command.c:2340
+#: src/qemu/qemu_command.c:2339
 msgid "filesystem passthrough not supported by this QEMU"
 msgstr "फाइलप्रणाली पासथ्रु ह्या QEMU तर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:2404
+#: src/qemu/qemu_command.c:2403
 #, fuzzy
 msgid "no model provided for USB controller"
 msgstr "scsi कंट्रोलरकरिता मॉडल ओळखणे अशक्य"
 
-#: src/qemu/qemu_command.c:2413 src/qemu/qemu_command.c:4131
+#: src/qemu/qemu_command.c:2412 src/qemu/qemu_command.c:4138
 #, c-format
 msgid "%s not supported in this QEMU binary"
 msgstr "QEMU बाइनरिमध्ये %s समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:2423
+#: src/qemu/qemu_command.c:2422
 #, c-format
 msgid "usb controller type %s doesn't support 'ports' with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2467
+#: src/qemu/qemu_command.c:2466
 msgid "IOThreads for virtio-scsi not supported for this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2474
+#: src/qemu/qemu_command.c:2473
 #, c-format
 msgid "IOThreads only supported for virtio-scsi controllers model is '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2483
+#: src/qemu/qemu_command.c:2482
 msgid "IOThreads only available for virtio pci and virtio ccw controllers"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2491
+#: src/qemu/qemu_command.c:2490
 #, c-format
 msgid "controller iothread '%u' not defined in iothreadid"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2523
+#: src/qemu/qemu_command.c:2522
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "फक्त virtio-scsi कंट्रोलरतर्फे 'queues' समर्थीत आहे"
 
-#: src/qemu/qemu_command.c:2528
+#: src/qemu/qemu_command.c:2527
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr "'cmd_per_lun' फक्त virtio-scsi कंट्रोलरमार्फत समर्थीत आहे"
 
-#: src/qemu/qemu_command.c:2533
+#: src/qemu/qemu_command.c:2532
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "फक्त virtio-scsi कंट्रोलरतर्फे 'max_sectors' समर्थीत आहे"
 
-#: src/qemu/qemu_command.c:2538
+#: src/qemu/qemu_command.c:2537
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2587 src/qemu/qemu_domain_address.c:86
+#: src/qemu/qemu_command.c:2586 src/qemu/qemu_domain_address.c:86
 #, c-format
 msgid "Unsupported controller model: %s"
 msgstr "असमर्थीत कंट्रोलर मॉडल: %s"
 
-#: src/qemu/qemu_command.c:2626
+#: src/qemu/qemu_command.c:2625
 msgid "SATA is not supported with this QEMU binary"
 msgstr "QEMU बाइनरीसह SATA समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:2646
+#: src/qemu/qemu_command.c:2645
 msgid "wrong function called for pci-root/pcie-root"
 msgstr "pci-root/pcie-root करिता चुकिचे फंक्शन कॉल केले"
 
-#: src/qemu/qemu_command.c:2651
+#: src/qemu/qemu_command.c:2650
 #, c-format
 msgid "index for pci controllers of model '%s' must be > 0"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2661
+#: src/qemu/qemu_command.c:2660
 msgid "autogenerated pci-bridge options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2668
+#: src/qemu/qemu_command.c:2667
 #, c-format
 msgid "unknown pci-bridge model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2675
+#: src/qemu/qemu_command.c:2674
 #, c-format
 msgid "PCI controller model name '%s' is not valid for a pci-bridge"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2682
+#: src/qemu/qemu_command.c:2681
 msgid "the pci-bridge controller is not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2695
+#: src/qemu/qemu_command.c:2694
 msgid "autogenerated pci-expander-bus options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2702
+#: src/qemu/qemu_command.c:2701
 #, c-format
 msgid "unknown pci-expander-bus model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2709
+#: src/qemu/qemu_command.c:2708
 #, c-format
 msgid "PCI controller model name '%s' is not valid for a pci-expander-bus"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2716
+#: src/qemu/qemu_command.c:2715
 msgid "the pxb controller is not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2731
+#: src/qemu/qemu_command.c:2730
 msgid "autogenerated dmi-to-pci-bridge options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2738
+#: src/qemu/qemu_command.c:2737
 #, c-format
 msgid "unknown dmi-to-pci-bridge model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2745
+#: src/qemu/qemu_command.c:2744
 #, c-format
 msgid "PCI controller model name '%s' is not valid for a dmi-to-pci-bridge"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2752
+#: src/qemu/qemu_command.c:2751
 msgid ""
 "the dmi-to-pci-bridge (i82801b11-bridge) controller is not supported in this "
 "QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2762
+#: src/qemu/qemu_command.c:2761
 msgid "autogenerated pcie-root-port options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2768
+#: src/qemu/qemu_command.c:2767
 #, c-format
 msgid "unknown pcie-root-port model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2775
+#: src/qemu/qemu_command.c:2774
 #, c-format
 msgid "PCI controller model name '%s' is not valid for a pcie-root-port"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2782
+#: src/qemu/qemu_command.c:2781
 msgid ""
 "the pcie-root-port (ioh3420) controller is not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2795
+#: src/qemu/qemu_command.c:2794
 msgid "autogenerated pcie-switch-upstream-port options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2801
+#: src/qemu/qemu_command.c:2800
 #, c-format
 msgid "unknown pcie-switch-upstream-port model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2808
+#: src/qemu/qemu_command.c:2807
 #, c-format
 msgid ""
 "PCI controller model name '%s' is not valid for a pcie-switch-upstream-port"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2815
+#: src/qemu/qemu_command.c:2814
 msgid ""
 "the pcie-switch-upstream-port (x3130-upstream) controller is not supported "
 "in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2828
+#: src/qemu/qemu_command.c:2827
 msgid "autogenerated pcie-switch-downstream-port options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2836
+#: src/qemu/qemu_command.c:2835
 #, c-format
 msgid "unknown pcie-switch-downstream-port model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2843
+#: src/qemu/qemu_command.c:2842
 #, c-format
 msgid ""
 "PCI controller model name '%s' is not valid for a pcie-switch-downstream-port"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2850
+#: src/qemu/qemu_command.c:2849
 msgid ""
 "The pcie-switch-downstream-port (xio3130-downstream) controller is not "
 "supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2864
+#: src/qemu/qemu_command.c:2863
 msgid "autogenerated pcie-expander-bus options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2871
+#: src/qemu/qemu_command.c:2870
 #, c-format
 msgid "unknown pcie-expander-bus model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2878
+#: src/qemu/qemu_command.c:2877
 #, c-format
 msgid "PCI controller model name '%s' is not valid for a pcie-expander-bus"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2885
+#: src/qemu/qemu_command.c:2884
 msgid "the pxb-pcie controller is not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2908
+#: src/qemu/qemu_command.c:2907
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2912
+#: src/qemu/qemu_command.c:2911
 msgid "IDE controllers are unsupported for this QEMU binary or machine type"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2918
+#: src/qemu/qemu_command.c:2917
 #, c-format
 msgid "Unsupported controller type: %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3031
+#: src/qemu/qemu_command.c:3030
 msgid "Multiple legacy USB controllers are not supported"
 msgstr "एकापेक्षा जास्त USB कंट्रोलर्स् समर्थीत नाही"
 
@@ -16252,176 +16252,181 @@ msgid ""
 "NUMA nodes configured"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3192 src/qemu/qemu_command.c:7180
+#: src/qemu/qemu_command.c:3193 src/qemu/qemu_command.c:7187
 #, fuzzy, c-format
 msgid "Unable to find any usable hugetlbfs mount for %llu KiB"
 msgstr "%llu KiB करिता वापरण्याजोगी hugetlbfs माउंट आढळले नाही"
 
-#: src/qemu/qemu_command.c:3231
+#: src/qemu/qemu_command.c:3203 src/qemu/qemu_command.c:7163
+msgid "hugetlbfs filesystem is not mounted or disabled by administrator config"
+msgstr ""
+"hugetlbfs फाइलप्रणाली माउंट केली जात नाही किंवा प्रशासक config तर्फे बंद केली जाते"
+
+#: src/qemu/qemu_command.c:3238
 msgid "Shared memory mapping is supported only with hugepages"
 msgstr "फक्त ह्युजपेजेससह शेअर्ड मेमरि मॅपिंग समर्थीत केली जाते"
 
-#: src/qemu/qemu_command.c:3270
+#: src/qemu/qemu_command.c:3277
 msgid "this qemu doesn't support the memory-backend-file object"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3276
+#: src/qemu/qemu_command.c:3283
 msgid "this qemu doesn't support the memory-backend-ram object"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3350
+#: src/qemu/qemu_command.c:3357
 msgid "memory device alias is not assigned"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3380
+#: src/qemu/qemu_command.c:3387
 msgid "missing alias for memory device"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3478
+#: src/qemu/qemu_command.c:3485
 msgid "unrecognized virtio-net-pci 'tx' option"
 msgstr "अनोळखी virtio-net-pci 'tx' पर्याय"
 
-#: src/qemu/qemu_command.c:3483
+#: src/qemu/qemu_command.c:3490
 msgid "virtio-net-pci 'tx' option not supported in this QEMU binary"
 msgstr "virtio-net-pci 'tx' पर्याय ह्या QEMU बाइनरिमध्ये समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:3599 src/xenconfig/xen_sxpr.c:1856
+#: src/qemu/qemu_command.c:3606 src/xenconfig/xen_sxpr.c:1856
 #, c-format
 msgid "scripts are not supported on interfaces of type %s"
 msgstr "प्रकार %s च्या इंटरफेसवर स्क्रिप्टस् समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:3720
+#: src/qemu/qemu_command.c:3727
 msgid "missing watchdog model"
 msgstr "न आढळलेले वॉचडॉग मॉडेल"
 
-#: src/qemu/qemu_command.c:3771
+#: src/qemu/qemu_command.c:3778
 msgid "invalid watchdog action"
 msgstr "अवैध वॉचडॉग कृती"
 
-#: src/qemu/qemu_command.c:3796
+#: src/qemu/qemu_command.c:3803
 #, c-format
 msgid ""
 "Memory balloon device type '%s' is not supported by this version of qemu"
 msgstr "मेमरि बलून साधन प्रकार '%s' qemu च्या ह्या आवृत्तीतर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:3813
+#: src/qemu/qemu_command.c:3820
 #, fuzzy, c-format
 msgid "memballoon unsupported with address type '%s'"
 msgstr "पत्ता प्रकार '%s'सह असमर्थीत memballoon"
 
-#: src/qemu/qemu_command.c:3825
+#: src/qemu/qemu_command.c:3832
 msgid "deflate-on-oom is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3854
+#: src/qemu/qemu_command.c:3861
 msgid "nvram address type must be spaprvio"
 msgstr "nvram पत्ता प्रकार spaprvio पाहिजे"
 
-#: src/qemu/qemu_command.c:3880
+#: src/qemu/qemu_command.c:3887
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "nvram साधन ह्या QEMU बाइनरितर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:3895
+#: src/qemu/qemu_command.c:3902
 msgid "nvram device is only supported for PPC64"
 msgstr "nvram साधन फक्त PPC64करिता समर्थीत आहे"
 
-#: src/qemu/qemu_command.c:3917
+#: src/qemu/qemu_command.c:3924
 #, c-format
 msgid "unsupported address type %s for virtio input device"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3926
+#: src/qemu/qemu_command.c:3933
 msgid "virtio-mouse is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3934
+#: src/qemu/qemu_command.c:3941
 msgid "virtio-tablet is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3942
+#: src/qemu/qemu_command.c:3949
 msgid "virtio-keyboard is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3950
+#: src/qemu/qemu_command.c:3957
 msgid "virtio-input-host is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4062
+#: src/qemu/qemu_command.c:4069
 msgid "usb-audio controller is not supported by this QEMU binary"
 msgstr "या QEMU बाइनरिमार्फत usb-audio कंट्रोलर समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:4071
+#: src/qemu/qemu_command.c:4078
 msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
 msgstr "या QEMU बाइनरितर्फे ich9-intel-hda ऑडिओ कंट्रोलर समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:4082
+#: src/qemu/qemu_command.c:4089
 #, fuzzy, c-format
 msgid "sound card model '%s' is not supported by qemu"
 msgstr "साउंड कार्ड मॉडेल '%s' qemu तर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:4219 src/qemu/qemu_command.c:4385
+#: src/qemu/qemu_command.c:4226 src/qemu/qemu_command.c:4392
 #, c-format
 msgid "video type %s is not supported with QEMU"
 msgstr "चलचित्र प्रकार %s QEMU सह समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:4226 src/qemu/qemu_domain_address.c:1249
+#: src/qemu/qemu_command.c:4233 src/qemu/qemu_domain_address.c:1249
 msgid "non-primary video device must be type of 'qxl'"
 msgstr "विना-प्राथमिक व्हिडीओ साधनाचे प्रकार 'qxl' असे पाहिजे"
 
-#: src/qemu/qemu_command.c:4232
+#: src/qemu/qemu_command.c:4239
 msgid "only one video card is currently supported"
 msgstr "फक्त एकच चलचित्र कार्ड सध्या समर्थीत आहे"
 
-#: src/qemu/qemu_command.c:4243
+#: src/qemu/qemu_command.c:4250
 msgid "qemu does not support the accel2d setting"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4251
+#: src/qemu/qemu_command.c:4258
 #, c-format
 msgid "%s 3d acceleration is not supported"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4263 src/qemu/qemu_command.c:4414
+#: src/qemu/qemu_command.c:4270 src/qemu/qemu_command.c:4421
 #, c-format
 msgid "value for 'vram' must be less than '%u'"
 msgstr "'vram' करिता मूल्य '%u' पेक्षा कमी पाहिजे"
 
-#: src/qemu/qemu_command.c:4269 src/qemu/qemu_command.c:4420
+#: src/qemu/qemu_command.c:4276 src/qemu/qemu_command.c:4427
 #, c-format
 msgid "value for 'ram' must be less than '%u'"
 msgstr "'ram' करिता मूल्य '%u' पेक्षा कमी पाहिजे"
 
-#: src/qemu/qemu_command.c:4315
+#: src/qemu/qemu_command.c:4322
 #, fuzzy
 msgid "value for 'vram' must be at least 1 MiB (1024 KiB)"
 msgstr "'vram' करिता मूल्य '%u' पेक्षा कमी पाहिजे"
 
-#: src/qemu/qemu_command.c:4378
+#: src/qemu/qemu_command.c:4385
 msgid "This QEMU does not support QXL graphics adapters"
 msgstr "ह्या QEMU मध्ये QXL ग्राफिक्स् अडॅप्टर्स् समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:4458 src/qemu/qemu_domain.c:2657
+#: src/qemu/qemu_command.c:4465 src/qemu/qemu_domain.c:2668
 #, fuzzy
 msgid "value for 'vgamem' must be at least 1 MiB (1024 KiB)"
 msgstr "'vram' करिता मूल्य '%u' पेक्षा कमी पाहिजे"
 
-#: src/qemu/qemu_command.c:4473
+#: src/qemu/qemu_command.c:4480
 #, c-format
 msgid "video type %s is only valid as primary video card"
 msgstr "व्हिडिओ प्रकार %s फक्त प्राइमरि व्हिडिओ कार्ड म्हणून वैध आहे"
 
-#: src/qemu/qemu_command.c:4508
+#: src/qemu/qemu_command.c:4515
 #, c-format
 msgid "Failed opening %s"
 msgstr "%s उघडणे अशक्य"
 
-#: src/qemu/qemu_command.c:4542
+#: src/qemu/qemu_command.c:4549
 #, fuzzy, c-format
 msgid "invalid PCI passthrough type '%s'"
 msgstr "अवैध PCI पासथ्रु प्रकार '%s'"
 
-#: src/qemu/qemu_command.c:4551
+#: src/qemu/qemu_command.c:4558
 #, fuzzy, c-format
 msgid ""
 "non-zero domain='%.4x' in host device PCI address not supported in this QEMU "
@@ -16430,616 +16435,611 @@ msgstr ""
 " विना-शून्य domain='%.4x' यजमान, साधन PCI पत्ता अंतर्गत, या QEMU बाइनरिमध्ये समर्थीत "
 "नाही"
 
-#: src/qemu/qemu_command.c:4592
+#: src/qemu/qemu_command.c:4599
 msgid "USB host device is missing bus/device information"
 msgstr "USB यजमान उपकरणात बस/उपकरण विषयी माहिती आढळली नाही"
 
-#: src/qemu/qemu_command.c:4628
+#: src/qemu/qemu_command.c:4635
 #, c-format
 msgid "hub type %s not supported"
 msgstr "हब प्रकार %s समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:4635
+#: src/qemu/qemu_command.c:4642
 msgid "usb-hub not supported by QEMU binary"
 msgstr "QEMU बाइनरीतर्फे usb-hub समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:4768
+#: src/qemu/qemu_command.c:4775
 msgid ""
 "target must be 0 for scsi host device if its controller model is 'lsilogic'"
 msgstr "कंट्रोलर प्रतिकृती 'lsilogic' असल्यास scsi यजमान साधनकरिता लक्ष्य 0 पाहिजे"
 
-#: src/qemu/qemu_command.c:4775
+#: src/qemu/qemu_command.c:4782
 msgid ""
 "unit must be not more than 7 for scsi host device if its controller model is "
 "'lsilogic'"
 msgstr ""
 "कंट्रोलर प्रतिकृती 'lsilogic' असल्यास scsi यजमान साधनकरिता युनिट ७ पेक्षा जास्त नसावे"
 
-#: src/qemu/qemu_command.c:4905
+#: src/qemu/qemu_command.c:4912
 msgid "append not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:4966
+#: src/qemu/qemu_command.c:4973
 msgid "spicevmc not supported in this QEMU binary"
 msgstr "QEMU बाइनरिमध्ये spicevmc समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:4976
+#: src/qemu/qemu_command.c:4983
 msgid "spiceport not supported in this QEMU binary"
 msgstr "spiceport या QEMU बाइनरिमध्ये समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:4993 src/qemu/qemu_command.c:5172
+#: src/qemu/qemu_command.c:5000 src/qemu/qemu_command.c:5179
 msgid "logfile not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5032
+#: src/qemu/qemu_command.c:5039
 msgid ""
 "booting from assigned devices is only supported for PCI, USB and SCSI devices"
 msgstr "PCI, USB व SCSI साधनांकरिताच वाटप केलेल्या साधनांपासून बूट करणे समर्थीत आहे"
 
-#: src/qemu/qemu_command.c:5042
+#: src/qemu/qemu_command.c:5049
 msgid ""
 "booting from PCI devices assigned with VFIO is not supported with this "
 "version of qemu"
 msgstr "qemuच्या ह्या आवृत्तीसह VFIOसह वाटप केलेल्या PCI साधनांपासून बूट करणे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:5050
+#: src/qemu/qemu_command.c:5057
 msgid ""
 "booting from assigned PCI devices is not supported with this version of qemu"
 msgstr "वाटप केलेल्या PCI साधनांपासून बूट करणे qemu च्या ह्या आवृत्तीतर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:5059
+#: src/qemu/qemu_command.c:5066
 msgid ""
 "booting from assigned USB devices is not supported with this version of qemu"
 msgstr "वाटप केलेल्या USB साधनांपासून बूट करणे qemuच्या ह्या आवृत्तीतर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:5067
+#: src/qemu/qemu_command.c:5074
 msgid ""
 "booting from assigned SCSI devices is not supported with this version of qemu"
 msgstr "qemuच्या ह्या आवृत्तीसह वाटप केलेल्या SCSI साधनांसह बूट करणे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:5094 src/qemu/qemu_hotplug.c:1318
+#: src/qemu/qemu_command.c:5101 src/qemu/qemu_hotplug.c:1318
 msgid "VFIO PCI device assignment is not supported by this version of qemu"
 msgstr "VFIO PCI साधन वाटप qemuच्या ह्या आवृत्तीसह समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:5155 src/qemu/qemu_hotplug.c:2055
+#: src/qemu/qemu_command.c:5162 src/qemu/qemu_hotplug.c:2056
 msgid "SCSI passthrough is not supported by this version of qemu"
 msgstr "SCSI पासथ्रु qemuच्या ह्या आवृत्तीसह समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:5333
+#: src/qemu/qemu_command.c:5340
 msgid "Cannot use virtio serial for parallel/serial devices"
 msgstr "पॅरलल/सिरिअल साधनांकरिता virtio सिरिअल वापरणे अशक्य"
 
-#: src/qemu/qemu_command.c:5343
+#: src/qemu/qemu_command.c:5350
 msgid "virtio serial device has invalid address type"
 msgstr "virtio सिरीअल उपकरणात अवैध पत्ता प्रकार आढळले"
 
-#: src/qemu/qemu_command.c:5362
+#: src/qemu/qemu_command.c:5369
 #, c-format
 msgid "Unsupported spicevmc target name '%s'"
 msgstr "असमर्थीत spicevmc लक्ष्य नाव '%s'"
 
-#: src/qemu/qemu_command.c:5406
+#: src/qemu/qemu_command.c:5413
 msgid "Cannot use slcp with devices other than console"
 msgstr "कंसोलवगळता slcpचा वापर इतर साधनांशी शक्य नाही"
 
-#: src/qemu/qemu_command.c:5463
+#: src/qemu/qemu_command.c:5470
 msgid "this qemu doesn't support the rng-random backend"
 msgstr "हे qemu rng-random बॅकएंडकरिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:5478
+#: src/qemu/qemu_command.c:5485
 msgid "this qemu doesn't support the rng-egd backend"
 msgstr "हे qemu rng-egd बॅकएंडकरिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:5496
+#: src/qemu/qemu_command.c:5503
 msgid "unknown rng-random backend"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5542
+#: src/qemu/qemu_command.c:5549
 #, fuzzy, c-format
 msgid "this qemu doesn't support RNG device type '%s'"
 msgstr "हे qemu RNG साधन प्रकार '%s'करिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:5600
+#: src/qemu/qemu_command.c:5607
 msgid "RNG device is missing alias"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5766
+#: src/qemu/qemu_command.c:5773
 #, c-format
 msgid "the QEMU binary %s does not support smbios settings"
 msgstr "QEMU बाइनरि %s smbios सेटिंग्स् करिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:5784
+#: src/qemu/qemu_command.c:5791
 #, c-format
 msgid "Domain '%s' sysinfo are not available"
 msgstr "डोमेन '%s' sysinfo उपलब्ध नाही"
 
-#: src/qemu/qemu_command.c:5807
+#: src/qemu/qemu_command.c:5814
 msgid "qemu does not support more than one entry to Type 2 in SMBIOS table"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5835
+#: src/qemu/qemu_command.c:5842
 msgid "qemu does not support SGA"
 msgstr "qemu SGA करिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:5840
+#: src/qemu/qemu_command.c:5847
 msgid "need at least one serial port to use SGA"
 msgstr "SGA वापरण्यासाठी किमान एक सिरिअल पोर्ट"
 
-#: src/qemu/qemu_command.c:5927
+#: src/qemu/qemu_command.c:5934
 #, c-format
 msgid "unsupported rtc timer track '%s'"
 msgstr "असमर्थीत rtc टाइमर ट्रॅक '%s'"
 
-#: src/qemu/qemu_command.c:5951
+#: src/qemu/qemu_command.c:5958
 #, c-format
 msgid "unsupported rtc timer tickpolicy '%s'"
 msgstr "असमर्थीत rtc टाइमर टिकपॉलिसि '%s'"
 
-#: src/qemu/qemu_command.c:6016
+#: src/qemu/qemu_command.c:6023
 #, c-format
 msgid "unsupported timer type (name) '%s'"
 msgstr "असमर्थीत टाइमर प्रकार (नाव) '%s'"
 
-#: src/qemu/qemu_command.c:6042 src/qemu/qemu_command.c:6053
+#: src/qemu/qemu_command.c:6049 src/qemu/qemu_command.c:6060
 #, c-format
 msgid "unsupported rtc tickpolicy '%s'"
 msgstr "असमर्थीत rtc टिकपॉलिसि '%s'"
 
-#: src/qemu/qemu_command.c:6081 src/qemu/qemu_command.c:6090
+#: src/qemu/qemu_command.c:6088 src/qemu/qemu_command.c:6097
 #, c-format
 msgid "unsupported pit tickpolicy '%s'"
 msgstr "असमर्थीत pit टिकपॉलिसि '%s'"
 
-#: src/qemu/qemu_command.c:6112
+#: src/qemu/qemu_command.c:6119
 msgid "hpet timer is not supported"
 msgstr "hpet टाइमर समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:6167
+#: src/qemu/qemu_command.c:6174
 msgid "setting ACPI S3 not supported"
 msgstr "ACPI S3 ठरवणे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:6184
+#: src/qemu/qemu_command.c:6191
 msgid "setting ACPI S4 not supported"
 msgstr "ACPI S4 ठरवणे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:6218
+#: src/qemu/qemu_command.c:6225
 msgid "hypervisor lacks deviceboot feature"
 msgstr "हायपरवाइजरकडे डिव्हाइसबूट गुणविशेष नाही"
 
-#: src/qemu/qemu_command.c:6266
+#: src/qemu/qemu_command.c:6273
 msgid "reboot timeout is not supported by this QEMU binary"
 msgstr "ह्या QEMU बाइनरिसह पुनःबूट वेळसमाप्ति समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:6279
+#: src/qemu/qemu_command.c:6286
 msgid "splash timeout is not supported by this QEMU binary"
 msgstr "QEMU बाइनरिमार्फत splash वेळसमाप्ति समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:6322
+#: src/qemu/qemu_command.c:6329
 msgid "dtb is not supported with this QEMU binary"
 msgstr "QEMU बाइनरीसह dtb समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:6356
+#: src/qemu/qemu_command.c:6363
 #, c-format
 msgid "IOMMU device: '%s' is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6363
+#: src/qemu/qemu_command.c:6370
 #, c-format
 msgid "IOMMU device: '%s' is only supported with Q35 machines"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6406
+#: src/qemu/qemu_command.c:6413
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr "64-बिट PCI होल सेटिंग फक्त रूट PCI कंट्रोलर्सकरिताच आहे"
 
-#: src/qemu/qemu_command.c:6413
+#: src/qemu/qemu_command.c:6420
 #, c-format
 msgid "Setting the 64-bit PCI hole size is not supported for machine '%s'"
 msgstr "मशीन '%s' करिता 64-बिट PCI होल आकार समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:6419
+#: src/qemu/qemu_command.c:6426
 msgid "64-bit PCI hole size setting is not supported with this QEMU binary"
 msgstr "या QEMU बाइनरिसह 64-बिट PCI होल आकार सेटिंग समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:6469
+#: src/qemu/qemu_command.c:6476
 msgid "CPU specification not supported by hypervisor"
 msgstr "CPU निर्देशन ह्या हायपरवाइजरतर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:6499
+#: src/qemu/qemu_command.c:6506
 #, c-format
 msgid ""
 "guest and host CPU are not compatible: %s; try using '%s-noTSX' CPU model"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6504
+#: src/qemu/qemu_command.c:6511
 #, c-format
 msgid "guest and host CPU are not compatible: %s"
 msgstr "अतिथी व यजमान CPU सहत्व नाही: %s"
 
-#: src/qemu/qemu_command.c:6511
+#: src/qemu/qemu_command.c:6518
 #, c-format
 msgid ""
 "guest CPU is not compatible with host CPU; try using '%s-noTSX' CPU model"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6516
+#: src/qemu/qemu_command.c:6523
 msgid "guest CPU is not compatible with host CPU"
 msgstr "अतिथी CPU यजमान CPU सह सहत्व नाही"
 
-#: src/qemu/qemu_command.c:6545
+#: src/qemu/qemu_command.c:6552
 #, c-format
 msgid "CPU mode '%s' is only supported with kvm"
 msgstr "kvm तर्फे CPU मोड '%s' समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:6555
+#: src/qemu/qemu_command.c:6562
 msgid ""
 "QEMU binary does not support CPU host-passthrough for armv7l on aarch64 host"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6838
+#: src/qemu/qemu_command.c:6845
 msgid "the QEMU binary does not support kqemu"
 msgstr "QEMU बाइनरि kqemu करिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:6846
+#: src/qemu/qemu_command.c:6853
 msgid "the QEMU binary does not support kvm"
 msgstr "QEMU बाइनरि kvm करिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:6857
+#: src/qemu/qemu_command.c:6864
 #, fuzzy, c-format
 msgid "the QEMU binary does not support %s"
 msgstr "QEMU बाइनरि %s करिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:6877
+#: src/qemu/qemu_command.c:6884
 #, c-format
 msgid "%s is not available with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6954 src/qemu/qemu_command.c:7020
+#: src/qemu/qemu_command.c:6961 src/qemu/qemu_command.c:7027
 msgid "dump-guest-core is not available with this QEMU binary"
 msgstr "ह्या QEMU बाइनरितर्फे dump-guest-core अनुपलब्ध आहे"
 
-#: src/qemu/qemu_command.c:6961 src/qemu/qemu_command.c:7032
+#: src/qemu/qemu_command.c:6968 src/qemu/qemu_command.c:7039
 msgid "disable shared memory is not available with this QEMU binary"
 msgstr "ह्या QEMU बाइनरितर्फे असमर्थीत शेअर्ड मेमरि अनुपलब्ध आहे"
 
-#: src/qemu/qemu_command.c:6970
+#: src/qemu/qemu_command.c:6977
 msgid "key wrap support is not available with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:6997
+#: src/qemu/qemu_command.c:7004
 msgid "vmport is not available with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7009
+#: src/qemu/qemu_command.c:7016
 #, fuzzy
 msgid "smm is not available with this QEMU binary"
 msgstr "ह्या QEMU बाइनरितर्फे dump-guest-core अनुपलब्ध आहे"
 
-#: src/qemu/qemu_command.c:7048
+#: src/qemu/qemu_command.c:7055
 msgid "gic-version option is available only for ARM virt machine"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7059
+#: src/qemu/qemu_command.c:7066
 msgid "gic-version option is not available with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7156
-msgid "hugetlbfs filesystem is not mounted or disabled by administrator config"
-msgstr ""
-"hugetlbfs फाइलप्रणाली माउंट केली जात नाही किंवा प्रशासक config तर्फे बंद केली जाते"
-
-#: src/qemu/qemu_command.c:7163
+#: src/qemu/qemu_command.c:7170
 #, c-format
 msgid "hugepage backing not supported by '%s'"
 msgstr "'%s' द्वारे hugepage backing समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7230
+#: src/qemu/qemu_command.c:7237
 msgid "memory locking not supported by QEMU binary"
 msgstr "ह्या QEMU बाइनरितर्फे मेमरि समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7255
+#: src/qemu/qemu_command.c:7262
 msgid "IOThreads not supported for this QEMU"
 msgstr "या QEMU करिता IOThreads समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7295
+#: src/qemu/qemu_command.c:7302
 msgid "Per-node memory binding is not supported with this QEMU"
 msgstr "या QEMU सह प्रत्येक नोडकरिता मेमरि बाइंडिंग समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7304
+#: src/qemu/qemu_command.c:7311
 msgid "huge pages per NUMA node are not supported with this QEMU"
 msgstr "दर NUMA नोडकरिता ह्युजे पेजेस या QEMU सह समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7330
+#: src/qemu/qemu_command.c:7337
 #, fuzzy, c-format
 msgid "hugepages: node %zd not found"
 msgstr "ह्युजपेजेस: नोड %zd आढळले नाही"
 
-#: src/qemu/qemu_command.c:7354
+#: src/qemu/qemu_command.c:7361
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "या QEMU सह शेअर्ड मेमरि मॅपिंग समर्थीत केली जात नाही"
 
-#: src/qemu/qemu_command.c:7373
+#: src/qemu/qemu_command.c:7380
 msgid "disjoint NUMA cpu ranges are not supported with this QEMU"
 msgstr "ह्या QEMUतर्फे डिसजॉइंट NUMA cpu व्याप्ति समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7462
+#: src/qemu/qemu_command.c:7469
 msgid "vnc graphics are not supported with this QEMU"
 msgstr "ह्या QEMU तर्फे vnc ग्राफिक्स् समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7468 src/qemu/qemu_command.c:7594
+#: src/qemu/qemu_command.c:7475 src/qemu/qemu_command.c:7601
 #: src/qemu/qemu_migration.c:464
 msgid "missing listen element"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7484
+#: src/qemu/qemu_command.c:7491
 msgid "vnc port must be in range [5900,65535]"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7501
+#: src/qemu/qemu_command.c:7508
 msgid "VNC WebSockets are not supported with this QEMU binary"
 msgstr "VNC वेबसॉकेट्स ह्या QEMU बाइनरिसह समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7520
+#: src/qemu/qemu_command.c:7527
 msgid "vnc display sharing policy is not supported with this QEMU"
 msgstr "vnc डिस्पले शेअरिंग धोरण ह्या QEMU तर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7588
+#: src/qemu/qemu_command.c:7595
 msgid "spice graphics are not supported with this QEMU"
 msgstr "स्पाइस ग्राफिक्स् ह्या QEMU तर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7602
+#: src/qemu/qemu_command.c:7609
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7621
+#: src/qemu/qemu_command.c:7628
 msgid ""
 "spice TLS port set in XML configuration, but TLS is disabled in qemu.conf"
 msgstr "XML संरचनामध्ये स्पाइस TLS पोर्ट निश्चित केले, qemu.conf मध्ये परंतु TLS बंद केले"
 
-#: src/qemu/qemu_command.c:7683
+#: src/qemu/qemu_command.c:7690
 msgid ""
 "spice defaultMode secure requested in XML configuration, but TLS connection "
 "is not available"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7693
+#: src/qemu/qemu_command.c:7700
 msgid ""
 "spice defaultMode insecure requested in XML configuration, but plaintext "
 "connection is not available"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7711
+#: src/qemu/qemu_command.c:7718
 msgid ""
 "spice secure channels set in XML configuration, but TLS connection is not "
 "available"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7723
+#: src/qemu/qemu_command.c:7730
 msgid ""
 "spice insecure channels set in XML configuration, but plaintext connection "
 "is not available"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7758
+#: src/qemu/qemu_command.c:7765
 msgid "This QEMU can't disable file transfers through spice"
 msgstr "हे QEMU स्पाइस मार्फत फाइल स्थानांतर बंद करू शकत नाही"
 
-#: src/qemu/qemu_command.c:7768
+#: src/qemu/qemu_command.c:7775
 msgid "This QEMU doesn't support spice OpenGL"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7816
+#: src/qemu/qemu_command.c:7823
 #, c-format
 msgid "sdl not supported by '%s'"
 msgstr "sdl '%s' तर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7851
+#: src/qemu/qemu_command.c:7858
 #, c-format
 msgid "unsupported graphics type '%s'"
 msgstr "असमर्थीत ग्राफिक्स् प्रकार '%s'"
 
-#: src/qemu/qemu_command.c:7873
+#: src/qemu/qemu_command.c:7880
 msgid "Netdev support unavailable"
 msgstr "Netdev समर्थन अनुपलब्ध"
 
-#: src/qemu/qemu_command.c:7898
+#: src/qemu/qemu_command.c:7905
 #, fuzzy, c-format
 msgid "vhost-user type '%s' not supported"
 msgstr "vhost-user प्रकार '%s' समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:7909
+#: src/qemu/qemu_command.c:7916
 msgid "multi-queue is not supported for vhost-user with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7925
+#: src/qemu/qemu_command.c:7932
 msgid "Error generating NIC -device string"
 msgstr "NIC -device स्ट्रिंग निर्माण करतेवेळी त्रुटी"
 
-#: src/qemu/qemu_command.c:7989 src/qemu/qemu_hotplug.c:971
+#: src/qemu/qemu_command.c:7996 src/qemu/qemu_hotplug.c:971
 #, fuzzy, c-format
 msgid "Multiqueue network is not supported for: %s"
 msgstr "मल्टिक्युउ नेटवर्क: %sकरिता समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:8000 src/qemu/qemu_hotplug.c:982
+#: src/qemu/qemu_command.c:8007 src/qemu/qemu_hotplug.c:982
 #, c-format
 msgid "filterref is not supported for network interfaces of type %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8011
+#: src/qemu/qemu_command.c:8018
 #, c-format
 msgid "Custom tap device path is not supported for: %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8329
+#: src/qemu/qemu_command.c:8336
 msgid "this QEMU binary lacks multiple smartcard support"
 msgstr "ह्या QEMU बाइनरिमध्ये एकापेक्षाजास्त स्मार्टकार्ड नाही"
 
-#: src/qemu/qemu_command.c:8340 src/qemu/qemu_command.c:8352
+#: src/qemu/qemu_command.c:8347 src/qemu/qemu_command.c:8359
 msgid "this QEMU binary lacks smartcard host mode support"
 msgstr "ह्या QEMU बाइनरिमध्ये स्मार्टकार्ड यजमान मोड समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:8362
+#: src/qemu/qemu_command.c:8369
 #, c-format
 msgid "invalid certificate name: %s"
 msgstr "अवैध प्रमाणपत्र नाव: %s"
 
-#: src/qemu/qemu_command.c:8373
+#: src/qemu/qemu_command.c:8380
 #, c-format
 msgid "invalid database name: %s"
 msgstr "अवैध डाटाबेस नाव: %s"
 
-#: src/qemu/qemu_command.c:8388
+#: src/qemu/qemu_command.c:8395
 msgid "this QEMU binary lacks smartcard passthrough mode support"
 msgstr "ह्या QEMU बाइनरिमध्ये स्मार्टकार्ड पासथ्रु मोड समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:8432
+#: src/qemu/qemu_command.c:8439
 msgid "ivshmem device is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8447
+#: src/qemu/qemu_command.c:8454
 msgid "shmem size must be a power of two"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8452
+#: src/qemu/qemu_command.c:8459
 msgid "shmem size must be at least 1 MiB (1024 KiB)"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8474
+#: src/qemu/qemu_command.c:8481
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8666
+#: src/qemu/qemu_command.c:8673
 msgid "guestfwd requires QEMU to support -chardev & -device"
 msgstr "guestfwd ला QEMU द्वारे -chardev & -device करिता समर्थन आवश्यक आहे"
 
-#: src/qemu/qemu_command.c:8732
+#: src/qemu/qemu_command.c:8739
 msgid "sclp console requires QEMU to support s390-sclp"
 msgstr "s390-sclpकरिता समर्थनसाठी sclp कंसोलला QEMU आवश्यक"
 
-#: src/qemu/qemu_command.c:8768 src/qemu/qemu_command.c:9773
+#: src/qemu/qemu_command.c:8775 src/qemu/qemu_command.c:9780
 #, c-format
 msgid "unsupported console target type %s"
 msgstr "असमर्थीत कंसोल लक्ष्य प्रकार %s"
 
-#: src/qemu/qemu_command.c:8789
+#: src/qemu/qemu_command.c:8796
 #, c-format
 msgid "Redirection bus %s is not supported by QEMU"
 msgstr "रिडायरेक्शन बस %s QEMU तर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:8796
+#: src/qemu/qemu_command.c:8803
 msgid "USB redirection is not supported by this version of QEMU"
 msgstr "USB रिडायरेक्शन QEMU च्या ह्या आवृत्तीसह समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:8807
+#: src/qemu/qemu_command.c:8814
 msgid "USB redirection filter is not supported by this version of QEMU"
 msgstr "USB रिडायरेक्शन फिल्टर QEMU च्या ह्या आवृत्तीतर्फे समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:8845
+#: src/qemu/qemu_command.c:8852
 msgid "USB redirection booting is not supported by this version of QEMU"
 msgstr "QEMUच्या या आवृत्तीतर्फे USB पुनःनिर्देशन बूट समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:8924
+#: src/qemu/qemu_command.c:8931
 msgid "ACPI must be enabled in order to use UEFI"
 msgstr "UEFI च्या वापरकरिता ACPI सुरू करणे आवश्यक आहे"
 
-#: src/qemu/qemu_command.c:8981
+#: src/qemu/qemu_command.c:8988
 #, c-format
 msgid "The QEMU executable %s does not support TPM model %s"
 msgstr "QEMU एक्जिक्युटेबल %s TPM प्रतिकृती %sकरिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:9031
+#: src/qemu/qemu_command.c:9038
 #, c-format
 msgid "Could not open TPM device %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9045
+#: src/qemu/qemu_command.c:9052
 #, c-format
 msgid "Could not open TPM device's cancel path %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9078
+#: src/qemu/qemu_command.c:9085
 #, c-format
 msgid "The QEMU executable %s does not support TPM backend type %s"
 msgstr "QEMU एक्जिक्युटेबल %s, TPM बॅकएंड प्रकार %sकरिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:9154
+#: src/qemu/qemu_command.c:9161
 msgid "only S390 guests support panic device of model 's390'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9161
+#: src/qemu/qemu_command.c:9168
 msgid "setting the panic device address is not supported for model 's390'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9173
+#: src/qemu/qemu_command.c:9180
 msgid "only i686 and x86_64 guests support panic device of model 'hyperv'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9180
+#: src/qemu/qemu_command.c:9187
 msgid "setting the panic device address is not supported for model 'hyperv'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9192
+#: src/qemu/qemu_command.c:9199
 msgid "only pSeries guests support panic device of model 'pseries'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9199
+#: src/qemu/qemu_command.c:9206
 msgid "setting the panic device address is not supported for model 'pseries'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9208
+#: src/qemu/qemu_command.c:9215
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9226
+#: src/qemu/qemu_command.c:9233
 msgid "panic is supported only with ISA address type"
 msgstr "पॅनिक फक्त ISA पत्ता प्रकारसह समर्थीत आहे"
 
-#: src/qemu/qemu_command.c:9268 src/qemu/qemu_driver.c:9274
+#: src/qemu/qemu_command.c:9275 src/qemu/qemu_driver.c:9274
 #: src/qemu/qemu_driver.c:9407
 msgid "Memory tuning is not available in session mode"
 msgstr "सत्र मोडमध्ये मेमरि ट्युनिंग अनुपलब्ध"
 
-#: src/qemu/qemu_command.c:9274 src/qemu/qemu_driver.c:8964
+#: src/qemu/qemu_command.c:9281 src/qemu/qemu_driver.c:8964
 #: src/qemu/qemu_driver.c:9171
 msgid "Block I/O tuning is not available in session mode"
 msgstr "सत्र मोडमध्ये ब्लॉक I/O ट्युनिंग अनुपलब्ध"
 
-#: src/qemu/qemu_command.c:9284 src/qemu/qemu_driver.c:8708
+#: src/qemu/qemu_command.c:9291 src/qemu/qemu_driver.c:8708
 #: src/qemu/qemu_driver.c:10053 src/qemu/qemu_driver.c:10472
 msgid "CPU tuning is not available in session mode"
 msgstr "सत्र मोडमध्ये CPU ट्युनिंग अनुपलब्ध"
 
-#: src/qemu/qemu_command.c:9309
+#: src/qemu/qemu_command.c:9316
 msgid "only 1 graphics device of each type (sdl, vnc, spice) is supported"
 msgstr "फक्त १ ग्राफिक्स साधन (sdl, vnc, spice) समर्थीत आहे"
 
-#: src/qemu/qemu_command.c:9318
+#: src/qemu/qemu_command.c:9325
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qemu इम्यूलेटर '%s' xen करिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_command.c:9329 src/qemu/qemu_hotplug.c:824
+#: src/qemu/qemu_command.c:9336 src/qemu/qemu_hotplug.c:824
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "डिस्क '%2$s' करिता असमर्थीत ड्राइवर नाव '%1$s'"
 
-#: src/qemu/qemu_command.c:9576
+#: src/qemu/qemu_command.c:9583
 msgid "QEMU does not support seccomp sandboxes"
 msgstr "QEMU seccomp सँडबॉक्सकरिता समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:9635
+#: src/qemu/qemu_command.c:9642
 msgid "usb-serial is not supported in this QEMU binary"
 msgstr "QEMU बाइनरिमध्ये usb-serial समर्थीत नाही"
 
-#: src/qemu/qemu_command.c:9654
+#: src/qemu/qemu_command.c:9661
 msgid "isa-serial requires address of isa type"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9665
+#: src/qemu/qemu_command.c:9672
 msgid "pci-serial is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9672
+#: src/qemu/qemu_command.c:9679
 msgid "pci-serial requires address of pci type"
 msgstr ""
 
@@ -17166,377 +17166,377 @@ msgstr ""
 msgid "invalid master key read, size=%zd"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:1099
+#: src/qemu/qemu_domain.c:1110
 msgid "luks encryption requires encrypted secrets to be supported"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:1311
+#: src/qemu/qemu_domain.c:1322
 msgid "Unable to init qemu driver mutexes"
 msgstr "init qemu ड्राइव्हर म्युटेक्सना सुरू करणे अशक्य"
 
-#: src/qemu/qemu_domain.c:1347
+#: src/qemu/qemu_domain.c:1358
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "डोमेन नष्ट करतेवेळी अनपेक्षित QEMU मॉनिटर अजूनही सुरू आहे"
 
-#: src/qemu/qemu_domain.c:1351
+#: src/qemu/qemu_domain.c:1362
 msgid "Unexpected QEMU agent still active during domain deletion"
 msgstr "डोमेन नष्ट करतेवेळी अनपेक्षित QEMU एजंट अजूनही सुरू आहे"
 
-#: src/qemu/qemu_domain.c:1526
+#: src/qemu/qemu_domain.c:1537
 #, c-format
 msgid "cannot parse vcpu index '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:1531
+#: src/qemu/qemu_domain.c:1542
 #, c-format
 msgid "invalid vcpu index '%u'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:1573
+#: src/qemu/qemu_domain.c:1584
 msgid "no monitor path"
 msgstr "मॉनीटर मार्ग आढळला नाही"
 
-#: src/qemu/qemu_domain.c:1597
+#: src/qemu/qemu_domain.c:1608
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "असमर्थीत मॉनीटर प्रकार '%s'"
 
-#: src/qemu/qemu_domain.c:1647
+#: src/qemu/qemu_domain.c:1658
 #, c-format
 msgid "Unknown job type %s"
 msgstr "अपरिचीत जॉब प्रकार %s"
 
-#: src/qemu/qemu_domain.c:1660
+#: src/qemu/qemu_domain.c:1671
 #, c-format
 msgid "Unknown async job type %s"
 msgstr "अपरिचीत async जॉब प्रकार %s"
 
-#: src/qemu/qemu_domain.c:1671
+#: src/qemu/qemu_domain.c:1682
 #, c-format
 msgid "Unknown job phase %s"
 msgstr "अपरिचीत जॉब फेज् %s"
 
-#: src/qemu/qemu_domain.c:1682
+#: src/qemu/qemu_domain.c:1693
 msgid "failed to parse list of disks marked for migration"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:1706 src/qemu/qemu_domain.c:1718
+#: src/qemu/qemu_domain.c:1717 src/qemu/qemu_domain.c:1729
 msgid "failed to parse qemu device list"
 msgstr "qemu साधन सूची वाचणे अपयशी"
 
-#: src/qemu/qemu_domain.c:1818
+#: src/qemu/qemu_domain.c:1829
 msgid "No qemu command-line argument specified"
 msgstr "qemu आदेश ओळ घटक निर्देशीत केले नाही"
 
-#: src/qemu/qemu_domain.c:1844
+#: src/qemu/qemu_domain.c:1855
 msgid "No qemu environment name specified"
 msgstr "qemu वातावरण नाव निर्देशीत केले नाही"
 
-#: src/qemu/qemu_domain.c:1849
+#: src/qemu/qemu_domain.c:1860
 msgid "Empty qemu environment name specified"
 msgstr "रिकामे qemu वातावरण नाव निर्देशीत केले"
 
-#: src/qemu/qemu_domain.c:1854
+#: src/qemu/qemu_domain.c:1865
 msgid "Invalid environment name, it must begin with a letter or underscore"
 msgstr "अवैध वातावरण नाव, अक्षर किंवा अंडरस्कोरसह सुरू व्हायला हवे"
 
-#: src/qemu/qemu_domain.c:1859
+#: src/qemu/qemu_domain.c:1870
 msgid ""
 "Invalid environment name, it must contain only alphanumerics and underscore"
 msgstr "अवैध वातावरण नाव, फक्त अल्फान्युमेरिक व अंडरस्कोर समाविष्ट असायला पाहिजे"
 
-#: src/qemu/qemu_domain.c:2054
+#: src/qemu/qemu_domain.c:2065
 #, c-format
 msgid ""
 "The PCI controller with index='0' must be model='pci-root' for this machine "
 "type, but model='%s' was found instead"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2077
+#: src/qemu/qemu_domain.c:2088
 #, c-format
 msgid ""
 "The PCI controller with index='0' must be model='pcie-root' for this machine "
 "type, but model='%s' was found instead"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2268
+#: src/qemu/qemu_domain.c:2279
 msgid "vcpu 0 can't be offline"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2273
+#: src/qemu/qemu_domain.c:2284
 #, fuzzy
 msgid "vcpu0 can't be hotpluggable"
 msgstr "डिस्क बस '%s' हॉटप्लग करणे अशक्य."
 
-#: src/qemu/qemu_domain.c:2278
+#: src/qemu/qemu_domain.c:2289
 msgid "vcpu0 must be enabled first"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2294
+#: src/qemu/qemu_domain.c:2305
 msgid "all vcpus must have either set or unset order"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2303
+#: src/qemu/qemu_domain.c:2314
 msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2312
+#: src/qemu/qemu_domain.c:2323
 msgid "online non-hotpluggable vcpus must be ordered in ascending order"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2338
+#: src/qemu/qemu_domain.c:2349
 msgid "bootloader is not supported by QEMU"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2344
+#: src/qemu/qemu_domain.c:2355
 msgid "missing machine type"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2407
+#: src/qemu/qemu_domain.c:2418
 msgid "Parameter 'min_guarantee' not supported by QEMU."
 msgstr "QEMU तर्फे बाब 'min_guarantee' समर्थीत नाही."
 
-#: src/qemu/qemu_domain.c:2418
+#: src/qemu/qemu_domain.c:2429
 msgid "Secure boot is supported with q35 machine types only"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2427
+#: src/qemu/qemu_domain.c:2438
 msgid "Secure boot is supported for x86_64 architecture only"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2433
+#: src/qemu/qemu_domain.c:2444
 #, fuzzy
 msgid "Secure boot requires SMM feature enabled"
 msgstr "सेक्युरिटि ड्राइव्हर %s सुरू केले नाही"
 
-#: src/qemu/qemu_domain.c:2445
+#: src/qemu/qemu_domain.c:2456
 #, fuzzy
 msgid "CPU topology doesn't match maximum vcpu count"
 msgstr "कमाल  vcpu प्रमाण पुनरप्राप्ति अपयशी"
 
-#: src/qemu/qemu_domain.c:2473
+#: src/qemu/qemu_domain.c:2484
 msgid ""
 "Invalid attempt to set network interface guest-side IP route and/or address "
 "info, not supported by QEMU"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2623
+#: src/qemu/qemu_domain.c:2634
 #, fuzzy, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %s"
 msgstr "hostdev मोड 'capabilities' %s अंतर्गत समर्थीत नाही"
 
-#: src/qemu/qemu_domain.c:2663
+#: src/qemu/qemu_domain.c:2674
 #, fuzzy
 msgid "value for 'vgamem' must be power of two"
 msgstr "'vram' करिता मूल्य '%u' पेक्षा कमी पाहिजे"
 
-#: src/qemu/qemu_domain.c:2689
+#: src/qemu/qemu_domain.c:2700
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2696
+#: src/qemu/qemu_domain.c:2707
 msgid ""
 "pcie-expander-bus controllers are only supported on q35-based machinetypes"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:2711
+#: src/qemu/qemu_domain.c:2722
 #, c-format
 msgid ""
 "%s with index %d is configured for a NUMA node (%d) not present in the "
 "domain's <cpu><numa> array (%zu)"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3006
+#: src/qemu/qemu_domain.c:3017
 #, c-format
 msgid "cannot acquire state change lock (held by %s)"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3017
+#: src/qemu/qemu_domain.c:3028
 #, c-format
 msgid "cannot acquire state change lock (held by %s) due to max_queued limit"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3022
+#: src/qemu/qemu_domain.c:3033
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr "max_queued मर्यादामुळे स्तर बदल कुलूपबंद करणे अशक्य"
 
-#: src/qemu/qemu_domain.c:3075
+#: src/qemu/qemu_domain.c:3086
 #, c-format
 msgid "unexpected async job %d"
 msgstr "अनपेक्षित async जॉब %d"
 
-#: src/qemu/qemu_domain.c:3166 src/qemu/qemu_domain.c:3233
+#: src/qemu/qemu_domain.c:3177 src/qemu/qemu_domain.c:3244
 msgid "domain is no longer running"
 msgstr "डोमेन यापुढे सुरू नाही"
 
-#: src/qemu/qemu_domain.c:3743 src/qemu/qemu_domain.c:3916
+#: src/qemu/qemu_domain.c:3754 src/qemu/qemu_domain.c:3927
 #: src/uml/uml_driver.c:1081
 #, c-format
 msgid "failed to create logfile %s"
 msgstr "लॉगफाइल %s बनवण्यास अपयशी"
 
-#: src/qemu/qemu_domain.c:3748 src/qemu/qemu_domain.c:3771
+#: src/qemu/qemu_domain.c:3759 src/qemu/qemu_domain.c:3782
 #, c-format
 msgid "failed to set close-on-exec flag on %s"
 msgstr "%s वर close-on-exec फ्लॅग सेट करणे अशक्य"
 
-#: src/qemu/qemu_domain.c:3759
+#: src/qemu/qemu_domain.c:3770
 #, c-format
 msgid "failed to truncate %s"
 msgstr "%s ला ट्रंकेट करण्यास अपयशी"
 
-#: src/qemu/qemu_domain.c:3766
+#: src/qemu/qemu_domain.c:3777
 #, fuzzy, c-format
 msgid "failed to open logfile %s"
 msgstr "लॉगफाइल %s उघडण्यास अपयशी"
 
-#: src/qemu/qemu_domain.c:3778
+#: src/qemu/qemu_domain.c:3789
 #, c-format
 msgid "failed to seek in log file %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3809
+#: src/qemu/qemu_domain.c:3820
 msgid "Unable to seek to end of domain logfile"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3814
+#: src/qemu/qemu_domain.c:3825
 msgid "Unable to write to domain logfile"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3861
+#: src/qemu/qemu_domain.c:3872
 msgid "Unable to read from log file"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3997 src/storage/storage_backend_fs.c:1346
+#: src/qemu/qemu_domain.c:4008 src/storage/storage_backend_fs.c:1346
 msgid "unable to find qemu-img"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4025
+#: src/qemu/qemu_domain.c:4036
 #, c-format
 msgid "cannot create snapshot directory '%s'"
 msgstr "स्नॅपशॉट डिरेक्ट्री '%s' निर्माण करणे अशक्य"
 
-#: src/qemu/qemu_domain.c:4086
+#: src/qemu/qemu_domain.c:4097
 #, c-format
 msgid "Disk device '%s' does not support snapshotting"
 msgstr "डिस्क साधन '%s' स्नॅपशॉटकरिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_domain.c:4724 src/qemu/qemu_domain.c:4734
-#: src/qemu/qemu_domain.c:4797 src/qemu/qemu_domain.c:4804
-#: src/qemu/qemu_domain.c:4811 src/qemu/qemu_domain.c:4818
-#: src/qemu/qemu_domain.c:4842
+#: src/qemu/qemu_domain.c:4735 src/qemu/qemu_domain.c:4745
+#: src/qemu/qemu_domain.c:4808 src/qemu/qemu_domain.c:4815
+#: src/qemu/qemu_domain.c:4822 src/qemu/qemu_domain.c:4829
+#: src/qemu/qemu_domain.c:4853
 #, c-format
 msgid "cannot modify field '%s' of the disk"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4865 src/qemu/qemu_domain.c:4873
+#: src/qemu/qemu_domain.c:4876 src/qemu/qemu_domain.c:4884
 #, fuzzy, c-format
 msgid "disk '%s' already in active block job"
 msgstr "डिस्क '%s' आधिपासूनच सक्रीय ब्लॉक जॉब अंतर्गत आहे"
 
-#: src/qemu/qemu_domain.c:5023
+#: src/qemu/qemu_domain.c:5034
 msgid "QEMU guest agent is not available due to an error"
 msgstr "त्रुटीमुळे QEMU अतिथी एजंट अनुपलब्ध"
 
-#: src/qemu/qemu_domain.c:5032
+#: src/qemu/qemu_domain.c:5043
 msgid "QEMU guest agent is not connected"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5038
+#: src/qemu/qemu_domain.c:5049
 msgid "QEMU guest agent is not configured"
 msgstr "QEMU अतिथी एजंट संरचीत नाही"
 
-#: src/qemu/qemu_domain.c:5096
+#: src/qemu/qemu_domain.c:5107
 #, c-format
 msgid "memory size of NUMA node '%zu' overflowed after alignment"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5110
+#: src/qemu/qemu_domain.c:5121
 msgid "initial memory size overflowed after alignment"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5117
+#: src/qemu/qemu_domain.c:5128
 msgid "maximum memory size overflowed after alignment"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5129
+#: src/qemu/qemu_domain.c:5140
 #, c-format
 msgid "size of memory module '%zu' overflowed after alignment"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5189
+#: src/qemu/qemu_domain.c:5200
 msgid "block jobs not supported with this QEMU binary"
 msgstr "ह्या QEMU बाइनरिसह ब्लॉक जॉब्स् समर्थीत नाही"
 
-#: src/qemu/qemu_domain.c:5314
+#: src/qemu/qemu_domain.c:5325
 #, c-format
 msgid "memory device slot '%u' is already being used by another memory device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5323
+#: src/qemu/qemu_domain.c:5334
 #, c-format
 msgid ""
 "memory device base '0x%llx' is already being used by another memory device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5341
+#: src/qemu/qemu_domain.c:5352
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5349
+#: src/qemu/qemu_domain.c:5360
 msgid "target NUMA node needs to be specified for memory device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5358
+#: src/qemu/qemu_domain.c:5369
 #, c-format
 msgid "memory device slot '%u' exceeds slots count '%u'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5415
+#: src/qemu/qemu_domain.c:5426
 msgid ""
 "cannot use/hotplug a memory device when domain 'maxMemory' is not defined"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5425
+#: src/qemu/qemu_domain.c:5436
 msgid "memory hotplug isn't supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5436
+#: src/qemu/qemu_domain.c:5447
 msgid ""
 "At least one numa node has to be configured when enabling memory hotplug"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5444
+#: src/qemu/qemu_domain.c:5455
 #, c-format
 msgid "memory device count '%u' exceeds slots count '%u'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5460
+#: src/qemu/qemu_domain.c:5471
 msgid "memory device total size exceeds hotplug space"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5811
+#: src/qemu/qemu_domain.c:5822
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%zu'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5817
+#: src/qemu/qemu_domain.c:5828
 #, c-format
 msgid "qemu reported thread id for inactive vcpu '%zu'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5984
+#: src/qemu/qemu_domain.c:5995
 msgid "No device found for specified path"
 msgstr "निर्देशीत मार्गकरिता साधन आढळले नाही"
 
-#: src/qemu/qemu_domain.c:6007
+#: src/qemu/qemu_domain.c:6018
 #, c-format
 msgid "disk device='lun' is not supported for protocol='%s'"
 msgstr "डिस्क device='lun' protocol='%s'करिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_domain.c:6014
+#: src/qemu/qemu_domain.c:6025
 msgid "disk device='lun' is only valid for block type disk source"
 msgstr "ब्लॉक प्रकार डिस्क स्रोतकरिता फक्त डिस्क साधन='lun' वैध आहे"
 
@@ -17771,7 +17771,7 @@ msgid "Unable to parse sched info value '%s'"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:1467 src/qemu/qemu_driver.c:5047
-#: src/qemu/qemu_process.c:4710
+#: src/qemu/qemu_process.c:4705
 msgid "cpu affinity is not supported"
 msgstr "cpu संबंध करिता समर्थन नाही"
 
@@ -17791,7 +17791,7 @@ msgid "domain is pmsuspended"
 msgstr "डोमेन pmsuspended आहे"
 
 #: src/qemu/qemu_driver.c:1930 src/qemu/qemu_migration.c:6298
-#: src/qemu/qemu_process.c:556 src/qemu/qemu_process.c:5520
+#: src/qemu/qemu_process.c:556 src/qemu/qemu_process.c:5515
 msgid "resume operation failed"
 msgstr "पुन्हप्रारंभ कार्यपद्धती अपयशी"
 
@@ -17887,13 +17887,13 @@ msgstr "'%s' च्या निर्माणवेळी चाईल्ड �
 msgid "Error from child process opening '%s'"
 msgstr "'%s' उघडतेवेळी चाइल्ड प्रोसेसपासून त्रुटी"
 
-#: src/qemu/qemu_driver.c:3027 src/qemu/qemu_process.c:3814
+#: src/qemu/qemu_driver.c:3027 src/qemu/qemu_process.c:3809
 #: src/storage/storage_backend.c:529
 #, c-format
 msgid "Failed to create file '%s'"
 msgstr "फाइल '%s' निर्माण करण्यास अपयशी"
 
-#: src/qemu/qemu_driver.c:3028 src/qemu/qemu_process.c:3805
+#: src/qemu/qemu_driver.c:3028 src/qemu/qemu_process.c:3800
 #: src/storage/storage_backend_fs.c:1546
 #: src/storage/storage_backend_gluster.c:713 src/util/virfile.c:1360
 #: src/util/virstoragefile.c:1047
@@ -18084,7 +18084,7 @@ msgstr ""
 msgid "Empty iothread cpumap list for pinning"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:5740 src/qemu/qemu_process.c:2177
+#: src/qemu/qemu_driver.c:5740 src/qemu/qemu_process.c:2173
 #, c-format
 msgid "iothread %d not found"
 msgstr ""
@@ -19076,153 +19076,153 @@ msgstr "chardev आधीपासूनच अस्तित्वात आ�
 msgid "detaching serial console is not supported"
 msgstr "सिरिअल कंसोलला विलग करणे समर्थीत नाही"
 
-#: src/qemu/qemu_hotplug.c:1631
+#: src/qemu/qemu_hotplug.c:1632
 msgid "Unsupported address type for character device"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2077
+#: src/qemu/qemu_hotplug.c:2078
 #, fuzzy, c-format
 msgid "Unable to prepare scsi hostdev for iSCSI: %s"
 msgstr "iSCSI: %s करिता scsi hostdev तयार करणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2082
+#: src/qemu/qemu_hotplug.c:2083
 #, c-format
 msgid "Unable to prepare scsi hostdev: %s:%u:%u:%llu"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2224 src/qemu/qemu_interface.c:525
+#: src/qemu/qemu_hotplug.c:2225 src/qemu/qemu_interface.c:525
 #, fuzzy
 msgid "Missing bridge name"
 msgstr "टाइमरचे नाव आढळले नाही"
 
-#: src/qemu/qemu_hotplug.c:2233
+#: src/qemu/qemu_hotplug.c:2234
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "ब्रिज %s अस्तित्वात नाही"
 
-#: src/qemu/qemu_hotplug.c:2257
+#: src/qemu/qemu_hotplug.c:2258
 #, c-format
 msgid "unable to recover former state by adding port to bridge %s"
 msgstr "ब्रिज %s करिता पोर्ट समाविष्ट करून मागील स्तर पुनःप्राप्त करणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2281
+#: src/qemu/qemu_hotplug.c:2282
 #, c-format
 msgid "filters not supported on interfaces of type %s"
 msgstr "%s प्रकारच्या संवादांवर फिल्टर्स समर्थीत नाही"
 
-#: src/qemu/qemu_hotplug.c:2293
+#: src/qemu/qemu_hotplug.c:2294
 #, c-format
 msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 msgstr ""
 "'%s'करिता नवीन फिल्टर नियम समावेश अपयशी - जुणे निय पूर्वस्थितीत आणण्याचा प्रत्न करत आहे"
 
-#: src/qemu/qemu_hotplug.c:2315
+#: src/qemu/qemu_hotplug.c:2316
 msgid "can't change link state: device alias not found"
 msgstr "लिंक स्तर बदलणे अशक्य: डिव्हाइस अलायस आढळले नाही"
 
-#: src/qemu/qemu_hotplug.c:2361
+#: src/qemu/qemu_hotplug.c:2362
 msgid "cannot find existing network device to modify"
 msgstr "संपादित करण्यासाठी अस्तित्वातील नेटवर्क साधन शोधणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2369
+#: src/qemu/qemu_hotplug.c:2370
 #, c-format
 msgid "cannot change config of '%s' network type"
 msgstr "'%s' नेटवर्क प्रकारचे काँफिग बदलणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2392
+#: src/qemu/qemu_hotplug.c:2393
 #, c-format
 msgid "cannot change network interface mac address from %s to %s"
 msgstr "%s पासून %s करिता नेटवर्क इंटरफेस मॅक पत्ता बदलणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2401
+#: src/qemu/qemu_hotplug.c:2402
 #, c-format
 msgid "cannot modify network device model from %s to %s"
 msgstr "%s पासून %s करिता नेटवर्क साधन मॉडल संपादित करणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2426
+#: src/qemu/qemu_hotplug.c:2427
 msgid "cannot modify virtio network device driver attributes"
 msgstr "virtio नेटवर्क साधन ड्राइव्हर गुणधर्म संपादित करणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2440
+#: src/qemu/qemu_hotplug.c:2441
 msgid "cannot modify network device script attribute"
 msgstr "नेटवर्क साधन स्क्रिप्ट गुणधर्म संपादित करणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2449
+#: src/qemu/qemu_hotplug.c:2450
 msgid "cannot modify network device tap name"
 msgstr "नेटवर्क साधन टॅप नाव संपादित करणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2467
+#: src/qemu/qemu_hotplug.c:2468
 msgid "cannot modify network device guest PCI address"
 msgstr "नेटवर्क साधन अतिथी PCI पत्ता संपादित करणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2476
+#: src/qemu/qemu_hotplug.c:2477
 msgid "cannot modify network device alias"
 msgstr "नेटवर्क साधन अलायस संपादित करणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2481
+#: src/qemu/qemu_hotplug.c:2482
 msgid "cannot modify network device rom bar setting"
 msgstr "नेटवर्क साधन rombar संपादित करणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2486
+#: src/qemu/qemu_hotplug.c:2487
 msgid "cannot modify network rom file"
 msgstr "cannot modify network rom file"
 
-#: src/qemu/qemu_hotplug.c:2491
+#: src/qemu/qemu_hotplug.c:2492
 msgid "cannot modify network device boot index setting"
 msgstr "नेटवर्क साधन बूट इंडेक्स् सेटिंग संपादित करणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2518
+#: src/qemu/qemu_hotplug.c:2519
 #, c-format
 msgid "cannot change network interface type to '%s'"
 msgstr "नेटवर्क इंटरफेस प्रकारला '%s' करिता बदलणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2571 src/qemu/qemu_hotplug.c:2644
+#: src/qemu/qemu_hotplug.c:2572 src/qemu/qemu_hotplug.c:2645
 #, c-format
 msgid "unable to change config on '%s' network type"
 msgstr "'%s' नेटवर्क प्रकारवरील काँफिग बदलणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2765
+#: src/qemu/qemu_hotplug.c:2766
 msgid "cannot find existing graphics device to modify"
 msgstr "संपादनकरिता अस्तित्वातील ग्राफिक्स् साधन आढळणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2771
+#: src/qemu/qemu_hotplug.c:2772
 #, c-format
 msgid "cannot change the number of listen addresses on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2782
+#: src/qemu/qemu_hotplug.c:2783
 #, c-format
 msgid "cannot change the type of listen address on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2791 src/qemu/qemu_hotplug.c:2801
+#: src/qemu/qemu_hotplug.c:2792 src/qemu/qemu_hotplug.c:2802
 #, c-format
 msgid "cannot change listen address setting on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2811
+#: src/qemu/qemu_hotplug.c:2812
 #, c-format
 msgid "cannot change listen socket setting on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2830
+#: src/qemu/qemu_hotplug.c:2831
 msgid "cannot change port settings on vnc graphics"
 msgstr "vnc ग्राफिक्सवर पोर्ट सेटिंग्स् बदलणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2835
+#: src/qemu/qemu_hotplug.c:2836
 msgid "cannot change keymap setting on vnc graphics"
 msgstr "vnc ग्राफिक्सवर किमॅप सेटिंग बदलणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2876
+#: src/qemu/qemu_hotplug.c:2877
 msgid "cannot change port settings on spice graphics"
 msgstr "स्पाइस ग्राफिक्सवर पोर्ट सेटिंग्स् बदलणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2882
+#: src/qemu/qemu_hotplug.c:2883
 msgid "cannot change keymap setting on spice graphics"
 msgstr "स्पाइस ग्राफिक्सवर किमॅप सेटिंग बदलणे अशक्य"
 
-#: src/qemu/qemu_hotplug.c:2924
+#: src/qemu/qemu_hotplug.c:2925
 #, c-format
 msgid "unable to change config on '%s' graphics type"
 msgstr "'%s' ग्राफिक्स् प्रकारवर काँफिग बदलणे अशक्य"
@@ -21247,117 +21247,117 @@ msgstr "%s करिता मॉनिटरकरिता सुरक्ष�
 msgid "Failed to clear security context for monitor for %s"
 msgstr "%s करिता मॉनिटरकरिता सुरक्षा संदर्भ नष्ट करण्यास अपयशी"
 
-#: src/qemu/qemu_process.c:1847 src/qemu/qemu_process.c:1945
+#: src/qemu/qemu_process.c:1843 src/qemu/qemu_process.c:1941
 #, fuzzy
 msgid "failed to format device alias for PTY retrieval"
 msgstr "'%s' करिता साधन निर्माण करण्यास अपयशी"
 
-#: src/qemu/qemu_process.c:1859
+#: src/qemu/qemu_process.c:1855
 #, c-format
 msgid "no assigned pty for device %s"
 msgstr "उपकरण %s करिता लागू केलेले pty आढळले नाही"
 
-#: src/qemu/qemu_process.c:2021
+#: src/qemu/qemu_process.c:2017
 msgid "Unable to convert time"
 msgstr ""
 
-#: src/qemu/qemu_process.c:2102
+#: src/qemu/qemu_process.c:2098
 msgid "process exited while connecting to monitor"
 msgstr ""
 
-#: src/qemu/qemu_process.c:2159
+#: src/qemu/qemu_process.c:2155
 #, c-format
 msgid "got wrong number of IOThread pids from QEMU monitor. got %d, wanted %zu"
 msgstr ""
 
-#: src/qemu/qemu_process.c:2209
+#: src/qemu/qemu_process.c:2205
 msgid "Cannot setup CPU affinity until process is started"
 msgstr "प्रोसेस सुरू झाल्याशिवाय CPU ॲफिनिटिची मांडणी अशक्य"
 
-#: src/qemu/qemu_process.c:2273
+#: src/qemu/qemu_process.c:2269
 msgid "missing alias for network device"
 msgstr ""
 
-#: src/qemu/qemu_process.c:2281
+#: src/qemu/qemu_process.c:2277
 msgid "Setting of link state is not supported by this qemu"
 msgstr "qemu तर्फे लिंक स्तर ठरवणे समर्थीत नाही"
 
-#: src/qemu/qemu_process.c:2290
+#: src/qemu/qemu_process.c:2286
 #, c-format
 msgid "Couldn't set link state on interface: %s"
 msgstr "इंटरफेस: %s वरील लिंक स्तर ठरवणे अशक्य"
 
-#: src/qemu/qemu_process.c:2509
+#: src/qemu/qemu_process.c:2505
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
 msgstr "chardev फाइल '%s' पूर्व-निर्माण करणे अशक्य"
 
-#: src/qemu/qemu_process.c:3489
+#: src/qemu/qemu_process.c:3485
 msgid "Could not create thread. QEMU initialization might be incomplete"
 msgstr "थ्रेड निर्माण करणे अशक्य. QEMU ला सुरू करणे कदाचित अपूर्ण अशू शकते"
 
-#: src/qemu/qemu_process.c:3624
+#: src/qemu/qemu_process.c:3620
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
 msgstr ""
 "स्पाइस TLS पोर्टचे स्वयं वाटपकरिता विनंती केली परंतु qemu.confमध्ये स्पाइस TLS बंद आहे"
 
-#: src/qemu/qemu_process.c:3655
+#: src/qemu/qemu_process.c:3650
 msgid "Domain requires at least 1 vCPU"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3661
+#: src/qemu/qemu_process.c:3656
 msgid "Maximum CPUs greater than specified machine type limit"
 msgstr "निर्देशीत मशीन प्रकार मर्यादापेक्षा जास्त कमाल CPUs"
 
-#: src/qemu/qemu_process.c:3701
+#: src/qemu/qemu_process.c:3696
 msgid "host doesn't support paravirtual spinlocks"
 msgstr "यजमान paravirtual स्पिनलॉक्सकरिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_process.c:3727
+#: src/qemu/qemu_process.c:3722
 #, c-format
 msgid "host doesn't support hyperv '%s' feature"
 msgstr ""
 
-#: src/qemu/qemu_process.c:3750
+#: src/qemu/qemu_process.c:3745
 msgid "host doesn't support invariant TSC"
 msgstr "यजमान इनवेरिएंट TSC करिता समर्थन पुरवत नाही"
 
-#: src/qemu/qemu_process.c:3797
+#: src/qemu/qemu_process.c:3792
 #, fuzzy, c-format
 msgid "unable to find any master var store for loader: %s"
 msgstr "लोडर: %s करिता master var store शोधणे अशक्य"
 
-#: src/qemu/qemu_process.c:3825
+#: src/qemu/qemu_process.c:3820
 #, fuzzy, c-format
 msgid "Unable to read from file '%s'"
 msgstr "फाइल '%s' पासून वाचणे अशक्य"
 
-#: src/qemu/qemu_process.c:3832
+#: src/qemu/qemu_process.c:3827
 #, fuzzy, c-format
 msgid "Unable to write to file '%s'"
 msgstr "फाइल '%s' करिता लिहणे अशक्य"
 
-#: src/qemu/qemu_process.c:3840 src/qemu/qemu_process.c:3846
+#: src/qemu/qemu_process.c:3835 src/qemu/qemu_process.c:3841
 #, fuzzy, c-format
 msgid "Unable to close file '%s'"
 msgstr "फाइल '%s' बंद करणे अशक्य"
 
-#: src/qemu/qemu_process.c:4113
+#: src/qemu/qemu_process.c:4108
 msgid "network-based listen isn't possible, network driver isn't present"
 msgstr ""
 
-#: src/qemu/qemu_process.c:4302
+#: src/qemu/qemu_process.c:4297
 msgid "Raw I/O is not supported on this platform"
 msgstr "ह्या प्लॅटफॉर्मवरील रॉ I/O समर्थीत नाही"
 
-#: src/qemu/qemu_process.c:4348
+#: src/qemu/qemu_process.c:4343
 #, c-format
 msgid "Cannot create directory '%s'"
 msgstr ""
 
-#: src/qemu/qemu_process.c:4466
+#: src/qemu/qemu_process.c:4461
 msgid ""
 "Domain requires KVM, but it is not available. Check that virtualization is "
 "enabled in the host BIOS, and host configuration is setup to load the kvm "
@@ -21366,16 +21366,16 @@ msgstr ""
 "डोमेनला KVM आवश्यक आहे, परंतु अनुपलब्ध आहे. वर्च्युअलाइजेशनला यजमान BIOS मध्ये सुरू केले आहे, व "
 "kvm मॉड्युल्स् लोड करण्यासाठी यजमान संरचना ठरवले आहे याची खात्री करा."
 
-#: src/qemu/qemu_process.c:4495
+#: src/qemu/qemu_process.c:4490
 msgid "QEMU does not support multiple listens for one graphics device."
 msgstr ""
 
-#: src/qemu/qemu_process.c:4545 src/qemu/qemu_process.c:6083
+#: src/qemu/qemu_process.c:4540 src/qemu/qemu_process.c:6078
 #: src/uml/uml_driver.c:1047
 msgid "VM is already active"
 msgstr "VM आधिपासूनच सक्रीय आहे"
 
-#: src/qemu/qemu_process.c:4639
+#: src/qemu/qemu_process.c:4634
 #, c-format
 msgid ""
 "PCI device %04x:%02x:%02x.%x allocated from network %s is already in use by "
@@ -21384,47 +21384,47 @@ msgstr ""
 "PCI साधन %04x:%02x:%02x.%x चे वाटप केले, नेटवर्क %s पासून, आधिपासूनच डोमेन %s तर्फे "
 "वापरले जाते"
 
-#: src/qemu/qemu_process.c:4794
+#: src/qemu/qemu_process.c:4789
 #, fuzzy, c-format
 msgid "duplicate vcpu order '%u'"
 msgstr "सेक्युरिटि ड्राइव्हर '%s' शोधणे अशक्य"
 
-#: src/qemu/qemu_process.c:4808
+#: src/qemu/qemu_process.c:4803
 #, c-format
 msgid ""
 "vcpus '%zu' and '%zu' are in the same hotplug group but differ in "
 "configuration"
 msgstr ""
 
-#: src/qemu/qemu_process.c:4819
+#: src/qemu/qemu_process.c:4814
 #, fuzzy, c-format
 msgid "vcpu '%zu' is missing hotplug data"
 msgstr "cpu प्रतिसादात रिटर्न डाटा आढळले नाही"
 
-#: src/qemu/qemu_process.c:5106
+#: src/qemu/qemu_process.c:5101
 msgid "Unable to set huge path in security driver"
 msgstr "सुरक्षा ड्राइव्हरमध्ये ह्युज मार्ग सेट करण्यास अशक्य"
 
-#: src/qemu/qemu_process.c:5121 src/qemu/qemu_process.c:6107
+#: src/qemu/qemu_process.c:5116 src/qemu/qemu_process.c:6102
 #: src/uml/uml_driver.c:1069
 #, c-format
 msgid "cannot create log directory %s"
 msgstr "लॉग डिरेक्ट्री %s बनवणे अशक्य"
 
-#: src/qemu/qemu_process.c:5129
+#: src/qemu/qemu_process.c:5124
 msgid "Failed to build pidfile path."
 msgstr "pidfile मार्ग बिल्ड करण्यास अपयशी."
 
-#: src/qemu/qemu_process.c:5136
+#: src/qemu/qemu_process.c:5131
 #, c-format
 msgid "Cannot remove stale PID file %s"
 msgstr "स्टेल PID फाइल %s काढून टाकणे अशक्य"
 
-#: src/qemu/qemu_process.c:5313
+#: src/qemu/qemu_process.c:5308
 msgid "Process exited prior to exec"
 msgstr ""
 
-#: src/qemu/qemu_process.c:5362
+#: src/qemu/qemu_process.c:5357
 #, c-format
 msgid "cannot stat fd %d"
 msgstr "fd %d ला स्टॅट करणे अशक्य"
@@ -23824,7 +23824,7 @@ msgid "copy-on-write ploop volumes are not yet supported"
 msgstr ""
 
 #: src/storage/storage_backend.c:814 src/storage/storage_backend.c:863
-#: src/storage/storage_backend.c:2199 src/storage/storage_driver.c:2288
+#: src/storage/storage_backend.c:2199 src/storage/storage_driver.c:2302
 msgid "unable to find ploop, please install ploop tools"
 msgstr ""
 
@@ -23964,7 +23964,7 @@ msgstr "फाइल '%s' ची सुरूवात वाचण्यास 
 msgid "cannot read beginning of file '%s'"
 msgstr "फाइल '%s' ची सुरूवात वाचण्यास अशक्य"
 
-#: src/storage/storage_backend.c:1691 src/storage/storage_driver.c:1664
+#: src/storage/storage_backend.c:1691 src/storage/storage_driver.c:1678
 #: src/test/test_driver.c:4837
 #, c-format
 msgid "no storage vol with matching path '%s'"
@@ -24211,7 +24211,7 @@ msgstr "netfs स्रोतकरिता यजमाननाव निर�
 #: src/storage/storage_backend_iscsi.c:61
 #: src/storage/storage_backend_iscsi.c:190
 #: src/storage/storage_backend_iscsi.c:245
-#: src/storage/storage_backend_iscsi.c:336 src/storage/storage_driver.c:3345
+#: src/storage/storage_backend_iscsi.c:336 src/storage/storage_driver.c:3359
 msgid "Expected exactly 1 host for the storage pool"
 msgstr "स्टोरेज पूलकरिता हुबेहुब 1 यजमान अपेक्षित"
 
@@ -24644,7 +24644,7 @@ msgstr "खंड '%s/%s' काढून टकाण्यास अपयश�
 msgid "only RAW volumes are supported by this storage pool"
 msgstr ""
 
-#: src/storage/storage_backend_rbd.c:671 src/storage/storage_driver.c:1899
+#: src/storage/storage_backend_rbd.c:671 src/storage/storage_driver.c:1913
 msgid "volume capacity required for this storage pool"
 msgstr ""
 
@@ -24820,77 +24820,77 @@ msgstr ""
 msgid "missing source devices"
 msgstr "स्रोत साधने आढळली नाही"
 
-#: src/storage/storage_driver.c:93
+#: src/storage/storage_driver.c:117
 #, c-format
 msgid "Missing backend %d"
 msgstr "बॅकएंड %d आढळले नाही"
 
-#: src/storage/storage_driver.c:104
+#: src/storage/storage_driver.c:126
 #, c-format
 msgid "Failed to initialize storage pool '%s': %s"
 msgstr "स्टोरेज पूल '%s': %s सुरू करण्यास अपयशी"
 
-#: src/storage/storage_driver.c:119
+#: src/storage/storage_driver.c:141
 #, c-format
 msgid "Failed to restart storage pool '%s': %s"
 msgstr ""
 
-#: src/storage/storage_driver.c:180 src/storage/storage_driver.c:202
+#: src/storage/storage_driver.c:203 src/storage/storage_driver.c:225
 #, c-format
 msgid "Failed to autostart storage pool '%s': %s"
 msgstr "स्टोरेज पूल '%s': %s स्वयंसुरू करण्यास अपयशी"
 
-#: src/storage/storage_driver.c:382
+#: src/storage/storage_driver.c:405
 #, fuzzy, c-format
 msgid "no storage pool with matching uuid '%s'"
 msgstr "जुळण्याजोगी uuid '%s' सह स्टोरेज पूल आढळले नाही"
 
-#: src/storage/storage_driver.c:410 src/storage/storage_driver.c:437
-#: src/storage/storage_driver.c:1794 src/storage/storage_driver.c:2044
+#: src/storage/storage_driver.c:433 src/storage/storage_driver.c:460
+#: src/storage/storage_driver.c:1808 src/storage/storage_driver.c:2058
 #, c-format
 msgid "no storage pool with matching name '%s'"
 msgstr "जुळवणी नाव '%s' सह स्टोरेज पूल आढळले नाही"
 
-#: src/storage/storage_driver.c:599 src/test/test_driver.c:4153
+#: src/storage/storage_driver.c:622 src/test/test_driver.c:4153
 #, c-format
 msgid "pool type '%s' does not support source discovery"
 msgstr "पूल प्रकार '%s' स्रोतच्या शोधकरिता समर्थन पुरवत नाही"
 
-#: src/storage/storage_driver.c:621 src/storage/storage_driver.c:837
-#: src/storage/storage_driver.c:1023 src/storage/storage_driver.c:1164
-#: src/storage/storage_driver.c:1318 src/storage/storage_driver.c:2037
+#: src/storage/storage_driver.c:644 src/storage/storage_driver.c:860
+#: src/storage/storage_driver.c:1046 src/storage/storage_driver.c:1180
+#: src/storage/storage_driver.c:1332 src/storage/storage_driver.c:2051
 #, fuzzy, c-format
 msgid "no storage pool with matching uuid '%s' (%s)"
 msgstr "जुळण्याजोगी uuid '%s' (%s) सह स्टोरेज पूल आढळले नाही"
 
-#: src/storage/storage_driver.c:847 src/storage/storage_driver.c:1112
+#: src/storage/storage_driver.c:870 src/storage/storage_driver.c:1128
 #, c-format
 msgid "storage pool '%s' is still active"
 msgstr "स्टोरेज पूल '%s' अजूनही सक्रीय आहे"
 
-#: src/storage/storage_driver.c:854 src/storage/storage_driver.c:1044
-#: src/storage/storage_driver.c:1119 src/storage/storage_driver.c:1183
+#: src/storage/storage_driver.c:877 src/storage/storage_driver.c:1067
+#: src/storage/storage_driver.c:1135 src/storage/storage_driver.c:1199
 #, c-format
 msgid "pool '%s' has asynchronous jobs running."
 msgstr "पूल '%s' मध्ये असमरित्या कार्यरत कार्य आहेत."
 
-#: src/storage/storage_driver.c:866
+#: src/storage/storage_driver.c:889
 #, c-format
 msgid "Failed to delete autostart link '%s': %s"
 msgstr "स्वयंसुरूवात लिंक '%s': %s नष्ट करण्यास अपयशी"
 
-#: src/storage/storage_driver.c:921 src/storage/storage_driver.c:993
+#: src/storage/storage_driver.c:944 src/storage/storage_driver.c:1016
 #: src/test/test_driver.c:4091 src/test/test_driver.c:4281
 #: src/test/test_driver.c:4323 src/test/test_driver.c:4400
 #, c-format
 msgid "storage pool '%s' is already active"
 msgstr "साठा संग्रह '%s' आधिपासूनच सक्रीय आहे"
 
-#: src/storage/storage_driver.c:1038 src/storage/storage_driver.c:1177
-#: src/storage/storage_driver.c:1385 src/storage/storage_driver.c:1419
-#: src/storage/storage_driver.c:1465 src/storage/storage_driver.c:1519
-#: src/storage/storage_driver.c:1801 src/storage/storage_driver.c:1885
-#: src/storage/storage_driver.c:2051 src/storage/storage_driver.c:2057
+#: src/storage/storage_driver.c:1061 src/storage/storage_driver.c:1193
+#: src/storage/storage_driver.c:1399 src/storage/storage_driver.c:1433
+#: src/storage/storage_driver.c:1479 src/storage/storage_driver.c:1533
+#: src/storage/storage_driver.c:1815 src/storage/storage_driver.c:1899
+#: src/storage/storage_driver.c:2065 src/storage/storage_driver.c:2071
 #: src/test/test_driver.c:4354 src/test/test_driver.c:4436
 #: src/test/test_driver.c:4598 src/test/test_driver.c:4635
 #: src/test/test_driver.c:4747 src/test/test_driver.c:4866
@@ -24901,16 +24901,16 @@ msgstr "साठा संग्रह '%s' आधिपासूनच सक�
 msgid "storage pool '%s' is not active"
 msgstr "साठा संग्रह '%s' सक्रीय नाही"
 
-#: src/storage/storage_driver.c:1134
+#: src/storage/storage_driver.c:1150
 msgid "pool does not support pool deletion"
 msgstr "पूल पूल नष्ट करणे यांस समर्थन पुरवत नाही"
 
-#: src/storage/storage_driver.c:1328 src/test/test_driver.c:4564
+#: src/storage/storage_driver.c:1342 src/test/test_driver.c:4564
 msgid "pool has no config file"
 msgstr "संग्रहकडे संयोजना फाइल नाही"
 
-#: src/storage/storage_driver.c:1527 src/storage/storage_driver.c:1808
-#: src/storage/storage_driver.c:2069 src/test/test_driver.c:4755
+#: src/storage/storage_driver.c:1541 src/storage/storage_driver.c:1822
+#: src/storage/storage_driver.c:2083 src/test/test_driver.c:4755
 #: src/test/test_driver.c:4957 src/test/test_driver.c:5026
 #: src/test/test_driver.c:5095 src/test/test_driver.c:5143
 #: src/test/test_driver.c:5184
@@ -24918,111 +24918,111 @@ msgstr "संग्रहकडे संयोजना फाइल नाह
 msgid "no storage vol with matching name '%s'"
 msgstr "जुळवणी नाव '%s' नुरूप साठा खंड आढळले नाही"
 
-#: src/storage/storage_driver.c:1577
+#: src/storage/storage_driver.c:1591
 #, c-format
 msgid "no storage vol with matching key %s"
 msgstr "जुळणाऱ्या कि %s सह स्टोरेज खंड आढळले नाही"
 
-#: src/storage/storage_driver.c:1667
+#: src/storage/storage_driver.c:1681
 #, fuzzy, c-format
 msgid "no storage vol with matching path '%s' (%s)"
 msgstr "जुळण्याजोगी uuid '%s' (%s) सह स्टोरेज पूल आढळले नाही"
 
-#: src/storage/storage_driver.c:1712
+#: src/storage/storage_driver.c:1726
 #, fuzzy, c-format
 msgid "no storage pool with matching target path '%s'"
 msgstr "जुळवणी मार्ग '%s' नुरूप साठा खंड आढळले नाही"
 
-#: src/storage/storage_driver.c:1752
+#: src/storage/storage_driver.c:1766
 msgid "storage pool does not support vol deletion"
 msgstr "संचयन संग्रह खंड काढून टाकणे करिता समर्थन पुरवित नाही"
 
-#: src/storage/storage_driver.c:1845 src/storage/storage_driver.c:2400
-#: src/storage/storage_driver.c:2474 src/storage/storage_driver.c:2578
+#: src/storage/storage_driver.c:1859 src/storage/storage_driver.c:2414
+#: src/storage/storage_driver.c:2488 src/storage/storage_driver.c:2592
 #, fuzzy, c-format
 msgid "volume '%s' is still in use."
 msgstr "वॉल्युम '%s' अजूनही वापरले जाते."
 
-#: src/storage/storage_driver.c:1852 src/storage/storage_driver.c:2110
-#: src/storage/storage_driver.c:2232 src/storage/storage_driver.c:2407
-#: src/storage/storage_driver.c:2481 src/storage/storage_driver.c:2585
+#: src/storage/storage_driver.c:1866 src/storage/storage_driver.c:2124
+#: src/storage/storage_driver.c:2246 src/storage/storage_driver.c:2421
+#: src/storage/storage_driver.c:2495 src/storage/storage_driver.c:2599
 #, c-format
 msgid "volume '%s' is still being allocated."
 msgstr "ध्वनिमान '%s' इजूनही वाटपले जात आहे."
 
-#: src/storage/storage_driver.c:1909
+#: src/storage/storage_driver.c:1923
 #, c-format
 msgid "'%s'"
 msgstr "'%s'"
 
-#: src/storage/storage_driver.c:1915
+#: src/storage/storage_driver.c:1929
 msgid "storage pool does not support volume creation"
 msgstr "संचयन संग्रह खंड निर्माण करिता समर्थन पुरवित नाही"
 
-#: src/storage/storage_driver.c:2084
+#: src/storage/storage_driver.c:2098
 #, c-format
 msgid "storage volume name '%s' already in use."
 msgstr "साठा खंडाचे नाव '%s' आधिपासूनच वापरणीत आहे."
 
-#: src/storage/storage_driver.c:2103
+#: src/storage/storage_driver.c:2117
 msgid "storage pool does not support volume creation from an existing volume"
 msgstr "साठा संग्रह अस्तित्वातील खंड पासून खंड निर्माण करिता समर्थन पुरवत नाही"
 
-#: src/storage/storage_driver.c:2239
+#: src/storage/storage_driver.c:2253
 msgid "storage pool doesn't support volume download"
 msgstr "स्टोरेज पूल वॉल्युम डाउनलोडकरिता समर्थन पुरवत नाही"
 
-#: src/storage/storage_driver.c:2280
+#: src/storage/storage_driver.c:2294
 msgid "refresh ploop failed: unable to delete DiskDescriptor.xml"
 msgstr ""
 
-#: src/storage/storage_driver.c:2368
+#: src/storage/storage_driver.c:2382
 msgid "Failed to create thread to handle pool refresh"
 msgstr "पूल ताजे करणे हाताळणीकरिता थ्रेड निर्माण अपयशी"
 
-#: src/storage/storage_driver.c:2414
+#: src/storage/storage_driver.c:2428
 msgid "storage pool doesn't support volume upload"
 msgstr "स्टोरेज पूल वॉल्युम अपलोडकरिता समर्थन पुरवत नाही"
 
-#: src/storage/storage_driver.c:2498
+#: src/storage/storage_driver.c:2512
 msgid "can't shrink capacity below existing allocation"
 msgstr "अस्तित्वातील क्षमतापेक्षा कमी करणे अशक्य"
 
-#: src/storage/storage_driver.c:2506
+#: src/storage/storage_driver.c:2520
 msgid ""
 "Can't shrink capacity below current capacity unless shrink flag explicitly "
 "specified"
 msgstr ""
 
-#: src/storage/storage_driver.c:2516
+#: src/storage/storage_driver.c:2530
 msgid "Not enough space left in storage pool"
 msgstr ""
 
-#: src/storage/storage_driver.c:2522
+#: src/storage/storage_driver.c:2536
 msgid "storage pool does not support changing of volume capacity"
 msgstr "स्टोरेज पूल खंड क्षमता बदलण्यास समर्थन पुरवत नाही"
 
-#: src/storage/storage_driver.c:2564
+#: src/storage/storage_driver.c:2578
 #, c-format
 msgid "wiping algorithm %d not supported"
 msgstr "वायपिंग अल्गोरिदम %d समर्थीत नाही"
 
-#: src/storage/storage_driver.c:2592
+#: src/storage/storage_driver.c:2606
 msgid "storage pool doesn't support volume wiping"
 msgstr "स्टोरेज पूल वॉल्युम wiping करिता समर्थन पुरवत नाही"
 
-#: src/storage/storage_driver.c:3076 src/storage/storage_driver.c:3110
+#: src/storage/storage_driver.c:3090 src/storage/storage_driver.c:3124
 msgid "storage file backend not initialized"
 msgstr "स्टोरेज फाइल बॅकएंड सुरू केले नाही"
 
-#: src/storage/storage_driver.c:3082
+#: src/storage/storage_driver.c:3096
 #, fuzzy, c-format
 msgid ""
 "storage file header reading is not supported for storage type %s (protocol: "
 "%s)"
 msgstr "स्टोरेज फाइल शीर्षक वाचन स्टोरेज प्रकार %s (प्रोटोकॉल: %s) करिता समर्थीत नाही"
 
-#: src/storage/storage_driver.c:3116
+#: src/storage/storage_driver.c:3130
 #, fuzzy, c-format
 msgid ""
 "unique storage file identifier not implemented for storage type %s "
@@ -25030,12 +25030,12 @@ msgid ""
 msgstr ""
 "स्टोरेज प्रकार %s (प्रोटोकॉल: %s) करिता एकमेव स्टोरेज फाइल आइडेंटिफायर लागू केले नाही"
 
-#: src/storage/storage_driver.c:3210
+#: src/storage/storage_driver.c:3224
 #, fuzzy, c-format
 msgid "Cannot access storage file '%s' (as uid:%u, gid:%u)"
 msgstr "स्टोरेज फाइल '%s' (uid:%d, gid:%d नुरूप) करिता प्रवेश अशक्य"
 
-#: src/storage/storage_driver.c:3216
+#: src/storage/storage_driver.c:3230
 #, fuzzy, c-format
 msgid ""
 "Cannot access backing file '%s' of storage file '%s' (as uid:%u, gid:%u)"
@@ -25043,35 +25043,35 @@ msgstr ""
 "स्टोरेज फाइल '%2$s' च्या बॅकिंग फाइल '%1$s' करिता प्रवेश अशक्य  (uid:%3$d, gid:%4$d "
 "नुरूप)"
 
-#: src/storage/storage_driver.c:3230
+#: src/storage/storage_driver.c:3244
 #, fuzzy, c-format
 msgid "backing store for %s (%s) is self-referential"
 msgstr "%s (%s) करिता स्टोरचे बॅकिंग स्व-संदर्भीय आहे"
 
-#: src/storage/storage_driver.c:3370
+#: src/storage/storage_driver.c:3384
 #, fuzzy, c-format
 msgid "unexpected iscsi volume name '%s'"
 msgstr "अनपेक्षित iscsi वॉल्युम नाव '%s'"
 
-#: src/storage/storage_driver.c:3442 src/vz/vz_sdk.c:4099
+#: src/storage/storage_driver.c:3456 src/vz/vz_sdk.c:4099
 #, fuzzy, c-format
 msgid "storage pool '%s' containing volume '%s' is not active"
 msgstr "स्टोरेज पूल '%s', वॉल्युम '%s' समाविष्टीत सक्रीय नाही"
 
-#: src/storage/storage_driver.c:3465
+#: src/storage/storage_driver.c:3479
 msgid "disk source mode is only valid when storage pool is of iscsi type"
 msgstr "डिस्क सोअर्स मोड स्टोरेज पूलचे प्रकार iscsi असल्यावरच वैध असते"
 
-#: src/storage/storage_driver.c:3490 src/storage/storage_driver.c:3528
+#: src/storage/storage_driver.c:3504 src/storage/storage_driver.c:3542
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "'startupPolicy' फक्त 'file' प्रकार वॉल्युमकरिता वैध आहे"
 
-#: src/storage/storage_driver.c:3516
+#: src/storage/storage_driver.c:3530
 #, fuzzy, c-format
 msgid "unexpected storage volume type '%s' for storage pool type '%s'"
 msgstr "स्टोरेज पूल प्रकार '%2$s' करिता अनपेक्षित स्टोरेज वॉल्यूम प्रकार '%1$s'"
 
-#: src/storage/storage_driver.c:3574
+#: src/storage/storage_driver.c:3588
 #, fuzzy, c-format
 msgid "using '%s' pools for backing 'volume' disks isn't yet supported"
 msgstr "'%s' पूल्सचा वापर, 'volume' डिस्क्सच्या बॅकिंगकरिता समर्थीत नाही"
@@ -25970,7 +25970,7 @@ msgstr "इतर जोडणी %2$p सह नोंदणीत डोमे
 msgid "Another close callback is already defined for domain %s"
 msgstr "डोमेन %s करिता इत close कॉलबॅक आधिपासूनच वर्णन केलेले आहे"
 
-#: src/util/virclosecallbacks.c:171
+#: src/util/virclosecallbacks.c:172
 #, c-format
 msgid "Trying to remove mismatching close callback for domain %s"
 msgstr "डोमेन %s करिता न जुळणारे close कॉलबॅक काढून टाकायचा प्रयत्न करत आहे"
