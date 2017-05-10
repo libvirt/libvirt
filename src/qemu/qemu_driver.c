@@ -2862,13 +2862,32 @@ qemuCompressGetCommand(virQEMUSaveFormat compression)
     return ret;
 }
 
-/* Internal function to properly create or open existing files, with
- * ownership affected by qemu driver setup and domain DAC label.  */
+/**
+ * qemuOpenFile:
+ * @driver: driver object
+ * @vm: domain object
+ * @path: path to file to open
+ * @oflags: flags for opening/creation of the file
+ * @needUnlink: set to true if file was created by this function
+ * @bypassSecurityDriver: optional pointer to a boolean that will be set to true
+ *                        if security driver operations are pointless (due to
+ *                        NFS mount)
+ *
+ * Internal function to properly create or open existing files, with
+ * ownership affected by qemu driver setup and domain DAC label.
+ *
+ * Returns the file descriptor on success and negative errno on failure.
+ *
+ * This function should not be used on storage sources. Use
+ * qemuDomainStorageFileInit and storage driver APIs if possible.
+ **/
 static int
 qemuOpenFile(virQEMUDriverPtr driver,
              virDomainObjPtr vm,
-             const char *path, int oflags,
-             bool *needUnlink, bool *bypassSecurityDriver)
+             const char *path,
+             int oflags,
+             bool *needUnlink,
+             bool *bypassSecurityDriver)
 {
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
