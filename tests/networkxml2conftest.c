@@ -67,7 +67,7 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
     VIR_FREE(actual);
     VIR_FREE(pidfile);
     virCommandFree(cmd);
-    virObjectUnref(obj);
+    virNetworkObjEndAPI(&obj);
     dnsmasqContextFree(dctx);
     return ret;
 }

@@ -87,6 +87,8 @@ virNetworkObjNew(void)
     ignore_value(virBitmapSetBit(obj->classIdMap, 1));
     ignore_value(virBitmapSetBit(obj->classIdMap, 2));
 
+    virObjectLock(obj);
+
     return obj;
 
  error:
@@ -571,8 +573,6 @@ virNetworkObjAssignDefLocked(virNetworkObjListPtr nets,
 
         if (!(obj = virNetworkObjNew()))
               goto cleanup;
-
-        virObjectLock(obj);
 
         virUUIDFormat(def->uuid, uuidstr);
         if (virHashAddEntry(nets->objs, uuidstr, obj) < 0)
