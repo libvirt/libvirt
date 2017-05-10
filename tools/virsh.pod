@@ -1672,7 +1672,7 @@ I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<listen-address>] [I<dna
 [I<--compressed>] [I<--comp-methods> B<method-list>]
 [I<--comp-mt-level>] [I<--comp-mt-threads>] [I<--comp-mt-dthreads>]
 [I<--comp-xbzrle-cache>] [I<--auto-converge>] [I<auto-converge-initial>]
-[I<auto-converge-increment>] [I<--persistent-xml> B<file>]
+[I<auto-converge-increment>] [I<--persistent-xml> B<file>] [I<--tls>]
 
 Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
@@ -1752,6 +1752,11 @@ Values are in range from 0 to 9, where 1 is maximum speed and 9 is maximum
 compression. I<--comp-mt-threads> and I<--comp-mt-dthreads> set the number
 of compress threads on source and the number of decompress threads on target
 respectively. I<--comp-xbzrle-cache> sets size of page cache in bytes.
+
+Providing I<--tls> causes the migration to use the host configured TLS setup
+(see migrate_tls_x509_cert_dir in /etc/libvirt/qemu.conf) in order to perform
+the migration of the domain. Usage requires proper TLS setup for both source
+and target.
 
 Running migration can be canceled by interrupting virsh (usually using
 C<Ctrl-C>) or by B<domjobabort> command sent from another virsh instance.
