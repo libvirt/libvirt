@@ -1180,3 +1180,17 @@ virStringEncodeBase64(const uint8_t *buf, size_t buflen)
 
     return ret;
 }
+
+/**
+ * virStringTrimOptionalNewline:
+ * @str: the string to modify in-place
+ *
+ * Modify @str to remove a single '\n' character
+ * from its end, if one exists.
+ */
+void virStringTrimOptionalNewline(char *str)
+{
+    char *tmp = str + strlen(str) - 1;
+    if (*tmp == '\n')
+        *tmp = '\0';
+}

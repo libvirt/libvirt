@@ -2630,6 +2630,7 @@ virStringSplitCount;
 virStringStripControlChars;
 virStringStripIPv6Brackets;
 virStringToUpper;
+virStringTrimOptionalNewline;
 virStrncpy;
 virStrndup;
 virStrToDouble;
