@@ -80,7 +80,7 @@ const REMOTE_NETWORK_LIST_MAX = 16384;
 const REMOTE_INTERFACE_LIST_MAX = 16384;
 
 /* Upper limit on lists of storage pools. */
-const REMOTE_STORAGE_POOL_LIST_MAX = 4096;
+const REMOTE_STORAGE_POOL_LIST_MAX = 16384;
 
 /* Upper limit on lists of storage vols. */
 const REMOTE_STORAGE_VOL_LIST_MAX = 16384;
@@ -92,7 +92,7 @@ const REMOTE_NODE_DEVICE_LIST_MAX = 65536;
 const REMOTE_NODE_DEVICE_CAPS_LIST_MAX = 65536;
 
 /* Upper limit on lists of network filters. */
-const REMOTE_NWFILTER_LIST_MAX = 1024;
+const REMOTE_NWFILTER_LIST_MAX = 16384;
 
 /* Upper limit on list of scheduler parameters. */
 const REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX = 16;
@@ -137,7 +137,7 @@ const REMOTE_AUTH_TYPE_LIST_MAX = 20;
 const REMOTE_DOMAIN_MEMORY_STATS_MAX = 1024;
 
 /* Upper limit on lists of domain snapshots. */
-const REMOTE_DOMAIN_SNAPSHOT_LIST_MAX = 1024;
+const REMOTE_DOMAIN_SNAPSHOT_LIST_MAX = 16384;
 
 /* Maximum length of a block peek buffer message.
  * Note applications need to be aware of this limit and issue multiple
