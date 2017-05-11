@@ -2674,7 +2674,7 @@ qemuDomainAttachHostDevice(virConnectPtr conn,
 {
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("hostdev mode '%s' not supported"),
+                       _("hotplug is not supported for hostdev mode '%s'"),
                        virDomainHostdevModeTypeToString(hostdev->mode));
         return -1;
     }
@@ -2705,7 +2705,7 @@ qemuDomainAttachHostDevice(virConnectPtr conn,
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("hostdev subsys type '%s' not supported"),
+                       _("hotplug is not supported for hostdev subsys type '%s'"),
                        virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
         goto error;
     }
@@ -4820,7 +4820,7 @@ qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("hostdev subsys type '%s' not supported"),
+                       _("hot unplug is not supported for hostdev subsys type '%s'"),
                        virDomainHostdevSubsysTypeToString(detach->source.subsys.type));
         return -1;
     }
@@ -4852,7 +4852,7 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
 
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("hostdev mode '%s' not supported"),
+                       _("hot unplug is not supported for hostdev mode '%s'"),
                        virDomainHostdevModeTypeToString(hostdev->mode));
         return -1;
     }
