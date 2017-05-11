@@ -54,6 +54,20 @@ css =         \
   libvirt.css \
   main.css
 
+fonts = \
+  fonts/LICENSE.md \
+  fonts/stylesheet.css \
+  fonts/overpass-bold-italic.woff \
+  fonts/overpass-bold.woff \
+  fonts/overpass-italic.woff \
+  fonts/overpass-light-italic.woff \
+  fonts/overpass-light.woff \
+  fonts/overpass-mono-bold.woff \
+  fonts/overpass-mono-light.woff \
+  fonts/overpass-mono-regular.woff \
+  fonts/overpass-mono-semibold.woff \
+  fonts/overpass-regular.woff
+
 devhelppng =		\
   devhelp/home.png	\
   devhelp/left.png	\
@@ -163,7 +177,7 @@ EXTRA_DIST=					\
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(qemu_xml) $(lxc_xml) $(admin_xml) $(fig) $(png) $(css) \
   $(logofiles) $(patches) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
-  $(internals_html_in) $(internals_html) \
+  $(internals_html_in) $(internals_html) $(fonts) \
   aclperms.htmlinc \
   hvsupport.pl \
   $(schema_DATA)
@@ -383,9 +397,13 @@ install-data-local:
 	for file in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
 	    $(INSTALL) -m 0644 $(srcdir)/$${file} $(DESTDIR)$(DEVHELP_DIR) ; \
 	done
+	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/fonts
+	for f in $(fonts); do \
+	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/fonts; \
+	done
 
 uninstall-local:
-	for f in $(css) $(dot_html) $(gif) $(png); do \
+	for f in $(css) $(dot_html) $(gif) $(png) $(fonts); do \
 	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
 	done
 	for f in $(logofiles); do \
