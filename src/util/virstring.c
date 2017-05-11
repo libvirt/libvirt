@@ -979,6 +979,38 @@ virStringSearch(const char *str,
 }
 
 /**
+ * virStringMatch:
+ * @str: string to match
+ * @regexp: POSIX Extended regular expression pattern used for matching
+ *
+ * Performs a POSIX extended regex match against a string.
+ * Returns true on match, false on error or no match.
+ */
+bool
+virStringMatch(const char *str,
+               const char *regexp)
+{
+    regex_t re;
+    int rv;
+
+    VIR_DEBUG("match '%s' for '%s'", str, regexp);
+
+    if ((rv = regcomp(&re, regexp, REG_EXTENDED | REG_NOSUB)) != 0) {
+        char error[100];
+        regerror(rv, &re, error, sizeof(error));
+        VIR_WARN("error while compiling regular expression '%s': %s",
+                 regexp, error);
+        return false;
+    }
+
+    rv = regexec(&re, str, 0, NULL, 0);
+
+    regfree(&re);
+
+    return rv == 0;
+}
+
+/**
  * virStringReplace:
  * @haystack: the source string to process
  * @oldneedle: the substring to locate

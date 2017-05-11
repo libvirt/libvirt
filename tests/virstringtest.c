@@ -480,6 +480,38 @@ testStringSearch(const void *opaque)
 }
 
 
+struct stringMatchData {
+    const char *str;
+    const char *regexp;
+    bool expectMatch;
+};
+
+static int
+testStringMatch(const void *opaque)
+{
+    const struct stringMatchData *data = opaque;
+    bool match;
+
+    match = virStringMatch(data->str, data->regexp);
+
+    if (data->expectMatch) {
+        if (!match) {
+            fprintf(stderr, "expected match for '%s' on '%s' but got no match\n",
+                    data->regexp, data->str);
+            return -1;
+        }
+    } else {
+        if (match) {
+            fprintf(stderr, "expected no match for '%s' on '%s' but got match\n",
+                    data->regexp, data->str);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 struct stringReplaceData {
     const char *haystack;
     const char *oldneedle;
@@ -802,6 +834,21 @@ mymain(void)
     /* Multi matches, limited returns */
     const char *matches3[] = { "foo", "bar" };
     TEST_SEARCH("1foo2bar3eek", "([a-z]+)", 2, 2, matches3, false);
+
+#define TEST_MATCH(s, r, m)                                                 \
+    do {                                                                    \
+        struct stringMatchData data = {                                     \
+            .str = s,                                                       \
+            .regexp = r,                                                    \
+            .expectMatch = m,                                               \
+        };                                                                  \
+        if (virTestRun("virStringMatch " s, testStringMatch, &data) < 0)    \
+            ret = -1;                                                       \
+    } while (0)
+
+    TEST_MATCH("foo", "foo", true);
+    TEST_MATCH("foobar", "f[o]+", true);
+    TEST_MATCH("foobar", "^f[o]+$", false);
 
 #define TEST_REPLACE(h, o, n, r)                                             \
     do {                                                                     \

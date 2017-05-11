@@ -274,6 +274,9 @@ ssize_t virStringSearch(const char *str,
                         char ***matches)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
+bool virStringMatch(const char *str,
+                    const char *regexp);
+
 char *virStringReplace(const char *haystack,
                        const char *oldneedle,
                        const char *newneedle)
