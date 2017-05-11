@@ -18,15 +18,17 @@
 
 #include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
+#ifndef WIN32
 
-#include "viralloc.h"
-#include "virfile.h"
-#include "virfilewrapper.h"
-#include "virmock.h"
-#include "virstring.h"
+# include <stdio.h>
+# include <stdlib.h>
+# include <fcntl.h>
+
+# include "viralloc.h"
+# include "virfile.h"
+# include "virfilewrapper.h"
+# include "virmock.h"
+# include "virstring.h"
 
 
 /* Mapping for prefix overrides */
@@ -139,7 +141,7 @@ virFileWrapperOverridePrefix(const char *path)
 }
 
 
-#define PATH_OVERRIDE(newpath, path)                    \
+# define PATH_OVERRIDE(newpath, path)                   \
     do {                                                \
         init_syms();                                    \
                                                         \
@@ -177,7 +179,7 @@ int access(const char *path, int mode)
     return ret;
 }
 
-#ifdef HAVE___LXSTAT
+# ifdef HAVE___LXSTAT
 int __lxstat(int ver, const char *path, struct stat *sb)
 {
     int ret = -1;
@@ -191,7 +193,7 @@ int __lxstat(int ver, const char *path, struct stat *sb)
 
     return ret;
 }
-#endif /* HAVE___LXSTAT */
+# endif /* HAVE___LXSTAT */
 
 int lstat(const char *path, struct stat *sb)
 {
@@ -207,7 +209,7 @@ int lstat(const char *path, struct stat *sb)
     return ret;
 }
 
-#ifdef HAVE___XSTAT
+# ifdef HAVE___XSTAT
 int __xstat(int ver, const char *path, struct stat *sb)
 {
     int ret = -1;
@@ -221,7 +223,7 @@ int __xstat(int ver, const char *path, struct stat *sb)
 
     return ret;
 }
-#endif /* HAVE___XSTAT */
+# endif /* HAVE___XSTAT */
 
 int stat(const char *path, struct stat *sb)
 {
@@ -278,3 +280,4 @@ DIR *opendir(const char *path)
 
     return ret;
 }
+#endif
