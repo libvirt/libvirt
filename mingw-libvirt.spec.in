@@ -30,7 +30,11 @@ Summary:        MinGW Windows libvirt virtualization library
 License:        LGPLv2+
 Group:          Development/Libraries
 URL:            http://libvirt.org/
-Source0:        ftp://libvirt.org/libvirt/libvirt-%{version}.tar.xz
+
+%if %(echo %{version} | grep -q "\.0$"; echo $?) == 1
+    %define mainturl stable_updates/
+%endif
+Source: http://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.xz
 
 BuildRequires:  mingw32-filesystem >= 95
 BuildRequires:  mingw64-filesystem >= 95
