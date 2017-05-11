@@ -1513,6 +1513,7 @@ elsif ($mode eq "client") {
                     $single_ret_list_name = $1;
                     $single_ret_list_max_var = "max$1";
                     $single_ret_list_max_define = $2;
+                    $single_ret_list_error_msg_type = "string";
                 } elsif ($ret_member =~ m/^(admin|remote)_nonnull_string (\S+)<\S+>;/) {
                     # error out on unannotated arrays
                     die "$1_nonnull_string array without insert@<offset> annotation: $ret_member";
@@ -1790,7 +1791,8 @@ elsif ($mode eq "client") {
             print "\n";
             print "    if ($single_ret_list_max_var > $single_ret_list_max_define) {\n";
             print "        virReportError(VIR_ERR_RPC,\n";
-            print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d\"),\n";
+            print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d,\"\n";
+            print "                         \"in parameter '$single_ret_list_name' for 'vir$call->{ProcName}'\"),\n";
             print "                       $single_ret_list_max_var, $single_ret_list_max_define);\n";
             print "        goto done;\n";
             print "    }\n";
@@ -1856,7 +1858,8 @@ elsif ($mode eq "client") {
             $modern_ret_as_list) {
             print "    if (ret.$single_ret_list_name.${single_ret_list_name}_len > $single_ret_list_max_var) {\n";
             print "        virReportError(VIR_ERR_RPC,\n";
-            print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d\"),\n";
+            print "                       _(\"too many remote ${single_ret_list_error_msg_type}s: %d > %d,\"\n";
+            print "                         \"in parameter '$single_ret_list_name' for 'vir$call->{ProcName}'\"),\n";
             print "                       ret.$single_ret_list_name.${single_ret_list_name}_len, $single_ret_list_max_var);\n";
             print "        goto cleanup;\n";
             print "    }\n";
