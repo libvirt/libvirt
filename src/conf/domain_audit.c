@@ -983,15 +983,13 @@ virDomainAuditShmem(virDomainObjPtr vm,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname = virAuditEncode("vm", vm->def->name);
     const char *srcpath = virDomainAuditChardevPath(&def->server.chr);
-    char *src = virAuditEncode("server", VIR_AUDIT_STR(srcpath));
-    char *shmem = virAuditEncode("shmem", VIR_AUDIT_STR(def->name));
     const char *virt = virDomainVirtTypeToString(vm->def->virtType);
-    char *size = NULL;
+    char *shmpath = NULL;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
 
-    if (!vmname || !src || !shmem ||
-        virAsprintfQuiet(&size, "%llu", def->size) < 0) {
+    if (!vmname ||
+        virAsprintfQuiet(&shmpath, "/dev/shm/%s", def->name) < 0) {
         VIR_WARN("OOM while encoding audit message");
         goto cleanup;
     }
@@ -1002,14 +1000,18 @@ virDomainAuditShmem(virDomainObjPtr vm,
         virt = "?";
     }
 
-    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-              "virt=%s resrc=shmem reason=%s %s uuid=%s size=%s %s %s",
-              virt, reason, vmname, uuidstr, size, shmem, src);
+    if (def->server.enabled) {
+        VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+                  "virt=%s resrc=ivshmem-socket reason=%s %s uuid=%s path=%s",
+                  virt, reason, vmname, uuidstr, VIR_AUDIT_STR(srcpath));
+    } else {
+        VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+                  "virt=%s resrc=shmem reason=%s %s uuid=%s size=%llu path=%s",
+                  virt, reason, vmname, uuidstr, def->size, VIR_AUDIT_STR(shmpath));
+   }
 
  cleanup:
     VIR_FREE(vmname);
-    VIR_FREE(src);
-    VIR_FREE(size);
-    VIR_FREE(shmem);
+    VIR_FREE(shmpath);
     return;
 }
