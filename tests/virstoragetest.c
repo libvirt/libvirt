@@ -32,7 +32,6 @@
 #include "dirname.h"
 
 #include "storage/storage_driver.h"
-#include "storage/storage_backend.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -732,8 +731,8 @@ mymain(void)
     virStorageSourcePtr chain2; /* short for chain->backingStore */
     virStorageSourcePtr chain3; /* short for chain2->backingStore */
 
-    if (virStorageBackendDriversRegister(false) < 0)
-       return -1;
+    if (storageRegisterAll() < 0)
+       return EXIT_FAILURE;
 
     /* Prep some files with qemu-img; if that is not found on PATH, or
      * if it lacks support for qcow2 and qed, skip this test.  */
