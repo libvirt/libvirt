@@ -238,7 +238,10 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
     if ((comm == NULL) && (name == NULL))
         return NULL;
 
-    VIR_DEBUG("Add entry %s %p", name, value);
+    /* don't log fully commented out lines */
+    if (name)
+        VIR_DEBUG("Add entry %s %p", name, value);
+
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
