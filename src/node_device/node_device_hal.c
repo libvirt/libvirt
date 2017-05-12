@@ -482,7 +482,7 @@ dev_create(const char *udi)
     /* Some devices don't have a path in sysfs, so ignore failure */
     (void)get_str_prop(ctx, udi, "linux.sysfs_path", &devicePath);
 
-    if (!(obj = virNodeDeviceObjAssignDef(&driver->devs, def))) {
+    if (!(obj = virNodeDeviceObjAssignDef(driver->devs, def))) {
         VIR_FREE(devicePath);
         goto failure;
     }
@@ -509,11 +509,11 @@ dev_refresh(const char *udi)
     virNodeDeviceObjPtr obj;
 
     nodeDeviceLock();
-    if ((obj = virNodeDeviceObjFindByName(&driver->devs, name))) {
+    if ((obj = virNodeDeviceObjFindByName(driver->devs, name))) {
         /* Simply "rediscover" device -- incrementally handling changes
          * to sub-capabilities (like net.80203) is nasty ... so avoid it.
          */
-        virNodeDeviceObjRemove(&driver->devs, obj);
+        virNodeDeviceObjRemove(driver->devs, obj);
     } else {
         VIR_DEBUG("no device named %s", name);
     }
@@ -542,10 +542,10 @@ device_removed(LibHalContext *ctx ATTRIBUTE_UNUSED,
     virNodeDeviceObjPtr obj;
 
     nodeDeviceLock();
-    obj = virNodeDeviceObjFindByName(&driver->devs, name);
+    obj = virNodeDeviceObjFindByName(driver->devs, name);
     VIR_DEBUG("%s", name);
     if (obj)
-        virNodeDeviceObjRemove(&driver->devs, obj);
+        virNodeDeviceObjRemove(driver->devs, obj);
     else
         VIR_DEBUG("no device named %s", name);
     nodeDeviceUnlock();
@@ -562,7 +562,7 @@ device_cap_added(LibHalContext *ctx,
     virNodeDeviceDefPtr def;
 
     nodeDeviceLock();
-    obj = virNodeDeviceObjFindByName(&driver->devs, name);
+    obj = virNodeDeviceObjFindByName(driver->devs, name);
     nodeDeviceUnlock();
     VIR_DEBUG("%s %s", cap, name);
     if (obj) {
@@ -626,6 +626,9 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
         return -1;
     }
     nodeDeviceLock();
+
+    if (!(driver->devs = virNodeDeviceObjListNew()))
+        goto failure;
 
     dbus_error_init(&err);
     if (!(sysbus = virDBusGetSystemBus())) {
@@ -701,7 +704,7 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
                        _("%s: %s"), err.name, err.message);
         dbus_error_free(&err);
     }
-    virNodeDeviceObjListFree(&driver->devs);
+    virNodeDeviceObjListFree(driver->devs);
     if (hal_ctx)
         (void)libhal_ctx_free(hal_ctx);
     nodeDeviceUnlock();
@@ -717,7 +720,7 @@ nodeStateCleanup(void)
     if (driver) {
         nodeDeviceLock();
         LibHalContext *hal_ctx = DRV_STATE_HAL_CTX(driver);
-        virNodeDeviceObjListFree(&driver->devs);
+        virNodeDeviceObjListFree(driver->devs);
         (void)libhal_ctx_shutdown(hal_ctx, NULL);
         (void)libhal_ctx_free(hal_ctx);
         nodeDeviceUnlock();

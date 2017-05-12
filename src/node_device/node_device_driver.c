@@ -182,7 +182,7 @@ nodeNumOfDevices(virConnectPtr conn,
     virCheckFlags(0, -1);
 
     nodeDeviceLock();
-    ndevs = virNodeDeviceObjNumOfDevices(&driver->devs, conn, cap,
+    ndevs = virNodeDeviceObjNumOfDevices(driver->devs, conn, cap,
                                          virNodeNumOfDevicesCheckACL);
     nodeDeviceUnlock();
 
@@ -205,7 +205,7 @@ nodeListDevices(virConnectPtr conn,
     virCheckFlags(0, -1);
 
     nodeDeviceLock();
-    nnames = virNodeDeviceObjGetNames(&driver->devs, conn,
+    nnames = virNodeDeviceObjGetNames(driver->devs, conn,
                                       virNodeListDevicesCheckACL,
                                       cap, names, maxnames);
     nodeDeviceUnlock();
@@ -227,7 +227,7 @@ nodeConnectListAllNodeDevices(virConnectPtr conn,
         return -1;
 
     nodeDeviceLock();
-    ret = virNodeDeviceObjListExport(conn, &driver->devs, devices,
+    ret = virNodeDeviceObjListExport(conn, driver->devs, devices,
                                      virConnectListAllNodeDevicesCheckACL,
                                      flags);
     nodeDeviceUnlock();
@@ -241,7 +241,7 @@ nodeDeviceObjFindByName(const char *name)
     virNodeDeviceObjPtr obj;
 
     nodeDeviceLock();
-    obj = virNodeDeviceObjFindByName(&driver->devs, name);
+    obj = virNodeDeviceObjFindByName(driver->devs, name);
     nodeDeviceUnlock();
 
     if (!obj) {
@@ -289,7 +289,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
                               unsigned int flags)
 {
     size_t i;
-    virNodeDeviceObjListPtr devs = &driver->devs;
+    virNodeDeviceObjListPtr devs = driver->devs;
     virNodeDevCapsDefPtr cap = NULL;
     virNodeDeviceObjPtr obj = NULL;
     virNodeDeviceDefPtr def;
@@ -587,7 +587,7 @@ nodeDeviceCreateXML(virConnectPtr conn,
     if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
         goto cleanup;
 
-    if ((parent_host = virNodeDeviceObjGetParentHost(&driver->devs, def,
+    if ((parent_host = virNodeDeviceObjGetParentHost(driver->devs, def,
                                                      CREATE_DEVICE)) < 0)
         goto cleanup;
 
@@ -639,7 +639,7 @@ nodeDeviceDestroy(virNodeDevicePtr device)
      * or parent_fabric_wwn) and drop the object lock. */
     virNodeDeviceObjUnlock(obj);
     obj = NULL;
-    if ((parent_host = virNodeDeviceObjGetParentHost(&driver->devs, def,
+    if ((parent_host = virNodeDeviceObjGetParentHost(driver->devs, def,
                                                      EXISTING_DEVICE)) < 0)
         goto cleanup;
 

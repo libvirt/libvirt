@@ -32,7 +32,7 @@ typedef virNodeDeviceDriverState *virNodeDeviceDriverStatePtr;
 struct _virNodeDeviceDriverState {
     virMutex lock;
 
-    virNodeDeviceObjList devs;		/* currently-known devices */
+    virNodeDeviceObjListPtr devs;	/* currently-known devices */
     void *privateData;			/* driver-specific private data */
 
     /* Immutable pointer, self-locking APIs */
@@ -67,6 +67,9 @@ virNodeDeviceObjGetParentHost(virNodeDeviceObjListPtr devs,
 
 void
 virNodeDeviceObjFree(virNodeDeviceObjPtr dev);
+
+virNodeDeviceObjListPtr
+virNodeDeviceObjListNew(void);
 
 void
 virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs);
