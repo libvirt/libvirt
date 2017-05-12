@@ -5842,12 +5842,7 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
     virDomainCapsFeatureGICPtr gic = &domCaps->gic;
     virGICVersion version;
 
-    if (domCaps->arch != VIR_ARCH_ARMV7L &&
-        domCaps->arch != VIR_ARCH_AARCH64)
-        return 0;
-
-    if (STRNEQ(domCaps->machine, "virt") &&
-        !STRPREFIX(domCaps->machine, "virt-"))
+    if (!qemuDomainMachineIsVirt(domCaps->machine, domCaps->arch))
         return 0;
 
     for (version = VIR_GIC_VERSION_LAST - 1;
