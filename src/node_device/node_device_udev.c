@@ -1312,20 +1312,18 @@ udevGetDeviceDetails(struct udev_device *device,
 static int
 udevRemoveOneDevice(struct udev_device *device)
 {
-    virNodeDeviceObjPtr dev = NULL;
+    virNodeDeviceObjPtr obj = NULL;
     virNodeDeviceDefPtr def;
     virObjectEventPtr event = NULL;
     const char *name = NULL;
 
     name = udev_device_get_syspath(device);
-    dev = virNodeDeviceObjFindBySysfsPath(&driver->devs, name);
-
-    if (!dev) {
+    if (!(obj = virNodeDeviceObjFindBySysfsPath(&driver->devs, name))) {
         VIR_DEBUG("Failed to find device to remove that has udev name '%s'",
                   name);
         return -1;
     }
-    def = virNodeDeviceObjGetDef(dev);
+    def = virNodeDeviceObjGetDef(obj);
 
     event = virNodeDeviceEventLifecycleNew(def->name,
                                            VIR_NODE_DEVICE_EVENT_DELETED,
@@ -1333,8 +1331,8 @@ udevRemoveOneDevice(struct udev_device *device)
 
     VIR_DEBUG("Removing device '%s' with sysfs path '%s'",
               def->name, name);
-    virNodeDeviceObjRemove(&driver->devs, dev);
-    virNodeDeviceObjFree(dev);
+    virNodeDeviceObjRemove(&driver->devs, obj);
+    virNodeDeviceObjFree(obj);
 
     if (event)
         virObjectEventStateQueue(driver->nodeDeviceEventState, event);
@@ -1348,7 +1346,7 @@ udevSetParent(struct udev_device *device,
 {
     struct udev_device *parent_device = NULL;
     const char *parent_sysfs_path = NULL;
-    virNodeDeviceObjPtr dev = NULL;
+    virNodeDeviceObjPtr obj = NULL;
     virNodeDeviceDefPtr objdef;
     int ret = -1;
 
@@ -1367,15 +1365,14 @@ udevSetParent(struct udev_device *device,
             goto cleanup;
         }
 
-        dev = virNodeDeviceObjFindBySysfsPath(&driver->devs,
-                                              parent_sysfs_path);
-        if (dev != NULL) {
-            objdef = virNodeDeviceObjGetDef(dev);
+        if ((obj = virNodeDeviceObjFindBySysfsPath(&driver->devs,
+                                                   parent_sysfs_path))) {
+            objdef = virNodeDeviceObjGetDef(obj);
             if (VIR_STRDUP(def->parent, objdef->name) < 0) {
-                virNodeDeviceObjUnlock(dev);
+                virNodeDeviceObjUnlock(obj);
                 goto cleanup;
             }
-            virNodeDeviceObjUnlock(dev);
+            virNodeDeviceObjUnlock(obj);
 
             if (VIR_STRDUP(def->parent_sysfs_path, parent_sysfs_path) < 0)
                 goto cleanup;
@@ -1397,7 +1394,7 @@ static int
 udevAddOneDevice(struct udev_device *device)
 {
     virNodeDeviceDefPtr def = NULL;
-    virNodeDeviceObjPtr dev = NULL;
+    virNodeDeviceObjPtr obj = NULL;
     virNodeDeviceDefPtr objdef;
     virObjectEventPtr event = NULL;
     bool new_device = true;
@@ -1427,18 +1424,16 @@ udevAddOneDevice(struct udev_device *device)
     if (udevSetParent(device, def) != 0)
         goto cleanup;
 
-    dev = virNodeDeviceObjFindByName(&driver->devs, def->name);
-    if (dev) {
-        virNodeDeviceObjUnlock(dev);
+    if ((obj = virNodeDeviceObjFindByName(&driver->devs, def->name))) {
+        virNodeDeviceObjUnlock(obj);
         new_device = false;
     }
 
     /* If this is a device change, the old definition will be freed
      * and the current definition will take its place. */
-    dev = virNodeDeviceObjAssignDef(&driver->devs, def);
-    if (dev == NULL)
+    if (!(obj = virNodeDeviceObjAssignDef(&driver->devs, def)))
         goto cleanup;
-    objdef = virNodeDeviceObjGetDef(dev);
+    objdef = virNodeDeviceObjGetDef(obj);
 
     if (new_device)
         event = virNodeDeviceEventLifecycleNew(objdef->name,
@@ -1447,7 +1442,7 @@ udevAddOneDevice(struct udev_device *device)
     else
         event = virNodeDeviceEventUpdateNew(objdef->name);
 
-    virNodeDeviceObjUnlock(dev);
+    virNodeDeviceObjUnlock(obj);
 
     ret = 0;
 
@@ -1710,7 +1705,7 @@ static int
 udevSetupSystemDev(void)
 {
     virNodeDeviceDefPtr def = NULL;
-    virNodeDeviceObjPtr dev = NULL;
+    virNodeDeviceObjPtr obj = NULL;
     int ret = -1;
 
     if (VIR_ALLOC(def) < 0)
@@ -1726,11 +1721,10 @@ udevSetupSystemDev(void)
     udevGetDMIData(&def->caps->data.system);
 #endif
 
-    dev = virNodeDeviceObjAssignDef(&driver->devs, def);
-    if (dev == NULL)
+    if (!(obj = virNodeDeviceObjAssignDef(&driver->devs, def)))
         goto cleanup;
 
-    virNodeDeviceObjUnlock(dev);
+    virNodeDeviceObjUnlock(obj);
 
     ret = 0;
 

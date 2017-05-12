@@ -260,7 +260,7 @@ nodeDeviceLookupByName(virConnectPtr conn,
 {
     virNodeDeviceObjPtr obj;
     virNodeDeviceDefPtr def;
-    virNodeDevicePtr ret = NULL;
+    virNodeDevicePtr device = NULL;
 
     if (!(obj = nodeDeviceObjFindByName(name)))
         return NULL;
@@ -269,16 +269,16 @@ nodeDeviceLookupByName(virConnectPtr conn,
     if (virNodeDeviceLookupByNameEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if ((ret = virGetNodeDevice(conn, name))) {
-        if (VIR_STRDUP(ret->parent, def->parent) < 0) {
-            virObjectUnref(ret);
-            ret = NULL;
+    if ((device = virGetNodeDevice(conn, name))) {
+        if (VIR_STRDUP(device->parent, def->parent) < 0) {
+            virObjectUnref(device);
+            device = NULL;
         }
     }
 
  cleanup:
     virNodeDeviceObjUnlock(obj);
-    return ret;
+    return device;
 }
 
 
@@ -293,7 +293,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
     virNodeDevCapsDefPtr cap = NULL;
     virNodeDeviceObjPtr obj = NULL;
     virNodeDeviceDefPtr def;
-    virNodeDevicePtr dev = NULL;
+    virNodeDevicePtr device = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -316,10 +316,10 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
                         if (virNodeDeviceLookupSCSIHostByWWNEnsureACL(conn, def) < 0)
                             goto error;
 
-                        if ((dev = virGetNodeDevice(conn, def->name))) {
-                            if (VIR_STRDUP(dev->parent, def->parent) < 0) {
-                                virObjectUnref(dev);
-                                dev = NULL;
+                        if ((device = virGetNodeDevice(conn, def->name))) {
+                            if (VIR_STRDUP(device->parent, def->parent) < 0) {
+                                virObjectUnref(device);
+                                device = NULL;
                             }
                         }
                         virNodeDeviceObjUnlock(obj);
@@ -335,7 +335,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
 
  out:
     nodeDeviceUnlock();
-    return dev;
+    return device;
 
  error:
     virNodeDeviceObjUnlock(obj);
@@ -344,7 +344,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
 
 
 char *
-nodeDeviceGetXMLDesc(virNodeDevicePtr dev,
+nodeDeviceGetXMLDesc(virNodeDevicePtr device,
                      unsigned int flags)
 {
     virNodeDeviceObjPtr obj;
@@ -353,11 +353,11 @@ nodeDeviceGetXMLDesc(virNodeDevicePtr dev,
 
     virCheckFlags(0, NULL);
 
-    if (!(obj = nodeDeviceObjFindByName(dev->name)))
+    if (!(obj = nodeDeviceObjFindByName(device->name)))
         return NULL;
     def = virNodeDeviceObjGetDef(obj);
 
-    if (virNodeDeviceGetXMLDescEnsureACL(dev->conn, def) < 0)
+    if (virNodeDeviceGetXMLDescEnsureACL(device->conn, def) < 0)
         goto cleanup;
 
     if (nodeDeviceUpdateDriverName(def) < 0)
@@ -375,17 +375,17 @@ nodeDeviceGetXMLDesc(virNodeDevicePtr dev,
 
 
 char *
-nodeDeviceGetParent(virNodeDevicePtr dev)
+nodeDeviceGetParent(virNodeDevicePtr device)
 {
     virNodeDeviceObjPtr obj;
     virNodeDeviceDefPtr def;
     char *ret = NULL;
 
-    if (!(obj = nodeDeviceObjFindByName(dev->name)))
+    if (!(obj = nodeDeviceObjFindByName(device->name)))
         return NULL;
     def = virNodeDeviceObjGetDef(obj);
 
-    if (virNodeDeviceGetParentEnsureACL(dev->conn, def) < 0)
+    if (virNodeDeviceGetParentEnsureACL(device->conn, def) < 0)
         goto cleanup;
 
     if (def->parent) {
@@ -403,7 +403,7 @@ nodeDeviceGetParent(virNodeDevicePtr dev)
 
 
 int
-nodeDeviceNumOfCaps(virNodeDevicePtr dev)
+nodeDeviceNumOfCaps(virNodeDevicePtr device)
 {
     virNodeDeviceObjPtr obj;
     virNodeDeviceDefPtr def;
@@ -411,11 +411,11 @@ nodeDeviceNumOfCaps(virNodeDevicePtr dev)
     int ncaps = 0;
     int ret = -1;
 
-    if (!(obj = nodeDeviceObjFindByName(dev->name)))
+    if (!(obj = nodeDeviceObjFindByName(device->name)))
         return -1;
     def = virNodeDeviceObjGetDef(obj);
 
-    if (virNodeDeviceNumOfCapsEnsureACL(dev->conn, def) < 0)
+    if (virNodeDeviceNumOfCapsEnsureACL(device->conn, def) < 0)
         goto cleanup;
 
     for (caps = def->caps; caps; caps = caps->next) {
@@ -442,7 +442,7 @@ nodeDeviceNumOfCaps(virNodeDevicePtr dev)
 
 
 int
-nodeDeviceListCaps(virNodeDevicePtr dev,
+nodeDeviceListCaps(virNodeDevicePtr device,
                    char **const names,
                    int maxnames)
 {
@@ -452,11 +452,11 @@ nodeDeviceListCaps(virNodeDevicePtr dev,
     int ncaps = 0;
     int ret = -1;
 
-    if (!(obj = nodeDeviceObjFindByName(dev->name)))
+    if (!(obj = nodeDeviceObjFindByName(device->name)))
         return -1;
     def = virNodeDeviceObjGetDef(obj);
 
-    if (virNodeDeviceListCapsEnsureACL(dev->conn, def) < 0)
+    if (virNodeDeviceListCapsEnsureACL(device->conn, def) < 0)
         goto cleanup;
 
     for (caps = def->caps; caps && ncaps < maxnames; caps = caps->next) {
@@ -530,7 +530,7 @@ nodeDeviceFindNewDevice(virConnectPtr conn,
                         const char *wwnn,
                         const char *wwpn)
 {
-    virNodeDevicePtr dev = NULL;
+    virNodeDevicePtr device = NULL;
     time_t start = 0, now = 0;
 
     /* The thread that creates the device takes the driver lock, so we
@@ -546,9 +546,9 @@ nodeDeviceFindNewDevice(virConnectPtr conn,
 
         virWaitForDevices();
 
-        dev = nodeDeviceLookupSCSIHostByWWN(conn, wwnn, wwpn, 0);
+        device = nodeDeviceLookupSCSIHostByWWN(conn, wwnn, wwpn, 0);
 
-        if (dev != NULL)
+        if (device != NULL)
             break;
 
         sleep(5);
@@ -558,7 +558,7 @@ nodeDeviceFindNewDevice(virConnectPtr conn,
 
     nodeDeviceLock();
 
-    return dev;
+    return device;
 }
 
 
@@ -570,7 +570,7 @@ nodeDeviceCreateXML(virConnectPtr conn,
     virNodeDeviceDefPtr def = NULL;
     char *wwnn = NULL, *wwpn = NULL;
     int parent_host = -1;
-    virNodeDevicePtr dev = NULL;
+    virNodeDevicePtr device = NULL;
     const char *virt_type = NULL;
 
     virCheckFlags(0, NULL);
@@ -594,11 +594,11 @@ nodeDeviceCreateXML(virConnectPtr conn,
     if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_CREATE) < 0)
         goto cleanup;
 
-    dev = nodeDeviceFindNewDevice(conn, wwnn, wwpn);
+    device = nodeDeviceFindNewDevice(conn, wwnn, wwpn);
     /* We don't check the return value, because one way or another,
      * we're returning what we get... */
 
-    if (dev == NULL)
+    if (device == NULL)
         virReportError(VIR_ERR_NO_NODE_DEVICE,
                        _("no node device for '%s' with matching "
                          "wwnn '%s' and wwpn '%s'"),
@@ -608,12 +608,12 @@ nodeDeviceCreateXML(virConnectPtr conn,
     virNodeDeviceDefFree(def);
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
-    return dev;
+    return device;
 }
 
 
 int
-nodeDeviceDestroy(virNodeDevicePtr dev)
+nodeDeviceDestroy(virNodeDevicePtr device)
 {
     int ret = -1;
     virNodeDeviceObjPtr obj = NULL;
@@ -621,13 +621,13 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
     char *wwnn = NULL, *wwpn = NULL;
     int parent_host = -1;
 
-    if (!(obj = nodeDeviceObjFindByName(dev->name)))
+    if (!(obj = nodeDeviceObjFindByName(device->name)))
         return -1;
     def = virNodeDeviceObjGetDef(obj);
 
     nodeDeviceLock();
 
-    if (virNodeDeviceDestroyEnsureACL(dev->conn, def) < 0)
+    if (virNodeDeviceDestroyEnsureACL(device->conn, def) < 0)
         goto cleanup;
 
     if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) < 0)
@@ -660,7 +660,7 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
 
 int
 nodeConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
-                                      virNodeDevicePtr dev,
+                                      virNodeDevicePtr device,
                                       int eventID,
                                       virConnectNodeDeviceEventGenericCallback callback,
                                       void *opaque,
@@ -672,7 +672,7 @@ nodeConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
         goto cleanup;
 
     if (virNodeDeviceEventStateRegisterID(conn, driver->nodeDeviceEventState,
-                                          dev, eventID, callback,
+                                          device, eventID, callback,
                                           opaque, freecb, &callbackID) < 0)
         callbackID = -1;
  cleanup:
