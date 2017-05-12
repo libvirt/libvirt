@@ -1,0 +1,25 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>6ba410c5-1e5c-4d57-bee7-2228e7ffa32f</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <gic version='3'/>
+  </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='allow'>cortex-a57</model>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <memballoon model='none'/>
+  </devices>
+</domain>

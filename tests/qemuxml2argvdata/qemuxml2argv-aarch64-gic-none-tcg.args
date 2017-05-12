@@ -1,0 +1,19 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-aarch64 \
+-name guest \
+-S \
+-machine virt,accel=tcg,gic-version=3 \
+-cpu cortex-a57 \
+-m 1024 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-guest/monitor.sock,server,nowait \
+-no-acpi \
+-boot c

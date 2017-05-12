@@ -2251,6 +2251,9 @@ mymain(void)
     DO_TEST_GIC("aarch64-gic-none-both", GIC_BOTH,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
+    DO_TEST_GIC("aarch64-gic-none-tcg", GIC_BOTH,
+            QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-default", GIC_NONE,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT);
     DO_TEST_GIC("aarch64-gic-default", GIC_NONE,
