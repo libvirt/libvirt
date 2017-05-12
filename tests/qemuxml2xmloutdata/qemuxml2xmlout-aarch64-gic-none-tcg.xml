@@ -9,7 +9,7 @@
     <boot dev='hd'/>
   </os>
   <features>
-    <gic version='3'/>
+    <gic version='2'/>
   </features>
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='allow'>cortex-a57</model>

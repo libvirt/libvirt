@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name guest \
 -S \
--machine virt,accel=tcg,gic-version=3 \
+-machine virt,accel=tcg \
 -cpu cortex-a57 \
 -m 1024 \
 -smp 1,sockets=1,cores=1,threads=1 \
