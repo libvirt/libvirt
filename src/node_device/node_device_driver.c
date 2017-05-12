@@ -288,9 +288,6 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
                               const char *wwpn,
                               unsigned int flags)
 {
-    size_t i;
-    virNodeDeviceObjListPtr devs = driver->devs;
-    virNodeDevCapsDefPtr cap = NULL;
     virNodeDeviceObjPtr obj = NULL;
     virNodeDeviceDefPtr def;
     virNodeDevicePtr device = NULL;
@@ -298,48 +295,27 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
     virCheckFlags(0, NULL);
 
     nodeDeviceLock();
+    obj = virNodeDeviceObjListFindSCSIHostByWWNs(driver->devs, wwnn, wwpn);
+    nodeDeviceUnlock();
 
-    for (i = 0; i < devs->count; i++) {
-        obj = devs->objs[i];
-        virNodeDeviceObjLock(obj);
-        def = virNodeDeviceObjGetDef(obj);
-        cap = def->caps;
+    if (!obj)
+        return NULL;
 
-        while (cap) {
-            if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
-                nodeDeviceSysfsGetSCSIHostCaps(&cap->data.scsi_host);
-                if (cap->data.scsi_host.flags &
-                    VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
-                    if (STREQ(cap->data.scsi_host.wwnn, wwnn) &&
-                        STREQ(cap->data.scsi_host.wwpn, wwpn)) {
+    def = virNodeDeviceObjGetDef(obj);
 
-                        if (virNodeDeviceLookupSCSIHostByWWNEnsureACL(conn, def) < 0)
-                            goto error;
+    if (virNodeDeviceLookupSCSIHostByWWNEnsureACL(conn, def) < 0)
+        goto cleanup;
 
-                        if ((device = virGetNodeDevice(conn, def->name))) {
-                            if (VIR_STRDUP(device->parent, def->parent) < 0) {
-                                virObjectUnref(device);
-                                device = NULL;
-                            }
-                        }
-                        virNodeDeviceObjUnlock(obj);
-                        goto out;
-                    }
-                }
-            }
-            cap = cap->next;
+    if ((device = virGetNodeDevice(conn, def->name))) {
+        if (VIR_STRDUP(device->parent, def->parent) < 0) {
+            virObjectUnref(device);
+            device = NULL;
         }
-
-        virNodeDeviceObjUnlock(obj);
     }
 
- out:
-    nodeDeviceUnlock();
-    return device;
-
- error:
+ cleanup:
     virNodeDeviceObjUnlock(obj);
-    goto out;
+    return device;
 }
 
 

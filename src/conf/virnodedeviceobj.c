@@ -273,6 +273,39 @@ virNodeDeviceObjListFindByCap(virNodeDeviceObjListPtr devs,
 }
 
 
+virNodeDeviceObjPtr
+virNodeDeviceObjListFindSCSIHostByWWNs(virNodeDeviceObjListPtr devs,
+                                       const char *wwnn,
+                                       const char *wwpn)
+{
+    size_t i;
+
+    for (i = 0; i < devs->count; i++) {
+        virNodeDeviceObjPtr obj = devs->objs[i];
+        virNodeDevCapsDefPtr cap;
+
+        virNodeDeviceObjLock(obj);
+        cap = obj->def->caps;
+
+        while (cap) {
+            if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+                virNodeDeviceGetSCSIHostCaps(&cap->data.scsi_host);
+                if (cap->data.scsi_host.flags &
+                    VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
+                    if (STREQ(cap->data.scsi_host.wwnn, wwnn) &&
+                        STREQ(cap->data.scsi_host.wwpn, wwpn))
+                        return obj;
+                }
+            }
+            cap = cap->next;
+        }
+        virNodeDeviceObjUnlock(obj);
+    }
+
+    return NULL;
+}
+
+
 void
 virNodeDeviceObjFree(virNodeDeviceObjPtr obj)
 {

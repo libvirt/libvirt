@@ -53,6 +53,11 @@ virNodeDeviceObjListFindBySysfsPath(virNodeDeviceObjListPtr devs,
     ATTRIBUTE_NONNULL(2);
 
 virNodeDeviceObjPtr
+virNodeDeviceObjListFindSCSIHostByWWNs(virNodeDeviceObjListPtr devs,
+                                       const char *wwnn,
+                                       const char *wwpn);
+
+virNodeDeviceObjPtr
 virNodeDeviceObjListAssignDef(virNodeDeviceObjListPtr devs,
                               virNodeDeviceDefPtr def);
 
