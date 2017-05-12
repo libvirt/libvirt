@@ -11309,9 +11309,9 @@ qemuDomainBlockPeek(virDomainPtr dom,
                     unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainDiskDefPtr disk = NULL;
     virDomainObjPtr vm;
-    int fd = -1, ret = -1;
-    const char *actual;
+    int ret = -1;
 
     virCheckFlags(0, -1);
 
@@ -11322,32 +11322,23 @@ qemuDomainBlockPeek(virDomainPtr dom,
         goto cleanup;
 
     /* Check the path belongs to this domain.  */
-    if (!(actual = virDomainDiskPathByName(vm->def, path))) {
+    if (!(disk = virDomainDiskByName(vm->def, path, true))) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid path '%s'"), path);
+                       _("invalid disk or path '%s'"), path);
         goto cleanup;
     }
-    path = actual;
 
-    fd = qemuOpenFile(driver, vm, path, O_RDONLY, NULL, NULL);
-    if (fd < 0)
+    if (qemuDomainStorageFileInit(driver, vm, disk->src) < 0)
         goto cleanup;
 
-    /* Seek and read. */
-    /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
-     * be 64 bits on all platforms.
-     */
-    if (lseek(fd, offset, SEEK_SET) == (off_t) -1 ||
-        saferead(fd, buffer, size) == (ssize_t) -1) {
-        virReportSystemError(errno,
-                             _("%s: failed to seek or read"), path);
+    if (virStorageFileRead(disk->src, offset, size, buffer) < 0)
         goto cleanup;
-    }
 
     ret = 0;
 
  cleanup:
-    VIR_FORCE_CLOSE(fd);
+    if (disk)
+        virStorageFileDeinit(disk->src);
     virDomainObjEndAPI(&vm);
     return ret;
 }
