@@ -19691,6 +19691,16 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
         }
     }
 
+    /* ioapic */
+    if (src->ioapic != dst->ioapic) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("State of ioapic differs: "
+                         "source: '%s', destination: '%s'"),
+                       virDomainIOAPICTypeToString(src->ioapic),
+                       virDomainIOAPICTypeToString(dst->ioapic));
+        return false;
+    }
+
     return true;
 }
 
@@ -19828,6 +19838,22 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDefPtr src,
                          "does not match source '%s'"),
                        virDomainIOMMUModelTypeToString(dst->model),
                        virDomainIOMMUModelTypeToString(src->model));
+        return false;
+    }
+    if (src->intremap != dst->intremap) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device intremap value '%s' "
+                         "does not match source '%s'"),
+                       virTristateSwitchTypeToString(dst->intremap),
+                       virTristateSwitchTypeToString(src->intremap));
+        return false;
+    }
+    if (src->caching_mode != dst->caching_mode) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device caching mode '%s' "
+                         "does not match source '%s'"),
+                       virTristateSwitchTypeToString(dst->caching_mode),
+                       virTristateSwitchTypeToString(src->caching_mode));
         return false;
     }
     return true;
