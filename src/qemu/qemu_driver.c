@@ -11328,6 +11328,12 @@ qemuDomainBlockPeek(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (disk->src->format != VIR_STORAGE_FILE_RAW) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("peeking is supported only for RAW disks"));
+        goto cleanup;
+    }
+
     if (qemuDomainStorageFileInit(driver, vm, disk->src) < 0)
         goto cleanup;
 
