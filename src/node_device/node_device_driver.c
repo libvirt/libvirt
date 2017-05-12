@@ -182,8 +182,8 @@ nodeNumOfDevices(virConnectPtr conn,
     virCheckFlags(0, -1);
 
     nodeDeviceLock();
-    ndevs = virNodeDeviceObjNumOfDevices(driver->devs, conn, cap,
-                                         virNodeNumOfDevicesCheckACL);
+    ndevs = virNodeDeviceObjListNumOfDevices(driver->devs, conn, cap,
+                                             virNodeNumOfDevicesCheckACL);
     nodeDeviceUnlock();
 
     return ndevs;
@@ -205,9 +205,9 @@ nodeListDevices(virConnectPtr conn,
     virCheckFlags(0, -1);
 
     nodeDeviceLock();
-    nnames = virNodeDeviceObjGetNames(driver->devs, conn,
-                                      virNodeListDevicesCheckACL,
-                                      cap, names, maxnames);
+    nnames = virNodeDeviceObjListGetNames(driver->devs, conn,
+                                          virNodeListDevicesCheckACL,
+                                          cap, names, maxnames);
     nodeDeviceUnlock();
 
     return nnames;
@@ -241,7 +241,7 @@ nodeDeviceObjFindByName(const char *name)
     virNodeDeviceObjPtr obj;
 
     nodeDeviceLock();
-    obj = virNodeDeviceObjFindByName(driver->devs, name);
+    obj = virNodeDeviceObjListFindByName(driver->devs, name);
     nodeDeviceUnlock();
 
     if (!obj) {
@@ -587,8 +587,8 @@ nodeDeviceCreateXML(virConnectPtr conn,
     if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
         goto cleanup;
 
-    if ((parent_host = virNodeDeviceObjGetParentHost(driver->devs, def,
-                                                     CREATE_DEVICE)) < 0)
+    if ((parent_host = virNodeDeviceObjListGetParentHost(driver->devs, def,
+                                                         CREATE_DEVICE)) < 0)
         goto cleanup;
 
     if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_CREATE) < 0)
@@ -639,8 +639,8 @@ nodeDeviceDestroy(virNodeDevicePtr device)
      * or parent_fabric_wwn) and drop the object lock. */
     virNodeDeviceObjUnlock(obj);
     obj = NULL;
-    if ((parent_host = virNodeDeviceObjGetParentHost(driver->devs, def,
-                                                     EXISTING_DEVICE)) < 0)
+    if ((parent_host = virNodeDeviceObjListGetParentHost(driver->devs, def,
+                                                         EXISTING_DEVICE)) < 0)
         goto cleanup;
 
     if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_DELETE) < 0)

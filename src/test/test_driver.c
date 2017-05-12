@@ -1172,7 +1172,7 @@ testParseNodedevs(testDriverPtr privconn,
         if (!def)
             goto error;
 
-        if (!(obj = virNodeDeviceObjAssignDef(privconn->devs, def))) {
+        if (!(obj = virNodeDeviceObjListAssignDef(privconn->devs, def))) {
             virNodeDeviceDefFree(def);
             goto error;
         }
@@ -4561,7 +4561,8 @@ testDestroyVport(testDriverPtr privconn,
      *
      * Reaching across the boundaries of space and time into the
      * Node Device in order to remove */
-    if (!(obj = virNodeDeviceObjFindByName(privconn->devs, "scsi_host12"))) {
+    if (!(obj = virNodeDeviceObjListFindByName(privconn->devs,
+                                               "scsi_host12"))) {
         virReportError(VIR_ERR_NO_NODE_DEVICE, "%s",
                        _("no node device with matching name 'scsi_host12'"));
         return -1;
@@ -4571,7 +4572,7 @@ testDestroyVport(testDriverPtr privconn,
                                            VIR_NODE_DEVICE_EVENT_DELETED,
                                            0);
 
-    virNodeDeviceObjRemove(privconn->devs, obj);
+    virNodeDeviceObjListRemove(privconn->devs, obj);
     virNodeDeviceObjFree(obj);
 
     testObjectEventQueue(privconn, event);
@@ -5303,7 +5304,7 @@ testNodeDeviceObjFindByName(testDriverPtr driver,
     virNodeDeviceObjPtr obj;
 
     testDriverLock(driver);
-    obj = virNodeDeviceObjFindByName(driver->devs, name);
+    obj = virNodeDeviceObjListFindByName(driver->devs, name);
     testDriverUnlock(driver);
 
     if (!obj)
@@ -5326,7 +5327,7 @@ testNodeNumOfDevices(virConnectPtr conn,
     virCheckFlags(0, -1);
 
     testDriverLock(driver);
-    ndevs = virNodeDeviceObjNumOfDevices(driver->devs, conn, cap, NULL);
+    ndevs = virNodeDeviceObjListNumOfDevices(driver->devs, conn, cap, NULL);
     testDriverUnlock(driver);
 
     return ndevs;
@@ -5346,8 +5347,8 @@ testNodeListDevices(virConnectPtr conn,
     virCheckFlags(0, -1);
 
     testDriverLock(driver);
-    nnames = virNodeDeviceObjGetNames(driver->devs, conn, NULL,
-                                     cap, names, maxnames);
+    nnames = virNodeDeviceObjListGetNames(driver->devs, conn, NULL,
+                                          cap, names, maxnames);
     testDriverUnlock(driver);
 
     return nnames;
@@ -5493,7 +5494,8 @@ testNodeDeviceMockCreateVport(testDriverPtr driver,
      * using the scsi_host11 definition, changing the name and the
      * scsi_host capability fields before calling virNodeDeviceAssignDef
      * to add the def to the node device objects list. */
-    if (!(objcopy = virNodeDeviceObjFindByName(driver->devs, "scsi_host11")))
+    if (!(objcopy = virNodeDeviceObjListFindByName(driver->devs,
+                                                   "scsi_host11")))
         goto cleanup;
 
     xml = virNodeDeviceDefFormat(virNodeDeviceObjGetDef(objcopy));
@@ -5533,7 +5535,7 @@ testNodeDeviceMockCreateVport(testDriverPtr driver,
         caps = caps->next;
     }
 
-    if (!(obj = virNodeDeviceObjAssignDef(driver->devs, def)))
+    if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, def)))
         goto cleanup;
     def = NULL;
     objdef = virNodeDeviceObjGetDef(obj);
@@ -5578,7 +5580,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     /* Unlike the "real" code we don't need the parent_host in order to
      * call virVHBAManageVport, but still let's make sure the code finds
      * something valid and no one messed up the mock environment. */
-    if (virNodeDeviceObjGetParentHost(driver->devs, def, CREATE_DEVICE) < 0)
+    if (virNodeDeviceObjListGetParentHost(driver->devs, def, CREATE_DEVICE) < 0)
         goto cleanup;
 
     /* In the real code, we'd call virVHBAManageVport followed by
@@ -5639,8 +5641,8 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
 
     /* We do this just for basic validation, but also avoid finding a
      * vport capable HBA if for some reason our vHBA doesn't exist */
-    if (virNodeDeviceObjGetParentHost(driver->devs, def,
-                                      EXISTING_DEVICE) < 0) {
+    if (virNodeDeviceObjListGetParentHost(driver->devs, def,
+                                          EXISTING_DEVICE) < 0) {
         obj = NULL;
         goto cleanup;
     }
@@ -5650,7 +5652,7 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
                                            0);
 
     virNodeDeviceObjLock(obj);
-    virNodeDeviceObjRemove(driver->devs, obj);
+    virNodeDeviceObjListRemove(driver->devs, obj);
     virNodeDeviceObjFree(obj);
     obj = NULL;
 

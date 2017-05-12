@@ -44,25 +44,25 @@ virNodeDeviceDefPtr
 virNodeDeviceObjGetDef(virNodeDeviceObjPtr obj);
 
 virNodeDeviceObjPtr
-virNodeDeviceObjFindByName(virNodeDeviceObjListPtr devs,
-                           const char *name);
+virNodeDeviceObjListFindByName(virNodeDeviceObjListPtr devs,
+                               const char *name);
 
 virNodeDeviceObjPtr
-virNodeDeviceObjFindBySysfsPath(virNodeDeviceObjListPtr devs,
-                                const char *sysfs_path)
+virNodeDeviceObjListFindBySysfsPath(virNodeDeviceObjListPtr devs,
+                                    const char *sysfs_path)
     ATTRIBUTE_NONNULL(2);
 
 virNodeDeviceObjPtr
-virNodeDeviceObjAssignDef(virNodeDeviceObjListPtr devs,
-                          virNodeDeviceDefPtr def);
+virNodeDeviceObjListAssignDef(virNodeDeviceObjListPtr devs,
+                              virNodeDeviceDefPtr def);
 
 void
-virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
-                       virNodeDeviceObjPtr dev);
+virNodeDeviceObjListRemove(virNodeDeviceObjListPtr devs,
+                           virNodeDeviceObjPtr dev);
 
 int
-virNodeDeviceObjGetParentHost(virNodeDeviceObjListPtr devs,
-                              virNodeDeviceDefPtr def,
+virNodeDeviceObjListGetParentHost(virNodeDeviceObjListPtr devs,
+                                  virNodeDeviceDefPtr def,
                               int create);
 
 void
@@ -85,24 +85,24 @@ typedef bool
                               virNodeDeviceDefPtr def);
 
 int
-virNodeDeviceObjNumOfDevices(virNodeDeviceObjListPtr devs,
-                             virConnectPtr conn,
-                             const char *cap,
-                             virNodeDeviceObjListFilter aclfilter);
+virNodeDeviceObjListNumOfDevices(virNodeDeviceObjListPtr devs,
+                                 virConnectPtr conn,
+                                 const char *cap,
+                                 virNodeDeviceObjListFilter aclfilter);
 
 int
-virNodeDeviceObjGetNames(virNodeDeviceObjListPtr devs,
-                         virConnectPtr conn,
-                         virNodeDeviceObjListFilter aclfilter,
-                         const char *cap,
-                         char **const names,
-                         int maxnames);
+virNodeDeviceObjListGetNames(virNodeDeviceObjListPtr devs,
+                             virConnectPtr conn,
+                             virNodeDeviceObjListFilter aclfilter,
+                             const char *cap,
+                             char **const names,
+                             int maxnames);
 
 int
 virNodeDeviceObjListExport(virConnectPtr conn,
                            virNodeDeviceObjListPtr devobjs,
                            virNodeDevicePtr **devices,
-                           virNodeDeviceObjListFilter filter,
+                           virNodeDeviceObjListFilter aclfilter,
                            unsigned int flags);
 
 #endif /* __VIRNODEDEVICEOBJ_H__ */

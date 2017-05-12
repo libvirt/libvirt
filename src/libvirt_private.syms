@@ -963,19 +963,19 @@ virNetworkObjUpdateAssignDef;
 
 
 # conf/virnodedeviceobj.h
-virNodeDeviceObjAssignDef;
-virNodeDeviceObjFindByName;
-virNodeDeviceObjFindBySysfsPath;
 virNodeDeviceObjFree;
 virNodeDeviceObjGetDef;
-virNodeDeviceObjGetNames;
-virNodeDeviceObjGetParentHost;
+virNodeDeviceObjListAssignDef;
 virNodeDeviceObjListExport;
+virNodeDeviceObjListFindByName;
+virNodeDeviceObjListFindBySysfsPath;
 virNodeDeviceObjListFree;
+virNodeDeviceObjListGetNames;
+virNodeDeviceObjListGetParentHost;
 virNodeDeviceObjListNew;
+virNodeDeviceObjListNumOfDevices;
+virNodeDeviceObjListRemove;
 virNodeDeviceObjLock;
-virNodeDeviceObjNumOfDevices;
-virNodeDeviceObjRemove;
 virNodeDeviceObjUnlock;
 
 

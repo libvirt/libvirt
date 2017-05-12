@@ -1318,7 +1318,7 @@ udevRemoveOneDevice(struct udev_device *device)
     const char *name = NULL;
 
     name = udev_device_get_syspath(device);
-    if (!(obj = virNodeDeviceObjFindBySysfsPath(driver->devs, name))) {
+    if (!(obj = virNodeDeviceObjListFindBySysfsPath(driver->devs, name))) {
         VIR_DEBUG("Failed to find device to remove that has udev name '%s'",
                   name);
         return -1;
@@ -1331,7 +1331,7 @@ udevRemoveOneDevice(struct udev_device *device)
 
     VIR_DEBUG("Removing device '%s' with sysfs path '%s'",
               def->name, name);
-    virNodeDeviceObjRemove(driver->devs, obj);
+    virNodeDeviceObjListRemove(driver->devs, obj);
     virNodeDeviceObjFree(obj);
 
     if (event)
@@ -1365,8 +1365,8 @@ udevSetParent(struct udev_device *device,
             goto cleanup;
         }
 
-        if ((obj = virNodeDeviceObjFindBySysfsPath(driver->devs,
-                                                   parent_sysfs_path))) {
+        if ((obj = virNodeDeviceObjListFindBySysfsPath(driver->devs,
+                                                       parent_sysfs_path))) {
             objdef = virNodeDeviceObjGetDef(obj);
             if (VIR_STRDUP(def->parent, objdef->name) < 0) {
                 virNodeDeviceObjUnlock(obj);
@@ -1424,14 +1424,14 @@ udevAddOneDevice(struct udev_device *device)
     if (udevSetParent(device, def) != 0)
         goto cleanup;
 
-    if ((obj = virNodeDeviceObjFindByName(driver->devs, def->name))) {
+    if ((obj = virNodeDeviceObjListFindByName(driver->devs, def->name))) {
         virNodeDeviceObjUnlock(obj);
         new_device = false;
     }
 
     /* If this is a device change, the old definition will be freed
      * and the current definition will take its place. */
-    if (!(obj = virNodeDeviceObjAssignDef(driver->devs, def)))
+    if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, def)))
         goto cleanup;
     objdef = virNodeDeviceObjGetDef(obj);
 
@@ -1721,7 +1721,7 @@ udevSetupSystemDev(void)
     udevGetDMIData(&def->caps->data.system);
 #endif
 
-    if (!(obj = virNodeDeviceObjAssignDef(driver->devs, def)))
+    if (!(obj = virNodeDeviceObjListAssignDef(driver->devs, def)))
         goto cleanup;
 
     virNodeDeviceObjUnlock(obj);
