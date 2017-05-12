@@ -32,6 +32,17 @@
 
 VIR_LOG_INIT("conf.virnodedeviceobj");
 
+struct _virNodeDeviceObj {
+    virMutex lock;
+
+    virNodeDeviceDefPtr def;		/* device definition */
+};
+
+struct _virNodeDeviceObjList {
+    size_t count;
+    virNodeDeviceObjPtr *objs;
+};
+
 
 static virNodeDeviceObjPtr
 virNodeDeviceObjNew(void)

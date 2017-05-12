@@ -27,6 +27,12 @@
 # include "object_event.h"
 
 
+typedef struct _virNodeDeviceObj virNodeDeviceObj;
+typedef virNodeDeviceObj *virNodeDeviceObjPtr;
+
+typedef struct _virNodeDeviceObjList virNodeDeviceObjList;
+typedef virNodeDeviceObjList *virNodeDeviceObjListPtr;
+
 typedef struct _virNodeDeviceDriverState virNodeDeviceDriverState;
 typedef virNodeDeviceDriverState *virNodeDeviceDriverStatePtr;
 struct _virNodeDeviceDriverState {
