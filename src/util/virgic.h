@@ -35,9 +35,6 @@ typedef enum {
 
 VIR_ENUM_DECL(virGICVersion);
 
-/* Consider GIC v2 the default */
-# define VIR_GIC_VERSION_DEFAULT VIR_GIC_VERSION_2
-
 typedef enum {
     VIR_GIC_IMPLEMENTATION_NONE = 0,
     VIR_GIC_IMPLEMENTATION_KERNEL = (1 << 1),

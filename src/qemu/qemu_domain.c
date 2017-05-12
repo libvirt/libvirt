@@ -2596,12 +2596,11 @@ qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def,
         def->features[VIR_DOMAIN_FEATURE_GIC] = VIR_TRISTATE_SWITCH_ON;
     }
 
-    /* Use the default GIC version if no version was specified */
+    /* Use the default GIC version (GICv2) if no version was specified */
     if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON &&
         def->gic_version == VIR_GIC_VERSION_NONE) {
-        VIR_DEBUG("Using GIC version %s (default)",
-                  virGICVersionTypeToString(VIR_GIC_VERSION_DEFAULT));
-        def->gic_version = VIR_GIC_VERSION_DEFAULT;
+        VIR_DEBUG("Using GIC version 2 (default)");
+        def->gic_version = VIR_GIC_VERSION_2;
     }
 }
 
