@@ -556,6 +556,25 @@ virBufferEscapeSexpr(virBufferPtr buf,
 }
 
 /**
+ * virBufferEscapeRegex:
+ * @buf: the buffer to append to
+ * @format: a printf like format string but with only one %s parameter
+ * @str: the string argument which needs to be escaped
+ *
+ * Do a formatted print with a single string to a buffer.  The @str is
+ * escaped to avoid using POSIX extended regular expression meta-characters.
+ * Escaping is not applied to characters specified in @format. Auto
+ * indentation may be applied.
+ */
+void
+virBufferEscapeRegex(virBufferPtr buf,
+                     const char *format,
+                     const char *str)
+{
+    virBufferEscape(buf, '\\', "^$.|?*+()[]{}\\", format, str);
+}
+
+/**
  * virBufferEscape:
  * @buf: the buffer to append to
  * @escape: the escape character to inject
