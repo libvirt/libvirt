@@ -52,8 +52,6 @@ VIR_LOG_INIT("node_device.node_device_hal");
 
 #define DRV_STATE_HAL_CTX(ds) ((LibHalContext *)((ds)->privateData))
 
-#define NODE_DEV_UDI(obj) ((const char *)((obj)->privateData)
-
 
 static const char *
 hal_name(const char *udi)
@@ -447,12 +445,6 @@ gather_capabilities(LibHalContext *ctx, const char *udi,
 }
 
 static void
-free_udi(void *udi)
-{
-    VIR_FREE(udi);
-}
-
-static void
 dev_create(const char *udi)
 {
     LibHalContext *ctx;
@@ -462,11 +454,7 @@ dev_create(const char *udi)
     virNodeDeviceDefPtr objdef;
     const char *name = hal_name(udi);
     int rv;
-    char *privData;
     char *devicePath = NULL;
-
-    if (VIR_STRDUP(privData, udi) < 0)
-        return;
 
     nodeDeviceLock();
     ctx = DRV_STATE_HAL_CTX(driver);
@@ -500,8 +488,6 @@ dev_create(const char *udi)
     }
     objdef = virNodeDeviceObjGetDef(dev);
 
-    dev->privateData = privData;
-    dev->privateFree = free_udi;
     objdef->sysfs_path = devicePath;
 
     virNodeDeviceObjUnlock(dev);
@@ -512,7 +498,6 @@ dev_create(const char *udi)
  failure:
     VIR_DEBUG("FAILED TO ADD dev %s", name);
  cleanup:
-    VIR_FREE(privData);
     virNodeDeviceDefFree(def);
     nodeDeviceUnlock();
 }

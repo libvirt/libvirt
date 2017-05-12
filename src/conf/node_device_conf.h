@@ -335,8 +335,6 @@ struct _virNodeDeviceObj {
     virMutex lock;
 
     virNodeDeviceDefPtr def;		/* device definition */
-    void *privateData;			/* driver-specific private data */
-    void (*privateFree)(void *data);	/* destructor for private data */
 
 };
 

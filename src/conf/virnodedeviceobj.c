@@ -246,8 +246,6 @@ virNodeDeviceObjFree(virNodeDeviceObjPtr dev)
         return;
 
     virNodeDeviceDefFree(dev->def);
-    if (dev->privateFree)
-        (*dev->privateFree)(dev->privateData);
 
     virMutexDestroy(&dev->lock);
 
