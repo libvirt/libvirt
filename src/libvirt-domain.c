@@ -5820,7 +5820,7 @@ virDomainMemoryStats(virDomainPtr dom, virDomainMemoryStatPtr stats,
 int
 virDomainBlockPeek(virDomainPtr dom,
                    const char *disk,
-                   unsigned long long offset /* really 64 bits */,
+                   unsigned long long offset,
                    size_t size,
                    void *buffer,
                    unsigned int flags)
@@ -5956,7 +5956,7 @@ virDomainBlockResize(virDomainPtr dom,
  */
 int
 virDomainMemoryPeek(virDomainPtr dom,
-                    unsigned long long start /* really 64 bits */,
+                    unsigned long long start,
                     size_t size,
                     void *buffer,
                     unsigned int flags)
