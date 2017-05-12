@@ -26,26 +26,6 @@
 
 typedef struct _virNetworkObj virNetworkObj;
 typedef virNetworkObj *virNetworkObjPtr;
-struct _virNetworkObj {
-    virObjectLockable parent;
-
-    pid_t dnsmasqPid;
-    pid_t radvdPid;
-    bool active;
-    bool autostart;
-    bool persistent;
-
-    virNetworkDefPtr def; /* The current definition */
-    virNetworkDefPtr newDef; /* New definition to activate at shutdown */
-
-    virBitmapPtr classIdMap; /* bitmap of class IDs for QoS */
-    unsigned long long floor_sum; /* sum of all 'floor'-s of attached NICs */
-
-    unsigned int taint;
-
-    /* Immutable pointer, self locking APIs */
-    virMacMapPtr macmap;
-};
 
 virNetworkObjPtr
 virNetworkObjNew(void);

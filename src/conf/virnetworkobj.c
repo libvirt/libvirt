@@ -37,6 +37,27 @@ VIR_LOG_INIT("conf.virnetworkobj");
 /* currently, /sbin/tc implementation allows up to 16 bits for minor class size */
 #define CLASS_ID_BITMAP_SIZE (1<<16)
 
+struct _virNetworkObj {
+    virObjectLockable parent;
+
+    pid_t dnsmasqPid;
+    pid_t radvdPid;
+    bool active;
+    bool autostart;
+    bool persistent;
+
+    virNetworkDefPtr def; /* The current definition */
+    virNetworkDefPtr newDef; /* New definition to activate at shutdown */
+
+    virBitmapPtr classIdMap; /* bitmap of class IDs for QoS */
+    unsigned long long floor_sum; /* sum of all 'floor'-s of attached NICs */
+
+    unsigned int taint;
+
+    /* Immutable pointer, self locking APIs */
+    virMacMapPtr macmap;
+};
+
 struct _virNetworkObjList {
     virObjectLockable parent;
 
