@@ -19819,6 +19819,22 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDefPtr src,
 
 
 static bool
+virDomainIOMMUDefCheckABIStability(virDomainIOMMUDefPtr src,
+                                   virDomainIOMMUDefPtr dst)
+{
+    if (src->model != dst->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device model '%s' "
+                         "does not match source '%s'"),
+                       virDomainIOMMUModelTypeToString(dst->model),
+                       virDomainIOMMUModelTypeToString(src->model));
+        return false;
+    }
+    return true;
+}
+
+
+static bool
 virDomainDefVcpuCheckAbiStability(virDomainDefPtr src,
                                   virDomainDefPtr dst)
 {
@@ -20284,14 +20300,8 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
     }
 
     if (src->iommu &&
-        src->iommu->model != dst->iommu->model) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device model '%s' "
-                         "does not match source '%s'"),
-                       virDomainIOMMUModelTypeToString(dst->iommu->model),
-                       virDomainIOMMUModelTypeToString(src->iommu->model));
+        !virDomainIOMMUDefCheckABIStability(src->iommu, dst->iommu))
         goto error;
-    }
 
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
