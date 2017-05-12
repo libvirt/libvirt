@@ -1611,10 +1611,10 @@ virCapabilitiesInitCaches(virCapsPtr caps)
             if (kernel_type < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unknown cache type '%s'"), type);
-                VIR_FREE(type);
                 goto cleanup;
             }
             bank->type = kernel_type;
+            VIR_FREE(type);
 
             for (i = 0; i < caps->host.ncaches; i++) {
                 if (virCapsHostCacheBankEquals(bank, caps->host.caches[i]))
@@ -1637,6 +1637,7 @@ virCapabilitiesInitCaches(virCapsPtr caps)
 
     ret = 0;
  cleanup:
+    VIR_FREE(type);
     VIR_FREE(path);
     virDirClose(&dirp);
     virCapsHostCacheBankFree(bank);
