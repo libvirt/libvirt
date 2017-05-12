@@ -49,9 +49,9 @@ virNodeDeviceDriverStatePtr driver;
 
 
 static int
-nodeDeviceUpdateCaps(virNodeDeviceObjPtr dev)
+nodeDeviceUpdateCaps(virNodeDeviceDefPtr def)
 {
-    virNodeDevCapsDefPtr cap = dev->def->caps;
+    virNodeDevCapsDefPtr cap = def->caps;
 
     while (cap) {
         switch (cap->data.type) {
@@ -59,7 +59,7 @@ nodeDeviceUpdateCaps(virNodeDeviceObjPtr dev)
             nodeDeviceSysfsGetSCSIHostCaps(&cap->data.scsi_host);
             break;
         case VIR_NODE_DEV_CAP_SCSI_TARGET:
-            nodeDeviceSysfsGetSCSITargetCaps(dev->def->sysfs_path,
+            nodeDeviceSysfsGetSCSITargetCaps(def->sysfs_path,
                                              &cap->data.scsi_target);
             break;
         case VIR_NODE_DEV_CAP_NET:
@@ -70,7 +70,7 @@ nodeDeviceUpdateCaps(virNodeDeviceObjPtr dev)
                 return -1;
             break;
         case VIR_NODE_DEV_CAP_PCI_DEV:
-           if (nodeDeviceSysfsGetPCIRelatedDevCaps(dev->def->sysfs_path,
+           if (nodeDeviceSysfsGetPCIRelatedDevCaps(def->sysfs_path,
                                                    &cap->data.pci_dev) < 0)
               return -1;
            break;
@@ -355,7 +355,7 @@ nodeDeviceGetXMLDesc(virNodeDevicePtr dev,
     if (nodeDeviceUpdateDriverName(obj->def) < 0)
         goto cleanup;
 
-    if (nodeDeviceUpdateCaps(obj) < 0)
+    if (nodeDeviceUpdateCaps(obj->def) < 0)
         goto cleanup;
 
     ret = virNodeDeviceDefFormat(obj->def);
