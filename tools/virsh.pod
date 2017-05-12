@@ -2838,7 +2838,7 @@ expected.
 =item B<attach-disk> I<domain> I<source> I<target> [[[I<--live>] [I<--config>]
 | [I<--current>]] | [I<--persistent>]] [I<--targetbus bus>] [I<--driver
 driver>] [I<--subdriver subdriver>] [I<--iothread iothread>]
-[I<--cache cache>] [I<--type type>]
+[I<--cache cache>] [I<--io io>] [I<--type type>]
 [I<--mode mode>] [I<--sourcetype sourcetype>] [I<--serial serial>] [I<--wwn
 wwn>] [I<--rawio>] [I<--address address>] [I<--multifunction>] [I<--print-xml>]
 
@@ -2865,6 +2865,7 @@ I<mode> can specify the two specific mode I<readonly> or I<shareable>.
 I<sourcetype> can indicate the type of source (block|file)
 I<cache> can be one of "default", "none", "writethrough", "writeback",
 "directsync" or "unsafe".
+I<io> controls specific policies on I/O; QEMU guests support "threads" and "native".
 I<iothread> is the number within the range of domain IOThreads to which
 this disk may be attached (QEMU only).
 I<serial> is the serial of disk device. I<wwn> is the wwn of disk device.

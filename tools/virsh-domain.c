@@ -267,6 +267,10 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .type = VSH_OT_STRING,
      .help = N_("cache mode of disk device")
     },
+    {.name = "io",
+     .type = VSH_OT_STRING,
+     .help = N_("io policy of disk device")
+    },
     {.name = "type",
      .type = VSH_OT_STRING,
      .help = N_("target device type")
@@ -504,8 +508,9 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom = NULL;
     const char *source = NULL, *target = NULL, *driver = NULL,
                 *subdriver = NULL, *type = NULL, *mode = NULL,
-                *iothread = NULL, *cache = NULL, *serial = NULL,
-                *straddr = NULL, *wwn = NULL, *targetbus = NULL;
+                *iothread = NULL, *cache = NULL, *io = NULL,
+                *serial = NULL, *straddr = NULL, *wwn = NULL,
+                *targetbus = NULL;
     struct DiskAddress diskAddr;
     bool isFile = false, functionReturn = false;
     int ret;
@@ -537,6 +542,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         vshCommandOptStringReq(ctl, cmd, "mode", &mode) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "iothread", &iothread) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "cache", &cache) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "io", &io) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "serial", &serial) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "wwn", &wwn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "address", &straddr) < 0 ||
@@ -579,7 +585,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virBufferAddLit(&buf, ">\n");
     virBufferAdjustIndent(&buf, 2);
 
-    if (driver || subdriver || iothread || cache) {
+    if (driver || subdriver || iothread || cache || io) {
         virBufferAddLit(&buf, "<driver");
 
         if (driver)
@@ -590,6 +596,8 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
             virBufferAsprintf(&buf, " iothread='%s'", iothread);
         if (cache)
             virBufferAsprintf(&buf, " cache='%s'", cache);
+        if (io)
+            virBufferAsprintf(&buf, " io='%s'", io);
 
         virBufferAddLit(&buf, "/>\n");
     }
