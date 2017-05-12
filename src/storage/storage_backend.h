@@ -154,9 +154,10 @@ typedef int
                              struct stat *st);
 
 typedef ssize_t
-(*virStorageFileBackendReadHeader)(virStorageSourcePtr src,
-                                   ssize_t max_len,
-                                   char **buf);
+(*virStorageFileBackendRead)(virStorageSourcePtr src,
+                             size_t offset,
+                             size_t len,
+                             char **buf);
 
 typedef const char *
 (*virStorageFileBackendGetUniqueIdentifier)(virStorageSourcePtr src);
@@ -186,7 +187,7 @@ struct _virStorageFileBackend {
      * error on failure. */
     virStorageFileBackendInit backendInit;
     virStorageFileBackendDeinit backendDeinit;
-    virStorageFileBackendReadHeader storageFileReadHeader;
+    virStorageFileBackendRead storageFileRead;
     virStorageFileBackendGetUniqueIdentifier storageFileGetUniqueIdentifier;
 
     /* The following group of callbacks is expected to set errno

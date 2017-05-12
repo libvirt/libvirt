@@ -64,7 +64,7 @@ virStorageFileSupportsBackingChainTraversal(virStorageSourcePtr src)
     }
 
     return backend->storageFileGetUniqueIdentifier &&
-           backend->storageFileReadHeader &&
+           backend->storageFileRead &&
            backend->storageFileAccess;
 }
 
@@ -263,20 +263,22 @@ virStorageFileStat(virStorageSourcePtr src,
 
 
 /**
- * virStorageFileReadHeader: read the beginning bytes of a file into a buffer
+ * virStorageFileRead: read bytes from a file into a buffer
  *
  * @src: file structure pointing to the file
- * @max_len: maximum number of bytes read from the storage file
- * @buf: buffer to read the data into. buffer shall be freed by caller)
+ * @offset: number of bytes to skip in the storage file
+ * @len: maximum number of bytes read from the storage file
+ * @buf: buffer to read the data into. (buffer shall be freed by caller)
  *
  * Returns the count of bytes read on success and -1 on failure, -2 if the
  * function isn't supported by the backend.
  * Libvirt error is reported on failure.
  */
 ssize_t
-virStorageFileReadHeader(virStorageSourcePtr src,
-                         ssize_t max_len,
-                         char **buf)
+virStorageFileRead(virStorageSourcePtr src,
+                   size_t offset,
+                   size_t len,
+                   char **buf)
 {
     ssize_t ret;
 
@@ -286,18 +288,19 @@ virStorageFileReadHeader(virStorageSourcePtr src,
         return -1;
     }
 
-    if (!src->drv->backend->storageFileReadHeader) {
+    if (!src->drv->backend->storageFileRead) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("storage file header reading is not supported for "
+                       _("storage file reading is not supported for "
                          "storage type %s (protocol: %s)"),
                        virStorageTypeToString(src->type),
                        virStorageNetProtocolTypeToString(src->protocol));
         return -2;
     }
 
-    ret = src->drv->backend->storageFileReadHeader(src, max_len, buf);
+    ret = src->drv->backend->storageFileRead(src, offset, len, buf);
 
-    VIR_DEBUG("read of storage header %p: ret=%zd", src, ret);
+    VIR_DEBUG("read '%zd' bytes from storage '%p' starting at offset '%zu'",
+              ret, src, offset);
 
     return ret;
 }
@@ -444,8 +447,8 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     if (virHashAddEntry(cycle, uniqueName, (void *)1) < 0)
         goto cleanup;
 
-    if ((headerLen = virStorageFileReadHeader(src, VIR_STORAGE_MAX_HEADER,
-                                              &buf)) < 0)
+    if ((headerLen = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER,
+                                        &buf)) < 0)
         goto cleanup;
 
     if (virStorageFileGetMetadataInternal(src, buf, headerLen,
@@ -565,8 +568,8 @@ virStorageFileGetBackingStoreStr(virStorageSourcePtr src)
     if (virStorageFileAccess(src, F_OK) < 0)
         return NULL;
 
-    if ((headerLen = virStorageFileReadHeader(src, VIR_STORAGE_MAX_HEADER,
-                                              &buf)) < 0)
+    if ((headerLen = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER,
+                                        &buf)) < 0)
         return NULL;
 
     if (!(tmp = virStorageSourceCopy(src, false)))

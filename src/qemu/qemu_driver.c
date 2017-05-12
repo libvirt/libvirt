@@ -11584,8 +11584,7 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
             goto cleanup;
         }
     } else {
-        if ((len = virStorageFileReadHeader(src, VIR_STORAGE_MAX_HEADER,
-                                            &buf)) < 0)
+        if ((len = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER, &buf)) < 0)
             goto cleanup;
     }
 

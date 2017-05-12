@@ -32,9 +32,10 @@ int virStorageFileCreate(virStorageSourcePtr src);
 int virStorageFileUnlink(virStorageSourcePtr src);
 int virStorageFileStat(virStorageSourcePtr src,
                        struct stat *stat);
-ssize_t virStorageFileReadHeader(virStorageSourcePtr src,
-                                 ssize_t max_len,
-                                 char **buf);
+ssize_t virStorageFileRead(virStorageSourcePtr src,
+                           size_t offset,
+                           size_t len,
+                           char **buf);
 const char *virStorageFileGetUniqueIdentifier(virStorageSourcePtr src);
 int virStorageFileAccess(virStorageSourcePtr src, int mode);
 int virStorageFileChown(const virStorageSource *src, uid_t uid, gid_t gid);

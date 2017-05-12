@@ -151,20 +151,20 @@ virStorageBackendGlusterOpen(virStoragePoolObjPtr pool)
 
 
 static ssize_t
-virStorageBackendGlusterReadHeader(glfs_fd_t *fd,
-                                   const char *name,
-                                   ssize_t maxlen,
-                                   char **buf)
+virStorageBackendGlusterRead(glfs_fd_t *fd,
+                             const char *name,
+                             size_t len,
+                             char **buf)
 {
     char *s;
     size_t nread = 0;
 
-    if (VIR_ALLOC_N(*buf, maxlen) < 0)
+    if (VIR_ALLOC_N(*buf, len) < 0)
         return -1;
 
     s = *buf;
-    while (maxlen) {
-        ssize_t r = glfs_read(fd, s, maxlen, 0);
+    while (len) {
+        ssize_t r = glfs_read(fd, s, len, 0);
         if (r < 0 && errno == EINTR)
             continue;
         if (r < 0) {
@@ -175,7 +175,7 @@ virStorageBackendGlusterReadHeader(glfs_fd_t *fd,
         if (r == 0)
             return nread;
         s += r;
-        maxlen -= r;
+        len -= r;
         nread += r;
     }
     return nread;
@@ -246,7 +246,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     glfs_fd_t *fd = NULL;
     virStorageSourcePtr meta = NULL;
     char *header = NULL;
-    ssize_t len = VIR_STORAGE_MAX_HEADER;
+    ssize_t len;
     int backingFormat;
 
     *volptr = NULL;
@@ -292,7 +292,8 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
         goto cleanup;
     }
 
-    if ((len = virStorageBackendGlusterReadHeader(fd, name, len, &header)) < 0)
+    if ((len = virStorageBackendGlusterRead(fd, name, VIR_STORAGE_MAX_HEADER,
+                                            &header)) < 0)
         goto cleanup;
 
     if (!(meta = virStorageFileGetMetadataFromBuf(name, header, len,
@@ -721,9 +722,10 @@ virStorageFileBackendGlusterStat(virStorageSourcePtr src,
 
 
 static ssize_t
-virStorageFileBackendGlusterReadHeader(virStorageSourcePtr src,
-                                       ssize_t max_len,
-                                       char **buf)
+virStorageFileBackendGlusterRead(virStorageSourcePtr src,
+                                 size_t offset,
+                                 size_t len,
+                                 char **buf)
 {
     virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
     glfs_fd_t *fd = NULL;
@@ -737,8 +739,16 @@ virStorageFileBackendGlusterReadHeader(virStorageSourcePtr src,
         return -1;
     }
 
-    ret = virStorageBackendGlusterReadHeader(fd, src->path, max_len, buf);
+    if (offset > 0) {
+        if (glfs_lseek(fd, offset, SEEK_SET) == (off_t) -1) {
+            virReportSystemError(errno, _("cannot seek into '%s'"), src->path);
+            goto cleanup;
+        }
+    }
 
+    ret = virStorageBackendGlusterRead(fd, src->path, len, buf);
+
+ cleanup:
     if (fd)
         glfs_close(fd);
 
@@ -851,7 +861,7 @@ virStorageFileBackend virStorageFileBackendGluster = {
     .storageFileCreate = virStorageFileBackendGlusterCreate,
     .storageFileUnlink = virStorageFileBackendGlusterUnlink,
     .storageFileStat = virStorageFileBackendGlusterStat,
-    .storageFileReadHeader = virStorageFileBackendGlusterReadHeader,
+    .storageFileRead = virStorageFileBackendGlusterRead,
     .storageFileAccess = virStorageFileBackendGlusterAccess,
     .storageFileChown = virStorageFileBackendGlusterChown,
 
