@@ -5866,6 +5866,7 @@ qemuDomainVcpuValidateConfig(virDomainDefPtr def,
     virDomainVcpuDefPtr vcpu;
     size_t maxvcpus = virDomainDefGetVcpusMax(def);
     ssize_t next;
+    ssize_t firstvcpu = -1;
 
     /* vcpu 0 can't be disabled */
     if (!state && virBitmapIsBitSet(map, 0)) {
@@ -5880,13 +5881,17 @@ qemuDomainVcpuValidateConfig(virDomainDefPtr def,
             continue;
 
         /* skip vcpus being modified */
-        if (virBitmapIsBitSet(map, next))
+        if (virBitmapIsBitSet(map, next)) {
+            if (firstvcpu < 0)
+                firstvcpu = next;
+
             continue;
+        }
 
         if (vcpu->online && vcpu->hotpluggable == VIR_TRISTATE_BOOL_NO) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("vcpu '%zd' can't be modified as it is followed "
-                             "by non-hotpluggable online vcpus"), next);
+                             "by non-hotpluggable online vcpus"), firstvcpu);
             return -1;
         }
     }
