@@ -37,6 +37,17 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Use GICv2 by default for aarch64/virt TCG guests
+        </summary>
+        <description>
+          The emulated GICv3 has some limitations that make it unusable as a
+          default; use GICv2 until they're sorted out. This change makes it
+          once again possible to run aarch64/virt guests on a x86_64 host
+          without having to tweak their configuration.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
