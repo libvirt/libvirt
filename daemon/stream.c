@@ -653,6 +653,52 @@ daemonStreamHandleAbort(virNetServerClientPtr client,
 }
 
 
+static int
+daemonStreamHandleHole(virNetServerClientPtr client,
+                       daemonClientStream *stream,
+                       virNetMessagePtr msg)
+{
+    int ret;
+    virNetStreamHole data;
+
+    VIR_DEBUG("client=%p, stream=%p, proc=%d, serial=%u",
+              client, stream, msg->header.proc, msg->header.serial);
+
+    /* Let's check if client plays nicely and advertised usage of
+     * sparse stream upfront. */
+    if (!stream->allowSkip) {
+        virReportError(VIR_ERR_RPC, "%s",
+                       _("Unexpected stream hole"));
+        return -1;
+    }
+
+    if (virNetMessageDecodePayload(msg,
+                                   (xdrproc_t) xdr_virNetStreamHole,
+                                   &data) < 0)
+        return -1;
+
+    ret = virStreamSendHole(stream->st, data.length, data.flags);
+
+    if (ret < 0) {
+        virNetMessageError rerr;
+
+        memset(&rerr, 0, sizeof(rerr));
+
+        VIR_INFO("Stream send hole failed");
+        stream->closed = true;
+        virStreamEventRemoveCallback(stream->st);
+        virStreamAbort(stream->st);
+
+        return virNetServerProgramSendReplyError(stream->prog,
+                                                 client,
+                                                 msg,
+                                                 &rerr,
+                                                 &msg->header);
+    }
+
+    return 0;
+}
+
 
 /*
  * Called when the stream is signalled has being able to accept
@@ -671,19 +717,31 @@ daemonStreamHandleWrite(virNetServerClientPtr client,
         virNetMessagePtr msg = stream->rx;
         int ret;
 
-        switch (msg->header.status) {
-        case VIR_NET_OK:
-            ret = daemonStreamHandleFinish(client, stream, msg);
-            break;
+        if (msg->header.type == VIR_NET_STREAM_HOLE) {
+            /* Handle special case when the client sent us a hole.
+             * Otherwise just carry on with processing stream
+             * data. */
+            ret = daemonStreamHandleHole(client, stream, msg);
+        } else if (msg->header.type == VIR_NET_STREAM) {
+            switch (msg->header.status) {
+            case VIR_NET_OK:
+                ret = daemonStreamHandleFinish(client, stream, msg);
+                break;
 
-        case VIR_NET_CONTINUE:
-            ret = daemonStreamHandleWriteData(client, stream, msg);
-            break;
+            case VIR_NET_CONTINUE:
+                ret = daemonStreamHandleWriteData(client, stream, msg);
+                break;
 
-        case VIR_NET_ERROR:
-        default:
-            ret = daemonStreamHandleAbort(client, stream, msg);
-            break;
+            case VIR_NET_ERROR:
+            default:
+                ret = daemonStreamHandleAbort(client, stream, msg);
+                break;
+            }
+        } else {
+            virReportError(VIR_ERR_RPC,
+                           _("Unexpected message type: %d"),
+                           msg->header.type);
+            ret = -1;
         }
 
         if (ret > 0)
