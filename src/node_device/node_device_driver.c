@@ -110,16 +110,16 @@ nodeDeviceUpdateCaps(virNodeDeviceObjPtr dev)
  * udev *and* HAL backends.
  */
 static int
-nodeDeviceUpdateDriverName(virNodeDeviceObjPtr dev)
+nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def)
 {
     char *driver_link = NULL;
     char *devpath = NULL;
     char *p;
     int ret = -1;
 
-    VIR_FREE(dev->def->driver);
+    VIR_FREE(def->driver);
 
-    if (virAsprintf(&driver_link, "%s/driver", dev->def->sysfs_path) < 0)
+    if (virAsprintf(&driver_link, "%s/driver", def->sysfs_path) < 0)
         goto cleanup;
 
     /* Some devices don't have an explicit driver, so just return
@@ -136,7 +136,7 @@ nodeDeviceUpdateDriverName(virNodeDeviceObjPtr dev)
     }
 
     p = strrchr(devpath, '/');
-    if (p && VIR_STRDUP(dev->def->driver, p + 1) < 0)
+    if (p && VIR_STRDUP(def->driver, p + 1) < 0)
         goto cleanup;
     ret = 0;
 
@@ -148,7 +148,7 @@ nodeDeviceUpdateDriverName(virNodeDeviceObjPtr dev)
 #else
 /* XXX: Implement me for non-linux */
 static int
-nodeDeviceUpdateDriverName(virNodeDeviceObjPtr dev ATTRIBUTE_UNUSED)
+nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -352,7 +352,9 @@ nodeDeviceGetXMLDesc(virNodeDevicePtr dev,
     if (virNodeDeviceGetXMLDescEnsureACL(dev->conn, obj->def) < 0)
         goto cleanup;
 
-    nodeDeviceUpdateDriverName(obj);
+    if (nodeDeviceUpdateDriverName(obj->def) < 0)
+        goto cleanup;
+
     if (nodeDeviceUpdateCaps(obj) < 0)
         goto cleanup;
 
