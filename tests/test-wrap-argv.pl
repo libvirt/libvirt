@@ -31,7 +31,7 @@
 $in_place = 0;
 $check = 0;
 
-if (@ARGV[0] eq "--in-place") {
+if (@ARGV[0] eq "--in-place" or @ARGV[0] eq "-i") {
     $in_place = 1;
     shift @ARGV;
 } elsif (@ARGV[0] eq "--check") {
