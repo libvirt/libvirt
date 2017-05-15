@@ -45,6 +45,8 @@ struct _virNodeDeviceDriverState {
     virObjectEventStatePtr nodeDeviceEventState;
 };
 
+void
+virNodeDeviceObjEndAPI(virNodeDeviceObjPtr *obj);
 
 virNodeDeviceDefPtr
 virNodeDeviceObjGetDef(virNodeDeviceObjPtr obj);
@@ -76,20 +78,11 @@ virNodeDeviceObjListGetParentHost(virNodeDeviceObjListPtr devs,
                                   virNodeDeviceDefPtr def,
                               int create);
 
-void
-virNodeDeviceObjFree(virNodeDeviceObjPtr dev);
-
 virNodeDeviceObjListPtr
 virNodeDeviceObjListNew(void);
 
 void
 virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs);
-
-void
-virNodeDeviceObjLock(virNodeDeviceObjPtr obj);
-
-void
-virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj);
 
 typedef bool
 (*virNodeDeviceObjListFilter)(virConnectPtr conn,

@@ -964,7 +964,7 @@ virNetworkObjUpdateAssignDef;
 
 
 # conf/virnodedeviceobj.h
-virNodeDeviceObjFree;
+virNodeDeviceObjEndAPI;
 virNodeDeviceObjGetDef;
 virNodeDeviceObjListAssignDef;
 virNodeDeviceObjListExport;
@@ -977,8 +977,6 @@ virNodeDeviceObjListGetParentHost;
 virNodeDeviceObjListNew;
 virNodeDeviceObjListNumOfDevices;
 virNodeDeviceObjListRemove;
-virNodeDeviceObjLock;
-virNodeDeviceObjUnlock;
 
 
 # conf/virnwfilterobj.h

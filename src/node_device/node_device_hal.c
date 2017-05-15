@@ -490,7 +490,7 @@ dev_create(const char *udi)
 
     objdef->sysfs_path = devicePath;
 
-    virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
 
     nodeDeviceUnlock();
     return;
@@ -520,7 +520,7 @@ dev_refresh(const char *udi)
     nodeDeviceUnlock();
 
     if (obj) {
-        virNodeDeviceObjFree(obj);
+        virObjectUnref(obj);
         dev_create(udi);
     }
 }
@@ -549,7 +549,7 @@ device_removed(LibHalContext *ctx ATTRIBUTE_UNUSED,
     else
         VIR_DEBUG("no device named %s", name);
     nodeDeviceUnlock();
-    virNodeDeviceObjFree(obj);
+    virObjectUnref(obj);
 }
 
 
@@ -568,7 +568,7 @@ device_cap_added(LibHalContext *ctx,
     if (obj) {
         def = virNodeDeviceObjGetDef(obj);
         (void)gather_capability(ctx, udi, cap, &def->caps);
-        virNodeDeviceObjUnlock(obj);
+        virNodeDeviceObjEndAPI(&obj);
     } else {
         VIR_DEBUG("no device named %s", name);
     }

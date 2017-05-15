@@ -277,7 +277,7 @@ nodeDeviceLookupByName(virConnectPtr conn,
     }
 
  cleanup:
-    virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
     return device;
 }
 
@@ -314,7 +314,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
     }
 
  cleanup:
-    virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
     return device;
 }
 
@@ -345,7 +345,7 @@ nodeDeviceGetXMLDesc(virNodeDevicePtr device,
     ret = virNodeDeviceDefFormat(def);
 
  cleanup:
-    virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
     return ret;
 }
 
@@ -373,7 +373,7 @@ nodeDeviceGetParent(virNodeDevicePtr device)
     }
 
  cleanup:
-    virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
     return ret;
 }
 
@@ -411,7 +411,7 @@ nodeDeviceNumOfCaps(virNodeDevicePtr device)
     ret = ncaps;
 
  cleanup:
-    virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
     return ret;
 }
 
@@ -460,7 +460,7 @@ nodeDeviceListCaps(virNodeDevicePtr device,
     ret = ncaps;
 
  cleanup:
-    virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
     if (ret == -1) {
         --ncaps;
         while (--ncaps >= 0)
@@ -613,8 +613,7 @@ nodeDeviceDestroy(virNodeDevicePtr device)
      * to be taken, so grab the object def which will have the various
      * fields used to search (name, parent, parent_wwnn, parent_wwpn,
      * or parent_fabric_wwn) and drop the object lock. */
-    virNodeDeviceObjUnlock(obj);
-    obj = NULL;
+    virNodeDeviceObjEndAPI(&obj);
     if ((parent_host = virNodeDeviceObjListGetParentHost(driver->devs, def,
                                                          EXISTING_DEVICE)) < 0)
         goto cleanup;
@@ -626,8 +625,7 @@ nodeDeviceDestroy(virNodeDevicePtr device)
 
  cleanup:
     nodeDeviceUnlock();
-    if (obj)
-        virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
     return ret;

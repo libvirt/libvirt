@@ -33,7 +33,7 @@
 VIR_LOG_INIT("conf.virnodedeviceobj");
 
 struct _virNodeDeviceObj {
-    virMutex lock;
+    virObjectLockable parent;
 
     virNodeDeviceDefPtr def;		/* device definition */
 };
@@ -44,23 +44,59 @@ struct _virNodeDeviceObjList {
 };
 
 
+static virClassPtr virNodeDeviceObjClass;
+static void virNodeDeviceObjDispose(void *opaque);
+
+static int
+virNodeDeviceObjOnceInit(void)
+{
+    if (!(virNodeDeviceObjClass = virClassNew(virClassForObjectLockable(),
+                                              "virNodeDeviceObj",
+                                              sizeof(virNodeDeviceObj),
+                                              virNodeDeviceObjDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNodeDeviceObj)
+
+
+static void
+virNodeDeviceObjDispose(void *opaque)
+{
+    virNodeDeviceObjPtr obj = opaque;
+
+    virNodeDeviceDefFree(obj->def);
+}
+
+
 static virNodeDeviceObjPtr
 virNodeDeviceObjNew(void)
 {
     virNodeDeviceObjPtr obj;
 
-    if (VIR_ALLOC(obj) < 0)
+    if (virNodeDeviceObjInitialize() < 0)
         return NULL;
 
-    if (virMutexInit(&obj->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot initialize mutex"));
-        VIR_FREE(obj);
+    if (!(obj = virObjectLockableNew(virNodeDeviceObjClass)))
         return NULL;
-    }
-    virNodeDeviceObjLock(obj);
+
+    virObjectLock(obj);
 
     return obj;
+}
+
+
+void
+virNodeDeviceObjEndAPI(virNodeDeviceObjPtr *obj)
+{
+    if (!*obj)
+        return;
+
+    virObjectUnlock(*obj);
+    virObjectUnref(*obj);
+    *obj = NULL;
 }
 
 
@@ -185,13 +221,13 @@ virNodeDeviceObjListFindBySysfsPath(virNodeDeviceObjListPtr devs,
         virNodeDeviceObjPtr obj = devs->objs[i];
         virNodeDeviceDefPtr def;
 
-        virNodeDeviceObjLock(obj);
+        virObjectLock(obj);
         def = obj->def;
         if ((def->sysfs_path != NULL) &&
             (STREQ(def->sysfs_path, sysfs_path))) {
-            return obj;
+            return virObjectRef(obj);
         }
-        virNodeDeviceObjUnlock(obj);
+        virObjectUnlock(obj);
     }
 
     return NULL;
@@ -208,11 +244,11 @@ virNodeDeviceObjListFindByName(virNodeDeviceObjListPtr devs,
         virNodeDeviceObjPtr obj = devs->objs[i];
         virNodeDeviceDefPtr def;
 
-        virNodeDeviceObjLock(obj);
+        virObjectLock(obj);
         def = obj->def;
         if (STREQ(def->name, name))
-            return obj;
-        virNodeDeviceObjUnlock(obj);
+            return virObjectRef(obj);
+        virObjectUnlock(obj);
     }
 
     return NULL;
@@ -230,13 +266,13 @@ virNodeDeviceObjListFindByWWNs(virNodeDeviceObjListPtr devs,
         virNodeDeviceObjPtr obj = devs->objs[i];
         virNodeDevCapsDefPtr cap;
 
-        virNodeDeviceObjLock(obj);
+        virObjectLock(obj);
         if ((cap = virNodeDeviceFindFCCapDef(obj)) &&
             STREQ_NULLABLE(cap->data.scsi_host.wwnn, parent_wwnn) &&
             STREQ_NULLABLE(cap->data.scsi_host.wwpn, parent_wwpn) &&
             virNodeDeviceFindVPORTCapDef(obj))
-            return obj;
-        virNodeDeviceObjUnlock(obj);
+            return virObjectRef(obj);
+        virObjectUnlock(obj);
     }
 
     return NULL;
@@ -253,12 +289,12 @@ virNodeDeviceObjListFindByFabricWWN(virNodeDeviceObjListPtr devs,
         virNodeDeviceObjPtr obj = devs->objs[i];
         virNodeDevCapsDefPtr cap;
 
-        virNodeDeviceObjLock(obj);
+        virObjectLock(obj);
         if ((cap = virNodeDeviceFindFCCapDef(obj)) &&
             STREQ_NULLABLE(cap->data.scsi_host.fabric_wwn, parent_fabric_wwn) &&
             virNodeDeviceFindVPORTCapDef(obj))
-            return obj;
-        virNodeDeviceObjUnlock(obj);
+            return virObjectRef(obj);
+        virObjectUnlock(obj);
     }
 
     return NULL;
@@ -274,10 +310,10 @@ virNodeDeviceObjListFindByCap(virNodeDeviceObjListPtr devs,
     for (i = 0; i < devs->count; i++) {
         virNodeDeviceObjPtr obj = devs->objs[i];
 
-        virNodeDeviceObjLock(obj);
+        virObjectLock(obj);
         if (virNodeDeviceObjHasCap(obj, cap))
-            return obj;
-        virNodeDeviceObjUnlock(obj);
+            return virObjectRef(obj);
+        virObjectUnlock(obj);
     }
 
     return NULL;
@@ -295,7 +331,7 @@ virNodeDeviceObjListFindSCSIHostByWWNs(virNodeDeviceObjListPtr devs,
         virNodeDeviceObjPtr obj = devs->objs[i];
         virNodeDevCapsDefPtr cap;
 
-        virNodeDeviceObjLock(obj);
+        virObjectLock(obj);
         cap = obj->def->caps;
 
         while (cap) {
@@ -305,29 +341,15 @@ virNodeDeviceObjListFindSCSIHostByWWNs(virNodeDeviceObjListPtr devs,
                     VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
                     if (STREQ(cap->data.scsi_host.wwnn, wwnn) &&
                         STREQ(cap->data.scsi_host.wwpn, wwpn))
-                        return obj;
+                        return virObjectRef(obj);
                 }
             }
             cap = cap->next;
         }
-        virNodeDeviceObjUnlock(obj);
+        virObjectUnlock(obj);
     }
 
     return NULL;
-}
-
-
-void
-virNodeDeviceObjFree(virNodeDeviceObjPtr obj)
-{
-    if (!obj)
-        return;
-
-    virNodeDeviceDefFree(obj->def);
-
-    virMutexDestroy(&obj->lock);
-
-    VIR_FREE(obj);
 }
 
 
@@ -347,7 +369,7 @@ virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs)
 {
     size_t i;
     for (i = 0; i < devs->count; i++)
-        virNodeDeviceObjFree(devs->objs[i]);
+        virObjectUnref(devs->objs[i]);
     VIR_FREE(devs->objs);
     VIR_FREE(devs);
 }
@@ -369,13 +391,12 @@ virNodeDeviceObjListAssignDef(virNodeDeviceObjListPtr devs,
         return NULL;
 
     if (VIR_APPEND_ELEMENT_COPY(devs->objs, devs->count, obj) < 0) {
-        virNodeDeviceObjUnlock(obj);
-        virNodeDeviceObjFree(obj);
+        virNodeDeviceObjEndAPI(&obj);
         return NULL;
     }
     obj->def = def;
 
-    return obj;
+    return virObjectRef(obj);
 }
 
 
@@ -385,17 +406,18 @@ virNodeDeviceObjListRemove(virNodeDeviceObjListPtr devs,
 {
     size_t i;
 
-    virNodeDeviceObjUnlock(obj);
+    virObjectUnlock(obj);
 
     for (i = 0; i < devs->count; i++) {
-        virNodeDeviceObjLock(devs->objs[i]);
+        virObjectLock(devs->objs[i]);
         if (devs->objs[i] == obj) {
-            virNodeDeviceObjUnlock(devs->objs[i]);
+            virObjectUnlock(devs->objs[i]);
+            virObjectUnref(devs->objs[i]);
 
             VIR_DELETE_ELEMENT(devs->objs, i, devs->count);
             break;
         }
-        virNodeDeviceObjUnlock(devs->objs[i]);
+        virObjectUnlock(devs->objs[i]);
     }
 }
 
@@ -446,7 +468,7 @@ virNodeDeviceObjListGetParentHostByParent(virNodeDeviceObjListPtr devs,
 
     ret = virNodeDeviceFindFCParentHost(obj);
 
-    virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
 
     return ret;
 }
@@ -471,7 +493,7 @@ virNodeDeviceObjListGetParentHostByWWNs(virNodeDeviceObjListPtr devs,
 
     ret = virNodeDeviceFindFCParentHost(obj);
 
-    virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
 
     return ret;
 }
@@ -494,7 +516,7 @@ virNodeDeviceObjListGetParentHostByFabricWWN(virNodeDeviceObjListPtr devs,
 
     ret = virNodeDeviceFindFCParentHost(obj);
 
-    virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
 
     return ret;
 }
@@ -515,7 +537,7 @@ virNodeDeviceObjListFindVportParentHost(virNodeDeviceObjListPtr devs)
 
     ret = virNodeDeviceFindFCParentHost(obj);
 
-    virNodeDeviceObjUnlock(obj);
+    virNodeDeviceObjEndAPI(&obj);
 
     return ret;
 }
@@ -545,20 +567,6 @@ virNodeDeviceObjListGetParentHost(virNodeDeviceObjListPtr devs,
     }
 
     return parent_host;
-}
-
-
-void
-virNodeDeviceObjLock(virNodeDeviceObjPtr obj)
-{
-    virMutexLock(&obj->lock);
-}
-
-
-void
-virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj)
-{
-    virMutexUnlock(&obj->lock);
 }
 
 
@@ -623,11 +631,11 @@ virNodeDeviceObjListNumOfDevices(virNodeDeviceObjListPtr devs,
 
     for (i = 0; i < devs->count; i++) {
         virNodeDeviceObjPtr obj = devs->objs[i];
-        virNodeDeviceObjLock(obj);
+        virObjectLock(obj);
         if ((!aclfilter || aclfilter(conn, obj->def)) &&
             (!cap || virNodeDeviceObjHasCap(obj, cap)))
             ++ndevs;
-        virNodeDeviceObjUnlock(obj);
+        virObjectUnlock(obj);
     }
 
     return ndevs;
@@ -647,16 +655,16 @@ virNodeDeviceObjListGetNames(virNodeDeviceObjListPtr devs,
 
     for (i = 0; i < devs->count && nnames < maxnames; i++) {
         virNodeDeviceObjPtr obj = devs->objs[i];
-        virNodeDeviceObjLock(obj);
+        virObjectLock(obj);
         if ((!aclfilter || aclfilter(conn, obj->def)) &&
             (!cap || virNodeDeviceObjHasCap(obj, cap))) {
             if (VIR_STRDUP(names[nnames], obj->def->name) < 0) {
-                virNodeDeviceObjUnlock(obj);
+                virObjectUnlock(obj);
                 goto failure;
             }
             nnames++;
         }
-        virNodeDeviceObjUnlock(obj);
+        virObjectUnlock(obj);
     }
 
     return nnames;
@@ -718,21 +726,21 @@ virNodeDeviceObjListExport(virConnectPtr conn,
 
     for (i = 0; i < devs->count; i++) {
         virNodeDeviceObjPtr obj = devs->objs[i];
-        virNodeDeviceObjLock(obj);
+        virObjectLock(obj);
         if ((!aclfilter || aclfilter(conn, obj->def)) &&
             virNodeDeviceMatch(obj, flags)) {
             if (devices) {
                 if (!(device = virGetNodeDevice(conn, obj->def->name)) ||
                     VIR_STRDUP(device->parent, obj->def->parent) < 0) {
                     virObjectUnref(device);
-                    virNodeDeviceObjUnlock(obj);
+                    virObjectUnlock(obj);
                     goto cleanup;
                 }
                 tmp_devices[ndevices] = device;
             }
             ndevices++;
         }
-        virNodeDeviceObjUnlock(obj);
+        virObjectUnlock(obj);
     }
 
     if (tmp_devices) {
