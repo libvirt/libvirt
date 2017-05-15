@@ -28,6 +28,9 @@ typedef virInterfaceObj *virInterfaceObjPtr;
 typedef struct _virInterfaceObjList virInterfaceObjList;
 typedef virInterfaceObjList *virInterfaceObjListPtr;
 
+void
+virInterfaceObjEndAPI(virInterfaceObjPtr *obj);
+
 virInterfaceDefPtr
 virInterfaceObjGetDef(virInterfaceObjPtr obj);
 
@@ -67,12 +70,6 @@ virInterfaceObjListAssignDef(virInterfaceObjListPtr interfaces,
 void
 virInterfaceObjListRemove(virInterfaceObjListPtr interfaces,
                           virInterfaceObjPtr obj);
-
-void
-virInterfaceObjLock(virInterfaceObjPtr obj);
-
-void
-virInterfaceObjUnlock(virInterfaceObjPtr obj);
 
 typedef bool
 (*virInterfaceObjListFilter)(virConnectPtr conn,

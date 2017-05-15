@@ -1027,7 +1027,7 @@ testParseInterfaces(testDriverPtr privconn,
         }
 
         virInterfaceObjSetActive(obj, true);
-        virInterfaceObjUnlock(obj);
+        virInterfaceObjEndAPI(&obj);
     }
 
     ret = 0;
@@ -3718,7 +3718,7 @@ testInterfaceLookupByName(virConnectPtr conn,
 
     ret = virGetInterface(conn, def->name, def->mac);
 
-    virInterfaceObjUnlock(obj);
+    virInterfaceObjEndAPI(&obj);
     return ret;
 }
 
@@ -3769,7 +3769,7 @@ testInterfaceIsActive(virInterfacePtr iface)
 
     ret = virInterfaceObjIsActive(obj);
 
-    virInterfaceObjUnlock(obj);
+    virInterfaceObjEndAPI(&obj);
     return ret;
 }
 
@@ -3881,7 +3881,7 @@ testInterfaceGetXMLDesc(virInterfacePtr iface,
 
     ret = virInterfaceDefFormat(def);
 
-    virInterfaceObjUnlock(obj);
+    virInterfaceObjEndAPI(&obj);
     return ret;
 }
 
@@ -3912,8 +3912,7 @@ testInterfaceDefineXML(virConnectPtr conn,
 
  cleanup:
     virInterfaceDefFree(def);
-    if (obj)
-        virInterfaceObjUnlock(obj);
+    virInterfaceObjEndAPI(&obj);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -3929,6 +3928,7 @@ testInterfaceUndefine(virInterfacePtr iface)
         return -1;
 
     virInterfaceObjListRemove(privconn->ifaces, obj);
+    virObjectUnref(obj);
 
     return 0;
 }
@@ -3956,7 +3956,7 @@ testInterfaceCreate(virInterfacePtr iface,
     ret = 0;
 
  cleanup:
-    virInterfaceObjUnlock(obj);
+    virInterfaceObjEndAPI(&obj);
     return ret;
 }
 
@@ -3983,7 +3983,7 @@ testInterfaceDestroy(virInterfacePtr iface,
     ret = 0;
 
  cleanup:
-    virInterfaceObjUnlock(obj);
+    virInterfaceObjEndAPI(&obj);
     return ret;
 }
 
