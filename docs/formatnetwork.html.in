@@ -8,9 +8,9 @@
     </ul>
 
     <p>
-      This page provides an introduction to the network XML format. For background
-      information on the concepts referred to here, consult the <a href="archnetwork.html">network driver architecture</a>
-      page.
+      This page provides an introduction to the network XML format. For
+      background information on the concepts referred to here, consult the
+      <a href="https://wiki.libvirt.org/page/Networking">relevant wiki page</a>.
     </p>
 
     <h2><a name="elements">Element and attribute overview</a></h2>
