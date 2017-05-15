@@ -444,7 +444,7 @@
         namespace. It provides information about the permissions to use for the
         final directory when the pool is built. There are 4 child elements.
         The <code>mode</code> element contains the octal permission set.
-        The <code>mode</code> defaults to 0755 when not provided.
+        The <code>mode</code> defaults to 0711 when not provided.
         The <code>owner</code> element contains the numeric user ID.
         The <code>group</code> element contains the numeric group ID.
         If <code>owner</code> or <code>group</code> aren't specified when
