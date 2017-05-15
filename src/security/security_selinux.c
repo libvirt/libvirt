@@ -2323,11 +2323,6 @@ virSecuritySELinuxRestoreSecurityChardevCallback(virDomainDefPtr def,
 {
     virSecurityManagerPtr mgr = opaque;
 
-    /* This is taken care of by processing of def->serials */
-    if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
-        dev->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
-        return 0;
-
     return virSecuritySELinuxRestoreChardevLabel(mgr, def, dev, dev->source);
 }
 
@@ -2716,11 +2711,6 @@ virSecuritySELinuxSetSecurityChardevCallback(virDomainDefPtr def,
                                              void *opaque)
 {
     virSecurityManagerPtr mgr = opaque;
-
-    /* This is taken care of by processing of def->serials */
-    if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
-        dev->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
-        return 0;
 
     return virSecuritySELinuxSetChardevLabel(mgr, def, dev, dev->source);
 }

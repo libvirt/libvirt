@@ -3523,6 +3523,24 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 }
 
 
+static bool
+virDomainSkipBackcompatConsole(virDomainDefPtr def,
+                               size_t index,
+                               bool all)
+{
+    virDomainChrDefPtr console = def->consoles[index];
+
+    if (!all && index == 0 &&
+        (console->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
+         console->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE) &&
+        def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
+        return true;
+    }
+
+    return false;
+}
+
+
 static int
 virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
                                    virDomainDeviceInfoCallback cb,
@@ -3591,11 +3609,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
             return -1;
     }
     for (i = 0; i < def->nconsoles; i++) {
-        if (!all &&
-            i == 0 &&
-            (def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
-             def->consoles[i]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE) &&
-             def->os.type == VIR_DOMAIN_OSTYPE_HVM)
+        if (virDomainSkipBackcompatConsole(def, i, all))
             continue;
         device.data.chr = def->consoles[i];
         if (cb(def, &device, &def->consoles[i]->info, opaque) < 0)
@@ -25431,6 +25445,8 @@ virDomainChrDefForeach(virDomainDefPtr def,
             goto done;
     }
     for (i = 0; i < def->nconsoles; i++) {
+        if (virDomainSkipBackcompatConsole(def, i, false))
+            continue;
         if ((iter)(def,
                    def->consoles[i],
                    opaque) < 0)
