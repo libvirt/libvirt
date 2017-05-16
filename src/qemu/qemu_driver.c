@@ -8172,8 +8172,6 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     virDomainDeviceDefPtr dev = NULL, dev_copy = NULL;
     bool force = (flags & VIR_DOMAIN_DEVICE_MODIFY_FORCE) != 0;
     int ret = -1;
-    virQEMUCapsPtr qemuCaps = NULL;
-    qemuDomainObjPrivatePtr priv;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
@@ -8191,8 +8189,6 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
-
-    priv = vm->privateData;
 
     if (virDomainUpdateDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
@@ -8219,12 +8215,6 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         if (!dev_copy)
             goto endjob;
     }
-
-    if (priv->qemuCaps)
-        qemuCaps = virObjectRef(priv->qemuCaps);
-    else if (!(qemuCaps = virQEMUCapsCacheLookup(caps, driver->qemuCapsCache,
-                                                 vm->def->emulator)))
-        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Make a copy for updated domain. */
@@ -8273,7 +8263,6 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    virObjectUnref(qemuCaps);
     virDomainDefFree(vmdef);
     if (dev != dev_copy)
         virDomainDeviceDefFree(dev_copy);
