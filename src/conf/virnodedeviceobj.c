@@ -165,7 +165,8 @@ virNodeDeviceFindByWWNs(virNodeDeviceObjListPtr devs,
         virNodeDeviceObjLock(devs->objs[i]);
         if ((cap = virNodeDeviceFindFCCapDef(devs->objs[i])) &&
             STREQ_NULLABLE(cap->data.scsi_host.wwnn, parent_wwnn) &&
-            STREQ_NULLABLE(cap->data.scsi_host.wwpn, parent_wwpn))
+            STREQ_NULLABLE(cap->data.scsi_host.wwpn, parent_wwpn) &&
+            virNodeDeviceFindVPORTCapDef(devs->objs[i]))
             return devs->objs[i];
         virNodeDeviceObjUnlock(devs->objs[i]);
     }
@@ -184,7 +185,8 @@ virNodeDeviceFindByFabricWWN(virNodeDeviceObjListPtr devs,
         virNodeDevCapsDefPtr cap;
         virNodeDeviceObjLock(devs->objs[i]);
         if ((cap = virNodeDeviceFindFCCapDef(devs->objs[i])) &&
-            STREQ_NULLABLE(cap->data.scsi_host.fabric_wwn, parent_fabric_wwn))
+            STREQ_NULLABLE(cap->data.scsi_host.fabric_wwn, parent_fabric_wwn) &&
+            virNodeDeviceFindVPORTCapDef(devs->objs[i]))
             return devs->objs[i];
         virNodeDeviceObjUnlock(devs->objs[i]);
     }
