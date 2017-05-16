@@ -3915,6 +3915,7 @@ qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rc;
     int ret = -1;
+    virCPUDefPtr orig = NULL;
 
     if (ARCH_IS_X86(def->os.arch)) {
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -3945,10 +3946,17 @@ qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
         if (qemuProcessVerifyCPUFeatures(def, cpu) < 0)
             goto cleanup;
 
-        if ((rc = virCPUUpdateLive(def->os.arch, def->cpu, cpu, disabled)) < 0)
+        if (!(orig = virCPUDefCopy(def->cpu)))
             goto cleanup;
-        else if (rc == 0)
+
+        if ((rc = virCPUUpdateLive(def->os.arch, def->cpu, cpu, disabled)) < 0) {
+            goto cleanup;
+        } else if (rc == 0) {
+            if (!virCPUDefIsEqual(def->cpu, orig, false))
+                VIR_STEAL_PTR(priv->origCPU, orig);
+
             def->cpu->check = VIR_CPU_CHECK_FULL;
+        }
     }
 
     ret = 0;
@@ -3956,6 +3964,7 @@ qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
  cleanup:
     virCPUDataFree(cpu);
     virCPUDataFree(disabled);
+    virCPUDefFree(orig);
     return ret;
 }
 

@@ -1726,6 +1726,8 @@ qemuDomainObjPrivateFree(void *data)
     VIR_FREE(priv->migTLSAlias);
     qemuDomainMasterKeyFree(priv);
 
+    virCPUDefFree(priv->origCPU);
+
     VIR_FREE(priv);
 }
 
@@ -1880,6 +1882,8 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
     virBufferEscapeString(buf, "<libDir path='%s'/>\n", priv->libDir);
     virBufferEscapeString(buf, "<channelTargetDir path='%s'/>\n",
                           priv->channelTargetDir);
+
+    virCPUDefFormatBufFull(buf, priv->origCPU, NULL, false);
 
     return 0;
 }
@@ -2147,6 +2151,9 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     tmp = NULL;
 
     if (qemuDomainSetPrivatePathsOld(driver, vm) < 0)
+        goto error;
+
+    if (virCPUDefParseXML(ctxt, "./cpu", VIR_CPU_TYPE_GUEST, &priv->origCPU) < 0)
         goto error;
 
     return 0;
