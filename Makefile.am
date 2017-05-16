@@ -40,6 +40,7 @@ EXTRA_DIST = \
   autogen.sh \
   cfg.mk \
   run.in \
+  README.md \
   AUTHORS.in
 
 pkgconfigdir = $(libdir)/pkgconfig
