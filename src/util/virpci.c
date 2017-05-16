@@ -147,7 +147,7 @@ struct _virPCIDeviceList {
 #define PCI_EXP_DEVCAP          0x4     /* Device capabilities */
 #define PCI_EXP_DEVCAP_FLR     (1<<28)  /* Function Level Reset */
 #define PCI_EXP_LNKCAP          0xc     /* Link Capabilities */
-#define PCI_EXP_LNKCAP_SPEED    0x0001f /* Maximum Link Speed */
+#define PCI_EXP_LNKCAP_SPEED    0x0000f /* Maximum Link Speed */
 #define PCI_EXP_LNKCAP_WIDTH    0x003f0 /* Maximum Link Width */
 #define PCI_EXP_LNKSTA          0x12    /* Link Status */
 #define PCI_EXP_LNKSTA_SPEED    0x000f  /* Negotiated Link Speed */
