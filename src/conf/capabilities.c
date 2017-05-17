@@ -51,6 +51,7 @@
 #define VIR_FROM_THIS VIR_FROM_CAPABILITIES
 
 #define SYSFS_SYSTEM_PATH "/sys/devices/system"
+#define SYSFS_RESCTRL_PATH "/sys/fs/resctrl"
 
 VIR_LOG_INIT("conf.capabilities")
 
@@ -872,6 +873,9 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
                             virCapsHostCacheBankPtr *caches)
 {
     size_t i = 0;
+    size_t j = 0;
+    int indent = virBufferGetIndent(buf, false);
+    virBuffer controlBuf = VIR_BUFFER_INITIALIZER;
 
     if (!ncaches)
         return 0;
@@ -893,12 +897,32 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
          */
         virBufferAsprintf(buf,
                           "<bank id='%u' level='%u' type='%s' "
-                          "size='%llu' unit='%s' cpus='%s'/>\n",
+                          "size='%llu' unit='%s' cpus='%s'",
                           bank->id, bank->level,
                           virCacheTypeToString(bank->type),
                           bank->size >> (kilos * 10),
                           kilos ? "KiB" : "B",
                           cpus_str);
+
+        virBufferAdjustIndent(&controlBuf, indent + 4);
+        for (j = 0; j < bank->ncontrols; j++) {
+            bool min_kilos = !(bank->controls[j]->min % 1024);
+            virBufferAsprintf(&controlBuf,
+                              "<control min='%llu' unit='%s' "
+                              "type='%s' maxAllocs='%u'/>\n",
+                              bank->controls[j]->min >> (min_kilos * 10),
+                              min_kilos ? "KiB" : "B",
+                              virCacheTypeToString(bank->controls[j]->scope),
+                              bank->controls[j]->max_allocation);
+        }
+
+        if (virBufferUse(&controlBuf)) {
+            virBufferAddLit(buf, ">\n");
+            virBufferAddBuffer(buf, &controlBuf);
+            virBufferAddLit(buf, "</bank>\n");
+        } else {
+            virBufferAddLit(buf, "/>\n");
+        }
 
         VIR_FREE(cpus_str);
     }
@@ -1519,11 +1543,113 @@ virCapsHostCacheBankEquals(virCapsHostCacheBankPtr a,
 void
 virCapsHostCacheBankFree(virCapsHostCacheBankPtr ptr)
 {
+    size_t i;
+
     if (!ptr)
         return;
 
     virBitmapFree(ptr->cpus);
+    for (i = 0; i < ptr->ncontrols; i++)
+        VIR_FREE(ptr->controls[i]);
+    VIR_FREE(ptr->controls);
     VIR_FREE(ptr);
+}
+
+/*
+ * This function tests which TYPE of cache control is supported
+ * Return values are:
+ *  -1: not supported
+ *   0: CAT
+ *   1: CDP
+ */
+static int
+virCapabilitiesGetCacheControlType(virCapsHostCacheBankPtr bank)
+{
+    int ret = -1;
+    char *path = NULL;
+
+    if (virAsprintf(&path,
+                    SYSFS_RESCTRL_PATH "/info/L%u",
+                    bank->level) < 0)
+        return -1;
+
+    if (virFileExists(path)) {
+        ret = 0;
+    } else {
+        VIR_FREE(path);
+        /*
+         * If CDP is enabled, there will be both CODE and DATA, but it's enough
+         * to check one of those only.
+         */
+        if (virAsprintf(&path,
+                        SYSFS_RESCTRL_PATH "/info/L%uCODE",
+                        bank->level) < 0)
+            return -1;
+        if (virFileExists(path))
+            ret = 1;
+    }
+
+    VIR_FREE(path);
+    return ret;
+}
+
+static int
+virCapabilitiesGetCacheControl(virCapsHostCacheBankPtr bank,
+                               virCacheType scope)
+{
+    int ret = -1;
+    char *path = NULL;
+    char *cbm_mask = NULL;
+    char *type_upper = NULL;
+    unsigned int min_cbm_bits = 0;
+    virCapsHostCacheControlPtr control;
+
+    if (VIR_ALLOC(control) < 0)
+        goto cleanup;
+
+    if (scope != VIR_CACHE_TYPE_BOTH &&
+        virStringToUpper(&type_upper, virCacheTypeToString(scope)) < 0)
+        goto cleanup;
+
+    if (virFileReadValueUint(&control->max_allocation,
+                             SYSFS_RESCTRL_PATH "/info/L%u%s/num_closids",
+                             bank->level,
+                             type_upper ? type_upper : "") < 0)
+        goto cleanup;
+
+    if (virFileReadValueString(&cbm_mask,
+                               SYSFS_RESCTRL_PATH
+                               "/info/L%u%s/cbm_mask",
+                               bank->level,
+                               type_upper ? type_upper: "") < 0)
+        goto cleanup;
+
+    if (virFileReadValueUint(&min_cbm_bits,
+                             SYSFS_RESCTRL_PATH "/info/L%u%s/min_cbm_bits",
+                             bank->level,
+                             type_upper ? type_upper : "") < 0)
+        goto cleanup;
+
+    virStringTrimOptionalNewline(cbm_mask);
+
+    /* cbm_mask: cache bit mask, it's in hex, eg: fffff */
+    control->min = min_cbm_bits * bank->size / (strlen(cbm_mask) * 4);
+
+    control->scope = scope;
+
+    if (VIR_APPEND_ELEMENT(bank->controls,
+                           bank->ncontrols,
+                           control) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(path);
+    VIR_FREE(cbm_mask);
+    VIR_FREE(type_upper);
+    VIR_FREE(control);
+    return ret;
 }
 
 int
@@ -1534,6 +1660,7 @@ virCapabilitiesInitCaches(virCapsPtr caps)
     ssize_t pos = -1;
     DIR *dirp = NULL;
     int ret = -1;
+    int typeret;
     char *path = NULL;
     char *type = NULL;
     struct dirent *ent = NULL;
@@ -1609,12 +1736,27 @@ virCapabilitiesInitCaches(virCapsPtr caps)
                                        SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
                 goto cleanup;
 
+            typeret = virCapabilitiesGetCacheControlType(bank);
+
+            if (typeret == 0) {
+                if (virCapabilitiesGetCacheControl(bank,
+                                                   VIR_CACHE_TYPE_BOTH) < 0)
+                    goto cleanup;
+            } else if (typeret == 1) {
+                if (virCapabilitiesGetCacheControl(bank,
+                                                   VIR_CACHE_TYPE_CODE) < 0 ||
+                    virCapabilitiesGetCacheControl(bank,
+                                                   VIR_CACHE_TYPE_DATA) < 0)
+                    goto cleanup;
+            }
+
             kernel_type = virCacheKernelTypeFromString(type);
             if (kernel_type < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unknown cache type '%s'"), type);
                 goto cleanup;
             }
+
             bank->type = kernel_type;
             VIR_FREE(type);
 

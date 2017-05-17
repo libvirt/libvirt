@@ -47,6 +47,7 @@ test_virCapabilities(const void *opaque)
     char *capsXML = NULL;
     char *path = NULL;
     char *dir = NULL;
+    char *resctrl = NULL;
     int ret = -1;
 
     /*
@@ -58,7 +59,12 @@ test_virCapabilities(const void *opaque)
                     data->resctrl ? "/system" : "") < 0)
         goto cleanup;
 
+    if (virAsprintf(&resctrl, "%s/vircaps2xmldata/linux-%s/resctrl",
+                    abs_srcdir, data->filename) < 0)
+        goto cleanup;
+
     virFileWrapperAddPrefix("/sys/devices/system", dir);
+    virFileWrapperAddPrefix("/sys/fs/resctrl", resctrl);
     caps = virCapabilitiesNew(data->arch, data->offlineMigrate, data->liveMigrate);
 
     if (!caps)
@@ -84,6 +90,7 @@ test_virCapabilities(const void *opaque)
 
  cleanup:
     VIR_FREE(dir);
+    VIR_FREE(resctrl);
     VIR_FREE(path);
     VIR_FREE(capsXML);
     virObjectUnref(caps);
@@ -112,6 +119,7 @@ mymain(void)
     DO_TEST("caches", VIR_ARCH_X86_64);
 
     DO_TEST_FULL("resctrl", VIR_ARCH_X86_64, true, true, true);
+    DO_TEST_FULL("resctrl-cdp", VIR_ARCH_X86_64, true, true, true);
 
     return ret;
 }

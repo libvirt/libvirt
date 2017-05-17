@@ -148,6 +148,14 @@ typedef enum {
 
 VIR_ENUM_DECL(virCache);
 
+typedef struct _virCapsHostCacheControl virCapsHostCacheControl;
+typedef virCapsHostCacheControl *virCapsHostCacheControlPtr;
+struct _virCapsHostCacheControl {
+    unsigned long long min; /* minimum cache control size in B */
+    virCacheType scope;  /* data, code or both */
+    unsigned int max_allocation; /* max number of supported allocations */
+};
+
 typedef struct _virCapsHostCacheBank virCapsHostCacheBank;
 typedef virCapsHostCacheBank *virCapsHostCacheBankPtr;
 struct _virCapsHostCacheBank {
@@ -156,6 +164,8 @@ struct _virCapsHostCacheBank {
     unsigned long long size; /* B */
     virCacheType type;  /* Data, Instruction or Unified */
     virBitmapPtr cpus;  /* All CPUs that share this bank */
+    size_t ncontrols;
+    virCapsHostCacheControlPtr *controls;
 };
 
 typedef struct _virCapsHost virCapsHost;

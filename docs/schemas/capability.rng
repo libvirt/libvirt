@@ -261,13 +261,7 @@
           <attribute name='level'>
             <ref name='unsignedInt'/>
           </attribute>
-          <attribute name='type'>
-            <choice>
-              <value>both</value>
-              <value>code</value>
-              <value>data</value>
-            </choice>
-          </attribute>
+          <ref name='cacheType'/>
           <attribute name='size'>
             <ref name='unsignedInt'/>
           </attribute>
@@ -277,9 +271,33 @@
           <attribute name='cpus'>
             <ref name='cpuset'/>
           </attribute>
+          <zeroOrMore>
+            <element name='control'>
+              <attribute name='min'>
+                <ref name='unsignedInt'/>
+              </attribute>
+              <attribute name='unit'>
+                <ref name='unit'/>
+              </attribute>
+              <ref name='cacheType'/>
+              <attribute name='maxAllocs'>
+                <ref name='unsignedInt'/>
+              </attribute>
+            </element>
+          </zeroOrMore>
         </element>
       </oneOrMore>
     </element>
+  </define>
+
+  <define name='cacheType'>
+    <attribute name='type'>
+      <choice>
+        <value>both</value>
+        <value>code</value>
+        <value>data</value>
+      </choice>
+    </attribute>
   </define>
 
   <define name='guestcaps'>
