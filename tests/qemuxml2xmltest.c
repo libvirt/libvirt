@@ -1127,6 +1127,7 @@ mymain(void)
             QEMU_CAPS_MACHINE_IOMMU);
     DO_TEST("intel-iommu-ioapic", NONE);
     DO_TEST("intel-iommu-caching-mode", NONE);
+    DO_TEST("intel-iommu-eim", NONE);
 
     DO_TEST("cpu-check-none", NONE);
     DO_TEST("cpu-check-partial", NONE);

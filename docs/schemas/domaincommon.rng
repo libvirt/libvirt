@@ -3959,6 +3959,11 @@
               <ref name="virOnOff"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="eim">
+              <ref name="virOnOff"/>
+            </attribute>
+          </optional>
         </element>
       </optional>
     </element>
