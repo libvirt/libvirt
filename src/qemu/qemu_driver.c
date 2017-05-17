@@ -16942,7 +16942,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
 
-    if (!top)
+    if (!top || STREQ(top, disk->dst))
         topSource = disk->src;
     else if (virStorageFileParseChainIndex(disk->dst, top, &topIndex) < 0 ||
              !(topSource = virStorageFileChainLookup(disk->src, NULL,
