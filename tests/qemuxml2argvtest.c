@@ -1673,6 +1673,13 @@ mymain(void)
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-cpu-le", QEMU_CAPS_KVM,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
+    DO_TEST_FAILURE("pseries-cpu-compat-power9", QEMU_CAPS_KVM);
+
+    qemuTestSetHostCPU(driver.caps, cpuPower9);
+    DO_TEST("pseries-cpu-compat-power9",
+            QEMU_CAPS_KVM, QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
+    qemuTestSetHostCPU(driver.caps, NULL);
+
     qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
 
     DO_TEST("pseries-panic-missing",

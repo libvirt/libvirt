@@ -17,6 +17,7 @@
 virCPUDefPtr cpuDefault;
 virCPUDefPtr cpuHaswell;
 virCPUDefPtr cpuPower8;
+virCPUDefPtr cpuPower9;
 
 static virCPUFeatureDef cpuDefaultFeatures[] = {
     { (char *) "ds",        -1 },
@@ -92,6 +93,15 @@ static virCPUDef cpuPower8Data = {
     .sockets = 1,
     .cores = 8,
     .threads = 8,
+};
+
+static virCPUDef cpuPower9Data = {
+    .type = VIR_CPU_TYPE_HOST,
+    .arch = VIR_ARCH_PPC64,
+    .model = (char *) "POWER9",
+    .sockets = 1,
+    .cores = 16,
+    .threads = 1,
 };
 
 typedef enum {
@@ -467,7 +477,8 @@ virCapsPtr testQemuCapsInit(void)
 
     if (!(cpuDefault = virCPUDefCopy(&cpuDefaultData)) ||
         !(cpuHaswell = virCPUDefCopy(&cpuHaswellData)) ||
-        !(cpuPower8 = virCPUDefCopy(&cpuPower8Data)))
+        !(cpuPower8 = virCPUDefCopy(&cpuPower8Data)) ||
+        !(cpuPower9 = virCPUDefCopy(&cpuPower9Data)))
         goto cleanup;
 
     qemuTestSetHostCPU(caps, NULL);

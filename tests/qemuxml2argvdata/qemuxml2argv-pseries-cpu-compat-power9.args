@@ -1,0 +1,24 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-ppc64 \
+-name QEMUGuest1 \
+-S \
+-M pseries \
+-cpu host,compat=power9 \
+-m 256 \
+-smp 4,sockets=4,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-nographic \
+-nodefconfig \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-boot c \
+-usb \
+-chardev pty,id=charserial0 \
+-device spapr-vty,chardev=charserial0,reg=0x30000000
