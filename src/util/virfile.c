@@ -3798,6 +3798,7 @@ virFileComparePaths(const char *p1, const char *p2)
 }
 
 
+#if HAVE_DECL_SEEK_HOLE
 /**
  * virFileInData:
  * @fd: file to check
@@ -3903,6 +3904,21 @@ virFileInData(int fd,
         ignore_value(lseek(fd, cur, SEEK_SET));
     return ret;
 }
+
+#else /* !HAVE_DECL_SEEK_HOLE */
+
+int
+virFileInData(int fd ATTRIBUTE_UNUSED,
+              int *inData ATTRIBUTE_UNUSED,
+              long long *length ATTRIBUTE_UNUSED)
+{
+    errno = ENOSYS;
+    virReportSystemError(errno, "%s",
+                         _("sparse files not supported"));
+    return -1;
+}
+
+#endif /* !HAVE_DECL_SEEK_HOLE */
 
 
 /**

@@ -352,6 +352,11 @@ AC_CHECK_DECLS([ETH_FLAG_TXVLAN, ETH_FLAG_NTUPLE, ETH_FLAG_RXHASH, ETH_FLAG_LRO,
   [], [], [[#include <linux/ethtool.h>
   ]])
 
+AC_CHECK_DECLS([SEEK_HOLE], [], [],
+               [#include <sys/types.h>
+                #include <unistd.h>])
+
+
 dnl Our only use of libtasn1.h is in the testsuite, and can be skipped
 dnl if the header is not present.  Assume -ltasn1 is present if the
 dnl header could be found.
