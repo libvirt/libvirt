@@ -193,7 +193,6 @@ void virConnectCloseCallbackDataRegister(virConnectCloseCallbackDataPtr closeDat
         VIR_WARN("Attempt to register callback on armed"
                  " close callback object %p", closeData);
         goto cleanup;
-        return;
     }
 
     closeData->conn = virObjectRef(conn);
