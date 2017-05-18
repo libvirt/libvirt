@@ -27,6 +27,10 @@
 #include "virfile.h"
 #include "virstring.h"
 
+#ifdef __linux__
+# include <linux/falloc.h>
+#endif
+
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 static int testFileCheckMounts(const char *prefix,
