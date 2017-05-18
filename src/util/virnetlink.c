@@ -758,6 +758,7 @@ virNetlinkEventServiceStop(unsigned int protocol)
     }
 
     server[protocol] = NULL;
+    VIR_FREE(srv->handles);
     virNetlinkEventServerUnlock(srv);
 
     virMutexDestroy(&srv->lock);
