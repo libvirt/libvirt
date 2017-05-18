@@ -775,32 +775,12 @@ virNetlinkEventServiceStop(unsigned int protocol)
 int
 virNetlinkEventServiceStopAll(void)
 {
-    size_t i, j;
-    virNetlinkEventSrvPrivatePtr srv = NULL;
+    size_t i;
 
     VIR_INFO("stopping all netlink event services");
 
-    for (i = 0; i < MAX_LINKS; i++) {
-        srv = server[i];
-        if (!srv)
-            continue;
-
-        virNetlinkEventServerLock(srv);
-        nl_close(srv->netlinknh);
-        virNetlinkFree(srv->netlinknh);
-        virEventRemoveHandle(srv->eventwatch);
-
-        for (j = 0; j < srv->handlesCount; j++) {
-            if (srv->handles[j].deleted == VIR_NETLINK_HANDLE_VALID)
-                virNetlinkEventRemoveClientPrimitive(j, i);
-        }
-
-        server[i] = NULL;
-        virNetlinkEventServerUnlock(srv);
-
-        virMutexDestroy(&srv->lock);
-        VIR_FREE(srv);
-    }
+    for (i = 0; i < MAX_LINKS; i++)
+        virNetlinkEventServiceStop(i);
 
     return 0;
 }
