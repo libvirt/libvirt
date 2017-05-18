@@ -35,6 +35,16 @@
 <libvirt>
   <release version="v3.4.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          Improved streams to efficiently transfer sparseness
+        </summary>
+        <description>
+          New extension to virStream was implemented so that
+          virStorageVolDownload and virStorageVolUpload can preserve file
+          sparseness.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
