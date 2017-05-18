@@ -1076,16 +1076,16 @@ udevProcessMediatedDevice(struct udev_device *dev,
     const char *uuidstr = NULL;
     int iommugrp = -1;
     char *linkpath = NULL;
-    char *realpath = NULL;
+    char *canonicalpath = NULL;
     virNodeDevCapMdevPtr data = &def->caps->data.mdev;
 
     if (virAsprintf(&linkpath, "%s/mdev_type", udev_device_get_syspath(dev)) < 0)
         goto cleanup;
 
-    if (virFileResolveLink(linkpath, &realpath) < 0)
+    if (virFileResolveLink(linkpath, &canonicalpath) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(data->type, last_component(realpath)) < 0)
+    if (VIR_STRDUP(data->type, last_component(canonicalpath)) < 0)
         goto cleanup;
 
     uuidstr = udev_device_get_sysname(dev);
@@ -1100,7 +1100,7 @@ udevProcessMediatedDevice(struct udev_device *dev,
     ret = 0;
  cleanup:
     VIR_FREE(linkpath);
-    VIR_FREE(realpath);
+    VIR_FREE(canonicalpath);
     return ret;
 }
 
