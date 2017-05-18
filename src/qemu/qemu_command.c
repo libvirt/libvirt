@@ -3633,8 +3633,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
                    int vlan,
                    unsigned int bootindex,
                    size_t vhostfdSize,
-                   virQEMUCapsPtr qemuCaps,
-                   unsigned int mtu)
+                   virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *nic = net->model;
@@ -3758,23 +3757,13 @@ qemuBuildNicDevStr(virDomainDefPtr def,
         virBufferAsprintf(&buf, ",rx_queue_size=%u", net->driver.virtio.rx_queue_size);
     }
 
-    if (usingVirtio && mtu) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_HOST_MTU)) {
-
-            virBufferAsprintf(&buf, ",host_mtu=%u", mtu);
-
-        } else {
-            /* log an error if mtu was requested specifically for this
-             * interface, otherwise, if it's just what was reported by
-             * the attached network, ignore it.
-             */
-            if (net->mtu) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("setting MTU is not supported with "
-                                 "this QEMU binary"));
-                goto error;
-            }
+    if (usingVirtio && net->mtu) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_HOST_MTU)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("setting MTU is not supported with this QEMU binary"));
+            goto error;
         }
+        virBufferAsprintf(&buf, ",host_mtu=%u", net->mtu);
     }
 
     if (vlan == -1)
@@ -8320,7 +8309,7 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
     VIR_FREE(netdev);
 
     if (!(nic = qemuBuildNicDevStr(def, net, -1, bootindex,
-                                   queues, qemuCaps, net->mtu))) {
+                                   queues, qemuCaps))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Error generating NIC -device string"));
         goto error;
@@ -8366,7 +8355,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     virDomainNetType actualType = virDomainNetGetActualType(net);
     virNetDevBandwidthPtr actualBandwidth;
     size_t i;
-    unsigned int mtu = net->mtu;
 
 
     if (!bootindex)
@@ -8421,7 +8409,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
 
         if (qemuInterfaceBridgeConnect(def, driver, net,
-                                       tapfd, &tapfdSize, &mtu) < 0)
+                                       tapfd, &tapfdSize) < 0)
             goto cleanup;
         break;
 
@@ -8601,7 +8589,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     }
     if (qemuDomainSupportsNicdev(def, net)) {
         if (!(nic = qemuBuildNicDevStr(def, net, vlan, bootindex,
-                                       vhostfdSize, qemuCaps, mtu)))
+                                       vhostfdSize, qemuCaps)))
             goto cleanup;
         virCommandAddArgList(cmd, "-device", nic, NULL);
     } else {
