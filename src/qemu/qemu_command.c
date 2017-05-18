@@ -6690,6 +6690,13 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
                              "with this QEMU binary"));
             return -1;
         }
+        if (iommu->eim != VIR_TRISTATE_SWITCH_ABSENT &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_EIM))  {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iommu: eim is not supported "
+                             "with this QEMU binary"));
+            return -1;
+        }
         break;
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
         break;
@@ -6722,6 +6729,10 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
         if (iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT) {
             virBufferAsprintf(&opts, ",caching-mode=%s",
                               virTristateSwitchTypeToString(iommu->caching_mode));
+        }
+        if (iommu->eim != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(&opts, ",eim=%s",
+                              virTristateSwitchTypeToString(iommu->eim));
         }
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
         break;

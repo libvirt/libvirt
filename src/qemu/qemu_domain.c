@@ -2992,6 +2992,9 @@ qemuDomainDefValidateVideo(const virDomainDef *def)
 }
 
 
+#define QEMU_MAX_VCPUS_WITHOUT_EIM 255
+
+
 static int
 qemuDomainDefValidate(const virDomainDef *def,
                       virCapsPtr caps,
@@ -3067,6 +3070,24 @@ qemuDomainDefValidate(const virDomainDef *def,
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("CPU topology doesn't match maximum vcpu count"));
+            goto cleanup;
+        }
+    }
+
+    if (ARCH_IS_X86(def->os.arch) &&
+        virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_EIM) {
+        if (!qemuDomainIsQ35(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("more than %d vCPUs are only supported on "
+                             "q35-based machine types"),
+                           QEMU_MAX_VCPUS_WITHOUT_EIM);
+            goto cleanup;
+        }
+        if (!def->iommu || def->iommu->eim != VIR_TRISTATE_SWITCH_ON) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("more than %d vCPUs require extended interrupt "
+                             "mode enabled on the iommu device"),
+                           QEMU_MAX_VCPUS_WITHOUT_EIM);
             goto cleanup;
         }
     }

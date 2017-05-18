@@ -206,6 +206,7 @@
   <flag name='kernel-irqchip'/>
   <flag name='kernel-irqchip.split'/>
   <flag name='intel-iommu.intremap'/>
+  <flag name='intel-iommu.eim'/>
   <version>2008000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.8.0)</package>
