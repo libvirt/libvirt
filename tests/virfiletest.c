@@ -119,11 +119,8 @@ testFileSanitizePath(const void *opaque)
 }
 
 
-static int
-makeSparseFile(const off_t offsets[],
-               const bool startData);
+#if HAVE_DECL_SEEK_HOLE && defined(__linux__)
 
-#ifdef __linux__
 /* Create a sparse file. @offsets in KiB. */
 static int
 makeSparseFile(const off_t offsets[],
@@ -188,19 +185,8 @@ makeSparseFile(const off_t offsets[],
     return -1;
 }
 
-#else /* !__linux__ */
 
-static int
-makeSparseFile(const off_t offsets[] ATTRIBUTE_UNUSED,
-               const bool startData ATTRIBUTE_UNUSED)
-{
-    return -1;
-}
-
-#endif /* !__linux__ */
-
-
-#define EXTENT 4
+# define EXTENT 4
 static bool
 holesSupported(void)
 {
@@ -245,6 +231,23 @@ holesSupported(void)
     return ret;
 }
 
+#else /* !HAVE_DECL_SEEK_HOLE || !defined(__linux__)*/
+
+static int
+makeSparseFile(const off_t offsets[] ATTRIBUTE_UNUSED,
+               const bool startData ATTRIBUTE_UNUSED)
+{
+    return -1;
+}
+
+
+static bool
+holesSupported(void)
+{
+    return false;
+}
+
+#endif /* !HAVE_DECL_SEEK_HOLE || !defined(__linux__)*/
 
 struct testFileInData {
     bool startData;     /* whether the list of offsets starts with data section */
