@@ -527,6 +527,13 @@
             goto label;                             \
         }                                           \
     } while (0)
+# define virCheckPositiveArgReturn(argname, retval)     \
+    do {                                                \
+        if (argname <= 0) {                             \
+            virReportInvalidPositiveArg(argname);       \
+            return retval;                              \
+        }                                               \
+    } while (0)
 # define virCheckNonZeroArgGoto(argname, label)     \
     do {                                            \
         if (argname == 0) {                         \

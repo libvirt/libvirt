@@ -367,6 +367,7 @@ virNetClientStreamSetHole(virNetClientStreamPtr st,
                           unsigned int flags)
 {
     virCheckFlags(0, -1);
+    virCheckPositiveArgReturn(length, -1);
 
     /* Shouldn't happen, But it's better to safe than sorry. */
     if (st->holeLength) {

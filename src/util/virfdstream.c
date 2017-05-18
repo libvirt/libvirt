@@ -950,6 +950,7 @@ virFDStreamSendHole(virStreamPtr st,
     int ret = -1;
 
     virCheckFlags(0, -1);
+    virCheckPositiveArgReturn(length, -1);
 
     virObjectLock(fdst);
     if (fdst->length) {
