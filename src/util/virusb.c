@@ -221,7 +221,7 @@ virUSBDeviceFindByVendor(unsigned int vendor,
     if (list->count == 0) {
         virObjectUnref(list);
         if (!mandatory) {
-            VIR_DEBUG("Did not find USB device %x:%x",
+            VIR_DEBUG("Did not find USB device %04x:%04x",
                       vendor, product);
             if (devices)
                 *devices = NULL;
@@ -229,7 +229,7 @@ virUSBDeviceFindByVendor(unsigned int vendor,
         }
 
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Did not find USB device %x:%x"), vendor, product);
+                       _("Did not find USB device %04x:%04x"), vendor, product);
         return -1;
     }
 
@@ -300,7 +300,7 @@ virUSBDeviceFind(unsigned int vendor,
     if (list->count == 0) {
         virObjectUnref(list);
         if (!mandatory) {
-            VIR_DEBUG("Did not find USB device %x:%x bus:%u device:%u",
+            VIR_DEBUG("Did not find USB device %04x:%04x bus:%u device:%u",
                       vendor, product, bus, devno);
             if (usb)
                 *usb = NULL;
@@ -308,7 +308,7 @@ virUSBDeviceFind(unsigned int vendor,
         }
 
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Did not find USB device %x:%x bus:%u device:%u"),
+                       _("Did not find USB device %04x:%04x bus:%u device:%u"),
                        vendor, product, bus, devno);
         return -1;
     }
