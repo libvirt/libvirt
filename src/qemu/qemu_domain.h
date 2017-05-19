@@ -515,6 +515,7 @@ char *qemuDomainFormatXML(virQEMUDriverPtr driver,
 
 char *qemuDomainDefFormatLive(virQEMUDriverPtr driver,
                               virDomainDefPtr def,
+                              virCPUDefPtr origCPU,
                               bool inactive,
                               bool compatible);
 

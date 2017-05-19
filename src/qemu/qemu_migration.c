@@ -2059,9 +2059,10 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
         if (!qemuDomainDefCheckABIStability(driver, vm->def, def))
             goto cleanup;
 
-        rv = qemuDomainDefFormatLive(driver, def, false, true);
+        rv = qemuDomainDefFormatLive(driver, def, NULL, false, true);
     } else {
-        rv = qemuDomainDefFormatLive(driver, vm->def, false, true);
+        rv = qemuDomainDefFormatLive(driver, vm->def, priv->origCPU,
+                                     false, true);
     }
 
  cleanup:

@@ -4216,11 +4216,13 @@ qemuDomainDefCopy(virQEMUDriverPtr driver,
     return ret;
 }
 
-int
-qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
-                       virDomainDefPtr def,
-                       unsigned int flags,
-                       virBuffer *buf)
+
+static int
+qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
+                               virDomainDefPtr def,
+                               virCPUDefPtr origCPU,
+                               unsigned int flags,
+                               virBuffer *buf)
 {
     int ret = -1;
     virDomainDefPtr copy = NULL;
@@ -4341,6 +4343,16 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
             if (qemuDomainChrDefDropDefaultPath(def->channels[i], driver) < 0)
                 goto cleanup;
         }
+
+        /* Replace the CPU definition updated according to QEMU with the one
+         * used for starting the domain. The updated def will be sent
+         * separately for backward compatibility.
+         */
+        if (origCPU) {
+            virCPUDefFree(def->cpu);
+            if (!(def->cpu = virCPUDefCopy(origCPU)))
+                goto cleanup;
+        }
     }
 
  format:
@@ -4354,13 +4366,26 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
     return ret;
 }
 
-char *qemuDomainDefFormatXML(virQEMUDriverPtr driver,
-                             virDomainDefPtr def,
-                             unsigned int flags)
+
+int
+qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
+                       virDomainDefPtr def,
+                       unsigned int flags,
+                       virBufferPtr buf)
+{
+    return qemuDomainDefFormatBufInternal(driver, def, NULL, flags, buf);
+}
+
+
+static char *
+qemuDomainDefFormatXMLInternal(virQEMUDriverPtr driver,
+                               virDomainDefPtr def,
+                               virCPUDefPtr origCPU,
+                               unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (qemuDomainDefFormatBuf(driver, def, flags, &buf) < 0) {
+    if (qemuDomainDefFormatBufInternal(driver, def, origCPU, flags, &buf) < 0) {
         virBufferFreeAndReset(&buf);
         return NULL;
     }
@@ -4374,26 +4399,40 @@ char *qemuDomainDefFormatXML(virQEMUDriverPtr driver,
     return virBufferContentAndReset(&buf);
 }
 
+
+char *
+qemuDomainDefFormatXML(virQEMUDriverPtr driver,
+                       virDomainDefPtr def,
+                       unsigned int flags)
+{
+    return qemuDomainDefFormatXMLInternal(driver, def, NULL, flags);
+}
+
+
 char *qemuDomainFormatXML(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           unsigned int flags)
 {
     virDomainDefPtr def;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCPUDefPtr origCPU = NULL;
 
     if ((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef) {
         def = vm->newDef;
     } else {
         def = vm->def;
+        origCPU = priv->origCPU;
         if (virDomainObjIsActive(vm))
             flags &= ~VIR_DOMAIN_XML_UPDATE_CPU;
     }
 
-    return qemuDomainDefFormatXML(driver, def, flags);
+    return qemuDomainDefFormatXMLInternal(driver, def, origCPU, flags);
 }
 
 char *
 qemuDomainDefFormatLive(virQEMUDriverPtr driver,
                         virDomainDefPtr def,
+                        virCPUDefPtr origCPU,
                         bool inactive,
                         bool compatible)
 {
@@ -4404,7 +4443,7 @@ qemuDomainDefFormatLive(virQEMUDriverPtr driver,
     if (compatible)
         flags |= VIR_DOMAIN_XML_MIGRATABLE;
 
-    return qemuDomainDefFormatXML(driver, def, flags);
+    return qemuDomainDefFormatXMLInternal(driver, def, origCPU, flags);
 }
 
 
