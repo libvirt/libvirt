@@ -2090,7 +2090,6 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
                                             rng->source.file))
             goto cleanup;
     }
-    releaseaddr = true;
 
     if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
         rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
@@ -2103,6 +2102,7 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
                                       !rng->info.addr.ccw.assigned) < 0)
             goto cleanup;
     }
+    releaseaddr = true;
 
     if (qemuDomainNamespaceSetupRNG(driver, vm, rng) < 0)
         goto cleanup;
