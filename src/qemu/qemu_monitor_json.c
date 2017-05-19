@@ -6435,6 +6435,8 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
     virJSONValuePtr data = NULL;
     virJSONValuePtr addr = NULL;
     const char *backend_type = NULL;
+    const char *host;
+    const char *port;
     char *tlsalias = NULL;
     bool telnet;
 
@@ -6498,9 +6500,14 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
             virJSONValueObjectAppend(data, "remote", addr) < 0)
             goto cleanup;
 
-        if (chr->data.udp.bindHost) {
-            addr = qemuMonitorJSONBuildInetSocketAddress(chr->data.udp.bindHost,
-                                                         chr->data.udp.bindService);
+        host = chr->data.udp.bindHost;
+        port = chr->data.udp.bindService;
+        if (host || port) {
+            if (!host)
+                host = "";
+            if (!port)
+                port = "";
+            addr = qemuMonitorJSONBuildInetSocketAddress(host, port);
             if (!addr ||
                 virJSONValueObjectAppend(data, "local", addr) < 0)
                 goto cleanup;
