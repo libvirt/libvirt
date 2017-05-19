@@ -14083,6 +14083,7 @@ virDomainMemoryDefParseXML(xmlNodePtr memdevNode,
     xmlNodePtr save = ctxt->node;
     xmlNodePtr node;
     virDomainMemoryDefPtr def;
+    int val;
 
     ctxt->node = memdevNode;
 
@@ -14102,12 +14103,14 @@ virDomainMemoryDefParseXML(xmlNodePtr memdevNode,
     }
     VIR_FREE(tmp);
 
-    tmp = virXMLPropString(memdevNode, "access");
-    if (tmp &&
-        (def->access = virDomainMemoryAccessTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid access mode '%s'"), tmp);
-        goto error;
+    if ((tmp = virXMLPropString(memdevNode, "access"))) {
+        if ((val = virDomainMemoryAccessTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid access mode '%s'"), tmp);
+            goto error;
+        }
+
+        def->access = val;
     }
     VIR_FREE(tmp);
 
