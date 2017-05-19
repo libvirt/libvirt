@@ -636,6 +636,7 @@ void qemuDomainCleanupRun(virQEMUDriverPtr driver,
 extern virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks;
 extern virDomainXMLNamespace virQEMUDriverDomainXMLNamespace;
 extern virDomainDefParserConfig virQEMUDriverDomainDefParserConfig;
+extern virDomainABIStability virQEMUDriverDomainABIStability;
 
 int qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
                                virDomainObjPtr vm, int asyncJob);

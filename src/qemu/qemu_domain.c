@@ -5820,6 +5820,28 @@ qemuDomainUpdateMemoryDeviceInfo(virQEMUDriverPtr driver,
 }
 
 
+static bool
+qemuDomainABIStabilityCheck(const virDomainDef *src,
+                            const virDomainDef *dst)
+{
+    if (src->mem.source != dst->mem.source) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target memoryBacking source '%s' doesn't "
+                         "match source memoryBacking source'%s'"),
+                       virDomainMemorySourceTypeToString(dst->mem.source),
+                       virDomainMemorySourceTypeToString(src->mem.source));
+        return false;
+    }
+
+    return true;
+}
+
+
+virDomainABIStability virQEMUDriverDomainABIStability = {
+    .domain = qemuDomainABIStabilityCheck,
+};
+
+
 bool
 qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
                                virDomainDefPtr src,

@@ -409,6 +409,8 @@ virDomainMemoryFindByDef;
 virDomainMemoryFindInactiveByDef;
 virDomainMemoryInsert;
 virDomainMemoryRemove;
+virDomainMemorySourceTypeFromString;
+virDomainMemorySourceTypeToString;
 virDomainNetAppendIPAddress;
 virDomainNetDefClear;
 virDomainNetDefFormat;
