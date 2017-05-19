@@ -67,7 +67,7 @@ testCompareParseXML(const char *xmcfg, const char *xml)
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto fail;
 
-    if (!virDomainDefCheckABIStability(def, def)) {
+    if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
         fprintf(stderr, "ABI stability check failed on %s", xml);
         goto fail;
     }

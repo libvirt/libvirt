@@ -200,7 +200,7 @@ xenapiConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     }
 
     if (!(privP->xmlopt = virDomainXMLOptionNew(&xenapiDomainDefParserConfig,
-                                                NULL, NULL))) {
+                                                NULL, NULL, NULL))) {
         xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("Failed to create XML conf object"));
         goto error;

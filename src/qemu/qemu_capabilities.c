@@ -5026,7 +5026,7 @@ virQEMUCapsInitQMPCommandRun(virQEMUCapsInitQMPCommandPtr cmd,
         goto ignore;
     }
 
-    if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)) ||
+    if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL, NULL)) ||
         !(cmd->vm = virDomainObjNew(xmlopt)))
         goto cleanup;
 

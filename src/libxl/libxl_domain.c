@@ -1452,7 +1452,9 @@ libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
         !(migratableDefDst = virDomainDefCopy(dst, cfg->caps, driver->xmlopt, NULL, true)))
         goto cleanup;
 
-    ret = virDomainDefCheckABIStability(migratableDefSrc, migratableDefDst);
+    ret = virDomainDefCheckABIStability(migratableDefSrc,
+                                        migratableDefDst,
+                                        driver->xmlopt);
 
  cleanup:
     virDomainDefFree(migratableDefSrc);

@@ -463,7 +463,7 @@ testCompareXMLToArgv(const void *data)
     if (virBitmapParse("0-3", &priv->autoNodeset, 4) < 0)
         goto cleanup;
 
-    if (!virDomainDefCheckABIStability(vm->def, vm->def)) {
+    if (!virDomainDefCheckABIStability(vm->def, vm->def, driver.xmlopt)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", xml);
         goto cleanup;
     }

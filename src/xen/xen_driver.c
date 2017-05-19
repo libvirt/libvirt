@@ -401,7 +401,7 @@ virDomainXMLOptionPtr
 xenDomainXMLConfInit(void)
 {
     return virDomainXMLOptionNew(&xenDomainDefParserConfig,
-                                 NULL, NULL);
+                                 NULL, NULL, NULL);
 }
 
 

@@ -215,7 +215,8 @@ lxcDomainXMLConfInit(void)
 {
     return virDomainXMLOptionNew(&virLXCDriverDomainDefParserConfig,
                                  &virLXCDriverPrivateDataCallbacks,
-                                 &virLXCDriverDomainXMLNamespace);
+                                 &virLXCDriverDomainXMLNamespace,
+                                 NULL);
 }
 
 

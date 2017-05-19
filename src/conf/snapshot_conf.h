@@ -181,6 +181,7 @@ int virDomainSnapshotRedefinePrep(virDomainPtr domain,
                                   virDomainObjPtr vm,
                                   virDomainSnapshotDefPtr *def,
                                   virDomainSnapshotObjPtr *snap,
+                                  virDomainXMLOptionPtr xmlopt,
                                   bool *update_current,
                                   unsigned int flags);
 

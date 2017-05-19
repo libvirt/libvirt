@@ -2537,9 +2537,19 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataParseFunc  parse;
 };
 
+typedef bool (*virDomainABIStabilityDomain)(const virDomainDef *src,
+                                            const virDomainDef *dst);
+
+typedef struct _virDomainABIStability virDomainABIStability;
+typedef virDomainABIStability *virDomainABIStabilityPtr;
+struct _virDomainABIStability {
+    virDomainABIStabilityDomain domain;
+};
+
 virDomainXMLOptionPtr virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
                                             virDomainXMLPrivateDataCallbacksPtr priv,
-                                            virDomainXMLNamespacePtr xmlns);
+                                            virDomainXMLNamespacePtr xmlns,
+                                            virDomainABIStabilityPtr abi);
 
 void virDomainNetGenerateMAC(virDomainXMLOptionPtr xmlopt, virMacAddrPtr mac);
 
@@ -2806,10 +2816,12 @@ virDomainObjPtr virDomainObjParseFile(const char *filename,
                                       unsigned int flags);
 
 bool virDomainDefCheckABIStability(virDomainDefPtr src,
-                                   virDomainDefPtr dst);
+                                   virDomainDefPtr dst,
+                                   virDomainXMLOptionPtr xmlopt);
 
 bool virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
                                         virDomainDefPtr dst,
+                                        virDomainXMLOptionPtr xmlopt,
                                         unsigned int flags);
 
 int virDomainDefAddImplicitDevices(virDomainDefPtr def);

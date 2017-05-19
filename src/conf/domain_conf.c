@@ -76,6 +76,9 @@ struct _virDomainXMLOption {
 
     /* XML namespace callbacks */
     virDomainXMLNamespace ns;
+
+    /* ABI stability callbacks */
+    virDomainABIStability abi;
 };
 
 #define VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS             \
@@ -1050,7 +1053,8 @@ virDomainKeyWrapDefParseXML(virDomainDefPtr def, xmlXPathContextPtr ctxt)
 virDomainXMLOptionPtr
 virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
                       virDomainXMLPrivateDataCallbacksPtr priv,
-                      virDomainXMLNamespacePtr xmlns)
+                      virDomainXMLNamespacePtr xmlns,
+                      virDomainABIStabilityPtr abi)
 {
     virDomainXMLOptionPtr xmlopt;
 
@@ -1068,6 +1072,9 @@ virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
 
     if (xmlns)
         xmlopt->ns = *xmlns;
+
+    if (abi)
+        xmlopt->abi = *abi;
 
     /* Technically this forbids to use one of Xerox's MAC address prefixes in
      * our hypervisor drivers. This shouldn't ever be a problem.
@@ -19984,6 +19991,7 @@ virDomainDefVcpuCheckAbiStability(virDomainDefPtr src,
 bool
 virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
                                    virDomainDefPtr dst,
+                                   virDomainXMLOptionPtr xmlopt,
                                    unsigned int flags)
 {
     size_t i;
@@ -20385,6 +20393,10 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
         !virDomainIOMMUDefCheckABIStability(src->iommu, dst->iommu))
         goto error;
 
+    if (xmlopt && xmlopt->abi.domain &&
+        !xmlopt->abi.domain(src, dst))
+        goto error;
+
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
     /* This switch statement is here to trigger compiler warning when adding
@@ -20444,9 +20456,10 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
 
 bool
 virDomainDefCheckABIStability(virDomainDefPtr src,
-                              virDomainDefPtr dst)
+                              virDomainDefPtr dst,
+                              virDomainXMLOptionPtr xmlopt)
 {
-    return virDomainDefCheckABIStabilityFlags(src, dst, 0);
+    return virDomainDefCheckABIStabilityFlags(src, dst, xmlopt, 0);
 }
 
 

@@ -114,7 +114,7 @@ vmwareDomainXMLConfigInit(void)
     virDomainXMLPrivateDataCallbacks priv = { .alloc = vmwareDataAllocFunc,
                                               .free = vmwareDataFreeFunc };
 
-    return virDomainXMLOptionNew(&vmwareDomainDefParserConfig, &priv, NULL);
+    return virDomainXMLOptionNew(&vmwareDomainDefParserConfig, &priv, NULL, NULL);
 }
 
 static virDrvOpenStatus

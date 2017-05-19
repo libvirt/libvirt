@@ -1136,7 +1136,7 @@ virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void)
 {
     return virDomainXMLOptionNew(&virTestGenericDomainDefParserConfig,
                                  &virTestGenericPrivateDataCallbacks,
-                                 NULL);
+                                 NULL, NULL);
 }
 
 
@@ -1169,7 +1169,7 @@ testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
         goto out;
     }
 
-    if (!virDomainDefCheckABIStability(def, def)) {
+    if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", infile);
         result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_STABILITY;
         goto out;

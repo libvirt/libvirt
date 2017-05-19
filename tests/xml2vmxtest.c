@@ -82,7 +82,7 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
     if (def == NULL)
         goto failure;
 
-    if (!virDomainDefCheckABIStability(def, def)) {
+    if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
         fprintf(stderr, "ABI stability check failed on %s", xml);
         goto failure;
     }

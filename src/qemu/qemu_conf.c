@@ -909,7 +909,8 @@ virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver)
     virQEMUDriverDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&virQEMUDriverDomainDefParserConfig,
                                  &virQEMUDriverPrivateDataCallbacks,
-                                 &virQEMUDriverDomainXMLNamespace);
+                                 &virQEMUDriverDomainXMLNamespace,
+                                 NULL);
 }
 
 

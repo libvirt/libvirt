@@ -97,7 +97,7 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
             goto fail;
     }
 
-    if (!virDomainDefCheckABIStability(def, def)) {
+    if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
         fprintf(stderr, "ABI stability check failed on %s", xml);
         goto fail;
     }

@@ -1198,6 +1198,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
                               virDomainObjPtr vm,
                               virDomainSnapshotDefPtr *defptr,
                               virDomainSnapshotObjPtr *snap,
+                              virDomainXMLOptionPtr xmlopt,
                               bool *update_current,
                               unsigned int flags)
 {
@@ -1286,7 +1287,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
         if (other->def->dom) {
             if (def->dom) {
                 if (!virDomainDefCheckABIStability(other->def->dom,
-                                                   def->dom))
+                                                   def->dom, xmlopt))
                     goto cleanup;
             } else {
                 /* Transfer the domain def */
