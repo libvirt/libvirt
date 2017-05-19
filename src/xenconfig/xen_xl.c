@@ -316,6 +316,10 @@ xenParseXLDiskSrc(virDomainDiskDefPtr disk, char *srcstr)
     char *tmpstr = NULL;
     int ret = -1;
 
+    /* A NULL source is valid, e.g. an empty CDROM */
+    if (srcstr == NULL)
+        return 0;
+
     if (STRPREFIX(srcstr, "rbd:")) {
         if (!(tmpstr = virStringReplace(srcstr, "\\\\", "\\")))
             goto cleanup;

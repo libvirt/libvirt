@@ -39,6 +39,12 @@
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <target dev='hdd' bus='ide'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='1' target='0' unit='1'/>
+    </disk>
     <controller type='ide' index='0'/>
     <interface type='bridge'>
       <mac address='00:16:3e:66:92:9c'/>
