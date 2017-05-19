@@ -79,6 +79,8 @@
 #  define INET_ADDRSTRLEN 16
 # endif
 
+# define VIR_LOOPBACK_IPV4_ADDR "127.0.0.1"
+
 /* String equality tests, suggested by Jim Meyering. */
 # define STREQ(a, b) (strcmp(a, b) == 0)
 # define STRCASEEQ(a, b) (c_strcasecmp(a, b) == 0)

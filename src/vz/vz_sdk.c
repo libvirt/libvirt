@@ -3084,7 +3084,7 @@ static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom,
 
     glisten = virDomainGraphicsGetListen(gr, 0);
     pret = PrlVmCfg_SetVNCHostName(sdkdom, glisten && glisten->address ?
-                                           glisten->address : "127.0.0.1");
+                                           glisten->address : VIR_LOOPBACK_IPV4_ADDR);
     prlsdkCheckRetGoto(pret, cleanup);
 
     ret = 0;

@@ -250,10 +250,10 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
                    SYSCONFDIR "/pki/qemu") < 0)
         goto error;
 
-    if (VIR_STRDUP(cfg->vncListen, "127.0.0.1") < 0)
+    if (VIR_STRDUP(cfg->vncListen, VIR_LOOPBACK_IPV4_ADDR) < 0)
         goto error;
 
-    if (VIR_STRDUP(cfg->spiceListen, "127.0.0.1") < 0)
+    if (VIR_STRDUP(cfg->spiceListen, VIR_LOOPBACK_IPV4_ADDR) < 0)
         goto error;
 
     /*
