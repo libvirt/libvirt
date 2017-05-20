@@ -247,6 +247,9 @@ virSystemdGetMachineNameByPID(pid_t pid)
     if (virDBusMessageRead(reply, "o", &object) < 0)
         goto cleanup;
 
+    virDBusMessageUnref(reply);
+    reply = NULL;
+
     VIR_DEBUG("Domain with pid %lld has object path '%s'",
               (long long) pid, object);
 
