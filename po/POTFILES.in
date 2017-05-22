@@ -206,6 +206,7 @@ src/util/virdnsmasq.c
 src/util/virerror.c
 src/util/virerror.h
 src/util/vireventpoll.c
+src/util/virfcp.c
 src/util/virfdstream.c
 src/util/virfile.c
 src/util/virfirewall.c

@@ -117,6 +117,7 @@ UTIL_SOURCES =							\
 		util/virerror.c util/virerror.h			\
 		util/virevent.c util/virevent.h			\
 		util/vireventpoll.c util/vireventpoll.h		\
+		util/virfcp.c util/virfcp.h			\
 		util/virfdstream.c util/virfdstream.h		\
 		util/virfile.c util/virfile.h			\
 		util/virfirewall.c util/virfirewall.h		\
