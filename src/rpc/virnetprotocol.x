@@ -40,13 +40,13 @@ const VIR_NET_MESSAGE_INITIAL = 65536;
 const VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX = 262120;
 
 /* Maximum total message size (serialised). */
-const VIR_NET_MESSAGE_MAX = 16777216;
+const VIR_NET_MESSAGE_MAX = 33554432;
 
 /* Size of struct virNetMessageHeader (serialised)*/
 const VIR_NET_MESSAGE_HEADER_MAX = 24;
 
 /* Size of message payload */
-const VIR_NET_MESSAGE_PAYLOAD_MAX = 16777192;
+const VIR_NET_MESSAGE_PAYLOAD_MAX = 33554408;
 
 /* Size of message length field. Not counted in VIR_NET_MESSAGE_MAX
  * and VIR_NET_MESSAGE_INITIAL.
