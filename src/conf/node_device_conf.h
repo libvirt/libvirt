@@ -93,6 +93,10 @@ typedef enum {
 } virNodeDevSCSIHostCapFlags;
 
 typedef enum {
+    VIR_NODE_DEV_CAP_FLAG_FC_RPORT			= (1 << 0),
+} virNodeDevSCSITargetCapsFlags;
+
+typedef enum {
     VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION     = (1 << 0),
     VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION      = (1 << 1),
     VIR_NODE_DEV_CAP_FLAG_PCIE                      = (1 << 2),
@@ -227,6 +231,9 @@ typedef struct _virNodeDevCapSCSITarget virNodeDevCapSCSITarget;
 typedef virNodeDevCapSCSITarget *virNodeDevCapSCSITargetPtr;
 struct _virNodeDevCapSCSITarget {
     char *name;
+    unsigned int flags; /* enum virNodeDevSCSITargetCapsFlags */
+    char *rport;
+    char *wwpn;
 };
 
 typedef struct _virNodeDevCapSCSI virNodeDevCapSCSI;

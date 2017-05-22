@@ -95,6 +95,7 @@ mymain(void)
     DO_TEST("pci_0000_00_02_0_header_type");
     DO_TEST("pci_0000_00_1c_0_header_type");
     DO_TEST("scsi_target0_0_0");
+    DO_TEST("scsi_target1_0_0");
     DO_TEST("pci_0000_02_10_7_sriov");
     DO_TEST("pci_0000_02_10_7_sriov_vfs");
     DO_TEST("pci_0000_02_10_7_sriov_zero_vfs_max_count");

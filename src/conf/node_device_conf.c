@@ -563,6 +563,16 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def)
         case VIR_NODE_DEV_CAP_SCSI_TARGET:
             virBufferEscapeString(&buf, "<target>%s</target>\n",
                                   data->scsi_target.name);
+            if (data->scsi_target.flags & VIR_NODE_DEV_CAP_FLAG_FC_RPORT) {
+                virBufferAddLit(&buf, "<capability type='fc_remote_port'>\n");
+                virBufferAdjustIndent(&buf, 2);
+                virBufferAsprintf(&buf, "<rport>%s</rport>\n",
+                                  data->scsi_target.rport);
+                virBufferAsprintf(&buf, "<wwpn>%s</wwpn>\n",
+                                  data->scsi_target.wwpn);
+                virBufferAdjustIndent(&buf, -2);
+                virBufferAddLit(&buf, "</capability>\n");
+            }
             break;
         case VIR_NODE_DEV_CAP_SCSI:
             virNodeDeviceCapSCSIDefFormat(&buf, data);
@@ -932,8 +942,10 @@ virNodeDevCapSCSITargetParseXML(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node,
                                 virNodeDevCapSCSITargetPtr scsi_target)
 {
-    xmlNodePtr orignode;
-    int ret = -1;
+    xmlNodePtr orignode, *nodes = NULL;
+    int ret = -1, n = 0;
+    size_t i;
+    char *type = NULL;
 
     orignode = ctxt->node;
     ctxt->node = node;
@@ -946,10 +958,60 @@ virNodeDevCapSCSITargetParseXML(xmlXPathContextPtr ctxt,
         goto out;
     }
 
+    if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0)
+        goto out;
+
+    for (i = 0; i < n; ++i) {
+        type = virXMLPropString(nodes[i], "type");
+
+        if (!type) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("missing type for SCSI target capability for '%s'"),
+                           def->name);
+            goto out;
+        }
+
+        if (STREQ(type, "fc_remote_port")) {
+            xmlNodePtr orignode2;
+
+            scsi_target->flags |= VIR_NODE_DEV_CAP_FLAG_FC_RPORT;
+
+            orignode2 = ctxt->node;
+            ctxt->node = nodes[i];
+
+            if (virNodeDevCapsDefParseString("string(./rport[1])",
+                                             ctxt,
+                                             &scsi_target->rport) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("missing rport name for '%s'"), def->name);
+                goto out;
+            }
+
+            if (virNodeDevCapsDefParseString("string(./wwpn[1])",
+                                             ctxt, &scsi_target->wwpn) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("missing wwpn identifier for '%s'"),
+                               def->name);
+                goto out;
+            }
+
+            ctxt->node = orignode2;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown SCSI target capability type '%s' for '%s'"),
+                           type, def->name);
+            goto out;
+        }
+
+        VIR_FREE(type);
+    }
+
     ret = 0;
 
  out:
     ctxt->node = orignode;
+    VIR_FREE(type);
+    VIR_FREE(nodes);
     return ret;
 }
 
@@ -2132,6 +2194,8 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         break;
     case VIR_NODE_DEV_CAP_SCSI_TARGET:
         VIR_FREE(data->scsi_target.name);
+        VIR_FREE(data->scsi_target.rport);
+        VIR_FREE(data->scsi_target.wwpn);
         break;
     case VIR_NODE_DEV_CAP_SCSI:
         VIR_FREE(data->scsi.type);

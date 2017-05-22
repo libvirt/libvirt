@@ -458,6 +458,20 @@
     </optional>
   </define>
 
+  <define name='capsfcrport'>
+    <attribute name='type'>
+      <value>fc_remote_port</value>
+    </attribute>
+
+    <element name='rport'>
+      <text/>
+    </element>
+
+    <element name='wwpn'>
+      <ref name='wwn'/>
+    </element>
+  </define>
+
   <define name='capscsitarget'>
     <attribute name='type'>
       <value>scsi_target</value>
@@ -466,6 +480,12 @@
     <element name='target'>
       <text/>
     </element>
+
+    <optional>
+      <element name='capability'>
+        <ref name='capsfcrport'/>
+      </element>
+    </optional>
   </define>
 
   <define name='capscsi'>

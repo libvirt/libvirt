@@ -26,11 +26,13 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 
+#include "dirname.h"
 #include "node_device_driver.h"
 #include "node_device_hal.h"
 #include "node_device_linux_sysfs.h"
 #include "virerror.h"
 #include "viralloc.h"
+#include "virfcp.h"
 #include "virlog.h"
 #include "virfile.h"
 #include "virscsihost.h"
@@ -121,6 +123,50 @@ nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host)
         VIR_FREE(scsi_host->fabric_wwn);
     }
     VIR_FREE(tmp);
+    return ret;
+}
+
+
+int
+nodeDeviceSysfsGetSCSITargetCaps(const char *sysfsPath,
+                                 virNodeDevCapSCSITargetPtr scsi_target)
+{
+    int ret = -1;
+    char *dir = NULL, *rport = NULL;
+
+    VIR_DEBUG("Checking if '%s' is an FC remote port", scsi_target->name);
+
+    /* /sys/devices/[...]/host0/rport-0:0-0/target0:0:0 -> rport-0:0-0 */
+    if (!(dir = mdir_name(sysfsPath)))
+        return -1;
+
+    if (VIR_STRDUP(rport, last_component(dir)) < 0)
+        goto cleanup;
+
+    if (!virFCIsCapableRport(rport))
+        goto cleanup;
+
+    VIR_FREE(scsi_target->rport);
+    VIR_STEAL_PTR(scsi_target->rport, rport);
+
+    if (virFCReadRportValue(scsi_target->rport, "port_name",
+                            &scsi_target->wwpn) < 0) {
+        VIR_WARN("Failed to read port_name for '%s'", scsi_target->rport);
+        goto cleanup;
+    }
+
+    scsi_target->flags |= VIR_NODE_DEV_CAP_FLAG_FC_RPORT;
+    ret = 0;
+
+ cleanup:
+    if (ret < 0) {
+        VIR_FREE(scsi_target->rport);
+        VIR_FREE(scsi_target->wwpn);
+        scsi_target->flags &= ~VIR_NODE_DEV_CAP_FLAG_FC_RPORT;
+    }
+    VIR_FREE(rport);
+    VIR_FREE(dir);
+
     return ret;
 }
 
@@ -227,6 +273,12 @@ nodeDeviceSysfsGetPCIRelatedDevCaps(const char *sysfsPath,
 
 int
 nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host ATTRIBUTE_UNUSED)
+{
+    return -1;
+}
+
+int nodeDeviceSysfsGetSCSITargetCaps(const char *sysfsPath ATTRIBUTE_UNUSED,
+                                     virNodeDevCapSCSITargetPtr scsi_target ATTRIBUTE_UNUSED)
 {
     return -1;
 }

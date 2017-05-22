@@ -26,6 +26,8 @@
 # include "node_device_conf.h"
 
 int nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host);
+int nodeDeviceSysfsGetSCSITargetCaps(const char *sysfsPath,
+                                     virNodeDevCapSCSITargetPtr scsi_target);
 int nodeDeviceSysfsGetPCIRelatedDevCaps(const char *sysfsPath,
                                         virNodeDevCapPCIDevPtr pci_dev);
 

@@ -56,6 +56,10 @@ static int update_caps(virNodeDeviceObjPtr dev)
         case VIR_NODE_DEV_CAP_SCSI_HOST:
             nodeDeviceSysfsGetSCSIHostCaps(&cap->data.scsi_host);
             break;
+        case VIR_NODE_DEV_CAP_SCSI_TARGET:
+            nodeDeviceSysfsGetSCSITargetCaps(dev->def->sysfs_path,
+                                             &cap->data.scsi_target);
+            break;
         case VIR_NODE_DEV_CAP_NET:
             if (virNetDevGetLinkInfo(cap->data.net.ifname, &cap->data.net.lnk) < 0)
                 return -1;
@@ -76,7 +80,6 @@ static int update_caps(virNodeDeviceObjPtr dev)
         case VIR_NODE_DEV_CAP_SYSTEM:
         case VIR_NODE_DEV_CAP_USB_DEV:
         case VIR_NODE_DEV_CAP_USB_INTERFACE:
-        case VIR_NODE_DEV_CAP_SCSI_TARGET:
         case VIR_NODE_DEV_CAP_SCSI:
         case VIR_NODE_DEV_CAP_STORAGE:
         case VIR_NODE_DEV_CAP_FC_HOST:

@@ -697,7 +697,7 @@ static int udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
 }
 
 
-static int udevProcessSCSITarget(struct udev_device *device ATTRIBUTE_UNUSED,
+static int udevProcessSCSITarget(struct udev_device *device,
                                  virNodeDeviceDefPtr def)
 {
     const char *sysname = NULL;
@@ -707,6 +707,8 @@ static int udevProcessSCSITarget(struct udev_device *device ATTRIBUTE_UNUSED,
 
     if (VIR_STRDUP(scsi_target->name, sysname) < 0)
         return -1;
+
+    nodeDeviceSysfsGetSCSITargetCaps(def->sysfs_path, &def->caps->data.scsi_target);
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
         return -1;
