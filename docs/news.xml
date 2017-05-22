@@ -58,6 +58,17 @@
           without having to tweak their configuration.
         </description>
       </change>
+      <change>
+        <summary>
+          Additional capabilities for the node_device module
+        </summary>
+        <description>
+          Introduce two new capabilities to the node_device module. The first
+          is for CCW devices, most common on the S390 architecture. The second
+          is for fibre channel-backed SCSI devices and exposes the
+          fc_remote_port sub-capability to SCSI target devices.
+       </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
