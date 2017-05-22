@@ -1555,6 +1555,8 @@ virCapabilitiesInitCaches(virCapsPtr caps)
         if (virAsprintf(&path, "%s/cpu/cpu%zd/cache/", SYSFS_SYSTEM_PATH, pos) < 0)
             goto cleanup;
 
+        VIR_DIR_CLOSE(dirp);
+
         rv = virDirOpenIfExists(&dirp, path);
         if (rv < 0)
             goto cleanup;
@@ -1639,7 +1641,7 @@ virCapabilitiesInitCaches(virCapsPtr caps)
  cleanup:
     VIR_FREE(type);
     VIR_FREE(path);
-    virDirClose(&dirp);
+    VIR_DIR_CLOSE(dirp);
     virCapsHostCacheBankFree(bank);
     return ret;
 }
