@@ -1104,6 +1104,36 @@ udevProcessMediatedDevice(struct udev_device *dev,
     return ret;
 }
 
+
+static int
+udevProcessCCW(struct udev_device *device,
+               virNodeDeviceDefPtr def)
+{
+    int online;
+    char *p;
+    virNodeDevCapDataPtr data = &def->caps->data;
+
+    /* process only online devices to keep the list sane */
+    if (udevGetIntSysfsAttr(device, "online", &online, 0) < 0 || online != 1)
+        return -1;
+
+    if ((p = strrchr(def->sysfs_path, '/')) == NULL ||
+        virStrToLong_ui(p + 1, &p, 16, &data->ccw_dev.cssid) < 0 || p == NULL ||
+        virStrToLong_ui(p + 1, &p, 16, &data->ccw_dev.ssid) < 0 || p == NULL ||
+        virStrToLong_ui(p + 1, &p, 16, &data->ccw_dev.devno) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to parse the CCW address from sysfs path: '%s'"),
+                       def->sysfs_path);
+        return -1;
+    }
+
+    if (udevGenerateDeviceName(device, def, NULL) != 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 udevGetDeviceNodes(struct udev_device *device,
                    virNodeDeviceDefPtr def)
@@ -1172,8 +1202,8 @@ udevGetDeviceType(struct udev_device *device,
         if (udevHasDeviceProperty(device, "INTERFACE"))
             *type = VIR_NODE_DEV_CAP_NET;
 
-        /* Neither SCSI generic devices nor mediated devices set DEVTYPE
-         * property, therefore we need to rely on the SUBSYSTEM property */
+        /* The following devices do not set the DEVTYPE property, therefore
+         * we need to rely on the SUBSYSTEM property */
         if (udevGetStringProperty(device, "SUBSYSTEM", &subsystem) < 0)
             return -1;
 
@@ -1181,6 +1211,8 @@ udevGetDeviceType(struct udev_device *device,
             *type = VIR_NODE_DEV_CAP_SCSI_GENERIC;
         else if (STREQ_NULLABLE(subsystem, "mdev"))
             *type = VIR_NODE_DEV_CAP_MDEV;
+        else if (STREQ_NULLABLE(subsystem, "ccw"))
+            *type = VIR_NODE_DEV_CAP_CCW_DEV;
 
         VIR_FREE(subsystem);
     }
@@ -1222,6 +1254,8 @@ static int udevGetDeviceDetails(struct udev_device *device,
         return udevProcessDRMDevice(device, def);
     case VIR_NODE_DEV_CAP_MDEV:
         return udevProcessMediatedDevice(device, def);
+    case VIR_NODE_DEV_CAP_CCW_DEV:
+        return udevProcessCCW(device, def);
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
     case VIR_NODE_DEV_CAP_SYSTEM:
     case VIR_NODE_DEV_CAP_FC_HOST:

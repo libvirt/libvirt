@@ -318,6 +318,37 @@
     </data>
   </define>
 
+  <define name="ccwCssidRange">
+    <choice>
+      <data type="string">
+        <param name="pattern">0x[0-9a-eA-E][0-9a-fA-F]?</param>
+      </data>
+      <data type="string">
+        <param name="pattern">0x[fF][0-9a-eA-E]?</param>
+      </data>
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">254</param>
+      </data>
+    </choice>
+  </define>
+  <define name="ccwSsidRange">
+    <data type="string">
+      <param name="pattern">(0x)?[0-3]</param>
+    </data>
+  </define>
+  <define name="ccwDevnoRange">
+    <choice>
+      <data type="string">
+        <param name="pattern">0x[0-9a-fA-F]{1,4}</param>
+      </data>
+      <data type="int">
+        <param name="minInclusive">0</param>
+        <param name="maxInclusive">65535</param>
+      </data>
+    </choice>
+  </define>
+
   <define name="cpuset">
     <data type="string">
       <param name="pattern">([0-9]+(-[0-9]+)?|\^[0-9]+)(,([0-9]+(-[0-9]+)?|\^[0-9]+))*</param>

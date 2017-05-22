@@ -1,0 +1,10 @@
+<device>
+  <name>ccw_0_0_10000</name>
+  <path>/sys/devices/css0/0.0.0000/0.0.10000</path>
+  <parent>computer</parent>
+  <capability type='ccw'>
+    <cssid>0x0</cssid>
+    <ssid>0x0</ssid>
+    <devno>0x10000</devno>
+  </capability>
+</device>

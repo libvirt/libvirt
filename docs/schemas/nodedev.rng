@@ -84,6 +84,7 @@
         <ref name="capstorage"/>
         <ref name="capdrm"/>
         <ref name="capmdev"/>
+        <ref name="capccwdev"/>
       </choice>
     </element>
   </define>
@@ -594,6 +595,21 @@
       <attribute name='number'>
         <ref name='unsignedInt'/>
       </attribute>
+    </element>
+  </define>
+
+  <define name='capccwdev'>
+    <attribute name='type'>
+      <value>ccw</value>
+    </attribute>
+    <element name='cssid'>
+      <ref name='ccwCssidRange'/>
+    </element>
+    <element name='ssid'>
+      <ref name='ccwSsidRange'/>
+    </element>
+    <element name='devno'>
+      <ref name='ccwDevnoRange'/>
     </element>
   </define>
 

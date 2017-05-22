@@ -62,7 +62,8 @@ VIR_ENUM_IMPL(virNodeDevCap, VIR_NODE_DEV_CAP_LAST,
               "scsi_generic",
               "drm",
               "mdev_types",
-              "mdev")
+              "mdev",
+              "ccw")
 
 VIR_ENUM_IMPL(virNodeDevNetCap, VIR_NODE_DEV_CAP_NET_LAST,
               "80203",
@@ -581,6 +582,14 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             virBufferAsprintf(&buf, "<iommuGroup number='%u'/>\n",
                               data->mdev.iommuGroupNumber);
             break;
+        case VIR_NODE_DEV_CAP_CCW_DEV:
+            virBufferAsprintf(&buf, "<cssid>0x%x</cssid>\n",
+                              data->ccw_dev.cssid);
+            virBufferAsprintf(&buf, "<ssid>0x%x</ssid>\n",
+                              data->ccw_dev.ssid);
+            virBufferAsprintf(&buf, "<devno>0x%04x</devno>\n",
+                              data->ccw_dev.devno);
+            break;
         case VIR_NODE_DEV_CAP_MDEV_TYPES:
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
@@ -712,6 +721,66 @@ virNodeDevCapDRMParseXML(xmlXPathContextPtr ctxt,
 
  out:
     VIR_FREE(type);
+    ctxt->node = orignode;
+    return ret;
+}
+
+
+static int
+virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
+                         virNodeDeviceDefPtr def,
+                         xmlNodePtr node,
+                         virNodeDevCapCCWPtr ccw_dev)
+{
+    xmlNodePtr orignode;
+    int ret = -1;
+    char *cssid = NULL, *ssid = NULL, *devno = NULL;
+
+    orignode = ctxt->node;
+    ctxt->node = node;
+
+   if (!(cssid = virXPathString("string(./cssid[1])", ctxt))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("missing cssid value for '%s'"), def->name);
+        goto out;
+    }
+
+    if (virStrToLong_uip(cssid, NULL, 0, &ccw_dev->cssid) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid cssid value '%s' for '%s'"),
+                       cssid, def->name);
+        goto out;
+    }
+
+    if (!(ssid = virXPathString("string(./ssid[1])", ctxt))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("missing ssid value for '%s'"), def->name);
+        goto out;
+    }
+
+    if (virStrToLong_uip(ssid, NULL, 0, &ccw_dev->ssid) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid ssid value '%s' for '%s'"),
+                       cssid, def->name);
+        goto out;
+    }
+
+    if (!(devno = virXPathString("string(./devno[1])", ctxt))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("missing devno value for '%s'"), def->name);
+        goto out;
+    }
+
+    if (virStrToLong_uip(devno, NULL, 16, &ccw_dev->devno) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid devno value '%s' for '%s'"),
+                       devno, def->name);
+        goto out;
+    }
+
+    ret = 0;
+
+ out:
     ctxt->node = orignode;
     return ret;
 }
@@ -1754,6 +1823,9 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
     case VIR_NODE_DEV_CAP_MDEV:
         ret = virNodeDevCapMdevParseXML(ctxt, def, node, &caps->data.mdev);
         break;
+    case VIR_NODE_DEV_CAP_CCW_DEV:
+        ret = virNodeDevCapCCWParseXML(ctxt, def, node, &caps->data.ccw_dev);
+        break;
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
@@ -2083,6 +2155,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     case VIR_NODE_DEV_CAP_DRM:
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
+    case VIR_NODE_DEV_CAP_CCW_DEV:
     case VIR_NODE_DEV_CAP_LAST:
         /* This case is here to shutup the compiler */
         break;

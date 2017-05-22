@@ -66,6 +66,7 @@ typedef enum {
     VIR_NODE_DEV_CAP_DRM,               /* DRM device */
     VIR_NODE_DEV_CAP_MDEV_TYPES,        /* Device capable of mediated devices */
     VIR_NODE_DEV_CAP_MDEV,              /* Mediated device */
+    VIR_NODE_DEV_CAP_CCW_DEV,           /* s390 CCW device */
 
     VIR_NODE_DEV_CAP_LAST
 } virNodeDevCapType;
@@ -267,6 +268,14 @@ struct _virNodeDevCapDRM {
     virNodeDevDRMType type;
 };
 
+typedef struct _virNodeDevCapCCW virNodeDevCapCCW;
+typedef virNodeDevCapCCW *virNodeDevCapCCWPtr;
+struct _virNodeDevCapCCW {
+    unsigned int cssid;
+    unsigned int ssid;
+    unsigned int devno;
+};
+
 typedef struct _virNodeDevCapData virNodeDevCapData;
 typedef virNodeDevCapData *virNodeDevCapDataPtr;
 struct _virNodeDevCapData {
@@ -284,6 +293,7 @@ struct _virNodeDevCapData {
         virNodeDevCapSCSIGeneric sg;
         virNodeDevCapDRM drm;
         virNodeDevCapMdev mdev;
+        virNodeDevCapCCW ccw_dev;
     };
 };
 
