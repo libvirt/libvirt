@@ -11553,14 +11553,6 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     }
 
     if (!entry->wr_highest_offset_valid) {
-        if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_BLOCK &&
-            disk->src->format != VIR_STORAGE_FILE_RAW) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to query the maximum written offset of "
-                             "block device '%s'"), disk->dst);
-            goto endjob;
-        }
-
         info->allocation = entry->physical;
     } else {
         if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_FILE &&
