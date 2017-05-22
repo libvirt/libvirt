@@ -81,6 +81,7 @@ typedef enum {
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM           = 1 << 12, /* DRM device */
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES    = 1 << 13, /* Capable of mediated devices */
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV          = 1 << 14, /* Mediated device */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV       = 1 << 15, /* CCW device */
 } virConnectListAllNodeDeviceFlags;
 
 int                     virConnectListAllNodeDevices (virConnectPtr conn,

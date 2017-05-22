@@ -388,7 +388,8 @@ virNodeDevCapMdevTypeFree(virNodeDevCapMdevTypePtr type);
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC  | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM           | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES    | \
-                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV)
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV          | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV)
 
 char *
 virNodeDeviceGetParentName(virConnectPtr conn,

@@ -461,7 +461,8 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV;
             break;
         case VIR_NODE_DEV_CAP_CCW_DEV:
-            /* enable next patch */
+            flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV;
+            break;
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }

@@ -568,7 +568,8 @@ virNodeDeviceMatch(virNodeDeviceObjPtr devobj,
               MATCH(SCSI_GENERIC)  ||
               MATCH(DRM)           ||
               MATCH(MDEV_TYPES)    ||
-              MATCH(MDEV)))
+              MATCH(MDEV)          ||
+              MATCH(CCW_DEV)))
             return false;
     }
 
