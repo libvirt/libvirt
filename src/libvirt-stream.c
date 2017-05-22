@@ -698,7 +698,7 @@ int virStreamSparseSendAll(virStreamPtr stream,
                            void *opaque)
 {
     char *bytes = NULL;
-    size_t want = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
+    size_t bufLen = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
     int ret = -1;
     unsigned long long dataLen = 0;
 
@@ -718,12 +718,13 @@ int virStreamSparseSendAll(virStreamPtr stream,
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(bytes, want) < 0)
+    if (VIR_ALLOC_N(bytes, bufLen) < 0)
         goto cleanup;
 
     for (;;) {
         int inData, got, offset = 0;
         long long sectionLen;
+        size_t want = bufLen;
         const unsigned int skipFlags = 0;
 
         if (!dataLen) {
