@@ -284,7 +284,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
                         STREQ(cap->data.scsi_host.wwpn, wwpn)) {
 
                         if (virNodeDeviceLookupSCSIHostByWWNEnsureACL(conn, obj->def) < 0)
-                            goto out;
+                            goto error;
 
                         if ((dev = virGetNodeDevice(conn, obj->def->name))) {
                             if (VIR_STRDUP(dev->parent, obj->def->parent) < 0) {
@@ -306,6 +306,10 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
  out:
     nodeDeviceUnlock();
     return dev;
+
+ error:
+    virNodeDeviceObjUnlock(obj);
+    goto out;
 }
 
 
