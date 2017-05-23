@@ -2805,7 +2805,7 @@ typedef virQEMUSaveHeader *virQEMUSaveHeaderPtr;
 struct _virQEMUSaveHeader {
     char magic[sizeof(QEMU_SAVE_MAGIC)-1];
     uint32_t version;
-    uint32_t xml_len;
+    uint32_t data_len;
     uint32_t was_running;
     uint32_t compressed;
     uint32_t unused[15];
@@ -2815,7 +2815,7 @@ static inline void
 bswap_header(virQEMUSaveHeaderPtr hdr)
 {
     hdr->version = bswap_32(hdr->version);
-    hdr->xml_len = bswap_32(hdr->xml_len);
+    hdr->data_len = bswap_32(hdr->data_len);
     hdr->was_running = bswap_32(hdr->was_running);
     hdr->compressed = bswap_32(hdr->compressed);
 }
@@ -2836,7 +2836,7 @@ qemuDomainSaveHeader(int fd, const char *path, const char *xml,
         goto endjob;
     }
 
-    if (safewrite(fd, xml, header->xml_len) != header->xml_len) {
+    if (safewrite(fd, xml, header->data_len) != header->data_len) {
         ret = -errno;
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("failed to write xml to '%s'"), path);
@@ -3082,7 +3082,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     header.version = QEMU_SAVE_VERSION;
     header.was_running = was_running ? 1 : 0;
     header.compressed = compressed;
-    header.xml_len = strlen(domXML) + 1;
+    header.data_len = strlen(domXML) + 1;
 
     /* Obtain the file handle.  */
     if ((flags & VIR_DOMAIN_SAVE_BYPASS_CACHE)) {
@@ -6276,16 +6276,16 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (header.xml_len <= 0) {
+    if (header.data_len <= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("invalid XML length: %d"), header.xml_len);
+                       _("invalid XML length: %d"), header.data_len);
         goto error;
     }
 
-    if (VIR_ALLOC_N(xml, header.xml_len) < 0)
+    if (VIR_ALLOC_N(xml, header.data_len) < 0)
         goto error;
 
-    if (saferead(fd, xml, header.xml_len) != header.xml_len) {
+    if (saferead(fd, xml, header.data_len) != header.data_len) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("failed to read XML"));
         goto error;
@@ -6629,12 +6629,12 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
         goto cleanup;
     len = strlen(xml) + 1;
 
-    if (len > header.xml_len) {
+    if (len > header.data_len) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("new xml too large to fit in file"));
         goto cleanup;
     }
-    if (VIR_EXPAND_N(xml, len, header.xml_len - len) < 0)
+    if (VIR_EXPAND_N(xml, len, header.data_len - len) < 0)
         goto cleanup;
 
     if (lseek(fd, 0, SEEK_SET) != 0) {
