@@ -145,6 +145,20 @@ testme() {
     fi
 }
 
+testfw() {
+    title="$1"
+    fwpath="$2"
+
+    if [ -f "$fwpath" ]; then
+        sed -e "s,###UUID###,$uuid,g"  \
+            -e "s,###DISK###,$disk1,g" \
+            -e "s,</os>,<loader readonly='yes' type='pflash'>$fwpath</loader></os>,g" "$template_xml" > "$test_xml"
+        testme "0" "$title" "-r -u $valid_uuid" "$test_xml"
+    else
+        echo "Skipping FW $title test. Could not find $fwpath"
+    fi
+}
+
 # Expected failures
 echo "Expected failures:" >$output
 testme "1" "invalid arg" "-z"
@@ -291,19 +305,8 @@ sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<kernel>$tm
 touch "$tmpdir/kernel"
 testme "0" "kernel" "-r -u $valid_uuid" "$test_xml"
 
-if [ -f /usr/share/ovmf/OVMF.fd ]; then
-    sed -e "s,###UUID###,$uuid,g"  \
-        -e "s,###DISK###,$disk1,g" \
-        -e "s,</os>,<loader readonly='yes' type='pflash'>/usr/share/ovmf/OVMF.fd</loader></os>,g" "$template_xml" > "$test_xml"
-    testme "0" "ovmf" "-r -u $valid_uuid" "$test_xml"
-elif [ -f /usr/share/OVMF/OVMF.fd ]; then
-    sed -e "s,###UUID###,$uuid,g"  \
-        -e "s,###DISK###,$disk1,g" \
-        -e "s,</os>,<loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF.fd</loader></os>,g" "$template_xml" > "$test_xml"
-    testme "0" "ovmf" "-r -u $valid_uuid" "$test_xml"
-else
-    echo "Skipping OVMF test. Could not find /usr/share/ovmf/OVMF.fd or /usr/share/OVMF/OVMF.fd"
-fi
+testfw "ovmf (old path)" "/usr/share/ovmf/OVMF.fd"
+testfw "OVMF (new path)" "/usr/share/OVMF/OVMF_CODE.fd"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<initrd>$tmpdir/initrd</initrd></os>,g" "$template_xml" > "$test_xml"
 touch "$tmpdir/initrd"
