@@ -71,6 +71,8 @@
   /usr/share/seabios/** r,
   /usr/share/ovmf/** r,
   /usr/share/OVMF/** r,
+  /usr/share/AAVMF/** r,
+  /usr/share/qemu-efi/** r,
 
   # access PKI infrastructure
   /etc/pki/libvirt-vnc/** r,
