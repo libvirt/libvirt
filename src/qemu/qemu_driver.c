@@ -17748,7 +17748,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
 
         /* Group name needs to be copied since qemuMonitorGetBlockIoThrottle
          * allocates it as well */
-        if (VIR_STRDUP(reply.group_name, disk->blkdeviotune.group_name))
+        if (VIR_STRDUP(reply.group_name, disk->blkdeviotune.group_name) < 0)
             goto endjob;
     }
 
