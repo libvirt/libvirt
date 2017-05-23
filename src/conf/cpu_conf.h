@@ -182,10 +182,11 @@ virCPUDefCopy(const virCPUDef *cpu);
 virCPUDefPtr
 virCPUDefCopyWithoutModel(const virCPUDef *cpu);
 
-virCPUDefPtr
-virCPUDefParseXML(xmlNodePtr node,
-                  xmlXPathContextPtr ctxt,
-                  virCPUType mode);
+int
+virCPUDefParseXML(xmlXPathContextPtr ctxt,
+                  const char *xpath,
+                  virCPUType mode,
+                  virCPUDefPtr *cpu);
 
 bool
 virCPUDefIsEqual(virCPUDefPtr src,

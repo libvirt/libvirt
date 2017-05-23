@@ -17444,16 +17444,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
-    /* analysis of cpu handling */
-    if ((node = virXPathNode("./cpu[1]", ctxt)) != NULL) {
-        xmlNodePtr oldnode = ctxt->node;
-        ctxt->node = node;
-        def->cpu = virCPUDefParseXML(node, ctxt, VIR_CPU_TYPE_GUEST);
-        ctxt->node = oldnode;
-
-        if (def->cpu == NULL)
-            goto error;
-    }
+    if (virCPUDefParseXML(ctxt, "./cpu[1]", VIR_CPU_TYPE_GUEST, &def->cpu) < 0)
+        goto error;
 
     if (virDomainNumaDefCPUParseXML(def->numa, ctxt) < 0)
         goto error;

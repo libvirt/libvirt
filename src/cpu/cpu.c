@@ -130,7 +130,7 @@ virCPUCompareXML(virArch arch,
     if (!(doc = virXMLParseStringCtxt(xml, _("(CPU_definition)"), &ctxt)))
         goto cleanup;
 
-    if (!(cpu = virCPUDefParseXML(ctxt->node, ctxt, VIR_CPU_TYPE_AUTO)))
+    if (virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_AUTO, &cpu) < 0)
         goto cleanup;
 
     ret = virCPUCompare(arch, host, cpu, failIncompatible);
@@ -562,8 +562,7 @@ cpuBaselineXML(const char **xmlCPUs,
         if (!(doc = virXMLParseStringCtxt(xmlCPUs[i], _("(CPU_definition)"), &ctxt)))
             goto error;
 
-        cpus[i] = virCPUDefParseXML(ctxt->node, ctxt, VIR_CPU_TYPE_HOST);
-        if (cpus[i] == NULL)
+        if (virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_HOST, &cpus[i]) < 0)
             goto error;
 
         xmlXPathFreeContext(ctxt);
