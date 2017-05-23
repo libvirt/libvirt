@@ -156,6 +156,9 @@
   /sys/bus/ r,
   /sys/class/ r,
 
+  # for rbd
+  /etc/ceph/ceph.conf r,
+
   # for ppc device-tree access
   @{PROC}/device-tree/ r,
   @{PROC}/device-tree/** r,
