@@ -296,8 +296,13 @@ if [ -f /usr/share/ovmf/OVMF.fd ]; then
         -e "s,###DISK###,$disk1,g" \
         -e "s,</os>,<loader readonly='yes' type='pflash'>/usr/share/ovmf/OVMF.fd</loader></os>,g" "$template_xml" > "$test_xml"
     testme "0" "ovmf" "-r -u $valid_uuid" "$test_xml"
+elif [ -f /usr/share/OVMF/OVMF.fd ]; then
+    sed -e "s,###UUID###,$uuid,g"  \
+        -e "s,###DISK###,$disk1,g" \
+        -e "s,</os>,<loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF.fd</loader></os>,g" "$template_xml" > "$test_xml"
+    testme "0" "ovmf" "-r -u $valid_uuid" "$test_xml"
 else
-    echo "Skipping OVMF test. Could not find /usr/share/ovmf/OVMF.fd"
+    echo "Skipping OVMF test. Could not find /usr/share/ovmf/OVMF.fd or /usr/share/OVMF/OVMF.fd"
 fi
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<initrd>$tmpdir/initrd</initrd></os>,g" "$template_xml" > "$test_xml"

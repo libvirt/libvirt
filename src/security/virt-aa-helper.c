@@ -512,6 +512,7 @@ valid_path(const char *path, const bool readonly)
         "/vmlinuz",
         "/initrd",
         "/initrd.img",
+        "/usr/share/OVMF/",              /* for OVMF images */
         "/usr/share/ovmf/"               /* for OVMF images */
     };
     /* override the above with these */

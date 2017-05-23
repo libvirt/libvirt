@@ -70,6 +70,7 @@
   /usr/share/vgabios/** r,
   /usr/share/seabios/** r,
   /usr/share/ovmf/** r,
+  /usr/share/OVMF/** r,
 
   # access PKI infrastructure
   /etc/pki/libvirt-vnc/** r,
