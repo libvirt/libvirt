@@ -73,6 +73,7 @@
   /usr/share/OVMF/** r,
   /usr/share/AAVMF/** r,
   /usr/share/qemu-efi/** r,
+  /usr/share/slof/** r,
 
   # access PKI infrastructure
   /etc/pki/libvirt-vnc/** r,
@@ -154,3 +155,8 @@
   /etc/udev/udev.conf r,
   /sys/bus/ r,
   /sys/class/ r,
+
+  # for ppc device-tree access
+  @{PROC}/device-tree/ r,
+  @{PROC}/device-tree/** r,
+  /sys/firmware/devicetree/** r,
