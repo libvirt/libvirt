@@ -1106,6 +1106,7 @@ mymain(void)
 
     DO_TEST("memorybacking-set", NONE);
     DO_TEST("memorybacking-unset", NONE);
+    DO_TEST("virtio-options", QEMU_CAPS_VIRTIO_SCSI);
 
     virObjectUnref(cfg);
 
