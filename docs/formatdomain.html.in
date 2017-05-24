@@ -6916,6 +6916,7 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;memballoon model='virtio'&gt;
       &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/&gt;
       &lt;stats period='10'/&gt;
+      &lt;driver iommu='on' ats='on'/&gt;
     &lt;/memballoon&gt;
   &lt;/devices&gt;
 &lt;/domain&gt;</pre>
@@ -6959,6 +6960,12 @@ qemu-kvm -net nic,model=? /dev/null
           period will fail.  Large values (e.g. many years) might be ignored.
           <span class='since'>Since 1.1.1, requires QEMU 1.5</span>
         </p>
+      </dd>
+      <dt><code>driver</code></dt>
+      <dd>
+        For model <code>virtio</code> memballoon,
+        <a href="#elementsVirtio">Virtio-specific options</a> can also be
+        set. (<span class="since">Since 3.5.0</span>)
       </dd>
     </dl>
     <h4><a name="elementsRng">Random number generator device</a></h4>

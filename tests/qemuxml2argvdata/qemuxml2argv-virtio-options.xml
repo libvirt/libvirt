@@ -73,6 +73,7 @@
     </video>
     <memballoon model='virtio'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
+      <driver iommu='on' ats='on'/>
     </memballoon>
     <rng model='virtio'>
       <backend model='random'>/dev/random</backend>

@@ -3784,6 +3784,11 @@
             </attribute>
           </element>
         </optional>
+        <optional>
+          <element name="driver">
+            <ref name="virtioOptions"/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

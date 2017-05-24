@@ -2305,6 +2305,7 @@ void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def)
         return;
 
     virDomainDeviceInfoClear(&def->info);
+    VIR_FREE(def->virtio);
 
     VIR_FREE(def);
 }
@@ -12997,6 +12998,9 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
     else if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
+    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
+        goto error;
+
  cleanup:
     VIR_FREE(model);
     VIR_FREE(deflate);
@@ -19608,6 +19612,10 @@ virDomainMemballoonDefCheckABIStability(virDomainMemballoonDefPtr src,
         return false;
     }
 
+    if (src->virtio && dst->virtio &&
+        !virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
+        return false;
+
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
         return false;
 
@@ -22976,6 +22984,22 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
         virDomainDeviceInfoFormat(&childrenBuf, &def->info, flags) < 0) {
         virBufferFreeAndReset(&childrenBuf);
         return -1;
+    }
+
+    if (def->virtio) {
+        virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+
+        virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
+
+        if (virBufferCheckError(&driverBuf) < 0) {
+            virBufferFreeAndReset(&childrenBuf);
+            return -1;
+        }
+        if (virBufferUse(&driverBuf)) {
+            virBufferAddLit(&childrenBuf, "<driver");
+            virBufferAddBuffer(&childrenBuf, &driverBuf);
+            virBufferAddLit(&childrenBuf, "/>\n");
+        }
     }
 
     if (!virBufferUse(&childrenBuf)) {
