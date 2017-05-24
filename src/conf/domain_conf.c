@@ -3525,12 +3525,12 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 
 static bool
 virDomainSkipBackcompatConsole(virDomainDefPtr def,
-                               size_t index,
+                               size_t idx,
                                bool all)
 {
-    virDomainChrDefPtr console = def->consoles[index];
+    virDomainChrDefPtr console = def->consoles[idx];
 
-    if (!all && index == 0 &&
+    if (!all && idx == 0 &&
         (console->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ||
          console->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE) &&
         def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
