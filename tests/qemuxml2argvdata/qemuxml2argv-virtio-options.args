@@ -1,0 +1,41 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name QEMUGuest1 \
+-S \
+-M pc \
+-m 214 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
+-no-acpi \
+-boot c \
+-device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x8 \
+-device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x9 \
+-usb \
+-drive file=/var/lib/libvirt/images/img1,format=raw,if=none,\
+id=drive-virtio-disk0 \
+-device virtio-blk-pci,bus=pci.0,addr=0xa,drive=drive-virtio-disk0,\
+id=virtio-disk0 \
+-fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/fs1 \
+-device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=fs1,bus=pci.0,addr=0x3 \
+-fsdev local,security_model=mapped,writeout=immediate,id=fsdev-fs1,\
+path=/export/fs2 \
+-device virtio-9p-pci,id=fs1,fsdev=fsdev-fs1,mount_tag=fs2,bus=pci.0,addr=0x4 \
+-device virtio-net-pci,vlan=0,id=net0,mac=52:54:56:58:5a:5c,bus=pci.0,addr=0x6 \
+-net user,vlan=0,name=hostnet0 \
+-device virtio-mouse-pci,id=input0,bus=pci.0,addr=0xe \
+-device virtio-keyboard-pci,id=input1,bus=pci.0,addr=0x10 \
+-device virtio-tablet-pci,id=input2,bus=pci.0,addr=0x11 \
+-device virtio-input-host-pci,id=input3,evdev=/dev/input/event1234,bus=pci.0,\
+addr=0x12 \
+-device virtio-gpu-pci,id=video0,virgl=on,bus=pci.0,addr=0x2 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0xc \
+-object rng-random,id=objrng0,filename=/dev/random \
+-device virtio-rng-pci,rng=objrng0,id=rng0,bus=pci.0,addr=0xd
