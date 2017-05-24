@@ -3451,6 +3451,19 @@
       </dd>
     </dl>
 
+    <h4><a name="elementsVirtio">Virtio-related options</a></h4>
+
+    <p>
+      QEMU's virtio devices have some attributes related to the virtio transport under
+      the <code>driver</code> element:
+      The <code>iommu</code> attribute enables the use of emulated IOMMU
+      by the device. The attribute <code>ats</code> controls the Address
+      Translation Service support for PCIe devices. This is needed to make use
+      of IOTLB support (see <a href="#elementsIommu">IOMMU device</a>).
+      Possible values are <code>on</code> or <code>off</code>.
+      <span class="since">Since 3.5.0</span>
+    </p>
+
     <h4><a name="elementsControllers">Controllers</a></h4>
 
     <p>
@@ -5141,6 +5154,12 @@ qemu-kvm -net nic,model=? /dev/null
 
         <b>In general you should leave this option alone, unless you
         are very certain you know what you are doing.</b>
+      </dd>
+      <dt>virtio options</dt>
+      <dd>
+        For virtio interfaces,
+        <a href="#elementsVirtio">Virtio-specific options</a> can also be
+        set. (<span class="since">Since 3.5.0</span>)
       </dd>
     </dl>
     <p>

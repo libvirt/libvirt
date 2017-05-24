@@ -156,6 +156,9 @@ typedef virDomainTPMDef *virDomainTPMDefPtr;
 typedef struct _virDomainIOMMUDef virDomainIOMMUDef;
 typedef virDomainIOMMUDef *virDomainIOMMUDefPtr;
 
+typedef struct _virDomainVirtioOptions virDomainVirtioOptions;
+typedef virDomainVirtioOptions *virDomainVirtioOptionsPtr;
+
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {
     VIR_DOMAIN_DEVICE_NONE = 0,
@@ -1040,6 +1043,7 @@ struct _virDomainNetDef {
     int linkstate;
     unsigned int mtu;
     virNetDevCoalescePtr coalesce;
+    virDomainVirtioOptionsPtr virtio;
 };
 
 typedef enum {
@@ -2215,6 +2219,12 @@ struct _virDomainIOMMUDef {
     virTristateSwitch eim;
     virTristateSwitch iotlb;
 };
+
+struct _virDomainVirtioOptions {
+    virTristateSwitch iommu;
+    virTristateSwitch ats;
+};
+
 /*
  * Guest VM main configuration
  *

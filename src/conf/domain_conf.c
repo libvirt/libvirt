@@ -1112,6 +1112,46 @@ virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
     return &xmlopt->ns;
 }
 
+static int
+virDomainVirtioOptionsParseXML(xmlXPathContextPtr ctxt,
+                               virDomainVirtioOptionsPtr *virtio)
+{
+    char *str = NULL;
+    int ret = -1;
+    int val;
+    virDomainVirtioOptionsPtr res;
+
+    if (VIR_ALLOC(*virtio) < 0)
+        return -1;
+
+    res = *virtio;
+
+    if ((str = virXPathString("string(./driver/@iommu)", ctxt))) {
+        if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("invalid iommu value"));
+            goto cleanup;
+        }
+        res->iommu = val;
+    }
+    VIR_FREE(str);
+
+    if ((str = virXPathString("string(./driver/@ats)", ctxt))) {
+        if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("invalid ats value"));
+            goto cleanup;
+        }
+        res->ats = val;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(str);
+    return ret;
+}
+
 
 virSaveCookieCallbacksPtr
 virDomainXMLOptionGetSaveCookie(virDomainXMLOptionPtr xmlopt)
@@ -1966,6 +2006,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
     VIR_FREE(def->ifname);
     VIR_FREE(def->ifname_guest);
     VIR_FREE(def->ifname_guest_actual);
+    VIR_FREE(def->virtio);
 
     virNetDevIPInfoClear(&def->guestIP);
     virNetDevIPInfoClear(&def->hostIP);
@@ -4340,6 +4381,28 @@ virDomainHostdevDefPostParse(virDomainHostdevDefPtr dev,
 
 
 static int
+virDomainCheckVirtioOptions(virDomainVirtioOptionsPtr virtio)
+{
+    if (!virtio)
+        return 0;
+
+    if (virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iommu driver option is only supported "
+                         "for virtio devices"));
+        return -1;
+    }
+    if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("ats driver option is only supported "
+                         "for virtio devices"));
+        return -1;
+    }
+    return 0;
+}
+
+
+static int
 virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
                                     const virDomainDef *def,
                                     virCapsPtr caps ATTRIBUTE_UNUSED,
@@ -4435,6 +4498,13 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
                            virDomainControllerModelSCSITypeToString(VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI));
             return -1;
         }
+    }
+
+    if (dev->type == VIR_DOMAIN_DEVICE_NET) {
+        virDomainNetDefPtr net = dev->data.net;
+        if (STRNEQ_NULLABLE(net->model, "virtio") &&
+            virDomainCheckVirtioOptions(net->virtio) < 0)
+            return -1;
     }
 
     return 0;
@@ -5232,6 +5302,24 @@ virDomainDefValidate(virDomainDefPtr def,
         return -1;
 
     return 0;
+}
+
+
+static void
+virDomainVirtioOptionsFormat(virBufferPtr buf,
+                             virDomainVirtioOptionsPtr virtio)
+{
+    if (!virtio)
+        return;
+
+    if (virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(buf, " iommu='%s'",
+                          virTristateSwitchTypeToString(virtio->iommu));
+    }
+    if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(buf, " ats='%s'",
+                          virTristateSwitchTypeToString(virtio->ats));
+    }
 }
 
 
@@ -10380,6 +10468,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (!def->coalesce)
             goto error;
     }
+
+    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
+        goto error;
 
  cleanup:
     ctxt->node = oldnode;
@@ -19005,6 +19096,30 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
 
 
 static bool
+virDomainVirtioOptionsCheckABIStability(virDomainVirtioOptionsPtr src,
+                                        virDomainVirtioOptionsPtr dst)
+{
+    if (src->iommu != dst->iommu) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target device iommu option '%s' does not "
+                         "match source '%s'"),
+                       virTristateSwitchTypeToString(dst->iommu),
+                       virTristateSwitchTypeToString(src->iommu));
+        return false;
+    }
+    if (src->ats != dst->ats) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target device ats option '%s' does not "
+                         "match source '%s'"),
+                       virTristateSwitchTypeToString(dst->ats),
+                       virTristateSwitchTypeToString(src->ats));
+        return false;
+    }
+    return true;
+}
+
+
+static bool
 virDomainDiskDefCheckABIStability(virDomainDiskDefPtr src,
                                   virDomainDiskDefPtr dst)
 {
@@ -19162,6 +19277,10 @@ virDomainNetDefCheckABIStability(virDomainNetDefPtr src,
                        NULLSTR(dst->model), NULLSTR(src->model));
         return false;
     }
+
+    if (src->virtio && dst->virtio &&
+        !virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
+        return false;
 
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
         return false;
@@ -22117,6 +22236,8 @@ virDomainVirtioNetDriverFormat(char **outstr,
     if (def->driver.virtio.rx_queue_size)
         virBufferAsprintf(&buf, " rx_queue_size='%u'",
                           def->driver.virtio.rx_queue_size);
+
+    virDomainVirtioOptionsFormat(&buf, def->virtio);
 
     if (virBufferCheckError(&buf) < 0)
         return -1;

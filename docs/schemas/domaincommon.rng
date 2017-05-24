@@ -2686,6 +2686,7 @@
               </optional>
             </group>
           </choice>
+          <ref name="virtioOptions"/>
           <interleave>
             <optional>
               <element name='host'>
@@ -5004,6 +5005,17 @@
       </optional>
       <empty/>
     </element>
+  </define>
+
+  <define name="virtioOptions">
+    <optional>
+      <attribute name="iommu">
+        <ref name="virOnOff"/>
+      </attribute>
+      <attribute name="ats">
+        <ref name="virOnOff"/>
+      </attribute>
+    </optional>
   </define>
 
   <define name="usbmaster">
