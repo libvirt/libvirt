@@ -374,6 +374,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "intel-iommu.eim",
 
               "intel-iommu.device-iotlb", /* 260 */
+              "virtio.iommu_platform",
+              "virtio.ats",
     );
 
 
@@ -1853,7 +1855,7 @@ struct virQEMUCapsPropTypeObjects {
     const char **objects;
 };
 
-static const char *virQEMUCapsVirtioPCIDisableLegacyObjects[] = {
+static const char *virQEMUCapsVirtioPCIObjects[] = {
      "virtio-balloon-pci",
      "virtio-blk-pci",
      "virtio-scsi-pci",
@@ -1872,7 +1874,13 @@ static const char *virQEMUCapsVirtioPCIDisableLegacyObjects[] = {
 static struct virQEMUCapsPropTypeObjects virQEMUCapsPropObjects[] = {
     { "disable-legacy",
       QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
-      virQEMUCapsVirtioPCIDisableLegacyObjects }
+      virQEMUCapsVirtioPCIObjects },
+    { "iommu_platform",
+      QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM,
+      virQEMUCapsVirtioPCIObjects },
+    { "ats",
+      QEMU_CAPS_VIRTIO_PCI_ATS,
+      virQEMUCapsVirtioPCIObjects },
 };
 
 

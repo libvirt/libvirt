@@ -413,6 +413,8 @@ typedef enum {
 
     /* 260 */
     QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB, /* intel-iommu.device-iotlb */
+    QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, /* virtio-*-pci.iommu_platform */
+    QEMU_CAPS_VIRTIO_PCI_ATS, /* virtio-*-pci.ats */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
