@@ -5767,8 +5767,10 @@ qemuDomainUpdateMemoryDeviceInfo(virQEMUDriverPtr driver,
 
     rc = qemuMonitorGetMemoryDeviceInfo(priv->mon, &meminfo);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        virHashFree(meminfo);
         return -1;
+    }
 
     /* if qemu doesn't support the info request, just carry on */
     if (rc == -2)
