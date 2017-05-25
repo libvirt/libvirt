@@ -1093,7 +1093,7 @@ virHostCPUGetMap(unsigned char **cpumap,
     if (online)
         *online = virBitmapCountBits(cpus);
 
-    ret = virBitmapSize(cpus);
+    ret = virHostCPUGetCount();
 
  cleanup:
     if (ret < 0 && cpumap)
