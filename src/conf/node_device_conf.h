@@ -408,4 +408,7 @@ int
 virNodeDeviceDeleteVport(virConnectPtr conn,
                          virStorageAdapterFCHostPtr fchost);
 
+int
+virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host);
+
 #endif /* __VIR_NODE_DEVICE_CONF_H__ */
