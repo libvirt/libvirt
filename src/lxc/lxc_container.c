@@ -1143,8 +1143,8 @@ static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
             return -1;
 
         if (virFileBindMountDevice(ttyPaths[i], tty) < 0) {
-            return -1;
             VIR_FREE(tty);
+            return -1;
         }
 
         VIR_FREE(tty);
