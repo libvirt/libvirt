@@ -17443,7 +17443,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
         /* NB: Cannot use macro since this is a value.s not a value.ul */
         if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME)) {
-            if (VIR_STRDUP(info.group_name, params->value.s) < 0)
+            if (VIR_STRDUP(info.group_name, param->value.s) < 0)
                 goto endjob;
             set_fields |= QEMU_BLOCK_IOTUNE_SET_GROUP_NAME;
             if (virTypedParamsAddString(&eventParams, &eventNparams,
