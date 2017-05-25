@@ -2808,7 +2808,8 @@ struct _virQEMUSaveHeader {
     uint32_t data_len;
     uint32_t was_running;
     uint32_t compressed;
-    uint32_t unused[15];
+    uint32_t cookieOffset;
+    uint32_t unused[14];
 };
 
 typedef struct _virQEMUSaveData virQEMUSaveData;
@@ -2816,6 +2817,7 @@ typedef virQEMUSaveData *virQEMUSaveDataPtr;
 struct _virQEMUSaveData {
     virQEMUSaveHeader header;
     char *xml;
+    char *cookie;
 };
 
 
@@ -2826,6 +2828,7 @@ bswap_header(virQEMUSaveHeaderPtr hdr)
     hdr->data_len = bswap_32(hdr->data_len);
     hdr->was_running = bswap_32(hdr->was_running);
     hdr->compressed = bswap_32(hdr->compressed);
+    hdr->cookieOffset = bswap_32(hdr->cookieOffset);
 }
 
 
@@ -2836,6 +2839,7 @@ virQEMUSaveDataFree(virQEMUSaveDataPtr data)
         return;
 
     VIR_FREE(data->xml);
+    VIR_FREE(data->cookie);
     VIR_FREE(data);
 }
 
@@ -2845,8 +2849,10 @@ virQEMUSaveDataFree(virQEMUSaveDataPtr data)
  */
 static virQEMUSaveDataPtr
 virQEMUSaveDataNew(char *domXML,
+                   qemuDomainSaveCookiePtr cookieObj,
                    bool running,
-                   int compressed)
+                   int compressed,
+                   virDomainXMLOptionPtr xmlopt)
 {
     virQEMUSaveDataPtr data = NULL;
     virQEMUSaveHeaderPtr header;
@@ -2856,6 +2862,11 @@ virQEMUSaveDataNew(char *domXML,
 
     VIR_STEAL_PTR(data->xml, domXML);
 
+    if (cookieObj &&
+        !(data->cookie = virSaveCookieFormat((virObjectPtr) cookieObj,
+                                             virDomainXMLOptionGetSaveCookie(xmlopt))))
+        goto error;
+
     header = &data->header;
     memcpy(header->magic, QEMU_SAVE_PARTIAL, sizeof(header->magic));
     header->version = QEMU_SAVE_VERSION;
@@ -2863,6 +2874,10 @@ virQEMUSaveDataNew(char *domXML,
     header->compressed = compressed;
 
     return data;
+
+ error:
+    virQEMUSaveDataFree(data);
+    return NULL;
 }
 
 
@@ -2882,11 +2897,17 @@ virQEMUSaveDataWrite(virQEMUSaveDataPtr data,
 {
     virQEMUSaveHeaderPtr header = &data->header;
     size_t len;
+    size_t xml_len;
+    size_t cookie_len = 0;
     int ret = -1;
     size_t zerosLen = 0;
     char *zeros = NULL;
 
-    len = strlen(data->xml) + 1;
+    xml_len = strlen(data->xml) + 1;
+    if (data->cookie)
+        cookie_len = strlen(data->cookie) + 1;
+
+    len = xml_len + cookie_len;
 
     if (header->data_len > 0) {
         if (len > header->data_len) {
@@ -2902,6 +2923,9 @@ virQEMUSaveDataWrite(virQEMUSaveDataPtr data,
         header->data_len = len;
     }
 
+    if (data->cookie)
+        header->cookieOffset = xml_len;
+
     if (safewrite(fd, header, sizeof(*header)) != sizeof(*header)) {
         virReportSystemError(errno,
                              _("failed to write header to domain save file '%s'"),
@@ -2909,10 +2933,24 @@ virQEMUSaveDataWrite(virQEMUSaveDataPtr data,
         goto cleanup;
     }
 
-    if (safewrite(fd, data->xml, header->data_len) != header->data_len ||
-        safewrite(fd, zeros, zerosLen) != zerosLen) {
+    if (safewrite(fd, data->xml, xml_len) != xml_len) {
         virReportSystemError(errno,
                              _("failed to write domain xml to '%s'"),
+                             path);
+        goto cleanup;
+    }
+
+    if (data->cookie &&
+        safewrite(fd, data->cookie, cookie_len) != cookie_len) {
+        virReportSystemError(errno,
+                             _("failed to write cookie to '%s'"),
+                             path);
+        goto cleanup;
+    }
+
+    if (safewrite(fd, zeros, zerosLen) != zerosLen) {
+        virReportSystemError(errno,
+                             _("failed to write padding to '%s'"),
                              path);
         goto cleanup;
     }
@@ -3250,6 +3288,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps;
     virQEMUSaveDataPtr data = NULL;
+    qemuDomainSaveCookiePtr cookie = NULL;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -3315,7 +3354,11 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         goto endjob;
     }
 
-    if (!(data = virQEMUSaveDataNew(xml, was_running, compressed)))
+    if (!(cookie = qemuDomainSaveCookieNew(vm)))
+        goto endjob;
+
+    if (!(data = virQEMUSaveDataNew(xml, cookie, was_running, compressed,
+                                    driver->xmlopt)))
         goto endjob;
     xml = NULL;
 
@@ -3352,6 +3395,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
+    virObjectUnref(cookie);
     VIR_FREE(xml);
     virQEMUSaveDataFree(data);
     qemuDomainEventQueue(driver, event);
@@ -6288,6 +6332,8 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     virDomainDefPtr def = NULL;
     int oflags = open_write ? O_RDWR : O_RDONLY;
     virCapsPtr caps = NULL;
+    size_t xml_len;
+    size_t cookie_len;
 
     if (bypass_cache) {
         int directFlag = virFileDirectFdFlag();
@@ -6368,13 +6414,31 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (VIR_ALLOC_N(data->xml, header->data_len) < 0)
+    if (header->cookieOffset)
+        xml_len = header->cookieOffset;
+    else
+        xml_len = header->data_len;
+
+    cookie_len = header->data_len - xml_len;
+
+    if (VIR_ALLOC_N(data->xml, xml_len) < 0)
         goto error;
 
-    if (saferead(fd, data->xml, header->data_len) != header->data_len) {
+    if (saferead(fd, data->xml, xml_len) != xml_len) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("failed to read domain XML"));
         goto error;
+    }
+
+    if (cookie_len > 0) {
+        if (VIR_ALLOC_N(data->cookie, cookie_len) < 0)
+            goto error;
+
+        if (saferead(fd, data->cookie, cookie_len) != cookie_len) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("failed to read cookie"));
+            goto error;
+        }
     }
 
     /* Create a domain from this XML */
@@ -6417,6 +6481,11 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     char *errbuf = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virQEMUSaveHeaderPtr header = &data->header;
+    qemuDomainSaveCookiePtr cookie = NULL;
+
+    if (virSaveCookieParseString(data->cookie, (virObjectPtr *) &cookie,
+                                 virDomainXMLOptionGetSaveCookie(driver->xmlopt)) < 0)
+        goto cleanup;
 
     if ((header->version == 2) &&
         (header->compressed != QEMU_SAVE_FORMAT_RAW)) {
@@ -6507,6 +6576,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     ret = 0;
 
  cleanup:
+    virObjectUnref(cookie);
     virCommandFree(cmd);
     VIR_FREE(errbuf);
     if (qemuSecurityRestoreSavedStateLabel(driver->securityManager,
@@ -13559,6 +13629,9 @@ qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
     if (ret < 0)
         goto cleanup;
 
+    if (!(snap->def->cookie = (virObjectPtr) qemuDomainSaveCookieNew(vm)))
+        goto cleanup;
+
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) {
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
@@ -14438,10 +14511,13 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
                                                     "snapshot", false)) < 0)
             goto cleanup;
 
-        if (!(xml = qemuDomainDefFormatLive(driver, vm->def, true, true)))
+        if (!(xml = qemuDomainDefFormatLive(driver, vm->def, true, true)) ||
+            !(snap->def->cookie = (virObjectPtr) qemuDomainSaveCookieNew(vm)))
             goto cleanup;
 
-        if (!(data = virQEMUSaveDataNew(xml, resume, compressed)))
+        if (!(data = virQEMUSaveDataNew(xml,
+                                        (qemuDomainSaveCookiePtr) snap->def->cookie,
+                                        resume, compressed, driver->xmlopt)))
             goto cleanup;
         xml = NULL;
 

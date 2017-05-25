@@ -235,6 +235,12 @@
         at the time of the snapshot (<span class="since">since
         0.9.5</span>).  Readonly.
       </dd>
+      <dt><code>cookie</code></dt>
+      <dd>Save image cookie containing additional data libvirt may need to
+        properly restore a domain from an active snapshot when such data
+        cannot be stored directly in the <code>domain</code> to maintain
+        compatibility with older libvirt or hypervisor. Readonly.
+      </dd>
     </dl>
 
     <h2><a name="example">Examples</a></h2>
