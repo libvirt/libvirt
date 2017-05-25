@@ -83,3 +83,11 @@ matrix:
         # many unit tests fail & so does syntax-check, so skip for now
         # one day we must fix it though....
         - make -j3
+
+after_failure:
+  - echo '============================================================================'
+  - 'if [ -f $(pwd)/tests/test-suite.log ]; then
+        cat $(pwd)/tests/test-suite.log;
+    else
+        echo "=== NO LOG FILE FOUND ===";
+    fi'
