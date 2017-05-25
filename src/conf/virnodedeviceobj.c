@@ -48,19 +48,39 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *dev,
     while (caps) {
         if (STREQ(cap, virNodeDevCapTypeToString(caps->data.type))) {
             return 1;
-        } else if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
-            if ((STREQ(cap, fc_host_cap) &&
-                (caps->data.scsi_host.flags &
-                 VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST)) ||
-                (STREQ(cap, vports_cap) &&
-                (caps->data.scsi_host.flags &
-                 VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)))
-                return 1;
-        } else if (caps->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
-            if ((STREQ(cap, mdev_types)) &&
-                (caps->data.pci_dev.flags &
-                 VIR_NODE_DEV_CAP_FLAG_PCI_MDEV))
-                return 1;
+        } else {
+            switch (caps->data.type) {
+            case VIR_NODE_DEV_CAP_PCI_DEV:
+                if ((STREQ(cap, mdev_types)) &&
+                    (caps->data.pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_MDEV))
+                    return 1;
+                break;
+
+            case VIR_NODE_DEV_CAP_SCSI_HOST:
+                if ((STREQ(cap, fc_host_cap) &&
+                    (caps->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST)) ||
+                    (STREQ(cap, vports_cap) &&
+                    (caps->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)))
+                    return 1;
+                break;
+
+            case VIR_NODE_DEV_CAP_SYSTEM:
+            case VIR_NODE_DEV_CAP_USB_DEV:
+            case VIR_NODE_DEV_CAP_USB_INTERFACE:
+            case VIR_NODE_DEV_CAP_NET:
+            case VIR_NODE_DEV_CAP_SCSI_TARGET:
+            case VIR_NODE_DEV_CAP_SCSI:
+            case VIR_NODE_DEV_CAP_STORAGE:
+            case VIR_NODE_DEV_CAP_FC_HOST:
+            case VIR_NODE_DEV_CAP_VPORTS:
+            case VIR_NODE_DEV_CAP_SCSI_GENERIC:
+            case VIR_NODE_DEV_CAP_DRM:
+            case VIR_NODE_DEV_CAP_MDEV_TYPES:
+            case VIR_NODE_DEV_CAP_MDEV:
+            case VIR_NODE_DEV_CAP_CCW_DEV:
+            case VIR_NODE_DEV_CAP_LAST:
+                break;
+            }
         }
 
         caps = caps->next;
@@ -468,23 +488,39 @@ virNodeDeviceCapMatch(virNodeDeviceObjPtr devobj,
         if (type == cap->data.type)
             return true;
 
-        if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+        switch (cap->data.type) {
+        case VIR_NODE_DEV_CAP_PCI_DEV:
+            if (type == VIR_NODE_DEV_CAP_MDEV_TYPES &&
+                (cap->data.pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_MDEV))
+                return true;
+            break;
+
+        case VIR_NODE_DEV_CAP_SCSI_HOST:
             if (type == VIR_NODE_DEV_CAP_FC_HOST &&
-                (cap->data.scsi_host.flags &
-                 VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST))
+                (cap->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST))
                 return true;
 
             if (type == VIR_NODE_DEV_CAP_VPORTS &&
-                (cap->data.scsi_host.flags &
-                 VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS))
+                (cap->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS))
                 return true;
-        }
+            break;
 
-        if (cap->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
-            if (type == VIR_NODE_DEV_CAP_MDEV_TYPES &&
-                (cap->data.pci_dev.flags &
-                 VIR_NODE_DEV_CAP_FLAG_PCI_MDEV))
-                return true;
+        case VIR_NODE_DEV_CAP_SYSTEM:
+        case VIR_NODE_DEV_CAP_USB_DEV:
+        case VIR_NODE_DEV_CAP_USB_INTERFACE:
+        case VIR_NODE_DEV_CAP_NET:
+        case VIR_NODE_DEV_CAP_SCSI_TARGET:
+        case VIR_NODE_DEV_CAP_SCSI:
+        case VIR_NODE_DEV_CAP_STORAGE:
+        case VIR_NODE_DEV_CAP_FC_HOST:
+        case VIR_NODE_DEV_CAP_VPORTS:
+        case VIR_NODE_DEV_CAP_SCSI_GENERIC:
+        case VIR_NODE_DEV_CAP_DRM:
+        case VIR_NODE_DEV_CAP_MDEV_TYPES:
+        case VIR_NODE_DEV_CAP_MDEV:
+        case VIR_NODE_DEV_CAP_CCW_DEV:
+        case VIR_NODE_DEV_CAP_LAST:
+            break;
         }
     }
 
