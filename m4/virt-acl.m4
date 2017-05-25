@@ -23,8 +23,10 @@ AC_DEFUN([LIBVIRT_CHECK_ACL], [
 
   ACL_CFLAGS=""
   ACL_LIBS=""
+  with_acl=no
   if test "x$ac_cv_header_sys_acl_h:x$with_linux" = "xyes:xyes"; then
     ACL_LIBS="-lacl"
+    with_acl=yes
   fi
   AC_SUBST([ACL_CFLAGS])
   AC_SUBST([ACL_LIBS])
