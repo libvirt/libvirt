@@ -2142,11 +2142,20 @@ virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
 
 void virDomainChrSourceDefFree(virDomainChrSourceDefPtr def)
 {
+    size_t i;
+
     if (!def)
         return;
 
     virDomainChrSourceDefClear(def);
     virObjectUnref(def->privateData);
+
+    if (def->seclabels) {
+        for (i = 0; i < def->nseclabels; i++)
+            virSecurityDeviceLabelDefFree(def->seclabels[i]);
+        VIR_FREE(def->seclabels);
+    }
+
 
     VIR_FREE(def);
 }
@@ -2216,8 +2225,6 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
 
 void virDomainChrDefFree(virDomainChrDefPtr def)
 {
-    size_t i;
-
     if (!def)
         return;
 
@@ -2241,12 +2248,6 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
 
     virDomainChrSourceDefFree(def->source);
     virDomainDeviceInfoClear(&def->info);
-
-    if (def->seclabels) {
-        for (i = 0; i < def->nseclabels; i++)
-            virSecurityDeviceLabelDefFree(def->seclabels[i]);
-        VIR_FREE(def->seclabels);
-    }
 
     VIR_FREE(def);
 }
@@ -10819,8 +10820,8 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 if (chr_def) {
                     xmlNodePtr saved_node = ctxt->node;
                     ctxt->node = cur;
-                    if (virSecurityDeviceLabelDefParseXML(&chr_def->seclabels,
-                                                          &chr_def->nseclabels,
+                    if (virSecurityDeviceLabelDefParseXML(&def->seclabels,
+                                                          &def->nseclabels,
                                                           vmSeclabels,
                                                           nvmSeclabels,
                                                           ctxt,
@@ -22625,19 +22626,11 @@ virDomainNetDefFormat(virBufferPtr buf,
  * output at " type='type'>". */
 static int
 virDomainChrSourceDefFormat(virBufferPtr buf,
-                            virDomainChrDefPtr chr_def,
                             virDomainChrSourceDefPtr def,
                             bool tty_compat,
                             unsigned int flags)
 {
     const char *type = virDomainChrTypeToString(def->type);
-    size_t nseclabels = 0;
-    virSecurityDeviceLabelDefPtr *seclabels = NULL;
-
-    if (chr_def) {
-        nseclabels = chr_def->nseclabels;
-        seclabels = chr_def->seclabels;
-    }
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -22675,7 +22668,8 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
                 def->data.file.append != VIR_TRISTATE_SWITCH_ABSENT)
                 virBufferAsprintf(buf, " append='%s'",
                     virTristateSwitchTypeToString(def->data.file.append));
-            virDomainSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
+            virDomainSourceDefFormatSeclabel(buf, def->nseclabels,
+                                             def->seclabels, flags);
         }
         break;
 
@@ -22730,7 +22724,8 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, "<source mode='%s'",
                               def->data.nix.listen ? "bind" : "connect");
             virBufferEscapeString(buf, " path='%s'", def->data.nix.path);
-            virDomainSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
+            virDomainSourceDefFormatSeclabel(buf, def->nseclabels,
+                                             def->seclabels, flags);
         }
         break;
 
@@ -22779,7 +22774,7 @@ virDomainChrDefFormat(virBufferPtr buf,
                   def->source->type == VIR_DOMAIN_CHR_TYPE_PTY &&
                   !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
                   def->source->data.file.path);
-    if (virDomainChrSourceDefFormat(buf, def, def->source, tty_compat, flags) < 0)
+    if (virDomainChrSourceDefFormat(buf, def->source, tty_compat, flags) < 0)
         return -1;
 
     /* Format <target> block */
@@ -22901,7 +22896,7 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        if (virDomainChrSourceDefFormat(buf, NULL, def->data.passthru, false,
+        if (virDomainChrSourceDefFormat(buf, def->data.passthru, false,
                                         flags) < 0)
             return -1;
         break;
@@ -23224,7 +23219,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:
         virBufferAdjustIndent(buf, 2);
-        if (virDomainChrSourceDefFormat(buf, NULL, def->source.chardev,
+        if (virDomainChrSourceDefFormat(buf, def->source.chardev,
                                         false, flags) < 0)
             return -1;
         virBufferAdjustIndent(buf, -2);
@@ -24070,7 +24065,7 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "<redirdev bus='%s'", bus);
     virBufferAdjustIndent(buf, 2);
-    if (virDomainChrSourceDefFormat(buf, NULL, def->source, false, flags) < 0)
+    if (virDomainChrSourceDefFormat(buf, def->source, false, flags) < 0)
         return -1;
     if (virDomainDeviceInfoFormat(buf, &def->info,
                                   flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) < 0)
@@ -26473,7 +26468,8 @@ virDomainDefGetSecurityLabelDef(virDomainDefPtr def, const char *model)
 
 
 virSecurityDeviceLabelDefPtr
-virDomainChrDefGetSecurityLabelDef(virDomainChrDefPtr def, const char *model)
+virDomainChrSourceDefGetSecurityLabelDef(virDomainChrSourceDefPtr def,
+                                         const char *model)
 {
     size_t i;
 

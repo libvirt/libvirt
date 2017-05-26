@@ -2179,7 +2179,6 @@ virSecuritySELinuxRestoreHostdevLabel(virSecurityManagerPtr mgr,
 static int
 virSecuritySELinuxSetChardevLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr def,
-                                  virDomainChrDefPtr dev,
                                   virDomainChrSourceDefPtr dev_source)
 
 {
@@ -2193,9 +2192,8 @@ virSecuritySELinuxSetChardevLabel(virSecurityManagerPtr mgr,
     if (!seclabel || !seclabel->relabel)
         return 0;
 
-    if (dev)
-        chr_seclabel = virDomainChrDefGetSecurityLabelDef(dev,
-                                                          SECURITY_SELINUX_NAME);
+    chr_seclabel = virDomainChrSourceDefGetSecurityLabelDef(dev_source,
+                                                            SECURITY_SELINUX_NAME);
 
     if (chr_seclabel && !chr_seclabel->relabel)
         return 0;
@@ -2254,7 +2252,6 @@ virSecuritySELinuxSetChardevLabel(virSecurityManagerPtr mgr,
 static int
 virSecuritySELinuxRestoreChardevLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
-                                      virDomainChrDefPtr dev,
                                       virDomainChrSourceDefPtr dev_source)
 
 {
@@ -2267,9 +2264,8 @@ virSecuritySELinuxRestoreChardevLabel(virSecurityManagerPtr mgr,
     if (!seclabel || !seclabel->relabel)
         return 0;
 
-    if (dev)
-        chr_seclabel = virDomainChrDefGetSecurityLabelDef(dev,
-                                                          SECURITY_SELINUX_NAME);
+    chr_seclabel = virDomainChrSourceDefGetSecurityLabelDef(dev_source,
+                                                            SECURITY_SELINUX_NAME);
     if (chr_seclabel && !chr_seclabel->relabel)
         return 0;
 
@@ -2318,12 +2314,12 @@ virSecuritySELinuxRestoreChardevLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecuritySELinuxRestoreSecurityChardevCallback(virDomainDefPtr def,
-                                                 virDomainChrDefPtr dev,
+                                                 virDomainChrDefPtr dev ATTRIBUTE_UNUSED,
                                                  void *opaque)
 {
     virSecurityManagerPtr mgr = opaque;
 
-    return virSecuritySELinuxRestoreChardevLabel(mgr, def, dev, dev->source);
+    return virSecuritySELinuxRestoreChardevLabel(mgr, def, dev->source);
 }
 
 
@@ -2346,7 +2342,7 @@ virSecuritySELinuxRestoreSecuritySmartcardCallback(virDomainDefPtr def,
         return virSecuritySELinuxRestoreFileLabel(mgr, database);
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        return virSecuritySELinuxRestoreChardevLabel(mgr, def, NULL, dev->data.passthru);
+        return virSecuritySELinuxRestoreChardevLabel(mgr, def, dev->data.passthru);
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2707,12 +2703,12 @@ virSecuritySELinuxClearSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 
 static int
 virSecuritySELinuxSetSecurityChardevCallback(virDomainDefPtr def,
-                                             virDomainChrDefPtr dev,
+                                             virDomainChrDefPtr dev ATTRIBUTE_UNUSED,
                                              void *opaque)
 {
     virSecurityManagerPtr mgr = opaque;
 
-    return virSecuritySELinuxSetChardevLabel(mgr, def, dev, dev->source);
+    return virSecuritySELinuxSetChardevLabel(mgr, def, dev->source);
 }
 
 
@@ -2736,7 +2732,7 @@ virSecuritySELinuxSetSecuritySmartcardCallback(virDomainDefPtr def,
         return virSecuritySELinuxSetFilecon(mgr, database, data->content_context);
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        return virSecuritySELinuxSetChardevLabel(mgr, def, NULL,
+        return virSecuritySELinuxSetChardevLabel(mgr, def,
                                                  dev->data.passthru);
 
     default:

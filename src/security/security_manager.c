@@ -811,8 +811,8 @@ virSecurityManagerCheckChardevLabel(virSecurityManagerPtr mgr,
 {
     size_t i;
 
-    for (i = 0; i < dev->nseclabels; i++) {
-        if (virSecurityManagerCheckModel(mgr, dev->seclabels[i]->model) < 0)
+    for (i = 0; i < dev->source->nseclabels; i++) {
+        if (virSecurityManagerCheckModel(mgr, dev->source->seclabels[i]->model) < 0)
             return -1;
     }
 
