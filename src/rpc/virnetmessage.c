@@ -358,7 +358,8 @@ int virNetMessageEncodePayload(virNetMessagePtr msg,
 
     /* Try to encode the payload. If the buffer is too small increase it. */
     while (!(*filter)(&xdr, data, 0)) {
-        unsigned int newlen = (msg->bufferLength - VIR_NET_MESSAGE_LEN_MAX) * 4;
+        unsigned int newlen = msg->bufferLength - VIR_NET_MESSAGE_LEN_MAX;
+        newlen *= 2;
 
         if (newlen > VIR_NET_MESSAGE_MAX) {
             virReportError(VIR_ERR_RPC, "%s", _("Unable to encode message payload"));
