@@ -26,6 +26,7 @@
 
 #include "viralloc.h"
 #include "virfile.h"
+#include "virerror.h"
 #include "virstring.h"
 
 #include "virfcp.h"
@@ -80,14 +81,14 @@ virFCReadRportValue(const char *rport,
 #else
 
 bool
-virSysfsIsCapableFCRport(const char *rport ATTRIBUTE_UNUSED)
+virFCIsCapableRport(const char *rport ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return false;
 }
 
 int
-virSysfsReadFCRport(const char *rport ATTRIBUTE_UNUSED,
+virFCReadRportValue(const char *rport ATTRIBUTE_UNUSED,
                     const char *entry ATTRIBUTE_UNUSED,
                     char **result ATTRIBUTE_UNUSED)
 {
