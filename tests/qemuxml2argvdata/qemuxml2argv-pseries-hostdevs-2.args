@@ -1,0 +1,24 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-ppc64 \
+-name guest \
+-S \
+-M pseries \
+-m 512 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
+-nographic \
+-nodefconfig \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-boot c \
+-device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.0,addr=0x1 \
+-device virtio-scsi-pci,id=scsi0,bus=pci.1,addr=0x1 \
+-device vfio-pci,host=0001:01:00.0,id=hostdev0,bus=pci.1,addr=0x2 \
+-device vfio-pci,host=0005:90:01.0,id=hostdev1,bus=pci.0,addr=0x2

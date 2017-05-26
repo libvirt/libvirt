@@ -1,0 +1,53 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-ppc64 \
+-name guest \
+-S \
+-M pseries \
+-m 512 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
+-nographic \
+-nodefconfig \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-boot c \
+-device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.0,addr=0x1 \
+-device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x2 \
+-device virtio-scsi-pci,id=scsi1,bus=pci.0,addr=0x3 \
+-device virtio-scsi-pci,id=scsi2,bus=pci.0,addr=0x4 \
+-device virtio-scsi-pci,id=scsi3,bus=pci.0,addr=0x5 \
+-device virtio-scsi-pci,id=scsi4,bus=pci.0,addr=0x6 \
+-device virtio-scsi-pci,id=scsi5,bus=pci.0,addr=0x7 \
+-device virtio-scsi-pci,id=scsi6,bus=pci.0,addr=0x8 \
+-device virtio-scsi-pci,id=scsi7,bus=pci.0,addr=0x9 \
+-device virtio-scsi-pci,id=scsi8,bus=pci.0,addr=0xa \
+-device virtio-scsi-pci,id=scsi9,bus=pci.0,addr=0xb \
+-device virtio-scsi-pci,id=scsi10,bus=pci.0,addr=0xc \
+-device virtio-scsi-pci,id=scsi11,bus=pci.0,addr=0xd \
+-device virtio-scsi-pci,id=scsi12,bus=pci.0,addr=0xe \
+-device virtio-scsi-pci,id=scsi13,bus=pci.0,addr=0xf \
+-device virtio-scsi-pci,id=scsi14,bus=pci.0,addr=0x10 \
+-device virtio-scsi-pci,id=scsi15,bus=pci.0,addr=0x11 \
+-device virtio-scsi-pci,id=scsi16,bus=pci.0,addr=0x12 \
+-device virtio-scsi-pci,id=scsi17,bus=pci.0,addr=0x13 \
+-device virtio-scsi-pci,id=scsi18,bus=pci.0,addr=0x14 \
+-device virtio-scsi-pci,id=scsi19,bus=pci.0,addr=0x15 \
+-device virtio-scsi-pci,id=scsi20,bus=pci.0,addr=0x16 \
+-device virtio-scsi-pci,id=scsi21,bus=pci.0,addr=0x17 \
+-device virtio-scsi-pci,id=scsi22,bus=pci.0,addr=0x18 \
+-device virtio-scsi-pci,id=scsi23,bus=pci.0,addr=0x19 \
+-device virtio-scsi-pci,id=scsi24,bus=pci.0,addr=0x1a \
+-device virtio-scsi-pci,id=scsi25,bus=pci.0,addr=0x1b \
+-device virtio-scsi-pci,id=scsi26,bus=pci.0,addr=0x1c \
+-device virtio-scsi-pci,id=scsi27,bus=pci.0,addr=0x1d \
+-device virtio-scsi-pci,id=scsi28,bus=pci.0,addr=0x1e \
+-device virtio-scsi-pci,id=scsi29,bus=pci.0,addr=0x1f \
+-device virtio-scsi-pci,id=scsi30,bus=pci.1,addr=0x1 \
+-device virtio-scsi-pci,id=scsi31,bus=pci.1,addr=0x2

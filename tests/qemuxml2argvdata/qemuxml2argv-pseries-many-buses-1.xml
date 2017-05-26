@@ -1,0 +1,19 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory unit='KiB'>524288</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <!-- The SCSI controller is plugged into PCI bus 1, but since said bus
+         is not present in the configuration libvirt will have to add it -->
+    <controller type='scsi' model='virtio-scsi'>
+      <address type='pci' bus='1' slot='1'/>
+    </controller>
+    <controller type='usb' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>
