@@ -244,7 +244,8 @@ virsh_CFLAGS =							\
 		$(WARN_CFLAGS)					\
 		$(PIE_CFLAGS)					\
 		$(COVERAGE_CFLAGS)				\
-		$(LIBXML_CFLAGS)
+		$(LIBXML_CFLAGS)				\
+		$(READLINE_CFLAGS)
 
 virt_admin_SOURCES =						\
 		virt-admin.c virt-admin.h			\

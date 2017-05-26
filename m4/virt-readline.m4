@@ -45,7 +45,9 @@ AC_DEFUN([LIBVIRT_CHECK_READLINE],[
   # function, to ensure we aren't being confused by caching.
   LIBS=$lv_saved_libs
   AC_CHECK_LIB([readline], [rl_initialize],
-    [], [READLINE_LIBS="$READLINE_LIBS $extra_LIBS"])
+    [READLINE_CFLAGS="-D_FUNCTION_DEF $READLINE_CFLAGS"
+     AC_SUBST(READLINE_CFLAGS)],
+    [READLINE_LIBS="$READLINE_LIBS $extra_LIBS"])
   LIBS=$lv_saved_libs
 ])
 
