@@ -21370,6 +21370,37 @@ virDomainDiskDefFormat(virBufferPtr buf,
 #undef FORMAT_IOTUNE
 
 
+static void
+virDomainControllerDriverFormat(virBufferPtr buf,
+                                virDomainControllerDefPtr def)
+{
+    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+
+    if (def->queues)
+        virBufferAsprintf(&driverBuf, " queues='%u'", def->queues);
+
+    if (def->cmd_per_lun)
+        virBufferAsprintf(&driverBuf, " cmd_per_lun='%u'", def->cmd_per_lun);
+
+    if (def->max_sectors)
+        virBufferAsprintf(&driverBuf, " max_sectors='%u'", def->max_sectors);
+
+    if (def->ioeventfd) {
+        virBufferAsprintf(&driverBuf, " ioeventfd='%s'",
+                          virTristateSwitchTypeToString(def->ioeventfd));
+    }
+
+    if (def->iothread)
+        virBufferAsprintf(&driverBuf, " iothread='%u'", def->iothread);
+
+    if (virBufferUse(&driverBuf)) {
+        virBufferAddLit(buf, "<driver");
+        virBufferAddBuffer(buf, &driverBuf);
+        virBufferAddLit(buf, "/>\n");
+    }
+}
+
+
 static int
 virDomainControllerDefFormat(virBufferPtr buf,
                              virDomainControllerDefPtr def,
@@ -21379,7 +21410,6 @@ virDomainControllerDefFormat(virBufferPtr buf,
     const char *model = NULL;
     const char *modelName = NULL;
     bool pcihole64 = false, pciModel = false, pciTarget = false;
-    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -21484,28 +21514,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
             }
         }
 
-        if (def->queues)
-            virBufferAsprintf(&driverBuf, " queues='%u'", def->queues);
-
-        if (def->cmd_per_lun)
-            virBufferAsprintf(&driverBuf, " cmd_per_lun='%u'", def->cmd_per_lun);
-
-        if (def->max_sectors)
-            virBufferAsprintf(&driverBuf, " max_sectors='%u'", def->max_sectors);
-
-        if (def->ioeventfd) {
-            virBufferAsprintf(&driverBuf, " ioeventfd='%s'",
-                              virTristateSwitchTypeToString(def->ioeventfd));
-        }
-
-        if (def->iothread)
-            virBufferAsprintf(&driverBuf, " iothread='%u'", def->iothread);
-
-        if (virBufferUse(&driverBuf)) {
-            virBufferAddLit(buf, "<driver");
-            virBufferAddBuffer(buf, &driverBuf);
-            virBufferAddLit(buf, "/>\n");
-        }
+        virDomainControllerDriverFormat(buf, def);
 
         if (virDomainDeviceInfoNeedsFormat(&def->info, flags) &&
             virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
