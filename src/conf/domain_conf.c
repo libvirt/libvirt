@@ -21410,6 +21410,9 @@ virDomainControllerDefFormat(virBufferPtr buf,
     const char *model = NULL;
     const char *modelName = NULL;
     bool pcihole64 = false, pciModel = false, pciTarget = false;
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -21475,7 +21478,6 @@ virDomainControllerDefFormat(virBufferPtr buf,
         def->iothread ||
         virDomainDeviceInfoNeedsFormat(&def->info, flags) || pcihole64) {
         virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
 
         if (pciModel) {
             modelName = virDomainControllerPCIModelNameTypeToString(def->opts.pciopts.modelName);
@@ -21485,47 +21487,47 @@ virDomainControllerDefFormat(virBufferPtr buf,
                                def->opts.pciopts.modelName);
                 return -1;
             }
-            virBufferAsprintf(buf, "<model name='%s'/>\n", modelName);
+            virBufferAsprintf(&childBuf, "<model name='%s'/>\n", modelName);
         }
 
         if (pciTarget) {
-            virBufferAddLit(buf, "<target");
+            virBufferAddLit(&childBuf, "<target");
             if (def->opts.pciopts.chassisNr != -1)
-                virBufferAsprintf(buf, " chassisNr='%d'",
+                virBufferAsprintf(&childBuf, " chassisNr='%d'",
                                   def->opts.pciopts.chassisNr);
             if (def->opts.pciopts.chassis != -1)
-                virBufferAsprintf(buf, " chassis='%d'",
+                virBufferAsprintf(&childBuf, " chassis='%d'",
                                   def->opts.pciopts.chassis);
             if (def->opts.pciopts.port != -1)
-                virBufferAsprintf(buf, " port='0x%x'",
+                virBufferAsprintf(&childBuf, " port='0x%x'",
                                   def->opts.pciopts.port);
             if (def->opts.pciopts.busNr != -1)
-                virBufferAsprintf(buf, " busNr='%d'",
+                virBufferAsprintf(&childBuf, " busNr='%d'",
                                   def->opts.pciopts.busNr);
             if (def->opts.pciopts.numaNode == -1) {
-                virBufferAddLit(buf, "/>\n");
+                virBufferAddLit(&childBuf, "/>\n");
             } else {
-                virBufferAddLit(buf, ">\n");
-                virBufferAdjustIndent(buf, 2);
-                virBufferAsprintf(buf, "<node>%d</node>\n",
+                virBufferAddLit(&childBuf, ">\n");
+                virBufferAdjustIndent(&childBuf, 2);
+                virBufferAsprintf(&childBuf, "<node>%d</node>\n",
                                   def->opts.pciopts.numaNode);
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</target>\n");
+                virBufferAdjustIndent(&childBuf, -2);
+                virBufferAddLit(&childBuf, "</target>\n");
             }
         }
 
-        virDomainControllerDriverFormat(buf, def);
+        virDomainControllerDriverFormat(&childBuf, def);
 
         if (virDomainDeviceInfoNeedsFormat(&def->info, flags) &&
-            virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+            virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
             return -1;
 
         if (pcihole64) {
-            virBufferAsprintf(buf, "<pcihole64 unit='KiB'>%lu</"
+            virBufferAsprintf(&childBuf, "<pcihole64 unit='KiB'>%lu</"
                               "pcihole64>\n", def->opts.pciopts.pcihole64size);
         }
 
-        virBufferAdjustIndent(buf, -2);
+        virBufferAddBuffer(buf, &childBuf);
         virBufferAddLit(buf, "</controller>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
