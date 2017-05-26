@@ -14,8 +14,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-s390x</emulator>
-    <controller type='virtio-serial' index='0'>
-    </controller>
+    <controller type='virtio-serial' index='0'/>
     <console type='pty'>
       <target type='virtio' port='0'/>
     </console>

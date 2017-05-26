@@ -21477,7 +21477,6 @@ virDomainControllerDefFormat(virBufferPtr buf,
         def->queues || def->cmd_per_lun || def->max_sectors || def->ioeventfd ||
         def->iothread ||
         virDomainDeviceInfoNeedsFormat(&def->info, flags) || pcihole64) {
-        virBufferAddLit(buf, ">\n");
 
         if (pciModel) {
             modelName = virDomainControllerPCIModelNameTypeToString(def->opts.pciopts.modelName);
@@ -21526,7 +21525,10 @@ virDomainControllerDefFormat(virBufferPtr buf,
             virBufferAsprintf(&childBuf, "<pcihole64 unit='KiB'>%lu</"
                               "pcihole64>\n", def->opts.pciopts.pcihole64size);
         }
+    }
 
+    if (virBufferUse(&childBuf)) {
+        virBufferAddLit(buf, ">\n");
         virBufferAddBuffer(buf, &childBuf);
         virBufferAddLit(buf, "</controller>\n");
     } else {
