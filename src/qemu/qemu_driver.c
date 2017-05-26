@@ -10993,22 +10993,22 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE)) {
-            bandwidth->in->average = params[i].value.ui;
+            bandwidth->in->average = param->value.ui;
             inboundSpecified = true;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_PEAK)) {
-            bandwidth->in->peak = params[i].value.ui;
+            bandwidth->in->peak = param->value.ui;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_BURST)) {
-            bandwidth->in->burst = params[i].value.ui;
+            bandwidth->in->burst = param->value.ui;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_FLOOR)) {
-            bandwidth->in->floor = params[i].value.ui;
+            bandwidth->in->floor = param->value.ui;
             inboundSpecified = true;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE)) {
-            bandwidth->out->average = params[i].value.ui;
+            bandwidth->out->average = param->value.ui;
             outboundSpecified = true;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_PEAK)) {
-            bandwidth->out->peak = params[i].value.ui;
+            bandwidth->out->peak = param->value.ui;
         } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_BURST)) {
-            bandwidth->out->burst = params[i].value.ui;
+            bandwidth->out->burst = param->value.ui;
         }
     }
 
