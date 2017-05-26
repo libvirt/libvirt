@@ -21479,11 +21479,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
         break;
     }
 
-    if (pciModel || pciTarget ||
-        def->queues || def->cmd_per_lun || def->max_sectors || def->ioeventfd ||
-        def->iothread ||
-        virDomainDeviceInfoNeedsFormat(&def->info, flags) || pcihole64) {
-
+    if (pciModel || pciTarget) {
         if (pciModel) {
             modelName = virDomainControllerPCIModelNameTypeToString(def->opts.pciopts.modelName);
             if (!modelName) {
@@ -21520,17 +21516,17 @@ virDomainControllerDefFormat(virBufferPtr buf,
                 virBufferAddLit(&childBuf, "</target>\n");
             }
         }
+    }
 
-        virDomainControllerDriverFormat(&childBuf, def);
+    virDomainControllerDriverFormat(&childBuf, def);
 
-        if (virDomainDeviceInfoNeedsFormat(&def->info, flags) &&
-            virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
-            return -1;
+    if (virDomainDeviceInfoNeedsFormat(&def->info, flags) &&
+        virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
+        return -1;
 
-        if (pcihole64) {
-            virBufferAsprintf(&childBuf, "<pcihole64 unit='KiB'>%lu</"
-                              "pcihole64>\n", def->opts.pciopts.pcihole64size);
-        }
+    if (pcihole64) {
+        virBufferAsprintf(&childBuf, "<pcihole64 unit='KiB'>%lu</"
+                          "pcihole64>\n", def->opts.pciopts.pcihole64size);
     }
 
     if (virBufferUse(&childBuf)) {
