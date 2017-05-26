@@ -686,7 +686,6 @@ mymain(void)
     DO_TEST("pseries-many-buses-2",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("pseries-hostdevs-1",
             QEMU_CAPS_NODEFCONFIG,

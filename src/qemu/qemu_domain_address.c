@@ -1097,10 +1097,14 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
      * that don't yet have a corresponding controller in the domain
      * config.
      */
-    if (hasPCIeRoot)
+    if (qemuDomainIsPSeries(def)) {
+        /* pSeries guests should use PHBs (pci-root controllers) */
+        defaultModel = VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT;
+    } else if (hasPCIeRoot) {
         defaultModel = VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT;
-    else
+    } else {
         defaultModel = VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE;
+    }
 
     for (i = 1; i < addrs->nbuses; i++) {
 
@@ -2160,7 +2164,13 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
             dev.data.controller = def->controllers[contIndex];
             /* set connect flags so it will be properly addressed */
             qemuDomainFillDevicePCIConnectFlags(def, &dev, qemuCaps, driver);
-            if (qemuDomainPCIAddressReserveNextAddr(addrs,
+
+            /* Reserve an address for the controller. pci-root and pcie-root
+             * controllers don't plug into any other PCI controller, hence
+             * they should skip this step */
+            if (bus->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
+                bus->model != VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT &&
+                qemuDomainPCIAddressReserveNextAddr(addrs,
                                                     &dev.data.controller->info) < 0) {
                 goto cleanup;
             }

@@ -23,10 +23,9 @@
       <target index='1'/>
     </controller>
     <controller type='usb' index='0' model='none'/>
-    <controller type='pci' index='1' model='pci-bridge'>
-      <model name='pci-bridge'/>
-      <target chassisNr='1'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    <controller type='pci' index='1' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='2'/>
     </controller>
     <memballoon model='none'/>
     <panic model='pseries'/>
