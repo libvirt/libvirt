@@ -417,8 +417,10 @@ virSocketAddrFormatFull(const virSocketAddr *addr,
 
         if (virAsprintf(&addrstr, "%s%s%s",
                         ipv6_host ? ipv6_host : host,
-                        separator ? separator : ":", port) == -1)
+                        separator ? separator : ":", port) == -1) {
+            VIR_FREE(ipv6_host);
             goto error;
+        }
 
         VIR_FREE(ipv6_host);
     } else {
