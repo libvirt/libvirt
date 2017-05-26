@@ -233,7 +233,7 @@ const REMOTE_DOMAIN_FSFREEZE_MOUNTPOINTS_MAX = 256;
 const REMOTE_NETWORK_DHCP_LEASES_MAX = 65536;
 
 /* Upper limit on count of parameters returned via bulk stats API */
-const REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX = 4096;
+const REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX = 262144;
 
 /* Upper limit of message size for tunable event. */
 const REMOTE_DOMAIN_EVENT_TUNABLE_MAX = 2048;
