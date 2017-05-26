@@ -95,8 +95,9 @@ nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host)
             goto cleanup;
         }
 
-         if (!(tmp = virVHBAGetConfig(NULL, scsi_host->host,
-                                      "npiv_vports_inuse"))) {
+        VIR_FREE(tmp);
+        if (!(tmp = virVHBAGetConfig(NULL, scsi_host->host,
+                                     "npiv_vports_inuse"))) {
             VIR_WARN("Failed to read npiv_vports_inuse for host%d",
                      scsi_host->host);
             goto cleanup;
