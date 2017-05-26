@@ -376,7 +376,7 @@ virDomainPCIAddressBusIsFullyReserved(virDomainPCIAddressBusPtr bus)
  *  0 = no action performed
  * >0 = number of buses added
  */
-int
+static int
 virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
                            virPCIDeviceAddressPtr addr,
                            virDomainPCIConnectFlags flags)
