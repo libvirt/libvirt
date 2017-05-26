@@ -48,7 +48,8 @@ VIR_ENUM_IMPL(qemuMigrationCookieFlag,
               "nbd",
               "statistics",
               "memory-hotplug",
-              "cpu-hotplug");
+              "cpu-hotplug",
+              "cpu");
 
 
 static void
@@ -109,6 +110,7 @@ qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
     VIR_FREE(mig->lockState);
     VIR_FREE(mig->lockDriver);
     VIR_FREE(mig->jobInfo);
+    virCPUDefFree(mig->cpu);
     VIR_FREE(mig);
 }
 
@@ -519,6 +521,22 @@ qemuMigrationCookieAddStatistics(qemuMigrationCookiePtr mig,
 }
 
 
+static int
+qemuMigrationCookieAddCPU(qemuMigrationCookiePtr mig,
+                          virDomainObjPtr vm)
+{
+    if (mig->cpu)
+        return 0;
+
+    if (!(mig->cpu = virCPUDefCopy(vm->def->cpu)))
+        return -1;
+
+    mig->flags |= QEMU_MIGRATION_COOKIE_CPU;
+
+    return 0;
+}
+
+
 static void
 qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
                                      qemuMigrationCookieGraphicsPtr grap)
@@ -754,6 +772,9 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
 
     if (mig->flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobInfo)
         qemuMigrationCookieStatisticsXMLFormat(buf, mig->jobInfo);
+
+    if (mig->flags & QEMU_MIGRATION_COOKIE_CPU && mig->cpu)
+        virCPUDefFormatBufFull(buf, mig->cpu, NULL, false);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</qemu-migration>\n");
@@ -1198,6 +1219,10 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         (!(mig->jobInfo = qemuMigrationCookieStatisticsXMLParse(ctxt))))
         goto error;
 
+    if (flags & QEMU_MIGRATION_COOKIE_CPU &&
+        virCPUDefParseXML(ctxt, "./cpu[1]", VIR_CPU_TYPE_GUEST, &mig->cpu) < 0)
+        goto error;
+
     virObjectUnref(caps);
     return 0;
 
@@ -1273,6 +1298,10 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
 
     if (flags & QEMU_MIGRATION_COOKIE_CPU_HOTPLUG)
         mig->flagsMandatory |= QEMU_MIGRATION_COOKIE_CPU_HOTPLUG;
+
+    if (flags & QEMU_MIGRATION_COOKIE_CPU &&
+        qemuMigrationCookieAddCPU(mig, dom) < 0)
+        return -1;
 
     if (!(*cookieout = qemuMigrationCookieXMLFormatStr(driver, mig)))
         return -1;

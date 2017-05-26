@@ -28,6 +28,7 @@ typedef enum {
     QEMU_MIGRATION_COOKIE_FLAG_STATS,
     QEMU_MIGRATION_COOKIE_FLAG_MEMORY_HOTPLUG,
     QEMU_MIGRATION_COOKIE_FLAG_CPU_HOTPLUG,
+    QEMU_MIGRATION_COOKIE_FLAG_CPU,
 
     QEMU_MIGRATION_COOKIE_FLAG_LAST
 } qemuMigrationCookieFlags;
@@ -43,6 +44,7 @@ typedef enum {
     QEMU_MIGRATION_COOKIE_STATS = (1 << QEMU_MIGRATION_COOKIE_FLAG_STATS),
     QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG = (1 << QEMU_MIGRATION_COOKIE_FLAG_MEMORY_HOTPLUG),
     QEMU_MIGRATION_COOKIE_CPU_HOTPLUG = (1 << QEMU_MIGRATION_COOKIE_FLAG_CPU_HOTPLUG),
+    QEMU_MIGRATION_COOKIE_CPU = (1 << QEMU_MIGRATION_COOKIE_FLAG_CPU),
 } qemuMigrationCookieFeatures;
 
 typedef struct _qemuMigrationCookieGraphics qemuMigrationCookieGraphics;
@@ -122,6 +124,9 @@ struct _qemuMigrationCookie {
 
     /* If (flags & QEMU_MIGRATION_COOKIE_STATS) */
     qemuDomainJobInfoPtr jobInfo;
+
+    /* If flags & QEMU_MIGRATION_COOKIE_CPU */
+    virCPUDefPtr cpu;
 };
 
 
