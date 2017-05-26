@@ -10118,7 +10118,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
             }
 
             if (persistentDef)
-                persistentDefCopy->cputune.period = params[i].value.ul;
+                persistentDefCopy->cputune.period = value_ul;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA)) {
             SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
@@ -10158,7 +10158,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
             }
 
             if (persistentDef)
-                persistentDefCopy->cputune.period = params[i].value.ul;
+                persistentDefCopy->cputune.period = value_ul;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA)) {
             SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA,
@@ -10240,7 +10240,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
             }
 
             if (persistentDef)
-                persistentDefCopy->cputune.iothread_period = params[i].value.ul;
+                persistentDefCopy->cputune.iothread_period = value_ul;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA)) {
             SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA,
