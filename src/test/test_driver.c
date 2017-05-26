@@ -5331,8 +5331,10 @@ testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
         goto cleanup;
 
     if ((ret = virGetNodeDevice(conn, name))) {
-        if (VIR_STRDUP(ret->parent, obj->def->parent) < 0)
+        if (VIR_STRDUP(ret->parent, obj->def->parent) < 0) {
             virObjectUnref(ret);
+            ret = NULL;
+        }
     }
 
  cleanup:
