@@ -71,6 +71,15 @@
       </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: Create memory_backing_dir on startup
+        </summary>
+        <description>
+          Libvirt's policy is that directories are created on startup if
+          they don't exist. We've missed this one.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.3.0" date="2017-05-05">

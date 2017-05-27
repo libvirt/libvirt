@@ -706,6 +706,11 @@ qemuStateInitialize(bool privileged,
                              cfg->nvramDir);
         goto error;
     }
+    if (virFileMakePath(cfg->memoryBackingDir) < 0) {
+        virReportSystemError(errno, _("Failed to create memory backing dir %s"),
+                             cfg->memoryBackingDir);
+        goto error;
+    }
 
     qemu_driver->qemuImgBinary = virFindFileInPath("qemu-img");
 
@@ -827,6 +832,13 @@ qemuStateInitialize(bool privileged,
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
                                  cfg->nvramDir, (int) cfg->user,
+                                 (int) cfg->group);
+            goto error;
+        }
+        if (chown(cfg->memoryBackingDir, cfg->user, cfg->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 cfg->memoryBackingDir, (int) cfg->user,
                                  (int) cfg->group);
             goto error;
         }
