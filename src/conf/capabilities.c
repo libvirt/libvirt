@@ -1643,5 +1643,6 @@ virCapabilitiesInitCaches(virCapsPtr caps)
     VIR_FREE(path);
     VIR_DIR_CLOSE(dirp);
     virCapsHostCacheBankFree(bank);
+    virBitmapFree(cpus);
     return ret;
 }
