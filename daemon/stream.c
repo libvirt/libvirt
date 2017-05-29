@@ -231,17 +231,23 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         int ret;
         virNetMessagePtr msg;
         virNetMessageError rerr;
+        virErrorPtr origErr = virSaveLastError();
 
         memset(&rerr, 0, sizeof(rerr));
         stream->closed = true;
         virStreamEventRemoveCallback(stream->st);
         virStreamAbort(stream->st);
-        if (events & VIR_STREAM_EVENT_HANGUP)
-            virReportError(VIR_ERR_RPC,
-                           "%s", _("stream had unexpected termination"));
-        else
-            virReportError(VIR_ERR_RPC,
-                           "%s", _("stream had I/O failure"));
+        if (origErr && origErr->code != VIR_ERR_OK) {
+            virSetError(origErr);
+            virFreeError(origErr);
+        } else {
+            if (events & VIR_STREAM_EVENT_HANGUP)
+                virReportError(VIR_ERR_RPC,
+                               "%s", _("stream had unexpected termination"));
+            else
+                virReportError(VIR_ERR_RPC,
+                               "%s", _("stream had I/O failure"));
+        }
 
         msg = virNetMessageNew(false);
         if (!msg) {

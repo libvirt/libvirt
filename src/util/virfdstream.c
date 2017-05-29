@@ -106,7 +106,7 @@ struct virFDStreamData {
     /* Thread data */
     virThreadPtr thread;
     virCond threadCond;
-    int threadErr;
+    virErrorPtr threadErr;
     bool threadQuit;
     bool threadAbort;
     bool threadDoRead;
@@ -123,6 +123,7 @@ virFDStreamDataDispose(void *obj)
     virFDStreamDataPtr fdst = obj;
 
     VIR_DEBUG("obj=%p", fdst);
+    virFreeError(fdst->threadErr);
     virFDStreamMsgQueueFree(&fdst->msg);
 }
 
@@ -312,8 +313,10 @@ static void virFDStreamEvent(int watch ATTRIBUTE_UNUSED,
         return;
     }
 
-    if (fdst->threadErr)
+    if (fdst->threadErr) {
         events |= VIR_STREAM_EVENT_ERROR;
+        virSetError(fdst->threadErr);
+    }
 
     cb = fdst->cb;
     cbopaque = fdst->opaque;
@@ -641,7 +644,7 @@ virFDStreamThread(void *opaque)
     return;
 
  error:
-    fdst->threadErr = errno;
+    fdst->threadErr = virSaveLastError();
     goto cleanup;
 }
 
