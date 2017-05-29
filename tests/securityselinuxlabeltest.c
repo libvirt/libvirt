@@ -313,7 +313,7 @@ testSELinuxLabeling(const void *opaque)
     if (!(def = testSELinuxLoadDef(testname)))
         goto cleanup;
 
-    if (virSecurityManagerSetAllLabel(mgr, def, NULL) < 0)
+    if (virSecurityManagerSetAllLabel(mgr, def, NULL, false) < 0)
         goto cleanup;
 
     if (testSELinuxCheckLabels(files, nfiles) < 0)

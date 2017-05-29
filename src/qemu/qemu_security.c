@@ -38,6 +38,7 @@ qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
                         const char *stdin_path)
 {
     int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
         virSecurityManagerTransactionStart(driver->securityManager) < 0)
@@ -45,7 +46,8 @@ qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
 
     if (virSecurityManagerSetAllLabel(driver->securityManager,
                                       vm->def,
-                                      stdin_path) < 0)
+                                      stdin_path,
+                                      priv->chardevStdioLogd) < 0)
         goto cleanup;
 
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
@@ -65,6 +67,8 @@ qemuSecurityRestoreAllLabel(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             bool migrated)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
     /* In contrast to qemuSecuritySetAllLabel, do not use
      * secdriver transactions here. This function is called from
      * qemuProcessStop() which is meant to do cleanup after qemu
@@ -73,7 +77,8 @@ qemuSecurityRestoreAllLabel(virQEMUDriverPtr driver,
      * in entering the namespace then. */
     virSecurityManagerRestoreAllLabel(driver->securityManager,
                                       vm->def,
-                                      migrated);
+                                      migrated,
+                                      priv->chardevStdioLogd);
 }
 
 

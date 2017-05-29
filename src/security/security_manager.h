@@ -130,10 +130,12 @@ int virSecurityManagerCheckAllLabel(virSecurityManagerPtr mgr,
                                     virDomainDefPtr sec);
 int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr sec,
-                                  const char *stdin_path);
+                                  const char *stdin_path,
+                                  bool chardevStdioLogd);
 int virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
-                                      bool migrated);
+                                      bool migrated,
+                                      bool chardevStdioLogd);
 int virSecurityManagerGetProcessLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
                                       pid_t pid,

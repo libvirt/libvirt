@@ -350,14 +350,16 @@ virSecurityStackRestoreHostdevLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityStackSetAllLabel(virSecurityManagerPtr mgr,
                             virDomainDefPtr vm,
-                            const char *stdin_path)
+                            const char *stdin_path,
+                            bool chardevStdioLogd)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerSetAllLabel(item->securityManager, vm, stdin_path) < 0)
+        if (virSecurityManagerSetAllLabel(item->securityManager, vm,
+                                          stdin_path, chardevStdioLogd) < 0)
             rc = -1;
     }
 
@@ -368,14 +370,16 @@ virSecurityStackSetAllLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityStackRestoreAllLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr vm,
-                                bool migrated)
+                                bool migrated,
+                                bool chardevStdioLogd)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
     int rc = 0;
 
     for (; item; item = item->next) {
-        if (virSecurityManagerRestoreAllLabel(item->securityManager, vm, migrated) < 0)
+        if (virSecurityManagerRestoreAllLabel(item->securityManager, vm,
+                                              migrated, chardevStdioLogd) < 0)
             rc = -1;
     }
 

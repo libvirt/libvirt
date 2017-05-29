@@ -489,7 +489,9 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 
 static int
 AppArmorSetSecurityAllLabel(virSecurityManagerPtr mgr,
-                            virDomainDefPtr def, const char *stdin_path)
+                            virDomainDefPtr def,
+                            const char *stdin_path,
+                            bool chardevStdioLogd ATTRIBUTE_UNUSED)
 {
     virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(def,
                                                     SECURITY_APPARMOR_NAME);
@@ -567,7 +569,8 @@ AppArmorReleaseSecurityLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 static int
 AppArmorRestoreSecurityAllLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                 virDomainDefPtr def,
-                                bool migrated ATTRIBUTE_UNUSED)
+                                bool migrated ATTRIBUTE_UNUSED,
+                                bool chardevStdioLogd ATTRIBUTE_UNUSED)
 {
     int rc = 0;
     virSecurityLabelDefPtr secdef =

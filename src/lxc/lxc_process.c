@@ -852,7 +852,7 @@ int virLXCProcessStop(virLXCDriverPtr driver,
     }
 
     virSecurityManagerRestoreAllLabel(driver->securityManager,
-                                      vm->def, false);
+                                      vm->def, false, false);
     virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
     /* Clear out dynamically assigned labels */
     if (vm->def->nseclabels &&
@@ -1349,7 +1349,7 @@ int virLXCProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Setting domain security labels");
     if (virSecurityManagerSetAllLabel(driver->securityManager,
-                                      vm->def, NULL) < 0)
+                                      vm->def, NULL, false) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up consoles");
@@ -1578,7 +1578,7 @@ int virLXCProcessStart(virConnectPtr conn,
             virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
         } else {
             virSecurityManagerRestoreAllLabel(driver->securityManager,
-                                              vm->def, false);
+                                              vm->def, false, false);
             virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
             /* Clear out dynamically assigned labels */
             if (vm->def->nseclabels &&

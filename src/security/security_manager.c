@@ -856,12 +856,14 @@ int virSecurityManagerCheckAllLabel(virSecurityManagerPtr mgr,
 int
 virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr vm,
-                              const char *stdin_path)
+                              const char *stdin_path,
+                              bool chardevStdioLogd)
 {
     if (mgr->drv->domainSetSecurityAllLabel) {
         int ret;
         virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityAllLabel(mgr, vm, stdin_path);
+        ret = mgr->drv->domainSetSecurityAllLabel(mgr, vm, stdin_path,
+                                                  chardevStdioLogd);
         virObjectUnlock(mgr);
         return ret;
     }
@@ -874,12 +876,14 @@ virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
 int
 virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr vm,
-                                  bool migrated)
+                                  bool migrated,
+                                  bool chardevStdioLogd)
 {
     if (mgr->drv->domainRestoreSecurityAllLabel) {
         int ret;
         virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityAllLabel(mgr, vm, migrated);
+        ret = mgr->drv->domainRestoreSecurityAllLabel(mgr, vm, migrated,
+                                                      chardevStdioLogd);
         virObjectUnlock(mgr);
         return ret;
     }

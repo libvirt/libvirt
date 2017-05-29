@@ -151,7 +151,8 @@ virSecurityDomainReleaseLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 static int
 virSecurityDomainSetAllLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                 virDomainDefPtr sec ATTRIBUTE_UNUSED,
-                                const char *stdin_path ATTRIBUTE_UNUSED)
+                                const char *stdin_path ATTRIBUTE_UNUSED,
+                                bool chardevStdioLogd ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -159,7 +160,8 @@ virSecurityDomainSetAllLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 static int
 virSecurityDomainRestoreAllLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                     virDomainDefPtr vm ATTRIBUTE_UNUSED,
-                                    bool migrated ATTRIBUTE_UNUSED)
+                                    bool migrated ATTRIBUTE_UNUSED,
+                                    bool chardevStdioLogd ATTRIBUTE_UNUSED)
 {
     return 0;
 }

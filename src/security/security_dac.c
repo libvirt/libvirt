@@ -1159,7 +1159,8 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def,
-                              virDomainChrSourceDefPtr dev_source)
+                              virDomainChrSourceDefPtr dev_source,
+                              bool chardevStdioLogd)
 
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
@@ -1176,6 +1177,9 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
                                                             SECURITY_DAC_NAME);
 
     if (chr_seclabel && !chr_seclabel->relabel)
+        return 0;
+
+    if (!chr_seclabel && chardevStdioLogd)
         return 0;
 
     if (chr_seclabel && chr_seclabel->label) {
@@ -1243,7 +1247,8 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                  virDomainChrSourceDefPtr dev_source)
+                                  virDomainChrSourceDefPtr dev_source,
+                                  bool chardevStdioLogd)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityDeviceLabelDefPtr chr_seclabel = NULL;
@@ -1254,6 +1259,9 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr,
                                                             SECURITY_DAC_NAME);
 
     if (chr_seclabel && !chr_seclabel->relabel)
+        return 0;
+
+    if (!chr_seclabel && chardevStdioLogd)
         return 0;
 
     switch ((virDomainChrType) dev_source->type) {
@@ -1298,14 +1306,21 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr,
 }
 
 
+struct _virSecuritySELinuxChardevCallbackData {
+    virSecurityManagerPtr mgr;
+    bool chardevStdioLogd;
+};
+
+
 static int
 virSecurityDACRestoreChardevCallback(virDomainDefPtr def,
                                      virDomainChrDefPtr dev ATTRIBUTE_UNUSED,
                                      void *opaque)
 {
-    virSecurityManagerPtr mgr = opaque;
+    struct _virSecuritySELinuxChardevCallbackData *data = opaque;
 
-    return virSecurityDACRestoreChardevLabel(mgr, def, dev->source);
+    return virSecurityDACRestoreChardevLabel(data->mgr, def, dev->source,
+                                             data->chardevStdioLogd);
 }
 
 
@@ -1319,7 +1334,8 @@ virSecurityDACSetTPMFileLabel(virSecurityManagerPtr mgr,
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         ret = virSecurityDACSetChardevLabel(mgr, def,
-                                            &tpm->data.passthrough.source);
+                                            &tpm->data.passthrough.source,
+                                            false);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
@@ -1339,7 +1355,8 @@ virSecurityDACRestoreTPMFileLabel(virSecurityManagerPtr mgr,
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         ret = virSecurityDACRestoreChardevLabel(mgr, def,
-                                                &tpm->data.passthrough.source);
+                                                &tpm->data.passthrough.source,
+                                                false);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
@@ -1436,7 +1453,8 @@ virSecurityDACRestoreMemoryLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def,
-                              bool migrated)
+                              bool migrated,
+                              bool chardevStdioLogd)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr secdef;
@@ -1479,10 +1497,15 @@ virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
             rc = -1;
     }
 
+    struct _virSecuritySELinuxChardevCallbackData chardevData = {
+        .mgr = mgr,
+        .chardevStdioLogd = chardevStdioLogd,
+    };
+
     if (virDomainChrDefForeach(def,
                                false,
                                virSecurityDACRestoreChardevCallback,
-                               mgr) < 0)
+                               &chardevData) < 0)
         rc = -1;
 
     if (def->tpm) {
@@ -1505,9 +1528,10 @@ virSecurityDACSetChardevCallback(virDomainDefPtr def,
                                  virDomainChrDefPtr dev ATTRIBUTE_UNUSED,
                                  void *opaque)
 {
-    virSecurityManagerPtr mgr = opaque;
+    struct _virSecuritySELinuxChardevCallbackData *data = opaque;
 
-    return virSecurityDACSetChardevLabel(mgr, def, dev->source);
+    return virSecurityDACSetChardevLabel(data->mgr, def, dev->source,
+                                         data->chardevStdioLogd);
 }
 
 
@@ -1549,7 +1573,8 @@ virSecurityDACSetMemoryLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
                           virDomainDefPtr def,
-                          const char *stdin_path ATTRIBUTE_UNUSED)
+                          const char *stdin_path ATTRIBUTE_UNUSED,
+                          bool chardevStdioLogd)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr secdef;
@@ -1592,10 +1617,15 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
             return -1;
     }
 
+    struct _virSecuritySELinuxChardevCallbackData chardevData = {
+        .mgr = mgr,
+        .chardevStdioLogd = chardevStdioLogd,
+    };
+
     if (virDomainChrDefForeach(def,
                                true,
                                virSecurityDACSetChardevCallback,
-                               mgr) < 0)
+                               &chardevData) < 0)
         return -1;
 
     if (def->tpm) {
