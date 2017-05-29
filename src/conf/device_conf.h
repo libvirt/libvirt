@@ -134,10 +134,6 @@ struct _virDomainDeviceDimmAddress {
 typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
 typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
 struct _virDomainDeviceInfo {
-    /* If adding to this struct, ensure that
-     * virDomainDeviceInfoIsSet() is updated
-     * to consider the new fields
-     */
     char *alias;
     int type; /* virDomainDeviceAddressType */
     union {
