@@ -145,6 +145,12 @@ int virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
                                    virDomainPCIConnectFlags flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
+                                       virDomainDeviceInfoPtr dev,
+                                       virDomainPCIConnectFlags flags,
+                                       int function)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 int virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
                                   virDomainDeviceInfoPtr dev,
                                   virDomainPCIConnectFlags flags)
@@ -152,12 +158,6 @@ int virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
 
 int virDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
                                    virPCIDeviceAddressPtr addr)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-int virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
-                                       virDomainDeviceInfoPtr dev,
-                                       virDomainPCIConnectFlags flags,
-                                       int function)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void virDomainPCIAddressSetAllMulti(virDomainDefPtr def)

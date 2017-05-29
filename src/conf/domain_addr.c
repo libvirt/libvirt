@@ -752,8 +752,8 @@ virDomainPCIAddressFindUnusedFunctionOnBus(virDomainPCIAddressBusPtr bus,
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 virDomainPCIAddressGetNextAddr(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr next_addr,
-                               int function,
-                               virDomainPCIConnectFlags flags)
+                               virDomainPCIConnectFlags flags,
+                               int function)
 {
     /* default to starting the search for a free slot from
      * the first slot of domain 0 bus 0...
@@ -859,7 +859,7 @@ virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
 {
     virPCIDeviceAddress addr;
 
-    if (virDomainPCIAddressGetNextAddr(addrs, &addr, function, flags) < 0)
+    if (virDomainPCIAddressGetNextAddr(addrs, &addr, flags, function) < 0)
         return -1;
 
     if (virDomainPCIAddressReserveAddrInternal(addrs, &addr, flags, false) < 0)
