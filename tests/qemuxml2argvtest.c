@@ -1757,12 +1757,10 @@ mymain(void)
     DO_TEST("pseries-many-devices",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("pseries-many-buses-1",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("pseries-many-buses-2",
             QEMU_CAPS_NODEFCONFIG,
@@ -1778,14 +1776,12 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_HOST_PCI_MULTIDOMAIN,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pseries-hostdevs-3",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_HOST_PCI_MULTIDOMAIN,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_VFIO_PCI);
 

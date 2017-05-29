@@ -15,110 +15,109 @@
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
     <controller type='scsi' index='0' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </controller>
     <controller type='scsi' index='1' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </controller>
     <controller type='scsi' index='2' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </controller>
     <controller type='scsi' index='3' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </controller>
     <controller type='scsi' index='4' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </controller>
     <controller type='scsi' index='5' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </controller>
     <controller type='scsi' index='6' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </controller>
     <controller type='scsi' index='7' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
     </controller>
     <controller type='scsi' index='8' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
     </controller>
     <controller type='scsi' index='9' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
     </controller>
     <controller type='scsi' index='10' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
     </controller>
     <controller type='scsi' index='11' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
     </controller>
     <controller type='scsi' index='12' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
     </controller>
     <controller type='scsi' index='13' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0f' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>
     </controller>
     <controller type='scsi' index='14' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x10' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0f' function='0x0'/>
     </controller>
     <controller type='scsi' index='15' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x11' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x10' function='0x0'/>
     </controller>
     <controller type='scsi' index='16' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x12' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x11' function='0x0'/>
     </controller>
     <controller type='scsi' index='17' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x13' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x12' function='0x0'/>
     </controller>
     <controller type='scsi' index='18' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x14' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x13' function='0x0'/>
     </controller>
     <controller type='scsi' index='19' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x15' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x14' function='0x0'/>
     </controller>
     <controller type='scsi' index='20' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x16' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x15' function='0x0'/>
     </controller>
     <controller type='scsi' index='21' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x17' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x16' function='0x0'/>
     </controller>
     <controller type='scsi' index='22' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x18' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x17' function='0x0'/>
     </controller>
     <controller type='scsi' index='23' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x19' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x18' function='0x0'/>
     </controller>
     <controller type='scsi' index='24' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1a' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x19' function='0x0'/>
     </controller>
     <controller type='scsi' index='25' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1b' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1a' function='0x0'/>
     </controller>
     <controller type='scsi' index='26' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1c' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1b' function='0x0'/>
     </controller>
     <controller type='scsi' index='27' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1d' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1c' function='0x0'/>
     </controller>
     <controller type='scsi' index='28' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1e' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1d' function='0x0'/>
     </controller>
     <controller type='scsi' index='29' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1e' function='0x0'/>
     </controller>
     <controller type='scsi' index='30' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x0'/>
     </controller>
     <controller type='scsi' index='31' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x01' slot='0x02' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'/>
     </controller>
     <controller type='usb' index='0' model='none'/>
     <controller type='pci' index='0' model='pci-root'>
       <model name='spapr-pci-host-bridge'/>
       <target index='0'/>
     </controller>
-    <controller type='pci' index='1' model='pci-bridge'>
-      <model name='pci-bridge'/>
-      <target chassisNr='1'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    <controller type='pci' index='1' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='1'/>
     </controller>
     <memballoon model='none'/>
     <panic model='pseries'/>

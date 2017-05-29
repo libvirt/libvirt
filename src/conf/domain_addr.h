@@ -108,6 +108,8 @@ struct _virDomainPCIAddressSet {
     size_t nbuses;
     bool dryRun;          /* on a dry run, new buses are auto-added
                              and addresses aren't saved in device infos */
+    /* If true, the guest can have multiple pci-root controllers */
+    bool multipleRootsSupported;
 };
 typedef struct _virDomainPCIAddressSet virDomainPCIAddressSet;
 typedef virDomainPCIAddressSet *virDomainPCIAddressSetPtr;

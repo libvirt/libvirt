@@ -1061,6 +1061,10 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
 
     addrs->dryRun = dryRun;
 
+    /* pSeries domains support multiple pci-root controllers */
+    if (qemuDomainIsPSeries(def))
+        addrs->multipleRootsSupported = true;
+
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
         size_t idx = cont->idx;

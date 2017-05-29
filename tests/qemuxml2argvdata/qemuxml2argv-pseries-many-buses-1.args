@@ -18,5 +18,5 @@ QEMU_AUDIO_DRV=none \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -boot c \
--device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.0,addr=0x1 \
--device virtio-scsi-pci,id=scsi0,bus=pci.1,addr=0x1
+-device spapr-pci-host-bridge,index=1,id=pci.1 \
+-device virtio-scsi-pci,id=scsi0,bus=pci.1.0,addr=0x1

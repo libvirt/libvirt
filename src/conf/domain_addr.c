@@ -397,33 +397,39 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
      */
 
     if (flags & VIR_PCI_CONNECT_TYPE_PCI_DEVICE) {
-        model = VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE;
+        if (addrs->multipleRootsSupported) {
+            /* Use a pci-root controller to expand the guest's PCI
+             * topology if it supports having more than one */
+            model = VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT;
+        } else {
+            model = VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE;
 
-        /* if there aren't yet any buses that will accept a
-         * pci-bridge, and the caller is asking for one, we'll need to
-         * add a dmi-to-pci-bridge first.
-         */
-        needDMIToPCIBridge = true;
-        for (i = 0; i < addrs->nbuses; i++) {
-            if (addrs->buses[i].flags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE) {
-                needDMIToPCIBridge = false;
-                break;
-            }
-        }
-        if (needDMIToPCIBridge && add == 1) {
-            /* We need to add a single pci-bridge to provide the bus
-             * our legacy PCI device will be plugged into; however, we
-             * have also determined that there isn't yet any proper
-             * place to connect that pci-bridge we're about to add (on
-             * a system with pcie-root, that "proper place" would be a
-             * dmi-to-pci-bridge". So, to give the pci-bridge a place
-             * to connect, we increase the count of buses to add,
-             * while also incrementing the bus number in the address
-             * for the device (since the pci-bridge will now be at an
-             * index 1 higher than the caller had anticipated).
+            /* if there aren't yet any buses that will accept a
+             * pci-bridge, and the caller is asking for one, we'll need to
+             * add a dmi-to-pci-bridge first.
              */
-            add++;
-            addr->bus++;
+            needDMIToPCIBridge = true;
+            for (i = 0; i < addrs->nbuses; i++) {
+                if (addrs->buses[i].flags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE) {
+                    needDMIToPCIBridge = false;
+                    break;
+                }
+            }
+            if (needDMIToPCIBridge && add == 1) {
+                /* We need to add a single pci-bridge to provide the bus
+                 * our legacy PCI device will be plugged into; however, we
+                 * have also determined that there isn't yet any proper
+                 * place to connect that pci-bridge we're about to add (on
+                 * a system with pcie-root, that "proper place" would be a
+                 * dmi-to-pci-bridge". So, to give the pci-bridge a place
+                 * to connect, we increase the count of buses to add,
+                 * while also incrementing the bus number in the address
+                 * for the device (since the pci-bridge will now be at an
+                 * index 1 higher than the caller had anticipated).
+                 */
+                add++;
+                addr->bus++;
+            }
         }
     } else if (flags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE &&
                addrs->buses[0].model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
