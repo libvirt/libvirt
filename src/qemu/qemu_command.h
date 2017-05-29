@@ -57,7 +57,8 @@ virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
                                    virBitmapPtr nodeset,
                                    size_t *nnicindexes,
                                    int **nicindexes,
-                                   const char *domainLibDir)
+                                   const char *domainLibDir,
+                                   bool chardevStdioLogd)
     ATTRIBUTE_NONNULL(15);
 
 
