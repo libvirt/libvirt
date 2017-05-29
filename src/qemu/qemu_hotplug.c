@@ -1802,15 +1802,17 @@ qemuDomainChrPreInsert(virDomainDefPtr vmdef,
     if (virDomainChrPreAlloc(vmdef, chr) < 0)
         return -1;
 
-    /* Due to some crazy backcompat stuff, the first serial device is an alias
-     * to the first console too. If this is the case, the definition must be
-     * duplicated as first console device. */
+    /* Due to historical reasons, the first console is an alias to the
+     * first serial device (if such exists). If this is the case, we need to
+     * create an object for the first console as well.
+     */
     if (vmdef->nserials == 0 && vmdef->nconsoles == 0 &&
         chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
         if (!vmdef->consoles && VIR_ALLOC(vmdef->consoles) < 0)
             return -1;
 
-        if (VIR_ALLOC(vmdef->consoles[0]) < 0) {
+        /* We'll be dealing with serials[0] directly, so NULL is fine here. */
+        if (!(vmdef->consoles[0] = virDomainChrDefNew(NULL))) {
             VIR_FREE(vmdef->consoles);
             return -1;
         }
@@ -1841,7 +1843,7 @@ qemuDomainChrInsertPreAllocCleanup(virDomainDefPtr vmdef,
     /* Remove the stub console added by qemuDomainChrPreInsert */
     if (vmdef->nserials == 0 && vmdef->nconsoles == 1 &&
         chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
-        VIR_FREE(vmdef->consoles[0]);
+        virDomainChrDefFree(vmdef->consoles[0]);
         VIR_FREE(vmdef->consoles);
         vmdef->nconsoles = 0;
     }
