@@ -60,7 +60,7 @@ static virNWFilterTechDriverPtr filter_tech_drivers[] = {
 /* Serializes instantiation of filters. This is necessary
  * to avoid lock ordering deadlocks. eg __virNWFilterInstantiateFilter
  * will hold a lock on a virNWFilterObjPtr. This in turn invokes
- * virNWFilterInstantiate which invokes virNWFilterDetermineMissingVarsRec
+ * virNWFilterDoInstantiate which invokes virNWFilterDetermineMissingVarsRec
  * which invokes virNWFilterObjListFindByName. This iterates over every single
  * virNWFilterObjPtr in the list. So if 2 threads try to instantiate a
  * filter in parallel, they'll both hold 1 lock at the top level in
@@ -605,7 +605,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
 
 
 /**
- * virNWFilterInstantiate:
+ * virNWFilterDoInstantiate:
  * @vmuuid: The UUID of the VM
  * @techdriver: The driver to use for instantiation
  * @filter: The filter to instantiate
@@ -625,18 +625,19 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
  * Call this function while holding the NWFilter filter update lock
  */
 static int
-virNWFilterInstantiate(const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                       virNWFilterTechDriverPtr techdriver,
-                       virNWFilterDefPtr filter,
-                       const char *ifname,
-                       int ifindex,
-                       const char *linkdev,
-                       virNWFilterHashTablePtr vars,
-                       enum instCase useNewFilter, bool *foundNewFilter,
-                       bool teardownOld,
-                       const virMacAddr *macaddr,
-                       virNWFilterDriverStatePtr driver,
-                       bool forceWithPendingReq)
+virNWFilterDoInstantiate(const unsigned char *vmuuid,
+                         virNWFilterTechDriverPtr techdriver,
+                         virNWFilterDefPtr filter,
+                         const char *ifname,
+                         int ifindex,
+                         const char *linkdev,
+                         virNWFilterHashTablePtr vars,
+                         enum instCase useNewFilter,
+                         bool *foundNewFilter,
+                         bool teardownOld,
+                         const virMacAddr *macaddr,
+                         virNWFilterDriverStatePtr driver,
+                         bool forceWithPendingReq)
 {
     int rc;
     virNWFilterInst inst;
@@ -868,18 +869,11 @@ __virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
         break;
     }
 
-    rc = virNWFilterInstantiate(vmuuid,
-                                techdriver,
-                                filter,
-                                ifname,
-                                ifindex,
-                                linkdev,
-                                vars,
-                                useNewFilter, foundNewFilter,
-                                teardownOld,
-                                macaddr,
-                                driver,
-                                forceWithPendingReq);
+    rc = virNWFilterDoInstantiate(vmuuid, techdriver, filter,
+                                  ifname, ifindex, linkdev,
+                                  vars, useNewFilter, foundNewFilter,
+                                  teardownOld, macaddr, driver,
+                                  forceWithPendingReq);
 
     virNWFilterHashTableFree(vars);
 
