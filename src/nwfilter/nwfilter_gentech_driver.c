@@ -58,13 +58,13 @@ static virNWFilterTechDriverPtr filter_tech_drivers[] = {
 };
 
 /* Serializes instantiation of filters. This is necessary
- * to avoid lock ordering deadlocks. eg __virNWFilterInstantiateFilter
+ * to avoid lock ordering deadlocks. eg virNWFilterInstantiateFilterUpdate
  * will hold a lock on a virNWFilterObjPtr. This in turn invokes
  * virNWFilterDoInstantiate which invokes virNWFilterDetermineMissingVarsRec
  * which invokes virNWFilterObjListFindByName. This iterates over every single
  * virNWFilterObjPtr in the list. So if 2 threads try to instantiate a
  * filter in parallel, they'll both hold 1 lock at the top level in
- * __virNWFilterInstantiateFilter which will cause the other thread
+ * virNWFilterInstantiateFilterUpdate which will cause the other thread
  * to deadlock in virNWFilterObjListFindByName.
  *
  * XXX better long term solution is to make virNWFilterObjList use a
@@ -777,18 +777,18 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
  * Call this function while holding the NWFilter filter update lock
  */
 static int
-__virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
-                               const unsigned char *vmuuid,
-                               bool teardownOld,
-                               const char *ifname,
-                               int ifindex,
-                               const char *linkdev,
-                               const virMacAddr *macaddr,
-                               const char *filtername,
-                               virNWFilterHashTablePtr filterparams,
-                               enum instCase useNewFilter,
-                               bool forceWithPendingReq,
-                               bool *foundNewFilter)
+virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
+                                   const unsigned char *vmuuid,
+                                   bool teardownOld,
+                                   const char *ifname,
+                                   int ifindex,
+                                   const char *linkdev,
+                                   const virMacAddr *macaddr,
+                                   const char *filtername,
+                                   virNWFilterHashTablePtr filterparams,
+                                   enum instCase useNewFilter,
+                                   bool forceWithPendingReq,
+                                   bool *foundNewFilter)
 {
     int rc;
     const char *drvname = EBIPTABLES_DRIVER_ID;
@@ -918,18 +918,11 @@ _virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
         goto cleanup;
     }
 
-    rc = __virNWFilterInstantiateFilter(driver,
-                                        vmuuid,
-                                        teardownOld,
-                                        net->ifname,
-                                        ifindex,
-                                        linkdev,
-                                        &net->mac,
-                                        net->filter,
-                                        net->filterparams,
-                                        useNewFilter,
-                                        false,
-                                        foundNewFilter);
+    rc = virNWFilterInstantiateFilterUpdate(driver, vmuuid, teardownOld,
+                                            net->ifname, ifindex, linkdev,
+                                            &net->mac, net->filter,
+                                            net->filterparams, useNewFilter,
+                                            false, foundNewFilter);
 
  cleanup:
     virMutexUnlock(&updateMutex);
@@ -954,18 +947,11 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
     virNWFilterReadLockFilterUpdates();
     virMutexLock(&updateMutex);
 
-    rc = __virNWFilterInstantiateFilter(driver,
-                                        vmuuid,
-                                        true,
-                                        ifname,
-                                        ifindex,
-                                        linkdev,
-                                        macaddr,
-                                        filtername,
-                                        filterparams,
-                                        INSTANTIATE_ALWAYS,
-                                        true,
-                                        &foundNewFilter);
+    rc = virNWFilterInstantiateFilterUpdate(driver, vmuuid, true,
+                                            ifname, ifindex, linkdev,
+                                            macaddr, filtername, filterparams,
+                                            INSTANTIATE_ALWAYS, true,
+                                            &foundNewFilter);
     if (rc < 0) {
         /* something went wrong... 'DOWN' the interface */
         if ((virNetDevValidateConfig(ifname, NULL, ifindex) <= 0) ||
