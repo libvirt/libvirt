@@ -891,12 +891,12 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
 
 
 static int
-_virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
-                              const unsigned char *vmuuid,
-                              const virDomainNetDef *net,
-                              bool teardownOld,
-                              enum instCase useNewFilter,
-                              bool *foundNewFilter)
+virNWFilterInstantiateFilterInternal(virNWFilterDriverStatePtr driver,
+                                     const unsigned char *vmuuid,
+                                     const virDomainNetDef *net,
+                                     bool teardownOld,
+                                     enum instCase useNewFilter,
+                                     bool *foundNewFilter)
 {
     const char *linkdev = (net->type == VIR_DOMAIN_NET_TYPE_DIRECT)
                           ? net->data.direct.linkdev
@@ -976,10 +976,10 @@ virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
 {
     bool foundNewFilter = false;
 
-    return _virNWFilterInstantiateFilter(driver, vmuuid, net,
-                                         1,
-                                         INSTANTIATE_ALWAYS,
-                                         &foundNewFilter);
+    return virNWFilterInstantiateFilterInternal(driver, vmuuid, net,
+                                                1,
+                                                INSTANTIATE_ALWAYS,
+                                                &foundNewFilter);
 }
 
 
@@ -991,10 +991,10 @@ virNWFilterUpdateInstantiateFilter(virNWFilterDriverStatePtr driver,
 {
     bool foundNewFilter = false;
 
-    int rc = _virNWFilterInstantiateFilter(driver, vmuuid, net,
-                                           0,
-                                           INSTANTIATE_FOLLOW_NEWFILTER,
-                                           &foundNewFilter);
+    int rc = virNWFilterInstantiateFilterInternal(driver, vmuuid, net,
+                                                  0,
+                                                  INSTANTIATE_FOLLOW_NEWFILTER,
+                                                  &foundNewFilter);
 
     *skipIface = !foundNewFilter;
     return rc;
