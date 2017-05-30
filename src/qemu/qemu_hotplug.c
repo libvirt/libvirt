@@ -1711,7 +1711,6 @@ int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
                                    virDomainRedirdevDefPtr redirdev)
 {
     int ret = -1;
-    int rc;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
     char *charAlias = NULL;
@@ -1728,10 +1727,9 @@ int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
     if (!(charAlias = qemuAliasChardevFromDevAlias(redirdev->info.alias)))
         goto cleanup;
 
-    if ((rc = virDomainUSBAddressEnsure(priv->usbaddrs, &redirdev->info)) < 0)
+    if ((virDomainUSBAddressEnsure(priv->usbaddrs, &redirdev->info)) < 0)
         goto cleanup;
-    if (rc == 1)
-        need_release = true;
+    need_release = true;
 
     if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, priv->qemuCaps)))
         goto cleanup;
