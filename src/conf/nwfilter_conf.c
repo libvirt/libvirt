@@ -2767,13 +2767,16 @@ virNWFilterDefParseFile(const char *filename)
 
 
 int
-virNWFilterSaveXML(const char *configDir,
-                   virNWFilterDefPtr def,
-                   const char *xml)
+virNWFilterSaveConfig(const char *configDir,
+                      virNWFilterDefPtr def)
 {
+    int ret = -1;
+    char *xml;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *configFile = NULL;
-    int ret = -1;
+
+    if (!(xml = virNWFilterDefFormat(def)))
+        goto cleanup;
 
     if (!(configFile = virFileBuildPath(configDir, def->name, ".xml")))
         goto cleanup;
@@ -2785,25 +2788,6 @@ virNWFilterSaveXML(const char *configDir,
 
  cleanup:
     VIR_FREE(configFile);
-    return ret;
-}
-
-
-int
-virNWFilterSaveConfig(const char *configDir,
-                      virNWFilterDefPtr def)
-{
-    int ret = -1;
-    char *xml;
-
-    if (!(xml = virNWFilterDefFormat(def)))
-        goto cleanup;
-
-    if (virNWFilterSaveXML(configDir, def, xml) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
     VIR_FREE(xml);
     return ret;
 }

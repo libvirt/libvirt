@@ -581,11 +581,6 @@ char *
 virNWFilterDefFormat(const virNWFilterDef *def);
 
 int
-virNWFilterSaveXML(const char *configDir,
-                   virNWFilterDefPtr def,
-                   const char *xml);
-
-int
 virNWFilterSaveConfig(const char *configDir,
                       virNWFilterDefPtr def);
 
