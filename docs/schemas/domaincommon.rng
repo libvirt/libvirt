@@ -385,6 +385,16 @@
             <text/>
           </element>
         </zeroOrMore>
+        <zeroOrMore>
+          <element name="initenv">
+            <attribute name="name">
+              <data type='string'>
+                <param name='pattern'>[a-zA-Z_]+[a-zA-Z0-9_]*</param>
+              </data>
+            </attribute>
+            <text/>
+          </element>
+        </zeroOrMore>
       </interleave>
     </element>
   </define>

@@ -98,6 +98,7 @@ mymain(void)
     DO_TEST("ethernet-hostip");
     DO_TEST_FULL("filesystem-root", 0, false,
                  VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS);
+    DO_TEST("initenv");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);

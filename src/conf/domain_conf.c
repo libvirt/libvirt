@@ -2874,6 +2874,9 @@ void virDomainDefFree(virDomainDefPtr def)
     for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
         VIR_FREE(def->os.initargv[i]);
     VIR_FREE(def->os.initargv);
+    for (i = 0; def->os.initenv && def->os.initenv[i]; i++)
+        VIR_FREE(def->os.initenv[i]);
+    VIR_FREE(def->os.initenv);
     VIR_FREE(def->os.kernel);
     VIR_FREE(def->os.initrd);
     VIR_FREE(def->os.cmdline);
@@ -17048,6 +17051,7 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
     xmlNodePtr *nodes = NULL;
     xmlNodePtr oldnode;
     char *tmp = NULL;
+    char *name = NULL;
     int ret = -1;
     size_t i;
     int n;
@@ -17082,6 +17086,37 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
                 goto error;
         }
         def->os.initargv[n] = NULL;
+        VIR_FREE(nodes);
+
+        if ((n = virXPathNodeSet("./os/initenv", ctxt, &nodes)) < 0)
+            goto error;
+
+        if (VIR_ALLOC_N(def->os.initenv, n+1) < 0)
+            goto error;
+        for (i = 0; i < n; i++) {
+            if (!(name = virXMLPropString(nodes[i], "name"))) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                                _("No name supplied for <initenv> element"));
+                goto error;
+            }
+
+            if (!nodes[i]->children ||
+                !nodes[i]->children->content) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("No value supplied for <initenv name='%s'> element"),
+                               name);
+                goto error;
+            }
+
+            if (VIR_ALLOC(def->os.initenv[i]) < 0)
+                goto error;
+
+            def->os.initenv[i]->name = name;
+            if (VIR_STRDUP(def->os.initenv[i]->value,
+                           (const char*) nodes[i]->children->content) < 0)
+                goto error;
+        }
+        def->os.initenv[n] = NULL;
         VIR_FREE(nodes);
     }
 
@@ -24915,6 +24950,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
         virBufferEscapeString(buf, "<initarg>%s</initarg>\n",
                               def->os.initargv[i]);
+    for (i = 0; def->os.initenv && def->os.initenv[i]; i++)
+        virBufferAsprintf(buf, "<initenv name='%s'>%s</initenv>\n",
+                          def->os.initenv[i]->name, def->os.initenv[i]->value);
     if (def->os.loader)
         virDomainLoaderDefFormat(buf, def->os.loader);
     virBufferEscapeString(buf, "<kernel>%s</kernel>\n",

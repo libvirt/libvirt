@@ -326,6 +326,10 @@
       element, if set will be used to provide an equivalent to <code>/proc/cmdline</code>
       but will not affect init argv.
     </p>
+    <p>
+      To set environment variables, use the <code>initenv</code> element, one
+      for each variable.
+    </p>
 
     <pre>
 &lt;os&gt;
@@ -333,6 +337,7 @@
   &lt;init&gt;/bin/systemd&lt;/init&gt;
   &lt;initarg&gt;--unit&lt;/initarg&gt;
   &lt;initarg&gt;emergency.service&lt;/initarg&gt;
+  &lt;initenv name='MYENV'&gt;some value&lt;/initenv&gt;
 &lt;/os&gt;
     </pre>
 
