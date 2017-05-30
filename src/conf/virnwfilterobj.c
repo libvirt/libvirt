@@ -190,6 +190,29 @@ virNWFilterObjListFindByName(virNWFilterObjListPtr nwfilters,
 }
 
 
+virNWFilterObjPtr
+virNWFilterObjListFindInstantiateFilter(virNWFilterObjListPtr nwfilters,
+                                        const char *filtername)
+{
+    virNWFilterObjPtr obj;
+
+    if (!(obj = virNWFilterObjListFindByName(nwfilters, filtername))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("referenced filter '%s' is missing"), filtername);
+        return NULL;
+    }
+
+    if (virNWFilterObjWantRemoved(obj)) {
+        virReportError(VIR_ERR_NO_NWFILTER,
+                       _("Filter '%s' is in use."), filtername);
+        virNWFilterObjUnlock(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+
 static int
 _virNWFilterObjListDefLoopDetect(virNWFilterObjListPtr nwfilters,
                                  virNWFilterDefPtr def,

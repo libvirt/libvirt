@@ -69,6 +69,10 @@ virNWFilterObjListFindByName(virNWFilterObjListPtr nwfilters,
                              const char *name);
 
 virNWFilterObjPtr
+virNWFilterObjListFindInstantiateFilter(virNWFilterObjListPtr nwfilters,
+                                        const char *filtername);
+
+virNWFilterObjPtr
 virNWFilterObjListAssignDef(virNWFilterObjListPtr nwfilters,
                             virNWFilterDefPtr def);
 
