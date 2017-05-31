@@ -5846,7 +5846,7 @@ remoteStreamEventRemoveCallback(virStreamPtr st)
 
 
 static int
-remoteStreamFinish(virStreamPtr st)
+remoteStreamCloseInt(virStreamPtr st, bool streamAbort)
 {
     struct private_data *priv = st->conn->privateData;
     virNetClientStreamPtr privst = st->privateData;
@@ -5862,7 +5862,7 @@ remoteStreamFinish(virStreamPtr st)
 
     ret = virNetClientStreamSendPacket(privst,
                                        priv->client,
-                                       VIR_NET_OK,
+                                       streamAbort ? VIR_NET_ERROR : VIR_NET_OK,
                                        NULL,
                                        0);
 
@@ -5881,37 +5881,16 @@ remoteStreamFinish(virStreamPtr st)
 
 
 static int
+remoteStreamFinish(virStreamPtr st)
+{
+    return remoteStreamCloseInt(st, false);
+}
+
+
+static int
 remoteStreamAbort(virStreamPtr st)
 {
-    struct private_data *priv = st->conn->privateData;
-    virNetClientStreamPtr privst = st->privateData;
-    int ret = -1;
-
-    remoteDriverLock(priv);
-
-    if (virNetClientStreamRaiseError(privst))
-        goto cleanup;
-
-    priv->localUses++;
-    remoteDriverUnlock(priv);
-
-    ret = virNetClientStreamSendPacket(privst,
-                                       priv->client,
-                                       VIR_NET_ERROR,
-                                       NULL,
-                                       0);
-
-    remoteDriverLock(priv);
-    priv->localUses--;
-
- cleanup:
-    virNetClientRemoveStream(priv->client, privst);
-    virObjectUnref(privst);
-    st->privateData = NULL;
-    st->driver = NULL;
-
-    remoteDriverUnlock(priv);
-    return ret;
+    return remoteStreamCloseInt(st, true);
 }
 
 
