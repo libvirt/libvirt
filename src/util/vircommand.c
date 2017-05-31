@@ -464,6 +464,41 @@ virCommandHandshakeChild(virCommandPtr cmd)
     return 0;
 }
 
+static int
+virExecCommon(virCommandPtr cmd)
+{
+    gid_t *groups = NULL;
+    int ngroups;
+    int ret = -1;
+
+    if ((ngroups = virGetGroupList(cmd->uid, cmd->gid, &groups)) < 0)
+        goto cleanup;
+
+    if (cmd->uid != (uid_t)-1 || cmd->gid != (gid_t)-1 ||
+        cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS)) {
+        VIR_DEBUG("Setting child uid:gid to %d:%d with caps %llx",
+                  (int)cmd->uid, (int)cmd->gid, cmd->capabilities);
+        if (virSetUIDGIDWithCaps(cmd->uid, cmd->gid, groups, ngroups,
+                                 cmd->capabilities,
+                                 !!(cmd->flags & VIR_EXEC_CLEAR_CAPS)) < 0)
+            goto cleanup;
+    }
+
+    if (cmd->pwd) {
+        VIR_DEBUG("Running child in %s", cmd->pwd);
+        if (chdir(cmd->pwd) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to change to %s"), cmd->pwd);
+            goto cleanup;
+        }
+    }
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(groups);
+    return ret;
+}
+
 /*
  * virExec:
  * @cmd virCommandPtr containing all information about the program to
@@ -484,8 +519,6 @@ virExec(virCommandPtr cmd)
     const char *binary = NULL;
     int ret;
     struct sigaction waxon, waxoff;
-    gid_t *groups = NULL;
-    int ngroups;
 
     if (cmd->args[0][0] != '/') {
         if (!(binary = binarystr = virFindFileInPath(cmd->args[0]))) {
@@ -556,9 +589,6 @@ virExec(virCommandPtr cmd)
         childerr = null;
     }
 
-    if ((ngroups = virGetGroupList(cmd->uid, cmd->gid, &groups)) < 0)
-        goto cleanup;
-
     pid = virFork();
 
     if (pid < 0)
@@ -578,7 +608,6 @@ virExec(virCommandPtr cmd)
         cmd->pid = pid;
 
         VIR_FREE(binarystr);
-        VIR_FREE(groups);
 
         return 0;
     }
@@ -727,28 +756,8 @@ virExec(virCommandPtr cmd)
     }
 # endif
 
-    /* The steps above may need to do something privileged, so we delay
-     * setuid and clearing capabilities until the last minute.
-     */
-    if (cmd->uid != (uid_t)-1 || cmd->gid != (gid_t)-1 ||
-        cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS)) {
-        VIR_DEBUG("Setting child uid:gid to %d:%d with caps %llx",
-                  (int)cmd->uid, (int)cmd->gid, cmd->capabilities);
-        if (virSetUIDGIDWithCaps(cmd->uid, cmd->gid, groups, ngroups,
-                                 cmd->capabilities,
-                                 !!(cmd->flags & VIR_EXEC_CLEAR_CAPS)) < 0) {
-            goto fork_error;
-        }
-    }
-
-    if (cmd->pwd) {
-        VIR_DEBUG("Running child in %s", cmd->pwd);
-        if (chdir(cmd->pwd) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to change to %s"), cmd->pwd);
-            goto fork_error;
-        }
-    }
+    if (virExecCommon(cmd) < 0)
+        goto fork_error;
 
     if (virCommandHandshakeChild(cmd) < 0)
        goto fork_error;
@@ -789,7 +798,6 @@ virExec(virCommandPtr cmd)
     /* This is cleanup of parent process only - child
        should never jump here on error */
 
-    VIR_FREE(groups);
     VIR_FREE(binarystr);
 
     /* NB we don't virReportError() on any failures here
@@ -2165,6 +2173,9 @@ int virCommandExec(virCommandPtr cmd)
                        _("invalid use of command API"));
         return -1;
     }
+
+    if (virExecCommon(cmd) < 0)
+        return -1;
 
     execve(cmd->args[0], cmd->args, cmd->env);
 
