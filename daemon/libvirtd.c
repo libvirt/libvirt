@@ -613,11 +613,11 @@ daemonSetupNetworking(virNetServerPtr srv,
 
 #if WITH_SASL
     if (config->auth_unix_rw == REMOTE_AUTH_SASL ||
-        config->auth_unix_ro == REMOTE_AUTH_SASL ||
+        (sock_path_ro && config->auth_unix_ro == REMOTE_AUTH_SASL) ||
 # if WITH_GNUTLS
-        config->auth_tls == REMOTE_AUTH_SASL ||
+        (ipsock && config->listen_tls && config->auth_tls == REMOTE_AUTH_SASL) ||
 # endif
-        config->auth_tcp == REMOTE_AUTH_SASL) {
+        (ipsock && config->listen_tcp && config->auth_tcp == REMOTE_AUTH_SASL)) {
         saslCtxt = virNetSASLContextNewServer(
             (const char *const*)config->sasl_allowed_username_list);
         if (!saslCtxt)
