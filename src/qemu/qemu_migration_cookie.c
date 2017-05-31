@@ -1292,6 +1292,7 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
                        int cookieinlen,
                        unsigned int flags)
 {
+    qemuDomainObjPrivatePtr priv = dom->privateData;
     qemuMigrationCookiePtr mig = NULL;
 
     /* Parse & validate incoming cookie (if any) */
@@ -1339,6 +1340,9 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
             goto error;
         }
     }
+
+    if (flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobInfo)
+        mig->jobInfo->operation = priv->job.current->operation;
 
     return mig;
 
