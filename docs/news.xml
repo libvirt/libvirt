@@ -45,8 +45,40 @@
           sparseness.
         </description>
       </change>
+      <change>
+        <summary>
+          I/O APIC type can be specified for QEMU/KVM domains
+        </summary>
+        <description>
+          The <code>ioapic</code> tag was added to domain
+          <code>features</code>, so the type of the I/O APIC can now
+          be specified (e.g. putting it in userspace for KVM domains).
+        </description>
+      </change>
+      <change>
+        <summary>
+          The reason for VM shutdown is reported, if known
+        </summary>
+        <description>
+          QEMU 2.10 will be able to report the reason for shutting
+          down (whether that was caused by the guest or not), and
+          libvirt is prepared for that and reports that information in
+          its shutdown event as well, if it is known.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          Repository now has new README.md file
+        </summary>
+        <description>
+          The new file uses markdown syntax, so it looks better on
+          github and possibly other web pages, but it has also more
+          useful information. The old README is now symlink to the
+          new file.
+        </description>
+      </change>
       <change>
         <summary>
           qemu: Use GICv2 by default for aarch64/virt TCG guests
@@ -69,6 +101,89 @@
           fc_remote_port sub-capability to SCSI target devices.
        </description>
       </change>
+      <change>
+        <summary>
+          Node devices now report Mediated device capabilities
+        </summary>
+        <description>
+          Endpoint devices support new <code>mdev</code> capability
+          and their parents now report the supported types in new
+          <code>mdev_types</mdev> capability.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Capabilities now report information about host caches
+        </summary>
+        <description>
+          If supported in the kernel, host capabilities will now list
+          L3 caches. The code for other levels was added as well, but
+          only L3 caches are reported currently.
+        </description>
+      </change>
+      <change>
+        <summary>
+          POWER9 CPU model was added
+        </summary>
+        <description>
+          It is now properly reported in host capabilities.
+        </description>
+      </change>
+      <change>
+        <summary>
+          libxl: NUMA sibling distances are now reported in host capabilities
+        </summary>
+      </change>
+      <change>
+        <summary>
+          VMDK version 3 files are now properly detected
+        </summary>
+      </change>
+      <change>
+        <summary>
+          Interrupt remapping and Extended interrupt mode for IOMMU devices
+        </summary>
+        <description>
+          These two new features can now be controlled with new
+          <code>&lt;driver intremap='on/off' eim='on/off'/&gt;</code>
+          tag for <code>iommu</code> devices.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Graphics in libxl domains now have default addresses
+        </summary>
+        <description>
+          Even though there were default addresses before this change,
+          they were not saved in the XML. It is now possible to see
+          and control the listen addresses properly.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Default USB controllers are now added for devices in libxl domains
+        </summary>
+        <description>
+          Even though they were added automatically when USB device
+          was attached, they could've been missing in some other
+          cases. The logic is now fixed so there are always USB
+          controllers, even if there was none of them in the specified
+          XML.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Limits for RPC messages were increased
+        </summary>
+        <description>
+          Hitting the RPC limits we have is easier every day, so they
+          were increased once again and some guessing logic was
+          improved as well. It is now possible to get more stats than
+          ever using the <code>virConnectGetAllDomainStats()</code>
+          call and push through even bigger requests and replies for
+          all APIs.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -78,6 +193,52 @@
         <description>
           Libvirt's policy is that directories are created on startup if
           they don't exist. We've missed this one.
+        </description>
+      </change>
+      <change>
+        <summary>
+          PCIe 4.0 cards now report proper link speeds
+        </summary>
+        <description>
+          It could happen that the link speed for PCIe devices was not
+          properly reported or the nodedev-dumpxml just failed. That
+          was due to mistake in the field width, but should now work
+          properly.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Do not report errors on shutdown
+        </summary>
+        <description>
+          For some users, in some rare cases, it could happen that
+          there was an error message "internal error: End of file from
+          qemu monitor" in the logs even though no problem happened.
+          The detection of these false positives was improved and such
+          errors should not show any more.
+        </description>
+      </change>
+      <change>
+        <summary>
+          User-specified UNIX socket paths for virtio channels should not be reset
+        </summary>
+        <description>
+          It could happen, in some cases, that libvirt would mistake a
+          user-specified path for its own generated one and thus
+          remove it from the XML. The detection of such addresses was
+          improved now.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Fix address reservation during RNG hot-plug
+        </summary>
+        <description>
+          When error occurred in a specific point in time during the
+          hot-plug of an RNG device, it could happen that an address
+          was released even though another device was already using
+          it, making it possible to hot-plug another device with that
+          address, effectively having duplicated addresses in the XML.
         </description>
       </change>
     </section>
