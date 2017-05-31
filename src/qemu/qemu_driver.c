@@ -1779,7 +1779,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (qemuProcessStart(conn, driver, vm, QEMU_ASYNC_JOB_START,
+    if (qemuProcessStart(conn, driver, vm, NULL, QEMU_ASYNC_JOB_START,
                          NULL, -1, NULL, NULL,
                          VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                          start_flags) < 0) {
@@ -6506,8 +6506,8 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         }
     }
 
-    if (qemuProcessStart(conn, driver, vm, asyncJob,
-                         "stdio", *fd, path, NULL,
+    if (qemuProcessStart(conn, driver, vm, cookie ? cookie->cpu : NULL,
+                         asyncJob, "stdio", *fd, path, NULL,
                          VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
                          VIR_QEMU_PROCESS_START_PAUSED) == 0)
         restored = true;
@@ -7124,7 +7124,7 @@ qemuDomainObjStart(virConnectPtr conn,
         }
     }
 
-    ret = qemuProcessStart(conn, driver, vm, asyncJob,
+    ret = qemuProcessStart(conn, driver, vm, NULL, asyncJob,
                            NULL, -1, NULL, NULL,
                            VIR_NETDEV_VPORT_PROFILE_OP_CREATE, start_flags);
     virDomainAuditStart(vm, "booted", ret >= 0);
@@ -15294,6 +15294,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virCapsPtr caps = NULL;
     bool was_running = false;
     bool was_stopped = false;
+    qemuDomainSaveCookiePtr cookie;
+    virCPUDefPtr origCPU = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                   VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED |
@@ -15399,6 +15401,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             goto endjob;
     }
 
+    cookie = (qemuDomainSaveCookiePtr) snap->def->cookie;
+
     switch ((virDomainState) snap->def->state) {
     case VIR_DOMAIN_RUNNING:
     case VIR_DOMAIN_PAUSED:
@@ -15410,6 +15414,15 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
          * to have finer control.  */
         if (virDomainObjIsActive(vm)) {
             /* Transitions 5, 6, 8, 9 */
+            /* Replace the CPU in config and put the original one in priv
+             * once we're done.
+             */
+            if (cookie && cookie->cpu && config->cpu) {
+                origCPU = config->cpu;
+                if (!(config->cpu = virCPUDefCopy(cookie->cpu)))
+                    goto endjob;
+            }
+
             /* Check for ABI compatibility. We need to do this check against
              * the migratable XML or it will always fail otherwise */
             if (config &&
@@ -15469,8 +15482,11 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                  * failed loadvm attempt? */
                 goto endjob;
             }
-            if (config)
+            if (config) {
                 virDomainObjAssignDef(vm, config, false, NULL);
+                virCPUDefFree(priv->origCPU);
+                VIR_STEAL_PTR(priv->origCPU, origCPU);
+            }
         } else {
             /* Transitions 2, 3 */
         load:
@@ -15479,6 +15495,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 virDomainObjAssignDef(vm, config, false, NULL);
 
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm,
+                                  cookie ? cookie->cpu : NULL,
                                   QEMU_ASYNC_JOB_START, NULL, -1, NULL, snap,
                                   VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                                   VIR_QEMU_PROCESS_START_PAUSED);
@@ -15572,7 +15589,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             start_flags |= paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
 
             qemuDomainEventQueue(driver, event);
-            rc = qemuProcessStart(snapshot->domain->conn, driver, vm,
+            rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
                                   QEMU_ASYNC_JOB_START, NULL, -1, NULL, NULL,
                                   VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                                   start_flags);
@@ -15644,6 +15661,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virObjectUnref(caps);
     virObjectUnref(cfg);
     virNWFilterUnlockFilterUpdates();
+    virCPUDefFree(origCPU);
 
     return ret;
 }

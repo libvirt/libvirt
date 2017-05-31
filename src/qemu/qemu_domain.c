@@ -9240,3 +9240,43 @@ virSaveCookieCallbacks virQEMUDriverDomainSaveCookie = {
     .parse = qemuDomainSaveCookieParse,
     .format = qemuDomainSaveCookieFormat,
 };
+
+
+/**
+ * qemuDomainUpdateCPU:
+ * @vm: domain which is being started
+ * @cpu: CPU updated when the domain was running previously (before migration,
+ *       snapshot, or save)
+ * @origCPU: where to store the original CPU from vm->def in case @cpu was
+ *           used instead
+ *
+ * Replace the CPU definition with the updated one when QEMU is new enough to
+ * allow us to check extra features it is about to enable or disable when
+ * starting a domain. The original CPU is stored in @origCPU.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+qemuDomainUpdateCPU(virDomainObjPtr vm,
+                    virCPUDefPtr cpu,
+                    virCPUDefPtr *origCPU)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    *origCPU = NULL;
+
+    if (!cpu || !vm->def->cpu ||
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION) ||
+        virCPUDefIsEqual(vm->def->cpu, cpu, false))
+        return 0;
+
+    if (!(cpu = virCPUDefCopy(cpu)))
+        return -1;
+
+    VIR_DEBUG("Replacing CPU def with the updated one");
+
+    *origCPU = vm->def->cpu;
+    vm->def->cpu = cpu;
+
+    return 0;
+}

@@ -2681,7 +2681,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         goto stopjob;
     }
 
-    if (qemuProcessInit(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
+    if (qemuProcessInit(driver, vm, mig->cpu, QEMU_ASYNC_JOB_MIGRATION_IN,
                         true, VIR_QEMU_PROCESS_START_AUTODESTROY) < 0)
         goto stopjob;
     stopProcess = true;

@@ -3946,6 +3946,13 @@ qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
         if (qemuProcessVerifyCPUFeatures(def, cpu) < 0)
             goto cleanup;
 
+        /* Don't update the CPU if we already did so when starting a domain
+         * during migration, restore or snapshot revert. */
+        if (priv->origCPU) {
+            ret = 0;
+            goto cleanup;
+        }
+
         if (!(orig = virCPUDefCopy(def->cpu)))
             goto cleanup;
 
@@ -4864,6 +4871,7 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
 int
 qemuProcessInit(virQEMUDriverPtr driver,
                 virDomainObjPtr vm,
+                virCPUDefPtr updatedCPU,
                 qemuDomainAsyncJob asyncJob,
                 bool migration,
                 unsigned int flags)
@@ -4872,6 +4880,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int stopFlags;
+    virCPUDefPtr origCPU = NULL;
     int ret = -1;
 
     VIR_DEBUG("vm=%p name=%s id=%d migration=%d",
@@ -4894,6 +4903,9 @@ qemuProcessInit(virQEMUDriverPtr driver,
                                                       driver->qemuCapsCache,
                                                       vm->def->emulator,
                                                       vm->def->os.machine)))
+        goto cleanup;
+
+    if (qemuDomainUpdateCPU(vm, updatedCPU, &origCPU) < 0)
         goto cleanup;
 
     if (qemuProcessStartValidate(driver, vm, priv->qemuCaps, caps, flags) < 0)
@@ -4928,11 +4940,14 @@ qemuProcessInit(virQEMUDriverPtr driver,
 
         if (qemuDomainSetPrivatePaths(driver, vm) < 0)
             goto stop;
+
+        VIR_STEAL_PTR(priv->origCPU, origCPU);
     }
 
     ret = 0;
 
  cleanup:
+    virCPUDefFree(origCPU);
     virObjectUnref(cfg);
     virObjectUnref(caps);
     return ret;
@@ -5963,6 +5978,7 @@ int
 qemuProcessStart(virConnectPtr conn,
                  virQEMUDriverPtr driver,
                  virDomainObjPtr vm,
+                 virCPUDefPtr updatedCPU,
                  qemuDomainAsyncJob asyncJob,
                  const char *migrateFrom,
                  int migrateFd,
@@ -5993,7 +6009,8 @@ qemuProcessStart(virConnectPtr conn,
     if (!migrateFrom && !snapshot)
         flags |= VIR_QEMU_PROCESS_START_NEW;
 
-    if (qemuProcessInit(driver, vm, asyncJob, !!migrateFrom, flags) < 0)
+    if (qemuProcessInit(driver, vm, updatedCPU,
+                        asyncJob, !!migrateFrom, flags) < 0)
         goto cleanup;
 
     if (migrateFrom) {
@@ -6072,7 +6089,8 @@ qemuProcessCreatePretendCmd(virConnectPtr conn,
     flags |= VIR_QEMU_PROCESS_START_PRETEND;
     flags |= VIR_QEMU_PROCESS_START_NEW;
 
-    if (qemuProcessInit(driver, vm, QEMU_ASYNC_JOB_NONE, !!migrateURI, flags) < 0)
+    if (qemuProcessInit(driver, vm, NULL, QEMU_ASYNC_JOB_NONE,
+                        !!migrateURI, flags) < 0)
         goto cleanup;
 
     if (qemuProcessPrepareDomain(conn, driver, vm, flags) < 0)
@@ -6476,6 +6494,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     /* clean up migration data */
     VIR_FREE(priv->migTLSAlias);
+    virCPUDefFree(priv->origCPU);
+    priv->origCPU = NULL;
 
     /* clear previously used namespaces */
     virBitmapFree(priv->namespaces);
