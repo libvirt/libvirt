@@ -20090,7 +20090,7 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
             goto error;
     }
 
-    if (!virCPUDefIsEqual(src->cpu, dst->cpu))
+    if (!virCPUDefIsEqual(src->cpu, dst->cpu, true))
         goto error;
 
     if (!virSysinfoIsEqual(src->sysinfo, dst->sysinfo))

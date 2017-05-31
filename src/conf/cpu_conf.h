@@ -189,7 +189,8 @@ virCPUDefParseXML(xmlNodePtr node,
 
 bool
 virCPUDefIsEqual(virCPUDefPtr src,
-                 virCPUDefPtr dst);
+                 virCPUDefPtr dst,
+                 bool reportError);
 
 char *
 virCPUDefFormat(virCPUDefPtr def,
