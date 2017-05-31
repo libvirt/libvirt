@@ -330,6 +330,10 @@
       To set environment variables, use the <code>initenv</code> element, one
       for each variable.
     </p>
+    <p>
+      To set a custom work directory for the init, use the <code>initdir</code>
+      element.
+    </p>
 
     <pre>
 &lt;os&gt;
@@ -338,6 +342,7 @@
   &lt;initarg&gt;--unit&lt;/initarg&gt;
   &lt;initarg&gt;emergency.service&lt;/initarg&gt;
   &lt;initenv name='MYENV'&gt;some value&lt;/initenv&gt;
+  &lt;initdir&gt;/my/custom/cwd&lt;/initdir&gt;
 &lt;/os&gt;
     </pre>
 

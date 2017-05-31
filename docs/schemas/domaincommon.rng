@@ -395,6 +395,11 @@
             <text/>
           </element>
         </zeroOrMore>
+        <optional>
+          <element name="initdir">
+            <ref name="absFilePath"/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

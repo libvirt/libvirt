@@ -2876,6 +2876,7 @@ void virDomainDefFree(virDomainDefPtr def)
     VIR_FREE(def->os.initargv);
     for (i = 0; def->os.initenv && def->os.initenv[i]; i++)
         VIR_FREE(def->os.initenv[i]);
+    VIR_FREE(def->os.initdir);
     VIR_FREE(def->os.initenv);
     VIR_FREE(def->os.kernel);
     VIR_FREE(def->os.initrd);
@@ -17068,6 +17069,7 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
     if (def->os.type == VIR_DOMAIN_OSTYPE_EXE) {
         def->os.init = virXPathString("string(./os/init[1])", ctxt);
         def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
+        def->os.initdir = virXPathString("string(./os/initdir[1])", ctxt);
 
         if ((n = virXPathNodeSet("./os/initarg", ctxt, &nodes)) < 0)
             goto error;
@@ -24953,6 +24955,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     for (i = 0; def->os.initenv && def->os.initenv[i]; i++)
         virBufferAsprintf(buf, "<initenv name='%s'>%s</initenv>\n",
                           def->os.initenv[i]->name, def->os.initenv[i]->value);
+    if (def->os.initdir)
+        virBufferEscapeString(buf, "<initdir>%s</initdir>\n",
+                              def->os.initdir);
     if (def->os.loader)
         virDomainLoaderDefFormat(buf, def->os.loader);
     virBufferEscapeString(buf, "<kernel>%s</kernel>\n",

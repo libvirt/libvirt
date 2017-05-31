@@ -245,6 +245,8 @@ static virCommandPtr lxcContainerBuildInitCmd(virDomainDefPtr vmDef,
     virCommandAddEnvPair(cmd, "LIBVIRT_LXC_NAME", vmDef->name);
     if (vmDef->os.cmdline)
         virCommandAddEnvPair(cmd, "LIBVIRT_LXC_CMDLINE", vmDef->os.cmdline);
+    if (vmDef->os.initdir)
+        virCommandSetWorkingDirectory(cmd, vmDef->os.initdir);
 
     for (i = 0; vmDef->os.initenv[i]; i++) {
         virCommandAddEnvPair(cmd, vmDef->os.initenv[i]->name,
