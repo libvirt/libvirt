@@ -332,7 +332,7 @@ virSecretObjListAdd(virSecretObjListPtr secrets,
                     virSecretDefPtr *oldDef)
 {
     virSecretObjPtr obj;
-    virSecretDefPtr def;
+    virSecretDefPtr objdef;
     virSecretObjPtr ret = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *configFile = NULL, *base64File = NULL;
@@ -347,26 +347,26 @@ virSecretObjListAdd(virSecretObjListPtr secrets,
     /* Is there a secret already matching this UUID */
     if ((obj = virSecretObjListFindByUUIDLocked(secrets, uuidstr))) {
         virObjectLock(obj);
-        def = obj->def;
+        objdef = obj->def;
 
-        if (STRNEQ_NULLABLE(def->usage_id, newdef->usage_id)) {
+        if (STRNEQ_NULLABLE(objdef->usage_id, newdef->usage_id)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("a secret with UUID %s is already defined for "
                              "use with %s"),
-                           uuidstr, def->usage_id);
+                           uuidstr, objdef->usage_id);
             goto cleanup;
         }
 
-        if (def->isprivate && !newdef->isprivate) {
+        if (objdef->isprivate && !newdef->isprivate) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cannot change private flag on existing secret"));
             goto cleanup;
         }
 
         if (oldDef)
-            *oldDef = def;
+            *oldDef = objdef;
         else
-            virSecretDefFree(def);
+            virSecretDefFree(objdef);
         obj->def = newdef;
     } else {
         /* No existing secret with same UUID,
@@ -375,8 +375,8 @@ virSecretObjListAdd(virSecretObjListPtr secrets,
                                                      newdef->usage_type,
                                                      newdef->usage_id))) {
             virObjectLock(obj);
-            def = obj->def;
-            virUUIDFormat(def->uuid, uuidstr);
+            objdef = obj->def;
+            virUUIDFormat(objdef->uuid, uuidstr);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("a secret with UUID %s already defined for "
                              "use with %s"),
