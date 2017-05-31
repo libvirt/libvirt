@@ -1764,12 +1764,14 @@ static int nodeStateInitialize(bool privileged,
 
     udev_monitor_enable_receiving(priv->udev_monitor);
 
+#if HAVE_UDEV_MONITOR_SET_RECEIVE_BUFFER_SIZE
     /* mimic udevd's behaviour and override the systems rmem_max limit in case
      * there's a significant number of device 'add' events
      */
     if (geteuid() == 0)
         udev_monitor_set_receive_buffer_size(priv->udev_monitor,
                                              128 * 1024 * 1024);
+#endif
 
     /* We register the monitor with the event callback so we are
      * notified by udev of device changes before we enumerate existing
