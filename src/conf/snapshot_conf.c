@@ -686,11 +686,13 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "</disk>\n");
 }
 
-char *virDomainSnapshotDefFormat(const char *domain_uuid,
-                                 virDomainSnapshotDefPtr def,
-                                 virCapsPtr caps,
-                                 unsigned int flags,
-                                 int internal)
+
+char *
+virDomainSnapshotDefFormat(const char *domain_uuid,
+                           virDomainSnapshotDefPtr def,
+                           virCapsPtr caps,
+                           unsigned int flags,
+                           int internal)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
@@ -702,12 +704,14 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
 
     virBufferAddLit(&buf, "<domainsnapshot>\n");
     virBufferAdjustIndent(&buf, 2);
+
     virBufferEscapeString(&buf, "<name>%s</name>\n", def->name);
     if (def->description)
         virBufferEscapeString(&buf, "<description>%s</description>\n",
                               def->description);
     virBufferAsprintf(&buf, "<state>%s</state>\n",
                       virDomainSnapshotStateTypeToString(def->state));
+
     if (def->parent) {
         virBufferAddLit(&buf, "<parent>\n");
         virBufferAdjustIndent(&buf, 2);
@@ -715,14 +719,17 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</parent>\n");
     }
+
     virBufferAsprintf(&buf, "<creationTime>%lld</creationTime>\n",
                       def->creationTime);
+
     if (def->memory) {
         virBufferAsprintf(&buf, "<memory snapshot='%s'",
                           virDomainSnapshotLocationTypeToString(def->memory));
         virBufferEscapeString(&buf, " file='%s'", def->file);
         virBufferAddLit(&buf, "/>\n");
     }
+
     if (def->ndisks) {
         virBufferAddLit(&buf, "<disks>\n");
         virBufferAdjustIndent(&buf, 2);
@@ -731,11 +738,10 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</disks>\n");
     }
+
     if (def->dom) {
-        if (virDomainDefFormatInternal(def->dom, caps, flags, &buf) < 0) {
-            virBufferFreeAndReset(&buf);
-            return NULL;
-        }
+        if (virDomainDefFormatInternal(def->dom, caps, flags, &buf) < 0)
+            goto error;
     } else if (domain_uuid) {
         virBufferAddLit(&buf, "<domain>\n");
         virBufferAdjustIndent(&buf, 2);
@@ -743,8 +749,10 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</domain>\n");
     }
+
     if (internal)
         virBufferAsprintf(&buf, "<active>%d</active>\n", def->current);
+
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</domainsnapshot>\n");
 
@@ -752,6 +760,10 @@ char *virDomainSnapshotDefFormat(const char *domain_uuid,
         return NULL;
 
     return virBufferContentAndReset(&buf);
+
+ error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
 }
 
 /* Snapshot Obj functions */
