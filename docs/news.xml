@@ -108,7 +108,7 @@
         <description>
           Endpoint devices support new <code>mdev</code> capability
           and their parents now report the supported types in new
-          <code>mdev_types</mdev> capability.
+          <code>mdev_types</code> capability.
         </description>
       </change>
       <change>
