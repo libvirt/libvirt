@@ -5105,7 +5105,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
         VIR_FREE(currentSnapshotXmlFilePath);
         if (virAsprintf(&currentSnapshotXmlFilePath, "%s%s.xml", machineLocationPath, snapshotMachineDesc->currentSnapshot) < 0)
             goto cleanup;
-        char *snapshotContent = virDomainSnapshotDefFormat(NULL, def, data->caps, VIR_DOMAIN_DEF_FORMAT_SECURE, 0);
+        char *snapshotContent = virDomainSnapshotDefFormat(NULL, def, data->caps, data->xmlopt, VIR_DOMAIN_DEF_FORMAT_SECURE, 0);
         if (snapshotContent == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unable to get snapshot content"));
@@ -6027,7 +6027,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     virUUIDFormat(dom->uuid, uuidstr);
     memcpy(def->dom->uuid, dom->uuid, VIR_UUID_BUFLEN);
-    ret = virDomainSnapshotDefFormat(uuidstr, def, data->caps,
+    ret = virDomainSnapshotDefFormat(uuidstr, def, data->caps, data->xmlopt,
                                       virDomainDefFormatConvertXMLFlags(flags),
                                       0);
 

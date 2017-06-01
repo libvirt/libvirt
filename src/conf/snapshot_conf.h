@@ -114,6 +114,7 @@ void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def);
 char *virDomainSnapshotDefFormat(const char *domain_uuid,
                                  virDomainSnapshotDefPtr def,
                                  virCapsPtr caps,
+                                 virDomainXMLOptionPtr xmlopt,
                                  unsigned int flags,
                                  int internal);
 int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,

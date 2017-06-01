@@ -691,6 +691,7 @@ char *
 virDomainSnapshotDefFormat(const char *domain_uuid,
                            virDomainSnapshotDefPtr def,
                            virCapsPtr caps,
+                           virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
                            unsigned int flags,
                            int internal)
 {

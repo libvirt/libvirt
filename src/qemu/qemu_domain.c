@@ -4820,6 +4820,7 @@ int
 qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
                                 virDomainSnapshotObjPtr snapshot,
                                 virCapsPtr caps,
+                                virDomainXMLOptionPtr xmlopt,
                                 char *snapshotDir)
 {
     char *newxml = NULL;
@@ -4830,7 +4831,7 @@ qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     newxml = virDomainSnapshotDefFormat(
-        uuidstr, snapshot->def, caps,
+        uuidstr, snapshot->def, caps, xmlopt,
         virDomainDefFormatConvertXMLFlags(QEMU_DOMAIN_FORMAT_LIVE_FLAGS),
         1);
     if (newxml == NULL)
@@ -4991,6 +4992,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
             } else {
                 parentsnap->def->current = true;
                 if (qemuDomainSnapshotWriteMetadata(vm, parentsnap, driver->caps,
+                                                    driver->xmlopt,
                                                     cfg->snapshotDir) < 0) {
                     VIR_WARN("failed to set parent snapshot '%s' as current",
                              snap->def->parent);
