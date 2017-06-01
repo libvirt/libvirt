@@ -990,6 +990,13 @@ virNWFilterObjUnlock;
 virNWFilterObjWantRemoved;
 
 
+# conf/virsavecookie.h
+virSaveCookieFormat;
+virSaveCookieFormatBuf;
+virSaveCookieParse;
+virSaveCookieParseString;
+
+
 # conf/virsecretobj.h
 virSecretLoadAllConfigs;
 virSecretObjDeleteConfig;

@@ -47,6 +47,7 @@ src/conf/virdomainobjlist.c
 src/conf/virnetworkobj.c
 src/conf/virnodedeviceobj.c
 src/conf/virnwfilterobj.c
+src/conf/virsavecookie.c
 src/conf/virsecretobj.c
 src/conf/virstorageobj.c
 src/cpu/cpu.c

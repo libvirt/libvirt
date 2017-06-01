@@ -402,6 +402,7 @@ DOMAIN_CONF_SOURCES =						\
 		conf/domain_conf.c conf/domain_conf.h		\
 		conf/domain_audit.c conf/domain_audit.h		\
 		conf/domain_nwfilter.c conf/domain_nwfilter.h	\
+		conf/virsavecookie.c conf/virsavecookie.h	\
 		conf/snapshot_conf.c conf/snapshot_conf.h	\
 		conf/numa_conf.c conf/numa_conf.h	\
 		conf/virdomainobjlist.c conf/virdomainobjlist.h
