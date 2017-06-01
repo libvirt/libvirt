@@ -127,6 +127,7 @@ struct pciDevice {
     int vendor;
     int device;
     int class;
+    int iommuGroup;
     struct pciDriver *driver;   /* Driver attached. NULL if attached to no driver */
 };
 
@@ -187,6 +188,22 @@ make_file(const char *path,
         ABORT("Unable to write: %s", filepath);
 
     VIR_FORCE_CLOSE(fd);
+    VIR_FREE(filepath);
+}
+
+static void
+make_symlink(const char *path,
+          const char *name,
+          const char *target)
+{
+    char *filepath = NULL;
+
+    if (virAsprintfQuiet(&filepath, "%s/%s", path, name) < 0)
+        ABORT_OOM();
+
+    if (symlink(target, filepath) < 0)
+        ABORT("Unable to create symlink filepath -> target");
+
     VIR_FREE(filepath);
 }
 
@@ -322,7 +339,7 @@ pci_device_new_from_stub(const struct pciDevice *data)
     char *id;
     char *c;
     char *configSrc;
-    char tmp[32];
+    char tmp[256];
     struct stat sb;
 
     if (VIR_STRDUP_QUIET(id, data->id) < 0)
@@ -385,6 +402,20 @@ pci_device_new_from_stub(const struct pciDevice *data)
     if (snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->class) < 0)
         ABORT("@tmp overflow");
     make_file(devpath, "class", tmp, -1);
+
+    if (snprintf(tmp, sizeof(tmp),
+                 "%s/../../../kernel/iommu_groups/%d",
+                 devpath, dev->iommuGroup) < 0) {
+        ABORT("@tmp overflow");
+    }
+    if (virFileMakePath(tmp) < 0)
+        ABORT("Unable to create %s", tmp);
+
+    if (snprintf(tmp, sizeof(tmp),
+                 "../../../kernel/iommu_groups/%d", dev->iommuGroup) < 0) {
+        ABORT("@tmp overflow");
+    }
+    make_symlink(devpath, "iommu_group", tmp);
 
     if (pci_device_autobind(dev) < 0)
         ABORT("Unable to bind: %s", data->id);
@@ -821,12 +852,12 @@ init_env(void)
     MAKE_PCI_DEVICE("0000:00:02.0", 0x8086, 0x0046);
     MAKE_PCI_DEVICE("0000:00:03.0", 0x8086, 0x0048);
     MAKE_PCI_DEVICE("0001:00:00.0", 0x1014, 0x03b9, .class = 0x060400);
-    MAKE_PCI_DEVICE("0001:01:00.0", 0x8086, 0x105e);
-    MAKE_PCI_DEVICE("0001:01:00.1", 0x8086, 0x105e);
+    MAKE_PCI_DEVICE("0001:01:00.0", 0x8086, 0x105e, .iommuGroup = 0);
+    MAKE_PCI_DEVICE("0001:01:00.1", 0x8086, 0x105e, .iommuGroup = 0);
     MAKE_PCI_DEVICE("0005:80:00.0", 0x10b5, 0x8112, .class = 0x060400);
-    MAKE_PCI_DEVICE("0005:90:01.0", 0x1033, 0x0035);
-    MAKE_PCI_DEVICE("0005:90:01.1", 0x1033, 0x0035);
-    MAKE_PCI_DEVICE("0005:90:01.2", 0x1033, 0x00e0);
+    MAKE_PCI_DEVICE("0005:90:01.0", 0x1033, 0x0035, .iommuGroup = 1);
+    MAKE_PCI_DEVICE("0005:90:01.1", 0x1033, 0x0035, .iommuGroup = 1);
+    MAKE_PCI_DEVICE("0005:90:01.2", 0x1033, 0x00e0, .iommuGroup = 1);
     MAKE_PCI_DEVICE("0000:0a:01.0", 0x8086, 0x0047);
     MAKE_PCI_DEVICE("0000:0a:02.0", 0x8286, 0x0048);
     MAKE_PCI_DEVICE("0000:0a:03.0", 0x8386, 0x0048);
