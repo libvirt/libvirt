@@ -210,6 +210,7 @@ secretDefineXML(virConnectPtr conn,
 {
     virSecretPtr ret = NULL;
     virSecretObjPtr obj = NULL;
+    virSecretDefPtr objDef;
     virSecretDefPtr backup = NULL;
     virSecretDefPtr def;
     virObjectEventPtr event = NULL;
@@ -225,8 +226,9 @@ secretDefineXML(virConnectPtr conn,
     if (!(obj = virSecretObjListAdd(driver->secrets, def,
                                     driver->configDir, &backup)))
         goto cleanup;
+    VIR_STEAL_PTR(objDef, def);
 
-    if (!def->isephemeral) {
+    if (!objDef->isephemeral) {
         if (backup && backup->isephemeral) {
             if (virSecretObjSaveData(obj) < 0)
                 goto restore_backup;
@@ -248,28 +250,27 @@ secretDefineXML(virConnectPtr conn,
     /* Saved successfully - drop old values */
     virSecretDefFree(backup);
 
-    event = virSecretEventLifecycleNew(def->uuid,
-                                       def->usage_type,
-                                       def->usage_id,
+    event = virSecretEventLifecycleNew(objDef->uuid,
+                                       objDef->usage_type,
+                                       objDef->usage_id,
                                        VIR_SECRET_EVENT_DEFINED,
                                        0);
 
     ret = virGetSecret(conn,
-                       def->uuid,
-                       def->usage_type,
-                       def->usage_id);
-    def = NULL;
+                       objDef->uuid,
+                       objDef->usage_type,
+                       objDef->usage_id);
     goto cleanup;
 
  restore_backup:
     /* If we have a backup, then secret was defined before, so just restore
-     * the backup. The current def will be handled below.
-     * Otherwise, this is a new secret, thus remove it.
-     */
-    if (backup)
+     * the backup; otherwise, this is a new secret, thus remove it. */
+    if (backup) {
         virSecretObjSetDef(obj, backup);
-    else
+        VIR_STEAL_PTR(def, objDef);
+    } else {
         virSecretObjListRemove(driver->secrets, obj);
+    }
 
  cleanup:
     virSecretDefFree(def);
