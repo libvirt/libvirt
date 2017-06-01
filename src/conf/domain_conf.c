@@ -3589,6 +3589,7 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
     memset(&info->addr, 0, sizeof(info->addr));
     info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
     VIR_FREE(info->romfile);
+    VIR_FREE(info->loadparm);
 }
 
 
@@ -5316,6 +5317,50 @@ virDomainDefValidate(virDomainDefPtr def,
 }
 
 
+/**
+ * virDomainDeviceLoadparmIsValid
+ * @loadparm : The string to validate
+ *
+ * The valid set of values for loadparm are [a-zA-Z0-9.]
+ * and blank spaces.
+ * The maximum allowed length is 8 characters.
+ * An empty string is considered invalid
+ */
+static bool
+virDomainDeviceLoadparmIsValid(const char *loadparm)
+{
+    size_t i;
+
+    if (virStringIsEmpty(loadparm)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("loadparm cannot be an empty string"));
+        return false;
+    }
+
+    if (strlen(loadparm) > 8) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("loadparm '%s' exceeds 8 characters"), loadparm);
+        return false;
+    }
+
+    for (i = 0; i < strlen(loadparm); i++) {
+        uint8_t c = loadparm[i];
+
+        if (('A' <= c && c <= 'Z') || ('0' <= c && c <= '9') ||
+            (c == '.') || (c == ' ')) {
+            continue;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid loadparm char '%c', expecting chars"
+                             " in set of [a-zA-Z0-9.] and blank spaces"), c);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 static void
 virDomainVirtioOptionsFormat(virBufferPtr buf,
                              virDomainVirtioOptionsPtr virtio)
@@ -5342,9 +5387,14 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           virDomainDeviceInfoPtr info,
                           unsigned int flags)
 {
-    if ((flags & VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) && info->bootIndex)
-        virBufferAsprintf(buf, "<boot order='%u'/>\n", info->bootIndex);
+    if ((flags & VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) && info->bootIndex) {
+        virBufferAsprintf(buf, "<boot order='%u'", info->bootIndex);
 
+        if (info->loadparm)
+            virBufferAsprintf(buf, " loadparm='%s'", info->loadparm);
+
+        virBufferAddLit(buf, "/>\n");
+    }
     if (info->alias &&
         !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
         virBufferAsprintf(buf, "<alias name='%s'/>\n", info->alias);
@@ -5770,6 +5820,7 @@ virDomainDeviceBootParseXML(xmlNodePtr node,
                             virHashTablePtr bootHash)
 {
     char *order;
+    char *loadparm;
     int ret = -1;
 
     if (!(order = virXMLPropString(node, "order"))) {
@@ -5798,10 +5849,26 @@ virDomainDeviceBootParseXML(xmlNodePtr node,
             goto cleanup;
     }
 
+    loadparm = virXMLPropString(node, "loadparm");
+    if (loadparm) {
+        if (virStringToUpper(&info->loadparm, loadparm) != 1) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to convert loadparm '%s' to upper case"),
+                           loadparm);
+            goto cleanup;
+        }
+
+        if (!virDomainDeviceLoadparmIsValid(info->loadparm)) {
+            VIR_FREE(info->loadparm);
+            goto cleanup;
+        }
+    }
+
     ret = 0;
 
  cleanup:
     VIR_FREE(order);
+    VIR_FREE(loadparm);
     return ret;
 }
 

@@ -3027,8 +3027,13 @@
       <dt><code>boot</code></dt>
       <dd>Specifies that the disk is bootable. The <code>order</code>
         attribute determines the order in which devices will be tried during
-        boot sequence. The per-device <code>boot</code> elements cannot be
-        used together with general boot elements in
+        boot sequence. On the S390 architecture only the first boot device is
+        used. The optional <code>loadparm</code> attribute is an 8 character
+        string which can be queried by guests on S390 via sclp or diag 308.
+        Linux guests on S390 can use <code>loadparm</code> to select a boot
+        entry. <span class="since">Since 3.5.0</span>
+        The per-device <code>boot</code> elements cannot be used together
+        with general boot elements in
         <a href="#elementsOSBIOS">BIOS bootloader</a> section.
         <span class="since">Since 0.8.8</span>
       </dd>

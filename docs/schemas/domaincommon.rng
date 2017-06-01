@@ -5071,6 +5071,13 @@
       <attribute name="order">
         <ref name="positiveInteger"/>
       </attribute>
+      <optional>
+        <attribute name="loadparm">
+          <data type="string">
+            <param name="pattern">[a-zA-Z0-9.\s]{1,8}</param>
+          </data>
+        </attribute>
+      </optional>
       <empty/>
     </element>
   </define>

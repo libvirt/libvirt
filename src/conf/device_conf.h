@@ -167,6 +167,7 @@ struct _virDomainDeviceInfo {
      * assignment, never saved and never reported.
      */
     int pciConnectFlags; /* enum virDomainPCIConnectFlags */
+    char *loadparm;
 };
 
 
