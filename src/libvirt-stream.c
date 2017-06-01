@@ -569,7 +569,7 @@ virStreamInData(virStreamPtr stream,
  *
  * Returns -1 upon any error, with virStreamAbort() already
  * having been called,  so the caller need only call
- * virStreamFree()
+ * virStreamFree().
  */
 int
 virStreamSendAll(virStreamPtr stream,
@@ -595,11 +595,17 @@ virStreamSendAll(virStreamPtr stream,
     if (VIR_ALLOC_N(bytes, want) < 0)
         goto cleanup;
 
+    errno = 0;
     for (;;) {
         int got, offset = 0;
+
         got = (handler)(stream, bytes, want, opaque);
-        if (got < 0)
+        if (got < 0) {
+            if (errno == 0)
+                errno = EIO;
+            virReportSystemError(errno, "%s", _("send handler failed"));
             goto cleanup;
+        }
         if (got == 0)
             break;
         while (offset < got) {
@@ -728,6 +734,7 @@ int virStreamSparseSendAll(virStreamPtr stream,
     if (VIR_ALLOC_N(bytes, bufLen) < 0)
         goto cleanup;
 
+    errno = 0;
     for (;;) {
         int inData, got, offset = 0;
         long long sectionLen;
@@ -735,16 +742,22 @@ int virStreamSparseSendAll(virStreamPtr stream,
         const unsigned int skipFlags = 0;
 
         if (!dataLen) {
-            if (holeHandler(stream, &inData, &sectionLen, opaque) < 0)
+            if (holeHandler(stream, &inData, &sectionLen, opaque) < 0) {
+                if (errno == 0)
+                    errno = EIO;
+                virReportSystemError(errno, "%s", _("send holeHandler failed"));
                 goto cleanup;
+            }
 
             if (!inData && sectionLen) {
                 if (virStreamSendHole(stream, sectionLen, skipFlags) < 0)
                     goto cleanup;
 
                 if (skipHandler(stream, sectionLen, opaque) < 0) {
+                    if (errno == 0)
+                        errno = EIO;
                     virReportSystemError(errno, "%s",
-                                         _("unable to skip hole"));
+                                         _("send skipHandler failed"));
                     goto cleanup;
                 }
                 continue;
@@ -757,8 +770,13 @@ int virStreamSparseSendAll(virStreamPtr stream,
             want = dataLen;
 
         got = (handler)(stream, bytes, want, opaque);
-        if (got < 0)
+        if (got < 0) {
+            if (errno == 0)
+                errno = EIO;
+            virReportSystemError(errno, "%s",
+                                 _("send handler failed"));
             goto cleanup;
+        }
         if (got == 0)
             break;
         while (offset < got) {
@@ -854,8 +872,10 @@ virStreamRecvAll(virStreamPtr stream,
     if (VIR_ALLOC_N(bytes, want) < 0)
         goto cleanup;
 
+    errno = 0;
     for (;;) {
         int got, offset = 0;
+
         got = virStreamRecv(stream, bytes, want);
         if (got < 0)
             goto cleanup;
@@ -864,8 +884,13 @@ virStreamRecvAll(virStreamPtr stream,
         while (offset < got) {
             int done;
             done = (handler)(stream, bytes + offset, got - offset, opaque);
-            if (done < 0)
+            if (done < 0) {
+                if (errno == 0)
+                    errno = EIO;
+                virReportSystemError(errno, "%s",
+                                     _("recv handler failed"));
                 goto cleanup;
+            }
             offset += done;
         }
     }
@@ -968,6 +993,7 @@ virStreamSparseRecvAll(virStreamPtr stream,
     if (VIR_ALLOC_N(bytes, want) < 0)
         goto cleanup;
 
+    errno = 0;
     for (;;) {
         int got, offset = 0;
         long long holeLen;
@@ -978,8 +1004,12 @@ virStreamSparseRecvAll(virStreamPtr stream,
             if (virStreamRecvHole(stream, &holeLen, holeFlags) < 0)
                 goto cleanup;
 
-            if (holeHandler(stream, holeLen, opaque) < 0)
+            if (holeHandler(stream, holeLen, opaque) < 0) {
+                if (errno == 0)
+                    errno = EIO;
+                virReportSystemError(errno, "%s", _("recv holeHandler failed"));
                 goto cleanup;
+            }
             continue;
         } else if (got < 0) {
             goto cleanup;
@@ -989,8 +1019,12 @@ virStreamSparseRecvAll(virStreamPtr stream,
         while (offset < got) {
             int done;
             done = (handler)(stream, bytes + offset, got - offset, opaque);
-            if (done < 0)
+            if (done < 0) {
+                if (errno == 0)
+                    errno = EIO;
+                virReportSystemError(errno, "%s", _("recv handler failed"));
                 goto cleanup;
+            }
             offset += done;
         }
     }

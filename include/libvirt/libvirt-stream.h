@@ -82,7 +82,10 @@ int virStreamRecvHole(virStreamPtr,
  * of bytes. The callback will continue to be
  * invoked until it indicates the end of the source
  * has been reached by returning 0. A return value
- * of -1 at any time will abort the send operation
+ * of -1 at any time will abort the send operation.
+ *
+ * Please note that for more accurate error reporting the
+ * callback should set appropriate errno on failure.
  *
  * Returns the number of bytes filled, 0 upon end
  * of file, or -1 upon error
@@ -119,6 +122,9 @@ int virStreamSendAll(virStreamPtr st,
  * This function should not adjust the current position within
  * the file.
  *
+ * Please note that for more accurate error reporting the
+ * callback should set appropriate errno on failure.
+ *
  * Returns 0 on success,
  *        -1 upon error
  */
@@ -141,6 +147,9 @@ typedef int (*virStreamSourceHoleFunc)(virStreamPtr st,
  * during processing a stream. The application should skip
  * processing the hole in the stream source and then return.
  * A return value of -1 at any time will abort the send operation.
+ *
+ * Please note that for more accurate error reporting the
+ * callback should set appropriate errno on failure.
  *
  * Returns 0 on success,
  *        -1 upon error.
@@ -176,6 +185,9 @@ int virStreamSparseSendAll(virStreamPtr st,
  * has been reached. A return value of -1 at any time
  * will abort the receive operation
  *
+ * Please note that for more accurate error reporting the
+ * callback should set appropriate errno on failure.
+ *
  * Returns the number of bytes consumed or -1 upon
  * error
  */
@@ -202,6 +214,9 @@ int virStreamRecvAll(virStreamPtr st,
  * during processing a stream. The application should create the
  * hole in the stream target and then return. A return value of
  * -1 at any time will abort the receive operation.
+ *
+ * Please note that for more accurate error reporting the
+ * callback should set appropriate errno on failure.
  *
  * Returns 0 on success,
  *        -1 upon error
