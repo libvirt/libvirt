@@ -99,7 +99,7 @@
           is for CCW devices, most common on the S390 architecture. The second
           is for fibre channel-backed SCSI devices and exposes the
           fc_remote_port sub-capability to SCSI target devices.
-       </description>
+        </description>
       </change>
       <change>
         <summary>
@@ -413,7 +413,7 @@
           NVDIMM is new type of memory introduced into QEMU 2.6. The idea is
           that we have a non-volatile memory module that keeps the data
           persistent across domain reboots and offers much faster data
-          accesses.  However, due to a bug in QEMU, this feature is not enabled
+          accesses. However, due to a bug in QEMU, this feature is not enabled
           for QEMUs older than 2.9.0.
         </description>
       </change>
