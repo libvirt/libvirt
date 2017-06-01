@@ -106,8 +106,6 @@ typedef virDomainPCIAddressBus *virDomainPCIAddressBusPtr;
 struct _virDomainPCIAddressSet {
     virDomainPCIAddressBus *buses;
     size_t nbuses;
-    virPCIDeviceAddress lastaddr;
-    virDomainPCIConnectFlags lastFlags;
     bool dryRun;          /* on a dry run, new buses are auto-added
                              and addresses aren't saved in device infos */
 };
