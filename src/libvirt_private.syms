@@ -535,6 +535,7 @@ virDomainWatchdogActionTypeToString;
 virDomainWatchdogModelTypeFromString;
 virDomainWatchdogModelTypeToString;
 virDomainXMLOptionGetNamespace;
+virDomainXMLOptionGetSaveCookie;
 virDomainXMLOptionNew;
 
 

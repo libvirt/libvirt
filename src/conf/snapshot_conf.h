@@ -76,6 +76,8 @@ struct _virDomainSnapshotDef {
 
     virDomainDefPtr dom;
 
+    virObjectPtr cookie;
+
     /* Internal use.  */
     bool current; /* At most one snapshot in the list should have this set */
 };

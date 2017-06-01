@@ -131,7 +131,7 @@ mymain(void)
         return EXIT_FAILURE;
 
     if ((driver.xmlopt = virDomainXMLOptionNew(NULL, NULL,
-                                               NULL, NULL)) == NULL)
+                                               NULL, NULL, NULL)) == NULL)
         return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, flags)                            \

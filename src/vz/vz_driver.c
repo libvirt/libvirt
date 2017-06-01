@@ -328,7 +328,7 @@ vzDriverObjNew(void)
     if (!(driver->caps = vzBuildCapabilities()) ||
         !(driver->xmlopt = virDomainXMLOptionNew(&vzDomainDefParserConfig,
                                                  &vzDomainXMLPrivateDataCallbacksPtr,
-                                                 NULL, NULL)) ||
+                                                 NULL, NULL, NULL)) ||
         !(driver->domains = virDomainObjListNew()) ||
         !(driver->domainEventState = virObjectEventStateNew()) ||
         (vzInitVersion(driver) < 0) ||

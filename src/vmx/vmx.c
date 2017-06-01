@@ -591,7 +591,7 @@ virDomainXMLOptionPtr
 virVMXDomainXMLConfInit(void)
 {
     return virDomainXMLOptionNew(&virVMXDomainDefParserConfig, NULL,
-                                 &virVMXDomainXMLNamespace, NULL);
+                                 &virVMXDomainXMLNamespace, NULL, NULL);
 }
 
 char *

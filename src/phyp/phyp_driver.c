@@ -1202,7 +1202,7 @@ phypConnectOpen(virConnectPtr conn,
         goto failure;
 
     if (!(phyp_driver->xmlopt = virDomainXMLOptionNew(&virPhypDriverDomainDefParserConfig,
-                                                      NULL, NULL, NULL)))
+                                                      NULL, NULL, NULL, NULL)))
         goto failure;
 
     conn->privateData = phyp_driver;

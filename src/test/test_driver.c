@@ -414,7 +414,7 @@ testDriverNew(void)
         goto error;
     }
 
-    if (!(ret->xmlopt = virDomainXMLOptionNew(NULL, NULL, &ns, NULL)) ||
+    if (!(ret->xmlopt = virDomainXMLOptionNew(NULL, NULL, &ns, NULL, NULL)) ||
         !(ret->eventState = virObjectEventStateNew()) ||
         !(ret->ifaces = virInterfaceObjListNew()) ||
         !(ret->domains = virDomainObjListNew()) ||

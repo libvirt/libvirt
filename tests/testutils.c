@@ -1136,7 +1136,7 @@ virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void)
 {
     return virDomainXMLOptionNew(&virTestGenericDomainDefParserConfig,
                                  &virTestGenericPrivateDataCallbacks,
-                                 NULL, NULL);
+                                 NULL, NULL, NULL);
 }
 
 

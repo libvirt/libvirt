@@ -55,6 +55,7 @@
 # include "virgic.h"
 # include "virperf.h"
 # include "virtypedparam.h"
+# include "virsavecookie.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef
@@ -2549,7 +2550,11 @@ struct _virDomainABIStability {
 virDomainXMLOptionPtr virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
                                             virDomainXMLPrivateDataCallbacksPtr priv,
                                             virDomainXMLNamespacePtr xmlns,
-                                            virDomainABIStabilityPtr abi);
+                                            virDomainABIStabilityPtr abi,
+                                            virSaveCookieCallbacksPtr saveCookie);
+
+virSaveCookieCallbacksPtr
+virDomainXMLOptionGetSaveCookie(virDomainXMLOptionPtr xmlopt);
 
 void virDomainNetGenerateMAC(virDomainXMLOptionPtr xmlopt, virMacAddrPtr mac);
 

@@ -910,7 +910,8 @@ virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver)
     return virDomainXMLOptionNew(&virQEMUDriverDomainDefParserConfig,
                                  &virQEMUDriverPrivateDataCallbacks,
                                  &virQEMUDriverDomainXMLNamespace,
-                                 &virQEMUDriverDomainABIStability);
+                                 &virQEMUDriverDomainABIStability,
+                                 NULL);
 }
 
 

@@ -1483,7 +1483,7 @@ static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
         goto cleanup;
 
     if (!(driver->xmlopt = virDomainXMLOptionNew(&openvzDomainDefParserConfig,
-                                                 NULL, NULL, NULL)))
+                                                 NULL, NULL, NULL, NULL)))
         goto cleanup;
 
     if (openvzLoadDomains(driver) < 0)

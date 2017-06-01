@@ -144,7 +144,7 @@ virBhyveDriverCreateXMLConf(bhyveConnPtr driver)
     virBhyveDriverDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&virBhyveDriverDomainDefParserConfig,
                                  &virBhyveDriverPrivateDataCallbacks,
-                                 NULL, NULL);
+                                 NULL, NULL, NULL);
 }
 
 virDomainDefParserConfig virBhyveDriverDomainDefParserConfig = {

@@ -79,6 +79,9 @@ struct _virDomainXMLOption {
 
     /* ABI stability callbacks */
     virDomainABIStability abi;
+
+    /* Private data for save image stored in snapshot XML */
+    virSaveCookieCallbacks saveCookie;
 };
 
 #define VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS             \
@@ -1054,7 +1057,8 @@ virDomainXMLOptionPtr
 virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
                       virDomainXMLPrivateDataCallbacksPtr priv,
                       virDomainXMLNamespacePtr xmlns,
-                      virDomainABIStabilityPtr abi)
+                      virDomainABIStabilityPtr abi,
+                      virSaveCookieCallbacksPtr saveCookie)
 {
     virDomainXMLOptionPtr xmlopt;
 
@@ -1075,6 +1079,9 @@ virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
 
     if (abi)
         xmlopt->abi = *abi;
+
+    if (saveCookie)
+        xmlopt->saveCookie = *saveCookie;
 
     /* Technically this forbids to use one of Xerox's MAC address prefixes in
      * our hypervisor drivers. This shouldn't ever be a problem.
@@ -1103,6 +1110,13 @@ virDomainXMLNamespacePtr
 virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
 {
     return &xmlopt->ns;
+}
+
+
+virSaveCookieCallbacksPtr
+virDomainXMLOptionGetSaveCookie(virDomainXMLOptionPtr xmlopt)
+{
+    return &xmlopt->saveCookie;
 }
 
 

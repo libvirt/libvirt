@@ -533,7 +533,7 @@ umlStateInitialize(bool privileged,
         goto out_of_memory;
 
     if (!(uml_driver->xmlopt = virDomainXMLOptionNew(&umlDriverDomainDefParserConfig,
-                                                     &privcb, NULL, NULL)))
+                                                     &privcb, NULL, NULL, NULL)))
         goto error;
 
     if ((uml_driver->inotifyFD = inotify_init()) < 0) {

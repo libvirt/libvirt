@@ -2255,5 +2255,5 @@ libxlCreateXMLConf(void)
 {
     return virDomainXMLOptionNew(&libxlDomainDefParserConfig,
                                  &libxlDomainXMLPrivateDataCallbacks,
-                                 NULL, NULL);
+                                 NULL, NULL, NULL);
 }

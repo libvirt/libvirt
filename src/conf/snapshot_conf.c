@@ -102,6 +102,7 @@ void virDomainSnapshotDefFree(virDomainSnapshotDefPtr def)
         virDomainSnapshotDiskDefClear(&def->disks[i]);
     VIR_FREE(def->disks);
     virDomainDefFree(def->dom);
+    virObjectUnref(def->cookie);
     VIR_FREE(def);
 }
 
@@ -214,6 +215,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     char *memorySnapshot = NULL;
     char *memoryFile = NULL;
     bool offline = !!(flags & VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE);
+    virSaveCookieCallbacksPtr saveCookie = virDomainXMLOptionGetSaveCookie(xmlopt);
 
     if (VIR_ALLOC(def) < 0)
         goto cleanup;
@@ -364,6 +366,9 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         }
         def->current = active != 0;
     }
+
+    if (!offline && virSaveCookieParse(ctxt, &def->cookie, saveCookie) < 0)
+        goto cleanup;
 
     ret = def;
 
@@ -691,7 +696,7 @@ char *
 virDomainSnapshotDefFormat(const char *domain_uuid,
                            virDomainSnapshotDefPtr def,
                            virCapsPtr caps,
-                           virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
+                           virDomainXMLOptionPtr xmlopt,
                            unsigned int flags,
                            int internal)
 {
@@ -750,6 +755,10 @@ virDomainSnapshotDefFormat(const char *domain_uuid,
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</domain>\n");
     }
+
+    if (virSaveCookieFormatBuf(&buf, def->cookie,
+                               virDomainXMLOptionGetSaveCookie(xmlopt)) < 0)
+        goto error;
 
     if (internal)
         virBufferAsprintf(&buf, "<active>%d</active>\n", def->current);
