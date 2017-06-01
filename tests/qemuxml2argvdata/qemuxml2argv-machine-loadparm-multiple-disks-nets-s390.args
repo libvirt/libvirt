@@ -1,0 +1,28 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-s390x \
+-name QEMUGuest1 \
+-S \
+-machine s390-ccw-virtio,accel=tcg,loadparm=SYSTEM1 \
+-m 214 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
+-device virtio-blk-ccw,devno=fe.0.0002,drive=drive-virtio-disk0,\
+id=virtio-disk0,bootindex=1 \
+-drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-virtio-disk1 \
+-device virtio-blk-ccw,devno=fe.0.0003,drive=drive-virtio-disk1,\
+id=virtio-disk1,bootindex=3 \
+-device virtio-net-ccw,vlan=0,id=net0,mac=00:11:22:33:44:54,devno=fe.0.0000,\
+bootindex=2 \
+-net user,vlan=0,name=hostnet0 \
+-device virtio-net-ccw,vlan=1,id=net1,mac=00:11:22:33:42:36,devno=fe.0.0004 \
+-net user,vlan=1,name=hostnet1 \
+-device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001

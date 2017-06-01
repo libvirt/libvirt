@@ -7316,6 +7316,34 @@ qemuAppendKeyWrapMachineParms(virBuffer *buf, virQEMUCapsPtr qemuCaps,
     return true;
 }
 
+
+static void
+qemuAppendLoadparmMachineParm(virBuffer *buf,
+                              const virDomainDef *def)
+{
+    size_t i = 0;
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDefPtr disk = def->disks[i];
+
+        if (disk->info.bootIndex == 1 && disk->info.loadparm) {
+            virBufferAsprintf(buf, ",loadparm=%s", disk->info.loadparm);
+            return;
+        }
+    }
+
+    /* Network boot device */
+    for (i = 0; i < def->nnets; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+
+        if (net->info.bootIndex == 1 && net->info.loadparm) {
+            virBufferAsprintf(buf, ",loadparm=%s", net->info.loadparm);
+            return;
+        }
+    }
+}
+
+
 static int
 qemuBuildNameCommandLine(virCommandPtr cmd,
                          virQEMUDriverConfigPtr cfg,
@@ -7554,6 +7582,10 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                 break;
             }
         }
+
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_LOADPARM))
+            qemuAppendLoadparmMachineParm(&buf, def);
 
         virCommandAddArgBuffer(cmd, &buf);
     }

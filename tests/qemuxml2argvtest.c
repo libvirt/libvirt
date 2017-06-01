@@ -2477,6 +2477,25 @@ mymain(void)
             QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
 
+    DO_TEST("machine-loadparm-s390", QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390,
+            QEMU_CAPS_BOOTINDEX, QEMU_CAPS_LOADPARM);
+    DO_TEST("machine-loadparm-net-s390", QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390,
+            QEMU_CAPS_BOOTINDEX, QEMU_CAPS_LOADPARM);
+    DO_TEST("machine-loadparm-multiple-disks-nets-s390",
+            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_VIRTIO_CCW,
+            QEMU_CAPS_VIRTIO_S390, QEMU_CAPS_BOOTINDEX,
+            QEMU_CAPS_LOADPARM);
+    DO_TEST_PARSE_ERROR("machine-loadparm-s390-char-invalid",
+                        QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_VIRTIO_CCW,
+                        QEMU_CAPS_VIRTIO_S390, QEMU_CAPS_BOOTINDEX,
+                        QEMU_CAPS_LOADPARM);
+    DO_TEST_PARSE_ERROR("machine-loadparm-s390-len-invalid",
+                        QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_VIRTIO_CCW,
+                        QEMU_CAPS_VIRTIO_S390, QEMU_CAPS_BOOTINDEX,
+                        QEMU_CAPS_LOADPARM);
+
     DO_TEST("qemu-ns-domain-ns0", NONE);
     DO_TEST("qemu-ns-domain-commandline", NONE);
     DO_TEST("qemu-ns-domain-commandline-ns0", NONE);
