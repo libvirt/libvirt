@@ -26,6 +26,10 @@
       <model name='spapr-pci-host-bridge'/>
       <target index='1'/>
     </controller>
+    <controller type='pci' index='2' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='2'/>
+    </controller>
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <driver name='vfio'/>
       <source>
@@ -38,7 +42,7 @@
       <source>
         <address domain='0x0005' bus='0x90' slot='0x01' function='0x0'/>
       </source>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x01' function='0x0'/>
     </hostdev>
     <memballoon model='none'/>
     <panic model='pseries'/>

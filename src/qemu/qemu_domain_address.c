@@ -25,6 +25,7 @@
 
 #include "qemu_domain_address.h"
 #include "qemu_domain.h"
+#include "network/bridge_driver.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
@@ -902,6 +903,243 @@ qemuDomainFillAllPCIConnectFlags(virDomainDefPtr def,
     return virDomainDeviceInfoIterate(def,
                                       qemuDomainFillDevicePCIConnectFlagsIter,
                                       &data);
+}
+
+
+/**
+ * qemuDomainFindUnusedIsolationGroupIter:
+ * @def: domain definition
+ * @dev: device definition
+ * @info: device information
+ * @opaque: user data
+ *
+ * Used to implement qemuDomainFindUnusedIsolationGroup(). You probably
+ * don't want to call this directly.
+ *
+ * Return: 0 if the isolation group is not used by the device, <1 otherwise.
+ */
+static int
+qemuDomainFindUnusedIsolationGroupIter(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                       virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                                       virDomainDeviceInfoPtr info,
+                                       void *opaque)
+{
+    unsigned int *isolationGroup = opaque;
+
+    if (info->isolationGroup == *isolationGroup)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * qemuDomainFindUnusedIsolationGroup:
+ * @def: domain definition
+ *
+ * Find an isolation group that is not used by any device in @def yet.
+ *
+ * Normally, we'd look up the device's IOMMU group and base its isolation
+ * group on that; however, when a network interface uses a network backed
+ * by SR-IOV Virtual Functions, we can't know at PCI address assignment
+ * time which host device will be used so we can't look up its IOMMU group.
+ *
+ * We still want such a device to be isolated: this function can be used
+ * to obtain a synthetic isolation group usable for the purpose.
+ *
+ * Return: unused isolation group
+ */
+static unsigned int
+qemuDomainFindUnusedIsolationGroup(virDomainDefPtr def)
+{
+    unsigned int isolationGroup = UINT_MAX;
+
+    /* We start from the highest possible isolation group and work our
+     * way backwards so that we're working in a completely different range
+     * from IOMMU groups, thus avoiding clashes. We're realistically going
+     * to call this function just a few times per guest anyway */
+    while (isolationGroup > 0 &&
+           virDomainDeviceInfoIterate(def,
+                                      qemuDomainFindUnusedIsolationGroupIter,
+                                      &isolationGroup) < 0) {
+        isolationGroup--;
+    }
+
+    return isolationGroup;
+}
+
+
+/**
+ * qemuDomainFillDeviceIsolationGroup:
+ * @def: domain definition
+ * @dev: device definition
+ *
+ * Fill isolation group information for a single device.
+ *
+ * Return: 0 on success, <0 on failure
+ * */
+int
+qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
+                                   virDomainDeviceDefPtr dev)
+{
+    int ret = -1;
+
+    /* Only host devices need their isolation group to be different from
+     * the default. Interfaces of type hostdev are just host devices in
+     * disguise, but we don't need to handle them separately because for
+     * each such interface a corresponding hostdev is also added to the
+     * guest configuration */
+    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
+        virDomainHostdevDefPtr hostdev = dev->data.hostdev;
+        virDomainDeviceInfoPtr info = hostdev->info;
+        virPCIDeviceAddressPtr hostAddr;
+        int tmp;
+
+        /* Only PCI host devices are subject to isolation */
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            goto skip;
+        }
+
+        hostAddr = &hostdev->source.subsys.u.pci.addr;
+
+        /* If a non-default isolation has already been assigned to the
+         * device, we can avoid looking up the information again */
+        if (info->isolationGroup > 0)
+            goto skip;
+
+        /* The isolation group depends on the IOMMU group assigned by the host */
+        tmp = virPCIDeviceAddressGetIOMMUGroupNum(hostAddr);
+
+        if (tmp < 0) {
+            VIR_WARN("Can't look up isolation group for host device "
+                     "%04x:%02x:%02x.%x",
+                     hostAddr->domain, hostAddr->bus,
+                     hostAddr->slot, hostAddr->function);
+            goto cleanup;
+        }
+
+        /* The isolation group for a host device is its IOMMU group,
+         * increased by one: this is because zero is a valid IOMMU group but
+         * that's also the default isolation group, which we want to save
+         * for emulated devices. Shifting isolation groups for host devices
+         * by one ensures there is no overlap */
+        info->isolationGroup = tmp + 1;
+
+        VIR_DEBUG("Isolation group for host device %04x:%02x:%02x.%x is %u",
+                  hostAddr->domain, hostAddr->bus,
+                  hostAddr->slot, hostAddr->function,
+                  info->isolationGroup);
+
+    } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
+        virDomainNetDefPtr iface = dev->data.net;
+        virDomainDeviceInfoPtr info = &iface->info;
+        unsigned int tmp;
+
+        /* Network interfaces can ultimately result in the guest being
+         * assigned a host device if the libvirt network they're connected
+         * to is of type hostdev. All other kinds of network interfaces don't
+         * require us to isolate the guest device, so we can skip them */
+        if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK ||
+            networkGetActualType(iface) != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+            goto skip;
+        }
+
+        /* If a non-default isolation has already been assigned to the
+         * device, we can avoid looking up the information again */
+        if (info->isolationGroup > 0)
+            goto skip;
+
+        /* Obtain a synthetic isolation group for the device, since at this
+         * point in time we don't have access to the IOMMU group of the host
+         * device that will eventually be used by the guest */
+        tmp = qemuDomainFindUnusedIsolationGroup(def);
+
+        if (tmp == 0) {
+            VIR_WARN("Can't obtain usable isolation group for interface "
+                     "configured to use hostdev-backed network '%s'",
+                     iface->data.network.name);
+            goto cleanup;
+        }
+
+        info->isolationGroup = tmp;
+
+        VIR_DEBUG("Isolation group for interface configured to use "
+                  "hostdev-backed network '%s' is %u",
+                  iface->data.network.name, info->isolationGroup);
+    }
+
+ skip:
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
+/**
+ * qemuDomainFillDeviceIsolationGroupIter:
+ * @def: domain definition
+ * @dev: device definition
+ * @info: device information
+ * @opaque: user data
+ *
+ * A version of qemuDomainFillDeviceIsolationGroup() to be used
+ * with virDomainDeviceInfoIterate()
+ *
+ * Return: 0 on success, <0 on failure
+ */
+static int
+qemuDomainFillDeviceIsolationGroupIter(virDomainDefPtr def,
+                                       virDomainDeviceDefPtr dev,
+                                       virDomainDeviceInfoPtr info ATTRIBUTE_UNUSED,
+                                       void *opaque ATTRIBUTE_UNUSED)
+{
+    return qemuDomainFillDeviceIsolationGroup(def, dev);
+}
+
+
+/**
+ * qemuDomainSetupIsolationGroups:
+ * @def: domain definition
+ *
+ * High-level function to set up isolation groups for all devices
+ * and controllers in @def. Isolation groups will only be set up if
+ * the guest architecture and machine type require it, so this
+ * function can and should be called unconditionally before attempting
+ * to assign any PCI address.
+ *
+ * Return: 0 on success, <0 on failure
+ */
+static int
+qemuDomainSetupIsolationGroups(virDomainDefPtr def)
+{
+    int idx;
+    int ret = -1;
+
+    /* Only pSeries guests care about isolation groups at the moment */
+    if (!qemuDomainIsPSeries(def))
+        return 0;
+
+    idx = virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0);
+    if (idx < 0)
+        goto cleanup;
+
+    /* We want to prevent hostdevs from being plugged into the default PHB:
+     * we can make sure that doesn't happen by locking its isolation group */
+    def->controllers[idx]->info.isolationGroupLocked = true;
+
+    /* Fill in isolation groups for all other devices */
+    if (virDomainDeviceInfoIterate(def,
+                                   qemuDomainFillDeviceIsolationGroupIter,
+                                   NULL) < 0) {
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
 }
 
 
@@ -2052,6 +2290,9 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
      * bus when assigning addresses.
      */
     if (qemuDomainFillAllPCIConnectFlags(def, qemuCaps, driver) < 0)
+        goto cleanup;
+
+    if (qemuDomainSetupIsolationGroups(def) < 0)
         goto cleanup;
 
     if (nbuses > 0) {

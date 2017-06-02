@@ -21,4 +21,4 @@ server,nowait \
 -device spapr-pci-host-bridge,index=1,id=pci.1 \
 -device spapr-pci-host-bridge,index=2,id=pci.2 \
 -device vfio-pci,host=0001:01:00.0,id=hostdev0,bus=pci.2.0,addr=0x1 \
--device vfio-pci,host=0001:01:00.1,id=hostdev1,bus=pci.0,addr=0x1
+-device vfio-pci,host=0001:01:00.1,id=hostdev1,bus=pci.2.0,addr=0x2

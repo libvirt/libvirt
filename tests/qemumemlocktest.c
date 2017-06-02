@@ -131,7 +131,7 @@ mymain(void)
 
     DO_TEST("pseries-hardlimit", 2147483648);
     DO_TEST("pseries-locked", VIR_DOMAIN_MEMORY_PARAM_UNLIMITED);
-    DO_TEST("pseries-hostdev", 2168455168);
+    DO_TEST("pseries-hostdev", 4320133120);
 
     DO_TEST("pseries-hardlimit+locked", 2147483648);
     DO_TEST("pseries-hardlimit+hostdev", 2147483648);
