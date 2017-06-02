@@ -122,11 +122,13 @@ struct _qemuDomainLogContext {
 };
 
 static virClassPtr qemuDomainLogContextClass;
+static virClassPtr qemuDomainSaveCookieClass;
 
 static void qemuDomainLogContextDispose(void *obj);
+static void qemuDomainSaveCookieDispose(void *obj);
 
 static int
-qemuDomainLogContextOnceInit(void)
+qemuDomainOnceInit(void)
 {
     if (!(qemuDomainLogContextClass = virClassNew(virClassForObject(),
                                                  "qemuDomainLogContext",
@@ -134,10 +136,16 @@ qemuDomainLogContextOnceInit(void)
                                                  qemuDomainLogContextDispose)))
         return -1;
 
+    if (!(qemuDomainSaveCookieClass = virClassNew(virClassForObject(),
+                                                  "qemuDomainSaveCookie",
+                                                  sizeof(qemuDomainSaveCookie),
+                                                  qemuDomainSaveCookieDispose)))
+        return -1;
+
     return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(qemuDomainLogContext)
+VIR_ONCE_GLOBAL_INIT(qemuDomain)
 
 static void
 qemuDomainLogContextDispose(void *obj)
@@ -4554,7 +4562,7 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainLogContextPtr ctxt = NULL;
 
-    if (qemuDomainLogContextInitialize() < 0)
+    if (qemuDomainInitialize() < 0)
         goto cleanup;
 
     if (!(ctxt = virObjectNew(qemuDomainLogContextClass)))
@@ -9105,3 +9113,68 @@ qemuDomainGetStorageSourceByDevstr(const char *devstr,
     VIR_FREE(target);
     return src;
 }
+
+
+static void
+qemuDomainSaveCookieDispose(void *obj)
+{
+    qemuDomainSaveCookiePtr cookie = obj;
+
+    VIR_DEBUG("cookie=%p", cookie);
+}
+
+
+qemuDomainSaveCookiePtr
+qemuDomainSaveCookieNew(virDomainObjPtr vm ATTRIBUTE_UNUSED)
+{
+    qemuDomainSaveCookiePtr cookie = NULL;
+
+    if (qemuDomainInitialize() < 0)
+        goto error;
+
+    if (!(cookie = virObjectNew(qemuDomainSaveCookieClass)))
+        goto error;
+
+    VIR_DEBUG("Save cookie %p", cookie);
+
+    return cookie;
+
+ error:
+    virObjectUnref(cookie);
+    return NULL;
+}
+
+
+static int
+qemuDomainSaveCookieParse(xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                          virObjectPtr *obj)
+{
+    qemuDomainSaveCookiePtr cookie = NULL;
+
+    if (qemuDomainInitialize() < 0)
+        goto error;
+
+    if (!(cookie = virObjectNew(qemuDomainSaveCookieClass)))
+        goto error;
+
+    *obj = (virObjectPtr) cookie;
+    return 0;
+
+ error:
+    virObjectUnref(cookie);
+    return -1;
+}
+
+
+static int
+qemuDomainSaveCookieFormat(virBufferPtr buf ATTRIBUTE_UNUSED,
+                           virObjectPtr obj ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+virSaveCookieCallbacks virQEMUDriverDomainSaveCookie = {
+    .parse = qemuDomainSaveCookieParse,
+    .format = qemuDomainSaveCookieFormat,
+};

@@ -416,6 +416,14 @@ struct qemuProcessEvent {
 typedef struct _qemuDomainLogContext qemuDomainLogContext;
 typedef qemuDomainLogContext *qemuDomainLogContextPtr;
 
+typedef struct _qemuDomainSaveCookie qemuDomainSaveCookie;
+typedef qemuDomainSaveCookie *qemuDomainSaveCookiePtr;
+struct _qemuDomainSaveCookie {
+    virObject parent;
+};
+
+qemuDomainSaveCookiePtr qemuDomainSaveCookieNew(virDomainObjPtr vm);
+
 const char *qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
                                             int phase);
 int qemuDomainAsyncJobPhaseFromString(qemuDomainAsyncJob job,
@@ -638,6 +646,7 @@ extern virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks;
 extern virDomainXMLNamespace virQEMUDriverDomainXMLNamespace;
 extern virDomainDefParserConfig virQEMUDriverDomainDefParserConfig;
 extern virDomainABIStability virQEMUDriverDomainABIStability;
+extern virSaveCookieCallbacks virQEMUDriverDomainSaveCookie;
 
 int qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
                                virDomainObjPtr vm, int asyncJob);

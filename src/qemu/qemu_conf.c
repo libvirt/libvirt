@@ -911,7 +911,7 @@ virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver)
                                  &virQEMUDriverPrivateDataCallbacks,
                                  &virQEMUDriverDomainXMLNamespace,
                                  &virQEMUDriverDomainABIStability,
-                                 NULL);
+                                 &virQEMUDriverDomainSaveCookie);
 }
 
 
