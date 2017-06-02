@@ -115,10 +115,6 @@ virConnectNumOfDomains(virConnectPtr conn)
  * reference counter on the connection is not increased by this
  * call.
  *
- * WARNING: When writing libvirt bindings in other languages, do
- * not use this function.  Instead, store the connection and
- * the domain object together.
- *
  * Returns the virConnectPtr or NULL in case of failure.
  */
 virConnectPtr

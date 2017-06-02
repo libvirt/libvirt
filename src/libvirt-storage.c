@@ -36,10 +36,6 @@ VIR_LOG_INIT("libvirt.storage");
  * reference counter on the connection is not increased by this
  * call.
  *
- * WARNING: When writing libvirt bindings in other languages, do
- * not use this function.  Instead, store the connection and
- * the pool object together.
- *
  * Returns the virConnectPtr or NULL in case of failure.
  */
 virConnectPtr
@@ -1253,10 +1249,6 @@ virStoragePoolListVolumes(virStoragePoolPtr pool,
  * Provides the connection pointer associated with a storage volume.  The
  * reference counter on the connection is not increased by this
  * call.
- *
- * WARNING: When writing libvirt bindings in other languages, do
- * not use this function.  Instead, store the connection and
- * the volume object together.
  *
  * Returns the virConnectPtr or NULL in case of failure.
  */
