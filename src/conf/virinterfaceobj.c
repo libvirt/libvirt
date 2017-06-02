@@ -47,7 +47,7 @@ struct _virInterfaceObjList {
 /* virInterfaceObj manipulation */
 
 static virInterfaceObjPtr
-virInterfaceObjNew(void)
+virInterfaceObjNew(virInterfaceDefPtr def)
 {
     virInterfaceObjPtr obj;
 
@@ -62,6 +62,7 @@ virInterfaceObjNew(void)
     }
 
     virInterfaceObjLock(obj);
+    obj->def = def;
 
     return obj;
 }
@@ -251,17 +252,17 @@ virInterfaceObjListAssignDef(virInterfaceObjListPtr interfaces,
         return obj;
     }
 
-    if (!(obj = virInterfaceObjNew()))
+    if (!(obj = virInterfaceObjNew(def)))
         return NULL;
 
     if (VIR_APPEND_ELEMENT_COPY(interfaces->objs,
                                 interfaces->count, obj) < 0) {
+        obj->def = NULL;
         virInterfaceObjUnlock(obj);
         virInterfaceObjFree(obj);
         return NULL;
     }
 
-    obj->def = def;
     return obj;
 
 }
