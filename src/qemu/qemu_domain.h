@@ -424,6 +424,8 @@ typedef struct _qemuDomainSaveCookie qemuDomainSaveCookie;
 typedef qemuDomainSaveCookie *qemuDomainSaveCookiePtr;
 struct _qemuDomainSaveCookie {
     virObject parent;
+
+    virCPUDefPtr cpu;
 };
 
 qemuDomainSaveCookiePtr qemuDomainSaveCookieNew(virDomainObjPtr vm);

@@ -9167,12 +9167,15 @@ qemuDomainSaveCookieDispose(void *obj)
     qemuDomainSaveCookiePtr cookie = obj;
 
     VIR_DEBUG("cookie=%p", cookie);
+
+    virCPUDefFree(cookie->cpu);
 }
 
 
 qemuDomainSaveCookiePtr
 qemuDomainSaveCookieNew(virDomainObjPtr vm ATTRIBUTE_UNUSED)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainSaveCookiePtr cookie = NULL;
 
     if (qemuDomainInitialize() < 0)
@@ -9181,7 +9184,10 @@ qemuDomainSaveCookieNew(virDomainObjPtr vm ATTRIBUTE_UNUSED)
     if (!(cookie = virObjectNew(qemuDomainSaveCookieClass)))
         goto error;
 
-    VIR_DEBUG("Save cookie %p", cookie);
+    if (priv->origCPU && !(cookie->cpu = virCPUDefCopy(vm->def->cpu)))
+        goto error;
+
+    VIR_DEBUG("Save cookie %p, cpu=%p", cookie, cookie->cpu);
 
     return cookie;
 
@@ -9203,6 +9209,10 @@ qemuDomainSaveCookieParse(xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
     if (!(cookie = virObjectNew(qemuDomainSaveCookieClass)))
         goto error;
 
+    if (virCPUDefParseXML(ctxt, "./cpu[1]", VIR_CPU_TYPE_GUEST,
+                          &cookie->cpu) < 0)
+        goto error;
+
     *obj = (virObjectPtr) cookie;
     return 0;
 
@@ -9213,9 +9223,15 @@ qemuDomainSaveCookieParse(xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSaveCookieFormat(virBufferPtr buf ATTRIBUTE_UNUSED,
-                           virObjectPtr obj ATTRIBUTE_UNUSED)
+qemuDomainSaveCookieFormat(virBufferPtr buf,
+                           virObjectPtr obj)
 {
+    qemuDomainSaveCookiePtr cookie = (qemuDomainSaveCookiePtr) obj;
+
+    if (cookie->cpu &&
+        virCPUDefFormatBufFull(buf, cookie->cpu, NULL, false) < 0)
+        return -1;
+
     return 0;
 }
 
