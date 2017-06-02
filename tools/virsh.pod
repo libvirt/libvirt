@@ -1440,13 +1440,19 @@ the I<format> argument must be B<qemu-argv>. For Xen hypervisor, the
 I<format> argument may be B<xen-xm>, B<xen-xl>, or B<xen-sxpr>. For
 LXC hypervisor, the I<format> argument must be B<lxc-tools>.
 
-=item B<domxml-to-native> I<format> I<xml>
+=item B<domxml-to-native> I<format>
+{ [I<--xml>] I<xml> | I<--domain> I<domain-name-or-id-or-uuid> }
 
-Convert the file I<xml> in domain XML format to the native guest
-configuration format named by I<format>. For QEMU/KVM hypervisor,
-the I<format> argument must be B<qemu-argv>. For Xen hypervisor, the
-I<format> argument may be B<xen-xm>, B<xen-xl>, or B<xen-sxpr>. For
-LXC hypervisor, the I<format> argument must be B<lxc-tools>.
+Convert the file I<xml> into domain XML format or convert an existing
+I<--domain> to the native guest configuration format named by I<format>.
+The I<xml> and I<--domain> arguments are mutually exclusive.
+
+For the QEMU/KVM hypervisor, the I<format> argument must be B<qemu-argv>.
+
+For the Xen hypervisor, the I<format> argument may be B<xen-xm>, B<xen-xl>,
+or B<xen-sxpr>.
+
+For the LXC hypervisor, the I<format> argument must be B<lxc-tools>.
 
 =item B<dump> I<domain> I<corefilepath> [I<--bypass-cache>]
 { [I<--live>] | [I<--crash>] | [I<--reset>] } [I<--verbose>] [I<--memory-only>]

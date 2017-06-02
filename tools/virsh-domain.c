@@ -9856,9 +9856,13 @@ static const vshCmdOptDef opts_domxmltonative[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("target config data type format")
     },
+    {.name = "domain",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ_OPT,
+     .help = N_("domain name, id or uuid")
+    },
     {.name = "xml",
      .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
      .help = N_("xml data file to export from")
     },
     {.name = NULL}
@@ -9867,30 +9871,51 @@ static const vshCmdOptDef opts_domxmltonative[] = {
 static bool
 cmdDomXMLToNative(vshControl *ctl, const vshCmd *cmd)
 {
-    bool ret = true;
+    bool ret = false;
     const char *format = NULL;
     const char *xmlFile = NULL;
-    char *configData;
-    char *xmlData;
+    char *configData = NULL;
+    char *xmlData = NULL;
     unsigned int flags = 0;
     virshControlPtr priv = ctl->privData;
+    virDomainPtr dom = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "format", &format) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "xml", &xmlFile) < 0)
         return false;
 
-    if (virFileReadAll(xmlFile, VSH_MAX_XML_FILE, &xmlData) < 0)
-        return false;
+    VSH_EXCLUSIVE_OPTIONS("domain", "xml");
 
-    configData = virConnectDomainXMLToNative(priv->conn, format, xmlData, flags);
-    if (configData != NULL) {
-        vshPrint(ctl, "%s", configData);
-        VIR_FREE(configData);
+    if (vshCommandOptBool(cmd, "domain") &&
+        (!(dom = virshCommandOptDomain(ctl, cmd, NULL))))
+            return false;
+
+    if (dom) {
+        xmlData = virDomainGetXMLDesc(dom, flags);
+    } else if (xmlFile) {
+        if (virFileReadAll(xmlFile, VSH_MAX_XML_FILE, &xmlData) < 0)
+            goto cleanup;
     } else {
-        ret = false;
+        vshError(ctl, "%s", _("need either domain or domain XML"));
+        goto cleanup;
     }
 
+    if (!xmlData) {
+        vshError(ctl, "%s", _("failed to retrieve XML"));
+        goto cleanup;
+    }
+
+    if (!(configData = virConnectDomainXMLToNative(priv->conn, format, xmlData, flags))) {
+        goto cleanup;
+    } else {
+        vshPrint(ctl, "%s", configData);
+        ret = true;
+    }
+
+ cleanup:
+    virshDomainFree(dom);
     VIR_FREE(xmlData);
+    VIR_FREE(configData);
     return ret;
 }
 
