@@ -1974,7 +1974,7 @@ virStoragePermsCopy(const virStoragePerms *src)
     ret->uid = src->uid;
     ret->gid = src->gid;
 
-    if (VIR_STRDUP(ret->label, src->label))
+    if (VIR_STRDUP(ret->label, src->label) < 0)
         goto error;
 
     return ret;
