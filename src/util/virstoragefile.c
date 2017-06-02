@@ -2635,13 +2635,6 @@ virStorageSourceParseNBDColonString(const char *nbdstr,
             goto cleanup;
 
    } else {
-        if (!backing[1]) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("missing host name in nbd string '%s'"),
-                           nbdstr);
-            goto cleanup;
-        }
-
         if (VIR_STRDUP(src->hosts->name, backing[1]) < 0)
             goto cleanup;
 
