@@ -4571,7 +4571,9 @@ testDestroyVport(testDriverPtr privconn,
                                            VIR_NODE_DEVICE_EVENT_DELETED,
                                            0);
 
-    virNodeDeviceObjRemove(&privconn->devs, &obj);
+    virNodeDeviceObjRemove(&privconn->devs, obj);
+    virNodeDeviceObjFree(obj);
+    obj = NULL;
 
     ret = 0;
 
@@ -5665,7 +5667,9 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
                                            0);
 
     virNodeDeviceObjLock(obj);
-    virNodeDeviceObjRemove(&driver->devs, &obj);
+    virNodeDeviceObjRemove(&driver->devs, obj);
+    virNodeDeviceObjFree(obj);
+    obj = NULL;
 
  out:
     if (obj)

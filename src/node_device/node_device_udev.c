@@ -1333,7 +1333,8 @@ udevRemoveOneDevice(struct udev_device *device)
 
     VIR_DEBUG("Removing device '%s' with sysfs path '%s'",
               def->name, name);
-    virNodeDeviceObjRemove(&driver->devs, &dev);
+    virNodeDeviceObjRemove(&driver->devs, dev);
+    virNodeDeviceObjFree(dev);
 
     if (event)
         virObjectEventStateQueue(driver->nodeDeviceEventState, event);

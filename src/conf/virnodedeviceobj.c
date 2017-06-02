@@ -301,23 +301,21 @@ virNodeDeviceObjAssignDef(virNodeDeviceObjListPtr devs,
 
 void
 virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
-                       virNodeDeviceObjPtr *dev)
+                       virNodeDeviceObjPtr dev)
 {
     size_t i;
 
-    virNodeDeviceObjUnlock(*dev);
+    virNodeDeviceObjUnlock(dev);
 
     for (i = 0; i < devs->count; i++) {
-        virNodeDeviceObjLock(*dev);
-        if (devs->objs[i] == *dev) {
-            virNodeDeviceObjUnlock(*dev);
-            virNodeDeviceObjFree(devs->objs[i]);
-            *dev = NULL;
+        virNodeDeviceObjLock(devs->objs[i]);
+        if (devs->objs[i] == dev) {
+            virNodeDeviceObjUnlock(devs->objs[i]);
 
             VIR_DELETE_ELEMENT(devs->objs, i, devs->count);
             break;
         }
-        virNodeDeviceObjUnlock(*dev);
+        virNodeDeviceObjUnlock(devs->objs[i]);
     }
 }
 

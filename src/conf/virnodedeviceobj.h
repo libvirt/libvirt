@@ -58,7 +58,7 @@ virNodeDeviceObjAssignDef(virNodeDeviceObjListPtr devs,
 
 void
 virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
-                       virNodeDeviceObjPtr *dev);
+                       virNodeDeviceObjPtr dev);
 
 int
 virNodeDeviceObjGetParentHost(virNodeDeviceObjListPtr devs,
