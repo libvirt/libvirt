@@ -40,6 +40,9 @@ struct _virNodeDeviceDriverState {
 };
 
 
+virNodeDeviceDefPtr
+virNodeDeviceObjGetDef(virNodeDeviceObjPtr obj);
+
 virNodeDeviceObjPtr
 virNodeDeviceObjFindByName(virNodeDeviceObjListPtr devs,
                            const char *name);

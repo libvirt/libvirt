@@ -33,6 +33,13 @@
 VIR_LOG_INIT("conf.virnodedeviceobj");
 
 
+virNodeDeviceDefPtr
+virNodeDeviceObjGetDef(virNodeDeviceObjPtr obj)
+{
+    return obj->def;
+}
+
+
 static int
 virNodeDeviceObjHasCap(const virNodeDeviceObj *dev,
                        const char *cap)

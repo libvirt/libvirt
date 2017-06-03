@@ -959,6 +959,7 @@ virNetworkObjUpdateAssignDef;
 virNodeDeviceObjAssignDef;
 virNodeDeviceObjFindByName;
 virNodeDeviceObjFindBySysfsPath;
+virNodeDeviceObjGetDef;
 virNodeDeviceObjGetNames;
 virNodeDeviceObjGetParentHost;
 virNodeDeviceObjListExport;

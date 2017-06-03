@@ -5322,13 +5322,15 @@ testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
 {
     testDriverPtr driver = conn->privateData;
     virNodeDeviceObjPtr obj;
+    virNodeDeviceDefPtr def;
     virNodeDevicePtr ret = NULL;
 
     if (!(obj = testNodeDeviceObjFindByName(driver, name)))
         goto cleanup;
+    def = virNodeDeviceObjGetDef(obj);
 
     if ((ret = virGetNodeDevice(conn, name))) {
-        if (VIR_STRDUP(ret->parent, obj->def->parent) < 0) {
+        if (VIR_STRDUP(ret->parent, def->parent) < 0) {
             virObjectUnref(ret);
             ret = NULL;
         }
@@ -5353,7 +5355,7 @@ testNodeDeviceGetXMLDesc(virNodeDevicePtr dev,
     if (!(obj = testNodeDeviceObjFindByName(driver, dev->name)))
         goto cleanup;
 
-    ret = virNodeDeviceDefFormat(obj->def);
+    ret = virNodeDeviceDefFormat(virNodeDeviceObjGetDef(obj));
 
  cleanup:
     if (obj)
@@ -5366,13 +5368,15 @@ testNodeDeviceGetParent(virNodeDevicePtr dev)
 {
     testDriverPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj;
+    virNodeDeviceDefPtr def;
     char *ret = NULL;
 
     if (!(obj = testNodeDeviceObjFindByName(driver, dev->name)))
         goto cleanup;
+    def = virNodeDeviceObjGetDef(obj);
 
-    if (obj->def->parent) {
-        ignore_value(VIR_STRDUP(ret, obj->def->parent));
+    if (def->parent) {
+        ignore_value(VIR_STRDUP(ret, def->parent));
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("no parent for this device"));
@@ -5390,14 +5394,16 @@ testNodeDeviceNumOfCaps(virNodeDevicePtr dev)
 {
     testDriverPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj;
+    virNodeDeviceDefPtr def;
     virNodeDevCapsDefPtr caps;
     int ncaps = 0;
     int ret = -1;
 
     if (!(obj = testNodeDeviceObjFindByName(driver, dev->name)))
         goto cleanup;
+    def = virNodeDeviceObjGetDef(obj);
 
-    for (caps = obj->def->caps; caps; caps = caps->next)
+    for (caps = def->caps; caps; caps = caps->next)
         ++ncaps;
     ret = ncaps;
 
@@ -5413,14 +5419,16 @@ testNodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
 {
     testDriverPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj;
+    virNodeDeviceDefPtr def;
     virNodeDevCapsDefPtr caps;
     int ncaps = 0;
     int ret = -1;
 
     if (!(obj = testNodeDeviceObjFindByName(driver, dev->name)))
         goto cleanup;
+    def = virNodeDeviceObjGetDef(obj);
 
-    for (caps = obj->def->caps; caps && ncaps < maxnames; caps = caps->next) {
+    for (caps = def->caps; caps && ncaps < maxnames; caps = caps->next) {
         if (VIR_STRDUP(names[ncaps++], virNodeDevCapTypeToString(caps->data.type)) < 0)
             goto cleanup;
     }
@@ -5447,6 +5455,7 @@ testNodeDeviceMockCreateVport(testDriverPtr driver,
     virNodeDeviceDefPtr def = NULL;
     virNodeDevCapsDefPtr caps;
     virNodeDeviceObjPtr obj = NULL, objcopy = NULL;
+    virNodeDeviceDefPtr objdef;
     virObjectEventPtr event = NULL;
 
     /* In the real code, we'd call virVHBAManageVport which would take the
@@ -5461,7 +5470,7 @@ testNodeDeviceMockCreateVport(testDriverPtr driver,
     if (!(objcopy = virNodeDeviceObjFindByName(&driver->devs, "scsi_host11")))
         goto cleanup;
 
-    xml = virNodeDeviceDefFormat(objcopy->def);
+    xml = virNodeDeviceDefFormat(virNodeDeviceObjGetDef(objcopy));
     virNodeDeviceObjUnlock(objcopy);
     if (!xml)
         goto cleanup;
@@ -5501,8 +5510,9 @@ testNodeDeviceMockCreateVport(testDriverPtr driver,
     if (!(obj = virNodeDeviceObjAssignDef(&driver->devs, def)))
         goto cleanup;
     def = NULL;
+    objdef = virNodeDeviceObjGetDef(obj);
 
-    event = virNodeDeviceEventLifecycleNew(obj->def->name,
+    event = virNodeDeviceEventLifecycleNew(objdef->name,
                                            VIR_NODE_DEVICE_EVENT_CREATED,
                                            0);
     testObjectEventQueue(driver, event);
@@ -5524,6 +5534,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     char *wwnn = NULL, *wwpn = NULL;
     virNodeDevicePtr dev = NULL, ret = NULL;
     virNodeDeviceObjPtr obj = NULL;
+    virNodeDeviceDefPtr objdef;
 
     virCheckFlags(0, NULL);
 
@@ -5551,8 +5562,9 @@ testNodeDeviceCreateXML(virConnectPtr conn,
      * work properly, we need to drop our lock */
     if (!(obj = testNodeDeviceMockCreateVport(driver, wwnn, wwpn)))
         goto cleanup;
+    objdef = virNodeDeviceObjGetDef(obj);
 
-    if (!(dev = virGetNodeDevice(conn, obj->def->name)))
+    if (!(dev = virGetNodeDevice(conn, objdef->name)))
         goto cleanup;
 
     VIR_FREE(dev->parent);
@@ -5579,16 +5591,18 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
     int ret = 0;
     testDriverPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj = NULL;
+    virNodeDeviceDefPtr def;
     char *parent_name = NULL, *wwnn = NULL, *wwpn = NULL;
     virObjectEventPtr event = NULL;
 
     if (!(obj = testNodeDeviceObjFindByName(driver, dev->name)))
         goto out;
+    def = virNodeDeviceObjGetDef(obj);
 
-    if (virNodeDeviceGetWWNs(obj->def, &wwnn, &wwpn) == -1)
+    if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
         goto out;
 
-    if (VIR_STRDUP(parent_name, obj->def->parent) < 0)
+    if (VIR_STRDUP(parent_name, def->parent) < 0)
         goto out;
 
     /* virNodeDeviceGetParentHost will cause the device object's lock to be
@@ -5599,7 +5613,7 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
 
     /* We do this just for basic validation, but also avoid finding a
      * vport capable HBA if for some reason our vHBA doesn't exist */
-    if (virNodeDeviceObjGetParentHost(&driver->devs, obj->def,
+    if (virNodeDeviceObjGetParentHost(&driver->devs, def,
                                       EXISTING_DEVICE) < 0) {
         obj = NULL;
         goto out;

@@ -459,6 +459,7 @@ dev_create(const char *udi)
     char *parent_key = NULL;
     virNodeDeviceObjPtr dev = NULL;
     virNodeDeviceDefPtr def = NULL;
+    virNodeDeviceDefPtr objdef;
     const char *name = hal_name(udi);
     int rv;
     char *privData;
@@ -493,15 +494,15 @@ dev_create(const char *udi)
     /* Some devices don't have a path in sysfs, so ignore failure */
     (void)get_str_prop(ctx, udi, "linux.sysfs_path", &devicePath);
 
-    dev = virNodeDeviceObjAssignDef(&driver->devs, def);
-    if (!dev) {
+    if (!(dev = virNodeDeviceObjAssignDef(&driver->devs, def))) {
         VIR_FREE(devicePath);
         goto failure;
     }
+    objdef = virNodeDeviceObjGetDef(dev);
 
     dev->privateData = privData;
     dev->privateFree = free_udi;
-    dev->def->sysfs_path = devicePath;
+    objdef->sysfs_path = devicePath;
 
     virNodeDeviceObjUnlock(dev);
 
@@ -571,13 +572,15 @@ device_cap_added(LibHalContext *ctx,
 {
     const char *name = hal_name(udi);
     virNodeDeviceObjPtr dev;
+    virNodeDeviceDefPtr def;
 
     nodeDeviceLock();
     dev = virNodeDeviceObjFindByName(&driver->devs, name);
     nodeDeviceUnlock();
     VIR_DEBUG("%s %s", cap, name);
     if (dev) {
-        (void)gather_capability(ctx, udi, cap, &dev->def->caps);
+        def = virNodeDeviceObjGetDef(dev);
+        (void)gather_capability(ctx, udi, cap, &def->caps);
         virNodeDeviceObjUnlock(dev);
     } else {
         VIR_DEBUG("no device named %s", name);
