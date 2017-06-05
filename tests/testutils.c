@@ -240,7 +240,7 @@ virTestRun(const char *title,
         for (i = start; i < end; i++) {
             bool missingFail = false;
 # ifdef TEST_OOM_TRACE
-            memset(testAllocStack, 0, ARRAY_CARDINALITY(testAllocStack));
+            memset(testAllocStack, 0, sizeof(testAllocStack));
             ntestAllocStack = 0;
 # endif
             virAllocTestOOM(i + 1, 1);
