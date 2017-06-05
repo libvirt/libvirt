@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include "capabilities.h"
+#include "c-ctype.h"
 #include "count-one-bits.h"
 #include "cpu_conf.h"
 #include "domain_conf.h"
@@ -906,11 +907,24 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
 
         virBufferAdjustIndent(&controlBuf, indent + 4);
         for (j = 0; j < bank->ncontrols; j++) {
-            bool min_kilos = !(bank->controls[j]->min % 1024);
+            bool min_kilos = !(bank->controls[j]->granularity % 1024);
+
+            /* Only use KiB if both values are divisible */
+            if (bank->controls[j]->min)
+                min_kilos = min_kilos && !(bank->controls[j]->min % 1024);
+
             virBufferAsprintf(&controlBuf,
-                              "<control min='%llu' unit='%s' "
-                              "type='%s' maxAllocs='%u'/>\n",
-                              bank->controls[j]->min >> (min_kilos * 10),
+                              "<control granularity='%llu'",
+                              bank->controls[j]->granularity >> (min_kilos * 10));
+
+            if (bank->controls[j]->min) {
+                virBufferAsprintf(&controlBuf,
+                                  " min='%llu'",
+                                  bank->controls[j]->min >> (min_kilos * 10));
+            }
+
+            virBufferAsprintf(&controlBuf,
+                              " unit='%s' type='%s' maxAllocs='%u'/>\n",
                               min_kilos ? "KiB" : "B",
                               virCacheTypeToString(bank->controls[j]->scope),
                               bank->controls[j]->max_allocation);
@@ -1598,9 +1612,11 @@ virCapabilitiesGetCacheControl(virCapsHostCacheBankPtr bank,
                                virCacheType scope)
 {
     int ret = -1;
+    char *tmp = NULL;
     char *path = NULL;
     char *cbm_mask = NULL;
     char *type_upper = NULL;
+    unsigned int bits = 0;
     unsigned int min_cbm_bits = 0;
     virCapsHostCacheControlPtr control;
 
@@ -1632,8 +1648,14 @@ virCapabilitiesGetCacheControl(virCapsHostCacheBankPtr bank,
 
     virStringTrimOptionalNewline(cbm_mask);
 
-    /* cbm_mask: cache bit mask, it's in hex, eg: fffff */
-    control->min = min_cbm_bits * bank->size / (strlen(cbm_mask) * 4);
+    for (tmp = cbm_mask; *tmp != '\0'; tmp++) {
+        if (c_isxdigit(*tmp))
+            bits += count_one_bits(virHexToBin(*tmp));
+    }
+
+    control->granularity = bank->size / bits;
+    if (min_cbm_bits != 1)
+        control->min = min_cbm_bits * control->granularity;
 
     control->scope = scope;
 

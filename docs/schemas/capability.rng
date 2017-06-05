@@ -273,9 +273,14 @@
           </attribute>
           <zeroOrMore>
             <element name='control'>
-              <attribute name='min'>
+              <attribute name='granularity'>
                 <ref name='unsignedInt'/>
               </attribute>
+              <optional>
+                <attribute name='min'>
+                  <ref name='unsignedInt'/>
+                </attribute>
+              </optional>
               <attribute name='unit'>
                 <ref name='unit'/>
               </attribute>

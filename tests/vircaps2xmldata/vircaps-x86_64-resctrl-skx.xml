@@ -1,0 +1,31 @@
+<capabilities>
+
+  <host>
+    <cpu>
+      <arch>x86_64</arch>
+    </cpu>
+    <power_management/>
+    <migration_features>
+      <live/>
+    </migration_features>
+    <topology>
+      <cells num='1'>
+        <cell id='0'>
+          <memory unit='KiB'>1048576</memory>
+          <pages unit='KiB' size='4'>2048</pages>
+          <pages unit='KiB' size='2048'>4096</pages>
+          <pages unit='KiB' size='1048576'>6144</pages>
+          <cpus num='1'>
+            <cpu id='0' socket_id='0' core_id='0' siblings='0'/>
+          </cpus>
+        </cell>
+      </cells>
+    </topology>
+    <cache>
+      <bank id='0' level='3' type='both' size='33792' unit='KiB' cpus='0'>
+        <control granularity='3072' unit='KiB' type='both' maxAllocs='16'/>
+      </bank>
+    </cache>
+  </host>
+
+</capabilities>

@@ -151,9 +151,14 @@ VIR_ENUM_DECL(virCache);
 typedef struct _virCapsHostCacheControl virCapsHostCacheControl;
 typedef virCapsHostCacheControl *virCapsHostCacheControlPtr;
 struct _virCapsHostCacheControl {
-    unsigned long long min; /* minimum cache control size in B */
-    virCacheType scope;  /* data, code or both */
-    unsigned int max_allocation; /* max number of supported allocations */
+    /* Smallest possible increase of the allocation size in bytes */
+    unsigned long long granularity;
+    /* Minimal allocatable size in bytes (if different from granularity) */
+    unsigned long long min;
+    /* Type of the allocation */
+    virCacheType scope;
+    /* Maximum number of simultaneous allocations */
+    unsigned int max_allocation;
 };
 
 typedef struct _virCapsHostCacheBank virCapsHostCacheBank;

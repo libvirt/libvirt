@@ -42,12 +42,12 @@
     </topology>
     <cache>
       <bank id='0' level='3' type='both' size='15360' unit='KiB' cpus='0-5'>
-        <control min='768' unit='KiB' type='code' maxAllocs='8'/>
-        <control min='768' unit='KiB' type='data' maxAllocs='8'/>
+        <control granularity='768' unit='KiB' type='code' maxAllocs='8'/>
+        <control granularity='768' unit='KiB' type='data' maxAllocs='8'/>
       </bank>
       <bank id='1' level='3' type='both' size='15360' unit='KiB' cpus='6-11'>
-        <control min='768' unit='KiB' type='code' maxAllocs='8'/>
-        <control min='768' unit='KiB' type='data' maxAllocs='8'/>
+        <control granularity='768' unit='KiB' type='code' maxAllocs='8'/>
+        <control granularity='768' unit='KiB' type='data' maxAllocs='8'/>
       </bank>
     </cache>
   </host>

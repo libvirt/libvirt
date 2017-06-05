@@ -120,6 +120,7 @@ mymain(void)
 
     DO_TEST_FULL("resctrl", VIR_ARCH_X86_64, true, true, true);
     DO_TEST_FULL("resctrl-cdp", VIR_ARCH_X86_64, true, true, true);
+    DO_TEST_FULL("resctrl-skx", VIR_ARCH_X86_64, true, true, true);
 
     return ret;
 }
