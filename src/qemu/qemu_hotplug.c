@@ -1398,6 +1398,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_HOSTDEV,
                                { .hostdev = hostdev } };
+    virDomainDeviceInfoPtr info = hostdev->info;
     int ret;
     char *devstr = NULL;
     int configfd = -1;
@@ -1470,7 +1471,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
         teardownlabel = true;
 
-    if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
+    if (qemuAssignDeviceHostdevAlias(vm->def, &info->alias, -1) < 0)
         goto error;
     if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
         goto error;
@@ -1479,8 +1480,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
         configfd = qemuOpenPCIConfig(hostdev);
         if (configfd >= 0) {
-            if (virAsprintf(&configfd_name, "fd-%s",
-                            hostdev->info->alias) < 0)
+            if (virAsprintf(&configfd_name, "fd-%s", info->alias) < 0)
                 goto error;
         }
     }
@@ -1525,7 +1525,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
         VIR_WARN("Unable to remove host device from /dev");
 
     if (releaseaddr)
-        qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
+        qemuDomainReleaseDeviceAddress(vm, info, NULL);
 
     qemuHostdevReAttachPCIDevices(driver, vm->def->name, &hostdev, 1);
 
