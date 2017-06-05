@@ -420,6 +420,8 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
                         const int fdout,
                         const char *fdinname,
                         const char *fdoutname,
+                        size_t length,
+                        size_t total,
                         size_t *dataLen,
                         size_t buflen)
 {
@@ -433,9 +435,17 @@ virFDStreamThreadDoRead(virFDStreamDataPtr fdst,
         if (virFileInData(fdin, &inData, &sectionLen) < 0)
             goto error;
 
+        if (length &&
+            sectionLen > length - total)
+            sectionLen = length - total;
+
         if (inData)
             *dataLen = sectionLen;
     }
+
+    if (length &&
+        buflen > length - total)
+        buflen = length - total;
 
     if (VIR_ALLOC(msg) < 0)
         goto error;
@@ -578,13 +588,6 @@ virFDStreamThread(void *opaque)
     while (1) {
         ssize_t got;
 
-        if (length &&
-            (length - total) < buflen)
-            buflen = length - total;
-
-        if (buflen == 0)
-            break; /* End of requested data from client */
-
         while (doRead == (fdst->msg != NULL) &&
                !fdst->threadQuit) {
             if (virCondWait(&fdst->threadCond, &fdst->parent.lock)) {
@@ -608,6 +611,7 @@ virFDStreamThread(void *opaque)
             got = virFDStreamThreadDoRead(fdst, sparse,
                                           fdin, fdout,
                                           fdinname, fdoutname,
+                                          length, total,
                                           &dataLen, buflen);
         else
             got = virFDStreamThreadDoWrite(fdst, sparse,
