@@ -418,8 +418,9 @@ State is the run state (see below).
 
 B<STATES>
 
-The State field lists 8 states for a domain, and which ones the
-current domain is in.
+The State field lists what state each domain is currently in. A domain
+can be in one of the following possible states:
+
 
 =over 4
 
