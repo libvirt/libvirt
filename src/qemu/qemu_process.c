@@ -3492,6 +3492,8 @@ qemuProcessReconnect(void *opaque)
     if (qemuDomainRefreshVcpuInfo(driver, obj, QEMU_ASYNC_JOB_NONE, true) < 0)
         goto error;
 
+    qemuDomainVcpuPersistOrder(obj->def);
+
     if (qemuSecurityReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
         goto error;
 
