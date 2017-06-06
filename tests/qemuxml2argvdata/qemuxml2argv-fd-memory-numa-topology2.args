@@ -12,7 +12,7 @@ QEMU_AUDIO_DRV=none \
 -mem-prealloc \
 -smp 20,sockets=1,cores=8,threads=1 \
 -object memory-backend-file,id=ram-node0,mem-path=/var/lib/libvirt/qemu/ram,\
-size=15032385536 \
+share=no,size=15032385536 \
 -numa node,nodeid=0,cpus=0-7,memdev=ram-node0 \
 -object memory-backend-file,id=ram-node1,mem-path=/var/lib/libvirt/qemu/ram,\
 share=yes,size=15032385536 \

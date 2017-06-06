@@ -3346,6 +3346,9 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
         memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, mem->targetNode);
     }
 
+    if (memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
+        memAccess = def->mem.access;
+
     if (virDomainNumatuneGetMode(def->numa, mem->targetNode, &mode) < 0 &&
         virDomainNumatuneGetMode(def->numa, -1, &mode) < 0)
         mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
@@ -3403,7 +3406,7 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
     if (!(props = virJSONValueNewObject()))
         return -1;
 
-    if (pagesize || mem->nvdimmPath ||
+    if (pagesize || mem->nvdimmPath || memAccess ||
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
         *backendType = "memory-backend-file";
 
@@ -3440,23 +3443,10 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
             break;
 
         case VIR_DOMAIN_MEMORY_ACCESS_DEFAULT:
-            if (def->mem.access == VIR_DOMAIN_MEMORY_ACCESS_SHARED) {
-                if (virJSONValueObjectAdd(props, "b:share", true, NULL) < 0)
-                    goto cleanup;
-            }
-            break;
-
         case VIR_DOMAIN_MEMORY_ACCESS_LAST:
             break;
         }
     } else {
-        if (memAccess) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Shared memory mapping is supported "
-                             "only with hugepages"));
-            goto cleanup;
-        }
-
         *backendType = "memory-backend-ram";
     }
 

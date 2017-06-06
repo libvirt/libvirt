@@ -819,6 +819,9 @@ mymain(void)
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-pages5", QEMU_CAPS_MEM_PATH);
     DO_TEST("hugepages-pages6", NONE);
+    DO_TEST("hugepages-memaccess", QEMU_CAPS_OBJECT_MEMORY_FILE,
+            QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_DEVICE_PC_DIMM,
+            QEMU_CAPS_NUMA);
     DO_TEST("nosharepages", QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_MEM_MERGE);
     DO_TEST("disk-cdrom", NONE);
     DO_TEST("disk-iscsi", NONE);
