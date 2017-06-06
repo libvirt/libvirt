@@ -400,6 +400,20 @@
             <ref name="absFilePath"/>
           </element>
         </optional>
+        <optional>
+          <element name="inituser">
+            <choice>
+              <ref name="unsignedInt"/>
+              <ref name="genericName"/>
+            </choice>
+          </element>
+          <element name="initgroup">
+            <choice>
+              <ref name="unsignedInt"/>
+              <ref name="genericName"/>
+            </choice>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

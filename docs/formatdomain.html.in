@@ -334,6 +334,13 @@
       To set a custom work directory for the init, use the <code>initdir</code>
       element.
     </p>
+    <p>
+      To run the init command as a given user or group, use the <code>inituser</code>
+      or <code>initgroup</code> elements respectively. Both elements can be provided
+      either a user (resp. group) id or a name. Prefixing the user or group id with
+      a <code>+</code> will force it to be considered like a numeric value. Without
+      this, it will be first tried as a user or group name.
+    </p>
 
     <pre>
 &lt;os&gt;
@@ -343,6 +350,8 @@
   &lt;initarg&gt;emergency.service&lt;/initarg&gt;
   &lt;initenv name='MYENV'&gt;some value&lt;/initenv&gt;
   &lt;initdir&gt;/my/custom/cwd&lt;/initdir&gt;
+  &lt;inituser&gt;tester&lt;/inituser&gt;
+  &lt;initgroup&gt;1000&lt;/initgroup&gt;
 &lt;/os&gt;
     </pre>
 
