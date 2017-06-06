@@ -2832,7 +2832,7 @@ virQEMUSaveDataFree(virQEMUSaveHeaderPtr header)
 
 
 static virQEMUSaveHeaderPtr
-virQEMUSaveDataNew(char *domXML,
+virQEMUSaveDataNew(char *domXML ATTRIBUTE_UNUSED,
                    bool running,
                    int compressed)
 {
@@ -2845,34 +2845,66 @@ virQEMUSaveDataNew(char *domXML,
     header->version = QEMU_SAVE_VERSION;
     header->was_running = running ? 1 : 0;
     header->compressed = compressed;
-    header->data_len = strlen(domXML) + 1;
 
     return header;
 }
 
 
-/* return -errno on failure, or 0 on success */
+/* virQEMUSaveDataWrite:
+ *
+ * Writes libvirt's header (including domain XML) into a saved image of a
+ * running domain. If @header has data_len filled in (because it was previously
+ * read from the file), the function will make sure the new data will fit
+ * within data_len.
+ *
+ * Returns -1 on failure, or 0 on success.
+ */
 static int
-qemuDomainSaveHeader(int fd, const char *path, const char *xml,
-                     virQEMUSaveHeaderPtr header)
+virQEMUSaveDataWrite(virQEMUSaveHeaderPtr header,
+                     const char *xml,
+                     int fd,
+                     const char *path)
 {
-    int ret = 0;
+    size_t len;
+    int ret = -1;
+    size_t zerosLen = 0;
+    char *zeros = NULL;
+
+    len = strlen(xml) + 1;
+
+    if (header->data_len > 0) {
+        if (len > header->data_len) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("new xml too large to fit in file"));
+            goto cleanup;
+        }
+
+        zerosLen = header->data_len - len;
+        if (VIR_ALLOC_N(zeros, zerosLen) < 0)
+            goto cleanup;
+    } else {
+        header->data_len = len;
+    }
 
     if (safewrite(fd, header, sizeof(*header)) != sizeof(*header)) {
-        ret = -errno;
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to write header to domain save file '%s'"),
-                       path);
-        goto endjob;
+        virReportSystemError(errno,
+                             _("failed to write header to domain save file '%s'"),
+                             path);
+        goto cleanup;
     }
 
-    if (safewrite(fd, xml, header->data_len) != header->data_len) {
-        ret = -errno;
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("failed to write xml to '%s'"), path);
-        goto endjob;
+    if (safewrite(fd, xml, header->data_len) != header->data_len ||
+        safewrite(fd, zeros, zerosLen) != zerosLen) {
+        virReportSystemError(errno,
+                             _("failed to write domain xml to '%s'"),
+                             path);
+        goto cleanup;
     }
- endjob:
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(zeros);
     return ret;
 }
 
@@ -3146,8 +3178,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     if (!(wrapperFd = virFileWrapperFdNew(&fd, path, wrapperFlags)))
         goto cleanup;
 
-    /* Write header to file, followed by XML */
-    if (qemuDomainSaveHeader(fd, path, domXML, header) < 0)
+    if (virQEMUSaveDataWrite(header, domXML, fd, path) < 0)
         goto cleanup;
 
     /* Perform the migration */
@@ -6626,7 +6657,6 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     virDomainDefPtr newdef = NULL;
     int fd = -1;
     char *xml = NULL;
-    size_t len;
     virQEMUSaveHeaderPtr header = NULL;
     int state = -1;
 
@@ -6662,30 +6692,22 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
 
     VIR_FREE(xml);
 
-    xml = qemuDomainDefFormatXML(driver, newdef,
-                                 VIR_DOMAIN_XML_INACTIVE |
-                                 VIR_DOMAIN_XML_SECURE |
-                                 VIR_DOMAIN_XML_MIGRATABLE);
-    if (!xml)
-        goto cleanup;
-    len = strlen(xml) + 1;
-
-    if (len > header->data_len) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("new xml too large to fit in file"));
-        goto cleanup;
-    }
-    if (VIR_EXPAND_N(xml, len, header->data_len - len) < 0)
+    if (!(xml = qemuDomainDefFormatXML(driver, newdef,
+                                       VIR_DOMAIN_XML_INACTIVE |
+                                       VIR_DOMAIN_XML_SECURE |
+                                       VIR_DOMAIN_XML_MIGRATABLE)))
         goto cleanup;
 
     if (lseek(fd, 0, SEEK_SET) != 0) {
         virReportSystemError(errno, _("cannot seek in '%s'"), path);
         goto cleanup;
     }
-    if (safewrite(fd, &header, sizeof(header)) != sizeof(header) ||
-        safewrite(fd, xml, len) != len ||
-        VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("failed to write xml to '%s'"), path);
+
+    if (virQEMUSaveDataWrite(header, xml, fd, path) < 0)
+        goto cleanup;
+
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("failed to write header data to '%s'"), path);
         goto cleanup;
     }
 
