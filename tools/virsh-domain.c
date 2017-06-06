@@ -2184,6 +2184,10 @@ static const vshCmdOptDef opts_block_copy[] = {
      .type = VSH_OT_BOOL,
      .help = N_("the bandwidth limit is in bytes/s rather than MiB/s")
     },
+    {.name = "transient-job",
+     .type = VSH_OT_BOOL,
+     .help = N_("the copy job is not persisted if VM is turned off")
+    },
     {.name = NULL}
 };
 
@@ -2205,6 +2209,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
     bool blocking = vshCommandOptBool(cmd, "wait") || finish || pivot;
     bool async = vshCommandOptBool(cmd, "async");
     bool bytes = vshCommandOptBool(cmd, "bytes");
+    bool transientjob = vshCommandOptBool(cmd, "transient-job");
     int timeout = 0;
     const char *path = NULL;
     int abort_flags = 0;
@@ -2234,6 +2239,8 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
     if (vshCommandOptBool(cmd, "reuse-external"))
         flags |= VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
+    if (transientjob)
+        flags |= VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB;
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
         return false;
 
@@ -2282,7 +2289,8 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    if (granularity || buf_size || (format && STRNEQ(format, "raw")) || xml) {
+    if (granularity || buf_size || (format && STRNEQ(format, "raw")) || xml ||
+        transientjob) {
         /* New API */
         if (bandwidth || granularity || buf_size) {
             params = vshCalloc(ctl, 3, sizeof(*params));

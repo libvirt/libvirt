@@ -1078,6 +1078,7 @@ command.
 | I<--xml> B<file> } [I<--shallow>] [I<--reuse-external>] [I<bandwidth>]
 [I<--wait> [I<--async>] [I<--verbose>]] [{I<--pivot> | I<--finish>}]
 [I<--timeout> B<seconds>] [I<granularity>] [I<buf-size>] [I<--bytes>]
+[I<--transient-job>]
 
 Copy a disk backing image chain to a destination.  Either I<dest> as
 the destination file name, or I<--xml> with the name of an XML file containing
@@ -1131,6 +1132,11 @@ usually correct); hypervisors may restrict this to be a power of two or fall
 within a certain range. Specifying I<buf-size> will control how much data can
 be simultaneously in-flight during the copy; larger values use more memory but
 may allow faster completion (the default value is usually correct).
+
+I<--transient-job> allows to specify that the user does not require the job to
+be recovered if the VM crashes or is turned off before the job completes. This
+flag removes the restriction of copy jobs to transient domains if that
+restriction is applied by the hypervisor.
 
 =item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<--bytes>] [I<base>]
 [I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async>]]
