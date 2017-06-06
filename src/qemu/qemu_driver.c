@@ -6235,12 +6235,13 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                 virReportSystemError(errno,
                                      _("cannot remove corrupt file: %s"),
                                      path);
-                goto error;
+            } else {
+                fd = -3;
             }
-            return -3;
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           "%s", _("failed to read qemu header"));
         }
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("failed to read qemu header"));
         goto error;
     }
 
@@ -6255,9 +6256,10 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                     virReportSystemError(errno,
                                          _("cannot remove corrupt file: %s"),
                                          path);
-                    goto error;
+                } else {
+                    fd = -3;
                 }
-                return -3;
+                goto error;
             }
         }
         virReportError(VIR_ERR_OPERATION_FAILED, "%s", msg);
