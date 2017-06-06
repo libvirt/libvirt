@@ -21415,7 +21415,6 @@ virDomainControllerDefFormat(virBufferPtr buf,
     const char *type = virDomainControllerTypeToString(def->type);
     const char *model = NULL;
     const char *modelName = NULL;
-    bool pcihole64 = false, pciModel = false, pciTarget = false;
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
 
     virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
@@ -21462,25 +21461,12 @@ virDomainControllerDefFormat(virBufferPtr buf,
         }
         break;
 
-    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
-        if (def->opts.pciopts.pcihole64)
-            pcihole64 = true;
-        if (def->opts.pciopts.modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
-            pciModel = true;
-        if (def->opts.pciopts.chassisNr != -1 ||
-            def->opts.pciopts.chassis != -1 ||
-            def->opts.pciopts.port != -1 ||
-            def->opts.pciopts.busNr != -1 ||
-            def->opts.pciopts.numaNode != -1)
-            pciTarget = true;
-        break;
-
     default:
         break;
     }
 
-    if (pciModel || pciTarget) {
-        if (pciModel) {
+    if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+        if (def->opts.pciopts.modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE) {
             modelName = virDomainControllerPCIModelNameTypeToString(def->opts.pciopts.modelName);
             if (!modelName) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -21491,7 +21477,11 @@ virDomainControllerDefFormat(virBufferPtr buf,
             virBufferAsprintf(&childBuf, "<model name='%s'/>\n", modelName);
         }
 
-        if (pciTarget) {
+        if (def->opts.pciopts.chassisNr != -1 ||
+            def->opts.pciopts.chassis != -1 ||
+            def->opts.pciopts.port != -1 ||
+            def->opts.pciopts.busNr != -1 ||
+            def->opts.pciopts.numaNode != -1) {
             virBufferAddLit(&childBuf, "<target");
             if (def->opts.pciopts.chassisNr != -1)
                 virBufferAsprintf(&childBuf, " chassisNr='%d'",
@@ -21524,7 +21514,8 @@ virDomainControllerDefFormat(virBufferPtr buf,
         virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
         return -1;
 
-    if (pcihole64) {
+    if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
+        def->opts.pciopts.pcihole64) {
         virBufferAsprintf(&childBuf, "<pcihole64 unit='KiB'>%lu</"
                           "pcihole64>\n", def->opts.pciopts.pcihole64size);
     }
