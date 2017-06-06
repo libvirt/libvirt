@@ -2877,6 +2877,25 @@ qemuDomainSaveHeader(int fd, const char *path, const char *xml,
 }
 
 
+static int
+virQEMUSaveDataFinish(virQEMUSaveHeaderPtr header,
+                      int *fd,
+                      const char *path)
+{
+    memcpy(header->magic, QEMU_SAVE_MAGIC, sizeof(header->magic));
+
+    if (safewrite(*fd, header, sizeof(*header)) != sizeof(*header) ||
+        VIR_CLOSE(*fd) < 0) {
+        virReportSystemError(errno,
+                             _("failed to write header to domain save file '%s'"),
+                             path);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static virCommandPtr
 qemuCompressGetCommand(virQEMUSaveFormat compression)
 {
@@ -3149,20 +3168,9 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     if (virFileWrapperFdClose(wrapperFd) < 0)
         goto cleanup;
 
-    if ((fd = qemuOpenFile(driver, vm, path, O_WRONLY, NULL, NULL)) < 0)
+    if ((fd = qemuOpenFile(driver, vm, path, O_WRONLY, NULL, NULL)) < 0 ||
+        virQEMUSaveDataFinish(header, &fd, path) < 0)
         goto cleanup;
-
-    memcpy(header->magic, QEMU_SAVE_MAGIC, sizeof(header->magic));
-
-    if (safewrite(fd, &header, sizeof(header)) != sizeof(header)) {
-        virReportSystemError(errno, _("unable to write %s"), path);
-        goto cleanup;
-    }
-
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("unable to close %s"), path);
-        goto cleanup;
-    }
 
     ret = 0;
 
