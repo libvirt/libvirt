@@ -2428,6 +2428,9 @@ typedef enum {
                                                  backing chain */
     VIR_DOMAIN_BLOCK_COPY_REUSE_EXT = 1 << 1, /* Reuse existing external
                                                  file for a copy */
+    VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB = 1 << 2, /* Don't force usage of
+                                                     recoverable job for the
+                                                     copy operation */
 } virDomainBlockCopyFlags;
 
 /**

@@ -16507,7 +16507,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 
     /* Preliminaries: find the disk we are editing, sanity checks */
     virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
-                  VIR_DOMAIN_BLOCK_COPY_REUSE_EXT, -1);
+                  VIR_DOMAIN_BLOCK_COPY_REUSE_EXT |
+                  VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB, -1);
 
     priv = vm->privateData;
     cfg = virQEMUDriverGetConfig(driver);
@@ -16546,7 +16547,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                        _("block copy is not supported with this QEMU binary"));
         goto endjob;
     }
-    if (vm->persistent) {
+    if (!(flags & VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB) &&
+        vm->persistent) {
         /* XXX if qemu ever lets us start a new domain with mirroring
          * already active, we can relax this; but for now, the risk of
          * 'managedsave' due to libvirt-guests means we can't risk
@@ -16773,7 +16775,8 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
     size_t i;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
-                  VIR_DOMAIN_BLOCK_COPY_REUSE_EXT, -1);
+                  VIR_DOMAIN_BLOCK_COPY_REUSE_EXT |
+                  VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB, -1);
     if (virTypedParamsValidate(params, nparams,
                                VIR_DOMAIN_BLOCK_COPY_BANDWIDTH,
                                VIR_TYPED_PARAM_ULLONG,
