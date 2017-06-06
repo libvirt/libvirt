@@ -2821,6 +2821,36 @@ bswap_header(virQEMUSaveHeaderPtr hdr)
 }
 
 
+static void
+virQEMUSaveDataFree(virQEMUSaveHeaderPtr header)
+{
+    if (!header)
+        return;
+
+    VIR_FREE(header);
+}
+
+
+static virQEMUSaveHeaderPtr
+virQEMUSaveDataNew(char *domXML,
+                   bool running,
+                   int compressed)
+{
+    virQEMUSaveHeaderPtr header = NULL;
+
+    if (VIR_ALLOC(header) < 0)
+        return NULL;
+
+    memcpy(header->magic, QEMU_SAVE_PARTIAL, sizeof(header->magic));
+    header->version = QEMU_SAVE_VERSION;
+    header->was_running = running ? 1 : 0;
+    header->compressed = compressed;
+    header->data_len = strlen(domXML) + 1;
+
+    return header;
+}
+
+
 /* return -errno on failure, or 0 on success */
 static int
 qemuDomainSaveHeader(int fd, const char *path, const char *xml,
@@ -3062,13 +3092,11 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      const char *path,
                      const char *domXML,
-                     int compressed,
+                     virQEMUSaveHeaderPtr header,
                      const char *compressedpath,
-                     bool was_running,
                      unsigned int flags,
                      qemuDomainAsyncJob asyncJob)
 {
-    virQEMUSaveHeader header;
     bool bypassSecurityDriver = false;
     bool needUnlink = false;
     int ret = -1;
@@ -3076,13 +3104,6 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     int directFlag = 0;
     virFileWrapperFdPtr wrapperFd = NULL;
     unsigned int wrapperFlags = VIR_FILE_WRAPPER_NON_BLOCKING;
-
-    memset(&header, 0, sizeof(header));
-    memcpy(header.magic, QEMU_SAVE_PARTIAL, sizeof(header.magic));
-    header.version = QEMU_SAVE_VERSION;
-    header.was_running = was_running ? 1 : 0;
-    header.compressed = compressed;
-    header.data_len = strlen(domXML) + 1;
 
     /* Obtain the file handle.  */
     if ((flags & VIR_DOMAIN_SAVE_BYPASS_CACHE)) {
@@ -3107,7 +3128,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
         goto cleanup;
 
     /* Write header to file, followed by XML */
-    if (qemuDomainSaveHeader(fd, path, domXML, &header) < 0)
+    if (qemuDomainSaveHeader(fd, path, domXML, header) < 0)
         goto cleanup;
 
     /* Perform the migration */
@@ -3131,7 +3152,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     if ((fd = qemuOpenFile(driver, vm, path, O_WRONLY, NULL, NULL)) < 0)
         goto cleanup;
 
-    memcpy(header.magic, QEMU_SAVE_MAGIC, sizeof(header.magic));
+    memcpy(header->magic, QEMU_SAVE_MAGIC, sizeof(header->magic));
 
     if (safewrite(fd, &header, sizeof(header)) != sizeof(header)) {
         virReportSystemError(errno, _("unable to write %s"), path);
@@ -3172,6 +3193,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     virObjectEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps;
+    virQEMUSaveHeaderPtr header = NULL;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -3237,9 +3259,11 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         goto endjob;
     }
 
-    ret = qemuDomainSaveMemory(driver, vm, path, xml, compressed,
-                               compressedpath, was_running, flags,
-                               QEMU_ASYNC_JOB_SAVE);
+    if (!(header = virQEMUSaveDataNew(xml, was_running, compressed)))
+        goto endjob;
+
+    ret = qemuDomainSaveMemory(driver, vm, path, xml, header, compressedpath,
+                               flags, QEMU_ASYNC_JOB_SAVE);
     if (ret < 0)
         goto endjob;
 
@@ -3272,6 +3296,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
 
  cleanup:
     VIR_FREE(xml);
+    virQEMUSaveDataFree(header);
     qemuDomainEventQueue(driver, event);
     virObjectUnref(caps);
     return ret;
@@ -6195,7 +6220,7 @@ static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                         const char *path,
                         virDomainDefPtr *ret_def,
-                        virQEMUSaveHeaderPtr ret_header,
+                        virQEMUSaveHeaderPtr *ret_header,
                         char **xmlout,
                         bool bypass_cache,
                         virFileWrapperFdPtr *wrapperFd,
@@ -6203,8 +6228,8 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                         bool unlink_corrupt)
 {
     int fd = -1;
-    virQEMUSaveHeader header;
     char *xml = NULL;
+    virQEMUSaveHeaderPtr header = NULL;
     virDomainDefPtr def = NULL;
     int oflags = open_write ? O_RDWR : O_RDONLY;
     virCapsPtr caps = NULL;
@@ -6229,7 +6254,10 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
                                            VIR_FILE_WRAPPER_BYPASS_CACHE)))
         goto error;
 
-    if (saferead(fd, &header, sizeof(header)) != sizeof(header)) {
+    if (VIR_ALLOC(header) < 0)
+        goto error;
+
+    if (saferead(fd, header, sizeof(*header)) != sizeof(*header)) {
         if (unlink_corrupt) {
             if (VIR_CLOSE(fd) < 0 || unlink(path) < 0) {
                 virReportSystemError(errno,
@@ -6245,11 +6273,11 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (memcmp(header.magic, QEMU_SAVE_MAGIC, sizeof(header.magic)) != 0) {
+    if (memcmp(header->magic, QEMU_SAVE_MAGIC, sizeof(header->magic)) != 0) {
         const char *msg = _("image magic is incorrect");
 
-        if (memcmp(header.magic, QEMU_SAVE_PARTIAL,
-                   sizeof(header.magic)) == 0) {
+        if (memcmp(header->magic, QEMU_SAVE_PARTIAL,
+                   sizeof(header->magic)) == 0) {
             msg = _("save image is incomplete");
             if (unlink_corrupt) {
                 if (VIR_CLOSE(fd) < 0 || unlink(path) < 0) {
@@ -6266,28 +6294,28 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (header.version > QEMU_SAVE_VERSION) {
+    if (header->version > QEMU_SAVE_VERSION) {
         /* convert endianess and try again */
-        bswap_header(&header);
+        bswap_header(header);
     }
 
-    if (header.version > QEMU_SAVE_VERSION) {
+    if (header->version > QEMU_SAVE_VERSION) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("image version is not supported (%d > %d)"),
-                       header.version, QEMU_SAVE_VERSION);
+                       header->version, QEMU_SAVE_VERSION);
         goto error;
     }
 
-    if (header.data_len <= 0) {
+    if (header->data_len <= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("invalid XML length: %d"), header.data_len);
+                       _("invalid XML length: %d"), header->data_len);
         goto error;
     }
 
-    if (VIR_ALLOC_N(xml, header.data_len) < 0)
+    if (VIR_ALLOC_N(xml, header->data_len) < 0)
         goto error;
 
-    if (saferead(fd, xml, header.data_len) != header.data_len) {
+    if (saferead(fd, xml, header->data_len) != header->data_len) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("failed to read XML"));
         goto error;
@@ -6314,6 +6342,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
  error:
     virDomainDefFree(def);
     VIR_FREE(xml);
+    virQEMUSaveDataFree(header);
     VIR_FORCE_CLOSE(fd);
     virObjectUnref(caps);
 
@@ -6325,7 +6354,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
                            virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            int *fd,
-                           const virQEMUSaveHeader *header,
+                           virQEMUSaveHeaderPtr header,
                            const char *path,
                            bool start_paused,
                            qemuDomainAsyncJob asyncJob)
@@ -6451,7 +6480,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     const char *newxml = dxml;
     int fd = -1;
     int ret = -1;
-    virQEMUSaveHeader header;
+    virQEMUSaveHeaderPtr header = NULL;
     virFileWrapperFdPtr wrapperFd = NULL;
     bool hook_taint = false;
 
@@ -6508,9 +6537,9 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     def = NULL;
 
     if (flags & VIR_DOMAIN_SAVE_RUNNING)
-        header.was_running = 1;
+        header->was_running = 1;
     else if (flags & VIR_DOMAIN_SAVE_PAUSED)
-        header.was_running = 0;
+        header->was_running = 0;
 
     if (hook_taint) {
         priv = vm->privateData;
@@ -6520,7 +6549,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     if (qemuProcessBeginJob(driver, vm, VIR_DOMAIN_JOB_OPERATION_RESTORE) < 0)
         goto cleanup;
 
-    ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path,
+    ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, header, path,
                                      false, QEMU_ASYNC_JOB_START);
     if (virFileWrapperFdClose(wrapperFd) < 0)
         VIR_WARN("Failed to close %s", path);
@@ -6531,6 +6560,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
     VIR_FREE(xml);
+    virQEMUSaveDataFree(header);
     VIR_FREE(xmlout);
     virFileWrapperFdFree(wrapperFd);
     if (vm && ret < 0)
@@ -6555,7 +6585,7 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
     char *ret = NULL;
     virDomainDefPtr def = NULL;
     int fd = -1;
-    virQEMUSaveHeader header;
+    virQEMUSaveHeaderPtr header = NULL;
 
     /* We only take subset of virDomainDefFormat flags.  */
     virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
@@ -6572,6 +6602,7 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
     ret = qemuDomainDefFormatXML(driver, def, flags);
 
  cleanup:
+    virQEMUSaveDataFree(header);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
     return ret;
@@ -6586,9 +6617,9 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     virDomainDefPtr def = NULL;
     virDomainDefPtr newdef = NULL;
     int fd = -1;
-    virQEMUSaveHeader header;
     char *xml = NULL;
     size_t len;
+    virQEMUSaveHeaderPtr header = NULL;
     int state = -1;
 
     virCheckFlags(VIR_DOMAIN_SAVE_RUNNING |
@@ -6609,14 +6640,14 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
         goto cleanup;
 
     if (STREQ(xml, dxml) &&
-        (state < 0 || state == header.was_running)) {
+        (state < 0 || state == header->was_running)) {
         /* no change to the XML */
         ret = 0;
         goto cleanup;
     }
 
     if (state >= 0)
-        header.was_running = state;
+        header->was_running = state;
 
     if (!(newdef = qemuDomainSaveImageUpdateDef(driver, def, dxml)))
         goto cleanup;
@@ -6631,12 +6662,12 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
         goto cleanup;
     len = strlen(xml) + 1;
 
-    if (len > header.data_len) {
+    if (len > header->data_len) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("new xml too large to fit in file"));
         goto cleanup;
     }
-    if (VIR_EXPAND_N(xml, len, header.data_len - len) < 0)
+    if (VIR_EXPAND_N(xml, len, header->data_len - len) < 0)
         goto cleanup;
 
     if (lseek(fd, 0, SEEK_SET) != 0) {
@@ -6657,6 +6688,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     virDomainDefFree(newdef);
     VIR_FORCE_CLOSE(fd);
     VIR_FREE(xml);
+    virQEMUSaveDataFree(header);
     return ret;
 }
 
@@ -6677,7 +6709,7 @@ qemuDomainObjRestore(virConnectPtr conn,
     int ret = -1;
     char *xml = NULL;
     char *xmlout = NULL;
-    virQEMUSaveHeader header;
+    virQEMUSaveHeaderPtr header = NULL;
     virFileWrapperFdPtr wrapperFd = NULL;
 
     fd = qemuDomainSaveImageOpen(driver, path, &def, &header, &xml,
@@ -6728,13 +6760,14 @@ qemuDomainObjRestore(virConnectPtr conn,
     virDomainObjAssignDef(vm, def, true, NULL);
     def = NULL;
 
-    ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, &header, path,
+    ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, header, path,
                                      start_paused, asyncJob);
     if (virFileWrapperFdClose(wrapperFd) < 0)
         VIR_WARN("Failed to close %s", path);
 
  cleanup:
     VIR_FREE(xml);
+    virQEMUSaveDataFree(header);
     VIR_FREE(xmlout);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
@@ -14300,6 +14333,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
     virQEMUDriverConfigPtr cfg = NULL;
     int compressed;
     char *compressedpath = NULL;
+    virQEMUSaveHeaderPtr header = NULL;
 
     /* If quiesce was requested, then issue a freeze command, and a
      * counterpart thaw command when it is actually sent to agent.
@@ -14371,9 +14405,12 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
         if (!(xml = qemuDomainDefFormatLive(driver, vm->def, true, true)))
             goto cleanup;
 
-        if ((ret = qemuDomainSaveMemory(driver, vm, snap->def->file, xml,
-                                        compressed, compressedpath, resume,
-                                        0, QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
+        if (!(header = virQEMUSaveDataNew(xml, resume, compressed)))
+            goto cleanup;
+
+        if ((ret = qemuDomainSaveMemory(driver, vm, snap->def->file, xml, header,
+                                        compressedpath, 0,
+                                        QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
             goto cleanup;
 
         /* the memory image was created, remove it on errors */
@@ -14441,6 +14478,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
             ret = -1;
     }
 
+    virQEMUSaveDataFree(header);
     VIR_FREE(xml);
     VIR_FREE(compressedpath);
     virObjectUnref(cfg);
