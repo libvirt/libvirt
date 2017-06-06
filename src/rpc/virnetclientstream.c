@@ -278,6 +278,15 @@ int virNetClientStreamQueuePacket(virNetClientStreamPtr st,
 
     VIR_DEBUG("Incoming stream message: stream=%p message=%p", st, msg);
 
+    if (msg->bufferLength == msg->bufferOffset) {
+        /* No payload means end of the stream. */
+        virObjectLock(st);
+        st->incomingEOF = true;
+        virNetClientStreamEventTimerUpdate(st);
+        virObjectUnlock(st);
+        return 0;
+    }
+
     /* Unfortunately, we must allocate new message as the one we
      * get in @msg is going to be cleared later in the process. */
 
