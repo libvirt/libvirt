@@ -1868,7 +1868,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
                     switch (datatype) {
                         case DATATYPE_UINT8_HEX:
                             base = 16;
-                            /* fallthrough */
+                            ATTRIBUTE_FALLTHROUGH;
                         case DATATYPE_UINT8:
                             if (virStrToLong_ui(prop, NULL, base, &uint_val) >= 0) {
                                 if (uint_val <= 0xff) {
@@ -1885,7 +1885,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
 
                         case DATATYPE_UINT16_HEX:
                             base = 16;
-                            /* fallthrough */
+                            ATTRIBUTE_FALLTHROUGH;
                         case DATATYPE_UINT16:
                             if (virStrToLong_ui(prop, NULL, base, &uint_val) >= 0) {
                                 if (uint_val <= 0xffff) {
@@ -1902,7 +1902,7 @@ virNWFilterRuleDetailsParse(xmlNodePtr node,
 
                         case DATATYPE_UINT32_HEX:
                             base = 16;
-                            /* fallthrough */
+                            ATTRIBUTE_FALLTHROUGH;
                         case DATATYPE_UINT32:
                             if (virStrToLong_ui(prop, NULL, base, &uint_val) >= 0) {
                                 item->u.u32 = uint_val;
@@ -2137,7 +2137,7 @@ virNWFilterRuleValidate(virNWFilterRuleDefPtr rule)
         portData = &rule->p.ipHdrFilter.portData;
         protocol = "IP";
         dataProtocolID = &rule->p.ipHdrFilter.ipHdr.dataProtocolID;
-        /* fall through */
+        ATTRIBUTE_FALLTHROUGH;
     case VIR_NWFILTER_RULE_PROTOCOL_IPV6:
         if (portData == NULL) {
             portData = &rule->p.ipv6HdrFilter.portData;
@@ -3371,7 +3371,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
 
                case DATATYPE_UINT8_HEX:
                    asHex = true;
-                   /* fallthrough */
+                   ATTRIBUTE_FALLTHROUGH;
                case DATATYPE_IPMASK:
                case DATATYPE_IPV6MASK:
                    /* display all masks in CIDR format */
@@ -3382,7 +3382,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
 
                case DATATYPE_UINT16_HEX:
                    asHex = true;
-                   /* fallthrough */
+                   ATTRIBUTE_FALLTHROUGH;
                case DATATYPE_UINT16:
                    virBufferAsprintf(buf, asHex ? "0x%x" : "%d",
                                      item->u.u16);
@@ -3390,7 +3390,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
 
                case DATATYPE_UINT32_HEX:
                    asHex = true;
-                   /* fallthrough */
+                   ATTRIBUTE_FALLTHROUGH;
                case DATATYPE_UINT32:
                    virBufferAsprintf(buf, asHex ? "0x%x" : "%u",
                                      item->u.u32);
