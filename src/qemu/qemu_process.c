@@ -3283,6 +3283,31 @@ qemuProcessReconnectCheckMemAliasOrderMismatch(virDomainObjPtr vm)
 }
 
 
+static bool
+qemuProcessNeedHugepagesPath(virDomainDefPtr def)
+{
+    const long system_pagesize = virGetSystemPageSizeKB();
+    size_t i;
+
+    if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE)
+        return true;
+
+    for (i = 0; i < def->mem.nhugepages; i++) {
+        if (def->mem.hugepages[i].size != system_pagesize)
+            return true;
+    }
+
+    for (i = 0; i < def->nmems; i++) {
+        if (def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_DIMM &&
+            def->mems[i]->pagesize &&
+            def->mems[i]->pagesize != system_pagesize)
+            return true;
+    }
+
+    return false;
+}
+
+
 static int
 qemuProcessBuildDestroyHugepagesPath(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
@@ -3291,9 +3316,13 @@ qemuProcessBuildDestroyHugepagesPath(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     char *hugepagePath = NULL;
     size_t i;
+    bool shouldBuild = false;
     int ret = -1;
 
-    if (vm->def->mem.nhugepages) {
+    if (build)
+        shouldBuild = qemuProcessNeedHugepagesPath(vm->def);
+
+    if (!build || shouldBuild) {
         for (i = 0; i < cfg->nhugetlbfs; i++) {
             VIR_FREE(hugepagePath);
             hugepagePath = qemuGetDomainHugepagePath(vm->def, &cfg->hugetlbfs[i]);
