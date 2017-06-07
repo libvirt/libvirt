@@ -777,7 +777,7 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
                 puts(VERSION);
                 exit(EXIT_SUCCESS);
             }
-            /* fall through */
+            ATTRIBUTE_FALLTHROUGH;
         case 'V':
             virshShowVersion(ctl);
             exit(EXIT_SUCCESS);

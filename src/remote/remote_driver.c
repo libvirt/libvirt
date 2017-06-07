@@ -947,7 +947,7 @@ doRemoteOpen(virConnectPtr conn,
         goto failed;
 #endif
 
-        /*FALLTHROUGH*/
+        ATTRIBUTE_FALLTHROUGH;
     case trans_tcp:
         priv->client = virNetClientNewTCP(priv->hostname, port, AF_UNSPEC);
         if (!priv->client)

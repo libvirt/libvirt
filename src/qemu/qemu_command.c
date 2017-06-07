@@ -9126,7 +9126,7 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
         virCommandAddArgList(cmd, "-object", devstr, NULL);
         VIR_FREE(devstr);
 
-        /* fall-through */
+        ATTRIBUTE_FALLTHROUGH;
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:
         devstr = qemuBuildShmemDevStr(def, shmem, qemuCaps);
         break;

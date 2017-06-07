@@ -97,17 +97,17 @@ uint32_t virHashCodeGen(const void *key, size_t len, uint32_t seed)
     switch (len & 3) {
     case 3:
         k1 ^= tail[2] << 16;
-        /* fallthrough */
+        ATTRIBUTE_FALLTHROUGH;
     case 2:
         k1 ^= tail[1] << 8;
-        /* fallthrough */
+        ATTRIBUTE_FALLTHROUGH;
     case 1:
         k1 ^= tail[0];
         k1 *= c1;
         k1 = rotl32(k1, 15);
         k1 *= c2;
         h1 ^= k1;
-        /* fallthrough */
+        ATTRIBUTE_FALLTHROUGH;
     default:
         break;
     }

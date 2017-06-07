@@ -4189,7 +4189,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
     case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
         if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0)
             goto endjob;
-        /* fall through */
+        ATTRIBUTE_FALLTHROUGH;
 
     case VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY:
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED,
@@ -4206,7 +4206,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
     case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART:
         if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0)
             goto endjob;
-        /* fall through */
+        ATTRIBUTE_FALLTHROUGH;
 
     case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART:
         qemuDomainSetFakeReboot(driver, vm, true);

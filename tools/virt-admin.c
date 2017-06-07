@@ -1300,7 +1300,7 @@ vshAdmParseArgv(vshControl *ctl, int argc, char **argv)
                 puts(VERSION);
                 exit(EXIT_SUCCESS);
             }
-            /* fall through */
+            ATTRIBUTE_FALLTHROUGH;
         case 'V':
             vshAdmShowVersion(ctl);
             exit(EXIT_SUCCESS);

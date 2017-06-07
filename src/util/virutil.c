@@ -312,19 +312,19 @@ virScaleInteger(unsigned long long *value, const char *suffix,
         switch (c_tolower(*suffix)) {
         case 'e':
             scale *= base;
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
         case 'p':
             scale *= base;
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
         case 't':
             scale *= base;
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
         case 'g':
             scale *= base;
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
         case 'm':
             scale *= base;
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
         case 'k':
             scale *= base;
             break;

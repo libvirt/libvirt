@@ -3466,7 +3466,7 @@ virStorageTranslateDiskSourcePool(virConnectPtr conn,
        case VIR_STORAGE_SOURCE_POOL_MODE_DEFAULT:
        case VIR_STORAGE_SOURCE_POOL_MODE_LAST:
            def->src->srcpool->mode = VIR_STORAGE_SOURCE_POOL_MODE_HOST;
-           /* fallthrough */
+           ATTRIBUTE_FALLTHROUGH;
        case VIR_STORAGE_SOURCE_POOL_MODE_HOST:
            def->src->srcpool->actualtype = VIR_STORAGE_TYPE_BLOCK;
            if (!(def->src->path = virStorageVolGetPath(vol)))

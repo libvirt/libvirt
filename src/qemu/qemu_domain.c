@@ -174,7 +174,7 @@ qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
     case QEMU_ASYNC_JOB_START:
     case QEMU_ASYNC_JOB_NONE:
     case QEMU_ASYNC_JOB_LAST:
-        ; /* fall through */
+        ATTRIBUTE_FALLTHROUGH;
     }
 
     return "none";
@@ -198,7 +198,7 @@ qemuDomainAsyncJobPhaseFromString(qemuDomainAsyncJob job,
     case QEMU_ASYNC_JOB_START:
     case QEMU_ASYNC_JOB_NONE:
     case QEMU_ASYNC_JOB_LAST:
-        ; /* fall through */
+        ATTRIBUTE_FALLTHROUGH;
     }
 
     if (STREQ(phase, "none"))

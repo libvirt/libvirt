@@ -1026,7 +1026,7 @@ int virConfGetValueStringList(virConfPtr conf,
             }
             break;
         }
-        /* fallthrough */
+        ATTRIBUTE_FALLTHROUGH;
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,

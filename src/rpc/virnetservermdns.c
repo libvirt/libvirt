@@ -231,7 +231,7 @@ static void virNetServerMDNSClientCallback(AvahiClient *c,
              * in AVAHI_SERVER_RUNNING state we will register them
              * again with the new host name. */
 
-            /* Fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
 
         case AVAHI_CLIENT_S_REGISTERING:
             /* The server records are now being established. This

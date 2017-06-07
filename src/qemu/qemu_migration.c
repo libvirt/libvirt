@@ -676,7 +676,7 @@ qemuMigrationDriveMirrorCancelled(virQEMUDriverPtr driver,
                                disk->dst);
                 failed = true;
             }
-            /* fallthrough */
+            ATTRIBUTE_FALLTHROUGH;
         case VIR_DOMAIN_BLOCK_JOB_CANCELED:
         case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
             qemuBlockJobSyncEnd(driver, vm, asyncJob, disk);
