@@ -5573,6 +5573,11 @@ virQEMUCapsSupportsChardev(const virDomainDef *def,
     if ((def->os.arch != VIR_ARCH_ARMV7L) && (def->os.arch != VIR_ARCH_AARCH64))
         return true;
 
+    /* The virt machine has a PCIe bus and allows plugging in the same type of
+     * devices as x86 systems do on a PCIe bus. */
+    if (qemuDomainIsVirt(def))
+        return true;
+
     /* This may not be true for all ARM machine types, but at least
      * the only supported non-virtio serial devices of vexpress and versatile
      * don't have the -chardev property wired up. */
