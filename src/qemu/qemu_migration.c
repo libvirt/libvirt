@@ -3644,8 +3644,9 @@ qemuMigrationRun(virQEMUDriverPtr driver,
             if (!(persistDef = qemuMigrationPrepareDef(driver, persist_xml,
                                                        NULL, NULL)))
                 goto cleanup;
-        } else if (vm->newDef) {
-            if (!(persistDef = qemuDomainDefCopy(driver, vm->newDef,
+        } else {
+            virDomainDefPtr def = vm->newDef ? vm->newDef : vm->def;
+            if (!(persistDef = qemuDomainDefCopy(driver, def,
                                                  VIR_DOMAIN_XML_SECURE |
                                                  VIR_DOMAIN_XML_MIGRATABLE)))
                 goto cleanup;
