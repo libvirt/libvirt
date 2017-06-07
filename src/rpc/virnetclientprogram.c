@@ -296,9 +296,9 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
     msg->header.type = noutfds ? VIR_NET_CALL_WITH_FDS : VIR_NET_CALL;
     msg->header.serial = serial;
     msg->header.proc = proc;
-    msg->nfds = noutfds;
-    if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0)
+    if (VIR_ALLOC_N(msg->fds, noutfds) < 0)
         goto error;
+    msg->nfds = noutfds;
     for (i = 0; i < msg->nfds; i++)
         msg->fds[i] = -1;
     for (i = 0; i < msg->nfds; i++) {
