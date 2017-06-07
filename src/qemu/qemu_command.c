@@ -52,6 +52,7 @@
 #include "secret_conf.h"
 #include "network/bridge_driver.h"
 #include "virnetdevtap.h"
+#include "virnetdevopenvswitch.h"
 #include "device_conf.h"
 #include "virstoragefile.h"
 #include "virtpm.h"
@@ -8310,6 +8311,9 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
                                        NULL, 0, NULL, 0)))
         goto error;
 
+    if (virNetDevOpenvswitchGetVhostuserIfname(net->data.vhostuser->data.nix.path,
+                                               &net->ifname) < 0)
+        goto error;
 
     virCommandAddArg(cmd, "-chardev");
     virCommandAddArg(cmd, chardev);

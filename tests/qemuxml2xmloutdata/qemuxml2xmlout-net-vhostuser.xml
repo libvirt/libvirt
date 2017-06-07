@@ -30,14 +30,12 @@
     <interface type='vhostuser'>
       <mac address='52:54:00:ee:96:6b'/>
       <source type='unix' path='/tmp/vhost0.sock' mode='server'/>
-      <target dev='vhost-user0'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
     <interface type='vhostuser'>
       <mac address='52:54:00:ee:96:6c'/>
       <source type='unix' path='/tmp/vhost1.sock' mode='client'/>
-      <target dev='vhost-user0'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </interface>
