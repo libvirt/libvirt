@@ -3284,7 +3284,8 @@ qemuProcessReconnectCheckMemAliasOrderMismatch(virDomainObjPtr vm)
 
 
 static bool
-qemuProcessNeedHugepagesPath(virDomainDefPtr def)
+qemuProcessNeedHugepagesPath(virDomainDefPtr def,
+                             virDomainMemoryDefPtr mem)
 {
     const long system_pagesize = virGetSystemPageSizeKB();
     size_t i;
@@ -3304,13 +3305,20 @@ qemuProcessNeedHugepagesPath(virDomainDefPtr def)
             return true;
     }
 
+    if (mem &&
+        mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM &&
+        mem->pagesize &&
+        mem->pagesize != system_pagesize)
+        return true;
+
     return false;
 }
 
 
-static int
+int
 qemuProcessBuildDestroyHugepagesPath(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
+                                     virDomainMemoryDefPtr mem,
                                      bool build)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -3320,7 +3328,7 @@ qemuProcessBuildDestroyHugepagesPath(virQEMUDriverPtr driver,
     int ret = -1;
 
     if (build)
-        shouldBuild = qemuProcessNeedHugepagesPath(vm->def);
+        shouldBuild = qemuProcessNeedHugepagesPath(vm->def, mem);
 
     if (!build || shouldBuild) {
         for (i = 0; i < cfg->nhugetlbfs; i++) {
@@ -3331,6 +3339,11 @@ qemuProcessBuildDestroyHugepagesPath(virQEMUDriverPtr driver,
                 goto cleanup;
 
             if (build) {
+                if (virFileExists(hugepagePath)) {
+                    ret = 0;
+                    goto cleanup;
+                }
+
                 if (virFileMakePathWithMode(hugepagePath, 0700) < 0) {
                     virReportSystemError(errno,
                                          _("Unable to create %s"),
@@ -3504,7 +3517,7 @@ qemuProcessReconnect(void *opaque)
         goto cleanup;
     }
 
-    if (qemuProcessBuildDestroyHugepagesPath(driver, obj, true) < 0)
+    if (qemuProcessBuildDestroyHugepagesPath(driver, obj, NULL, true) < 0)
         goto error;
 
     if ((qemuDomainAssignAddresses(obj->def, priv->qemuCaps,
@@ -5572,7 +5585,7 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
                                NULL) < 0)
         goto cleanup;
 
-    if (qemuProcessBuildDestroyHugepagesPath(driver, vm, true) < 0)
+    if (qemuProcessBuildDestroyHugepagesPath(driver, vm, NULL, true) < 0)
         goto cleanup;
 
     /* Ensure no historical cgroup for this VM is lying around bogus
@@ -6259,7 +6272,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    qemuProcessBuildDestroyHugepagesPath(driver, vm, false);
+    qemuProcessBuildDestroyHugepagesPath(driver, vm, NULL, false);
 
     vm->def->id = -1;
 

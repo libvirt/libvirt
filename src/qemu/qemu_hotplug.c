@@ -2258,6 +2258,9 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
                                   priv->qemuCaps, vm->def, mem, NULL, true) < 0)
         goto cleanup;
 
+    if (qemuProcessBuildDestroyHugepagesPath(driver, vm, mem, true) < 0)
+        goto cleanup;
+
     if (qemuDomainNamespaceSetupMemory(driver, vm, mem) < 0)
         goto cleanup;
     teardowndevice = true;
