@@ -10074,7 +10074,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (ifname &&
             flags & VIR_DOMAIN_DEF_PARSE_INACTIVE &&
             (STRPREFIX(ifname, VIR_NET_GENERATED_MACVTAP_PREFIX) ||
-             STRPREFIX(ifname, VIR_NET_GENERATED_MACVTAP_PREFIX))) {
+             STRPREFIX(ifname, VIR_NET_GENERATED_MACVLAN_PREFIX))) {
             VIR_FREE(ifname);
         }
 
