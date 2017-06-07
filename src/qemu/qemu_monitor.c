@@ -61,6 +61,12 @@ struct _qemuMonitor {
     virCond notify;
 
     int fd;
+
+    /* Represents the watch number to be used for updating and
+     * unregistering the monitor @fd for events in the event loop:
+     * > 0: valid watch number
+     * = 0: not registered
+     * < 0: an error occurred during the registration of @fd */
     int watch;
     int hasSendFD;
     int willhangup;
