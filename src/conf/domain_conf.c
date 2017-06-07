@@ -22097,28 +22097,26 @@ virDomainVirtioNetDriverFormat(char **outstr,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     if (def->driver.virtio.name) {
-        virBufferAsprintf(&buf, "name='%s' ",
+        virBufferAsprintf(&buf, " name='%s'",
                           virDomainNetBackendTypeToString(def->driver.virtio.name));
     }
     if (def->driver.virtio.txmode) {
-        virBufferAsprintf(&buf, "txmode='%s' ",
+        virBufferAsprintf(&buf, " txmode='%s'",
                           virDomainNetVirtioTxModeTypeToString(def->driver.virtio.txmode));
     }
     if (def->driver.virtio.ioeventfd) {
-        virBufferAsprintf(&buf, "ioeventfd='%s' ",
+        virBufferAsprintf(&buf, " ioeventfd='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.ioeventfd));
     }
     if (def->driver.virtio.event_idx) {
-        virBufferAsprintf(&buf, "event_idx='%s' ",
+        virBufferAsprintf(&buf, " event_idx='%s'",
                           virTristateSwitchTypeToString(def->driver.virtio.event_idx));
     }
     if (def->driver.virtio.queues)
-        virBufferAsprintf(&buf, "queues='%u' ", def->driver.virtio.queues);
+        virBufferAsprintf(&buf, " queues='%u'", def->driver.virtio.queues);
     if (def->driver.virtio.rx_queue_size)
-        virBufferAsprintf(&buf, "rx_queue_size='%u' ",
+        virBufferAsprintf(&buf, " rx_queue_size='%u'",
                           def->driver.virtio.rx_queue_size);
-
-    virBufferTrim(&buf, " ", -1);
 
     if (virBufferCheckError(&buf) < 0)
         return -1;
@@ -22367,10 +22365,10 @@ virDomainNetDefFormat(virBufferPtr buf,
 
             if (!gueststr && !hoststr) {
                 if (str)
-                    virBufferAsprintf(buf, "<driver %s/>\n", str);
+                    virBufferAsprintf(buf, "<driver%s/>\n", str);
             } else {
                 if (str)
-                    virBufferAsprintf(buf, "<driver %s>\n", str);
+                    virBufferAsprintf(buf, "<driver%s>\n", str);
                 else
                     virBufferAddLit(buf, "<driver>\n");
                 virBufferAdjustIndent(buf, 2);
