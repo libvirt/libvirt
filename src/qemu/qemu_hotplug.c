@@ -1134,6 +1134,10 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         }
     }
 
+    if (net->mtu &&
+        virNetDevSetMTU(net->ifname, net->mtu) < 0)
+        goto cleanup;
+
     for (i = 0; i < tapfdSize; i++) {
         if (qemuSecuritySetTapFDLabel(driver->securityManager,
                                       vm->def, tapfd[i]) < 0)
