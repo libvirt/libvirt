@@ -121,14 +121,6 @@ virDomainPCIAddressSetPtr virDomainPCIAddressSetAlloc(unsigned int nbuses);
 
 void virDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs);
 
-bool virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
-                                        const char *addrStr,
-                                        virDomainPCIConnectFlags busFlags,
-                                        virDomainPCIConnectFlags devFlags,
-                                        bool reportError,
-                                        bool fromConfig)
-     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
 bool virDomainPCIAddressValidate(virDomainPCIAddressSetPtr addrs,
                                  virPCIDeviceAddressPtr addr,
                                  const char *addrStr,

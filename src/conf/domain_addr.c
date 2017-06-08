@@ -103,7 +103,7 @@ virDomainPCIControllerConnectTypeToModel(virDomainPCIConnectFlags flags)
 }
 
 
-bool
+static bool
 virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
                                    const char *addrStr,
                                    virDomainPCIConnectFlags busFlags,
