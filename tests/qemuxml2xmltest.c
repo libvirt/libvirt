@@ -420,6 +420,7 @@ mymain(void)
     DO_TEST("hugepages-pages6", NONE);
     DO_TEST("hugepages-shared", NONE);
     DO_TEST("hugepages-memaccess", NONE);
+    DO_TEST("hugepages-memaccess2", NONE);
     DO_TEST("nosharepages", NONE);
     DO_TEST("restore-v2", NONE);
     DO_TEST("migrate", NONE);

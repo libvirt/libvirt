@@ -1,0 +1,62 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <maxMemory slots='16' unit='KiB'>8388608</maxMemory>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <memoryBacking>
+    <hugepages>
+      <page size='2048' unit='KiB' nodeset='1'/>
+    </hugepages>
+    <source type='file'/>
+    <access mode='private'/>
+  </memoryBacking>
+  <vcpu placement='static'>4</vcpu>
+  <numatune>
+    <memory mode='strict' nodeset='0-3'/>
+    <memnode cellid='3' mode='strict' nodeset='3'/>
+  </numatune>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu>
+    <numa>
+      <cell id='0' cpus='0' memory='1048576' unit='KiB'/>
+      <cell id='1' cpus='1' memory='1048576' unit='KiB' memAccess='shared'/>
+      <cell id='2' cpus='2' memory='1048576' unit='KiB' memAccess='private'/>
+      <cell id='3' cpus='3' memory='1048576' unit='KiB'/>
+    </numa>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='usb' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </memballoon>
+    <memory model='dimm'>
+      <target>
+        <size unit='KiB'>524288</size>
+        <node>1</node>
+      </target>
+      <address type='dimm' slot='0' base='0x100000000'/>
+    </memory>
+  </devices>
+</domain>
