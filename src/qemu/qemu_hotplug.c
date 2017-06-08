@@ -3138,6 +3138,12 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     /* vlan can be modified, and will be checked later */
     /* linkstate can be modified */
 
+    if (olddev->mtu != newdev->mtu) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot modify MTU"));
+        goto cleanup;
+    }
+
     /* allocate new actual device to compare to old - we will need to
      * free it if we fail for any reason
      */
