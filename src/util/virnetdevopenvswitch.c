@@ -444,6 +444,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
         goto cleanup;
     }
 
+    tmpIfname++;
     cmd = virCommandNew(OVSVSCTL);
     virNetDevOpenvswitchAddTimeout(cmd);
     virCommandAddArgList(cmd, "get", "Interface", tmpIfname, "name", NULL);
