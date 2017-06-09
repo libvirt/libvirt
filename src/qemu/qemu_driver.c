@@ -16856,7 +16856,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
  endjob:
     if (need_unlink && unlink(mirror->path))
         VIR_WARN("unable to unlink just-created %s", mirror->path);
-    virStorageSourceFree(mirror);
     qemuDomainObjEndJob(driver, vm);
     if (monitor_error) {
         virSetError(monitor_error);
@@ -16866,6 +16865,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
  cleanup:
     VIR_FREE(device);
     virObjectUnref(cfg);
+    virStorageSourceFree(mirror);
     return ret;
 }
 
