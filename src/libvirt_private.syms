@@ -2422,7 +2422,6 @@ virProcessWait;
 
 
 # util/virqemu.h
-virQEMUBuildBufferEscape;
 virQEMUBuildBufferEscapeComma;
 virQEMUBuildCommandLineJSON;
 virQEMUBuildCommandLineJSONArrayBitmap;
