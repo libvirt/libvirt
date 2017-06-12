@@ -7622,7 +7622,9 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
         goto error;
 
     for (i = 0; i < nmounts; i++) {
+        char *tmp;
         const char *suffix = mounts[i] + strlen(DEVPREFIX);
+        size_t off;
 
         if (STREQ(mounts[i], "/dev"))
             suffix = "dev";
@@ -7630,6 +7632,20 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
         if (virAsprintf(&paths[i], "%s/%s.%s",
                         cfg->stateDir, vm->def->name, suffix) < 0)
             goto error;
+
+        /* Now consider that mounts[i] is "/dev/blah/blah2".
+         * @suffix then points to "blah/blah2". However, caller
+         * expects all the @paths to be the same depth. The
+         * caller doesn't always do `mkdir -p` but sometimes bare
+         * `touch`. Therefore fix all the suffixes. */
+        off = strlen(paths[i]) - strlen(suffix);
+
+        tmp = paths[i] + off;
+        while (*tmp) {
+            if (*tmp == '/')
+                *tmp = '.';
+            tmp++;
+        }
     }
 
     if (devPath)
