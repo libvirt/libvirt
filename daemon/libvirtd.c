@@ -288,6 +288,7 @@ daemonUnixSocketPaths(struct daemonConfig *config,
             old_umask = umask(077);
             if (virFileMakePath(rundir) < 0) {
                 umask(old_umask);
+                VIR_FREE(rundir);
                 goto error;
             }
             umask(old_umask);
