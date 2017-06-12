@@ -17,7 +17,7 @@ other qemu events in the future.
 ----------------------------------------------------
 
 Any event emitted by qemu is received by
-qemu_monitor_json.c:qemuMonitorJSONProcessEvent(). It looks up the
+qemu_monitor_json.c:qemuMonitorJSONIOProcessEvent(). It looks up the
 event by name in the table eventHandlers (in the same file), which
 should have an entry like this for each event that libvirt
 understands:
@@ -27,7 +27,7 @@ understands:
   NB: This table is searched with bsearch, so it *must* be
   alphabetically sorted.
 
-qemuMonitorJSONProcessEvent calls the function listed in
+qemuMonitorJSONIOProcessEvent calls the function listed in
 eventHandlers, e.g.:
 
    qemu_monitor_json.c:qemuMonitorJSONHandleNicRxFilterChanged()
