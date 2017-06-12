@@ -8363,8 +8363,13 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
 
     ret = 0;
  cleanup:
-    for (i = 0; i < ndevMountsPath; i++)
-        rmdir(devMountsSavePath[i]);
+    for (i = 0; i < ndevMountsPath; i++) {
+        /* The path can be either a regular file or a dir. */
+        if (virFileIsDir(devMountsSavePath[i]))
+            rmdir(devMountsSavePath[i]);
+        else
+            unlink(devMountsSavePath[i]);
+    }
     virStringListFreeCount(devMountsPath, ndevMountsPath);
     virStringListFreeCount(devMountsSavePath, ndevMountsPath);
     return ret;
