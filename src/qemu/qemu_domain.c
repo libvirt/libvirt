@@ -7585,7 +7585,7 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
                              size_t *ndevPath)
 {
     char **paths = NULL, **mounts = NULL;
-    size_t i, nmounts;
+    size_t i, j, nmounts;
 
     if (virFileGetMountSubtree(PROC_MOUNTS, "/dev",
                                &mounts, &nmounts) < 0)
@@ -7595,6 +7595,27 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
         if (ndevPath)
             *ndevPath = 0;
         return 0;
+    }
+
+    /* There can be nested mount points. For instance
+     * /dev/shm/blah can be a mount point and /dev/shm too. It
+     * doesn't make much sense to return the former path because
+     * caller preserves the latter (and with that the former
+     * too). Therefore prune nested mount points.
+     * NB mounts[0] is "/dev". Should we start the outer loop
+     * from the beginning of the array all we'd be left with is
+     * just the first element. Think about it.
+     */
+    for (i = 1; i < nmounts; i++) {
+        j = i + 1;
+        while (j < nmounts) {
+            if (STRPREFIX(mounts[j], mounts[i])) {
+                VIR_DEBUG("Dropping path %s because of %s", mounts[j], mounts[i]);
+                VIR_DELETE_ELEMENT(mounts, j, nmounts);
+            } else {
+                j++;
+            }
+        }
     }
 
     if (VIR_ALLOC_N(paths, nmounts) < 0)
