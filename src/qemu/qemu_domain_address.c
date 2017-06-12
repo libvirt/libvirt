@@ -645,6 +645,11 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             return pcieFlags;
         }
 
+        /* mdevs don't have corresponding files in /sys that we can poke to
+         * try and figure out whether they are legacy PCI or PCI Express, so
+         * the logic below would never work; instead, we just go ahead and
+         * assume they're PCI Express. This is a very reasonable assumption,
+         * as all current mdev-capable devices are indeed PCI Express */
         if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV)
             return pcieFlags;
 
