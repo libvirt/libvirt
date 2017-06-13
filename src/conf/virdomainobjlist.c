@@ -119,7 +119,7 @@ virDomainObjListFindByIDInternal(virDomainObjListPtr doms,
 {
     virDomainObjPtr obj;
     virObjectLock(doms);
-    obj = virHashSearch(doms->objs, virDomainObjListSearchID, &id);
+    obj = virHashSearch(doms->objs, virDomainObjListSearchID, &id, NULL);
     if (ref) {
         virObjectRef(obj);
         virObjectUnlock(doms);

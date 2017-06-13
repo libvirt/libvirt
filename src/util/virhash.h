@@ -194,7 +194,7 @@ bool virHashEqual(const virHashTable *table1,
 int virHashForEach(virHashTablePtr table, virHashIterator iter, void *data);
 ssize_t virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, const void *data);
 void *virHashSearch(const virHashTable *table, virHashSearcher iter,
-                    const void *data);
+                    const void *data, void **name);
 
 /* Convenience for when VIR_FREE(value) is sufficient as a data freer.  */
 void virHashValueFree(void *value, const void *name);

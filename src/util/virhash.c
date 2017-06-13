@@ -702,15 +702,18 @@ virHashRemoveAll(virHashTablePtr table)
  * @table: the hash table to search
  * @iter: an iterator to identify the desired element
  * @data: extra opaque information passed to the iter
+ * @name: the name of found user data, pass NULL to ignore
  *
  * Iterates over the hash table calling the 'iter' callback
  * for each element. The first element for which the iter
  * returns non-zero will be returned by this function.
- * The elements are processed in a undefined order
+ * The elements are processed in a undefined order. Caller is
+ * responsible for freeing the @name.
  */
 void *virHashSearch(const virHashTable *ctable,
                     virHashSearcher iter,
-                    const void *data)
+                    const void *data,
+                    void **name)
 {
     size_t i;
 
@@ -730,6 +733,8 @@ void *virHashSearch(const virHashTable *ctable,
         for (entry = table->table[i]; entry; entry = entry->next) {
             if (iter(entry->payload, entry->name, data)) {
                 table->iterating = false;
+                if (name)
+                    *name = table->keyCopy(entry->name);
                 return entry->payload;
             }
         }
@@ -824,7 +829,7 @@ bool virHashEqual(const virHashTable *table1,
         virHashSize(table1) != virHashSize(table2))
         return false;
 
-    virHashSearch(table1, virHashEqualSearcher, &data);
+    virHashSearch(table1, virHashEqualSearcher, &data, NULL);
 
     return data.equal;
 }

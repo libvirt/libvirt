@@ -5502,14 +5502,15 @@ virQEMUCapsCacheLookupByArch(virCapsPtr caps,
     struct virQEMUCapsSearchData data = { .arch = arch };
 
     virMutexLock(&cache->lock);
-    ret = virHashSearch(cache->binaries, virQEMUCapsCompareArch, &data);
+    ret = virHashSearch(cache->binaries, virQEMUCapsCompareArch, &data, NULL);
     if (!ret) {
         /* If the first attempt at finding capabilities has failed, try
          * again using the QEMU target as lookup key instead */
         target = virQEMUCapsFindTarget(virArchFromHost(), data.arch);
         if (target != data.arch) {
             data.arch = target;
-            ret = virHashSearch(cache->binaries, virQEMUCapsCompareArch, &data);
+            ret = virHashSearch(cache->binaries, virQEMUCapsCompareArch,
+                                &data, NULL);
         }
     }
 

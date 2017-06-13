@@ -247,7 +247,7 @@ virSecretObjListFindByUsageLocked(virSecretObjListPtr secrets,
     struct virSecretSearchData data = { .usageType = usageType,
                                         .usageID = usageID };
 
-    obj = virHashSearch(secrets->objs, virSecretObjSearchName, &data);
+    obj = virHashSearch(secrets->objs, virSecretObjSearchName, &data, NULL);
     if (obj)
         virObjectRef(obj);
     return obj;

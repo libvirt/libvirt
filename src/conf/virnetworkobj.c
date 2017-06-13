@@ -208,7 +208,7 @@ virNetworkObjFindByNameLocked(virNetworkObjListPtr nets,
 {
     virNetworkObjPtr ret = NULL;
 
-    ret = virHashSearch(nets->objs, virNetworkObjSearchName, name);
+    ret = virHashSearch(nets->objs, virNetworkObjSearchName, name, NULL);
     if (ret)
         virObjectRef(ret);
     return ret;
@@ -980,7 +980,7 @@ virNetworkObjBridgeInUse(virNetworkObjListPtr nets,
     struct virNetworkObjBridgeInUseHelperData data = {bridge, skipname};
 
     virObjectLock(nets);
-    obj = virHashSearch(nets->objs, virNetworkObjBridgeInUseHelper, &data);
+    obj = virHashSearch(nets->objs, virNetworkObjBridgeInUseHelper, &data, NULL);
     virObjectUnlock(nets);
 
     return obj != NULL;

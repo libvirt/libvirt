@@ -436,7 +436,7 @@ testHashSearch(const void *data ATTRIBUTE_UNUSED)
     if (!(hash = testHashInit(0)))
         return -1;
 
-    entry = virHashSearch(hash, testHashSearchIter, NULL);
+    entry = virHashSearch(hash, testHashSearchIter, NULL, NULL);
 
     if (!entry || STRNEQ(uuids_subset[testSearchIndex], entry)) {
         VIR_TEST_VERBOSE("\nvirHashSearch didn't find entry '%s'\n",

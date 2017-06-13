@@ -880,7 +880,8 @@ xenXMDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (!xenInotifyActive(conn) && xenXMConfigCacheRefresh(conn) < 0)
         goto cleanup;
 
-    if (!(entry = virHashSearch(priv->configCache, xenXMDomainSearchForUUID, (const void *)uuid)))
+    if (!(entry = virHashSearch(priv->configCache, xenXMDomainSearchForUUID,
+                                (const void *)uuid, NULL)))
         goto cleanup;
 
     ret = virDomainDefNewFull(entry->def->name, uuid, -1);
@@ -971,7 +972,7 @@ xenXMDomainDefineXML(virConnectPtr conn, virDomainDefPtr def)
      * it has the same name
      */
     if ((entry = virHashSearch(priv->configCache, xenXMDomainSearchForUUID,
-                               (const void *)&(def->uuid))) != NULL) {
+                               (const void *)&(def->uuid), NULL)) != NULL) {
         if ((entry->def != NULL) && (entry->def->name != NULL) &&
             (STRNEQ(def->name, entry->def->name))) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
