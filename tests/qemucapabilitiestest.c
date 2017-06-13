@@ -66,7 +66,7 @@ testQemuCaps(const void *opaque)
                                      qemuMonitorTestGetMonitor(mon)) < 0)
         goto cleanup;
 
-    if (!(actual = virQEMUCapsFormatCache(capsActual, 0, 0)))
+    if (!(actual = virQEMUCapsFormatCache(capsActual)))
         goto cleanup;
 
     if (virTestCompareToFile(actual, capsFile) < 0)
@@ -108,7 +108,7 @@ testQemuCapsCopy(const void *opaque)
     if (!(copy = virQEMUCapsNewCopy(orig)))
         goto cleanup;
 
-    if (!(actual = virQEMUCapsFormatCache(copy, 0, 0)))
+    if (!(actual = virQEMUCapsFormatCache(copy)))
         goto cleanup;
 
     if (virTestCompareToFile(actual, capsFile) < 0)

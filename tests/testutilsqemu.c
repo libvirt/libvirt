@@ -568,12 +568,9 @@ qemuTestParseCapabilities(virCapsPtr caps,
                           const char *capsFile)
 {
     virQEMUCapsPtr qemuCaps = NULL;
-    time_t selfctime;
-    unsigned long version;
 
     if (!(qemuCaps = virQEMUCapsNew()) ||
-        virQEMUCapsLoadCache(caps, qemuCaps, capsFile,
-                             &selfctime, &version) < 0)
+        virQEMUCapsLoadCache(caps, qemuCaps, capsFile) < 0)
         goto error;
 
     return qemuCaps;

@@ -50,12 +50,8 @@ virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
 
 int virQEMUCapsLoadCache(virCapsPtr caps,
                          virQEMUCapsPtr qemuCaps,
-                         const char *filename,
-                         time_t *selfctime,
-                         unsigned long *selfvers);
-char *virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
-                             time_t selfCTime,
-                             unsigned long selfVersion);
+                         const char *filename);
+char *virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps);
 
 int
 virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
