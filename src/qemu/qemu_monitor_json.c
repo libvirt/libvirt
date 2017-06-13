@@ -6430,8 +6430,8 @@ static virJSONValuePtr
 qemuMonitorJSONAttachCharDevCommand(const char *chrID,
                                     const virDomainChrSourceDef *chr)
 {
-    virJSONValuePtr ret;
-    virJSONValuePtr backend;
+    virJSONValuePtr ret = NULL;
+    virJSONValuePtr backend = NULL;
     virJSONValuePtr data = NULL;
     virJSONValuePtr addr = NULL;
     const char *backend_type = NULL;
@@ -6440,7 +6440,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
 
     if (!(backend = virJSONValueNewObject()) ||
         !(data = virJSONValueNewObject())) {
-        goto error;
+        goto cleanup;
     }
 
     switch ((virDomainChrType) chr->type) {
@@ -6456,14 +6456,14 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
     case VIR_DOMAIN_CHR_TYPE_FILE:
         backend_type = "file";
         if (virJSONValueObjectAppendString(data, "out", chr->data.file.path) < 0)
-            goto error;
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
         backend_type = STRPREFIX(chrID, "parallel") ? "parallel" : "serial";
         if (virJSONValueObjectAppendString(data, "device",
                                            chr->data.file.path) < 0)
-            goto error;
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
@@ -6472,7 +6472,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
                                                      chr->data.tcp.service);
         if (!addr ||
             virJSONValueObjectAppend(data, "addr", addr) < 0)
-            goto error;
+            goto cleanup;
         addr = NULL;
 
         telnet = chr->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
@@ -6480,13 +6480,13 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
         if (virJSONValueObjectAppendBoolean(data, "wait", false) < 0 ||
             virJSONValueObjectAppendBoolean(data, "telnet", telnet) < 0 ||
             virJSONValueObjectAppendBoolean(data, "server", chr->data.tcp.listen) < 0)
-            goto error;
+            goto cleanup;
         if (chr->data.tcp.tlscreds) {
             if (!(tlsalias = qemuAliasTLSObjFromSrcAlias(chrID)))
-                goto error;
+                goto cleanup;
 
             if (virJSONValueObjectAppendString(data, "tls-creds", tlsalias) < 0)
-                goto error;
+                goto cleanup;
         }
         break;
 
@@ -6496,14 +6496,14 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
                                                      chr->data.udp.connectService);
         if (!addr ||
             virJSONValueObjectAppend(data, "remote", addr) < 0)
-            goto error;
+            goto cleanup;
 
         if (chr->data.udp.bindHost) {
             addr = qemuMonitorJSONBuildInetSocketAddress(chr->data.udp.bindHost,
                                                          chr->data.udp.bindService);
             if (!addr ||
                 virJSONValueObjectAppend(data, "local", addr) < 0)
-                goto error;
+                goto cleanup;
         }
         addr = NULL;
         break;
@@ -6514,12 +6514,12 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
 
         if (!addr ||
             virJSONValueObjectAppend(data, "addr", addr) < 0)
-            goto error;
+            goto cleanup;
         addr = NULL;
 
         if (virJSONValueObjectAppendBoolean(data, "wait", false) < 0 ||
             virJSONValueObjectAppendBoolean(data, "server", chr->data.nix.listen) < 0)
-            goto error;
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
@@ -6527,7 +6527,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
 
         if (virJSONValueObjectAppendString(data, "type",
                                            virDomainChrSpicevmcTypeToString(chr->data.spicevmc)) < 0)
-            goto error;
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
@@ -6544,28 +6544,27 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
                            _("Hotplug unsupported for char device type '%d'"),
                            chr->type);
         }
-        goto error;
+        goto cleanup;
     }
 
     if (virJSONValueObjectAppendString(backend, "type", backend_type) < 0 ||
         virJSONValueObjectAppend(backend, "data", data) < 0)
-        goto error;
+        goto cleanup;
     data = NULL;
 
     if (!(ret = qemuMonitorJSONMakeCommand("chardev-add",
                                            "s:id", chrID,
                                            "a:backend", backend,
                                            NULL)))
-        goto error;
+        goto cleanup;
+    backend = NULL;
 
-    return ret;
-
- error:
+ cleanup:
     VIR_FREE(tlsalias);
     virJSONValueFree(addr);
     virJSONValueFree(data);
     virJSONValueFree(backend);
-    return NULL;
+    return ret;
 }
 
 
