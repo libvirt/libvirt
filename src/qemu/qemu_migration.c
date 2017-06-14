@@ -2059,7 +2059,7 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
                                             VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto cleanup;
 
-        if (!qemuDomainDefCheckABIStability(driver, vm->def, def))
+        if (!qemuDomainCheckABIStability(driver, vm, def))
             goto cleanup;
 
         rv = qemuDomainDefFormatLive(driver, def, NULL, false, true);
