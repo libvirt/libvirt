@@ -4590,6 +4590,7 @@ qemuBuildVgaVideoCommand(virCommandPtr cmd,
         unsigned int vram = video->vram;
         unsigned int vram64 = video->vram64;
         unsigned int vgamem = video->vgamem;
+        unsigned int heads = video->heads;
 
         if (ram) {
             virCommandAddArg(cmd, "-global");
@@ -4612,6 +4613,12 @@ qemuBuildVgaVideoCommand(virCommandPtr cmd,
             virCommandAddArg(cmd, "-global");
             virCommandAddArgFormat(cmd, "%s.vgamem_mb=%u",
                                    dev, vgamem / 1024);
+        }
+        if (heads &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_MAX_OUTPUTS)) {
+            virCommandAddArg(cmd, "-global");
+            virCommandAddArgFormat(cmd, "%s.max_outputs=%u",
+                                   dev, heads);
         }
     }
 
