@@ -11826,7 +11826,7 @@ qemuConnectDomainEventDeregisterAny(virConnectPtr conn,
 
     if (virObjectEventStateDeregisterID(conn,
                                         driver->domainEventState,
-                                        callbackID) < 0)
+                                        callbackID, true) < 0)
         goto cleanup;
 
     ret = 0;
@@ -18472,7 +18472,7 @@ qemuConnectDomainQemuMonitorEventDeregister(virConnectPtr conn,
         goto cleanup;
 
     if (virObjectEventStateDeregisterID(conn, driver->domainEventState,
-                                        callbackID) < 0)
+                                        callbackID, true) < 0)
         goto cleanup;
 
     ret = 0;

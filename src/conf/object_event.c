@@ -234,13 +234,15 @@ virObjectEventCallbackListCount(virConnectPtr conn,
  * @conn: pointer to the connection
  * @cbList: the list
  * @callback: the callback to remove
+ * @doFreeCb: Inhibit calling the freecb
  *
  * Internal function to remove a callback from a virObjectEventCallbackListPtr
  */
 static int
 virObjectEventCallbackListRemoveID(virConnectPtr conn,
                                    virObjectEventCallbackListPtr cbList,
-                                   int callbackID)
+                                   int callbackID,
+                                   bool doFreeCb)
 {
     size_t i;
 
@@ -256,7 +258,10 @@ virObjectEventCallbackListRemoveID(virConnectPtr conn,
                                                  cb->key_filter ? cb->key : NULL,
                                                  cb->remoteID >= 0) - 1);
 
-            if (cb->freecb)
+            /* @doFreeCb inhibits calling @freecb from error paths in
+             * register functions to ensure the caller of a failed register
+             * function won't end up with a double free error */
+            if (doFreeCb && cb->freecb)
                 (*cb->freecb)(cb->opaque);
             virObjectEventCallbackFree(cb);
             VIR_DELETE_ELEMENT(cbList->callbacks, i, cbList->count);
@@ -927,16 +932,22 @@ virObjectEventStateRegisterID(virConnectPtr conn,
  * @conn: connection to associate with callback
  * @state: object event state
  * @callbackID: ID of the function to remove from event
+ * @doFreeCb: Allow the calling of a freecb
  *
  * Unregister the function @callbackID with connection @conn,
- * from @state, for events.
+ * from @state, for events. If @doFreeCb is false, then we
+ * are being called from a remote call failure path for the
+ * Event registration indicating a -1 return to the caller. The
+ * caller wouldn't expect us to run their freecb function if it
+ * exists, so we cannot do so.
  *
  * Returns: the number of callbacks still registered, or -1 on error
  */
 int
 virObjectEventStateDeregisterID(virConnectPtr conn,
                                 virObjectEventStatePtr state,
-                                int callbackID)
+                                int callbackID,
+                                bool doFreeCb)
 {
     int ret;
 
@@ -946,8 +957,8 @@ virObjectEventStateDeregisterID(virConnectPtr conn,
                                                      state->callbacks,
                                                      callbackID);
     else
-        ret = virObjectEventCallbackListRemoveID(conn,
-                                                 state->callbacks, callbackID);
+        ret = virObjectEventCallbackListRemoveID(conn, state->callbacks,
+                                                 callbackID, doFreeCb);
 
     virObjectEventStateCleanupTimer(state, true);
 

@@ -5697,7 +5697,7 @@ testConnectDomainEventDeregisterAny(virConnectPtr conn,
     int ret = 0;
 
     if (virObjectEventStateDeregisterID(conn, driver->eventState,
-                                        callbackID) < 0)
+                                        callbackID, true) < 0)
         ret = -1;
 
     return ret;
@@ -5731,7 +5731,7 @@ testConnectNetworkEventDeregisterAny(virConnectPtr conn,
     int ret = 0;
 
     if (virObjectEventStateDeregisterID(conn, driver->eventState,
-                                        callbackID) < 0)
+                                        callbackID, true) < 0)
         ret = -1;
 
     return ret;
@@ -5764,7 +5764,7 @@ testConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
     int ret = 0;
 
     if (virObjectEventStateDeregisterID(conn, driver->eventState,
-                                        callbackID) < 0)
+                                        callbackID, true) < 0)
         ret = -1;
 
     return ret;
@@ -5797,7 +5797,7 @@ testConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
     int ret = 0;
 
     if (virObjectEventStateDeregisterID(conn, driver->eventState,
-                                        callbackID) < 0)
+                                        callbackID, true) < 0)
         ret = -1;
 
     return ret;

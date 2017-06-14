@@ -5652,7 +5652,7 @@ libxlConnectDomainEventDeregisterAny(virConnectPtr conn, int callbackID)
 
     if (virObjectEventStateDeregisterID(conn,
                                         driver->domainEventState,
-                                        callbackID) < 0)
+                                        callbackID, true) < 0)
         return -1;
 
     return 0;

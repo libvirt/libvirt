@@ -2284,7 +2284,7 @@ xenUnifiedConnectDomainEventDeregisterAny(virConnectPtr conn,
 
     if (virObjectEventStateDeregisterID(conn,
                                         priv->domainEvents,
-                                        callbackID) < 0)
+                                        callbackID, true) < 0)
         ret = -1;
 
     xenUnifiedUnlock(priv);

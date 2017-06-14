@@ -3066,7 +3066,7 @@ remoteConnectNetworkEventRegisterAny(virConnectPtr conn,
                  (xdrproc_t) xdr_remote_connect_network_event_register_any_args, (char *) &args,
                  (xdrproc_t) xdr_remote_connect_network_event_register_any_ret, (char *) &ret) == -1) {
             virObjectEventStateDeregisterID(conn, priv->eventState,
-                                            callbackID);
+                                            callbackID, false);
             goto done;
         }
         virObjectEventStateSetRemote(conn, priv->eventState, callbackID,
@@ -3099,7 +3099,7 @@ remoteConnectNetworkEventDeregisterAny(virConnectPtr conn,
         goto done;
 
     if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                 callbackID)) < 0)
+                                                 callbackID, true)) < 0)
         goto done;
 
     /* If that was the last callback for this eventID, we need to disable
@@ -3160,7 +3160,7 @@ remoteConnectStoragePoolEventRegisterAny(virConnectPtr conn,
                  (xdrproc_t) xdr_remote_connect_storage_pool_event_register_any_args, (char *) &args,
                  (xdrproc_t) xdr_remote_connect_storage_pool_event_register_any_ret, (char *) &ret) == -1) {
             virObjectEventStateDeregisterID(conn, priv->eventState,
-                                            callbackID);
+                                            callbackID, false);
             goto done;
         }
 
@@ -3193,7 +3193,7 @@ remoteConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
         goto done;
 
     if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                 callbackID)) < 0)
+                                                 callbackID, true)) < 0)
         goto done;
 
     /* If that was the last callback for this eventID, we need to disable
@@ -3256,7 +3256,7 @@ remoteConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
                  (xdrproc_t) xdr_remote_connect_node_device_event_register_any_args, (char *) &args,
                  (xdrproc_t) xdr_remote_connect_node_device_event_register_any_ret, (char *) &ret) == -1) {
             virObjectEventStateDeregisterID(conn, priv->eventState,
-                                            callbackID);
+                                            callbackID, false);
             goto done;
         }
 
@@ -3290,7 +3290,7 @@ remoteConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
         goto done;
 
     if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                 callbackID)) < 0)
+                                                 callbackID, true)) < 0)
         goto done;
 
     /* If that was the last callback for this eventID, we need to disable
@@ -3353,7 +3353,7 @@ remoteConnectSecretEventRegisterAny(virConnectPtr conn,
                  (xdrproc_t) xdr_remote_connect_secret_event_register_any_args, (char *) &args,
                  (xdrproc_t) xdr_remote_connect_secret_event_register_any_ret, (char *) &ret) == -1) {
             virObjectEventStateDeregisterID(conn, priv->eventState,
-                                            callbackID);
+                                            callbackID, false);
             goto done;
         }
 
@@ -3387,7 +3387,7 @@ remoteConnectSecretEventDeregisterAny(virConnectPtr conn,
         goto done;
 
     if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                 callbackID)) < 0)
+                                                 callbackID, true)) < 0)
         goto done;
 
     /* If that was the last callback for this eventID, we need to disable
@@ -3453,7 +3453,7 @@ remoteConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
                  (xdrproc_t) xdr_qemu_connect_domain_monitor_event_register_args, (char *) &args,
                  (xdrproc_t) xdr_qemu_connect_domain_monitor_event_register_ret, (char *) &ret) == -1) {
             virObjectEventStateDeregisterID(conn, priv->eventState,
-                                            callbackID);
+                                            callbackID, false);
             goto done;
         }
         virObjectEventStateSetRemote(conn, priv->eventState, callbackID,
@@ -3485,7 +3485,7 @@ remoteConnectDomainQemuMonitorEventDeregister(virConnectPtr conn,
         goto done;
 
     if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                 callbackID)) < 0)
+                                                 callbackID, true)) < 0)
         goto done;
 
     /* If that was the last callback for this event, we need to disable
@@ -4409,7 +4409,7 @@ remoteConnectDomainEventRegister(virConnectPtr conn,
                      (xdrproc_t) xdr_remote_connect_domain_event_callback_register_any_args, (char *) &args,
                      (xdrproc_t) xdr_remote_connect_domain_event_callback_register_any_ret, (char *) &ret) == -1) {
                 virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                callbackID);
+                                                callbackID, false);
                 goto done;
             }
             virObjectEventStateSetRemote(conn, priv->eventState, callbackID,
@@ -4419,7 +4419,7 @@ remoteConnectDomainEventRegister(virConnectPtr conn,
                      (xdrproc_t) xdr_void, (char *) NULL,
                      (xdrproc_t) xdr_void, (char *) NULL) == -1) {
                 virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                callbackID);
+                                                callbackID, false);
                 goto done;
             }
         }
@@ -4452,7 +4452,7 @@ remoteConnectDomainEventDeregister(virConnectPtr conn,
         goto done;
 
     if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                 callbackID)) < 0)
+                                                 callbackID, true)) < 0)
         goto done;
 
     if (count == 0) {
@@ -5951,7 +5951,7 @@ remoteConnectDomainEventRegisterAny(virConnectPtr conn,
                      (xdrproc_t) xdr_remote_connect_domain_event_callback_register_any_args, (char *) &args,
                      (xdrproc_t) xdr_remote_connect_domain_event_callback_register_any_ret, (char *) &ret) == -1) {
                 virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                callbackID);
+                                                callbackID, false);
                 goto done;
             }
             virObjectEventStateSetRemote(conn, priv->eventState, callbackID,
@@ -5965,7 +5965,7 @@ remoteConnectDomainEventRegisterAny(virConnectPtr conn,
                      (xdrproc_t) xdr_remote_connect_domain_event_register_any_args, (char *) &args,
                      (xdrproc_t) xdr_void, (char *)NULL) == -1) {
                 virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                callbackID);
+                                                callbackID, false);
                 goto done;
             }
         }
@@ -5996,7 +5996,7 @@ remoteConnectDomainEventDeregisterAny(virConnectPtr conn,
         goto done;
 
     if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
-                                                 callbackID)) < 0)
+                                                 callbackID, true)) < 0)
         goto done;
 
     /* If that was the last callback for this eventID, we need to disable

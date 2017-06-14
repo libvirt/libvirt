@@ -2301,7 +2301,7 @@ virDomainEventStateDeregister(virConnectPtr conn,
                                                NULL);
     if (callbackID < 0)
         return -1;
-    return virObjectEventStateDeregisterID(conn, state, callbackID);
+    return virObjectEventStateDeregisterID(conn, state, callbackID, true);
 }
 
 
