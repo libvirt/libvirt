@@ -61,6 +61,9 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dontwarn="$dontwarn -Wenum-compare"
     # gcc 5.1 -Wformat-signedness mishandles enums, not ready for prime time
     dontwarn="$dontwarn -Wformat-signedness"
+    # Several conditionals expand the same on both branches
+    # depending on the particular platform/architecture
+    dontwarn="$dontwarn -Wduplicated-branches"
 
     # gcc 4.2 treats attribute(format) as an implicit attribute(nonnull),
     # which triggers spurious warnings for our usage
