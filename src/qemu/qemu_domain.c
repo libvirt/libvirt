@@ -5899,6 +5899,26 @@ virDomainABIStability virQEMUDriverDomainABIStability = {
 };
 
 
+static bool
+qemuDomainMigratableDefCheckABIStability(virQEMUDriverPtr driver,
+                                         virDomainDefPtr src,
+                                         virDomainDefPtr migratableSrc,
+                                         virDomainDefPtr dst,
+                                         virDomainDefPtr migratableDst)
+{
+    if (!virDomainDefCheckABIStabilityFlags(migratableSrc,
+                                            migratableDst,
+                                            driver->xmlopt,
+                                            VIR_DOMAIN_DEF_ABI_CHECK_SKIP_VOLATILE))
+        return false;
+
+    /* Force update any skipped values from the volatile flag */
+    dst->mem.cur_balloon = src->mem.cur_balloon;
+
+    return true;
+}
+
+
 bool
 qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
                                virDomainDefPtr src,
@@ -5909,23 +5929,15 @@ qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
     const unsigned int flags = VIR_DOMAIN_XML_SECURE |
                                VIR_DOMAIN_XML_UPDATE_CPU |
                                VIR_DOMAIN_XML_MIGRATABLE;
-    const unsigned int check_flags = VIR_DOMAIN_DEF_ABI_CHECK_SKIP_VOLATILE;
     bool ret = false;
 
     if (!(migratableDefSrc = qemuDomainDefCopy(driver, src, flags)) ||
         !(migratableDefDst = qemuDomainDefCopy(driver, dst, flags)))
         goto cleanup;
 
-    if (!virDomainDefCheckABIStabilityFlags(migratableDefSrc,
-                                            migratableDefDst,
-                                            driver->xmlopt,
-                                            check_flags))
-        goto cleanup;
-
-    /* Force update any skipped values from the volatile flag */
-    dst->mem.cur_balloon = src->mem.cur_balloon;
-
-    ret = true;
+    ret = qemuDomainMigratableDefCheckABIStability(driver,
+                                                   src, migratableDefSrc,
+                                                   dst, migratableDefDst);
 
  cleanup:
     virDomainDefFree(migratableDefSrc);
