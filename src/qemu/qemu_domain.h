@@ -666,6 +666,10 @@ bool qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
                                     virDomainDefPtr src,
                                     virDomainDefPtr dst);
 
+bool qemuDomainCheckABIStability(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 virDomainDefPtr dst);
+
 bool qemuDomainAgentAvailable(virDomainObjPtr vm,
                               bool reportError);
 

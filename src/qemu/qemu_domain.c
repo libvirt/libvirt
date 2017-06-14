@@ -5919,6 +5919,10 @@ qemuDomainMigratableDefCheckABIStability(virQEMUDriverPtr driver,
 }
 
 
+#define COPY_FLAGS (VIR_DOMAIN_XML_SECURE | \
+                    VIR_DOMAIN_XML_UPDATE_CPU | \
+                    VIR_DOMAIN_XML_MIGRATABLE)
+
 bool
 qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
                                virDomainDefPtr src,
@@ -5926,13 +5930,10 @@ qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
 {
     virDomainDefPtr migratableDefSrc = NULL;
     virDomainDefPtr migratableDefDst = NULL;
-    const unsigned int flags = VIR_DOMAIN_XML_SECURE |
-                               VIR_DOMAIN_XML_UPDATE_CPU |
-                               VIR_DOMAIN_XML_MIGRATABLE;
     bool ret = false;
 
-    if (!(migratableDefSrc = qemuDomainDefCopy(driver, src, flags)) ||
-        !(migratableDefDst = qemuDomainDefCopy(driver, dst, flags)))
+    if (!(migratableDefSrc = qemuDomainDefCopy(driver, src, COPY_FLAGS)) ||
+        !(migratableDefDst = qemuDomainDefCopy(driver, dst, COPY_FLAGS)))
         goto cleanup;
 
     ret = qemuDomainMigratableDefCheckABIStability(driver,
@@ -5944,6 +5945,36 @@ qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
     virDomainDefFree(migratableDefDst);
     return ret;
 }
+
+
+bool
+qemuDomainCheckABIStability(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainDefPtr dst)
+{
+    virDomainDefPtr migratableSrc = NULL;
+    virDomainDefPtr migratableDst = NULL;
+    char *xml = NULL;
+    bool ret = false;
+
+    if (!(xml = qemuDomainFormatXML(driver, vm, COPY_FLAGS)) ||
+        !(migratableSrc = qemuDomainDefFromXML(driver, xml)) ||
+        !(migratableDst = qemuDomainDefCopy(driver, dst, COPY_FLAGS)))
+        goto cleanup;
+
+    ret = qemuDomainMigratableDefCheckABIStability(driver,
+                                                   vm->def, migratableSrc,
+                                                   dst, migratableDst);
+
+ cleanup:
+    VIR_FREE(xml);
+    virDomainDefFree(migratableSrc);
+    virDomainDefFree(migratableDst);
+    return ret;
+}
+
+#undef COPY_FLAGS
+
 
 bool
 qemuDomainAgentAvailable(virDomainObjPtr vm,
