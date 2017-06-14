@@ -1541,6 +1541,7 @@ mymain(void)
     DO_TEST("cpu-numa-disjoint", QEMU_CAPS_NUMA);
     DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_FAILURE("cpu-numa-memshared", NONE);
+    DO_TEST("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("cpu-host-model", NONE);
     DO_TEST("cpu-host-model-vendor", NONE);
     skipLegacyCPUs = true;

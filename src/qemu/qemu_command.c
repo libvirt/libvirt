@@ -3410,19 +3410,19 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
         *backendType = "memory-backend-file";
 
-        if (mem->nvdimmPath) {
+        if (pagesize) {
+            if (qemuGetDomainHupageMemPath(def, cfg, pagesize, &memPath) < 0)
+                goto cleanup;
+            prealloc = true;
+        } else if (mem->nvdimmPath) {
             if (VIR_STRDUP(memPath, mem->nvdimmPath) < 0)
                 goto cleanup;
             prealloc = true;
-        } else if (!pagesize && def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
+        } else {
             /* We can have both pagesize and mem source. If that's the case,
              * prefer hugepages as those are more specific. */
             if (VIR_STRDUP(memPath, cfg->memoryBackingDir) < 0)
                 goto cleanup;
-        } else {
-            if (qemuGetDomainHupageMemPath(def, cfg, pagesize, &memPath) < 0)
-                goto cleanup;
-            prealloc = true;
         }
 
         if (virJSONValueObjectAdd(props,
