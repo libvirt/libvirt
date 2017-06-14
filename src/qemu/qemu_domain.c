@@ -4179,6 +4179,25 @@ void qemuDomainObjExitRemote(virDomainObjPtr obj)
 }
 
 
+static virDomainDefPtr
+qemuDomainDefFromXML(virQEMUDriverPtr driver,
+                     const char *xml)
+{
+    virCapsPtr caps;
+    virDomainDefPtr def;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        return NULL;
+
+    def = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                  VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
+
+    virObjectUnref(caps);
+    return def;
+}
+
+
 virDomainDefPtr
 qemuDomainDefCopy(virQEMUDriverPtr driver,
                   virDomainDefPtr src,
@@ -4186,25 +4205,15 @@ qemuDomainDefCopy(virQEMUDriverPtr driver,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virDomainDefPtr ret = NULL;
-    virCapsPtr caps = NULL;
     char *xml = NULL;
 
     if (qemuDomainDefFormatBuf(driver, src, flags, &buf) < 0)
-        goto cleanup;
+        return NULL;
 
     xml = virBufferContentAndReset(&buf);
+    ret = qemuDomainDefFromXML(driver, xml);
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    if (!(ret = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
-        goto cleanup;
-
- cleanup:
     VIR_FREE(xml);
-    virObjectUnref(caps);
     return ret;
 }
 
