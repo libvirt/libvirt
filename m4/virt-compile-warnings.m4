@@ -169,6 +169,10 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
       wantwarn="$wantwarn -Wno-format"
     fi
 
+    # -Wformat enables this by default, and we should keep it,
+    # but need to rewrite various areas of code first
+    wantwarn="$wantwarn -Wno-format-truncation"
+
     # This should be < 256 really. Currently we're down to 4096,
     # but using 1024 bytes sized buffers (mostly for virStrerror)
     # stops us from going down further
