@@ -8531,6 +8531,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
     int ret = -1;
     bool delDevice = false;
     bool isLink = S_ISLNK(data->sb.st_mode);
+    bool isDev = S_ISCHR(data->sb.st_mode) || S_ISBLK(data->sb.st_mode);
 
     qemuSecurityPostFork(data->driver->securityManager);
 
@@ -8552,7 +8553,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
         } else {
             delDevice = true;
         }
-    } else {
+    } else if (isDev) {
         VIR_DEBUG("Creating dev %s (%d,%d)",
                   data->file, major(data->sb.st_rdev), minor(data->sb.st_rdev));
         if (mknod(data->file, data->sb.st_mode, data->sb.st_rdev) < 0) {
@@ -8569,6 +8570,11 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
         } else {
             delDevice = true;
         }
+    } else {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("unsupported device type %s 0%o"),
+                       data->file, data->sb.st_mode);
+        goto cleanup;
     }
 
     if (lchown(data->file, data->sb.st_uid, data->sb.st_gid) < 0) {
