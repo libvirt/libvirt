@@ -3087,10 +3087,11 @@ virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
     const char *path = virJSONValueObjectGetString(json, "path");
     const char *host = virJSONValueObjectGetString(json, "host");
     const char *port = virJSONValueObjectGetString(json, "port");
+    virJSONValuePtr server = virJSONValueObjectGetObject(json, "server");
 
-    if (!host || !path) {
+    if (!(host || server) || !path) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("missing host or path of SSH JSON backing "
+                       _("missing host/server or path of SSH JSON backing "
                          "volume definition"));
         return -1;
     }
@@ -3105,12 +3106,16 @@ virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
         return -1;
     src->nhosts = 1;
 
-    src->hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
-    if (VIR_STRDUP(src->hosts[0].name, host) < 0)
-        return -1;
-
-    if (VIR_STRDUP(src->hosts[0].port, port) < 0)
-        return -1;
+    if (server) {
+        if (virStorageSourceParseBackingJSONInetSocketAddress(src->hosts,
+                                                              server) < 0)
+            return -1;
+    } else {
+        src->hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+        if (VIR_STRDUP(src->hosts[0].name, host) < 0 ||
+            VIR_STRDUP(src->hosts[0].port, port) < 0)
+            return -1;
+    }
 
     return 0;
 }

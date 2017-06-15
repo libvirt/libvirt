@@ -1501,6 +1501,17 @@ mymain(void)
                        "<source protocol='ssh' name='blah'>\n"
                        "  <host name='example.org' port='6000'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"ssh\","
+                                       "\"path\":\"blah\","
+                                       "\"server\":{ \"host\":\"example.org\","
+                                                    "\"port\":\"6000\""
+                                                  "},"
+                                       "\"user\":\"user\""
+                                      "}"
+                            "}",
+                       "<source protocol='ssh' name='blah'>\n"
+                       "  <host name='example.org' port='6000'/>\n"
+                       "</source>\n");
     TEST_BACKING_PARSE("json:{\"file.driver\":\"rbd\","
                              "\"file.filename\":\"rbd:testshare:id=asdf:mon_host=example.com\""
                             "}",
