@@ -2795,8 +2795,8 @@ virStorageSourceParseBackingJSONUri(virStorageSourcePtr src,
 
 
 static int
-virStorageSourceParseBackingJSONGlusterHost(virStorageNetHostDefPtr host,
-                                            virJSONValuePtr json)
+virStorageSourceParseBackingJSONSocketAddress(virStorageNetHostDefPtr host,
+                                              virJSONValuePtr json)
 {
     const char *type = virJSONValueObjectGetString(json, "type");
     const char *hostname = virJSONValueObjectGetString(json, "host");
@@ -2817,7 +2817,7 @@ virStorageSourceParseBackingJSONGlusterHost(virStorageNetHostDefPtr host,
         if (!hostname) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("missing hostname for tcp backing server in "
-                             "JSON backing definition for gluster volume"));
+                             "JSON backing volume definition"));
             return -1;
         }
 
@@ -2830,7 +2830,7 @@ virStorageSourceParseBackingJSONGlusterHost(virStorageNetHostDefPtr host,
         if (!socket) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("missing socket path for udp backing server in "
-                             "JSON backing definition for gluster volume"));
+                             "JSON backing volume definition"));
             return -1;
         }
 
@@ -2897,8 +2897,8 @@ virStorageSourceParseBackingJSONGluster(virStorageSourcePtr src,
     src->nhosts = nservers;
 
     for (i = 0; i < nservers; i++) {
-        if (virStorageSourceParseBackingJSONGlusterHost(src->hosts + i,
-                                                        virJSONValueArrayGet(server, i)) < 0)
+        if (virStorageSourceParseBackingJSONSocketAddress(src->hosts + i,
+                                                          virJSONValueArrayGet(server, i)) < 0)
             return -1;
     }
 
