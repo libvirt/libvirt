@@ -142,6 +142,9 @@ int virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
 bool virDomainPCIAddressBusIsFullyReserved(virDomainPCIAddressBusPtr bus)
     ATTRIBUTE_NONNULL(1);
 
+bool virDomainPCIAddressBusIsEmpty(virDomainPCIAddressBusPtr bus)
+    ATTRIBUTE_NONNULL(1);
+
 bool virDomainPCIAddressSlotInUse(virDomainPCIAddressSetPtr addrs,
                                   virPCIDeviceAddressPtr addr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

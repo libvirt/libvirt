@@ -369,6 +369,20 @@ virDomainPCIAddressBusIsFullyReserved(virDomainPCIAddressBusPtr bus)
 }
 
 
+bool
+virDomainPCIAddressBusIsEmpty(virDomainPCIAddressBusPtr bus)
+{
+    size_t i;
+
+    for (i = bus->minSlot; i <= bus->maxSlot; i++) {
+        if (bus->slot[i].functions)
+            return false;
+    }
+
+    return true;
+}
+
+
 /* Ensure addr fits in the address set, by expanding it if needed
  *
  * Return value:
@@ -548,7 +562,7 @@ static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 virDomainPCIAddressReserveAddrInternal(virDomainPCIAddressSetPtr addrs,
                                        virPCIDeviceAddressPtr addr,
                                        virDomainPCIConnectFlags flags,
-                                       unsigned int isolationGroup ATTRIBUTE_UNUSED,
+                                       unsigned int isolationGroup,
                                        bool fromConfig)
 {
     int ret = -1;
@@ -584,6 +598,26 @@ virDomainPCIAddressReserveAddrInternal(virDomainPCIAddressSetPtr addrs,
     if (!bus->slot[addr->slot].functions &&
         flags & VIR_PCI_CONNECT_AGGREGATE_SLOT) {
         bus->slot[addr->slot].aggregate = true;
+    }
+
+    if (virDomainPCIAddressBusIsEmpty(bus) && !bus->isolationGroupLocked) {
+        /* The first device decides the isolation group for the
+         * entire bus */
+        bus->isolationGroup = isolationGroup;
+        VIR_DEBUG("PCI bus %.4x:%.2x assigned isolation group %u because of "
+                  "first device %s",
+                  addr->domain, addr->bus, isolationGroup, addrStr);
+    } else if (bus->isolationGroup != isolationGroup && fromConfig) {
+        /* If this is not the first function and its isolation group
+         * doesn't match the bus', then it should not be using this
+         * address. However, if the address comes from the user then
+         * we comply with the request and change the isolation group
+         * back to the default (because at that point isolation can't
+         * be guaranteed anymore) */
+        bus->isolationGroup = 0;
+        VIR_DEBUG("PCI bus %.4x:%.2x assigned isolation group %u because of "
+                  "user assigned address %s",
+                  addr->domain, addr->bus, isolationGroup, addrStr);
     }
 
     /* mark the requested function as reserved */
@@ -763,7 +797,7 @@ static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 virDomainPCIAddressGetNextAddr(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr next_addr,
                                virDomainPCIConnectFlags flags,
-                               unsigned int isolationGroup ATTRIBUTE_UNUSED,
+                               unsigned int isolationGroup,
                                int function)
 {
     virPCIDeviceAddress a = { 0 };
@@ -779,11 +813,16 @@ virDomainPCIAddressGetNextAddr(virDomainPCIAddressSetPtr addrs,
     else
         a.function = function;
 
-    /* "Begin at the beginning," the King said, very gravely, "and go on
-     * till you come to the end: then stop." */
+    /* When looking for a suitable bus for the device, start by being
+     * very strict and ignoring all those where the isolation groups
+     * don't match. This ensures all devices sharing the same isolation
+     * group will end up on the same bus */
     for (a.bus = 0; a.bus < addrs->nbuses; a.bus++) {
         virDomainPCIAddressBusPtr bus = &addrs->buses[a.bus];
         bool found = false;
+
+        if (bus->isolationGroup != isolationGroup)
+            continue;
 
         a.slot = bus->minSlot;
 
@@ -792,6 +831,32 @@ virDomainPCIAddressGetNextAddr(virDomainPCIAddressSetPtr addrs,
             goto error;
         }
 
+        if (found)
+            goto success;
+    }
+
+    /* We haven't been able to find a perfectly matching bus, but we
+     * might still be able to make this work by altering the isolation
+     * group for a bus that's currently empty. So let's try that */
+    for (a.bus = 0; a.bus < addrs->nbuses; a.bus++) {
+        virDomainPCIAddressBusPtr bus = &addrs->buses[a.bus];
+        bool found = false;
+
+        /* We can only change the isolation group for a bus when
+         * plugging in the first device; moreover, some buses are
+         * prevented from ever changing it */
+        if (!virDomainPCIAddressBusIsEmpty(bus) || bus->isolationGroupLocked)
+            continue;
+
+        a.slot = bus->minSlot;
+
+        if (virDomainPCIAddressFindUnusedFunctionOnBus(bus, &a, function,
+                                                       flags, &found) < 0) {
+            goto error;
+        }
+
+        /* The isolation group for the bus will actually be changed
+         * later, in virDomainPCIAddressReserveAddrInternal() */
         if (found)
             goto success;
     }
