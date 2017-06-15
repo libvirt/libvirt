@@ -3086,7 +3086,8 @@ virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap ATTRIBUTE_UNUSED,
 /**
  * virNetDevSetCoalesce:
  * @ifname: interface name to modify
- * @coalesce: Coalesce settings to set and update
+ * @coalesce: Coalesce settings to set or update
+ * @update: Whether this is an update for existing settings or not
  *
  * This function sets the various coalesce settings for a given interface
  * @ifname and updates them back into @coalesce.
@@ -3094,40 +3095,44 @@ virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap ATTRIBUTE_UNUSED,
  * Returns 0 in case of success or -1 on failure
  */
 int virNetDevSetCoalesce(const char *ifname,
-                         virNetDevCoalescePtr coalesce)
+                         virNetDevCoalescePtr coalesce,
+                         bool update)
 {
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
     struct ethtool_coalesce coal = {0};
 
-    if (!coalesce)
+    if (!coalesce && !update)
         return 0;
 
-    coal = (struct ethtool_coalesce) {
-        .cmd = ETHTOOL_SCOALESCE,
-        .rx_max_coalesced_frames = coalesce->rx_max_coalesced_frames,
-        .rx_coalesce_usecs_irq = coalesce->rx_coalesce_usecs_irq,
-        .rx_max_coalesced_frames_irq = coalesce->rx_max_coalesced_frames_irq,
-        .tx_coalesce_usecs = coalesce->tx_coalesce_usecs,
-        .tx_max_coalesced_frames = coalesce->tx_max_coalesced_frames,
-        .tx_coalesce_usecs_irq = coalesce->tx_coalesce_usecs_irq,
-        .tx_max_coalesced_frames_irq = coalesce->tx_max_coalesced_frames_irq,
-        .stats_block_coalesce_usecs = coalesce->stats_block_coalesce_usecs,
-        .use_adaptive_rx_coalesce = coalesce->use_adaptive_rx_coalesce,
-        .use_adaptive_tx_coalesce = coalesce->use_adaptive_tx_coalesce,
-        .pkt_rate_low = coalesce->pkt_rate_low,
-        .rx_coalesce_usecs_low = coalesce->rx_coalesce_usecs_low,
-        .rx_max_coalesced_frames_low = coalesce->rx_max_coalesced_frames_low,
-        .tx_coalesce_usecs_low = coalesce->tx_coalesce_usecs_low,
-        .tx_max_coalesced_frames_low = coalesce->tx_max_coalesced_frames_low,
-        .pkt_rate_high = coalesce->pkt_rate_high,
-        .rx_coalesce_usecs_high = coalesce->rx_coalesce_usecs_high,
-        .rx_max_coalesced_frames_high = coalesce->rx_max_coalesced_frames_high,
-        .tx_coalesce_usecs_high = coalesce->tx_coalesce_usecs_high,
-        .tx_max_coalesced_frames_high = coalesce->tx_max_coalesced_frames_high,
-        .rate_sample_interval = coalesce->rate_sample_interval,
-    };
+    if (coalesce) {
+        coal = (struct ethtool_coalesce) {
+            .rx_max_coalesced_frames = coalesce->rx_max_coalesced_frames,
+            .rx_coalesce_usecs_irq = coalesce->rx_coalesce_usecs_irq,
+            .rx_max_coalesced_frames_irq = coalesce->rx_max_coalesced_frames_irq,
+            .tx_coalesce_usecs = coalesce->tx_coalesce_usecs,
+            .tx_max_coalesced_frames = coalesce->tx_max_coalesced_frames,
+            .tx_coalesce_usecs_irq = coalesce->tx_coalesce_usecs_irq,
+            .tx_max_coalesced_frames_irq = coalesce->tx_max_coalesced_frames_irq,
+            .stats_block_coalesce_usecs = coalesce->stats_block_coalesce_usecs,
+            .use_adaptive_rx_coalesce = coalesce->use_adaptive_rx_coalesce,
+            .use_adaptive_tx_coalesce = coalesce->use_adaptive_tx_coalesce,
+            .pkt_rate_low = coalesce->pkt_rate_low,
+            .rx_coalesce_usecs_low = coalesce->rx_coalesce_usecs_low,
+            .rx_max_coalesced_frames_low = coalesce->rx_max_coalesced_frames_low,
+            .tx_coalesce_usecs_low = coalesce->tx_coalesce_usecs_low,
+            .tx_max_coalesced_frames_low = coalesce->tx_max_coalesced_frames_low,
+            .pkt_rate_high = coalesce->pkt_rate_high,
+            .rx_coalesce_usecs_high = coalesce->rx_coalesce_usecs_high,
+            .rx_max_coalesced_frames_high = coalesce->rx_max_coalesced_frames_high,
+            .tx_coalesce_usecs_high = coalesce->tx_coalesce_usecs_high,
+            .tx_max_coalesced_frames_high = coalesce->tx_max_coalesced_frames_high,
+            .rate_sample_interval = coalesce->rate_sample_interval,
+        };
+    }
+
+    coal.cmd = ETHTOOL_SCOALESCE;
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
@@ -3141,12 +3146,36 @@ int virNetDevSetCoalesce(const char *ifname,
         goto cleanup;
     }
 
-    coal = (struct ethtool_coalesce) {
-        .cmd = ETHTOOL_GCOALESCE,
-    };
+    if (coalesce) {
+        coal = (struct ethtool_coalesce) {
+            .cmd = ETHTOOL_GCOALESCE,
+        };
 
-    /* Don't fail if the update itself fails */
-    virNetDevSendEthtoolIoctl(fd, &ifr);
+        /* Don't fail if the update itself fails */
+        if (virNetDevSendEthtoolIoctl(fd, &ifr) == 0) {
+            coalesce->rx_max_coalesced_frames = coal.rx_max_coalesced_frames;
+            coalesce->rx_coalesce_usecs_irq = coal.rx_coalesce_usecs_irq;
+            coalesce->rx_max_coalesced_frames_irq = coal.rx_max_coalesced_frames_irq;
+            coalesce->tx_coalesce_usecs = coal.tx_coalesce_usecs;
+            coalesce->tx_max_coalesced_frames = coal.tx_max_coalesced_frames;
+            coalesce->tx_coalesce_usecs_irq = coal.tx_coalesce_usecs_irq;
+            coalesce->tx_max_coalesced_frames_irq = coal.tx_max_coalesced_frames_irq;
+            coalesce->stats_block_coalesce_usecs = coal.stats_block_coalesce_usecs;
+            coalesce->use_adaptive_rx_coalesce = coal.use_adaptive_rx_coalesce;
+            coalesce->use_adaptive_tx_coalesce = coal.use_adaptive_tx_coalesce;
+            coalesce->pkt_rate_low = coal.pkt_rate_low;
+            coalesce->rx_coalesce_usecs_low = coal.rx_coalesce_usecs_low;
+            coalesce->rx_max_coalesced_frames_low = coal.rx_max_coalesced_frames_low;
+            coalesce->tx_coalesce_usecs_low = coal.tx_coalesce_usecs_low;
+            coalesce->tx_max_coalesced_frames_low = coal.tx_max_coalesced_frames_low;
+            coalesce->pkt_rate_high = coal.pkt_rate_high;
+            coalesce->rx_coalesce_usecs_high = coal.rx_coalesce_usecs_high;
+            coalesce->rx_max_coalesced_frames_high = coal.rx_max_coalesced_frames_high;
+            coalesce->tx_coalesce_usecs_high = coal.tx_coalesce_usecs_high;
+            coalesce->tx_max_coalesced_frames_high = coal.tx_max_coalesced_frames_high;
+            coalesce->rate_sample_interval = coal.rate_sample_interval;
+        }
+    }
 
     ret = 0;
  cleanup:
@@ -3155,9 +3184,10 @@ int virNetDevSetCoalesce(const char *ifname,
 }
 # else
 int virNetDevSetCoalesce(const char *ifname,
-                         virNetDevCoalescePtr coalesce)
+                         virNetDevCoalescePtr coalesce,
+                         bool update)
 {
-    if (!coalesce)
+    if (!coalesce && !update)
         return 0;
 
     virReportSystemError(ENOSYS,
@@ -3216,9 +3246,10 @@ virNetDevGetFeatures(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 int virNetDevSetCoalesce(const char *ifname,
-                         virNetDevCoalescePtr coalesce)
+                         virNetDevCoalescePtr coalesce,
+                         bool update)
 {
-    if (!coalesce)
+    if (!coalesce && !update)
         return 0;
 
     virReportSystemError(ENOSYS,

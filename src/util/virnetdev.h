@@ -180,7 +180,8 @@ int virNetDevRestoreMacAddress(const char *linkdev,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevSetCoalesce(const char *ifname,
-                         virNetDevCoalescePtr coalesce)
+                         virNetDevCoalescePtr coalesce,
+                         bool update)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevSetMTU(const char *ifname,

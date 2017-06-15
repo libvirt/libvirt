@@ -2986,6 +2986,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     bool needLinkStateChange = false;
     bool needReplaceDevDef = false;
     bool needBandwidthSet = false;
+    bool needCoalesceChange = false;
     int ret = -1;
     int changeidx = -1;
 
@@ -3280,6 +3281,12 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
                                  virDomainNetGetActualBandwidth(newdev)))
         needBandwidthSet = true;
 
+    if (!!olddev->coalesce != !!newdev->coalesce ||
+        (olddev->coalesce && newdev->coalesce &&
+         !memcmp(olddev->coalesce, newdev->coalesce,
+                 sizeof(*olddev->coalesce))))
+        needCoalesceChange = true;
+
     /* FINALLY - actually perform the required actions */
 
     if (needReconnect) {
@@ -3312,6 +3319,12 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         /* we successfully switched to the new filter, and we've
          * determined that the rest of newdev is equivalent to olddev,
          * so move newdev into place */
+        needReplaceDevDef = true;
+    }
+
+    if (needCoalesceChange) {
+        if (virNetDevSetCoalesce(newdev->ifname, newdev->coalesce, true) < 0)
+            goto cleanup;
         needReplaceDevDef = true;
     }
 

@@ -663,7 +663,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
     if (virNetDevSetOnline(*ifname, !!(flags & VIR_NETDEV_TAP_CREATE_IFUP)) < 0)
         goto error;
 
-    if (virNetDevSetCoalesce(*ifname, coalesce) < 0)
+    if (virNetDevSetCoalesce(*ifname, coalesce, false) < 0)
         goto error;
 
     return 0;
