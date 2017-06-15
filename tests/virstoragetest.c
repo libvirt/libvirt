@@ -1562,6 +1562,17 @@ mymain(void)
                        "<source protocol='iscsi' name='iqn.2016-12.com.virttest:emulated-iscsi-noauth.target/6'>\n"
                        "  <host name='test.org' port='1234'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"sheepdog\","
+                                       "\"vdi\":\"test\","
+                                       "\"server\":{ \"type\":\"inet\","
+                                                    "\"host\":\"example.com\","
+                                                    "\"port\":\"321\""
+                                                  "}"
+                                      "}"
+                            "}",
+                       "<source protocol='sheepdog' name='test'>\n"
+                       "  <host name='example.com' port='321'/>\n"
+                       "</source>\n");
 
  cleanup:
     /* Final cleanup */

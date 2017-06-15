@@ -3061,6 +3061,8 @@ virStorageSourceParseBackingJSONSheepdog(virStorageSourcePtr src,
                                          int opaque ATTRIBUTE_UNUSED)
 {
     const char *filename;
+    const char *vdi = virJSONValueObjectGetString(json, "vdi");
+    virJSONValuePtr server = virJSONValueObjectGetObject(json, "server");
 
     /* legacy URI based syntax passed via 'filename' option */
     if ((filename = virJSONValueObjectGetString(json, "filename"))) {
@@ -3069,13 +3071,31 @@ virStorageSourceParseBackingJSONSheepdog(virStorageSourcePtr src,
                                                           VIR_STORAGE_NET_PROTOCOL_SHEEPDOG);
 
         /* libvirt doesn't implement a parser for the legacy non-URI syntax */
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing sheepdog URI in JSON backing volume definition"));
+        return -1;
     }
 
-    /* Sheepdog currently supports only URI and legacy syntax passed in as filename */
-    virReportError(VIR_ERR_INVALID_ARG, "%s",
-                   _("missing sheepdog URI in JSON backing volume definition"));
+    src->type = VIR_STORAGE_TYPE_NETWORK;
+    src->protocol = VIR_STORAGE_NET_PROTOCOL_SHEEPDOG;
 
-    return -1;
+    if (!vdi) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("missing sheepdog vdi name"));
+        return -1;
+    }
+
+    if (VIR_STRDUP(src->path, vdi) < 0)
+        return -1;
+
+    if (VIR_ALLOC(src->hosts) < 0)
+        return -1;
+
+    src->nhosts = 1;
+
+    if (virStorageSourceParseBackingJSONSocketAddress(src->hosts, server) < 0)
+        return -1;
+
+    return 0;
 }
 
 
