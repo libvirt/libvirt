@@ -57,7 +57,7 @@ bhyveCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     }
 
     if (virDomainPCIAddressReserveAddr(addrs, addr,
-                                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE) < 0) {
+                                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE, 0) < 0) {
         goto cleanup;
     }
 
@@ -100,7 +100,7 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
     lpc_addr.slot = 0x1;
 
     if (virDomainPCIAddressReserveAddr(addrs, &lpc_addr,
-                                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE) < 0) {
+                                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE, 0) < 0) {
         goto error;
     }
 

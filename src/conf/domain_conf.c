@@ -3670,6 +3670,8 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
     info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
     VIR_FREE(info->romfile);
     VIR_FREE(info->loadparm);
+    info->isolationGroup = 0;
+    info->isolationGroupLocked = false;
 }
 
 
