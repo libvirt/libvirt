@@ -5435,6 +5435,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     size_t i;
     char *nodeset = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virCapsPtr caps;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
@@ -5469,6 +5470,13 @@ qemuProcessPrepareDomain(virConnectPtr conn,
                                                                        priv->autoNodeset)))
                 goto cleanup;
         }
+    }
+
+    /* Whether we should use virtlogd as stdio handler for character
+     * devices source backend. */
+    if (cfg->stdioLogD &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FILE_APPEND)) {
+        priv->chardevStdioLogd = true;
     }
 
     /*
@@ -5534,6 +5542,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
  cleanup:
     VIR_FREE(nodeset);
     virObjectUnref(caps);
+    virObjectUnref(cfg);
     return ret;
 }
 

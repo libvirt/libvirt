@@ -1885,6 +1885,9 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
 
     virCPUDefFormatBufFull(buf, priv->origCPU, NULL, false);
 
+    if (priv->chardevStdioLogd)
+        virBufferAddLit(buf, "<chardevStdioLogd/>");
+
     return 0;
 }
 
@@ -2155,6 +2158,9 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 
     if (virCPUDefParseXML(ctxt, "./cpu", VIR_CPU_TYPE_GUEST, &priv->origCPU) < 0)
         goto error;
+
+    priv->chardevStdioLogd = virXPathBoolean("boolean(./chardevStdioLogd)",
+                                             ctxt) == 1;
 
     return 0;
 

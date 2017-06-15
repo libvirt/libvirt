@@ -297,6 +297,9 @@ struct _qemuDomainObjPrivate {
     /* CPU def used to start the domain when it differs from the one actually
      * provided by QEMU. */
     virCPUDefPtr origCPU;
+
+    /* If true virtlogd is used as stdio handler for character devices. */
+    bool chardevStdioLogd;
 };
 
 # define QEMU_DOMAIN_PRIVATE(vm)	\
