@@ -29,8 +29,8 @@
         file from zanata.</p>
       </li>
 
-      <li><p>Post patches using "git send-email", with git rename
-        detection enabled.  You need a one-time setup of:</p>
+      <li><p>Post patches using <code>git send-email</code>, with git
+        rename detection enabled.  You need a one-time setup of:</p>
 <pre>
   git config diff.renames true
 </pre>
@@ -50,22 +50,44 @@
   git pull --rebase
   (fix any conflicts)
   git send-email --cover-letter --no-chain-reply-to --annotate \
-                 --to=libvir-list@redhat.com master
+                 --confirm=always --to=libvir-list@redhat.com master
 </pre>
-        <p>(Note that the "git send-email" subcommand may not be in
-        the main git package and using it may require installation of a
-        separate package, for example the "git-email" package in
-        Fedora.)  For a single patch you can omit
+        <p>For a single patch you can omit
         <code>--cover-letter</code>, but a series of two or more
-        patches needs a cover letter. If you get tired of typing
-        <code>--to=libvir-list@redhat.com</code> designation you can
-        set it in git config:</p>
+        patches needs a cover letter.</p>
+        <p>Note that the <code>git send-email</code> subcommand may not
+        be in the main git package and using it may require installation
+        of a separate package, for example the "git-email" package in
+        Fedora and Debian.  If this is your first time using
+        <code>git send-email</code>, you might need to configure it to
+        point it to your SMTP server with something like:</p>
+<pre>
+  git config --global sendemail.smtpServer stmp.youremailprovider.net
+</pre>
+        <p>If you get tired of typing
+        <code>--to=libvir-list@redhat.com</code> all the time, you can
+        configure that to be automatically handled as well:</p>
 <pre>
   git config sendemail.to libvir-list@redhat.com
 </pre>
+        <p>As a rule, patches should be sent to the mailing list only: all
+        developers are subscribed to libvir-list and read it regularly, so
+        please don't CC individual developers unless they've explicitly
+        asked you to.</p>
+        <p>Avoid using mail clients for sending patches, as most of them
+        will mangle the messages in some way, making them unusable for our
+        purposes.  Gmail and other Web-based mail clients are particularly
+        bad at this.</p>
+        <p>If everything went well, your patch should show up on the
+        <a href="https://www.redhat.com/archives/libvir-list/">libvir-list
+        archives</a> in a matter of minutes; if you still can't find it on
+        there after an hour or so, you should double-check your setup.  Note
+        that your very first post to the mailing list will be subject to
+        moderation, and it's not uncommon for that to take around a day.</p>
         <p>Please follow this as close as you can, especially the rebase and
-        git send-email part, as it makes life easier for other developers to
-        review your patch set. One should avoid sending patches as attachments,
+        <code>git send-email</code> part, as it makes life easier for other
+        developers to review your patch set.</p>
+        <p>One should avoid sending patches as attachments,
         but rather send them in email body along with commit message. If a
         developer is sending another version of the patch (e.g. to address
         review comments), they are advised to note differences to previous
