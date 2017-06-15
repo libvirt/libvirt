@@ -1963,6 +1963,12 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
         goto cleanup;
     }
 
+    if (strstr(reply, "Image is not in")) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Incorrect disk format"));
+        goto cleanup;
+    }
+
     ret = 0;
 
  cleanup:
