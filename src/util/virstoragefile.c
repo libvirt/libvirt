@@ -3014,11 +3014,12 @@ virStorageSourceParseBackingJSONNbd(virStorageSourcePtr src,
     const char *host = virJSONValueObjectGetString(json, "host");
     const char *port = virJSONValueObjectGetString(json, "port");
     const char *export = virJSONValueObjectGetString(json, "export");
+    virJSONValuePtr server = virJSONValueObjectGetObject(json, "server");
 
-    if (!path && !host) {
+    if (!path && !host && !server) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("missing path or host of NBD server in JSON backing "
-                         "volume definition"));
+                       _("missing host specification of NBD server in JSON "
+                         "backing volume definition"));
         return -1;
     }
 
@@ -3032,17 +3033,22 @@ virStorageSourceParseBackingJSONNbd(virStorageSourcePtr src,
         return -1;
     src->nhosts = 1;
 
-    if (path) {
-        src->hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_UNIX;
-        if (VIR_STRDUP(src->hosts[0].socket, path) < 0)
+    if (server) {
+        if (virStorageSourceParseBackingJSONSocketAddress(src->hosts, server) < 0)
             return -1;
     } else {
-        src->hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
-        if (VIR_STRDUP(src->hosts[0].name, host) < 0)
-            return -1;
+        if (path) {
+            src->hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_UNIX;
+            if (VIR_STRDUP(src->hosts[0].socket, path) < 0)
+                return -1;
+        } else {
+            src->hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+            if (VIR_STRDUP(src->hosts[0].name, host) < 0)
+                return -1;
 
-        if (VIR_STRDUP(src->hosts[0].port, port) < 0)
-            return -1;
+            if (VIR_STRDUP(src->hosts[0].port, port) < 0)
+                return -1;
+        }
     }
 
     return 0;
