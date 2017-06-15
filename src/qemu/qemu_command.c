@@ -2527,7 +2527,8 @@ qemuBuildFSDevStr(const virDomainDef *def,
                       QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
     virBufferAsprintf(&opt, ",mount_tag=%s", fs->dst);
 
-    qemuBuildVirtioOptionsStr(&opt, fs->virtio, qemuCaps);
+    if (qemuBuildVirtioOptionsStr(&opt, fs->virtio, qemuCaps) < 0)
+        goto error;
 
     if (qemuBuildDeviceAddressStr(&opt, def, &fs->info, qemuCaps) < 0)
         goto error;
