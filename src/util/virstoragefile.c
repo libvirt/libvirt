@@ -3122,6 +3122,15 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
                                     int opaque ATTRIBUTE_UNUSED)
 {
     const char *filename;
+    const char *pool = virJSONValueObjectGetString(json, "pool");
+    const char *image = virJSONValueObjectGetString(json, "image");
+    const char *conf = virJSONValueObjectGetString(json, "conf");
+    const char *snapshot = virJSONValueObjectGetString(json, "snapshot");
+    virJSONValuePtr servers = virJSONValueObjectGetArray(json, "server");
+    char *fullname = NULL;
+    size_t nservers;
+    size_t i;
+    int ret = -1;
 
     src->type = VIR_STORAGE_TYPE_NETWORK;
     src->protocol = VIR_STORAGE_NET_PROTOCOL_RBD;
@@ -3130,11 +3139,44 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
     if ((filename = virJSONValueObjectGetString(json, "filename")))
         return virStorageSourceParseRBDColonString(filename, src);
 
-    /* RBD currently supports only URI syntax passed in as filename */
-    virReportError(VIR_ERR_INVALID_ARG, "%s",
-                   _("missing RBD filename in JSON backing volume definition"));
+    if (!pool || !image) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing pool or image name in ceph backing volume "
+                         "JSON specification"));
+        return -1;
+    }
 
-    return -1;
+    /* currently we need to store the pool name and image name together, since
+     * the rest of the code is not prepared for it */
+    if (virAsprintf(&fullname, "%s/%s", pool, image) < 0)
+        return -1;
+
+    if (VIR_STRDUP(src->snapshot, snapshot) < 0 ||
+        VIR_STRDUP(src->configFile, conf) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(src->path, fullname);
+
+    if (servers) {
+        nservers = virJSONValueArraySize(servers);
+
+        if (VIR_ALLOC_N(src->hosts, nservers) < 0)
+            goto cleanup;
+
+        src->nhosts = nservers;
+
+        for (i = 0; i < nservers; i++) {
+            if (virStorageSourceParseBackingJSONInetSocketAddress(src->hosts + i,
+                                                                  virJSONValueArrayGet(servers, i)) < 0)
+                goto cleanup;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(fullname);
+
+    return ret;
 }
 
 static int
