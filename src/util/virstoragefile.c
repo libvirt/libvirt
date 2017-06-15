@@ -2935,18 +2935,73 @@ virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
                                       virJSONValuePtr json,
                                       int opaque ATTRIBUTE_UNUSED)
 {
+    const char *transport = virJSONValueObjectGetString(json, "transport");
+    const char *portal = virJSONValueObjectGetString(json, "portal");
+    const char *target = virJSONValueObjectGetString(json, "target");
     const char *uri;
+    char *port;
+    unsigned int lun = 0;
+    char *fulltarget = NULL;
+    int ret = -1;
 
     /* legacy URI based syntax passed via 'filename' option */
     if ((uri = virJSONValueObjectGetString(json, "filename")))
         return virStorageSourceParseBackingJSONUriStr(src, uri,
                                                       VIR_STORAGE_NET_PROTOCOL_ISCSI);
 
-    /* iSCSI currently supports only URI syntax passed in as filename */
-    virReportError(VIR_ERR_INVALID_ARG, "%s",
-                   _("missing iSCSI URI in JSON backing volume definition"));
+    src->type = VIR_STORAGE_TYPE_NETWORK;
+    src->protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
 
-    return -1;
+    if (VIR_ALLOC(src->hosts) < 0)
+        goto cleanup;
+
+    src->nhosts = 1;
+
+    if (STRNEQ_NULLABLE(transport, "tcp")) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("only TCP transport is supported for iSCSI volumes"));
+        goto cleanup;
+    }
+
+    src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+
+    if (!portal) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing 'portal' address in iSCSI backing definition"));
+        goto cleanup;
+    }
+
+    if (!target) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing 'target' in iSCSI backing definition"));
+        goto cleanup;
+    }
+
+    if (VIR_STRDUP(src->hosts->name, portal) < 0)
+        goto cleanup;
+
+    if ((port = strchr(src->hosts->name, ':'))) {
+        if (VIR_STRDUP(src->hosts->port, port + 1) < 0)
+            goto cleanup;
+
+        if (strlen(src->hosts->port) == 0)
+            VIR_FREE(src->hosts->port);
+
+        *port = '\0';
+    }
+
+    ignore_value(virJSONValueObjectGetNumberUint(json, "lun", &lun));
+
+    if (virAsprintf(&fulltarget, "%s/%u", target, lun) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(src->path, fulltarget);
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(fulltarget);
+    return ret;
 }
 
 
