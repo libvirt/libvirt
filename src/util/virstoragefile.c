@@ -3606,13 +3606,16 @@ virStorageSourceUpdateCapacity(virStorageSourcePtr src,
         src->format = format;
     }
 
-    if (format == VIR_STORAGE_FILE_RAW)
+    if (format == VIR_STORAGE_FILE_RAW && !src->encryption) {
         src->capacity = src->physical;
-    else if ((meta = virStorageFileGetMetadataFromBuf(src->path, buf,
-                                                      len, format, NULL)))
+    } else if ((meta = virStorageFileGetMetadataFromBuf(src->path, buf,
+                                                        len, format, NULL))) {
         src->capacity = meta->capacity ? meta->capacity : src->physical;
-    else
+        if (src->encryption && meta->encryption)
+            src->encryption->payload_offset = meta->encryption->payload_offset;
+    } else {
         goto cleanup;
+    }
 
     if (src->encryption && src->encryption->payload_offset != -1)
         src->capacity -= src->encryption->payload_offset * 512;
