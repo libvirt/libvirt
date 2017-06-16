@@ -50,6 +50,7 @@
   /{usr/,}lib/udev/scsi_id PUx,
   /usr/{lib,lib64}/xen-common/bin/xen-toolstack PUx,
   /usr/{lib,lib64}/xen/bin/* Ux,
+  /usr/lib/xen-*/bin/libxl-save-helper PUx,
 
   # force the use of virt-aa-helper
   audit deny /{usr/,}sbin/apparmor_parser rwxl,
