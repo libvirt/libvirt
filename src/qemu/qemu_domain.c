@@ -7721,6 +7721,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
     int ret = -1;
     bool isLink = false;
     bool isDev = false;
+    bool isReg = false;
     bool create = false;
 #ifdef WITH_SELINUX
     char *tcon = NULL;
@@ -7744,6 +7745,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
 
     isLink = S_ISLNK(sb.st_mode);
     isDev = S_ISCHR(sb.st_mode) || S_ISBLK(sb.st_mode);
+    isReg = S_ISREG(sb.st_mode);
 
     /* Here, @device might be whatever path in the system. We
      * should create the path in the namespace iff it's "/dev"
@@ -7855,16 +7857,12 @@ qemuDomainCreateDeviceRecursive(const char *device,
             }
             goto cleanup;
         }
-
-        /* Set the file permissions again: mknod() is affected by the
-         * current umask, and as such might not have set them correctly */
+    } else if (isReg) {
         if (create &&
-            chmod(devicePath, sb.st_mode) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to set permissions for device %s"),
-                                 devicePath);
+            virFileTouch(devicePath, sb.st_mode) < 0)
             goto cleanup;
-        }
+        /* Just create the file here so that code below sets
+         * proper owner and mode. Bind mount only after that. */
     } else {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("unsupported device type %s 0%o"),
@@ -7880,6 +7878,15 @@ qemuDomainCreateDeviceRecursive(const char *device,
     if (lchown(devicePath, sb.st_uid, sb.st_gid) < 0) {
         virReportSystemError(errno,
                              _("Failed to chown device %s"),
+                             devicePath);
+        goto cleanup;
+    }
+
+    /* Symlinks don't have mode */
+    if (!isLink &&
+        chmod(devicePath, sb.st_mode) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to set permissions for device %s"),
                              devicePath);
         goto cleanup;
     }
@@ -7915,6 +7922,11 @@ qemuDomainCreateDeviceRecursive(const char *device,
         }
     }
 #endif
+
+    /* Finish mount process started earlier. */
+    if (isReg &&
+        virFileBindMountDevice(device, devicePath) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
