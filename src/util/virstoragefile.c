@@ -3229,6 +3229,8 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
     } else {
         ret->type = VIR_STORAGE_TYPE_NETWORK;
 
+        VIR_DEBUG("parsing backing store string: '%s'", path);
+
         /* handle URI formatted backing stores */
         if ((json = STRSKIP(path, "json:")))
             rc = virStorageSourceParseBackingJSON(ret, json);
