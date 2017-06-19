@@ -495,11 +495,6 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
                                    size_t *nmachines,
                                    virCapsGuestMachinePtr **machines);
 
-bool virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
-                        time_t ctime,
-                        uid_t runUid,
-                        gid_t runGid);
-
 void virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
                                     const char *machineType);
 

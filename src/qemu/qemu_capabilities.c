@@ -4281,6 +4281,62 @@ virQEMUCapsReset(virQEMUCapsPtr qemuCaps)
 }
 
 
+static bool
+virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
+                   time_t qemuctime,
+                   uid_t runUid,
+                   gid_t runGid)
+{
+    bool kvmUsable;
+
+    if (!qemuCaps->binary)
+        return true;
+
+    if (!qemuctime) {
+        struct stat sb;
+
+        if (stat(qemuCaps->binary, &sb) < 0) {
+            char ebuf[1024];
+            VIR_DEBUG("Failed to stat QEMU binary '%s': %s",
+                      qemuCaps->binary,
+                      virStrerror(errno, ebuf, sizeof(ebuf)));
+            return false;
+        }
+        qemuctime = sb.st_ctime;
+    }
+
+    if (qemuctime != qemuCaps->ctime) {
+        VIR_DEBUG("Outdated capabilities for '%s': QEMU binary changed "
+                  "(%lld vs %lld)",
+                  qemuCaps->binary,
+                  (long long) qemuctime, (long long) qemuCaps->ctime);
+        return false;
+    }
+
+    kvmUsable = virFileAccessibleAs("/dev/kvm", R_OK | W_OK,
+                                    runUid, runGid) == 0;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KVM) &&
+        kvmUsable) {
+        VIR_DEBUG("KVM was not enabled when probing '%s', "
+                  "but it should be usable now",
+                  qemuCaps->binary);
+        return false;
+    }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
+        !kvmUsable) {
+        VIR_DEBUG("KVM was enabled when probing '%s', "
+                  "but it is not available now",
+                  qemuCaps->binary);
+        return false;
+    }
+
+    return true;
+}
+
+
 static int
 virQEMUCapsInitCached(virCapsPtr caps,
                       virQEMUCapsPtr qemuCaps,
@@ -5272,62 +5328,6 @@ virQEMUCapsNewForBinary(virCapsPtr caps,
 {
     return virQEMUCapsNewForBinaryInternal(caps, binary, libDir, cacheDir,
                                            runUid, runGid, false);
-}
-
-
-bool
-virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
-                   time_t qemuctime,
-                   uid_t runUid,
-                   gid_t runGid)
-{
-    bool kvmUsable;
-
-    if (!qemuCaps->binary)
-        return true;
-
-    if (!qemuctime) {
-        struct stat sb;
-
-        if (stat(qemuCaps->binary, &sb) < 0) {
-            char ebuf[1024];
-            VIR_DEBUG("Failed to stat QEMU binary '%s': %s",
-                      qemuCaps->binary,
-                      virStrerror(errno, ebuf, sizeof(ebuf)));
-            return false;
-        }
-        qemuctime = sb.st_ctime;
-    }
-
-    if (qemuctime != qemuCaps->ctime) {
-        VIR_DEBUG("Outdated capabilities for '%s': QEMU binary changed "
-                  "(%lld vs %lld)",
-                  qemuCaps->binary,
-                  (long long) qemuctime, (long long) qemuCaps->ctime);
-        return false;
-    }
-
-    kvmUsable = virFileAccessibleAs("/dev/kvm", R_OK | W_OK,
-                                    runUid, runGid) == 0;
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KVM) &&
-        kvmUsable) {
-        VIR_DEBUG("KVM was not enabled when probing '%s', "
-                  "but it should be usable now",
-                  qemuCaps->binary);
-        return false;
-    }
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
-        !kvmUsable) {
-        VIR_DEBUG("KVM was enabled when probing '%s', "
-                  "but it is not available now",
-                  qemuCaps->binary);
-        return false;
-    }
-
-    return true;
 }
 
 
