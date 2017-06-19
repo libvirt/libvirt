@@ -801,7 +801,7 @@ virStorageIsFile(const char *backing)
 }
 
 
-static bool
+bool
 virStorageIsRelative(const char *backing)
 {
     if (backing[0] == '/')

@@ -332,6 +332,7 @@ int virStorageFileResize(const char *path,
 
 int virStorageFileIsClusterFS(const char *path);
 bool virStorageIsFile(const char *path);
+bool virStorageIsRelative(const char *backing);
 
 int virStorageFileGetLVMKey(const char *path,
                             char **key);
