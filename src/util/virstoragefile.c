@@ -2798,8 +2798,18 @@ static int
 virStorageSourceParseBackingJSONInetSocketAddress(virStorageNetHostDefPtr host,
                                                   virJSONValuePtr json)
 {
-    const char *hostname = virJSONValueObjectGetString(json, "host");
-    const char *port = virJSONValueObjectGetString(json, "port");
+    const char *hostname;
+    const char *port;
+
+    if (!json) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing remote server specification in JSON "
+                         "backing volume definition"));
+        return -1;
+    }
+
+    hostname = virJSONValueObjectGetString(json, "host");
+    port = virJSONValueObjectGetString(json, "port");
 
     if (!hostname) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -2822,10 +2832,17 @@ static int
 virStorageSourceParseBackingJSONSocketAddress(virStorageNetHostDefPtr host,
                                               virJSONValuePtr json)
 {
-    const char *type = virJSONValueObjectGetString(json, "type");
-    const char *socket = virJSONValueObjectGetString(json, "socket");
+    const char *type;
+    const char *socket;
 
-    if (!type) {
+    if (!json) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing remote server specification in JSON "
+                         "backing volume definition"));
+        return -1;
+    }
+
+    if (!(type = virJSONValueObjectGetString(json, "type"))) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("missing socket address type in "
                          "JSON backing volume definition"));
@@ -2838,7 +2855,7 @@ virStorageSourceParseBackingJSONSocketAddress(virStorageNetHostDefPtr host,
     } else if (STREQ(type, "unix")) {
         host->transport = VIR_STORAGE_NET_HOST_TRANS_UNIX;
 
-        if (!socket) {
+        if (!(socket = virJSONValueObjectGetString(json, "socket"))) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("missing socket path for udp backing server in "
                              "JSON backing volume definition"));
