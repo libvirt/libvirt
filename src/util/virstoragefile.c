@@ -2802,18 +2802,17 @@ virStorageSourceParseBackingJSONSocketAddress(virStorageNetHostDefPtr host,
     const char *hostname = virJSONValueObjectGetString(json, "host");
     const char *port = virJSONValueObjectGetString(json, "port");
     const char *socket = virJSONValueObjectGetString(json, "socket");
-    int transport;
 
-    if ((transport = virStorageNetHostTransportTypeFromString(type)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown backing store transport protocol '%s'"), type);
+    if (!type) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing socket address type in "
+                         "JSON backing volume definition"));
         return -1;
     }
 
-    host->transport = transport;
+    if (STREQ(type, "tcp") || STREQ(type, "inet")) {
+        host->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
 
-    switch ((virStorageNetHostTransport) transport) {
-    case VIR_STORAGE_NET_HOST_TRANS_TCP:
         if (!hostname) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("missing hostname for tcp backing server in "
@@ -2824,9 +2823,9 @@ virStorageSourceParseBackingJSONSocketAddress(virStorageNetHostDefPtr host,
         if (VIR_STRDUP(host->name, hostname) < 0 ||
             VIR_STRDUP(host->port, port) < 0)
             return -1;
-        break;
+    } else if (STREQ(type, "unix")) {
+        host->transport = VIR_STORAGE_NET_HOST_TRANS_UNIX;
 
-    case VIR_STORAGE_NET_HOST_TRANS_UNIX:
         if (!socket) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("missing socket path for udp backing server in "
@@ -2834,13 +2833,9 @@ virStorageSourceParseBackingJSONSocketAddress(virStorageNetHostDefPtr host,
             return -1;
         }
 
-
         if (VIR_STRDUP(host->socket, socket) < 0)
             return -1;
-        break;
-
-    case VIR_STORAGE_NET_HOST_TRANS_RDMA:
-    case VIR_STORAGE_NET_HOST_TRANS_LAST:
+    } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("backing store protocol '%s' is not yet supported"),
                        type);

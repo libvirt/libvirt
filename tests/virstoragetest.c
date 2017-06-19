@@ -1431,7 +1431,7 @@ mymain(void)
                                                "{ \"type\":\"unix\","
                                                  "\"socket\":\"/path/socket\""
                                                "},"
-                                               "{ \"type\":\"tcp\","
+                                               "{ \"type\":\"inet\","
                                                  "\"host\":\"example.com\""
                                                "}"
                                              "]"
