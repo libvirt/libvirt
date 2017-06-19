@@ -2690,7 +2690,6 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                                   listenAddress, port,
                                                   dataFD[0])))
         goto stopjob;
-    dataFD[0] = -1; /* the FD is now owned by incoming */
 
     if (qemuProcessPrepareDomain(dconn, driver, vm,
                                  VIR_QEMU_PROCESS_START_AUTODESTROY) < 0)

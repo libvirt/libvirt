@@ -4166,6 +4166,9 @@ qemuProcessIncomingDefFree(qemuProcessIncomingDefPtr inc)
  * This function does not copy @path, the caller is responsible for keeping
  * the @path pointer valid during the lifetime of the allocated
  * qemuProcessIncomingDef structure.
+ *
+ * The caller is responsible for closing @fd, calling
+ * qemuProcessIncomingDefFree will NOT close it.
  */
 qemuProcessIncomingDefPtr
 qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
