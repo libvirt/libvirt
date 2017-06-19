@@ -3284,6 +3284,8 @@ int virDomainDefFindDevice(virDomainDefPtr def,
                            virDomainDeviceDefPtr dev,
                            bool reportError);
 
+const char *virDomainChrSourceDefGetPath(virDomainChrSourceDefPtr chr);
+
 void virDomainChrSourceDefClear(virDomainChrSourceDefPtr def);
 
 char *virDomainObjGetMetadata(virDomainObjPtr vm,

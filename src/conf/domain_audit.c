@@ -68,38 +68,6 @@ virDomainAuditGetRdev(const char *path ATTRIBUTE_UNUSED)
 #endif
 
 
-static const char *
-virDomainAuditChardevPath(virDomainChrSourceDefPtr chr)
-{
-    if (!chr)
-        return NULL;
-
-    switch ((virDomainChrType) chr->type) {
-    case VIR_DOMAIN_CHR_TYPE_PTY:
-    case VIR_DOMAIN_CHR_TYPE_DEV:
-    case VIR_DOMAIN_CHR_TYPE_FILE:
-    case VIR_DOMAIN_CHR_TYPE_PIPE:
-    case VIR_DOMAIN_CHR_TYPE_NMDM:
-        return chr->data.file.path;
-
-    case VIR_DOMAIN_CHR_TYPE_UNIX:
-        return chr->data.nix.path;
-
-    case VIR_DOMAIN_CHR_TYPE_TCP:
-    case VIR_DOMAIN_CHR_TYPE_UDP:
-    case VIR_DOMAIN_CHR_TYPE_NULL:
-    case VIR_DOMAIN_CHR_TYPE_VC:
-    case VIR_DOMAIN_CHR_TYPE_STDIO:
-    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
-    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-    case VIR_DOMAIN_CHR_TYPE_LAST:
-        return NULL;
-    }
-
-    return NULL;
-}
-
-
 static void
 virDomainAuditGenericDev(virDomainObjPtr vm,
                          const char *type,
@@ -178,8 +146,8 @@ virDomainAuditChardev(virDomainObjPtr vm,
         newsrc = newDef->source;
 
     virDomainAuditGenericDev(vm, "chardev",
-                             virDomainAuditChardevPath(oldsrc),
-                             virDomainAuditChardevPath(newsrc),
+                             virDomainChrSourceDefGetPath(oldsrc),
+                             virDomainChrSourceDefGetPath(newsrc),
                              reason, success);
 }
 
@@ -218,7 +186,7 @@ virDomainAuditSmartcard(virDomainObjPtr vm,
 
         case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
             virDomainAuditGenericDev(vm, "smartcard", NULL,
-                                     virDomainAuditChardevPath(def->data.passthru),
+                                     virDomainChrSourceDefGetPath(def->data.passthru),
                                      reason, success);
             break;
 
@@ -264,7 +232,7 @@ virDomainAuditRNG(virDomainObjPtr vm,
             break;
 
         case VIR_DOMAIN_RNG_BACKEND_EGD:
-            newsrcpath = virDomainAuditChardevPath(newDef->source.chardev);
+            newsrcpath = virDomainChrSourceDefGetPath(newDef->source.chardev);
             break;
 
         case VIR_DOMAIN_RNG_BACKEND_LAST:
@@ -279,7 +247,7 @@ virDomainAuditRNG(virDomainObjPtr vm,
             break;
 
         case VIR_DOMAIN_RNG_BACKEND_EGD:
-            oldsrcpath = virDomainAuditChardevPath(oldDef->source.chardev);
+            oldsrcpath = virDomainChrSourceDefGetPath(oldDef->source.chardev);
             break;
 
         case VIR_DOMAIN_RNG_BACKEND_LAST:
@@ -982,7 +950,7 @@ virDomainAuditShmem(virDomainObjPtr vm,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname = virAuditEncode("vm", vm->def->name);
-    const char *srcpath = virDomainAuditChardevPath(&def->server.chr);
+    const char *srcpath = virDomainChrSourceDefGetPath(&def->server.chr);
     const char *virt = virDomainVirtTypeToString(vm->def->virtType);
     char *shmpath = NULL;
 
