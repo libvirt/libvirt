@@ -991,6 +991,7 @@ mymain(void)
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-4600U", true);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-4510U", true);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-5600U", true);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-5600U-arat", true);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Core2-E6850", true);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Core2-Q9500", false);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "FX-8150", false);

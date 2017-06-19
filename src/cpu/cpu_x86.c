@@ -2664,12 +2664,11 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
         x86DataCopy(&disabled, &dataDisabled->data.x86) < 0)
         goto cleanup;
 
-    x86DataSubtract(&enabled, &model->data);
-
     for (i = 0; i < map->nfeatures; i++) {
         virCPUx86FeaturePtr feature = map->features[i];
 
-        if (x86DataIsSubset(&enabled, &feature->data)) {
+        if (x86DataIsSubset(&enabled, &feature->data) &&
+            !x86DataIsSubset(&model->data, &feature->data)) {
             VIR_DEBUG("Feature '%s' enabled by the hypervisor", feature->name);
             if (cpu->check == VIR_CPU_CHECK_FULL)
                 virBufferAsprintf(&bufAdded, "%s,", feature->name);
@@ -2678,7 +2677,9 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
                 goto cleanup;
         }
 
-        if (x86DataIsSubset(&disabled, &feature->data)) {
+        if (x86DataIsSubset(&disabled, &feature->data) ||
+            (x86DataIsSubset(&model->data, &feature->data) &&
+             !x86DataIsSubset(&enabled, &feature->data))) {
             VIR_DEBUG("Feature '%s' disabled by the hypervisor", feature->name);
             if (cpu->check == VIR_CPU_CHECK_FULL)
                 virBufferAsprintf(&bufRemoved, "%s,", feature->name);
