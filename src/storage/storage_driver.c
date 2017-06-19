@@ -3263,6 +3263,50 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
 }
 
 
+/**
+ * virStorageFileGetBackingStoreStr:
+ * @src: storage object
+ *
+ * Extracts the backing store string as stored in the storage volume described
+ * by @src and returns it to the user. Caller is responsible for freeing it.
+ * In case when the string can't be retrieved or does not exist NULL is
+ * returned.
+ */
+char *
+virStorageFileGetBackingStoreStr(virStorageSourcePtr src)
+{
+    virStorageSourcePtr tmp = NULL;
+    char *buf = NULL;
+    ssize_t headerLen;
+    char *ret = NULL;
+
+    /* exit if we can't load information about the current image */
+    if (!virStorageFileSupportsBackingChainTraversal(src))
+        return NULL;
+
+    if (virStorageFileAccess(src, F_OK) < 0)
+        return NULL;
+
+    if ((headerLen = virStorageFileReadHeader(src, VIR_STORAGE_MAX_HEADER,
+                                              &buf)) < 0)
+        return NULL;
+
+    if (!(tmp = virStorageSourceCopy(src, false)))
+        goto cleanup;
+
+    if (virStorageFileGetMetadataInternal(tmp, buf, headerLen, NULL) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret, tmp->backingStoreRaw);
+
+ cleanup:
+    VIR_FREE(buf);
+    virStorageSourceFree(tmp);
+
+    return ret;
+}
+
+
 static int
 virStorageAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
                                  virStoragePoolDefPtr pooldef)

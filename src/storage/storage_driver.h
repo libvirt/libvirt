@@ -54,6 +54,9 @@ int virStorageFileGetMetadata(virStorageSourcePtr src,
                               bool report_broken)
     ATTRIBUTE_NONNULL(1);
 
+char *virStorageFileGetBackingStoreStr(virStorageSourcePtr src)
+    ATTRIBUTE_NONNULL(1);
+
 int virStorageTranslateDiskSourcePool(virConnectPtr conn,
                                       virDomainDiskDefPtr def);
 
