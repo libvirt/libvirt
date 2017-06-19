@@ -7720,6 +7720,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
     struct stat sb;
     int ret = -1;
     bool isLink = false;
+    bool isDev = false;
     bool create = false;
 #ifdef WITH_SELINUX
     char *tcon = NULL;
@@ -7742,6 +7743,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
     }
 
     isLink = S_ISLNK(sb.st_mode);
+    isDev = S_ISCHR(sb.st_mode) || S_ISBLK(sb.st_mode);
 
     /* Here, @device might be whatever path in the system. We
      * should create the path in the namespace iff it's "/dev"
@@ -7841,7 +7843,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
         if (qemuDomainCreateDeviceRecursive(target, data,
                                             allow_noent, ttl - 1) < 0)
             goto cleanup;
-    } else {
+    } else if (isDev) {
         if (create &&
             mknod(devicePath, sb.st_mode, sb.st_rdev) < 0) {
             if (errno == EEXIST) {
@@ -7863,6 +7865,11 @@ qemuDomainCreateDeviceRecursive(const char *device,
                                  devicePath);
             goto cleanup;
         }
+    } else {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("unsupported device type %s 0%o"),
+                       device, sb.st_mode);
+        goto cleanup;
     }
 
     if (!create) {
