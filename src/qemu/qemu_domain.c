@@ -7745,7 +7745,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
 
     isLink = S_ISLNK(sb.st_mode);
     isDev = S_ISCHR(sb.st_mode) || S_ISBLK(sb.st_mode);
-    isReg = S_ISREG(sb.st_mode);
+    isReg = S_ISREG(sb.st_mode) || S_ISFIFO(sb.st_mode) || S_ISSOCK(sb.st_mode);
 
     /* Here, @device might be whatever path in the system. We
      * should create the path in the namespace iff it's "/dev"
@@ -8142,11 +8142,17 @@ qemuDomainSetupChardev(virDomainDefPtr def ATTRIBUTE_UNUSED,
                        void *opaque)
 {
     const struct qemuDomainCreateDeviceData *data = opaque;
+    const char *path = NULL;
 
-    if (dev->source->type != VIR_DOMAIN_CHR_TYPE_DEV)
+    if (!(path = virDomainChrSourceDefGetPath(dev->source)))
         return 0;
 
-    return qemuDomainCreateDevice(dev->source->data.file.path, data, false);
+    /* Socket created by qemu. It doesn't exist upfront. */
+    if (dev->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+        dev->source->data.nix.listen)
+        return 0;
+
+    return qemuDomainCreateDevice(path, data, true);
 }
 
 
@@ -8544,7 +8550,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
     bool delDevice = false;
     bool isLink = S_ISLNK(data->sb.st_mode);
     bool isDev = S_ISCHR(data->sb.st_mode) || S_ISBLK(data->sb.st_mode);
-    bool isReg = S_ISREG(data->sb.st_mode);
+    bool isReg = S_ISREG(data->sb.st_mode) || S_ISFIFO(data->sb.st_mode) || S_ISSOCK(data->sb.st_mode);
 
     qemuSecurityPostFork(data->driver->securityManager);
 
@@ -8589,7 +8595,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
          * as its backing chain. This might however clash here.
          * Therefore do the cleanup here. */
         if (umount(data->file) < 0 &&
-            errno != ENOENT) {
+            errno != ENOENT && errno != EINVAL) {
             virReportSystemError(errno,
                                  _("Unable to umount %s"),
                                  data->file);
@@ -8698,7 +8704,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
     }
 
     isLink = S_ISLNK(data.sb.st_mode);
-    isReg = S_ISREG(data.sb.st_mode);
+    isReg = S_ISREG(data.sb.st_mode) || S_ISFIFO(data.sb.st_mode) || S_ISSOCK(data.sb.st_mode);
 
     if (isReg && STRPREFIX(file, DEVPREFIX)) {
         cfg = virQEMUDriverGetConfig(driver);
@@ -9090,10 +9096,13 @@ qemuDomainNamespaceSetupChardev(virQEMUDriverPtr driver,
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (chr->source->type != VIR_DOMAIN_CHR_TYPE_DEV)
+    if (!(path = virDomainChrSourceDefGetPath(chr->source)))
         return 0;
 
-    path = chr->source->data.file.path;
+    /* Socket created by qemu. It doesn't exist upfront. */
+    if (chr->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+        chr->source->data.nix.listen)
+        return 0;
 
     cfg = virQEMUDriverGetConfig(driver);
     if (qemuDomainGetPreservedMounts(cfg, vm,
