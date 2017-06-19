@@ -5007,7 +5007,6 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
     detach = vm->def->nets[detachidx];
 
     if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-        /* coverity[negative_returns] */
         ret = qemuDomainDetachThisHostDevice(driver, vm,
                                              virDomainNetGetActualHostdev(detach));
         goto cleanup;
