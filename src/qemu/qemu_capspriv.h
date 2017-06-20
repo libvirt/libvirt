@@ -28,13 +28,19 @@
 #ifndef __QEMU_CAPSPRIV_H__
 # define __QEMU_CAPSPRIV_H__
 
+struct _virQEMUCapsCachePriv {
+    char *libDir;
+    uid_t runUid;
+    gid_t runGid;
+};
+typedef struct _virQEMUCapsCachePriv virQEMUCapsCachePriv;
+typedef virQEMUCapsCachePriv *virQEMUCapsCachePrivPtr;
+
 struct _virQEMUCapsCache {
     virMutex lock;
     virHashTablePtr binaries;
-    char *libDir;
     char *cacheDir;
-    uid_t runUid;
-    gid_t runGid;
+    virQEMUCapsCachePrivPtr priv;
 };
 
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
