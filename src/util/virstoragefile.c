@@ -966,8 +966,12 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                   size_t len,
                                   int *backingFormat)
 {
+    int dummy;
     int ret = -1;
     size_t i;
+
+    if (!backingFormat)
+        backingFormat = &dummy;
 
     VIR_DEBUG("path=%s, buf=%p, len=%zu, meta->format=%d",
               meta->path, buf, len, meta->format);
