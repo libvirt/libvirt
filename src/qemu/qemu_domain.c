@@ -8357,9 +8357,11 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
             goto cleanup;
         }
 
-        /* At this point, devMountsPath is either a regular file or a directory. */
+        /* At this point, devMountsPath is either:
+         * a file (regular or special), or
+         * a directory. */
         if ((S_ISDIR(sb.st_mode) && virFileMakePath(devMountsSavePath[i]) < 0) ||
-            (S_ISREG(sb.st_mode) && virFileTouch(devMountsSavePath[i], sb.st_mode) < 0)) {
+            (!S_ISDIR(sb.st_mode) && virFileTouch(devMountsSavePath[i], sb.st_mode) < 0)) {
             virReportSystemError(errno,
                                  _("Failed to create %s"),
                                  devMountsSavePath[i]);
