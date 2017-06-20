@@ -1188,8 +1188,22 @@ udevProcessMediatedDevice(struct udev_device *dev,
     char *canonicalpath = NULL;
     virNodeDevCapMdevPtr data = &def->caps->data.mdev;
 
-    if (virAsprintf(&linkpath, "%s/mdev_type", udev_device_get_syspath(dev)) < 0)
+    /* Because of a kernel uevent race, we might get the 'add' event prior to
+     * the sysfs tree being ready, so any attempt to access any sysfs attribute
+     * would result in ENOENT and us dropping the device, so let's work around
+     * it by waiting for the attributes to become available.
+     */
+
+    if (virAsprintf(&linkpath, "%s/mdev_type",
+                    udev_device_get_syspath(dev)) < 0)
         goto cleanup;
+
+    if (virFileWaitForExists(linkpath, 1, 100) < 0) {
+        virReportSystemError(errno,
+                             _("failed to wait for file '%s' to appear"),
+                             linkpath);
+        goto cleanup;
+    }
 
     if (virFileResolveLink(linkpath, &canonicalpath) < 0) {
         virReportSystemError(errno, _("failed to resolve '%s'"), linkpath);
