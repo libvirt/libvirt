@@ -14091,6 +14091,7 @@ struct _qemuDomainSnapshotDiskData {
     bool created; /* @src was created by the snapshot code */
     bool prepared; /* @src was prepared using qemuDomainDiskChainElementPrepare */
     virDomainDiskDefPtr disk;
+    char *relPath; /* relative path component to fill into original disk */
 
     virStorageSourcePtr persistsrc;
     virDomainDiskDefPtr persistdisk;
@@ -14124,6 +14125,7 @@ qemuDomainSnapshotDiskDataFree(qemuDomainSnapshotDiskDataPtr data,
             virStorageSourceFree(data[i].src);
         }
         virStorageSourceFree(data[i].persistsrc);
+        VIR_FREE(data[i].relPath);
     }
 
     VIR_FREE(data);
@@ -14139,11 +14141,13 @@ qemuDomainSnapshotDiskDataFree(qemuDomainSnapshotDiskDataPtr data,
 static qemuDomainSnapshotDiskDataPtr
 qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
-                                  virDomainSnapshotObjPtr snap)
+                                  virDomainSnapshotObjPtr snap,
+                                  bool reuse)
 {
     size_t i;
     qemuDomainSnapshotDiskDataPtr ret;
     qemuDomainSnapshotDiskDataPtr dd;
+    char *backingStoreStr;
 
     if (VIR_ALLOC_N(ret, snap->def->ndisks) < 0)
         return NULL;
@@ -14166,6 +14170,16 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
             goto error;
 
         dd->initialized = true;
+
+        /* relative backing store paths need to be updated so that relative
+         * block commit still works */
+        if (reuse &&
+            (backingStoreStr = virStorageFileGetBackingStoreStr(dd->src))) {
+            if (virStorageIsRelative(backingStoreStr))
+                VIR_STEAL_PTR(dd->relPath, backingStoreStr);
+            else
+                VIR_FREE(backingStoreStr);
+        }
 
         /* Note that it's unsafe to assume that the disks in the persistent
          * definition match up with the disks in the live definition just by
@@ -14210,6 +14224,7 @@ qemuDomainSnapshotUpdateDiskSources(qemuDomainSnapshotDiskDataPtr dd,
     if (dd->initialized)
         virStorageFileDeinit(dd->src);
 
+    VIR_STEAL_PTR(dd->disk->src->relPath, dd->relPath);
     VIR_STEAL_PTR(dd->src->backingStore, dd->disk->src);
     VIR_STEAL_PTR(dd->disk->src, dd->src);
 
@@ -14323,7 +14338,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
     /* prepare a list of objects to use in the vm definition so that we don't
      * have to roll back later */
-    if (!(diskdata = qemuDomainSnapshotDiskDataCollect(driver, vm, snap)))
+    if (!(diskdata = qemuDomainSnapshotDiskDataCollect(driver, vm, snap, reuse)))
         goto cleanup;
 
     cfg = virQEMUDriverGetConfig(driver);
