@@ -17270,10 +17270,16 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
  endjob:
     if (ret < 0 && clean_access) {
+        virErrorPtr orig_err = virSaveLastError();
         /* Revert access to read-only, if possible.  */
         qemuDomainDiskChainElementPrepare(driver, vm, baseSource, true);
         if (top_parent && top_parent != disk->src)
             qemuDomainDiskChainElementPrepare(driver, vm, top_parent, true);
+
+        if (orig_err) {
+            virSetError(orig_err);
+            virFreeError(orig_err);
+        }
     }
     virStorageSourceFree(mirror);
     qemuDomainObjEndJob(driver, vm);
