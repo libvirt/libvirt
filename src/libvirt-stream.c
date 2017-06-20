@@ -1131,6 +1131,9 @@ virStreamEventRemoveCallback(virStreamPtr stream)
  * errors, so if this returns a success code the application can
  * be sure that all data has been successfully processed.
  *
+ * If the stream is non-blocking, any callback must be removed
+ * beforehand.
+ *
  * Returns 0 on success, -1 upon error
  */
 int
@@ -1169,6 +1172,9 @@ virStreamFinish(virStreamPtr stream)
  * that the stream is being terminated early. For input
  * streams this can be used to inform the driver that it
  * should stop sending data.
+ *
+ * If the stream is non-blocking, any callback must be removed
+ * beforehand.
  *
  * Returns 0 on success, -1 upon error
  */
