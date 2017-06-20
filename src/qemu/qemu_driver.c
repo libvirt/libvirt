@@ -17193,19 +17193,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
             goto endjob;
     }
 
-    /* For the commit to succeed, we must allow qemu to open both the
-     * 'base' image and the parent of 'top' as read/write; 'top' might
-     * not have a parent, or might already be read-write.  XXX It
-     * would also be nice to revert 'base' to read-only, as well as
-     * revoke access to files removed from the chain, when the commit
-     * operation succeeds, but doing that requires tracking the
-     * operation in XML across libvirtd restarts.  */
-    clean_access = true;
-    if (qemuDomainDiskChainElementPrepare(driver, vm, baseSource, false) < 0 ||
-        (top_parent && top_parent != disk->src &&
-         qemuDomainDiskChainElementPrepare(driver, vm, top_parent, false) < 0))
-        goto endjob;
-
     if (flags & VIR_DOMAIN_BLOCK_COMMIT_RELATIVE &&
         topSource != disk->src) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHANGE_BACKING_FILE)) {
@@ -17224,6 +17211,19 @@ qemuDomainBlockCommit(virDomainPtr dom,
             goto endjob;
         }
     }
+
+    /* For the commit to succeed, we must allow qemu to open both the
+     * 'base' image and the parent of 'top' as read/write; 'top' might
+     * not have a parent, or might already be read-write.  XXX It
+     * would also be nice to revert 'base' to read-only, as well as
+     * revoke access to files removed from the chain, when the commit
+     * operation succeeds, but doing that requires tracking the
+     * operation in XML across libvirtd restarts.  */
+    clean_access = true;
+    if (qemuDomainDiskChainElementPrepare(driver, vm, baseSource, false) < 0 ||
+        (top_parent && top_parent != disk->src &&
+         qemuDomainDiskChainElementPrepare(driver, vm, top_parent, false) < 0))
+        goto endjob;
 
     /* Start the commit operation.  Pass the user's original spelling,
      * if any, through to qemu, since qemu may behave differently
