@@ -61,319 +61,372 @@ VIR_LOG_INIT("qemu.qemu_capabilities");
  * daemon restarts
  */
 VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
-              "kqemu",  /* 0 */
+              /* 0 */
+              "kqemu",
               "vnc-colon",
               "no-reboot",
               "drive",
               "drive-boot",
 
-              "name", /* 5 */
+              /* 5 */
+              "name",
               "uuid",
               "domid",
               "vnet-hdr",
               "migrate-kvm-stdio",
 
-              "migrate-qemu-tcp", /* 10 */
+              /* 10 */
+              "migrate-qemu-tcp",
               "migrate-qemu-exec",
               "drive-cache-v2",
               "kvm",
               "drive-format",
 
-              "vga", /* 15 */
+              /* 15 */
+              "vga",
               "0.10",
               "pci-device",
               "mem-path",
               "drive-serial",
 
-              "xen-domid", /* 20 */
+              /* 20 */
+              "xen-domid",
               "migrate-qemu-unix",
               "chardev",
               "enable-kvm",
               "monitor-json",
 
-              "balloon", /* 25 */
+              /* 25 */
+              "balloon",
               "device",
               "sdl",
               "smp-topology",
               "netdev",
 
-              "rtc", /* 30 */
+              /* 30 */
+              "rtc",
               "vhost-net",
               "rtc-td-hack",
               "no-hpet",
               "no-kvm-pit",
 
-              "tdf", /* 35 */
+              /* 35 */
+              "tdf",
               "pci-configfd",
               "nodefconfig",
               "boot-menu",
               "enable-kqemu",
 
-              "fsdev", /* 40 */
+              /* 40 */
+              "fsdev",
               "nesting",
               "name-process",
               "drive-readonly",
               "smbios-type",
 
-              "vga-qxl", /* 45 */
+              /* 45 */
+              "vga-qxl",
               "spice",
               "vga-none",
               "migrate-qemu-fd",
               "boot-index",
 
-              "hda-duplex", /* 50 */
+              /* 50 */
+              "hda-duplex",
               "drive-aio",
               "pci-multibus",
               "pci-bootindex",
               "ccid-emulated",
 
-              "ccid-passthru", /* 55 */
+              /* 55 */
+              "ccid-passthru",
               "chardev-spicevmc",
               "device-spicevmc",
               "virtio-tx-alg",
               "device-qxl-vga",
 
-              "pci-multifunction", /* 60 */
+              /* 60 */
+              "pci-multifunction",
               "virtio-blk-pci.ioeventfd",
               "sga",
               "virtio-blk-pci.event_idx",
               "virtio-net-pci.event_idx",
 
-              "cache-directsync", /* 65 */
+              /* 65 */
+              "cache-directsync",
               "piix3-usb-uhci",
               "piix4-usb-uhci",
               "usb-ehci",
               "ich9-usb-ehci1",
 
-              "vt82c686b-usb-uhci", /* 70 */
+              /* 70 */
+              "vt82c686b-usb-uhci",
               "pci-ohci",
               "usb-redir",
               "usb-hub",
               "no-shutdown",
 
-              "cache-unsafe", /* 75 */
+              /* 75 */
+              "cache-unsafe",
               "rombar",
               "ich9-ahci",
               "no-acpi",
               "fsdev-readonly",
 
-              "virtio-blk-pci.scsi", /* 80 */
+              /* 80 */
+              "virtio-blk-pci.scsi",
               "blk-sg-io",
               "drive-copy-on-read",
               "cpu-host",
               "fsdev-writeout",
 
-              "drive-iotune", /* 85 */
+              /* 85 */
+              "drive-iotune",
               "system_wakeup",
               "scsi-disk.channel",
               "scsi-block",
               "transaction",
 
-              "block-job-sync", /* 90 */
+              /* 90 */
+              "block-job-sync",
               "block-job-async",
               "scsi-cd",
               "ide-cd",
               "no-user-config",
 
-              "hda-micro", /* 95 */
+              /* 95 */
+              "hda-micro",
               "dump-guest-memory",
               "nec-usb-xhci",
               "virtio-s390",
               "balloon-event",
 
-              "bridge", /* 100 */
+              /* 100 */
+              "bridge",
               "lsi",
               "virtio-scsi-pci",
               "blockio",
               "disable-s3",
 
-              "disable-s4", /* 105 */
+              /* 105 */
+              "disable-s4",
               "usb-redir.filter",
               "ide-drive.wwn",
               "scsi-disk.wwn",
               "seccomp-sandbox",
 
-              "reboot-timeout", /* 110 */
+              /* 110 */
+              "reboot-timeout",
               "dump-guest-core",
               "seamless-migration",
               "block-commit",
               "vnc",
 
-              "drive-mirror", /* 115 */
+              /* 115 */
+              "drive-mirror",
               "usb-redir.bootindex",
               "usb-host.bootindex",
               "blockdev-snapshot-sync",
               "qxl",
 
-              "VGA", /* 120 */
+              /* 120 */
+              "VGA",
               "cirrus-vga",
               "vmware-svga",
               "device-video-primary",
               "s390-sclp",
 
-              "usb-serial", /* 125 */
+              /* 125 */
+              "usb-serial",
               "usb-net",
               "add-fd",
               "nbd-server",
               "virtio-rng",
 
-              "rng-random", /* 130 */
+              /* 130 */
+              "rng-random",
               "rng-egd",
               "virtio-ccw",
               "dtb",
               "megasas",
 
-              "ipv6-migration", /* 135 */
+              /* 135 */
+              "ipv6-migration",
               "machine-opt",
               "machine-usb-opt",
               "tpm-passthrough",
               "tpm-tis",
 
-              "nvram",  /* 140 */
+              /* 140 */
+              "nvram",
               "pci-bridge",
               "vfio-pci",
               "vfio-pci.bootindex",
               "scsi-generic",
 
-              "scsi-generic.bootindex", /* 145 */
+              /* 145 */
+              "scsi-generic.bootindex",
               "mem-merge",
               "vnc-websocket",
               "drive-discard",
               "mlock",
 
-              "vnc-share-policy", /* 150 */
+              /* 150 */
+              "vnc-share-policy",
               "device-del-event",
               "dmi-to-pci-bridge",
               "i440fx-pci-hole64-size",
               "q35-pci-hole64-size",
 
-              "usb-storage", /* 155 */
+              /* 155 */
+              "usb-storage",
               "usb-storage.removable",
               "virtio-mmio",
               "ich9-intel-hda",
               "kvm-pit-lost-tick-policy",
 
-              "boot-strict", /* 160 */
+              /* 160 */
+              "boot-strict",
               "pvpanic",
               "enable-fips",
               "spice-file-xfer-disable",
               "spiceport",
 
-              "usb-kbd", /* 165 */
+              /* 165 */
+              "usb-kbd",
               "host-pci-multidomain",
               "msg-timestamp",
               "active-commit",
               "change-backing-file",
 
-              "memory-backend-ram", /* 170 */
+              /* 170 */
+              "memory-backend-ram",
               "numa",
               "memory-backend-file",
               "usb-audio",
               "rtc-reset-reinjection",
 
-              "splash-timeout", /* 175 */
+              /* 175 */
+              "splash-timeout",
               "iothread",
               "migrate-rdma",
               "ivshmem",
               "drive-iotune-max",
 
-              "VGA.vgamem_mb", /* 180 */
+              /* 180 */
+              "VGA.vgamem_mb",
               "vmware-svga.vgamem_mb",
               "qxl.vgamem_mb",
               "qxl-vga.vgamem_mb",
               "pc-dimm",
 
-              "machine-vmport-opt", /* 185 */
+              /* 185 */
+              "machine-vmport-opt",
               "aes-key-wrap",
               "dea-key-wrap",
               "pci-serial",
               "aarch64-off",
 
-              "vhost-user-multiqueue", /* 190 */
+              /* 190 */
+              "vhost-user-multiqueue",
               "migration-event",
               "gpex-pcihost",
               "ioh3420",
               "x3130-upstream",
 
-              "xio3130-downstream", /* 195 */
+              /* 195 */
+              "xio3130-downstream",
               "rtl8139",
               "e1000",
               "virtio-net",
               "gic-version",
 
-              "incoming-defer", /* 200 */
+              /* 200 */
+              "incoming-defer",
               "virtio-gpu",
               "virtio-gpu.virgl",
               "virtio-keyboard",
               "virtio-mouse",
 
-              "virtio-tablet", /* 205 */
+              /* 205 */
+              "virtio-tablet",
               "virtio-input-host",
               "chardev-file-append",
               "ich9-disable-s3",
               "ich9-disable-s4",
 
-              "vserport-change-event", /* 210 */
+              /* 210 */
+              "vserport-change-event",
               "virtio-balloon-pci.deflate-on-oom",
               "mptsas1068",
               "spice-gl",
               "qxl.vram64_size_mb",
 
-              "qxl-vga.vram64_size_mb", /* 215 */
+              /* 215 */
+              "qxl-vga.vram64_size_mb",
               "chardev-logfile",
               "debug-threads",
               "secret",
               "pxb",
 
-              "pxb-pcie", /* 220 */
+              /* 220 */
+              "pxb-pcie",
               "device-tray-moved-event",
               "nec-usb-xhci-ports",
               "virtio-scsi-pci.iothread",
               "name-guest",
 
-              "qxl.max_outputs", /* 225 */
+              /* 225 */
+              "qxl.max_outputs",
               "qxl-vga.max_outputs",
               "spice-unix",
               "drive-detect-zeroes",
               "tls-creds-x509",
 
-              "display", /* 230 */
+              /* 230 */
+              "display",
               "intel-iommu",
               "smm",
               "virtio-pci-disable-legacy",
               "query-hotpluggable-cpus",
 
-              "virtio-net.rx_queue_size", /* 235 */
+              /* 235 */
+              "virtio-net.rx_queue_size",
               "machine-iommu",
               "virtio-vga",
               "drive-iotune-max-length",
               "ivshmem-plain",
 
-              "ivshmem-doorbell", /* 240 */
+              /* 240 */
+              "ivshmem-doorbell",
               "query-qmp-schema",
               "gluster.debug_level",
               "vhost-scsi",
               "drive-iotune-group",
 
-              "query-cpu-model-expansion", /* 245 */
+              /* 245 */
+              "query-cpu-model-expansion",
               "virtio-net.host_mtu",
               "spice-rendernode",
               "nvdimm",
               "pcie-root-port",
 
-              "query-cpu-definitions", /* 250 */
+              /* 250 */
+              "query-cpu-definitions",
               "block-write-threshold",
               "query-named-block-nodes",
               "cpu-cache",
               "qemu-xhci",
 
-              "kernel-irqchip", /* 255 */
+              /* 255 */
+              "kernel-irqchip",
               "kernel-irqchip.split",
               "intel-iommu.intremap",
               "intel-iommu.caching-mode",
               "intel-iommu.eim",
 
-              "intel-iommu.device-iotlb", /* 260 */
+              /* 260 */
+              "intel-iommu.device-iotlb",
               "virtio.iommu_platform",
               "virtio.ats",
               "loadparm",
