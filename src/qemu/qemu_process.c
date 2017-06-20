@@ -3358,7 +3358,8 @@ qemuProcessBuildDestroyHugepagesPath(virQEMUDriverPtr driver,
                     goto cleanup;
                 }
             } else {
-                if (rmdir(hugepagePath) < 0)
+                if (rmdir(hugepagePath) < 0 &&
+                    errno != ENOENT)
                     VIR_WARN("Unable to remove hugepage path: %s (errno=%d)",
                              hugepagePath, errno);
             }
