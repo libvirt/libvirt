@@ -1121,8 +1121,10 @@ udevProcessMediatedDevice(struct udev_device *dev,
     if (virAsprintf(&linkpath, "%s/mdev_type", udev_device_get_syspath(dev)) < 0)
         goto cleanup;
 
-    if (virFileResolveLink(linkpath, &canonicalpath) < 0)
+    if (virFileResolveLink(linkpath, &canonicalpath) < 0) {
+        virReportSystemError(errno, _("failed to resolve '%s'"), linkpath);
         goto cleanup;
+    }
 
     if (VIR_STRDUP(data->type, last_component(canonicalpath)) < 0)
         goto cleanup;
