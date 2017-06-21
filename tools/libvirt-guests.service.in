@@ -2,6 +2,7 @@
 Description=Suspend/Resume Running libvirt Guests
 Wants=libvirtd.service
 Requires=virt-guest-shutdown.target
+RequiresMountsFor=/var/lib/libvirt/qemu/save
 After=network.target
 After=time-sync.target
 After=libvirtd.service
