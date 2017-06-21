@@ -1359,6 +1359,8 @@ mymain(void)
                        "<source protocol='nbd' name='blah'>\n"
                        "  <host name='example.org' port='6000'/>\n"
                        "</source>\n");
+
+#ifdef WITH_YAJL
     TEST_BACKING_PARSE("json:", NULL);
     TEST_BACKING_PARSE("json:asdgsdfg", NULL);
     TEST_BACKING_PARSE("json:{}", NULL);
@@ -1573,6 +1575,7 @@ mymain(void)
                        "<source protocol='sheepdog' name='test'>\n"
                        "  <host name='example.com' port='321'/>\n"
                        "</source>\n");
+#endif /* WITH_YAJL */
 
  cleanup:
     /* Final cleanup */
