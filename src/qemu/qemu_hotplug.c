@@ -3283,8 +3283,8 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
 
     if (!!olddev->coalesce != !!newdev->coalesce ||
         (olddev->coalesce && newdev->coalesce &&
-         !memcmp(olddev->coalesce, newdev->coalesce,
-                 sizeof(*olddev->coalesce))))
+         memcmp(olddev->coalesce, newdev->coalesce,
+                sizeof(*olddev->coalesce))))
         needCoalesceChange = true;
 
     /* FINALLY - actually perform the required actions */
