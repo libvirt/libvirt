@@ -109,6 +109,9 @@ int virStrToDouble(char const *s,
                    double *result)
     ATTRIBUTE_RETURN_CHECK;
 
+int virDoubleToStr(char **strp, double number)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
 void virSkipSpaces(const char **str) ATTRIBUTE_NONNULL(1);
 void virSkipSpacesAndBackslash(const char **str) ATTRIBUTE_NONNULL(1);
 void virTrimSpaces(char *str, char **endp) ATTRIBUTE_NONNULL(1);

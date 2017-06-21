@@ -28,6 +28,7 @@
 #include "base64.h"
 #include "c-ctype.h"
 #include "virstring.h"
+#include "virthread.h"
 #include "viralloc.h"
 #include "virbuffer.h"
 #include "virerror.h"
@@ -516,6 +517,24 @@ virStrToLong_ullp(char const *s, char **end_ptr, int base,
     return 0;
 }
 
+/* In case thread-safe locales are available */
+#if HAVE_NEWLOCALE
+
+static locale_t virLocale;
+
+static int
+virLocaleOnceInit(void)
+{
+    virLocale = newlocale(LC_ALL_MASK, "C", (locale_t)0);
+    if (!virLocale)
+        return -1;
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virLocale);
+#endif
+
+
 int
 virStrToDouble(char const *s,
                char **end_ptr,
@@ -535,6 +554,52 @@ virStrToDouble(char const *s,
     *result = val;
     return 0;
 }
+
+/**
+ * virDoubleToStr
+ *
+ * converts double to string with C locale (thread-safe).
+ *
+ * Returns -1 on error, size of the string otherwise.
+ */
+int
+virDoubleToStr(char **strp, double number)
+{
+    int ret = -1;
+
+#if HAVE_NEWLOCALE
+
+    locale_t old_loc;
+
+    if (virLocaleInitialize() < 0)
+        goto error;
+
+    old_loc = uselocale(virLocale);
+    ret = virAsprintf(strp, "%lf", number);
+    uselocale(old_loc);
+
+#else
+
+    char *radix, *tmp;
+    struct lconv *lc;
+
+    if ((ret = virAsprintf(strp, "%lf", number) < 0))
+        goto error;
+
+    lc = localeconv();
+    radix = lc->decimal_point;
+    tmp = strstr(*strp, radix);
+    if (tmp) {
+        *tmp = '.';
+        if (strlen(radix) > 1)
+            memmove(tmp + 1, tmp + strlen(radix), strlen(*strp) - (tmp - *strp));
+    }
+
+#endif /* HAVE_NEWLOCALE */
+ error:
+    return ret;
+}
+
 
 int
 virVasprintfInternal(bool report,

@@ -63,9 +63,6 @@ int virParseNumber(const char **str);
 int virParseVersionString(const char *str, unsigned long *version,
                           bool allowMissing);
 
-int virDoubleToStr(char **strp, double number)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-
 char *virFormatIntDecimal(char *buf, size_t buflen, int val)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
