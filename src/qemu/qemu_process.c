@@ -3989,20 +3989,16 @@ qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
         if (qemuProcessVerifyCPUFeatures(def, cpu) < 0)
             goto cleanup;
 
-        /* Don't update the CPU if we already did so when starting a domain
-         * during migration, restore or snapshot revert. */
-        if (priv->origCPU) {
-            ret = 0;
-            goto cleanup;
-        }
-
         if (!(orig = virCPUDefCopy(def->cpu)))
             goto cleanup;
 
         if ((rc = virCPUUpdateLive(def->os.arch, def->cpu, cpu, disabled)) < 0) {
             goto cleanup;
         } else if (rc == 0) {
-            if (!virCPUDefIsEqual(def->cpu, orig, false))
+            /* Store the original CPU in priv if QEMU changed it and we didn't
+             * get the original CPU via migration, restore, or snapshot revert.
+             */
+            if (!priv->origCPU && !virCPUDefIsEqual(def->cpu, orig, false))
                 VIR_STEAL_PTR(priv->origCPU, orig);
 
             def->cpu->check = VIR_CPU_CHECK_FULL;
