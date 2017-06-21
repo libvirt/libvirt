@@ -100,6 +100,7 @@
 #include "viraccessapicheck.h"
 #include "viraccessapicheckqemu.h"
 #include "storage/storage_driver.h"
+#include "storage/storage_source.h"
 #include "virhostdev.h"
 #include "domain_capabilities.h"
 #include "vircgroup.h"

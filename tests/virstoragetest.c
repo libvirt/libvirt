@@ -32,6 +32,7 @@
 #include "dirname.h"
 
 #include "storage/storage_driver.h"
+#include "storage/storage_source.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

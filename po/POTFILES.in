@@ -185,6 +185,7 @@ src/storage/storage_backend_sheepdog.c
 src/storage/storage_backend_vstorage.c
 src/storage/storage_backend_zfs.c
 src/storage/storage_driver.c
+src/storage/storage_source.c
 src/storage/storage_util.c
 src/test/test_driver.c
 src/uml/uml_conf.c

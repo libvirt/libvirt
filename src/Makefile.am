@@ -1053,6 +1053,7 @@ STORAGE_DRIVER_BACKEND_SOURCES = \
 
 STORAGE_DRIVER_SOURCES =						\
 		storage/storage_driver.h storage/storage_driver.c	\
+		storage/storage_source.h storage/storage_source.c	\
 		$(STORAGE_DRIVER_BACKEND_SOURCES) \
 		storage/storage_util.h storage/storage_util.c
 
