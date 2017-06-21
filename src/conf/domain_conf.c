@@ -25510,34 +25510,6 @@ virDomainDeviceInfoCheckBootIndex(virDomainDefPtr def ATTRIBUTE_UNUSED,
     return 0;
 }
 
-
-/**
- * virDomainDefGetDiskByWWN:
- * @def: domain definition
- * @wwn: wwn of a disk to find
- *
- * Returns a disk definition pointer corresponding to the given WWN identifier
- * or NULL either if @wwn was NULL or if disk with given WWN is not present in
- * the domain definition.
- */
-static virDomainDiskDefPtr
-virDomainDefGetDiskByWWN(virDomainDefPtr def,
-                         const char *wwn)
-{
-    size_t i;
-
-    if (!wwn)
-        return NULL;
-
-    for (i = 0; i < def->ndisks; i++) {
-        if (STREQ_NULLABLE(def->disks[i]->wwn, wwn))
-            return def->disks[i];
-    }
-
-    return NULL;
-}
-
-
 int
 virDomainDefCompatibleDevice(virDomainDefPtr def,
                              virDomainDeviceDefPtr dev,
@@ -25577,15 +25549,6 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Attaching memory device with size '%llu' would "
                              "exceed domain's maxMemory config"), sz);
-            return -1;
-        }
-    }
-
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-        if (!!virDomainDefGetDiskByWWN(def, dev->data.disk->wwn)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Domain already has a disk with wwn '%s'"),
-                           dev->data.disk->wwn);
             return -1;
         }
     }
