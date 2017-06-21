@@ -534,7 +534,13 @@ virLocaleOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virLocale);
 #endif
 
-
+/**
+ * virStrToDouble
+ *
+ * converts string with C locale (thread-safe) to double.
+ *
+ * Returns -1 on error or returns 0 on success.
+ */
 int
 virStrToDouble(char const *s,
                char **end_ptr,
@@ -545,7 +551,17 @@ virStrToDouble(char const *s,
     int err;
 
     errno = 0;
+#if HAVE_NEWLOCALE
+    locale_t old_loc;
+    if (virLocaleInitialize() < 0)
+        return -1;
+
+    old_loc = uselocale(virLocale);
+#endif
     val = strtod(s, &p); /* exempt from syntax-check */
+#if HAVE_NEWLOCALE
+    uselocale(old_loc);
+#endif
     err = (errno || (!end_ptr && *p) || p == s);
     if (end_ptr)
         *end_ptr = p;
