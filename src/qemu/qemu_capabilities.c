@@ -4283,11 +4283,11 @@ virQEMUCapsReset(virQEMUCapsPtr qemuCaps)
 
 static bool
 virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
-                   time_t qemuctime,
                    uid_t runUid,
                    gid_t runGid)
 {
     bool kvmUsable;
+    struct stat sb;
 
     if (!qemuCaps->binary)
         return true;
@@ -4304,24 +4304,19 @@ virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
         return false;
     }
 
-    if (!qemuctime) {
-        struct stat sb;
-
-        if (stat(qemuCaps->binary, &sb) < 0) {
-            char ebuf[1024];
-            VIR_DEBUG("Failed to stat QEMU binary '%s': %s",
-                      qemuCaps->binary,
-                      virStrerror(errno, ebuf, sizeof(ebuf)));
-            return false;
-        }
-        qemuctime = sb.st_ctime;
+    if (stat(qemuCaps->binary, &sb) < 0) {
+        char ebuf[1024];
+        VIR_DEBUG("Failed to stat QEMU binary '%s': %s",
+                  qemuCaps->binary,
+                  virStrerror(errno, ebuf, sizeof(ebuf)));
+        return false;
     }
 
-    if (qemuctime != qemuCaps->ctime) {
+    if (sb.st_ctime != qemuCaps->ctime) {
         VIR_DEBUG("Outdated capabilities for '%s': QEMU binary changed "
                   "(%lld vs %lld)",
                   qemuCaps->binary,
-                  (long long) qemuctime, (long long) qemuCaps->ctime);
+                  (long long) sb.st_ctime, (long long) qemuCaps->ctime);
         return false;
     }
 
@@ -4401,7 +4396,7 @@ virQEMUCapsInitCached(virCapsPtr caps,
         goto discard;
     }
 
-    if (!virQEMUCapsIsValid(qemuCaps, qemuctime, runUid, runGid))
+    if (!virQEMUCapsIsValid(qemuCaps, runUid, runGid))
         goto discard;
 
     VIR_DEBUG("Loaded '%s' for '%s' ctime %lld usedQMP=%d",
@@ -5411,7 +5406,7 @@ virQEMUCapsCacheValidate(virQEMUCapsCachePtr cache,
                          virQEMUCapsPtr *qemuCaps)
 {
     if (*qemuCaps &&
-        !virQEMUCapsIsValid(*qemuCaps, 0, cache->runUid, cache->runGid)) {
+        !virQEMUCapsIsValid(*qemuCaps, cache->runUid, cache->runGid)) {
         VIR_DEBUG("Cached capabilities %p no longer valid for %s",
                   *qemuCaps, binary);
         virHashRemoveEntry(cache->binaries, binary);
