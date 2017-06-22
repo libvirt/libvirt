@@ -521,19 +521,81 @@ virStrToLong_ullp(char const *s, char **end_ptr, int base,
 /* In case thread-safe locales are available */
 #if HAVE_NEWLOCALE
 
-static locale_t virLocale;
+typedef locale_t virLocale;
+static virLocale virLocaleRaw;
 
 static int
 virLocaleOnceInit(void)
 {
-    virLocale = newlocale(LC_ALL_MASK, "C", (locale_t)0);
-    if (!virLocale)
+    virLocaleRaw = newlocale(LC_ALL_MASK, "C", (locale_t)0);
+    if (!virLocaleRaw)
         return -1;
     return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(virLocale);
-#endif
+
+/**
+ * virLocaleSetRaw:
+ *
+ * @oldlocale: set to old locale pointer
+ *
+ * Sets the locale to 'C' to allow operating on non-localized objects.
+ * Returns 0 on success -1 on error.
+ */
+static int
+virLocaleSetRaw(virLocale *oldlocale)
+{
+    if (virLocaleInitialize() < 0)
+        return -1;
+    *oldlocale = uselocale(virLocaleRaw);
+    return 0;
+}
+
+static void
+virLocaleRevert(virLocale *oldlocale)
+{
+    uselocale(*oldlocale);
+}
+
+static void
+virLocaleFixupRadix(char **strp ATTRIBUTE_UNUSED)
+{
+}
+
+#else /* !HAVE_NEWLOCALE */
+
+typedef int virLocale;
+
+static int
+virLocaleSetRaw(virLocale *oldlocale ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static void
+virLocaleRevert(virLocale *oldlocale ATTRIBUTE_UNUSED)
+{
+}
+
+static void
+virLocaleFixupRadix(char **strp)
+{
+    char *radix, *tmp;
+    struct lconv *lc;
+
+    lc = localeconv();
+    radix = lc->decimal_point;
+    tmp = strstr(*strp, radix);
+    if (tmp) {
+        *tmp = '.';
+        if (strlen(radix) > 1)
+            memmove(tmp + 1, tmp + strlen(radix), strlen(*strp) - (tmp - *strp));
+    }
+}
+
+#endif /* !HAVE_NEWLOCALE */
+
 
 /**
  * virStrToDouble
@@ -547,22 +609,17 @@ virStrToDouble(char const *s,
                char **end_ptr,
                double *result)
 {
+    virLocale oldlocale;
     double val;
     char *p;
     int err;
 
     errno = 0;
-#if HAVE_NEWLOCALE
-    locale_t old_loc;
-    if (virLocaleInitialize() < 0)
+    if (virLocaleSetRaw(&oldlocale) < 0)
         return -1;
-
-    old_loc = uselocale(virLocale);
-#endif
     val = strtod(s, &p); /* exempt from syntax-check */
-#if HAVE_NEWLOCALE
-    uselocale(old_loc);
-#endif
+    virLocaleRevert(&oldlocale);
+
     err = (errno || (!end_ptr && *p) || p == s);
     if (end_ptr)
         *end_ptr = p;
@@ -582,38 +639,17 @@ virStrToDouble(char const *s,
 int
 virDoubleToStr(char **strp, double number)
 {
+    virLocale oldlocale;
     int ret = -1;
 
-#if HAVE_NEWLOCALE
+    if (virLocaleSetRaw(&oldlocale) < 0)
+        return -1;
 
-    locale_t old_loc;
-
-    if (virLocaleInitialize() < 0)
-        goto error;
-
-    old_loc = uselocale(virLocale);
     ret = virAsprintf(strp, "%lf", number);
-    uselocale(old_loc);
 
-#else
+    virLocaleRevert(&oldlocale);
+    virLocaleFixupRadix(strp);
 
-    char *radix, *tmp;
-    struct lconv *lc;
-
-    if ((ret = virAsprintf(strp, "%lf", number) < 0))
-        goto error;
-
-    lc = localeconv();
-    radix = lc->decimal_point;
-    tmp = strstr(*strp, radix);
-    if (tmp) {
-        *tmp = '.';
-        if (strlen(radix) > 1)
-            memmove(tmp + 1, tmp + strlen(radix), strlen(*strp) - (tmp - *strp));
-    }
-
-#endif /* HAVE_NEWLOCALE */
- error:
     return ret;
 }
 
