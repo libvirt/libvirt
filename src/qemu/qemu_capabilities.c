@@ -4292,6 +4292,18 @@ virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
     if (!qemuCaps->binary)
         return true;
 
+    if (qemuCaps->libvirtCtime != virGetSelfLastChanged() ||
+        qemuCaps->libvirtVersion != LIBVIR_VERSION_NUMBER) {
+        VIR_DEBUG("Outdated capabilities for '%s': libvirt changed "
+                  "(%lld vs %lld, %lu vs %lu)",
+                  qemuCaps->binary,
+                  (long long)qemuCaps->libvirtCtime,
+                  (long long)virGetSelfLastChanged(),
+                  (unsigned long)qemuCaps->libvirtVersion,
+                  (unsigned long)LIBVIR_VERSION_NUMBER);
+        return false;
+    }
+
     if (!qemuctime) {
         struct stat sb;
 
@@ -4391,19 +4403,6 @@ virQEMUCapsInitCached(virCapsPtr caps,
 
     if (!virQEMUCapsIsValid(qemuCaps, qemuctime, runUid, runGid))
         goto discard;
-
-    /* Discard cache if QEMU binary or libvirtd changed */
-    if (qemuCaps->libvirtCtime != virGetSelfLastChanged() ||
-        qemuCaps->libvirtVersion != LIBVIR_VERSION_NUMBER) {
-        VIR_DEBUG("Outdated capabilities for '%s': libvirt changed "
-                  "(%lld vs %lld, %lu vs %lu)",
-                  qemuCaps->binary,
-                  (long long)qemuCaps->libvirtCtime,
-                  (long long)virGetSelfLastChanged(),
-                  (unsigned long)qemuCaps->libvirtVersion,
-                  (unsigned long)LIBVIR_VERSION_NUMBER);
-        goto discard;
-    }
 
     VIR_DEBUG("Loaded '%s' for '%s' ctime %lld usedQMP=%d",
               capsfile, qemuCaps->binary,
