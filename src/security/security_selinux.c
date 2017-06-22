@@ -2199,7 +2199,9 @@ virSecuritySELinuxSetChardevLabel(virSecurityManagerPtr mgr,
     if (chr_seclabel && !chr_seclabel->relabel)
         return 0;
 
-    if (!chr_seclabel && chardevStdioLogd)
+    if (!chr_seclabel &&
+        dev_source->type == VIR_DOMAIN_CHR_TYPE_FILE &&
+        chardevStdioLogd)
         return 0;
 
     if (chr_seclabel)
@@ -2274,7 +2276,9 @@ virSecuritySELinuxRestoreChardevLabel(virSecurityManagerPtr mgr,
     if (chr_seclabel && !chr_seclabel->relabel)
         return 0;
 
-    if (!chr_seclabel && chardevStdioLogd)
+    if (!chr_seclabel &&
+        dev_source->type == VIR_DOMAIN_CHR_TYPE_FILE &&
+        chardevStdioLogd)
         return 0;
 
     switch (dev_source->type) {
