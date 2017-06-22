@@ -45,7 +45,6 @@
 #include <sys/ioctl.h>
 #include <string.h>
 #include <termios.h>
-#include <locale.h>
 
 #if WITH_DEVMAPPER
 # include <libdevmapper.h>

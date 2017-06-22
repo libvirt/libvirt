@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <regex.h>
+#include <locale.h>
 
 #include "base64.h"
 #include "c-ctype.h"
