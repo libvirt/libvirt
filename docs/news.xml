@@ -40,6 +40,17 @@
           hyperv: Implement virDomainSetMemory and virDomainSendKey APIs
         </summary>
       </change>
+      <change>
+        <summary>
+          qemu: Support multiple PHBs for pSeries guests
+        </summary>
+        <description>
+          pSeries guests can now have multiple PHBs (PCI Host Bridges), which
+          show up as separate PCI domains in the guest. To create additional
+          PHBs, simply add PCI controllers with model <code>pci-root</code>
+          to the guest configuration.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
