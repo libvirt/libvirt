@@ -795,7 +795,7 @@ static void daemonInhibitCallback(bool inhibit, void *opaque)
 }
 
 
-#ifdef HAVE_DBUS
+#ifdef WITH_DBUS
 static DBusConnection *sessionBus;
 static DBusConnection *systemBus;
 
@@ -887,7 +887,7 @@ static void daemonRunStateInit(void *opaque)
 
     driversInitialized = true;
 
-#ifdef HAVE_DBUS
+#ifdef WITH_DBUS
     /* Tie the non-privileged libvirtd to the session/shutdown lifecycle */
     if (!virNetDaemonIsPrivileged(dmn)) {
 

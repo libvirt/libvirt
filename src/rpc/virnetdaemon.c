@@ -437,7 +437,7 @@ virNetDaemonAutoShutdown(virNetDaemonPtr dmn,
 }
 
 
-#if defined(HAVE_DBUS) && defined(DBUS_TYPE_UNIX_FD)
+#if defined(WITH_DBUS) && defined(DBUS_TYPE_UNIX_FD)
 static void
 virNetDaemonGotInhibitReply(DBusPendingCall *pending,
                             void *opaque)
@@ -529,7 +529,7 @@ virNetDaemonAddShutdownInhibition(virNetDaemonPtr dmn)
 
     VIR_DEBUG("dmn=%p inhibitions=%zu", dmn, dmn->autoShutdownInhibitions);
 
-#if defined(HAVE_DBUS) && defined(DBUS_TYPE_UNIX_FD)
+#if defined(WITH_DBUS) && defined(DBUS_TYPE_UNIX_FD)
     if (dmn->autoShutdownInhibitions == 1)
         virNetDaemonCallInhibit(dmn,
                                 "shutdown",
