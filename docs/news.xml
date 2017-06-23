@@ -51,6 +51,16 @@
           to the guest configuration.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Isolate hostdevs on pSeries guests
+        </summary>
+        <description>
+          To enable better error reporting and recovery, unrelated hostdevs
+          will now be automatically isolated on pSeries guests by placing them
+          on separate PHBs (PCI Host Bridges).
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
