@@ -76,6 +76,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM_PLAIN);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_SCSI_DISK_WWN);
     if (event)
         virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT);
 
@@ -809,6 +810,10 @@ mymain(void)
     DO_TEST_DETACH("base-live", "ivshmem-plain-detach", false, false,
                    "device_del", QMP_OK,
                    "object-del", QMP_OK);
+    DO_TEST_ATTACH("base-live+disk-scsi-wwn",
+                   "disk-scsi-duplicate-wwn", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
 
 #define DO_TEST_CPU_GROUP(prefix, vcpus, modernhp, expectfail)                 \
     do {                                                                       \
