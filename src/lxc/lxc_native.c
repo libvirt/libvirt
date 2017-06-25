@@ -394,7 +394,7 @@ lxcCreateNetDef(const char *type,
 static virDomainHostdevDefPtr
 lxcCreateHostdevDef(int mode, int type, const char *data)
 {
-    virDomainHostdevDefPtr hostdev = virDomainHostdevDefAlloc(NULL);
+    virDomainHostdevDefPtr hostdev = virDomainHostdevDefNew(NULL);
 
     if (!hostdev)
         return NULL;

@@ -1162,7 +1162,7 @@ qemuParseCommandLinePCI(const char *val)
     int bus = 0, slot = 0, func = 0;
     const char *start;
     char *end;
-    virDomainHostdevDefPtr def = virDomainHostdevDefAlloc(NULL);
+    virDomainHostdevDefPtr def = virDomainHostdevDefNew(NULL);
 
     if (!def)
         goto error;
@@ -1212,7 +1212,7 @@ qemuParseCommandLinePCI(const char *val)
 static virDomainHostdevDefPtr
 qemuParseCommandLineUSB(const char *val)
 {
-    virDomainHostdevDefPtr def = virDomainHostdevDefAlloc(NULL);
+    virDomainHostdevDefPtr def = virDomainHostdevDefNew(NULL);
     virDomainHostdevSubsysUSBPtr usbsrc;
     int first = 0, second = 0;
     const char *start;

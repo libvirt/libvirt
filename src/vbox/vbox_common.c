@@ -2989,7 +2989,7 @@ vboxHostDeviceGetXMLDesc(vboxDriverPtr data, virDomainDefPtr def, IMachine *mach
         goto release_filters;
 
     for (i = 0; i < def->nhostdevs; i++) {
-        def->hostdevs[i] = virDomainHostdevDefAlloc(NULL);
+        def->hostdevs[i] = virDomainHostdevDefNew(NULL);
         if (!def->hostdevs[i])
             goto release_hostdevs;
     }
