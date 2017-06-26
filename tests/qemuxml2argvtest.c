@@ -739,7 +739,9 @@ mymain(void)
     DO_TEST("reboot-timeout-enabled", QEMU_CAPS_REBOOT_TIMEOUT);
     DO_TEST_FAILURE("reboot-timeout-enabled", NONE);
 
-    DO_TEST("bios", QEMU_CAPS_SGA);
+    DO_TEST("bios",
+            QEMU_CAPS_SGA,
+            QEMU_CAPS_CHARDEV);
     DO_TEST("bios-nvram", NONE);
     DO_TEST("bios-nvram-secure",
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
@@ -1177,8 +1179,10 @@ mymain(void)
             QEMU_CAPS_SPICE, QEMU_CAPS_CHARDEV_SPICEPORT);
     DO_TEST("serial-spiceport-nospice", NONE);
 
-    DO_TEST("console-compat", NONE);
-    DO_TEST("console-compat-auto", NONE);
+    DO_TEST("console-compat",
+            QEMU_CAPS_CHARDEV);
+    DO_TEST("console-compat-auto",
+            QEMU_CAPS_CHARDEV);
 
     DO_TEST("serial-vc-chardev",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
@@ -2001,6 +2005,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     DO_TEST("q35-virt-manager-basic",
             QEMU_CAPS_KVM,
+            QEMU_CAPS_CHARDEV,
             QEMU_CAPS_RTC,
             QEMU_CAPS_ICH9_DISABLE_S3,
             QEMU_CAPS_ICH9_DISABLE_S4,
