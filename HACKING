@@ -43,27 +43,49 @@ post your patches:
   git pull --rebase
   (fix any conflicts)
   git send-email --cover-letter --no-chain-reply-to --annotate \
-                 --to=libvir-list@redhat.com master
+                 --confirm=always --to=libvir-list@redhat.com master
 
-(Note that the "git send-email" subcommand may not be in the main git package
+For a single patch you can omit "--cover-letter", but a series of two or more
+patches needs a cover letter.
+
+Note that the "git send-email" subcommand may not be in the main git package
 and using it may require installation of a separate package, for example the
-"git-email" package in Fedora.) For a single patch you can omit
-"--cover-letter", but a series of two or more patches needs a cover letter. If
-you get tired of typing "--to=libvir-list@redhat.com" designation you can set
-it in git config:
+"git-email" package in Fedora and Debian. If this is your first time using
+"git send-email", you might need to configure it to point it to your SMTP
+server with something like:
+
+  git config --global sendemail.smtpServer stmp.youremailprovider.net
+
+If you get tired of typing "--to=libvir-list@redhat.com" all the time, you can
+configure that to be automatically handled as well:
 
   git config sendemail.to libvir-list@redhat.com
 
-Please follow this as close as you can, especially the rebase and git
-send-email part, as it makes life easier for other developers to review your
-patch set. One should avoid sending patches as attachments, but rather send
-them in email body along with commit message. If a developer is sending
-another version of the patch (e.g. to address review comments), they are
-advised to note differences to previous versions after the "---" line in the
-patch so that it helps reviewers but doesn't become part of git history.
-Moreover, such patch needs to be prefixed correctly with
-"--subject-prefix=PATCHv2" appended to "git send-email" (substitute "v2" with
-the correct version if needed though).
+As a rule, patches should be sent to the mailing list only: all developers are
+subscribed to libvir-list and read it regularly, so please don't CC individual
+developers unless they've explicitly asked you to.
+
+Avoid using mail clients for sending patches, as most of them will mangle the
+messages in some way, making them unusable for our purposes. Gmail and other
+Web-based mail clients are particularly bad at this.
+
+If everything went well, your patch should show up on the libvir-list archives
+<https://www.redhat.com/archives/libvir-list/> in a matter of minutes; if you
+still can't find it on there after an hour or so, you should double-check your
+setup. Note that your very first post to the mailing list will be subject to
+moderation, and it's not uncommon for that to take around a day.
+
+Please follow this as close as you can, especially the rebase and "git
+send-email" part, as it makes life easier for other developers to review your
+patch set.
+
+One should avoid sending patches as attachments, but rather send them in email
+body along with commit message. If a developer is sending another version of
+the patch (e.g. to address review comments), they are advised to note
+differences to previous versions after the "---" line in the patch so that it
+helps reviewers but doesn't become part of git history. Moreover, such patch
+needs to be prefixed correctly with "--subject-prefix=PATCHv2" appended to
+"git send-email" (substitute "v2" with the correct version if needed though).
 
 (5) In your commit message, make the summary line reasonably short (60 characters
 is typical), followed by a blank line, followed by any longer description of
