@@ -114,6 +114,8 @@ virJSONValuePtr virJSONValueObjectGet(virJSONValuePtr object, const char *key);
 virJSONValuePtr virJSONValueObjectGetByType(virJSONValuePtr object,
                                             const char *key, virJSONType type);
 
+bool virJSONValueIsObject(virJSONValuePtr object);
+
 bool virJSONValueIsArray(virJSONValuePtr array);
 ssize_t virJSONValueArraySize(const virJSONValue *array);
 virJSONValuePtr virJSONValueArrayGet(virJSONValuePtr object, unsigned int element);

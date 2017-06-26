@@ -1907,6 +1907,7 @@ virJSONValueGetString;
 virJSONValueHashFree;
 virJSONValueIsArray;
 virJSONValueIsNull;
+virJSONValueIsObject;
 virJSONValueNewArray;
 virJSONValueNewArrayFromBitmap;
 virJSONValueNewBoolean;
