@@ -1,0 +1,9 @@
+{
+  "file": {
+    "nest": {
+      "into": "is already here"
+    },
+    "nest.into": 2,
+    "nest.there": "too"
+  }
+}

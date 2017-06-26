@@ -1,0 +1,9 @@
+{
+    "file.double.nest1":"some",
+    "file.double.nest2":"more",
+    "file.double.nest3": {
+        "even":"objects"
+    },
+    "file.very.deeply.nested.object.chains.nest1":"some",
+    "file.very.deeply.nested.object.chains.nest2":"stuff"
+}

@@ -1,0 +1,10 @@
+{
+  "file": {
+    "int": 1,
+    "string": "string",
+    "object": {
+      "data": "value",
+      "foo": "bar"
+    }
+  }
+}

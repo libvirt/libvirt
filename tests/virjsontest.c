@@ -9,6 +9,8 @@
 #include "virjson.h"
 #include "testutils.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
+
 struct testInfo {
     const char *doc;
     const char *expect;
@@ -312,6 +314,63 @@ testJSONCopy(const void *data)
 
 
 static int
+testJSONDeflatten(const void *data)
+{
+    const struct testInfo *info = data;
+    virJSONValuePtr injson = NULL;
+    virJSONValuePtr deflattened = NULL;
+    char *infile = NULL;
+    char *indata = NULL;
+    char *outfile = NULL;
+    char *actual = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&infile, "%s/virjsondata/deflatten-%s-in.json",
+                    abs_srcdir, info->doc) < 0 ||
+        virAsprintf(&outfile, "%s/virjsondata/deflatten-%s-out.json",
+                    abs_srcdir, info->doc) < 0)
+        goto cleanup;
+
+    if (virTestLoadFile(infile, &indata) < 0)
+        goto cleanup;
+
+    if (!(injson = virJSONValueFromString(indata)))
+        goto cleanup;
+
+    if ((deflattened = virJSONValueObjectDeflatten(injson))) {
+        if (!info->pass) {
+            VIR_TEST_VERBOSE("%s: deflattening should have failed\n", info->doc);
+            goto cleanup;
+        }
+    } else {
+        if (!info->pass)
+            ret = 0;
+
+        goto cleanup;
+    }
+
+    if (!(actual = virJSONValueToString(deflattened, true)))
+        goto cleanup;
+
+    if (virTestCompareToFile(actual, outfile) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(injson);
+    virJSONValueFree(deflattened);
+    VIR_FREE(infile);
+    VIR_FREE(indata);
+    VIR_FREE(outfile);
+    VIR_FREE(actual);
+
+    return ret;
+
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -447,6 +506,19 @@ mymain(void)
     DO_TEST_FULL("lookup with correct type", Lookup,
                  "{ \"a\": {}, \"b\": 1, \"c\": \"str\", \"d\": [] }",
                  NULL, true);
+
+#define DO_TEST_DEFLATTEN(name, pass) \
+    DO_TEST_FULL(name, Deflatten, name, NULL, pass)
+
+    DO_TEST_DEFLATTEN("unflattened", true);
+    DO_TEST_DEFLATTEN("basic-file", true);
+    DO_TEST_DEFLATTEN("basic-generic", false);
+    DO_TEST_DEFLATTEN("deep-file", true);
+    DO_TEST_DEFLATTEN("deep-generic", false);
+    DO_TEST_DEFLATTEN("nested", true);
+    DO_TEST_DEFLATTEN("double-key", true);
+    DO_TEST_DEFLATTEN("concat", true);
+    DO_TEST_DEFLATTEN("concat-double-key", true);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
