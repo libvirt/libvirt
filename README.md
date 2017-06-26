@@ -20,7 +20,7 @@ mappings into object systems such as GObject, CIM and SNMP.
 Further information about the libvirt project can be found on the
 website:
 
-*  <https://libvirt.org>
+[https://libvirt.org](https://libvirt.org)
 
 
 License
@@ -29,8 +29,8 @@ License
 The libvirt C API is distributed under the terms of GNU Lesser General
 Public License, version 2.1 (or later). Some parts of the code that are
 not part of the C library may have the more restrictive GNU General
-Public License, version 2.1 (or later). See the files COPYING.LESSER
-and COPYING for full license terms & conditions.
+Public License, version 2.1 (or later). See the files `COPYING.LESSER`
+and `COPYING` for full license terms & conditions.
 
 
 Installation
@@ -55,7 +55,7 @@ $ make install
 ```
 
 The libvirt code relies on a large number of 3rd party libraries. These will
-be detected during execution of the configure script and a summary printed
+be detected during execution of the `configure` script and a summary printed
 which lists any missing (optional) dependencies.
 
 
@@ -65,9 +65,9 @@ Contributing
 The libvirt project welcomes contributions in many ways. For most components
 the best way to contribute is to send patches to the primary development
 mailing list, using the `git send-email` command. Further guidance on this
-can be found in the `HACKING` file, or the project website
+can be found in the `HACKING` file or on the website:
 
-* <https://libvirt.org/contribute.html>
+[https://libvirt.org/contribute.html](https://libvirt.org/contribute.html)
 
 
 Contact
@@ -75,9 +75,9 @@ Contact
 
 The libvirt project has two primary mailing lists:
 
- * libvirt-users@redhat.com (**for user discussions**)
- * libvir-list@redhat.com (**for development only**)
+  * libvirt-users@redhat.com (**for user discussions**)
+  * libvir-list@redhat.com (**for development only**)
 
-Further details on contacting the project are available on the website
+Further details on contacting the project are available on the website:
 
-* <https://libvirt.org/contact.html>
+[https://libvirt.org/contact.html](https://libvirt.org/contact.html)
