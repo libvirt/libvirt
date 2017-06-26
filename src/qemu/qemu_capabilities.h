@@ -525,10 +525,6 @@ int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
 
 VIR_ENUM_DECL(virQEMUCaps);
 
-bool virQEMUCapsSupportsChardev(const virDomainDef *def,
-                                virQEMUCapsPtr qemuCaps,
-                                virDomainChrDefPtr chr);
-
 bool virQEMUCapsSupportsGICVersion(virQEMUCapsPtr qemuCaps,
                                    virDomainVirtType virtType,
                                    virGICVersion version);

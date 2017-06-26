@@ -9101,6 +9101,30 @@ qemuBuildChrDeviceCommandLine(virCommandPtr cmd,
 }
 
 
+static bool
+qemuChrIsPlatformDevice(const virDomainDef *def,
+                        virDomainChrDefPtr chr)
+{
+    if ((def->os.arch == VIR_ARCH_PPC) || ARCH_IS_PPC64(def->os.arch)) {
+        if (!qemuDomainIsPSeries(def))
+            return true;
+        /* only pseries need -device spapr-vty with -chardev */
+        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+            chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO)
+            return true;
+    }
+
+    if (def->os.arch == VIR_ARCH_ARMV7L || def->os.arch == VIR_ARCH_AARCH64) {
+        /* TARGET_TYPE_ISA here really means 'the default platform device' */
+        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+            chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA)
+            return true;
+    }
+
+    return false;
+}
+
+
 static int
 qemuBuildSerialCommandLine(virLogManagerPtr logManager,
                            virCommandPtr cmd,
@@ -9136,8 +9160,8 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
         virCommandAddArg(cmd, devstr);
         VIR_FREE(devstr);
 
-        /* Use -chardev with -device if they are available */
-        if (virQEMUCapsSupportsChardev(def, qemuCaps, serial)) {
+        /* If the device is not a platform device, build the devstr */
+        if (!qemuChrIsPlatformDevice(def, serial)) {
             if (qemuBuildChrDeviceCommandLine(cmd, def, serial, qemuCaps) < 0)
                 return -1;
         } else {
