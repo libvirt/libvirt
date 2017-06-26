@@ -39,12 +39,6 @@
       <model type='virtio'/>
       <driver name='vhost' event_idx='off'/>
     </interface>
-    <serial type='pty'>
-      <target port='0'/>
-    </serial>
-    <console type='pty'>
-      <target type='serial' port='0'/>
-    </console>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <memballoon model='virtio'/>
