@@ -8880,8 +8880,7 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
 
     switch (smartcard->type) {
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_EMULATED)) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_EMULATED)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this QEMU binary lacks smartcard host "
                              "mode support"));
@@ -8892,8 +8891,7 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_EMULATED)) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_EMULATED)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this QEMU binary lacks smartcard host "
                              "mode support"));
@@ -8928,8 +8926,7 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_PASSTHRU)) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_PASSTHRU)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this QEMU binary lacks smartcard "
                              "passthrough mode support"));
@@ -9319,12 +9316,6 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
 
         switch (channel->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("guestfwd requires QEMU to support -chardev & -device"));
-                return -1;
-            }
-
             if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                                   channel->source,
                                                   channel->info.alias,
