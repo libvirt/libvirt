@@ -36,7 +36,9 @@
         language bindings written in Python, Perl, Java, Ruby,
         Php, OCaml and Go. There are also higher level wrappers
         mapping libvirt into other object frameworks, such GLib,
-        CIM and SNMP</li>
+        CIM and SNMP. For those interested in working on the core parts of
+        libvirt, the <a href="hacking.html">contributor guidelines</a> are
+        mandatory reading</li>
       <li><strong>Translation</strong>. All the libvirt modules aim to support
         translations where appropriate. All translation is
         handling outside of the normal libvirt review process,
