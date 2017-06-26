@@ -64,8 +64,7 @@ Contributing
 
 The libvirt project welcomes contributions in many ways. For most components
 the best way to contribute is to send patches to the primary development
-mailing list. Further guidance on this can be found in the `HACKING` file
-or on the website:
+mailing list. Further guidance on this can be found on the website:
 
 [https://libvirt.org/contribute.html](https://libvirt.org/contribute.html)
 

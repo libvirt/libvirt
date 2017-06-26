@@ -2,7 +2,8 @@
 
 These notes intend to help people working on the checked-out sources.
 These requirements do not apply when building from a distribution tarball.
-See also HACKING for more detailed libvirt contribution guidelines.
+See also docs/hacking.html (after building libvirt using the information
+included in this file) for more detailed contribution guidelines.
 
 * Requirements
 

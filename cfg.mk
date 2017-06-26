@@ -91,7 +91,7 @@ endif
 
 # Files that should never cause syntax check failures.
 VC_LIST_ALWAYS_EXCLUDE_REGEX = \
-  (^(HACKING|docs/(news(-[0-9]*)?\.html\.in|.*\.patch))|\.(po|fig|gif|ico|png))$$
+  (^(docs/(news(-[0-9]*)?\.html\.in|.*\.patch))|\.(po|fig|gif|ico|png))$$
 
 # Functions like free() that are no-ops on NULL arguments.
 useless_free_options =				\
@@ -910,12 +910,11 @@ sc_curly_braces_style:
 '^\s*(?!([a-zA-Z_]*for_?each[a-zA-Z_]*) ?\()([_a-zA-Z0-9]+( [_a-zA-Z0-9]+)* ?\()?(\*?[_a-zA-Z0-9]+(,? \*?[_a-zA-Z0-9\[\]]+)+|void)\) ?\{'		\
 	$$files; then							\
 	  echo '$(ME): Non-K&R style used for curly braces around'	\
-		'function body, see HACKING' 1>&2; exit 1;		\
+	    'function body' 1>&2; exit 1;		\
 	fi;								\
 	if $(GREP) -A1 -En ' ((if|for|while|switch) \(|(else|do)\b)[^{]*$$'\
 	  $$files | $(GREP) '^[^ ]*- *{'; then				\
-	  echo '$(ME): Use hanging braces for compound statements,'	\
-		'see HACKING' 1>&2; exit 1;				\
+	  echo '$(ME): Use hanging braces for compound statements' 1>&2; exit 1; \
 	fi
 
 sc_prohibit_windows_special_chars_in_filename:
@@ -1067,9 +1066,8 @@ _autogen:
 _autogen_error:
 	$(srcdir)/autogen.sh --dry-run
 
-# regenerate HACKING as part of the syntax-check
 ifneq ($(_gl-Makefile),)
-syntax-check: $(top_srcdir)/HACKING spacing-check test-wrap-argv \
+syntax-check: spacing-check test-wrap-argv \
 	prohibit-duplicate-header mock-noinline
 endif
 
@@ -1081,8 +1079,7 @@ prohibit-duplicate-header:
 spacing-check:
 	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.c$$'`; \
 	$(PERL) $(top_srcdir)/build-aux/check-spacing.pl $$files || \
-	  { echo '$(ME): incorrect formatting, see HACKING for rules' 1>&2; \
-	    exit 1; }
+	  { echo '$(ME): incorrect formatting' 1>&2; exit 1; }
 
 mock-noinline:
 	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.[ch]$$'`; \
