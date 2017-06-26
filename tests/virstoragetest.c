@@ -1575,6 +1575,16 @@ mymain(void)
                        "<source protocol='sheepdog' name='test'>\n"
                        "  <host name='example.com' port='321'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE("json:{\"driver\": \"raw\","
+                             "\"file\": {\"server.host\": \"10.10.10.10\","
+                                        "\"server.port\": \"7000\","
+                                        "\"tag\": \"\","
+                                        "\"driver\": \"sheepdog\","
+                                        "\"server.type\": \"inet\","
+                                        "\"vdi\": \"Alice\"}}",
+                       "<source protocol='sheepdog' name='Alice'>\n"
+                       "  <host name='10.10.10.10' port='7000'/>\n"
+                       "</source>\n");
 #endif /* WITH_YAJL */
 
  cleanup:

@@ -519,6 +519,7 @@ mymain(void)
     DO_TEST_DEFLATTEN("double-key", false);
     DO_TEST_DEFLATTEN("concat", true);
     DO_TEST_DEFLATTEN("concat-double-key", false);
+    DO_TEST_DEFLATTEN("qemu-sheepdog", true);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
