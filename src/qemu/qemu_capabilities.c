@@ -1275,13 +1275,10 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
     if (strstr(help, "-mem-path"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MEM_PATH);
-    if (strstr(help, "-chardev")) {
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV);
-        if (strstr(help, "-chardev spicevmc"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEVMC);
-        if (strstr(help, "-chardev spiceport"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEPORT);
-    }
+    if (strstr(help, "-chardev spicevmc"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEVMC);
+    if (strstr(help, "-chardev spiceport"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEPORT);
     if (strstr(help, "-nodefconfig"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NODEFCONFIG);
     if (strstr(help, "-no-user-config"))
@@ -4467,7 +4464,6 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MEM_PATH);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV);
@@ -5555,12 +5551,9 @@ virQEMUCapsCacheFree(virQEMUCapsCachePtr cache)
 
 bool
 virQEMUCapsSupportsChardev(const virDomainDef *def,
-                           virQEMUCapsPtr qemuCaps,
+                           virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
                            virDomainChrDefPtr chr)
 {
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV))
-        return false;
-
     if ((def->os.arch == VIR_ARCH_PPC) || ARCH_IS_PPC64(def->os.arch)) {
         if (!qemuDomainIsPSeries(def))
             return false;

@@ -1065,7 +1065,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_GPU, QEMU_CAPS_BOOTINDEX);
     DO_TEST("aarch64-pci-serial",
             QEMU_CAPS_NODEFCONFIG,
-            QEMU_CAPS_CHARDEV,
             QEMU_CAPS_DEVICE_PCI_SERIAL,
             QEMU_CAPS_CHARDEV_LOGFILE,
             QEMU_CAPS_OBJECT_GPEX,

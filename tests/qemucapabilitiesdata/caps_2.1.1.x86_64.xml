@@ -6,7 +6,6 @@
   <flag name='kvm'/>
   <flag name='mem-path'/>
   <flag name='drive-serial'/>
-  <flag name='chardev'/>
   <flag name='monitor-json'/>
   <flag name='sdl'/>
   <flag name='netdev'/>
