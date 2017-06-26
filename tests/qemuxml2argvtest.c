@@ -2342,6 +2342,15 @@ mymain(void)
     DO_TEST_FAILURE("aarch64-kvm-32-on-64",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_KVM);
+    DO_TEST("aarch64-pci-serial",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_CHARDEV,
+            QEMU_CAPS_DEVICE_PCI_SERIAL,
+            QEMU_CAPS_CHARDEV_LOGFILE,
+            QEMU_CAPS_OBJECT_GPEX,
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT);
 
     /* Make sure all combinations of ACPI and UEFI behave as expected */
     DO_TEST("aarch64-acpi-uefi", NONE);
