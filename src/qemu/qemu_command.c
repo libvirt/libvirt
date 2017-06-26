@@ -9284,28 +9284,19 @@ qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
         virDomainChrDefPtr parallel = def->parallels[i];
         char *devstr;
 
-        /* Use -chardev with -device if they are available */
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV)) {
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                                  parallel->source,
-                                                  parallel->info.alias,
-                                                  qemuCaps, true,
-                                                  chardevStdioLogd)))
-                return -1;
-            virCommandAddArg(cmd, "-chardev");
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
+        if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
+                                              parallel->source,
+                                              parallel->info.alias,
+                                              qemuCaps, true,
+                                              chardevStdioLogd)))
+            return -1;
+        virCommandAddArg(cmd, "-chardev");
+        virCommandAddArg(cmd, devstr);
+        VIR_FREE(devstr);
 
-            if (qemuBuildChrDeviceCommandLine(cmd, def, parallel,
-                                              qemuCaps) < 0)
-                return -1;
-        } else {
-            virCommandAddArg(cmd, "-parallel");
-            if (!(devstr = qemuBuildChrArgStr(parallel->source, NULL)))
-                return -1;
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-        }
+        if (qemuBuildChrDeviceCommandLine(cmd, def, parallel,
+                                          qemuCaps) < 0)
+            return -1;
     }
 
     return 0;

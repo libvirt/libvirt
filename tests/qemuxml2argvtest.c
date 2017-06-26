@@ -1186,7 +1186,6 @@ mymain(void)
             QEMU_CAPS_SPICE, QEMU_CAPS_CHARDEV_SPICEPORT);
     DO_TEST("serial-spiceport-nospice", NONE);
 
-    DO_TEST("parallel-tcp", NONE);
     DO_TEST("console-compat", NONE);
     DO_TEST("console-compat-auto", NONE);
 

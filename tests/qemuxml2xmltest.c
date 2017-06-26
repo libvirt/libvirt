@@ -549,7 +549,6 @@ mymain(void)
     DO_TEST("serial-many", NONE);
     DO_TEST("serial-spiceport", NONE);
     DO_TEST("serial-spiceport-nospice", NONE);
-    DO_TEST("parallel-tcp", NONE);
     DO_TEST("console-compat", NONE);
     DO_TEST("console-compat2", NONE);
     DO_TEST("console-virtio-many", NONE);
