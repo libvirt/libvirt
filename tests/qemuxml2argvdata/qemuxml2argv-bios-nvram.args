@@ -16,7 +16,9 @@ readonly=on \
 -uuid 362d1fc1-df7d-193e-5c18-49a71bd1da66 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/lib/domain--1-test-bios/monitor.sock,server,nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-test-bios/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
 -boot c \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \

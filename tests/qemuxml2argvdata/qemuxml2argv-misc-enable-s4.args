@@ -13,7 +13,9 @@ QEMU_AUDIO_DRV=none \
 -uuid 8caaa98c-e7bf-5845-126a-1fc316bd1089 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -global PIIX4_PM.disable_s4=0 \
 -boot c \

@@ -5630,33 +5630,19 @@ qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
     if (!monitor_chr)
         return 0;
 
-    /* Use -chardev if it's available */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV)) {
+    if (!(chrdev = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
+                                          monitor_chr, "monitor",
+                                          qemuCaps, true,
+                                          chardevStdioLogd)))
+        return -1;
+    virCommandAddArg(cmd, "-chardev");
+    virCommandAddArg(cmd, chrdev);
+    VIR_FREE(chrdev);
 
-        if (!(chrdev = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                              monitor_chr, "monitor",
-                                              qemuCaps, true,
-                                              chardevStdioLogd)))
-            return -1;
-        virCommandAddArg(cmd, "-chardev");
-        virCommandAddArg(cmd, chrdev);
-        VIR_FREE(chrdev);
-
-        virCommandAddArg(cmd, "-mon");
-        virCommandAddArgFormat(cmd,
-                               "chardev=charmonitor,id=monitor,mode=%s",
-                               monitor_json ? "control" : "readline");
-    } else {
-        const char *prefix = NULL;
-        if (monitor_json)
-            prefix = "control,";
-
-        virCommandAddArg(cmd, "-monitor");
-        if (!(chrdev = qemuBuildChrArgStr(monitor_chr, prefix)))
-            return -1;
-        virCommandAddArg(cmd, chrdev);
-        VIR_FREE(chrdev);
-    }
+    virCommandAddArg(cmd, "-mon");
+    virCommandAddArgFormat(cmd,
+                           "chardev=charmonitor,id=monitor,mode=%s",
+                           monitor_json ? "control" : "readline");
 
     return 0;
 }

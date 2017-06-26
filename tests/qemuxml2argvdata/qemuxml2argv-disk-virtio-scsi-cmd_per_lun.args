@@ -14,7 +14,9 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefconfig \
 -nodefaults \
--monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
 -device virtio-scsi-pci,id=scsi0,cmd_per_lun=50,bus=pci.0,addr=0x3 \

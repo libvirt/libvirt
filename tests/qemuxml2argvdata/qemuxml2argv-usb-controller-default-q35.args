@@ -13,7 +13,9 @@ QEMU_AUDIO_DRV=none \
 -uuid 11dbdcdd-4c3b-482b-8903-9bdb8c0a2774 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/lib/domain--1-q35-test/monitor.sock,server,nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-q35-test/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
 -device piix3-usb-uhci,id=usb,bus=pcie.0,addr=0x1

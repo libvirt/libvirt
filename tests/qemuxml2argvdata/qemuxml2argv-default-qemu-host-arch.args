@@ -13,7 +13,9 @@ QEMU_AUDIO_DRV=none \
 -uuid d091ea82-29e6-2e34-3005-f02617b36e87 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/lib/domain--1-qemu-host/monitor.sock,server,nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-qemu-host/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
 -usb \

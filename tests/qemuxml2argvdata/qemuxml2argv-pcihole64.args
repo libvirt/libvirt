@@ -13,7 +13,9 @@ QEMU_AUDIO_DRV=none \
 -uuid 3c7c30b5-7866-4b05-8a29-efebccba52a0 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/lib/domain--1-foo/monitor.sock,server,nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-foo/monitor.sock,server,\
+nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
 -global i440FX-pcihost.pci-hole64-size=1048576K \

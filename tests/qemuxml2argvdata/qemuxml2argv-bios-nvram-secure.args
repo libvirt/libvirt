@@ -17,7 +17,9 @@ readonly=on \
 -uuid 362d1fc1-df7d-193e-5c18-49a71bd1da66 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/lib/domain--1-test-bios/monitor.sock,server,nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-test-bios/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
 -boot c \
 -device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1e \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0 \

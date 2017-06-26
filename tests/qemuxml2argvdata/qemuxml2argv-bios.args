@@ -15,7 +15,9 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefaults \
 -device sga \
--monitor unix:/tmp/lib/domain--1-test-bios/monitor.sock,server,nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-test-bios/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
 -usb \

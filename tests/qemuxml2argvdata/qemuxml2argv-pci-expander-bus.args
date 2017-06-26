@@ -15,7 +15,9 @@ QEMU_AUDIO_DRV=none \
 -uuid 3ec6cbe1-b5a2-4515-b800-31a61855df41 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/lib/domain--1-expander-test/monitor.sock,server,nowait \
+-chardev socket,id=charmonitor,\
+path=/tmp/lib/domain--1-expander-test/monitor.sock,server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
 -device pxb,bus_nr=254,id=pci.1,numa_node=1,bus=pci.0,addr=0x3 \

@@ -23,7 +23,9 @@ share=no,size=15032385536 \
 -uuid 126f2720-6f8e-45ab-a886-ec9277079a67 \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/lib/domain--1-instance-00000092/monitor.sock,server,nowait \
+-chardev socket,id=charmonitor,\
+path=/tmp/lib/domain--1-instance-00000092/monitor.sock,server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
 -usb \

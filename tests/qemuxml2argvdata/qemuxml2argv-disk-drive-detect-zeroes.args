@@ -13,7 +13,9 @@ QEMU_AUDIO_DRV=none \
 -uuid 92d7a226-cfae-425b-a6d3-00bbf9ec5c9e \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/lib/domain--1-test/monitor.sock,server,nowait \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-test/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot dc \
 -usb \
