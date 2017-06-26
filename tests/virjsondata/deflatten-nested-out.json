@@ -1,17 +1,27 @@
 {
   "file": {
     "nest": {
-      "even.objects": "can",
-      "even.contain": "some",
-      "even.more": {
-        "deeply.nested": "objects",
-        "deeply.needing": "deflattening",
-        "deeply.some.even": "more",
-        "deeply.some.than": {
-          "others.thought.was": "even",
-          "others.thought.completely": "necessary"
-        },
-        "perhaps": "flat value"
+      "even": {
+        "objects": "can",
+        "contain": "some",
+        "more": {
+          "deeply": {
+            "nested": "objects",
+            "needing": "deflattening",
+            "some": {
+              "even": "more",
+              "than": {
+                "others": {
+                  "thought": {
+                    "was": "even",
+                    "completely": "necessary"
+                  }
+                }
+              }
+            }
+          },
+          "perhaps": "flat value"
+        }
       }
     }
   }

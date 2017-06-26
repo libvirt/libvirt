@@ -1981,7 +1981,13 @@ virJSONValueObjectDeflattenWorker(const char *key,
 
     /* non-nested keys only need to be copied */
     if (!strchr(key, '.')) {
-        if (!(newval = virJSONValueCopy(value)))
+
+        if (virJSONValueIsObject(value))
+            newval = virJSONValueObjectDeflatten(value);
+        else
+            newval = virJSONValueCopy(value);
+
+        if (!newval)
             return -1;
 
         if (virJSONValueObjectHasKey(retobj, key)) {
