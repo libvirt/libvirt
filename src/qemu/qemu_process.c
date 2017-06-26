@@ -1877,8 +1877,8 @@ qemuProcessMonitorReportLogError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessLookupPTYs(virDomainDefPtr def,
-                      virQEMUCapsPtr qemuCaps,
+qemuProcessLookupPTYs(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                      virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
                       virDomainChrDefPtr *devices,
                       int count,
                       virHashTablePtr info)
@@ -1887,14 +1887,11 @@ qemuProcessLookupPTYs(virDomainDefPtr def,
 
     for (i = 0; i < count; i++) {
         virDomainChrDefPtr chr = devices[i];
-        bool chardevfmt = virQEMUCapsSupportsChardev(def, qemuCaps, chr);
-
         if (chr->source->type == VIR_DOMAIN_CHR_TYPE_PTY) {
             char id[32];
             qemuMonitorChardevInfoPtr entry;
 
-            if (snprintf(id, sizeof(id), "%s%s",
-                         chardevfmt ? "char" : "",
+            if (snprintf(id, sizeof(id), "char%s",
                          chr->info.alias) >= sizeof(id)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to format device alias "

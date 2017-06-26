@@ -5514,106 +5514,6 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
     return 0;
 }
 
-static char *
-qemuBuildChrArgStr(const virDomainChrSourceDef *dev,
-                   const char *prefix)
-{
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-
-    if (dev->logfile) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("logfile not supported in this QEMU binary"));
-        goto error;
-    }
-
-    if (prefix)
-        virBufferAdd(&buf, prefix, strlen(prefix));
-
-    switch ((virDomainChrType)dev->type) {
-    case VIR_DOMAIN_CHR_TYPE_NULL:
-        virBufferAddLit(&buf, "null");
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_VC:
-        virBufferAddLit(&buf, "vc");
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_PTY:
-        virBufferAddLit(&buf, "pty");
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferStrcat(&buf, dev->data.file.path, NULL);
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_FILE:
-        virBufferAsprintf(&buf, "file:%s", dev->data.file.path);
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_PIPE:
-        virBufferAsprintf(&buf, "pipe:%s", dev->data.file.path);
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_STDIO:
-        virBufferAddLit(&buf, "stdio");
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_UDP: {
-        const char *connectHost = dev->data.udp.connectHost;
-        const char *bindHost = dev->data.udp.bindHost;
-        const char *bindService  = dev->data.udp.bindService;
-
-        if (connectHost == NULL)
-            connectHost = "";
-        if (bindHost == NULL)
-            bindHost = "";
-        if (bindService == NULL)
-            bindService = "0";
-
-        virBufferAsprintf(&buf, "udp:%s:%s@%s:%s",
-                          connectHost,
-                          dev->data.udp.connectService,
-                          bindHost,
-                          bindService);
-        break;
-    }
-    case VIR_DOMAIN_CHR_TYPE_TCP:
-        if (dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET) {
-            virBufferAsprintf(&buf, "telnet:%s:%s%s",
-                              dev->data.tcp.host,
-                              dev->data.tcp.service,
-                              dev->data.tcp.listen ? ",server,nowait" : "");
-        } else {
-            virBufferAsprintf(&buf, "tcp:%s:%s%s",
-                              dev->data.tcp.host,
-                              dev->data.tcp.service,
-                              dev->data.tcp.listen ? ",server,nowait" : "");
-        }
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_UNIX:
-        virBufferAsprintf(&buf, "unix:%s%s",
-                          dev->data.nix.path,
-                          dev->data.nix.listen ? ",server,nowait" : "");
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
-    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-    case VIR_DOMAIN_CHR_TYPE_NMDM:
-    case VIR_DOMAIN_CHR_TYPE_LAST:
-        break;
-    }
-
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
-    return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
-}
-
 
 static int
 qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
@@ -9226,26 +9126,23 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
         if (serial->source->type == VIR_DOMAIN_CHR_TYPE_SPICEPORT && !havespice)
             continue;
 
+        if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
+                                              serial->source,
+                                              serial->info.alias,
+                                              qemuCaps, true,
+                                              chardevStdioLogd)))
+            return -1;
+        virCommandAddArg(cmd, "-chardev");
+        virCommandAddArg(cmd, devstr);
+        VIR_FREE(devstr);
+
         /* Use -chardev with -device if they are available */
         if (virQEMUCapsSupportsChardev(def, qemuCaps, serial)) {
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                                  serial->source,
-                                                  serial->info.alias,
-                                                  qemuCaps, true,
-                                                  chardevStdioLogd)))
-                return -1;
-            virCommandAddArg(cmd, "-chardev");
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-
             if (qemuBuildChrDeviceCommandLine(cmd, def, serial, qemuCaps) < 0)
                 return -1;
         } else {
             virCommandAddArg(cmd, "-serial");
-            if (!(devstr = qemuBuildChrArgStr(serial->source, NULL)))
-                return -1;
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
+            virCommandAddArgFormat(cmd, "chardev:char%s", serial->info.alias);
         }
     }
 

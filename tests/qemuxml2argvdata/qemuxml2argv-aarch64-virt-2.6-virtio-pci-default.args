@@ -33,7 +33,8 @@ path=/tmp/lib/domain--1-aarch64test/monitor.sock,server,nowait \
 id=virtio-disk0 \
 -device virtio-net-pci,vlan=0,id=net0,mac=52:54:00:09:a4:37,bus=pci.2,addr=0x1 \
 -net user,vlan=0,name=hostnet0 \
--serial pty \
+-chardev pty,id=charserial0 \
+-serial chardev:charserial0 \
 -chardev pty,id=charconsole1 \
 -device virtconsole,chardev=charconsole1,id=console1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.2,addr=0x4 \
