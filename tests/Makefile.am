@@ -328,7 +328,7 @@ test_programs += objectlocking
 endif WITH_CIL
 
 if WITH_YAJL
-test_programs += jsontest
+test_programs += virjsontest
 endif WITH_YAJL
 
 test_programs += \
@@ -1375,9 +1375,9 @@ virfirewalltest_SOURCES = \
 virfirewalltest_LDADD = $(LDADDS) $(DBUS_LIBS)
 virfirewalltest_CFLAGS = $(AM_CFLAGS) $(DBUS_CFLAGS)
 
-jsontest_SOURCES = \
-	jsontest.c testutils.h testutils.c
-jsontest_LDADD = $(LDADDS)
+virjsontest_SOURCES = \
+	virjsontest.c testutils.h testutils.c
+virjsontest_LDADD = $(LDADDS)
 
 utiltest_SOURCES = \
 	utiltest.c testutils.h testutils.c
