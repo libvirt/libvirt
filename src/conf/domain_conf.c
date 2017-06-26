@@ -3573,12 +3573,14 @@ virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
     /* first a shallow copy of *everything* */
     *dst = *src;
 
-    /* then redo the two fields that are pointers */
+    /* then copy whatever's left */
     dst->alias = NULL;
     dst->romfile = NULL;
+    dst->loadparm = NULL;
 
     if (VIR_STRDUP(dst->alias, src->alias) < 0 ||
-        VIR_STRDUP(dst->romfile, src->romfile) < 0)
+        VIR_STRDUP(dst->romfile, src->romfile) < 0 ||
+        VIR_STRDUP(dst->loadparm, src->loadparm) < 0)
         return -1;
     return 0;
 }
