@@ -3244,69 +3244,6 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
 };
 
 
-static int
-virStorageSourceParseBackingJSONDeflattenWorker(const char *key,
-                                                virJSONValuePtr value,
-                                                void *opaque)
-{
-    virJSONValuePtr retobj = opaque;
-    virJSONValuePtr newval = NULL;
-    const char *newkey;
-
-    if (!(newkey = STRSKIP(key, "file."))) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("JSON backing file syntax is neither nested nor "
-                         "flattened"));
-        return -1;
-    }
-
-    if (!(newval = virJSONValueCopy(value)))
-        return -1;
-
-    if (virJSONValueObjectAppend(retobj, newkey, newval) < 0) {
-        virJSONValueFree(newval);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-/**
- * virStorageSourceParseBackingJSONDeflatten:
- *
- * The json: pseudo-protocol syntax in qemu allows multiple approaches to
- * describe nesting of the values. This is due to the lax handling of the string
- * in qemu and the fact that internally qemu is flattening the values using '.'.
- *
- * This allows to specify nested json strings either using nested json objects
- * or prefixing object members with the parent object name followed by the dot.
- *
- * This function will attempt to reverse the process and provide a nested json
- * hierarchy so that the parsers can be kept simple and we still can use the
- * weird syntax some users might use.
- *
- * Currently this function will flatten out just the 'file.' prefix into a new
- * tree. Any other syntax will be rejected.
- */
-static virJSONValuePtr
-virStorageSourceParseBackingJSONDeflatten(virJSONValuePtr json)
-{
-    virJSONValuePtr ret;
-
-    if (!(ret = virJSONValueNewObject()))
-        return NULL;
-
-    if (virJSONValueObjectForeachKeyValue(json,
-                                          virStorageSourceParseBackingJSONDeflattenWorker,
-                                          ret) < 0) {
-        virJSONValueFree(ret);
-        return NULL;
-    }
-
-    return ret;
-}
-
 
 static int
 virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
@@ -3320,7 +3257,7 @@ virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
     int ret = -1;
 
     if (!(file = virJSONValueObjectGetObject(json, "file"))) {
-        if (!(fixedroot = virStorageSourceParseBackingJSONDeflatten(json)))
+        if (!(fixedroot = virJSONValueObjectDeflatten(json)))
             goto cleanup;
 
         file = fixedroot;

@@ -1965,3 +1965,64 @@ virJSONStringReformat(const char *jsonstr,
     virJSONValueFree(json);
     return ret;
 }
+
+
+static int
+virJSONValueObjectDeflattenWorker(const char *key,
+                                  virJSONValuePtr value,
+                                  void *opaque)
+{
+    virJSONValuePtr retobj = opaque;
+    virJSONValuePtr newval = NULL;
+    const char *newkey;
+
+    if (!(newkey = STRSKIP(key, "file."))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("JSON object is neither nested nor flattened"));
+        return -1;
+    }
+
+    if (!(newval = virJSONValueCopy(value)))
+        return -1;
+
+    if (virJSONValueObjectAppend(retobj, newkey, newval) < 0) {
+        virJSONValueFree(newval);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * virJSONValueObjectDeflatten:
+ *
+ * In some cases it's possible to nest JSON objects by prefixing object members
+ * with the parent object name followed by the dot and then the attribute name
+ * rather than directly using a nested value object (e.g qemu's JSON
+ * pseudo-protocol in backing file definition).
+ *
+ * This function will attempt to reverse the process and provide a nested json
+ * hierarchy so that the parsers can be kept simple and we still can use the
+ * weird syntax some users might use.
+ *
+ * Currently this function will flatten out just the 'file.' prefix into a new
+ * tree. Any other syntax will be rejected.
+ */
+virJSONValuePtr
+virJSONValueObjectDeflatten(virJSONValuePtr json)
+{
+    virJSONValuePtr ret;
+
+    if (!(ret = virJSONValueNewObject()))
+        return NULL;
+
+    if (virJSONValueObjectForeachKeyValue(json,
+                                          virJSONValueObjectDeflattenWorker,
+                                          ret) < 0) {
+        virJSONValueFree(ret);
+        return NULL;
+    }
+
+    return ret;
+}
