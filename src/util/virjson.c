@@ -2012,17 +2012,24 @@ virJSONValueObjectDeflattenWorker(const char *key,
 virJSONValuePtr
 virJSONValueObjectDeflatten(virJSONValuePtr json)
 {
-    virJSONValuePtr ret;
+    virJSONValuePtr deflattened;
+    virJSONValuePtr ret = NULL;
 
-    if (!(ret = virJSONValueNewObject()))
+    if (!(deflattened = virJSONValueNewObject()))
         return NULL;
 
     if (virJSONValueObjectForeachKeyValue(json,
                                           virJSONValueObjectDeflattenWorker,
-                                          ret) < 0) {
-        virJSONValueFree(ret);
-        return NULL;
-    }
+                                          deflattened) < 0)
+        goto cleanup;
+
+    if (virJSONValueObjectCreate(&ret, "a:file", deflattened, NULL) < 0)
+        goto cleanup;
+
+    deflattened = NULL;
+
+ cleanup:
+    virJSONValueFree(deflattened);
 
     return ret;
 }

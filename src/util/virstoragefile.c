@@ -3260,7 +3260,13 @@ virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
         if (!(fixedroot = virJSONValueObjectDeflatten(json)))
             goto cleanup;
 
-        file = fixedroot;
+        if (!(file = virJSONValueObjectGetObject(fixedroot, "file"))) {
+            str = virJSONValueToString(json, false);
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("JSON backing volume defintion '%s' lacks 'file' object"),
+                           NULLSTR(str));
+            goto cleanup;
+        }
     }
 
     if (!(drvname = virJSONValueObjectGetString(file, "driver"))) {
