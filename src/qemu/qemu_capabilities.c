@@ -5570,15 +5570,16 @@ virQEMUCapsSupportsChardev(const virDomainDef *def,
             return false;
     }
 
-    if ((def->os.arch != VIR_ARCH_ARMV7L) && (def->os.arch != VIR_ARCH_AARCH64))
-        return true;
+    if (def->os.arch == VIR_ARCH_ARMV7L || def->os.arch == VIR_ARCH_AARCH64) {
+        /* TARGET_TYPE_ISA here really means 'the default', which we
+           treat as whatever the built in platform serial device is on.
+           And for platform devices we can't use -chardev */
+        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+            chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA)
+            return false;
+    }
 
-    /* This may not be true for all ARM machine types, but at least
-     * the only supported non-virtio serial devices of vexpress and versatile
-     * don't have the -chardev property wired up. */
-    return (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO ||
-            (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
-             chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO));
+    return true;
 }
 
 
