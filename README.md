@@ -54,7 +54,6 @@ $ make
 $ make install
 ```
 
-
 The libvirt code relies on a large number of 3rd party libraries. These will
 be detected during execution of the configure script and a summary printed
 which lists any missing (optional) dependencies.
