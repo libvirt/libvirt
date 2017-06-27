@@ -2714,9 +2714,6 @@ virDomainDeviceDefPtr virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
 int virDomainDeviceAddressIsValid(virDomainDeviceInfoPtr info,
                                   int type);
 virDomainDeviceInfoPtr virDomainDeviceGetInfo(virDomainDeviceDefPtr device);
-int virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
-                            virDomainDeviceInfoPtr src);
-void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
 void virDomainTPMDefFree(virDomainTPMDefPtr def);
 
 typedef int (*virDomainDeviceInfoCallback)(virDomainDefPtr def,
@@ -3340,11 +3337,6 @@ virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
                                          virTypedParameterPtr params,
                                          int *nparams,
                                          int maxparams);
-
-bool
-virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
-                                  const virDomainDeviceInfo *b)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
                                 virDomainBlockIoTuneInfo *info);

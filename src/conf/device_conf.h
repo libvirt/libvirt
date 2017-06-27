@@ -176,6 +176,14 @@ struct _virDomainDeviceInfo {
     bool isolationGroupLocked;
 };
 
+int virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
+                            virDomainDeviceInfoPtr src);
+void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
+void virDomainDeviceInfoFree(virDomainDeviceInfoPtr info);
+
+bool virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
+                                       const virDomainDeviceInfo *b)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                                bool report);
