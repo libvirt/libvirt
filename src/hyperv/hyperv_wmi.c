@@ -24,6 +24,7 @@
  */
 
 #include <config.h>
+#include <wsman-soap.h>
 
 #include "internal.h"
 #include "virerror.h"
@@ -34,11 +35,16 @@
 #include "hyperv_private.h"
 #include "hyperv_wmi.h"
 #include "virstring.h"
+#include "openwsman.h"
+#include "virlog.h"
 
 #define WS_SERIALIZER_FREE_MEM_WORKS 0
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 
+#define HYPERV_JOB_TIMEOUT_MS 5000
+
+VIR_LOG_INIT("hyperv.hyperv_wmi");
 
 static int
 hypervGetWmiClassInfo(hypervPrivate *priv, hypervWmiClassInfoListPtr list,
@@ -403,6 +409,589 @@ void
 hypervFreeEmbeddedParam(virHashTablePtr p)
 {
     virHashFree(p);
+}
+
+/*
+ * Serializing parameters to XML and invoking methods
+ */
+
+static int
+hypervGetCimTypeInfo(hypervCimTypePtr typemap, const char *name,
+        hypervCimTypePtr *property)
+{
+    size_t i = 0;
+    while (typemap[i].name[0] != '\0') {
+        if (STREQ(typemap[i].name, name)) {
+            *property = &typemap[i];
+            return 0;
+        }
+        i++;
+    }
+
+    return -1;
+}
+
+
+static int
+hypervCreateInvokeXmlDoc(hypervInvokeParamsListPtr params, WsXmlDocH *docRoot)
+{
+    int result = -1;
+    char *method = NULL;
+    WsXmlNodeH xmlNodeMethod = NULL;
+
+    if (virAsprintf(&method, "%s_INPUT", params->method) < 0)
+        goto cleanup;
+
+    *docRoot = ws_xml_create_doc(NULL, method);
+    if (*docRoot == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not instantiate XML document"));
+        goto cleanup;
+    }
+
+    xmlNodeMethod = xml_parser_get_root(*docRoot);
+    if (xmlNodeMethod == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not get root node of XML document"));
+        goto cleanup;
+    }
+
+    /* add resource URI as namespace */
+    ws_xml_set_ns(xmlNodeMethod, params->resourceUri, "p");
+
+    result = 0;
+
+ cleanup:
+    if (result < 0 && *docRoot != NULL) {
+        ws_xml_destroy_doc(*docRoot);
+        *docRoot = NULL;
+    }
+    VIR_FREE(method);
+    return result;
+}
+
+static int
+hypervSerializeSimpleParam(hypervParamPtr p, const char *resourceUri,
+        WsXmlNodeH *methodNode)
+{
+    WsXmlNodeH xmlNodeParam = NULL;
+
+    xmlNodeParam = ws_xml_add_child(*methodNode, resourceUri,
+            p->simple.name, p->simple.value);
+    if (xmlNodeParam == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not create simple param"));
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
+        const char *resourceUri, WsXmlDocH doc, WsXmlNodeH *methodNode)
+{
+    int result = -1;
+    WsXmlNodeH xmlNodeParam = NULL,
+               xmlNodeTemp = NULL,
+               xmlNodeAddr = NULL,
+               xmlNodeRef = NULL;
+    xmlNodePtr xmlNodeAddrPtr = NULL,
+               xmlNodeRefPtr = NULL;
+    WsXmlDocH xmlDocResponse = NULL;
+    xmlDocPtr docPtr = (xmlDocPtr) doc->parserDoc;
+    WsXmlNsH ns = NULL;
+    client_opt_t *options = NULL;
+    filter_t *filter = NULL;
+    char *enumContext = NULL;
+    char *query_string = NULL;
+
+    /* init and set up options */
+    options = wsmc_options_init();
+    if (!options) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not init options"));
+        goto cleanup;
+    }
+    wsmc_set_action_option(options, FLAG_ENUMERATION_ENUM_EPR);
+
+    /* Get query and create filter based on it */
+    if (virBufferCheckError(p->epr.query) < 0) {
+        virBufferFreeAndReset(p->epr.query);
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid query"));
+        goto cleanup;
+    }
+    query_string = virBufferContentAndReset(p->epr.query);
+
+    filter = filter_create_simple(WSM_WQL_FILTER_DIALECT, query_string);
+    if (!filter) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create WQL filter"));
+        goto cleanup;
+    }
+
+    /* enumerate based on the filter from this query */
+    xmlDocResponse = wsmc_action_enumerate(priv->client, p->epr.info->rootUri,
+            options, filter);
+    if (hypervVerifyResponse(priv->client, xmlDocResponse, "enumeration") < 0)
+        goto cleanup;
+
+    /* Get context */
+    enumContext = wsmc_get_enum_context(xmlDocResponse);
+    ws_xml_destroy_doc(xmlDocResponse);
+
+    /* Pull using filter and enum context */
+    xmlDocResponse = wsmc_action_pull(priv->client, resourceUri, options,
+            filter, enumContext);
+
+    if (hypervVerifyResponse(priv->client, xmlDocResponse, "pull") < 0)
+        goto cleanup;
+
+    /* drill down and extract EPR node children */
+    if (!(xmlNodeTemp = ws_xml_get_soap_body(xmlDocResponse))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not get SOAP body"));
+        goto cleanup;
+    }
+
+    if (!(xmlNodeTemp = ws_xml_get_child(xmlNodeTemp, 0, XML_NS_ENUMERATION,
+            WSENUM_PULL_RESP))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not get response"));
+        goto cleanup;
+    }
+
+    if (!(xmlNodeTemp = ws_xml_get_child(xmlNodeTemp, 0, XML_NS_ENUMERATION, WSENUM_ITEMS))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not get response items"));
+        goto cleanup;
+    }
+
+    if (!(xmlNodeTemp = ws_xml_get_child(xmlNodeTemp, 0, XML_NS_ADDRESSING, WSA_EPR))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not get EPR items"));
+        goto cleanup;
+    }
+
+    if (!(xmlNodeAddr = ws_xml_get_child(xmlNodeTemp, 0, XML_NS_ADDRESSING,
+                    WSA_ADDRESS))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not get EPR address"));
+        goto cleanup;
+    }
+
+    if (!(xmlNodeAddrPtr = xmlDocCopyNode((xmlNodePtr) xmlNodeAddr, docPtr, 1))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not copy EPR address"));
+        goto cleanup;
+    }
+
+    if (!(xmlNodeRef = ws_xml_get_child(xmlNodeTemp, 0, XML_NS_ADDRESSING,
+            WSA_REFERENCE_PARAMETERS))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not lookup EPR item reference parameters"));
+        goto cleanup;
+    }
+
+    if (!(xmlNodeRefPtr = xmlDocCopyNode((xmlNodePtr) xmlNodeRef, docPtr, 1))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not copy EPR item reference parameters"));
+        goto cleanup;
+    }
+
+    /* now build a new xml doc with the EPR node children */
+    if (!(xmlNodeParam = ws_xml_add_child(*methodNode, resourceUri,
+                    p->epr.name, NULL))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not add child node to xmlNodeParam"));
+        goto cleanup;
+    }
+
+    if (!(ns = ws_xml_ns_add(xmlNodeParam,
+                    "http://schemas.xmlsoap.org/ws/2004/08/addressing", "a"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not set namespace address for xmlNodeParam"));
+        goto cleanup;
+    }
+
+    if (!(ns = ws_xml_ns_add(xmlNodeParam,
+                    "http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd", "w"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not set wsman namespace address for xmlNodeParam"));
+        goto cleanup;
+    }
+
+    if (xmlAddChild((xmlNodePtr) *methodNode, (xmlNodePtr) xmlNodeParam) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not add child to xml parent node"));
+        goto cleanup;
+    }
+
+    if (xmlAddChild((xmlNodePtr) xmlNodeParam, xmlNodeAddrPtr) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not add child to xml parent node"));
+        goto cleanup;
+    }
+
+    if (xmlAddChild((xmlNodePtr) xmlNodeParam, xmlNodeRefPtr) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not add child to xml parent node"));
+        goto cleanup;
+    }
+
+    /* we did it! */
+    result = 0;
+
+ cleanup:
+    if (options != NULL)
+        wsmc_options_destroy(options);
+    if (filter != NULL)
+        filter_destroy(filter);
+    ws_xml_destroy_doc(xmlDocResponse);
+    VIR_FREE(enumContext);
+    VIR_FREE(query_string);
+    return result;
+}
+
+static int
+hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
+        WsXmlNodeH *methodNode)
+{
+    int result = -1;
+    WsXmlNodeH xmlNodeInstance = NULL,
+               xmlNodeProperty = NULL,
+               xmlNodeParam = NULL,
+               xmlNodeArray = NULL;
+    WsXmlDocH xmlDocTemp = NULL,
+              xmlDocCdata = NULL;
+    xmlBufferPtr xmlBufferNode = NULL;
+    const xmlChar *xmlCharCdataContent = NULL;
+    xmlNodePtr xmlNodeCdata = NULL;
+    hypervWmiClassInfoPtr classInfo = p->embedded.info;
+    virHashKeyValuePairPtr items = NULL;
+    hypervCimTypePtr property = NULL;
+    ssize_t numKeys = -1;
+    int len = 0, i = 0;
+
+    if (!(xmlNodeParam = ws_xml_add_child(*methodNode, resourceUri, p->embedded.name,
+                    NULL))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not add child node %s"),
+                p->embedded.name);
+        goto cleanup;
+    }
+
+    /* create the temp xml doc */
+
+    /* start with the INSTANCE node */
+    if (!(xmlDocTemp = ws_xml_create_doc(NULL, "INSTANCE"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not create temporary xml doc"));
+        goto cleanup;
+    }
+
+    if (!(xmlNodeInstance = xml_parser_get_root(xmlDocTemp))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not get temp xml doc root"));
+        goto cleanup;
+    }
+
+    /* add CLASSNAME node to INSTANCE node */
+    if (!(ws_xml_add_node_attr(xmlNodeInstance, NULL, "CLASSNAME",
+                classInfo->name))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not add attribute to node"));
+        goto cleanup;
+    }
+
+    /* retrieve parameters out of hash table */
+    numKeys = virHashSize(p->embedded.table);
+    items = virHashGetItems(p->embedded.table, NULL);
+    if (!items) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not read embedded param hash table"));
+        goto cleanup;
+    }
+
+    /* Add the parameters */
+    for (i = 0; i < numKeys; i++) {
+        const char *name = items[i].key;
+        const char *value = items[i].value;
+
+        if (value != NULL) {
+            if (hypervGetCimTypeInfo(classInfo->propertyInfo, name,
+                        &property) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not read type information"));
+                goto cleanup;
+            }
+
+            if (!(xmlNodeProperty = ws_xml_add_child(xmlNodeInstance, NULL,
+                            property->isArray ? "PROPERTY.ARRAY" : "PROPERTY",
+                            NULL))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not add child to XML node"));
+                goto cleanup;
+            }
+
+            if (!(ws_xml_add_node_attr(xmlNodeProperty, NULL, "NAME", name))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not add attribute to XML node"));
+                goto cleanup;
+            }
+
+            if (!(ws_xml_add_node_attr(xmlNodeProperty, NULL, "TYPE", property->type))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not add attribute to XML node"));
+                goto cleanup;
+            }
+
+            /* If this attribute is an array, add VALUE.ARRAY node */
+            if (property->isArray) {
+                if (!(xmlNodeArray = ws_xml_add_child(xmlNodeProperty, NULL,
+                                "VALUE.ARRAY", NULL))) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Could not add child to XML node"));
+                    goto cleanup;
+                }
+            }
+
+            /* add the child */
+            if (!(ws_xml_add_child(property->isArray ? xmlNodeArray : xmlNodeProperty,
+                        NULL, "VALUE", value))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not add child to XML node"));
+                goto cleanup;
+            }
+
+            xmlNodeArray = NULL;
+            xmlNodeProperty = NULL;
+        }
+    }
+
+    /* create CDATA node */
+    xmlBufferNode = xmlBufferCreate();
+    if (xmlNodeDump(xmlBufferNode, (xmlDocPtr) xmlDocTemp->parserDoc,
+                (xmlNodePtr) xmlNodeInstance, 0, 0) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not get root of temp XML doc"));
+        goto cleanup;
+    }
+
+    len = xmlBufferLength(xmlBufferNode);
+    xmlCharCdataContent = xmlBufferContent(xmlBufferNode);
+    if (!(xmlNodeCdata = xmlNewCDataBlock((xmlDocPtr) xmlDocCdata,
+                    xmlCharCdataContent, len))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not create CDATA element"));
+        goto cleanup;
+    }
+
+    /* Add CDATA node to the doc root */
+    if (!(xmlAddChild((xmlNodePtr) xmlNodeParam, xmlNodeCdata))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not add CDATA to doc root"));
+        goto cleanup;
+    }
+
+    /* we did it! */
+    result = 0;
+
+ cleanup:
+    VIR_FREE(items);
+    ws_xml_destroy_doc(xmlDocCdata);
+    ws_xml_destroy_doc(xmlDocTemp);
+    xmlBufferFree(xmlBufferNode);
+    return result;
+}
+
+
+/*
+ * hypervInvokeMethod:
+ * @priv: hypervPrivate object associated with the connection
+ * @params: object containing the all necessary information for method
+ * invocation
+ * @res: Optional out parameter to contain the response XML.
+ *
+ * Performs an invocation described by @params, and optionally returns the
+ * XML containing the result. Returns -1 on failure, 0 on success.
+ */
+int
+hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
+        WsXmlDocH *res)
+{
+    int result = -1;
+    size_t i = 0;
+    int returnCode;
+    WsXmlDocH paramsDocRoot = NULL;
+    client_opt_t *options = NULL;
+    WsXmlDocH response = NULL;
+    WsXmlNodeH methodNode = NULL;
+    char *returnValue_xpath = NULL;
+    char *jobcode_instance_xpath = NULL;
+    char *returnValue = NULL;
+    char *instanceID = NULL;
+    bool completed = false;
+    virBuffer query = VIR_BUFFER_INITIALIZER;
+    Msvm_ConcreteJob *job = NULL;
+    int jobState = -1;
+    hypervParamPtr p = NULL;
+    int timeout = HYPERV_JOB_TIMEOUT_MS;
+
+    if (hypervCreateInvokeXmlDoc(params, &paramsDocRoot) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not create XML document"));
+        goto cleanup;
+    }
+
+    methodNode = xml_parser_get_root(paramsDocRoot);
+    if (!methodNode) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                _("Could not get root of XML document"));
+        goto cleanup;
+    }
+
+    /* Serialize parameters */
+    for (i = 0; i < params->nbParams; i++) {
+        p = &(params->params[i]);
+
+        switch (p->type) {
+            case HYPERV_SIMPLE_PARAM:
+                if (hypervSerializeSimpleParam(p, params->resourceUri,
+                            &methodNode) < 0)
+                    goto cleanup;
+                break;
+            case HYPERV_EPR_PARAM:
+                if (hypervSerializeEprParam(p, priv, params->resourceUri,
+                            paramsDocRoot, &methodNode) < 0)
+                    goto cleanup;
+                break;
+            case HYPERV_EMBEDDED_PARAM:
+                if (hypervSerializeEmbeddedParam(p, params->resourceUri,
+                            &methodNode) < 0)
+                    goto cleanup;
+                break;
+            default:
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unknown parameter type"));
+                goto cleanup;
+        }
+    }
+
+    /* Invoke the method and get the response */
+
+    options = wsmc_options_init();
+    if (!options) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not init options"));
+        goto cleanup;
+    }
+    wsmc_add_selectors_from_str(options, params->selector);
+
+    /* do the invoke */
+    response = wsmc_action_invoke(priv->client, params->resourceUri, options,
+            params->method, paramsDocRoot);
+
+    /* check return code of invocation */
+    if (virAsprintf(&returnValue_xpath, "/s:Envelope/s:Body/p:%s_OUTPUT/p:ReturnValue",
+            params->method) < 0)
+        goto cleanup;
+
+    returnValue = ws_xml_get_xpath_value(response, returnValue_xpath);
+    if (!returnValue) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not get return value for %s invocation"),
+                       params->method);
+        goto cleanup;
+    }
+
+    if (virStrToLong_i(returnValue, NULL, 10, &returnCode) < 0)
+        goto cleanup;
+
+    if (returnCode == CIM_RETURNCODE_TRANSITION_STARTED) {
+        if (virAsprintf(&jobcode_instance_xpath,
+                    "/s:Envelope/s:Body/p:%s_OUTPUT/p:Job/a:ReferenceParameters/"
+                    "w:SelectorSet/w:Selector[@Name='InstanceID']",
+                    params->method) < 0) {
+            goto cleanup;
+        }
+
+        instanceID = ws_xml_get_xpath_value(response, jobcode_instance_xpath);
+        if (!instanceID) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not get instance ID for %s invocation"),
+                           params->method);
+            goto cleanup;
+        }
+
+        /*
+         * Poll Hyper-V about the job until either the job completes or fails,
+         * or 5 minutes have elapsed.
+         *
+         * Windows has its own timeout on running WMI method calls (it calls
+         * these "jobs"), by default set to 1 minute. The administrator can
+         * change this to whatever they want, however, so we can't rely on it.
+         *
+         * Therefore, to avoid waiting in this loop for a very long-running job
+         * to complete, we instead bail after 5 minutes no matter what. NOTE that
+         * this does not mean that the remote job has terminated on the Windows
+         * side! That is up to Windows to control, we don't do anything about it.
+         */
+        while (!completed && timeout >= 0) {
+            virBufferAddLit(&query, MSVM_CONCRETEJOB_WQL_SELECT);
+            virBufferAsprintf(&query, "where InstanceID = \"%s\"", instanceID);
+
+            if (hypervGetMsvmConcreteJobList(priv, &query, &job) < 0
+                    || job == NULL)
+                goto cleanup;
+
+            jobState = job->data.common->JobState;
+            switch (jobState) {
+                case MSVM_CONCRETEJOB_JOBSTATE_NEW:
+                case MSVM_CONCRETEJOB_JOBSTATE_STARTING:
+                case MSVM_CONCRETEJOB_JOBSTATE_RUNNING:
+                case MSVM_CONCRETEJOB_JOBSTATE_SHUTTING_DOWN:
+                    hypervFreeObject(priv, (hypervObject *) job);
+                    job = NULL;
+                    usleep(100 * 1000); /* sleep 100 ms */
+                    timeout -= 100;
+                    continue;
+                case MSVM_CONCRETEJOB_JOBSTATE_COMPLETED:
+                    completed = true;
+                    break;
+                case MSVM_CONCRETEJOB_JOBSTATE_TERMINATED:
+                case MSVM_CONCRETEJOB_JOBSTATE_KILLED:
+                case MSVM_CONCRETEJOB_JOBSTATE_EXCEPTION:
+                case MSVM_CONCRETEJOB_JOBSTATE_SERVICE:
+                    goto cleanup;
+                default:
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("Unknown invocation state"));
+                    goto cleanup;
+            }
+        }
+        if (!completed && timeout < 0) {
+            virReportError(VIR_ERR_OPERATION_TIMEOUT,
+                    _("Timeout waiting for %s invocation"), params->method);
+            goto cleanup;
+        }
+    } else if (returnCode != CIM_RETURNCODE_COMPLETED_WITH_NO_ERROR) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invocation of %s returned an error: %s (%d)"),
+                    params->method, hypervReturnCodeToString(returnCode),
+                    returnCode);
+        goto cleanup;
+    }
+
+    if (res)
+        *res = response;
+
+    result = 0;
+
+ cleanup:
+    if (options)
+        wsmc_options_destroy(options);
+    if (response && (!res))
+        ws_xml_destroy_doc(response);
+    if (paramsDocRoot)
+        ws_xml_destroy_doc(paramsDocRoot);
+    VIR_FREE(returnValue_xpath);
+    VIR_FREE(jobcode_instance_xpath);
+    VIR_FREE(returnValue);
+    VIR_FREE(instanceID);
+    virBufferFreeAndReset(&query);
+    hypervFreeObject(priv, (hypervObject *) job);
+    hypervFreeInvokeParams(params);
+    return result;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

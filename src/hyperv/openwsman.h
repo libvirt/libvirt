@@ -43,4 +43,8 @@
 #  define SER_NS_INT64(ns, n, x) SER_NS_INT64_FLAGS(ns, n, x, 0)
 # endif
 
+/* wsman-xml.h */
+WsXmlDocH ws_xml_create_doc(const char *rootNsUri, const char *rootName);
+WsXmlNodeH xml_parser_get_root(WsXmlDocH doc);
+
 #endif /* __OPENWSMAN_H__ */

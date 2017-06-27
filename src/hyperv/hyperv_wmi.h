@@ -95,14 +95,14 @@ typedef struct _hypervSimpleParam hypervSimpleParam;
 struct _hypervEprParam {
     const char *name;
     virBufferPtr query;
-    hypervWmiClassInfoPtr info; // info of the object this param represents
+    hypervWmiClassInfoPtr info; /* info of the object this param represents */
 };
 typedef struct _hypervEprParam hypervEprParam;
 
 struct _hypervEmbeddedParam {
     const char *name;
     virHashTablePtr table;
-    hypervWmiClassInfoPtr info; // info of the object this param represents
+    hypervWmiClassInfoPtr info; /* info of the object this param represents */
 };
 typedef struct _hypervEmbeddedParam hypervEmbeddedParam;
 
@@ -152,6 +152,10 @@ int hypervAddEmbeddedParam(hypervInvokeParamsListPtr params, hypervPrivate *priv
         const char *name, virHashTablePtr table, hypervWmiClassInfoListPtr info);
 
 void hypervFreeEmbeddedParam(virHashTablePtr p);
+
+int hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
+        WsXmlDocH *res);
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * CIM/Msvm_ReturnCode
  */
