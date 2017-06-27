@@ -9857,12 +9857,12 @@ static const vshCmdOptDef opts_domxmltonative[] = {
      .help = N_("target config data type format")
     },
     {.name = "domain",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("domain name, id or uuid")
     },
     {.name = "xml",
-     .type = VSH_OT_DATA,
+     .type = VSH_OT_ARGV,
      .help = N_("xml data file to export from")
     },
     {.name = NULL}
