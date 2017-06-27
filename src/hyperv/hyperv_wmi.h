@@ -35,6 +35,9 @@
 
 # define HYPERV_DEFAULT_PARAM_COUNT 5
 
+# define MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR \
+    "CreationClassName=Msvm_VirtualSystemManagementService"
+
 int hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
                          const char *detail);
 
@@ -212,12 +215,20 @@ int hypervGetMsvmVirtualSystemSettingDataList(hypervPrivate *priv,
                                               virBufferPtr query,
                                               Msvm_VirtualSystemSettingData **list);
 
+int hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
+                                                  const char *uuid_string,
+                                                  Msvm_VirtualSystemSettingData **list);
+
 int hypervGetMsvmProcessorSettingDataList(hypervPrivate *priv,
                                           virBufferPtr query,
                                           Msvm_ProcessorSettingData **list);
 
 int hypervGetMsvmMemorySettingDataList(hypervPrivate *priv, virBufferPtr query,
                                        Msvm_MemorySettingData **list);
+
+int hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
+                                           const char *vssd_instanceid,
+                                           Msvm_MemorySettingData **list);
 
 int hypervGetMsvmKeyboardList(hypervPrivate *priv, virBufferPtr query,
                                        Msvm_Keyboard **list);

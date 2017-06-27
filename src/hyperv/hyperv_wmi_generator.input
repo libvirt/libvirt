@@ -787,6 +787,36 @@ class Msvm_VirtualSystemManagementService
     boolean  Started
 end
 
+class v2/Msvm_VirtualSystemManagementService
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    string   Name
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   CommunicationStatus
+    uint16   DetailedStatus
+    uint16   OperatingStatus
+    uint16   PrimaryStatus
+    uint16   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    uint16   AvailableRequestedStates[]
+    uint16   TransitioningToState
+    string   SystemCreationClassName
+    string   SystemName
+    string   CreationClassName
+    string   PrimaryOwnerName
+    string   PrimaryOwnerContact
+    string   StartMode
+    boolean  Started
+end
 
 class Msvm_VirtualSystemGlobalSettingData
     string   Caption

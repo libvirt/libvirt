@@ -1634,3 +1634,54 @@ hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
 
     return 0;
 }
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Msvm_VirtualSystemSettingData
+ */
+
+int
+hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
+        const char *uuid_string, Msvm_VirtualSystemSettingData **list)
+{
+    virBuffer query = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&query,
+            "associators of "
+            "{Msvm_ComputerSystem.CreationClassName=\"Msvm_ComputerSystem\","
+            "Name=\"%s\"} "
+            "where AssocClass = Msvm_SettingsDefineState "
+            "ResultClass = Msvm_VirtualSystemSettingData",
+            uuid_string);
+
+    if (hypervGetWmiClassList(priv, Msvm_VirtualSystemSettingData_WmiInfo, &query,
+                (hypervObject **) list) < 0 || *list == NULL)
+        return -1;
+
+    return 0;
+}
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Msvm_MemorySettingData
+ */
+
+int
+hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
+        const char *vssd_instanceid, Msvm_MemorySettingData **list)
+{
+    virBuffer query = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&query,
+            "associators of "
+            "{Msvm_VirtualSystemSettingData.InstanceID=\"%s\"} "
+            "where AssocClass = Msvm_VirtualSystemSettingDataComponent "
+            "ResultClass = Msvm_MemorySettingData",
+            vssd_instanceid);
+
+    if (hypervGetWmiClassList(priv, Msvm_MemorySettingData_WmiInfo, &query,
+                (hypervObject **) list) < 0 || *list == NULL)
+        return -1;
+
+    return 0;
+}
