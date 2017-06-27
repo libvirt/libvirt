@@ -1750,6 +1750,7 @@ qemuMonitorCPUInfoClear(qemuMonitorCPUInfoPtr cpus,
         cpus[i].socket_id = -1;
         cpus[i].core_id = -1;
         cpus[i].thread_id = -1;
+        cpus[i].node_id = -1;
         cpus[i].vcpus = 0;
         cpus[i].tid = 0;
         cpus[i].halted = false;
@@ -1902,6 +1903,7 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
         vcpus[mastervcpu].socket_id = hotplugvcpus[i].socket_id;
         vcpus[mastervcpu].core_id = hotplugvcpus[i].core_id;
         vcpus[mastervcpu].thread_id = hotplugvcpus[i].thread_id;
+        vcpus[mastervcpu].node_id = hotplugvcpus[i].node_id;
         vcpus[mastervcpu].vcpus = hotplugvcpus[i].vcpus;
         VIR_STEAL_PTR(vcpus[mastervcpu].qom_path, hotplugvcpus[i].qom_path);
         VIR_STEAL_PTR(vcpus[mastervcpu].alias, hotplugvcpus[i].alias);

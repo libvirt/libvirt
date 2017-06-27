@@ -483,6 +483,7 @@ struct _qemuMonitorCPUInfo {
     int socket_id;
     int core_id;
     int thread_id;
+    int node_id;
     unsigned int vcpus; /* number of vcpus added if given entry is hotplugged */
 
     /* name of the qemu type to add in case of hotplug */

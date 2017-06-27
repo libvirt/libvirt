@@ -1,0 +1,48 @@
+[vcpu libvirt-id='0']
+    online=yes
+    hotpluggable=no
+    thread-id='2033724'
+    enable-id='1'
+    query-cpus-id='0'
+    type='Broadwell-x86_64-cpu'
+    qom_path='/machine/unattached/device[0]'
+    topology: socket='0' core='0' thread='0' node='0' vcpus='1'
+[vcpu libvirt-id='1']
+    online=yes
+    hotpluggable=no
+    thread-id='2033725'
+    enable-id='2'
+    query-cpus-id='1'
+    type='Broadwell-x86_64-cpu'
+    qom_path='/machine/unattached/device[2]'
+    topology: socket='0' core='0' thread='1' node='1' vcpus='1'
+[vcpu libvirt-id='2']
+    online=no
+    hotpluggable=yes
+    type='Broadwell-x86_64-cpu'
+    topology: socket='0' core='1' thread='0' node='0' vcpus='1'
+[vcpu libvirt-id='3']
+    online=no
+    hotpluggable=yes
+    type='Broadwell-x86_64-cpu'
+    topology: socket='0' core='1' thread='1' node='1' vcpus='1'
+[vcpu libvirt-id='4']
+    online=no
+    hotpluggable=yes
+    type='Broadwell-x86_64-cpu'
+    topology: socket='1' core='0' thread='0' node='0' vcpus='1'
+[vcpu libvirt-id='5']
+    online=no
+    hotpluggable=yes
+    type='Broadwell-x86_64-cpu'
+    topology: socket='1' core='0' thread='1' node='1' vcpus='1'
+[vcpu libvirt-id='6']
+    online=no
+    hotpluggable=yes
+    type='Broadwell-x86_64-cpu'
+    topology: socket='1' core='1' thread='0' node='0' vcpus='1'
+[vcpu libvirt-id='7']
+    online=no
+    hotpluggable=yes
+    type='Broadwell-x86_64-cpu'
+    topology: socket='1' core='1' thread='1' node='1' vcpus='1'

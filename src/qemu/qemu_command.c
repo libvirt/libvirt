@@ -10508,6 +10508,10 @@ qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
         virJSONValueObjectAdd(ret, "i:thread-id", vcpupriv->thread_id, NULL) < 0)
         goto error;
 
+    if (vcpupriv->node_id != -1 &&
+        virJSONValueObjectAdd(ret, "i:node-id", vcpupriv->node_id, NULL) < 0)
+        goto error;
+
     return ret;
 
  error:

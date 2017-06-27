@@ -359,6 +359,7 @@ struct _qemuDomainVcpuPrivate {
     int socket_id;
     int core_id;
     int thread_id;
+    int node_id;
     int vcpus;
 };
 

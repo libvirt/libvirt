@@ -5219,7 +5219,7 @@ qemuProcessValidateHotpluggableVcpus(virDomainDefPtr def)
 
         if (vcpu->online && vcpu->hotpluggable == VIR_TRISTATE_BOOL_YES) {
             if ((vcpupriv->socket_id == -1 && vcpupriv->core_id == -1 &&
-                 vcpupriv->thread_id == -1) ||
+                 vcpupriv->thread_id == -1 && vcpupriv->node_id == -1) ||
                 !vcpupriv->type) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("vcpu '%zu' is missing hotplug data"), i);

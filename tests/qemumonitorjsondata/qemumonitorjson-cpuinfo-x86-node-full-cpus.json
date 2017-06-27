@@ -1,0 +1,35 @@
+{
+  "return": [
+    {
+      "arch": "x86",
+      "current": true,
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "node-id": 0,
+        "socket-id": 0
+      },
+      "CPU": 0,
+      "qom_path": "/machine/unattached/device[0]",
+      "pc": 1048956,
+      "halted": true,
+      "thread_id": 2033724
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "node-id": 1,
+        "socket-id": 0
+      },
+      "CPU": 1,
+      "qom_path": "/machine/unattached/device[2]",
+      "pc": 1037318,
+      "halted": true,
+      "thread_id": 2033725
+    }
+  ],
+  "id": "libvirt-21"
+}

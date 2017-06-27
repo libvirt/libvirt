@@ -1,0 +1,87 @@
+{
+  "return": [
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "node-id": 1,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "node-id": 0,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "node-id": 1,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "node-id": 0,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "node-id": 1,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "node-id": 0,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "node-id": 1,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[2]",
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "node-id": 0,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[0]",
+      "type": "Broadwell-x86_64-cpu"
+    }
+  ],
+  "id": "libvirt-20"
+}

@@ -6986,6 +6986,7 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
         vcpupriv->socket_id = info[i].socket_id;
         vcpupriv->core_id = info[i].core_id;
         vcpupriv->thread_id = info[i].thread_id;
+        vcpupriv->node_id = info[i].node_id;
         vcpupriv->vcpus = info[i].vcpus;
         VIR_FREE(vcpupriv->type);
         VIR_STEAL_PTR(vcpupriv->type, info[i].type);
