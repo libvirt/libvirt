@@ -3529,23 +3529,6 @@ virDomainDeviceGetInfo(virDomainDeviceDefPtr device)
     return NULL;
 }
 
-static bool
-virDomainDeviceInfoNeedsFormat(virDomainDeviceInfoPtr info, unsigned int flags)
-{
-    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-        return true;
-    if (info->alias && !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
-        return true;
-    if (info->mastertype != VIR_DOMAIN_CONTROLLER_MASTER_NONE)
-        return true;
-    if ((info->rombar != VIR_TRISTATE_SWITCH_ABSENT) ||
-        info->romfile)
-        return true;
-    if (info->bootIndex)
-        return true;
-    return false;
-}
-
 
 static int
 virDomainDefHasDeviceAddressIterator(virDomainDefPtr def ATTRIBUTE_UNUSED,
@@ -24320,6 +24303,9 @@ virDomainHubDefFormat(virBufferPtr buf,
                       unsigned int flags)
 {
     const char *type = virDomainHubTypeToString(def->type);
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -24327,14 +24313,16 @@ virDomainHubDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "<hub type='%s'", type);
+    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
+        return -1;
 
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
+    if (virBufferCheckError(&childBuf) < 0)
+        return -1;
+
+    virBufferAsprintf(buf, "<hub type='%s'", type);
+    if (virBufferUse(&childBuf)) {
         virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
-        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-            return -1;
-        virBufferAdjustIndent(buf, -2);
+        virBufferAddBuffer(buf, &childBuf);
         virBufferAddLit(buf, "</hub>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
