@@ -28,10 +28,12 @@
 # include "hyperv_private.h"
 # include "hyperv_wmi_classes.h"
 # include "openwsman.h"
-
+# include "virhash.h"
 
 
 # define HYPERV_WQL_QUERY_INITIALIZER { NULL, NULL }
+
+# define HYPERV_DEFAULT_PARAM_COUNT 5
 
 int hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
                          const char *detail);
@@ -74,7 +76,82 @@ int hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
 void hypervFreeObject(hypervPrivate *priv, hypervObject *object);
 
 
+/*
+ * Invoke
+ */
 
+typedef enum {
+    HYPERV_SIMPLE_PARAM,
+    HYPERV_EPR_PARAM,
+    HYPERV_EMBEDDED_PARAM
+} hypervStorageType;
+
+struct _hypervSimpleParam {
+    const char *name;
+    const char *value;
+};
+typedef struct _hypervSimpleParam hypervSimpleParam;
+
+struct _hypervEprParam {
+    const char *name;
+    virBufferPtr query;
+    hypervWmiClassInfoPtr info; // info of the object this param represents
+};
+typedef struct _hypervEprParam hypervEprParam;
+
+struct _hypervEmbeddedParam {
+    const char *name;
+    virHashTablePtr table;
+    hypervWmiClassInfoPtr info; // info of the object this param represents
+};
+typedef struct _hypervEmbeddedParam hypervEmbeddedParam;
+
+struct _hypervParam {
+    hypervStorageType type;
+    union {
+        hypervSimpleParam simple;
+        hypervEprParam epr;
+        hypervEmbeddedParam embedded;
+    };
+};
+typedef struct _hypervParam hypervParam;
+typedef hypervParam *hypervParamPtr;
+
+struct _hypervInvokeParamsList {
+    const char *method;
+    const char *ns;
+    const char *resourceUri;
+    const char *selector;
+    hypervParamPtr params;
+    size_t nbParams;
+    size_t nbAvailParams;
+};
+typedef struct _hypervInvokeParamsList hypervInvokeParamsList;
+typedef hypervInvokeParamsList *hypervInvokeParamsListPtr;
+
+
+hypervInvokeParamsListPtr hypervCreateInvokeParamsList(hypervPrivate *priv,
+        const char *method, const char *selector, hypervWmiClassInfoListPtr obj);
+
+void hypervFreeInvokeParams(hypervInvokeParamsListPtr params);
+
+int hypervAddSimpleParam(hypervInvokeParamsListPtr params, const char *name,
+        const char *value);
+
+int hypervAddEprParam(hypervInvokeParamsListPtr params, const char *name,
+        hypervPrivate *priv, virBufferPtr query,
+        hypervWmiClassInfoListPtr eprInfo);
+
+virHashTablePtr hypervCreateEmbeddedParam(hypervPrivate *priv,
+        hypervWmiClassInfoListPtr info);
+
+int hypervSetEmbeddedProperty(virHashTablePtr table, const char *name,
+        char *value);
+
+int hypervAddEmbeddedParam(hypervInvokeParamsListPtr params, hypervPrivate *priv,
+        const char *name, virHashTablePtr table, hypervWmiClassInfoListPtr info);
+
+void hypervFreeEmbeddedParam(virHashTablePtr p);
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * CIM/Msvm_ReturnCode
  */
