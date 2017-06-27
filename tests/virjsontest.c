@@ -512,13 +512,13 @@ mymain(void)
 
     DO_TEST_DEFLATTEN("unflattened", true);
     DO_TEST_DEFLATTEN("basic-file", true);
-    DO_TEST_DEFLATTEN("basic-generic", false);
+    DO_TEST_DEFLATTEN("basic-generic", true);
     DO_TEST_DEFLATTEN("deep-file", true);
-    DO_TEST_DEFLATTEN("deep-generic", false);
+    DO_TEST_DEFLATTEN("deep-generic", true);
     DO_TEST_DEFLATTEN("nested", true);
-    DO_TEST_DEFLATTEN("double-key", true);
+    DO_TEST_DEFLATTEN("double-key", false);
     DO_TEST_DEFLATTEN("concat", true);
-    DO_TEST_DEFLATTEN("concat-double-key", true);
+    DO_TEST_DEFLATTEN("concat-double-key", false);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

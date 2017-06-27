@@ -1974,23 +1974,60 @@ virJSONValueObjectDeflattenWorker(const char *key,
 {
     virJSONValuePtr retobj = opaque;
     virJSONValuePtr newval = NULL;
-    const char *newkey;
+    virJSONValuePtr existobj;
+    char **tokens = NULL;
+    size_t ntokens = 0;
+    int ret = -1;
 
-    if (!(newkey = STRSKIP(key, "file."))) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("JSON object is neither nested nor flattened"));
-        return -1;
+    /* non-nested keys only need to be copied */
+    if (!strchr(key, '.')) {
+        if (!(newval = virJSONValueCopy(value)))
+            return -1;
+
+        if (virJSONValueObjectHasKey(retobj, key)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("can't deflatten colliding key '%s'"), key);
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectAppend(retobj, key, newval) < 0)
+            goto cleanup;
+
+        return 0;
     }
 
-    if (!(newval = virJSONValueCopy(value)))
-        return -1;
+    if (!(tokens = virStringSplitCount(key, ".", 2, &ntokens)))
+        goto cleanup;
 
-    if (virJSONValueObjectAppend(retobj, newkey, newval) < 0) {
-        virJSONValueFree(newval);
-        return -1;
+    if (ntokens != 2) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid nested value key '%s'"), key);
+        goto cleanup;
     }
 
-    return 0;
+    if (!(existobj = virJSONValueObjectGet(retobj, tokens[0]))) {
+        if (!(existobj = virJSONValueNewObject()))
+            goto cleanup;
+
+        if (virJSONValueObjectAppend(retobj, tokens[0], existobj) < 0)
+            goto cleanup;
+
+    } else {
+        if (!virJSONValueIsObject(existobj)) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("mixing nested objects and values is forbidden in "
+                             "JSON deflattening"));
+            goto cleanup;
+        }
+    }
+
+    ret = virJSONValueObjectDeflattenWorker(tokens[1], value, existobj);
+
+ cleanup:
+    virStringListFreeCount(tokens, ntokens);
+    virJSONValueFree(newval);
+
+    return ret;
 }
 
 
@@ -2005,9 +2042,6 @@ virJSONValueObjectDeflattenWorker(const char *key,
  * This function will attempt to reverse the process and provide a nested json
  * hierarchy so that the parsers can be kept simple and we still can use the
  * weird syntax some users might use.
- *
- * Currently this function will flatten out just the 'file.' prefix into a new
- * tree. Any other syntax will be rejected.
  */
 virJSONValuePtr
 virJSONValueObjectDeflatten(virJSONValuePtr json)
@@ -2023,10 +2057,7 @@ virJSONValueObjectDeflatten(virJSONValuePtr json)
                                           deflattened) < 0)
         goto cleanup;
 
-    if (virJSONValueObjectCreate(&ret, "a:file", deflattened, NULL) < 0)
-        goto cleanup;
-
-    deflattened = NULL;
+    VIR_STEAL_PTR(ret, deflattened);
 
  cleanup:
     virJSONValueFree(deflattened);
