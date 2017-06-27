@@ -21916,8 +21916,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
 
     virDomainControllerDriverFormat(&childBuf, def);
 
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags) &&
-        virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
+    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
         return -1;
 
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
@@ -23053,10 +23052,8 @@ virDomainChrDefFormat(virBufferPtr buf,
         break;
     }
 
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
-        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-            return -1;
-    }
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+        return -1;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAsprintf(buf, "</%s>\n", elementName);
@@ -23158,10 +23155,8 @@ virDomainTPMDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</backend>\n");
 
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
-        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-            return -1;
-    }
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+        return -1;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</tpm>\n");
@@ -23243,8 +23238,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     if (def->period)
         virBufferAsprintf(&childrenBuf, "<stats period='%i'/>\n", def->period);
 
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags) &&
-        virDomainDeviceInfoFormat(&childrenBuf, &def->info, flags) < 0) {
+    if (virDomainDeviceInfoFormat(&childrenBuf, &def->info, flags) < 0) {
         virBufferFreeAndReset(&childrenBuf);
         return -1;
     }
@@ -23283,8 +23277,7 @@ virDomainNVRAMDefFormat(virBufferPtr buf,
 {
     virBufferAddLit(buf, "<nvram>\n");
     virBufferAdjustIndent(buf, 2);
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags) &&
-        virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
 
     virBufferAdjustIndent(buf, -2);
@@ -23443,10 +23436,8 @@ virDomainRNGDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
-        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-            return -1;
-    }
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+        return -1;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</rng>\n");
@@ -23564,10 +23555,8 @@ virDomainMemoryDefFormat(virBufferPtr buf,
 
     virDomainMemoryTargetDefFormat(buf, def);
 
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
-        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-            return -1;
-    }
+    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+        return -1;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</memory>\n");
