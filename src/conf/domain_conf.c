@@ -5349,9 +5349,6 @@ virDomainVirtioOptionsFormat(virBufferPtr buf,
 }
 
 
-/* Generate a string representation of a device address
- * @info address Device address to stringify
- */
 static int ATTRIBUTE_NONNULL(2)
 virDomainDeviceInfoFormat(virBufferPtr buf,
                           virDomainDeviceInfoPtr info,
@@ -5400,7 +5397,6 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)
         return 0;
 
-    /* We'll be in domain/devices/[device type]/ so 3 level indent */
     virBufferAsprintf(buf, "<address type='%s'",
                       virDomainDeviceAddressTypeToString(info->type));
 
