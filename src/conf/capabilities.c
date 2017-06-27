@@ -931,6 +931,9 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
                               bank->controls[j]->max_allocation);
         }
 
+        if (virBufferCheckError(&controlBuf) < 0)
+            return -1;
+
         if (virBufferUse(&controlBuf)) {
             virBufferAddLit(buf, ">\n");
             virBufferAddBuffer(buf, &controlBuf);

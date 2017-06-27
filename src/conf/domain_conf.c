@@ -21573,6 +21573,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
 
+    if (virBufferCheckError(&driverBuf) < 0)
+        return -1;
+
     if (virBufferUse(&driverBuf)) {
         virBufferAddLit(buf, "<driver");
         virBufferAddBuffer(buf, &driverBuf);
@@ -21757,7 +21760,7 @@ virDomainControllerDriverFormat(virBufferPtr buf,
 
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
 
-    if (virBufferUse(&driverBuf)) {
+    if (virBufferError(&driverBuf) != 0 || virBufferUse(&driverBuf)) {
         virBufferAddLit(buf, "<driver");
         virBufferAddBuffer(buf, &driverBuf);
         virBufferAddLit(buf, "/>\n");
@@ -21904,6 +21907,9 @@ virDomainControllerDefFormat(virBufferPtr buf,
                           "pcihole64>\n", def->opts.pciopts.pcihole64size);
     }
 
+    if (virBufferCheckError(&childBuf) < 0)
+        return -1;
+
     if (virBufferUse(&childBuf)) {
         virBufferAddLit(buf, ">\n");
         virBufferAddBuffer(buf, &childBuf);
@@ -21974,6 +21980,9 @@ virDomainFSDefFormat(virBufferPtr buf,
     }
 
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
+
+    if (virBufferCheckError(&driverBuf) < 0)
+        return -1;
 
     if (virBufferUse(&driverBuf)) {
         virBufferAddLit(buf, "<driver");
@@ -23239,6 +23248,9 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
         }
     }
 
+    if (virBufferCheckError(&childrenBuf) < 0)
+        return -1;
+
     if (!virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, "/>\n");
     } else {
@@ -23325,6 +23337,10 @@ static int virDomainPanicDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(&childrenBuf, indent + 2);
     if (virDomainDeviceInfoFormat(&childrenBuf, &def->info, 0) < 0)
         return -1;
+
+    if (virBufferCheckError(&childrenBuf) < 0)
+        return -1;
+
     if (virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, ">\n");
         virBufferAddBuffer(buf, &childrenBuf);
@@ -23669,6 +23685,9 @@ virDomainInputDefFormat(virBufferPtr buf,
     }
     virBufferEscapeString(&childbuf, "<source evdev='%s'/>\n", def->source.evdev);
     if (virDomainDeviceInfoFormat(&childbuf, &def->info, flags) < 0)
+        return -1;
+
+    if (virBufferCheckError(&childbuf) < 0)
         return -1;
 
     if (!virBufferUse(&childbuf)) {
@@ -24612,6 +24631,9 @@ virDomainCputuneDefFormat(virBufferPtr buf,
                                  def->iothreadids[i]->iothread_id);
     }
 
+    if (virBufferCheckError(&childrenBuf) < 0)
+        return -1;
+
     if (virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, "<cputune>\n");
         virBufferAddBuffer(buf, &childrenBuf);
@@ -24725,7 +24747,8 @@ virDomainIOMMUDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "<iommu model='%s'",
                       virDomainIOMMUModelTypeToString(iommu->model));
-    if (virBufferUse(&childBuf)) {
+
+    if (virBufferError(&childBuf) != 0 || virBufferUse(&childBuf)) {
         virBufferAddLit(buf, ">\n");
         virBufferAddBuffer(buf, &childBuf);
         virBufferAddLit(buf, "</iommu>\n");
@@ -24863,6 +24886,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAdjustIndent(&childrenBuf, -2);
         virBufferAddLit(&childrenBuf, "</device>\n");
     }
+
+    if (virBufferCheckError(&childrenBuf) < 0)
+        goto error;
+
     if (virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, "<blkiotune>\n");
         virBufferAddBuffer(buf, &childrenBuf);

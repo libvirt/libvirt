@@ -646,6 +646,10 @@ virCPUDefFormatBufFull(virBufferPtr buf,
     if (virDomainNumaDefCPUFormat(&childrenBuf, numa) < 0)
         goto cleanup;
 
+    if (virBufferCheckError(&attributeBuf) < 0 ||
+        virBufferCheckError(&childrenBuf) < 0)
+        goto cleanup;
+
     /* Put it all together */
     if (virBufferUse(&attributeBuf) || virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, "<cpu");
