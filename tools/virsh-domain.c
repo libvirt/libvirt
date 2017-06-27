@@ -10696,13 +10696,13 @@ static bool
 cmdMigrateSetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
-    long long downtime = 0;
+    unsigned long long downtime = 0;
     bool ret = false;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (vshCommandOptLongLong(ctl, cmd, "downtime", &downtime) < 0)
+    if (vshCommandOptULongLong(ctl, cmd, "downtime", &downtime) < 0)
         goto done;
     if (downtime < 1) {
         vshError(ctl, "%s", _("migrate: Invalid downtime"));
