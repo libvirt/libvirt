@@ -23174,8 +23174,10 @@ virDomainSoundDefFormat(virBufferPtr buf,
                         unsigned int flags)
 {
     const char *model = virDomainSoundModelTypeToString(def->model);
-    bool children = false;
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
+
+    virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -23183,29 +23185,21 @@ virDomainSoundDefFormat(virBufferPtr buf,
         return -1;
     }
 
+    for (i = 0; i < def->ncodecs; i++)
+        virDomainSoundCodecDefFormat(&childBuf, def->codecs[i]);
+
+    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0) {
+        virBufferFreeAndReset(&childBuf);
+        return -1;
+    }
+
+    if (virBufferCheckError(&childBuf) < 0)
+        return -1;
+
     virBufferAsprintf(buf, "<sound model='%s'",  model);
-
-    for (i = 0; i < def->ncodecs; i++) {
-        if (!children) {
-            virBufferAddLit(buf, ">\n");
-            virBufferAdjustIndent(buf, 2);
-            children = true;
-        }
-        virDomainSoundCodecDefFormat(buf, def->codecs[i]);
-    }
-
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
-        if (!children) {
-            virBufferAddLit(buf, ">\n");
-            virBufferAdjustIndent(buf, 2);
-            children = true;
-        }
-        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-            return -1;
-    }
-
-    if (children) {
-        virBufferAdjustIndent(buf, -2);
+    if (virBufferUse(&childBuf)) {
+        virBufferAddLit(buf, ">\n");
+        virBufferAddBuffer(buf, &childBuf);
         virBufferAddLit(buf, "</sound>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
