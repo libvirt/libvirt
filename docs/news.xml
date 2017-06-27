@@ -35,6 +35,11 @@
 <libvirt>
   <release version="v3.6.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          hyperv: Implement virDomainSetMemory and virDomainSendKey APIs
+        </summary>
+      </change>
     </section>
     <section title="Improvements">
     </section>
