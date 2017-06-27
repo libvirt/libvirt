@@ -2434,13 +2434,13 @@ void virDomainVideoDefFree(virDomainVideoDefPtr def)
 virDomainHostdevDefPtr
 virDomainHostdevDefNew(virDomainXMLOptionPtr xmlopt)
 {
-    virDomainHostdevDefPtr def = NULL;
+    virDomainHostdevDefPtr def;
 
-    if (VIR_ALLOC(def) < 0 ||
-        VIR_ALLOC(def->info) < 0) {
-        VIR_FREE(def);
+    if (VIR_ALLOC(def) < 0)
         return NULL;
-    }
+
+    if (VIR_ALLOC(def->info) < 0)
+        goto error;
 
     if (xmlopt &&
         xmlopt->privateData.hostdevNew &&
