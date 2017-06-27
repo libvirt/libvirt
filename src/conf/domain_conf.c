@@ -23291,6 +23291,9 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
 {
     const char *model = virDomainWatchdogModelTypeToString(def->model);
     const char *action = virDomainWatchdogActionTypeToString(def->action);
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -23304,15 +23307,18 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
         return -1;
     }
 
+    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
+        return -1;
+
+    if (virBufferCheckError(&childBuf) < 0)
+        return -1;
+
     virBufferAsprintf(buf, "<watchdog model='%s' action='%s'",
                       model, action);
 
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
+    if (virBufferUse(&childBuf)) {
         virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
-        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-            return -1;
-        virBufferAdjustIndent(buf, -2);
+        virBufferAddBuffer(buf, &childBuf);
         virBufferAddLit(buf, "</watchdog>\n");
     } else {
         virBufferAddLit(buf, "/>\n");
