@@ -122,6 +122,14 @@ class WmiClass:
 
             source += "SER_END_ITEMS(%s_Data);\n\n" % cls.name
 
+            # also generate typemap data while we're here
+            source += "hypervCimType %s_Typemap[] = {\n" % cls.name
+
+            for property in cls.properties:
+                source += property.generate_typemap()
+            source += '    { "", "", 0 },\n' # null terminated
+            source += '};\n\n'
+
 
         source += self._define_WmiInfo_struct()
         source += "\n\n"
@@ -222,7 +230,8 @@ class WmiClass:
                 source += "            .version = NULL,\n"
             source += "            .rootUri = %s,\n" % cls.uri_info.rootUri
             source += "            .resourceUri = %s_RESOURCE_URI,\n" % cls.name.upper()
-            source += "            .serializerInfo = %s_Data_TypeInfo\n" % cls.name
+            source += "            .serializerInfo = %s_Data_TypeInfo,\n" % cls.name
+            source += "            .propertyInfo = %s_Typemap\n" % cls.name
             source += "        },\n"
 
         source += "    }\n"
@@ -372,6 +381,10 @@ class Property:
         else:
             return "    SER_NS_%s(%s_RESOURCE_URI, \"%s\", 1),\n" \
                    % (Property.typemap[self.type], class_name.upper(), self.name)
+
+
+    def generate_typemap(self):
+        return '    { "%s", "%s", %s },\n' % (self.name, self.type.lower(), str(self.is_array).lower())
 
 
 

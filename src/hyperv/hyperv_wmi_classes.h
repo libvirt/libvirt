@@ -1,6 +1,7 @@
 /*
  * hyperv_wmi_classes.h: WMI classes for managing Microsoft Hyper-V hosts
  *
+ * Copyright (C) 2017 Datto Inc
  * Copyright (C) 2011 Matthias Bolte <matthias.bolte@googlemail.com>
  * Copyright (C) 2009 Michael Sievers <msievers83@googlemail.com>
  *
@@ -23,6 +24,7 @@
 #ifndef __HYPERV_WMI_CLASSES_H__
 # define __HYPERV_WMI_CLASSES_H__
 
+# include "internal.h"
 # include "openwsman.h"
 
 # include "hyperv_wmi_classes.generated.typedef"
@@ -96,6 +98,21 @@ enum _Msvm_ConcreteJob_JobState {
 };
 
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * WMI
+ */
+
+typedef struct _hypervCimType hypervCimType;
+typedef hypervCimType *hypervCimTypePtr;
+struct _hypervCimType {
+    /* Parameter name */
+    const char *name;
+    /* Parameter type */
+    const char *type;
+    /* whether parameter is an array type */
+    bool isArray;
+};
+
 typedef struct _hypervWmiClassInfo hypervWmiClassInfo;
 typedef hypervWmiClassInfo *hypervWmiClassInfoPtr;
 struct _hypervWmiClassInfo {
@@ -109,6 +126,8 @@ struct _hypervWmiClassInfo {
     const char *resourceUri;
     /* The wsman serializer info - one of the *_TypeInfo structs */
     XmlSerializerInfo *serializerInfo;
+    /* Property type information */
+    hypervCimTypePtr propertyInfo;
 };
 
 
