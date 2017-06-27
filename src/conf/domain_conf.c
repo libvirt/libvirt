@@ -23063,7 +23063,10 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
                             unsigned int flags)
 {
     const char *mode = virDomainSmartcardTypeToString(def->type);
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
+
+    virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
 
     if (!mode) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -23071,29 +23074,21 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "<smartcard mode='%s'", mode);
-    virBufferAdjustIndent(buf, 2);
     switch (def->type) {
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
-        if (!virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "/>\n");
-            return 0;
-        }
-        virBufferAddLit(buf, ">\n");
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
-        virBufferAddLit(buf, ">\n");
-        for (i = 0; i < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; i++)
-            virBufferEscapeString(buf, "<certificate>%s</certificate>\n",
+        for (i = 0; i < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; i++) {
+            virBufferEscapeString(&childBuf, "<certificate>%s</certificate>\n",
                                   def->data.cert.file[i]);
-        virBufferEscapeString(buf, "<database>%s</database>\n",
+        }
+        virBufferEscapeString(&childBuf, "<database>%s</database>\n",
                               def->data.cert.database);
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        if (virDomainChrSourceDefFormat(buf, def->data.passthru, false,
+        if (virDomainChrSourceDefFormat(&childBuf, def->data.passthru, false,
                                         flags) < 0)
             return -1;
         break;
@@ -23103,10 +23098,22 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
                        _("unexpected smartcard type %d"), def->type);
         return -1;
     }
-    if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
+    if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0) {
+        virBufferFreeAndReset(&childBuf);
         return -1;
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</smartcard>\n");
+    }
+
+    if (virBufferCheckError(&childBuf) < 0)
+        return -1;
+
+    virBufferAsprintf(buf, "<smartcard mode='%s'", mode);
+    if (virBufferUse(&childBuf)) {
+        virBufferAddLit(buf, ">\n");
+        virBufferAddBuffer(buf, &childBuf);
+        virBufferAddLit(buf, "</smartcard>\n");
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
     return 0;
 }
 
