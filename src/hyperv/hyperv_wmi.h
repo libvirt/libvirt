@@ -219,7 +219,8 @@ int hypervGetMsvmProcessorSettingDataList(hypervPrivate *priv,
 int hypervGetMsvmMemorySettingDataList(hypervPrivate *priv, virBufferPtr query,
                                        Msvm_MemorySettingData **list);
 
-
+int hypervGetMsvmKeyboardList(hypervPrivate *priv, virBufferPtr query,
+                                       Msvm_Keyboard **list);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_ComputerSystem

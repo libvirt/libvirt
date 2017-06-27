@@ -35,6 +35,8 @@
 #include "hyperv_wmi.h"
 #include "openwsman.h"
 #include "virstring.h"
+#include "virkeycode.h"
+#include "intprops.h"
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 
@@ -1373,6 +1375,126 @@ hypervConnectListAllDomains(virConnectPtr conn,
 #undef MATCH
 
 
+static int
+hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
+        unsigned int holdtime, unsigned int *keycodes, int nkeycodes,
+        unsigned int flags)
+{
+    int result = -1;
+    size_t i = 0;
+    int keycode = 0;
+    int *translatedKeycodes = NULL;
+    hypervPrivate *priv = domain->conn->privateData;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    char *selector = NULL;
+    Msvm_ComputerSystem *computerSystem = NULL;
+    Msvm_Keyboard *keyboard = NULL;
+    virBuffer query = VIR_BUFFER_INITIALIZER;
+    hypervInvokeParamsListPtr params = NULL;
+    char keycodeStr[INT_BUFSIZE_BOUND(int)];
+
+    virCheckFlags(0, -1);
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
+        goto cleanup;
+
+    virBufferAsprintf(&query,
+            "associators of "
+            "{Msvm_ComputerSystem.CreationClassName=\"Msvm_ComputerSystem\","
+            "Name=\"%s\"} "
+            "where ResultClass = Msvm_Keyboard",
+            uuid_string);
+
+    if (hypervGetMsvmKeyboardList(priv, &query, &keyboard) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(translatedKeycodes, nkeycodes) < 0)
+        goto cleanup;
+
+    /* translate keycodes to win32 and generate keyup scancodes. */
+    for (i = 0; i < nkeycodes; i++) {
+        if (codeset != VIR_KEYCODE_SET_WIN32) {
+            keycode = virKeycodeValueTranslate(codeset, VIR_KEYCODE_SET_WIN32,
+                    keycodes[i]);
+
+            if (keycode < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not translate keycode"));
+                goto cleanup;
+            }
+            translatedKeycodes[i] = keycode;
+        }
+    }
+
+    if (virAsprintf(&selector,
+                "CreationClassName=Msvm_Keyboard&DeviceID=%s&"
+                "SystemCreationClassName=Msvm_ComputerSystem&"
+                "SystemName=%s", keyboard->data.common->DeviceID, uuid_string) < 0)
+        goto cleanup;
+
+    /* press the keys */
+    for (i = 0; i < nkeycodes; i++) {
+        snprintf(keycodeStr, sizeof(keycodeStr), "%d", translatedKeycodes[i]);
+
+        params = hypervCreateInvokeParamsList(priv, "PressKey", selector,
+                Msvm_Keyboard_WmiInfo);
+
+        if (!params) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create param"));
+            goto cleanup;
+        }
+
+        if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0) {
+            hypervFreeInvokeParams(params);
+            goto cleanup;
+        }
+
+        if (hypervInvokeMethod(priv, params, NULL) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not press key %d"),
+                           translatedKeycodes[i]);
+            goto cleanup;
+        }
+    }
+
+    /* simulate holdtime by sleeping */
+    if (holdtime > 0)
+        usleep(holdtime * 1000);
+
+    /* release the keys */
+    for (i = 0; i < nkeycodes; i++) {
+        snprintf(keycodeStr, sizeof(keycodeStr), "%d", translatedKeycodes[i]);
+        params = hypervCreateInvokeParamsList(priv, "ReleaseKey", selector,
+                Msvm_Keyboard_WmiInfo);
+
+        if (!params) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not create param"));
+            goto cleanup;
+        }
+
+        if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0) {
+            hypervFreeInvokeParams(params);
+            goto cleanup;
+        }
+
+        if (hypervInvokeMethod(priv, params, NULL) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Could not release key %s"),
+                    keycodeStr);
+            goto cleanup;
+        }
+    }
+
+    result = 0;
+
+ cleanup:
+    VIR_FREE(translatedKeycodes);
+    VIR_FREE(selector);
+    hypervFreeObject(priv, (hypervObject *) keyboard);
+    hypervFreeObject(priv, (hypervObject *) computerSystem);
+    virBufferFreeAndReset(&query);
+    return result;
+}
 
 
 static virHypervisorDriver hypervHypervisorDriver = {
@@ -1408,6 +1530,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainManagedSave = hypervDomainManagedSave, /* 0.9.5 */
     .domainHasManagedSaveImage = hypervDomainHasManagedSaveImage, /* 0.9.5 */
     .domainManagedSaveRemove = hypervDomainManagedSaveRemove, /* 0.9.5 */
+    .domainSendKey = hypervDomainSendKey, /* 3.6.0 */
     .connectIsAlive = hypervConnectIsAlive, /* 0.9.8 */
 };
 
