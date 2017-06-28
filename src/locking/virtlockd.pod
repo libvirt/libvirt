@@ -67,7 +67,7 @@ upgrades of the virtlockd service.
 
 =over
 
-=item F<SYSCONFDIR/virtlockd.conf>
+=item F<SYSCONFDIR/libvirt/virtlockd.conf>
 
 The default configuration file used by virtlockd, unless overridden on the
 command line using the B<-f>|B<--config> option.
@@ -86,7 +86,7 @@ The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
 
 =over
 
-=item F<$XDG_CONFIG_HOME/virtlockd.conf>
+=item F<$XDG_CONFIG_HOME/libvirt/virtlockd.conf>
 
 The default configuration file used by libvirtd, unless overridden on the
 command line using the B<-f>|B<--config> option.

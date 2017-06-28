@@ -67,7 +67,7 @@ upgrades of the virtlogd service.
 
 =over
 
-=item F<SYSCONFDIR/virtlogd.conf>
+=item F<SYSCONFDIR/libvirt/virtlogd.conf>
 
 The default configuration file used by virtlogd, unless overridden on the
 command line using the B<-f>|B<--config> option.
@@ -86,7 +86,7 @@ The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
 
 =over
 
-=item F<$XDG_CONFIG_HOME/virtlogd.conf>
+=item F<$XDG_CONFIG_HOME/libvirt/virtlogd.conf>
 
 The default configuration file used by libvirtd, unless overridden on the
 command line using the B<-f>|B<--config> option.

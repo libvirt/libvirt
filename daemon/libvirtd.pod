@@ -81,7 +81,7 @@ On receipt of B<SIGHUP> libvirtd will reload its configuration.
 
 =over
 
-=item F<SYSCONFDIR/libvirtd.conf>
+=item F<SYSCONFDIR/libvirt/libvirtd.conf>
 
 The default configuration file used by libvirtd, unless overridden on the
 command line using the B<-f>|B<--config> option.
@@ -114,7 +114,7 @@ The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
 
 =over
 
-=item F<$XDG_CONFIG_HOME/libvirtd.conf>
+=item F<$XDG_CONFIG_HOME/libvirt/libvirtd.conf>
 
 The default configuration file used by libvirtd, unless overridden on the
 command line using the B<-f>|B<--config> option.
