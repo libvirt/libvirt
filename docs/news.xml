@@ -58,6 +58,16 @@
           require different settings to boot properly.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for live updates of coalesce settings
+        </summary>
+        <description>
+          Users can now use <code>virsh update-device</code> to change
+          the coalesce settings of an interfaces while the domain is
+          running.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
