@@ -91,6 +91,15 @@
           the new format.
         </description>
       </change>
+      <change>
+        <summary>
+          Capabilities now include info about host's CAT settings
+        </summary>
+        <description>
+          Various information about resource control from the host is
+          gathered and presented in capabilities if available.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
