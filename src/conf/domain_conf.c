@@ -2407,6 +2407,20 @@ void virDomainShmemDefFree(virDomainShmemDefPtr def)
     VIR_FREE(def);
 }
 
+
+virDomainVideoDefPtr
+virDomainVideoDefNew(void)
+{
+    virDomainVideoDefPtr def;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    def->heads = 1;
+    return def;
+}
+
+
 void virDomainVideoDefFree(virDomainVideoDefPtr def)
 {
     if (!def)
@@ -13962,7 +13976,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainVideoDefNew()))
         return NULL;
 
     cur = node->children;
@@ -14060,8 +14074,6 @@ virDomainVideoDefParseXML(xmlNodePtr node,
                            _("cannot parse video heads '%s'"), heads);
             goto error;
         }
-    } else {
-        def->heads = 1;
     }
 
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
@@ -21207,7 +21219,7 @@ virDomainDefAddImplicitVideo(virDomainDefPtr def)
     if (def->ngraphics == 0 || def->nvideos > 0)
         return 0;
 
-    if (VIR_ALLOC(video) < 0)
+    if (!(video = virDomainVideoDefNew()))
         goto cleanup;
     video->type = virDomainVideoDefaultType(def);
     if (video->type < 0) {
@@ -21215,7 +21227,6 @@ virDomainDefAddImplicitVideo(virDomainDefPtr def)
                        _("cannot determine default video type"));
         goto cleanup;
     }
-    video->heads = 1;
     if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
         goto cleanup;
 

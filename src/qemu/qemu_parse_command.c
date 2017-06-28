@@ -2605,10 +2605,9 @@ qemuParseCommandLine(virCapsPtr caps,
 
     if (def->ngraphics) {
         virDomainVideoDefPtr vid;
-        if (VIR_ALLOC(vid) < 0)
+        if (!(vid = virDomainVideoDefNew()))
             goto error;
         vid->type = video;
-        vid->heads = 1;
 
         if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, vid) < 0) {
             virDomainVideoDefFree(vid);

@@ -530,6 +530,7 @@ virDomainUSBDeviceDefForeach;
 virDomainVideoDefaultRAM;
 virDomainVideoDefaultType;
 virDomainVideoDefFree;
+virDomainVideoDefNew;
 virDomainVideoTypeFromString;
 virDomainVideoTypeToString;
 virDomainVideoVGAConfTypeFromString;

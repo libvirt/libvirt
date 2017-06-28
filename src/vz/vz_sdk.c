@@ -553,12 +553,11 @@ prlsdkAddDomainVideoInfoCt(virDomainDefPtr def)
     if (def->ngraphics == 0)
         return 0;
 
-    if (VIR_ALLOC(video) < 0)
+    if (!(video = virDomainVideoDefNew()))
         goto cleanup;
 
     video->type = VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
     video->vram = 0;
-    video->heads = 1;
 
     if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
         goto cleanup;
