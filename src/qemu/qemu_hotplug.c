@@ -937,6 +937,24 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
 }
 
 
+static void
+qemuDomainNetDeviceVportRemove(virDomainNetDefPtr net)
+{
+    virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(net);
+    const char *brname;
+
+    if (!vport)
+        return;
+
+    if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
+        ignore_value(virNetDevMidonetUnbindPort(vport));
+    } else if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
+        brname = virDomainNetGetActualBridgeName(net);
+        ignore_value(virNetDevOpenvswitchRemovePort(brname, net->ifname));
+    }
+}
+
+
 int
 qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
@@ -954,7 +972,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     size_t queueSize = 0;
     char *nicstr = NULL;
     char *netstr = NULL;
-    virNetDevVPortProfilePtr vport = NULL;
     int ret = -1;
     int vlan;
     bool releaseaddr = false;
@@ -1302,16 +1319,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                                  cfg->stateDir));
             }
 
-            vport = virDomainNetGetActualVirtPortProfile(net);
-            if (vport) {
-                if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
-                    ignore_value(virNetDevMidonetUnbindPort(vport));
-                } else if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
-                    ignore_value(virNetDevOpenvswitchRemovePort(
-                                     virDomainNetGetActualBridgeName(net),
-                                     net->ifname));
-                }
-            }
+            qemuDomainNetDeviceVportRemove(net);
         }
 
         virDomainNetRemoveHostdev(vm->def, net);
@@ -3949,7 +3957,6 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virNetDevVPortProfilePtr vport;
     virObjectEventPtr event;
     char *hostnet_name = NULL;
     char *charDevAlias = NULL;
@@ -4038,16 +4045,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
                          cfg->stateDir));
     }
 
-    vport = virDomainNetGetActualVirtPortProfile(net);
-    if (vport) {
-        if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
-            ignore_value(virNetDevMidonetUnbindPort(vport));
-        } else if (vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
-            ignore_value(virNetDevOpenvswitchRemovePort(
-                             virDomainNetGetActualBridgeName(net),
-                             net->ifname));
-        }
-    }
+    qemuDomainNetDeviceVportRemove(net);
 
     networkReleaseActualDevice(vm->def, net);
     virDomainNetDefFree(net);
