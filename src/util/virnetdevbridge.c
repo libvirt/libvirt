@@ -468,22 +468,17 @@ virNetDevBridgeCreate(const char *brname)
         if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
             goto malformed_resp;
 
-        switch (err->error) {
-        case 0:
-            break;
-        case -EOPNOTSUPP:
+        if (err->error < 0) {
 # if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRADDBR)
-            /* fallback to ioctl if netlink doesn't support creating
-             * bridges
-             */
-            rc = virNetDevBridgeCreateWithIoctl(brname);
-            goto cleanup;
+            if (err->error == -EOPNOTSUPP) {
+                /* fallback to ioctl if netlink doesn't support creating
+                 * bridges
+                 */
+                rc = virNetDevBridgeCreateWithIoctl(brname);
+                goto cleanup;
+            }
 # endif
-            /* intentionally fall through if virNetDevBridgeCreateWithIoctl()
-             * isn't available.
-             */
-            ATTRIBUTE_FALLTHROUGH;
-        default:
+
             virReportSystemError(-err->error,
                                  _("error creating bridge interface %s"),
                                  brname);
