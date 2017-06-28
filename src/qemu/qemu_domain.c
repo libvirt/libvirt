@@ -3259,6 +3259,33 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         }
     }
 
+    /* forbid capabilities mode hostdev in this kind of hypervisor */
+    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
+        dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("hostdev mode 'capabilities' is not "
+                         "supported in %s"),
+                       virDomainVirtTypeToString(def->virtType));
+        goto cleanup;
+    }
+
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
+        if (dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
+            dev->data.video->vgamem) {
+            if (dev->data.video->vgamem < 1024) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("value for 'vgamem' must be at least 1 MiB "
+                                 "(1024 KiB)"));
+                goto cleanup;
+            }
+            if (dev->data.video->vgamem != VIR_ROUND_UP_POWER_OF_TWO(dev->data.video->vgamem)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("value for 'vgamem' must be power of two"));
+                goto cleanup;
+            }
+        }
+    }
+
     ret = 0;
  cleanup:
     virObjectUnref(cfg);
@@ -3642,31 +3669,9 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             goto cleanup;
     }
 
-    /* forbid capabilities mode hostdev in this kind of hypervisor */
-    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
-        dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("hostdev mode 'capabilities' is not "
-                         "supported in %s"),
-                       virDomainVirtTypeToString(def->virtType));
-        goto cleanup;
-    }
-
-    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO &&
-        dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
-        if (dev->data.video->vgamem) {
-            if (dev->data.video->vgamem < 1024) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("value for 'vgamem' must be at least 1 MiB "
-                                 "(1024 KiB)"));
-                goto cleanup;
-            }
-            if (dev->data.video->vgamem != VIR_ROUND_UP_POWER_OF_TWO(dev->data.video->vgamem)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("value for 'vgamem' must be power of two"));
-                goto cleanup;
-            }
-        } else {
+    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
+        if (dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
+            !dev->data.video->vgamem) {
             dev->data.video->vgamem = QEMU_QXL_VGAMEM_DEFAULT;
         }
     }
