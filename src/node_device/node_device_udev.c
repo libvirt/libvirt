@@ -61,6 +61,12 @@ struct _udevEventData {
 
     struct udev_monitor *udev_monitor;
     int watch;
+
+    /* Thread data */
+    virThread th;
+    virCond threadCond;
+    bool threadQuit;
+    bool dataReady;
 };
 
 static virClassPtr udevEventDataClass;
@@ -80,6 +86,8 @@ udevEventDataDispose(void *obj)
     udev = udev_monitor_get_udev(priv->udev_monitor);
     udev_monitor_unref(priv->udev_monitor);
     udev_unref(udev);
+
+    virCondDestroy(&priv->threadCond);
 }
 
 
@@ -107,6 +115,11 @@ udevEventDataNew(void)
 
     if (!(ret = virObjectLockableNew(udevEventDataClass)))
         return NULL;
+
+    if (virCondInit(&ret->threadCond) < 0) {
+        virObjectUnref(ret);
+        return NULL;
+    }
 
     ret->watch = -1;
     return ret;
@@ -1616,10 +1629,21 @@ udevPCITranslateDeinit(void)
 static int
 nodeStateCleanup(void)
 {
+    udevEventDataPtr priv = NULL;
+
     if (!driver)
         return -1;
 
-    virObjectUnref(driver->privateData);
+    priv = driver->privateData;
+    if (priv) {
+        virObjectLock(priv);
+        priv->threadQuit = true;
+        virCondSignal(&priv->threadCond);
+        virObjectUnlock(priv);
+        virThreadJoin(&priv->th);
+    }
+
+    virObjectUnref(priv);
     virObjectUnref(driver->nodeDeviceEventState);
 
     virNodeDeviceObjListFree(driver->devs);
@@ -1679,30 +1703,61 @@ udevEventMonitorSanityCheck(udevEventDataPtr priv,
 
 
 static void
-udevEventHandleThread(void *opaque)
+udevEventHandleThread(void *opaque ATTRIBUTE_UNUSED)
 {
     udevEventDataPtr priv = driver->privateData;
-    int fd = (intptr_t) opaque;
     struct udev_device *device = NULL;
 
-    virObjectLock(priv);
+    /* continue rather than break from the loop on non-fatal errors */
+    while (1) {
+        virObjectLock(priv);
+        while (!priv->dataReady && !priv->threadQuit) {
+            if (virCondWait(&priv->threadCond, &priv->parent.lock)) {
+                virReportSystemError(errno, "%s",
+                                     _("handler failed to wait on condition"));
+                virObjectUnlock(priv);
+                return;
+            }
+        }
 
-    if (!udevEventMonitorSanityCheck(priv, fd)) {
+        if (priv->threadQuit) {
+            virObjectUnlock(priv);
+            return;
+        }
+
+        errno = 0;
+        device = udev_monitor_receive_device(priv->udev_monitor);
         virObjectUnlock(priv);
-        return;
+
+        if (!device) {
+            if (errno == 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("failed to receive device from udev monitor"));
+                return;
+            }
+
+            /* POSIX allows both EAGAIN and EWOULDBLOCK to be used
+             * interchangeably when the read would block or timeout was fired
+             */
+            VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
+            if (errno != EAGAIN && errno != EWOULDBLOCK) {
+            VIR_WARNINGS_RESET
+                virReportSystemError(errno, "%s",
+                                     _("failed to receive device from udev "
+                                       "monitor"));
+                return;
+            }
+
+            virObjectLock(priv);
+            priv->dataReady = false;
+            virObjectUnlock(priv);
+
+            continue;
+        }
+
+        udevHandleOneDevice(device);
+        udev_device_unref(device);
     }
-
-    device = udev_monitor_receive_device(priv->udev_monitor);
-    virObjectUnlock(priv);
-
-    if (device == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("udev_monitor_receive_device returned NULL"));
-        return;
-    }
-
-    udevHandleOneDevice(device);
-    udev_device_unref(device);
 }
 
 
@@ -1715,13 +1770,14 @@ udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
     udevEventDataPtr priv = driver->privateData;
 
     virObjectLock(priv);
-    if (!udevEventMonitorSanityCheck(priv, fd)) {
-        virObjectUnlock(priv);
-        return;
-    }
-    virObjectUnlock(priv);
 
-    udevEventHandleThread((void *)(intptr_t) fd);
+    if (!udevEventMonitorSanityCheck(priv, fd))
+        priv->threadQuit = true;
+    else
+        priv->dataReady = true;
+
+    virCondSignal(&priv->threadCond);
+    virObjectUnlock(priv);
 }
 
 
@@ -1903,6 +1959,12 @@ nodeStateInitialize(bool privileged,
         udev_monitor_set_receive_buffer_size(priv->udev_monitor,
                                              128 * 1024 * 1024);
 #endif
+
+    if (virThreadCreate(&priv->th, true, udevEventHandleThread, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("failed to create udev handler thread"));
+        goto unlock;
+    }
 
     /* We register the monitor with the event callback so we are
      * notified by udev of device changes before we enumerate existing
