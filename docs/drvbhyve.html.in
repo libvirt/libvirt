@@ -351,9 +351,35 @@ FreeBSD port.</p>
 
 <p>This way, VNC will be accessible on <code>127.0.0.1:5904</code>.</p>
 
-<p>Please note that the tablet device requires to have an USB controller
+<p>Please note that the tablet device requires to have a USB controller
 of the <code>nec-xhci</code> model. Currently, only a single controller of this
 type and a single tablet are supported per domain.</p>
+
+<p><span class="since">Since 3.5.0</span>, it's possible to configure how the video device is exposed
+to the guest using the <code>vgaconf</code> attribute:</p>
+
+<pre>
+&lt;domain type='bhyve'&gt;
+    &lt;devices&gt;
+    ...
+      &lt;graphics type='vnc' port='5904'&gt;
+        &lt;listen type='address' address='127.0.0.1'/&gt;
+      &lt;/graphics&gt;
+      &lt;video&gt;
+        &lt;driver vgaconf='on'/&gt;
+        &lt;model type='gop' heads='1' primary='yes'/&gt;
+      &lt;/video&gt;
+      ...
+    &lt;/devices&gt;
+    ...
+&lt;/domain&gt;
+</pre>
+
+<p>If not specified, bhyve's default mode for <code>vgaconf</code>
+will be used. Please refer to the
+<a href="https://www.freebsd.org/cgi/man.cgi?query=bhyve&amp;sektion=8&amp;manpath=FreeBSD+12-current">bhyve(8)</a>
+manual page and the <a href="https://wiki.freebsd.org/bhyve">bhyve wiki</a> for more details on using
+the <code>vgaconf</code> option.</p>
 
 <h3><a name="clockconfig">Clock configuration</a></h3>
 

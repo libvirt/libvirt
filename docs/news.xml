@@ -46,6 +46,18 @@
           select a boot entry.
         </description>
       </change>
+      <change>
+        <summary>
+          Support controlling how video devices are exposed to the bhyve guests
+        </summary>
+        <description>
+          The <code>vgaconf</code> attribute was added to <code>video</code>'s
+          <code>driver</code> element. Possible values are: <code>on</code>,
+          <code>off</code>, and <code>io</code>. It controlls the way how
+          bhyve exposes video devices to its guests; various guest OSes might
+          require different settings to boot properly.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
