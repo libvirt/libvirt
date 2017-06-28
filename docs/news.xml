@@ -48,8 +48,42 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: block copy job can be used with persistent domains
+        </summary>
+        <description>
+          Until now it was not possible to use block copy with persistent VMs.
+          In use cases where it's not required to recover the job after VM
+          shutdown, it's possible to specify VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB
+          flag to start the copy job.
+        </description>
+      </change>
+      <change>
+        <summary>
+          JSON pseudo-protocol backing store parser supports new format of qemu 2.9
+        </summary>
+        <description>
+          QEMU 2.9 modified a few structures corresponding to the JSON format
+          of specifying a backing store for a disk image. Libvirt now implements
+          the new format.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: snapshot: retrieve image metadata from user provided files
+        </summary>
+        <description>
+          Disk images of an external snapshot created with
+          VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT flag specified would not be
+          scanned for metadata after recent changes.
+
+          The metadata is necessary to allow keeping relative paths between
+          images when doing a block-commit.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.4.0" date="2017-06-02">
