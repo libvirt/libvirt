@@ -1679,12 +1679,10 @@ udevEventMonitorSanityCheck(udevEventDataPtr priv,
 
 
 static void
-udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
-                        int fd,
-                        int events ATTRIBUTE_UNUSED,
-                        void *data ATTRIBUTE_UNUSED)
+udevEventHandleThread(void *opaque)
 {
     udevEventDataPtr priv = driver->privateData;
+    int fd = (intptr_t) opaque;
     struct udev_device *device = NULL;
 
     virObjectLock(priv);
@@ -1705,6 +1703,25 @@ udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
 
     udevHandleOneDevice(device);
     udev_device_unref(device);
+}
+
+
+static void
+udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
+                        int fd,
+                        int events ATTRIBUTE_UNUSED,
+                        void *data ATTRIBUTE_UNUSED)
+{
+    udevEventDataPtr priv = driver->privateData;
+
+    virObjectLock(priv);
+    if (!udevEventMonitorSanityCheck(priv, fd)) {
+        virObjectUnlock(priv);
+        return;
+    }
+    virObjectUnlock(priv);
+
+    udevEventHandleThread((void *)(intptr_t) fd);
 }
 
 
