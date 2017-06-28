@@ -1611,10 +1611,20 @@ udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
 
     udev_fd = udev_monitor_get_fd(udev_monitor);
     if (fd != udev_fd) {
+        udevPrivate *priv = driver->privateData;
+
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("File descriptor returned by udev %d does not "
                          "match node device file descriptor %d"),
                        fd, udev_fd);
+
+        /* this is a non-recoverable error, let's remove the handle, so that we
+         * don't get in here again because of some spurious behaviour and report
+         * the same error multiple times
+         */
+        virEventRemoveHandle(priv->watch);
+        priv->watch = -1;
+
         goto cleanup;
     }
 
