@@ -650,7 +650,8 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
 
  cleanup:
     nodeDeviceUnlock();
-    virNodeDeviceObjUnlock(obj);
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
     return ret;
