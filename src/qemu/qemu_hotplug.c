@@ -5884,18 +5884,17 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
 
 static int
 qemuDomainVcpuValidateConfig(virDomainDefPtr def,
-                             virBitmapPtr map,
-                             bool state)
+                             virBitmapPtr map)
 {
     virDomainVcpuDefPtr vcpu;
     size_t maxvcpus = virDomainDefGetVcpusMax(def);
     ssize_t next;
     ssize_t firstvcpu = -1;
 
-    /* vcpu 0 can't be disabled */
-    if (!state && virBitmapIsBitSet(map, 0)) {
+    /* vcpu 0 can't be modified */
+    if (virBitmapIsBitSet(map, 0)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("vCPU '0' must be enabled"));
+                       _("vCPU '0' can't be modified"));
         return -1;
     }
 
@@ -5959,7 +5958,7 @@ qemuDomainSetVcpuInternal(virQEMUDriverPtr driver,
     }
 
     if (persistentDef) {
-        if (qemuDomainVcpuValidateConfig(persistentDef, map, state) < 0)
+        if (qemuDomainVcpuValidateConfig(persistentDef, map) < 0)
             goto cleanup;
     }
 
