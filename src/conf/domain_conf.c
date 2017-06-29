@@ -19178,20 +19178,9 @@ virDomainDefParseCaps(virDomainDefPtr def,
         goto cleanup;
     }
 
-    if ((!def->os.arch || !def->os.machine) &&
-        !(flags & VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)) {
-        /* If the logic here seems fairly arbitrary, that's because it is :)
-         * This is duplicating how the code worked before
-         * CapabilitiesDomainDataLookup was added. We can simplify this,
-         * but it would take a bit of work because the test suite fails
-         * in numerous minor ways. */
-        bool use_virttype = ((def->os.arch == VIR_ARCH_NONE) ||
-            !def->os.machine);
-
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)) {
         if (!(capsdata = virCapabilitiesDomainDataLookup(caps,
-                def->os.type,
-                def->os.arch,
-                use_virttype ? def->virtType : VIR_DOMAIN_VIRT_NONE,
+                def->os.type, def->os.arch, def->virtType,
                 NULL, NULL)))
             goto cleanup;
 

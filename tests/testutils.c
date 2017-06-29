@@ -1196,7 +1196,12 @@ virCapsPtr virTestGenericCapsInit(void)
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST, NULL, NULL, 0, NULL))
         goto error;
-
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
+                                       NULL, NULL, 0, NULL))
+        goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                       NULL, NULL, 0, NULL))
+        goto error;
 
     if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
                                          "/usr/bin/acme-virt", NULL,
@@ -1204,6 +1209,12 @@ virCapsPtr virTestGenericCapsInit(void)
         goto error;
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST, NULL, NULL, 0, NULL))
+        goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
+                                       NULL, NULL, 0, NULL))
+        goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                       NULL, NULL, 0, NULL))
         goto error;
 
 

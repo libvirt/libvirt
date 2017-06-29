@@ -219,6 +219,9 @@ static int testQemuAddPPC64Guest(virCapsPtr caps)
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
         goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                       NULL, NULL, 0, NULL))
+        goto error;
 
     return 0;
 
@@ -245,6 +248,9 @@ static int testQemuAddPPC64LEGuest(virCapsPtr caps)
         goto error;
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
+        goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                       NULL, NULL, 0, NULL))
         goto error;
 
     return 0;
@@ -275,6 +281,9 @@ static int testQemuAddPPCGuest(virCapsPtr caps)
         goto error;
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
+        goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                       NULL, NULL, 0, NULL))
         goto error;
 
     return 0;
@@ -307,6 +316,9 @@ static int testQemuAddS390Guest(virCapsPtr caps)
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
         goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                       NULL, NULL, 0, NULL))
+        goto error;
 
     return 0;
 
@@ -338,6 +350,9 @@ static int testQemuAddArmGuest(virCapsPtr caps)
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
         goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                       NULL, NULL, 0, NULL))
+        goto error;
 
     return 0;
 
@@ -366,6 +381,9 @@ static int testQemuAddAARCH64Guest(virCapsPtr caps)
         goto error;
 
     if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
+        goto error;
+    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                       NULL, NULL, 0, NULL))
         goto error;
 
     return 0;
