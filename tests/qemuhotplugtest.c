@@ -268,6 +268,10 @@ testQemuHotplug(const void *data)
 
     if (test->vm) {
         vm = test->vm;
+        if (!vm->def) {
+            VIR_TEST_VERBOSE("test skipped due to failure of dependent test\n");
+            goto cleanup;
+        }
     } else {
         if (qemuHotplugCreateObjects(driver.xmlopt, &vm, domain_xml,
                                      test->deviceDeletedEvent) < 0)
