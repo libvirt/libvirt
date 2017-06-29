@@ -61,9 +61,7 @@ virTPMCreateCancelPath(const char *devpath)
                 VIR_FREE(path);
             }
             if (!path)
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("No usable sysfs TPM cancel file could be "
-                                 "found"));
+                ignore_value(VIR_STRDUP(path, "/dev/null"));
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("TPM device path %s is invalid"), devpath);
