@@ -113,6 +113,7 @@ struct _virQEMUDriverConfig {
     char *nvramDir;
 
     char *defaultTLSx509certdir;
+    bool checkdefaultTLSx509certdir;
     bool defaultTLSx509verify;
     char *defaultTLSx509secretUUID;
 
@@ -301,6 +302,9 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged);
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                                 const char *filename,
                                 bool privileged);
+
+int
+virQEMUDriverConfigValidate(virQEMUDriverConfigPtr cfg);
 
 virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver);
 bool virQEMUDriverIsPrivileged(virQEMUDriverPtr driver);

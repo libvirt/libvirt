@@ -425,6 +425,43 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 }
 
 
+/**
+ * @cfg: Just read config TLS values
+ *
+ * If the default_tls_x509_cert_dir was uncommented or changed from
+ * the default value assigned to the *_tls_x509_cert_dir values when
+ * virQEMUDriverConfigNew was executed, we need to check if we need
+ * to update the other defaults.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+static int
+virQEMUDriverConfigTLSDirResetDefaults(virQEMUDriverConfigPtr cfg)
+{
+    /* Not changed or set to the default default, nothing to do */
+    if (!cfg->checkdefaultTLSx509certdir ||
+        STREQ(cfg->defaultTLSx509certdir, SYSCONFDIR "/pki/qemu"))
+        return 0;
+
+#define CHECK_RESET_CERT_DIR_DEFAULT(val)                                 \
+    do {                                                                  \
+        if (STREQ(cfg->val ## TLSx509certdir, SYSCONFDIR "/pki/qemu")) {  \
+            VIR_FREE(cfg->val ## TLSx509certdir);                         \
+            if (VIR_STRDUP(cfg->val ## TLSx509certdir,                    \
+                           cfg->defaultTLSx509certdir) < 0)               \
+                return -1;                                                \
+        }                                                                 \
+    } while (0)
+
+    CHECK_RESET_CERT_DIR_DEFAULT(vnc);
+    CHECK_RESET_CERT_DIR_DEFAULT(spice);
+    CHECK_RESET_CERT_DIR_DEFAULT(chardev);
+    CHECK_RESET_CERT_DIR_DEFAULT(migrate);
+
+    return 0;
+}
+
+
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                                 const char *filename,
                                 bool privileged)
@@ -452,8 +489,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (!(conf = virConfReadFile(filename, 0)))
         goto cleanup;
 
-    if (virConfGetValueString(conf, "default_tls_x509_cert_dir", &cfg->defaultTLSx509certdir) < 0)
+    if ((rv = virConfGetValueString(conf, "default_tls_x509_cert_dir", &cfg->defaultTLSx509certdir)) < 0)
         goto cleanup;
+    cfg->checkdefaultTLSx509certdir = (rv == 1);
     if (virConfGetValueBool(conf, "default_tls_x509_verify", &cfg->defaultTLSx509verify) < 0)
         goto cleanup;
     if (virConfGetValueString(conf, "default_tls_x509_secret_uuid",
@@ -548,6 +586,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     GET_CONFIG_TLS_CERTINFO(migrate);
 
 #undef GET_CONFIG_TLS_CERTINFO
+
+    if (virQEMUDriverConfigTLSDirResetDefaults(cfg) < 0)
+        goto cleanup;
 
     if (virConfGetValueUInt(conf, "remote_websocket_port_min", &cfg->webSocketPortMin) < 0)
         goto cleanup;
@@ -872,6 +913,68 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     virConfFree(conf);
     return ret;
 }
+
+
+/**
+ * @cfg: Recently read config values
+ *
+ * Validate the recently read configuration values.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+virQEMUDriverConfigValidate(virQEMUDriverConfigPtr cfg)
+{
+    /* If the default entry was uncommented, then validate existence */
+    if (cfg->checkdefaultTLSx509certdir) {
+        if (!virFileExists(cfg->defaultTLSx509certdir)) {
+            virReportError(VIR_ERR_CONF_SYNTAX,
+                           _("default_tls_x509_cert_dir directory '%s' "
+                             "does not exist"),
+                           cfg->defaultTLSx509certdir);
+            return -1;
+        }
+    }
+
+    /* For each of the others - if the value is not to the default default
+     * then check if the directory exists (this may duplicate the check done
+     * during virQEMUDriverConfigNew).
+     */
+    if (STRNEQ(cfg->vncTLSx509certdir, SYSCONFDIR "/pki/qemu") &&
+        !virFileExists(cfg->vncTLSx509certdir)) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("vnc_tls_x509_cert_dir directory '%s' does not exist"),
+                       cfg->vncTLSx509certdir);
+        return -1;
+    }
+
+    if (STRNEQ(cfg->spiceTLSx509certdir, SYSCONFDIR "/pki/qemu") &&
+        !virFileExists(cfg->spiceTLSx509certdir)) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("spice_tls_x509_cert_dir directory '%s' does not exist"),
+                       cfg->spiceTLSx509certdir);
+        return -1;
+    }
+
+    if (STRNEQ(cfg->chardevTLSx509certdir, SYSCONFDIR "/pki/qemu") &&
+        !virFileExists(cfg->chardevTLSx509certdir)) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("chardev_tls_x509_cert_dir directory '%s' does not exist"),
+                       cfg->chardevTLSx509certdir);
+        return -1;
+    }
+
+    if (STRNEQ(cfg->migrateTLSx509certdir, SYSCONFDIR "/pki/qemu") &&
+        !virFileExists(cfg->migrateTLSx509certdir)) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("migrate_tls_x509_cert_dir directory '%s' does not exist"),
+                       cfg->migrateTLSx509certdir);
+        return -1;
+    }
+
+    return 0;
+}
+
 
 virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver)
 {

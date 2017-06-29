@@ -667,6 +667,9 @@ qemuStateInitialize(bool privileged,
         goto error;
     VIR_FREE(driverConf);
 
+    if (virQEMUDriverConfigValidate(cfg) < 0)
+        goto error;
+
     if (virFileMakePath(cfg->stateDir) < 0) {
         virReportSystemError(errno, _("Failed to create state dir %s"),
                              cfg->stateDir);
