@@ -25,6 +25,7 @@
 #include "viralloc.h"
 #include "virnodedeviceobj.h"
 #include "virerror.h"
+#include "virhash.h"
 #include "virlog.h"
 #include "virstring.h"
 
@@ -39,13 +40,19 @@ struct _virNodeDeviceObj {
 };
 
 struct _virNodeDeviceObjList {
-    size_t count;
-    virNodeDeviceObjPtr *objs;
+    virObjectLockable parent;
+
+    /* name string -> virNodeDeviceObj mapping
+     * for O(1), lockless lookup-by-name */
+    virHashTable *objs;
+
 };
 
 
 static virClassPtr virNodeDeviceObjClass;
+static virClassPtr virNodeDeviceObjListClass;
 static void virNodeDeviceObjDispose(void *opaque);
+static void virNodeDeviceObjListDispose(void *opaque);
 
 static int
 virNodeDeviceObjOnceInit(void)
@@ -54,6 +61,12 @@ virNodeDeviceObjOnceInit(void)
                                               "virNodeDeviceObj",
                                               sizeof(virNodeDeviceObj),
                                               virNodeDeviceObjDispose)))
+        return -1;
+
+    if (!(virNodeDeviceObjListClass = virClassNew(virClassForObjectLockable(),
+                                                  "virNodeDeviceObjList",
+                                                  sizeof(virNodeDeviceObjList),
+                                                  virNodeDeviceObjListDispose)))
         return -1;
 
     return 0;
@@ -211,26 +224,57 @@ virNodeDeviceFindVPORTCapDef(const virNodeDeviceObj *obj)
 }
 
 
+static virNodeDeviceObjPtr
+virNodeDeviceObjListSearch(virNodeDeviceObjListPtr devs,
+                           virHashSearcher callback,
+                           const void *data)
+{
+    virNodeDeviceObjPtr obj;
+
+    virObjectLock(devs);
+    obj = virHashSearch(devs->objs, callback, data, NULL);
+    virObjectRef(obj);
+    virObjectUnlock(devs);
+
+    if (obj)
+        virObjectLock(obj);
+
+    return obj;
+}
+
+
+static int
+virNodeDeviceObjListFindBySysfsPathCallback(const void *payload,
+                                            const void *name ATTRIBUTE_UNUSED,
+                                            const void *opaque)
+{
+    virNodeDeviceObjPtr obj = (virNodeDeviceObjPtr) payload;
+    const char *sysfs_path = opaque;
+    int want = 0;
+
+    virObjectLock(obj);
+    if (STREQ_NULLABLE(obj->def->sysfs_path, sysfs_path))
+        want = 1;
+    virObjectUnlock(obj);
+    return want;
+}
+
+
 virNodeDeviceObjPtr
 virNodeDeviceObjListFindBySysfsPath(virNodeDeviceObjListPtr devs,
                                     const char *sysfs_path)
 {
-    size_t i;
+    return virNodeDeviceObjListSearch(devs,
+                                      virNodeDeviceObjListFindBySysfsPathCallback,
+                                      sysfs_path);
+}
 
-    for (i = 0; i < devs->count; i++) {
-        virNodeDeviceObjPtr obj = devs->objs[i];
-        virNodeDeviceDefPtr def;
 
-        virObjectLock(obj);
-        def = obj->def;
-        if ((def->sysfs_path != NULL) &&
-            (STREQ(def->sysfs_path, sysfs_path))) {
-            return virObjectRef(obj);
-        }
-        virObjectUnlock(obj);
-    }
-
-    return NULL;
+static virNodeDeviceObjPtr
+virNodeDeviceObjListFindByNameLocked(virNodeDeviceObjListPtr devs,
+                                     const char *name)
+{
+    return virObjectRef(virHashLookup(devs->objs, name));
 }
 
 
@@ -238,20 +282,42 @@ virNodeDeviceObjPtr
 virNodeDeviceObjListFindByName(virNodeDeviceObjListPtr devs,
                                const char *name)
 {
-    size_t i;
+    virNodeDeviceObjPtr obj;
 
-    for (i = 0; i < devs->count; i++) {
-        virNodeDeviceObjPtr obj = devs->objs[i];
-        virNodeDeviceDefPtr def;
-
+    virObjectLock(devs);
+    obj = virNodeDeviceObjListFindByNameLocked(devs, name);
+    virObjectUnlock(devs);
+    if (obj)
         virObjectLock(obj);
-        def = obj->def;
-        if (STREQ(def->name, name))
-            return virObjectRef(obj);
-        virObjectUnlock(obj);
-    }
 
-    return NULL;
+    return obj;
+}
+
+
+struct virNodeDeviceObjListFindByWWNsData {
+    const char *parent_wwnn;
+    const char *parent_wwpn;
+};
+
+static int
+virNodeDeviceObjListFindByWWNsCallback(const void *payload,
+                                       const void *name ATTRIBUTE_UNUSED,
+                                       const void *opaque)
+{
+    virNodeDeviceObjPtr obj = (virNodeDeviceObjPtr) payload;
+    struct virNodeDeviceObjListFindByWWNsData *data =
+        (struct virNodeDeviceObjListFindByWWNsData *) opaque;
+    virNodeDevCapsDefPtr cap;
+    int want = 0;
+
+    virObjectLock(obj);
+    if ((cap = virNodeDeviceFindFCCapDef(obj)) &&
+        STREQ_NULLABLE(cap->data.scsi_host.wwnn, data->parent_wwnn) &&
+        STREQ_NULLABLE(cap->data.scsi_host.wwpn, data->parent_wwpn) &&
+        virNodeDeviceFindVPORTCapDef(obj))
+        want = 1;
+    virObjectUnlock(obj);
+    return want;
 }
 
 
@@ -260,22 +326,32 @@ virNodeDeviceObjListFindByWWNs(virNodeDeviceObjListPtr devs,
                                const char *parent_wwnn,
                                const char *parent_wwpn)
 {
-    size_t i;
+    struct virNodeDeviceObjListFindByWWNsData data = {
+        .parent_wwnn = parent_wwnn, .parent_wwpn = parent_wwpn };
 
-    for (i = 0; i < devs->count; i++) {
-        virNodeDeviceObjPtr obj = devs->objs[i];
-        virNodeDevCapsDefPtr cap;
+    return virNodeDeviceObjListSearch(devs,
+                                      virNodeDeviceObjListFindByWWNsCallback,
+                                      &data);
+}
 
-        virObjectLock(obj);
-        if ((cap = virNodeDeviceFindFCCapDef(obj)) &&
-            STREQ_NULLABLE(cap->data.scsi_host.wwnn, parent_wwnn) &&
-            STREQ_NULLABLE(cap->data.scsi_host.wwpn, parent_wwpn) &&
-            virNodeDeviceFindVPORTCapDef(obj))
-            return virObjectRef(obj);
-        virObjectUnlock(obj);
-    }
 
-    return NULL;
+static int
+virNodeDeviceObjListFindByFabricWWNCallback(const void *payload,
+                                            const void *name ATTRIBUTE_UNUSED,
+                                            const void *opaque)
+{
+    virNodeDeviceObjPtr obj = (virNodeDeviceObjPtr) payload;
+    const char *matchstr = opaque;
+    virNodeDevCapsDefPtr cap;
+    int want = 0;
+
+    virObjectLock(obj);
+    if ((cap = virNodeDeviceFindFCCapDef(obj)) &&
+        STREQ_NULLABLE(cap->data.scsi_host.fabric_wwn, matchstr) &&
+        virNodeDeviceFindVPORTCapDef(obj))
+        want = 1;
+    virObjectUnlock(obj);
+    return want;
 }
 
 
@@ -283,21 +359,26 @@ static virNodeDeviceObjPtr
 virNodeDeviceObjListFindByFabricWWN(virNodeDeviceObjListPtr devs,
                                     const char *parent_fabric_wwn)
 {
-    size_t i;
+    return virNodeDeviceObjListSearch(devs,
+                                      virNodeDeviceObjListFindByFabricWWNCallback,
+                                      parent_fabric_wwn);
+}
 
-    for (i = 0; i < devs->count; i++) {
-        virNodeDeviceObjPtr obj = devs->objs[i];
-        virNodeDevCapsDefPtr cap;
 
-        virObjectLock(obj);
-        if ((cap = virNodeDeviceFindFCCapDef(obj)) &&
-            STREQ_NULLABLE(cap->data.scsi_host.fabric_wwn, parent_fabric_wwn) &&
-            virNodeDeviceFindVPORTCapDef(obj))
-            return virObjectRef(obj);
-        virObjectUnlock(obj);
-    }
+static int
+virNodeDeviceObjListFindByCapCallback(const void *payload,
+                                      const void *name ATTRIBUTE_UNUSED,
+                                      const void *opaque)
+{
+    virNodeDeviceObjPtr obj = (virNodeDeviceObjPtr) payload;
+    const char *matchstr = opaque;
+    int want = 0;
 
-    return NULL;
+    virObjectLock(obj);
+    if (virNodeDeviceObjHasCap(obj, matchstr))
+        want = 1;
+    virObjectUnlock(obj);
+    return want;
 }
 
 
@@ -305,18 +386,48 @@ static virNodeDeviceObjPtr
 virNodeDeviceObjListFindByCap(virNodeDeviceObjListPtr devs,
                               const char *cap)
 {
-    size_t i;
+    return virNodeDeviceObjListSearch(devs,
+                                      virNodeDeviceObjListFindByCapCallback,
+                                      cap);
+}
 
-    for (i = 0; i < devs->count; i++) {
-        virNodeDeviceObjPtr obj = devs->objs[i];
 
-        virObjectLock(obj);
-        if (virNodeDeviceObjHasCap(obj, cap))
-            return virObjectRef(obj);
-        virObjectUnlock(obj);
-    }
+struct virNodeDeviceObjListFindSCSIHostByWWNsData {
+    const char *wwnn;
+    const char *wwpn;
+};
 
-    return NULL;
+static int
+virNodeDeviceObjListFindSCSIHostByWWNsCallback(const void *payload,
+                                               const void *name ATTRIBUTE_UNUSED,
+                                               const void *opaque)
+{
+    virNodeDeviceObjPtr obj = (virNodeDeviceObjPtr) payload;
+    struct virNodeDeviceObjListFindSCSIHostByWWNsData *data =
+        (struct virNodeDeviceObjListFindSCSIHostByWWNsData *) opaque;
+    virNodeDevCapsDefPtr cap;
+    int want = 0;
+
+    virObjectLock(obj);
+    cap = obj->def->caps;
+
+    while (cap) {
+        if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+            virNodeDeviceGetSCSIHostCaps(&cap->data.scsi_host);
+            if (cap->data.scsi_host.flags &
+                VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
+                if (STREQ(cap->data.scsi_host.wwnn, data->wwnn) &&
+                    STREQ(cap->data.scsi_host.wwpn, data->wwpn)) {
+                    want = 1;
+                    break;
+                }
+            }
+        }
+        cap = cap->next;
+     }
+
+    virObjectUnlock(obj);
+    return want;
 }
 
 
@@ -325,31 +436,21 @@ virNodeDeviceObjListFindSCSIHostByWWNs(virNodeDeviceObjListPtr devs,
                                        const char *wwnn,
                                        const char *wwpn)
 {
-    size_t i;
+    struct virNodeDeviceObjListFindSCSIHostByWWNsData data = {
+        .wwnn = wwnn, .wwpn = wwpn };
 
-    for (i = 0; i < devs->count; i++) {
-        virNodeDeviceObjPtr obj = devs->objs[i];
-        virNodeDevCapsDefPtr cap;
+    return virNodeDeviceObjListSearch(devs,
+                                      virNodeDeviceObjListFindSCSIHostByWWNsCallback,
+                                      &data);
+}
 
-        virObjectLock(obj);
-        cap = obj->def->caps;
 
-        while (cap) {
-            if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
-                virNodeDeviceGetSCSIHostCaps(&cap->data.scsi_host);
-                if (cap->data.scsi_host.flags &
-                    VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
-                    if (STREQ(cap->data.scsi_host.wwnn, wwnn) &&
-                        STREQ(cap->data.scsi_host.wwpn, wwpn))
-                        return virObjectRef(obj);
-                }
-            }
-            cap = cap->next;
-        }
-        virObjectUnlock(obj);
-    }
+static void
+virNodeDeviceObjListDispose(void *obj)
+{
+    virNodeDeviceObjListPtr devs = obj;
 
-    return NULL;
+    virHashFree(devs->objs);
 }
 
 
@@ -358,8 +459,17 @@ virNodeDeviceObjListNew(void)
 {
     virNodeDeviceObjListPtr devs;
 
-    if (VIR_ALLOC(devs) < 0)
+    if (virNodeDeviceObjInitialize() < 0)
         return NULL;
+
+    if (!(devs = virObjectLockableNew(virNodeDeviceObjListClass)))
+        return NULL;
+
+    if (!(devs->objs = virHashCreate(50, virObjectFreeHashData))) {
+        virObjectUnref(devs);
+        return NULL;
+    }
+
     return devs;
 }
 
@@ -367,11 +477,7 @@ virNodeDeviceObjListNew(void)
 void
 virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs)
 {
-    size_t i;
-    for (i = 0; i < devs->count; i++)
-        virObjectUnref(devs->objs[i]);
-    VIR_FREE(devs->objs);
-    VIR_FREE(devs);
+    virObjectUnref(devs);
 }
 
 
@@ -381,22 +487,28 @@ virNodeDeviceObjListAssignDef(virNodeDeviceObjListPtr devs,
 {
     virNodeDeviceObjPtr obj;
 
-    if ((obj = virNodeDeviceObjListFindByName(devs, def->name))) {
+    virObjectLock(devs);
+
+    if ((obj = virNodeDeviceObjListFindByNameLocked(devs, def->name))) {
+        virObjectLock(obj);
         virNodeDeviceDefFree(obj->def);
         obj->def = def;
-        return obj;
+    } else {
+        if (!(obj = virNodeDeviceObjNew()))
+            goto cleanup;
+
+        if (virHashAddEntry(devs->objs, def->name, obj) < 0) {
+            virNodeDeviceObjEndAPI(&obj);
+            goto cleanup;
+        }
+
+        obj->def = def;
+        virObjectRef(obj);
     }
 
-    if (!(obj = virNodeDeviceObjNew()))
-        return NULL;
-
-    if (VIR_APPEND_ELEMENT_COPY(devs->objs, devs->count, obj) < 0) {
-        virNodeDeviceObjEndAPI(&obj);
-        return NULL;
-    }
-    obj->def = def;
-
-    return virObjectRef(obj);
+ cleanup:
+    virObjectUnlock(devs);
+    return obj;
 }
 
 
@@ -404,21 +516,20 @@ void
 virNodeDeviceObjListRemove(virNodeDeviceObjListPtr devs,
                            virNodeDeviceObjPtr obj)
 {
-    size_t i;
+    virNodeDeviceDefPtr def;
 
+    if (!obj)
+        return;
+    def = obj->def;
+
+    virObjectRef(obj);
     virObjectUnlock(obj);
-
-    for (i = 0; i < devs->count; i++) {
-        virObjectLock(devs->objs[i]);
-        if (devs->objs[i] == obj) {
-            virObjectUnlock(devs->objs[i]);
-            virObjectUnref(devs->objs[i]);
-
-            VIR_DELETE_ELEMENT(devs->objs, i, devs->count);
-            break;
-        }
-        virObjectUnlock(devs->objs[i]);
-    }
+    virObjectLock(devs);
+    virObjectLock(obj);
+    virHashRemoveEntry(devs->objs, def->name);
+    virObjectUnlock(obj);
+    virObjectUnref(obj);
+    virObjectUnlock(devs);
 }
 
 
@@ -619,25 +730,89 @@ virNodeDeviceCapMatch(virNodeDeviceObjPtr obj,
 }
 
 
+struct virNodeDeviceCountData {
+    virConnectPtr conn;
+    virNodeDeviceObjListFilter aclfilter;
+    const char *matchstr;
+    int count;
+};
+
+static int
+virNodeDeviceObjListNumOfDevicesCallback(void *payload,
+                                         const void *name ATTRIBUTE_UNUSED,
+                                         void *opaque)
+{
+    virNodeDeviceObjPtr obj = payload;
+    virNodeDeviceDefPtr def;
+    struct virNodeDeviceCountData *data = opaque;
+    virNodeDeviceObjListFilter aclfilter = data->aclfilter;
+
+    virObjectLock(obj);
+    def = obj->def;
+    if ((!aclfilter || aclfilter(data->conn, def)) &&
+        (!data->matchstr || virNodeDeviceObjHasCap(obj, data->matchstr)))
+        data->count++;
+
+    virObjectUnlock(obj);
+    return 0;
+}
+
+
 int
 virNodeDeviceObjListNumOfDevices(virNodeDeviceObjListPtr devs,
                                  virConnectPtr conn,
                                  const char *cap,
                                  virNodeDeviceObjListFilter aclfilter)
 {
-    size_t i;
-    int ndevs = 0;
+    struct virNodeDeviceCountData data = {
+        .conn = conn, .aclfilter = aclfilter, .matchstr = cap, .count = 0 };
 
-    for (i = 0; i < devs->count; i++) {
-        virNodeDeviceObjPtr obj = devs->objs[i];
-        virObjectLock(obj);
-        if ((!aclfilter || aclfilter(conn, obj->def)) &&
-            (!cap || virNodeDeviceObjHasCap(obj, cap)))
-            ++ndevs;
-        virObjectUnlock(obj);
-    }
+    virObjectLock(devs);
+    virHashForEach(devs->objs, virNodeDeviceObjListNumOfDevicesCallback, &data);
+    virObjectUnlock(devs);
 
-    return ndevs;
+    return data.count;
+}
+
+
+struct virNodeDeviceGetNamesData {
+    virConnectPtr conn;
+    virNodeDeviceObjListFilter aclfilter;
+    const char *matchstr;
+    int nnames;
+    char **names;
+    int maxnames;
+    bool error;
+};
+
+static int
+virNodeDeviceObjListGetNamesCallback(void *payload,
+                                     const void *name ATTRIBUTE_UNUSED,
+                                     void *opaque)
+{
+    virNodeDeviceObjPtr obj = payload;
+    virNodeDeviceDefPtr def;
+    struct virNodeDeviceGetNamesData *data = opaque;
+    virNodeDeviceObjListFilter aclfilter = data->aclfilter;
+
+    if (data->error)
+        return 0;
+
+    virObjectLock(obj);
+    def = obj->def;
+
+    if ((!aclfilter || aclfilter(data->conn, def)) &&
+        (!data->matchstr || virNodeDeviceObjHasCap(obj, data->matchstr))) {
+        if (VIR_STRDUP(data->names[data->nnames], def->name) < 0) {
+            data->error = true;
+            goto cleanup;
+        }
+        data->nnames++;
+     }
+
+ cleanup:
+    virObjectUnlock(obj);
+    return 0;
 }
 
 
@@ -649,28 +824,22 @@ virNodeDeviceObjListGetNames(virNodeDeviceObjListPtr devs,
                              char **const names,
                              int maxnames)
 {
-    int nnames = 0;
-    size_t i;
+    struct virNodeDeviceGetNamesData data = {
+        .conn = conn, .aclfilter = aclfilter, .matchstr = cap, .names = names,
+        .nnames = 0, .maxnames = maxnames, .error = false };
 
-    for (i = 0; i < devs->count && nnames < maxnames; i++) {
-        virNodeDeviceObjPtr obj = devs->objs[i];
-        virObjectLock(obj);
-        if ((!aclfilter || aclfilter(conn, obj->def)) &&
-            (!cap || virNodeDeviceObjHasCap(obj, cap))) {
-            if (VIR_STRDUP(names[nnames], obj->def->name) < 0) {
-                virObjectUnlock(obj);
-                goto failure;
-            }
-            nnames++;
-        }
-        virObjectUnlock(obj);
-    }
+    virObjectLock(devs);
+    virHashForEach(devs->objs, virNodeDeviceObjListGetNamesCallback, &data);
+    virObjectUnlock(devs);
 
-    return nnames;
+    if (data.error)
+        goto error;
 
- failure:
-    while (--nnames >= 0)
-        VIR_FREE(names[nnames]);
+    return data.nnames;
+
+ error:
+    while (--data.nnames)
+        VIR_FREE(data.names[data.nnames]);
     return -1;
 }
 
@@ -707,6 +876,51 @@ virNodeDeviceMatch(virNodeDeviceObjPtr obj,
 #undef MATCH
 
 
+struct virNodeDeviceObjListExportData {
+    virConnectPtr conn;
+    virNodeDeviceObjListFilter aclfilter;
+    unsigned int flags;
+    virNodeDevicePtr *devices;
+    int ndevices;
+    bool error;
+};
+
+static int
+virNodeDeviceObjListExportCallback(void *payload,
+                                   const void *name ATTRIBUTE_UNUSED,
+                                   void *opaque)
+{
+    virNodeDeviceObjPtr obj = payload;
+    virNodeDeviceDefPtr def;
+    struct virNodeDeviceObjListExportData *data = opaque;
+    virNodeDevicePtr device = NULL;
+
+    if (data->error)
+        return 0;
+
+    virObjectLock(obj);
+    def = obj->def;
+
+    if ((!data->aclfilter || data->aclfilter(data->conn, def)) &&
+        virNodeDeviceMatch(obj, data->flags)) {
+        if (data->devices) {
+            if (!(device = virGetNodeDevice(data->conn, def->name)) ||
+                VIR_STRDUP(device->parent, def->parent) < 0) {
+                virObjectUnref(device);
+                data->error = true;
+                goto cleanup;
+            }
+            data->devices[data->ndevices] = device;
+        }
+        data->ndevices++;
+    }
+
+ cleanup:
+    virObjectUnlock(obj);
+    return 0;
+}
+
+
 int
 virNodeDeviceObjListExport(virConnectPtr conn,
                            virNodeDeviceObjListPtr devs,
@@ -714,49 +928,31 @@ virNodeDeviceObjListExport(virConnectPtr conn,
                            virNodeDeviceObjListFilter aclfilter,
                            unsigned int flags)
 {
-    virNodeDevicePtr *tmp_devices = NULL;
-    virNodeDevicePtr device = NULL;
-    int ndevices = 0;
-    int ret = -1;
-    size_t i;
+    struct virNodeDeviceObjListExportData data = {
+        .conn = conn, .aclfilter = aclfilter, .flags = flags,
+        .devices = NULL, .ndevices = 0, .error = false };
 
-    if (devices && VIR_ALLOC_N(tmp_devices, devs->count + 1) < 0)
+    virObjectLock(devs);
+    if (devices &&
+        VIR_ALLOC_N(data.devices, virHashSize(devs->objs) + 1) < 0) {
+        virObjectUnlock(devs);
+        return -1;
+    }
+
+    virHashForEach(devs->objs, virNodeDeviceObjListExportCallback, &data);
+    virObjectUnlock(devs);
+
+    if (data.error)
         goto cleanup;
 
-    for (i = 0; i < devs->count; i++) {
-        virNodeDeviceObjPtr obj = devs->objs[i];
-        virObjectLock(obj);
-        if ((!aclfilter || aclfilter(conn, obj->def)) &&
-            virNodeDeviceMatch(obj, flags)) {
-            if (devices) {
-                if (!(device = virGetNodeDevice(conn, obj->def->name)) ||
-                    VIR_STRDUP(device->parent, obj->def->parent) < 0) {
-                    virObjectUnref(device);
-                    virObjectUnlock(obj);
-                    goto cleanup;
-                }
-                tmp_devices[ndevices] = device;
-            }
-            ndevices++;
-        }
-        virObjectUnlock(obj);
-    }
+    if (data.devices) {
+        ignore_value(VIR_REALLOC_N(data.devices, data.ndevices + 1));
+        *devices = data.devices;
+     }
 
-    if (tmp_devices) {
-        /* trim the array to the final size */
-        ignore_value(VIR_REALLOC_N(tmp_devices, ndevices + 1));
-        *devices = tmp_devices;
-        tmp_devices = NULL;
-    }
-
-    ret = ndevices;
+    return data.ndevices;
 
  cleanup:
-    if (tmp_devices) {
-        for (i = 0; i < ndevices; i++)
-            virObjectUnref(tmp_devices[i]);
-    }
-
-    VIR_FREE(tmp_devices);
-    return ret;
+    virObjectListFree(data.devices);
+    return -1;
 }
