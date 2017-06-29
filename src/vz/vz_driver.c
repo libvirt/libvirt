@@ -872,7 +872,7 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
              * So forbid this operation, if config is changed. If it's
              * not changed - just do nothing. */
 
-            if (!virDomainDefCheckABIStability(dom->def, def)) {
+            if (!virDomainDefCheckABIStability(dom->def, def, driver->xmlopt)) {
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                                _("Can't change domain configuration "
                                  "in managed save state"));
