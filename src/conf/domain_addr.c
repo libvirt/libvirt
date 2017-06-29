@@ -355,6 +355,20 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
 }
 
 
+bool
+virDomainPCIAddressBusIsFullyReserved(virDomainPCIAddressBusPtr bus)
+{
+    size_t i;
+
+    for (i = bus->minSlot; i <= bus->maxSlot; i++) {
+        if (!bus->slot[i].functions)
+            return false;
+    }
+
+    return true;
+}
+
+
 /* Ensure addr fits in the address set, by expanding it if needed
  *
  * Return value:

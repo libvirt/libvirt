@@ -106,6 +106,7 @@ virDomainCCWAddressSetFree;
 virDomainCCWAddressValidate;
 virDomainGetBlkioParametersAssignFromDef;
 virDomainPCIAddressAsString;
+virDomainPCIAddressBusIsFullyReserved;
 virDomainPCIAddressBusSetModel;
 virDomainPCIAddressEnsureAddr;
 virDomainPCIAddressFlagsCompatible;
