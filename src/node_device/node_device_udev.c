@@ -1607,7 +1607,6 @@ udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
     const char *action = NULL;
     int udev_fd = -1;
 
-    nodeDeviceLock();
     udev_fd = udev_monitor_get_fd(udev_monitor);
     if (fd != udev_fd) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1639,7 +1638,6 @@ udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
 
  cleanup:
     udev_device_unref(device);
-    nodeDeviceUnlock();
     return;
 }
 
@@ -1767,7 +1765,6 @@ nodeStateInitialize(bool privileged,
 {
     udevPrivate *priv = NULL;
     struct udev *udev = NULL;
-    int ret = -1;
 
     if (VIR_ALLOC(priv) < 0)
         return -1;
@@ -1846,19 +1843,18 @@ nodeStateInitialize(bool privileged,
     if (udevSetupSystemDev() != 0)
         goto cleanup;
 
-    /* Populate with known devices */
+    nodeDeviceUnlock();
 
+    /* Populate with known devices */
     if (udevEnumerateDevices(udev) != 0)
         goto cleanup;
 
-    ret = 0;
+    return 0;
 
  cleanup:
     nodeDeviceUnlock();
-
-    if (ret == -1)
-        nodeStateCleanup();
-    return ret;
+    nodeStateCleanup();
+    return -1;
 }
 
 

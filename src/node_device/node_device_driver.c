@@ -174,19 +174,13 @@ nodeNumOfDevices(virConnectPtr conn,
                  const char *cap,
                  unsigned int flags)
 {
-    int ndevs = 0;
-
     if (virNodeNumOfDevicesEnsureACL(conn) < 0)
         return -1;
 
     virCheckFlags(0, -1);
 
-    nodeDeviceLock();
-    ndevs = virNodeDeviceObjListNumOfDevices(driver->devs, conn, cap,
-                                             virNodeNumOfDevicesCheckACL);
-    nodeDeviceUnlock();
-
-    return ndevs;
+    return virNodeDeviceObjListNumOfDevices(driver->devs, conn, cap,
+                                            virNodeNumOfDevicesCheckACL);
 }
 
 
@@ -197,20 +191,14 @@ nodeListDevices(virConnectPtr conn,
                 int maxnames,
                 unsigned int flags)
 {
-    int nnames;
-
     if (virNodeListDevicesEnsureACL(conn) < 0)
         return -1;
 
     virCheckFlags(0, -1);
 
-    nodeDeviceLock();
-    nnames = virNodeDeviceObjListGetNames(driver->devs, conn,
-                                          virNodeListDevicesCheckACL,
-                                          cap, names, maxnames);
-    nodeDeviceUnlock();
-
-    return nnames;
+    return virNodeDeviceObjListGetNames(driver->devs, conn,
+                                        virNodeListDevicesCheckACL,
+                                        cap, names, maxnames);
 }
 
 
@@ -219,19 +207,14 @@ nodeConnectListAllNodeDevices(virConnectPtr conn,
                               virNodeDevicePtr **devices,
                               unsigned int flags)
 {
-    int ret = -1;
-
     virCheckFlags(VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP, -1);
 
     if (virConnectListAllNodeDevicesEnsureACL(conn) < 0)
         return -1;
 
-    nodeDeviceLock();
-    ret = virNodeDeviceObjListExport(conn, driver->devs, devices,
-                                     virConnectListAllNodeDevicesCheckACL,
-                                     flags);
-    nodeDeviceUnlock();
-    return ret;
+    return virNodeDeviceObjListExport(conn, driver->devs, devices,
+                                      virConnectListAllNodeDevicesCheckACL,
+                                      flags);
 }
 
 
@@ -240,11 +223,7 @@ nodeDeviceObjFindByName(const char *name)
 {
     virNodeDeviceObjPtr obj;
 
-    nodeDeviceLock();
-    obj = virNodeDeviceObjListFindByName(driver->devs, name);
-    nodeDeviceUnlock();
-
-    if (!obj) {
+    if (!(obj = virNodeDeviceObjListFindByName(driver->devs, name))) {
         virReportError(VIR_ERR_NO_NODE_DEVICE,
                        _("no node device with matching name '%s'"),
                        name);
@@ -294,11 +273,8 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
 
     virCheckFlags(0, NULL);
 
-    nodeDeviceLock();
-    obj = virNodeDeviceObjListFindSCSIHostByWWNs(driver->devs, wwnn, wwpn);
-    nodeDeviceUnlock();
-
-    if (!obj)
+    if (!(obj = virNodeDeviceObjListFindSCSIHostByWWNs(driver->devs,
+                                                       wwnn, wwpn)))
         return NULL;
 
     def = virNodeDeviceObjGetDef(obj);
@@ -509,13 +485,6 @@ nodeDeviceFindNewDevice(virConnectPtr conn,
     virNodeDevicePtr device = NULL;
     time_t start = 0, now = 0;
 
-    /* The thread that creates the device takes the driver lock, so we
-     * must release it in order to allow the device to be created.
-     * We're not doing anything with the driver pointer at this point,
-     * so it's safe to release it, assuming that the pointer itself
-     * doesn't become invalid.  */
-    nodeDeviceUnlock();
-
     nodeDeviceGetTime(&start);
 
     while ((now - start) < LINUX_NEW_DEVICE_WAIT_TIME) {
@@ -531,8 +500,6 @@ nodeDeviceFindNewDevice(virConnectPtr conn,
         if (nodeDeviceGetTime(&now) == -1)
             break;
     }
-
-    nodeDeviceLock();
 
     return device;
 }
@@ -551,8 +518,6 @@ nodeDeviceCreateXML(virConnectPtr conn,
 
     virCheckFlags(0, NULL);
     virt_type  = virConnectGetType(conn);
-
-    nodeDeviceLock();
 
     if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type)))
         goto cleanup;
@@ -579,7 +544,6 @@ nodeDeviceCreateXML(virConnectPtr conn,
                          "wwnn '%s' and wwpn '%s'"),
                        def->name, wwnn, wwpn);
  cleanup:
-    nodeDeviceUnlock();
     virNodeDeviceDefFree(def);
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
@@ -600,8 +564,6 @@ nodeDeviceDestroy(virNodeDevicePtr device)
     if (!(obj = nodeDeviceObjFindByName(device->name)))
         return -1;
     def = virNodeDeviceObjGetDef(obj);
-
-    nodeDeviceLock();
 
     if (virNodeDeviceDestroyEnsureACL(device->conn, def) < 0)
         goto cleanup;
@@ -634,7 +596,6 @@ nodeDeviceDestroy(virNodeDevicePtr device)
     ret = 0;
 
  cleanup:
-    nodeDeviceUnlock();
     virNodeDeviceObjEndAPI(&obj);
     VIR_FREE(parent);
     VIR_FREE(wwnn);
