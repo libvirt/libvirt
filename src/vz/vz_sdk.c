@@ -2894,7 +2894,7 @@ static int prlsdkCheckSerialUnsupportedParams(virDomainChrDefPtr chr)
         return -1;
     }
 
-    if (chr->nseclabels > 0) {
+    if (chr->source->nseclabels > 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting security labels is not "
                          "supported by vz driver."));
