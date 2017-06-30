@@ -1790,11 +1790,8 @@ prlsdkConvertBootOrderVm(PRL_HANDLE sdkdom, virDomainDefPtr def)
         pret = PrlBootDev_IsInUse(bootDev, &inUse);
         prlsdkCheckRetGoto(pret, cleanup);
 
-        if (!inUse) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Boot ordering with disabled items is not supported"));
-            goto cleanup;
-        }
+        if (!inUse)
+            continue;
 
         pret = PrlBootDev_GetSequenceIndex(bootDev, &bootIndex);
         prlsdkCheckRetGoto(pret, cleanup);
