@@ -604,20 +604,20 @@ virCPUDefFormatBufFull(virBufferPtr buf,
     if (!def)
         return 0;
 
-    /* Format attributes */
-    if (def->type == VIR_CPU_TYPE_GUEST) {
+    /* Format attributes for guest CPUs unless they only specify
+     * topology or cache. */
+    if (def->type == VIR_CPU_TYPE_GUEST &&
+        (def->mode != VIR_CPU_MODE_CUSTOM || def->model)) {
         const char *tmp;
 
-        if (def->mode != VIR_CPU_MODE_CUSTOM || def->model) {
-            if (!(tmp = virCPUModeTypeToString(def->mode))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected CPU mode %d"), def->mode);
-                goto cleanup;
-            }
-            virBufferAsprintf(&attributeBuf, " mode='%s'", tmp);
+        if (!(tmp = virCPUModeTypeToString(def->mode))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unexpected CPU mode %d"), def->mode);
+            goto cleanup;
         }
+        virBufferAsprintf(&attributeBuf, " mode='%s'", tmp);
 
-        if (def->model && def->mode == VIR_CPU_MODE_CUSTOM) {
+        if (def->mode == VIR_CPU_MODE_CUSTOM) {
             if (!(tmp = virCPUMatchTypeToString(def->match))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected CPU match policy %d"),
