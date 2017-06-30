@@ -703,8 +703,7 @@ virDomainSnapshotDefFormat(const char *domain_uuid,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    virCheckFlags(VIR_DOMAIN_DEF_FORMAT_SECURE |
-                  VIR_DOMAIN_DEF_FORMAT_UPDATE_CPU, NULL);
+    virCheckFlags(VIR_DOMAIN_DEF_FORMAT_SECURE, NULL);
 
     flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 

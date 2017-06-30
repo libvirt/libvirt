@@ -87,7 +87,6 @@ struct _virDomainXMLOption {
 #define VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS             \
     (VIR_DOMAIN_DEF_FORMAT_SECURE |                    \
      VIR_DOMAIN_DEF_FORMAT_INACTIVE |                  \
-     VIR_DOMAIN_DEF_FORMAT_UPDATE_CPU |                \
      VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
@@ -25998,8 +25997,6 @@ unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags)
         formatFlags |= VIR_DOMAIN_DEF_FORMAT_SECURE;
     if (flags & VIR_DOMAIN_XML_INACTIVE)
         formatFlags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
-    if (flags & VIR_DOMAIN_XML_UPDATE_CPU)
-        formatFlags |= VIR_DOMAIN_DEF_FORMAT_UPDATE_CPU;
     if (flags & VIR_DOMAIN_XML_MIGRATABLE)
         formatFlags |= VIR_DOMAIN_DEF_FORMAT_MIGRATABLE;
 
