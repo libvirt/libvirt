@@ -1945,7 +1945,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
     virBufferEscapeString(buf, "<channelTargetDir path='%s'/>\n",
                           priv->channelTargetDir);
 
-    virCPUDefFormatBufFull(buf, priv->origCPU, NULL, false);
+    virCPUDefFormatBufFull(buf, priv->origCPU, NULL);
 
     if (priv->chardevStdioLogd)
         virBufferAddLit(buf, "<chardevStdioLogd/>\n");
@@ -9811,7 +9811,7 @@ qemuDomainSaveCookieFormat(virBufferPtr buf,
     qemuDomainSaveCookiePtr cookie = (qemuDomainSaveCookiePtr) obj;
 
     if (cookie->cpu &&
-        virCPUDefFormatBufFull(buf, cookie->cpu, NULL, false) < 0)
+        virCPUDefFormatBufFull(buf, cookie->cpu, NULL) < 0)
         return -1;
 
     return 0;

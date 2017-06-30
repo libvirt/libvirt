@@ -25744,8 +25744,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "</features>\n");
     }
 
-    if (virCPUDefFormatBufFull(buf, def->cpu, def->numa,
-                               !!(flags & VIR_DOMAIN_DEF_FORMAT_UPDATE_CPU)) < 0)
+    if (virCPUDefFormatBufFull(buf, def->cpu, def->numa) < 0)
         goto error;
 
     virBufferAsprintf(buf, "<clock offset='%s'",

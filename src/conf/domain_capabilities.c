@@ -413,7 +413,7 @@ virDomainCapsCPUFormat(virBufferPtr buf,
         virBufferAddLit(buf, "supported='yes'>\n");
         virBufferAdjustIndent(buf, 2);
 
-        virCPUDefFormatBuf(buf, cpu->hostModel, false);
+        virCPUDefFormatBuf(buf, cpu->hostModel);
 
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</mode>\n");

@@ -771,7 +771,7 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
         qemuMigrationCookieStatisticsXMLFormat(buf, mig->jobInfo);
 
     if (mig->flags & QEMU_MIGRATION_COOKIE_CPU && mig->cpu)
-        virCPUDefFormatBufFull(buf, mig->cpu, NULL, false);
+        virCPUDefFormatBufFull(buf, mig->cpu, NULL);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</qemu-migration>\n");

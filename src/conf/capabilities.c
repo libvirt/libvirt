@@ -984,7 +984,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</features>\n");
     }
-    virCPUDefFormatBuf(&buf, caps->host.cpu, false);
+    virCPUDefFormatBuf(&buf, caps->host.cpu);
 
     for (i = 0; i < caps->host.nPagesSize; i++) {
         virBufferAsprintf(&buf, "<pages unit='KiB' size='%u'/>\n",

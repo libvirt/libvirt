@@ -574,12 +574,11 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
 
 char *
 virCPUDefFormat(virCPUDefPtr def,
-                virDomainNumaPtr numa,
-                bool updateCPU)
+                virDomainNumaPtr numa)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (virCPUDefFormatBufFull(&buf, def, numa, updateCPU) < 0)
+    if (virCPUDefFormatBufFull(&buf, def, numa) < 0)
         goto cleanup;
 
     if (virBufferCheckError(&buf) < 0)
@@ -596,8 +595,7 @@ virCPUDefFormat(virCPUDefPtr def,
 int
 virCPUDefFormatBufFull(virBufferPtr buf,
                        virCPUDefPtr def,
-                       virDomainNumaPtr numa,
-                       bool updateCPU)
+                       virDomainNumaPtr numa)
 {
     int ret = -1;
     virBuffer attributeBuf = VIR_BUFFER_INITIALIZER;
@@ -619,9 +617,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
             virBufferAsprintf(&attributeBuf, " mode='%s'", tmp);
         }
 
-        if (def->model &&
-            (def->mode == VIR_CPU_MODE_CUSTOM ||
-             updateCPU)) {
+        if (def->model && def->mode == VIR_CPU_MODE_CUSTOM) {
             if (!(tmp = virCPUMatchTypeToString(def->match))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unexpected CPU match policy %d"),
@@ -642,7 +638,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
     if (def->type == VIR_CPU_TYPE_HOST && def->arch)
         virBufferAsprintf(&childrenBuf, "<arch>%s</arch>\n",
                           virArchToString(def->arch));
-    if (virCPUDefFormatBuf(&childrenBuf, def, updateCPU) < 0)
+    if (virCPUDefFormatBuf(&childrenBuf, def) < 0)
         goto cleanup;
 
     if (virDomainNumaDefCPUFormat(&childrenBuf, numa) < 0)
@@ -677,8 +673,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
 
 int
 virCPUDefFormatBuf(virBufferPtr buf,
-                   virCPUDefPtr def,
-                   bool updateCPU)
+                   virCPUDefPtr def)
 {
     size_t i;
     bool formatModel;
@@ -688,8 +683,7 @@ virCPUDefFormatBuf(virBufferPtr buf,
         return 0;
 
     formatModel = (def->mode == VIR_CPU_MODE_CUSTOM ||
-                   def->mode == VIR_CPU_MODE_HOST_MODEL ||
-                   updateCPU);
+                   def->mode == VIR_CPU_MODE_HOST_MODEL);
     formatFallback = (def->type == VIR_CPU_TYPE_GUEST &&
                       (def->mode == VIR_CPU_MODE_HOST_MODEL ||
                        (def->mode == VIR_CPU_MODE_CUSTOM && def->model)));

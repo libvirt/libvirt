@@ -195,18 +195,15 @@ virCPUDefIsEqual(virCPUDefPtr src,
 
 char *
 virCPUDefFormat(virCPUDefPtr def,
-                virDomainNumaPtr numa,
-                bool updateCPU);
+                virDomainNumaPtr numa);
 
 int
 virCPUDefFormatBuf(virBufferPtr buf,
-                   virCPUDefPtr def,
-                   bool updateCPU);
+                   virCPUDefPtr def);
 int
 virCPUDefFormatBufFull(virBufferPtr buf,
                        virCPUDefPtr def,
-                       virDomainNumaPtr numa,
-                       bool updateCPU);
+                       virDomainNumaPtr numa);
 
 int
 virCPUDefAddFeature(virCPUDefPtr cpu,
