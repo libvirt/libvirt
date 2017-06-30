@@ -6997,6 +6997,13 @@ static char
     if ((flags & VIR_DOMAIN_XML_MIGRATABLE))
         flags |= QEMU_DOMAIN_FORMAT_LIVE_FLAGS;
 
+    /* The CPU is already updated in the domain's live definition, we need to
+     * ignore the VIR_DOMAIN_XML_UPDATE_CPU flag.
+     */
+    if (virDomainObjIsActive(vm) &&
+        !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
+        flags &= ~VIR_DOMAIN_XML_UPDATE_CPU;
+
     ret = qemuDomainFormatXML(driver, vm, flags);
 
  cleanup:

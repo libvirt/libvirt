@@ -4765,8 +4765,6 @@ char *qemuDomainFormatXML(virQEMUDriverPtr driver,
     } else {
         def = vm->def;
         origCPU = priv->origCPU;
-        if (virDomainObjIsActive(vm))
-            flags &= ~VIR_DOMAIN_XML_UPDATE_CPU;
     }
 
     return qemuDomainDefFormatXMLInternal(driver, def, origCPU, flags);

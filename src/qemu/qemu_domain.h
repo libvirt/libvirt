@@ -40,8 +40,7 @@
 # include "logging/log_manager.h"
 
 # define QEMU_DOMAIN_FORMAT_LIVE_FLAGS      \
-    (VIR_DOMAIN_XML_SECURE |                \
-     VIR_DOMAIN_XML_UPDATE_CPU)
+    (VIR_DOMAIN_XML_SECURE)
 
 # if ULONG_MAX == 4294967295
 /* QEMU has a 64-bit limit, but we are limited by our historical choice of
