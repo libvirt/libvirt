@@ -4561,6 +4561,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
     int ret = -1;
     virDomainDefPtr copy = NULL;
     virCapsPtr caps = NULL;
+    virQEMUCapsPtr qemuCaps = NULL;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -4579,7 +4580,14 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
         def->cpu &&
         (def->cpu->mode != VIR_CPU_MODE_CUSTOM ||
          def->cpu->model)) {
-        if (virCPUUpdate(def->os.arch, def->cpu, caps->host.cpu) < 0)
+        if (!(qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+                                                    def->emulator,
+                                                    def->os.machine)))
+            goto cleanup;
+
+        if (virCPUUpdate(def->os.arch, def->cpu,
+                         virQEMUCapsGetHostModel(qemuCaps, def->virtType,
+                                                 VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE)) < 0)
             goto cleanup;
     }
 
@@ -4697,6 +4705,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
  cleanup:
     virDomainDefFree(copy);
     virObjectUnref(caps);
+    virObjectUnref(qemuCaps);
     return ret;
 }
 
