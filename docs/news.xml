@@ -197,6 +197,18 @@
           QEMU releases older than 1.6.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Fix migration to older libvirt/QEMU versions
+        </summary>
+        <description>
+          When the guest is started, libvirt updates the CPU definition to
+          reflect the actual CPU features to enforce ABI. We need to send
+          original and updated CPU definition in order to support migration
+          to older libvirt/QEMU versions. Only the updated CPU definition
+          was sent to destination.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.4.0" date="2017-06-02">
