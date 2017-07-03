@@ -490,6 +490,10 @@ mymain(void)
     DO_TEST_PARSE("integer", "1", NULL);
     DO_TEST_PARSE("boolean", "true", NULL);
     DO_TEST_PARSE("null", "null", NULL);
+
+    DO_TEST_PARSE("escaping symbols", "[\"\\\"\\t\\n\\\\\"]", NULL);
+    DO_TEST_PARSE("escaped strings", "[\"{\\\"blurb\\\":\\\"test\\\"}\"]", NULL);
+
     DO_TEST_PARSE_FAIL("incomplete keyword", "tr");
     DO_TEST_PARSE_FAIL("overdone keyword", "[ truest ]");
     DO_TEST_PARSE_FAIL("unknown keyword", "huh");
