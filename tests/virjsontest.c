@@ -23,6 +23,8 @@ testJSONFromString(const void *data)
 {
     const struct testInfo *info = data;
     virJSONValuePtr json;
+    const char *expectstr = info->expect ? info->expect : info->doc;
+    char *formatted = NULL;
     int ret = -1;
 
     json = virJSONValueFromString(info->doc);
@@ -45,9 +47,20 @@ testJSONFromString(const void *data)
 
     VIR_TEST_DEBUG("Parsed %s\n", info->doc);
 
+    if (!(formatted = virJSONValueToString(json, false))) {
+        VIR_TEST_VERBOSE("Failed to format json data\n");
+        goto cleanup;
+    }
+
+    if (STRNEQ(expectstr, formatted)) {
+        virTestDifference(stderr, expectstr, formatted);
+        goto cleanup;
+    }
+
     ret = 0;
 
  cleanup:
+    VIR_FREE(formatted);
     virJSONValueFree(json);
     return ret;
 }
@@ -368,23 +381,39 @@ mymain(void)
             ret = -1;                                               \
     } while (0)
 
-#define DO_TEST_PARSE(name, doc)                \
-    DO_TEST_FULL(name, FromString, doc, NULL, true)
+/**
+ * DO_TEST_PARSE:
+ * @name: test name
+ * @doc: source JSON string
+ * @expect: expected output JSON formatted from parsed @doc
+ *
+ * Parses @doc and formats it back. If @expect is NULL the result has to be
+ * identical to @doc.
+ */
+#define DO_TEST_PARSE(name, doc, expect)                \
+    DO_TEST_FULL(name, FromString, doc, expect, true)
 
 #define DO_TEST_PARSE_FAIL(name, doc)           \
     DO_TEST_FULL(name, FromString, doc, NULL, false)
 
 
-    DO_TEST_PARSE("Simple", "{\"return\": {}, \"id\": \"libvirt-1\"}");
+    DO_TEST_PARSE("Simple", "{\"return\": {}, \"id\": \"libvirt-1\"}",
+                  "{\"return\":{},\"id\":\"libvirt-1\"}");
     DO_TEST_PARSE("NotSoSimple", "{\"QMP\": {\"version\": {\"qemu\":"
                   "{\"micro\": 91, \"minor\": 13, \"major\": 0},"
-                  "\"package\": \" (qemu-kvm-devel)\"}, \"capabilities\": []}}");
-
+                  "\"package\": \" (qemu-kvm-devel)\"}, \"capabilities\": []}}",
+                  "{\"QMP\":{\"version\":{\"qemu\":"
+                  "{\"micro\":91,\"minor\":13,\"major\":0},"
+                  "\"package\":\" (qemu-kvm-devel)\"},\"capabilities\":[]}}");
 
     DO_TEST_PARSE("Harder", "{\"return\": [{\"filename\": "
                   "\"unix:/home/berrange/.libvirt/qemu/lib/tck.monitor,server\","
                   "\"label\": \"charmonitor\"}, {\"filename\": \"pty:/dev/pts/158\","
-                  "\"label\": \"charserial0\"}], \"id\": \"libvirt-3\"}");
+                  "\"label\": \"charserial0\"}], \"id\": \"libvirt-3\"}",
+                  "{\"return\":[{\"filename\":"
+                  "\"unix:/home/berrange/.libvirt/qemu/lib/tck.monitor,server\","
+                  "\"label\":\"charmonitor\"},{\"filename\":\"pty:/dev/pts/158\","
+                  "\"label\":\"charserial0\"}],\"id\":\"libvirt-3\"}");
 
     DO_TEST_PARSE("VeryHard", "{\"return\":[{\"name\":\"quit\"},{\"name\":"
                   "\"eject\"},{\"name\":\"change\"},{\"name\":\"screendump\"},"
@@ -409,7 +438,7 @@ mymain(void)
                   "\"query-mice\"},{\"name\":\"query-vnc\"},{\"name\":"
                   "\"query-spice\"},{\"name\":\"query-name\"},{\"name\":"
                   "\"query-uuid\"},{\"name\":\"query-migrate\"},{\"name\":"
-                  "\"query-balloon\"}],\"id\":\"libvirt-2\"}");
+                  "\"query-balloon\"}],\"id\":\"libvirt-2\"}", NULL);
 
     DO_TEST_FULL("add and remove", AddRemove,
                  "{\"name\": \"sample\", \"value\": true}",
@@ -445,21 +474,22 @@ mymain(void)
                  "\"query-balloon\"}], \"id\": \"libvirt-2\"}", NULL, true);
 
 
-    DO_TEST_PARSE("almost nothing", "[]");
+    DO_TEST_PARSE("almost nothing", "[]", NULL);
     DO_TEST_PARSE_FAIL("nothing", "");
 
-    DO_TEST_PARSE("number without garbage", "[ 234545 ]");
+    DO_TEST_PARSE("number without garbage", "[ 234545 ]", "[234545]");
     DO_TEST_PARSE_FAIL("number with garbage", "[ 2345b45 ]");
 
-    DO_TEST_PARSE("float without garbage", "[ 0.0314159e+100 ]");
+    DO_TEST_PARSE("float without garbage", "[ 0.0314159e+100 ]", "[0.0314159e+100]");
     DO_TEST_PARSE_FAIL("float with garbage", "[ 0.0314159ee+100 ]");
 
-    DO_TEST_PARSE("string", "[ \"The meaning of life\" ]");
+    DO_TEST_PARSE("string", "[ \"The meaning of life\" ]",
+                  "[\"The meaning of life\"]");
     DO_TEST_PARSE_FAIL("unterminated string", "[ \"The meaning of lif ]");
 
-    DO_TEST_PARSE("integer", "1");
-    DO_TEST_PARSE("boolean", "true");
-    DO_TEST_PARSE("null", "null");
+    DO_TEST_PARSE("integer", "1", NULL);
+    DO_TEST_PARSE("boolean", "true", NULL);
+    DO_TEST_PARSE("null", "null", NULL);
     DO_TEST_PARSE_FAIL("incomplete keyword", "tr");
     DO_TEST_PARSE_FAIL("overdone keyword", "[ truest ]");
     DO_TEST_PARSE_FAIL("unknown keyword", "huh");
