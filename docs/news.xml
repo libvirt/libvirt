@@ -68,6 +68,15 @@
           running.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Allow VirtIO devices to use vIOMMU
+        </summary>
+        <description>
+          It is now possible to turn on IOTBL for the vIOMMU and have VirtIO
+          devices use it, provided they have been configured appropriately.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
@@ -100,6 +109,20 @@
           gathered and presented in capabilities if available.
         </description>
       </change>
+      <change>
+        <summary>
+          apparmor: Several improvements
+        </summary>
+        <description>
+          Allow access to Ceph config, EFI firmware on both x86_64 and
+          aarch64, device tree on ppc64 and more.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Support host-model on POWER9 machines
+        </summary>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -113,6 +136,65 @@
 
           The metadata is necessary to allow keeping relative paths between
           images when doing a block-commit.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Parse decimal numbers in a locale-independent way
+        </summary>
+        <description>
+          Some locales, such as <code>de_DE</code> and <code>pt_BR</code>,
+          use comma rather than dot to separate the integer part from the
+          fractional part of a decimal number; however, several data sources
+          such as the kernel use a locale-independent representation and need
+          to be treated accordingly.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Support compilation with newer compiler and libc versions
+        </summary>
+        <description>
+          Several fixes have been included to make compilation with Clang
+          4.0.0, GCC 7.1 and glibc >= 2.25.90 possible.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Query name for vhost-user interfaces at runtime
+        </summary>
+        <description>
+          This makes it possible to use <code>virsh</code> subcommands such
+          as <code>domiflist</code> and <code>domifstat</code> on vhost-user
+          interfaces.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Set MTU for hotplugged interfaces correctly
+        </summary>
+        <description>
+          When hotplugging a network interface, the MTU was only set on the
+          guest side. Set it on the host side as well.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Forbid updating MTU for interfaces of running guests
+        </summary>
+        <description>
+          The MTU setting can't be modified while the guest is running, so any
+          attempt to alter it at runtime will now result in an error rather
+          than being silently ignored.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Fix specifying QXL heads with older QEMU releases
+        </summary>
+        <description>
+          Specifying the number of QXL heads was not working correctly for
+          QEMU releases older than 1.6.
         </description>
       </change>
     </section>
