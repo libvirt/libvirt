@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
-    <h1 >Bindings for other languages</h1>
+    <h1 >Bindings for other languages and integration API modules</h1>
 
     <p>
       Libvirt supports C and C++ directly, and has bindings available
@@ -71,6 +71,17 @@
       <li>
         <strong>Ruby</strong>: Chris Lalancette develops
         <a href="https://libvirt.org/ruby/">Ruby bindings</a>.
+      </li>
+    </ul>
+
+    <p>
+      Integration API modules:
+    </p>
+
+    <ul>
+      <li>
+        <strong>D-Bus</strong>: Pavel Hrdina develops
+        <a href="dbus.html">D-Bus API</a>.
       </li>
     </ul>
 

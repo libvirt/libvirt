@@ -54,7 +54,7 @@
         <dt><a href="virshcmdref.html">Virsh Commands</a></dt>
         <dd>Command reference for virsh</dd>
 
-        <dt><a href="bindings.html">Language bindings</a></dt>
+        <dt><a href="bindings.html">Language bindings and API modules</a></dt>
         <dd>Bindings of the libvirt API for
           <a href="csharp.html">c#</a>,
           <a href="https://godoc.org/github.com/libvirt/libvirt-go">go</a>,
@@ -63,7 +63,9 @@
           <a href="http://search.cpan.org/dist/Sys-Virt/">perl</a>,
           <a href="python.html">python</a>,
           <a href="php.html">php</a>,
-          <a href="https://libvirt.org/ruby/">ruby</a></dd>
+          <a href="https://libvirt.org/ruby/">ruby</a>
+          and integration API modules for
+          <a href="dbus.html">D-Bus</a></dd>
 
 
         <dt><a href="format.html">XML schemas</a></dt>

@@ -221,6 +221,21 @@
           </td>
         </tr>
         <tr>
+          <td>D-Bus</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/dbus/">ftp</a>
+            <a href="https://libvirt.org/sources/dbus/">https</a>
+          </td>
+          <td>
+            <a href="https://libvirt.org/git/?p=libvirt-dbus.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-dbus">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-dbus">github</a>
+          </td>
+          <td></td>
+        </tr>
+        <tr>
           <td>Console Proxy</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/consoleproxy/">ftp</a>
