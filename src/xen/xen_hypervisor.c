@@ -1262,7 +1262,8 @@ xenHypervisorGetSchedulerParameters(virConnectPtr conn,
                 }
 
                 /* TODO: Implement for Xen/SEDF */
-                TODO
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("SEDF schedular parameters not supported"));
                 return -1;
             case XEN_SCHEDULER_CREDIT:
                 memset(&op_dom, 0, sizeof(op_dom));
@@ -1359,7 +1360,8 @@ xenHypervisorSetSchedulerParameters(virConnectPtr conn,
         switch (op_sys.u.getschedulerid.sched_id) {
         case XEN_SCHEDULER_SEDF:
             /* TODO: Implement for Xen/SEDF */
-            TODO
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("SEDF schedular parameters not supported"));
             return -1;
         case XEN_SCHEDULER_CREDIT: {
             memset(&op_dom, 0, sizeof(op_dom));

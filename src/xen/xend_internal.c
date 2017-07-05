@@ -2881,7 +2881,8 @@ xenDaemonGetSchedulerParameters(virConnectPtr conn,
             }
 
             /* TODO: Implement for Xen/SEDF */
-            TODO
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("SEDF schedular parameters not supported"));
             goto error;
         case XEN_SCHED_CRED_NPARAM:
             /* get cpu_weight/cpu_cap from xend/domain */
@@ -2972,7 +2973,8 @@ xenDaemonSetSchedulerParameters(virConnectPtr conn,
     switch (sched_nparam) {
         case XEN_SCHED_SEDF_NPARAM:
             /* TODO: Implement for Xen/SEDF */
-            TODO
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("SEDF schedular parameters not supported"));
             goto error;
         case XEN_SCHED_CRED_NPARAM: {
             char buf_weight[VIR_UUID_BUFLEN];
