@@ -113,13 +113,26 @@
 # endif
 
 /**
- * ATTRIBUTE_NOINLINE:
+ * ATTRIBUTE_MOCKABLE:
  *
- * Force compiler not to inline a method. Should be used if
- * the method need to be overridable by test mocks.
+ * Ensure that the symbol can be overridden in a mock
+ * library preload. This implies a number of attributes
+ *
+ *  - noinline: prevents the body being inlined to
+ *              callers,
+ *  - noclone: prevents specialized copies of the
+ *             function body being created for different
+ *             callers
+ *  - weak: prevents the compiler making optimizations
+ *          such as constant return value propagation
+ *
  */
-# ifndef ATTRIBUTE_NOINLINE
-#  define ATTRIBUTE_NOINLINE __attribute__((__noinline__))
+# ifndef ATTRIBUTE_MOCKABLE
+#  if __GNUC_PREREQ(4, 5)
+#   define ATTRIBUTE_MOCKABLE __attribute__((__noinline__, __noclone__, __weak__))
+#  else
+#   define ATTRIBUTE_MOCKABLE __attribute__((__noinline__, __weak__))
+#  endif
 # endif
 
 /**

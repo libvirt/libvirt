@@ -137,10 +137,10 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
                                 gid_t *gid,
                                 pid_t *pid,
                                 unsigned long long *timestamp)
-    ATTRIBUTE_NOINLINE;
+    ATTRIBUTE_MOCKABLE;
 int virNetSocketGetSELinuxContext(virNetSocketPtr sock,
                                   char **context)
-    ATTRIBUTE_NOINLINE;
+    ATTRIBUTE_MOCKABLE;
 
 int virNetSocketSetBlocking(virNetSocketPtr sock,
                             bool blocking);

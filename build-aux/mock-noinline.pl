@@ -43,7 +43,7 @@ sub scan_annotations {
         } elsif (/^\s*$/) {
             $func = undef;
         }
-        if (/ATTRIBUTE_NOINLINE/) {
+        if (/ATTRIBUTE_MOCKABLE/) {
             if (defined $func) {
                 $noninlined{$func} = 1;
             }
