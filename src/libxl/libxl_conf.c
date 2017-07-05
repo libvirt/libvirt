@@ -42,6 +42,7 @@
 #include "viralloc.h"
 #include "viruuid.h"
 #include "vircommand.h"
+#include "virsocketaddr.h"
 #include "libxl_domain.h"
 #include "libxl_conf.h"
 #include "libxl_utils.h"

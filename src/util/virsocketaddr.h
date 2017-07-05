@@ -32,6 +32,18 @@
 #  include <sys/un.h>
 # endif
 
+/* On architectures which lack these limits, define them (ie. Cygwin).
+ * Note that the libvirt code should be robust enough to handle the
+ * case where actual value is longer than these limits (eg. by setting
+ * length correctly in second argument to gethostname and by always
+ * using strncpy instead of strcpy).
+ */
+# ifndef INET_ADDRSTRLEN
+#  define INET_ADDRSTRLEN 16
+# endif
+
+# define VIR_LOOPBACK_IPV4_ADDR "127.0.0.1"
+
 typedef struct {
     union {
         struct sockaddr sa;

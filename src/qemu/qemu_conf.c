@@ -49,6 +49,7 @@
 #include "cpu/cpu.h"
 #include "domain_nwfilter.h"
 #include "virfile.h"
+#include "virsocketaddr.h"
 #include "virstring.h"
 #include "viratomic.h"
 #include "storage_conf.h"

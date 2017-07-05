@@ -31,6 +31,7 @@
 #include "domain_conf.h"
 #include "virtime.h"
 #include "virhostcpu.h"
+#include "virsocketaddr.h"
 
 #include "storage/storage_driver.h"
 #include "vz_sdk.h"

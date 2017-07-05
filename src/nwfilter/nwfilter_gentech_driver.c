@@ -37,6 +37,7 @@
 #include "nwfilter_learnipaddr.h"
 #include "virnetdev.h"
 #include "datatypes.h"
+#include "virsocketaddr.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER

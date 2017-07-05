@@ -581,6 +581,10 @@ char *virIndexToDiskName(int idx, const char *prefix)
 # define AI_CANONIDN 0
 #endif
 
+#ifndef HOST_NAME_MAX
+# define HOST_NAME_MAX 256
+#endif
+
 /* Who knew getting a hostname could be so delicate.  In Linux (and Unices
  * in general), many things depend on "hostname" returning a value that will
  * resolve one way or another.  In the modern world where networks frequently
