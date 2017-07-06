@@ -11708,10 +11708,9 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
      * Additionally, if qemu hasn't written to the file yet, then set the
      * allocation to whatever qemu returned for physical (e.g. the "actual-
      * size" from the json query) as that will match the expected allocation
-     * value for this API. */
+     * value for this API. NB: May still be 0 for block. */
     if (entry->physical == 0 || info->allocation == 0 ||
         info->allocation == entry->physical) {
-        info->allocation = entry->physical;
         if (info->allocation == 0)
             info->allocation = entry->physical;
 
