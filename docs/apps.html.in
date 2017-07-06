@@ -458,6 +458,14 @@
         providers, OpenStack based public/private clouds, Docker servers, bare
         metal servers and now KVM hypervisors).
       </dd>
+      <dt><a href="http://ravada.upc.edu/">Ravada</a></dt>
+      <dd>
+        Ravada is an open source tool for managing Virtual Desktop
+        Infrastructure (VDI). It is very easy to install and use. Following
+        the documentation, you'll be ready to deploy virtual machines in
+        minutes. The only requirements for the users are a Web browser and
+        a lightweight remote viewer.
+      </dd>
     </dl>
 
     <h2><a name="mobile">Mobile applications</a></h2>
