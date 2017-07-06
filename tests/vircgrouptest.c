@@ -885,6 +885,7 @@ mymain(void)
     DETECT_MOUNTS("cgroups3");
     DETECT_MOUNTS("all-in-one");
     DETECT_MOUNTS("no-cgroups");
+    DETECT_MOUNTS("kubevirt");
 
     if (virTestRun("New cgroup for self", testCgroupNewForSelf, NULL) < 0)
         ret = -1;

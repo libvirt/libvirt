@@ -397,6 +397,7 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
             const char *typestr = virCgroupControllerTypeToString(i);
             int typelen = strlen(typestr);
             char *tmp = entry.mnt_opts;
+            struct virCgroupController *controller = &group->controllers[i];
             while (tmp) {
                 char *next = strchr(tmp, ',');
                 int len;
@@ -406,18 +407,22 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
                 } else {
                     len = strlen(tmp);
                 }
-                /* NB, the same controller can appear >1 time in mount list
-                 * due to bind mounts from one location to another. Pick the
-                 * first entry only
-                 */
-                if (typelen == len && STREQLEN(typestr, tmp, len) &&
-                    !group->controllers[i].mountPoint) {
+
+                if (typelen == len && STREQLEN(typestr, tmp, len)) {
                     char *linksrc;
                     struct stat sb;
                     char *tmp2;
 
-                    if (VIR_STRDUP(group->controllers[i].mountPoint,
-                                   entry.mnt_dir) < 0)
+                    /* Note that the lines in /proc/mounts have the same
+                     * order than the mount operations, and that there may
+                     * be duplicates due to bind mounts. This means
+                     * that the same mount point may be processed more than
+                     * once. We need to save the results of the last one,
+                     * and we need to be careful to release the memory used
+                     * by previous processing. */
+                    VIR_FREE(controller->mountPoint);
+                    VIR_FREE(controller->linkPoint);
+                    if (VIR_STRDUP(controller->mountPoint, entry.mnt_dir) < 0)
                         goto error;
 
                     tmp2 = strrchr(entry.mnt_dir, '/');
@@ -453,7 +458,7 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
                                 VIR_WARN("Expecting a symlink at %s for controller %s",
                                          linksrc, typestr);
                             } else {
-                                group->controllers[i].linkPoint = linksrc;
+                                controller->linkPoint = linksrc;
                             }
                         }
                     }
