@@ -1886,7 +1886,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
     virCPUDefFormatBufFull(buf, priv->origCPU, NULL, false);
 
     if (priv->chardevStdioLogd)
-        virBufferAddLit(buf, "<chardevStdioLogd/>");
+        virBufferAddLit(buf, "<chardevStdioLogd/>\n");
 
     return 0;
 }
