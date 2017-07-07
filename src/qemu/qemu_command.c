@@ -1348,7 +1348,7 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
     int ret = -1;
 
     if (qemuDiskSourceNeedsProps(disk->src) &&
-        qemuGetDriveSourceProps(disk->src, &srcprops) < 0)
+        !(srcprops = qemuBlockStorageSourceGetBackendProps(disk->src)))
         goto cleanup;
 
     if (!srcprops &&

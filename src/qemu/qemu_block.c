@@ -519,14 +519,19 @@ qemuBuildGlusterDriveJSON(virStorageSourcePtr src)
 }
 
 
-int
-qemuGetDriveSourceProps(virStorageSourcePtr src,
-                        virJSONValuePtr *props)
+/**
+ * qemuBlockStorageSourceGetBackendProps:
+ * @src: disk source
+ *
+ * Creates a JSON object describing the underlying storage or protocol of a
+ * storage source. Returns NULL on error and reports an appropriate error message.
+ */
+virJSONValuePtr
+qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
 {
     int actualType = virStorageSourceGetActualType(src);
     virJSONValuePtr fileprops = NULL;
-
-    *props = NULL;
+    virJSONValuePtr ret = NULL;
 
     switch ((virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -538,19 +543,35 @@ qemuGetDriveSourceProps(virStorageSourcePtr src,
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        if (src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
-            src->nhosts > 1) {
+        switch ((virStorageNetProtocol) src->protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             if (!(fileprops = qemuBuildGlusterDriveJSON(src)))
-                return -1;
+                goto cleanup;
+            break;
+
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
+        case VIR_STORAGE_NET_PROTOCOL_NONE:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
+            break;
         }
         break;
     }
 
-    if (fileprops &&
-        virJSONValueObjectCreate(props, "a:file", fileprops, NULL) < 0) {
-        virJSONValueFree(fileprops);
-        return -1;
-    }
+    if (virJSONValueObjectCreate(&ret, "a:file", fileprops, NULL) < 0)
+        goto cleanup;
 
-    return 0;
+    fileprops = NULL;
+
+ cleanup:
+    virJSONValueFree(fileprops);
+    return ret;
 }
