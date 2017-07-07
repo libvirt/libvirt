@@ -949,6 +949,10 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
         goto cleanup;
 
     if (src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
+        if ((uri->port = qemuNetworkDriveGetPort(src->protocol,
+                                                 src->hosts->port)) < 0)
+            goto cleanup;
+
         if (VIR_STRDUP(uri->scheme,
                        virStorageNetProtocolTypeToString(src->protocol)) < 0)
             goto cleanup;
@@ -958,10 +962,6 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
                         virStorageNetHostTransportTypeToString(src->hosts->transport)) < 0)
             goto cleanup;
     }
-
-    if ((uri->port = qemuNetworkDriveGetPort(src->protocol,
-                                             src->hosts->port)) < 0)
-        goto cleanup;
 
     if (src->path) {
         if (src->volume) {
