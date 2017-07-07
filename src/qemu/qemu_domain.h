@@ -363,6 +363,9 @@ struct _qemuDomainObjPrivate {
 
     /* true if qemu-pr-helper process is running for the domain */
     bool prDaemonRunning;
+
+    /* counter for generating node names for qemu disks */
+    unsigned long long nodenameindex;
 };
 
 # define QEMU_DOMAIN_PRIVATE(vm) \
@@ -1062,5 +1065,8 @@ qemuDomainDiskCachemodeFlags(int cachemode,
                              bool *noflush);
 
 char * qemuDomainGetManagedPRSocketPath(qemuDomainObjPrivatePtr priv);
+
+unsigned int qemuDomainStorageIdNew(qemuDomainObjPrivatePtr priv);
+void qemuDomainStorageIdReset(qemuDomainObjPrivatePtr priv);
 
 #endif /* __QEMU_DOMAIN_H__ */

@@ -7157,6 +7157,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     /* clear all private data entries which are no longer needed */
     qemuDomainObjPrivateDataClear(priv);
 
+    /* reset node name allocator */
+    qemuDomainStorageIdReset(priv);
+
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
         char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);

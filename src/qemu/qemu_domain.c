@@ -2438,6 +2438,9 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
 
     qemuDomainObjPrivateXMLFormatPR(buf, priv);
 
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
+        virBufferAsprintf(buf, "<nodename index='%llu'/>\n", priv->nodenameindex);
+
     if (qemuDomainObjPrivateXMLFormatBlockjobs(buf, vm) < 0)
         return -1;
 
@@ -2932,6 +2935,14 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 
     if (qemuDomainObjPrivateXMLParseBlockjobs(priv, ctxt) < 0)
         goto error;
+
+    qemuDomainStorageIdReset(priv);
+    if (virXPathULongLong("string(./nodename/@index)", ctxt,
+                          &priv->nodenameindex) == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("failed to parse node name index"));
+        goto error;
+    }
 
     return 0;
 
@@ -13178,4 +13189,31 @@ qemuDomainGetManagedPRSocketPath(qemuDomainObjPrivatePtr priv)
                              qemuDomainGetManagedPRAlias()));
 
     return ret;
+}
+
+
+/**
+ * qemuDomainStorageIdNew:
+ * @priv: qemu VM private data object.
+ *
+ * Generate a new unique id for a storage object. Useful for node name generation.
+ */
+unsigned int
+qemuDomainStorageIdNew(qemuDomainObjPrivatePtr priv)
+{
+    return ++priv->nodenameindex;
+}
+
+
+/**
+ * qemuDomainStorageIdReset:
+ * @priv: qemu VM private data object.
+ *
+ * Resets the data for the node name generator. The node names need to be unique
+ * for a single instance, so can be reset on VM shutdown.
+ */
+void
+qemuDomainStorageIdReset(qemuDomainObjPrivatePtr priv)
+{
+    priv->nodenameindex = 0;
 }

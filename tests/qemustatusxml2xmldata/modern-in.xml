@@ -233,6 +233,7 @@
     <flag name='isa-serial'/>
     <flag name='dump-completed'/>
     <flag name='hda-output'/>
+    <flag name='blockdev'/>
   </qemuCaps>
   <devices>
     <device alias='rng0'/>
@@ -258,6 +259,7 @@
   <channelTargetDir path='/var/lib/libvirt/qemu/channel/target/domain-1-upstream'/>
   <chardevStdioLogd/>
   <allowReboot value='yes'/>
+  <nodename index='123'/>
   <blockjobs active='no'/>
   <domain type='kvm' id='1'>
     <name>upstream</name>
