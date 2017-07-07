@@ -53,4 +53,9 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
 virHashTablePtr
 qemuBlockGetNodeData(virJSONValuePtr data);
 
+
+int
+qemuGetDriveSourceProps(virStorageSourcePtr src,
+                        virJSONValuePtr *props);
+
 #endif /* __QEMU_BLOCK_H__ */

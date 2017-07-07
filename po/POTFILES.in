@@ -129,6 +129,7 @@ src/openvz/openvz_util.c
 src/phyp/phyp_driver.c
 src/qemu/qemu_agent.c
 src/qemu/qemu_alias.c
+src/qemu/qemu_block.c
 src/qemu/qemu_capabilities.c
 src/qemu/qemu_cgroup.c
 src/qemu/qemu_command.c

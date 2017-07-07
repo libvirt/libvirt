@@ -428,3 +428,129 @@ qemuBlockGetNodeData(virJSONValuePtr data)
     virHashFree(ret);
     return NULL;
 }
+
+
+/* builds the hosts array */
+static virJSONValuePtr
+qemuBuildGlusterDriveJSONHosts(virStorageSourcePtr src)
+{
+    virJSONValuePtr servers = NULL;
+    virJSONValuePtr server = NULL;
+    virJSONValuePtr ret = NULL;
+    virStorageNetHostDefPtr host;
+    const char *transport;
+    size_t i;
+
+    if (!(servers = virJSONValueNewArray()))
+        goto cleanup;
+
+    for (i = 0; i < src->nhosts; i++) {
+        host = src->hosts + i;
+        transport = virStorageNetHostTransportTypeToString(host->transport);
+
+        if (virJSONValueObjectCreate(&server, "s:type", transport, NULL) < 0)
+            goto cleanup;
+
+        switch ((virStorageNetHostTransport) host->transport) {
+        case VIR_STORAGE_NET_HOST_TRANS_TCP:
+            if (virJSONValueObjectAdd(server,
+                                      "s:host", host->name,
+                                      "s:port", host->port,
+                                      NULL) < 0)
+                goto cleanup;
+            break;
+
+        case VIR_STORAGE_NET_HOST_TRANS_UNIX:
+            if (virJSONValueObjectAdd(server,
+                                      "s:socket", host->socket,
+                                      NULL) < 0)
+                goto cleanup;
+            break;
+
+        case VIR_STORAGE_NET_HOST_TRANS_RDMA:
+        case VIR_STORAGE_NET_HOST_TRANS_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("transport protocol '%s' is not yet supported"),
+                           transport);
+            goto cleanup;
+        }
+
+        if (virJSONValueArrayAppend(servers, server) < 0)
+            goto cleanup;
+
+        server = NULL;
+    }
+
+    ret = servers;
+    servers = NULL;
+
+ cleanup:
+    virJSONValueFree(servers);
+    virJSONValueFree(server);
+
+    return ret;
+}
+
+
+static virJSONValuePtr
+qemuBuildGlusterDriveJSON(virStorageSourcePtr src)
+{
+    const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
+    virJSONValuePtr servers = NULL;
+    virJSONValuePtr ret = NULL;
+
+    if (!(servers = qemuBuildGlusterDriveJSONHosts(src)))
+        return NULL;
+
+     /* { driver:"gluster",
+      *   volume:"testvol",
+      *   path:"/a.img",
+      *   server :[{type:"tcp", host:"1.2.3.4", port:24007},
+      *            {type:"unix", socket:"/tmp/glusterd.socket"}, ...]}
+      */
+    if (virJSONValueObjectCreate(&ret,
+                                 "s:driver", protocol,
+                                 "s:volume", src->volume,
+                                 "s:path", src->path,
+                                 "a:server", servers, NULL) < 0)
+          virJSONValueFree(servers);
+
+    return ret;
+}
+
+
+int
+qemuGetDriveSourceProps(virStorageSourcePtr src,
+                        virJSONValuePtr *props)
+{
+    int actualType = virStorageSourceGetActualType(src);
+    virJSONValuePtr fileprops = NULL;
+
+    *props = NULL;
+
+    switch ((virStorageType) actualType) {
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_FILE:
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_LAST:
+        break;
+
+    case VIR_STORAGE_TYPE_NETWORK:
+        if (src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
+            src->nhosts > 1) {
+            if (!(fileprops = qemuBuildGlusterDriveJSON(src)))
+                return -1;
+        }
+        break;
+    }
+
+    if (fileprops &&
+        virJSONValueObjectCreate(props, "a:file", fileprops, NULL) < 0) {
+        virJSONValueFree(fileprops);
+        return -1;
+    }
+
+    return 0;
+}
