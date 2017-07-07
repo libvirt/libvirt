@@ -430,9 +430,17 @@ qemuBlockGetNodeData(virJSONValuePtr data)
 }
 
 
-/* builds the hosts array */
+/**
+ * qemuBlockStorageSourceBuildHostsJSONSocketAddress:
+ * @src: disk storage source
+ * @legacy: use 'tcp' instead of 'inet' for compatibility reasons
+ *
+ * Formats src->hosts into a json object conforming to the 'SocketAddress' type
+ * in qemu.
+ */
 static virJSONValuePtr
-qemuBuildGlusterDriveJSONHosts(virStorageSourcePtr src)
+qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
+                                                  bool legacy)
 {
     virJSONValuePtr servers = NULL;
     virJSONValuePtr server = NULL;
@@ -446,24 +454,27 @@ qemuBuildGlusterDriveJSONHosts(virStorageSourcePtr src)
 
     for (i = 0; i < src->nhosts; i++) {
         host = src->hosts + i;
-        transport = virStorageNetHostTransportTypeToString(host->transport);
-
-        if (virJSONValueObjectCreate(&server, "s:type", transport, NULL) < 0)
-            goto cleanup;
 
         switch ((virStorageNetHostTransport) host->transport) {
         case VIR_STORAGE_NET_HOST_TRANS_TCP:
-            if (virJSONValueObjectAdd(server,
-                                      "s:host", host->name,
-                                      "s:port", host->port,
-                                      NULL) < 0)
+            if (legacy)
+                transport = "tcp";
+            else
+                transport = "inet";
+
+            if (virJSONValueObjectCreate(&server,
+                                         "s:type", transport,
+                                         "s:host", host->name,
+                                         "s:port", host->port,
+                                         NULL) < 0)
                 goto cleanup;
             break;
 
         case VIR_STORAGE_NET_HOST_TRANS_UNIX:
-            if (virJSONValueObjectAdd(server,
-                                      "s:socket", host->socket,
-                                      NULL) < 0)
+            if (virJSONValueObjectCreate(&server,
+                                         "s:type", "unix",
+                                         "s:socket", host->socket,
+                                         NULL) < 0)
                 goto cleanup;
             break;
 
@@ -481,8 +492,7 @@ qemuBuildGlusterDriveJSONHosts(virStorageSourcePtr src)
         server = NULL;
     }
 
-    ret = servers;
-    servers = NULL;
+    VIR_STEAL_PTR(ret, servers);
 
  cleanup:
     virJSONValueFree(servers);
@@ -499,7 +509,7 @@ qemuBuildGlusterDriveJSON(virStorageSourcePtr src)
     virJSONValuePtr servers = NULL;
     virJSONValuePtr ret = NULL;
 
-    if (!(servers = qemuBuildGlusterDriveJSONHosts(src)))
+    if (!(servers = qemuBlockStorageSourceBuildHostsJSONSocketAddress(src, true)))
         return NULL;
 
      /* { driver:"gluster",
