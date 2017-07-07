@@ -1436,6 +1436,28 @@ qemuDiskBusNeedsDeviceArg(int bus)
 }
 
 
+/**
+ * qemuDiskSourceNeedsProps:
+ * @src: disk source
+ *
+ * Returns true, if the disk source needs to be generated from the JSON
+ * representation. Otherwise, the disk source should be represented using
+ * the legacy representation.
+ */
+static bool
+qemuDiskSourceNeedsProps(virStorageSourcePtr src)
+{
+    int actualType = virStorageSourceGetActualType(src);
+
+    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
+        src->nhosts > 1)
+        return true;
+
+    return false;
+}
+
+
 static int
 qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
                         virQEMUDriverConfigPtr cfg,
@@ -1450,7 +1472,8 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
     char *source = NULL;
     int ret = -1;
 
-    if (qemuGetDriveSourceProps(disk->src, &srcprops) < 0)
+    if (qemuDiskSourceNeedsProps(disk->src) &&
+        qemuGetDriveSourceProps(disk->src, &srcprops) < 0)
         goto cleanup;
 
     if (!srcprops &&
