@@ -3959,3 +3959,46 @@ virStorageSourceFindByNodeName(virStorageSourcePtr top,
         *idx = 0;
     return NULL;
 }
+
+
+const char *
+virStorageSourceNetworkDefaultPort(virStorageNetProtocol protocol)
+{
+    switch (protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+            return "80";
+
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+            return "443";
+
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+            return "21";
+
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+            return "990";
+
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+            return "69";
+
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+            return "7000";
+
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+            return "10809";
+
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
+            return "22";
+
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+            /* no default port specified */
+            return "0";
+
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
+        case VIR_STORAGE_NET_PROTOCOL_NONE:
+            return NULL;
+    }
+
+    return NULL;
+}

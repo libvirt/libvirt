@@ -406,4 +406,7 @@ virStorageSourceFindByNodeName(virStorageSourcePtr top,
                                unsigned int *index)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+const char *
+virStorageSourceNetworkDefaultPort(virStorageNetProtocol protocol);
+
 #endif /* __VIR_STORAGE_FILE_H__ */

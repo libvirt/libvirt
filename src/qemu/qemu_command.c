@@ -482,55 +482,18 @@ qemuNetworkDriveGetPort(int protocol,
 {
     int ret = 0;
 
-    if (port) {
-        if (virStrToLong_i(port, NULL, 10, &ret) < 0 || ret < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to parse port number '%s'"),
-                           port);
-            return -1;
-        }
+    if (!port &&
+        !(port = virStorageSourceNetworkDefaultPort(protocol)))
+        return -1;
 
-        return ret;
+    if (virStrToLong_i(port, NULL, 10, &ret) < 0 || ret < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to parse port number '%s'"),
+                       port);
+        return -1;
     }
 
-    switch ((virStorageNetProtocol) protocol) {
-        case VIR_STORAGE_NET_PROTOCOL_HTTP:
-            return 80;
-
-        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
-            return 443;
-
-        case VIR_STORAGE_NET_PROTOCOL_FTP:
-            return 21;
-
-        case VIR_STORAGE_NET_PROTOCOL_FTPS:
-            return 990;
-
-        case VIR_STORAGE_NET_PROTOCOL_TFTP:
-            return 69;
-
-        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
-            return 7000;
-
-        case VIR_STORAGE_NET_PROTOCOL_NBD:
-            return 10809;
-
-        case VIR_STORAGE_NET_PROTOCOL_SSH:
-            return 22;
-
-        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
-        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-            /* no default port specified */
-            return 0;
-
-        case VIR_STORAGE_NET_PROTOCOL_RBD:
-        case VIR_STORAGE_NET_PROTOCOL_LAST:
-        case VIR_STORAGE_NET_PROTOCOL_NONE:
-            /* not applicable */
-            return -1;
-    }
-
-    return -1;
+    return ret;
 }
 
 
