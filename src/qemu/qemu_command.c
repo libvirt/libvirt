@@ -792,9 +792,6 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
 }
 
 
-#define QEMU_DEFAULT_NBD_PORT "10809"
-#define QEMU_DEFAULT_GLUSTER_PORT "24007"
-
 /* builds the hosts array */
 static virJSONValuePtr
 qemuBuildGlusterDriveJSONHosts(virStorageSourcePtr src)
@@ -804,7 +801,6 @@ qemuBuildGlusterDriveJSONHosts(virStorageSourcePtr src)
     virJSONValuePtr ret = NULL;
     virStorageNetHostDefPtr host;
     const char *transport;
-    const char *portstr;
     size_t i;
 
     if (!(servers = virJSONValueNewArray()))
@@ -813,19 +809,15 @@ qemuBuildGlusterDriveJSONHosts(virStorageSourcePtr src)
     for (i = 0; i < src->nhosts; i++) {
         host = src->hosts + i;
         transport = virStorageNetHostTransportTypeToString(host->transport);
-        portstr = host->port;
 
         if (virJSONValueObjectCreate(&server, "s:type", transport, NULL) < 0)
             goto cleanup;
-
-        if (!portstr)
-            portstr = QEMU_DEFAULT_GLUSTER_PORT;
 
         switch ((virStorageNetHostTransport) host->transport) {
         case VIR_STORAGE_NET_HOST_TRANS_TCP:
             if (virJSONValueObjectAdd(server,
                                       "s:host", host->name,
-                                      "s:port", portstr,
+                                      "s:port", host->port,
                                       NULL) < 0)
                 goto cleanup;
             break;
@@ -979,10 +971,8 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
 
                 switch (src->hosts->transport) {
                 case VIR_STORAGE_NET_HOST_TRANS_TCP:
-                    virBufferStrcat(&buf, src->hosts->name, NULL);
-                    virBufferAsprintf(&buf, ":%s",
-                                      src->hosts->port ? src->hosts->port :
-                                      QEMU_DEFAULT_NBD_PORT);
+                    virBufferStrcat(&buf, src->hosts->name, ":",
+                                    src->hosts->port, NULL);
                     break;
 
                 case VIR_STORAGE_NET_HOST_TRANS_UNIX:
