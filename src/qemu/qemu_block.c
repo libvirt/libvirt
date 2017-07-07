@@ -503,9 +503,8 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
 
 
 static virJSONValuePtr
-qemuBuildGlusterDriveJSON(virStorageSourcePtr src)
+qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src)
 {
-    const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
     virJSONValuePtr servers = NULL;
     virJSONValuePtr ret = NULL;
 
@@ -519,7 +518,7 @@ qemuBuildGlusterDriveJSON(virStorageSourcePtr src)
       *            {type:"unix", socket:"/tmp/glusterd.socket"}, ...]}
       */
     if (virJSONValueObjectCreate(&ret,
-                                 "s:driver", protocol,
+                                 "s:driver", "gluster",
                                  "s:volume", src->volume,
                                  "s:path", src->path,
                                  "a:server", servers, NULL) < 0)
@@ -555,7 +554,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
     case VIR_STORAGE_TYPE_NETWORK:
         switch ((virStorageNetProtocol) src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-            if (!(fileprops = qemuBuildGlusterDriveJSON(src)))
+            if (!(fileprops = qemuBlockStorageSourceGetGlusterProps(src)))
                 goto cleanup;
             break;
 
