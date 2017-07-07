@@ -11153,6 +11153,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(output);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
+    virshDomainFree(dom);
     return ret;
 }
 
