@@ -3990,11 +3990,15 @@ virStorageSourceNetworkDefaultPort(virStorageNetProtocol protocol)
             return "22";
 
         case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+            return "3260";
+
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-            /* no default port specified */
-            return "0";
+            return "24007";
 
         case VIR_STORAGE_NET_PROTOCOL_RBD:
+            /* we don't provide a default for RBD */
+            return NULL;
+
         case VIR_STORAGE_NET_PROTOCOL_LAST:
         case VIR_STORAGE_NET_PROTOCOL_NONE:
             return NULL;
