@@ -42,6 +42,18 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: platform serial devices can now use chardev features
+        </summary>
+        <description>
+          QEMU VMs that depend on platform serial devices can now use
+          QEMU's <code>-chardev</code> option, which enables access to
+          advanced features like log file configuration. This applies
+          to the default serial devices for arm, aarch64, and some ppc
+          configurations.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
