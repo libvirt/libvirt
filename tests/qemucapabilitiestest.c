@@ -175,6 +175,7 @@ mymain(void)
     DO_TEST("ppc64le", "caps_2.6.0");
     DO_TEST("s390x", "caps_2.7.0");
     DO_TEST("s390x", "caps_2.8.0");
+    DO_TEST("s390x", "caps_2.9.0");
 
     /*
      * Run "tests/qemucapsprobe /path/to/qemu/binary >foo.replies"

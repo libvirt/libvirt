@@ -1,7 +1,7 @@
 <qemuCaps>
-  <qemuctime>1495812539</qemuctime>
-  <selfctime>1496170776</selfctime>
-  <selfvers>3004000</selfvers>
+  <qemuctime>0</qemuctime>
+  <selfctime>0</selfctime>
+  <selfvers>0</selfvers>
   <usedQMP/>
   <flag name='kvm'/>
   <flag name='mem-path'/>
@@ -132,8 +132,9 @@
   <flag name='query-named-block-nodes'/>
   <flag name='kernel-irqchip'/>
   <flag name='kernel-irqchip.split'/>
-  <flag name='loadparm'/>
-  <version>2009050</version>
+  <flag name='virtio.iommu_platform'/>
+  <flag name='virtio.ats'/>
+  <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
   <arch>s390x</arch>
@@ -150,18 +151,10 @@
     <property name='edat2' type='boolean' value='true'/>
     <property name='vx' type='boolean' value='true'/>
     <property name='ipter' type='boolean' value='true'/>
-    <property name='cei' type='boolean' value='true'/>
-    <property name='gpereh' type='boolean' value='true'/>
     <property name='esop' type='boolean' value='true'/>
-    <property name='ib' type='boolean' value='true'/>
-    <property name='siif' type='boolean' value='true'/>
-    <property name='ibs' type='boolean' value='true'/>
-    <property name='sief2' type='boolean' value='true'/>
     <property name='cte' type='boolean' value='true'/>
-    <property name='64bscao' type='boolean' value='true'/>
     <property name='te' type='boolean' value='true'/>
     <property name='cmm' type='boolean' value='true'/>
-    <property name='gsls' type='boolean' value='true'/>
   </hostCPU>
   <cpu type='kvm' name='z10EC-base'/>
   <cpu type='kvm' name='z9EC-base'/>
@@ -210,8 +203,8 @@
   <cpu type='kvm' name='z10EC.2-base'/>
   <cpu type='kvm' name='z990.2'/>
   <cpu type='kvm' name='z890.2'/>
-  <cpu type='kvm' name='zBC12-base'/>
   <cpu type='kvm' name='z800-base'/>
+  <cpu type='kvm' name='zBC12-base'/>
   <cpu type='kvm' name='zEC12'/>
   <cpu type='kvm' name='z9BC.2-base'/>
   <cpu type='kvm' name='z9BC'/>
@@ -274,8 +267,8 @@
   <cpu type='tcg' name='z10EC.2-base'/>
   <cpu type='tcg' name='z990.2'/>
   <cpu type='tcg' name='z890.2'/>
-  <cpu type='tcg' name='zBC12-base'/>
   <cpu type='tcg' name='z800-base'/>
+  <cpu type='tcg' name='zBC12-base'/>
   <cpu type='tcg' name='zEC12'/>
   <cpu type='tcg' name='z9BC.2-base'/>
   <cpu type='tcg' name='z9BC'/>
@@ -291,11 +284,10 @@
   <cpu type='tcg' name='z196-base'/>
   <cpu type='tcg' name='z13-base'/>
   <cpu type='tcg' name='z890'/>
-  <machine name='s390-ccw-virtio-2.10' alias='s390-ccw-virtio' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.9' alias='s390-ccw-virtio' maxCpus='248'/>
   <machine name='s390-ccw-virtio-2.7' maxCpus='248'/>
   <machine name='s390-ccw-virtio-2.6' maxCpus='248'/>
   <machine name='s390-ccw-virtio-2.5' maxCpus='248'/>
   <machine name='s390-ccw-virtio-2.4' maxCpus='248'/>
-  <machine name='s390-ccw-virtio-2.9' maxCpus='248'/>
   <machine name='s390-ccw-virtio-2.8' maxCpus='248'/>
 </qemuCaps>
