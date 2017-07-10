@@ -1558,6 +1558,7 @@ mymain(void)
 
     DO_TEST("qemu-ns", NONE);
     DO_TEST("qemu-ns-no-env", NONE);
+    DO_TEST("qemu-ns-alt", NONE);
 
     DO_TEST("smp", NONE);
 
