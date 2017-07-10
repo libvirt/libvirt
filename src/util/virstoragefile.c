@@ -3961,7 +3961,7 @@ virStorageSourceFindByNodeName(virStorageSourcePtr top,
 }
 
 
-const char *
+static const char *
 virStorageSourceNetworkDefaultPort(virStorageNetProtocol protocol)
 {
     switch (protocol) {
@@ -4005,4 +4005,22 @@ virStorageSourceNetworkDefaultPort(virStorageNetProtocol protocol)
     }
 
     return NULL;
+}
+
+
+int
+virStorageSourceNetworkAssignDefaultPorts(virStorageSourcePtr src)
+{
+    size_t i;
+
+    for (i = 0; i < src->nhosts; i++) {
+        if (src->hosts[i].transport == VIR_STORAGE_NET_HOST_TRANS_TCP &&
+            src->hosts[i].port == NULL) {
+            if (VIR_STRDUP(src->hosts[i].port,
+                           virStorageSourceNetworkDefaultPort(src->protocol)) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
 }

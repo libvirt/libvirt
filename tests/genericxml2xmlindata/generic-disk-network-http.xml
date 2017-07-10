@@ -17,14 +17,14 @@
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
       <source protocol='http' name='test.img'>
-        <host name='example.org'/>
+        <host name='example.org' port='80'/>
       </source>
       <target dev='vda' bus='virtio'/>
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
       <source protocol='https' name='test2.img'>
-        <host name='example.org'/>
+        <host name='example.org' port='443'/>
       </source>
       <target dev='vdb' bus='virtio'/>
     </disk>

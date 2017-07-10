@@ -7846,6 +7846,9 @@ virDomainDiskSourceParse(xmlNodePtr node,
 
         if (virDomainStorageHostParse(node, &src->hosts, &src->nhosts) < 0)
             goto cleanup;
+
+        if (virStorageSourceNetworkAssignDefaultPorts(src) < 0)
+            goto cleanup;
         break;
     case VIR_STORAGE_TYPE_VOLUME:
         if (virDomainDiskSourcePoolDefParse(node, &src->srcpool) < 0)

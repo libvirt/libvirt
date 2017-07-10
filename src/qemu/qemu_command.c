@@ -477,14 +477,9 @@ qemuSafeSerialParamValue(const char *value)
 
 
 static int
-qemuNetworkDriveGetPort(int protocol,
-                        const char *port)
+qemuNetworkDriveGetPort(const char *port)
 {
     int ret = 0;
-
-    if (!port &&
-        !(port = virStorageSourceNetworkDefaultPort(protocol)))
-        return -1;
 
     if (virStrToLong_i(port, NULL, 10, &ret) < 0 || ret < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -912,8 +907,7 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
         goto cleanup;
 
     if (src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
-        if ((uri->port = qemuNetworkDriveGetPort(src->protocol,
-                                                 src->hosts->port)) < 0)
+        if ((uri->port = qemuNetworkDriveGetPort(src->hosts->port)) < 0)
             goto cleanup;
 
         if (VIR_STRDUP(uri->scheme,

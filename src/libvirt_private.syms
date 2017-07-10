@@ -2617,7 +2617,7 @@ virStorageSourceIsBlockLocal;
 virStorageSourceIsEmpty;
 virStorageSourceIsLocalStorage;
 virStorageSourceIsRelative;
-virStorageSourceNetworkDefaultPort;
+virStorageSourceNetworkAssignDefaultPorts;
 virStorageSourceNewFromBacking;
 virStorageSourceNewFromBackingAbsolute;
 virStorageSourceParseRBDColonString;
