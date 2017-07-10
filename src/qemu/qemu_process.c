@@ -1877,9 +1877,7 @@ qemuProcessMonitorReportLogError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessLookupPTYs(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                      virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
-                      virDomainChrDefPtr *devices,
+qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
                       int count,
                       virHashTablePtr info)
 {
@@ -1927,24 +1925,18 @@ qemuProcessLookupPTYs(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 static int
 qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
-                                     virQEMUCapsPtr qemuCaps,
                                      virHashTablePtr info)
 {
     size_t i = 0;
 
-    if (qemuProcessLookupPTYs(vm->def, qemuCaps,
-                              vm->def->serials, vm->def->nserials,
+    if (qemuProcessLookupPTYs(vm->def->serials, vm->def->nserials, info) < 0)
+        return -1;
+
+    if (qemuProcessLookupPTYs(vm->def->parallels, vm->def->nparallels,
                               info) < 0)
         return -1;
 
-    if (qemuProcessLookupPTYs(vm->def, qemuCaps,
-                              vm->def->parallels, vm->def->nparallels,
-                              info) < 0)
-        return -1;
-
-    if (qemuProcessLookupPTYs(vm->def, qemuCaps,
-                              vm->def->channels, vm->def->nchannels,
-                              info) < 0)
+    if (qemuProcessLookupPTYs(vm->def->channels, vm->def->nchannels, info) < 0)
         return -1;
     /* For historical reasons, console[0] can be just an alias
      * for serial[0]. That's why we need to update it as well. */
@@ -1962,8 +1954,7 @@ qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
         }
     }
 
-    if (qemuProcessLookupPTYs(vm->def, qemuCaps,
-                              vm->def->consoles + i, vm->def->nconsoles - i,
+    if (qemuProcessLookupPTYs(vm->def->consoles + i, vm->def->nconsoles - i,
                               info) < 0)
         return -1;
 
@@ -2111,7 +2102,6 @@ static int
 qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           int asyncJob,
-                          virQEMUCapsPtr qemuCaps,
                           qemuDomainLogContextPtr logCtxt)
 {
     int ret = -1;
@@ -2135,8 +2125,7 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
         ret = -1;
 
     if (ret == 0) {
-        if ((ret = qemuProcessFindCharDevicePTYsMonitor(vm, qemuCaps,
-                                                        info)) < 0)
+        if ((ret = qemuProcessFindCharDevicePTYsMonitor(vm, info)) < 0)
             goto cleanup;
 
         if ((ret = qemuProcessRefreshChannelVirtioState(driver, vm, info,
@@ -5870,7 +5859,7 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Waiting for monitor to show up");
-    if (qemuProcessWaitForMonitor(driver, vm, asyncJob, priv->qemuCaps, logCtxt) < 0)
+    if (qemuProcessWaitForMonitor(driver, vm, asyncJob, logCtxt) < 0)
         goto cleanup;
 
     if (qemuConnectAgent(driver, vm) < 0)
@@ -6724,7 +6713,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_EXTERNAL_LAUNCH, logCtxt);
 
     VIR_DEBUG("Waiting for monitor to show up");
-    if (qemuProcessWaitForMonitor(driver, vm, QEMU_ASYNC_JOB_NONE, priv->qemuCaps, NULL) < 0)
+    if (qemuProcessWaitForMonitor(driver, vm, QEMU_ASYNC_JOB_NONE, NULL) < 0)
         goto error;
 
     if (qemuConnectAgent(driver, vm) < 0)
