@@ -16684,6 +16684,50 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
 }
 
 
+static int
+qemuDomainBlockCopyValidateMirror(virStorageSourcePtr mirror,
+                                  const char *dst,
+                                  bool *reuse)
+{
+    int desttype = virStorageSourceGetActualType(mirror);
+    struct stat st;
+
+    if (stat(mirror->path, &st) < 0) {
+        if (errno != ENOENT) {
+            virReportSystemError(errno, _("unable to stat for disk %s: %s"),
+                                 dst, mirror->path);
+            return -1;
+        } else if (*reuse || desttype == VIR_STORAGE_TYPE_BLOCK) {
+            virReportSystemError(errno,
+                                 _("missing destination file for disk %s: %s"),
+                                 dst, mirror->path);
+            return -1;
+        }
+    } else if (!S_ISBLK(st.st_mode)) {
+        if (st.st_size && !(*reuse)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("external destination file for disk %s already "
+                             "exists and is not a block device: %s"),
+                           dst, mirror->path);
+            return -1;
+        }
+        if (desttype == VIR_STORAGE_TYPE_BLOCK) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("blockdev flag requested for disk %s, but file "
+                             "'%s' is not a block device"),
+                           dst, mirror->path);
+            return -1;
+        }
+    } else {
+        /* if the target is a block device, assume that we are reusing it, so
+         * there are no attempts to create it */
+        *reuse = true;
+    }
+
+    return 0;
+}
+
+
 /* bandwidth in bytes/s.  Caller must lock vm beforehand, and not
  * access mirror afterwards.  */
 static int
@@ -16702,11 +16746,9 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     char *device = NULL;
     virDomainDiskDefPtr disk = NULL;
     int ret = -1;
-    struct stat st;
     bool need_unlink = false;
     virQEMUDriverConfigPtr cfg = NULL;
     const char *format = NULL;
-    int desttype = virStorageSourceGetActualType(mirror);
     virErrorPtr monitor_error = NULL;
     bool reuse = !!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
 
@@ -16789,37 +16831,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (qemuDomainStorageFileInit(driver, vm, mirror) < 0)
         goto endjob;
 
-    if (stat(mirror->path, &st) < 0) {
-        if (errno != ENOENT) {
-            virReportSystemError(errno, _("unable to stat for disk %s: %s"),
-                                 disk->dst, mirror->path);
-            goto endjob;
-        } else if (reuse || desttype == VIR_STORAGE_TYPE_BLOCK) {
-            virReportSystemError(errno,
-                                 _("missing destination file for disk %s: %s"),
-                                 disk->dst, mirror->path);
-            goto endjob;
-        }
-    } else if (!S_ISBLK(st.st_mode)) {
-        if (st.st_size && !reuse) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("external destination file for disk %s already "
-                             "exists and is not a block device: %s"),
-                           disk->dst, mirror->path);
-            goto endjob;
-        }
-        if (desttype == VIR_STORAGE_TYPE_BLOCK) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("blockdev flag requested for disk %s, but file "
-                             "'%s' is not a block device"),
-                           disk->dst, mirror->path);
-            goto endjob;
-        }
-    } else {
-        /* if the target is a block device, assume that we are reusing it, so
-         * there are no attempts to create it */
-        reuse = true;
-    }
+    if (qemuDomainBlockCopyValidateMirror(mirror, disk->dst, &reuse) < 0)
+        goto endjob;
 
     if (!mirror->format) {
         if (!reuse) {
