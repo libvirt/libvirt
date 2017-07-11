@@ -3934,6 +3934,47 @@ qemuProcessVerifyCPUFeatures(virDomainDefPtr def,
 
 
 static int
+qemuProcessFetchGuestCPU(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         qemuDomainAsyncJob asyncJob,
+                         virCPUDataPtr *enabled,
+                         virCPUDataPtr *disabled)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCPUDataPtr dataEnabled = NULL;
+    virCPUDataPtr dataDisabled = NULL;
+    int rc;
+
+    *enabled = NULL;
+    *disabled = NULL;
+
+    if (!ARCH_IS_X86(vm->def->os.arch))
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto error;
+
+    rc = qemuMonitorGetGuestCPU(priv->mon, vm->def->os.arch,
+                                &dataEnabled, &dataDisabled);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto error;
+
+    if (rc == -1)
+        goto error;
+
+    *enabled = dataEnabled;
+    *disabled = dataDisabled;
+    return 0;
+
+ error:
+    virCPUDataFree(dataEnabled);
+    virCPUDataFree(dataDisabled);
+    return -1;
+}
+
+
+static int
 qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               qemuDomainAsyncJob asyncJob)
@@ -3946,21 +3987,10 @@ qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
     int ret = -1;
     virCPUDefPtr orig = NULL;
 
-    if (ARCH_IS_X86(def->os.arch)) {
-        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-            goto cleanup;
+    if (qemuProcessFetchGuestCPU(driver, vm, asyncJob, &cpu, &disabled) < 0)
+        goto cleanup;
 
-        rc = qemuMonitorGetGuestCPU(priv->mon, def->os.arch, &cpu, &disabled);
-
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto cleanup;
-
-        if (rc < 0) {
-            if (rc == -2)
-                ret = 0;
-            goto cleanup;
-        }
-
+    if (cpu) {
         if (qemuProcessVerifyKVMFeatures(def, cpu) < 0 ||
             qemuProcessVerifyHypervFeatures(def, cpu) < 0)
             goto cleanup;
