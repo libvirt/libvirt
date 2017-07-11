@@ -16811,6 +16811,10 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                            disk->dst, mirror->path);
             goto endjob;
         }
+    } else {
+        /* if the target is a block device, assume that we are reusing it, so
+         * there are no attempts to create it */
+        reuse = true;
     }
 
     if (!mirror->format) {
@@ -16850,6 +16854,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 
     /* Actually start the mirroring */
     qemuDomainObjEnterMonitor(driver, vm);
+    /* qemuMonitorDriveMirror needs to honor the REUSE_EXT flag as specified
+     * by the user regardless of how @reuse was modified */
     ret = qemuMonitorDriveMirror(priv->mon, device, mirror->path, format,
                                  bandwidth, granularity, buf_size, flags);
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
