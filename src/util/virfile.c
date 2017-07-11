@@ -3900,8 +3900,12 @@ virFileInData(int fd,
     ret = 0;
  cleanup:
     /* At any rate, reposition back to where we started. */
-    if (cur != (off_t) -1)
-        ignore_value(lseek(fd, cur, SEEK_SET));
+    if (cur != (off_t) -1 &&
+        lseek(fd, cur, SEEK_SET) == (off_t) -1) {
+        virReportSystemError(errno, "%s",
+                             _("unable to restore position in file"));
+        ret = -1;
+    }
     return ret;
 }
 
