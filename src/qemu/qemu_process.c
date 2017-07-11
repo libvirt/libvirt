@@ -3747,6 +3747,30 @@ qemuProcessUpdateAndVerifyCPU(virQEMUDriverPtr driver,
 
 
 static int
+qemuProcessUpdateCPU(virQEMUDriverPtr driver,
+                     virDomainObjPtr vm,
+                     qemuDomainAsyncJob asyncJob)
+{
+    virCPUDataPtr cpu = NULL;
+    virCPUDataPtr disabled = NULL;
+    int ret = -1;
+
+    if (qemuProcessFetchGuestCPU(driver, vm, asyncJob, &cpu, &disabled) < 0)
+        goto cleanup;
+
+    if (qemuProcessUpdateLiveGuestCPU(vm, cpu, disabled) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virCPUDataFree(cpu);
+    virCPUDataFree(disabled);
+    return ret;
+}
+
+
+static int
 qemuPrepareNVRAM(virQEMUDriverConfigPtr cfg,
                  virDomainObjPtr vm)
 {
@@ -6840,6 +6864,30 @@ qemuProcessReconnect(void *opaque)
      */
     ignore_value(qemuSecurityCheckAllLabel(driver->securityManager,
                                            obj->def));
+
+    /* If the domain with a host-model CPU was started by an old libvirt
+     * (< 2.3) which didn't replace the CPU with a custom one, let's do it now
+     * since the rest of our code does not really expect a host-model CPU in a
+     * running domain.
+     */
+    if (virQEMUCapsGuestIsNative(caps->host.arch, obj->def->os.arch) &&
+        caps->host.cpu &&
+        obj->def->cpu &&
+        obj->def->cpu->mode == VIR_CPU_MODE_HOST_MODEL) {
+        virCPUDefPtr host;
+
+        if (!(host = virCPUCopyMigratable(caps->host.cpu->arch, caps->host.cpu)))
+            goto error;
+
+        if (virCPUUpdate(obj->def->os.arch, obj->def->cpu, host) < 0) {
+            virCPUDefFree(host);
+            goto error;
+        }
+        virCPUDefFree(host);
+
+        if (qemuProcessUpdateCPU(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
+            goto error;
+    }
 
     if (qemuDomainRefreshVcpuInfo(driver, obj, QEMU_ASYNC_JOB_NONE, true) < 0)
         goto error;
