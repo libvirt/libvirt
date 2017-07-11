@@ -128,10 +128,14 @@
  *
  */
 # ifndef ATTRIBUTE_MOCKABLE
-#  if __GNUC_PREREQ(4, 5)
-#   define ATTRIBUTE_MOCKABLE __attribute__((__noinline__, __noclone__, __weak__))
+#  if defined(WIN32)
+#   define ATTRIBUTE_MOCKABLE
 #  else
-#   define ATTRIBUTE_MOCKABLE __attribute__((__noinline__, __weak__))
+#   if __GNUC_PREREQ(4, 5)
+#    define ATTRIBUTE_MOCKABLE __attribute__((__noinline__, __noclone__, __weak__))
+#   else
+#    define ATTRIBUTE_MOCKABLE __attribute__((__noinline__, __weak__))
+#   endif
 #  endif
 # endif
 
