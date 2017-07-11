@@ -3249,24 +3249,22 @@ static int
 virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
                                          virJSONValuePtr json)
 {
-    virJSONValuePtr fixedroot = NULL;
+    virJSONValuePtr deflattened = NULL;
     virJSONValuePtr file;
     const char *drvname;
     char *str = NULL;
     size_t i;
     int ret = -1;
 
-    if (!(file = virJSONValueObjectGetObject(json, "file"))) {
-        if (!(fixedroot = virJSONValueObjectDeflatten(json)))
-            goto cleanup;
+    if (!(deflattened = virJSONValueObjectDeflatten(json)))
+        goto cleanup;
 
-        if (!(file = virJSONValueObjectGetObject(fixedroot, "file"))) {
-            str = virJSONValueToString(json, false);
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("JSON backing volume defintion '%s' lacks 'file' object"),
-                           NULLSTR(str));
-            goto cleanup;
-        }
+    if (!(file = virJSONValueObjectGetObject(deflattened, "file"))) {
+        str = virJSONValueToString(json, false);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("JSON backing volume defintion '%s' lacks 'file' object"),
+                       NULLSTR(str));
+        goto cleanup;
     }
 
     if (!(drvname = virJSONValueObjectGetString(file, "driver"))) {
@@ -3290,7 +3288,7 @@ virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
 
  cleanup:
     VIR_FREE(str);
-    virJSONValueFree(fixedroot);
+    virJSONValueFree(deflattened);
     return ret;
 }
 
