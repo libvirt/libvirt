@@ -382,6 +382,8 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
     FILE *mounts = NULL;
     struct mntent entry;
     char buf[CGROUP_MAX_VAL];
+    char *linksrc = NULL;
+    int ret = -1;
 
     mounts = fopen(path, "r");
     if (mounts == NULL) {
@@ -409,7 +411,6 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
                 }
 
                 if (typelen == len && STREQLEN(typestr, tmp, len)) {
-                    char *linksrc;
                     struct stat sb;
                     char *tmp2;
 
@@ -423,35 +424,35 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
                     VIR_FREE(controller->mountPoint);
                     VIR_FREE(controller->linkPoint);
                     if (VIR_STRDUP(controller->mountPoint, entry.mnt_dir) < 0)
-                        goto error;
+                        goto cleanup;
 
                     tmp2 = strrchr(entry.mnt_dir, '/');
                     if (!tmp2) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("Missing '/' separator in cgroup mount '%s'"),
                                        entry.mnt_dir);
-                        goto error;
+                        goto cleanup;
                     }
 
                     /* If it is a co-mount it has a filename like "cpu,cpuacct"
                      * and we must identify the symlink path */
                     if (checkLinks && strchr(tmp2 + 1, ',')) {
                         *tmp2 = '\0';
+                        VIR_FREE(linksrc);
                         if (virAsprintf(&linksrc, "%s/%s",
                                         entry.mnt_dir, typestr) < 0)
-                            goto error;
+                            goto cleanup;
                         *tmp2 = '/';
 
                         if (lstat(linksrc, &sb) < 0) {
                             if (errno == ENOENT) {
                                 VIR_WARN("Controller %s co-mounted at %s is missing symlink at %s",
                                          typestr, entry.mnt_dir, linksrc);
-                                VIR_FREE(linksrc);
                             } else {
                                 virReportSystemError(errno,
                                                      _("Cannot stat %s"),
                                                      linksrc);
-                                goto error;
+                                goto cleanup;
                             }
                         } else {
                             if (!S_ISLNK(sb.st_mode)) {
@@ -459,6 +460,7 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
                                          linksrc, typestr);
                             } else {
                                 controller->linkPoint = linksrc;
+                                linksrc = NULL;
                             }
                         }
                     }
@@ -468,13 +470,11 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
         }
     }
 
+    ret = 0;
+ cleanup:
+    VIR_FREE(linksrc);
     VIR_FORCE_FCLOSE(mounts);
-
-    return 0;
-
- error:
-    VIR_FORCE_FCLOSE(mounts);
-    return -1;
+    return ret;
 }
 
 static int
