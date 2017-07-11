@@ -4000,7 +4000,7 @@ qemuProcessVerifyCPU(virDomainObjPtr vm,
 
 
 static int
-qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
+qemuProcessUpdateAndVerifyCPU(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               qemuDomainAsyncJob asyncJob)
 {
@@ -5917,7 +5917,7 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Verifying and updating provided guest CPU");
-    if (qemuProcessUpdateLiveGuestCPU(driver, vm, asyncJob) < 0)
+    if (qemuProcessUpdateAndVerifyCPU(driver, vm, asyncJob) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up post-init cgroup restrictions");
