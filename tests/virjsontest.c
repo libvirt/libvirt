@@ -240,40 +240,31 @@ testJSONCopy(const void *data)
 
     json = virJSONValueFromString(info->doc);
     if (!json) {
-        if (virTestGetVerbose())
-            fprintf(stderr, "Failed to parse %s\n", info->doc);
-        ret = -1;
+        VIR_TEST_VERBOSE("Failed to parse %s\n", info->doc);
         goto cleanup;
     }
 
     jsonCopy = virJSONValueCopy(json);
     if (!jsonCopy) {
-        if (virTestGetVerbose())
-            fprintf(stderr, "Failed to copy JSON data\n");
-        ret = -1;
+        VIR_TEST_VERBOSE("Failed to copy JSON data\n");
         goto cleanup;
     }
 
     result = virJSONValueToString(json, false);
     if (!result) {
-        if (virTestGetVerbose())
-            fprintf(stderr, "Failed to format original JSON data\n");
-        ret = -1;
+        VIR_TEST_VERBOSE("Failed to format original JSON data\n");
         goto cleanup;
     }
 
     resultCopy = virJSONValueToString(json, false);
     if (!resultCopy) {
-        if (virTestGetVerbose())
-            fprintf(stderr, "Failed to format copied JSON data\n");
-        ret = -1;
+        VIR_TEST_VERBOSE("Failed to format copied JSON data\n");
         goto cleanup;
     }
 
     if (STRNEQ(result, resultCopy)) {
         if (virTestGetVerbose())
             virTestDifference(stderr, result, resultCopy);
-        ret = -1;
         goto cleanup;
     }
 
@@ -282,24 +273,19 @@ testJSONCopy(const void *data)
 
     result = virJSONValueToString(json, true);
     if (!result) {
-        if (virTestGetVerbose())
-            fprintf(stderr, "Failed to format original JSON data\n");
-        ret = -1;
+        VIR_TEST_VERBOSE("Failed to format original JSON data\n");
         goto cleanup;
     }
 
     resultCopy = virJSONValueToString(json, true);
     if (!resultCopy) {
-        if (virTestGetVerbose())
-            fprintf(stderr, "Failed to format copied JSON data\n");
-        ret = -1;
+        VIR_TEST_VERBOSE("Failed to format copied JSON data\n");
         goto cleanup;
     }
 
     if (STRNEQ(result, resultCopy)) {
         if (virTestGetVerbose())
             virTestDifference(stderr, result, resultCopy);
-        ret = -1;
         goto cleanup;
     }
 
