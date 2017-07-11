@@ -4000,17 +4000,55 @@ qemuProcessVerifyCPU(virDomainObjPtr vm,
 
 
 static int
+qemuProcessUpdateLiveGuestCPU(virDomainObjPtr vm,
+                              virCPUDataPtr enabled,
+                              virCPUDataPtr disabled)
+{
+    virDomainDefPtr def = vm->def;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCPUDefPtr orig = NULL;
+    int rc;
+    int ret = -1;
+
+    if (!enabled)
+        return 0;
+
+    if (!def->cpu ||
+        (def->cpu->mode == VIR_CPU_MODE_CUSTOM &&
+         !def->cpu->model))
+        return 0;
+
+    if (!(orig = virCPUDefCopy(def->cpu)))
+        goto cleanup;
+
+    if ((rc = virCPUUpdateLive(def->os.arch, def->cpu, enabled, disabled)) < 0) {
+        goto cleanup;
+    } else if (rc == 0) {
+        /* Store the original CPU in priv if QEMU changed it and we didn't
+         * get the original CPU via migration, restore, or snapshot revert.
+         */
+        if (!priv->origCPU && !virCPUDefIsEqual(def->cpu, orig, false))
+            VIR_STEAL_PTR(priv->origCPU, orig);
+
+        def->cpu->check = VIR_CPU_CHECK_FULL;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virCPUDefFree(orig);
+    return ret;
+}
+
+
+static int
 qemuProcessUpdateAndVerifyCPU(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               qemuDomainAsyncJob asyncJob)
 {
-    virDomainDefPtr def = vm->def;
     virCPUDataPtr cpu = NULL;
     virCPUDataPtr disabled = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc;
     int ret = -1;
-    virCPUDefPtr orig = NULL;
 
     if (qemuProcessFetchGuestCPU(driver, vm, asyncJob, &cpu, &disabled) < 0)
         goto cleanup;
@@ -4018,36 +4056,14 @@ qemuProcessUpdateAndVerifyCPU(virQEMUDriverPtr driver,
     if (qemuProcessVerifyCPU(vm, cpu) < 0)
         goto cleanup;
 
-    if (cpu) {
-        if (!def->cpu ||
-            (def->cpu->mode == VIR_CPU_MODE_CUSTOM &&
-             !def->cpu->model)) {
-            ret = 0;
-            goto cleanup;
-        }
-
-        if (!(orig = virCPUDefCopy(def->cpu)))
-            goto cleanup;
-
-        if ((rc = virCPUUpdateLive(def->os.arch, def->cpu, cpu, disabled)) < 0) {
-            goto cleanup;
-        } else if (rc == 0) {
-            /* Store the original CPU in priv if QEMU changed it and we didn't
-             * get the original CPU via migration, restore, or snapshot revert.
-             */
-            if (!priv->origCPU && !virCPUDefIsEqual(def->cpu, orig, false))
-                VIR_STEAL_PTR(priv->origCPU, orig);
-
-            def->cpu->check = VIR_CPU_CHECK_FULL;
-        }
-    }
+    if (qemuProcessUpdateLiveGuestCPU(vm, cpu, disabled) < 0)
+        goto cleanup;
 
     ret = 0;
 
  cleanup:
     virCPUDataFree(cpu);
     virCPUDataFree(disabled);
-    virCPUDefFree(orig);
     return ret;
 }
 
