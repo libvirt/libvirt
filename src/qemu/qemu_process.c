@@ -3975,6 +3975,31 @@ qemuProcessFetchGuestCPU(virQEMUDriverPtr driver,
 
 
 static int
+qemuProcessVerifyCPU(virDomainObjPtr vm,
+                     virCPUDataPtr cpu)
+{
+    virDomainDefPtr def = vm->def;
+
+    if (!cpu)
+        return 0;
+
+    if (qemuProcessVerifyKVMFeatures(def, cpu) < 0 ||
+        qemuProcessVerifyHypervFeatures(def, cpu) < 0)
+        return -1;
+
+    if (!def->cpu ||
+        (def->cpu->mode == VIR_CPU_MODE_CUSTOM &&
+         !def->cpu->model))
+        return 0;
+
+    if (qemuProcessVerifyCPUFeatures(def, cpu) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               qemuDomainAsyncJob asyncJob)
@@ -3990,20 +4015,16 @@ qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
     if (qemuProcessFetchGuestCPU(driver, vm, asyncJob, &cpu, &disabled) < 0)
         goto cleanup;
 
-    if (cpu) {
-        if (qemuProcessVerifyKVMFeatures(def, cpu) < 0 ||
-            qemuProcessVerifyHypervFeatures(def, cpu) < 0)
-            goto cleanup;
+    if (qemuProcessVerifyCPU(vm, cpu) < 0)
+        goto cleanup;
 
+    if (cpu) {
         if (!def->cpu ||
             (def->cpu->mode == VIR_CPU_MODE_CUSTOM &&
              !def->cpu->model)) {
             ret = 0;
             goto cleanup;
         }
-
-        if (qemuProcessVerifyCPUFeatures(def, cpu) < 0)
-            goto cleanup;
 
         if (!(orig = virCPUDefCopy(def->cpu)))
             goto cleanup;
