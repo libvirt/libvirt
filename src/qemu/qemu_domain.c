@@ -8542,6 +8542,8 @@ struct qemuDomainAttachDeviceMknodData {
 };
 
 
+/* Our way of creating devices is highly linux specific */
+#if defined(__linux__)
 static int
 qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
                                   void *opaque)
@@ -8639,7 +8641,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-#ifdef WITH_SELINUX
+# ifdef WITH_SELINUX
     if (data->tcon &&
         lsetfilecon_raw(data->file, (VIR_SELINUX_CTX_CONST char *) data->tcon) < 0) {
         VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
@@ -8651,7 +8653,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
             goto cleanup;
         }
     }
-#endif
+# endif
 
     /* Finish mount process started earlier. */
     if (isReg &&
@@ -8662,9 +8664,9 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
  cleanup:
     if (ret < 0 && delDevice)
         unlink(data->file);
-#ifdef WITH_SELINUX
+# ifdef WITH_SELINUX
     freecon(data->tcon);
-#endif
+# endif
     virFileFreeACLs(&data->acl);
     return ret;
 }
@@ -8755,14 +8757,14 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-#ifdef WITH_SELINUX
+# ifdef WITH_SELINUX
     if (lgetfilecon_raw(file, &data.tcon) < 0 &&
         (errno != ENOTSUP && errno != ENODATA)) {
         virReportSystemError(errno,
                              _("Unable to get SELinux label from %s"), file);
         goto cleanup;
     }
-#endif
+# endif
 
     if (STRPREFIX(file, DEVPREFIX)) {
         size_t i;
@@ -8799,9 +8801,9 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
-#ifdef WITH_SELINUX
+# ifdef WITH_SELINUX
     freecon(data.tcon);
-#endif
+# endif
     virFileFreeACLs(&data.acl);
     if (isReg && target)
         umount(target);
@@ -8809,6 +8811,26 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
     return ret;
 }
+
+
+#else /* !defined(__linux__) */
+
+
+static int
+qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                                     virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                                     const char *file ATTRIBUTE_UNUSED,
+                                     char * const *devMountsPath ATTRIBUTE_UNUSED,
+                                     size_t ndevMountsPath ATTRIBUTE_UNUSED,
+                                     unsigned int ttl ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Namespaces are not supported on this platform."));
+    return -1;
+}
+
+
+#endif /* !defined(__linux__) */
 
 
 static int
