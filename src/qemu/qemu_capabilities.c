@@ -545,7 +545,7 @@ static const char *virQEMUCapsArchToString(virArch arch)
 
 /* Checks whether a domain with @guest arch can run natively on @host.
  */
-static bool
+bool
 virQEMUCapsGuestIsNative(virArch host,
                          virArch guest)
 {

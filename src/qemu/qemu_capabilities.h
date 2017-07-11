@@ -547,4 +547,7 @@ int virQEMUCapsFillDomainCaps(virCapsPtr caps,
                               virFirmwarePtr *firmwares,
                               size_t nfirmwares);
 
+bool virQEMUCapsGuestIsNative(virArch host,
+                              virArch guest);
+
 #endif /* __QEMU_CAPABILITIES_H__*/
