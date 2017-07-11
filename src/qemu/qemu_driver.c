@@ -16708,6 +16708,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     const char *format = NULL;
     int desttype = virStorageSourceGetActualType(mirror);
     virErrorPtr monitor_error = NULL;
+    bool reuse = !!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
 
     /* Preliminaries: find the disk we are editing, sanity checks */
     virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
@@ -16768,8 +16769,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 
     /* unless the user provides a pre-created file, shallow copy into a raw
      * file is not possible */
-    if ((flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW) &&
-        !(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT) &&
+    if ((flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW) && !reuse &&
         mirror->format == VIR_STORAGE_FILE_RAW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("shallow copy of disk '%s' into a raw file "
@@ -16790,15 +16790,14 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
             virReportSystemError(errno, _("unable to stat for disk %s: %s"),
                                  disk->dst, mirror->path);
             goto endjob;
-        } else if (flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT ||
-                   desttype == VIR_STORAGE_TYPE_BLOCK) {
+        } else if (reuse || desttype == VIR_STORAGE_TYPE_BLOCK) {
             virReportSystemError(errno,
                                  _("missing destination file for disk %s: %s"),
                                  disk->dst, mirror->path);
             goto endjob;
         }
     } else if (!S_ISBLK(st.st_mode)) {
-        if (st.st_size && !(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT)) {
+        if (st.st_size && !reuse) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("external destination file for disk %s already "
                              "exists and is not a block device: %s"),
@@ -16815,7 +16814,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     }
 
     if (!mirror->format) {
-        if (!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT)) {
+        if (!reuse) {
             mirror->format = disk->src->format;
         } else {
             /* If the user passed the REUSE_EXT flag, then either they
@@ -16828,7 +16827,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     }
 
     /* pre-create the image file */
-    if (!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT)) {
+    if (!reuse) {
         int fd = qemuOpenFile(driver, vm, mirror->path,
                               O_WRONLY | O_TRUNC | O_CREAT,
                               &need_unlink, NULL);
