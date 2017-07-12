@@ -1761,6 +1761,29 @@ qemuDomainObjPrivateXMLFormatVcpus(virBufferPtr buf,
 
 
 static int
+qemuDomainObjPtrivateXMLFormatAutomaticPlacement(virBufferPtr buf,
+                                                 qemuDomainObjPrivatePtr priv)
+{
+    char *nodeset = NULL;
+    int ret = -1;
+
+    if (!priv->autoNodeset)
+        return 0;
+
+    if (!(nodeset = virBitmapFormat(priv->autoNodeset)))
+        goto cleanup;
+
+    virBufferAsprintf(buf, "<numad nodeset='%s'/>\n", nodeset);
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(nodeset);
+    return ret;
+}
+
+
+static int
 qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
                               virDomainObjPtr vm)
 {
@@ -1869,15 +1892,8 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
         virBufferAddLit(buf, "</devices>\n");
     }
 
-    if (priv->autoNodeset) {
-        char *nodeset = virBitmapFormat(priv->autoNodeset);
-
-        if (!nodeset)
-            return -1;
-
-        virBufferAsprintf(buf, "<numad nodeset='%s'/>\n", nodeset);
-        VIR_FREE(nodeset);
-    }
+    if (qemuDomainObjPtrivateXMLFormatAutomaticPlacement(buf, priv) < 0)
+        return -1;
 
     /* Various per-domain paths */
     virBufferEscapeString(buf, "<libDir path='%s'/>\n", priv->libDir);
@@ -1936,6 +1952,40 @@ qemuDomainObjPrivateXMLParseVcpu(xmlNodePtr node,
 
 
 static int
+qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
+                                               qemuDomainObjPrivatePtr priv,
+                                               virQEMUDriverPtr driver)
+{
+    virCapsPtr caps = NULL;
+    char *nodeset;
+    int ret = -1;
+
+    nodeset = virXPathString("string(./numad/@nodeset)", ctxt);
+
+    if (!nodeset)
+        return 0;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    if (virBitmapParse(nodeset, &priv->autoNodeset, caps->host.nnumaCell_max) < 0)
+        goto cleanup;
+
+    if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps,
+                                                               priv->autoNodeset)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(caps);
+    VIR_FREE(nodeset);
+
+    return ret;
+}
+
+
+static int
 qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                              virDomainObjPtr vm,
                              virDomainDefParserConfigPtr config)
@@ -1949,7 +1999,6 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     xmlNodePtr *nodes = NULL;
     xmlNodePtr node = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
-    virCapsPtr caps = NULL;
 
     if (VIR_ALLOC(priv->monConfig) < 0)
         goto error;
@@ -2133,20 +2182,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     }
     VIR_FREE(nodes);
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (qemuDomainObjPrivateXMLParseAutomaticPlacement(ctxt, priv, driver) < 0)
         goto error;
-
-    if ((tmp = virXPathString("string(./numad/@nodeset)", ctxt))) {
-        if (virBitmapParse(tmp, &priv->autoNodeset,
-                           caps->host.nnumaCell_max) < 0)
-            goto error;
-
-        if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps,
-                                                                   priv->autoNodeset)))
-            goto error;
-    }
-    virObjectUnref(caps);
-    VIR_FREE(tmp);
 
     if ((tmp = virXPathString("string(./libDir/@path)", ctxt)))
         priv->libDir = tmp;
@@ -2175,7 +2212,6 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     virStringListFree(priv->qemuDevices);
     priv->qemuDevices = NULL;
     virObjectUnref(qemuCaps);
-    virObjectUnref(caps);
     return -1;
 }
 
