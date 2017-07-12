@@ -1765,20 +1765,30 @@ qemuDomainObjPtrivateXMLFormatAutomaticPlacement(virBufferPtr buf,
                                                  qemuDomainObjPrivatePtr priv)
 {
     char *nodeset = NULL;
+    char *cpuset = NULL;
     int ret = -1;
 
-    if (!priv->autoNodeset)
+    if (!priv->autoNodeset && !priv->autoCpuset)
         return 0;
 
-    if (!(nodeset = virBitmapFormat(priv->autoNodeset)))
+    if (priv->autoNodeset &&
+        !((nodeset = virBitmapFormat(priv->autoNodeset))))
         goto cleanup;
 
-    virBufferAsprintf(buf, "<numad nodeset='%s'/>\n", nodeset);
+    if (priv->autoCpuset &&
+        !((cpuset = virBitmapFormat(priv->autoCpuset))))
+        goto cleanup;
+
+    virBufferAddLit(buf, "<numad");
+    virBufferEscapeString(buf, " nodeset='%s'", nodeset);
+    virBufferEscapeString(buf, " cpuset='%s'", cpuset);
+    virBufferAddLit(buf, "/>\n");
 
     ret = 0;
 
  cleanup:
     VIR_FREE(nodeset);
+    VIR_FREE(cpuset);
     return ret;
 }
 
@@ -1958,28 +1968,39 @@ qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
 {
     virCapsPtr caps = NULL;
     char *nodeset;
+    char *cpuset;
     int ret = -1;
 
     nodeset = virXPathString("string(./numad/@nodeset)", ctxt);
+    cpuset = virXPathString("string(./numad/@cpuset)", ctxt);
 
-    if (!nodeset)
+    if (!nodeset && !cpuset)
         return 0;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (virBitmapParse(nodeset, &priv->autoNodeset, caps->host.nnumaCell_max) < 0)
+    if (nodeset &&
+        virBitmapParse(nodeset, &priv->autoNodeset, caps->host.nnumaCell_max) < 0)
         goto cleanup;
 
-    if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps,
-                                                               priv->autoNodeset)))
-        goto cleanup;
+    if (cpuset) {
+        if (virBitmapParse(cpuset, &priv->autoCpuset, VIR_DOMAIN_CPUMASK_LEN) < 0)
+            goto cleanup;
+    } else {
+        /* autoNodeset is present in this case, since otherwise we wouldn't
+         * reach this code */
+        if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps,
+                                                                   priv->autoNodeset)))
+            goto cleanup;
+    }
 
     ret = 0;
 
  cleanup:
     virObjectUnref(caps);
     VIR_FREE(nodeset);
+    VIR_FREE(cpuset);
 
     return ret;
 }

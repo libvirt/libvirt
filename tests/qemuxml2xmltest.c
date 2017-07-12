@@ -95,7 +95,7 @@ static const char testStatusXMLPrefixFooter[] =
 "    <device alias='net0'/>\n"
 "    <device alias='usb'/>\n"
 "  </devices>\n"
-"  <numad nodeset='0-2'/>\n"
+"  <numad nodeset='0-2' cpuset='1,3'/>\n"
 "  <libDir path='/tmp'/>\n"
 "  <channelTargetDir path='/tmp/channel'/>\n";
 
