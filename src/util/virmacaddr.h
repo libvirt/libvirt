@@ -48,7 +48,7 @@ void virMacAddrGetRaw(const virMacAddr *src, unsigned char dst[VIR_MAC_BUFLEN]);
 const char *virMacAddrFormat(const virMacAddr *addr,
                              char *str);
 void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
-                        virMacAddrPtr addr) ATTRIBUTE_MOCKABLE;
+                        virMacAddrPtr addr) ATTRIBUTE_NOINLINE;
 int virMacAddrParse(const char* str,
                     virMacAddrPtr addr) ATTRIBUTE_RETURN_CHECK;
 int virMacAddrParseHex(const char* str,

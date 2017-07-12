@@ -188,7 +188,7 @@ void virFileActivateDirOverride(const char *argv0)
 
 off_t virFileLength(const char *path, int fd) ATTRIBUTE_NONNULL(1);
 bool virFileIsDir (const char *file) ATTRIBUTE_NONNULL(1);
-bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1) ATTRIBUTE_MOCKABLE;
+bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NOINLINE;
 bool virFileIsExecutable(const char *file) ATTRIBUTE_NONNULL(1);
 
 enum {

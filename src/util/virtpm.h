@@ -22,6 +22,6 @@
 #ifndef __VIR_TPM_H__
 # define __VIR_TPM_H__
 
-char *virTPMCreateCancelPath(const char *devpath) ATTRIBUTE_MOCKABLE;
+char *virTPMCreateCancelPath(const char *devpath) ATTRIBUTE_NOINLINE;
 
 #endif /* __VIR_TPM_H__ */

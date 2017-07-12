@@ -34,20 +34,20 @@ int virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode,
                              virBitmapPtr nodeset);
 
 virBitmapPtr virNumaGetHostMemoryNodeset(void);
-bool virNumaNodesetIsAvailable(virBitmapPtr nodeset) ATTRIBUTE_MOCKABLE;
-bool virNumaIsAvailable(void) ATTRIBUTE_MOCKABLE;
-int virNumaGetMaxNode(void) ATTRIBUTE_MOCKABLE;
-bool virNumaNodeIsAvailable(int node) ATTRIBUTE_MOCKABLE;
+bool virNumaNodesetIsAvailable(virBitmapPtr nodeset) ATTRIBUTE_NOINLINE;
+bool virNumaIsAvailable(void) ATTRIBUTE_NOINLINE;
+int virNumaGetMaxNode(void) ATTRIBUTE_NOINLINE;
+bool virNumaNodeIsAvailable(int node) ATTRIBUTE_NOINLINE;
 int virNumaGetDistances(int node,
                         int **distances,
-                        int *ndistances) ATTRIBUTE_MOCKABLE;
+                        int *ndistances) ATTRIBUTE_NOINLINE;
 int virNumaGetNodeMemory(int node,
                          unsigned long long *memsize,
-                         unsigned long long *memfree) ATTRIBUTE_MOCKABLE;
+                         unsigned long long *memfree) ATTRIBUTE_NOINLINE;
 
 unsigned int virNumaGetMaxCPUs(void);
 
-int virNumaGetNodeCPUs(int node, virBitmapPtr *cpus) ATTRIBUTE_MOCKABLE;
+int virNumaGetNodeCPUs(int node, virBitmapPtr *cpus) ATTRIBUTE_NOINLINE;
 
 int virNumaGetPageInfo(int node,
                        unsigned int page_size,
@@ -59,7 +59,7 @@ int virNumaGetPages(int node,
                     unsigned int **pages_avail,
                     unsigned int **pages_free,
                     size_t *npages)
-    ATTRIBUTE_NONNULL(5) ATTRIBUTE_MOCKABLE;
+    ATTRIBUTE_NONNULL(5) ATTRIBUTE_NOINLINE;
 int virNumaSetPagePoolSize(int node,
                            unsigned int page_size,
                            unsigned long long page_count,

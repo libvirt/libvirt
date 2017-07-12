@@ -55,6 +55,6 @@ int virCryptoEncryptData(virCryptoCipher algorithm,
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6)
     ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(9) ATTRIBUTE_RETURN_CHECK;
 
-uint8_t *virCryptoGenerateRandom(size_t nbytes) ATTRIBUTE_MOCKABLE;
+uint8_t *virCryptoGenerateRandom(size_t nbytes) ATTRIBUTE_NOINLINE;
 
 #endif /* __VIR_CRYPTO_H__ */
