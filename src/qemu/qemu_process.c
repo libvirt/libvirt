@@ -5168,6 +5168,43 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
 }
 
 
+static int
+qemuProcessPrepareDomainNUMAPlacement(virDomainObjPtr vm,
+                                      virCapsPtr caps)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *nodeset = NULL;
+    int ret = -1;
+
+    /* Get the advisory nodeset from numad if 'placement' of
+     * either <vcpu> or <numatune> is 'auto'.
+     */
+    if (!virDomainDefNeedsPlacementAdvice(vm->def))
+        return 0;
+
+    nodeset = virNumaGetAutoPlacementAdvice(virDomainDefGetVcpus(vm->def),
+                                            virDomainDefGetMemoryTotal(vm->def));
+
+    if (!nodeset)
+        goto cleanup;
+
+    VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
+
+    if (virBitmapParse(nodeset, &priv->autoNodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
+        goto cleanup;
+
+    if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps,
+                                                               priv->autoNodeset)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(nodeset);
+    return ret;
+}
+
+
 /**
  * qemuProcessPrepareDomain
  *
@@ -5188,7 +5225,6 @@ qemuProcessPrepareDomain(virConnectPtr conn,
 {
     int ret = -1;
     size_t i;
-    char *nodeset = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virCapsPtr caps;
@@ -5206,25 +5242,8 @@ qemuProcessPrepareDomain(virConnectPtr conn,
         }
         virDomainAuditSecurityLabel(vm, true);
 
-        /* Get the advisory nodeset from numad if 'placement' of
-         * either <vcpu> or <numatune> is 'auto'.
-         */
-        if (virDomainDefNeedsPlacementAdvice(vm->def)) {
-            nodeset = virNumaGetAutoPlacementAdvice(virDomainDefGetVcpus(vm->def),
-                                                    virDomainDefGetMemoryTotal(vm->def));
-            if (!nodeset)
-                goto cleanup;
-
-            VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
-
-            if (virBitmapParse(nodeset, &priv->autoNodeset,
-                               VIR_DOMAIN_CPUMASK_LEN) < 0)
-                goto cleanup;
-
-            if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps,
-                                                                       priv->autoNodeset)))
-                goto cleanup;
-        }
+        if (qemuProcessPrepareDomainNUMAPlacement(vm, caps) < 0)
+            goto cleanup;
     }
 
     /* Whether we should use virtlogd as stdio handler for character
@@ -5295,7 +5314,6 @@ qemuProcessPrepareDomain(virConnectPtr conn,
 
     ret = 0;
  cleanup:
-    VIR_FREE(nodeset);
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
