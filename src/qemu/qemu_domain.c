@@ -7578,9 +7578,9 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
  * qemuDomainGetPreservedMountPath:
  * @cfg: driver configuration data
  * @vm: domain object
- * @mount: mount point path to convert
+ * @mountpoint: mount point path to convert
  *
- * For given @mount point return new path where the mount point
+ * For given @mountpoint return new path where the mount point
  * should be moved temporarily whilst building the namespace.
  *
  * Returns: allocated string on success which the caller must free,
@@ -7589,21 +7589,21 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
 static char *
 qemuDomainGetPreservedMountPath(virQEMUDriverConfigPtr cfg,
                                 virDomainObjPtr vm,
-                                const char *mount)
+                                const char *mountpoint)
 {
     char *path = NULL;
     char *tmp;
-    const char *suffix = mount + strlen(DEVPREFIX);
+    const char *suffix = mountpoint + strlen(DEVPREFIX);
     size_t off;
 
-    if (STREQ(mount, "/dev"))
+    if (STREQ(mountpoint, "/dev"))
         suffix = "dev";
 
     if (virAsprintf(&path, "%s/%s.%s",
                     cfg->stateDir, vm->def->name, suffix) < 0)
         return NULL;
 
-    /* Now consider that @mount is "/dev/blah/blah2".
+    /* Now consider that @mountpoint is "/dev/blah/blah2".
      * @suffix then points to "blah/blah2". However, caller
      * expects all the @paths to be the same depth. The
      * caller doesn't always do `mkdir -p` but sometimes bare
