@@ -29,7 +29,7 @@
     <interface type='user'>
       <mac address='00:11:22:33:44:55'/>
       <model type='virtio'/>
-      <driver rx_queue_size='512'/>
+      <driver rx_queue_size='512' tx_queue_size='1024'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
     <input type='mouse' bus='ps2'/>

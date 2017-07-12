@@ -3226,11 +3226,17 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
             goto cleanup;
         }
 
-        if (STREQ_NULLABLE(net->model, "virtio") &&
-            net->driver.virtio.rx_queue_size & (net->driver.virtio.rx_queue_size - 1)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("rx_queue_size has to be a power of two"));
-            goto cleanup;
+        if (STREQ_NULLABLE(net->model, "virtio")) {
+            if (net->driver.virtio.rx_queue_size & (net->driver.virtio.rx_queue_size - 1)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("rx_queue_size has to be a power of two"));
+                goto cleanup;
+            }
+            if (net->driver.virtio.tx_queue_size & (net->driver.virtio.tx_queue_size - 1)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("tx_queue_size has to be a power of two"));
+                goto cleanup;
+            }
         }
 
         if (net->mtu &&

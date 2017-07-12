@@ -422,6 +422,7 @@ typedef enum {
     /* 265 */
     QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE, /* spapr-pci-host-bridge.numa_node= */
     QEMU_CAPS_VNC_MULTI_SERVERS, /* -vnc vnc=unix:/path */
+    QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE, /* virtio-net-*.tx_queue_size */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

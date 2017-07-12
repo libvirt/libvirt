@@ -21,7 +21,7 @@ server,nowait \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
--device virtio-net-pci,rx_queue_size=512,vlan=0,id=net0,mac=00:11:22:33:44:55,\
-bus=pci.0,addr=0x3 \
+-device virtio-net-pci,rx_queue_size=512,tx_queue_size=1024,vlan=0,id=net0,\
+mac=00:11:22:33:44:55,bus=pci.0,addr=0x3 \
 -net user,vlan=0,name=hostnet0 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4

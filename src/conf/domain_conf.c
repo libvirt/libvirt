@@ -9833,6 +9833,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *event_idx = NULL;
     char *queues = NULL;
     char *rx_queue_size = NULL;
+    char *tx_queue_size = NULL;
     char *str = NULL;
     char *filter = NULL;
     char *internal = NULL;
@@ -10006,6 +10007,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 event_idx = virXMLPropString(cur, "event_idx");
                 queues = virXMLPropString(cur, "queues");
                 rx_queue_size = virXMLPropString(cur, "rx_queue_size");
+                tx_queue_size = virXMLPropString(cur, "tx_queue_size");
             } else if (xmlStrEqual(cur->name, BAD_CAST "filterref")) {
                 if (filter) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -10403,6 +10405,16 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             }
             def->driver.virtio.rx_queue_size = q;
         }
+        if (tx_queue_size) {
+            unsigned int q;
+            if (virStrToLong_uip(tx_queue_size, NULL, 10, &q) < 0) {
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("'tx_queue_size' attribute must be positive number: %s"),
+                               tx_queue_size);
+                goto error;
+            }
+            def->driver.virtio.tx_queue_size = q;
+        }
         if ((str = virXPathString("string(./driver/host/@csum)", ctxt))) {
             if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -10600,6 +10612,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(event_idx);
     VIR_FREE(queues);
     VIR_FREE(rx_queue_size);
+    VIR_FREE(tx_queue_size);
     VIR_FREE(str);
     VIR_FREE(filter);
     VIR_FREE(type);
@@ -22497,6 +22510,9 @@ virDomainVirtioNetDriverFormat(char **outstr,
     if (def->driver.virtio.rx_queue_size)
         virBufferAsprintf(&buf, " rx_queue_size='%u'",
                           def->driver.virtio.rx_queue_size);
+    if (def->driver.virtio.tx_queue_size)
+        virBufferAsprintf(&buf, " tx_queue_size='%u'",
+                          def->driver.virtio.tx_queue_size);
 
     virDomainVirtioOptionsFormat(&buf, def->virtio);
 
