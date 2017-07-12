@@ -5174,6 +5174,8 @@ qemuProcessPrepareDomainNUMAPlacement(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *nodeset = NULL;
+    virBitmapPtr numadNodeset = NULL;
+    virBitmapPtr hostMemoryNodeset = NULL;
     int ret = -1;
 
     /* Get the advisory nodeset from numad if 'placement' of
@@ -5188,19 +5190,30 @@ qemuProcessPrepareDomainNUMAPlacement(virDomainObjPtr vm,
     if (!nodeset)
         goto cleanup;
 
+    if (!(hostMemoryNodeset = virNumaGetHostMemoryNodeset()))
+        goto cleanup;
+
     VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
 
-    if (virBitmapParse(nodeset, &priv->autoNodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
+    if (virBitmapParse(nodeset, &numadNodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
         goto cleanup;
 
-    if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps,
-                                                               priv->autoNodeset)))
+    /* numad may return a nodeset that only contains cpus but cgroups don't play
+     * well with that. Set the autoCpuset from all cpus from that nodeset, but
+     * assign autoNodeset only with nodes containing memory. */
+    if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps, numadNodeset)))
         goto cleanup;
+
+    virBitmapIntersect(numadNodeset, hostMemoryNodeset);
+
+    VIR_STEAL_PTR(priv->autoNodeset, numadNodeset);
 
     ret = 0;
 
  cleanup:
     VIR_FREE(nodeset);
+    virBitmapFree(numadNodeset);
+    virBitmapFree(hostMemoryNodeset);
     return ret;
 }
 
