@@ -1298,6 +1298,7 @@ virBitmapEqual;
 virBitmapFormat;
 virBitmapFree;
 virBitmapGetBit;
+virBitmapIntersect;
 virBitmapIsAllClear;
 virBitmapIsAllSet;
 virBitmapIsBitSet;
@@ -1318,7 +1319,6 @@ virBitmapSetBit;
 virBitmapSetBitExpand;
 virBitmapSize;
 virBitmapString;
-virBitmapSubtract;
 virBitmapToData;
 virBitmapToDataBuf;
 

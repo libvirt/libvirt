@@ -1091,15 +1091,15 @@ virBitmapOverlaps(virBitmapPtr b1,
 }
 
 /**
- * virBitmapSubtract:
- * @a: minuend/result
- * @b: subtrahend
+ * virBitmapIntersect:
+ * @a: bitmap, modified to contain result
+ * @b: bitmap
  *
- * Performs bitwise subtraction: a = a - b
+ * Performs intersection of two bitmaps: a = intersect(a, b)
  */
 void
-virBitmapSubtract(virBitmapPtr a,
-                  virBitmapPtr b)
+virBitmapIntersect(virBitmapPtr a,
+                   virBitmapPtr b)
 {
     size_t i;
     size_t max = a->map_len;
@@ -1108,5 +1108,5 @@ virBitmapSubtract(virBitmapPtr a,
         max = b->map_len;
 
     for (i = 0; i < max; i++)
-        a->map[i] &= ~b->map[i];
+        a->map[i] &= b->map[i];
 }
