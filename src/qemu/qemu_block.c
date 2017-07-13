@@ -653,6 +653,57 @@ qemuBlockStorageSourceGetVxHSProps(virStorageSourcePtr src)
 }
 
 
+static virJSONValuePtr
+qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src)
+{
+    qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+    const char *passwordalias = NULL;
+    const char *username = NULL;
+    virJSONValuePtr ret = NULL;
+    virURIPtr uri = NULL;
+    char *uristr = NULL;
+    const char *driver;
+
+    /**
+     * Common options:
+     * url, readahead, timeout, username, password-secret, proxy-username,
+     * proxy-password-secret
+     *
+     * Options for http transport:
+     * cookie, cookie-secret
+     *
+     * Options for secure transport (ftps, https):
+     * sslverify
+     */
+
+    driver = virStorageNetProtocolTypeToString(src->protocol);
+
+    if (!(uri = qemuBlockStorageSourceGetURI(src)))
+        goto cleanup;
+
+    if (!(uristr = virURIFormat(uri)))
+        goto cleanup;
+
+    if (src->auth) {
+        username = src->auth->username;
+        passwordalias = srcPriv->secinfo->s.aes.alias;
+    }
+
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:driver", driver,
+                                          "s:url", uristr,
+                                          "S:username", username,
+                                          "S:password-secret", passwordalias,
+                                          NULL));
+
+ cleanup:
+    virURIFree(uri);
+    VIR_FREE(uristr);
+
+    return ret;
+}
+
+
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
@@ -693,15 +744,19 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
                 return NULL;
             break;
 
-        case VIR_STORAGE_NET_PROTOCOL_NBD:
-        case VIR_STORAGE_NET_PROTOCOL_RBD:
-        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
-        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
         case VIR_STORAGE_NET_PROTOCOL_HTTP:
         case VIR_STORAGE_NET_PROTOCOL_HTTPS:
         case VIR_STORAGE_NET_PROTOCOL_FTP:
         case VIR_STORAGE_NET_PROTOCOL_FTPS:
         case VIR_STORAGE_NET_PROTOCOL_TFTP:
+            if (!(fileprops = qemuBlockStorageSourceGetCURLProps(src)))
+                return NULL;
+            break;
+
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
         case VIR_STORAGE_NET_PROTOCOL_SSH:
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
