@@ -6812,11 +6812,11 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
                         virQEMUCapsPtr qemuCaps)
 {
     virArch hostarch = virArchFromHost();
-    char *cpu = NULL;
+    char *cpu = NULL, *cpu_flags = NULL;
     bool hasHwVirt = false;
     const char *default_model;
-    bool have_cpu = false;
     int ret = -1;
+    virBuffer cpu_buf = VIR_BUFFER_INITIALIZER;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
@@ -6827,9 +6827,8 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
 
     if (def->cpu &&
         (def->cpu->mode != VIR_CPU_MODE_CUSTOM || def->cpu->model)) {
-        if (qemuBuildCpuModelArgStr(driver, def, &buf, qemuCaps) < 0)
+        if (qemuBuildCpuModelArgStr(driver, def, &cpu_buf, qemuCaps) < 0)
             goto cleanup;
-        have_cpu = true;
 
         /* Only 'svm' requires --enable-nesting. The nested 'vmx' patches now
          * simply hook off the CPU features. */
@@ -6867,8 +6866,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
             ((hostarch == VIR_ARCH_X86_64 &&
               strstr(def->emulator, "kvm")) ||
              strstr(def->emulator, "x86_64"))) {
-            virBufferAdd(&buf, default_model, -1);
-            have_cpu = true;
+            virBufferAdd(&cpu_buf, default_model, -1);
         }
     }
 
@@ -6878,21 +6876,14 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
 
         if (timer->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK &&
             timer->present != -1) {
-            virBufferAsprintf(&buf, "%s,%ckvmclock",
-                              have_cpu ? "" : default_model,
+            virBufferAsprintf(&buf, ",%ckvmclock",
                               timer->present ? '+' : '-');
-            have_cpu = true;
         } else if (timer->name == VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK &&
                    timer->present == 1) {
-            virBufferAsprintf(&buf, "%s,hv_time",
-                              have_cpu ? "" : default_model);
-            have_cpu = true;
+            virBufferAddLit(&buf, ",hv_time");
         } else if (timer->name == VIR_DOMAIN_TIMER_NAME_TSC &&
                    timer->frequency > 0) {
-            virBufferAsprintf(&buf, "%s,tsc-frequency=%lu",
-                              have_cpu ? "" : default_model,
-                              timer->frequency);
-            have_cpu = true;
+            virBufferAsprintf(&buf, ",tsc-frequency=%lu", timer->frequency);
         }
     }
 
@@ -6903,10 +6894,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
         else
             sign = '-';
 
-        virBufferAsprintf(&buf, "%s,%ckvm_pv_eoi",
-                          have_cpu ? "" : default_model,
-                          sign);
-        have_cpu = true;
+        virBufferAsprintf(&buf, ",%ckvm_pv_eoi", sign);
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK]) {
@@ -6917,18 +6905,10 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
         else
             sign = '-';
 
-        virBufferAsprintf(&buf, "%s,%ckvm_pv_unhalt",
-                          have_cpu ? "" : default_model,
-                          sign);
-        have_cpu = true;
+        virBufferAsprintf(&buf, ",%ckvm_pv_unhalt", sign);
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
-        if (!have_cpu) {
-            virBufferAdd(&buf, default_model, -1);
-            have_cpu = true;
-        }
-
         for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
             switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
@@ -6964,22 +6944,12 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
 
     for (i = 0; i < def->npanics; i++) {
         if (def->panics[i]->model == VIR_DOMAIN_PANIC_MODEL_HYPERV) {
-            if (!have_cpu) {
-                virBufferAdd(&buf, default_model, -1);
-                have_cpu = true;
-            }
-
             virBufferAddLit(&buf, ",hv_crash");
             break;
         }
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
-        if (!have_cpu) {
-            virBufferAdd(&buf, default_model, -1);
-            have_cpu = true;
-        }
-
         for (i = 0; i < VIR_DOMAIN_KVM_LAST; i++) {
             switch ((virDomainKVM) i) {
             case VIR_DOMAIN_KVM_HIDDEN:
@@ -6996,23 +6966,14 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
 
     if (def->features[VIR_DOMAIN_FEATURE_PMU]) {
         virTristateSwitch pmu = def->features[VIR_DOMAIN_FEATURE_PMU];
-        if (!have_cpu)
-            virBufferAdd(&buf, default_model, -1);
-
         virBufferAsprintf(&buf, ",pmu=%s",
                           virTristateSwitchTypeToString(pmu));
-        have_cpu = true;
     }
 
     if (def->cpu && def->cpu->cache) {
         virCPUCacheDefPtr cache = def->cpu->cache;
         bool hostOff = false;
         bool l3Off = false;
-
-        if (!have_cpu) {
-            virBufferAdd(&buf, default_model, -1);
-            have_cpu = true;
-        }
 
         switch (cache->mode) {
         case VIR_CPU_CACHE_MODE_EMULATE:
@@ -7043,13 +7004,22 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
             virBufferAddLit(&buf, ",l3-cache=off");
     }
 
+    if (virBufferCheckError(&cpu_buf) < 0)
+        goto cleanup;
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
 
-    cpu = virBufferContentAndReset(&buf);
+    cpu = virBufferContentAndReset(&cpu_buf);
+    cpu_flags = virBufferContentAndReset(&buf);
+
+    if (cpu_flags && !cpu) {
+        if (VIR_STRDUP(cpu, default_model) < 0)
+            goto cleanup;
+    }
 
     if (cpu) {
-        virCommandAddArgList(cmd, "-cpu", cpu, NULL);
+        virCommandAddArg(cmd, "-cpu");
+        virCommandAddArgFormat(cmd, "%s%s", cpu, cpu_flags ? cpu_flags : "");
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NESTING) && hasHwVirt)
             virCommandAddArg(cmd, "-enable-nesting");
@@ -7059,7 +7029,9 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
 
  cleanup:
     VIR_FREE(cpu);
+    VIR_FREE(cpu_flags);
     virBufferFreeAndReset(&buf);
+    virBufferFreeAndReset(&cpu_buf);
     return ret;
 }
 
