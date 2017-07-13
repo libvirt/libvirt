@@ -6814,16 +6814,10 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
     virArch hostarch = virArchFromHost();
     char *cpu = NULL, *cpu_flags = NULL;
     bool hasHwVirt = false;
-    const char *default_model;
     int ret = -1;
     virBuffer cpu_buf = VIR_BUFFER_INITIALIZER;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
-
-    if (def->os.arch == VIR_ARCH_I686)
-        default_model = "qemu32";
-    else
-        default_model = "qemu64";
 
     if (def->cpu &&
         (def->cpu->mode != VIR_CPU_MODE_CUSTOM || def->cpu->model)) {
@@ -6866,7 +6860,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
             ((hostarch == VIR_ARCH_X86_64 &&
               strstr(def->emulator, "kvm")) ||
              strstr(def->emulator, "x86_64"))) {
-            virBufferAdd(&cpu_buf, default_model, -1);
+            virBufferAddLit(&cpu_buf, "qemu32");
         }
     }
 
@@ -7013,6 +7007,23 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
     cpu_flags = virBufferContentAndReset(&buf);
 
     if (cpu_flags && !cpu) {
+        const char *default_model;
+
+        switch (def->os.arch) {
+        case VIR_ARCH_I686:
+            default_model = "qemu32";
+            break;
+        case VIR_ARCH_X86_64:
+            default_model = "qemu64";
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("CPU flags requested but can't determine "
+                             "default CPU for arch %s"),
+                           virArchToString(def->os.arch));
+            goto cleanup;
+        }
+
         if (VIR_STRDUP(cpu, default_model) < 0)
             goto cleanup;
     }
