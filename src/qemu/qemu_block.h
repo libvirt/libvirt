@@ -26,6 +26,7 @@
 
 # include "virhash.h"
 # include "virjson.h"
+# include "viruri.h"
 
 typedef struct qemuBlockNodeNameBackingChainData qemuBlockNodeNameBackingChainData;
 typedef qemuBlockNodeNameBackingChainData *qemuBlockNodeNameBackingChainDataPtr;
@@ -55,5 +56,8 @@ qemuBlockGetNodeData(virJSONValuePtr data);
 
 virJSONValuePtr
 qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src);
+
+virURIPtr
+qemuBlockStorageSourceGetURI(virStorageSourcePtr src);
 
 #endif /* __QEMU_BLOCK_H__ */

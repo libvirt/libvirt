@@ -829,50 +829,14 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
     virURIPtr uri = NULL;
     char *ret = NULL;
 
-    if (src->nhosts != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("protocol '%s' accepts only one host"),
-                       virStorageNetProtocolTypeToString(src->protocol));
+    if (!(uri = qemuBlockStorageSourceGetURI(src)))
         goto cleanup;
-    }
-
-    if (VIR_ALLOC(uri) < 0)
-        goto cleanup;
-
-    if (src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
-        uri->port = src->hosts->port;
-
-        if (VIR_STRDUP(uri->scheme,
-                       virStorageNetProtocolTypeToString(src->protocol)) < 0)
-            goto cleanup;
-    } else {
-        if (virAsprintf(&uri->scheme, "%s+%s",
-                        virStorageNetProtocolTypeToString(src->protocol),
-                        virStorageNetHostTransportTypeToString(src->hosts->transport)) < 0)
-            goto cleanup;
-    }
-
-    if (src->path) {
-        if (src->volume) {
-            if (virAsprintf(&uri->path, "/%s%s",
-                            src->volume, src->path) < 0)
-                goto cleanup;
-        } else {
-            if (virAsprintf(&uri->path, "%s%s",
-                            src->path[0] == '/' ? "" : "/",
-                            src->path) < 0)
-                goto cleanup;
-        }
-    }
 
     if (src->hosts->socket &&
         virAsprintf(&uri->query, "socket=%s", src->hosts->socket) < 0)
         goto cleanup;
 
     if (qemuBuildGeneralSecinfoURI(uri, secinfo) < 0)
-        goto cleanup;
-
-    if (VIR_STRDUP(uri->server, src->hosts->name) < 0)
         goto cleanup;
 
     ret = virURIFormat(uri);

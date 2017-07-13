@@ -391,6 +391,65 @@ qemuBlockGetNodeData(virJSONValuePtr data)
 
 
 /**
+ * qemuBlockStorageSourceGetURI:
+ * @src: disk storage source
+ *
+ * Formats a URI from a virStorageSource.
+ */
+virURIPtr
+qemuBlockStorageSourceGetURI(virStorageSourcePtr src)
+{
+    virURIPtr uri = NULL;
+    virURIPtr ret = NULL;
+
+    if (src->nhosts != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("protocol '%s' accepts only one host"),
+                       virStorageNetProtocolTypeToString(src->protocol));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(uri) < 0)
+        goto cleanup;
+
+    if (src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
+        uri->port = src->hosts->port;
+
+        if (VIR_STRDUP(uri->scheme,
+                       virStorageNetProtocolTypeToString(src->protocol)) < 0)
+            goto cleanup;
+    } else {
+        if (virAsprintf(&uri->scheme, "%s+%s",
+                        virStorageNetProtocolTypeToString(src->protocol),
+                        virStorageNetHostTransportTypeToString(src->hosts->transport)) < 0)
+            goto cleanup;
+    }
+
+    if (src->path) {
+        if (src->volume) {
+            if (virAsprintf(&uri->path, "/%s%s",
+                            src->volume, src->path) < 0)
+                goto cleanup;
+        } else {
+            if (virAsprintf(&uri->path, "%s%s",
+                            src->path[0] == '/' ? "" : "/",
+                            src->path) < 0)
+                goto cleanup;
+        }
+    }
+
+    if (VIR_STRDUP(uri->server, src->hosts->name) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret, uri);
+
+ cleanup:
+    virURIFree(uri);
+    return ret;
+}
+
+
+/**
  * qemuBlockStorageSourceBuildJSONSocketAddress
  * @host: the virStorageNetHostDefPtr definition to build
  * @legacy: use 'tcp' instead of 'inet' for compatibility reasons
