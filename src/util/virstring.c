@@ -1344,3 +1344,40 @@ void virStringTrimOptionalNewline(char *str)
     if (*tmp == '\n')
         *tmp = '\0';
 }
+
+
+/**
+ * virStringParsePort:
+ * @str: port number to parse
+ * @port: pointer to parse port into
+ *
+ * Parses a string representation of a network port and validates it. Returns
+ * 0 on success and -1 on error.
+ */
+int
+virStringParsePort(const char *str,
+                   int *port)
+{
+    unsigned int p = 0;
+
+    *port = 0;
+
+    if (!str)
+        return 0;
+
+    if (virStrToLong_uip(str, NULL, 10, &p) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("failed to parse port number '%s'"), str);
+        return -1;
+    }
+
+    if (p > UINT16_MAX) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("port '%s' out of range"), str);
+        return -1;
+    }
+
+    *port = p;
+
+    return 0;
+}
