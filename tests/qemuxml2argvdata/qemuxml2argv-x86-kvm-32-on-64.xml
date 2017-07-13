@@ -1,0 +1,13 @@
+<domain type='kvm'>
+  <name>kvm</name>
+  <uuid>d091ea82-29e6-2e34-3005-f02617b36e87</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <os>
+    <type arch='i686'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

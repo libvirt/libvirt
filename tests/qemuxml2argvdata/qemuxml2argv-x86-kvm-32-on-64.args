@@ -1,0 +1,21 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name kvm \
+-S \
+-machine pc,accel=kvm \
+-cpu qemu32 \
+-m 4096 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid d091ea82-29e6-2e34-3005-f02617b36e87 \
+-nographic \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-kvm/monitor.sock,server,\
+nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-no-acpi \
+-boot c
