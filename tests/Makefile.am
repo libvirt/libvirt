@@ -148,6 +148,7 @@ EXTRA_DIST =		\
 	vircgroupdata \
 	virconfdata \
 	virfiledata \
+	virjsondata \
 	virmacmaptestdata \
 	virmock.h \
 	virnetdaemondata \
