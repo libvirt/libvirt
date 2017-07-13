@@ -775,6 +775,34 @@ qemuBlockStorageSourceGetISCSIProps(virStorageSourcePtr src)
 }
 
 
+static virJSONValuePtr
+qemuBlockStorageSourceGetNBDProps(virStorageSourcePtr src)
+{
+    virJSONValuePtr serverprops;
+    virJSONValuePtr ret = NULL;
+
+    if (src->nhosts != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("nbd protocol accepts only one host"));
+        return NULL;
+    }
+
+    serverprops = qemuBlockStorageSourceBuildJSONSocketAddress(&src->hosts[0],
+                                                               false);
+    if (!serverprops)
+        return NULL;
+
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:driver", "nbd",
+                                          "a:server", serverprops,
+                                          "S:export", src->path,
+                                          "S:tls-creds", src->tlsAlias,
+                                          NULL));
+
+    return ret;
+}
+
+
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
@@ -830,6 +858,10 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_NBD:
+            if (!(fileprops = qemuBlockStorageSourceGetNBDProps(src)))
+                return NULL;
+            break;
+
         case VIR_STORAGE_NET_PROTOCOL_RBD:
         case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
         case VIR_STORAGE_NET_PROTOCOL_SSH:
