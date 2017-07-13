@@ -577,6 +577,12 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:
+        if (virJSONValueObjectCreate(&fileprops,
+                                     "s:driver", "file",
+                                     "s:filename", src->path, NULL) < 0)
+            return NULL;
+        break;
+
     case VIR_STORAGE_TYPE_VOLUME:
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
