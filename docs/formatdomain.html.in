@@ -3002,7 +3002,7 @@
           </li>
           <li>
             The optional <code>discard</code> attribute controls whether
-            to discard (also known as "trim" or "unmap") requests are
+            discard requests (also known as "trim" or "unmap") are
             ignored or passed to the filesystem. The value can be either
             "unmap" (allow the discard request to be passed) or "ignore"
             (ignore the discard request).
