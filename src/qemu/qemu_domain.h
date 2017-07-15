@@ -50,7 +50,7 @@
 #  define QEMU_DOMAIN_MIG_BANDWIDTH_MAX (INT64_MAX / (1024 * 1024))
 # endif
 
-# define JOB_MASK(job)                  (1 << (job - 1))
+# define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
 # define QEMU_JOB_DEFAULT_MASK          \
     (JOB_MASK(QEMU_JOB_QUERY) |         \
      JOB_MASK(QEMU_JOB_DESTROY) |       \

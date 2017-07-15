@@ -30,7 +30,7 @@
 # include "libxl_conf.h"
 # include "virchrdev.h"
 
-# define JOB_MASK(job)                  (1 << (job - 1))
+# define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
 # define DEFAULT_JOB_MASK               \
     (JOB_MASK(LIBXL_JOB_DESTROY) |      \
      JOB_MASK(LIBXL_JOB_ABORT))
