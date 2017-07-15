@@ -511,6 +511,8 @@ pci_driver_new(const char *name, int fail, ...)
 
     if (VIR_APPEND_ELEMENT_QUIET(pciDrivers, nPCIDrivers, driver) < 0)
         ABORT_OOM();
+
+    VIR_FREE(driverpath);
 }
 
 static struct pciDriver *
