@@ -287,18 +287,11 @@ virNWFilterObjTestUnassignDef(virNWFilterObjPtr obj)
 
 static bool
 virNWFilterDefEqual(const virNWFilterDef *def1,
-                    virNWFilterDefPtr def2,
-                    bool cmpUUIDs)
+                    virNWFilterDefPtr def2)
 {
     bool ret = false;
-    unsigned char rem_uuid[VIR_UUID_BUFLEN];
-    char *xml1, *xml2 = NULL;
-
-    if (!cmpUUIDs) {
-        /* make sure the UUIDs are equal */
-        memcpy(rem_uuid, def2->uuid, sizeof(rem_uuid));
-        memcpy(def2->uuid, def1->uuid, sizeof(def2->uuid));
-    }
+    char *xml1 = NULL;
+    char *xml2 = NULL;
 
     if (!(xml1 = virNWFilterDefFormat(def1)) ||
         !(xml2 = virNWFilterDefFormat(def2)))
@@ -307,9 +300,6 @@ virNWFilterDefEqual(const virNWFilterDef *def1,
     ret = STREQ(xml1, xml2);
 
  cleanup:
-    if (!cmpUUIDs)
-        memcpy(def2->uuid, rem_uuid, sizeof(rem_uuid));
-
     VIR_FREE(xml1);
     VIR_FREE(xml2);
 
@@ -360,7 +350,7 @@ virNWFilterObjListAssignDef(virNWFilterObjListPtr nwfilters,
     if ((obj = virNWFilterObjListFindByName(nwfilters, def->name))) {
 
         objdef = obj->def;
-        if (virNWFilterDefEqual(def, objdef, false)) {
+        if (virNWFilterDefEqual(def, objdef)) {
             virNWFilterDefFree(objdef);
             obj->def = def;
             return obj;
