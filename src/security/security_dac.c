@@ -1381,6 +1381,54 @@ virSecurityDACRestoreTPMFileLabel(virSecurityManagerPtr mgr,
 
 
 static int
+virSecurityDACSetGraphicsLabel(virSecurityManagerPtr mgr,
+                               virDomainDefPtr def,
+                               virDomainGraphicsDefPtr gfx)
+
+{
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityLabelDefPtr seclabel;
+    uid_t user;
+    gid_t group;
+
+    /* Skip chowning the shared render file if namespaces are disabled */
+    if (!priv->mountNamespace)
+        return 0;
+
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
+    if (seclabel && !seclabel->relabel)
+        return 0;
+
+    if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
+        return -1;
+
+    if (gfx->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
+        gfx->data.spice.gl == VIR_TRISTATE_BOOL_YES &&
+        gfx->data.spice.rendernode) {
+        if (virSecurityDACSetOwnership(priv, NULL,
+                                       gfx->data.spice.rendernode,
+                                       user, group) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virSecurityDACRestoreGraphicsLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                               virDomainDefPtr def ATTRIBUTE_UNUSED,
+                               virDomainGraphicsDefPtr gfx ATTRIBUTE_UNUSED)
+
+{
+    /* The only graphics labelling we do is dependent on mountNamespaces,
+       in which case 'restoring' the label doesn't actually accomplish
+       anything, so there's nothing to do here */
+    return 0;
+}
+
+
+static int
 virSecurityDACSetInputLabel(virSecurityManagerPtr mgr,
                             virDomainDefPtr def,
                             virDomainInputDefPtr input)
@@ -1489,6 +1537,11 @@ virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
                                               def->hostdevs[i],
                                               NULL) < 0)
             rc = -1;
+    }
+
+    for (i = 0; i < def->ngraphics; i++) {
+        if (virSecurityDACRestoreGraphicsLabel(mgr, def, def->graphics[i]) < 0)
+            return -1;
     }
 
     for (i = 0; i < def->ninputs; i++) {
@@ -1608,6 +1661,11 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
         if (virSecurityDACSetDiskLabel(mgr,
                                        def,
                                        def->disks[i]) < 0)
+            return -1;
+    }
+
+    for (i = 0; i < def->ngraphics; i++) {
+        if (virSecurityDACSetGraphicsLabel(mgr, def, def->graphics[i]) < 0)
             return -1;
     }
 
