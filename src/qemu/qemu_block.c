@@ -482,7 +482,7 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
         case VIR_STORAGE_NET_HOST_TRANS_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("transport protocol '%s' is not yet supported"),
-                           transport);
+                           virStorageNetHostTransportTypeToString(host->transport));
             goto cleanup;
         }
 
