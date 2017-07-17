@@ -3005,6 +3005,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     bool needReplaceDevDef = false;
     bool needBandwidthSet = false;
     bool needCoalesceChange = false;
+    bool needVlanUpdate = false;
     int ret = -1;
     int changeidx = -1;
 
@@ -3286,10 +3287,13 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
                         virDomainNetGetActualDirectDev(newdev)) ||
         virDomainNetGetActualDirectMode(olddev) != virDomainNetGetActualDirectMode(newdev) ||
         !virNetDevVPortProfileEqual(virDomainNetGetActualVirtPortProfile(olddev),
-                                    virDomainNetGetActualVirtPortProfile(newdev)) ||
-        !virNetDevVlanEqual(virDomainNetGetActualVlan(olddev),
-                            virDomainNetGetActualVlan(newdev))) {
+                                    virDomainNetGetActualVirtPortProfile(newdev))) {
         needReconnect = true;
+    }
+
+    if (!virNetDevVlanEqual(virDomainNetGetActualVlan(olddev),
+                             virDomainNetGetActualVlan(newdev))) {
+        needVlanUpdate = true;
     }
 
     if (olddev->linkstate != newdev->linkstate)
@@ -3349,6 +3353,12 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     if (needLinkStateChange &&
         qemuDomainChangeNetLinkState(driver, vm, olddev, newdev->linkstate) < 0) {
         goto cleanup;
+    }
+
+    if (needVlanUpdate) {
+        if (virNetDevOpenvswitchUpdateVlan(newdev->ifname, &newdev->vlan) < 0)
+            goto cleanup;
+        needReplaceDevDef = true;
     }
 
     if (needReplaceDevDef) {

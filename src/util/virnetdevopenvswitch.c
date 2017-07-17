@@ -460,3 +460,41 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
     VIR_FREE(ovs_timeout);
     return ret;
 }
+
+/**
+ * virNetDevOpenvswitchUpdateVlan:
+ * @ifname: the network interface name
+ * @virtVlan: VLAN configuration to be applied
+ *
+ * Update VLAN configuration of an OVS port.
+ *
+ * Returns 0 in case of success or -1 in case of failure.
+ */
+int virNetDevOpenvswitchUpdateVlan(const char *ifname,
+                                   virNetDevVlanPtr virtVlan)
+{
+    int ret = -1;
+    virCommandPtr cmd = NULL;
+
+    cmd = virCommandNew(OVSVSCTL);
+    virNetDevOpenvswitchAddTimeout(cmd);
+    virCommandAddArgList(cmd,
+                         "--", "--if-exists", "clear", "Port", ifname, "tag",
+                         "--", "--if-exists", "clear", "Port", ifname, "trunk",
+                         "--", "--if-exists", "clear", "Port", ifname, "vlan_mode",
+                         "--", "--if-exists", "set", "Port", ifname, NULL);
+
+    if (virNetDevOpenvswitchConstructVlans(cmd, virtVlan) < 0)
+        goto cleanup;
+
+    if (virCommandRun(cmd, NULL) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to set vlan configuration on port %s"), ifname);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virCommandFree(cmd);
+    return ret;
+}

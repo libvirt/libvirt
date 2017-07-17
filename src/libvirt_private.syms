@@ -2206,6 +2206,7 @@ virNetDevOpenvswitchInterfaceStats;
 virNetDevOpenvswitchRemovePort;
 virNetDevOpenvswitchSetMigrateData;
 virNetDevOpenvswitchSetTimeout;
+virNetDevOpenvswitchUpdateVlan;
 
 
 # util/virnetdevtap.h
