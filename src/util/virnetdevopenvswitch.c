@@ -64,6 +64,69 @@ virNetDevOpenvswitchAddTimeout(virCommandPtr cmd)
 }
 
 /**
+ * virNetDevOpenvswitchConstructVlans:
+ * @cmd: command to construct
+ * @virtVlan: VLAN configuration to be applied
+ *
+ * Construct the VLAN configuration parameters to be passed to
+ * ovs-vsctl command.
+ *
+ * Returns 0 in case of success or -1 in case of failure.
+ */
+static int
+virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, virNetDevVlanPtr virtVlan)
+{
+    int ret = -1;
+    size_t i = 0;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (!virtVlan || !virtVlan->nTags)
+        return 0;
+
+    switch (virtVlan->nativeMode) {
+    case VIR_NATIVE_VLAN_MODE_TAGGED:
+        virCommandAddArg(cmd, "vlan_mode=native-tagged");
+        virCommandAddArgFormat(cmd, "tag=%d", virtVlan->nativeTag);
+        break;
+    case VIR_NATIVE_VLAN_MODE_UNTAGGED:
+        virCommandAddArg(cmd, "vlan_mode=native-untagged");
+        virCommandAddArgFormat(cmd, "tag=%d", virtVlan->nativeTag);
+        break;
+    case VIR_NATIVE_VLAN_MODE_DEFAULT:
+    default:
+        break;
+    }
+
+    if (virtVlan->trunk) {
+        virBufferAddLit(&buf, "trunk=");
+
+        /*
+         * Trunk ports have at least one VLAN. Do the first one
+         * outside the "for" loop so we can put a "," at the
+         * start of the for loop if there are more than one VLANs
+         * on this trunk port.
+         */
+        virBufferAsprintf(&buf, "%d", virtVlan->tag[i]);
+
+        for (i = 1; i < virtVlan->nTags; i++) {
+            virBufferAddLit(&buf, ",");
+            virBufferAsprintf(&buf, "%d", virtVlan->tag[i]);
+        }
+
+        if (virBufferCheckError(&buf) < 0)
+            goto cleanup;
+        virCommandAddArg(cmd, virBufferCurrentContent(&buf));
+    } else if (virtVlan->nTags) {
+        virCommandAddArgFormat(cmd, "tag=%d", virtVlan->tag[0]);
+    }
+
+    ret = 0;
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
+}
+
+/**
  * virNetDevOpenvswitchAddPort:
  * @brname: the bridge name
  * @ifname: the network interface name
@@ -82,7 +145,6 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                                    virNetDevVlanPtr virtVlan)
 {
     int ret = -1;
-    size_t i = 0;
     virCommandPtr cmd = NULL;
     char macaddrstr[VIR_MAC_STRING_BUFLEN];
     char ifuuidstr[VIR_UUID_STRING_BUFLEN];
@@ -91,7 +153,6 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     char *ifaceid_ex_id = NULL;
     char *profile_ex_id = NULL;
     char *vmid_ex_id = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virMacAddrFormat(macaddr, macaddrstr);
     virUUIDFormat(ovsport->interfaceID, ifuuidstr);
@@ -117,45 +178,8 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     virCommandAddArgList(cmd, "--", "--if-exists", "del-port",
                          ifname, "--", "add-port", brname, ifname, NULL);
 
-    if (virtVlan && virtVlan->nTags > 0) {
-
-        switch (virtVlan->nativeMode) {
-        case VIR_NATIVE_VLAN_MODE_TAGGED:
-            virCommandAddArg(cmd, "vlan_mode=native-tagged");
-            virCommandAddArgFormat(cmd, "tag=%d", virtVlan->nativeTag);
-            break;
-        case VIR_NATIVE_VLAN_MODE_UNTAGGED:
-            virCommandAddArg(cmd, "vlan_mode=native-untagged");
-            virCommandAddArgFormat(cmd, "tag=%d", virtVlan->nativeTag);
-            break;
-        case VIR_NATIVE_VLAN_MODE_DEFAULT:
-        default:
-            break;
-        }
-
-        if (virtVlan->trunk) {
-            virBufferAddLit(&buf, "trunk=");
-
-            /*
-             * Trunk ports have at least one VLAN. Do the first one
-             * outside the "for" loop so we can put a "," at the
-             * start of the for loop if there are more than one VLANs
-             * on this trunk port.
-             */
-            virBufferAsprintf(&buf, "%d", virtVlan->tag[i]);
-
-            for (i = 1; i < virtVlan->nTags; i++) {
-                virBufferAddLit(&buf, ",");
-                virBufferAsprintf(&buf, "%d", virtVlan->tag[i]);
-            }
-
-            if (virBufferCheckError(&buf) < 0)
-                goto cleanup;
-            virCommandAddArg(cmd, virBufferCurrentContent(&buf));
-        } else if (virtVlan->nTags) {
-            virCommandAddArgFormat(cmd, "tag=%d", virtVlan->tag[0]);
-        }
-    }
+    if (virNetDevOpenvswitchConstructVlans(cmd, virtVlan) < 0)
+        goto cleanup;
 
     if (ovsport->profileID[0] == '\0') {
         virCommandAddArgList(cmd,
@@ -185,7 +209,6 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&buf);
     VIR_FREE(attachedmac_ex_id);
     VIR_FREE(ifaceid_ex_id);
     VIR_FREE(vmid_ex_id);
