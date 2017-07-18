@@ -1804,9 +1804,11 @@
     </element>
   </define>
   <define name="driverFormat">
-    <attribute name="name">
-      <ref name="genericName"/>
-    </attribute>
+    <optional>
+      <attribute name="name">
+        <ref name="genericName"/>
+      </attribute>
+    </optional>
     <optional>
       <attribute name='type'>
         <choice>
