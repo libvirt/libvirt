@@ -313,7 +313,12 @@ dissect_libvirt_payload_xdr_data(tvbuff_t *tvb, proto_tree *tree, gint payload_l
         payload_length -= 4;
     }
 
+#if WIRESHARK_VERSION < 200400
     payload_tvb = tvb_new_subset(tvb, start, -1, payload_length);
+#else
+    payload_tvb = tvb_new_subset_remaining(tvb, start);
+#endif
+
 #if WIRESHARK_VERSION < 1012000
     payload_data = (caddr_t)tvb_memdup(payload_tvb, 0, payload_length);
 #else
