@@ -2260,7 +2260,6 @@ virNodeDeviceGetParentName(virConnectPtr conn,
 
 
 /**
- * @conn: Connection pointer
  * @fchost: Pointer to vHBA adapter
  *
  * Create a vHBA for Storage. This code accomplishes this via searching
@@ -2273,16 +2272,15 @@ virNodeDeviceGetParentName(virConnectPtr conn,
  * Returns vHBA name on success, NULL on failure with an error message set
  */
 char *
-virNodeDeviceCreateVport(virConnectPtr conn,
-                         virStorageAdapterFCHostPtr fchost)
+virNodeDeviceCreateVport(virStorageAdapterFCHostPtr fchost)
 {
     unsigned int parent_host;
     char *name = NULL;
     char *parent_hoststr = NULL;
     bool skip_capable_check = false;
 
-    VIR_DEBUG("conn=%p, parent='%s', wwnn='%s' wwpn='%s'",
-              conn, NULLSTR(fchost->parent), fchost->wwnn, fchost->wwpn);
+    VIR_DEBUG("parent='%s', wwnn='%s' wwpn='%s'",
+              NULLSTR(fchost->parent), fchost->wwnn, fchost->wwpn);
 
     if (fchost->parent) {
         if (VIR_STRDUP(parent_hoststr, fchost->parent) < 0)

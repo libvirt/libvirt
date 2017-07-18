@@ -294,7 +294,7 @@ createVport(virConnectPtr conn,
         }
     }
 
-    if (!(name = virNodeDeviceCreateVport(conn, fchost)))
+    if (!(name = virNodeDeviceCreateVport(fchost)))
         goto cleanup;
 
     /* Creating our own VPORT didn't leave enough time to find any LUN's,
