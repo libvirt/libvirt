@@ -744,7 +744,7 @@ nodeStateReload(void)
     VIR_INFO("Reloading HAL device state");
     nodeDeviceLock();
     VIR_INFO("Removing existing objects");
-    virNodeDeviceObjListFree(&driver->devs);
+    virNodeDeviceObjListFree(driver->devs);
     nodeDeviceUnlock();
 
     hal_ctx = DRV_STATE_HAL_CTX(driver);
