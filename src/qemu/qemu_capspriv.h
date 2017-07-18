@@ -43,7 +43,6 @@ virQEMUCapsPtr
 virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
                                 const char *binary,
                                 const char *libDir,
-                                const char *cacheDir,
                                 uid_t runUid,
                                 gid_t runGid,
                                 bool qmpOnly);

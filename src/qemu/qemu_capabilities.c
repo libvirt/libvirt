@@ -4250,37 +4250,6 @@ virQEMUCapsRememberCached(virQEMUCapsPtr qemuCaps, const char *cacheDir)
 }
 
 
-static void
-virQEMUCapsReset(virQEMUCapsPtr qemuCaps)
-{
-    size_t i;
-
-    virBitmapClearAll(qemuCaps->flags);
-    qemuCaps->version = qemuCaps->kvmVersion = 0;
-    VIR_FREE(qemuCaps->package);
-    qemuCaps->arch = VIR_ARCH_NONE;
-    qemuCaps->usedQMP = false;
-
-    virObjectUnref(qemuCaps->kvmCPUModels);
-    qemuCaps->kvmCPUModels = NULL;
-    virObjectUnref(qemuCaps->tcgCPUModels);
-    qemuCaps->tcgCPUModels = NULL;
-
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        VIR_FREE(qemuCaps->machineTypes[i].name);
-        VIR_FREE(qemuCaps->machineTypes[i].alias);
-    }
-    VIR_FREE(qemuCaps->machineTypes);
-    qemuCaps->nmachineTypes = 0;
-
-    VIR_FREE(qemuCaps->gicCapabilities);
-    qemuCaps->ngicCapabilities = 0;
-
-    virQEMUCapsHostCPUDataClear(&qemuCaps->kvmCPU);
-    virQEMUCapsHostCPUDataClear(&qemuCaps->tcgCPU);
-}
-
-
 static bool
 virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
                    uid_t runUid,
@@ -4346,7 +4315,8 @@ virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
 
 static int
 virQEMUCapsInitCached(virCapsPtr caps,
-                      virQEMUCapsPtr qemuCaps,
+                      virQEMUCapsPtr *qemuCaps,
+                      const char *binary,
                       const char *cacheDir,
                       uid_t runUid,
                       gid_t runGid)
@@ -4356,14 +4326,12 @@ virQEMUCapsInitCached(virCapsPtr caps,
     int ret = -1;
     char *binaryhash = NULL;
     struct stat sb;
-    time_t qemuctime = qemuCaps->ctime;
+    virQEMUCapsPtr qemuCapsNew = NULL;
 
     if (virAsprintf(&capsdir, "%s/capabilities", cacheDir) < 0)
         goto cleanup;
 
-    if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256,
-                            qemuCaps->binary,
-                            &binaryhash) < 0)
+    if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, binary, &binaryhash) < 0)
         goto cleanup;
 
     if (virAsprintf(&capsfile, "%s/%s.xml", capsdir, binaryhash) < 0)
@@ -4379,33 +4347,39 @@ virQEMUCapsInitCached(virCapsPtr caps,
     if (stat(capsfile, &sb) < 0) {
         if (errno == ENOENT) {
             VIR_DEBUG("No cached capabilities '%s' for '%s'",
-                      capsfile, qemuCaps->binary);
+                      capsfile, binary);
             ret = 0;
             goto cleanup;
         }
         virReportSystemError(errno,
                              _("Unable to access cache '%s' for '%s'"),
-                             capsfile, qemuCaps->binary);
+                             capsfile, binary);
         goto cleanup;
     }
 
-    if (virQEMUCapsLoadCache(caps, qemuCaps, capsfile) < 0) {
+    if (!(qemuCapsNew = virQEMUCapsNew()))
+        goto cleanup;
+
+    if (VIR_STRDUP(qemuCapsNew->binary, binary) < 0)
+        goto discard;
+
+    if (virQEMUCapsLoadCache(caps, qemuCapsNew, capsfile) < 0) {
         VIR_WARN("Failed to load cached caps from '%s' for '%s': %s",
-                 capsfile, qemuCaps->binary, virGetLastErrorMessage());
+                 capsfile, qemuCapsNew->binary, virGetLastErrorMessage());
         virResetLastError();
         goto discard;
     }
 
-    if (!virQEMUCapsIsValid(qemuCaps, runUid, runGid))
+    if (!virQEMUCapsIsValid(qemuCapsNew, runUid, runGid))
         goto discard;
 
     VIR_DEBUG("Loaded '%s' for '%s' ctime %lld usedQMP=%d",
-              capsfile, qemuCaps->binary,
-              (long long)qemuCaps->ctime, qemuCaps->usedQMP);
+              capsfile, qemuCapsNew->binary,
+              (long long)qemuCapsNew->ctime, qemuCapsNew->usedQMP);
 
     ret = 1;
+    *qemuCaps = qemuCapsNew;
  cleanup:
-    qemuCaps->ctime = qemuctime;
     VIR_FREE(binaryhash);
     VIR_FREE(capsfile);
     VIR_FREE(capsdir);
@@ -4413,9 +4387,9 @@ virQEMUCapsInitCached(virCapsPtr caps,
 
  discard:
     VIR_DEBUG("Dropping cached capabilities '%s' for '%s'",
-              capsfile, qemuCaps->binary);
+              capsfile, qemuCapsNew->binary);
     ignore_value(unlink(capsfile));
-    virQEMUCapsReset(qemuCaps);
+    virObjectUnref(qemuCapsNew);
     ret = 0;
     goto cleanup;
 }
@@ -5230,14 +5204,12 @@ virQEMUCapsPtr
 virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
                                 const char *binary,
                                 const char *libDir,
-                                const char *cacheDir,
                                 uid_t runUid,
                                 gid_t runGid,
                                 bool qmpOnly)
 {
     virQEMUCapsPtr qemuCaps;
     struct stat sb;
-    int rv;
     char *qmperr = NULL;
 
     if (!(qemuCaps = virQEMUCapsNew()))
@@ -5265,42 +5237,30 @@ virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
         goto error;
     }
 
-    if (!cacheDir)
-        rv = 0;
-    else if ((rv = virQEMUCapsInitCached(caps, qemuCaps, cacheDir,
-                                         runUid, runGid)) < 0)
+    if (virQEMUCapsInitQMP(qemuCaps, libDir, runUid, runGid, &qmperr) < 0) {
+        virQEMUCapsLogProbeFailure(binary);
         goto error;
-
-    if (rv == 0) {
-        if (virQEMUCapsInitQMP(qemuCaps, libDir, runUid, runGid, &qmperr) < 0) {
-            virQEMUCapsLogProbeFailure(binary);
-            goto error;
-        }
-
-        if (qmpOnly && !qemuCaps->usedQMP) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to probe QEMU binary with QMP: %s"),
-                           qmperr ? qmperr : _("unknown error"));
-            virQEMUCapsLogProbeFailure(binary);
-            goto error;
-        }
-
-        if (!qemuCaps->usedQMP &&
-            virQEMUCapsInitHelp(qemuCaps, runUid, runGid, qmperr) < 0) {
-            virQEMUCapsLogProbeFailure(binary);
-            goto error;
-        }
-
-        qemuCaps->libvirtCtime = virGetSelfLastChanged();
-        qemuCaps->libvirtVersion = LIBVIR_VERSION_NUMBER;
-
-        if (cacheDir &&
-            virQEMUCapsRememberCached(qemuCaps, cacheDir) < 0)
-            goto error;
-
-        virQEMUCapsInitHostCPUModel(qemuCaps, caps, VIR_DOMAIN_VIRT_KVM);
-        virQEMUCapsInitHostCPUModel(qemuCaps, caps, VIR_DOMAIN_VIRT_QEMU);
     }
+
+    if (qmpOnly && !qemuCaps->usedQMP) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to probe QEMU binary with QMP: %s"),
+                       qmperr ? qmperr : _("unknown error"));
+        virQEMUCapsLogProbeFailure(binary);
+        goto error;
+    }
+
+    if (!qemuCaps->usedQMP &&
+        virQEMUCapsInitHelp(qemuCaps, runUid, runGid, qmperr) < 0) {
+        virQEMUCapsLogProbeFailure(binary);
+        goto error;
+    }
+
+    qemuCaps->libvirtCtime = virGetSelfLastChanged();
+    qemuCaps->libvirtVersion = LIBVIR_VERSION_NUMBER;
+
+    virQEMUCapsInitHostCPUModel(qemuCaps, caps, VIR_DOMAIN_VIRT_KVM);
+    virQEMUCapsInitHostCPUModel(qemuCaps, caps, VIR_DOMAIN_VIRT_QEMU);
 
  cleanup:
     VIR_FREE(qmperr);
@@ -5320,8 +5280,29 @@ virQEMUCapsNewForBinary(virCapsPtr caps,
                         uid_t runUid,
                         gid_t runGid)
 {
-    return virQEMUCapsNewForBinaryInternal(caps, binary, libDir, cacheDir,
-                                           runUid, runGid, false);
+    int rv;
+    virQEMUCapsPtr qemuCaps = NULL;
+
+    if ((rv = virQEMUCapsInitCached(caps, &qemuCaps, binary, cacheDir,
+                                    runUid, runGid)) < 0)
+        goto error;
+
+    if (rv == 0) {
+        if (!(qemuCaps = virQEMUCapsNewForBinaryInternal(caps, binary,
+                                                         libDir, runUid,
+                                                         runGid, false))) {
+            goto error;
+        }
+
+        if (virQEMUCapsRememberCached(qemuCaps, cacheDir) < 0)
+            goto error;
+    }
+
+    return qemuCaps;
+
+ error:
+    virObjectUnref(qemuCaps);
+    return NULL;
 }
 
 

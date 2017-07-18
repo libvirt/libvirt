@@ -70,7 +70,7 @@ main(int argc, char **argv)
     if (virThreadCreate(&thread, false, eventLoop, NULL) < 0)
         return EXIT_FAILURE;
 
-    if (!(caps = virQEMUCapsNewForBinaryInternal(NULL, argv[1], "/tmp", NULL,
+    if (!(caps = virQEMUCapsNewForBinaryInternal(NULL, argv[1], "/tmp",
                                                  -1, -1, true)))
         return EXIT_FAILURE;
 
