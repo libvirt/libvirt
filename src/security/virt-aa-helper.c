@@ -56,6 +56,7 @@
 #include "virgettext.h"
 
 #include "storage/storage_source.h"
+#include "storage/storage_backend.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -926,6 +927,11 @@ get_files(vahControl * ctl)
         goto cleanup;
     }
 
+    if (virStorageBackendDriversRegister(false) < 0) {
+        vah_error(ctl, 0, _("failed to register storage driver backend"));
+        goto cleanup;
+    }
+
     for (i = 0; i < ctl->def->ndisks; i++) {
         virDomainDiskDefPtr disk = ctl->def->disks[i];
 
@@ -1282,6 +1288,8 @@ main(int argc, char **argv)
         fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
         exit(EXIT_FAILURE);
     }
+
+    virFileActivateDirOverride(argv[0]);
 
     /* Initialize the log system */
     virLogSetFromEnv();
