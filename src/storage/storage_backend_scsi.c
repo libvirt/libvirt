@@ -211,6 +211,48 @@ getAdapterName(virStorageAdapterPtr adapter)
 }
 
 
+/*
+ * Using the host# name found via wwnn/wwpn lookup in the fc_host
+ * sysfs tree to get the parent 'scsi_host#' to ensure it matches.
+ */
+static bool
+checkParent(virConnectPtr conn,
+            const char *name,
+            const char *parent_name)
+{
+    char *scsi_host_name = NULL;
+    char *vhba_parent = NULL;
+    bool retval = false;
+
+    VIR_DEBUG("conn=%p, name=%s, parent_name=%s", conn, name, parent_name);
+
+    /* autostarted pool - assume we're OK */
+    if (!conn)
+        return true;
+
+    if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
+        goto cleanup;
+
+    if (!(vhba_parent = virNodeDeviceGetParentName(conn, scsi_host_name)))
+        goto cleanup;
+
+    if (STRNEQ(parent_name, vhba_parent)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Parent attribute '%s' does not match parent '%s' "
+                         "determined for the '%s' wwnn/wwpn lookup."),
+                       parent_name, vhba_parent, name);
+        goto cleanup;
+    }
+
+    retval = true;
+
+ cleanup:
+    VIR_FREE(vhba_parent);
+    VIR_FREE(scsi_host_name);
+    return retval;
+}
+
+
 static int
 createVport(virConnectPtr conn,
             virStoragePoolDefPtr def,
@@ -226,6 +268,18 @@ createVport(virConnectPtr conn,
               conn, NULLSTR(configFile), NULLSTR(fchost->parent),
               fchost->wwnn, fchost->wwpn);
 
+    /* If we find an existing HBA/vHBA within the fc_host sysfs
+     * using the wwnn/wwpn, then a nodedev is already created for
+     * this pool and we don't have to create the vHBA
+     */
+    if ((name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
+        /* If a parent was provided, let's make sure the 'name' we've
+         * retrieved has the same parent. If not this will cause failure. */
+        if (!fchost->parent || checkParent(conn, name, fchost->parent))
+            ret = 0;
+
+        goto cleanup;
+    }
 
     /* Since we're creating the vHBA, then we need to manage removing it
      * as well. Since we need this setting to "live" through a libvirtd
