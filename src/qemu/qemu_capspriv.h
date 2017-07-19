@@ -28,18 +28,6 @@
 #ifndef __QEMU_CAPSPRIV_H__
 # define __QEMU_CAPSPRIV_H__
 
-# include "virarch.h"
-
-struct _virQEMUCapsCachePriv {
-    char *libDir;
-    uid_t runUid;
-    gid_t runGid;
-    virArch hostArch;
-};
-typedef struct _virQEMUCapsCachePriv virQEMUCapsCachePriv;
-typedef virQEMUCapsCachePriv *virQEMUCapsCachePrivPtr;
-
-
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
 
 virQEMUCapsPtr
