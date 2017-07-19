@@ -136,6 +136,7 @@ void virMutexUnlock(virMutexPtr m);
 
 
 int virRWLockInit(virRWLockPtr m) ATTRIBUTE_RETURN_CHECK;
+int virRWLockInitPreferWriter(virRWLockPtr m) ATTRIBUTE_RETURN_CHECK;
 void virRWLockDestroy(virRWLockPtr m);
 
 void virRWLockRead(virRWLockPtr m);
