@@ -39,12 +39,6 @@ struct _virQEMUCapsCachePriv {
 typedef struct _virQEMUCapsCachePriv virQEMUCapsCachePriv;
 typedef virQEMUCapsCachePriv *virQEMUCapsCachePrivPtr;
 
-struct _virQEMUCapsCache {
-    virMutex lock;
-    virHashTablePtr binaries;
-    char *cacheDir;
-    virQEMUCapsCachePrivPtr priv;
-};
 
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
 

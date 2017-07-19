@@ -1,6 +1,7 @@
 #ifdef WITH_QEMU
 
 # include "capabilities.h"
+# include "virfilecache.h"
 # include "domain_conf.h"
 # include "qemu/qemu_capabilities.h"
 # include "qemu/qemu_conf.h"
@@ -30,7 +31,7 @@ void qemuTestSetHostCPU(virCapsPtr caps,
 
 int qemuTestDriverInit(virQEMUDriver *driver);
 void qemuTestDriverFree(virQEMUDriver *driver);
-int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache,
+int qemuTestCapsCacheInsert(virFileCachePtr cache,
                             virQEMUCapsPtr caps);
 
 int testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,

@@ -12,6 +12,7 @@
 # define __QEMU_CAPSPRIV_H_ALLOW__
 # include "qemu/qemu_capspriv.h"
 # include "virstring.h"
+# include "virfilecache.h"
 
 # define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -511,14 +512,14 @@ void qemuTestDriverFree(virQEMUDriver *driver)
         virFileDeleteTree(driver->config->stateDir);
         virFileDeleteTree(driver->config->configDir);
     }
-    virQEMUCapsCacheFree(driver->qemuCapsCache);
+    virObjectUnref(driver->qemuCapsCache);
     virObjectUnref(driver->xmlopt);
     virObjectUnref(driver->caps);
     virObjectUnref(driver->config);
     virObjectUnref(driver->securityManager);
 }
 
-int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache,
+int qemuTestCapsCacheInsert(virFileCachePtr cache,
                             virQEMUCapsPtr caps)
 {
     size_t i;
@@ -533,9 +534,7 @@ int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache,
 
     for (i = 0; i < ARRAY_CARDINALITY(QEMUBinList); i++) {
         virObjectRef(tmpCaps);
-        if (virHashUpdateEntry(cache->binaries,
-                               QEMUBinList[i],
-                               tmpCaps) < 0) {
+        if (virFileCacheInsertData(cache, QEMUBinList[i], tmpCaps) < 0) {
             virObjectUnref(tmpCaps);
             return -1;
         }

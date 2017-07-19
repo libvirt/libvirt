@@ -29,6 +29,7 @@
 #include "virlog.h"
 #include "virerror.h"
 #include "virfile.h"
+#include "virfilecache.h"
 #include "virpidfile.h"
 #include "virprocess.h"
 #include "cpu/cpu.h"
@@ -957,7 +958,7 @@ virQEMUCapsFindBinaryForArch(virArch hostarch,
 
 static int
 virQEMUCapsInitGuest(virCapsPtr caps,
-                     virQEMUCapsCachePtr cache,
+                     virFileCachePtr cache,
                      virArch hostarch,
                      virArch guestarch)
 {
@@ -1174,7 +1175,8 @@ virQEMUCapsProbeHostCPUForEmulator(virArch hostArch,
 }
 
 
-virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
+virCapsPtr
+virQEMUCapsInit(virFileCachePtr cache)
 {
     virCapsPtr caps;
     size_t i;
@@ -2172,7 +2174,7 @@ virQEMUCapsExtractDeviceStr(const char *qemu,
 
 
 int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
-                                 virQEMUCapsCachePtr capsCache,
+                                 virFileCachePtr capsCache,
                                  unsigned int *version)
 {
     virQEMUCapsPtr qemucaps;
@@ -3775,8 +3777,10 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
 
 
 static void
-virQEMUCapsCachePrivFree(virQEMUCapsCachePrivPtr priv)
+virQEMUCapsCachePrivFree(void *privData)
 {
+    virQEMUCapsCachePrivPtr priv = privData;
+
     VIR_FREE(priv->libDir);
     VIR_FREE(priv);
 }
@@ -4205,8 +4209,11 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
 
 
 static int
-virQEMUCapsSaveCache(virQEMUCapsPtr qemuCaps, const char *filename)
+virQEMUCapsSaveFile(void *data,
+                    const char *filename,
+                    void *privData ATTRIBUTE_UNUSED)
 {
+    virQEMUCapsPtr qemuCaps = data;
     char *xml = NULL;
     int ret = -1;
 
@@ -4230,48 +4237,13 @@ virQEMUCapsSaveCache(virQEMUCapsPtr qemuCaps, const char *filename)
     return ret;
 }
 
-static int
-virQEMUCapsRememberCached(virQEMUCapsPtr qemuCaps, const char *cacheDir)
-{
-    char *capsdir = NULL;
-    char *capsfile = NULL;
-    int ret = -1;
-    char *binaryhash = NULL;
-
-    if (virAsprintf(&capsdir, "%s/capabilities", cacheDir) < 0)
-        goto cleanup;
-
-    if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256,
-                            qemuCaps->binary,
-                            &binaryhash) < 0)
-        goto cleanup;
-
-    if (virAsprintf(&capsfile, "%s/%s.xml", capsdir, binaryhash) < 0)
-        goto cleanup;
-
-    if (virFileMakePath(capsdir) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to create directory '%s'"),
-                             capsdir);
-        goto cleanup;
-    }
-
-    if (virQEMUCapsSaveCache(qemuCaps, capsfile) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    VIR_FREE(binaryhash);
-    VIR_FREE(capsfile);
-    VIR_FREE(capsdir);
-    return ret;
-}
-
 
 static bool
-virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
-                   virQEMUCapsCachePrivPtr priv)
+virQEMUCapsIsValid(void *data,
+                   void *privData)
 {
+    virQEMUCapsPtr qemuCaps = data;
+    virQEMUCapsCachePrivPtr priv = privData;
     bool kvmUsable;
     struct stat sb;
 
@@ -4327,86 +4299,6 @@ virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
     }
 
     return true;
-}
-
-
-static int
-virQEMUCapsInitCached(virQEMUCapsPtr *qemuCaps,
-                      const char *binary,
-                      const char *cacheDir,
-                      virQEMUCapsCachePrivPtr priv)
-{
-    char *capsdir = NULL;
-    char *capsfile = NULL;
-    int ret = -1;
-    char *binaryhash = NULL;
-    struct stat sb;
-    virQEMUCapsPtr qemuCapsNew = NULL;
-
-    if (virAsprintf(&capsdir, "%s/capabilities", cacheDir) < 0)
-        goto cleanup;
-
-    if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, binary, &binaryhash) < 0)
-        goto cleanup;
-
-    if (virAsprintf(&capsfile, "%s/%s.xml", capsdir, binaryhash) < 0)
-        goto cleanup;
-
-    if (virFileMakePath(capsdir) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to create directory '%s'"),
-                             capsdir);
-        goto cleanup;
-    }
-
-    if (stat(capsfile, &sb) < 0) {
-        if (errno == ENOENT) {
-            VIR_DEBUG("No cached capabilities '%s' for '%s'",
-                      capsfile, binary);
-            ret = 0;
-            goto cleanup;
-        }
-        virReportSystemError(errno,
-                             _("Unable to access cache '%s' for '%s'"),
-                             capsfile, binary);
-        goto cleanup;
-    }
-
-    if (!(qemuCapsNew = virQEMUCapsNew()))
-        goto cleanup;
-
-    if (VIR_STRDUP(qemuCapsNew->binary, binary) < 0)
-        goto discard;
-
-    if (virQEMUCapsLoadCache(priv->hostArch, qemuCapsNew, capsfile) < 0) {
-        VIR_WARN("Failed to load cached caps from '%s' for '%s': %s",
-                 capsfile, qemuCapsNew->binary, virGetLastErrorMessage());
-        virResetLastError();
-        goto discard;
-    }
-
-    if (!virQEMUCapsIsValid(qemuCapsNew, priv))
-        goto discard;
-
-    VIR_DEBUG("Loaded '%s' for '%s' ctime %lld usedQMP=%d",
-              capsfile, qemuCapsNew->binary,
-              (long long)qemuCapsNew->ctime, qemuCapsNew->usedQMP);
-
-    ret = 1;
-    *qemuCaps = qemuCapsNew;
- cleanup:
-    VIR_FREE(binaryhash);
-    VIR_FREE(capsfile);
-    VIR_FREE(capsdir);
-    return ret;
-
- discard:
-    VIR_DEBUG("Dropping cached capabilities '%s' for '%s'",
-              capsfile, qemuCapsNew->binary);
-    ignore_value(unlink(capsfile));
-    virObjectUnref(qemuCapsNew);
-    ret = 0;
-    goto cleanup;
 }
 
 
@@ -5287,36 +5179,45 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     goto cleanup;
 }
 
-static virQEMUCapsPtr
-virQEMUCapsNewForBinary(const char *binary,
-                        const char *cacheDir,
-                        virQEMUCapsCachePrivPtr priv)
+static void *
+virQEMUCapsNewData(const char *binary,
+                   void *privData)
 {
-    int rv;
-    virQEMUCapsPtr qemuCaps = NULL;
+    virQEMUCapsCachePrivPtr priv = privData;
 
-    if ((rv = virQEMUCapsInitCached(&qemuCaps, binary, cacheDir, priv)) < 0)
+    return virQEMUCapsNewForBinaryInternal(priv->hostArch,
+                                           binary,
+                                           priv->libDir,
+                                           priv->runUid,
+                                           priv->runGid,
+                                           false);
+}
+
+
+static void *
+virQEMUCapsLoadFile(const char *filename,
+                    const char *binary,
+                    void *privData)
+{
+    virQEMUCapsPtr qemuCaps = virQEMUCapsNew();
+    virQEMUCapsCachePrivPtr priv = privData;
+
+    if (!qemuCaps)
+        return NULL;
+
+    if (VIR_STRDUP(qemuCaps->binary, binary) < 0)
         goto error;
 
-    if (rv == 0) {
-        if (!(qemuCaps = virQEMUCapsNewForBinaryInternal(priv->hostArch,
-                                                         binary,
-                                                         priv->libDir,
-                                                         priv->runUid,
-                                                         priv->runGid,
-                                                         false))) {
-            goto error;
-        }
+    if (virQEMUCapsLoadCache(priv->hostArch, qemuCaps, filename) < 0)
+        goto error;
 
-        if (virQEMUCapsRememberCached(qemuCaps, cacheDir) < 0)
-            goto error;
-    }
-
+ cleanup:
     return qemuCaps;
 
  error:
     virObjectUnref(qemuCaps);
-    return NULL;
+    qemuCaps = NULL;
+    goto cleanup;
 }
 
 
@@ -5358,90 +5259,61 @@ virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
 }
 
 
-virQEMUCapsCachePtr
+virFileCacheHandlers qemuCapsCacheHandlers = {
+    .isValid = virQEMUCapsIsValid,
+    .newData = virQEMUCapsNewData,
+    .loadFile = virQEMUCapsLoadFile,
+    .saveFile = virQEMUCapsSaveFile,
+    .privFree = virQEMUCapsCachePrivFree,
+};
+
+
+virFileCachePtr
 virQEMUCapsCacheNew(const char *libDir,
                     const char *cacheDir,
                     uid_t runUid,
                     gid_t runGid)
 {
-    virQEMUCapsCachePtr cache;
+    char *capsCacheDir = NULL;
+    virFileCachePtr cache = NULL;
+    virQEMUCapsCachePrivPtr priv = NULL;
 
-    if (VIR_ALLOC(cache) < 0)
-        return NULL;
-
-    if (virMutexInit(&cache->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to initialize mutex"));
-        VIR_FREE(cache);
-        return NULL;
-    }
-
-    if (!(cache->binaries = virHashCreate(10, virObjectFreeHashData)))
-        goto error;
-    if (VIR_STRDUP(cache->cacheDir, cacheDir) < 0)
+    if (virAsprintf(&capsCacheDir, "%s/capabilities", cacheDir) < 0)
         goto error;
 
-    if (VIR_ALLOC(cache->priv) < 0)
+    if (!(cache = virFileCacheNew(capsCacheDir, "xml", &qemuCapsCacheHandlers)))
         goto error;
 
-    if (VIR_STRDUP(cache->priv->libDir, libDir) < 0)
+    if (VIR_ALLOC(priv) < 0)
+        goto error;
+    virFileCacheSetPriv(cache, priv);
+
+    if (VIR_STRDUP(priv->libDir, libDir) < 0)
         goto error;
 
-    cache->priv->hostArch = virArchFromHost();
+    priv->hostArch = virArchFromHost();
 
-    cache->priv->runUid = runUid;
-    cache->priv->runGid = runGid;
+    priv->runUid = runUid;
+    priv->runGid = runGid;
 
+ cleanup:
+    VIR_FREE(capsCacheDir);
     return cache;
 
  error:
-    virQEMUCapsCacheFree(cache);
-    return NULL;
-}
-
-
-static void ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-virQEMUCapsCacheValidate(virQEMUCapsCachePtr cache,
-                         const char *binary,
-                         virQEMUCapsPtr *qemuCaps)
-{
-    if (*qemuCaps &&
-        !virQEMUCapsIsValid(*qemuCaps, cache->priv)) {
-        VIR_DEBUG("Cached capabilities %p no longer valid for %s",
-                  *qemuCaps, binary);
-        virHashRemoveEntry(cache->binaries, binary);
-        *qemuCaps = NULL;
-    }
-
-    if (!*qemuCaps) {
-        VIR_DEBUG("Creating capabilities for %s", binary);
-        *qemuCaps = virQEMUCapsNewForBinary(binary,
-                                            cache->cacheDir,
-                                            cache->priv);
-        if (*qemuCaps) {
-            VIR_DEBUG("Caching capabilities %p for %s", *qemuCaps, binary);
-            if (virHashAddEntry(cache->binaries, binary, *qemuCaps) < 0) {
-                virObjectUnref(*qemuCaps);
-                *qemuCaps = NULL;
-            }
-        }
-    }
+    virObjectUnref(cache);
+    cache = NULL;
+    goto cleanup;
 }
 
 
 virQEMUCapsPtr
-virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache,
+virQEMUCapsCacheLookup(virFileCachePtr cache,
                        const char *binary)
 {
     virQEMUCapsPtr ret = NULL;
 
-    virMutexLock(&cache->lock);
-
-    ret = virHashLookup(cache->binaries, binary);
-    virQEMUCapsCacheValidate(cache, binary, &ret);
-    virObjectRef(ret);
-
-    virMutexUnlock(&cache->lock);
+    ret = virFileCacheLookup(cache, binary);
 
     VIR_DEBUG("Returning caps %p for %s", ret, binary);
     return ret;
@@ -5449,7 +5321,7 @@ virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache,
 
 
 virQEMUCapsPtr
-virQEMUCapsCacheLookupCopy(virQEMUCapsCachePtr cache,
+virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
                            const char *binary,
                            const char *machineType)
 {
@@ -5483,61 +5355,33 @@ virQEMUCapsCompareArch(const void *payload,
 
 
 virQEMUCapsPtr
-virQEMUCapsCacheLookupByArch(virQEMUCapsCachePtr cache,
+virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
                              virArch arch)
 {
     virQEMUCapsPtr ret = NULL;
     virArch target;
     struct virQEMUCapsSearchData data = { .arch = arch };
 
-    virMutexLock(&cache->lock);
-    ret = virHashSearch(cache->binaries, virQEMUCapsCompareArch, &data, NULL);
+    ret = virFileCacheLookupByFunc(cache, virQEMUCapsCompareArch, &data);
     if (!ret) {
         /* If the first attempt at finding capabilities has failed, try
          * again using the QEMU target as lookup key instead */
         target = virQEMUCapsFindTarget(virArchFromHost(), data.arch);
         if (target != data.arch) {
             data.arch = target;
-            ret = virHashSearch(cache->binaries, virQEMUCapsCompareArch,
-                                &data, NULL);
+            ret = virFileCacheLookupByFunc(cache, virQEMUCapsCompareArch, &data);
         }
     }
 
-    if (ret) {
-        char *binary;
-
-        if (VIR_STRDUP(binary, ret->binary) < 0) {
-            ret = NULL;
-        } else {
-            virQEMUCapsCacheValidate(cache, binary, &ret);
-            VIR_FREE(binary);
-        }
-    } else {
+    if (!ret) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unable to find any emulator to serve '%s' "
                          "architecture"), virArchToString(arch));
     }
 
-    virObjectRef(ret);
-    virMutexUnlock(&cache->lock);
-
     VIR_DEBUG("Returning caps %p for arch %s", ret, virArchToString(arch));
 
     return ret;
-}
-
-
-void
-virQEMUCapsCacheFree(virQEMUCapsCachePtr cache)
-{
-    if (!cache)
-        return;
-
-    virQEMUCapsCachePrivFree(cache->priv);
-    VIR_FREE(cache->cacheDir);
-    virHashFree(cache->binaries);
-    virMutexDestroy(&cache->lock);
-    VIR_FREE(cache);
 }
 
 

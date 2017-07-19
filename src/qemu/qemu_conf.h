@@ -48,6 +48,7 @@
 # include "virclosecallbacks.h"
 # include "virhostdev.h"
 # include "virfile.h"
+# include "virfilecache.h"
 # include "virfirmware.h"
 
 # ifdef CPU_SETSIZE /* Linux */
@@ -245,7 +246,7 @@ struct _virQEMUDriver {
     virDomainXMLOptionPtr xmlopt;
 
     /* Immutable pointer, self-locking APIs */
-    virQEMUCapsCachePtr qemuCapsCache;
+    virFileCachePtr qemuCapsCache;
 
     /* Immutable pointer, self-locking APIs */
     virObjectEventStatePtr domainEventState;
