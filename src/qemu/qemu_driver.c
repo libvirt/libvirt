@@ -6111,11 +6111,8 @@ static int qemuDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secl
      */
     if (virDomainObjIsActive(vm)) {
         if (qemuSecurityGetProcessLabel(driver->securityManager,
-                                        vm->def, vm->pid, seclabel) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Failed to get security label"));
+                                        vm->def, vm->pid, seclabel) < 0)
             goto cleanup;
-        }
     }
 
     ret = 0;
@@ -6173,8 +6170,6 @@ static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
         for (i = 0; i < len; i++) {
             if (qemuSecurityGetProcessLabel(mgrs[i], vm->def, vm->pid,
                                             &(*seclabels)[i]) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("Failed to get security label"));
                 VIR_FREE(mgrs);
                 VIR_FREE(*seclabels);
                 goto cleanup;

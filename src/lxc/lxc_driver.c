@@ -1348,11 +1348,9 @@ static int lxcDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secla
         }
 
         if (virSecurityManagerGetProcessLabel(driver->securityManager,
-                                              vm->def, priv->initpid, seclabel) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Failed to get security label"));
+                                              vm->def, priv->initpid,
+                                              seclabel) < 0)
             goto cleanup;
-        }
     }
 
     ret = 0;
