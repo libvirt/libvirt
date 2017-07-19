@@ -49,8 +49,10 @@ struct _virClass {
 
 static virClassPtr virObjectClass;
 static virClassPtr virObjectLockableClass;
+static virClassPtr virObjectRWLockableClass;
 
 static void virObjectLockableDispose(void *anyobj);
+static void virObjectRWLockableDispose(void *anyobj);
 
 static int
 virObjectOnceInit(void)
@@ -65,6 +67,12 @@ virObjectOnceInit(void)
                                                "virObjectLockable",
                                                sizeof(virObjectLockable),
                                                virObjectLockableDispose)))
+        return -1;
+
+    if (!(virObjectRWLockableClass = virClassNew(virObjectClass,
+                                                 "virObjectRWLockable",
+                                                 sizeof(virObjectRWLockable),
+                                                 virObjectRWLockableDispose)))
         return -1;
 
     return 0;
@@ -100,6 +108,21 @@ virClassForObjectLockable(void)
         return NULL;
 
     return virObjectLockableClass;
+}
+
+
+/**
+ * virClassForObjectRWLockable:
+ *
+ * Returns the class instance for the virObjectRWLockable type
+ */
+virClassPtr
+virClassForObjectRWLockable(void)
+{
+    if (virObjectInitialize() < 0)
+        return NULL;
+
+    return virObjectRWLockableClass;
 }
 
 
@@ -237,12 +260,47 @@ virObjectLockableNew(virClassPtr klass)
 }
 
 
+void *
+virObjectRWLockableNew(virClassPtr klass)
+{
+    virObjectRWLockablePtr obj;
+
+    if (!virClassIsDerivedFrom(klass, virClassForObjectRWLockable())) {
+        virReportInvalidArg(klass,
+                            _("Class %s must derive from virObjectRWLockable"),
+                            virClassName(klass));
+        return NULL;
+    }
+
+    if (!(obj = virObjectNew(klass)))
+        return NULL;
+
+    if (virRWLockInitPreferWriter(&obj->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to initialize RW lock"));
+        virObjectUnref(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+
 static void
 virObjectLockableDispose(void *anyobj)
 {
     virObjectLockablePtr obj = anyobj;
 
     virMutexDestroy(&obj->lock);
+}
+
+
+static void
+virObjectRWLockableDispose(void *anyobj)
+{
+    virObjectRWLockablePtr obj = anyobj;
+
+    virRWLockDestroy(&obj->lock);
 }
 
 
@@ -309,28 +367,13 @@ virObjectRef(void *anyobj)
 }
 
 
-static virObjectLockablePtr
-virObjectGetLockableObj(void *anyobj)
-{
-    virObjectPtr obj;
-
-    if (virObjectIsClass(anyobj, virObjectLockableClass))
-        return anyobj;
-
-    obj = anyobj;
-    VIR_WARN("Object %p (%s) is not a virObjectLockable instance",
-              anyobj, obj ? obj->klass->name : "(unknown)");
-
-    return NULL;
-}
-
-
 /**
  * virObjectLock:
- * @anyobj: any instance of virObjectLockablePtr
+ * @anyobj: any instance of virObjectLockable or virObjectRWLockable
  *
- * Acquire a lock on @anyobj. The lock must be
- * released by virObjectUnlock.
+ * Acquire a lock on @anyobj. The lock must be released by
+ * virObjectUnlock. In case the passed object is instance of
+ * virObjectRWLockable a write lock is acquired.
  *
  * The caller is expected to have acquired a reference
  * on the object before locking it (eg virObjectRef).
@@ -340,31 +383,69 @@ virObjectGetLockableObj(void *anyobj)
 void
 virObjectLock(void *anyobj)
 {
-    virObjectLockablePtr obj = virObjectGetLockableObj(anyobj);
+    if (virObjectIsClass(anyobj, virObjectLockableClass)) {
+        virObjectLockablePtr obj = anyobj;
+        virMutexLock(&obj->lock);
+    } else if (virObjectIsClass(anyobj, virObjectRWLockableClass)) {
+        virObjectRWLockablePtr obj = anyobj;
+        virRWLockWrite(&obj->lock);
+    } else {
+        virObjectPtr obj = anyobj;
+        VIR_WARN("Object %p (%s) is not a virObjectLockable "
+                 "nor virObjectRWLockable instance",
+                 anyobj, obj ? obj->klass->name : "(unknown)");
+    }
+}
 
-    if (!obj)
-        return;
 
-    virMutexLock(&obj->lock);
+/**
+ * virObjectLockRead:
+ * @anyobj: any instance of virObjectRWLockable
+ *
+ * Acquire a read lock on @anyobj. The lock must be
+ * released by virObjectUnlock.
+ *
+ * The caller is expected to have acquired a reference
+ * on the object before locking it (eg virObjectRef).
+ * The object must be unlocked before releasing this
+ * reference.
+ */
+void
+virObjectLockRead(void *anyobj)
+{
+    if (virObjectIsClass(anyobj, virObjectRWLockableClass)) {
+        virObjectRWLockablePtr obj = anyobj;
+        virRWLockRead(&obj->lock);
+    } else {
+        virObjectPtr obj = anyobj;
+        VIR_WARN("Object %p (%s) is not a virObjectRWLockable instance",
+                 anyobj, obj ? obj->klass->name : "(unknown)");
+    }
 }
 
 
 /**
  * virObjectUnlock:
- * @anyobj: any instance of virObjectLockablePtr
+ * @anyobj: any instance of virObjectLockable or virObjectRWLockable
  *
- * Release a lock on @anyobj. The lock must have been
- * acquired by virObjectLock.
+ * Release a lock on @anyobj. The lock must have been acquired by
+ * virObjectLock or virObjectLockRead.
  */
 void
 virObjectUnlock(void *anyobj)
 {
-    virObjectLockablePtr obj = virObjectGetLockableObj(anyobj);
-
-    if (!obj)
-        return;
-
-    virMutexUnlock(&obj->lock);
+    if (virObjectIsClass(anyobj, virObjectLockableClass)) {
+        virObjectLockablePtr obj = anyobj;
+        virMutexUnlock(&obj->lock);
+    } else if (virObjectIsClass(anyobj, virObjectRWLockableClass)) {
+        virObjectRWLockablePtr obj = anyobj;
+        virRWLockUnlock(&obj->lock);
+    } else {
+        virObjectPtr obj = anyobj;
+        VIR_WARN("Object %p (%s) is not a virObjectLockable "
+                 "nor virObjectRWLockable instance",
+                 anyobj, obj ? obj->klass->name : "(unknown)");
+    }
 }
 
 
