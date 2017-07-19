@@ -21831,7 +21831,30 @@ virDomainControllerDefFormat(virBufferPtr buf,
     }
 
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-        if (def->opts.pciopts.modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE) {
+        bool formatModelName = true;
+
+        if (def->opts.pciopts.modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE)
+            formatModelName = false;
+
+        /* Historically, libvirt didn't support specifying a model name for
+         * pci-root controllers; starting from 3.6.0, however, pSeries guests
+         * use pci-root controllers with model name spapr-pci-host-bridge to
+         * represent all PHBs, including the default one.
+         *
+         * In order to allow migration of pSeries guests from older libvirt
+         * versions and back, we don't format the model name in the migratable
+         * XML if it's spapr-pci-host-bridge, thus making "no model name" and
+         * "spapr-pci-host-bridge model name" basically equivalent.
+         *
+         * The spapr-pci-host-bridge device is specific to pSeries.
+         */
+        if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
+            def->opts.pciopts.modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE &&
+            flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE) {
+            formatModelName = false;
+        }
+
+        if (formatModelName) {
             modelName = virDomainControllerPCIModelNameTypeToString(def->opts.pciopts.modelName);
             if (!modelName) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
