@@ -200,6 +200,7 @@ virStorageBackendCreateVols(virStoragePoolObjPtr pool,
 
     retval = 0;
  out:
+    VIR_FREE(map_device);
     return retval;
 }
 
