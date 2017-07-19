@@ -108,7 +108,7 @@ qemuMigrationCheckTLSCreds(virQEMUDriverPtr driver,
     qemuMonitorMigrationParams migParams = { 0 };
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorGetMigrationParams(priv->mon, &migParams) < 0)
         goto cleanup;
