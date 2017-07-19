@@ -568,6 +568,7 @@ phypUUIDTable_Push(virConnectPtr conn)
     ret = 0;
 
  cleanup:
+    VIR_FREE(remote_file);
     if (channel) {
         libssh2_channel_send_eof(channel);
         libssh2_channel_wait_eof(channel);
