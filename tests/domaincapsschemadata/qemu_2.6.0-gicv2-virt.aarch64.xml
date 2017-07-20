@@ -7,6 +7,7 @@
   <os supported='yes'>
     <loader supported='yes'>
       <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>
+      <value>/usr/share/AAVMF/AAVMF32_CODE.fd</value>
       <value>/usr/share/OVMF/OVMF_CODE.fd</value>
       <enum name='type'>
         <value>rom</value>

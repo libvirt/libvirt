@@ -240,6 +240,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
 
     if (fillStringValues(&loader->values,
                          "/usr/share/AAVMF/AAVMF_CODE.fd",
+                         "/usr/share/AAVMF/AAVMF32_CODE.fd",
                          "/usr/share/OVMF/OVMF_CODE.fd",
                          NULL) < 0)
         goto cleanup;
