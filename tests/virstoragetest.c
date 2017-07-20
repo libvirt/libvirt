@@ -1349,7 +1349,7 @@ mymain(void)
     TEST_BACKING_PARSE("://", NULL);
     TEST_BACKING_PARSE("http://example.com/file",
                        "<source protocol='http' name='file'>\n"
-                       "  <host name='example.com'/>\n"
+                       "  <host name='example.com' port='80'/>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("rbd:testshare:id=asdf:mon_host=example.com",
                        "<source protocol='rbd' name='testshare'>\n"
@@ -1385,14 +1385,14 @@ mymain(void)
     TEST_BACKING_PARSE("json:{\"file.driver\":\"http\", "
                              "\"file.url\":\"http://example.com/file\"}",
                        "<source protocol='http' name='file'>\n"
-                       "  <host name='example.com'/>\n"
+                       "  <host name='example.com' port='80'/>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("json:{\"file\":{ \"driver\":\"http\","
                                         "\"url\":\"http://example.com/file\""
                                       "}"
                             "}",
                        "<source protocol='http' name='file'>\n"
-                       "  <host name='example.com'/>\n"
+                       "  <host name='example.com' port='80'/>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("json:{\"file.driver\":\"ftp\", "
                              "\"file.url\":\"http://example.com/file\"}",
@@ -1400,7 +1400,7 @@ mymain(void)
     TEST_BACKING_PARSE("json:{\"file.driver\":\"gluster\", "
                              "\"file.filename\":\"gluster://example.com/vol/file\"}",
                        "<source protocol='gluster' name='vol/file'>\n"
-                       "  <host name='example.com'/>\n"
+                       "  <host name='example.com' port='24007'/>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"gluster\","
                                        "\"volume\":\"testvol\","
@@ -1421,7 +1421,7 @@ mymain(void)
                         "<source protocol='gluster' name='testvol/img.qcow2'>\n"
                         "  <host name='example.com' port='1234'/>\n"
                         "  <host transport='unix' socket='/path/socket'/>\n"
-                        "  <host name='example.com'/>\n"
+                        "  <host name='example.com' port='24007'/>\n"
                         "</source>\n");
     TEST_BACKING_PARSE("json:{\"file.driver\":\"gluster\","
                              "\"file.volume\":\"testvol\","
@@ -1441,7 +1441,7 @@ mymain(void)
                         "<source protocol='gluster' name='testvol/img.qcow2'>\n"
                         "  <host name='example.com' port='1234'/>\n"
                         "  <host transport='unix' socket='/path/socket'/>\n"
-                        "  <host name='example.com'/>\n"
+                        "  <host name='example.com' port='24007'/>\n"
                         "</source>\n");
     TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"nbd\","
                                        "\"path\":\"/path/to/socket\""
@@ -1552,7 +1552,7 @@ mymain(void)
                                       "}"
                             "}",
                        "<source protocol='iscsi' name='iqn.2016-12.com.virttest:emulated-iscsi-noauth.target/0'>\n"
-                       "  <host name='test.org'/>\n"
+                       "  <host name='test.org' port='3260'/>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"iscsi\","
                                        "\"transport\":\"tcp\","

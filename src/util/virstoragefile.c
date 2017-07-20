@@ -3340,6 +3340,9 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
 
         if (rc < 0)
             goto error;
+
+        if (virStorageSourceNetworkAssignDefaultPorts(ret) < 0)
+            goto error;
     }
 
     return ret;
