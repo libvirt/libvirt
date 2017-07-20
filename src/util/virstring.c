@@ -1356,7 +1356,7 @@ void virStringTrimOptionalNewline(char *str)
  */
 int
 virStringParsePort(const char *str,
-                   int *port)
+                   unsigned int *port)
 {
     unsigned int p = 0;
 

@@ -42,7 +42,7 @@ struct _virURI {
     char *scheme;       /* the URI scheme */
     char *server;       /* the server part */
     char *user;         /* the user part */
-    int port;           /* the port number */
+    unsigned int port;  /* the port number */
     char *path;         /* the path string */
     char *query;        /* the query string */
     char *fragment;     /* the fragment string */

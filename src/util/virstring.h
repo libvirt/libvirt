@@ -297,7 +297,7 @@ char *virStringEncodeBase64(const uint8_t *buf, size_t buflen);
 void virStringTrimOptionalNewline(char *str);
 
 int virStringParsePort(const char *str,
-                       int *port)
+                       unsigned int *port)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __VIR_STRING_H__ */
