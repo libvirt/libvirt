@@ -594,8 +594,9 @@ nodeDeviceDestroy(virNodeDevicePtr device)
     int ret = -1;
     virNodeDeviceObjPtr obj = NULL;
     virNodeDeviceDefPtr def;
+    char *parent = NULL;
     char *wwnn = NULL, *wwpn = NULL;
-    int parent_host = -1;
+    unsigned int parent_host;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
         return -1;
@@ -609,13 +610,23 @@ nodeDeviceDestroy(virNodeDevicePtr device)
     if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) < 0)
         goto cleanup;
 
-    /* virNodeDeviceGetParentHost will cause the device object's lock
-     * to be taken, so grab the object def which will have the various
-     * fields used to search (name, parent, parent_wwnn, parent_wwpn,
-     * or parent_fabric_wwn) and drop the object lock. */
+    /* Because we're about to release the lock and thus run into a race
+     * possibility (however improbable) with a udevAddOneDevice change
+     * event which would essentially free the existing @def (obj->def) and
+     * replace it with something new, we need to grab the parent field
+     * and then find the parent obj in order to manage the vport */
+    if (VIR_STRDUP(parent, def->parent) < 0)
+        goto cleanup;
+
     virNodeDeviceObjEndAPI(&obj);
-    if ((parent_host = virNodeDeviceObjListGetParentHost(driver->devs, def,
-                                                         EXISTING_DEVICE)) < 0)
+
+    if (!(obj = virNodeDeviceObjListFindByName(driver->devs, parent))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot find parent '%s' definition"), parent);
+        goto cleanup;
+    }
+
+    if (virSCSIHostGetNumber(parent, &parent_host) < 0)
         goto cleanup;
 
     if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_DELETE) < 0)
@@ -626,6 +637,7 @@ nodeDeviceDestroy(virNodeDevicePtr device)
  cleanup:
     nodeDeviceUnlock();
     virNodeDeviceObjEndAPI(&obj);
+    VIR_FREE(parent);
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
     return ret;
