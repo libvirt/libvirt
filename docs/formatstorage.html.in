@@ -207,18 +207,21 @@
         </dl>
         <dl>
           <dt><code>wwnn</code> and <code>wwpn</code></dt>
-          <dd>The "World Wide Node Name" (<code>wwnn</code>) and "World Wide
-            Port Name" (<code>wwpn</code>) are used by the "fc_host" adapter
-            to uniquely identify the device in the Fibre Channel storage fabric
-            (the device can be either a HBA or vHBA). Both wwnn and wwpn should
-            be specified. Use the command 'virsh nodedev-dumpxml' to determine
-            how to set the values for the wwnn/wwpn of a (v)HBA. The wwnn and
-            wwpn have very specific numerical format requirements based on the
-            hypervisor being used, thus care should be taken if you decide to
-            generate your own to follow the standards; otherwise, the pool
-            will fail to start with an opaque error message indicating failure
-            to write to the vport_create file during vport create/delete due
-            to "No such file or directory".
+          <dd>The required "World Wide Node Name" (<code>wwnn</code>) and
+            "World Wide Port Name" (<code>wwpn</code>) are used by the
+            "fc_host" adapter to uniquely identify the vHBA device in the
+            Fibre Channel storage fabric. If the vHBA device already exists
+            as a Node Device, then libvirt will use it; otherwise, the vHBA
+            will be created using the provided values. It is considered a
+            configuration error use the values from the HBA as those would
+            be for a "scsi_host" <code>type</code> pool instead. The
+            <code>wwnn</code> and <code>wwpn</code> have very specific
+            format requirements based on the hypervisor being used, thus
+            care should be taken if you decide to generate your own to
+            follow the standards; otherwise, the pool will fail to start
+            with an opaque error message indicating failure to write to
+            the vport_create file during vport create/delete due to
+            "No such file or directory".
             <span class="since">Since 1.0.4</span>
           </dd>
         </dl>
