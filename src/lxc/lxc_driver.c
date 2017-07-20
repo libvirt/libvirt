@@ -4358,7 +4358,7 @@ lxcDomainAttachDeviceLive(virConnectPtr conn,
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         ret = lxcDomainAttachDeviceHostdevLive(driver, vm, dev);
         if (!ret)
-            dev->data.disk = NULL;
+            dev->data.hostdev = NULL;
         break;
 
     default:
