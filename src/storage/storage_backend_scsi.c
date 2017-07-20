@@ -220,6 +220,7 @@ checkParent(virConnectPtr conn,
             const char *name,
             const char *parent_name)
 {
+    unsigned int host_num;
     char *scsi_host_name = NULL;
     char *vhba_parent = NULL;
     bool retval = false;
@@ -229,6 +230,20 @@ checkParent(virConnectPtr conn,
     /* autostarted pool - assume we're OK */
     if (!conn)
         return true;
+
+    if (virSCSIHostGetNumber(parent_name, &host_num) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("parent '%s' is not properly formatted"),
+                       parent_name);
+        goto cleanup;
+    }
+
+    if (!virVHBAPathExists(NULL, host_num)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("parent '%s' is not an fc_host for the wwnn/wwpn"),
+                       parent_name);
+        goto cleanup;
+    }
 
     if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
         goto cleanup;
