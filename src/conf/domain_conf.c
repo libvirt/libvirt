@@ -6316,71 +6316,61 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
     return ret;
 }
 
+
 static int
-virDomainStorageHostParse(xmlNodePtr node,
-                          virStorageNetHostDefPtr *hosts,
-                          size_t *nhosts)
+virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
+                                 virStorageNetHostDefPtr *hosts,
+                                 size_t *nhosts)
 {
     int ret = -1;
-    xmlNodePtr child;
     char *transport = NULL;
     virStorageNetHostDef host;
 
     memset(&host, 0, sizeof(host));
+    host.transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
 
-    child = node->children;
-    while (child != NULL) {
-        if (child->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(child->name, BAD_CAST "host")) {
-
-            host.transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
-
-            /* transport can be tcp (default), unix or rdma.  */
-            if ((transport = virXMLPropString(child, "transport"))) {
-                host.transport = virStorageNetHostTransportTypeFromString(transport);
-                if (host.transport < 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown protocol transport type '%s'"),
-                                   transport);
-                    goto cleanup;
-                }
-            }
-
-            host.socket = virXMLPropString(child, "socket");
-
-            if (host.transport == VIR_STORAGE_NET_HOST_TRANS_UNIX &&
-                host.socket == NULL) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("missing socket for unix transport"));
-                goto cleanup;
-            }
-
-            if (host.transport != VIR_STORAGE_NET_HOST_TRANS_UNIX &&
-                host.socket != NULL) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("transport '%s' does not support "
-                                 "socket attribute"),
-                               transport);
-                goto cleanup;
-            }
-
-            VIR_FREE(transport);
-
-            if (host.transport != VIR_STORAGE_NET_HOST_TRANS_UNIX) {
-                if (!(host.name = virXMLPropString(child, "name"))) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("missing name for host"));
-                    goto cleanup;
-                }
-
-                host.port = virXMLPropString(child, "port");
-            }
-
-            if (VIR_APPEND_ELEMENT(*hosts, *nhosts, host) < 0)
-                goto cleanup;
+    /* transport can be tcp (default), unix or rdma.  */
+    if ((transport = virXMLPropString(hostnode, "transport"))) {
+        host.transport = virStorageNetHostTransportTypeFromString(transport);
+        if (host.transport < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown protocol transport type '%s'"),
+                           transport);
+            goto cleanup;
         }
-        child = child->next;
     }
+
+    host.socket = virXMLPropString(hostnode, "socket");
+
+    if (host.transport == VIR_STORAGE_NET_HOST_TRANS_UNIX &&
+        host.socket == NULL) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing socket for unix transport"));
+        goto cleanup;
+    }
+
+    if (host.transport != VIR_STORAGE_NET_HOST_TRANS_UNIX &&
+        host.socket != NULL) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("transport '%s' does not support "
+                         "socket attribute"),
+                       transport);
+        goto cleanup;
+    }
+
+    if (host.transport != VIR_STORAGE_NET_HOST_TRANS_UNIX) {
+        if (!(host.name = virXMLPropString(hostnode, "name"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing name for host"));
+            goto cleanup;
+        }
+
+        host.port = virXMLPropString(hostnode, "port");
+    }
+
+    if (VIR_APPEND_ELEMENT(*hosts, *nhosts, host) < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
@@ -6388,6 +6378,27 @@ virDomainStorageHostParse(xmlNodePtr node,
     VIR_FREE(transport);
     return ret;
 }
+
+
+static int
+virDomainStorageNetworkParseHosts(xmlNodePtr node,
+                                  virStorageNetHostDefPtr *hosts,
+                                  size_t *nhosts)
+{
+    xmlNodePtr child;
+
+    for (child = node->children; child; child = child->next) {
+        if (child->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(child->name, BAD_CAST "host")) {
+
+            if (virDomainStorageNetworkParseHost(child, hosts, nhosts) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
 
 static int
 virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
@@ -6496,8 +6507,8 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
         goto cleanup;
     }
 
-    if (virDomainStorageHostParse(sourcenode, &iscsisrc->hosts,
-                                  &iscsisrc->nhosts) < 0)
+    if (virDomainStorageNetworkParseHosts(sourcenode, &iscsisrc->hosts,
+                                          &iscsisrc->nhosts) < 0)
         goto cleanup;
 
     if (iscsisrc->nhosts < 1) {
@@ -7766,7 +7777,7 @@ virDomainDiskSourceParse(xmlNodePtr node,
         /* config file currently only works with remote disks */
         src->configFile = virXPathString("string(./config/@file)", ctxt);
 
-        if (virDomainStorageHostParse(node, &src->hosts, &src->nhosts) < 0)
+        if (virDomainStorageNetworkParseHosts(node, &src->hosts, &src->nhosts) < 0)
             goto cleanup;
 
         if (virStorageSourceNetworkAssignDefaultPorts(src) < 0)
