@@ -80,8 +80,10 @@ mymain(void)
     if (!abs_top_srcdir)
         abs_top_srcdir = abs_srcdir "/..";
 
-    if (qemuTestDriverInit(&driver) < 0)
+    if (qemuTestDriverInit(&driver) < 0) {
+        VIR_FREE(fakerootdir);
         return EXIT_FAILURE;
+    }
 
     driver.privileged = true;
 
