@@ -575,9 +575,8 @@ virStorageFileBackendGlusterDeinit(virStorageSourcePtr src)
 {
     virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
 
-    VIR_DEBUG("deinitializing gluster storage file %p (gluster://%s:%s/%s%s)",
-              src, src->hosts->name, src->hosts->port ? src->hosts->port : "0",
-              src->volume, src->path);
+    VIR_DEBUG("deinitializing gluster storage file %p (gluster://%s:%u/%s%s)",
+              src, src->hosts->name, src->hosts->port, src->volume, src->path);
 
     if (priv->vol)
         glfs_fini(priv->vol);
@@ -599,15 +598,7 @@ virStorageFileBackendGlusterInitServer(virStorageFileBackendGlusterPrivPtr priv,
     case VIR_STORAGE_NET_HOST_TRANS_RDMA:
     case VIR_STORAGE_NET_HOST_TRANS_TCP:
         hoststr = host->name;
-
-        if (host->port &&
-            virStrToLong_i(host->port, NULL, 10, &port) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to parse port number '%s'"),
-                           host->port);
-            return -1;
-        }
-
+        port = host->port;
         break;
 
     case VIR_STORAGE_NET_HOST_TRANS_UNIX:
@@ -828,7 +819,7 @@ virStorageFileBackendGlusterGetUniqueIdentifier(virStorageSourcePtr src)
                                                     priv)))
         return NULL;
 
-    ignore_value(virAsprintf(&priv->canonpath, "gluster://%s:%s/%s/%s",
+    ignore_value(virAsprintf(&priv->canonpath, "gluster://%s:%u/%s/%s",
                              src->hosts->name,
                              src->hosts->port,
                              src->volume,

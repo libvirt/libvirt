@@ -155,7 +155,7 @@ typedef struct _virStorageNetHostDef virStorageNetHostDef;
 typedef virStorageNetHostDef *virStorageNetHostDefPtr;
 struct _virStorageNetHostDef {
     char *name;
-    char *port;
+    unsigned int port;
     int transport; /* virStorageNetHostTransport */
     char *socket;  /* path to unix socket */
 };
@@ -406,7 +406,7 @@ virStorageSourceFindByNodeName(virStorageSourcePtr top,
                                unsigned int *index)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int
+void
 virStorageSourceNetworkAssignDefaultPorts(virStorageSourcePtr src)
     ATTRIBUTE_NONNULL(1);
 

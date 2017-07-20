@@ -92,8 +92,7 @@ qemuParseDriveURIString(virDomainDiskDefPtr def, virURIPtr uri,
         if (VIR_STRDUP(def->src->hosts->name, uri->server) < 0)
             goto error;
 
-        if (virAsprintf(&def->src->hosts->port, "%d", uri->port) < 0)
-            goto error;
+        def->src->hosts->port = uri->port;
     } else {
         def->src->hosts->name = NULL;
         def->src->hosts->port = 0;
@@ -240,7 +239,7 @@ qemuParseNBDString(virDomainDiskDefPtr disk)
         if (src)
             *src++ = '\0';
 
-        if (VIR_STRDUP(h->port, port) < 0)
+        if (virStringParsePort(port, &h->port) < 0)
             goto error;
     }
 
@@ -730,7 +729,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                             goto error;
                         def->src->nhosts = 1;
                         def->src->hosts->name = def->src->path;
-                        if (VIR_STRDUP(def->src->hosts->port, port) < 0)
+                        if (virStringParsePort(port, &def->src->hosts->port) < 0)
                             goto error;
                         def->src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
                         def->src->hosts->socket = NULL;
@@ -2005,7 +2004,7 @@ qemuParseCommandLine(virCapsPtr caps,
                             goto error;
                         disk->src->nhosts = 1;
                         disk->src->hosts->name = disk->src->path;
-                        if (VIR_STRDUP(disk->src->hosts->port, port) < 0)
+                        if (virStringParsePort(port, &disk->src->hosts->port) < 0)
                             goto error;
                         if (VIR_STRDUP(disk->src->path, vdi) < 0)
                             goto error;
@@ -2541,12 +2540,12 @@ qemuParseCommandLine(virCapsPtr caps,
             port = strchr(token, ':');
             if (port) {
                 *port++ = '\0';
-                if (VIR_STRDUP(port, port) < 0) {
+                if (virStringParsePort(port,
+                                       &first_rbd_disk->src->hosts[first_rbd_disk->src->nhosts].port) < 0) {
                     VIR_FREE(hosts);
                     goto error;
                 }
             }
-            first_rbd_disk->src->hosts[first_rbd_disk->src->nhosts].port = port;
             if (VIR_STRDUP(first_rbd_disk->src->hosts[first_rbd_disk->src->nhosts].name,
                            token) < 0) {
                 VIR_FREE(hosts);

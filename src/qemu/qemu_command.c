@@ -809,8 +809,7 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
         goto cleanup;
 
     if (src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
-        if (virStringParsePort(src->hosts->port, &uri->port) < 0)
-            goto cleanup;
+        uri->port = src->hosts->port;
 
         if (VIR_STRDUP(uri->scheme,
                        virStorageNetProtocolTypeToString(src->protocol)) < 0)
@@ -881,8 +880,8 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
 
                 switch (src->hosts->transport) {
                 case VIR_STORAGE_NET_HOST_TRANS_TCP:
-                    virBufferStrcat(&buf, src->hosts->name, ":",
-                                    src->hosts->port, NULL);
+                    virBufferAsprintf(&buf, "%s:%u",
+                                      src->hosts->name, src->hosts->port);
                     break;
 
                 case VIR_STORAGE_NET_HOST_TRANS_UNIX:
@@ -937,7 +936,7 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
                 if (virAsprintf(&ret, "sheepdog:%s", src->path) < 0)
                     goto cleanup;
             } else if (src->nhosts == 1) {
-                if (virAsprintf(&ret, "sheepdog:%s:%s:%s",
+                if (virAsprintf(&ret, "sheepdog:%s:%u:%s",
                                 src->hosts->name, src->hosts->port,
                                 src->path) < 0)
                     goto cleanup;
@@ -979,7 +978,7 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
                         virBufferAsprintf(&buf, "%s", src->hosts[i].name);
 
                     if (src->hosts[i].port)
-                        virBufferAsprintf(&buf, "\\:%s", src->hosts[i].port);
+                        virBufferAsprintf(&buf, "\\:%u", src->hosts[i].port);
                 }
             }
 

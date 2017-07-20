@@ -1057,7 +1057,7 @@ xenFormatXLDiskSrcNet(virStorageSourcePtr src)
                     virBufferAsprintf(&buf, "%s", src->hosts[i].name);
 
                 if (src->hosts[i].port)
-                    virBufferAsprintf(&buf, "\\\\:%s", src->hosts[i].port);
+                    virBufferAsprintf(&buf, "\\\\:%u", src->hosts[i].port);
             }
         }
 

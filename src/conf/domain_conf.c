@@ -6324,6 +6324,7 @@ virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
 {
     int ret = -1;
     char *transport = NULL;
+    char *port = NULL;
     virStorageNetHostDef host;
 
     memset(&host, 0, sizeof(host));
@@ -6365,7 +6366,10 @@ virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
             goto cleanup;
         }
 
-        host.port = virXMLPropString(hostnode, "port");
+        if ((port = virXMLPropString(hostnode, "port"))) {
+            if (virStringParsePort(port, &host.port) < 0)
+                goto cleanup;
+        }
     }
 
     if (VIR_APPEND_ELEMENT(*hosts, *nhosts, host) < 0)
@@ -6376,6 +6380,7 @@ virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
  cleanup:
     virStorageNetHostDefClear(&host);
     VIR_FREE(transport);
+    VIR_FREE(port);
     return ret;
 }
 
@@ -7780,8 +7785,8 @@ virDomainDiskSourceParse(xmlNodePtr node,
         if (virDomainStorageNetworkParseHosts(node, &src->hosts, &src->nhosts) < 0)
             goto cleanup;
 
-        if (virStorageSourceNetworkAssignDefaultPorts(src) < 0)
-            goto cleanup;
+        virStorageSourceNetworkAssignDefaultPorts(src);
+
         break;
     case VIR_STORAGE_TYPE_VOLUME:
         if (virDomainDiskSourcePoolDefParse(node, &src->srcpool) < 0)
@@ -14814,7 +14819,7 @@ virDomainHostdevMatchSubsysSCSIiSCSI(virDomainHostdevDefPtr first,
         &second->source.subsys.u.scsi.u.iscsi;
 
     if (STREQ(first_iscsisrc->hosts[0].name, second_iscsisrc->hosts[0].name) &&
-        STREQ(first_iscsisrc->hosts[0].port, second_iscsisrc->hosts[0].port) &&
+        first_iscsisrc->hosts[0].port == second_iscsisrc->hosts[0].port &&
         STREQ(first_iscsisrc->path, second_iscsisrc->path))
         return 1;
     return 0;
@@ -21313,7 +21318,9 @@ virDomainDiskSourceFormatNetwork(virBufferPtr buf,
         for (n = 0; n < src->nhosts; n++) {
             virBufferAddLit(buf, "<host");
             virBufferEscapeString(buf, " name='%s'", src->hosts[n].name);
-            virBufferEscapeString(buf, " port='%s'", src->hosts[n].port);
+
+            if (src->hosts[n].port)
+                virBufferAsprintf(buf, " port='%u'", src->hosts[n].port);
 
             if (src->hosts[n].transport)
                 virBufferAsprintf(buf, " transport='%s'",
@@ -22160,7 +22167,8 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
             virBufferAddLit(buf, "<host");
             virBufferEscapeString(buf, " name='%s'", iscsisrc->hosts[0].name);
-            virBufferEscapeString(buf, " port='%s'", iscsisrc->hosts[0].port);
+            if (iscsisrc->hosts[0].port)
+                virBufferAsprintf(buf, " port='%u'", iscsisrc->hosts[0].port);
             virBufferAddLit(buf, "/>\n");
         } else {
             virBufferAsprintf(buf, "<adapter name='%s'/>\n",

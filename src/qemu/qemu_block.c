@@ -447,6 +447,7 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
     virJSONValuePtr ret = NULL;
     virStorageNetHostDefPtr host;
     const char *transport;
+    char *port = NULL;
     size_t i;
 
     if (!(servers = virJSONValueNewArray()))
@@ -462,10 +463,13 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
             else
                 transport = "inet";
 
+            if (virAsprintf(&port, "%u", host->port) < 0)
+                goto cleanup;
+
             if (virJSONValueObjectCreate(&server,
                                          "s:type", transport,
                                          "s:host", host->name,
-                                         "s:port", host->port,
+                                         "s:port", port,
                                          NULL) < 0)
                 goto cleanup;
             break;
@@ -497,6 +501,7 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
  cleanup:
     virJSONValueFree(servers);
     virJSONValueFree(server);
+    VIR_FREE(port);
 
     return ret;
 }

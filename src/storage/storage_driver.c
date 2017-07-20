@@ -2783,11 +2783,8 @@ virStorageAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     if (VIR_STRDUP(def->src->hosts[0].name, pooldef->source.hosts[0].name) < 0)
         goto cleanup;
 
-    if (virAsprintf(&def->src->hosts[0].port, "%d",
-                    pooldef->source.hosts[0].port ?
-                    pooldef->source.hosts[0].port :
-                    3260) < 0)
-        goto cleanup;
+    def->src->hosts[0].port = pooldef->source.hosts[0].port ?
+        pooldef->source.hosts[0].port : 3260;
 
     /* iscsi volume has name like "unit:0:0:1" */
     if (!(tokens = virStringSplit(def->src->srcpool->volume, ":", 0)))
