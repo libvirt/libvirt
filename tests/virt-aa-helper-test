@@ -308,6 +308,7 @@ testme "0" "kernel" "-r -u $valid_uuid" "$test_xml"
 testfw "ovmf (old path)" "/usr/share/ovmf/OVMF.fd"
 testfw "OVMF (new path)" "/usr/share/OVMF/OVMF_CODE.fd"
 testfw "AAVMF" "/usr/share/AAVMF/AAVMF_CODE.fd"
+testfw "AAVMF32" "/usr/share/AAVMF/AAVMF32_CODE.fd"
 testfw "qemu-efi" "/usr/share/qemu-efi/QEMU_EFI.fd"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<initrd>$tmpdir/initrd</initrd></os>,g" "$template_xml" > "$test_xml"
