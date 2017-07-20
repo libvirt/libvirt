@@ -239,7 +239,6 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         virStreamAbort(stream->st);
         if (origErr && origErr->code != VIR_ERR_OK) {
             virSetError(origErr);
-            virFreeError(origErr);
         } else {
             if (events & VIR_STREAM_EVENT_HANGUP)
                 virReportError(VIR_ERR_RPC,
@@ -248,6 +247,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
                 virReportError(VIR_ERR_RPC,
                                "%s", _("stream had I/O failure"));
         }
+        virFreeError(origErr);
 
         msg = virNetMessageNew(false);
         if (!msg) {
