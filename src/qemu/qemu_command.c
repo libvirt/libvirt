@@ -938,8 +938,7 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
                     goto cleanup;
             } else if (src->nhosts == 1) {
                 if (virAsprintf(&ret, "sheepdog:%s:%s:%s",
-                                src->hosts->name,
-                                src->hosts->port ? src->hosts->port : "7000",
+                                src->hosts->name, src->hosts->port,
                                 src->path) < 0)
                     goto cleanup;
             } else {
