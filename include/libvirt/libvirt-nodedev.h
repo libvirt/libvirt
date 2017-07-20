@@ -142,7 +142,7 @@ int                     virNodeDeviceDestroy    (virNodeDevicePtr dev);
  */
 typedef enum {
     VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE = 0, /* virConnectNodeDeviceEventLifecycleCallback */
-    VIR_NODE_DEVICE_EVENT_ID_UPDATE = 1, /* virConnectNodeDeviceEventUpdateCallback */
+    VIR_NODE_DEVICE_EVENT_ID_UPDATE = 1, /* virConnectNodeDeviceEventGenericCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_NODE_DEVICE_EVENT_ID_LAST
