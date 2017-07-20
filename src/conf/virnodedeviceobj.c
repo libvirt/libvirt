@@ -545,8 +545,7 @@ virNodeDeviceObjListFindVportParentHost(virNodeDeviceObjListPtr devs)
 
 int
 virNodeDeviceObjListGetParentHost(virNodeDeviceObjListPtr devs,
-                                  virNodeDeviceDefPtr def,
-                                  int create)
+                                  virNodeDeviceDefPtr def)
 {
     int parent_host = -1;
 
@@ -561,7 +560,7 @@ virNodeDeviceObjListGetParentHost(virNodeDeviceObjListPtr devs,
         parent_host =
             virNodeDeviceObjListGetParentHostByFabricWWN(devs, def->name,
                                                          def->parent_fabric_wwn);
-    } else if (create == CREATE_DEVICE) {
+    } else {
         /* Try to find a vport capable scsi_host when no parent supplied */
         parent_host = virNodeDeviceObjListFindVportParentHost(devs);
     }

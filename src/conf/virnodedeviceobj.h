@@ -75,8 +75,7 @@ virNodeDeviceObjListRemove(virNodeDeviceObjListPtr devs,
 
 int
 virNodeDeviceObjListGetParentHost(virNodeDeviceObjListPtr devs,
-                                  virNodeDeviceDefPtr def,
-                              int create);
+                                  virNodeDeviceDefPtr def);
 
 virNodeDeviceObjListPtr
 virNodeDeviceObjListNew(void);

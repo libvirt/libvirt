@@ -563,8 +563,7 @@ nodeDeviceCreateXML(virConnectPtr conn,
     if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
         goto cleanup;
 
-    if ((parent_host = virNodeDeviceObjListGetParentHost(driver->devs, def,
-                                                         CREATE_DEVICE)) < 0)
+    if ((parent_host = virNodeDeviceObjListGetParentHost(driver->devs, def)) < 0)
         goto cleanup;
 
     if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_CREATE) < 0)

@@ -5477,7 +5477,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     /* Unlike the "real" code we don't need the parent_host in order to
      * call virVHBAManageVport, but still let's make sure the code finds
      * something valid and no one messed up the mock environment. */
-    if (virNodeDeviceObjListGetParentHost(driver->devs, def, CREATE_DEVICE) < 0)
+    if (virNodeDeviceObjListGetParentHost(driver->devs, def) < 0)
         goto cleanup;
 
     /* In the real code, we'd call virVHBAManageVport followed by
