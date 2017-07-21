@@ -564,14 +564,18 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
             goto cleanup;                                                   \
         if (rv == 0)                                                        \
             cfg->val## TLSx509verify = cfg->defaultTLSx509verify;           \
-        if (virConfGetValueString(conf, #val "_tls_x509_cert_dir",          \
-                                  &cfg->val## TLSx509certdir) < 0)          \
+        if ((rv = virConfGetValueString(conf, #val "_tls_x509_cert_dir",    \
+                                  &cfg->val## TLSx509certdir)) < 0)         \
             goto cleanup;                                                   \
         if (virConfGetValueString(conf,                                     \
                                   #val "_tls_x509_secret_uuid",             \
                                   &cfg->val## TLSx509secretUUID) < 0)       \
             goto cleanup;                                                   \
-        if (!cfg->val## TLSx509secretUUID &&                                \
+        /* Only if a *tls_x509_cert_dir wasn't found (e.g. rv == 0), should \
+         * we copy the defaultTLSx509secretUUID. If this environment needs  \
+         * a passphrase to decode the certificate, then it should provide   \
+         * it's own secretUUID for that. */                                 \
+        if (rv == 0 && !cfg->val## TLSx509secretUUID &&                     \
             cfg->defaultTLSx509secretUUID) {                                \
             if (VIR_STRDUP(cfg->val## TLSx509secretUUID,                    \
                            cfg->defaultTLSx509secretUUID) < 0)              \
