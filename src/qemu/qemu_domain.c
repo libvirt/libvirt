@@ -2964,8 +2964,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     if (qemuCaps) {
         virObjectRef(qemuCaps);
     } else {
-        if (!(qemuCaps = virQEMUCapsCacheLookup(caps,
-                                                driver->qemuCapsCache,
+        if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                                 def->emulator)))
             goto cleanup;
     }
@@ -3078,7 +3077,7 @@ qemuDomainDefValidateVideo(const virDomainDef *def)
 
 static int
 qemuDomainDefValidate(const virDomainDef *def,
-                      virCapsPtr caps,
+                      virCapsPtr caps ATTRIBUTE_UNUSED,
                       void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
@@ -3086,8 +3085,7 @@ qemuDomainDefValidate(const virDomainDef *def,
     unsigned int topologycpus;
     int ret = -1;
 
-    if (!(qemuCaps = virQEMUCapsCacheLookup(caps,
-                                            driver->qemuCapsCache,
+    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                             def->emulator)))
         goto cleanup;
 
@@ -3549,7 +3547,7 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
 static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
-                             virCapsPtr caps,
+                             virCapsPtr caps ATTRIBUTE_UNUSED,
                              unsigned int parseFlags,
                              void *opaque,
                              void *parseOpaque)
@@ -3562,7 +3560,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (qemuCaps) {
         virObjectRef(qemuCaps);
     } else {
-        qemuCaps = virQEMUCapsCacheLookup(caps, driver->qemuCapsCache,
+        qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                           def->emulator);
     }
 
@@ -3682,7 +3680,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
 static int
 qemuDomainDefAssignAddresses(virDomainDef *def,
-                             virCapsPtr caps,
+                             virCapsPtr caps ATTRIBUTE_UNUSED,
                              unsigned int parseFlags ATTRIBUTE_UNUSED,
                              void *opaque,
                              void *parseOpaque)
@@ -3695,8 +3693,7 @@ qemuDomainDefAssignAddresses(virDomainDef *def,
     if (qemuCaps) {
         virObjectRef(qemuCaps);
     } else {
-        if (!(qemuCaps = virQEMUCapsCacheLookup(caps,
-                                                driver->qemuCapsCache,
+        if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                                 def->emulator)))
             goto cleanup;
     }

@@ -25,10 +25,11 @@
 #include "qemu/qemu_capspriv.h"
 #undef __QEMU_CAPSPRIV_H_ALLOW__
 #include "testutilshostcpus.h"
+#include "virarch.h"
 
 
 virCPUDefPtr
-virQEMUCapsProbeHostCPUForEmulator(virCapsPtr caps ATTRIBUTE_UNUSED,
+virQEMUCapsProbeHostCPUForEmulator(virArch hostArch ATTRIBUTE_UNUSED,
                                    virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
                                    virDomainVirtType type ATTRIBUTE_UNUSED)
 {

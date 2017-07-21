@@ -15929,7 +15929,7 @@ static virDomainPtr qemuDomainQemuAttach(virConnectPtr conn,
         virAsprintf(&def->name, "attach-pid-%u", pid_value) < 0)
         goto cleanup;
 
-    if (!(qemuCaps = virQEMUCapsCacheLookup(caps, driver->qemuCapsCache,
+    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                             def->emulator)))
         goto cleanup;
 
@@ -18979,8 +18979,7 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     if (emulatorbin) {
         virArch arch_from_caps;
 
-        if (!(qemuCaps = virQEMUCapsCacheLookup(caps,
-                                                driver->qemuCapsCache,
+        if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                                 emulatorbin)))
             goto cleanup;
 
@@ -18999,8 +18998,7 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
             goto cleanup;
         }
     } else {
-        if (!(qemuCaps = virQEMUCapsCacheLookupByArch(caps,
-                                                      driver->qemuCapsCache,
+        if (!(qemuCaps = virQEMUCapsCacheLookupByArch(driver->qemuCapsCache,
                                                       arch)))
             goto cleanup;
 

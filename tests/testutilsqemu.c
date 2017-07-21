@@ -490,8 +490,11 @@ qemuTestParseCapabilities(virCapsPtr caps,
 {
     virQEMUCapsPtr qemuCaps = NULL;
 
+    if (!caps)
+        return NULL;
+
     if (!(qemuCaps = virQEMUCapsNew()) ||
-        virQEMUCapsLoadCache(caps, qemuCaps, capsFile) < 0)
+        virQEMUCapsLoadCache(caps->host.arch, qemuCaps, capsFile) < 0)
         goto error;
 
     return qemuCaps;

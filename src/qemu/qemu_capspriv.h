@@ -28,10 +28,13 @@
 #ifndef __QEMU_CAPSPRIV_H__
 # define __QEMU_CAPSPRIV_H__
 
+# include "virarch.h"
+
 struct _virQEMUCapsCachePriv {
     char *libDir;
     uid_t runUid;
     gid_t runGid;
+    virArch hostArch;
 };
 typedef struct _virQEMUCapsCachePriv virQEMUCapsCachePriv;
 typedef virQEMUCapsCachePriv *virQEMUCapsCachePrivPtr;
@@ -46,14 +49,14 @@ struct _virQEMUCapsCache {
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
 
 virQEMUCapsPtr
-virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
+virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 const char *binary,
                                 const char *libDir,
                                 uid_t runUid,
                                 gid_t runGid,
                                 bool qmpOnly);
 
-int virQEMUCapsLoadCache(virCapsPtr caps,
+int virQEMUCapsLoadCache(virArch hostArch,
                          virQEMUCapsPtr qemuCaps,
                          const char *filename);
 char *virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps);
@@ -76,7 +79,7 @@ virQEMUCapsSetVersion(virQEMUCapsPtr qemuCaps,
 
 void
 virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
-                            virCapsPtr caps,
+                            virArch hostArch,
                             virDomainVirtType type);
 
 int
@@ -94,7 +97,7 @@ virQEMUCapsSetCPUModelInfo(virQEMUCapsPtr qemuCaps,
                            qemuMonitorCPUModelInfoPtr modelInfo);
 
 virCPUDefPtr
-virQEMUCapsProbeHostCPUForEmulator(virCapsPtr caps,
+virQEMUCapsProbeHostCPUForEmulator(virArch hostArch,
                                    virQEMUCapsPtr qemuCaps,
                                    virDomainVirtType type) ATTRIBUTE_NOINLINE;
 

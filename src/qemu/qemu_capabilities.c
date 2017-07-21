@@ -975,7 +975,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
 
     /* Ignore binary if extracting version info fails */
     if (binary) {
-        if (!(qemubinCaps = virQEMUCapsCacheLookup(caps, cache, binary))) {
+        if (!(qemubinCaps = virQEMUCapsCacheLookup(cache, binary))) {
             virResetLastError();
             VIR_FREE(binary);
         }
@@ -1015,7 +1015,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
             if (!kvmbin)
                 continue;
 
-            if (!(kvmbinCaps = virQEMUCapsCacheLookup(caps, cache, kvmbin))) {
+            if (!(kvmbinCaps = virQEMUCapsCacheLookup(cache, kvmbin))) {
                 virResetLastError();
                 VIR_FREE(kvmbin);
                 continue;
@@ -1155,7 +1155,7 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 
 
 virCPUDefPtr
-virQEMUCapsProbeHostCPUForEmulator(virCapsPtr caps,
+virQEMUCapsProbeHostCPUForEmulator(virArch hostArch,
                                    virQEMUCapsPtr qemuCaps,
                                    virDomainVirtType type)
 {
@@ -1166,7 +1166,7 @@ virQEMUCapsProbeHostCPUForEmulator(virCapsPtr caps,
     if (virQEMUCapsGetCPUDefinitions(qemuCaps, type, &models, &nmodels) < 0)
         return NULL;
 
-    cpu = virCPUGetHost(caps->host.arch, VIR_CPU_TYPE_GUEST, NULL,
+    cpu = virCPUGetHost(hostArch, VIR_CPU_TYPE_GUEST, NULL,
                         (const char **) models, nmodels);
 
     virStringListFreeCount(models, nmodels);
@@ -2192,7 +2192,7 @@ int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
         return -1;
     }
 
-    qemucaps = virQEMUCapsCacheLookup(caps, capsCache, capsdata->emulator);
+    qemucaps = virQEMUCapsCacheLookup(capsCache, capsdata->emulator);
     VIR_FREE(capsdata);
     if (!qemucaps)
         return -1;
@@ -3494,7 +3494,7 @@ virQEMUCapsNewHostCPUModel(void)
 
 void
 virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
-                            virCapsPtr caps,
+                            virArch hostArch,
                             virDomainVirtType type)
 {
     virCPUDefPtr cpu = NULL;
@@ -3504,7 +3504,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
     size_t i;
     int rc;
 
-    if (!caps || !virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch))
+    if (!virQEMUCapsGuestIsNative(hostArch, qemuCaps->arch))
         return;
 
     if (!(cpu = virQEMUCapsNewHostCPUModel()))
@@ -3515,7 +3515,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
     } else if (rc == 1) {
         VIR_DEBUG("No host CPU model info from QEMU; probing host CPU directly");
 
-        hostCPU = virQEMUCapsProbeHostCPUForEmulator(caps, qemuCaps, type);
+        hostCPU = virQEMUCapsProbeHostCPUForEmulator(hostArch, qemuCaps, type);
         if (!hostCPU ||
             virCPUDefCopyModelFilter(cpu, hostCPU, true,
                                      virQEMUCapsCPUFilterFeatures,
@@ -3800,7 +3800,7 @@ virQEMUCapsCachePrivFree(virQEMUCapsCachePrivPtr priv)
  * </qemuCaps>
  */
 int
-virQEMUCapsLoadCache(virCapsPtr caps,
+virQEMUCapsLoadCache(virArch hostArch,
                      virQEMUCapsPtr qemuCaps,
                      const char *filename)
 {
@@ -4017,8 +4017,8 @@ virQEMUCapsLoadCache(virCapsPtr caps,
     }
     VIR_FREE(nodes);
 
-    virQEMUCapsInitHostCPUModel(qemuCaps, caps, VIR_DOMAIN_VIRT_KVM);
-    virQEMUCapsInitHostCPUModel(qemuCaps, caps, VIR_DOMAIN_VIRT_QEMU);
+    virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_KVM);
+    virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_QEMU);
 
     ret = 0;
  cleanup:
@@ -4331,8 +4331,7 @@ virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
 
 
 static int
-virQEMUCapsInitCached(virCapsPtr caps,
-                      virQEMUCapsPtr *qemuCaps,
+virQEMUCapsInitCached(virQEMUCapsPtr *qemuCaps,
                       const char *binary,
                       const char *cacheDir,
                       virQEMUCapsCachePrivPtr priv)
@@ -4379,7 +4378,7 @@ virQEMUCapsInitCached(virCapsPtr caps,
     if (VIR_STRDUP(qemuCapsNew->binary, binary) < 0)
         goto discard;
 
-    if (virQEMUCapsLoadCache(caps, qemuCapsNew, capsfile) < 0) {
+    if (virQEMUCapsLoadCache(priv->hostArch, qemuCapsNew, capsfile) < 0) {
         VIR_WARN("Failed to load cached caps from '%s' for '%s': %s",
                  capsfile, qemuCapsNew->binary, virGetLastErrorMessage());
         virResetLastError();
@@ -5217,7 +5216,7 @@ virQEMUCapsLogProbeFailure(const char *binary)
 
 
 virQEMUCapsPtr
-virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
+virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 const char *binary,
                                 const char *libDir,
                                 uid_t runUid,
@@ -5275,8 +5274,8 @@ virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
     qemuCaps->libvirtCtime = virGetSelfLastChanged();
     qemuCaps->libvirtVersion = LIBVIR_VERSION_NUMBER;
 
-    virQEMUCapsInitHostCPUModel(qemuCaps, caps, VIR_DOMAIN_VIRT_KVM);
-    virQEMUCapsInitHostCPUModel(qemuCaps, caps, VIR_DOMAIN_VIRT_QEMU);
+    virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_KVM);
+    virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_QEMU);
 
  cleanup:
     VIR_FREE(qmperr);
@@ -5289,19 +5288,19 @@ virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
 }
 
 static virQEMUCapsPtr
-virQEMUCapsNewForBinary(virCapsPtr caps,
-                        const char *binary,
+virQEMUCapsNewForBinary(const char *binary,
                         const char *cacheDir,
                         virQEMUCapsCachePrivPtr priv)
 {
     int rv;
     virQEMUCapsPtr qemuCaps = NULL;
 
-    if ((rv = virQEMUCapsInitCached(caps, &qemuCaps, binary, cacheDir, priv)) < 0)
+    if ((rv = virQEMUCapsInitCached(&qemuCaps, binary, cacheDir, priv)) < 0)
         goto error;
 
     if (rv == 0) {
-        if (!(qemuCaps = virQEMUCapsNewForBinaryInternal(caps, binary,
+        if (!(qemuCaps = virQEMUCapsNewForBinaryInternal(priv->hostArch,
+                                                         binary,
                                                          priv->libDir,
                                                          priv->runUid,
                                                          priv->runGid,
@@ -5388,6 +5387,8 @@ virQEMUCapsCacheNew(const char *libDir,
     if (VIR_STRDUP(cache->priv->libDir, libDir) < 0)
         goto error;
 
+    cache->priv->hostArch = virArchFromHost();
+
     cache->priv->runUid = runUid;
     cache->priv->runGid = runGid;
 
@@ -5402,7 +5403,6 @@ virQEMUCapsCacheNew(const char *libDir,
 static void ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
 virQEMUCapsCacheValidate(virQEMUCapsCachePtr cache,
                          const char *binary,
-                         virCapsPtr caps,
                          virQEMUCapsPtr *qemuCaps)
 {
     if (*qemuCaps &&
@@ -5415,7 +5415,7 @@ virQEMUCapsCacheValidate(virQEMUCapsCachePtr cache,
 
     if (!*qemuCaps) {
         VIR_DEBUG("Creating capabilities for %s", binary);
-        *qemuCaps = virQEMUCapsNewForBinary(caps, binary,
+        *qemuCaps = virQEMUCapsNewForBinary(binary,
                                             cache->cacheDir,
                                             cache->priv);
         if (*qemuCaps) {
@@ -5430,8 +5430,7 @@ virQEMUCapsCacheValidate(virQEMUCapsCachePtr cache,
 
 
 virQEMUCapsPtr
-virQEMUCapsCacheLookup(virCapsPtr caps,
-                       virQEMUCapsCachePtr cache,
+virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache,
                        const char *binary)
 {
     virQEMUCapsPtr ret = NULL;
@@ -5439,7 +5438,7 @@ virQEMUCapsCacheLookup(virCapsPtr caps,
     virMutexLock(&cache->lock);
 
     ret = virHashLookup(cache->binaries, binary);
-    virQEMUCapsCacheValidate(cache, binary, caps, &ret);
+    virQEMUCapsCacheValidate(cache, binary, &ret);
     virObjectRef(ret);
 
     virMutexUnlock(&cache->lock);
@@ -5450,12 +5449,11 @@ virQEMUCapsCacheLookup(virCapsPtr caps,
 
 
 virQEMUCapsPtr
-virQEMUCapsCacheLookupCopy(virCapsPtr caps,
-                           virQEMUCapsCachePtr cache,
+virQEMUCapsCacheLookupCopy(virQEMUCapsCachePtr cache,
                            const char *binary,
                            const char *machineType)
 {
-    virQEMUCapsPtr qemuCaps = virQEMUCapsCacheLookup(caps, cache, binary);
+    virQEMUCapsPtr qemuCaps = virQEMUCapsCacheLookup(cache, binary);
     virQEMUCapsPtr ret;
 
     if (!qemuCaps)
@@ -5485,8 +5483,7 @@ virQEMUCapsCompareArch(const void *payload,
 
 
 virQEMUCapsPtr
-virQEMUCapsCacheLookupByArch(virCapsPtr caps,
-                             virQEMUCapsCachePtr cache,
+virQEMUCapsCacheLookupByArch(virQEMUCapsCachePtr cache,
                              virArch arch)
 {
     virQEMUCapsPtr ret = NULL;
@@ -5512,7 +5509,7 @@ virQEMUCapsCacheLookupByArch(virCapsPtr caps,
         if (VIR_STRDUP(binary, ret->binary) < 0) {
             ret = NULL;
         } else {
-            virQEMUCapsCacheValidate(cache, binary, caps, &ret);
+            virQEMUCapsCacheValidate(cache, binary, &ret);
             VIR_FREE(binary);
         }
     } else {
