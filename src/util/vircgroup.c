@@ -252,17 +252,14 @@ static bool
 virCgroupValidateMachineGroup(virCgroupPtr group,
                               const char *name,
                               const char *drivername,
-                              int id,
-                              bool privileged,
-                              bool stripEmulatorSuffix)
+                              bool stripEmulatorSuffix,
+                              char *machinename)
 {
     size_t i;
     bool valid = false;
     char *partname = NULL;
     char *scopename_old = NULL;
     char *scopename_new = NULL;
-    char *machinename = virSystemdMakeMachineName(drivername, id,
-                                                  name, privileged);
     char *partmachinename = NULL;
 
     if (virAsprintf(&partname, "%s.libvirt-%s",
@@ -1539,10 +1536,9 @@ virCgroupNewDetect(pid_t pid,
 int
 virCgroupNewDetectMachine(const char *name,
                           const char *drivername,
-                          int id,
-                          bool privileged,
                           pid_t pid,
                           int controllers,
+                          char *machinename,
                           virCgroupPtr *group)
 {
     if (virCgroupNewDetect(pid, controllers, group) < 0) {
@@ -1552,7 +1548,7 @@ virCgroupNewDetectMachine(const char *name,
     }
 
     if (!virCgroupValidateMachineGroup(*group, name, drivername,
-                                       id, privileged, true)) {
+                                       true, machinename)) {
         VIR_DEBUG("Failed to validate machine name for '%s' driver '%s'",
                   name, drivername);
         virCgroupFree(group);
@@ -4208,10 +4204,9 @@ virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
 int
 virCgroupNewDetectMachine(const char *name ATTRIBUTE_UNUSED,
                           const char *drivername ATTRIBUTE_UNUSED,
-                          int id ATTRIBUTE_UNUSED,
-                          bool privileged ATTRIBUTE_UNUSED,
                           pid_t pid ATTRIBUTE_UNUSED,
                           int controllers ATTRIBUTE_UNUSED,
+                          char *machinename ATTRIBUTE_UNUSED,
                           virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",

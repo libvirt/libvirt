@@ -29,11 +29,6 @@ char *virSystemdMakeScopeName(const char *name,
                               bool legacy_behaviour);
 char *virSystemdMakeSliceName(const char *partition);
 
-char *virSystemdMakeMachineName(const char *drivername,
-                                int id,
-                                const char *name,
-                                bool privileged);
-
 int virSystemdCreateMachine(const char *name,
                             const char *drivername,
                             const unsigned char *uuid,

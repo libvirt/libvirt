@@ -94,13 +94,13 @@ int virCgroupNewDetect(pid_t pid,
                        int controllers,
                        virCgroupPtr *group);
 
-int virCgroupNewDetectMachine(const char *name,
-                              const char *drivername,
-                              int id,
-                              bool privileged,
-                              pid_t pid,
-                              int controllers,
-                              virCgroupPtr *group)
+int
+virCgroupNewDetectMachine(const char *name,
+                          const char *drivername,
+                          pid_t pid,
+                          int controllers,
+                          char *machinename,
+                          virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virCgroupNewMachine(const char *name,

@@ -49,6 +49,7 @@
 #include "viratomic.h"
 #include "virprocess.h"
 #include "vircrypto.h"
+#include "virsystemd.h"
 #include "secret_util.h"
 #include "logging/log_manager.h"
 #include "locking/domain_lock.h"
@@ -9567,4 +9568,24 @@ qemuDomainUpdateCPU(virDomainObjPtr vm,
     vm->def->cpu = cpu;
 
     return 0;
+}
+
+char *
+qemuDomainGetMachineName(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    char *ret = NULL;
+
+    if (vm->pid) {
+        ret = virSystemdGetMachineNameByPID(vm->pid);
+        if (!ret)
+            virResetLastError();
+    }
+
+    if (!ret)
+        ret = virDomainGenerateMachineName("qemu", vm->def->id, vm->def->name,
+                                           virQEMUDriverIsPrivileged(driver));
+
+    return ret;
 }

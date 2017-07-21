@@ -485,10 +485,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                                 int *nicindexes)
 {
     virCgroupPtr cgroup = NULL;
-    char *machineName = virSystemdMakeMachineName("lxc",
-                                                  def->id,
-                                                  def->name,
-                                                  true);
+    char *machineName = virLXCDomainGetMachineName(def, 0);
 
     if (!machineName)
         goto cleanup;

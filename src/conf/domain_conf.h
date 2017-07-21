@@ -3341,4 +3341,9 @@ virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
 int virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
                                 virDomainBlockIoTuneInfo *info);
 
+char *
+virDomainGenerateMachineName(const char *drivername,
+                             int id,
+                             const char *name,
+                             bool privileged);
 #endif /* __DOMAIN_CONF_H */

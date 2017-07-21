@@ -852,17 +852,6 @@ qemuInitCgroup(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    /*
-     * We need to do this because of systemd-machined, because
-     * CreateMachine requires the name to be a valid hostname.
-     */
-    priv->machineName = virSystemdMakeMachineName("qemu",
-                                                  vm->def->id,
-                                                  vm->def->name,
-                                                  virQEMUDriverIsPrivileged(driver));
-    if (!priv->machineName)
-        goto cleanup;
-
     if (virCgroupNewMachine(priv->machineName,
                             "qemu",
                             vm->def->uuid,
@@ -978,20 +967,19 @@ qemuConnectCgroup(virQEMUDriverPtr driver,
     if (!virCgroupAvailable())
         goto done;
 
+    priv->machineName = qemuDomainGetMachineName(vm);
+    if (!priv->machineName)
+            goto cleanup;
+
     virCgroupFree(&priv->cgroup);
 
     if (virCgroupNewDetectMachine(vm->def->name,
                                   "qemu",
-                                  vm->def->id,
-                                  virQEMUDriverIsPrivileged(driver),
                                   vm->pid,
                                   cfg->cgroupControllers,
+                                  priv->machineName,
                                   &priv->cgroup) < 0)
         goto cleanup;
-
-    priv->machineName = virSystemdGetMachineNameByPID(vm->pid);
-    if (!priv->machineName)
-        virResetLastError();
 
     qemuRestoreCgroupState(vm);
 
@@ -1163,8 +1151,6 @@ qemuRemoveCgroup(virDomainObjPtr vm)
         if (!virCgroupNewIgnoreError())
             VIR_DEBUG("Failed to terminate cgroup for %s", vm->def->name);
     }
-
-    VIR_FREE(priv->machineName);
 
     return virCgroupRemove(priv->cgroup);
 }

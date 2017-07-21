@@ -5242,6 +5242,10 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
+    priv->machineName = qemuDomainGetMachineName(vm);
+    if (!priv->machineName)
+        goto cleanup;
+
     if (!(flags & VIR_QEMU_PROCESS_START_PRETEND)) {
         /* If you are using a SecurityDriver with dynamic labelling,
            then generate a security label for isolation */
@@ -6306,6 +6310,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
             }
         }
     }
+
+    VIR_FREE(priv->machineName);
 
     vm->taint = 0;
     vm->pid = -1;

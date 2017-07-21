@@ -413,8 +413,8 @@ testMachineName(const void *opaque)
     int ret = -1;
     char *actual = NULL;
 
-    if (!(actual = virSystemdMakeMachineName("qemu", data->id,
-                                             data->name, true)))
+    if (!(actual = virDomainGenerateMachineName("qemu", data->id,
+                                                data->name, true)))
         goto cleanup;
 
     if (STRNEQ(actual, data->expected)) {

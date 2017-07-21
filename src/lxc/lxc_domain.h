@@ -107,4 +107,7 @@ virLXCDomainObjEndJob(virLXCDriverPtr driver,
                      virDomainObjPtr obj);
 
 
+char *
+virLXCDomainGetMachineName(virDomainDefPtr def, pid_t pid);
+
 #endif /* __LXC_DOMAIN_H__ */

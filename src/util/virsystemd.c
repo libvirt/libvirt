@@ -125,68 +125,6 @@ char *virSystemdMakeSliceName(const char *partition)
     return virBufferContentAndReset(&buf);
 }
 
-#define HOSTNAME_CHARS                                                  \
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"
-
-static void
-virSystemdAppendValidMachineName(virBufferPtr buf,
-                                 const char *name)
-{
-    bool skip_dot = false;
-
-    for (; *name; name++) {
-        if (virBufferError(buf))
-            break;
-        if (strlen(virBufferCurrentContent(buf)) >= 64)
-            break;
-
-        if (*name == '.') {
-            if (!skip_dot)
-                virBufferAddChar(buf, *name);
-            skip_dot = true;
-            continue;
-        }
-
-        skip_dot = false;
-
-        if (!strchr(HOSTNAME_CHARS, *name))
-            continue;
-
-        virBufferAddChar(buf, *name);
-    }
-}
-
-#undef HOSTNAME_CHARS
-
-char *
-virSystemdMakeMachineName(const char *drivername,
-                          int id,
-                          const char *name,
-                          bool privileged)
-{
-    char *machinename = NULL;
-    char *username = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-
-    if (privileged) {
-        virBufferAsprintf(&buf, "%s-", drivername);
-    } else {
-        if (!(username = virGetUserName(geteuid())))
-            goto cleanup;
-
-        virBufferAsprintf(&buf, "%s-%s-", username, drivername);
-    }
-
-    virBufferAsprintf(&buf, "%d-", id);
-    virSystemdAppendValidMachineName(&buf, name);
-
-    machinename = virBufferContentAndReset(&buf);
- cleanup:
-    VIR_FREE(username);
-
-    return machinename;
-}
-
 static int virSystemdHasMachinedCachedValue = -1;
 
 /* Reset the cache from tests for testing the underlying dbus calls

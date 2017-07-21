@@ -934,4 +934,7 @@ qemuDomainUpdateCPU(virDomainObjPtr vm,
                     virCPUDefPtr cpu,
                     virCPUDefPtr *origCPU);
 
+char *
+qemuDomainGetMachineName(virDomainObjPtr vm);
+
 #endif /* __QEMU_DOMAIN_H__ */
