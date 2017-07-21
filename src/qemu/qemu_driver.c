@@ -159,7 +159,7 @@ static int qemuGetDHCPInterfaces(virDomainPtr dom,
                                  virDomainObjPtr vm,
                                  virDomainInterfacePtr **ifaces);
 
-virQEMUDriverPtr qemu_driver = NULL;
+static virQEMUDriverPtr qemu_driver;
 
 
 static void

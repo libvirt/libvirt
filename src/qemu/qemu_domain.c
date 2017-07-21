@@ -1662,7 +1662,7 @@ qemuDomainClearPrivatePaths(virDomainObjPtr vm)
 
 
 static void *
-qemuDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
+qemuDomainObjPrivateAlloc(void *opaque)
 {
     qemuDomainObjPrivatePtr priv;
 
@@ -1679,6 +1679,7 @@ qemuDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
         goto error;
 
     priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
+    priv->driver = opaque;
 
     return priv;
 

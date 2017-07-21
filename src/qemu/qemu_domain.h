@@ -217,6 +217,8 @@ struct _qemuDomainSecretInfo {
 typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
 struct _qemuDomainObjPrivate {
+    virQEMUDriverPtr driver;
+
     struct qemuDomainJobObj job;
 
     virBitmapPtr namespaces;

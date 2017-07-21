@@ -120,9 +120,6 @@ qemuProcessRemoveDomainStatus(virQEMUDriverPtr driver,
 }
 
 
-/* XXX figure out how to remove this */
-extern virQEMUDriverPtr qemu_driver;
-
 /*
  * This is a callback registered with a qemuAgentPtr instance,
  * and to be invoked when the agent console hits an end of file
@@ -518,9 +515,9 @@ qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 static void
 qemuProcessFakeReboot(void *opaque)
 {
-    virQEMUDriverPtr driver = qemu_driver;
     virDomainObjPtr vm = opaque;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
     virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainRunningReason reason = VIR_DOMAIN_RUNNING_BOOTED;
