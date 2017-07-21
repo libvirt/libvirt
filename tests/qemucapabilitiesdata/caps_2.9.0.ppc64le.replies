@@ -4274,6 +4274,92 @@
 {
   "return": [
     {
+      "name": "dynamic-reconfiguration",
+      "type": "bool"
+    },
+    {
+      "name": "ddw",
+      "type": "bool"
+    },
+    {
+      "name": "dma_win_size",
+      "type": "uint64"
+    },
+    {
+      "name": "numa_node",
+      "type": "uint32"
+    },
+    {
+      "name": "pre-2.8-migration",
+      "type": "bool"
+    },
+    {
+      "name": "mem64_win_size",
+      "type": "uint64"
+    },
+    {
+      "name": "pgsz",
+      "type": "uint64"
+    },
+    {
+      "name": "liobn64",
+      "type": "uint32"
+    },
+    {
+      "name": "dma_win_addr",
+      "type": "uint64"
+    },
+    {
+      "name": "io_win_size",
+      "type": "uint64"
+    },
+    {
+      "name": "mem_win_size",
+      "type": "uint64"
+    },
+    {
+      "name": "buid",
+      "type": "uint64"
+    },
+    {
+      "name": "dma64_win_addr",
+      "type": "uint64"
+    },
+    {
+      "name": "mem64_win_addr",
+      "type": "uint64"
+    },
+    {
+      "name": "pcie-extended-configuration-space",
+      "type": "bool"
+    },
+    {
+      "name": "io_win_addr",
+      "type": "uint64"
+    },
+    {
+      "name": "liobn",
+      "type": "uint32"
+    },
+    {
+      "name": "mem_win_addr",
+      "type": "uint64"
+    },
+    {
+      "name": "mem64_win_pciaddr",
+      "type": "uint64"
+    },
+    {
+      "name": "index",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-41"
+}
+
+{
+  "return": [
+    {
       "hotpluggable-cpus": false,
       "name": "ref405ep",
       "cpu-max": 1
@@ -4381,7 +4467,7 @@
       "cpu-max": 1
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -6557,12 +6643,6 @@
       "static": false
     }
   ],
-  "id": "libvirt-42"
-}
-
-{
-  "return": [
-  ],
   "id": "libvirt-43"
 }
 
@@ -6570,6 +6650,12 @@
   "return": [
   ],
   "id": "libvirt-44"
+}
+
+{
+  "return": [
+  ],
+  "id": "libvirt-45"
 }
 
 {
@@ -7679,7 +7765,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -7721,7 +7807,7 @@
       "capability": "release-ram"
     }
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -17007,7 +17093,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {

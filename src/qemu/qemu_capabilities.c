@@ -431,6 +431,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "virtio.ats",
               "loadparm",
               "spapr-pci-host-bridge",
+              "spapr-pci-host-bridge.numa_node",
     );
 
 
@@ -1702,6 +1703,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioNet[] = {
     { "host_mtu", QEMU_CAPS_VIRTIO_NET_HOST_MTU },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSpaprPCIHostBridge[] = {
+    { "numa_node", QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE },
+};
+
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioSCSI[] = {
     { "iothread", QEMU_CAPS_VIRTIO_SCSI_IOTHREAD },
 };
@@ -1902,6 +1907,9 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
     { "intel-iommu", virQEMUCapsObjectPropsIntelIOMMU,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsIntelIOMMU),
       QEMU_CAPS_DEVICE_INTEL_IOMMU},
+    { "spapr-pci-host-bridge", virQEMUCapsObjectPropsSpaprPCIHostBridge,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsSpaprPCIHostBridge),
+      QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE },
 };
 
 struct virQEMUCapsPropTypeObjects {

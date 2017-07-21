@@ -168,6 +168,7 @@
   <flag name='virtio.iommu_platform'/>
   <flag name='virtio.ats'/>
   <flag name='spapr-pci-host-bridge'/>
+  <flag name='spapr-pci-host-bridge.numa_node'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.9.0)</package>
