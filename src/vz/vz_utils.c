@@ -581,7 +581,7 @@ int vzCheckUnsupportedGraphics(virDomainGraphicsDefPtr gr)
 }
 
 void*
-vzDomObjAlloc(void)
+vzDomObjAlloc(void *opaque ATTRIBUTE_UNUSED)
 {
     vzDomObjPtr pdom = NULL;
 

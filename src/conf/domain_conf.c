@@ -3032,7 +3032,8 @@ virDomainObjNew(virDomainXMLOptionPtr xmlopt)
     }
 
     if (xmlopt->privateData.alloc) {
-        if (!(domain->privateData = (xmlopt->privateData.alloc)()))
+        domain->privateData = (xmlopt->privateData.alloc)(xmlopt->config.priv);
+        if (!domain->privateData)
             goto error;
         domain->privateDataFreeFunc = xmlopt->privateData.free;
     }

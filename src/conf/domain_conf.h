@@ -2562,7 +2562,7 @@ struct _virDomainDefParserConfig {
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
 };
 
-typedef void *(*virDomainXMLPrivateDataAllocFunc)(void);
+typedef void *(*virDomainXMLPrivateDataAllocFunc)(void *);
 typedef void (*virDomainXMLPrivateDataFreeFunc)(void *);
 typedef virObjectPtr (*virDomainXMLPrivateDataNewFunc)(void);
 typedef int (*virDomainXMLPrivateDataFormatFunc)(virBufferPtr,

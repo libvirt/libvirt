@@ -206,7 +206,7 @@ libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
 }
 
 static void *
-libxlDomainObjPrivateAlloc(void)
+libxlDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
 {
     libxlDomainObjPrivatePtr priv;
 

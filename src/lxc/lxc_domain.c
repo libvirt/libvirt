@@ -150,7 +150,7 @@ virLXCDomainObjEndJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static void *
-virLXCDomainObjPrivateAlloc(void)
+virLXCDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
 {
     virLXCDomainObjPrivatePtr priv;
 

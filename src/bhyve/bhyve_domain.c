@@ -33,7 +33,7 @@
 VIR_LOG_INIT("bhyve.bhyve_domain");
 
 static void *
-bhyveDomainObjPrivateAlloc(void)
+bhyveDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
 {
     bhyveDomainObjPrivatePtr priv;
 

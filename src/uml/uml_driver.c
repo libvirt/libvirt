@@ -90,7 +90,7 @@ static int umlProcessAutoDestroyRemove(struct uml_driver *driver,
 
 static int umlStateCleanup(void);
 
-static void *umlDomainObjPrivateAlloc(void)
+static void *umlDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
 {
     umlDomainObjPrivatePtr priv;
 

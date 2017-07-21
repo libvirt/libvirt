@@ -1662,7 +1662,7 @@ qemuDomainClearPrivatePaths(virDomainObjPtr vm)
 
 
 static void *
-qemuDomainObjPrivateAlloc(void)
+qemuDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
 {
     qemuDomainObjPrivatePtr priv;
 

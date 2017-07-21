@@ -60,7 +60,7 @@ vmwareDriverUnlock(struct vmware_driver *driver)
 }
 
 static void *
-vmwareDataAllocFunc(void)
+vmwareDataAllocFunc(void *opaque ATTRIBUTE_UNUSED)
 {
     vmwareDomainPtr dom;
 
