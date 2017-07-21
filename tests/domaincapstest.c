@@ -117,38 +117,7 @@ fillAllCaps(virDomainCapsPtr domCaps)
 
 #if WITH_QEMU
 # include "testutilsqemu.h"
-
-static virCPUDef aarch64Cpu = {
-    .sockets = 1,
-    .cores = 1,
-    .threads = 1,
-};
-
-static virCPUDef ppc64leCpu = {
-    .type = VIR_CPU_TYPE_HOST,
-    .arch = VIR_ARCH_PPC64LE,
-    .model = (char *) "POWER8",
-    .sockets = 1,
-    .cores = 1,
-    .threads = 1,
-};
-
-static virCPUDef x86Cpu = {
-    .type = VIR_CPU_TYPE_HOST,
-    .arch = VIR_ARCH_X86_64,
-    .model = (char *) "Broadwell",
-    .sockets = 1,
-    .cores = 1,
-    .threads = 1,
-};
-
-static virCPUDef s390Cpu = {
-    .type = VIR_CPU_TYPE_HOST,
-    .arch = VIR_ARCH_S390X,
-    .sockets = 1,
-    .cores = 1,
-    .threads = 1,
-};
+# include "testutilshostcpus.h"
 
 static int
 fakeHostCPU(virCapsPtr caps,
@@ -156,32 +125,14 @@ fakeHostCPU(virCapsPtr caps,
 {
     virCPUDefPtr cpu;
 
-    switch (arch) {
-    case VIR_ARCH_AARCH64:
-        cpu = &aarch64Cpu;
-        break;
-
-    case VIR_ARCH_PPC64LE:
-        cpu = &ppc64leCpu;
-        break;
-
-    case VIR_ARCH_X86_64:
-        cpu = &x86Cpu;
-        break;
-
-    case VIR_ARCH_S390X:
-        cpu = &s390Cpu;
-        break;
-
-    default:
+    if (!(cpu = testUtilsHostCpusGetDefForArch(arch))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "cannot fake host CPU for arch %s",
                        virArchToString(arch));
         return -1;
     }
 
-    if (!(caps->host.cpu = virCPUDefCopy(cpu)))
-        return -1;
+    qemuTestSetHostCPU(caps, cpu);
 
     return 0;
 }

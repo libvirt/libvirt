@@ -3,6 +3,7 @@
 # include <stdlib.h>
 
 # include "testutilsqemu.h"
+# include "testutilshostcpus.h"
 # include "testutils.h"
 # include "viralloc.h"
 # include "cpu_conf.h"
@@ -18,91 +19,6 @@ virCPUDefPtr cpuDefault;
 virCPUDefPtr cpuHaswell;
 virCPUDefPtr cpuPower8;
 virCPUDefPtr cpuPower9;
-
-static virCPUFeatureDef cpuDefaultFeatures[] = {
-    { (char *) "ds",        -1 },
-    { (char *) "acpi",      -1 },
-    { (char *) "ss",        -1 },
-    { (char *) "ht",        -1 },
-    { (char *) "tm",        -1 },
-    { (char *) "pbe",       -1 },
-    { (char *) "ds_cpl",    -1 },
-    { (char *) "vmx",       -1 },
-    { (char *) "est",       -1 },
-    { (char *) "tm2",       -1 },
-    { (char *) "cx16",      -1 },
-    { (char *) "xtpr",      -1 },
-    { (char *) "lahf_lm",   -1 },
-};
-static virCPUDef cpuDefaultData = {
-    .type = VIR_CPU_TYPE_HOST,
-    .arch = VIR_ARCH_X86_64,
-    .model = (char *) "core2duo",
-    .vendor = (char *) "Intel",
-    .sockets = 1,
-    .cores = 2,
-    .threads = 1,
-    .nfeatures = ARRAY_CARDINALITY(cpuDefaultFeatures),
-    .nfeatures_max = ARRAY_CARDINALITY(cpuDefaultFeatures),
-    .features = cpuDefaultFeatures,
-};
-
-static virCPUFeatureDef cpuHaswellFeatures[] = {
-    { (char *) "vme",       -1 },
-    { (char *) "ds",        -1 },
-    { (char *) "acpi",      -1 },
-    { (char *) "ss",        -1 },
-    { (char *) "ht",        -1 },
-    { (char *) "tm",        -1 },
-    { (char *) "pbe",       -1 },
-    { (char *) "dtes64",    -1 },
-    { (char *) "monitor",   -1 },
-    { (char *) "ds_cpl",    -1 },
-    { (char *) "vmx",       -1 },
-    { (char *) "smx",       -1 },
-    { (char *) "est",       -1 },
-    { (char *) "tm2",       -1 },
-    { (char *) "xtpr",      -1 },
-    { (char *) "pdcm",      -1 },
-    { (char *) "osxsave",   -1 },
-    { (char *) "f16c",      -1 },
-    { (char *) "rdrand",    -1 },
-    { (char *) "cmt",       -1 },
-    { (char *) "pdpe1gb",   -1 },
-    { (char *) "abm",       -1 },
-    { (char *) "invtsc",    -1 },
-    { (char *) "lahf_lm",   -1 },
-};
-static virCPUDef cpuHaswellData = {
-    .type = VIR_CPU_TYPE_HOST,
-    .arch = VIR_ARCH_X86_64,
-    .model = (char *) "Haswell",
-    .vendor = (char *) "Intel",
-    .sockets = 1,
-    .cores = 2,
-    .threads = 2,
-    .nfeatures = ARRAY_CARDINALITY(cpuHaswellFeatures),
-    .nfeatures_max = ARRAY_CARDINALITY(cpuHaswellFeatures),
-    .features = cpuHaswellFeatures,
-};
-
-static virCPUDef cpuPower8Data = {
-    .type = VIR_CPU_TYPE_HOST,
-    .arch = VIR_ARCH_PPC64,
-    .model = (char *) "POWER8",
-    .sockets = 1,
-    .cores = 8,
-    .threads = 8,
-};
-
-static virCPUDef cpuPower9Data = {
-    .type = VIR_CPU_TYPE_HOST,
-    .arch = VIR_ARCH_PPC64,
-    .model = (char *) "POWER9",
-    .sockets = 1,
-    .cores = 16,
-    .threads = 1,
-};
 
 typedef enum {
     TEST_UTILS_QEMU_BIN_I686,
@@ -557,8 +473,13 @@ qemuTestSetHostCPU(virCapsPtr caps,
             cpu = cpuPower8;
     }
 
-    if (cpu)
+    if (cpu) {
         caps->host.arch = cpu->arch;
+        if (cpu->model)
+            setenv("VIR_TEST_MOCK_FAKE_HOST_CPU", cpu->model, 1);
+        else
+            unsetenv("VIR_TEST_MOCK_FAKE_HOST_CPU");
+    }
     caps->host.cpu = cpu;
 }
 

@@ -16,20 +16,23 @@
 
 #include <config.h>
 
-#include "internal.h"
+#include <stdlib.h>
+
+#include "conf/cpu_conf.h"
+#include "cpu/cpu.h"
 #include "qemu/qemu_capabilities.h"
 #define __QEMU_CAPSPRIV_H_ALLOW__
 #include "qemu/qemu_capspriv.h"
 #undef __QEMU_CAPSPRIV_H_ALLOW__
+#include "testutilshostcpus.h"
 
 
 virCPUDefPtr
-virQEMUCapsProbeHostCPUForEmulator(virCapsPtr caps,
+virQEMUCapsProbeHostCPUForEmulator(virCapsPtr caps ATTRIBUTE_UNUSED,
                                    virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
                                    virDomainVirtType type ATTRIBUTE_UNUSED)
 {
-    if (!caps || !caps->host.cpu || !caps->host.cpu->model)
-        return NULL;
+    const char *model = getenv("VIR_TEST_MOCK_FAKE_HOST_CPU");
 
-    return virCPUDefCopy(caps->host.cpu);
+    return testUtilsHostCpusGetDefForModel(model);
 }
