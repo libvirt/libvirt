@@ -134,6 +134,7 @@
   <flag name='kernel-irqchip.split'/>
   <flag name='virtio.iommu_platform'/>
   <flag name='virtio.ats'/>
+  <flag name='vnc-multi-servers'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

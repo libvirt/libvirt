@@ -164,6 +164,7 @@
   <flag name='kernel-irqchip'/>
   <flag name='kernel-irqchip.split'/>
   <flag name='spapr-pci-host-bridge'/>
+  <flag name='vnc-multi-servers'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

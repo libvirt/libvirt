@@ -169,6 +169,7 @@
   <flag name='virtio.ats'/>
   <flag name='spapr-pci-host-bridge'/>
   <flag name='spapr-pci-host-bridge.numa_node'/>
+  <flag name='vnc-multi-servers'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.9.0)</package>
