@@ -2309,21 +2309,21 @@ int virDomainSetPerfEvents(virDomainPtr dom,
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN = 0, /* Placeholder */
 
-    VIR_DOMAIN_BLOCK_JOB_TYPE_PULL = 1,
     /* Block Pull (virDomainBlockPull, or virDomainBlockRebase without
      * flags), job ends on completion */
+    VIR_DOMAIN_BLOCK_JOB_TYPE_PULL = 1,
 
-    VIR_DOMAIN_BLOCK_JOB_TYPE_COPY = 2,
     /* Block Copy (virDomainBlockCopy, or virDomainBlockRebase with
      * flags), job exists as long as mirroring is active */
+    VIR_DOMAIN_BLOCK_JOB_TYPE_COPY = 2,
 
-    VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT = 3,
     /* Block Commit (virDomainBlockCommit without flags), job ends on
      * completion */
+    VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT = 3,
 
-    VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT = 4,
     /* Active Block Commit (virDomainBlockCommit with flags), job
      * exists as long as sync is active */
+    VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT = 4,
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_BLOCK_JOB_TYPE_LAST
@@ -3712,12 +3712,13 @@ typedef void (*virConnectDomainEventBlockJobCallback)(virConnectPtr conn,
  * The reason describing why this callback is called
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START = 0,
-    /* removable media changed to empty according to startup policy as source
+    /* Removable media changed to empty according to startup policy as source
      * was missing. oldSrcPath is set, newSrcPath is NULL */
-    VIR_DOMAIN_EVENT_DISK_DROP_MISSING_ON_START = 1,
-    /* disk was dropped from domain as source file was missing.
+    VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START = 0,
+
+    /* Disk was dropped from domain as source file was missing.
      * oldSrcPath is set, newSrcPath is NULL */
+    VIR_DOMAIN_EVENT_DISK_DROP_MISSING_ON_START = 1,
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_DISK_CHANGE_LAST
