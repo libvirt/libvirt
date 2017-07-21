@@ -845,12 +845,6 @@ int virLXCProcessStop(virLXCDriverPtr driver,
 
     priv = vm->privateData;
 
-    if (vm->pid <= 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid PID %d for container"), vm->pid);
-        return -1;
-    }
-
     virSecurityManagerRestoreAllLabel(driver->securityManager,
                                       vm->def, false, false);
     virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
@@ -895,7 +889,7 @@ int virLXCProcessStop(virLXCDriverPtr driver,
                            _("Some processes refused to die"));
             return -1;
         }
-    } else {
+    } else if (vm->pid > 0) {
         /* If cgroup doesn't exist, just try cleaning up the
          * libvirt_lxc process */
         if (virProcessKillPainfully(vm->pid, true) < 0) {
@@ -1210,8 +1204,6 @@ int virLXCProcessStart(virConnectPtr conn,
     virCgroupPtr selfcgroup;
     int status;
     char *pidfile = NULL;
-    bool clearSeclabel = false;
-    bool need_stop = false;
 
     if (virCgroupNewSelf(&selfcgroup) < 0)
         return -1;
@@ -1330,9 +1322,6 @@ int virLXCProcessStart(virConnectPtr conn,
     /* If you are using a SecurityDriver with dynamic labelling,
        then generate a security label for isolation */
     VIR_DEBUG("Generating domain security label (if required)");
-
-    clearSeclabel = vm->def->nseclabels == 0 ||
-                    vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DEFAULT;
 
     if (vm->def->nseclabels &&
         vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DEFAULT)
@@ -1468,7 +1457,6 @@ int virLXCProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    need_stop = true;
     priv->stopReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
     priv->wantReboot = false;
     vm->def->id = vm->pid;
@@ -1574,23 +1562,7 @@ int virLXCProcessStart(virConnectPtr conn,
     }
     if (rc != 0) {
         err = virSaveLastError();
-        if (need_stop) {
-            virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
-        } else {
-            virSecurityManagerRestoreAllLabel(driver->securityManager,
-                                              vm->def, false, false);
-            virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
-            /* Clear out dynamically assigned labels */
-            if (vm->def->nseclabels &&
-                (vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC ||
-                clearSeclabel)) {
-                VIR_FREE(vm->def->seclabels[0]->model);
-                VIR_FREE(vm->def->seclabels[0]->label);
-                VIR_FREE(vm->def->seclabels[0]->imagelabel);
-                VIR_DELETE_ELEMENT(vm->def->seclabels, 0, vm->def->nseclabels);
-            }
-            virLXCProcessCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
-        }
+        virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
     }
     virCommandFree(cmd);
     for (i = 0; i < nveths; i++)
