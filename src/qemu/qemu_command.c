@@ -8879,28 +8879,6 @@ qemuBuildShmemDevStr(virDomainDefPtr def,
     return virBufferContentAndReset(&buf);
 }
 
-static char *
-qemuBuildShmemBackendChrStr(virLogManagerPtr logManager,
-                            virCommandPtr cmd,
-                            virQEMUDriverConfigPtr cfg,
-                            virDomainDefPtr def,
-                            virDomainShmemDefPtr shmem,
-                            virQEMUCapsPtr qemuCaps,
-                            bool chardevStdioLogd)
-{
-    char *devstr = NULL;
-
-    if (qemuDomainPrepareShmemChardev(shmem) < 0)
-        return NULL;
-
-    devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                    &shmem->server.chr,
-                                    shmem->info.alias, qemuCaps, true,
-                                    chardevStdioLogd);
-
-    return devstr;
-}
-
 
 virJSONValuePtr
 qemuBuildShmemBackendMemProps(virDomainShmemDefPtr shmem)
@@ -9010,9 +8988,11 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
     VIR_FREE(devstr);
 
     if (shmem->server.enabled) {
-        if (!(devstr = qemuBuildShmemBackendChrStr(logManager, cmd, cfg, def,
-                                                   shmem, qemuCaps,
-                                                   chardevStdioLogd)))
+        devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
+                                        &shmem->server.chr,
+                                        shmem->info.alias, qemuCaps, true,
+                                        chardevStdioLogd);
+        if (!devstr)
             return -1;
 
         virCommandAddArgList(cmd, "-chardev", devstr, NULL);

@@ -5325,6 +5325,11 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (qemuProcessUpdateGuestCPU(vm->def, priv->qemuCaps, caps, flags) < 0)
         goto cleanup;
 
+    for (i = 0; i < vm->def->nshmems; i++) {
+        if (qemuDomainPrepareShmemChardev(vm->def->shmems[i]) < 0)
+            goto cleanup;
+    }
+
     ret = 0;
  cleanup:
     virObjectUnref(caps);
