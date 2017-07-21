@@ -3778,7 +3778,10 @@
       </dd>
       <dt><code>node</code></dt>
       <dd>
-        pci-expander-bus controllers can have an
+        Some PCI controllers (<code>pci-expander-bus</code> for the pc
+        machine type, <code>pcie-expander-bus</code> for the q35 machine
+        type and, <span class="since">since 3.6.0</span>,
+        <code>pci-root</code> for the pseries machine type) can have an
         optional <code>&lt;node&gt;</code> subelement within
         the <code>&lt;target&gt;</code> subelement, which is used to
         set the NUMA node reported to the guest OS for that bus - the

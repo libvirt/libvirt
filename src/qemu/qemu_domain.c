@@ -3511,15 +3511,14 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
             return -1;
         }
 
-        /* if a PCI expander bus has a NUMA node set, make sure
-         * that NUMA node is configured in the guest <cpu><numa>
-         * array. NUMA cell id's in this array are numbered
+        /* if a PCI expander bus or pci-root on Pseries has a NUMA node
+         * set, make sure that NUMA node is configured in the guest
+         * <cpu><numa> array. NUMA cell id's in this array are numbered
          * from 0 .. size-1.
          */
-        if ((cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS ||
-             cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS) &&
-            (int) virDomainNumaGetNodeCount(def->numa)
-            <= cont->opts.pciopts.numaNode) {
+        if (cont->opts.pciopts.numaNode >= 0 &&
+            cont->opts.pciopts.numaNode >=
+            (int) virDomainNumaGetNodeCount(def->numa)) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("%s with index %d is "
                              "configured for a NUMA node (%d) "

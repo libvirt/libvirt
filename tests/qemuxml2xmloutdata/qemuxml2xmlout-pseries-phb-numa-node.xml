@@ -1,0 +1,52 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>87eedafe-eedc-4336-8130-ed9fe5dc90c8</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static'>8</vcpu>
+  <numatune>
+    <memnode cellid='0' mode='strict' nodeset='1'/>
+    <memnode cellid='1' mode='strict' nodeset='2'/>
+  </numatune>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <cpu>
+    <topology sockets='2' cores='1' threads='4'/>
+    <numa>
+      <cell id='0' cpus='0-3' memory='1048576' unit='KiB'/>
+      <cell id='1' cpus='4-7' memory='1048576' unit='KiB'/>
+    </numa>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <controller type='usb' index='0' model='none'/>
+    <controller type='pci' index='0' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='0'/>
+    </controller>
+    <controller type='pci' index='1' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='1'>
+        <node>1</node>
+      </target>
+    </controller>
+    <controller type='pci' index='2' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='2'/>
+    </controller>
+    <controller type='pci' index='3' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='3'>
+        <node>0</node>
+      </target>
+    </controller>
+    <memballoon model='none'/>
+    <panic model='pseries'/>
+  </devices>
+</domain>

@@ -3038,6 +3038,16 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             virBufferAsprintf(&buf, "%s,index=%d,id=%s",
                               modelName, def->opts.pciopts.targetIndex,
                               def->info.alias);
+
+            if (def->opts.pciopts.numaNode != -1) {
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("the spapr-pci-host-bridge controller "
+                                     "doesn't support numa_node on this QEMU binary"));
+                    goto error;
+                }
+                virBufferAsprintf(&buf, ",numa_node=%d", def->opts.pciopts.numaNode);
+            }
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:

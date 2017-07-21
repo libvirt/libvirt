@@ -1,0 +1,29 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <vcpu placement='static'>24</vcpu>
+  <numatune>
+    <memnode cellid="0" mode="strict" nodeset="1"/>
+  </numatune>
+  <cpu>
+    <topology sockets='3' cores='1' threads='8'/>
+    <numa>
+      <cell id='0' cpus='0-23' memory='1048576' unit='KiB'/>
+    </numa>
+  </cpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <!-- The default PHB (controller index 0) shouldn't be assigned a NUMA node -->
+    <controller type='pci' index='0' model='pci-root'>
+      <target index='0'>
+        <node>0</node>
+      </target>
+    </controller>
+    <controller type='usb' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

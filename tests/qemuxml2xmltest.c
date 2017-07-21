@@ -672,6 +672,10 @@ mymain(void)
     DO_TEST("pseries-phb-default-missing",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+    DO_TEST("pseries-phb-numa-node",
+            QEMU_CAPS_NUMA,
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
+            QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE);
 
     DO_TEST("pseries-many-devices",
             QEMU_CAPS_NODEFCONFIG,
