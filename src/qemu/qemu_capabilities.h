@@ -417,6 +417,8 @@ typedef enum {
     QEMU_CAPS_VIRTIO_PCI_ATS, /* virtio-*-pci.ats */
     QEMU_CAPS_LOADPARM, /* -machine loadparm */
     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE, /* -device spapr-pci-host-bridge */
+
+    /* 265 */
     QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE, /* spapr-pci-host-bridge.numa_node= */
 
     QEMU_CAPS_LAST /* this must always be the last item */

@@ -431,6 +431,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "virtio.ats",
               "loadparm",
               "spapr-pci-host-bridge",
+
+              /* 265 */
               "spapr-pci-host-bridge.numa_node",
     );
 
