@@ -1365,9 +1365,9 @@ class CParser:
     def parseEnumBlock(self, token):
         self.enums = []
         name = None
-        self.comment = None
         comment = ""
         value = "-1"
+        commentsBeforeVal = self.comment is not None
         while token is not None:
             if token[0] == "sep" and token[1] == "{":
                 token = self.token()
@@ -1408,6 +1408,10 @@ class CParser:
                         self.warning("Failed to compute value of enum %s" % (name))
                         value=""
                 if token[0] == "sep" and token[1] == ",":
+                    if commentsBeforeVal:
+                        self.cleanupComment()
+                        self.enums.append((name, value, self.comment))
+                        name = comment = self.comment = None
                     token = self.token()
             else:
                 token = self.token()
@@ -1652,6 +1656,8 @@ class CParser:
             self.enums = []
             token = self.token()
             if token is not None and token[0] == "sep" and token[1] == "{":
+                # drop comments before the enum block
+                self.comment = None
                 token = self.token()
                 token = self.parseEnumBlock(token)
             else:
