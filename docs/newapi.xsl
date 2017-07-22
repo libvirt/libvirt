@@ -307,16 +307,21 @@
           <tr>
             <td><a name="{@name}"><xsl:value-of select="@name"/></a></td>
             <td><xsl:text> = </xsl:text></td>
-            <td><xsl:value-of select="@value"/></td>
-            <xsl:if test="@info != ''">
-              <td>
-                <div class="comment">
-                  <xsl:call-template name="dumptext">
-                    <xsl:with-param name="text" select="@info"/>
-                  </xsl:call-template>
-                </div>
-              </td>
-            </xsl:if>
+            <xsl:choose>
+              <xsl:when test="@info != ''">
+                <td><xsl:value-of select="@value"/></td>
+                <td>
+                  <div class="comment">
+                    <xsl:call-template name="dumptext">
+                      <xsl:with-param name="text" select="@info"/>
+                    </xsl:call-template>
+                  </div>
+                </td>
+              </xsl:when>
+              <xsl:otherwise>
+                <td colspan="2"><xsl:value-of select="@value"/></td>
+              </xsl:otherwise>
+            </xsl:choose>
           </tr>
         </xsl:for-each>
       </table>
