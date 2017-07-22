@@ -1280,6 +1280,7 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
     if (!obj->configFile) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("pool has no config file"));
+        goto cleanup;
     }
 
     autostart = (autostart != 0);
