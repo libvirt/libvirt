@@ -1908,7 +1908,7 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       -1 },
     { "intel-iommu", virQEMUCapsObjectPropsIntelIOMMU,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsIntelIOMMU),
-      QEMU_CAPS_DEVICE_INTEL_IOMMU},
+      QEMU_CAPS_DEVICE_INTEL_IOMMU },
     { "spapr-pci-host-bridge", virQEMUCapsObjectPropsSpaprPCIHostBridge,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsSpaprPCIHostBridge),
       QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE },
