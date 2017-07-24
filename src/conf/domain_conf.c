@@ -1892,7 +1892,7 @@ void virDomainControllerDefFree(virDomainControllerDefPtr def)
 
 
 /**
- * virDomainControllerIsPCIHostBridge:
+ * virDomainControllerIsPSeriesPHB:
  * @cont: controller
  *
  * Checks whether @cont is a PCI Host Bridge (PHB), a specific type
@@ -1901,7 +1901,7 @@ void virDomainControllerDefFree(virDomainControllerDefPtr def)
  * Returns: true if @cont is a PHB, false otherwise.
  */
 bool
-virDomainControllerIsPCIHostBridge(const virDomainControllerDef *cont)
+virDomainControllerIsPSeriesPHB(const virDomainControllerDef *cont)
 {
     virDomainControllerPCIModelName name;
 

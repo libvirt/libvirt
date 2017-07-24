@@ -6735,7 +6735,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def)
         for (i = 0; i < def->ncontrollers; i++) {
             virDomainControllerDefPtr cont = def->controllers[i];
 
-            if (!virDomainControllerIsPCIHostBridge(cont))
+            if (!virDomainControllerIsPSeriesPHB(cont))
                 continue;
 
             nPCIHostBridges++;

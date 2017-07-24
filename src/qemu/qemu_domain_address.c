@@ -2167,7 +2167,7 @@ qemuDomainAddressFindNewTargetIndex(virDomainDefPtr def)
             virDomainControllerDefPtr cont = def->controllers[i];
 
             /* Skip everything but PHBs */
-            if (!virDomainControllerIsPCIHostBridge(cont))
+            if (!virDomainControllerIsPSeriesPHB(cont))
                 continue;
 
             /* Stop looking as soon as we find a PHB that's

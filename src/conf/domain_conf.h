@@ -2681,7 +2681,7 @@ virDomainDiskDefPtr virDomainDiskFindByBusAndDst(virDomainDefPtr def,
 
 virDomainControllerDefPtr virDomainControllerDefNew(virDomainControllerType type);
 void virDomainControllerDefFree(virDomainControllerDefPtr def);
-bool virDomainControllerIsPCIHostBridge(const virDomainControllerDef *cont);
+bool virDomainControllerIsPSeriesPHB(const virDomainControllerDef *cont);
 
 virDomainFSDefPtr virDomainFSDefNew(void);
 void virDomainFSDefFree(virDomainFSDefPtr def);

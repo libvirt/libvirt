@@ -317,7 +317,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
             if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
                 cont->idx == info->addr.pci.bus) {
                 contAlias = cont->info.alias;
-                contIsPHB = virDomainControllerIsPCIHostBridge(cont);
+                contIsPHB = virDomainControllerIsPSeriesPHB(cont);
                 contTargetIndex = cont->opts.pciopts.targetIndex;
                 if (!contAlias) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
