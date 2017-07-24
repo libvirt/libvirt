@@ -80,6 +80,8 @@ void virBufferVasprintf(virBufferPtr buf, const char *format, va_list ap)
   ATTRIBUTE_FMT_PRINTF(2, 0);
 void virBufferStrcat(virBufferPtr buf, ...)
   ATTRIBUTE_SENTINEL;
+void virBufferStrcatVArgs(virBufferPtr buf, va_list ap);
+
 void virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
                      const char *format, const char *str);
 void virBufferEscapeN(virBufferPtr buf, const char *format,

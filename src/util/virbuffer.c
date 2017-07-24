@@ -831,6 +831,26 @@ virBufferEscapeShell(virBufferPtr buf, const char *str)
 }
 
 /**
+ * virBufferStrcatVArgs:
+ * @buf: the buffer to append to
+ * @ap: variable argument structure
+ *
+ * See virBufferStrcat.
+ */
+void
+virBufferStrcatVArgs(virBufferPtr buf,
+                     va_list ap)
+{
+    char *str;
+
+    if (buf->error)
+        return;
+
+    while ((str = va_arg(ap, char *)) != NULL)
+        virBufferAdd(buf, str, -1);
+}
+
+/**
  * virBufferStrcat:
  * @buf: the buffer to append to
  * @...: the variable list of strings, the last argument must be NULL
@@ -842,14 +862,9 @@ void
 virBufferStrcat(virBufferPtr buf, ...)
 {
     va_list ap;
-    char *str;
-
-    if (buf->error)
-        return;
 
     va_start(ap, buf);
-    while ((str = va_arg(ap, char *)) != NULL)
-        virBufferAdd(buf, str, -1);
+    virBufferStrcatVArgs(buf, ap);
     va_end(ap);
 }
 

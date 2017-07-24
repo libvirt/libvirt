@@ -1345,6 +1345,7 @@ virBufferFreeAndReset;
 virBufferGetIndent;
 virBufferSetIndent;
 virBufferStrcat;
+virBufferStrcatVArgs;
 virBufferTrim;
 virBufferURIEncodeString;
 virBufferUse;
