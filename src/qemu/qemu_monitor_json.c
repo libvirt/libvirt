@@ -2061,6 +2061,35 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
 }
 
 
+virJSONValuePtr
+qemuMonitorJSONQueryBlockstats(qemuMonitorPtr mon)
+{
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr ret = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-blockstats", NULL)))
+        return NULL;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    if (!(ret = virJSONValueObjectStealArray(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-blockstats reply was missing device list"));
+        goto cleanup;
+    }
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int
 qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
                                     virHashTablePtr hash,
@@ -2070,24 +2099,10 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
     int nstats = 0;
     int rc;
     size_t i;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
     virJSONValuePtr devices;
 
-    if (!(cmd = qemuMonitorJSONMakeCommand("query-blockstats", NULL)))
+    if (!(devices = qemuMonitorJSONQueryBlockstats(mon)))
         return -1;
-
-    if ((rc = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        goto cleanup;
-
-    if (!(devices = virJSONValueObjectGetArray(reply, "return"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("blockstats reply was missing device list"));
-        goto cleanup;
-    }
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
@@ -2120,8 +2135,7 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
     ret = nstats;
 
  cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
+    virJSONValueFree(devices);
     return ret;
 }
 

@@ -523,6 +523,8 @@ int qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
 int qemuMonitorBlockIOStatusToError(const char *status);
 virHashTablePtr qemuMonitorGetBlockInfo(qemuMonitorPtr mon);
 
+virJSONValuePtr qemuMonitorQueryBlockstats(qemuMonitorPtr mon);
+
 typedef struct _qemuBlockStats qemuBlockStats;
 typedef qemuBlockStats *qemuBlockStatsPtr;
 struct _qemuBlockStats {

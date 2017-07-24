@@ -2242,6 +2242,21 @@ qemuMonitorGetBlockInfo(qemuMonitorPtr mon)
 
 
 /**
+ * qemuMonitorQueryBlockstats:
+ * @mon: monitor object
+ *
+ * Returns data from a call to 'query-blockstats'.
+ */
+virJSONValuePtr
+qemuMonitorQueryBlockstats(qemuMonitorPtr mon)
+{
+    QEMU_CHECK_MONITOR_JSON_NULL(mon);
+
+    return qemuMonitorJSONQueryBlockstats(mon);
+}
+
+
+/**
  * qemuMonitorGetAllBlockStatsInfo:
  * @mon: monitor object
  * @ret_stats: pointer that is filled with a hash table containing the stats
