@@ -407,6 +407,40 @@ virTestLoadFilePath(const char *p, ...)
 }
 
 
+/**
+ * virTestLoadFileJSON:
+ * @...: name components terminated with a NULL
+ *
+ * Constructs the test file path from variable arguments and loads and parses
+ * the JSON file. 'abs_srcdir' is automatically prepended to the path.
+ */
+virJSONValuePtr
+virTestLoadFileJSON(const char *p, ...)
+{
+    virJSONValuePtr ret = NULL;
+    char *jsonstr = NULL;
+    char *path = NULL;
+    va_list ap;
+
+    va_start(ap, p);
+
+    if (!(path = virTestLoadFileGetPath(p, ap)))
+        goto cleanup;
+
+    if (virTestLoadFile(path, &jsonstr) < 0)
+        goto cleanup;
+
+    if (!(ret = virJSONValueFromString(jsonstr)))
+        VIR_TEST_VERBOSE("failed to parse json from file '%s'", path);
+
+ cleanup:
+    va_end(ap);
+    VIR_FREE(jsonstr);
+    VIR_FREE(path);
+    return ret;
+}
+
+
 #ifndef WIN32
 static
 void virTestCaptureProgramExecChild(const char *const argv[],

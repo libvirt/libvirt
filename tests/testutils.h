@@ -27,6 +27,7 @@
 # include "viralloc.h"
 # include "virfile.h"
 # include "virstring.h"
+# include "virjson.h"
 # include "capabilities.h"
 # include "domain_conf.h"
 
@@ -54,6 +55,9 @@ int virTestRun(const char *title,
 int virTestLoadFile(const char *file, char **buf);
 char *virTestLoadFilePath(const char *p, ...)
     ATTRIBUTE_SENTINEL;
+virJSONValuePtr virTestLoadFileJSON(const char *p, ...)
+    ATTRIBUTE_SENTINEL;
+
 int virTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen);
 
 void virTestClearCommandPath(char *cmdset);
