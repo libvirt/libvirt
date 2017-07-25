@@ -7264,7 +7264,8 @@ qemuDomainPrepareChannel(virDomainChrDefPtr channel,
                         "%s/%s", domainChannelTargetDir,
                         channel->target.name) < 0)
             return -1;
-    } else {    // Generate a unique name
+    } else {
+        /* Generate a unique name */
         if (virAsprintf(&channel->source->data.nix.path,
                         "%s/vioser-%02d-%02d-%02d.sock",
                         domainChannelTargetDir,
