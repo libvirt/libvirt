@@ -356,6 +356,57 @@ virTestLoadFile(const char *file, char **buf)
     return 0;
 }
 
+
+static char *
+virTestLoadFileGetPath(const char *p,
+                       va_list ap)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *path = NULL;
+
+    virBufferAddLit(&buf, abs_srcdir "/");
+
+    if (p) {
+        virBufferAdd(&buf, p, -1);
+        virBufferStrcatVArgs(&buf, ap);
+    }
+
+    if (!(path = virBufferContentAndReset(&buf)))
+        VIR_TEST_VERBOSE("failed to format file path");
+
+    return path;
+}
+
+
+/**
+ * virTestLoadFilePath:
+ * @...: file name components terminated with a NULL
+ *
+ * Constructs the test file path from variable arguments and loads the file.
+ * 'abs_srcdir' is automatically prepended.
+ */
+char *
+virTestLoadFilePath(const char *p, ...)
+{
+    char *path = NULL;
+    char *ret = NULL;
+    va_list ap;
+
+    va_start(ap, p);
+
+    if (!(path = virTestLoadFileGetPath(p, ap)))
+        goto cleanup;
+
+    ignore_value(virTestLoadFile(path, &ret));
+
+ cleanup:
+    va_end(ap);
+    VIR_FREE(path);
+
+    return ret;
+}
+
+
 #ifndef WIN32
 static
 void virTestCaptureProgramExecChild(const char *const argv[],
