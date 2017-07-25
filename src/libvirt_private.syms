@@ -2465,6 +2465,13 @@ virRandomGenerateWWN;
 virRandomInt;
 
 
+# util/virresctrl.h
+virCacheTypeFromString;
+virCacheTypeToString;
+virResctrlGetCacheControlType;
+virResctrlGetCacheInfo;
+
+
 # util/virrotatingfile.h
 virRotatingFileReaderConsume;
 virRotatingFileReaderFree;

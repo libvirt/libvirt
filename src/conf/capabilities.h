@@ -30,6 +30,7 @@
 # include "virarch.h"
 # include "virmacaddr.h"
 # include "virobject.h"
+# include "virresctrl.h"
 
 # include <libxml/xpath.h>
 
@@ -138,29 +139,6 @@ struct _virCapsHostSecModel {
     virCapsHostSecModelLabelPtr labels;
 };
 
-typedef enum {
-    VIR_CACHE_TYPE_BOTH,
-    VIR_CACHE_TYPE_CODE,
-    VIR_CACHE_TYPE_DATA,
-
-    VIR_CACHE_TYPE_LAST
-} virCacheType;
-
-VIR_ENUM_DECL(virCache);
-
-typedef struct _virCapsHostCacheControl virCapsHostCacheControl;
-typedef virCapsHostCacheControl *virCapsHostCacheControlPtr;
-struct _virCapsHostCacheControl {
-    /* Smallest possible increase of the allocation size in bytes */
-    unsigned long long granularity;
-    /* Minimal allocatable size in bytes (if different from granularity) */
-    unsigned long long min;
-    /* Type of the allocation */
-    virCacheType scope;
-    /* Maximum number of simultaneous allocations */
-    unsigned int max_allocation;
-};
-
 typedef struct _virCapsHostCacheBank virCapsHostCacheBank;
 typedef virCapsHostCacheBank *virCapsHostCacheBankPtr;
 struct _virCapsHostCacheBank {
@@ -170,7 +148,7 @@ struct _virCapsHostCacheBank {
     virCacheType type;  /* Data, Instruction or Unified */
     virBitmapPtr cpus;  /* All CPUs that share this bank */
     size_t ncontrols;
-    virCapsHostCacheControlPtr *controls;
+    virResctrlPtr *controls;
 };
 
 typedef struct _virCapsHost virCapsHost;
