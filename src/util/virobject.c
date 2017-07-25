@@ -275,7 +275,7 @@ virObjectRWLockableNew(virClassPtr klass)
     if (!(obj = virObjectNew(klass)))
         return NULL;
 
-    if (virRWLockInitPreferWriter(&obj->lock) < 0) {
+    if (virRWLockInit(&obj->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to initialize RW lock"));
         virObjectUnref(obj);

@@ -95,15 +95,6 @@ void virMutexUnlock(virMutexPtr m)
 }
 
 
-/**
- * virRWLockInit:
- * @m: rwlock to init
- *
- * Initializes RW lock using pthread default attributes (which
- * is PTHREAD_RWLOCK_PREFER_READER_NP).
- *
- * Returns 0 on success, -1 otherwise.
- */
 int virRWLockInit(virRWLockPtr m)
 {
     int ret;
@@ -114,32 +105,6 @@ int virRWLockInit(virRWLockPtr m)
     }
     return 0;
 }
-
-
-/**
- * virRWLockInitPreferWriter:
- * @m: rwlock to init
- *
- * Initializes RW lock which prefers writers over readers.
- *
- * Returns 0 on success, -1 otherwise.
- */
-int virRWLockInitPreferWriter(virRWLockPtr m)
-{
-    int ret;
-    pthread_rwlockattr_t attr;
-
-    pthread_rwlockattr_init(&attr);
-    pthread_rwlockattr_setkind_np(&attr, PTHREAD_RWLOCK_PREFER_WRITER_NONRECURSIVE_NP);
-    ret = pthread_rwlock_init(&m->lock, &attr);
-    pthread_rwlockattr_destroy(&attr);
-    if (ret != 0) {
-        errno = ret;
-        return -1;
-    }
-    return 0;
-}
-
 
 void virRWLockDestroy(virRWLockPtr m)
 {
