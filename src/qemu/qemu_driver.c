@@ -19490,8 +19490,8 @@ qemuDomainGetStatsOneBlockNode(virDomainStatsRecordPtr record,
     unsigned long long tmp;
     int ret = -1;
 
-    if (src->nodebacking &&
-        (data = virHashLookup(nodedata, src->nodebacking))) {
+    if (src->nodestorage &&
+        (data = virHashLookup(nodedata, src->nodestorage))) {
         if (virJSONValueObjectGetNumberUlong(data, "write_threshold", &tmp) == 0 &&
             tmp > 0)
             QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
@@ -20674,18 +20674,18 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
     if (!(src = qemuDomainGetStorageSourceByDevstr(dev, vm->def)))
         goto endjob;
 
-    if (!src->nodebacking &&
+    if (!src->nodestorage &&
         qemuBlockNodeNamesDetect(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
         goto endjob;
 
-    if (!src->nodebacking) {
+    if (!src->nodestorage) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("threshold currently can't be set for block device '%s'"),
                        dev);
         goto endjob;
     }
 
-    if (VIR_STRDUP(nodename, src->nodebacking) < 0)
+    if (VIR_STRDUP(nodename, src->nodestorage) < 0)
         goto endjob;
 
     qemuDomainObjEnterMonitor(driver, vm);

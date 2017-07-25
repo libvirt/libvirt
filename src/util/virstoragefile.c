@@ -2050,7 +2050,7 @@ virStorageSourceCopy(const virStorageSource *src,
         VIR_STRDUP(ret->snapshot, src->snapshot) < 0 ||
         VIR_STRDUP(ret->configFile, src->configFile) < 0 ||
         VIR_STRDUP(ret->nodeformat, src->nodeformat) < 0 ||
-        VIR_STRDUP(ret->nodebacking, src->nodebacking) < 0 ||
+        VIR_STRDUP(ret->nodestorage, src->nodestorage) < 0 ||
         VIR_STRDUP(ret->compat, src->compat) < 0)
         goto error;
 
@@ -2271,7 +2271,7 @@ virStorageSourceClear(virStorageSourcePtr def)
     virStorageNetHostDefFree(def->nhosts, def->hosts);
     virStorageAuthDefFree(def->auth);
 
-    VIR_FREE(def->nodebacking);
+    VIR_FREE(def->nodestorage);
     VIR_FREE(def->nodeformat);
 
     virStorageSourceBackingStoreClear(def);
@@ -3941,7 +3941,7 @@ virStorageSourceFindByNodeName(virStorageSourcePtr top,
 
     for (tmp = top; tmp; tmp = tmp->backingStore) {
         if ((tmp->nodeformat && STREQ(tmp->nodeformat, nodeName)) ||
-            (tmp->nodebacking && STREQ(tmp->nodebacking, nodeName)))
+            (tmp->nodestorage && STREQ(tmp->nodestorage, nodeName)))
             return tmp;
 
         if (idx)

@@ -279,7 +279,7 @@ struct _virStorageSource {
 
     /* metadata that allows identifying given storage source */
     char *nodeformat;  /* name of the format handler object */
-    char *nodebacking; /* name of the backing storage object */
+    char *nodestorage; /* name of the storage object */
 };
 
 
