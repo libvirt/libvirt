@@ -2736,8 +2736,7 @@ static int
 testBlockNodeNameDetect(const void *opaque)
 {
     const struct testBlockNodeNameDetectData *data = opaque;
-    char *namedNodesFile = NULL;
-    char *namedNodesStr = NULL;
+    const char *pathprefix = "qemumonitorjsondata/qemumonitorjson-nodename-";
     char *resultFile = NULL;
     char *actual = NULL;
     char **nodenames = NULL;
@@ -2747,21 +2746,15 @@ testBlockNodeNameDetect(const void *opaque)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
-    if (virAsprintf(&namedNodesFile,
-                    "%s/qemumonitorjsondata/qemumonitorjson-nodename-%s-named-nodes.json",
-                    abs_srcdir, data->name) < 0 ||
-        virAsprintf(&resultFile,
-                    "%s/qemumonitorjsondata/qemumonitorjson-nodename-%s.result",
-                    abs_srcdir, data->name) < 0)
+    if (virAsprintf(&resultFile, "%s/%s%s.result",
+                    abs_srcdir, pathprefix, data->name) < 0)
         goto cleanup;
 
     if (!(nodenames = virStringSplit(data->nodenames, ",", 0)))
         goto cleanup;
 
-    if (virTestLoadFile(namedNodesFile, &namedNodesStr) < 0)
-        goto cleanup;
-
-    if (!(namedNodesJson = virJSONValueFromString(namedNodesStr)))
+    if (!(namedNodesJson = virTestLoadFileJSON(pathprefix, data->name,
+                                               "-named-nodes.json", NULL)))
         goto cleanup;
 
     if (!(nodedata = qemuBlockNodeNameGetBackingChain(namedNodesJson)))
@@ -2783,9 +2776,7 @@ testBlockNodeNameDetect(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(namedNodesFile);
     VIR_FREE(resultFile);
-    VIR_FREE(namedNodesStr);
     VIR_FREE(actual);
     virHashFree(nodedata);
     virStringListFree(nodenames);
