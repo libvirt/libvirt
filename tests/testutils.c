@@ -289,9 +289,17 @@ virTestRun(const char *title,
     return ret;
 }
 
-/* Allocate BUF to the size of FILE. Read FILE into buffer BUF.
-   Upon any failure, diagnose it and return -1, but don't bother trying
-   to preserve errno. Otherwise, return the number of bytes copied into BUF. */
+
+/**
+ * virTestLoadFile:
+ * @file: name of the file to load
+ * @buf: buffer to load the file into
+ *
+ * Allocates @buf to the size of FILE. Reads FILE into buffer BUF.
+ * Upon any failure, error is printed to stderr and -1 is returned. 'errno' is
+ * not preserved. On success 0 is returned. Caller is responsible for freeing
+ * @buf.
+ */
 int
 virTestLoadFile(const char *file, char **buf)
 {
@@ -345,7 +353,7 @@ virTestLoadFile(const char *file, char **buf)
     }
 
     VIR_FORCE_FCLOSE(fp);
-    return strlen(*buf);
+    return 0;
 }
 
 #ifndef WIN32
