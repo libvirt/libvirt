@@ -3505,7 +3505,9 @@
       appear more than once, with a group of virtual devices tied to a
       virtual controller.  Normally, libvirt can automatically infer such
       controllers without requiring explicit XML markup, but sometimes
-      it is necessary to provide an explicit controller element.
+      it is necessary to provide an explicit controller element, notably
+      when planning the <a href="pci-hotplug.html">PCI topology</a>
+      for guests where device hotplug is expected.
     </p>
 
 <pre>
