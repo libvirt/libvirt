@@ -671,7 +671,7 @@ catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
         return;
 
     if (ctxt->_private)
-            domcode = ((struct virParserData *) ctxt->_private)->domcode;
+        domcode = ((struct virParserData *) ctxt->_private)->domcode;
 
 
     cur = ctxt->input->cur;
@@ -718,7 +718,7 @@ catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
                               contextstr,
                               pointerstr);
     } else {
-         virGenericReportError(domcode, VIR_ERR_XML_DETAIL,
+        virGenericReportError(domcode, VIR_ERR_XML_DETAIL,
                               _("at line %d: %s%s\n%s"),
                               ctxt->lastError.line,
                               ctxt->lastError.message,
@@ -928,26 +928,26 @@ char *
 virXMLNodeToString(xmlDocPtr doc,
                    xmlNodePtr node)
 {
-     xmlBufferPtr xmlbuf = NULL;
-     char *ret = NULL;
+    xmlBufferPtr xmlbuf = NULL;
+    char *ret = NULL;
 
-     if (!(xmlbuf = xmlBufferCreate())) {
-         virReportOOMError();
-         return NULL;
-     }
+    if (!(xmlbuf = xmlBufferCreate())) {
+        virReportOOMError();
+        return NULL;
+    }
 
-     if (xmlNodeDump(xmlbuf, doc, node, 0, 1) == 0) {
-         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("failed to convert the XML node tree"));
-         goto cleanup;
-     }
+    if (xmlNodeDump(xmlbuf, doc, node, 0, 1) == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to convert the XML node tree"));
+        goto cleanup;
+    }
 
-     ignore_value(VIR_STRDUP(ret, (const char *)xmlBufferContent(xmlbuf)));
+    ignore_value(VIR_STRDUP(ret, (const char *)xmlBufferContent(xmlbuf)));
 
  cleanup:
-     xmlBufferFree(xmlbuf);
+    xmlBufferFree(xmlbuf);
 
-     return ret;
+    return ret;
 }
 
 typedef int (*virXMLForeachCallback)(xmlNodePtr node,
@@ -1126,7 +1126,7 @@ virXMLNodeSanitizeNamespaces(xmlNodePtr node)
     xmlNodePtr dupl;
 
     if (!node)
-       return;
+        return;
 
     child = node->children;
     while (child) {
