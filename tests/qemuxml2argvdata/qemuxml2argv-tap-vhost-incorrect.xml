@@ -24,7 +24,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <interface type='user'>
       <mac address='52:54:00:e5:48:58'/>
-      <model type='definitely-not-virtio'/>
+      <model type='e1000'/>
       <driver name='vhost' queues='5'/>
       <backend tap='/dev/null' vhost='/dev/zero'/>
     </interface>
