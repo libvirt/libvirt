@@ -55,10 +55,8 @@ int qemuSetupChardevCgroup(virDomainObjPtr vm,
                            virDomainChrDefPtr dev);
 int qemuTeardownChardevCgroup(virDomainObjPtr vm,
                               virDomainChrDefPtr dev);
-int qemuConnectCgroup(virQEMUDriverPtr driver,
-                      virDomainObjPtr vm);
-int qemuSetupCgroup(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm,
+int qemuConnectCgroup(virDomainObjPtr vm);
+int qemuSetupCgroup(virDomainObjPtr vm,
                     size_t nnicindexes,
                     int *nicindexes);
 int qemuSetupCpusetMems(virDomainObjPtr vm);

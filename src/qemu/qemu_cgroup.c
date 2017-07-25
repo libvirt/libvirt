@@ -604,8 +604,7 @@ qemuTeardownChardevCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
-                       virDomainObjPtr vm)
+qemuSetupDevicesCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -644,7 +643,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
     if (rv < 0)
         goto cleanup;
 
-    cfg = virQEMUDriverGetConfig(driver);
+    cfg = virQEMUDriverGetConfig(priv->driver);
     deviceACL = cfg->cgroupDeviceACL ?
                 (const char *const *)cfg->cgroupDeviceACL :
                 defaultDeviceACL;
@@ -769,8 +768,7 @@ qemuSetupCpusetCgroup(virDomainObjPtr vm)
 
 
 static int
-qemuSetupCpuCgroup(virQEMUDriverPtr driver,
-                   virDomainObjPtr vm)
+qemuSetupCpuCgroup(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virObjectEventPtr event = NULL;
@@ -806,7 +804,7 @@ qemuSetupCpuCgroup(virQEMUDriverPtr driver,
             event = virDomainEventTunableNewFromObj(vm, eventParams, eventNparams);
         }
 
-        qemuDomainEventQueue(driver, event);
+        qemuDomainEventQueue(priv->driver, event);
     }
 
     return 0;
@@ -814,16 +812,15 @@ qemuSetupCpuCgroup(virQEMUDriverPtr driver,
 
 
 static int
-qemuInitCgroup(virQEMUDriverPtr driver,
-               virDomainObjPtr vm,
+qemuInitCgroup(virDomainObjPtr vm,
                size_t nnicindexes,
                int *nicindexes)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(priv->driver);
 
-    if (!virQEMUDriverIsPrivileged(driver))
+    if (!virQEMUDriverIsPrivileged(priv->driver))
         goto done;
 
     if (!virCgroupAvailable())
@@ -954,14 +951,13 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
 }
 
 int
-qemuConnectCgroup(virQEMUDriverPtr driver,
-                  virDomainObjPtr vm)
+qemuConnectCgroup(virDomainObjPtr vm)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(priv->driver);
     int ret = -1;
 
-    if (!virQEMUDriverIsPrivileged(driver))
+    if (!virQEMUDriverIsPrivileged(priv->driver))
         goto done;
 
     if (!virCgroupAvailable())
@@ -991,8 +987,7 @@ qemuConnectCgroup(virQEMUDriverPtr driver,
 }
 
 int
-qemuSetupCgroup(virQEMUDriverPtr driver,
-                virDomainObjPtr vm,
+qemuSetupCgroup(virDomainObjPtr vm,
                 size_t nnicindexes,
                 int *nicindexes)
 {
@@ -1005,13 +1000,13 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (qemuInitCgroup(driver, vm, nnicindexes, nicindexes) < 0)
+    if (qemuInitCgroup(vm, nnicindexes, nicindexes) < 0)
         return -1;
 
     if (!priv->cgroup)
         return 0;
 
-    if (qemuSetupDevicesCgroup(driver, vm) < 0)
+    if (qemuSetupDevicesCgroup(vm) < 0)
         goto cleanup;
 
     if (qemuSetupBlkioCgroup(vm) < 0)
@@ -1020,7 +1015,7 @@ qemuSetupCgroup(virQEMUDriverPtr driver,
     if (qemuSetupMemoryCgroup(vm) < 0)
         goto cleanup;
 
-    if (qemuSetupCpuCgroup(driver, vm) < 0)
+    if (qemuSetupCpuCgroup(vm) < 0)
         goto cleanup;
 
     if (qemuSetupCpusetCgroup(vm) < 0)
