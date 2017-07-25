@@ -44,7 +44,6 @@ static void printMismatchedFlags(virQEMUCapsPtr got,
 static int testHelpStrParsing(const void *data)
 {
     const struct testInfo *info = data;
-    char *path = NULL;
     char *help = NULL;
     unsigned int version, kvm_version;
     bool is_kvm;
@@ -53,10 +52,7 @@ static int testHelpStrParsing(const void *data)
     char *got = NULL;
     char *expected = NULL;
 
-    if (virAsprintf(&path, "%s/qemuhelpdata/%s", abs_srcdir, info->name) < 0)
-        return -1;
-
-    if (virTestLoadFile(path, &help) < 0)
+    if (!(help = virTestLoadFilePath("qemuhelpdata/", info->name, NULL)))
         goto cleanup;
 
     if (!(flags = virQEMUCapsNew()))
@@ -76,13 +72,8 @@ static int testHelpStrParsing(const void *data)
         virQEMUCapsSet(flags, QEMU_CAPS_MONITOR_JSON);
 # endif
 
-    VIR_FREE(path);
     VIR_FREE(help);
-    if (virAsprintf(&path, "%s/qemuhelpdata/%s-device", abs_srcdir,
-                    info->name) < 0)
-        goto cleanup;
-
-    if (virTestLoadFile(path, &help) < 0)
+    if (!(help = virTestLoadFilePath("qemuhelpdata/", info->name, "-device", NULL)))
         goto cleanup;
 
     if (virQEMUCapsParseDeviceStr(flags, help) < 0)
@@ -125,7 +116,6 @@ static int testHelpStrParsing(const void *data)
 
     ret = 0;
  cleanup:
-    VIR_FREE(path);
     VIR_FREE(help);
     virObjectUnref(flags);
     VIR_FREE(got);
