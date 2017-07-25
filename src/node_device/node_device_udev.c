@@ -1598,6 +1598,23 @@ nodeStateCleanup(void)
 }
 
 
+static int
+udevHandleOneDevice(struct udev_device *device)
+{
+    const char *action = udev_device_get_action(device);
+
+    VIR_DEBUG("udev action: '%s'", action);
+
+    if (STREQ(action, "add") || STREQ(action, "change"))
+        return udevAddOneDevice(device);
+
+    if (STREQ(action, "remove"))
+        return udevRemoveOneDevice(device);
+
+    return 0;
+}
+
+
 static void
 udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
                         int fd,
@@ -1606,7 +1623,6 @@ udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
 {
     struct udev_device *device = NULL;
     struct udev_monitor *udev_monitor = DRV_STATE_UDEV_MONITOR(driver);
-    const char *action = NULL;
     int udev_fd = -1;
 
     udev_fd = udev_monitor_get_fd(udev_monitor);
@@ -1635,18 +1651,7 @@ udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    action = udev_device_get_action(device);
-    VIR_DEBUG("udev action: '%s'", action);
-
-    if (STREQ(action, "add") || STREQ(action, "change")) {
-        udevAddOneDevice(device);
-        goto cleanup;
-    }
-
-    if (STREQ(action, "remove")) {
-        udevRemoveOneDevice(device);
-        goto cleanup;
-    }
+    udevHandleOneDevice(device);
 
  cleanup:
     udev_device_unref(device);
