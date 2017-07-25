@@ -7254,17 +7254,27 @@ int
 qemuDomainPrepareChannel(virDomainChrDefPtr channel,
                          const char *domainChannelTargetDir)
 {
-    if (channel->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
-        channel->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
-        !channel->source->data.nix.path) {
+    if (channel->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO ||
+        channel->source->type != VIR_DOMAIN_CHR_TYPE_UNIX ||
+        channel->source->data.nix.path)
+        return 0;
+
+    if (channel->target.name) {
         if (virAsprintf(&channel->source->data.nix.path,
                         "%s/%s", domainChannelTargetDir,
-                        channel->target.name ? channel->target.name
-                        : "unknown.sock") < 0)
+                        channel->target.name) < 0)
             return -1;
-
-        channel->source->data.nix.listen = true;
+    } else {    // Generate a unique name
+        if (virAsprintf(&channel->source->data.nix.path,
+                        "%s/vioser-%02d-%02d-%02d.sock",
+                        domainChannelTargetDir,
+                        channel->info.addr.vioserial.controller,
+                        channel->info.addr.vioserial.bus,
+                        channel->info.addr.vioserial.port) < 0)
+            return -1;
     }
+
+    channel->source->data.nix.listen = true;
 
     return 0;
 }
