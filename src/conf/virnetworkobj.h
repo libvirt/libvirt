@@ -66,16 +66,8 @@ virNetworkObjListPtr
 virNetworkObjListNew(void);
 
 virNetworkObjPtr
-virNetworkObjFindByUUIDLocked(virNetworkObjListPtr nets,
-                              const unsigned char *uuid);
-
-virNetworkObjPtr
 virNetworkObjFindByUUID(virNetworkObjListPtr nets,
                         const unsigned char *uuid);
-
-virNetworkObjPtr
-virNetworkObjFindByNameLocked(virNetworkObjListPtr nets,
-                              const char *name);
 
 virNetworkObjPtr
 virNetworkObjFindByName(virNetworkObjListPtr nets,

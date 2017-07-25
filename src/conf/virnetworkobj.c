@@ -127,16 +127,7 @@ virNetworkObjListNew(void)
 }
 
 
-/**
- * virNetworkObjFindByUUIDLocked:
- * @nets: list of network objects
- * @uuid: network uuid to find
- *
- * This functions requires @nets to be locked already!
- *
- * Returns: not locked, but ref'd network object.
- */
-virNetworkObjPtr
+static virNetworkObjPtr
 virNetworkObjFindByUUIDLocked(virNetworkObjListPtr nets,
                               const unsigned char *uuid)
 {
@@ -193,16 +184,7 @@ virNetworkObjSearchName(const void *payload,
 }
 
 
-/*
- * virNetworkObjFindByNameLocked:
- * @nets: list of network objects
- * @name: network name to find
- *
- * This functions requires @nets to be locked already!
- *
- * Returns: not locked, but ref'd network object.
- */
-virNetworkObjPtr
+static virNetworkObjPtr
 virNetworkObjFindByNameLocked(virNetworkObjListPtr nets,
                               const char *name)
 {
