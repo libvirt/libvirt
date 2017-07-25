@@ -70,7 +70,7 @@ static void init_syms(void)
 
 int
 virFileWrapperAddPrefix(const char *prefix,
-                     const char *override)
+                        const char *override)
 {
     /* Both parameters are mandatory */
     if (!prefix || !override)
@@ -145,7 +145,7 @@ virFileWrapperOverridePrefix(const char *path)
     do {                                                \
         init_syms();                                    \
                                                         \
-        newpath = virFileWrapperOverridePrefix(path);      \
+        newpath = virFileWrapperOverridePrefix(path);   \
         if (!newpath)                                   \
             abort();                                    \
     } while (0)
