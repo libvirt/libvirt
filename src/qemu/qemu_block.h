@@ -35,6 +35,10 @@ struct qemuBlockNodeNameBackingChainData {
     char *nodestorage;  /* node name of the storage backing the format node */
 
     qemuBlockNodeNameBackingChainDataPtr backing;
+
+    /* for testing purposes */
+    char *drvformat;
+    char *drvstorage;
 };
 
 virHashTablePtr

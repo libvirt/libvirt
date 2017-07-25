@@ -2714,8 +2714,10 @@ testBlockNodeNameDetectFormat(void *payload,
         virBufferAsprintf(buf, "filename    : '%s'\n", entry->qemufilename);
         virBufferAsprintf(buf, "format node : '%s'\n",
                           NULLSTR(entry->nodeformat));
+        virBufferAsprintf(buf, "format drv  : '%s'\n", NULLSTR(entry->drvformat));
         virBufferAsprintf(buf, "storage node: '%s'\n",
                           NULLSTR(entry->nodestorage));
+        virBufferAsprintf(buf, "storage drv : '%s'\n", NULLSTR(entry->drvstorage));
 
         virBufferAdjustIndent(buf, 2);
 

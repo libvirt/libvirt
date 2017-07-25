@@ -56,6 +56,9 @@ qemuBlockNodeNameBackingChainDataFree(qemuBlockNodeNameBackingChainDataPtr data)
 
     VIR_FREE(data->qemufilename);
 
+    VIR_FREE(data->drvformat);
+    VIR_FREE(data->drvstorage);
+
     qemuBlockNodeNameBackingChainDataFree(data->backing);
 
     VIR_FREE(data);
@@ -108,7 +111,8 @@ qemuBlockNodeNameGetBackingChainBacking(virJSONValuePtr next,
     virJSONValuePtr parentnodedata;
     virJSONValuePtr nodedata;
     const char *nodename = virJSONValueObjectGetString(next, "node-name");
-    const char *drvname;
+    const char *drvname = NULL;
+    const char *drvparent = NULL;
     const char *parentnodename = NULL;
     const char *filename = NULL;
     int ret = -1;
@@ -134,8 +138,10 @@ qemuBlockNodeNameGetBackingChainBacking(virJSONValuePtr next,
 
     if (parent &&
         (parentnodename = virJSONValueObjectGetString(parent, "node-name"))) {
-        if ((parentnodedata = virHashLookup(nodenamestable, parentnodename)))
+        if ((parentnodedata = virHashLookup(nodenamestable, parentnodename))) {
             filename = virJSONValueObjectGetString(parentnodedata, "file");
+            drvparent = virJSONValueObjectGetString(parentnodedata, "drv");
+        }
     }
 
     if (VIR_ALLOC(data) < 0)
@@ -143,7 +149,9 @@ qemuBlockNodeNameGetBackingChainBacking(virJSONValuePtr next,
 
     if (VIR_STRDUP(data->nodeformat, nodename) < 0 ||
         VIR_STRDUP(data->nodestorage, parentnodename) < 0 ||
-        VIR_STRDUP(data->qemufilename, filename) < 0)
+        VIR_STRDUP(data->qemufilename, filename) < 0 ||
+        VIR_STRDUP(data->drvformat, drvname) < 0 ||
+        VIR_STRDUP(data->drvstorage, drvparent) < 0)
         goto cleanup;
 
     if (backing &&
