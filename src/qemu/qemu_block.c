@@ -27,6 +27,24 @@
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 
+static int
+qemuBlockNamedNodesArrayToHash(size_t pos ATTRIBUTE_UNUSED,
+                               virJSONValuePtr item,
+                               void *opaque)
+{
+    virHashTablePtr table = opaque;
+    const char *name;
+
+    if (!(name = virJSONValueObjectGetString(item, "node-name")))
+        return 1;
+
+    if (virHashAddEntry(table, name, item) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static void
 qemuBlockNodeNameBackingChainDataFree(qemuBlockNodeNameBackingChainDataPtr data)
 {
@@ -384,24 +402,6 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
 }
 
 
-static int
-qemuBlockFillNodeData(size_t pos ATTRIBUTE_UNUSED,
-                      virJSONValuePtr item,
-                      void *opaque)
-{
-    virHashTablePtr table = opaque;
-    const char *name;
-
-    if (!(name = virJSONValueObjectGetString(item, "node-name")))
-        return 1;
-
-    if (virHashAddEntry(table, name, item) < 0)
-        return -1;
-
-    return 0;
-}
-
-
 /**
  * qemuBlockGetNodeData:
  * @data: JSON object returned from query-named-block-nodes
@@ -419,7 +419,8 @@ qemuBlockGetNodeData(virJSONValuePtr data)
     if (!(ret = virHashCreate(50, virJSONValueHashFree)))
         return NULL;
 
-    if (virJSONValueArrayForeachSteal(data, qemuBlockFillNodeData, ret) < 0)
+    if (virJSONValueArrayForeachSteal(data,
+                                      qemuBlockNamedNodesArrayToHash, ret) < 0)
         goto error;
 
     return ret;
