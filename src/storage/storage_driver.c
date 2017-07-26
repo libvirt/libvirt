@@ -91,7 +91,7 @@ virStoragePoolUpdateInactive(virStoragePoolObjPtr *objptr)
 {
     virStoragePoolObjPtr obj = *objptr;
 
-    if (obj->configFile == NULL) {
+    if (!virStoragePoolObjGetConfigFile(obj)) {
         virStoragePoolObjRemove(&driver->pools, obj);
         *objptr = NULL;
     } else if (obj->newDef) {
@@ -643,7 +643,7 @@ storagePoolIsPersistent(virStoragePoolPtr pool)
     if (virStoragePoolIsPersistentEnsureACL(pool->conn, obj->def) < 0)
         goto cleanup;
 
-    ret = obj->configFile ? 1 : 0;
+    ret = virStoragePoolObjGetConfigFile(obj) ? 1 : 0;
 
  cleanup:
     virStoragePoolObjUnlock(obj);
@@ -849,7 +849,6 @@ storagePoolUndefine(virStoragePoolPtr pool)
                   obj->autostartLink, virStrerror(errno, ebuf, sizeof(ebuf)));
     }
 
-    VIR_FREE(obj->configFile);
     VIR_FREE(obj->autostartLink);
 
     event = virStoragePoolEventLifecycleNew(obj->def->name,
@@ -1250,7 +1249,7 @@ storagePoolGetAutostart(virStoragePoolPtr pool,
     if (virStoragePoolGetAutostartEnsureACL(pool->conn, obj->def) < 0)
         goto cleanup;
 
-    if (!obj->configFile) {
+    if (!virStoragePoolObjGetConfigFile(obj)) {
         *autostart = 0;
     } else {
         *autostart = obj->autostart;
@@ -1268,6 +1267,7 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
                         int autostart)
 {
     virStoragePoolObjPtr obj;
+    const char *configFile;
     int ret = -1;
 
     storageDriverLock();
@@ -1277,7 +1277,7 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
     if (virStoragePoolSetAutostartEnsureACL(pool->conn, obj->def) < 0)
         goto cleanup;
 
-    if (!obj->configFile) {
+    if (!(configFile = virStoragePoolObjGetConfigFile(obj))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("pool has no config file"));
         goto cleanup;
@@ -1294,10 +1294,10 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
                 goto cleanup;
             }
 
-            if (symlink(obj->configFile, obj->autostartLink) < 0) {
+            if (symlink(configFile, obj->autostartLink) < 0) {
                 virReportSystemError(errno,
                                      _("Failed to create symlink '%s' to '%s'"),
-                                     obj->autostartLink, obj->configFile);
+                                     obj->autostartLink, configFile);
                 goto cleanup;
             }
         } else {

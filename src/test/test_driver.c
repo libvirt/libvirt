@@ -4072,12 +4072,17 @@ testInterfaceDestroy(virInterfacePtr iface,
 static int
 testStoragePoolObjSetDefaults(virStoragePoolObjPtr obj)
 {
+    char *configFile;
 
     obj->def->capacity = defaultPoolCap;
     obj->def->allocation = defaultPoolAlloc;
     obj->def->available = defaultPoolCap - defaultPoolAlloc;
 
-    return VIR_STRDUP(obj->configFile, "");
+    if (VIR_STRDUP(configFile, "") < 0)
+        return -1;
+
+    virStoragePoolObjSetConfigFile(obj, configFile);
+    return 0;
 }
 
 
@@ -4319,7 +4324,7 @@ testStoragePoolIsPersistent(virStoragePoolPtr pool)
     if (!(obj = testStoragePoolObjFindByUUID(privconn, pool->uuid)))
         return -1;
 
-    ret = obj->configFile ? 1 : 0;
+    ret = virStoragePoolObjGetConfigFile(obj) ? 1 : 0;
 
     virStoragePoolObjUnlock(obj);
     return ret;
@@ -4485,7 +4490,7 @@ testStoragePoolCreateXML(virConnectPtr conn,
     /* *SetDefaults fills this in for the persistent pools, but this
      * would be a transient pool so remove it; otherwise, the Destroy
      * code will not Remove the pool */
-    VIR_FREE(obj->configFile);
+    virStoragePoolObjSetConfigFile(obj, NULL);
 
     obj->active = true;
 
@@ -4650,7 +4655,7 @@ testStoragePoolDestroy(virStoragePoolPtr pool)
                                             VIR_STORAGE_POOL_EVENT_STOPPED,
                                             0);
 
-    if (obj->configFile == NULL) {
+    if (!(virStoragePoolObjGetConfigFile(obj))) {
         virStoragePoolObjRemove(&privconn->pools, obj);
         obj = NULL;
     }
@@ -4756,11 +4761,10 @@ testStoragePoolGetAutostart(virStoragePoolPtr pool,
     if (!(obj = testStoragePoolObjFindByName(privconn, pool->name)))
         return -1;
 
-    if (!obj->configFile) {
+    if (!virStoragePoolObjGetConfigFile(obj))
         *autostart = 0;
-    } else {
+    else
         *autostart = obj->autostart;
-    }
 
     virStoragePoolObjUnlock(obj);
     return 0;
@@ -4778,7 +4782,7 @@ testStoragePoolSetAutostart(virStoragePoolPtr pool,
     if (!(obj = testStoragePoolObjFindByName(privconn, pool->name)))
         return -1;
 
-    if (!obj->configFile) {
+    if (!virStoragePoolObjGetConfigFile(obj)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        "%s", _("pool has no config file"));
         goto cleanup;

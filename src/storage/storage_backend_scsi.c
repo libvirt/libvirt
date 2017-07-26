@@ -443,8 +443,10 @@ static int
 virStorageBackendSCSIStartPool(virConnectPtr conn,
                                virStoragePoolObjPtr pool)
 {
+    const char *configFile = virStoragePoolObjGetConfigFile(pool);
+
     if (pool->def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST)
-        return createVport(conn, pool->def, pool->configFile,
+        return createVport(conn, pool->def, configFile,
                            &pool->def->source.adapter.data.fchost);
 
     return 0;
