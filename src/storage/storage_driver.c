@@ -145,9 +145,9 @@ storagePoolUpdateState(virStoragePoolObjPtr obj)
         }
     }
 
-    obj->active = active;
+    virStoragePoolObjSetActive(obj, active);
 
-    if (!obj->active)
+    if (!virStoragePoolObjIsActive(obj))
         virStoragePoolUpdateInactive(&obj);
 
  cleanup:
@@ -226,7 +226,7 @@ storageDriverAutostart(void)
                                _("Failed to autostart storage pool '%s': %s"),
                                obj->def->name, virGetLastErrorMessage());
             } else {
-                obj->active = true;
+                virStoragePoolObjSetActive(obj, true);
             }
             VIR_FREE(stateFile);
         }
@@ -735,7 +735,7 @@ storagePoolCreateXML(virConnectPtr conn,
                                             0);
 
     VIR_INFO("Creating storage pool '%s'", obj->def->name);
-    obj->active = true;
+    virStoragePoolObjSetActive(obj, true);
 
     pool = virGetStoragePool(conn, obj->def->name, obj->def->uuid, NULL, NULL);
 
@@ -940,7 +940,7 @@ storagePoolCreate(virStoragePoolPtr pool,
                                             VIR_STORAGE_POOL_EVENT_STARTED,
                                             0);
 
-    obj->active = true;
+    virStoragePoolObjSetActive(obj, true);
     ret = 0;
 
  cleanup:
@@ -1040,7 +1040,7 @@ storagePoolDestroy(virStoragePoolPtr pool)
                                             VIR_STORAGE_POOL_EVENT_STOPPED,
                                             0);
 
-    obj->active = false;
+    virStoragePoolObjSetActive(obj, false);
 
     virStoragePoolUpdateInactive(&obj);
 
@@ -1156,7 +1156,7 @@ storagePoolRefresh(virStoragePoolPtr pool,
                                                 obj->def->uuid,
                                                 VIR_STORAGE_POOL_EVENT_STOPPED,
                                                 0);
-        obj->active = false;
+        virStoragePoolObjSetActive(obj, false);
 
         virStoragePoolUpdateInactive(&obj);
 
@@ -1194,7 +1194,7 @@ storagePoolGetInfo(virStoragePoolPtr pool,
         goto cleanup;
 
     memset(info, 0, sizeof(virStoragePoolInfo));
-    if (obj->active)
+    if (virStoragePoolObjIsActive(obj))
         info->state = VIR_STORAGE_POOL_RUNNING;
     else
         info->state = VIR_STORAGE_POOL_INACTIVE;

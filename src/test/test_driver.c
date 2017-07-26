@@ -1131,7 +1131,7 @@ testParseStorage(testDriverPtr privconn,
             virStoragePoolObjUnlock(obj);
             goto error;
         }
-        obj->active = true;
+        virStoragePoolObjSetActive(obj, true);
 
         /* Find storage volumes */
         if (testOpenVolumesForPool(file, ctxt, obj, i+1) < 0) {
@@ -4344,7 +4344,7 @@ testStoragePoolCreate(virStoragePoolPtr pool,
     if (!(obj = testStoragePoolObjFindInactiveByName(privconn, pool->name)))
         return -1;
 
-    obj->active = true;
+    virStoragePoolObjSetActive(obj, true);
 
     event = virStoragePoolEventLifecycleNew(pool->name, pool->uuid,
                                             VIR_STORAGE_POOL_EVENT_STARTED,
@@ -4492,7 +4492,7 @@ testStoragePoolCreateXML(virConnectPtr conn,
      * code will not Remove the pool */
     virStoragePoolObjSetConfigFile(obj, NULL);
 
-    obj->active = true;
+    virStoragePoolObjSetActive(obj, true);
 
     event = virStoragePoolEventLifecycleNew(obj->def->name, obj->def->uuid,
                                             VIR_STORAGE_POOL_EVENT_STARTED,
@@ -4640,7 +4640,7 @@ testStoragePoolDestroy(virStoragePoolPtr pool)
     if (!(obj = testStoragePoolObjFindActiveByName(privconn, pool->name)))
         return -1;
 
-    obj->active = false;
+    virStoragePoolObjSetActive(obj, false);
 
     if (obj->def->source.adapter.type ==
         VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
@@ -4718,7 +4718,7 @@ testStoragePoolGetInfo(virStoragePoolPtr pool,
         return -1;
 
     memset(info, 0, sizeof(virStoragePoolInfo));
-    if (obj->active)
+    if (virStoragePoolObjIsActive(obj))
         info->state = VIR_STORAGE_POOL_RUNNING;
     else
         info->state = VIR_STORAGE_POOL_INACTIVE;
