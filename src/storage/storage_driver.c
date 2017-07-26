@@ -832,7 +832,7 @@ storagePoolUndefine(virStoragePoolPtr pool)
         goto cleanup;
     }
 
-    if (obj->asyncjobs > 0) {
+    if (virStoragePoolObjGetAsyncjobs(obj) > 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("pool '%s' has asynchronous jobs running."),
                        obj->def->name);
@@ -1014,7 +1014,7 @@ storagePoolDestroy(virStoragePoolPtr pool)
         goto cleanup;
     }
 
-    if (obj->asyncjobs > 0) {
+    if (virStoragePoolObjGetAsyncjobs(obj) > 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("pool '%s' has asynchronous jobs running."),
                        obj->def->name);
@@ -1082,7 +1082,7 @@ storagePoolDelete(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    if (obj->asyncjobs > 0) {
+    if (virStoragePoolObjGetAsyncjobs(obj) > 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("pool '%s' has asynchronous jobs running."),
                        obj->def->name);
@@ -1140,7 +1140,7 @@ storagePoolRefresh(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    if (obj->asyncjobs > 0) {
+    if (virStoragePoolObjGetAsyncjobs(obj) > 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("pool '%s' has asynchronous jobs running."),
                        obj->def->name);
@@ -1827,7 +1827,7 @@ storageVolCreateXML(virStoragePoolPtr pool,
         memcpy(buildvoldef, voldef, sizeof(*voldef));
 
         /* Drop the pool lock during volume allocation */
-        obj->asyncjobs++;
+        virStoragePoolObjIncrAsyncjobs(obj);
         voldef->building = true;
         virStoragePoolObjUnlock(obj);
 
@@ -1840,7 +1840,7 @@ storageVolCreateXML(virStoragePoolPtr pool,
         storageDriverUnlock();
 
         voldef->building = false;
-        obj->asyncjobs--;
+        virStoragePoolObjDecrAsyncjobs(obj);
 
         if (buildret < 0) {
             /* buildVol handles deleting volume on failure */
@@ -2020,13 +2020,13 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
         goto cleanup;
 
     /* Drop the pool lock during volume allocation */
-    obj->asyncjobs++;
+    virStoragePoolObjIncrAsyncjobs(obj);
     voldef->building = true;
     voldefsrc->in_use++;
     virStoragePoolObjUnlock(obj);
 
     if (objsrc) {
-        objsrc->asyncjobs++;
+        virStoragePoolObjIncrAsyncjobs(objsrc);
         virStoragePoolObjUnlock(objsrc);
     }
 
@@ -2040,10 +2040,10 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
 
     voldefsrc->in_use--;
     voldef->building = false;
-    obj->asyncjobs--;
+    virStoragePoolObjDecrAsyncjobs(obj);
 
     if (objsrc) {
-        objsrc->asyncjobs--;
+        virStoragePoolObjDecrAsyncjobs(objsrc);
         virStoragePoolObjUnlock(objsrc);
         objsrc = NULL;
     }
