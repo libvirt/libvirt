@@ -31,37 +31,49 @@
 # include "virdnsmasq.h"
 # include "virnetworkobj.h"
 
-int networkRegister(void);
+int
+networkRegister(void);
 
 # if WITH_NETWORK
-int networkAllocateActualDevice(virDomainDefPtr dom,
-                                virDomainNetDefPtr iface)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-void networkNotifyActualDevice(virDomainDefPtr dom,
-                               virDomainNetDefPtr iface)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int networkReleaseActualDevice(virDomainDefPtr dom,
-                               virDomainNetDefPtr iface)
+int
+networkAllocateActualDevice(virDomainDefPtr dom,
+                            virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int networkGetNetworkAddress(const char *netname, char **netaddr)
+void
+networkNotifyActualDevice(virDomainDefPtr dom,
+                          virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int networkGetActualType(virDomainNetDefPtr iface)
+int
+networkReleaseActualDevice(virDomainDefPtr dom,
+                           virDomainNetDefPtr iface)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int
+networkGetNetworkAddress(const char *netname,
+                         char **netaddr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int
+networkGetActualType(virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1);
 
-int networkDnsmasqConfContents(virNetworkObjPtr network,
-                        const char *pidfile,
-                        char **configstr,
-                        dnsmasqContext *dctx,
-                        dnsmasqCapsPtr caps);
+int
+networkDnsmasqConfContents(virNetworkObjPtr network,
+                           const char *pidfile,
+                           char **configstr,
+                           dnsmasqContext *dctx,
+                           dnsmasqCapsPtr caps);
 
-bool networkBandwidthChangeAllowed(virDomainNetDefPtr iface,
-                                   virNetDevBandwidthPtr newBandwidth)
+bool
+networkBandwidthChangeAllowed(virDomainNetDefPtr iface,
+                              virNetDevBandwidthPtr newBandwidth)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int networkBandwidthUpdate(virDomainNetDefPtr iface,
-                           virNetDevBandwidthPtr newBandwidth)
+int
+networkBandwidthUpdate(virDomainNetDefPtr iface,
+                       virNetDevBandwidthPtr newBandwidth)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 # else
@@ -80,7 +92,7 @@ networkNotifyActualDevice(virDomainDefPtr dom ATTRIBUTE_UNUSED,
 
 static inline int
 networkReleaseActualDevice(virDomainDefPtr dom ATTRIBUTE_UNUSED,
-                          virDomainNetDefPtr iface ATTRIBUTE_UNUSED)
+                           virDomainNetDefPtr iface ATTRIBUTE_UNUSED)
 {
     return 0;
 }
