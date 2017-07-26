@@ -139,6 +139,7 @@ virStoragePoolFCRefreshThread(void *opaque)
     const char *fchost_name = cbdata->fchost_name;
     const unsigned char *pool_uuid = cbdata->pool_uuid;
     virStoragePoolObjPtr pool = NULL;
+    virStoragePoolDefPtr def;
     unsigned int host;
     int found = 0;
     int tries = 2;
@@ -149,14 +150,15 @@ virStoragePoolFCRefreshThread(void *opaque)
         /* Let's see if the pool still exists -  */
         if (!(pool = virStoragePoolObjFindPoolByUUID(pool_uuid)))
             break;
+        def = virStoragePoolObjGetDef(pool);
 
         /* Return with pool lock, if active, we can get the host number,
          * successfully, rescan, and find LUN's, then we are happy
          */
         VIR_DEBUG("Attempt FC Refresh for pool='%s' name='%s' tries='%d'",
-                  pool->def->name, fchost_name, tries);
+                  def->name, fchost_name, tries);
 
-        pool->def->allocation = pool->def->capacity = pool->def->available = 0;
+        def->allocation = def->capacity = def->available = 0;
 
         if (virStoragePoolObjIsActive(pool) &&
             virSCSIHostGetNumber(fchost_name, &host) == 0 &&
@@ -371,6 +373,7 @@ static int
 virStorageBackendSCSICheckPool(virStoragePoolObjPtr pool,
                                bool *isActive)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *path = NULL;
     char *name = NULL;
     unsigned int host;
@@ -378,13 +381,12 @@ virStorageBackendSCSICheckPool(virStoragePoolObjPtr pool,
 
     *isActive = false;
 
-    if (!(name = getAdapterName(&pool->def->source.adapter))) {
+    if (!(name = getAdapterName(&def->source.adapter))) {
         /* It's normal for the pool with "fc_host" type source
          * adapter fails to get the adapter name, since the vHBA
          * the adapter based on might be not created yet.
          */
-        if (pool->def->source.adapter.type ==
-            VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
+        if (def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
             virResetLastError();
             return 0;
         } else {
@@ -412,13 +414,14 @@ static int
 virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *name = NULL;
     unsigned int host;
     int ret = -1;
 
-    pool->def->allocation = pool->def->capacity = pool->def->available = 0;
+    def->allocation = def->capacity = def->available = 0;
 
-    if (!(name = getAdapterName(&pool->def->source.adapter)))
+    if (!(name = getAdapterName(&def->source.adapter)))
         return -1;
 
     if (virSCSIHostGetNumber(name, &host) < 0)
@@ -443,11 +446,12 @@ static int
 virStorageBackendSCSIStartPool(virConnectPtr conn,
                                virStoragePoolObjPtr pool)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     const char *configFile = virStoragePoolObjGetConfigFile(pool);
 
-    if (pool->def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST)
-        return createVport(conn, pool->def, configFile,
-                           &pool->def->source.adapter.data.fchost);
+    if (def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST)
+        return createVport(conn, def, configFile,
+                           &def->source.adapter.data.fchost);
 
     return 0;
 }
@@ -457,9 +461,11 @@ static int
 virStorageBackendSCSIStopPool(virConnectPtr conn,
                               virStoragePoolObjPtr pool)
 {
-    if (pool->def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST)
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+
+    if (def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST)
         return virNodeDeviceDeleteVport(conn,
-                                        &pool->def->source.adapter.data.fchost);
+                                        &def->source.adapter.data.fchost);
 
     return 0;
 }
