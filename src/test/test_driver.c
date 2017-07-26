@@ -1041,7 +1041,7 @@ testOpenVolumesForPool(const char *file,
     size_t i;
     int num, ret = -1;
     xmlNodePtr *nodes = NULL;
-    virStorageVolDefPtr def = NULL;
+    virStorageVolDefPtr volDef = NULL;
 
     /* Find storage volumes */
     if (virAsprintf(&vol_xpath, "/node/pool[%d]/volume", objidx) < 0)
@@ -1058,30 +1058,29 @@ testOpenVolumesForPool(const char *file,
         if (!node)
             goto error;
 
-        def = virStorageVolDefParseNode(obj->def, ctxt->doc, node, 0);
-        if (!def)
+        if (!(volDef = virStorageVolDefParseNode(obj->def, ctxt->doc, node, 0)))
             goto error;
 
-        if (def->target.path == NULL) {
-            if (virAsprintf(&def->target.path, "%s/%s",
-                            obj->def->target.path, def->name) < 0)
+        if (!volDef->target.path) {
+            if (virAsprintf(&volDef->target.path, "%s/%s",
+                            obj->def->target.path, volDef->name) < 0)
                 goto error;
         }
 
-        if (!def->key && VIR_STRDUP(def->key, def->target.path) < 0)
+        if (!volDef->key && VIR_STRDUP(volDef->key, volDef->target.path) < 0)
             goto error;
 
-        if (virStoragePoolObjAddVol(obj, def) < 0)
+        if (virStoragePoolObjAddVol(obj, volDef) < 0)
             goto error;
 
-        obj->def->allocation += def->target.allocation;
+        obj->def->allocation += volDef->target.allocation;
         obj->def->available = (obj->def->capacity - obj->def->allocation);
-        def = NULL;
+        volDef = NULL;
     }
 
     ret = 0;
  error:
-    virStorageVolDefFree(def);
+    virStorageVolDefFree(volDef);
     VIR_FREE(nodes);
     return ret;
 }
