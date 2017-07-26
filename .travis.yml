@@ -38,7 +38,6 @@ addons:
       - libapparmor-dev
       - dnsmasq-base
       - librbd-dev
-      - w3c-dtd-xhtml
 
 notifications:
   irc:

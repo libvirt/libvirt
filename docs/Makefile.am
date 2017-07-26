@@ -268,14 +268,10 @@ MAINTAINERCLEANFILES += \
 	    || { rm $@ && exit 1; }; fi
 
 %.html: %.html.tmp
-	@if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
-	  if $(XMLCATALOG) '$(XML_CATALOG_FILE)' \
-	    "-//W3C//DTD XHTML 1.0 Strict//EN" > /dev/null ; then \
+	@if test -x $(XMLLINT) ; then \
 	  echo "Validating $@" ; \
-	  SGML_CATALOG_FILES='$(XML_CATALOG_FILE)' \
-	  $(XMLLINT) --catalogs --nonet --format --valid $< > $(srcdir)/$@ \
-	  || { rm $(srcdir)/$@ && exit 1; }; \
-	  else echo "missing XHTML1 DTD"; cat $< > $(srcdir)/$@ ; fi ; fi
+	  $(XMLLINT) --nonet --format $< > $(srcdir)/$@ \
+	  || { rm $(srcdir)/$@ && exit 1; }; fi
 
 %.php.tmp: %.php.in site.xsl page.xsl
 	if [ -x $(XSLTPROC) ] ; then \
@@ -300,12 +296,8 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
 	  --stringparam builddir '$(abs_top_builddir)' \
 	  --stringparam timestamp $(timestamp) \
 	  $(srcdir)/newapi.xsl $(srcdir)/libvirt-api.xml ; fi && \
-	if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
-	  if $(XMLCATALOG) '$(XML_CATALOG_FILE)' "-//W3C//DTD XHTML 1.0 Strict//EN" \
-	    > /dev/null ; then \
-	  SGML_CATALOG_FILES='$(XML_CATALOG_FILE)' \
-	  $(XMLLINT) --catalogs --nonet --valid --noout $(srcdir)/html/*.html ; \
-	  else echo "missing XHTML1 DTD"; cat $< > $(srcdir)/$@ ; fi ; fi
+	if test -x $(XMLLINT) ; then \
+	  $(XMLLINT) --nonet --noout $(srcdir)/html/*.html ; fi
 
 $(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
 	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \

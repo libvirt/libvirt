@@ -24,7 +24,6 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
 
   dnl Miscellaneous external programs.
   AC_PATH_PROG([XMLLINT], [xmllint], [/usr/bin/xmllint])
-  AC_PATH_PROG([XMLCATALOG], [xmlcatalog], [/usr/bin/xmlcatalog])
   AC_PATH_PROG([XSLTPROC], [xsltproc], [/usr/bin/xsltproc])
   AC_PATH_PROG([AUGPARSE], [augparse], [/usr/bin/augparse])
   AC_PROG_MKDIR_P

@@ -301,7 +301,6 @@ BuildRequires: systemd-units
 BuildRequires: xen-devel
 %endif
 BuildRequires: libxml2-devel
-BuildRequires: xhtml1-dtds
 BuildRequires: libxslt
 BuildRequires: readline-devel
 BuildRequires: ncurses-devel
