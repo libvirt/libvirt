@@ -96,13 +96,14 @@ void
 virStorageBackendSheepdogAddHostArg(virCommandPtr cmd,
                                     virStoragePoolObjPtr pool)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     const char *address = "localhost";
     int port = 7000;
-    if (pool->def->source.nhost > 0) {
-        if (pool->def->source.hosts[0].name != NULL)
-            address = pool->def->source.hosts[0].name;
-        if (pool->def->source.hosts[0].port)
-            port = pool->def->source.hosts[0].port;
+    if (def->source.nhost > 0) {
+        if (def->source.hosts[0].name != NULL)
+            address = def->source.hosts[0].name;
+        if (def->source.hosts[0].port)
+            port = def->source.hosts[0].port;
     }
     virCommandAddArg(cmd, "-a");
     virCommandAddArgFormat(cmd, "%s", address);
@@ -202,7 +203,8 @@ virStorageBackendSheepdogRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if (virStorageBackendSheepdogParseNodeInfo(pool->def, output) < 0)
+    if (virStorageBackendSheepdogParseNodeInfo(virStoragePoolObjGetDef(pool),
+                                               output) < 0)
         goto cleanup;
 
     ret = virStorageBackendSheepdogRefreshAllVol(conn, pool);
@@ -236,6 +238,8 @@ virStorageBackendSheepdogCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                                    virStoragePoolObjPtr pool,
                                    virStorageVolDefPtr vol)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s", _("storage pool does not support encrypted "
@@ -247,7 +251,7 @@ virStorageBackendSheepdogCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_FREE(vol->key);
     if (virAsprintf(&vol->key, "%s/%s",
-                    pool->def->source.name, vol->name) < 0)
+                    def->source.name, vol->name) < 0)
         return -1;
 
     VIR_FREE(vol->target.path);
@@ -356,8 +360,9 @@ virStorageBackendSheepdogRefreshVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     int ret;
     char *output = NULL;
-
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virCommandPtr cmd = virCommandNewArgList(SHEEPDOGCLI, "vdi", "list", vol->name, "-r", NULL);
+
     virStorageBackendSheepdogAddHostArg(cmd, pool);
     virCommandSetOutputBuffer(cmd, &output);
     ret = virCommandRun(cmd, NULL);
@@ -372,7 +377,7 @@ virStorageBackendSheepdogRefreshVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_FREE(vol->key);
     if (virAsprintf(&vol->key, "%s/%s",
-                    pool->def->source.name, vol->name) < 0)
+                    def->source.name, vol->name) < 0)
         goto cleanup;
 
     VIR_FREE(vol->target.path);
