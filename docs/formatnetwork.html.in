@@ -997,7 +997,7 @@
         <code>prefix</code> attribute, which is an integer (for example,
         <code>netmask='255.255.255.0'</code> could also be given as
         <code>prefix='24'</code>). The <code>family</code> attribute is used
-        to specify the type of address &mdash; <code>ipv4</code> or
+        to specify the type of address - <code>ipv4</code> or
         <code>ipv6</code>; if no <code>family</code> is given,
         <code>ipv4</code> is assumed. More than one address of each family can
         be defined for a network. The optional <code>localPtr</code> attribute

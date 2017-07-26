@@ -6927,10 +6927,10 @@ qemu-kvm -net nic,model=? /dev/null
         QEMU and KVM support:
         </p>
         <ul>
-          <li> 'i6300esb' &mdash; the recommended device,
+          <li>'i6300esb' - the recommended device,
             emulating a PCI Intel 6300ESB </li>
-          <li> 'ib700' &mdash; emulating an ISA iBase IB700 </li>
-          <li> 'diag288' &mdash; emulating an S390 DIAG288 device
+          <li>'ib700' - emulating an ISA iBase IB700 </li>
+          <li>'diag288' - emulating an S390 DIAG288 device
             <span class="since">Since 1.2.17</span></li>
         </ul>
       </dd>
@@ -6945,15 +6945,15 @@ qemu-kvm -net nic,model=? /dev/null
         QEMU and KVM support:
         </p>
         <ul>
-          <li>'reset' &mdash; default, forcefully reset the guest</li>
-          <li>'shutdown' &mdash; gracefully shutdown the guest
+          <li>'reset' - default, forcefully reset the guest</li>
+          <li>'shutdown' - gracefully shutdown the guest
             (not recommended) </li>
-          <li>'poweroff' &mdash; forcefully power off the guest</li>
-          <li>'pause' &mdash; pause the guest</li>
-          <li>'none' &mdash; do nothing</li>
-          <li>'dump' &mdash; automatically dump the guest
+          <li>'poweroff' - forcefully power off the guest</li>
+          <li>'pause' - pause the guest</li>
+          <li>'none' - do nothing</li>
+          <li>'dump' - automatically dump the guest
             <span class="since">Since 0.8.7</span></li>
-          <li>'inject-nmi' &mdash; inject a non-maskable interrupt
+          <li>'inject-nmi' - inject a non-maskable interrupt
             into the guest
             <span class="since">Since 1.2.17</span></li>
         </ul>
@@ -7018,8 +7018,8 @@ qemu-kvm -net nic,model=? /dev/null
           the virtualization platform
         </p>
         <ul>
-          <li>'virtio' &mdash; default with QEMU/KVM</li>
-          <li>'xen' &mdash; default with Xen</li>
+          <li>'virtio' - default with QEMU/KVM</li>
+          <li>'xen' - default with Xen</li>
         </ul>
       </dd>
       <dt><code>autodeflate</code></dt>
@@ -7091,7 +7091,7 @@ qemu-kvm -net nic,model=? /dev/null
           the virtualization platform:
         </p>
         <ul>
-          <li>'virtio' &mdash; supported by qemu and virtio-rng kernel module</li>
+          <li>'virtio' - supported by qemu and virtio-rng kernel module</li>
         </ul>
       </dd>
       <dt><code>rate</code></dt>
@@ -7283,11 +7283,11 @@ qemu-kvm -net nic,model=? /dev/null
           is missing depends on the hypervisor and guest arch.
         </p>
         <ul>
-          <li>'isa' &mdash; for ISA pvpanic device</li>
-          <li>'pseries' &mdash; default and valid only for pSeries guests.</li>
-          <li>'hyperv' &mdash; for Hyper-V crash CPU feature.
+          <li>'isa' - for ISA pvpanic device</li>
+          <li>'pseries' - default and valid only for pSeries guests.</li>
+          <li>'hyperv' - for Hyper-V crash CPU feature.
             <span class="since">Since 1.3.0, QEMU and KVM only</span></li>
-          <li>'s390' &mdash; default for S390 guests.
+          <li>'s390' - default for S390 guests.
             <span class="since">Since 1.3.5</span></li>
         </ul>
       </dd>
