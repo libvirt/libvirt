@@ -48,6 +48,7 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
                              const int devnum,
                              const char *dev)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virStorageVolDefPtr vol;
     int ret = -1;
 
@@ -74,8 +75,8 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
     if (virStoragePoolObjAddVol(pool, vol) < 0)
         goto cleanup;
 
-    pool->def->capacity += vol->target.capacity;
-    pool->def->allocation += vol->target.allocation;
+    def->capacity += vol->target.capacity;
+    def->allocation += vol->target.allocation;
     ret = 0;
 
  cleanup:
@@ -259,10 +260,11 @@ virStorageBackendMpathRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool)
 {
     int retval = 0;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
 
     VIR_DEBUG("conn=%p, pool=%p", conn, pool);
 
-    pool->def->allocation = pool->def->capacity = pool->def->available = 0;
+    def->allocation = def->capacity = def->available = 0;
 
     virWaitForDevices();
 
