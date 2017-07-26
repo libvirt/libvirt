@@ -228,17 +228,14 @@ $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 news.html.in: \
 	  $(srcdir)/news.xml \
 	  $(srcdir)/news-html.xsl
-	$(AM_V_GEN) \
-	if [ -x $(XSLTPROC) ]; then \
-	  $(XSLTPROC) --nonet \
+	$(AM_V_GEN)$(XSLTPROC) --nonet \
 	    $(srcdir)/news-html.xsl \
 	    $(srcdir)/news.xml \
 	  >$@-tmp \
 	    || { rm -f $@-tmp; exit 1; }; \
 	  sed 's/ xmlns=""//g' $@-tmp >$@ \
 	    || { rm -f $@-tmp; exit 1; }; \
-	  rm -f $@-tmp; \
-	fi
+	  rm -f $@-tmp
 EXTRA_DIST += \
 	$(srcdir)/news.xml \
 	$(srcdir)/news.rng \
@@ -251,9 +248,7 @@ MAINTAINERCLEANFILES += \
 
 %.html.tmp: %.html.in site.xsl subsite.xsl page.xsl \
 		$(acl_generated)
-	@if [ -x $(XSLTPROC) ] ; then \
-	  echo "Generating $@"; \
-	  name=`echo $@ | sed -e 's/.tmp//'`; \
+	$(AM_V_GEN)name=`echo $@ | sed -e 's/.tmp//'`; \
 	  dir=`dirname $@` ; \
 	  if test "$$dir" = "."; \
 	  then \
@@ -265,45 +260,36 @@ MAINTAINERCLEANFILES += \
 	  $(XSLTPROC) --stringparam pagename $$name \
 	    --stringparam timestamp $(timestamp) --nonet \
 	    $(top_srcdir)/docs/$$style $< > $@ \
-	    || { rm $@ && exit 1; }; fi
+	    || { rm $@ && exit 1; }
 
 %.html: %.html.tmp
-	@if test -x $(XMLLINT) ; then \
-	  echo "Validating $@" ; \
-	  $(XMLLINT) --nonet --format $< > $(srcdir)/$@ \
-	  || { rm $(srcdir)/$@ && exit 1; }; fi
+	$(AM_V_GEN)$(XMLLINT) --nonet --format $< > $(srcdir)/$@ \
+	  || { rm $(srcdir)/$@ && exit 1; }
 
 %.php.tmp: %.php.in site.xsl page.xsl
-	if [ -x $(XSLTPROC) ] ; then \
-	  echo "Generating $@"; \
-	  $(XSLTPROC) --stringparam pagename $(@:.tmp=) \
+	$(AM_V_GEN)$(XSLTPROC) --stringparam pagename $(@:.tmp=) \
 	    --stringparam timestamp $(timestamp) --nonet \
 	    $(top_srcdir)/docs/site.xsl $< > $@ \
-	    || { rm $@ && exit 1; }; fi
+	    || { rm $@ && exit 1; }
 
 %.php: %.php.tmp %.php.code.in
-	@if [ -x $(XSLTPROC) ] ; then \
-	  echo "Scripting $@"; \
-	    sed -e '/<span id="php_placeholder"><\/span>/r '"$(srcdir)/$@.code.in" \
+	$(AM_V_GEN)sed -e '/<span id="php_placeholder"><\/span>/r '"$(srcdir)/$@.code.in" \
 	    -e /php_placeholder/d < $@.tmp > $(srcdir)/$@ \
-	    || { rm $(srcdir)/$@ && exit 1; }; fi
+	    || { rm $(srcdir)/$@ && exit 1; }
 
 $(apihtml_generated): html/index.html
 
 html/index.html: libvirt-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
-	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
-	  $(XSLTPROC) --nonet -o $(srcdir)/ \
+	$(AM_V_GEN)$(XSLTPROC) --nonet -o $(srcdir)/ \
 	  --stringparam builddir '$(abs_top_builddir)' \
 	  --stringparam timestamp $(timestamp) \
-	  $(srcdir)/newapi.xsl $(srcdir)/libvirt-api.xml ; fi && \
-	if test -x $(XMLLINT) ; then \
-	  $(XMLLINT) --nonet --noout $(srcdir)/html/*.html ; fi
+	  $(srcdir)/newapi.xsl $(srcdir)/libvirt-api.xml && \
+	  $(XMLLINT) --nonet --noout $(srcdir)/html/*.html
 
 $(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
-	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
-	  $(XSLTPROC) --stringparam timestamp $(timestamp) \
-	    --nonet -o $(srcdir)/devhelp/ \
-	  $(top_srcdir)/docs/devhelp/devhelp.xsl $(srcdir)/libvirt-api.xml ; fi
+	$(AM_V_GEN)$(XSLTPROC) --stringparam timestamp $(timestamp) \
+	  --nonet -o $(srcdir)/devhelp/ \
+	  $(top_srcdir)/docs/devhelp/devhelp.xsl $(srcdir)/libvirt-api.xml
 
 
 python_generated_files = \
