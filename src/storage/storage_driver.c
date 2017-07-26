@@ -814,6 +814,7 @@ static int
 storagePoolUndefine(virStoragePoolPtr pool)
 {
     virStoragePoolObjPtr obj;
+    const char *autostartLink;
     virObjectEventPtr event = NULL;
     int ret = -1;
 
@@ -838,18 +839,17 @@ storagePoolUndefine(virStoragePoolPtr pool)
         goto cleanup;
     }
 
+    autostartLink = virStoragePoolObjGetAutostartLink(obj);
     if (virStoragePoolObjDeleteDef(obj) < 0)
         goto cleanup;
 
-    if (unlink(obj->autostartLink) < 0 &&
-        errno != ENOENT &&
-        errno != ENOTDIR) {
+    if (autostartLink && unlink(autostartLink) < 0 &&
+        errno != ENOENT && errno != ENOTDIR) {
         char ebuf[1024];
         VIR_ERROR(_("Failed to delete autostart link '%s': %s"),
-                  obj->autostartLink, virStrerror(errno, ebuf, sizeof(ebuf)));
+                  autostartLink, virStrerror(errno, ebuf, sizeof(ebuf)));
     }
 
-    VIR_FREE(obj->autostartLink);
 
     event = virStoragePoolEventLifecycleNew(obj->def->name,
                                             obj->def->uuid,
@@ -1268,6 +1268,7 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
 {
     virStoragePoolObjPtr obj;
     const char *configFile;
+    const char *autostartLink;
     int ret = -1;
 
     storageDriverLock();
@@ -1283,6 +1284,8 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
         goto cleanup;
     }
 
+    autostartLink = virStoragePoolObjGetAutostartLink(obj);
+
     autostart = (autostart != 0);
 
     if (obj->autostart != autostart) {
@@ -1294,18 +1297,18 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
                 goto cleanup;
             }
 
-            if (symlink(configFile, obj->autostartLink) < 0) {
+            if (symlink(configFile, autostartLink) < 0) {
                 virReportSystemError(errno,
                                      _("Failed to create symlink '%s' to '%s'"),
-                                     obj->autostartLink, configFile);
+                                     autostartLink, configFile);
                 goto cleanup;
             }
         } else {
-            if (unlink(obj->autostartLink) < 0 &&
+            if (autostartLink && unlink(autostartLink) < 0 &&
                 errno != ENOENT && errno != ENOTDIR) {
                 virReportSystemError(errno,
                                      _("Failed to delete symlink '%s'"),
-                                     obj->autostartLink);
+                                     autostartLink);
                 goto cleanup;
             }
         }
