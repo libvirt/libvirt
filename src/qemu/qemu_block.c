@@ -48,20 +48,15 @@ qemuBlockNamedNodesArrayToHash(size_t pos ATTRIBUTE_UNUSED,
 static void
 qemuBlockNodeNameBackingChainDataFree(qemuBlockNodeNameBackingChainDataPtr data)
 {
-    size_t i;
-
     if (!data)
         return;
 
-    for (i = 0; i < data->nelems; i++)
-        virJSONValueFree(data->elems[i]);
-
     VIR_FREE(data->nodeformat);
     VIR_FREE(data->nodestorage);
-    VIR_FREE(data->nodebacking);
 
     VIR_FREE(data->qemufilename);
-    VIR_FREE(data->backingstore);
+
+    qemuBlockNodeNameBackingChainDataFree(data->backing);
 
     VIR_FREE(data);
 }
@@ -75,55 +70,10 @@ qemuBlockNodeNameBackingChainDataHashEntryFree(void *opaque,
 }
 
 
-struct qemuBlockNodeNameGetBackingChainData {
-    virHashTablePtr table;
-    qemuBlockNodeNameBackingChainDataPtr *entries;
-    size_t nentries;
-};
-
-
-static int
-qemuBlockNodeNameDetectProcessByFilename(size_t pos ATTRIBUTE_UNUSED,
-                                         virJSONValuePtr item,
-                                         void *opaque)
-{
-    struct qemuBlockNodeNameGetBackingChainData *data = opaque;
-    qemuBlockNodeNameBackingChainDataPtr entry;
-    const char *file;
-
-    if (!(file = virJSONValueObjectGetString(item, "file")))
-        return 1;
-
-    if (!(entry = virHashLookup(data->table, file))) {
-        if (VIR_ALLOC(entry) < 0)
-            return -1;
-
-        if (VIR_APPEND_ELEMENT_COPY(data->entries, data->nentries, entry) < 0) {
-            VIR_FREE(entry);
-            return -1;
-        }
-
-        if (VIR_STRDUP(entry->qemufilename, file) < 0)
-            return -1;
-
-        if (virHashAddEntry(data->table, file, entry) < 0)
-            return -1;
-    }
-
-    if (VIR_APPEND_ELEMENT(entry->elems, entry->nelems, item) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static const char *qemuBlockDriversFormat[] = {
-    "qcow2", "raw", "qcow", "luks", "qed", "bochs", "cloop", "dmg", "parallels",
-    "vdi", "vhdx", "vmdk", "vpc", "vvfat", NULL};
-static const char *qemuBlockDriversStorage[] = {
-    "file", "iscsi", "nbd", "host_cdrom", "host_device", "ftp", "ftps",
-    "gluster", "http", "https", "nfs", "rbd", "sheepdog", "ssh", "tftp", NULL};
-
+/* list of driver names of layers that qemu automatically adds into the
+ * backing chain */
+static const char *qemuBlockDriversBlockjob[] = {
+    "mirror_top", "commit_top", NULL };
 
 static bool
 qemuBlockDriverMatch(const char *drvname,
@@ -140,86 +90,110 @@ qemuBlockDriverMatch(const char *drvname,
 }
 
 
-static int
-qemuBlockNodeNameDetectProcessExtract(qemuBlockNodeNameBackingChainDataPtr data)
-{
-    const char *drv;
-    const char *nodename;
-    const char *backingstore;
-    size_t i;
+struct qemuBlockNodeNameGetBackingChainData {
+    virHashTablePtr nodenamestable;
+    virHashTablePtr disks;
+};
 
-    /* Since the only way to construct the backing chain is to look up the files
-     * by file name, if two disks share a backing image we can't know which node
-     * belongs to which backing chain. Refuse to detect such chains. */
-    if (data->nelems > 2)
+
+static int
+qemuBlockNodeNameGetBackingChainBacking(virJSONValuePtr next,
+                                        virHashTablePtr nodenamestable,
+                                        qemuBlockNodeNameBackingChainDataPtr *nodenamedata)
+{
+    qemuBlockNodeNameBackingChainDataPtr data = NULL;
+    qemuBlockNodeNameBackingChainDataPtr backingdata = NULL;
+    virJSONValuePtr backing = virJSONValueObjectGetObject(next, "backing");
+    virJSONValuePtr parent = virJSONValueObjectGetObject(next, "parent");
+    virJSONValuePtr parentnodedata;
+    virJSONValuePtr nodedata;
+    const char *nodename = virJSONValueObjectGetString(next, "node-name");
+    const char *drvname;
+    const char *parentnodename = NULL;
+    const char *filename = NULL;
+    int ret = -1;
+
+    if (!nodename)
         return 0;
 
-    for (i = 0; i < data->nelems; i++) {
-        drv = virJSONValueObjectGetString(data->elems[i], "drv");
-        nodename = virJSONValueObjectGetString(data->elems[i], "node-name");
-        backingstore = virJSONValueObjectGetString(data->elems[i], "backing_file");
+    if ((nodedata = virHashLookup(nodenamestable, nodename)) &&
+        (drvname = virJSONValueObjectGetString(nodedata, "drv"))) {
 
-        if (!drv || !nodename)
-            continue;
-
-        if (qemuBlockDriverMatch(drv, qemuBlockDriversFormat)) {
-            if (data->nodeformat)
-                continue;
-
-            if (VIR_STRDUP(data->nodeformat, nodename) < 0)
-                return -1;
-
-            /* extract the backing store file name for the protocol layer */
-            if (VIR_STRDUP(data->backingstore, backingstore) < 0)
-                return -1;
-        } else if (qemuBlockDriverMatch(drv, qemuBlockDriversStorage)) {
-            if (data->nodestorage)
-                continue;
-
-            if (VIR_STRDUP(data->nodestorage, nodename) < 0)
-                return -1;
+        /* qemu 2.9 reports layers in the backing chain which don't correspond
+         * to files. skip them */
+        if (qemuBlockDriverMatch(drvname, qemuBlockDriversBlockjob)) {
+            if (backing) {
+                return qemuBlockNodeNameGetBackingChainBacking(backing,
+                                                               nodenamestable,
+                                                               nodenamedata);
+            } else {
+                return 0;
+            }
         }
     }
 
-    return 0;
+    if (parent &&
+        (parentnodename = virJSONValueObjectGetString(parent, "node-name"))) {
+        if ((parentnodedata = virHashLookup(nodenamestable, parentnodename)))
+            filename = virJSONValueObjectGetString(parentnodedata, "file");
+    }
+
+    if (VIR_ALLOC(data) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(data->nodeformat, nodename) < 0 ||
+        VIR_STRDUP(data->nodestorage, parentnodename) < 0 ||
+        VIR_STRDUP(data->qemufilename, filename) < 0)
+        goto cleanup;
+
+    if (backing &&
+        qemuBlockNodeNameGetBackingChainBacking(backing, nodenamestable,
+                                                &backingdata) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(data->backing, backingdata);
+    VIR_STEAL_PTR(*nodenamedata, data);
+
+    ret = 0;
+
+ cleanup:
+    qemuBlockNodeNameBackingChainDataFree(data);
+    return ret;
 }
 
 
 static int
-qemuBlockNodeNameDetectProcessLinkBacking(qemuBlockNodeNameBackingChainDataPtr data,
-                                          virHashTablePtr table)
+qemuBlockNodeNameGetBackingChainDisk(size_t pos ATTRIBUTE_UNUSED,
+                                     virJSONValuePtr item,
+                                     void *opaque)
 {
-    qemuBlockNodeNameBackingChainDataPtr backing;
+    struct qemuBlockNodeNameGetBackingChainData *data = opaque;
+    const char *device = virJSONValueObjectGetString(item, "device");
+    qemuBlockNodeNameBackingChainDataPtr devicedata = NULL;
+    int ret = -1;
 
-    if (!data->backingstore)
-        return 0;
+    if (qemuBlockNodeNameGetBackingChainBacking(item, data->nodenamestable,
+                                                &devicedata) < 0)
+        goto cleanup;
 
-    if (!(backing = virHashLookup(table, data->backingstore)))
-        return 0;
+    if (devicedata &&
+        virHashAddEntry(data->disks, device, devicedata) < 0)
+        goto cleanup;
 
-    if (VIR_STRDUP(data->nodebacking, backing->nodeformat) < 0)
-        return -1;
+    devicedata = NULL;
+    ret = 1; /* we don't really want to steal @item */
 
-    return 0;
-}
+ cleanup:
+    qemuBlockNodeNameBackingChainDataFree(devicedata);
 
-
-static void
-qemuBlockNodeNameGetBackingChainDataClearLookup(qemuBlockNodeNameBackingChainDataPtr data)
-{
-    size_t i;
-
-    for (i = 0; i < data->nelems; i++)
-        virJSONValueFree(data->elems[i]);
-
-    VIR_FREE(data->elems);
-    data->nelems = 0;
+    return ret;
 }
 
 
 /**
  * qemuBlockNodeNameGetBackingChain:
- * @json: JSON array of data returned from 'query-named-block-nodes'
+ * @namednodes: JSON array of data returned from 'query-named-block-nodes'
+ * @blockstats: JSON array of data returned from 'query-blockstats'
  *
  * Tries to reconstruct the backing chain from @json to allow detection of
  * node names that were auto-assigned by qemu. This is a best-effort operation
@@ -230,69 +204,40 @@ qemuBlockNodeNameGetBackingChainDataClearLookup(qemuBlockNodeNameBackingChainDat
  * Returns a hash table on success and NULL on failure.
  */
 virHashTablePtr
-qemuBlockNodeNameGetBackingChain(virJSONValuePtr json)
+qemuBlockNodeNameGetBackingChain(virJSONValuePtr namednodes,
+                                 virJSONValuePtr blockstats)
 {
     struct qemuBlockNodeNameGetBackingChainData data;
-    virHashTablePtr nodetable = NULL;
+    virHashTablePtr namednodestable = NULL;
+    virHashTablePtr disks = NULL;
     virHashTablePtr ret = NULL;
-    size_t i;
 
     memset(&data, 0, sizeof(data));
 
-    /* hash table keeps the entries accessible by the 'file' in qemu */
-    if (!(data.table = virHashCreate(50, NULL)))
+    if (!(namednodestable = virHashCreate(50, virJSONValueHashFree)))
         goto cleanup;
 
-    /* first group the named entries by the 'file' field */
-    if (virJSONValueArrayForeachSteal(json,
-                                      qemuBlockNodeNameDetectProcessByFilename,
+    if (virJSONValueArrayForeachSteal(namednodes,
+                                      qemuBlockNamedNodesArrayToHash,
+                                      namednodestable) < 0)
+        goto cleanup;
+
+    if (!(disks = virHashCreate(50, qemuBlockNodeNameBackingChainDataHashEntryFree)))
+        goto cleanup;
+
+    data.nodenamestable = namednodestable;
+    data.disks = disks;
+
+    if (virJSONValueArrayForeachSteal(blockstats,
+                                      qemuBlockNodeNameGetBackingChainDisk,
                                       &data) < 0)
         goto cleanup;
 
-    /* extract the node names for the format and storage layer */
-    for (i = 0; i < data.nentries; i++) {
-        if (qemuBlockNodeNameDetectProcessExtract(data.entries[i]) < 0)
-            goto cleanup;
-    }
-
-    /* extract the node name for the backing file */
-    for (i = 0; i < data.nentries; i++) {
-        if (qemuBlockNodeNameDetectProcessLinkBacking(data.entries[i],
-                                                      data.table) < 0)
-            goto cleanup;
-    }
-
-    /* clear JSON data necessary only for the lookup procedure */
-    for (i = 0; i < data.nentries; i++)
-        qemuBlockNodeNameGetBackingChainDataClearLookup(data.entries[i]);
-
-    /* create hash table hashed by the format node name */
-    if (!(nodetable = virHashCreate(50,
-                                    qemuBlockNodeNameBackingChainDataHashEntryFree)))
-        goto cleanup;
-
-    /* fill the entries */
-    for (i = 0; i < data.nentries; i++) {
-        if (!data.entries[i]->nodeformat)
-            continue;
-
-        if (virHashAddEntry(nodetable, data.entries[i]->nodeformat,
-                            data.entries[i]) < 0)
-            goto cleanup;
-
-        /* hash table steals the entry and then frees it by itself */
-        data.entries[i] = NULL;
-    }
-
-    VIR_STEAL_PTR(ret, nodetable);
+    VIR_STEAL_PTR(ret, disks);
 
  cleanup:
-     virHashFree(data.table);
-     virHashFree(nodetable);
-     for (i = 0; i < data.nentries; i++)
-         qemuBlockNodeNameBackingChainDataFree(data.entries[i]);
-
-    VIR_FREE(data.entries);
+     virHashFree(namednodestable);
+     virHashFree(disks);
 
      return ret;
 }
@@ -314,20 +259,19 @@ qemuBlockDiskClearDetectedNodes(virDomainDiskDefPtr disk)
 
 static int
 qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
-                         const char *parentnode,
-                         virHashTablePtr table)
+                         virHashTablePtr disktable)
 {
     qemuBlockNodeNameBackingChainDataPtr entry = NULL;
     virStorageSourcePtr src = disk->src;
 
-    /* don't attempt the detection if the top level already has node names */
-    if (!parentnode || src->nodeformat || src->nodestorage)
+    if (!(entry = virHashLookup(disktable, disk->info.alias)))
         return 0;
 
-    while (src && parentnode) {
-        if (!(entry = virHashLookup(table, parentnode)))
-            break;
+    /* don't attempt the detection if the top level already has node names */
+    if (src->nodeformat || src->nodestorage)
+        return 0;
 
+    while (src && entry) {
         if (src->nodeformat || src->nodestorage) {
             if (STRNEQ_NULLABLE(src->nodeformat, entry->nodeformat) ||
                 STRNEQ_NULLABLE(src->nodestorage, entry->nodestorage))
@@ -340,7 +284,7 @@ qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
                 goto error;
         }
 
-        parentnode = entry->nodebacking;
+        entry = entry->backing;
         src = src->backingStore;
     }
 
@@ -359,10 +303,9 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virHashTablePtr disktable = NULL;
-    virHashTablePtr nodenametable = NULL;
     virJSONValuePtr data = NULL;
+    virJSONValuePtr blockstats = NULL;
     virDomainDiskDefPtr disk;
-    struct qemuDomainDiskInfo *info;
     size_t i;
     int ret = -1;
 
@@ -372,22 +315,19 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    disktable = qemuMonitorGetBlockInfo(qemuDomainGetMonitor(vm));
     data = qemuMonitorQueryNamedBlockNodes(qemuDomainGetMonitor(vm));
+    blockstats = qemuMonitorQueryBlockstats(qemuDomainGetMonitor(vm));
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !data || !disktable)
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !data || !blockstats)
         goto cleanup;
 
-    if (!(nodenametable = qemuBlockNodeNameGetBackingChain(data)))
+    if (!(disktable = qemuBlockNodeNameGetBackingChain(data, blockstats)))
         goto cleanup;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         disk = vm->def->disks[i];
 
-        if (!(info = virHashLookup(disktable, disk->info.alias)))
-            continue;
-
-        if (qemuBlockDiskDetectNodes(disk, info->nodename, nodenametable) < 0)
+        if (qemuBlockDiskDetectNodes(disk, disktable) < 0)
             goto cleanup;
     }
 
@@ -395,7 +335,7 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
 
  cleanup:
     virJSONValueFree(data);
-    virHashFree(nodenametable);
+    virJSONValueFree(blockstats);
     virHashFree(disktable);
 
     return ret;

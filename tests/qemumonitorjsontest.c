@@ -2704,18 +2704,17 @@ struct testBlockNodeNameDetectData {
 
 static void
 testBlockNodeNameDetectFormat(virBufferPtr buf,
-                              const char *basenode,
+                              const char *diskalias,
                               virHashTablePtr nodedata)
 {
     qemuBlockNodeNameBackingChainDataPtr entry = NULL;
-    const char *node = basenode;
 
     virBufferSetIndent(buf, 0);
 
-    while (node) {
-        if (!(entry = virHashLookup(nodedata, node)))
-            break;
+    if (!(entry = virHashLookup(nodedata, diskalias)))
+        return;
 
+    while (entry) {
         virBufferAsprintf(buf, "filename    : '%s'\n", entry->qemufilename);
         virBufferAsprintf(buf, "format node : '%s'\n",
                           NULLSTR(entry->nodeformat));
@@ -2724,7 +2723,7 @@ testBlockNodeNameDetectFormat(virBufferPtr buf,
 
         virBufferAdjustIndent(buf, 2);
 
-        node = entry->nodebacking;
+        entry = entry->backing;
     }
 
     virBufferSetIndent(buf, 0);
@@ -2742,6 +2741,7 @@ testBlockNodeNameDetect(const void *opaque)
     char **nodenames = NULL;
     char **next;
     virJSONValuePtr namedNodesJson = NULL;
+    virJSONValuePtr blockstatsJson = NULL;
     virHashTablePtr nodedata = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
@@ -2757,7 +2757,12 @@ testBlockNodeNameDetect(const void *opaque)
                                                "-named-nodes.json", NULL)))
         goto cleanup;
 
-    if (!(nodedata = qemuBlockNodeNameGetBackingChain(namedNodesJson)))
+    if (!(blockstatsJson = virTestLoadFileJSON(pathprefix, data->name,
+                                               "-blockstats.json", NULL)))
+        goto cleanup;
+
+    if (!(nodedata = qemuBlockNodeNameGetBackingChain(namedNodesJson,
+                                                      blockstatsJson)))
         goto cleanup;
 
     for (next = nodenames; *next; next++)
@@ -2781,6 +2786,7 @@ testBlockNodeNameDetect(const void *opaque)
     virHashFree(nodedata);
     virStringListFree(nodenames);
     virJSONValueFree(namedNodesJson);
+    virJSONValueFree(blockstatsJson);
 
     return ret;
 }
@@ -2929,7 +2935,7 @@ mymain(void)
             ret = -1;                                                          \
     } while (0)
 
-    DO_TEST_BLOCK_NODE_DETECT("basic", "#block118");
+    DO_TEST_BLOCK_NODE_DETECT("basic", "drive-virtio-disk0");
 /*    DO_TEST_BLOCK_NODE_DETECT("same-backing", "#block170,#block574"); */
 /*    DO_TEST_BLOCK_NODE_DETECT("relative", "#block153,#block1177"); */
 /*    DO_TEST_BLOCK_NODE_DETECT("gluster", "#block1008"); */
