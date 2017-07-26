@@ -125,8 +125,8 @@ virNetworkObjSetMacMap(virNetworkObjPtr obj,
 void
 virNetworkObjUnrefMacMap(virNetworkObjPtr obj)
 {
-    if (!virObjectUnref(obj->macmap))
-        obj->macmap = NULL;
+    virObjectUnref(obj->macmap);
+    obj->macmap = NULL;
 }
 
 
