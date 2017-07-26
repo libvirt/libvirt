@@ -2721,10 +2721,6 @@ testBlockNodeNameDetectFormat(virBufferPtr buf,
                           NULLSTR(entry->nodeformat));
         virBufferAsprintf(buf, "storage node: '%s'\n",
                           NULLSTR(entry->nodestorage));
-        virBufferAsprintf(buf, "backingfile : '%s'\n",
-                          NULLSTR(entry->backingstore));
-        virBufferAsprintf(buf, "backing ptr : '%s'\n",
-                          NULLSTR(entry->nodebacking));
 
         virBufferAdjustIndent(buf, 2);
 

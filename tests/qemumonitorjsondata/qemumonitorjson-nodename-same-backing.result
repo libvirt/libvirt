@@ -1,11 +1,7 @@
 filename    : '/var/lib/libvirt/images/a.qcow2'
 format node : '#block170'
 storage node: '#block057'
-backingfile : '/var/lib/libvirt/images/base.qcow2'
-backing ptr : '<null>'
 
 filename    : '/var/lib/libvirt/images/b.qcow2'
 format node : '#block574'
 storage node: '#block405'
-backingfile : '/var/lib/libvirt/images/base.qcow2'
-backing ptr : '<null>'
