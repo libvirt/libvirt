@@ -37,6 +37,26 @@
 VIR_LOG_INIT("conf.virstorageobj");
 
 
+struct _virStorageVolDefList {
+    size_t count;
+    virStorageVolDefPtr *objs;
+};
+
+struct _virStoragePoolObj {
+    virMutex lock;
+
+    char *configFile;
+    char *autostartLink;
+    bool active;
+    bool autostart;
+    unsigned int asyncjobs;
+
+    virStoragePoolDefPtr def;
+    virStoragePoolDefPtr newDef;
+
+    virStorageVolDefList volumes;
+};
+
 virStoragePoolObjPtr
 virStoragePoolObjNew(void)
 {

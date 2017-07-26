@@ -27,21 +27,6 @@
 typedef struct _virStoragePoolObj virStoragePoolObj;
 typedef virStoragePoolObj *virStoragePoolObjPtr;
 
-struct _virStoragePoolObj {
-    virMutex lock;
-
-    char *configFile;
-    char *autostartLink;
-    bool active;
-    bool autostart;
-    unsigned int asyncjobs;
-
-    virStoragePoolDefPtr def;
-    virStoragePoolDefPtr newDef;
-
-    virStorageVolDefList volumes;
-};
-
 typedef struct _virStoragePoolObjList virStoragePoolObjList;
 typedef virStoragePoolObjList *virStoragePoolObjListPtr;
 struct _virStoragePoolObjList {

@@ -75,10 +75,6 @@ struct _virStorageVolDef {
 
 typedef struct _virStorageVolDefList virStorageVolDefList;
 typedef virStorageVolDefList *virStorageVolDefListPtr;
-struct _virStorageVolDefList {
-    size_t count;
-    virStorageVolDefPtr *objs;
-};
 
 VIR_ENUM_DECL(virStorageVol)
 
