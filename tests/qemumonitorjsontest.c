@@ -2930,6 +2930,7 @@ mymain(void)
     DO_TEST_BLOCK_NODE_DETECT("same-backing");
     DO_TEST_BLOCK_NODE_DETECT("relative");
     DO_TEST_BLOCK_NODE_DETECT("gluster");
+    DO_TEST_BLOCK_NODE_DETECT("blockjob");
 
 #undef DO_TEST_BLOCK_NODE_DETECT
 

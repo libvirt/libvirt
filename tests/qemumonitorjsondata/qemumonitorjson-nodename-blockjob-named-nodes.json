@@ -1,0 +1,682 @@
+[
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "backing-image": {
+          "backing-image": {
+            "backing-image": {
+              "backing-image": {
+                "backing-image": {
+                  "virtual-size": 10485760,
+                  "filename": "/var/lib/libvirt/images/a",
+                  "format": "raw",
+                  "actual-size": 0,
+                  "dirty-flag": false
+                },
+                "backing-filename-format": "raw",
+                "virtual-size": 10485760,
+                "filename": "/var/lib/libvirt/images/c",
+                "cluster-size": 65536,
+                "format": "qcow2",
+                "actual-size": 200704,
+                "format-specific": {
+                  "type": "qcow2",
+                  "data": {
+                    "compat": "1.1",
+                    "lazy-refcounts": false,
+                    "refcount-bits": 16,
+                    "corrupt": false
+                  }
+                },
+                "full-backing-filename": "/var/lib/libvirt/images/a",
+                "backing-filename": "/var/lib/libvirt/images/a",
+                "dirty-flag": false
+              },
+              "backing-filename-format": "qcow2",
+              "virtual-size": 10485760,
+              "filename": "/var/lib/libvirt/images/d",
+              "cluster-size": 65536,
+              "format": "qcow2",
+              "actual-size": 200704,
+              "format-specific": {
+                "type": "qcow2",
+                "data": {
+                  "compat": "1.1",
+                  "lazy-refcounts": false,
+                  "refcount-bits": 16,
+                  "corrupt": false
+                }
+              },
+              "full-backing-filename": "/var/lib/libvirt/images/c",
+              "backing-filename": "/var/lib/libvirt/images/c",
+              "dirty-flag": false
+            },
+            "backing-filename-format": "qcow2",
+            "virtual-size": 10485760,
+            "filename": "/var/lib/libvirt/images/d.1499152668",
+            "cluster-size": 65536,
+            "format": "qcow2",
+            "actual-size": 200704,
+            "format-specific": {
+              "type": "qcow2",
+              "data": {
+                "compat": "1.1",
+                "lazy-refcounts": false,
+                "refcount-bits": 16,
+                "corrupt": false
+              }
+            },
+            "full-backing-filename": "/var/lib/libvirt/images/d",
+            "backing-filename": "/var/lib/libvirt/images/d",
+            "dirty-flag": false
+          },
+          "backing-filename-format": "qcow2",
+          "virtual-size": 10485760,
+          "filename": "/var/lib/libvirt/images/d.1499152698",
+          "cluster-size": 65536,
+          "format": "qcow2",
+          "actual-size": 200704,
+          "format-specific": {
+            "type": "qcow2",
+            "data": {
+              "compat": "1.1",
+              "lazy-refcounts": false,
+              "refcount-bits": 16,
+              "corrupt": false
+            }
+          },
+          "full-backing-filename": "/var/lib/libvirt/images/d.1499152668",
+          "backing-filename": "/var/lib/libvirt/images/d.1499152668",
+          "dirty-flag": false
+        },
+        "backing-filename-format": "qcow2",
+        "virtual-size": 10485760,
+        "filename": "/var/lib/libvirt/images/d.1499152698",
+        "format": "mirror_top",
+        "full-backing-filename": "/var/lib/libvirt/images/d.1499152698",
+        "backing-filename": "/var/lib/libvirt/images/d.1499152698"
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block3343",
+      "backing_file_depth": 5,
+      "drv": "mirror_top",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "backing_file": "/var/lib/libvirt/images/d.1499152698",
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/d.1499152698",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 10485760,
+        "filename": "/tmp/kkt",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 266240,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false
+          }
+        },
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block3243",
+      "backing_file_depth": 0,
+      "drv": "qcow2",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/tmp/kkt",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 327680,
+        "filename": "/tmp/kkt",
+        "format": "file",
+        "actual-size": 266240,
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block3144",
+      "backing_file_depth": 0,
+      "drv": "file",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/tmp/kkt",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 10485760,
+        "filename": "/var/lib/libvirt/images/a",
+        "format": "raw",
+        "actual-size": 0,
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": true,
+      "node-name": "#block901",
+      "backing_file_depth": 0,
+      "drv": "raw",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/a",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 10485760,
+        "filename": "/var/lib/libvirt/images/a",
+        "format": "file",
+        "actual-size": 0,
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": true,
+      "node-name": "#block846",
+      "backing_file_depth": 0,
+      "drv": "file",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/a",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "backing-image": {
+          "virtual-size": 10485760,
+          "filename": "/var/lib/libvirt/images/a",
+          "format": "raw",
+          "actual-size": 0,
+          "dirty-flag": false
+        },
+        "backing-filename-format": "raw",
+        "virtual-size": 10485760,
+        "filename": "/var/lib/libvirt/images/c",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 200704,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false
+          }
+        },
+        "full-backing-filename": "/var/lib/libvirt/images/a",
+        "backing-filename": "/var/lib/libvirt/images/a",
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": true,
+      "node-name": "#block717",
+      "backing_file_depth": 1,
+      "drv": "qcow2",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "backing_file": "/var/lib/libvirt/images/a",
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/c",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 197120,
+        "filename": "/var/lib/libvirt/images/c",
+        "format": "file",
+        "actual-size": 200704,
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": true,
+      "node-name": "#block618",
+      "backing_file_depth": 0,
+      "drv": "file",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/c",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "backing-image": {
+          "backing-image": {
+            "virtual-size": 10485760,
+            "filename": "/var/lib/libvirt/images/a",
+            "format": "raw",
+            "actual-size": 0,
+            "dirty-flag": false
+          },
+          "backing-filename-format": "raw",
+          "virtual-size": 10485760,
+          "filename": "/var/lib/libvirt/images/c",
+          "cluster-size": 65536,
+          "format": "qcow2",
+          "actual-size": 200704,
+          "format-specific": {
+            "type": "qcow2",
+            "data": {
+              "compat": "1.1",
+              "lazy-refcounts": false,
+              "refcount-bits": 16,
+              "corrupt": false
+            }
+          },
+          "full-backing-filename": "/var/lib/libvirt/images/a",
+          "backing-filename": "/var/lib/libvirt/images/a",
+          "dirty-flag": false
+        },
+        "backing-filename-format": "qcow2",
+        "virtual-size": 10485760,
+        "filename": "/var/lib/libvirt/images/d",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 200704,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false
+          }
+        },
+        "full-backing-filename": "/var/lib/libvirt/images/c",
+        "backing-filename": "/var/lib/libvirt/images/c",
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": true,
+      "node-name": "#block551",
+      "backing_file_depth": 2,
+      "drv": "qcow2",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "backing_file": "/var/lib/libvirt/images/c",
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/d",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 197120,
+        "filename": "/var/lib/libvirt/images/d",
+        "format": "file",
+        "actual-size": 200704,
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": true,
+      "node-name": "#block449",
+      "backing_file_depth": 0,
+      "drv": "file",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/d",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "backing-image": {
+          "backing-image": {
+            "backing-image": {
+              "virtual-size": 10485760,
+              "filename": "/var/lib/libvirt/images/a",
+              "format": "raw",
+              "actual-size": 0,
+              "dirty-flag": false
+            },
+            "backing-filename-format": "raw",
+            "virtual-size": 10485760,
+            "filename": "/var/lib/libvirt/images/c",
+            "cluster-size": 65536,
+            "format": "qcow2",
+            "actual-size": 200704,
+            "format-specific": {
+              "type": "qcow2",
+              "data": {
+                "compat": "1.1",
+                "lazy-refcounts": false,
+                "refcount-bits": 16,
+                "corrupt": false
+              }
+            },
+            "full-backing-filename": "/var/lib/libvirt/images/a",
+            "backing-filename": "/var/lib/libvirt/images/a",
+            "dirty-flag": false
+          },
+          "backing-filename-format": "qcow2",
+          "virtual-size": 10485760,
+          "filename": "/var/lib/libvirt/images/d",
+          "cluster-size": 65536,
+          "format": "qcow2",
+          "actual-size": 200704,
+          "format-specific": {
+            "type": "qcow2",
+            "data": {
+              "compat": "1.1",
+              "lazy-refcounts": false,
+              "refcount-bits": 16,
+              "corrupt": false
+            }
+          },
+          "full-backing-filename": "/var/lib/libvirt/images/c",
+          "backing-filename": "/var/lib/libvirt/images/c",
+          "dirty-flag": false
+        },
+        "backing-filename-format": "qcow2",
+        "virtual-size": 10485760,
+        "filename": "/var/lib/libvirt/images/d.1499152668",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 200704,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false
+          }
+        },
+        "full-backing-filename": "/var/lib/libvirt/images/d",
+        "backing-filename": "/var/lib/libvirt/images/d",
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": true,
+      "node-name": "#block312",
+      "backing_file_depth": 3,
+      "drv": "qcow2",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "backing_file": "/var/lib/libvirt/images/d",
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/d.1499152668",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 197120,
+        "filename": "/var/lib/libvirt/images/d.1499152668",
+        "format": "file",
+        "actual-size": 200704,
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": true,
+      "node-name": "#block259",
+      "backing_file_depth": 0,
+      "drv": "file",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/d.1499152668",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "backing-image": {
+          "backing-image": {
+            "backing-image": {
+              "backing-image": {
+                "virtual-size": 10485760,
+                "filename": "/var/lib/libvirt/images/a",
+                "format": "raw",
+                "actual-size": 0,
+                "dirty-flag": false
+              },
+              "backing-filename-format": "raw",
+              "virtual-size": 10485760,
+              "filename": "/var/lib/libvirt/images/c",
+              "cluster-size": 65536,
+              "format": "qcow2",
+              "actual-size": 200704,
+              "format-specific": {
+                "type": "qcow2",
+                "data": {
+                  "compat": "1.1",
+                  "lazy-refcounts": false,
+                  "refcount-bits": 16,
+                  "corrupt": false
+                }
+              },
+              "full-backing-filename": "/var/lib/libvirt/images/a",
+              "backing-filename": "/var/lib/libvirt/images/a",
+              "dirty-flag": false
+            },
+            "backing-filename-format": "qcow2",
+            "virtual-size": 10485760,
+            "filename": "/var/lib/libvirt/images/d",
+            "cluster-size": 65536,
+            "format": "qcow2",
+            "actual-size": 200704,
+            "format-specific": {
+              "type": "qcow2",
+              "data": {
+                "compat": "1.1",
+                "lazy-refcounts": false,
+                "refcount-bits": 16,
+                "corrupt": false
+              }
+            },
+            "full-backing-filename": "/var/lib/libvirt/images/c",
+            "backing-filename": "/var/lib/libvirt/images/c",
+            "dirty-flag": false
+          },
+          "backing-filename-format": "qcow2",
+          "virtual-size": 10485760,
+          "filename": "/var/lib/libvirt/images/d.1499152668",
+          "cluster-size": 65536,
+          "format": "qcow2",
+          "actual-size": 200704,
+          "format-specific": {
+            "type": "qcow2",
+            "data": {
+              "compat": "1.1",
+              "lazy-refcounts": false,
+              "refcount-bits": 16,
+              "corrupt": false
+            }
+          },
+          "full-backing-filename": "/var/lib/libvirt/images/d",
+          "backing-filename": "/var/lib/libvirt/images/d",
+          "dirty-flag": false
+        },
+        "backing-filename-format": "qcow2",
+        "virtual-size": 10485760,
+        "filename": "/var/lib/libvirt/images/d.1499152698",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 200704,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false
+          }
+        },
+        "full-backing-filename": "/var/lib/libvirt/images/d.1499152668",
+        "backing-filename": "/var/lib/libvirt/images/d.1499152668",
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block179",
+      "backing_file_depth": 4,
+      "drv": "qcow2",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "backing_file": "/var/lib/libvirt/images/d.1499152668",
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/d.1499152698",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 197120,
+        "filename": "/var/lib/libvirt/images/d.1499152698",
+        "format": "file",
+        "actual-size": 200704,
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block042",
+      "backing_file_depth": 0,
+      "drv": "file",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/d.1499152698",
+      "encryption_key_missing": false
+    }
+]
