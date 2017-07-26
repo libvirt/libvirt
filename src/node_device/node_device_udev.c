@@ -1789,18 +1789,18 @@ nodeStateInitialize(bool privileged,
     nodeDeviceLock();
 
     if (!(driver->devs = virNodeDeviceObjListNew()))
-        goto cleanup;
+        goto unlock;
 
     driver->nodeDeviceEventState = virObjectEventStateNew();
 
     if (udevPCITranslateInit(privileged) < 0)
-        goto cleanup;
+        goto unlock;
 
     udev = udev_new();
     if (!udev) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to create udev context"));
-        goto cleanup;
+        goto unlock;
     }
 #if HAVE_UDEV_LOGGING
     /* cast to get rid of missing-format-attribute warning */
@@ -1811,7 +1811,7 @@ nodeStateInitialize(bool privileged,
     if (priv->udev_monitor == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("udev_monitor_new_from_netlink returned NULL"));
-        goto cleanup;
+        goto unlock;
     }
 
     udev_monitor_enable_receiving(priv->udev_monitor);
@@ -1837,11 +1837,11 @@ nodeStateInitialize(bool privileged,
                                     VIR_EVENT_HANDLE_READABLE,
                                     udevEventHandleCallback, NULL, NULL);
     if (priv->watch == -1)
-        goto cleanup;
+        goto unlock;
 
     /* Create a fictional 'computer' device to root the device tree. */
     if (udevSetupSystemDev() != 0)
-        goto cleanup;
+        goto unlock;
 
     nodeDeviceUnlock();
 
@@ -1852,9 +1852,12 @@ nodeStateInitialize(bool privileged,
     return 0;
 
  cleanup:
-    nodeDeviceUnlock();
     nodeStateCleanup();
     return -1;
+
+ unlock:
+    nodeDeviceUnlock();
+    goto cleanup;
 }
 
 
