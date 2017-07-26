@@ -89,7 +89,11 @@
       <head>
         <meta charset="UTF-8"/>
         <link rel="stylesheet" type="text/css" href="{$href_base}main.css"/>
-        <link rel="SHORTCUT ICON" href="{$href_base}32favicon.png"/>
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>
+        <link rel="manifest" href="/manifest.json"/>
+        <meta name="theme-color" content="#ffffff"/>
         <title>libvirt: <xsl:value-of select="html:html/html:body/html:h1"/></title>
         <meta name="description" content="libvirt, virtualization, virtualization API"/>
         <xsl:apply-templates select="/html:html/html:head/*" mode="content"/>
