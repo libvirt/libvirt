@@ -289,7 +289,7 @@
       <li><span class="since">Since 1.2.2</span>, before a network is started,
         this script is called as:<br/>
           <pre>/etc/libvirt/hooks/network network_name start begin -</pre></li>
-      <li>After the network is started, up &and; running, the script is
+      <li>After the network is started, up &amp; running, the script is
         called as:<br/>
           <pre>/etc/libvirt/hooks/network network_name started begin -</pre></li>
       <li>When a network is shut down, this script is called as:<br/>
