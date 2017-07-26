@@ -1420,7 +1420,7 @@ struct virNetworkObjListGetHelperData {
     virConnectPtr conn;
     virNetworkObjListFilter filter;
     char **names;
-    int nnames;
+    int maxnames;
     bool active;
     int got;
     bool error;
@@ -1437,8 +1437,8 @@ virNetworkObjListGetHelper(void *payload,
     if (data->error)
         return 0;
 
-    if (data->nnames >= 0 &&
-        data->got == data->nnames)
+    if (data->maxnames >= 0 &&
+        data->got == data->maxnames)
         return 0;
 
     virObjectLock(obj);
@@ -1467,14 +1467,14 @@ int
 virNetworkObjListGetNames(virNetworkObjListPtr nets,
                           bool active,
                           char **names,
-                          int nnames,
+                          int maxnames,
                           virNetworkObjListFilter filter,
                           virConnectPtr conn)
 {
     int ret = -1;
 
     struct virNetworkObjListGetHelperData data = {
-        conn, filter, names, nnames, active, 0, false};
+        conn, filter, names, maxnames, active, 0, false};
 
     virObjectLock(nets);
     virHashForEach(nets->objs, virNetworkObjListGetHelper, &data);

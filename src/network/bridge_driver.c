@@ -2946,7 +2946,7 @@ networkConnectNumOfNetworks(virConnectPtr conn)
 static int
 networkConnectListNetworks(virConnectPtr conn,
                            char **const names,
-                           int nnames)
+                           int maxnames)
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
     int got = 0;
@@ -2955,7 +2955,7 @@ networkConnectListNetworks(virConnectPtr conn,
         return -1;
 
     got = virNetworkObjListGetNames(driver->networks,
-                                    true, names, nnames,
+                                    true, names, maxnames,
                                     virConnectListNetworksCheckACL,
                                     conn);
 
@@ -2984,7 +2984,7 @@ networkConnectNumOfDefinedNetworks(virConnectPtr conn)
 static int
 networkConnectListDefinedNetworks(virConnectPtr conn,
                                   char **const names,
-                                  int nnames)
+                                  int maxnames)
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
     int got = 0;
@@ -2993,7 +2993,7 @@ networkConnectListDefinedNetworks(virConnectPtr conn,
         return -1;
 
     got = virNetworkObjListGetNames(driver->networks,
-                                    false, names, nnames,
+                                    false, names, maxnames,
                                     virConnectListDefinedNetworksCheckACL,
                                     conn);
     return got;
