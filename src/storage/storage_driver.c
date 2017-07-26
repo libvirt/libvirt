@@ -94,10 +94,8 @@ virStoragePoolUpdateInactive(virStoragePoolObjPtr *objptr)
     if (!virStoragePoolObjGetConfigFile(obj)) {
         virStoragePoolObjRemove(&driver->pools, obj);
         *objptr = NULL;
-    } else if (obj->newDef) {
-        virStoragePoolDefFree(obj->def);
-        obj->def = obj->newDef;
-        obj->newDef = NULL;
+    } else if (virStoragePoolObjGetNewDef(obj)) {
+        virStoragePoolObjDefUseNewDef(obj);
     }
 }
 
