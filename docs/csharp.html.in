@@ -115,7 +115,7 @@ git clone git://libvirt.org/libvirt-csharp.git
     <p>
       The C# bindings are the work of Arnaud Champion
       &lt;<a href="mailto:arnaud.champion AT devatom.fr">arnaud.champion AT devatom.fr</a>&gt;,
-      based upon the previous work of Jarom&iacute;r &#x010C;ervenka.
+      based upon the previous work of Jaromír Červenka.
     </p>
 
     <h2><a id="notes">Test Configuration</a></h2>
