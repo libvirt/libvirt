@@ -31,15 +31,15 @@
 
 # include "internal.h"
 
-# if !defined(WITH_DRIVER_MODULES) || defined(VBOX_NETWORK_DRIVER)
+# if defined(VBOX_NETWORK_DRIVER)
 int vboxNetworkRegister(void);
 # endif
 
-# if !defined(WITH_DRIVER_MODULES) || defined(VBOX_STORAGE_DRIVER)
+# if defined(VBOX_STORAGE_DRIVER)
 int vboxStorageRegister(void);
 # endif
 
-# if !defined(WITH_DRIVER_MODULES) || defined(VBOX_DRIVER)
+# if defined(VBOX_DRIVER)
 int vboxRegister(void);
 # endif
 

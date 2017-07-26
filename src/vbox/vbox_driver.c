@@ -48,7 +48,7 @@
 
 VIR_LOG_INIT("vbox.vbox_driver");
 
-#if !defined(WITH_DRIVER_MODULES) || defined(VBOX_DRIVER)
+#if defined(VBOX_DRIVER)
 static virDrvOpenStatus dummyConnectOpen(virConnectPtr conn,
                                          virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                          virConfPtr conf ATTRIBUTE_UNUSED,

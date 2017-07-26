@@ -208,63 +208,6 @@ libvirtd_LDADD += \
 	../src/libvirt_driver_remote.la \
 	$(NULL)
 
-if ! WITH_DRIVER_MODULES
-if WITH_QEMU
-    libvirtd_LDADD += ../src/libvirt_driver_qemu.la
-if WITH_DTRACE_PROBES
-    libvirtd_LDADD += ../src/libvirt_qemu_probes.lo
-endif WITH_DTRACE_PROBES
-endif WITH_QEMU
-
-if WITH_LXC
-    libvirtd_LDADD += ../src/libvirt_driver_lxc.la
-endif WITH_LXC
-
-if WITH_XEN
-    libvirtd_LDADD += ../src/libvirt_driver_xen.la
-endif WITH_XEN
-
-if WITH_LIBXL
-    libvirtd_LDADD += ../src/libvirt_driver_libxl.la
-endif WITH_LIBXL
-
-if WITH_UML
-    libvirtd_LDADD += ../src/libvirt_driver_uml.la
-endif WITH_UML
-
-if WITH_VBOX
-    libvirtd_LDADD += ../src/libvirt_driver_vbox.la
-endif WITH_VBOX
-
-if WITH_VZ
-    libvirtd_LDADD += ../src/libvirt_driver_vz.la
-endif WITH_VZ
-
-if WITH_STORAGE
-    libvirtd_LDADD += ../src/libvirt_driver_storage.la
-endif WITH_STORAGE
-
-if WITH_NETWORK
-    libvirtd_LDADD += ../src/libvirt_driver_network.la
-endif WITH_NETWORK
-
-if WITH_INTERFACE
-    libvirtd_LDADD += ../src/libvirt_driver_interface.la
-endif WITH_INTERFACE
-
-if WITH_NODE_DEVICES
-    libvirtd_LDADD += ../src/libvirt_driver_nodedev.la
-endif WITH_NODE_DEVICES
-
-if WITH_SECRETS
-    libvirtd_LDADD += ../src/libvirt_driver_secret.la
-endif WITH_SECRETS
-
-if WITH_NWFILTER
-    libvirtd_LDADD += ../src/libvirt_driver_nwfilter.la
-endif WITH_NWFILTER
-endif ! WITH_DRIVER_MODULES
-
 libvirtd_LDADD += ../src/libvirt.la
 
 if WITH_POLKIT

@@ -33,12 +33,10 @@
 VIR_LOG_INIT("driver");
 
 
-#ifdef WITH_DRIVER_MODULES
-
 /* XXX re-implement this for other OS, or use libtools helper lib ? */
 
-# include <dlfcn.h>
-# define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
+#include <dlfcn.h>
+#define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
 
 
 static void *
@@ -155,5 +153,3 @@ virDriverLoadModule(const char *name,
 
 
 /* XXX unload modules, but we can't until we can unregister libvirt drivers */
-
-#endif

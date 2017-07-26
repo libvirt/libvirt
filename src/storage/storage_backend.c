@@ -81,9 +81,7 @@ static size_t virStorageBackendsCount;
 static virStorageFileBackendPtr virStorageFileBackends[VIR_STORAGE_BACKENDS_MAX];
 static size_t virStorageFileBackendsCount;
 
-#if WITH_DRIVER_MODULES
-
-# define STORAGE_BACKEND_MODULE_DIR LIBDIR "/libvirt/storage-backend"
+#define STORAGE_BACKEND_MODULE_DIR LIBDIR "/libvirt/storage-backend"
 
 static int
 virStorageDriverLoadBackendModule(const char *name,
@@ -116,14 +114,9 @@ virStorageDriverLoadBackendModule(const char *name,
 }
 
 
-# define VIR_STORAGE_BACKEND_REGISTER(func, module)                            \
+#define VIR_STORAGE_BACKEND_REGISTER(func, module)                            \
     if (virStorageDriverLoadBackendModule(module, #func, allbackends) < 0)     \
         return -1
-#else
-# define VIR_STORAGE_BACKEND_REGISTER(func, module)                            \
-    if (func() < 0)                                                            \
-        return -1
-#endif
 
 int
 virStorageBackendDriversRegister(bool allbackends ATTRIBUTE_UNUSED)

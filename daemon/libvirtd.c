@@ -60,52 +60,7 @@
 #include "virgettext.h"
 #include "util/virnetdevopenvswitch.h"
 
-#ifdef WITH_DRIVER_MODULES
-# include "driver.h"
-#else
-# ifdef WITH_QEMU
-#  include "qemu/qemu_driver.h"
-# endif
-# ifdef WITH_LXC
-#  include "lxc/lxc_driver.h"
-# endif
-# ifdef WITH_XEN
-#  include "xen/xen_driver.h"
-# endif
-# ifdef WITH_LIBXL
-#  include "libxl/libxl_driver.h"
-# endif
-# ifdef WITH_UML
-#  include "uml/uml_driver.h"
-# endif
-# ifdef WITH_VBOX
-#  include "vbox/vbox_driver.h"
-# endif
-# ifdef WITH_BHYVE
-#  include "bhyve/bhyve_driver.h"
-# endif
-# ifdef WITH_NETWORK
-#  include "network/bridge_driver.h"
-# endif
-# ifdef WITH_INTERFACE
-#  include "interface/interface_driver.h"
-# endif
-# ifdef WITH_STORAGE
-#  include "storage/storage_driver.h"
-# endif
-# ifdef WITH_NODE_DEVICES
-#  include "node_device/node_device_driver.h"
-# endif
-# ifdef WITH_SECRETS
-#  include "secret/secret_driver.h"
-# endif
-# ifdef WITH_NWFILTER
-#  include "nwfilter/nwfilter_driver.h"
-# endif
-#endif
-#ifdef WITH_VZ
-# include "vz/vz_driver.h"
-#endif
+#include "driver.h"
 
 #include "configmake.h"
 
@@ -341,13 +296,8 @@ static int daemonErrorLogFilter(virErrorPtr err, int priority)
 }
 
 
-#ifdef WITH_DRIVER_MODULES
-# define VIR_DAEMON_LOAD_MODULE(func, module) \
+#define VIR_DAEMON_LOAD_MODULE(func, module) \
     virDriverLoadModule(module, #func)
-#else
-# define VIR_DAEMON_LOAD_MODULE(func, module) \
-    func()
-#endif
 static void daemonInitialize(void)
 {
     /*

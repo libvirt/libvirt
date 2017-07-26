@@ -646,9 +646,6 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #if WITH_READLINE
     vshPrint(ctl, " Readline");
 #endif
-#ifdef WITH_DRIVER_MODULES
-    vshPrint(ctl, " Modular");
-#endif
     vshPrint(ctl, "\n");
 }
 
