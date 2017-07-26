@@ -560,7 +560,7 @@ libqemutestdriver_la_LDFLAGS = $(QEMULIB_LDFLAGS)
 libqemutestdriver_la_LIBADD = $(qemu_LDADDS)
 
 qemucpumock_la_SOURCES = \
-	qemucpumock.c
+	qemucpumock.c testutilshostcpus.h
 qemucpumock_la_CFLAGS = $(AM_CFLAGS)
 qemucpumock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 qemucpumock_la_LIBADD = $(MOCKLIBS_LIBS)
@@ -674,7 +674,7 @@ EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c \
 	qemumonitorjsontest.c qemuhotplugtest.c \
 	qemuagenttest.c qemucapabilitiestest.c \
 	qemucaps2xmltest.c qemucommandutiltest.c \
-	qemumemlocktest.c \
+	qemumemlocktest.c qemucpumock.c testutilshostcpus.h \
 	$(QEMUMONITORTESTUTILS_SOURCES)
 endif ! WITH_QEMU
 
