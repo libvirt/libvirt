@@ -1206,22 +1206,23 @@ else ! WITH_NSS
 EXTRA_DIST += nsstest.c nssmock.c nsslinktest.c
 endif ! WITH_NSS
 
-if WITH_YAJL
-virmacmapmock_la_SOURCES = \
-	virmacmapmock.c
-virmacmapmock_la_CFLAGS = $(AM_CFLAGS)
-virmacmapmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
-virmacmapmock_la_LIBADD = $(MOCKLIBS_LIBS)
+virdeterministichashmock_la_SOURCES = \
+	virdeterministichashmock.c
+virdeterministichashmock_la_CFLAGS = $(AM_CFLAGS)
+virdeterministichashmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virdeterministichashmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
+test_libraries += virdeterministichashmock.la
+
+if WITH_YAJL
 virmacmaptest_SOURCES = \
 	virmacmaptest.c testutils.h testutils.c
 virmacmaptest_CLFAGS = $(AM_CFLAGS)
 virmacmaptest_LDADD = $(LDADDS)
 
-test_libraries += virmacmapmock.la
 test_programs += virmacmaptest
 else ! WITH_YAJL
-EXTRA_DIST += virmacmapmock.c virmacmaptest.c
+EXTRA_DIST +=  virmacmaptest.c
 endif ! WITH_YAJL
 
 virnetdevtest_SOURCES = \
