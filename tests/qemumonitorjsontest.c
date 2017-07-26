@@ -2696,23 +2696,19 @@ testQemuMonitorCPUInfo(const void *opaque)
 }
 
 
-struct testBlockNodeNameDetectData {
-    const char *name;
-    const char *nodenames;
-};
-
-
-static void
-testBlockNodeNameDetectFormat(virBufferPtr buf,
-                              const char *diskalias,
-                              virHashTablePtr nodedata)
+static int
+testBlockNodeNameDetectFormat(void *payload,
+                              const void *name,
+                              void *opaque)
 {
-    qemuBlockNodeNameBackingChainDataPtr entry = NULL;
+    qemuBlockNodeNameBackingChainDataPtr entry = payload;
+    const char *diskalias = name;
+    virBufferPtr buf = opaque;
 
     virBufferSetIndent(buf, 0);
 
-    if (!(entry = virHashLookup(nodedata, diskalias)))
-        return;
+    virBufferAdd(buf, diskalias, -1);
+    virBufferAddLit(buf, "\n");
 
     while (entry) {
         virBufferAsprintf(buf, "filename    : '%s'\n", entry->qemufilename);
@@ -2728,18 +2724,17 @@ testBlockNodeNameDetectFormat(virBufferPtr buf,
 
     virBufferSetIndent(buf, 0);
     virBufferAddLit(buf, "\n");
+    return 0;
 }
 
 
 static int
 testBlockNodeNameDetect(const void *opaque)
 {
-    const struct testBlockNodeNameDetectData *data = opaque;
+    const char *testname = opaque;
     const char *pathprefix = "qemumonitorjsondata/qemumonitorjson-nodename-";
     char *resultFile = NULL;
     char *actual = NULL;
-    char **nodenames = NULL;
-    char **next;
     virJSONValuePtr namedNodesJson = NULL;
     virJSONValuePtr blockstatsJson = NULL;
     virHashTablePtr nodedata = NULL;
@@ -2747,17 +2742,14 @@ testBlockNodeNameDetect(const void *opaque)
     int ret = -1;
 
     if (virAsprintf(&resultFile, "%s/%s%s.result",
-                    abs_srcdir, pathprefix, data->name) < 0)
+                    abs_srcdir, pathprefix, testname) < 0)
         goto cleanup;
 
-    if (!(nodenames = virStringSplit(data->nodenames, ",", 0)))
-        goto cleanup;
-
-    if (!(namedNodesJson = virTestLoadFileJSON(pathprefix, data->name,
+    if (!(namedNodesJson = virTestLoadFileJSON(pathprefix, testname,
                                                "-named-nodes.json", NULL)))
         goto cleanup;
 
-    if (!(blockstatsJson = virTestLoadFileJSON(pathprefix, data->name,
+    if (!(blockstatsJson = virTestLoadFileJSON(pathprefix, testname,
                                                "-blockstats.json", NULL)))
         goto cleanup;
 
@@ -2765,8 +2757,7 @@ testBlockNodeNameDetect(const void *opaque)
                                                       blockstatsJson)))
         goto cleanup;
 
-    for (next = nodenames; *next; next++)
-        testBlockNodeNameDetectFormat(&buf, *next, nodedata);
+    virHashForEach(nodedata, testBlockNodeNameDetectFormat, &buf);
 
     virBufferTrim(&buf, "\n", -1);
 
@@ -2784,7 +2775,6 @@ testBlockNodeNameDetect(const void *opaque)
     VIR_FREE(resultFile);
     VIR_FREE(actual);
     virHashFree(nodedata);
-    virStringListFree(nodenames);
     virJSONValueFree(namedNodesJson);
     virJSONValueFree(blockstatsJson);
 
@@ -2927,18 +2917,17 @@ mymain(void)
     DO_TEST_CPU_INFO("ppc64-hotplug-4", 24);
     DO_TEST_CPU_INFO("ppc64-no-threads", 16);
 
-#define DO_TEST_BLOCK_NODE_DETECT(testname, testnodes)                         \
+#define DO_TEST_BLOCK_NODE_DETECT(testname)                                    \
     do {                                                                       \
-        struct testBlockNodeNameDetectData testdata = {testname, testnodes};   \
         if (virTestRun("node-name-detect(" testname ")",                       \
-                       testBlockNodeNameDetect, &testdata) < 0)                \
+                       testBlockNodeNameDetect, testname) < 0)                 \
             ret = -1;                                                          \
     } while (0)
 
-    DO_TEST_BLOCK_NODE_DETECT("basic", "drive-virtio-disk0");
-/*    DO_TEST_BLOCK_NODE_DETECT("same-backing", "#block170,#block574"); */
-/*    DO_TEST_BLOCK_NODE_DETECT("relative", "#block153,#block1177"); */
-/*    DO_TEST_BLOCK_NODE_DETECT("gluster", "#block1008"); */
+    DO_TEST_BLOCK_NODE_DETECT("basic");
+/*    DO_TEST_BLOCK_NODE_DETECT("same-backing"); */
+/*    DO_TEST_BLOCK_NODE_DETECT("relative"); */
+/*    DO_TEST_BLOCK_NODE_DETECT("gluster"); */
 
 #undef DO_TEST_BLOCK_NODE_DETECT
 
@@ -2947,4 +2936,4 @@ mymain(void)
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdeterministichashmock.so")

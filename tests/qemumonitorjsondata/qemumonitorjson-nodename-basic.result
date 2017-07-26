@@ -1,3 +1,4 @@
+drive-virtio-disk0
 filename    : '/var/lib/libvirt/images/rhel7.3.1483545313'
 format node : '#block187'
 storage node: '#block033'
