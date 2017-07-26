@@ -4764,7 +4764,7 @@ testStoragePoolGetAutostart(virStoragePoolPtr pool,
     if (!virStoragePoolObjGetConfigFile(obj))
         *autostart = 0;
     else
-        *autostart = obj->autostart;
+        *autostart = virStoragePoolObjIsAutostart(obj) ? 1 : 0;
 
     virStoragePoolObjUnlock(obj);
     return 0;
@@ -4789,7 +4789,7 @@ testStoragePoolSetAutostart(virStoragePoolPtr pool,
     }
 
     autostart = (autostart != 0);
-    obj->autostart = autostart;
+    virStoragePoolObjSetAutostart(obj, autostart);
     ret = 0;
 
  cleanup:

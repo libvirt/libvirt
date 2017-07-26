@@ -196,7 +196,7 @@ storageDriverAutostart(void)
             continue;
         }
 
-        if (obj->autostart &&
+        if (virStoragePoolObjIsAutostart(obj) &&
             !virStoragePoolObjIsActive(obj)) {
             if (backend->startPool &&
                 backend->startPool(conn, obj) < 0) {
@@ -1249,11 +1249,7 @@ storagePoolGetAutostart(virStoragePoolPtr pool,
     if (virStoragePoolGetAutostartEnsureACL(pool->conn, obj->def) < 0)
         goto cleanup;
 
-    if (!virStoragePoolObjGetConfigFile(obj)) {
-        *autostart = 0;
-    } else {
-        *autostart = obj->autostart;
-    }
+    *autostart = virStoragePoolObjIsAutostart(obj) ? 1 : 0;
 
     ret = 0;
 
@@ -1269,6 +1265,8 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
     virStoragePoolObjPtr obj;
     const char *configFile;
     const char *autostartLink;
+    bool new_autostart;
+    bool cur_autostart;
     int ret = -1;
 
     storageDriverLock();
@@ -1286,10 +1284,10 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
 
     autostartLink = virStoragePoolObjGetAutostartLink(obj);
 
-    autostart = (autostart != 0);
-
-    if (obj->autostart != autostart) {
-        if (autostart) {
+    new_autostart = (autostart != 0);
+    cur_autostart = virStoragePoolObjIsAutostart(obj);
+    if (cur_autostart != new_autostart) {
+        if (new_autostart) {
             if (virFileMakePath(driver->autostartDir) < 0) {
                 virReportSystemError(errno,
                                      _("cannot create autostart directory %s"),
@@ -1312,7 +1310,7 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
                 goto cleanup;
             }
         }
-        obj->autostart = autostart;
+        virStoragePoolObjSetAutostart(obj, autostart);
     }
 
     ret = 0;
