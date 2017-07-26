@@ -2942,8 +2942,7 @@ mymain(void)
             ret = -1;                                                          \
     } while (0)
 
-    DO_TEST_BLOCK_NODE_DETECT("1", "#block118");
-    DO_TEST_BLOCK_NODE_DETECT("2", "#block161");
+    DO_TEST_BLOCK_NODE_DETECT("basic", "#block118");
     DO_TEST_BLOCK_NODE_DETECT("same-backing", "#block170,#block574");
     DO_TEST_BLOCK_NODE_DETECT("relative", "#block153,#block1177");
     DO_TEST_BLOCK_NODE_DETECT("gluster", "#block1008");
