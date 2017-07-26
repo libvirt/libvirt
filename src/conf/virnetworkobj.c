@@ -577,10 +577,10 @@ virNetworkObjAssignDefLocked(virNetworkObjListPtr nets,
         virUUIDFormat(def->uuid, uuidstr);
         if (virHashAddEntry(nets->objs, uuidstr, obj) < 0)
             goto cleanup;
+        virObjectRef(obj);
 
         obj->def = def;
         obj->persistent = !(flags & VIR_NETWORK_OBJ_LIST_ADD_LIVE);
-        virObjectRef(obj);
     }
 
     ret = obj;
