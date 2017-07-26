@@ -3,83 +3,6 @@
       "iops_rd": 0,
       "detect_zeroes": "off",
       "image": {
-        "backing-image": {
-          "virtual-size": 197120,
-          "filename": "gluster://gluster-host/vol0/img0",
-          "format": "raw",
-          "actual-size": 197120
-        },
-        "backing-filename-format": "raw",
-        "virtual-size": 197120,
-        "filename": "gluster://gluster-host/vol0/img1",
-        "cluster-size": 65536,
-        "format": "qcow2",
-        "actual-size": 197120,
-        "format-specific": {
-          "type": "qcow2",
-          "data": {
-            "compat": "1.1",
-            "lazy-refcounts": false,
-            "refcount-bits": 16,
-            "corrupt": false
-          }
-        },
-        "full-backing-filename": "gluster://gluster-host/vol0/img0",
-        "backing-filename": "gluster://gluster-host/vol0/img0",
-        "dirty-flag": false
-      },
-      "iops_wr": 0,
-      "ro": false,
-      "node-name": "#block1008",
-      "backing_file_depth": 1,
-      "drv": "qcow2",
-      "iops": 0,
-      "bps_wr": 0,
-      "write_threshold": 0,
-      "backing_file": "gluster://gluster-host/vol0/img0",
-      "encrypted": false,
-      "bps": 0,
-      "bps_rd": 0,
-      "cache": {
-        "no-flush": false,
-        "direct": true,
-        "writeback": true
-      },
-      "file": "gluster://gluster-host/vol0/img1",
-      "encryption_key_missing": false
-    },
-    {
-      "iops_rd": 0,
-      "detect_zeroes": "off",
-      "image": {
-        "virtual-size": 197120,
-        "filename": "gluster://gluster-host/vol0/img1",
-        "format": "gluster",
-        "actual-size": 197120
-      },
-      "iops_wr": 0,
-      "ro": false,
-      "node-name": "#block981",
-      "backing_file_depth": 0,
-      "drv": "gluster",
-      "iops": 0,
-      "bps_wr": 0,
-      "write_threshold": 0,
-      "encrypted": false,
-      "bps": 0,
-      "bps_rd": 0,
-      "cache": {
-        "no-flush": false,
-        "direct": true,
-        "writeback": true
-      },
-      "file": "gluster://gluster-host/vol0/img1",
-      "encryption_key_missing": false
-    },
-    {
-      "iops_rd": 0,
-      "detect_zeroes": "off",
-      "image": {
         "virtual-size": 197120,
         "filename": "gluster://gluster-host/vol0/img0",
         "format": "raw",
@@ -87,7 +10,7 @@
       },
       "iops_wr": 0,
       "ro": true,
-      "node-name": "#block349",
+      "node-name": "#block596",
       "backing_file_depth": 0,
       "drv": "raw",
       "iops": 0,
@@ -115,7 +38,7 @@
       },
       "iops_wr": 0,
       "ro": true,
-      "node-name": "#block269",
+      "node-name": "#block477",
       "backing_file_depth": 0,
       "drv": "gluster",
       "iops": 0,
@@ -130,6 +53,83 @@
         "writeback": true
       },
       "file": "gluster://gluster-host/vol0/img0",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "backing-image": {
+          "virtual-size": 197120,
+          "filename": "gluster://gluster-host/vol0/img0",
+          "format": "raw",
+          "actual-size": 197120
+        },
+        "backing-filename-format": "raw",
+        "virtual-size": 197120,
+        "filename": "gluster://gluster-host:24007/vol0/img1",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 197120,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false
+          }
+        },
+        "full-backing-filename": "gluster://gluster-host/vol0/img0",
+        "backing-filename": "gluster://gluster-host/vol0/img0",
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block338",
+      "backing_file_depth": 1,
+      "drv": "qcow2",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "backing_file": "gluster://gluster-host/vol0/img0",
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": true,
+        "writeback": true
+      },
+      "file": "gluster://gluster-host:24007/vol0/img1",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 197120,
+        "filename": "gluster://gluster-host:24007/vol0/img1",
+        "format": "gluster",
+        "actual-size": 197120
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block282",
+      "backing_file_depth": 0,
+      "drv": "gluster",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": true,
+        "writeback": true
+      },
+      "file": "gluster://gluster-host:24007/vol0/img1",
       "encryption_key_missing": false
     }
   ]
