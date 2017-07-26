@@ -322,18 +322,6 @@ networkRadvdConfigFileName(virNetworkDriverStatePtr driver,
 }
 
 
-static char *
-networkMacMgrFileName(virNetworkDriverStatePtr driver,
-                      const char *bridge)
-{
-    char *filename;
-
-    ignore_value(virAsprintf(&filename, "%s/%s.macs",
-                             driver->dnsmasqStateDir, bridge));
-    return filename;
-}
-
-
 /* do needed cleanup steps and remove the network from the list */
 static int
 networkRemoveInactive(virNetworkDriverStatePtr driver,
@@ -375,7 +363,7 @@ networkRemoveInactive(virNetworkDriverStatePtr driver,
     if (!(statusfile = virNetworkConfigFile(driver->stateDir, def->name)))
         goto cleanup;
 
-    if (!(macMapFile = networkMacMgrFileName(driver, def->bridge)))
+    if (!(macMapFile = virMacMapFileName(driver->dnsmasqStateDir, def->bridge)))
         goto cleanup;
 
     /* dnsmasq */
@@ -427,7 +415,7 @@ networkMacMgrAdd(virNetworkDriverStatePtr driver,
 
     virMacAddrFormat(mac, macStr);
 
-    if (!(file = networkMacMgrFileName(driver, obj->def->bridge)))
+    if (!(file = virMacMapFileName(driver->dnsmasqStateDir, obj->def->bridge)))
         goto cleanup;
 
     if (virMacMapAdd(obj->macmap, domain, macStr) < 0)
@@ -458,7 +446,7 @@ networkMacMgrDel(virNetworkDriverStatePtr driver,
 
     virMacAddrFormat(mac, macStr);
 
-    if (!(file = networkMacMgrFileName(driver, obj->def->bridge)))
+    if (!(file = virMacMapFileName(driver->dnsmasqStateDir, obj->def->bridge)))
         goto cleanup;
 
     if (virMacMapRemove(obj->macmap, domain, macStr) < 0)
@@ -523,7 +511,8 @@ networkUpdateState(virNetworkObjPtr obj,
         if (!(obj->def->bridge && virNetDevExists(obj->def->bridge) == 1))
             obj->active = 0;
 
-        if (!(macMapFile = networkMacMgrFileName(driver, obj->def->bridge)))
+        if (!(macMapFile = virMacMapFileName(driver->dnsmasqStateDir,
+                                             obj->def->bridge)))
             goto cleanup;
 
         if (!(obj->macmap = virMacMapNew(macMapFile)))
@@ -2380,7 +2369,8 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         }
     }
 
-    if (!(macMapFile = networkMacMgrFileName(driver, obj->def->bridge)) ||
+    if (!(macMapFile = virMacMapFileName(driver->dnsmasqStateDir,
+                                         obj->def->bridge)) ||
         !(obj->macmap = virMacMapNew(macMapFile)))
         goto err1;
 

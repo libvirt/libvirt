@@ -294,6 +294,18 @@ virMacMapWriteFileLocked(virMacMapPtr mgr,
 }
 
 
+char *
+virMacMapFileName(const char *dnsmasqStateDir,
+                  const char *bridge)
+{
+    char *filename;
+
+    ignore_value(virAsprintf(&filename, "%s/%s.macs", dnsmasqStateDir, bridge));
+
+    return filename;
+}
+
+
 #define VIR_MAC_HASH_TABLE_SIZE 10
 
 virMacMapPtr

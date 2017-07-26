@@ -27,6 +27,10 @@
 typedef struct virMacMap virMacMap;
 typedef virMacMap *virMacMapPtr;
 
+char *
+virMacMapFileName(const char *dnsmasqStateDir,
+                  const char *bridge);
+
 virMacMapPtr virMacMapNew(const char *file);
 
 int virMacMapAdd(virMacMapPtr mgr,
