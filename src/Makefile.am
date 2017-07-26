@@ -3124,7 +3124,7 @@ virt_aa_helper_LDADD =						\
 		libvirt.la					\
 		libvirt_conf.la					\
 		libvirt_util.la					\
-		libvirt_driver_storage.la			\
+		libvirt_driver_storage_impl.la			\
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
 virt_aa_helper_LDADD += libvirt_probes.lo

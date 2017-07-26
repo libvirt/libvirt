@@ -41,6 +41,7 @@
 #include "viralloc.h"
 #include "vircommand.h"
 #include "virlog.h"
+#include "driver.h"
 
 #include "security_driver.h"
 #include "security_apparmor.h"
@@ -56,7 +57,6 @@
 #include "virgettext.h"
 
 #include "storage/storage_source.h"
-#include "storage/storage_backend.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -927,10 +927,10 @@ get_files(vahControl * ctl)
         goto cleanup;
     }
 
-    if (virStorageBackendDriversRegister(false) < 0) {
-        vah_error(ctl, 0, _("failed to register storage driver backend"));
-        goto cleanup;
-    }
+    /* load the storage driver so that backing store can be accessed */
+#ifdef WITH_STORAGE
+    virDriverLoadModule("storage", "storageRegister");
+#endif
 
     for (i = 0; i < ctl->def->ndisks; i++) {
         virDomainDiskDefPtr disk = ctl->def->disks[i];
