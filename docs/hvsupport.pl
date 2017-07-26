@@ -332,7 +332,7 @@ foreach my $drv (keys %{$groups{"virHypervisorDriver"}->{drivers}}) {
 
 print <<EOF;
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <body class="hvsupport">
 <h1>libvirt API support matrix</h1>

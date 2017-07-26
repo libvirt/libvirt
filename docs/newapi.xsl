@@ -17,10 +17,7 @@
   <!-- Import the main part of the site stylesheets -->
   <xsl:import href="page.xsl"/>
 
-  <!-- Generate XHTML-1.0 transitional -->
-  <xsl:output method="xml" encoding="UTF-8" indent="yes"
-      doctype-public="-//W3C//DTD XHTML 1.0//EN"
-      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
+  <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 
   <!-- Build keys for all symbols -->
   <xsl:key name="symbols" match="/api/symbols/*" use="@name"/>
@@ -737,6 +734,8 @@
   <xsl:template match="file">
     <xsl:variable name="name" select="@name"/>
     <xsl:variable name="title">Module <xsl:value-of select="$name"/> from <xsl:value-of select="/api/@name"/></xsl:variable>
+    <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;
+</xsl:text>
     <html>
       <body>
         <h1><xsl:value-of select="$title"/></h1>
@@ -794,6 +793,8 @@
 
   <xsl:template name="mainpage">
     <xsl:variable name="title">Reference Manual for <xsl:value-of select="/api/@name"/></xsl:variable>
+    <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;
+</xsl:text>
     <html>
       <body>
         <h1><xsl:value-of select="$title"/></h1>
@@ -813,9 +814,7 @@
     <xsl:document
       href="{concat($htmldir, '/index.html')}"
       method="xml"
-      encoding="UTF-8"
-      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
-      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      encoding="UTF-8">
       <xsl:apply-templates select="exsl:node-set($mainpage)" mode="page">
         <xsl:with-param name="pagename" select="concat($htmldir, '/index.html')"/>
         <xsl:with-param name="timestamp" select="$timestamp"/>
@@ -830,9 +829,7 @@
       <xsl:document
         href="{concat($htmldir, '/libvirt-', @name, '.html')}"
         method="xml"
-        encoding="UTF-8"
-        doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
-        doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        encoding="UTF-8">
         <xsl:apply-templates select="exsl:node-set($subpage)" mode="page">
           <xsl:with-param name="pagename" select="concat($htmldir, '/libvirt-', @name, '.html')"/>
           <xsl:with-param name="timestamp" select="$timestamp"/>
