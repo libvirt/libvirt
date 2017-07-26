@@ -2740,19 +2740,19 @@ static int
 testBlockNodeNameDetect(const void *opaque)
 {
     const struct testBlockNodeNameDetectData *data = opaque;
-    char *jsonFile = NULL;
-    char *jsonStr = NULL;
+    char *namedNodesFile = NULL;
+    char *namedNodesStr = NULL;
     char *resultFile = NULL;
     char *actual = NULL;
     char **nodenames = NULL;
     char **next;
-    virJSONValuePtr json = NULL;
+    virJSONValuePtr namedNodesJson = NULL;
     virHashTablePtr nodedata = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
-    if (virAsprintf(&jsonFile,
-                    "%s/qemumonitorjsondata/qemumonitorjson-nodename-%s.json",
+    if (virAsprintf(&namedNodesFile,
+                    "%s/qemumonitorjsondata/qemumonitorjson-nodename-%s-named-nodes.json",
                     abs_srcdir, data->name) < 0 ||
         virAsprintf(&resultFile,
                     "%s/qemumonitorjsondata/qemumonitorjson-nodename-%s.result",
@@ -2762,13 +2762,13 @@ testBlockNodeNameDetect(const void *opaque)
     if (!(nodenames = virStringSplit(data->nodenames, ",", 0)))
         goto cleanup;
 
-    if (virTestLoadFile(jsonFile, &jsonStr) < 0)
+    if (virTestLoadFile(namedNodesFile, &namedNodesStr) < 0)
         goto cleanup;
 
-    if (!(json = virJSONValueFromString(jsonStr)))
+    if (!(namedNodesJson = virJSONValueFromString(namedNodesStr)))
         goto cleanup;
 
-    if (!(nodedata = qemuBlockNodeNameGetBackingChain(json)))
+    if (!(nodedata = qemuBlockNodeNameGetBackingChain(namedNodesJson)))
         goto cleanup;
 
     for (next = nodenames; *next; next++)
@@ -2787,13 +2787,13 @@ testBlockNodeNameDetect(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(jsonFile);
+    VIR_FREE(namedNodesFile);
     VIR_FREE(resultFile);
-    VIR_FREE(jsonStr);
+    VIR_FREE(namedNodesStr);
     VIR_FREE(actual);
     virHashFree(nodedata);
     virStringListFree(nodenames);
-    virJSONValueFree(json);
+    virJSONValueFree(namedNodesJson);
 
     return ret;
 }
