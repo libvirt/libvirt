@@ -19,8 +19,6 @@
       to libvirt.
     </p>
 
-    <p>&nbsp;</p>
-
     <h2><a id="requirements">Requirements</a></h2>
 
     <p>
@@ -30,8 +28,6 @@
       In the .NET case, this is <b>libvirt-0.dll</b>, produced from
       compiling libvirt for windows.
     </p>
-
-    <p>&nbsp;</p>
 
 <!-- 2010-10-19 JC: Commented out until we have C# tarballs to download
     <h2><a id="getting">Getting them</a></h2>
@@ -64,8 +60,6 @@ git clone git://libvirt.org/libvirt-csharp.git
 <pre>
 <a href="http://libvirt.org/git/?p=libvirt-csharp.git;a=summary">http://libvirt.org/git/?p=libvirt-csharp.git;a=summary</a>
 </pre>
-
-    <p>&nbsp;</p>
 
     <h2><a id="usage">Usage</a></h2>
 
@@ -116,8 +110,6 @@ git clone git://libvirt.org/libvirt-csharp.git
       </li>
     </ul>
 
-    <p>&nbsp;</p>
-
     <h2><a id="authors">Authors</a></h2>
 
     <p>
@@ -125,8 +117,6 @@ git clone git://libvirt.org/libvirt-csharp.git
       &lt;<a href="mailto:arnaud.champion AT devatom.fr">arnaud.champion AT devatom.fr</a>&gt;,
       based upon the previous work of Jarom&iacute;r &#x010C;ervenka.
     </p>
-
-    <p>&nbsp;</p>
 
     <h2><a id="notes">Test Configuration</a></h2>
 
@@ -139,8 +129,6 @@ git clone git://libvirt.org/libvirt-csharp.git
       <li>Ubuntu 10.10 amd64 / Mono 2.6.7 (compiled in 64 bits)</li>
     </ul>
 
-    <p>&nbsp;</p>
-
     <h2><a id="type">Type Coverage</a></h2>
 
     <p>
@@ -148,76 +136,76 @@ git clone git://libvirt.org/libvirt-csharp.git
     </p>
     <table class="top_table">
       <tr><th>Type</th><th>Name</th><th>Binding?</th><th>Tested?</th><th>Sample Code?</th><th>Works?</th><th>Tested .Net/Windows Works?</th><th>Tested Mono (32-bit)/Windows Works?</th><th>Tested Mono (64-bit)/Linux Works?</th></tr>
-      <tr><td>enum</td><td>virCPUCompareResult</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virConnect</td><td>Yes, an IntPtr as the struct is not public</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>enum</td><td>virCPUCompareResult</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virConnect</td><td>Yes, an IntPtr as the struct is not public</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
       <tr><td>struct</td><td>virConnectAuth</td><td>Yes</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>struct</td><td>virConnectCredential</td><td>Yes</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>enum</td><td>virConnectCredentialType</td><td>Yes</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>enum</td><td>virConnectFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virDomain</td><td>Yes, an IntPtr as the struct is not public</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virDomainBlockInfo</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>enum</td><td>virConnectFlags</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virDomain</td><td>Yes, an IntPtr as the struct is not public</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virDomainBlockInfo</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td>struct</td><td>virDomainBlockStatsInfo</td><td>Yes</td><td>Yes</td><td>virDomainStats</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>enum</td><td>virDomainCoreDumpFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainCreateFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainDeviceModifyFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>enum</td><td>virDomainCoreDumpFlags</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainCreateFlags</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainDeviceModifyFlags</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td>enum</td><td>virDomainEventDefinedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>struct</td><td>virDomainEventGraphicsAddress</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainEventGraphicsAddressType</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainEventGraphicsPhase</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virDomainEventGraphicsSubject</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virDomainEventGraphicsSubjectIdentity</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainEventID</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainEventIOErrorAction</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>struct</td><td>virDomainEventGraphicsAddress</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainEventGraphicsAddressType</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainEventGraphicsPhase</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virDomainEventGraphicsSubject</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virDomainEventGraphicsSubjectIdentity</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainEventID</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainEventIOErrorAction</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td>enum</td><td>virDomainEventResumedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>enum</td><td>virDomainEventStartedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>enum</td><td>virDomainEventStoppedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>enum</td><td>virDomainEventSuspendedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>enum</td><td>virDomainEventType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>enum</td><td>virDomainEventUndefinedDetailType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>enum</td><td>virDomainEventWatchdogAction</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>enum</td><td>virDomainEventWatchdogAction</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td>struct</td><td>virDomainInfo</td><td>Yes</td><td>Yes</td><td>virConnectSetErrorFunc, virDomainStats</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>struct</td><td>virDomainInterfaceStatsStruct</td><td>Yes</td><td>Yes</td><td>virDomainStats</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>struct</td><td>virDomainJobInfo</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainJobType</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainMemoryFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virDomainMemoryStatStruct</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainMemoryStatTags</td><td>Yes</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainMigrateFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virDomainSnapshot</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainSnapshotDeleteFlags</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainState</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virDomainXMLFlags</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>struct</td><td>virDomainJobInfo</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainJobType</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainMemoryFlags</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virDomainMemoryStatStruct</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainMemoryStatTags</td><td>Yes</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainMigrateFlags</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virDomainSnapshot</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainSnapshotDeleteFlags</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainState</td><td>Yes</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virDomainXMLFlags</td><td>Yes</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
       <tr><td>enum</td><td>virEventHandleType</td><td>Yes</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>struct</td><td>virInterface</td><td>Yes, an IntPtr as the struct is not public</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virInterfaceXMLFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virNWFilter</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virNetwork</td><td>Yes, an IntPtr as the struct is not public</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virNodeDevice</td><td>Yes, an IntPtr as the struct is not public</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virNodeInfo</td><td>Yes</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virSchedParameter</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virSchedParameterType</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virSecret</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virSecretUsageType</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virSecurityLabel</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virSecurityModel</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virStoragePoolBuildFlags</td><td>Yes</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virStoragePoolDeleteFlags</td><td>Yes</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virStoragePoolInfo</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virStoragePool</td><td>Yes, an IntPtr as the struct is not public</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virStoragePoolState</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virStorageVol</td><td>Yes, an IntPtr as the struct is not public</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virStorageVolDeleteFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virStorageVolInfo</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virStorageVolType</td><td>Yes</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virStream</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virStreamEventType</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virStreamFlags</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>struct</td><td>virVcpuInfo</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>enum</td><td>virVcpuState</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>struct</td><td>virInterface</td><td>Yes, an IntPtr as the struct is not public</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virInterfaceXMLFlags</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virNWFilter</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virNetwork</td><td>Yes, an IntPtr as the struct is not public</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virNodeDevice</td><td>Yes, an IntPtr as the struct is not public</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virNodeInfo</td><td>Yes</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virSchedParameter</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virSchedParameterType</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virSecret</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virSecretUsageType</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virSecurityLabel</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virSecurityModel</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virStoragePoolBuildFlags</td><td>Yes</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virStoragePoolDeleteFlags</td><td>Yes</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virStoragePoolInfo</td><td>Yes</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virStoragePool</td><td>Yes, an IntPtr as the struct is not public</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virStoragePoolState</td><td>Yes</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virStorageVol</td><td>Yes, an IntPtr as the struct is not public</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virStorageVolDeleteFlags</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virStorageVolInfo</td><td>Yes</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virStorageVolType</td><td>Yes</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virStream</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virStreamEventType</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virStreamFlags</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>struct</td><td>virVcpuInfo</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>enum</td><td>virVcpuState</td><td>No</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td>struct</td><td>virError</td><td>Yes</td><td>Yes</td><td>virConnectSetErrorFunc, virDomainStats</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
     </table>
 
-    <p>&nbsp;</p>
+    <p></p>
 
     <h2><a id="funccover">Function Coverage</a></h2>
 
@@ -227,274 +215,274 @@ git clone git://libvirt.org/libvirt-csharp.git
     <table class="top_table">
       <tr><th>Name</th><th>Binding?</th><th>Type?</th><th>Tested?</th><th>Sample Code?</th><th>Working?</th><th>Tested .Net/Windows Works?</th><th>Tested Mono (32-bit)/Windows Works?</th><th>Tested Mono (64-bit)/Linux Works?</th></tr>
       <tr><td>virConnectAuthCallback</td><td>Yes</td><td>delegate</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virConnectBaselineCPU</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectBaselineCPU</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td>virConnectClose</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virConnectCompareCPU</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainEventCallback</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainEventDeregister</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainEventDeregisterAny</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainEventGenericCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainEventGraphicsCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainEventIOErrorCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainEventIOErrorReasonCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainEventRTCChangeCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectCompareCPU</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectDomainEventCallback</td><td>Yes</td><td>delegate</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectDomainEventDeregister</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectDomainEventDeregisterAny</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectDomainEventGenericCallback</td><td>No</td><td>delegate</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectDomainEventGraphicsCallback</td><td>No</td><td>delegate</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectDomainEventIOErrorCallback</td><td>No</td><td>delegate</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectDomainEventIOErrorReasonCallback</td><td>No</td><td>delegate</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectDomainEventRTCChangeCallback</td><td>No</td><td>delegate</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td>virConnectDomainEventRegister</td><td>Yes</td><td>function</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virConnectDomainEventRegisterAny</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainEventWatchdogCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainXMLFromNative</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectDomainXMLToNative</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectFindStoragePoolSources</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectGetCapabilities</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectGetHostname</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectGetLibVersion</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectGetMaxVcpus</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectGetType</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectGetURI</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectGetVersion</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectIsEncrypted</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectIsSecure</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectDomainEventRegisterAny</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectDomainEventWatchdogCallback</td><td>No</td><td>delegate</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectDomainXMLFromNative</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectDomainXMLToNative</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectFindStoragePoolSources</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectGetCapabilities</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectGetHostname</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectGetLibVersion</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectGetMaxVcpus</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectGetType</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectGetURI</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectGetVersion</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectIsEncrypted</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectIsSecure</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
       <tr><td>virConnectListDefinedDomains</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virConnectListDefinedInterfaces </td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectListDefinedNetworks</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectListDefinedStoragePools</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectListDefinedInterfaces </td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectListDefinedNetworks</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectListDefinedStoragePools</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
       <tr><td>virConnectListDomains</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth, virDomainInfos</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virConnectListInterfaces</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes, if the host handle the method</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectListNWFilters </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectListNetworks</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectListSecrets</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectListInterfaces</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes, if the host handle the method</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectListNWFilters </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectListNetworks</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectListSecrets</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
       <tr><td>virConnectListStoragePools</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpen</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virConnectNumOfDefinedDomains</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virConnectNumOfDefinedInterfaces</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectNumOfDefinedNetworks</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectNumOfDefinedStoragePools</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectNumOfDefinedInterfaces</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectNumOfDefinedNetworks</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectNumOfDefinedStoragePools</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
       <tr><td>virConnectNumOfDomains</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth, virDomainInfos</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virConnectNumOfInterfaces</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectNumOfNWFilters</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectNumOfNetworks </td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectNumOfSecrets</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectNumOfInterfaces</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectNumOfNWFilters</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectNumOfNetworks </td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectNumOfSecrets</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
       <tr><td>virConnectNumOfStoragePools</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpen</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virConnectOpen</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpen, virEventRegisterImpl, virDomainInfos</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virConnectOpenAuth</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virConnectOpenReadOnly</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virConnectRef</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainAbortJob</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainAttachDevice</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainAttachDeviceFlags</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainBlockPeek</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virConnectOpenReadOnly</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virConnectRef</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainAbortJob</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainAttachDevice</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainAttachDeviceFlags</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainBlockPeek</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td>virDomainBlockStats</td><td>Yes</td><td>function</td><td>Yes</td><td>virDomainInfos</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virDomainCoreDump</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainCreate</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainCreateLinux</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainCreateWithFlags</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainCreateXML</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainDefineXML</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainDestroy</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainDetachDevice</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainDetachDeviceFlags</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainFree</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetAutostart</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetBlockInfo</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetConnect</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetID</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainCoreDump</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainCreate</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainCreateLinux</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainCreateWithFlags</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainCreateXML</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainDefineXML</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainDestroy</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainDetachDevice</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainDetachDeviceFlags</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainFree</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetAutostart</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetBlockInfo</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetConnect</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetID</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
       <tr><td>virDomainGetInfo</td><td>Yes</td><td>function</td><td>Yes</td><td>virDomainInfos</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virDomainGetJobInfo</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetMaxMemory</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetMaxVcpus</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainGetJobInfo</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetMaxMemory</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetMaxVcpus</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
       <tr><td>virDomainGetName</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth, virDomainInfos</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virDomainGetOSType</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetSchedulerParameters</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetSchedulerType</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetSecurityLabel</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetUUID</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetUUIDString</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainGetVcpus</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainGetOSType</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetSchedulerParameters</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetSchedulerType</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetSecurityLabel</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetUUID</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetUUIDString</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainGetVcpus</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td>virDomainGetXMLDesc</td><td>Yes</td><td>function</td><td>Yes</td><td>virDomainInfos</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virDomainHasCurrentSnapshot</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainHasManagedSaveImage</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainHasCurrentSnapshot</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainHasManagedSaveImage</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td>virDomainInterfaceStats </td><td>No</td><td>function</td><td>Yes</td><td>virDomainInfos</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virDomainIsActive</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainIsPersistent</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainIsActive</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainIsPersistent</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
       <tr><td>virDomainLookupByID</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectOpenAuth, virDomainInfos</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virDomainLookupByName</td><td>Yes</td><td>function</td><td>Yes</td><td>virDomainInfos</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virDomainLookupByUUID</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainLookupByUUIDString</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainManagedSave    </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainManagedSaveRemove</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainMemoryPeek</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainMemoryStats</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainMigrate</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainMigrateSetMaxDowntime</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainMigrateToURI   </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainPinVcpu</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainReboot</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainRef    </td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainRestore</td><td>Yes </td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainResume </td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainRevertToSnapshot</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSave</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSetAutostart</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSetMaxMemory   </td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSetMemory</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSetSchedulerParameters</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSetVcpus</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainShutdown</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSnapshotCreateXML</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSnapshotCurrent</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSnapshotDelete</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSnapshotFree</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSnapshotGetXMLDesc</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSnapshotListNames</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSnapshotLookupByName</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSnapshotNum</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainSuspend</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainUndefine</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virDomainUpdateDeviceFlags</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virEventAddHandleFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virEventAddTimeoutFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virDomainLookupByUUID</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainLookupByUUIDString</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainManagedSave    </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainManagedSaveRemove</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainMemoryPeek</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainMemoryStats</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainMigrate</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainMigrateSetMaxDowntime</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainMigrateToURI   </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainPinVcpu</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainReboot</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainRef    </td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainRestore</td><td>Yes </td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainResume </td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainRevertToSnapshot</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSave</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSetAutostart</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSetMaxMemory   </td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSetMemory</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSetSchedulerParameters</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSetVcpus</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainShutdown</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSnapshotCreateXML</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSnapshotCurrent</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSnapshotDelete</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSnapshotFree</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSnapshotGetXMLDesc</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSnapshotListNames</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSnapshotLookupByName</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSnapshotNum</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainSuspend</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainUndefine</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virDomainUpdateDeviceFlags</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virEventAddHandleFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virEventAddTimeoutFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
       <tr><td>virEventHandleCallback</td><td>Yes</td><td>delegate</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virEventRegisterImpl</td><td>Yes</td><td>function</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virEventRemoveHandleFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virEventRemoveTimeoutFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virEventRemoveHandleFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virEventRemoveTimeoutFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
       <tr><td>virEventTimeoutCallback</td><td>Yes</td><td>delegate</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virEventUpdateHandleFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virEventUpdateTimeoutFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virEventUpdateHandleFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virEventUpdateTimeoutFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
       <tr><td>virFreeCallback</td><td>Yes</td><td>function</td><td>Yes</td><td>virEventRegisterImpl</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-      <tr><td>virGetVersion</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInitialize</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceCreate</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceDefineXML</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceDestroy</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceFree</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceGetConnect</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceGetMACString</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceGetName</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceGetXMLDesc</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceIsActive</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceLookupByMACString</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceLookupByName</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceRef </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virInterfaceUndefine</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterDefineXML</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterFree</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterGetName</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterGetUUID</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterGetUUIDString</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterGetXMLDesc</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterLookupByName </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterLookupByUUID</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterLookupByUUIDString</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterRef  </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNWFilterUndefine</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkCreate</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkCreateXML</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkDefineXML</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkDestroy</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkFree</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkGetAutostart</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkGetBridgeName</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkGetConnect</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkGetName</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkGetUUID</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkGetUUIDString </td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkGetXMLDesc</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkIsActive</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkIsPersistent</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkLookupByName</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkLookupByUUID</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkLookupByUUIDString</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkRef</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkSetAutostart</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNetworkUndefine</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceCreateXML</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceDestroy</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceDettach</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceFree</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceGetName</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceGetParent</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceGetXMLDesc</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceListCaps</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceLookupByName</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceNumOfCaps</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceReAttach</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceRef</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeDeviceReset</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeGetCellsFreeMemory</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeGetFreeMemory</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeGetInfo</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeGetSecurityModel </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeListDevices</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virNodeNumOfDevices</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretDefineXML</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretFree   </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretGetConnect</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretGetUUID</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretGetUUIDString  </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretGetUsageID</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretGetUsageType</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretGetValue</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretGetXMLDesc</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretLookupByUUID</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretLookupByUUIDString</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretLookupByUsage</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretRef</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretSetValue</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virSecretUndefine</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolBuild</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolCreate</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolCreateXML </td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolDefineXML</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolDelete</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolDestroy</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolFree</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolGetAutostart</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolGetConnect</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolGetInfo</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolGetName</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolGetUUID</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolGetUUIDString</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolGetXMLDesc</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolIsActive</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolIsPersistent</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolListVolumes</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolLookupByName</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolLookupByUUID</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolLookupByUUIDString</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolLookupByVolume</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolNumOfVolumes</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolRef</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolRefresh</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolSetAutostart</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStoragePoolUndefine</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolCreateXML</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolCreateXMLFrom</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolDelete</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolFree</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolGetConnect  </td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>Maybe</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolGetInfo</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolGetKey</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolGetName</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolGetPath</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolGetXMLDesc </td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolLookupByKey</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolLookupByName</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolLookupByPath</td><td>Yes</td><td>function</td><td>Yes</td><td>&nbsp;</td><td>Yes</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolRef</td><td>Yes</td><td>function</td><td>No</td><td>&nbsp;</td><td>No</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStorageVolWipe</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamAbort  </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamEventAddCallback</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamEventCallback</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamEventRemoveCallback</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamEventUpdateCallback</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamFinish </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamFree   </td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamNew</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamRecv</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamRecvAll</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamRef</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamSend</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamSendAll</td><td>No</td><td>function</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamSinkFunc</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-      <tr><td>virStreamSourceFunc</td><td>No</td><td>delegate</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>virGetVersion</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virInitialize</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceCreate</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceDefineXML</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceDestroy</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceFree</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceGetConnect</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceGetMACString</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceGetName</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceGetXMLDesc</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceIsActive</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceLookupByMACString</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceLookupByName</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceRef </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virInterfaceUndefine</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNWFilterDefineXML</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNWFilterFree</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNWFilterGetName</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNWFilterGetUUID</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNWFilterGetUUIDString</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNWFilterGetXMLDesc</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNWFilterLookupByName </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNWFilterLookupByUUID</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNWFilterLookupByUUIDString</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNWFilterRef  </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNWFilterUndefine</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkCreate</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkCreateXML</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkDefineXML</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkDestroy</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkFree</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkGetAutostart</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkGetBridgeName</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkGetConnect</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkGetName</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkGetUUID</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkGetUUIDString </td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkGetXMLDesc</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkIsActive</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkIsPersistent</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkLookupByName</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkLookupByUUID</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkLookupByUUIDString</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkRef</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkSetAutostart</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNetworkUndefine</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceCreateXML</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceDestroy</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceDettach</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceFree</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceGetName</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceGetParent</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceGetXMLDesc</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceListCaps</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceLookupByName</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceNumOfCaps</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceReAttach</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceRef</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeDeviceReset</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeGetCellsFreeMemory</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeGetFreeMemory</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeGetInfo</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeGetSecurityModel </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeListDevices</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virNodeNumOfDevices</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretDefineXML</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretFree   </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretGetConnect</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretGetUUID</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretGetUUIDString  </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretGetUsageID</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretGetUsageType</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretGetValue</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretGetXMLDesc</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretLookupByUUID</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretLookupByUUIDString</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretLookupByUsage</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretRef</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretSetValue</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virSecretUndefine</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolBuild</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolCreate</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolCreateXML </td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolDefineXML</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolDelete</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolDestroy</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolFree</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolGetAutostart</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolGetConnect</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolGetInfo</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolGetName</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolGetUUID</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolGetUUIDString</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolGetXMLDesc</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolIsActive</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolIsPersistent</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolListVolumes</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolLookupByName</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolLookupByUUID</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolLookupByUUIDString</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolLookupByVolume</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolNumOfVolumes</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolRef</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolRefresh</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolSetAutostart</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStoragePoolUndefine</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolCreateXML</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolCreateXMLFrom</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolDelete</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolFree</td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolGetConnect  </td><td>Yes</td><td>function</td><td>No</td><td></td><td>Maybe</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolGetInfo</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolGetKey</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolGetName</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolGetPath</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolGetXMLDesc </td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolLookupByKey</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolLookupByName</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolLookupByPath</td><td>Yes</td><td>function</td><td>Yes</td><td></td><td>Yes</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolRef</td><td>Yes</td><td>function</td><td>No</td><td></td><td>No</td><td></td><td></td><td></td></tr>
+      <tr><td>virStorageVolWipe</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamAbort  </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamEventAddCallback</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamEventCallback</td><td>No</td><td>delegate</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamEventRemoveCallback</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamEventUpdateCallback</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamFinish </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamFree   </td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamNew</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamRecv</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamRecvAll</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamRef</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamSend</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamSendAll</td><td>No</td><td>function</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamSinkFunc</td><td>No</td><td>delegate</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>virStreamSourceFunc</td><td>No</td><td>delegate</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td>virGetLastError</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectSetErrorFunc</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virConnSetErrorFunc</td><td>Yes</td><td>function</td><td>Yes</td><td>virConnectSetErrorFunc</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
       <tr><td>virErrorFunc</td><td>Yes</td><td>delegate</td><td>Yes</td><td>virConnectSetErrorFunc, virDomainInfos</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>

@@ -22,8 +22,6 @@
       <a href="contact.html">official libvirt mailing lists</a>.
     </p>
 
-    <p>&nbsp;</p>
-
    <h2><a id="viewing">Viewing Online</a></h2>
 
     <p>
@@ -38,8 +36,6 @@
         <a href="http://libvirt.org/sources/virshcmdref/html-single/">HTML format, one long page</a>
       </li>
     </ul>
-
-    <p>&nbsp;</p>
 
     <h2><a id="downloading">Downloading</a></h2>
 
@@ -86,8 +82,6 @@ git clone git://libvirt.org/libvirt-virshcmdref.git
 <pre>
 <a href="http://libvirt.org/git/?p=libvirt-virshcmdref.git">http://libvirt.org/git/?p=libvirt-virshcmdref.git</a>
 </pre>
-
-    <p>&nbsp;</p>
 
   </body>
 </html>
