@@ -74,8 +74,9 @@ static virStorageBackendGlusterStatePtr
 virStorageBackendGlusterOpen(virStoragePoolObjPtr pool)
 {
     virStorageBackendGlusterStatePtr ret = NULL;
-    const char *name = pool->def->source.name;
-    const char *dir = pool->def->source.dir;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    const char *name = def->source.name;
+    const char *dir = def->source.dir;
     bool trailing_slash = true;
 
     /* Volume name must not contain '/'; optional path allows use of a
@@ -112,11 +113,11 @@ virStorageBackendGlusterOpen(virStoragePoolObjPtr pool)
         goto error;
     if (VIR_STRDUP(ret->uri->scheme, "gluster") < 0)
         goto error;
-    if (VIR_STRDUP(ret->uri->server, pool->def->source.hosts[0].name) < 0)
+    if (VIR_STRDUP(ret->uri->server, def->source.hosts[0].name) < 0)
         goto error;
     if (virAsprintf(&ret->uri->path, "/%s%s", ret->volname, ret->dir) < 0)
         goto error;
-    ret->uri->port = pool->def->source.hosts[0].port;
+    ret->uri->port = def->source.hosts[0].port;
 
     /* Actually connect to glfs */
     if (!(ret->vol = glfs_new(ret->volname))) {
@@ -343,6 +344,7 @@ virStorageBackendGlusterRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                     virStoragePoolObjPtr pool)
 {
     int ret = -1;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virStorageBackendGlusterStatePtr state = NULL;
     struct {
         struct dirent ent;
@@ -401,11 +403,11 @@ virStorageBackendGlusterRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    pool->def->capacity = ((unsigned long long)sb.f_frsize *
-                           (unsigned long long)sb.f_blocks);
-    pool->def->available = ((unsigned long long)sb.f_bfree *
-                            (unsigned long long)sb.f_frsize);
-    pool->def->allocation = pool->def->capacity - pool->def->available;
+    def->capacity = ((unsigned long long)sb.f_frsize *
+                     (unsigned long long)sb.f_blocks);
+    def->available = ((unsigned long long)sb.f_bfree *
+                      (unsigned long long)sb.f_frsize);
+    def->allocation = def->capacity - def->available;
 
     ret = 0;
  cleanup:
