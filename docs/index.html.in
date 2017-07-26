@@ -59,16 +59,16 @@
 
         <dt><a href="format.html">XML configuration</a></dt>
         <dd>Description of the XML schemas for
-          <a href="formatdomain.html" shape="rect">domains</a>,
-          <a href="formatnetwork.html" shape="rect">networks</a>,
-          <a href="formatnwfilter.html" shape="rect">network filtering</a>,
-          <a href="formatstorage.html" shape="rect">storage</a>,
-          <a href="formatstorageencryption.html" shape="rect">storage encryption</a>,
-          <a href="formatcaps.html" shape="rect">capabilities</a>,
-          <a href="formatdomaincaps.html" shape="rect">domain capabilities</a>,
-          <a href="formatnode.html" shape="rect">node devices</a>,
-          <a href="formatsecret.html" shape="rect">secrets</a>,
-          <a href="formatsnapshot.html" shape="rect">snapshots</a></dd>
+          <a href="formatdomain.html">domains</a>,
+          <a href="formatnetwork.html">networks</a>,
+          <a href="formatnwfilter.html">network filtering</a>,
+          <a href="formatstorage.html">storage</a>,
+          <a href="formatstorageencryption.html">storage encryption</a>,
+          <a href="formatcaps.html">capabilities</a>,
+          <a href="formatdomaincaps.html">domain capabilities</a>,
+          <a href="formatnode.html">node devices</a>,
+          <a href="formatsecret.html">secrets</a>,
+          <a href="formatsnapshot.html">snapshots</a></dd>
         <dt><a href="http://wiki.libvirt.org">Wiki</a></dt>
         <dd>Read further community contributed content</dd>
       </dl>

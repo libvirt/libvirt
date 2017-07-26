@@ -10,9 +10,9 @@
     A similar list for <a href="news-2012.html">2012</a> is also available.
     </p>
     <p>It is also possible to just use
-    the <a href="downloads.html" shape="rect">GIT version or snapshot</a>,
+    the <a href="downloads.html">GIT version or snapshot</a>,
     contact the mailing list and check
-    the <a href="http://libvirt.org/git/?p=libvirt.git;a=log" shape="rect">GIT log</a>
+    the <a href="http://libvirt.org/git/?p=libvirt.git;a=log">GIT log</a>
     to gauge progress.
     </p>
 

@@ -14,16 +14,16 @@
 
 
     <ul>
-      <li><a href="formatdomain.html" shape="rect">Domains</a></li>
-      <li><a href="formatnetwork.html" shape="rect">Networks</a></li>
-      <li><a href="formatnwfilter.html" shape="rect">Network filtering</a></li>
-      <li><a href="formatstorage.html" shape="rect">Storage</a></li>
-      <li><a href="formatstorageencryption.html" shape="rect">Storage encryption</a></li>
-      <li><a href="formatcaps.html" shape="rect">Capabilities</a></li>
-      <li><a href="formatdomaincaps.html" shape="rect">Domain capabilities</a></li>
-      <li><a href="formatnode.html" shape="rect">Node devices</a></li>
-      <li><a href="formatsecret.html" shape="rect">Secrets</a></li>
-      <li><a href="formatsnapshot.html" shape="rect">Snapshots</a></li>
+      <li><a href="formatdomain.html">Domains</a></li>
+      <li><a href="formatnetwork.html">Networks</a></li>
+      <li><a href="formatnwfilter.html">Network filtering</a></li>
+      <li><a href="formatstorage.html">Storage</a></li>
+      <li><a href="formatstorageencryption.html">Storage encryption</a></li>
+      <li><a href="formatcaps.html">Capabilities</a></li>
+      <li><a href="formatdomaincaps.html">Domain capabilities</a></li>
+      <li><a href="formatnode.html">Node devices</a></li>
+      <li><a href="formatsecret.html">Secrets</a></li>
+      <li><a href="formatsnapshot.html">Snapshots</a></li>
     </ul>
 
     <h2>Command line validation</h2>
