@@ -196,6 +196,13 @@ MAINTAINERCLEANFILES = \
   $(addprefix $(srcdir)/,$(dot_php)) \
   $(srcdir)/hvsupport.html.in $(srcdir)/aclperms.htmlinc
 
+timestamp="$(shell if test -n "$$SOURCE_DATE_EPOCH"; \
+		   then \
+		     date --date="@$$SOURCE_DATE_EPOCH"; \
+		   else \
+		     date; \
+		   fi)"
+
 all-am: web
 
 api: $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml
@@ -255,7 +262,8 @@ MAINTAINERCLEANFILES += \
 	    $(MKDIR_P) $$dir; \
 	    style=subsite.xsl; \
 	  fi; \
-	  $(XSLTPROC) --stringparam pagename $$name --nonet \
+	  $(XSLTPROC) --stringparam pagename $$name \
+	    --stringparam timestamp $(timestamp) --nonet \
 	    $(top_srcdir)/docs/$$style $< > $@ \
 	    || { rm $@ && exit 1; }; fi
 
@@ -270,9 +278,10 @@ MAINTAINERCLEANFILES += \
 	  else echo "missing XHTML1 DTD"; cat $< > $(srcdir)/$@ ; fi ; fi
 
 %.php.tmp: %.php.in site.xsl page.xsl
-	@if [ -x $(XSLTPROC) ] ; then \
+	if [ -x $(XSLTPROC) ] ; then \
 	  echo "Generating $@"; \
-	  $(XSLTPROC) --stringparam pagename $(@:.tmp=) --nonet \
+	  $(XSLTPROC) --stringparam pagename $(@:.tmp=) \
+	    --stringparam timestamp $(timestamp) --nonet \
 	    $(top_srcdir)/docs/site.xsl $< > $@ \
 	    || { rm $@ && exit 1; }; fi
 
@@ -289,6 +298,7 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
 	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
 	  $(XSLTPROC) --nonet -o $(srcdir)/ \
 	  --stringparam builddir '$(abs_top_builddir)' \
+	  --stringparam timestamp $(timestamp) \
 	  $(srcdir)/newapi.xsl $(srcdir)/libvirt-api.xml ; fi && \
 	if test -x $(XMLLINT) && test -x $(XMLCATALOG) ; then \
 	  if $(XMLCATALOG) '$(XML_CATALOG_FILE)' "-//W3C//DTD XHTML 1.0 Strict//EN" \
@@ -299,7 +309,8 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
 
 $(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
 	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
-	  $(XSLTPROC) --nonet -o $(srcdir)/devhelp/ \
+	  $(XSLTPROC) --stringparam timestamp $(timestamp) \
+	    --nonet -o $(srcdir)/devhelp/ \
 	  $(top_srcdir)/docs/devhelp/devhelp.xsl $(srcdir)/libvirt-api.xml ; fi
 
 

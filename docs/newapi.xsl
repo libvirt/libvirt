@@ -818,6 +818,7 @@
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       <xsl:apply-templates select="exsl:node-set($mainpage)" mode="page">
         <xsl:with-param name="pagename" select="concat($htmldir, '/index.html')"/>
+        <xsl:with-param name="timestamp" select="$timestamp"/>
       </xsl:apply-templates>
     </xsl:document>
 
@@ -834,6 +835,7 @@
         doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         <xsl:apply-templates select="exsl:node-set($subpage)" mode="page">
           <xsl:with-param name="pagename" select="concat($htmldir, '/libvirt-', @name, '.html')"/>
+          <xsl:with-param name="timestamp" select="$timestamp"/>
         </xsl:apply-templates>
       </xsl:document>
     </xsl:for-each>
