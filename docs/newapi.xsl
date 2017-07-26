@@ -814,6 +814,7 @@
     <xsl:document
       href="{concat($htmldir, '/index.html')}"
       method="xml"
+      indent="yes"
       encoding="UTF-8">
       <xsl:apply-templates select="exsl:node-set($mainpage)" mode="page">
         <xsl:with-param name="pagename" select="concat($htmldir, '/index.html')"/>
@@ -829,6 +830,7 @@
       <xsl:document
         href="{concat($htmldir, '/libvirt-', @name, '.html')}"
         method="xml"
+        indent="yes"
         encoding="UTF-8">
         <xsl:apply-templates select="exsl:node-set($subpage)" mode="page">
           <xsl:with-param name="pagename" select="concat($htmldir, '/libvirt-', @name, '.html')"/>
