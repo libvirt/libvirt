@@ -83,7 +83,8 @@ static char *
 virStorageBackendISCSISession(virStoragePoolObjPtr pool,
                               bool probe)
 {
-    return virISCSIGetSession(pool->def->source.devices[0].path, probe);
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    return virISCSIGetSession(def->source.devices[0].path, probe);
 }
 
 
@@ -235,25 +236,26 @@ static int
 virStorageBackendISCSICheckPool(virStoragePoolObjPtr pool,
                                 bool *isActive)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *session = NULL;
     int ret = -1;
 
     *isActive = false;
 
-    if (pool->def->source.nhost != 1) {
+    if (def->source.nhost != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Expected exactly 1 host for the storage pool"));
         return -1;
     }
 
-    if (pool->def->source.hosts[0].name == NULL) {
+    if (def->source.hosts[0].name == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing source host"));
         return -1;
     }
 
-    if (pool->def->source.ndevice != 1 ||
-        pool->def->source.devices[0].path == NULL) {
+    if (def->source.ndevice != 1 ||
+        def->source.devices[0].path == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing source device"));
         return -1;
@@ -327,44 +329,45 @@ static int
 virStorageBackendISCSIStartPool(virConnectPtr conn,
                                 virStoragePoolObjPtr pool)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *portal = NULL;
     char *session = NULL;
     int ret = -1;
 
-    if (pool->def->source.nhost != 1) {
+    if (def->source.nhost != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Expected exactly 1 host for the storage pool"));
         return -1;
     }
 
-    if (pool->def->source.hosts[0].name == NULL) {
+    if (def->source.hosts[0].name == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing source host"));
         return -1;
     }
 
-    if (pool->def->source.ndevice != 1 ||
-        pool->def->source.devices[0].path == NULL) {
+    if (def->source.ndevice != 1 ||
+        def->source.devices[0].path == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing source device"));
         return -1;
     }
 
     if ((session = virStorageBackendISCSISession(pool, true)) == NULL) {
-        if ((portal = virStorageBackendISCSIPortal(&pool->def->source)) == NULL)
+        if ((portal = virStorageBackendISCSIPortal(&def->source)) == NULL)
             goto cleanup;
 
         /* Create a static node record for the IQN target. Must be done
          * in order for login to the target */
-        if (virISCSINodeNew(portal, pool->def->source.devices[0].path) < 0)
+        if (virISCSINodeNew(portal, def->source.devices[0].path) < 0)
             goto cleanup;
 
-        if (virStorageBackendISCSISetAuth(portal, conn, &pool->def->source) < 0)
+        if (virStorageBackendISCSISetAuth(portal, conn, &def->source) < 0)
             goto cleanup;
 
         if (virISCSIConnectionLogin(portal,
-                                    pool->def->source.initiator.iqn,
-                                    pool->def->source.devices[0].path) < 0)
+                                    def->source.initiator.iqn,
+                                    def->source.devices[0].path) < 0)
             goto cleanup;
     }
     ret = 0;
@@ -379,9 +382,10 @@ static int
 virStorageBackendISCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *session = NULL;
 
-    pool->def->allocation = pool->def->capacity = pool->def->available = 0;
+    def->allocation = def->capacity = def->available = 0;
 
     if ((session = virStorageBackendISCSISession(pool, false)) == NULL)
         goto cleanup;
@@ -403,6 +407,7 @@ static int
 virStorageBackendISCSIStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *portal;
     char *session;
     int ret = -1;
@@ -411,12 +416,12 @@ virStorageBackendISCSIStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         return 0;
     VIR_FREE(session);
 
-    if ((portal = virStorageBackendISCSIPortal(&pool->def->source)) == NULL)
+    if ((portal = virStorageBackendISCSIPortal(&def->source)) == NULL)
         return -1;
 
     if (virISCSIConnectionLogout(portal,
-                                 pool->def->source.initiator.iqn,
-                                 pool->def->source.devices[0].path) < 0)
+                                 def->source.initiator.iqn,
+                                 def->source.devices[0].path) < 0)
         goto cleanup;
     ret = 0;
 
