@@ -13,7 +13,7 @@
       <a href="https://wiki.libvirt.org/page/Networking">relevant wiki page</a>.
     </p>
 
-    <h2><a name="elements">Element and attribute overview</a></h2>
+    <h2><a id="elements">Element and attribute overview</a></h2>
 
     <p>
       The root element required for all virtual networks is
@@ -27,7 +27,7 @@
       available <span class="since">since 0.3.0</span>
     </p>
 
-    <h3><a name="elementsMetadata">General metadata</a></h3>
+    <h3><a id="elementsMetadata">General metadata</a></h3>
 
     <p>
       The first elements provide basic metadata about the virtual
@@ -83,7 +83,7 @@
         override the setting in the network.</dd>
     </dl>
 
-    <h3><a name="elementsConnect">Connectivity</a></h3>
+    <h3><a id="elementsConnect">Connectivity</a></h3>
 
     <p>
       The next set of elements control how a virtual network is
@@ -514,7 +514,7 @@
 
       </dd>
     </dl>
-    <h5><a name="elementQoS">Quality of service</a></h5>
+    <h5><a id="elementQoS">Quality of service</a></h5>
 
 <pre>
 ...
@@ -634,7 +634,7 @@
         <span class="since">since 1.0.1</span>.
       </p>
 
-    <h5><a name="elementVlanTag">Setting VLAN tag (on supported network types only)</a></h5>
+    <h5><a id="elementVlanTag">Setting VLAN tag (on supported network types only)</a></h5>
 
 <pre>
 &lt;network&gt;
@@ -712,7 +712,7 @@
       or <code>&lt;interface&gt;</code>.
     </p>
 
-    <h5><a name="elementsPortgroup">Portgroups</a></h5>
+    <h5><a id="elementsPortgroup">Portgroups</a></h5>
 
 <pre>
 ...
@@ -790,7 +790,7 @@
       setting in the portgroup.
     </p>
 
-    <h5><a name="elementsStaticroute">Static Routes</a></h5>
+    <h5><a id="elementsStaticroute">Static Routes</a></h5>
     <p>
       Static route definitions are used to provide routing information
       to the virtualization host for networks which are not directly
@@ -845,7 +845,7 @@
 ...
     </pre>
 
-    <h3><a name="elementsAddress">Addressing</a></h3>
+    <h3><a id="elementsAddress">Addressing</a></h3>
 
     <p>
       The final set of elements define the addresses (IPv4 and/or
@@ -1079,9 +1079,9 @@
       </dd>
     </dl>
 
-    <h2><a name="examples">Example configuration</a></h2>
+    <h2><a id="examples">Example configuration</a></h2>
 
-    <h3><a name="examplesNAT">NAT based network</a></h3>
+    <h3><a id="examplesNAT">NAT based network</a></h3>
 
     <p>
       This example is the so called "default" virtual network. It is
@@ -1129,7 +1129,7 @@
   &lt;/ip&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesRoute">Routed network config</a></h3>
+    <h3><a id="examplesRoute">Routed network config</a></h3>
 
     <p>
       This is a variant on the default network which routes traffic
@@ -1211,7 +1211,7 @@
   &lt;route family="ipv6" address="2001:db8:ca2:8::" prefix="64" gateway="2001:db8:ca2:7::4"/&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesPrivate">Isolated network config</a></h3>
+    <h3><a id="examplesPrivate">Isolated network config</a></h3>
 
     <p>
       This variant provides a completely isolated private network
@@ -1233,7 +1233,7 @@
   &lt;ip family="ipv6" address="2001:db8:ca2:3::1" prefix="64"/&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesPrivate6">Isolated IPv6 network config</a></h3>
+    <h3><a id="examplesPrivate6">Isolated IPv6 network config</a></h3>
 
     <p>
       This variation of an isolated network defines only IPv6.
@@ -1259,7 +1259,7 @@
   &lt;/ip&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesBridge">Using an existing host bridge</a></h3>
+    <h3><a id="examplesBridge">Using an existing host bridge</a></h3>
 
     <p>
       <span class="since">Since 0.9.4</span>
@@ -1277,7 +1277,7 @@
   &lt;bridge name="br0"/&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesDirect">Using a macvtap "direct" connection</a></h3>
+    <h3><a id="examplesDirect">Using a macvtap "direct" connection</a></h3>
 
     <p>
       <span class="since">Since 0.9.4, QEMU and KVM only, requires
@@ -1312,7 +1312,7 @@
   &lt;/forward&gt;
 &lt;/network&gt;</pre>
 
-    <h3><a name="examplesNoGateway">Network config with no gateway addresses</a></h3>
+    <h3><a id="examplesNoGateway">Network config with no gateway addresses</a></h3>
 
     <p>
     A valid network definition can contain no IPv4 or IPv6 addresses.  Such a definition

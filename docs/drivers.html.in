@@ -18,7 +18,7 @@
       network and storage driver active.
     </p>
 
-    <h2><a name="hypervisor">Hypervisor drivers</a></h2>
+    <h2><a id="hypervisor">Hypervisor drivers</a></h2>
 
     <p>
       The hypervisor drivers currently supported by libvirt are:
@@ -40,7 +40,7 @@
       <li><strong><a href="drvbhyve.html">Bhyve</a></strong> - The BSD Hypervisor</li>
     </ul>
 
-    <h2><a name="storage">Storage drivers</a></h2>
+    <h2><a id="storage">Storage drivers</a></h2>
 
     <ul>
       <li><strong><a href="storage.html#StorageBackendDir">Directory backend</a></strong></li>

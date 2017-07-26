@@ -6,7 +6,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="NodedevAttributes">Node Device XML</a></h2>
+    <h2><a id="NodedevAttributes">Node Device XML</a></h2>
 
     <p>
       There are several libvirt functions, all with the
@@ -340,7 +340,7 @@
       </dd>
     </dl>
 
-    <h2><a name="nodeExample">Examples</a></h2>
+    <h2><a id="nodeExample">Examples</a></h2>
 
     <p>The following are some example node device XML outputs:</p>
     <pre>

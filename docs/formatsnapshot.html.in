@@ -6,7 +6,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="SnapshotAttributes">Snapshot XML</a></h2>
+    <h2><a id="SnapshotAttributes">Snapshot XML</a></h2>
 
     <p>
       There are several types of snapshots:
@@ -243,7 +243,7 @@
       </dd>
     </dl>
 
-    <h2><a name="example">Examples</a></h2>
+    <h2><a id="example">Examples</a></h2>
 
     <p>Using this XML to create a disk snapshot of just vda on a qemu
       domain with two disks:</p>

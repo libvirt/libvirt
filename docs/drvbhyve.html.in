@@ -31,7 +31,7 @@ $
 Additional information on bhyve could be obtained on <a href="http://bhyve.org/">bhyve.org</a>.
 </p>
 
-<h2><a name="uri">Connections to the Bhyve driver</a></h2>
+<h2><a id="uri">Connections to the Bhyve driver</a></h2>
 <p>
 The libvirt bhyve driver is a single-instance privileged driver. Some sample
 connection URIs are:
@@ -43,7 +43,7 @@ bhyve+unix:///system                (local access)
 bhyve+ssh://root@example.com/system (remote access, SSH tunnelled)
 </pre>
 
-<h2><a name="exconfig">Example guest domain XML configurations</a></h2>
+<h2><a id="exconfig">Example guest domain XML configurations</a></h2>
 
 <h3>Example config</h3>
 <p>
@@ -206,9 +206,9 @@ Note the addition of &lt;bootloader&gt;.
 
 <p>Please refer to the <a href="#uefi">UEFI</a> section for a more detailed explanation.</p>
 
-<h2><a name="usage">Guest usage / management</a></h2>
+<h2><a id="usage">Guest usage / management</a></h2>
 
-<h3><a name="console">Connecting to a guest console</a></h3>
+<h3><a id="console">Connecting to a guest console</a></h3>
 
 <p>
 Guest console connection is supported through the <code>nmdm</code> device. It could be enabled by adding
@@ -253,7 +253,7 @@ device) is:</p>
 
 <pre>cu -l /dev/nmdm0B</pre>
 
-<h3><a name="xmltonative">Converting from domain XML to Bhyve args</a></h3>
+<h3><a id="xmltonative">Converting from domain XML to Bhyve args</a></h3>
 
 <p>
 The <code>virsh domxml-to-native</code> command can preview the actual
@@ -275,7 +275,7 @@ tweak them.</p>
 /usr/sbin/bhyve -c 2 -m 214 -A -I -H -P -s 0:0,hostbridge -s 3:0,virtio-net,tap0,mac=52:54:00:5d:74:e3 -s 2:0,virtio-blk,/home/user/vm1.img -s 1,lpc -l com1,/dev/nmdm0A vm1
 </pre>
 
-<h3><a name="zfsvolume">Using ZFS volumes</a></h3>
+<h3><a id="zfsvolume">Using ZFS volumes</a></h3>
 
 <p>It's possible to use ZFS volumes as disk devices <span class="since">since 1.2.8</span>.
 An example of domain XML device entry for that will look like:</p>
@@ -291,7 +291,7 @@ An example of domain XML device entry for that will look like:</p>
 <p>Please refer to the <a href="storage.html">Storage documentation</a> for more details on storage
 management.</p>
 
-<h3><a name="grubbhyve">Using grub2-bhyve or Alternative Bootloaders</a></h3>
+<h3><a id="grubbhyve">Using grub2-bhyve or Alternative Bootloaders</a></h3>
 
 <p>It's possible to boot non-FreeBSD guests by specifying an explicit
 bootloader, e.g. <code>grub-bhyve(1)</code>. Arguments to the bootloader may be
@@ -312,7 +312,7 @@ attempt to boot from the first partition in the disk image.</p>
 <p>Caveat: <code>bootloader_args</code> does not support any quoting.
 Filenames, etc, must not have spaces or they will be tokenized incorrectly.</p>
 
-<h3><a name="uefi">Using UEFI bootrom, VNC, and USB tablet</a></h3>
+<h3><a id="uefi">Using UEFI bootrom, VNC, and USB tablet</a></h3>
 
 <p><span class="since">Since 3.2.0</span>, in addition to <a href="#grubbhyve">grub-bhyve</a>,
 non-FreeBSD guests could be also booted using an UEFI boot ROM, provided both guest OS and
@@ -381,7 +381,7 @@ will be used. Please refer to the
 manual page and the <a href="https://wiki.freebsd.org/bhyve">bhyve wiki</a> for more details on using
 the <code>vgaconf</code> option.</p>
 
-<h3><a name="clockconfig">Clock configuration</a></h3>
+<h3><a id="clockconfig">Clock configuration</a></h3>
 
 <p>Originally bhyve supported only localtime for RTC. Support for UTC time was introduced in
 <a href="http://svnweb.freebsd.org/changeset/base/284894">r284894</a> for <i>10-STABLE</i> and
@@ -409,7 +409,7 @@ you'll need to explicitly specify 'localtime' in this case:</p>
 &lt;/domain&gt;
 </pre>
 
-<h3><a name="e1000">e1000 NIC</a></h3>
+<h3><a id="e1000">e1000 NIC</a></h3>
 
 <p>As of <a href="https://svnweb.freebsd.org/changeset/base/302504">r302504</a> bhyve
 supports Intel e1000 network adapter emulation. It's supported in libvirt

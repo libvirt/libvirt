@@ -6,7 +6,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="description">Description</a></h2>
+    <h2><a id="description">Description</a></h2>
 
     <p>
       The C# libvirt bindings are a class library.  They use a Microsoft
@@ -21,7 +21,7 @@
 
     <p>&nbsp;</p>
 
-    <h2><a name="requirements">Requirements</a></h2>
+    <h2><a id="requirements">Requirements</a></h2>
 
     <p>
       These bindings depend upon the libvirt libraries being installed.
@@ -34,7 +34,7 @@
     <p>&nbsp;</p>
 
 <!-- 2010-10-19 JC: Commented out until we have C# tarballs to download
-    <h2><a name="getting">Getting them</a></h2>
+    <h2><a id="getting">Getting them</a></h2>
 
     <p>
       The latest versions of the libvirt C# bindings can be downloaded from:
@@ -46,7 +46,7 @@
     </ul>
 -->
 
-    <h2><a name="git">GIT source repository</a></h2>
+    <h2><a id="git">GIT source repository</a></h2>
     <p>
       The C# bindings source code is maintained in a <a
       href="http://git-scm.com/">git</a> repository available on
@@ -67,7 +67,7 @@ git clone git://libvirt.org/libvirt-csharp.git
 
     <p>&nbsp;</p>
 
-    <h2><a name="usage">Usage</a></h2>
+    <h2><a id="usage">Usage</a></h2>
 
     <p>
       The libvirt C# bindings class library exposes the <b>Libvirt</b>
@@ -118,7 +118,7 @@ git clone git://libvirt.org/libvirt-csharp.git
 
     <p>&nbsp;</p>
 
-    <h2><a name="authors">Authors</a></h2>
+    <h2><a id="authors">Authors</a></h2>
 
     <p>
       The C# bindings are the work of Arnaud Champion
@@ -128,7 +128,7 @@ git clone git://libvirt.org/libvirt-csharp.git
 
     <p>&nbsp;</p>
 
-    <h2><a name="notes">Test Configuration</a></h2>
+    <h2><a id="notes">Test Configuration</a></h2>
 
     <p>
       Testing is performed using the following configurations:
@@ -141,7 +141,7 @@ git clone git://libvirt.org/libvirt-csharp.git
 
     <p>&nbsp;</p>
 
-    <h2><a name="type">Type Coverage</a></h2>
+    <h2><a id="type">Type Coverage</a></h2>
 
     <p>
       Coverage of the libvirt types is:
@@ -219,7 +219,7 @@ git clone git://libvirt.org/libvirt-csharp.git
 
     <p>&nbsp;</p>
 
-    <h2><a name="funccover">Function Coverage</a></h2>
+    <h2><a id="funccover">Function Coverage</a></h2>
 
     <p>
       Coverage of the libvirt functions is:

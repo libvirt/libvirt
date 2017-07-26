@@ -12,7 +12,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="intro">Access control introduction</a></h2>
+    <h2><a id="intro">Access control introduction</a></h2>
 
     <p>
       In a default configuration, the libvirtd daemon has three levels
@@ -42,7 +42,7 @@
       <code>getattr</code> permission.
     </p>
 
-    <h2><a name="drivers">Access control drivers</a></h2>
+    <h2><a id="drivers">Access control drivers</a></h2>
 
     <p>
       The access control framework is designed as a pluggable
@@ -83,7 +83,7 @@
       the libvirtd daemon be restarted.
     </p>
 
-    <h2><a name="perms">Objects and permissions</a></h2>
+    <h2><a id="perms">Objects and permissions</a></h2>
 
     <p>
       Libvirt applies access control to all the main object

@@ -9,7 +9,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="Objects">Objects Exposed</a></h2>
+    <h2><a id="Objects">Objects Exposed</a></h2>
     <p> As defined in the <a href="goals.html">goals section</a>, the libvirt
     API is designed to expose all the resources needed to manage the
     virtualization support of recent operating systems. The first object
@@ -121,7 +121,7 @@
       set of nodes.</p></li>
     </ul>
 
-    <h2><a name="Functions">Functions and Naming Conventions</a></h2>
+    <h2><a id="Functions">Functions and Naming Conventions</a></h2>
     <p> The naming of the functions present in the library is usually
       composed by a prefix describing the object associated to the function
       and a verb describing the action on that object.</p>
@@ -297,7 +297,7 @@
     <p> For more in-depth details of the storage related APIs see
       <a href="storage.html">the storage management page</a>.
     </p>
-    <h2><a name="Drivers">The libvirt Drivers</a></h2>
+    <h2><a id="Drivers">The libvirt Drivers</a></h2>
     <p>Drivers are the basic building block for libvirt functionality
     to support the capability to handle specific hypervisor driver calls.
     Drivers are discovered and registered during connection processing as
@@ -325,7 +325,7 @@
     the various functions and support found in each driver by the version
     support was added into libvirt.
     </p>
-    <h2><a name="Remote">Daemon and Remote Access</a></h2>
+    <h2><a id="Remote">Daemon and Remote Access</a></h2>
     <p>Access to libvirt drivers is primarily handled by the libvirtd
     daemon through the <a href="remote.html">remote</a> driver via an
     <a href="internals/rpc.html">RPC</a>. Some hypervisors do support

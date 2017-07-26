@@ -11,7 +11,7 @@
       libvirt. Both server and client.
     </p>
 
-    <h2><a name="event_loop">Event driven programming</a></h2>
+    <h2><a id="event_loop">Event driven programming</a></h2>
 
     <p>Traditionally, a program simply ran once, then terminated.
     This type of program was very common in the early days of
@@ -38,7 +38,7 @@
     file descriptor which is then watched for incoming events,
     e.g. messages. </p>
 
-    <h2><a name="api">The event loop API</a></h2>
+    <h2><a id="api">The event loop API</a></h2>
 
     <p>To work with event loop from our code we have plenty of
     APIs.</p>
@@ -62,7 +62,7 @@
     <p>For more information on these APIs continue reading <a
     href="../html/libvirt-libvirt-event.html">here</a>.</p>
 
-    <h2><a name="worker_pool">Worker pool</a></h2>
+    <h2><a id="worker_pool">Worker pool</a></h2>
 
     <p>Looking back at the image above we can see one big
     limitation. While processing a message event loop is blocked

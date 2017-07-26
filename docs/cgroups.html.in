@@ -11,7 +11,7 @@
       for applying resource management to their virtual machines and containers.
     </p>
 
-    <h2><a name="requiredControllers">Required controllers</a></h2>
+    <h2><a id="requiredControllers">Required controllers</a></h2>
 
     <p>
       The control groups filesystem supports multiple "controllers". By default
@@ -42,7 +42,7 @@
       which use them will cease to operate.
     </p>
 
-    <h2><a name="currentLayout">Current cgroups layout</a></h2>
+    <h2><a id="currentLayout">Current cgroups layout</a></h2>
 
     <p>
       As of libvirt 1.0.5 or later, the cgroups layout created by libvirt has been
@@ -63,14 +63,14 @@
       in two, one describing systemd hosts and the other non-systemd hosts.
     </p>
 
-    <h3><a name="currentLayoutSystemd">Systemd cgroups integration</a></h3>
+    <h3><a id="currentLayoutSystemd">Systemd cgroups integration</a></h3>
 
     <p>
       On hosts which use systemd, each consumer maps to a systemd scope unit,
       while partitions map to a system slice unit.
     </p>
 
-    <h4><a name="systemdScope">Systemd scope naming</a></h4>
+    <h4><a id="systemdScope">Systemd scope naming</a></h4>
 
     <p>
       The systemd convention is for the scope name of virtual machines / containers
@@ -83,7 +83,7 @@
       The scope names map directly to the cgroup directory names.
     </p>
 
-    <h4><a name="systemdSlice">Systemd slice naming</a></h4>
+    <h4><a id="systemdSlice">Systemd slice naming</a></h4>
 
     <p>
       The systemd convention for slice naming is that a slice should include the
@@ -96,7 +96,7 @@
       by libvirt will be associated with <code>machine.slice</code> by default.
     </p>
 
-    <h4><a name="systemdLayout">Systemd cgroup layout</a></h4>
+    <h4><a id="systemdLayout">Systemd cgroup layout</a></h4>
 
     <p>
       Given this, a possible systemd cgroups layout involving 3 qemu guests,
@@ -145,7 +145,7 @@ $ROOT
           +- machine-lxc\x2dcontainer3.scope
     </pre>
 
-    <h3><a name="currentLayoutGeneric">Non-systemd cgroups layout</a></h3>
+    <h3><a id="currentLayoutGeneric">Non-systemd cgroups layout</a></h3>
 
     <p>
       On hosts which do not use systemd, each consumer has a corresponding cgroup
@@ -206,7 +206,7 @@ $ROOT
           +- container3.libvirt-lxc
     </pre>
 
-    <h2><a name="customPartiton">Using custom partitions</a></h2>
+    <h2><a id="customPartiton">Using custom partitions</a></h2>
 
     <p>
       If there is a need to apply resource constraints to groups of
@@ -255,7 +255,7 @@ $ROOT
       later in this document did not support customization per guest.
     </p>
 
-    <h3><a name="createSystemd">Creating custom partitions (systemd)</a></h3>
+    <h3><a id="createSystemd">Creating custom partitions (systemd)</a></h3>
 
     <p>
       Given the XML config above, the admin on a systemd based host would
@@ -272,7 +272,7 @@ EOF
 # systemctl start machine-testing.slice
     </pre>
 
-    <h3><a name="createNonSystemd">Creating custom partitions (non-systemd)</a></h3>
+    <h3><a id="createNonSystemd">Creating custom partitions (non-systemd)</a></h3>
 
     <p>
       Given the XML config above, the admin on a non-systemd based host
@@ -291,7 +291,7 @@ EOF
   done
 </pre>
 
-    <h2><a name="resourceAPIs">Resource management APIs/commands</a></h2>
+    <h2><a id="resourceAPIs">Resource management APIs/commands</a></h2>
 
     <p>
       Since libvirt aims to provide an API which is portable across
@@ -354,7 +354,7 @@ swap_hard_limit: unlimited
       network interfaces.
     </p>
 
-    <h2><a name="legacyLayout">Legacy cgroups layout</a></h2>
+    <h2><a id="legacyLayout">Legacy cgroups layout</a></h2>
 
     <p>
       Prior to libvirt 1.0.5, the cgroups layout created by libvirt was different

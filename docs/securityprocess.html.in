@@ -15,7 +15,7 @@
       potential security issues.
     </p>
 
-    <h2><a name="reporting">Reporting security issues</a></h2>
+    <h2><a id="reporting">Reporting security issues</a></h2>
 
     <p>
       In the event that a bug in libvirt is found which is
@@ -37,7 +37,7 @@
       moderator and the reporter copied on any replies.
     </p>
 
-    <h2><a name="seclist">Security team</a></h2>
+    <h2><a id="seclist">Security team</a></h2>
 
     <p>
       The libvirt security team is made up of a subset of the libvirt
@@ -61,7 +61,7 @@
       described below.
     </p>
 
-    <h2><a name="embargo">Publication embargo policy</a></h2>
+    <h2><a id="embargo">Publication embargo policy</a></h2>
 
     <p>
       The libvirt security team operates a policy of
@@ -84,7 +84,7 @@
     </p>
 
 
-    <h2><a name="cve">CVE allocation</a></h2>
+    <h2><a id="cve">CVE allocation</a></h2>
 
     <p>
       The libvirt security team will associate each security issue with
@@ -92,7 +92,7 @@
       the vendor security engineers on the security team.
     </p>
 
-    <h2><a name="branches">Branch fixing policy</a></h2>
+    <h2><a id="branches">Branch fixing policy</a></h2>
 
     <p>
       The libvirt community maintains one or more stable release branches
@@ -103,7 +103,7 @@
       other release branches where applicable.
     </p>
 
-    <h2><a name="notification">Notification of issues</a></h2>
+    <h2><a id="notification">Notification of issues</a></h2>
 
     <p>
       When an embargo expires, security issues will be announced on both

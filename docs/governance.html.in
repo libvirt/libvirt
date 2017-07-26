@@ -14,7 +14,7 @@
       influence, within the community.
     </p>
 
-    <h2><a name="codeofconduct">Code of conduct</a></h2>
+    <h2><a id="codeofconduct">Code of conduct</a></h2>
 
     <p>
       The libvirt project community covers people from a wide variety of
@@ -49,7 +49,7 @@
         from them. Playing a blame game doesn't help anyone.</li>
     </ul>
 
-    <h2><a name="roles">Roles and responsibilities</a></h2>
+    <h2><a id="roles">Roles and responsibilities</a></h2>
 
     <h3><a href="users">Users</a></h3>
 
@@ -91,7 +91,7 @@
       ways listed in the next section.
     </p>
 
-    <h3><a name="contributors">Contributors</a></h3>
+    <h3><a id="contributors">Contributors</a></h3>
 
     <p>
       The contributors are community members who have some concrete impact
@@ -156,7 +156,7 @@
       covered are found in the source repositories, or website in question.
     </p>
 
-    <h3><a name="committers">Committers</a></h3>
+    <h3><a id="committers">Committers</a></h3>
 
     <p>
       The committers are the subset of contributors who have direct access
@@ -227,7 +227,7 @@
       to retain their role as a committer.
     </p>
 
-    <h3><a name="secteam">Security team</a></h3>
+    <h3><a id="secteam">Security team</a></h3>
 
     <p>
       The security team consists of a subset of the project committers
@@ -252,7 +252,7 @@
       before disclosing a private issue.
     </p>
 
-    <h2><a name="roughconsensus">Rough consensus</a></h2>
+    <h2><a id="roughconsensus">Rough consensus</a></h2>
 
     <p>
       A core concept for governance of the project described above is

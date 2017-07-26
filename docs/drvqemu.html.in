@@ -11,7 +11,7 @@
       version 0.12.0 or later.
     </p>
 
-    <h2><a name="project">Project Links</a></h2>
+    <h2><a id="project">Project Links</a></h2>
 
     <ul>
       <li>
@@ -23,7 +23,7 @@
       </li>
     </ul>
 
-    <h2><a name="prereq">Deployment pre-requisites</a></h2>
+    <h2><a id="prereq">Deployment pre-requisites</a></h2>
 
     <ul>
       <li>
@@ -43,7 +43,7 @@
       </li>
     </ul>
 
-    <h2><a name="uris">Connections to QEMU driver</a></h2>
+    <h2><a id="uris">Connections to QEMU driver</a></h2>
 
     <p>
     The libvirt QEMU driver is a multi-instance driver, providing a single
@@ -63,14 +63,14 @@ qemu+tcp://example.com/system        (remote access, SASl/Kerberos)
 qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
 </pre>
 
-    <h2><a name="security">Driver security architecture</a></h2>
+    <h2><a id="security">Driver security architecture</a></h2>
 
     <p>
       There are multiple layers to security in the QEMU driver, allowing for
       flexibility in the use of QEMU based virtual machines.
     </p>
 
-    <h3><a name="securitydriver">Driver instances</a></h3>
+    <h3><a id="securitydriver">Driver instances</a></h3>
 
     <p>
       As explained above there are two ways to access the QEMU driver
@@ -94,7 +94,7 @@ qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
       elevated privileges.
     </p>
 
-    <h3><a name="securitydac">POSIX users/groups</a></h3>
+    <h3><a id="securitydac">POSIX users/groups</a></h3>
 
     <p>
       In the "session" instance, the POSIX users/groups model restricts QEMU
@@ -187,7 +187,7 @@ chmod o+x /path/to/directory
       </li>
     </ul>
 
-    <h3><a name="securitycap">Linux process capabilities</a></h3>
+    <h3><a id="securitycap">Linux process capabilities</a></h3>
 
     <p>
       The libvirt QEMU driver has a build time option allowing it to use
@@ -224,7 +224,7 @@ chmod o+x /path/to/directory
       to changing the <code>/etc/libvirt/qemu.conf</code> settings.
     </p>
 
-    <h3><a name="securityselinux">SELinux basic confinement</a></h3>
+    <h3><a id="securityselinux">SELinux basic confinement</a></h3>
 
     <p>
       The basic SELinux protection for QEMU virtual machines is intended to
@@ -255,7 +255,7 @@ chmod o+x /path/to/directory
       SELinux boolean.
     </p>
 
-    <h3><a name="securitysvirt">SELinux sVirt confinement</a></h3>
+    <h3><a id="securitysvirt">SELinux sVirt confinement</a></h3>
 
     <p>
       The SELinux sVirt protection for QEMU virtual machines builds to the
@@ -305,7 +305,7 @@ chmod o+x /path/to/directory
       file can be used to change the setting to <code>security_driver="none"</code>
     </p>
 
-    <h3><a name="securitysvirtaa">AppArmor sVirt confinement</a></h3>
+    <h3><a id="securitysvirtaa">AppArmor sVirt confinement</a></h3>
 
     <p>
       When using basic AppArmor protection for the libvirtd daemon and
@@ -373,7 +373,7 @@ chmod o+x /path/to/directory
     </p>
 
 
-    <h3><a name="securityacl">Cgroups device ACLs</a></h3>
+    <h3><a id="securityacl">Cgroups device ACLs</a></h3>
 
     <p>
       Recent Linux kernels have a capability known as "cgroups" which is used
@@ -416,7 +416,7 @@ mount -t cgroup none /dev/cgroup -o devices
       <code>/dev/cgroup/libvirt/qemu/$VMNAME/</code>
     </p>
 
-    <h2><a name="imex">Import and export of libvirt domain XML configs</a></h2>
+    <h2><a id="imex">Import and export of libvirt domain XML configs</a></h2>
 
     <p>The QEMU driver currently supports a single native
       config format known as <code>qemu-argv</code>. The data for this format
@@ -424,7 +424,7 @@ mount -t cgroup none /dev/cgroup -o devices
       then the QEMu binary name, finally followed by the QEMU command line
       arguments</p>
 
-    <h3><a name="xmlimport">Converting from QEMU args to domain XML</a></h3>
+    <h3><a id="xmlimport">Converting from QEMU args to domain XML</a></h3>
 
     <p>
       The <code>virsh domxml-from-native</code> provides a way to
@@ -473,7 +473,7 @@ $ virsh domxml-from-native qemu-argv demo.args
 
     <p>NB, don't include the literal \ in the args, put everything on one line</p>
 
-    <h3><a name="xmlexport">Converting from domain XML to QEMU args</a></h3>
+    <h3><a id="xmlexport">Converting from domain XML to QEMU args</a></h3>
 
     <p>
       The <code>virsh domxml-to-native</code> provides a way to convert a
@@ -515,7 +515,7 @@ $ virsh domxml-to-native qemu-argv demo.xml
   -serial none -parallel none -usb
 </pre>
 
-    <h2><a name="qemucommand">Pass-through of arbitrary qemu
+    <h2><a id="qemucommand">Pass-through of arbitrary qemu
     commands</a></h2>
 
     <p>Libvirt provides an XML namespace and an optional
@@ -582,7 +582,7 @@ $ virsh domxml-to-native qemu-argv demo.xml
 &lt;/domain&gt;
 </pre>
 
-    <h2><a name="xmlconfig">Example domain XML config</a></h2>
+    <h2><a id="xmlconfig">Example domain XML config</a></h2>
 
     <h3>QEMU emulated guest on x86_64</h3>
 

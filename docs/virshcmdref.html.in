@@ -6,7 +6,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="description">Description</a></h2>
+    <h2><a id="description">Description</a></h2>
 
     <p>
       The new <b>Virsh Command Reference</b>, for documenting the commands
@@ -24,7 +24,7 @@
 
     <p>&nbsp;</p>
 
-   <h2><a name="viewing">Viewing Online</a></h2>
+   <h2><a id="viewing">Viewing Online</a></h2>
 
     <p>
       The latest version can be viewed directly online:
@@ -41,7 +41,7 @@
 
     <p>&nbsp;</p>
 
-    <h2><a name="downloading">Downloading</a></h2>
+    <h2><a id="downloading">Downloading</a></h2>
 
     <p>
       The latest version of the Virsh Command Reference can be downloaded:
@@ -68,7 +68,7 @@
       </li>
     </ul>
 
-    <h2><a name="git">DocBook source GIT repository</a></h2>
+    <h2><a id="git">DocBook source GIT repository</a></h2>
     <p>
       The DocBook source is maintained in a <a
       href="http://git-scm.com/">git</a> repository available on

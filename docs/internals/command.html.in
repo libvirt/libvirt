@@ -12,7 +12,7 @@
       All code is required to use these APIs
     </p>
 
-    <h2><a name="posix">Problems with standard POSIX APIs</a></h2>
+    <h2><a id="posix">Problems with standard POSIX APIs</a></h2>
 
     <p>
       The POSIX specification includes a number of APIs for
@@ -62,7 +62,7 @@
       error prone, particularly wrt memory leak / OOM handling.
     </p>
 
-    <h2><a name="api">The libvirt command execution API</a></h2>
+    <h2><a id="api">The libvirt command execution API</a></h2>
 
     <p>
       There is now a high level API that provides a safe and
@@ -72,7 +72,7 @@
       header which can be imported using <code>#include "vircommand.h"</code>
     </p>
 
-    <h3><a name="initial">Defining commands in libvirt</a></h3>
+    <h3><a id="initial">Defining commands in libvirt</a></h3>
 
     <p>
       The first step is to declare what command is to be
@@ -92,7 +92,7 @@ virCommandPtr cmd = virCommandNew("/usr/bin/dnsmasq");
       reported at a later time.
     </p>
 
-    <h3><a name="args">Adding arguments to the command</a></h3>
+    <h3><a id="args">Adding arguments to the command</a></h3>
 
     <p>
       There are a number of APIs for adding arguments to a
@@ -150,7 +150,7 @@ virCommandPtr cmd2 = virCommandNewArgList("/usr/bin/dnsmasq",
                                           "--domain", "localdomain", NULL);
 </pre>
 
-    <h3><a name="env">Setting up the environment</a></h3>
+    <h3><a id="env">Setting up the environment</a></h3>
 
     <p>
       By default a command will inherit all environment variables
@@ -199,7 +199,7 @@ virCommandAddEnvPair(cmd, "TERM", "xterm");
 virCommandAddEnvString(cmd, "TERM=xterm");
 </pre>
 
-    <h3><a name="misc">Miscellaneous other options</a></h3>
+    <h3><a id="misc">Miscellaneous other options</a></h3>
 
     <p>
       Normally the spawned command will retain the current
@@ -229,7 +229,7 @@ virCommandSetPidFile(cmd, "/var/run/dnsmasq.pid");
       the intermediate process exits.
     </p>
 
-    <h3><a name="privs">Reducing command privileges</a></h3>
+    <h3><a id="privs">Reducing command privileges</a></h3>
 
     <p>
       Normally a command will inherit all privileges of
@@ -243,7 +243,7 @@ virCommandSetPidFile(cmd, "/var/run/dnsmasq.pid");
 virCommandClearCaps(cmd);
 </pre>
 
-    <h3><a name="fds">Managing file handles</a></h3>
+    <h3><a id="fds">Managing file handles</a></h3>
 
     <p>
       To prevent unintended resource leaks to child processes, the
@@ -329,7 +329,7 @@ virCommandSetErrorFD(cmd, &amp;errfd);
 virCommandNonblockingFDs(cmd);
 </pre>
 
-    <h3><a name="buffers">Feeding &amp; capturing strings to/from the child</a></h3>
+    <h3><a id="buffers">Feeding &amp; capturing strings to/from the child</a></h3>
 
     <p>
       Often dealing with file handles for stdin/out/err is
@@ -382,7 +382,7 @@ virCommandSetErrorBuffer(cmd, &amp;errors);
       case the child process interleaves output into a single string.
     </p>
 
-    <h3><a name="directory">Setting working directory</a></h3>
+    <h3><a id="directory">Setting working directory</a></h3>
 
     <p>
       Daemonized commands are always run with "/" as the current
@@ -395,7 +395,7 @@ virCommandSetErrorBuffer(cmd, &amp;errors);
 virCommandSetWorkingDirectory(cmd, LOCALSTATEDIR);
 </pre>
 
-    <h3><a name="hooks">Any additional hooks</a></h3>
+    <h3><a id="hooks">Any additional hooks</a></h3>
 
     <p>
       If anything else is needed, it is possible to request a hook
@@ -409,7 +409,7 @@ virCommandSetWorkingDirectory(cmd, LOCALSTATEDIR);
 virCommandSetPreExecHook(cmd, hook, opaque);
 </pre>
 
-    <h3><a name="logging">Logging commands</a></h3>
+    <h3><a id="logging">Logging commands</a></h3>
 
     <p>
       Sometimes, it is desirable to log what command will be run, or
@@ -434,7 +434,7 @@ if (virCommandRun(cmd, NULL) &lt; 0)
     return -1;
 </pre>
 
-    <h3><a name="sync">Running commands synchronously</a></h3>
+    <h3><a id="sync">Running commands synchronously</a></h3>
 
     <p>
       For most commands, the desired behaviour is to spawn
@@ -480,7 +480,7 @@ if (WIFEXITED(status) &amp;&amp; WEXITSTATUS(status) == 1) {
 }
 </pre>
 
-    <h3><a name="async">Running commands asynchronously</a></h3>
+    <h3><a id="async">Running commands asynchronously</a></h3>
 
     <p>
       In certain complex scenarios, particularly special
@@ -530,7 +530,7 @@ if (WEXITSTATUS(status)...) {
       virCommandAbort to reap the process.
     </p>
 
-    <h3><a name="release">Releasing resources</a></h3>
+    <h3><a id="release">Releasing resources</a></h3>
 
     <p>
       Once the command has been executed, or if execution
@@ -550,7 +550,7 @@ virCommandFree(cmd);
       it will be forcibly killed and cleaned up (via waitpid).
     </p>
 
-    <h2><a name="example">Complete examples</a></h2>
+    <h2><a id="example">Complete examples</a></h2>
 
     <p>
       This shows a complete example usage of the APIs roughly

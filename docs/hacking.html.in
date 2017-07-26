@@ -6,7 +6,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="patches">General tips for contributing patches</a></h2>
+    <h2><a id="patches">General tips for contributing patches</a></h2>
     <ol>
       <li>
         <p>Discuss any large changes on the mailing list first.  Post patches
@@ -336,7 +336,7 @@
         Richard Jones' guide to working with open source projects</a>.
     </p>
 
-    <h2><a name="tooling">Tooling</a></h2>
+    <h2><a id="tooling">Tooling</a></h2>
 
     <p>
       libvirt includes support for some useful development tools right in its
@@ -356,7 +356,7 @@
       </li>
     </ul>
 
-    <h2><a name="naming">Naming conventions</a></h2>
+    <h2><a id="naming">Naming conventions</a></h2>
 
     <p>
       When reading libvirt code, a number of different naming conventions will
@@ -450,7 +450,7 @@
       </dd>
     </dl>
 
-    <h2><a name="indent">Code indentation</a></h2>
+    <h2><a id="indent">Code indentation</a></h2>
     <p>
       Libvirt's C source code generally adheres to some basic code-formatting
       conventions.  The existing code base is not totally consistent on this
@@ -487,7 +487,7 @@
       which will load the .lvimrc only when you edit libvirt code.
     </p>
 
-    <h2><a name="formatting">Code formatting (especially for new code)</a></h2>
+    <h2><a id="formatting">Code formatting (especially for new code)</a></h2>
 
     <p>
       With new code, we can be even more strict.
@@ -523,7 +523,7 @@
     </p>
 
 
-    <h2><a name="bracket_spacing">Bracket spacing</a></h2>
+    <h2><a id="bracket_spacing">Bracket spacing</a></h2>
 
     <p>
       The keywords <code>if</code>, <code>for</code>, <code>while</code>,
@@ -572,7 +572,7 @@
       int foo(int wizz);    // Good
 </pre>
 
-    <h2><a name="comma">Commas</a></h2>
+    <h2><a id="comma">Commas</a></h2>
 
     <p>
       Commas should always be followed by a space or end of line, and
@@ -609,7 +609,7 @@
       };
 </pre>
 
-    <h2><a name="semicolon">Semicolons</a></h2>
+    <h2><a id="semicolon">Semicolons</a></h2>
 
     <p>
       Semicolons should never have a space beforehand.  Inside the
@@ -638,7 +638,7 @@
       }
 </pre>
 
-    <h2><a name="curly_braces">Curly braces</a></h2>
+    <h2><a id="curly_braces">Curly braces</a></h2>
 
     <p>
       Omit the curly braces around an <code>if</code>, <code>while</code>,
@@ -819,7 +819,7 @@
   }
 </pre>
 
-    <h2><a name="preprocessor">Preprocessor</a></h2>
+    <h2><a id="preprocessor">Preprocessor</a></h2>
 
     <p>Macros defined with an ALL_CAPS name should generally be
       assumed to be unsafe with regards to arguments with side-effects
@@ -844,7 +844,7 @@
   #endif
 </pre>
 
-    <h2><a name="types">C types</a></h2>
+    <h2><a id="types">C types</a></h2>
 
     <p>
       Use the right type.
@@ -919,7 +919,7 @@
       it points to, or it is aliased to another pointer that is.
     </p>
 
-    <h2><a name="memalloc">Low level memory management</a></h2>
+    <h2><a id="memalloc">Low level memory management</a></h2>
 
     <p>
       Use of the malloc/free/realloc/calloc APIs is deprecated in the libvirt
@@ -1013,7 +1013,7 @@
       </li>
     </ul>
 
-    <h2><a name="file_handling">File handling</a></h2>
+    <h2><a id="file_handling">File handling</a></h2>
 
     <p>
       Usage of the <code>fdopen()</code>, <code>close()</code>, <code>fclose()</code>
@@ -1059,7 +1059,7 @@
       </li>
     </ul>
 
-    <h2><a name="string_comparision">String comparisons</a></h2>
+    <h2><a id="string_comparision">String comparisons</a></h2>
 
     <p>
       Do not use the strcmp, strncmp, etc functions directly. Instead use
@@ -1109,7 +1109,7 @@
     </ul>
 
 
-    <h2><a name="string_copying">String copying</a></h2>
+    <h2><a id="string_copying">String copying</a></h2>
 
     <p>
       Do not use the strncpy function.  According to the man page, it
@@ -1169,7 +1169,7 @@
       and usually considered a flaw.
     </p>
 
-    <h2><a name="strbuf">Variable length string buffer</a></h2>
+    <h2><a id="strbuf">Variable length string buffer</a></h2>
 
     <p>
       If there is a need for complex string concatenations, avoid using
@@ -1202,7 +1202,7 @@
 </pre>
 
 
-    <h2><a name="includes">Include files</a></h2>
+    <h2><a id="includes">Include files</a></h2>
 
     <p>
       There are now quite a large number of include files, both libvirt
@@ -1251,7 +1251,7 @@
     </p>
 
 
-    <h2><a name="printf">Printf-style functions</a></h2>
+    <h2><a id="printf">Printf-style functions</a></h2>
 
     <p>
       Whenever you add a new printf-style function, i.e., one with a format
@@ -1280,7 +1280,7 @@
       does for snprintf.
     </p>
 
-    <h2><a name="goto">Use of goto</a></h2>
+    <h2><a id="goto">Use of goto</a></h2>
 
     <p>
       The use of goto is not forbidden, and goto is widely used
@@ -1363,7 +1363,7 @@ int foo()
 
 
 
-    <h2><a name="committers">Libvirt committer guidelines</a></h2>
+    <h2><a id="committers">Libvirt committer guidelines</a></h2>
 
     <p>
       The AUTHORS files indicates the list of people with commit access right

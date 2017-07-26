@@ -12,7 +12,7 @@
       their goals, concepts and XML format.
     </p>
 
-    <h2><a name="goals">Goals and background</a></h2>
+    <h2><a id="goals">Goals and background</a></h2>
 
     <p>
       The goal of the network filtering XML is to enable administrators
@@ -43,7 +43,7 @@
       (QEMU, KVM)</span>
     </p>
 
-    <h2><a name="nwfconcepts">Concepts</a></h2>
+    <h2><a id="nwfconcepts">Concepts</a></h2>
     <p>
       The network traffic filtering subsystem enables configuration
       of network traffic filtering rules on individual network
@@ -111,7 +111,7 @@
       <br/><br/>
     </p>
 
-    <h3><a name="nwfconceptschains">Filtering chains</a></h3>
+    <h3><a id="nwfconceptschains">Filtering chains</a></h3>
     <p>
       Filtering rules are organized in filter chains. These chains can be
       thought of as having a tree structure with packet
@@ -192,7 +192,7 @@
       traverse the ARP chain.
       <br/><br/>
     </p>
-    <h3><a name="nwfconceptschainpriorities">Filtering chain priorities</a></h3>
+    <h3><a id="nwfconceptschainpriorities">Filtering chain priorities</a></h3>
     <p>
       All chains are connected to the <code>root</code> chain. The order in
       which those chains are accessed is influenced by the priority of the
@@ -236,7 +236,7 @@
       node. The above example filter shows the default priority of -500
       for <code>arp</code> chains.
     </p>
-    <h3><a name="nwfconceptsvars">Usage of variables in filters</a></h3>
+    <h3><a id="nwfconceptsvars">Usage of variables in filters</a></h3>
     <p>
 
       Two variables names have so far been reserved for usage by the
@@ -374,7 +374,7 @@ DSTPORTS = [ 80, 8080 ]
       former notation always assumes the iterator with Id '0'.
     </p>
 
-    <h3><a name="nwfelemsRulesAdvIPAddrDetection">Automatic IP address detection</a></h3>
+    <h3><a id="nwfelemsRulesAdvIPAddrDetection">Automatic IP address detection</a></h3>
     <p>
        The detection of IP addresses used on a virtual machine's interface
        is automatically activated if the variable <code>IP</code> is referenced
@@ -448,7 +448,7 @@ DSTPORTS = [ 80, 8080 ]
 &lt;/interface&gt;
 </pre>
 
-    <h3><a name="nwfelemsReservedVars">Reserved Variables</a></h3>
+    <h3><a id="nwfelemsReservedVars">Reserved Variables</a></h3>
     <p>
       The following table lists reserved variables in use by libvirt.
     </p>
@@ -485,7 +485,7 @@ DSTPORTS = [ 80, 8080 ]
        </tr>
       </table>
 
-    <h2><a name="nwfelems">Element and attribute overview</a></h2>
+    <h2><a id="nwfelems">Element and attribute overview</a></h2>
 
     <p>
       The root element required for all network filters is
@@ -498,7 +498,7 @@ DSTPORTS = [ 80, 8080 ]
       ipv4, ipv6, arp and rarp</code>.
     </p>
 
-    <h3><a name="nwfelemsRefs">References to other filters</a></h3>
+    <h3><a id="nwfelemsRefs">References to other filters</a></h3>
     <p>
      Any filter may hold references to other filters. Individual
      filters may be referenced multiple times in a filter tree but
@@ -536,7 +536,7 @@ DSTPORTS = [ 80, 8080 ]
     attached.
     </p>
 
-    <h3><a name="nwfelemsRules">Filter rules</a></h3>
+    <h3><a id="nwfelemsRules">Filter rules</a></h3>
     <p>
     The following XML shows a simple example of a network
     traffic filter implementing a rule to drop traffic if
@@ -618,7 +618,7 @@ DSTPORTS = [ 80, 8080 ]
      filtered.
     </p>
 
-    <h4><a name="nwfelemsRulesProto">Supported protocols</a></h4>
+    <h4><a id="nwfelemsRulesProto">Supported protocols</a></h4>
     <p>
      The following sections enumerate the list of protocols that
      are supported by the network filtering subsystem. The
@@ -677,7 +677,7 @@ DSTPORTS = [ 80, 8080 ]
     </p>
 
 
-    <h5><a name="nwfelemsRulesProtoMAC">MAC (Ethernet)</a></h5>
+    <h5><a id="nwfelemsRulesProtoMAC">MAC (Ethernet)</a></h5>
     <p>
       Protocol ID: <code>mac</code>
       <br/>
@@ -729,7 +729,7 @@ DSTPORTS = [ 80, 8080 ]
 [...]
 </pre>
 
-    <h5><a name="nwfelemsRulesProtoVLAN">VLAN (802.1Q)</a>
+    <h5><a id="nwfelemsRulesProtoVLAN">VLAN (802.1Q)</a>
       <span class="since">(Since 0.9.8)</span>
     </h5>
     <p>
@@ -784,7 +784,7 @@ DSTPORTS = [ 80, 8080 ]
       Valid Strings for <code>encap-protocol</code> are: arp, ipv4, ipv6
     </p>
 
-    <h5><a name="nwfelemsRulesProtoSTP">STP (Spanning Tree Protocol)</a>
+    <h5><a id="nwfelemsRulesProtoSTP">STP (Spanning Tree Protocol)</a>
       <span class="since">(Since 0.9.8)</span>
     </h5>
     <p>
@@ -926,7 +926,7 @@ DSTPORTS = [ 80, 8080 ]
        </tr>
       </table>
 
-    <h5><a name="nwfelemsRulesProtoARP">ARP/RARP</a></h5>
+    <h5><a id="nwfelemsRulesProtoARP">ARP/RARP</a></h5>
     <p>
       Protocol ID: <code>arp</code> or <code>rarp</code>
       <br/>
@@ -1022,7 +1022,7 @@ DSTPORTS = [ 80, 8080 ]
       <br/><br/>
     </p>
 
-    <h5><a name="nwfelemsRulesProtoIP">IPv4</a></h5>
+    <h5><a id="nwfelemsRulesProtoIP">IPv4</a></h5>
     <p>
       Protocol ID: <code>ip</code>
       <br/>
@@ -1118,7 +1118,7 @@ DSTPORTS = [ 80, 8080 ]
     </p>
 
 
-    <h5><a name="nwfelemsRulesProtoIPv6">IPv6</a></h5>
+    <h5><a id="nwfelemsRulesProtoIPv6">IPv6</a></h5>
     <p>
       Protocol ID: <code>ipv6</code>
       <br/>
@@ -1228,7 +1228,7 @@ DSTPORTS = [ 80, 8080 ]
       <br/><br/>
     </p>
 
-    <h5><a name="nwfelemsRulesProtoTCP-ipv4">TCP/UDP/SCTP</a></h5>
+    <h5><a id="nwfelemsRulesProtoTCP-ipv4">TCP/UDP/SCTP</a></h5>
     <p>
       Protocol ID: <code>tcp</code>, <code>udp</code>, <code>sctp</code>
       <br/>
@@ -1344,7 +1344,7 @@ DSTPORTS = [ 80, 8080 ]
     </p>
 
 
-    <h5><a name="nwfelemsRulesProtoICMP">ICMP</a></h5>
+    <h5><a id="nwfelemsRulesProtoICMP">ICMP</a></h5>
     <p>
       Protocol ID: <code>icmp</code>
       <br/>
@@ -1458,7 +1458,7 @@ DSTPORTS = [ 80, 8080 ]
       <br/><br/>
     </p>
 
-    <h5><a name="nwfelemsRulesProtoMisc">IGMP, ESP, AH, UDPLITE, 'ALL'</a></h5>
+    <h5><a id="nwfelemsRulesProtoMisc">IGMP, ESP, AH, UDPLITE, 'ALL'</a></h5>
     <p>
       Protocol ID: <code>igmp</code>, <code>esp</code>, <code>ah</code>, <code>udplite</code>, <code>all</code>
       <br/>
@@ -1563,7 +1563,7 @@ DSTPORTS = [ 80, 8080 ]
     </p>
 
 
-    <h5><a name="nwfelemsRulesProtoTCP-ipv6">TCP/UDP/SCTP over IPV6</a></h5>
+    <h5><a id="nwfelemsRulesProtoTCP-ipv6">TCP/UDP/SCTP over IPV6</a></h5>
     <p>
       Protocol ID: <code>tcp-ipv6</code>, <code>udp-ipv6</code>, <code>sctp-ipv6</code>
       <br/>
@@ -1679,7 +1679,7 @@ DSTPORTS = [ 80, 8080 ]
     </p>
 
 
-    <h5><a name="nwfelemsRulesProtoICMPv6">ICMPv6</a></h5>
+    <h5><a id="nwfelemsRulesProtoICMPv6">ICMPv6</a></h5>
     <p>
       Protocol ID: <code>icmpv6</code>
       <br/>
@@ -1779,7 +1779,7 @@ DSTPORTS = [ 80, 8080 ]
       <br/><br/>
     </p>
 
-    <h5><a name="nwfelemsRulesProtoMiscv6">ESP, AH, UDPLITE, 'ALL' over IPv6</a></h5>
+    <h5><a id="nwfelemsRulesProtoMiscv6">ESP, AH, UDPLITE, 'ALL' over IPv6</a></h5>
     <p>
       Protocol ID: <code>esp-ipv6</code>, <code>ah-ipv6</code>, <code>udplite-ipv6</code>, <code>all-ipv6</code>
       <br/>
@@ -1868,13 +1868,13 @@ DSTPORTS = [ 80, 8080 ]
       <br/><br/>
     </p>
 
-    <h3><a name="nwfelemsRulesAdv">Advanced Filter Configuration Topics</a></h3>
+    <h3><a id="nwfelemsRulesAdv">Advanced Filter Configuration Topics</a></h3>
     <p>
      The following sections discuss advanced filter configuration
      topics.
     </p>
 
-    <h4><a name="nwfelemsRulesAdvTracking">Connection tracking</a></h4>
+    <h4><a id="nwfelemsRulesAdvTracking">Connection tracking</a></h4>
     <p>
      The network filtering subsystem (on Linux) makes use of the connection
      tracking support of iptables. This helps in enforcing the
@@ -1908,7 +1908,7 @@ DSTPORTS = [ 80, 8080 ]
      which may or may not be desirable.
     </p>
 
-    <h4><a name="nwfelemsRulesAdvLimiting">Limiting Number of Connections</a></h4>
+    <h4><a id="nwfelemsRulesAdvLimiting">Limiting Number of Connections</a></h4>
     <p>
      To limit the number of connections a VM may establish, a rule must
      be provided that sets a limit of connections for a given
@@ -1981,7 +1981,7 @@ echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
       traffic behavior in relation to idle connections.
     </p>
 
-    <h2><a name="nwfcli">Command line tools</a></h2>
+    <h2><a id="nwfcli">Command line tools</a></h2>
     <p>
       The libvirt command line tool <code>virsh</code> has been extended
       with life-cycle support for network filters. All commands related
@@ -1996,7 +1996,7 @@ echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
      <li>nwfilter-edit : edit a network filter given its name</li>
     </ul>
 
-    <h2><a name="nwfexamples">Pre-existing network filters</a></h2>
+    <h2><a id="nwfexamples">Pre-existing network filters</a></h2>
     <p>
      The following is a list of example network filters that are
      automatically installed with libvirt.</p>
@@ -2051,7 +2051,7 @@ echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
      on top of the prevention of packet spoofing.
     </p>
 
-    <h2><a name="nwfwrite">Writing your own filters</a></h2>
+    <h2><a id="nwfwrite">Writing your own filters</a></h2>
 
     <p>
      Since libvirt only provides a couple of example networking filters, you
@@ -2124,7 +2124,7 @@ echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
     <code>udp-ipv6</code> traffic filtering node.
     </p>
 
-    <h3><a name="nwfwriteexample">Example custom filter</a></h3>
+    <h3><a id="nwfwriteexample">Example custom filter</a></h3>
     <p>
      As an example we want to now build a filter that fulfills the following
      list of requirements:
@@ -2227,7 +2227,7 @@ echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
 &lt;/rule&gt;
 </pre>
 
-    <h3><a name="nwfwriteexample2nd">Second example custom filter</a></h3>
+    <h3><a id="nwfwriteexample2nd">Second example custom filter</a></h3>
     <p>
      In this example we now want to build a similar filter as in the
      example above, but extend the list of requirements with an
@@ -2400,13 +2400,13 @@ modprobe ip_conntrack_ftp   # if above is not available
 
 </pre>
 
-    <h2><a name="nwflimits">Limitations</a></h2>
+    <h2><a id="nwflimits">Limitations</a></h2>
     <p>
      The following sections list (current) limitations of the network
      filtering subsystem.
     </p>
 
-    <h3><a name="nwflimitsmigr">VM Migration</a></h3>
+    <h3><a id="nwflimitsmigr">VM Migration</a></h3>
      <p>
       VM migration is only supported if the whole filter tree
       that is referenced by a virtual machine's top level filter
@@ -2424,7 +2424,7 @@ modprobe ip_conntrack_ftp   # if above is not available
       0.8.1 or later in order not to lose the network traffic filters
       associated with an interface.
      </p>
-    <h3><a name="nwflimitsvlan">VLAN filtering on Linux</a></h3>
+    <h3><a id="nwflimitsvlan">VLAN filtering on Linux</a></h3>
      <p>
       VLAN (802.1Q) packets, if sent by a virtual machine, cannot be filtered
       with rules for protocol IDs <code>arp</code>, <code>rarp</code>,

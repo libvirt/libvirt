@@ -25,7 +25,7 @@
     users. This is where NSS module comes handy.
     </p>
 
-    <h2><a name="Installation">Installation</a></h2>
+    <h2><a id="Installation">Installation</a></h2>
 
     <p>
     Installing the module is really easy:
@@ -35,7 +35,7 @@
 # yum install libvirt-nss
 </pre>
 
-    <h2><a name="Configuration">Configuration</a></h2>
+    <h2><a id="Configuration">Configuration</a></h2>
 
     <p>
     Enabling the module is really easy. Just add <b>libvirt</b> into
@@ -62,7 +62,7 @@ hosts:       files libvirt dns
     lookup given host name.
     </p>
 
-    <h2><a name="Sources">Sources of information</a></h2>
+    <h2><a id="Sources">Sources of information</a></h2>
 
     <p>
     As of <code>v3.0.0</code> release, libvirt offers two NSS modules
@@ -104,7 +104,7 @@ hosts:       files libvirt libvirt_guest dns
     resolved).
     </p>
 
-    <h2><a name="Internals">How does it work?</a></h2>
+    <h2><a id="Internals">How does it work?</a></h2>
 
     <p>
     Whenever an Unix process wants to do a host name translation
@@ -139,7 +139,7 @@ hosts:       files libvirt libvirt_guest dns
     should carefully chose the lookup order.
     </p>
 
-    <h2><a name="Limitations">Limitations</a></h2>
+    <h2><a id="Limitations">Limitations</a></h2>
 
     <ol>
       <li>The <code>libvirt</code> NSS module matches only hostnames provided by guest.

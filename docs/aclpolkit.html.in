@@ -14,7 +14,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="intro">Introduction</a></h2>
+    <h2><a id="intro">Introduction</a></h2>
 
     <p>
       A default install of libvirt will typically use
@@ -27,7 +27,7 @@
       object.
     </p>
 
-    <h2><a name="perms">Permission names</a></h2>
+    <h2><a id="perms">Permission names</a></h2>
 
     <p>
       The libvirt <a href="acl.html#perms">object names and permission names</a>
@@ -53,7 +53,7 @@
       permissions default to deny access.
     </p>
 
-    <h2><a name="attrs">Object identity attributes</a></h2>
+    <h2><a id="attrs">Object identity attributes</a></h2>
 
     <p>
       To allow polkit authorization rules to be written to match
@@ -63,7 +63,7 @@
       of object being checked
     </p>
 
-    <h3><a name="object_connect">virConnectPtr</a></h3>
+    <h3><a id="object_connect">virConnectPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -79,7 +79,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_domain">virDomainPtr</a></h3>
+    <h3><a id="object_domain">virDomainPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -103,7 +103,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_interface">virInterfacePtr</a></h3>
+    <h3><a id="object_interface">virInterfacePtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -127,7 +127,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_network">virNetworkPtr</a></h3>
+    <h3><a id="object_network">virNetworkPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -151,7 +151,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_node_device">virNodeDevicePtr</a></h3>
+    <h3><a id="object_node_device">virNodeDevicePtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -171,7 +171,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_nwfilter">virNWFilterPtr</a></h3>
+    <h3><a id="object_nwfilter">virNWFilterPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -195,7 +195,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_secret">virSecretPtr</a></h3>
+    <h3><a id="object_secret">virSecretPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -231,7 +231,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_storage_pool">virStoragePoolPtr</a></h3>
+    <h3><a id="object_storage_pool">virStoragePoolPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -255,7 +255,7 @@
       </tbody>
     </table>
 
-    <h3><a name="object_storage_vol">virStorageVolPtr</a></h3>
+    <h3><a id="object_storage_vol">virStorageVolPtr</a></h3>
     <table class="acl">
       <thead>
         <tr>
@@ -288,7 +288,7 @@
     </table>
 
 
-    <h2><a name="user">User identity attributes</a></h2>
+    <h2><a id="user">User identity attributes</a></h2>
 
     <p>
       At this point in time, the only attribute provided by
@@ -307,7 +307,7 @@
     </p>
 
 
-    <h2><a name="checks">Writing access control policies</a></h2>
+    <h2><a id="checks">Writing access control policies</a></h2>
 
     <p>
       If using versions of polkit prior to 0.106 then it is only
@@ -358,7 +358,7 @@ polkit.addRule(function(action, subject) {
     for a more complex example.
     </p>
 
-    <h3><a name="exconnect">Example: restricting ability to connect to drivers</a></h3>
+    <h3><a id="exconnect">Example: restricting ability to connect to drivers</a></h3>
 
     <p>
       Consider a local user <code>berrange</code>
@@ -386,7 +386,7 @@ polkit.addRule(function(action, subject) {
 });
     </pre>
 
-    <h3><a name="exdomain">Example: restricting access to a single domain</a></h3>
+    <h3><a id="exdomain">Example: restricting access to a single domain</a></h3>
 
     <p>
       Consider a local user <code>berrange</code>

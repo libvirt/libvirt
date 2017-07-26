@@ -14,7 +14,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="Auth_client_config">Client configuration</a></h2>
+    <h2><a id="Auth_client_config">Client configuration</a></h2>
 
     <p>
       When connecting to a remote hypervisor which requires authentication,
@@ -142,7 +142,7 @@ credentials=defgrp</pre>
       to storage VNC or SPICE login credentials
     </p>
 
-    <h2><a name="ACL_server_config">Server configuration</a></h2>
+    <h2><a id="ACL_server_config">Server configuration</a></h2>
     <p>
 The libvirt daemon allows the administrator to choose the authentication
 mechanisms used for client connections on each network socket independently.
@@ -153,7 +153,7 @@ currently a choice of <code>none</code>, <code>polkit</code>, and <code>sasl</co
 The SASL scheme can be further configured to choose between a large
 number of different mechanisms.
 </p>
-    <h2><a name="ACL_server_unix_perms">UNIX socket permissions/group</a></h2>
+    <h2><a id="ACL_server_unix_perms">UNIX socket permissions/group</a></h2>
     <p>
 If libvirt does not contain support for PolicyKit, then access control for
 the UNIX domain socket is done using traditional file user/group ownership
@@ -170,7 +170,7 @@ parameter. For example, setting the former to mode <code>0770</code> and the
 latter <code>wheel</code> would let any user in the wheel group connect to
 the libvirt daemon.
 </p>
-    <h2><a name="ACL_server_polkit">UNIX socket PolicyKit auth</a></h2>
+    <h2><a id="ACL_server_polkit">UNIX socket PolicyKit auth</a></h2>
     <p>
 If libvirt contains support for PolicyKit, then access control options are
 more advanced. The <code>auth_unix_rw</code> parameter will default to
@@ -204,7 +204,7 @@ ResultActive=yes</pre>
 Further examples of PolicyKit setup can be found on the
 <a href="http://wiki.libvirt.org/page/SSHPolicyKitSetup">wiki page</a>.
     </p>
-    <h2><a name="ACL_server_sasl">SASL pluggable authentication</a></h2>
+    <h2><a id="ACL_server_sasl">SASL pluggable authentication</a></h2>
 
     <p>
 Libvirt integrates with the cyrus-sasl library to provide a pluggable authentication
@@ -255,7 +255,7 @@ GSSAPI plugin is considered acceptably secure by modern standards:
       TLS or UNIX socket listeners.
     </p>
 
-    <h3><a name="ACL_server_username">Username/password auth</a></h3>
+    <h3><a id="ACL_server_username">Username/password auth</a></h3>
     <p>
 As noted above, the DIGEST-MD5 mechanism is considered obsolete and should
 not be used anymore. To provide a simple username/password auth scheme on
@@ -297,7 +297,7 @@ again:
     <pre>
 # saslpasswd2 -a libvirt -d fred
 </pre>
-    <h3><a name="ACL_server_kerberos">GSSAPI/Kerberos auth</a></h3>
+    <h3><a id="ACL_server_kerberos">GSSAPI/Kerberos auth</a></h3>
     <p>
 The plain TCP listener of the libvirt daemon defaults to using SASL for authentication.
 The libvirt SASL config also defaults to GSSAPI, so there is no need to edit the

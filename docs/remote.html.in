@@ -10,7 +10,7 @@ machines through authenticated and encrypted connections.
     <ul id="toc"></ul>
 
     <h2>
-      <a name="Remote_basic_usage">Basic usage</a>
+      <a id="Remote_basic_usage">Basic usage</a>
     </h2>
     <p>
 On the remote machine, <code>libvirtd</code> should be running in general.
@@ -50,7 +50,7 @@ relating to failures in the remote transport itself. </li>
 much slower than, say, direct hypervisor calls. </li>
     </ul>
     <h2>
-      <a name="Remote_transports">Transports</a>
+      <a id="Remote_transports">Transports</a>
     </h2>
     <p>
 Remote libvirt supports a range of transports:
@@ -111,7 +111,7 @@ netcat is required on the remote side.</dd>
 The default transport, if no other is specified, is <code>tls</code>.
 </p>
     <h2>
-      <a name="Remote_URI_reference">Remote URIs</a>
+      <a id="Remote_URI_reference">Remote URIs</a>
     </h2>
     <p>
 See also: <a href="uri.html">documentation on ordinary ("local") URIs</a>.
@@ -158,7 +158,7 @@ Connect to a remote host using a ssh connection with the libssh driver
 and use a different known_hosts file.</li>
     </ul>
     <h3>
-      <a name="Remote_URI_parameters">Extra parameters</a>
+      <a id="Remote_URI_parameters">Extra parameters</a>
     </h3>
     <p>
 Extra parameters can be added to remote URIs as part
@@ -364,10 +364,10 @@ Note that parameter values must be
       </tr>
     </table>
     <h2>
-      <a name="Remote_certificates">Generating TLS certificates</a>
+      <a id="Remote_certificates">Generating TLS certificates</a>
     </h2>
     <h3>
-      <a name="Remote_PKI">Public Key Infrastructure set up</a>
+      <a id="Remote_PKI">Public Key Infrastructure set up</a>
     </h3>
     <p>
 If you are unsure how to create TLS certificates, skip to the
@@ -472,7 +472,7 @@ next section.
       <li> For the root user, the global default locations will always be used.</li>
     </ul>
     <h3>
-      <a name="Remote_TLS_background">Background to TLS certificates</a>
+      <a id="Remote_TLS_background">Background to TLS certificates</a>
     </h3>
     <p>
 Libvirt supports TLS certificates for verifying the identity
@@ -507,7 +507,7 @@ address.  You may want to change this to make it less (or more)
 permissive, depending on your needs.
 </p>
     <h3>
-      <a name="Remote_TLS_CA">Setting up a Certificate Authority (CA)</a>
+      <a id="Remote_TLS_CA">Setting up a Certificate Authority (CA)</a>
     </h3>
     <p>
 You will need the <a href="http://www.gnu.org/software/gnutls/manual/html_node/Invoking-certtool.html">GnuTLS
@@ -578,7 +578,7 @@ key carefully as you will need it when you come to issue certificates
 for your clients and servers.
 </p>
     <h3>
-      <a name="Remote_TLS_server_certificates">Issuing server certificates</a>
+      <a id="Remote_TLS_server_certificates">Issuing server certificates</a>
     </h3>
     <p>
 For each server (libvirtd) you need to issue a certificate
@@ -661,7 +661,7 @@ which can be installed on the server as
 </li>
     </ul>
     <h3>
-      <a name="Remote_TLS_client_certificates">Issuing client certificates</a>
+      <a id="Remote_TLS_client_certificates">Issuing client certificates</a>
     </h3>
     <p>
 For each client (ie. any program linked with libvirt, such as
@@ -714,7 +714,7 @@ cp clientcert.pem /etc/pki/libvirt/clientcert.pem
 </li>
     </ol>
     <h3>
-      <a name="Remote_TLS_troubleshooting">Troubleshooting TLS certificate problems</a>
+      <a id="Remote_TLS_troubleshooting">Troubleshooting TLS certificate problems</a>
     </h3>
     <dl>
       <dt> failed to verify client's certificate </dt>
@@ -732,7 +732,7 @@ to analyze the setup on the client or server machines, preferably as root.
 It will try to point out the possible problems and provide solutions to
 fix the set up up to a point where you have secure remote access.</p>
     <h2>
-      <a name="Remote_libvirtd_configuration">libvirtd configuration file</a>
+      <a id="Remote_libvirtd_configuration">libvirtd configuration file</a>
     </h2>
     <p>
 Libvirtd (the remote daemon) is configured from a file called
@@ -900,7 +900,7 @@ Blank lines and comments beginning with <code>#</code> are ignored.
       </tr>
     </table>
     <h2>
-      <a name="Remote_IPv6">IPv6 support</a>
+      <a id="Remote_IPv6">IPv6 support</a>
     </h2>
     <p>
 The libvirtd service and libvirt remote client driver both use the
@@ -913,7 +913,7 @@ connection will be made, otherwise IPv4 will be used. In summary it
 should just 'do the right thing(tm)'.
 </p>
     <h2>
-      <a name="Remote_limitations">Limitations</a>
+      <a id="Remote_limitations">Limitations</a>
     </h2>
     <ul>
       <li> Fine-grained authentication: libvirt in general,

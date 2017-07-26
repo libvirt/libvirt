@@ -273,7 +273,7 @@
       <li>unlocks the remote driver.</li>
     </ol>
 
-    <h3><a name="serverdispatch">Implement the server side dispatcher</a></h3>
+    <h3><a id="serverdispatch">Implement the server side dispatcher</a></h3>
 
     <p>
       Implementing the server side of the remote function call is simply a
@@ -300,7 +300,7 @@
 
     <p class="example">See <a href="api_extension/0005-implement-the-remote-protocol.patch">0005-implement-the-remote-protocol.patch</a></p>
 
-    <h2><a name="internaluseapi">Use the new API internally</a></h2>
+    <h2><a id="internaluseapi">Use the new API internally</a></h2>
 
     <p>
       Sometimes, a new API serves as a superset of existing API, by
@@ -314,7 +314,7 @@
 
     <p class="example">See <a href="api_extension/0006-make-old-API-trivially-wrap-to-new-API.patch">0006-make-old-API-trivially-wrap-to-new-API.patch</a></p>
 
-    <h2><a name="virshuseapi">Expose the new API in virsh</a></h2>
+    <h2><a id="virshuseapi">Expose the new API in virsh</a></h2>
 
     <p>
       All new API should be manageable from the virsh command line
@@ -345,7 +345,7 @@
 
     <p class="example">See <a href="api_extension/0007-add-virsh-support.patch">0007-add-virsh-support.patch</a></p>
 
-    <h2><a name="driverimpl">Implement the driver methods</a></h2>
+    <h2><a id="driverimpl">Implement the driver methods</a></h2>
 
     <p>
       So, after all that, we get to the fun part.  All functionality in
@@ -356,7 +356,7 @@
       adding.
     </p>
 
-    <h3><a name="commonimpl">Implement common handling</a></h3>
+    <h3><a id="commonimpl">Implement common handling</a></h3>
 
     <p>
       If the new API is applicable to more than one driver, it may
@@ -373,7 +373,7 @@
 
     <p class="example">See <a href="api_extension/0008-support-new-xml.patch">0008-support-new-xml.patch</a></p>
 
-    <h3><a name="drivercode">Implement driver handling</a></h3>
+    <h3><a id="drivercode">Implement driver handling</a></h3>
 
     <p>
       The remaining patches should only touch one driver at a time.

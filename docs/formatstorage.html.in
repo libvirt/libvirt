@@ -6,7 +6,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="StoragePool">Storage pool XML</a></h2>
+    <h2><a id="StoragePool">Storage pool XML</a></h2>
 
     <p>
       Although all storage pool backends share the same public APIs and
@@ -29,7 +29,7 @@
       3.1.0</span>). This corresponds to the
       storage backend drivers listed further along in this document.
     </p>
-    <h3><a name="StoragePoolFirst">General metadata</a></h3>
+    <h3><a id="StoragePoolFirst">General metadata</a></h3>
 
     <pre>
 &lt;pool type="iscsi"&gt;
@@ -66,7 +66,7 @@
         pool. <span class="since">Since 0.4.1</span></dd>
     </dl>
 
-    <h3><a name="StoragePoolSource">Source elements</a></h3>
+    <h3><a id="StoragePoolSource">Source elements</a></h3>
 
     <p>
       A single <code>source</code> element is contained within the top level
@@ -397,7 +397,7 @@
         is backend specific.  <span class="since">Since 0.8.4</span></dd>
     </dl>
 
-    <h3><a name="StoragePoolTarget">Target elements</a></h3>
+    <h3><a id="StoragePoolTarget">Target elements</a></h3>
 
     <p>
       A single <code>target</code> element is contained within the top level
@@ -461,7 +461,7 @@
       </dd>
     </dl>
 
-    <h3><a name="StoragePoolExtents">Device extents</a></h3>
+    <h3><a id="StoragePoolExtents">Device extents</a></h3>
 
     <p>
       If a storage pool exposes information about its underlying
@@ -481,7 +481,7 @@
       device, measured in bytes.  <span class="since">Since 0.4.1</span>
     </p>
 
-    <h2><a name="StorageVol">Storage volume XML</a></h2>
+    <h2><a id="StorageVol">Storage volume XML</a></h2>
     <p>
       A storage volume will generally be either a file or a device
       node; <span class="since">since 1.2.0</span>, an optional
@@ -491,7 +491,7 @@
       XML format is available <span class="since">since 0.4.1</span>
     </p>
 
-    <h3><a name="StorageVolFirst">General metadata</a></h3>
+    <h3><a id="StorageVolFirst">General metadata</a></h3>
 
     <pre>
 &lt;volume type='file'&gt;
@@ -570,7 +570,7 @@
         on the local host. <span class="since">Since 0.4.1</span></dd>
     </dl>
 
-    <h3><a name="StorageVolTarget">Target elements</a></h3>
+    <h3><a id="StorageVolTarget">Target elements</a></h3>
 
     <p>
       A single <code>target</code> element is contained within the top level
@@ -686,7 +686,7 @@
       </dd>
     </dl>
 
-    <h3><a name="StorageVolBacking">Backing store elements</a></h3>
+    <h3><a id="StorageVolBacking">Backing store elements</a></h3>
 
     <p>
       A single <code>backingStore</code> element is contained within the top level
@@ -732,14 +732,14 @@
       </dd>
     </dl>
 
-    <h2><a name="examples">Example configuration</a></h2>
+    <h2><a id="examples">Example configuration</a></h2>
 
     <p>
       Here are a couple of examples, for a more complete set demonstrating
       every type of storage pool, consult the <a href="storage.html">storage driver page</a>
     </p>
 
-    <h3><a name="exampleFile">File based storage pool</a></h3>
+    <h3><a id="exampleFile">File based storage pool</a></h3>
 
     <pre>
 &lt;pool type="dir"&gt;
@@ -749,7 +749,7 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3><a name="exampleISCSI">iSCSI based storage pool</a></h3>
+    <h3><a id="exampleISCSI">iSCSI based storage pool</a></h3>
 
     <pre>
 &lt;pool type="iscsi"&gt;
@@ -766,7 +766,7 @@
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
-    <h3><a name="exampleVol">Storage volume</a></h3>
+    <h3><a id="exampleVol">Storage volume</a></h3>
 
     <pre>
 &lt;volume&gt;
@@ -784,7 +784,7 @@
   &lt;/target&gt;
 &lt;/volume&gt;</pre>
 
-    <h3><a name="exampleLuks">Storage volume using LUKS</a></h3>
+    <h3><a id="exampleLuks">Storage volume using LUKS</a></h3>
 
     <pre>
 &lt;volume&gt;

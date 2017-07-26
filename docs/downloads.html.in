@@ -6,7 +6,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="releases">Project modules</a></h2>
+    <h2><a id="releases">Project modules</a></h2>
 
     <p>
       The libvirt project maintains a number of inter-related modules beyond
@@ -435,7 +435,7 @@
       <li><a href="https://libvirt.org/sources/">libvirt.org HTTPS server</a></li>
     </ul>
 
-    <h2><a name="hourly">Hourly development snapshots</a></h2>
+    <h2><a id="hourly">Hourly development snapshots</a></h2>
 
     <p>
       Once an hour, an automated snapshot is made from the git server
@@ -450,7 +450,7 @@
       <li><a href="http://libvirt.org/sources/libvirt-git-snapshot.tar.xz">libvirt.org HTTP server</a></li>
     </ul>
 
-    <h2><a name="schedule">Primary release schedule</a></h2>
+    <h2><a id="schedule">Primary release schedule</a></h2>
 
     <p>
       The core libvirt module follows a time based plan, with releases made
@@ -462,7 +462,7 @@
       independant ad-hoc releases with no fixed time schedle.
     </p>
 
-    <h2><a name="numbering">Release numbering</a></h2>
+    <h2><a id="numbering">Release numbering</a></h2>
 
     <p>
       Since libvirt 2.0.0, a time based version numbering rule
@@ -497,7 +497,7 @@
       digits.
     </p>
 
-    <h2><a name="maintenance">Maintenance releases</a></h2>
+    <h2><a id="maintenance">Maintenance releases</a></h2>
     <p>
       In the git repository are several stable maintenance branches
       for the core library, matching the
@@ -525,7 +525,7 @@
       wiki page</a>.
     </p>
 
-    <h2><a name="git">GIT source repository</a></h2>
+    <h2><a id="git">GIT source repository</a></h2>
 
     <p>
       All modules maintained by the libvirt project have their primary

@@ -8,7 +8,7 @@
         from version 2.2 onwards.
     </p>
 
-    <h2><a name="project">Project Links</a></h2>
+    <h2><a id="project">Project Links</a></h2>
 
     <ul>
       <li>
@@ -43,7 +43,7 @@ vbox+ssh://user@example.com/session  (remote access, SSH tunnelled)
         work is completed to get the libvirtd daemon working there.</strong>
     </p>
 
-    <h2><a name="xmlconfig">Example domain XML config</a></h2>
+    <h2><a id="xmlconfig">Example domain XML config</a></h2>
 
 <pre>
 &lt;domain type='vbox'&gt;

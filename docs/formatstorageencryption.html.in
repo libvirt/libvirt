@@ -6,7 +6,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="StorageEncryption">Storage volume encryption XML</a></h2>
+    <h2><a id="StorageEncryption">Storage volume encryption XML</a></h2>
 
     <p>
       Storage volumes may be encrypted, the XML snippet described below is used
@@ -37,7 +37,7 @@
       secret value at the time of volume creation, and store it using the
       specified <code>uuid</code>.
     </p>
-    <h3><a name="StorageEncryptionDefault">"default" format</a></h3>
+    <h3><a id="StorageEncryptionDefault">"default" format</a></h3>
     <p>
       <code>&lt;encryption format="default"/&gt;</code> can be specified only
       when creating a qcow volume.  If the volume is successfully created, the
@@ -47,7 +47,7 @@
       in later operations with the volume, or when setting up a domain that
       uses the volume.
     </p>
-    <h3><a name="StorageEncryptionQcow">"qcow" format</a></h3>
+    <h3><a id="StorageEncryptionQcow">"qcow" format</a></h3>
     <p>
       The <code>qcow</code> format specifies that the built-in encryption
       support in <code>qcow</code>- or <code>qcow2</code>-formatted volume
@@ -56,7 +56,7 @@
       the <code>secret</code> element is not present during volume creation,
       a secret is automatically generated and attached to the volume.
     </p>
-    <h3><a name="StorageEncryptionLuks">"luks" format</a></h3>
+    <h3><a id="StorageEncryptionLuks">"luks" format</a></h3>
     <p>
       The <code>luks</code> format is specific to a luks encrypted volume
       and the secret is used in order to either encrypt during volume creation
@@ -119,7 +119,7 @@
     </dl>
 
 
-    <h2><a name="example">Examples</a></h2>
+    <h2><a id="example">Examples</a></h2>
 
     <p>
       Here is a simple example, specifying use of the <code>qcow</code> format:

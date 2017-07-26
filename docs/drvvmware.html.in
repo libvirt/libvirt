@@ -15,7 +15,7 @@
     from <a href="http://www.vmware.com/support/developer/vix-api/">here</a>.
     </p>
 
-    <h2><a name="project">Project Links</a></h2>
+    <h2><a id="project">Project Links</a></h2>
 
     <ul>
       <li>
@@ -51,7 +51,7 @@ vmwarews+tcp://user@example.com/session  (remote access to VMware Workstation, S
 vmwarews+ssh://user@example.com/session  (remote access to VMware Workstation, SSH tunnelled)
 </pre>
 
-    <h2><a name="xmlconfig">Example domain XML config</a></h2>
+    <h2><a id="xmlconfig">Example domain XML config</a></h2>
 
 <pre>
 &lt;domain type='vmware'&gt;

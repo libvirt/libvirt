@@ -11,7 +11,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="add">Add an application</a></h2>
+    <h2><a id="add">Add an application</a></h2>
 
     <p>
       To add an application not listed on this page, send a message
@@ -30,7 +30,7 @@
       <img src="logos/logo-square-powered-256.png" alt="libvirt powered"/>
     </p>
 
-    <h2><a name="clientserver">Client/Server applications</a></h2>
+    <h2><a id="clientserver">Client/Server applications</a></h2>
 
     <dl>
       <dt><a href="http://archipelproject.org">Archipel</a></dt>
@@ -50,7 +50,7 @@
       </dd>
     </dl>
 
-    <h2><a name="command">Command line tools</a></h2>
+    <h2><a id="command">Command line tools</a></h2>
 
     <dl>
       <dt><a href="http://libguestfs.org">guestfish</a></dt>
@@ -121,7 +121,7 @@
       </dd>
     </dl>
 
-    <h2><a name="configmgmt">Configuration Management</a></h2>
+    <h2><a id="configmgmt">Configuration Management</a></h2>
 
     <dl>
       <dt><a href="https://wiki.lcfg.org/bin/view/LCFG/LcfgLibvirt">LCFG</a></dt>
@@ -139,7 +139,7 @@
       </dd>
     </dl>
 
-    <h2><a name="continuousintegration">Continuous Integration</a></h2>
+    <h2><a id="continuousintegration">Continuous Integration</a></h2>
 
     <dl>
       <dt><a href="http://buildbot.net/buildbot/docs/current/Libvirt.html">BuildBot</a></dt>
@@ -163,7 +163,7 @@
       </dd>
     </dl>
 
-    <h2><a name="conversion">Conversion</a></h2>
+    <h2><a id="conversion">Conversion</a></h2>
 
     <dl>
       <dt><a href="http://libguestfs.org/virt-p2v.1.html">virt-p2v</a></dt>
@@ -194,7 +194,7 @@
       </dd>
     </dl>
 
-    <h2><a name="desktop">Desktop applications</a></h2>
+    <h2><a id="desktop">Desktop applications</a></h2>
 
     <dl>
       <dt><a href="http://virt-manager.org/">virt-manager</a></dt>
@@ -224,7 +224,7 @@
       </dd>
     </dl>
 
-    <h2><a name="iaas">Infrastructure as a Service (IaaS)</a></h2>
+    <h2><a id="iaas">Infrastructure as a Service (IaaS)</a></h2>
 
     <dl>
       <dt><a href="http://cc1.ifj.edu.pl">Cracow Cloud One</a></dt>
@@ -288,7 +288,7 @@
       </dd>
     </dl>
 
-    <h2><a name="libraries">Libraries</a></h2>
+    <h2><a id="libraries">Libraries</a></h2>
 
     <dl>
       <dt><a href="http://libguestfs.org">libguestfs</a></dt>
@@ -321,7 +321,7 @@
       </dd>
     </dl>
 
-    <h2><a name="livecd">LiveCD / Appliances</a></h2>
+    <h2><a id="livecd">LiveCD / Appliances</a></h2>
 
     <dl>
       <dt><a href="http://et.redhat.com/~rjones/virt-p2v/">virt-p2v</a></dt>
@@ -334,7 +334,7 @@
       </dd>
     </dl>
 
-    <h2><a name="monitoring">Monitoring</a></h2>
+    <h2><a id="monitoring">Monitoring</a></h2>
     <dl>
       <dt><a href="http://collectd.org/plugins/libvirt.shtml">collectd</a></dt>
       <dd>
@@ -381,7 +381,7 @@
       </dd>
     </dl>
 
-    <h2><a name="provisioning">Provisioning</a></h2>
+    <h2><a id="provisioning">Provisioning</a></h2>
 
     <dl>
       <dt><a href="http://www.ibm.com/software/tivoli/products/prov-mgr/">Tivoli Provisioning Manager</a></dt>
@@ -415,7 +415,7 @@
     </dl>
 
 
-    <h2><a name="web">Web applications</a></h2>
+    <h2><a id="web">Web applications</a></h2>
 
     <dl>
       <dt><a href="http://community.abiquo.com/display/AbiCloud">AbiCloud</a></dt>
@@ -468,7 +468,7 @@
       </dd>
     </dl>
 
-    <h2><a name="mobile">Mobile applications</a></h2>
+    <h2><a id="mobile">Mobile applications</a></h2>
 
     <dl>
       <dt><a href="https://market.android.com/details?id=vm.manager">VM Manager</a></dt>
@@ -479,7 +479,7 @@
       </dd>
     </dl>
 
-    <h2><a name="other">Other</a></h2>
+    <h2><a id="other">Other</a></h2>
 
     <dl>
       <dt><a href="http://cuckoosandbox.org/">Cuckoo Sandbox</a></dt>

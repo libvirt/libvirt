@@ -7,7 +7,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="security">Security Issues</a></h2>
+    <h2><a id="security">Security Issues</a></h2>
 
     <p>
       If you think that an issue with libvirt may have security
@@ -19,7 +19,7 @@
       <a href="securityprocess.html">security process</a> instead.
     </p>
 
-    <h2><a name="bugzilla">Bug Tracking</a></h2>
+    <h2><a id="bugzilla">Bug Tracking</a></h2>
 
     <p>
       If you are using libvirt binaries from a Linux distribution
@@ -27,7 +27,7 @@
       first.
     </p>
 
-    <h2><a name="general">General libvirt bug reports</a></h2>
+    <h2><a id="general">General libvirt bug reports</a></h2>
 
     <p>
       The <a href="http://bugzilla.redhat.com">Red Hat Bugzilla Server</a>
@@ -69,7 +69,7 @@
       <li><a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?product=Virtualization%20Tools&amp;component=libvirt">New libvirt ticket</a></li>
     </ul>
 
-    <h2><a name="distribution">Linux Distribution specific bug reports</a></h2>
+    <h2><a id="distribution">Linux Distribution specific bug reports</a></h2>
     <ul>
       <li>
         If you are using binaries from <strong>Fedora</strong>, enter
@@ -107,7 +107,7 @@
     </ul>
 
 
-    <h2><a name="quality">How to file high quality bug reports</a></h2>
+    <h2><a id="quality">How to file high quality bug reports</a></h2>
 
     <p>
       To increase the likelihood of your bug report being addressed it is

@@ -11,7 +11,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="skills">Contributions required</a></h2>
+    <h2><a id="skills">Contributions required</a></h2>
 
     <p>
       The libvirt project is always looking for new contributors to
@@ -97,7 +97,7 @@
         these help forums.</li>
     </ul>
 
-    <h2><a name="comms">Communication</a></h2>
+    <h2><a id="comms">Communication</a></h2>
 
     <p>
       For full details on contacting other project contributors
@@ -106,7 +106,7 @@
       between contributors:
     </p>
 
-    <h3><a name="email">Mailing lists</a></h3>
+    <h3><a id="email">Mailing lists</a></h3>
 
     <p>
       The project has a number of
@@ -118,7 +118,7 @@
       to follow the traffic.
     </p>
 
-    <h3><a name="irc">Instant messaging / chat</a></h3>
+    <h3><a id="irc">Instant messaging / chat</a></h3>
 
     <p>
       Contributors to libvirt are encouraged to join the
@@ -127,7 +127,7 @@
       with others members.
     </p>
 
-    <h2><a name="outreach">Student / outreach coding programs</a></h2>
+    <h2><a id="outreach">Student / outreach coding programs</a></h2>
 
     <p>
       Since 2016, the libvirt project directly participates as an

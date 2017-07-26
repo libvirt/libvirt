@@ -17,7 +17,7 @@
     </p>
 
 
-    <h2><a name="protocol">RPC protocol</a></h2>
+    <h2><a id="protocol">RPC protocol</a></h2>
 
     <p>
       libvirt uses a simple, variable length, packet based RPC protocol.
@@ -193,14 +193,14 @@
       definition for the program+version in question
     </p>
 
-    <h3><a name="wireexamples">Wire examples</a></h3>
+    <h3><a id="wireexamples">Wire examples</a></h3>
 
     <p>
       The following diagrams illustrate some example packet exchanges
       between a client and server
     </p>
 
-    <h4><a name="wireexamplescall">Method call</a></h4>
+    <h4><a id="wireexamplescall">Method call</a></h4>
 
     <p>
       A single method call and successful
@@ -219,7 +219,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
        +--+-----------------------+--------+
     </pre>
 
-    <h4><a name="wireexamplescallerr">Method call with error</a></h4>
+    <h4><a id="wireexamplescallerr">Method call with error</a></h4>
 
     <p>
       An unsuccessful method call will instead return an error object
@@ -235,7 +235,7 @@ C &lt;--  |48| 8 | 1 | 3 | 2 | 1 | 0 | .o.oOo.o.oOo.o.oOo.o.oOo |  &lt;-- S  (er
        +--+-----------------------+--------------------------+
     </pre>
 
-    <h4><a name="wireexamplescallup">Method call with upload stream</a></h4>
+    <h4><a id="wireexamplescallup">Method call with upload stream</a></h4>
 
     <p>
       A method call which also involves uploading some data over
@@ -272,7 +272,7 @@ C &lt;--  |24| 8 | 1 | 3 | 3 | 1 | 0 | &lt;-- S  (stream finish)
        +--+-----------------------+
     </pre>
 
-    <h4><a name="wireexamplescallbi">Method call bidirectional stream</a></h4>
+    <h4><a id="wireexamplescallbi">Method call bidirectional stream</a></h4>
 
     <p>
       A method call which also involves a bi-directional stream will
@@ -328,7 +328,7 @@ C &lt;--  |24| 8 | 1 | 3 | 3 | 1 | 0 | &lt;-- S  (stream finish)
     </pre>
 
 
-    <h4><a name="wireexamplescallmany">Method calls overlapping</a></h4>
+    <h4><a id="wireexamplescallmany">Method calls overlapping</a></h4>
     <pre>
        +--+-----------------------+-----------+
 C --&gt;  |38| 8 | 1 | 3 | 0 | 1 | 0 | .o.oOo.o. |  --&gt; S  (call 1)
@@ -356,7 +356,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 4 | 0 | .o.oOo |  &lt;-- S  (reply 4)
        +--+-----------------------+--------+
     </pre>
 
-    <h4><a name="wireexamplescallfd">Method call with passed FD</a></h4>
+    <h4><a id="wireexamplescallfd">Method call with passed FD</a></h4>
 
     <p>
       A single method call with 2 passed file descriptors and successful
@@ -378,14 +378,14 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
     </pre>
 
 
-    <h2><a name="security">RPC security</a></h2>
+    <h2><a id="security">RPC security</a></h2>
 
     <p>
       There are various things to consider to ensure an implementation
       of the RPC protocol can be satisfactorily secured
     </p>
 
-    <h3><a name="securitytls">Authentication/encryption</a></h3>
+    <h3><a id="securitytls">Authentication/encryption</a></h3>
 
     <p>
       The basic RPC protocol does not define or require any specific
@@ -399,7 +399,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
       stream can of course be tunnelled over transports such as SSH.
     </p>
 
-    <h3><a name="securitylimits">Data limits</a></h3>
+    <h3><a id="securitylimits">Data limits</a></h3>
 
     <p>
       Although the protocol itself defines many arbitrary sized data values in the
@@ -411,7 +411,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
       breaking compatibility of the RPC data on the wire.
     </p>
 
-    <h3><a name="securityvalidate">Data validation</a></h3>
+    <h3><a id="securityvalidate">Data validation</a></h3>
 
     <p>
       It is important that all data be fully validated before performing
@@ -427,7 +427,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
       execution API (e.g. corresponding libvirt public API).
     </p>
 
-    <h2><a name="internals">RPC internal APIs</a></h2>
+    <h2><a id="internals">RPC internal APIs</a></h2>
 
     <p>
       The generic internal RPC library code lives in the <code>src/rpc/</code>
@@ -436,7 +436,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
       purposes are:
     </p>
 
-    <h3><a name="apioverview">Overview of RPC objects</a></h3>
+    <h3><a id="apioverview">Overview of RPC objects</a></h3>
 
     <p>
       The following is a high level overview of the role of each
@@ -568,7 +568,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
       </dd>
     </dl>
 
-    <h3><a name="apiclientdispatch">Client RPC dispatch</a></h3>
+    <h3><a id="apiclientdispatch">Client RPC dispatch</a></h3>
 
     <p>
       The client RPC code must allow for multiple overlapping RPC method
@@ -601,7 +601,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
       grabs the buck, and re-enabled when the buck is released.
     </p>
 
-    <h4><a name="apiclientdispatchex1">Example with buck passing</a></h4>
+    <h4><a id="apiclientdispatchex1">Example with buck passing</a></h4>
 
     <p>
       In the first example, a second thread issues an API call
@@ -649,7 +649,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
                       Return API2()
     </pre>
 
-    <h4><a name="apiclientdispatchex2">Example without buck passing</a></h4>
+    <h4><a id="apiclientdispatchex2">Example without buck passing</a></h4>
 
     <p>
       In this second example, a second thread issues an API call
@@ -699,7 +699,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
        Return API1()
     </pre>
 
-    <h4><a name="apiclientdispatchex3">Example with async events</a></h4>
+    <h4><a id="apiclientdispatchex3">Example with async events</a></h4>
 
     <p>
       In this example, only one thread is present and it has to
@@ -739,7 +739,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
                           ...
     </pre>
 
-    <h3><a name="apiserverdispatch">Server RPC dispatch</a></h3>
+    <h3><a id="apiserverdispatch">Server RPC dispatch</a></h3>
 
     <p>
       The RPC server code must support receipt of incoming RPC requests from
@@ -827,7 +827,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
       queue.
     </p>
 
-    <h4><a name="apiserverdispatchex1">Example with overlapping methods</a></h4>
+    <h4><a id="apiserverdispatchex1">Example with overlapping methods</a></h4>
 
     <p>
       This example illustrates processing of two incoming methods with
@@ -874,7 +874,7 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
       ...
     </pre>
 
-    <h4><a name="apiserverdispatchex2">Example with stream data</a></h4>
+    <h4><a id="apiserverdispatchex2">Example with stream data</a></h4>
 
     <p>
       This example illustrates processing of stream data

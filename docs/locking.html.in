@@ -15,7 +15,7 @@
       aware filesystem.
     </p>
 
-    <h2><a name="plugins">Lock manager plugins</a></h2>
+    <h2><a id="plugins">Lock manager plugins</a></h2>
 
     <p>
       The lock manager framework has a pluggable architecture,

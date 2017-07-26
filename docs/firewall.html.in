@@ -35,8 +35,7 @@
       </li>
     </ul>
 
-    <h3><a name="name-fw-virtual-network-driver"
-           id="id-fw-virtual-network-driver">The virtual network driver</a>
+    <h3><a id="fw-virtual-network-driver">The virtual network driver</a>
     </h3>
     <p>The typical configuration for guests is to use bridging of the
        physical NIC on the host to connect the guest directly to the LAN.
@@ -130,8 +129,7 @@ MASQUERADE all  --  *      *       192.168.122.0/24    !192.168.122.0/24</pre>
       </li>
     </ul>
 
-    <h3><a name="name-fw-network-filter-driver"
-           id="id-fw-network-filter-driver">The network filter driver</a>
+    <h3><a id="fw-network-filter-driver">The network filter driver</a>
     </h3>
     <p>This driver provides a fully configurable network filtering capability
        that leverages ebtables, iptables and ip6tables. This was written by

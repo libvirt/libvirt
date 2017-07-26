@@ -27,30 +27,30 @@
       <xsl:for-each select="/html:html/html:body/html:h2[count(html:a) = 1]">
         <xsl:variable name="thish2" select="."/>
         <li>
-          <a href="#{html:a/@name}"><xsl:value-of select="html:a/text()"/></a>
+          <a href="#{html:a/@id}"><xsl:value-of select="html:a/text()"/></a>
           <xsl:if test="count(./following-sibling::html:h3[preceding-sibling::html:h2[1] = $thish2 and count(html:a) = 1]) > 0">
             <ul>
               <xsl:for-each select="./following-sibling::html:h3[preceding-sibling::html:h2[1] = $thish2 and count(html:a) = 1]">
                 <xsl:variable name="thish3" select="."/>
                 <li>
-                  <a href="#{html:a/@name}"><xsl:value-of select="html:a/text()"/></a>
+                  <a href="#{html:a/@id}"><xsl:value-of select="html:a/text()"/></a>
                   <xsl:if test="count(./following-sibling::html:h4[preceding-sibling::html:h3[1] = $thish3 and count(html:a) = 1]) > 0">
                     <ul>
                       <xsl:for-each select="./following-sibling::html:h4[preceding-sibling::html:h3[1] = $thish3 and count(html:a) = 1]">
                         <xsl:variable name="thish4" select="."/>
                         <li>
-                          <a href="#{html:a/@name}"><xsl:value-of select="html:a/text()"/></a>
+                          <a href="#{html:a/@id}"><xsl:value-of select="html:a/text()"/></a>
                           <xsl:if test="count(./following-sibling::html:h5[preceding-sibling::html:h4[1] = $thish4 and count(html:a) = 1]) > 0">
                             <ul>
                               <xsl:for-each select="./following-sibling::html:h5[preceding-sibling::html:h4[1] = $thish4 and count(html:a) = 1]">
                                 <xsl:variable name="thish5" select="."/>
                                 <li>
-                                  <a href="#{html:a/@name}"><xsl:value-of select="html:a/text()"/></a>
+                                  <a href="#{html:a/@id}"><xsl:value-of select="html:a/text()"/></a>
                                   <xsl:if test="count(./following-sibling::html:h6[preceding-sibling::html:h5[1] = $thish5 and count(html:a) = 1]) > 0">
                                     <ul>
                                       <xsl:for-each select="./following-sibling::html:h6[preceding-sibling::html:h5[1] = $thish5 and count(html:a) = 1]">
                                         <li>
-                                          <a href="#{html:a/@name}"><xsl:value-of select="html:a/text()"/></a>
+                                          <a href="#{html:a/@id}"><xsl:value-of select="html:a/text()"/></a>
                                         </li>
                                       </xsl:for-each>
                                     </ul>
@@ -159,8 +159,8 @@
   <xsl:template match="html:h2 | html:h3 | html:h4 | html:h5 | html:h6" mode="content">
     <xsl:element name="{name()}">
       <xsl:apply-templates mode="copy" />
-      <xsl:if test="./html:a/@name">
-        <a class="headerlink" href="#{html:a/@name}" title="Permalink to this headline">&#xb6;</a>
+      <xsl:if test="./html:a/@id">
+        <a class="headerlink" href="#{html:a/@id}" title="Permalink to this headline">&#xb6;</a>
       </xsl:if>
     </xsl:element>
   </xsl:template>

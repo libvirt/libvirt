@@ -6,7 +6,7 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="intro">Introduction</a></h2>
+    <h2><a id="intro">Introduction</a></h2>
 
     <p>
       A number of the libvirt virtualization drivers (QEMU/KVM and LXC) include
@@ -17,7 +17,7 @@
       the logs will usually end up in <code>/var/log/audit/audit.log</code>
     </p>
 
-    <h2><a name="config">Configuration</a></h2>
+    <h2><a id="config">Configuration</a></h2>
 
     <p>
       The libvirt audit integration is enabled by default on any host which has
@@ -48,7 +48,7 @@
       mentioned above.
     </p>
 
-    <h2><a name="types">Message types</a></h2>
+    <h2><a id="types">Message types</a></h2>
 
     <p>
       Libvirt defines three core audit message types each of which will
@@ -90,7 +90,7 @@
       <dd>Result of the action, either <code>success</code> or <code>failed</code></dd>
     </dl>
 
-    <h3><a name="typecontrol">VIRT_CONTROL</a></h3>
+    <h3><a id="typecontrol">VIRT_CONTROL</a></h3>
 
     <p>
       Reports change in the lifecycle state of a virtual machine. The <code>msg</code>
@@ -110,7 +110,7 @@
       <dd>Namespace ID of the <code>init</code> process in a container. Only if <code>op=init</code> and <code>virt=lxc</code></dd>
     </dl>
 
-    <h3><a name="typemachine">VIRT_MACHINE_ID</a></h3>
+    <h3><a id="typemachine">VIRT_MACHINE_ID</a></h3>
 
     <p>
       Reports the association of a security context with a guest. The <code>msg</code>
@@ -126,7 +126,7 @@
       <dd>Security context for the guest disk images and other assigned host resources</dd>
     </dl>
 
-    <h3><a name="typeresource">VIRT_RESOURCE</a></h3>
+    <h3><a id="typeresource">VIRT_RESOURCE</a></h3>
 
     <p>
       Reports the usage of a host resource by a guest. The fields include will
@@ -137,7 +137,7 @@
       be generated.
     </p>
 
-    <h4><a name="typeresourcevcpu">Virtual CPU</a></h4>
+    <h4><a id="typeresourcevcpu">Virtual CPU</a></h4>
 
     <p>
       The <code>msg</code> field will include the following sub-fields
@@ -155,7 +155,7 @@
     </dl>
 
 
-    <h4><a name="typeresourcemem">Memory</a></h4>
+    <h4><a id="typeresourcemem">Memory</a></h4>
 
     <p>
       The <code>msg</code> field will include the following sub-fields
@@ -172,7 +172,7 @@
       <dd>Updated memory size in bytes</dd>
     </dl>
 
-    <h4><a name="typeresourcedisk">Disk</a></h4>
+    <h4><a id="typeresourcedisk">Disk</a></h4>
     <p>
       The <code>msg</code> field will include the following sub-fields
     </p>
@@ -188,7 +188,7 @@
       <dd>Updated host file or device path acting as the disk backing file</dd>
     </dl>
 
-    <h4><a name="typeresourcenic">Network interface</a></h4>
+    <h4><a id="typeresourcenic">Network interface</a></h4>
 
     <p>
       The <code>msg</code> field will include the following sub-fields
@@ -221,7 +221,7 @@
       <dd>Name of the host network interface</dd>
     </dl>
 
-    <h4><a name="typeresourcefs">Filesystem</a></h4>
+    <h4><a id="typeresourcefs">Filesystem</a></h4>
     <p>
       The <code>msg</code> field will include the following sub-fields
     </p>
@@ -237,7 +237,7 @@
       <dd>Updated host directory, file or device path backing the filesystem</dd>
     </dl>
 
-    <h4><a name="typeresourcehost">Host device</a></h4>
+    <h4><a id="typeresourcehost">Host device</a></h4>
     <p>
       The <code>msg</code> field will include the following sub-fields
     </p>
@@ -255,7 +255,7 @@
       <dd>The path of the character device assigned to the guest, if <code>resrc=hostdev</code></dd>
     </dl>
 
-    <h4><a name="typeresourcetpm">TPM</a></h4>
+    <h4><a id="typeresourcetpm">TPM</a></h4>
     <p>
       The <code>msg</code> field will include the following sub-fields
     </p>
@@ -269,7 +269,7 @@
       <dd>The path of the host TPM device assigned to the guest</dd>
     </dl>
 
-    <h4><a name="typeresourcerng">RNG</a></h4>
+    <h4><a id="typeresourcerng">RNG</a></h4>
     <p>
       The <code>msg</code> field will include the following sub-fields
     </p>
@@ -285,7 +285,7 @@
       <dd>Updated path of the host entropy source for the RNG</dd>
     </dl>
 
-    <h4><a name="typeresourcechardev">console/serial/parallel/channel</a></h4>
+    <h4><a id="typeresourcechardev">console/serial/parallel/channel</a></h4>
     <p>
       The <code>msg</code> field will include the following sub-fields
     </p>
@@ -301,7 +301,7 @@
       <dd>Updated path of the backing character device for given emulated device</dd>
     </dl>
 
-    <h4><a name="typeresourcesmartcard">smartcard</a></h4>
+    <h4><a id="typeresourcesmartcard">smartcard</a></h4>
     <p>
       The <code>msg</code> field will include the following sub-fields
     </p>
@@ -321,7 +321,7 @@
       </dd>
     </dl>
 
-    <h4><a name="typeresourceredir">Redirected device</a></h4>
+    <h4><a id="typeresourceredir">Redirected device</a></h4>
     <p>
       The <code>msg</code> field will include the following sub-fields
     </p>
@@ -337,7 +337,7 @@
       <dd>The device type, only <code>USB redir</code> allowed</dd>
     </dl>
 
-    <h4><a name="typeresourcecgroup">Control group</a></h4>
+    <h4><a id="typeresourcecgroup">Control group</a></h4>
 
     <p>
       The <code>msg</code> field will include the following sub-fields
@@ -353,7 +353,7 @@
     </dl>
 
 
-    <h4><a name="typeresourceshmem">Shared memory</a></h4>
+    <h4><a id="typeresourceshmem">Shared memory</a></h4>
     <p>
       The <code>msg</code> field will include the following sub-fields
     </p>

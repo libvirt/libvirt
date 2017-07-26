@@ -98,7 +98,7 @@
 
     <ul id="toc"/>
 
-    <h2><a name="PCI">PCI host devices</a></h2>
+    <h2><a id="PCI">PCI host devices</a></h2>
     <dl>
       <dt><code>capability</code></dt>
       <dd>
@@ -139,7 +139,7 @@
       element will be included for each capability the device supports.
     </p>
 
-    <h3><a name="SRIOVCap">SR-IOV capability</a></h3>
+    <h3><a id="SRIOVCap">SR-IOV capability</a></h3>
     <p>
       Single root input/output virtualization (SR-IOV) allows sharing of the
       PCIe resources by multiple virtual environments. That is achieved by
@@ -186,7 +186,7 @@
 ...
 &lt;device&gt;</pre>
 
-    <h3><a name="MDEVCap">MDEV capability</a></h3>
+    <h3><a id="MDEVCap">MDEV capability</a></h3>
     <p>
       A PCI device capable of creating mediated devices will include a nested
       capability <code>mdev_types</code> which enumerates all supported mdev
@@ -252,7 +252,7 @@
   &lt;/capability&gt;
 &lt;/device&gt;</pre>
 
-    <h2><a name="MDEV">Mediated devices (MDEVs)</a></h2>
+    <h2><a id="MDEV">Mediated devices (MDEVs)</a></h2>
     <p>
       Mediated devices (<span class="since">Since 3.2.0</span>) are software
       devices defining resource allocation on the backing physical device which

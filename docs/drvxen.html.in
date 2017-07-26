@@ -11,7 +11,7 @@
       on any Xen release from 3.0.1 onwards.
     </p>
 
-    <h2><a name="project">Project Links</a></h2>
+    <h2><a id="project">Project Links</a></h2>
 
     <ul>
       <li>
@@ -20,7 +20,7 @@
       </li>
     </ul>
 
-    <h2><a name="prereq">Deployment pre-requisites</a></h2>
+    <h2><a id="prereq">Deployment pre-requisites</a></h2>
 
     <p>
       The libvirt Xen driver uses a combination of channels to manage Xen
@@ -65,7 +65,7 @@
       </li>
     </ul>
 
-    <h2><a name="uri">Connections to Xen driver</a></h2>
+    <h2><a id="uri">Connections to Xen driver</a></h2>
 
     <p>
     The libvirt Xen driver is a single-instance privileged driver,
@@ -81,7 +81,7 @@ xen+tcp://example.com/         (remote access, SASl/Kerberos)
 xen+ssh://root@example.com/    (remote access, SSH tunnelled)
 </pre>
 
-    <h2><a name="imex">Import and export of libvirt domain XML configs</a></h2>
+    <h2><a id="imex">Import and export of libvirt domain XML configs</a></h2>
 
     <p>The Xen driver currently supports two native
       config formats. The first known as <code>xen-xm</code> is the format
@@ -89,7 +89,7 @@ xen+ssh://root@example.com/    (remote access, SSH tunnelled)
       known as <code>xen-sxpr</code>, is the format used for interacting
       with the XenD's legacy HTTP RPC service.</p>
 
-    <h3><a name="xmlimport">Converting from XM config files to domain XML</a></h3>
+    <h3><a id="xmlimport">Converting from XM config files to domain XML</a></h3>
 
     <p>
       The <code>virsh domxml-from-native</code> provides a way to convert an
@@ -135,7 +135,7 @@ xen+ssh://root@example.com/    (remote access, SSH tunnelled)
   &lt;/devices&gt;
 &lt;/domain&gt;</pre>
 
-    <h3><a name="xmlexport">Converting from domain XML to XM config files</a></h3>
+    <h3><a id="xmlexport">Converting from domain XML to XM config files</a></h3>
 
     <p>
       The <code>virsh domxml-to-native</code> provides a way to convert a
@@ -163,7 +163,7 @@ vnclisten = "0.0.0.0"
 disk = [ "tap:aio:/var/lib/xen/images/rhel5pv.img,xvda,w", "tap:qcow:/root/qcow1-xen.img,xvdd,w" ]
 vif = [ "mac=00:16:3e:60:36:ba,bridge=virbr0,script=vif-bridge,vifname=vif5.0" ]</pre>
 
-    <h2><a name="xmlconfig">Example domain XML config</a></h2>
+    <h2><a id="xmlconfig">Example domain XML config</a></h2>
 
     <p>
       Below are some example XML configurations for Xen guest domains.

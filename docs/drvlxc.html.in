@@ -18,7 +18,7 @@ particular sVirt for mandatory access control, auditing of operations,
 integration with control groups and many other features.
 </p>
 
-<h2><a name="cgroups">Control groups Requirements</a></h2>
+<h2><a id="cgroups">Control groups Requirements</a></h2>
 
 <p>
 In order to control the resource usage of processes inside containers, the
@@ -32,7 +32,7 @@ init service will be required. For further information, consult the general
 libvirt <a href="cgroups.html">cgroups documentation</a>.
 </p>
 
-<h2><a name="namespaces">Namespace requirements</a></h2>
+<h2><a id="namespaces">Namespace requirements</a></h2>
 
 <p>
 In order to separate processes inside a container from those in the
@@ -47,9 +47,9 @@ configured UID/GID mapping is a pre-requisite to making containers
 secure, in the absence of sVirt confinement.</strong>
 </p>
 
-<h2><a name="init">Default container setup</a></h2>
+<h2><a id="init">Default container setup</a></h2>
 
-<h3><a name="cliargs">Command line arguments</a></h3>
+<h3><a id="cliargs">Command line arguments</a></h3>
 
 <p>
 When the container "init" process is started, it will typically
@@ -70,7 +70,7 @@ would use the following XML
 &lt;/os&gt;
 </pre>
 
-<h3><a name="envvars">Environment variables</a></h3>
+<h3><a id="envvars">Environment variables</a></h3>
 
 <p>
 When the container "init" process is started, it will be given several useful
@@ -108,7 +108,7 @@ Use of this is discouraged, in favour of passing arguments directly to the
 container init process via the <code>initarg</code> config element.</dd>
 </dl>
 
-<h3><a name="fsmounts">Filesystem mounts</a></h3>
+<h3><a id="fsmounts">Filesystem mounts</a></h3>
 
 <p>
 In the absence of any explicit configuration, the container will
@@ -131,7 +131,7 @@ only expose the sub-tree associated with the container</li>
 </ul>
 
 
-<h3><a name="devnodes">Device nodes</a></h3>
+<h3><a id="devnodes">Device nodes</a></h3>
 
 <p>
 The container init process will be started with <code>CAP_MKNOD</code>
@@ -178,7 +178,7 @@ Further block or character devices will be made available to containers
 depending on their configuration.
 </p>
 
-<h2><a name="security">Security considerations</a></h2>
+<h2><a id="security">Security considerations</a></h2>
 
 <p>
 The libvirt LXC driver is fairly flexible in how it can be configured,
@@ -190,7 +190,7 @@ isolation between a container and the host must ensure that they are
 writing a suitable configuration.
 </p>
 
-<h3><a name="securenetworking">Network isolation</a></h3>
+<h3><a id="securenetworking">Network isolation</a></h3>
 
 <p>
 If the guest configuration does not list any network interfaces,
@@ -205,7 +205,7 @@ namespace is not wanted, then applications should set the
 <code>&lt;features&gt;....&lt;/features&gt;</code> element.
 </p>
 
-<h3><a name="securefs">Filesystem isolation</a></h3>
+<h3><a id="securefs">Filesystem isolation</a></h3>
 
 <p>
 If the guest configuration does not list any filesystems, then
@@ -250,7 +250,7 @@ a bind mount to hide them. This is particularly important for the
 </p>
 
 
-<h3><a name="secureusers">User and group isolation</a></h3>
+<h3><a id="secureusers">User and group isolation</a></h3>
 
 <p>
 If the guest configuration does not list any ID mapping, then the
@@ -281,7 +281,7 @@ causes libvirt to activate the user namespace feature.
 </p>
 
 
-<h2><a name="activation">Systemd Socket Activation Integration</a></h2>
+<h2><a id="activation">Systemd Socket Activation Integration</a></h2>
 
 <p>
 The libvirt LXC driver provides the ability to pass across pre-opened file
@@ -477,7 +477,7 @@ configured to block read/write/mknod from all devices except those
 that a container is authorized to use.
 </p>
 
-<h2><a name="exconfig">Example configurations</a></h2>
+<h2><a id="exconfig">Example configurations</a></h2>
 
 <h3>Example config version 1</h3>
 <p></p>
@@ -542,7 +542,7 @@ debootstrap, whatever) under /opt/vm-1-root:
 &lt;/domain&gt;
 </pre>
 
-<h2><a name="capabilities">Altering the available capabilities</a></h2>
+<h2><a id="capabilities">Altering the available capabilities</a></h2>
 
 <p>
 By default the libvirt LXC driver drops some capabilities among which CAP_MKNOD.
@@ -590,7 +590,7 @@ Note that allowing capabilities that are normally dropped by default can serious
 affect the security of the container and the host.
 </p>
 
-<h2><a name="share">Inherit namespaces</a></h2>
+<h2><a id="share">Inherit namespaces</a></h2>
 
 <p>
 Libvirt allows you to inherit the namespace from container/process just like lxc tools
@@ -615,7 +615,7 @@ ignored.
 The use of namespace passthrough requires libvirt >= 1.2.19
 </p>
 
-<h2><a name="usage">Container usage / management</a></h2>
+<h2><a id="usage">Container usage / management</a></h2>
 
 <p>
 As with any libvirt virtualization driver, LXC containers can be
@@ -629,7 +629,7 @@ and LXC. For further details about usage of virsh consult its
 manual page.
 </p>
 
-<h3><a name="usageSave">Defining (saving) container configuration</a></h3>
+<h3><a id="usageSave">Defining (saving) container configuration</a></h3>
 
 <p>
 The <code>virsh define</code> command takes an XML configuration
@@ -640,7 +640,7 @@ document and loads it into libvirt, saving the configuration on disk
 # virsh -c lxc:/// define myguest.xml
 </pre>
 
-<h3><a name="usageView">Viewing container configuration</a></h3>
+<h3><a id="usageView">Viewing container configuration</a></h3>
 
 <p>
 The <code>virsh dumpxml</code> command can be used to view the
@@ -655,7 +655,7 @@ using the <code>--inactive</code> flag
 # virsh -c lxc:/// dumpxml myguest
 </pre>
 
-<h3><a name="usageStart">Starting containers</a></h3>
+<h3><a id="usageStart">Starting containers</a></h3>
 
 <p>
 The <code>virsh start</code> command can be used to start a
@@ -677,7 +677,7 @@ by libvirt, using the <code>virsh create</code> command.
 </pre>
 
 
-<h3><a name="usageStop">Stopping containers</a></h3>
+<h3><a id="usageStop">Stopping containers</a></h3>
 
 <p>
 The <code>virsh shutdown</code> command can be used
@@ -702,7 +702,7 @@ request, it can be forcibly stopped using the <code>virsh destroy</code>
 </pre>
 
 
-<h3><a name="usageReboot">Rebooting a container</a></h3>
+<h3><a id="usageReboot">Rebooting a container</a></h3>
 
 <p>
 The <code>virsh reboot</code> command can be used
@@ -717,7 +717,7 @@ to PID 1 inside the container.
 # virsh -c lxc:/// reboot myguest
 </pre>
 
-<h3><a name="usageDelete">Undefining (deleting) a container configuration</a></h3>
+<h3><a id="usageDelete">Undefining (deleting) a container configuration</a></h3>
 
 <p>
 The <code>virsh undefine</code> command can be used to delete the
@@ -729,7 +729,7 @@ running, this will turn it into a "transient" guest.
 # virsh -c lxc:/// undefine myguest
 </pre>
 
-<h3><a name="usageConnect">Connecting to a container console</a></h3>
+<h3><a id="usageConnect">Connecting to a container console</a></h3>
 
 <p>
 The <code>virsh console</code> command can be used to connect
@@ -752,7 +752,7 @@ as 'console0', 'console1', 'console2', etc.
 # virsh -c lxc:/// console myguest --devname console1
 </pre>
 
-<h3><a name="usageEnter">Running commands in a container</a></h3>
+<h3><a id="usageEnter">Running commands in a container</a></h3>
 
 <p>
 The <code>virsh lxc-enter-namespace</code> command can be used
@@ -764,7 +764,7 @@ and then execute an arbitrary command.
 # virsh -c lxc:/// lxc-enter-namespace myguest -- /bin/ls -al /dev
 </pre>
 
-<h3><a name="usageTop">Monitoring container utilization</a></h3>
+<h3><a id="usageTop">Monitoring container utilization</a></h3>
 
 <p>
 The <code>virt-top</code> command can be used to monitor the
@@ -776,7 +776,7 @@ host
 # virt-top -c lxc:///
 </pre>
 
-<h3><a name="usageConvert">Converting LXC container configuration</a></h3>
+<h3><a id="usageConvert">Converting LXC container configuration</a></h3>
 
 <p>
 The <code>virsh domxml-from-native</code> command can be used to convert

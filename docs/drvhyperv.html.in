@@ -9,7 +9,7 @@
     </p>
 
 
-    <h2><a name="project">Project Links</a></h2>
+    <h2><a id="project">Project Links</a></h2>
     <ul>
       <li>
         The <a href="http://www.microsoft.com/hyper-v-server/">Microsoft Hyper-V</a>
@@ -18,7 +18,7 @@
     </ul>
 
 
-    <h2><a name="uri">Connections to the Microsoft Hyper-V driver</a></h2>
+    <h2><a id="uri">Connections to the Microsoft Hyper-V driver</a></h2>
     <p>
         Some example remote connection URIs for the driver are:
     </p>
@@ -36,7 +36,7 @@ hyperv://example-hyperv.com/?transport=http  (over HTTP)
     </p>
 
 
-    <h3><a name="uriformat">URI Format</a></h3>
+    <h3><a id="uriformat">URI Format</a></h3>
     <p>
         URIs have this general form (<code>[...]</code> marks an optional part).
     </p>
@@ -49,7 +49,7 @@ hyperv://[username@]hostname[:port]/[?extraparameters]
     </p>
 
 
-    <h4><a name="extraparams">Extra parameters</a></h4>
+    <h4><a id="extraparams">Extra parameters</a></h4>
     <p>
         Extra parameters can be added to a URI as part of the query string
         (the part following <code>?</code>). A single parameter is formed by a
@@ -83,7 +83,7 @@ hyperv://[username@]hostname[:port]/[?extraparameters]
     </table>
 
 
-    <h3><a name="auth">Authentication</a></h3>
+    <h3><a id="auth">Authentication</a></h3>
     <p>
         In order to perform any useful operation the driver needs to log into
         the Hyper-V server. Therefore, only <code>virConnectOpenAuth</code> can

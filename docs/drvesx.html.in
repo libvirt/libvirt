@@ -11,7 +11,7 @@
         connect to a VMware vCenter 2.5/4.x/5.x (VPX).
     </p>
 
-    <h2><a name="project">Project Links</a></h2>
+    <h2><a id="project">Project Links</a></h2>
 
     <ul>
       <li>
@@ -20,7 +20,7 @@
       </li>
     </ul>
 
-    <h2><a name="prereq">Deployment pre-requisites</a></h2>
+    <h2><a id="prereq">Deployment pre-requisites</a></h2>
     <p>
         None. Any out-of-the-box installation of VPX/ESX(i)/GSX should work. No
         preparations are required on the server side, no libvirtd must be
@@ -34,7 +34,7 @@
         VMware vSphere API</a>.
     </p>
 
-    <h2><a name="uri">Connections to the VMware ESX driver</a></h2>
+    <h2><a id="uri">Connections to the VMware ESX driver</a></h2>
     <p>
         Some example remote connection URIs for the driver are:
     </p>
@@ -54,7 +54,7 @@ esx://example-esx.com/?no_verify=1     (ESX over HTTPS, but doesn't verify the s
     </p>
 
 
-    <h3><a name="uriformat">URI Format</a></h3>
+    <h3><a id="uriformat">URI Format</a></h3>
     <p>
         URIs have this general form (<code>[...]</code> marks an optional part).
     </p>
@@ -93,7 +93,7 @@ vpx://example-vcenter.com/folder1/dc1/folder2/example-esx.com
 </pre>
 
 
-    <h4><a name="extraparams">Extra parameters</a></h4>
+    <h4><a id="extraparams">Extra parameters</a></h4>
     <p>
         Extra parameters can be added to a URI as part of the query string
         (the part following <code>?</code>). A single parameter is formed by a
@@ -188,7 +188,7 @@ vpx://example-vcenter.com/folder1/dc1/folder2/example-esx.com
     </table>
 
 
-    <h3><a name="auth">Authentication</a></h3>
+    <h3><a id="auth">Authentication</a></h3>
     <p>
         In order to perform any useful operation the driver needs to log into
         the ESX server. Therefore, only <code>virConnectOpenAuth</code> can be
@@ -208,7 +208,7 @@ vpx://example-vcenter.com/folder1/dc1/folder2/example-esx.com
     </p>
 
 
-    <h3><a name="certificates">Certificates for HTTPS</a></h3>
+    <h3><a id="certificates">Certificates for HTTPS</a></h3>
     <p>
         By default the ESX driver uses HTTPS to communicate with an ESX server.
         Proper HTTPS communication requires correctly configured SSL
@@ -244,7 +244,7 @@ error: internal error curl_easy_perform() returned an error: Peer certificate ca
     </ul>
 
 
-    <h3><a name="connproblems">Connection problems</a></h3>
+    <h3><a id="connproblems">Connection problems</a></h3>
     <p>
         There are also other causes for connection problems than the
         <a href="#certificates">HTTPS certificate</a> related ones.
@@ -303,7 +303,7 @@ error: invalid argument in libvirt was built without the 'esx' driver
     </ul>
 
 
-    <h2><a name="questions">Questions blocking tasks</a></h2>
+    <h2><a id="questions">Questions blocking tasks</a></h2>
     <p>
         Some methods of the VI API start tasks, for example
         <code>PowerOnVM_Task()</code>. Such tasks may be blocked by questions
@@ -322,12 +322,12 @@ error: invalid argument in libvirt was built without the 'esx' driver
     </p>
 
 
-    <h2><a name="xmlspecial">Specialties in the domain XML config</a></h2>
+    <h2><a id="xmlspecial">Specialties in the domain XML config</a></h2>
     <p>
         There are several specialties in the domain XML config for ESX domains.
     </p>
 
-    <h3><a name="restrictions">Restrictions</a></h3>
+    <h3><a id="restrictions">Restrictions</a></h3>
     <p>
         There are some restrictions for some values of the domain XML config.
         The driver will complain if this restrictions are violated.
@@ -347,7 +347,7 @@ error: invalid argument in libvirt was built without the 'esx' driver
     </ul>
 
 
-    <h3><a name="datastore">Datastore references</a></h3>
+    <h3><a id="datastore">Datastore references</a></h3>
     <p>
         Storage is managed in datastores. VMware uses a special path format to
         reference files in a datastore. Basically, the datastore name is put
@@ -366,7 +366,7 @@ error: invalid argument in libvirt was built without the 'esx' driver
     </p>
 
 
-    <h3><a name="macaddresses">MAC addresses</a></h3>
+    <h3><a id="macaddresses">MAC addresses</a></h3>
     <p>
         VMware has registered two MAC address prefixes for domains:
         <code>00:0c:29</code> and <code>00:50:56</code>. These prefixes are
@@ -427,7 +427,7 @@ ethernet0.checkMACAddress = "false"
 </pre>
 
 
-    <h3><a name="hardware">Available hardware</a></h3>
+    <h3><a id="hardware">Available hardware</a></h3>
     <p>
         VMware ESX supports different models of SCSI controllers and network
         cards.
@@ -523,14 +523,14 @@ ethernet0.checkMACAddress = "false"
 </pre>
 
 
-    <h2><a name="importexport">Import and export of domain XML configs</a></h2>
+    <h2><a id="importexport">Import and export of domain XML configs</a></h2>
     <p>
         The ESX driver currently supports a native config format known as
         <code>vmware-vmx</code> to handle VMware VMX configs.
     </p>
 
 
-    <h3><a name="xmlimport">Converting from VMware VMX config to domain XML config</a></h3>
+    <h3><a id="xmlimport">Converting from VMware VMX config to domain XML config</a></h3>
     <p>
         The <code>virsh domxml-from-native</code> provides a way to convert an
         existing VMware VMX config into a domain XML config that can then be
@@ -621,7 +621,7 @@ Enter root password for example.com:
 </pre>
 
 
-    <h3><a name="xmlexport">Converting from domain XML config to VMware VMX config</a></h3>
+    <h3><a id="xmlexport">Converting from domain XML config to VMware VMX config</a></h3>
     <p>
       The <code>virsh domxml-to-native</code> provides a way to convert a
       domain XML config into a VMware VMX config.
@@ -675,7 +675,7 @@ ethernet0.address = "00:50:56:25:48:C7"
 </pre>
 
 
-    <h2><a name="xmlconfig">Example domain XML configs</a></h2>
+    <h2><a id="xmlconfig">Example domain XML configs</a></h2>
 
     <h3>Fedora11 on x86_64</h3>
 <pre>
@@ -704,7 +704,7 @@ ethernet0.address = "00:50:56:25:48:C7"
 </pre>
 
 
-    <h2><a name="migration">Migration</a></h2>
+    <h2><a id="migration">Migration</a></h2>
     <p>
         A migration cannot be initiated on an ESX server directly, a VMware
         vCenter is necessary for this. The <code>vcenter</code> query
@@ -749,7 +749,7 @@ Enter administrator password for example-vcenter.com:
 </pre>
 
 
-    <h2><a name="scheduler">Scheduler configuration</a></h2>
+    <h2><a id="scheduler">Scheduler configuration</a></h2>
     <p>
         The driver exposes the ESX CPU scheduler. The parameters listed below
         are available to control the scheduler.
@@ -780,7 +780,7 @@ Enter administrator password for example-vcenter.com:
     </dl>
 
 
-    <h2><a name="tools">VMware tools</a></h2>
+    <h2><a id="tools">VMware tools</a></h2>
     <p>
         Some actions require installed VMware tools. If the VMware tools are
         not installed in the guest and one of the actions below is to be
@@ -796,7 +796,7 @@ Enter administrator password for example-vcenter.com:
     </ul>
 
 
-    <h2><a name="links">Links</a></h2>
+    <h2><a id="links">Links</a></h2>
     <ul>
         <li>
             <a href="http://www.vmware.com/support/developer/vc-sdk/">
