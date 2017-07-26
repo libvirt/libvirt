@@ -87,6 +87,7 @@
         This page was generated at <xsl:value-of select="$timestamp"/>.
       </xsl:comment>
       <head>
+        <meta charset="UTF-8"/>
         <link rel="stylesheet" type="text/css" href="{$href_base}main.css"/>
         <link rel="SHORTCUT ICON" href="{$href_base}32favicon.png"/>
         <title>libvirt: <xsl:value-of select="html:html/html:body/html:h1"/></title>
