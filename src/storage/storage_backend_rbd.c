@@ -210,10 +210,11 @@ static int
 virStorageBackendRBDOpenIoCTX(virStorageBackendRBDStatePtr ptr,
                               virStoragePoolObjPtr pool)
 {
-    int r = rados_ioctx_create(ptr->cluster, pool->def->source.name, &ptr->ioctx);
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    int r = rados_ioctx_create(ptr->cluster, def->source.name, &ptr->ioctx);
     if (r < 0) {
         virReportSystemError(-r, _("failed to create the RBD IoCTX. Does the pool '%s' exist?"),
-                             pool->def->source.name);
+                             def->source.name);
     }
     return r;
 }
@@ -255,11 +256,12 @@ virStorageBackendRBDNewState(virConnectPtr conn,
                              virStoragePoolObjPtr pool)
 {
     virStorageBackendRBDStatePtr ptr;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
 
     if (VIR_ALLOC(ptr) < 0)
         return NULL;
 
-    if (virStorageBackendRBDOpenRADOSConn(ptr, conn, &pool->def->source) < 0)
+    if (virStorageBackendRBDOpenRADOSConn(ptr, conn, &def->source) < 0)
         goto error;
 
     if (virStorageBackendRBDOpenIoCTX(ptr, pool) < 0)
@@ -359,6 +361,7 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
                                    virStorageBackendRBDStatePtr ptr)
 {
     int ret = -1;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int r = 0;
     rbd_image_t image = NULL;
     rbd_image_info_t info;
@@ -388,7 +391,7 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
     if (volStorageBackendRBDUseFastDiff(features)) {
         VIR_DEBUG("RBD image %s/%s has fast-diff feature enabled. "
                   "Querying for actual allocation",
-                  pool->def->source.name, vol->name);
+                  def->source.name, vol->name);
 
         if (virStorageBackendRBDSetAllocation(vol, image, &info) < 0)
             goto cleanup;
@@ -398,19 +401,17 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
 
     VIR_DEBUG("Refreshed RBD image %s/%s (capacity: %llu allocation: %llu "
                       "obj_size: %"PRIu64" num_objs: %"PRIu64")",
-              pool->def->source.name, vol->name, vol->target.capacity,
+              def->source.name, vol->name, vol->target.capacity,
               vol->target.allocation, info.obj_size, info.num_objs);
 
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
-                    pool->def->source.name,
-                    vol->name) < 0)
+                    def->source.name, vol->name) < 0)
         goto cleanup;
 
     VIR_FREE(vol->key);
     if (virAsprintf(&vol->key, "%s/%s",
-                    pool->def->source.name,
-                    vol->name) < 0)
+                    def->source.name, vol->name) < 0)
         goto cleanup;
 
     ret = 0;
@@ -430,6 +431,7 @@ virStorageBackendRBDRefreshPool(virConnectPtr conn,
     int len = -1;
     int r = 0;
     char *name, *names = NULL;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virStorageBackendRBDStatePtr ptr = NULL;
     struct rados_cluster_stat_t clusterstat;
     struct rados_pool_stat_t poolstat;
@@ -444,17 +446,17 @@ virStorageBackendRBDRefreshPool(virConnectPtr conn,
 
     if ((r = rados_ioctx_pool_stat(ptr->ioctx, &poolstat)) < 0) {
         virReportSystemError(-r, _("failed to stat the RADOS pool '%s'"),
-                             pool->def->source.name);
+                             def->source.name);
         goto cleanup;
     }
 
-    pool->def->capacity = clusterstat.kb * 1024;
-    pool->def->available = clusterstat.kb_avail * 1024;
-    pool->def->allocation = poolstat.num_bytes;
+    def->capacity = clusterstat.kb * 1024;
+    def->available = clusterstat.kb_avail * 1024;
+    def->allocation = poolstat.num_bytes;
 
     VIR_DEBUG("Utilization of RBD pool %s: (kb: %"PRIu64" kb_avail: %"PRIu64
               " num_bytes: %"PRIu64")",
-              pool->def->source.name, clusterstat.kb, clusterstat.kb_avail,
+              def->source.name, clusterstat.kb, clusterstat.kb_avail,
               poolstat.num_bytes);
 
     while (true) {
@@ -514,7 +516,7 @@ virStorageBackendRBDRefreshPool(virConnectPtr conn,
     }
 
     VIR_DEBUG("Found %zu images in RBD pool %s",
-              virStoragePoolObjGetVolumesCount(pool), pool->def->source.name);
+              virStoragePoolObjGetVolumesCount(pool), def->source.name);
 
     ret = 0;
 
@@ -610,12 +612,13 @@ virStorageBackendRBDDeleteVol(virConnectPtr conn,
 {
     int ret = -1;
     int r = 0;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virStorageBackendRBDStatePtr ptr = NULL;
 
     virCheckFlags(VIR_STORAGE_VOL_DELETE_ZEROED |
                   VIR_STORAGE_VOL_DELETE_WITH_SNAPSHOTS, -1);
 
-    VIR_DEBUG("Removing RBD image %s/%s", pool->def->source.name, vol->name);
+    VIR_DEBUG("Removing RBD image %s/%s", def->source.name, vol->name);
 
     if (flags & VIR_STORAGE_VOL_DELETE_ZEROED)
         VIR_WARN("%s", "This storage backend does not support zeroed removal of volumes");
@@ -624,17 +627,17 @@ virStorageBackendRBDDeleteVol(virConnectPtr conn,
         goto cleanup;
 
     if (flags & VIR_STORAGE_VOL_DELETE_WITH_SNAPSHOTS) {
-        if (virStorageBackendRBDCleanupSnapshots(ptr->ioctx, &pool->def->source,
+        if (virStorageBackendRBDCleanupSnapshots(ptr->ioctx, &def->source,
                                                  vol) < 0)
             goto cleanup;
     }
 
-    VIR_DEBUG("Removing volume %s/%s", pool->def->source.name, vol->name);
+    VIR_DEBUG("Removing volume %s/%s", def->source.name, vol->name);
 
     r = rbd_remove(ptr->ioctx, vol->name);
     if (r < 0 && (-r) != ENOENT) {
         virReportSystemError(-r, _("failed to remove volume '%s/%s'"),
-                             pool->def->source.name, vol->name);
+                             def->source.name, vol->name);
         goto cleanup;
     }
 
@@ -651,6 +654,8 @@ virStorageBackendRBDCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                               virStoragePoolObjPtr pool,
                               virStorageVolDefPtr vol)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
     if (vol->target.format != VIR_STORAGE_FILE_RAW) {
@@ -661,14 +666,12 @@ virStorageBackendRBDCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_FREE(vol->target.path);
     if (virAsprintf(&vol->target.path, "%s/%s",
-                    pool->def->source.name,
-                    vol->name) < 0)
+                    def->source.name, vol->name) < 0)
         return -1;
 
     VIR_FREE(vol->key);
     if (virAsprintf(&vol->key, "%s/%s",
-                    pool->def->source.name,
-                    vol->name) < 0)
+                    def->source.name, vol->name) < 0)
         return -1;
 
     return 0;
@@ -687,13 +690,13 @@ virStorageBackendRBDBuildVol(virConnectPtr conn,
                              virStorageVolDefPtr vol,
                              unsigned int flags)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virStorageBackendRBDStatePtr ptr = NULL;
     int ret = -1;
     int r = 0;
 
     VIR_DEBUG("Creating RBD image %s/%s with size %llu",
-              pool->def->source.name,
-              vol->name, vol->target.capacity);
+              def->source.name, vol->name, vol->target.capacity);
 
     virCheckFlags(0, -1);
 
@@ -721,8 +724,7 @@ virStorageBackendRBDBuildVol(virConnectPtr conn,
     if ((r = virStorageBackendRBDCreateImage(ptr->ioctx, vol->name,
                                              vol->target.capacity)) < 0) {
         virReportSystemError(-r, _("failed to create volume '%s/%s'"),
-                             pool->def->source.name,
-                             vol->name);
+                             def->source.name, vol->name);
         goto cleanup;
     }
 
@@ -1045,11 +1047,12 @@ virStorageBackendRBDBuildVolFrom(virConnectPtr conn,
                                  virStorageVolDefPtr origvol,
                                  unsigned int flags)
 {
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virStorageBackendRBDStatePtr ptr = NULL;
     int ret = -1;
 
     VIR_DEBUG("Creating clone of RBD image %s/%s with name %s",
-              pool->def->source.name, origvol->name, newvol->name);
+              def->source.name, origvol->name, newvol->name);
 
     virCheckFlags(0, -1);
 
@@ -1208,6 +1211,7 @@ virStorageBackendRBDVolWipe(virConnectPtr conn,
                             unsigned int flags)
 {
     virStorageBackendRBDStatePtr ptr = NULL;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     rbd_image_t image = NULL;
     rbd_image_info_t info;
     uint64_t stripe_count;
@@ -1216,7 +1220,7 @@ virStorageBackendRBDVolWipe(virConnectPtr conn,
 
     virCheckFlags(0, -1);
 
-    VIR_DEBUG("Wiping RBD image %s/%s", pool->def->source.name, vol->name);
+    VIR_DEBUG("Wiping RBD image %s/%s", def->source.name, vol->name);
 
     if (!(ptr = virStorageBackendRBDNewState(conn, pool)))
         goto cleanup;
@@ -1240,7 +1244,7 @@ virStorageBackendRBDVolWipe(virConnectPtr conn,
     }
 
     VIR_DEBUG("Need to wipe %"PRIu64" bytes from RBD image %s/%s",
-              info.size, pool->def->source.name, vol->name);
+              info.size, def->source.name, vol->name);
 
     switch ((virStorageVolWipeAlgorithm) algorithm) {
     case VIR_STORAGE_VOL_WIPE_ALG_ZERO:
