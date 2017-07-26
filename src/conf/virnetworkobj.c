@@ -79,13 +79,13 @@ virNetworkObjNew(void)
     if (!(net = virObjectLockableNew(virNetworkObjClass)))
         return NULL;
 
-    if (!(net->class_id = virBitmapNew(CLASS_ID_BITMAP_SIZE)))
+    if (!(net->classIdMap = virBitmapNew(CLASS_ID_BITMAP_SIZE)))
         goto error;
 
     /* The first three class IDs are already taken */
-    ignore_value(virBitmapSetBit(net->class_id, 0));
-    ignore_value(virBitmapSetBit(net->class_id, 1));
-    ignore_value(virBitmapSetBit(net->class_id, 2));
+    ignore_value(virBitmapSetBit(net->classIdMap, 0));
+    ignore_value(virBitmapSetBit(net->classIdMap, 1));
+    ignore_value(virBitmapSetBit(net->classIdMap, 2));
 
     return net;
 
@@ -358,7 +358,7 @@ virNetworkObjDispose(void *obj)
 
     virNetworkDefFree(net->def);
     virNetworkDefFree(net->newDef);
-    virBitmapFree(net->class_id);
+    virBitmapFree(net->classIdMap);
     virObjectUnref(net->macmap);
 }
 
@@ -698,17 +698,17 @@ virNetworkObjFormat(virNetworkObjPtr net,
                     unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *class_id = virBitmapFormat(net->class_id);
+    char *classIdStr = virBitmapFormat(net->classIdMap);
     size_t i;
 
-    if (!class_id)
+    if (!classIdStr)
         goto error;
 
     virBufferAddLit(&buf, "<networkstatus>\n");
     virBufferAdjustIndent(&buf, 2);
-    virBufferAsprintf(&buf, "<class_id bitmap='%s'/>\n", class_id);
+    virBufferAsprintf(&buf, "<class_id bitmap='%s'/>\n", classIdStr);
     virBufferAsprintf(&buf, "<floor sum='%llu'/>\n", net->floor_sum);
-    VIR_FREE(class_id);
+    VIR_FREE(classIdStr);
 
     for (i = 0; i < VIR_NETWORK_TAINT_LAST; i++) {
         if (net->taint & (1 << i))
@@ -765,7 +765,7 @@ virNetworkLoadState(virNetworkObjListPtr nets,
     xmlDocPtr xml = NULL;
     xmlNodePtr node = NULL, *nodes = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    virBitmapPtr class_id_map = NULL;
+    virBitmapPtr classIdMap = NULL;
     unsigned long long floor_sum_val = 0;
     unsigned int taint = 0;
     int n;
@@ -802,18 +802,19 @@ virNetworkLoadState(virNetworkObjListPtr nets,
     if (virXMLNodeNameEqual(node, "networkstatus")) {
         /* Newer network status file. Contains useful
          * info which are not to be found in bare config XML */
-        char *class_id = NULL;
+        char *classIdStr = NULL;
         char *floor_sum = NULL;
 
         ctxt->node = node;
-        if ((class_id = virXPathString("string(./class_id[1]/@bitmap)", ctxt))) {
-            if (virBitmapParse(class_id, &class_id_map,
+        if ((classIdStr = virXPathString("string(./class_id[1]/@bitmap)",
+                                         ctxt))) {
+            if (virBitmapParse(classIdStr, &classIdMap,
                                CLASS_ID_BITMAP_SIZE) < 0) {
-                VIR_FREE(class_id);
+                VIR_FREE(classIdStr);
                 goto error;
             }
         }
-        VIR_FREE(class_id);
+        VIR_FREE(classIdStr);
 
         floor_sum = virXPathString("string(./floor[1]/@sum)", ctxt);
         if (floor_sum &&
@@ -855,9 +856,9 @@ virNetworkLoadState(virNetworkObjListPtr nets,
     /* do not put any "goto error" below this comment */
 
     /* assign status data stored in the network object */
-    if (class_id_map) {
-        virBitmapFree(net->class_id);
-        net->class_id = class_id_map;
+    if (classIdMap) {
+        virBitmapFree(net->classIdMap);
+        net->classIdMap = classIdMap;
     }
 
     if (floor_sum_val > 0)
@@ -874,7 +875,7 @@ virNetworkLoadState(virNetworkObjListPtr nets,
 
  error:
     VIR_FREE(nodes);
-    virBitmapFree(class_id_map);
+    virBitmapFree(classIdMap);
     virNetworkDefFree(def);
     goto cleanup;
 }
