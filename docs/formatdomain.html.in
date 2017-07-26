@@ -964,7 +964,7 @@
         option opens up to a potential security risk: the host will be unable
         to reclaim the locked memory back from the guest when it's running out
         of memory, which means a malicious guest allocating large amounts of
-        locked memory could cause a denial-of-service attach on the host.
+        locked memory could cause a denial-of-service attack on the host.
         Because of this, using this option is discouraged unless your workload
         demands it; even then, it's highly recommended to set an
         <code>hard_limit</code> (see
