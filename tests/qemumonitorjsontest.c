@@ -2928,7 +2928,7 @@ mymain(void)
 
     DO_TEST_BLOCK_NODE_DETECT("basic");
     DO_TEST_BLOCK_NODE_DETECT("same-backing");
-/*    DO_TEST_BLOCK_NODE_DETECT("relative"); */
+    DO_TEST_BLOCK_NODE_DETECT("relative");
 /*    DO_TEST_BLOCK_NODE_DETECT("gluster"); */
 
 #undef DO_TEST_BLOCK_NODE_DETECT
