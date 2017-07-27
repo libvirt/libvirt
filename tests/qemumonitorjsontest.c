@@ -2931,6 +2931,7 @@ mymain(void)
     DO_TEST_BLOCK_NODE_DETECT("relative");
     DO_TEST_BLOCK_NODE_DETECT("gluster");
     DO_TEST_BLOCK_NODE_DETECT("blockjob");
+    DO_TEST_BLOCK_NODE_DETECT("luks");
 
 #undef DO_TEST_BLOCK_NODE_DETECT
 

@@ -1,0 +1,109 @@
+[
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 10485760,
+        "filename": "json:{\"driver\": \"luks\", \"file\": {\"driver\": \"file\", \"filename\": \"/var/lib/libvirt/images/luks\"}, \"key-secret\": \"virtio-disk0-luks-secret0\"}",
+        "format": "luks",
+        "actual-size": 262144,
+        "format-specific": {
+          "type": "luks",
+          "data": {
+            "ivgen-alg": "plain64",
+            "hash-alg": "sha256",
+            "cipher-alg": "aes-256",
+            "uuid": "687ef639-c687-40d3-a103-7b4bdaa6e74a",
+            "cipher-mode": "xts",
+            "slots": [
+              {
+                "active": true,
+                "iters": 1886334,
+                "key-offset": 4096,
+                "stripes": 4000
+              },
+              {
+                "active": false,
+                "key-offset": 262144
+              },
+              {
+                "active": false,
+                "key-offset": 520192
+              },
+              {
+                "active": false,
+                "key-offset": 778240
+              },
+              {
+                "active": false,
+                "key-offset": 1036288
+              },
+              {
+                "active": false,
+                "key-offset": 1294336
+              },
+              {
+                "active": false,
+                "key-offset": 1552384
+              },
+              {
+                "active": false,
+                "key-offset": 1810432
+              }
+            ],
+            "payload-offset": 2068480,
+            "master-key-iters": 484865
+          }
+        },
+        "encrypted": true,
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block136",
+      "backing_file_depth": 0,
+      "drv": "luks",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": true,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "json:{\"driver\": \"luks\", \"file\": {\"driver\": \"file\", \"filename\": \"/var/lib/libvirt/images/luks\"}, \"key-secret\": \"virtio-disk0-luks-secret0\"}",
+      "encryption_key_missing": false
+    },
+    {
+      "iops_rd": 0,
+      "detect_zeroes": "off",
+      "image": {
+        "virtual-size": 12554240,
+        "filename": "/var/lib/libvirt/images/luks",
+        "format": "file",
+        "actual-size": 262144,
+        "dirty-flag": false
+      },
+      "iops_wr": 0,
+      "ro": false,
+      "node-name": "#block033",
+      "backing_file_depth": 0,
+      "drv": "file",
+      "iops": 0,
+      "bps_wr": 0,
+      "write_threshold": 0,
+      "encrypted": false,
+      "bps": 0,
+      "bps_rd": 0,
+      "cache": {
+        "no-flush": false,
+        "direct": false,
+        "writeback": true
+      },
+      "file": "/var/lib/libvirt/images/luks",
+      "encryption_key_missing": false
+    }
+]
