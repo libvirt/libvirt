@@ -164,6 +164,7 @@ EXTRA_DIST =		\
 	xml2sexprdata \
 	xml2vmxdata \
 	virstorageutildata \
+	virfilecachedata \
 	$(NULL)
 
 test_helpers = commandhelper ssh
