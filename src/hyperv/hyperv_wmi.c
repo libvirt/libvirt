@@ -489,17 +489,14 @@ hypervSerializeSimpleParam(hypervParamPtr p, const char *resourceUri,
 
 static int
 hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
-        const char *resourceUri, WsXmlDocH doc, WsXmlNodeH *methodNode)
+        const char *resourceUri, WsXmlNodeH *methodNode)
 {
     int result = -1;
     WsXmlNodeH xmlNodeParam = NULL,
                xmlNodeTemp = NULL,
                xmlNodeAddr = NULL,
                xmlNodeRef = NULL;
-    xmlNodePtr xmlNodeAddrPtr = NULL,
-               xmlNodeRefPtr = NULL;
     WsXmlDocH xmlDocResponse = NULL;
-    xmlDocPtr docPtr = (xmlDocPtr) doc->parserDoc;
     WsXmlNsH ns = NULL;
     client_opt_t *options = NULL;
     filter_t *filter = NULL;
@@ -573,11 +570,6 @@ hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
         goto cleanup;
     }
 
-    if (!(xmlNodeAddrPtr = xmlDocCopyNode((xmlNodePtr) xmlNodeAddr, docPtr, 1))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not copy EPR address"));
-        goto cleanup;
-    }
-
     if (!(xmlNodeRef = ws_xml_get_child(xmlNodeTemp, 0, XML_NS_ADDRESSING,
             WSA_REFERENCE_PARAMETERS))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -585,17 +577,11 @@ hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
         goto cleanup;
     }
 
-    if (!(xmlNodeRefPtr = xmlDocCopyNode((xmlNodePtr) xmlNodeRef, docPtr, 1))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                _("Could not copy EPR item reference parameters"));
-        goto cleanup;
-    }
-
     /* now build a new xml doc with the EPR node children */
     if (!(xmlNodeParam = ws_xml_add_child(*methodNode, resourceUri,
                     p->epr.name, NULL))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                _("Could not add child node to xmlNodeParam"));
+                _("Could not add child node to methodNode"));
         goto cleanup;
     }
 
@@ -613,23 +599,8 @@ hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
         goto cleanup;
     }
 
-    if (xmlAddChild((xmlNodePtr) *methodNode, (xmlNodePtr) xmlNodeParam) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                _("Could not add child to xml parent node"));
-        goto cleanup;
-    }
-
-    if (xmlAddChild((xmlNodePtr) xmlNodeParam, xmlNodeAddrPtr) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                _("Could not add child to xml parent node"));
-        goto cleanup;
-    }
-
-    if (xmlAddChild((xmlNodePtr) xmlNodeParam, xmlNodeRefPtr) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                _("Could not add child to xml parent node"));
-        goto cleanup;
-    }
+    ws_xml_duplicate_tree(xmlNodeParam, xmlNodeAddr);
+    ws_xml_duplicate_tree(xmlNodeParam, xmlNodeRef);
 
     /* we did it! */
     result = 0;
@@ -656,8 +627,7 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
                xmlNodeArray = NULL;
     WsXmlDocH xmlDocTemp = NULL,
               xmlDocCdata = NULL;
-    xmlBufferPtr xmlBufferNode = NULL;
-    const xmlChar *xmlCharCdataContent = NULL;
+    char *cdataContent = NULL;
     xmlNodePtr xmlNodeCdata = NULL;
     hypervWmiClassInfoPtr classInfo = p->embedded.info;
     virHashKeyValuePairPtr items = NULL;
@@ -761,25 +731,22 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
     }
 
     /* create CDATA node */
-    xmlBufferNode = xmlBufferCreate();
-    if (xmlNodeDump(xmlBufferNode, (xmlDocPtr) xmlDocTemp->parserDoc,
-                (xmlNodePtr) xmlNodeInstance, 0, 0) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                _("Could not get root of temp XML doc"));
-        goto cleanup;
-    }
+    ws_xml_dump_memory_node_tree(xmlNodeInstance, &cdataContent, &len);
 
-    len = xmlBufferLength(xmlBufferNode);
-    xmlCharCdataContent = xmlBufferContent(xmlBufferNode);
     if (!(xmlNodeCdata = xmlNewCDataBlock((xmlDocPtr) xmlDocCdata,
-                    xmlCharCdataContent, len))) {
+                    (xmlChar *)cdataContent, len))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                 _("Could not create CDATA element"));
         goto cleanup;
     }
 
-    /* Add CDATA node to the doc root */
-    if (!(xmlAddChild((xmlNodePtr) xmlNodeParam, xmlNodeCdata))) {
+    /*
+     * Add CDATA node to the doc root
+     *
+     * FIXME: there is no openwsman wrapper for xmlNewCDataBlock, so instead
+     * silence clang alignment warnings by casting to a void pointer first
+     */
+    if (!(xmlAddChild((xmlNodePtr)(void *)xmlNodeParam, xmlNodeCdata))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                 _("Could not add CDATA to doc root"));
         goto cleanup;
@@ -792,7 +759,7 @@ hypervSerializeEmbeddedParam(hypervParamPtr p, const char *resourceUri,
     VIR_FREE(items);
     ws_xml_destroy_doc(xmlDocCdata);
     ws_xml_destroy_doc(xmlDocTemp);
-    xmlBufferFree(xmlBufferNode);
+    ws_xml_free_memory(cdataContent);
     return result;
 }
 
@@ -854,7 +821,7 @@ hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
                 break;
             case HYPERV_EPR_PARAM:
                 if (hypervSerializeEprParam(p, priv, params->resourceUri,
-                            paramsDocRoot, &methodNode) < 0)
+                                            &methodNode) < 0)
                     goto cleanup;
                 break;
             case HYPERV_EMBEDDED_PARAM:
