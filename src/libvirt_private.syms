@@ -2308,10 +2308,10 @@ virObjectListFree;
 virObjectListFreeCount;
 virObjectLock;
 virObjectLockableNew;
-virObjectLockRead;
 virObjectNew;
 virObjectRef;
 virObjectRWLockableNew;
+virObjectRWLockRead;
 virObjectUnlock;
 virObjectUnref;
 

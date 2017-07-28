@@ -399,7 +399,7 @@ virObjectLock(void *anyobj)
 
 
 /**
- * virObjectLockRead:
+ * virObjectRWLockRead:
  * @anyobj: any instance of virObjectRWLockable
  *
  * Acquire a read lock on @anyobj. The lock must be
@@ -409,9 +409,14 @@ virObjectLock(void *anyobj)
  * on the object before locking it (eg virObjectRef).
  * The object must be unlocked before releasing this
  * reference.
+ *
+ * NB: It's possible to return without the lock if
+ *     @anyobj was invalid - this has been considered
+ *     a programming error rather than something that
+ *     should be checked.
  */
 void
-virObjectLockRead(void *anyobj)
+virObjectRWLockRead(void *anyobj)
 {
     if (virObjectIsClass(anyobj, virObjectRWLockableClass)) {
         virObjectRWLockablePtr obj = anyobj;
@@ -429,7 +434,7 @@ virObjectLockRead(void *anyobj)
  * @anyobj: any instance of virObjectLockable or virObjectRWLockable
  *
  * Release a lock on @anyobj. The lock must have been acquired by
- * virObjectLock or virObjectLockRead.
+ * virObjectLock or virObjectRWLockRead.
  */
 void
 virObjectUnlock(void *anyobj)
