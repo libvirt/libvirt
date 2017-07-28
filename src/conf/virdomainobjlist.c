@@ -327,7 +327,7 @@ virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
 {
     virDomainObjPtr ret;
 
-    virObjectLock(doms);
+    virObjectRWLockWrite(doms);
     ret = virDomainObjListAddLocked(doms, def, xmlopt, flags, oldDef);
     virObjectUnlock(doms);
     return ret;
@@ -349,7 +349,7 @@ void virDomainObjListRemove(virDomainObjListPtr doms,
     virObjectRef(dom);
     virObjectUnlock(dom);
 
-    virObjectLock(doms);
+    virObjectRWLockWrite(doms);
     virObjectLock(dom);
     virHashRemoveEntry(doms->objs, uuidstr);
     virHashRemoveEntry(doms->objsName, dom->def->name);
@@ -394,7 +394,7 @@ virDomainObjListRename(virDomainObjListPtr doms,
      * hold a lock on dom but not refcount it. */
     virObjectRef(dom);
     virObjectUnlock(dom);
-    virObjectLock(doms);
+    virObjectRWLockWrite(doms);
     virObjectLock(dom);
     virObjectUnref(dom);
 
@@ -573,7 +573,7 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
     if ((rc = virDirOpenIfExists(&dir, configDir)) <= 0)
         return rc;
 
-    virObjectLock(doms);
+    virObjectRWLockWrite(doms);
 
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         virDomainObjPtr dom;
