@@ -137,6 +137,10 @@ virObjectUnlock(void *lockableobj)
     ATTRIBUTE_NONNULL(1);
 
 void
+virObjectRWUnlock(void *lockableobj)
+    ATTRIBUTE_NONNULL(1);
+
+void
 virObjectListFree(void *list);
 
 void

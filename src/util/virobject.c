@@ -428,7 +428,7 @@ virObjectLock(void *anyobj)
  * @anyobj: any instance of virObjectRWLockable
  *
  * Acquire a read lock on @anyobj. The lock must be
- * released by virObjectUnlock.
+ * released by virObjectRWUnlock.
  *
  * The caller is expected to have acquired a reference
  * on the object before locking it (eg virObjectRef).
@@ -457,7 +457,7 @@ virObjectRWLockRead(void *anyobj)
  * @anyobj: any instance of virObjectRWLockable
  *
  * Acquire a write lock on @anyobj. The lock must be
- * released by virObjectUnlock.
+ * released by virObjectRWUnlock.
  *
  * The caller is expected to have acquired a reference
  * on the object before locking it (eg virObjectRef).
@@ -483,26 +483,39 @@ virObjectRWLockWrite(void *anyobj)
 
 /**
  * virObjectUnlock:
- * @anyobj: any instance of virObjectLockable or virObjectRWLockable
+ * @anyobj: any instance of virObjectLockable
  *
  * Release a lock on @anyobj. The lock must have been acquired by
- * virObjectLock, virObjectRWLockRead, or virObjectRWLockWrite.
+ * virObjectLock.
  */
 void
 virObjectUnlock(void *anyobj)
 {
-    if (virObjectIsClass(anyobj, virObjectLockableClass)) {
-        virObjectLockablePtr obj = anyobj;
-        virMutexUnlock(&obj->lock);
-    } else if (virObjectIsClass(anyobj, virObjectRWLockableClass)) {
-        virObjectRWLockablePtr obj = anyobj;
-        virRWLockUnlock(&obj->lock);
-    } else {
-        virObjectPtr obj = anyobj;
-        VIR_WARN("Object %p (%s) is not a virObjectLockable "
-                 "nor virObjectRWLockable instance",
-                 anyobj, obj ? obj->klass->name : "(unknown)");
-    }
+    virObjectLockablePtr obj = virObjectGetLockableObj(anyobj);
+
+    if (!obj)
+        return;
+
+    virMutexUnlock(&obj->lock);
+}
+
+
+/**
+ * virObjectRWUnlock:
+ * @anyobj: any instance of virObjectRWLockable
+ *
+ * Release a lock on @anyobj. The lock must have been acquired by
+ * virObjectRWLockRead or virObjectRWLockWrite.
+ */
+void
+virObjectRWUnlock(void *anyobj)
+{
+    virObjectRWLockablePtr obj = virObjectGetRWLockableObj(anyobj);
+
+    if (!obj)
+        return;
+
+    virRWLockUnlock(&obj->lock);
 }
 
 
