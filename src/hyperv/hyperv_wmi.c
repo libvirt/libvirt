@@ -42,7 +42,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 
-#define HYPERV_JOB_TIMEOUT_MS 5000
+#define HYPERV_JOB_TIMEOUT_MS 300000
 
 VIR_LOG_INIT("hyperv.hyperv_wmi");
 
