@@ -198,9 +198,9 @@ MAINTAINERCLEANFILES = \
 
 timestamp="$(shell if test -n "$$SOURCE_DATE_EPOCH"; \
 		   then \
-		     date --date="@$$SOURCE_DATE_EPOCH"; \
+		     date -u --date="@$$SOURCE_DATE_EPOCH"; \
 		   else \
-		     date; \
+		     date -u; \
 		   fi)"
 
 all-am: web
