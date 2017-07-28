@@ -423,10 +423,11 @@ endif ! WITH_LIBVIRTD
 test_programs += objecteventtest
 
 if WITH_SECDRIVER_APPARMOR
+if WITH_LIBVIRTD
 test_scripts += virt-aa-helper-test
-else ! WITH_SECDRIVER_APPARMOR
+endif WITH_LIBVIRTD
+endif WITH_SECDRIVER_APPARMOR
 EXTRA_DIST += virt-aa-helper-test
-endif ! WITH_SECDRIVER_APPARMOR
 
 EXTRA_DIST += $(test_scripts)
 
