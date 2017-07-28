@@ -47,6 +47,17 @@ struct _virClass {
     virObjectDisposeCallback dispose;
 };
 
+#define VIR_OBJECT_USAGE_PRINT_WARNING(anyobj, objclass)                    \
+    do {                                                                    \
+        virObjectPtr obj = anyobj;                                          \
+        if (!obj)                                                           \
+            VIR_WARN("Object cannot be NULL");                              \
+        else                                                                \
+            VIR_WARN("Object %p (%s) is not a %s instance",                 \
+                      anyobj, obj->klass->name, #objclass);                 \
+    } while (0)
+
+
 static virClassPtr virObjectClass;
 static virClassPtr virObjectLockableClass;
 static virClassPtr virObjectRWLockableClass;
@@ -370,15 +381,10 @@ virObjectRef(void *anyobj)
 static virObjectLockablePtr
 virObjectGetLockableObj(void *anyobj)
 {
-    virObjectPtr obj;
-
     if (virObjectIsClass(anyobj, virObjectLockableClass))
         return anyobj;
 
-    obj = anyobj;
-    VIR_WARN("Object %p (%s) is not a virObjectLockable instance",
-              anyobj, obj ? obj->klass->name : "(unknown)");
-
+    VIR_OBJECT_USAGE_PRINT_WARNING(anyobj, virObjectLockable);
     return NULL;
 }
 
@@ -386,15 +392,10 @@ virObjectGetLockableObj(void *anyobj)
 static virObjectRWLockablePtr
 virObjectGetRWLockableObj(void *anyobj)
 {
-    virObjectPtr obj;
-
     if (virObjectIsClass(anyobj, virObjectRWLockableClass))
         return anyobj;
 
-    obj = anyobj;
-    VIR_WARN("Object %p (%s) is not a virObjectRWLockable instance",
-              anyobj, obj ? obj->klass->name : "(unknown)");
-
+    VIR_OBJECT_USAGE_PRINT_WARNING(anyobj, virObjectRWLockable);
     return NULL;
 }
 
