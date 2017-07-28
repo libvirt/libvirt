@@ -261,8 +261,6 @@ endif WITH_QEMU
 endif WITH_ATTR
 endif WITH_SECDRIVER_SELINUX
 
-test_programs += virdrivermoduletest
-
 # This is a fake SSH we use from virnetsockettest
 ssh_SOURCES = ssh.c
 ssh_LDADD = $(COVERAGE_LDFLAGS)
@@ -415,7 +413,8 @@ if WITH_LIBVIRTD
 test_scripts += $(libvirtd_test_scripts)
 
 test_programs += 			\
-	eventtest
+	eventtest \
+	virdrivermoduletest
 else ! WITH_LIBVIRTD
 EXTRA_DIST += $(libvirtd_test_scripts)
 endif ! WITH_LIBVIRTD
@@ -1393,9 +1392,11 @@ utiltest_SOURCES = \
 	utiltest.c testutils.h testutils.c
 utiltest_LDADD = $(LDADDS)
 
+if WITH_LIBVIRTD
 virdrivermoduletest_SOURCES = \
 	virdrivermoduletest.c testutils.h testutils.c
 virdrivermoduletest_LDADD = $(LDADDS)
+endif WITH_LIBVIRTD
 
 if WITH_LIBVIRTD
 eventtest_SOURCES = \
