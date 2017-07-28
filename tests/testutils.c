@@ -777,6 +777,8 @@ int virTestDifferenceBin(FILE *stream,
 /*
  * @param strcontent: String input content
  * @param filename: File to compare strcontent against
+ *
+ * If @strcontent is NULL, it's treated as an empty string.
  */
 int
 virTestCompareToFile(const char *strcontent,
@@ -786,6 +788,9 @@ virTestCompareToFile(const char *strcontent,
     char *filecontent = NULL;
     char *fixedcontent = NULL;
     const char *cmpcontent = strcontent;
+
+    if (!cmpcontent)
+        cmpcontent = "";
 
     if (virTestLoadFile(filename, &filecontent) < 0 && !virTestGetRegenerate())
         goto failure;
