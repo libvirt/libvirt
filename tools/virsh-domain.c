@@ -10948,6 +10948,8 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     char *xpath = NULL;
     char *listen_addr = NULL;
     int port, tls_port = 0;
+    char *type_conn = NULL;
+    char *socket = NULL;
     char *passwd = NULL;
     char *output = NULL;
     const char *scheme[] = { "vnc", "spice", "rdp", NULL };
@@ -11008,9 +11010,6 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         if (tmp)
             tls_port = 0;
 
-        if (!port && !tls_port)
-            continue;
-
         /* Create our XPATH lookup for the current display's address */
         if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "@listen") < 0)
             goto cleanup;
@@ -11020,6 +11019,29 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(listen_addr);
         listen_addr = virXPathString(xpath, ctxt);
         VIR_FREE(xpath);
+
+        /* Create our XPATH lookup for the current spice type. */
+        if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "listen/@type") < 0)
+            goto cleanup;
+
+        /* Attempt to get the type of spice connection */
+        VIR_FREE(type_conn);
+        type_conn = virXPathString(xpath, ctxt);
+        VIR_FREE(xpath);
+
+        if (STREQ_NULLABLE(type_conn, "socket")) {
+            if (!socket) {
+                if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "listen/@socket") < 0)
+                    goto cleanup;
+
+                socket = virXPathString(xpath, ctxt);
+
+                VIR_FREE(xpath);
+            }
+        }
+
+        if (!port && !tls_port && !socket)
+            continue;
 
         if (!listen_addr) {
             /* The subelement address - <listen address='xyz'/> -
@@ -11035,11 +11057,9 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
             listen_addr = virXPathString(xpath, ctxt);
             VIR_FREE(xpath);
-        }
-
-        /* If listen_addr is 0.0.0.0 or [::] we should try to parse URI and set
-         * listen_addr based on current URI. */
-        if (listen_addr) {
+        } else {
+            /* If listen_addr is 0.0.0.0 or [::] we should try to parse URI and set
+             * listen_addr based on current URI. */
             if (virSocketAddrParse(&addr, listen_addr, AF_UNSPEC) > 0 &&
                 virSocketAddrIsWildcard(&addr)) {
 
@@ -11078,19 +11098,27 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(xpath);
 
         /* Build up the full URI, starting with the scheme */
-        virBufferAsprintf(&buf, "%s://", scheme[iter]);
+        if (socket)
+            virBufferAsprintf(&buf, "%s+unix://", scheme[iter]);
+        else
+            virBufferAsprintf(&buf, "%s://", scheme[iter]);
 
         /* There is no user, so just append password if there's any */
         if (STREQ(scheme[iter], "vnc") && passwd)
             virBufferAsprintf(&buf, ":%s@", passwd);
 
         /* Then host name or IP */
-        if (!listen_addr)
+        if (!listen_addr && !socket)
             virBufferAddLit(&buf, "localhost");
-        else if (strchr(listen_addr, ':'))
+        else if (!socket && strchr(listen_addr, ':'))
             virBufferAsprintf(&buf, "[%s]", listen_addr);
+        else if (socket)
+            virBufferAsprintf(&buf, "%s", socket);
         else
             virBufferAsprintf(&buf, "%s", listen_addr);
+
+        /* Free socket to prepare the pointer for the next iteration */
+        VIR_FREE(socket);
 
         /* Add the port */
         if (port) {
@@ -11148,6 +11176,8 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(xpath);
+    VIR_FREE(type_conn);
+    VIR_FREE(socket);
     VIR_FREE(passwd);
     VIR_FREE(listen_addr);
     VIR_FREE(output);
