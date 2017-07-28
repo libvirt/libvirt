@@ -75,8 +75,77 @@
           configurations.
         </description>
       </change>
+      <change>
+        <summary>
+          Require use of GCC 4.4 or Clang compilers
+        </summary>
+        <description>
+          We only ever test libvirt with GCC or Clang (which
+          provides a GCC compatible compilation environment).
+          Between them, these compilers cover every supported
+          operating system platform, including Windows.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: shared disks with directsync cache should be safe for migration
+        </summary>
+        <description>
+          At present shared disks can be migrated with either readonly or
+          <code>cache=none</code>.  But <code>cache=directsync</code> should be
+          safe for migration, because both <code>cache=directsync</code> and
+          <code>cache=none</code> don't use the host page cache, and
+          <code>cache=direct</code> write through qemu block layer cache.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Handle hotplug change on VLAN configuration using OVS
+        </summary>
+        <description>
+          Libvirt was taught to handle VLAN change for running OVS interface.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: Use vCPU 'node-id' property and pass it back to qemu
+        </summary>
+        <description>
+          vCPU properties gathered from query-hotpluggable-cpus need to be
+          passed back to QEMU. As QEMU did not use the node-id property until
+          now and libvirt forgot to pass it back properly (it was parsed but
+          not passed around) we did not honor this.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Miscellaneous stream fixes
+        </summary>
+        <description>
+          After introducing sparse stream features there were still some known
+          bugs left. Those are fixed in this release.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Misceleanous domain NS fixes
+        </summary>
+        <description>
+          Libvirt starts qemu domains in separate Linux namespaces for a while
+          now. However, there were still some bugs lingering. For instance
+          libvirt did not know how to handle file based bind mounts.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Various CPU driver improvements
+        </summary>
+        <description>
+          There were some minor bugs when using 'host-model' CPU.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.5.0" date="2017-07-04">
