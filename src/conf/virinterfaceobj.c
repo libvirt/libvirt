@@ -74,7 +74,7 @@ virInterfaceObjDispose(void *opaque)
 
 
 static virInterfaceObjPtr
-virInterfaceObjNew(virInterfaceDefPtr def)
+virInterfaceObjNew(void)
 {
     virInterfaceObjPtr obj;
 
@@ -85,7 +85,6 @@ virInterfaceObjNew(virInterfaceDefPtr def)
         return NULL;
 
     virObjectLock(obj);
-    obj->def = def;
 
     return obj;
 }
@@ -261,15 +260,15 @@ virInterfaceObjListAssignDef(virInterfaceObjListPtr interfaces,
         return obj;
     }
 
-    if (!(obj = virInterfaceObjNew(def)))
+    if (!(obj = virInterfaceObjNew()))
         return NULL;
 
     if (VIR_APPEND_ELEMENT_COPY(interfaces->objs,
                                 interfaces->count, obj) < 0) {
-        obj->def = NULL;
         virInterfaceObjEndAPI(&obj);
         return NULL;
     }
+    obj->def = def;
     return virObjectRef(obj);
 }
 
