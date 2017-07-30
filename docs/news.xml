@@ -35,6 +35,16 @@
 <libvirt>
   <release version="v3.7.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          bhyve: Support autoport for VNC ports
+        </summary>
+        <description>
+          It's no longer necessary to explicitly specify VNC port for the bhyve
+          guests. With the autoport feature it will be allocated automatically.
+          Please refer to the bhyve driver documentation for examples.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>

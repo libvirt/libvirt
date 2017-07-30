@@ -381,6 +381,14 @@ will be used. Please refer to the
 manual page and the <a href="https://wiki.freebsd.org/bhyve">bhyve wiki</a> for more details on using
 the <code>vgaconf</code> option.</p>
 
+<p><span class="since">Since 3.7.0</span>, it's possible to use <code>autoport</code>
+to let libvirt allocate VNC port automatically (instead of explicitly specifying
+it with the <code>port</code> attribute):</p>
+
+<pre>
+    &lt;graphics type='vnc' autoport='yes'&gt;
+</pre>
+
 <h3><a id="clockconfig">Clock configuration</a></h3>
 
 <p>Originally bhyve supported only localtime for RTC. Support for UTC time was introduced in
