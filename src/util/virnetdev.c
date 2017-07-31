@@ -1231,13 +1231,17 @@ virNetDevGetVirtualFunctions(const char *pfname,
     char *pf_sysfs_device_link = NULL;
     char *pci_sysfs_device_link = NULL;
     char *pciConfigAddr = NULL;
+    char *pfPhysPortID = NULL;
 
     *virt_fns = NULL;
     *n_vfname = 0;
     *max_vfs = 0;
 
+    if (virNetDevGetPhysPortID(pfname, &pfPhysPortID) < 0)
+        goto cleanup;
+
     if (virNetDevSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
-        return ret;
+        goto cleanup;
 
     if (virPCIGetVirtualFunctions(pf_sysfs_device_link, virt_fns,
                                   n_vfname, max_vfs) < 0)
@@ -1263,7 +1267,7 @@ virNetDevGetVirtualFunctions(const char *pfname,
         }
 
         if (virPCIGetNetName(pci_sysfs_device_link, 0,
-                             NULL, &((*vfname)[i])) < 0) {
+                             pfPhysPortID, &((*vfname)[i])) < 0) {
             goto cleanup;
         }
 
@@ -1278,6 +1282,7 @@ virNetDevGetVirtualFunctions(const char *pfname,
         VIR_FREE(*vfname);
         VIR_FREE(*virt_fns);
     }
+    VIR_FREE(pfPhysPortID);
     VIR_FREE(pf_sysfs_device_link);
     VIR_FREE(pci_sysfs_device_link);
     VIR_FREE(pciConfigAddr);
@@ -1359,14 +1364,19 @@ int
 virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
 {
     char *physfn_sysfs_path = NULL;
+    char *vfPhysPortID = NULL;
     int ret = -1;
 
+    if (virNetDevGetPhysPortID(ifname, &vfPhysPortID) < 0)
+        goto cleanup;
+
     if (virNetDevSysfsDeviceFile(&physfn_sysfs_path, ifname, "physfn") < 0)
-        return ret;
+        goto cleanup;
 
     if (virPCIGetNetName(physfn_sysfs_path, 0,
-                         NULL, pfname) < 0)
+                         vfPhysPortID, pfname) < 0) {
         goto cleanup;
+    }
 
     if (!*pfname) {
         /* this shouldn't be possible. A VF can't exist unless its
@@ -1380,6 +1390,7 @@ virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
 
     ret = 0;
  cleanup:
+    VIR_FREE(vfPhysPortID);
     VIR_FREE(physfn_sysfs_path);
     return ret;
 }
@@ -1407,7 +1418,15 @@ virNetDevPFGetVF(const char *pfname, int vf, char **vfname)
 {
     char *virtfnName = NULL;
     char *virtfnSysfsPath = NULL;
+    char *pfPhysPortID = NULL;
     int ret = -1;
+
+    /* a VF may have multiple "ports", each one having its own netdev,
+     * and each netdev having a different phys_port_id. Be sure we get
+     * the VF netdev with a phys_port_id matchine that of pfname
+     */
+    if (virNetDevGetPhysPortID(pfname, &pfPhysPortID) < 0)
+        goto cleanup;
 
     if (virAsprintf(&virtfnName, "virtfn%d", vf) < 0)
         goto cleanup;
@@ -1425,11 +1444,12 @@ virNetDevPFGetVF(const char *pfname, int vf, char **vfname)
      * isn't bound to a netdev driver, it won't have a netdev name,
      * and vfname will be NULL).
      */
-    ret = virPCIGetNetName(virtfnSysfsPath, 0, NULL, vfname);
+    ret = virPCIGetNetName(virtfnSysfsPath, 0, pfPhysPortID, vfname);
 
  cleanup:
     VIR_FREE(virtfnName);
     VIR_FREE(virtfnSysfsPath);
+    VIR_FREE(pfPhysPortID);
 
     return ret;
 }
