@@ -484,6 +484,7 @@ qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virObjectEventPtr event;
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int ret = -1;
 
     virObjectLock(vm);
 
@@ -495,12 +496,32 @@ qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
 
+    if (vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_DESTROY ||
+        vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_PRESERVE) {
+
+        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+            goto cleanup;
+
+        if (!virDomainObjIsActive(vm)) {
+            VIR_DEBUG("Ignoring RESET event from inactive domain %s",
+                      vm->def->name);
+            goto endjob;
+        }
+
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED,
+                        QEMU_ASYNC_JOB_NONE, 0);
+        virDomainAuditStop(vm, "destroyed");
+        qemuDomainRemoveInactive(driver, vm);
+     endjob:
+        qemuDomainObjEndJob(driver, vm);
+    }
+
+    ret = 0;
+ cleanup:
     virObjectUnlock(vm);
-
     qemuDomainEventQueue(driver, event);
-
     virObjectUnref(cfg);
-    return 0;
+    return ret;
 }
 
 
