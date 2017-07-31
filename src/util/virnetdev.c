@@ -1170,6 +1170,46 @@ virNetDevGetPCIDevice(const char *devName)
 
 
 /**
+ * virNetDevGetPhysPortID:
+ *
+ * @ifname: name of a netdev
+ *
+ * @physPortID: pointer to char* that will receive @ifname's
+ *              phys_port_id from sysfs (null terminated
+ *              string). Could be NULL if @ifname's net driver doesn't
+ *              support phys_port_id (most netdev drivers
+ *              don't). Caller is responsible for freeing the string
+ *              when finished.
+ *
+ * Returns 0 on success or -1 on failure.
+ */
+int
+virNetDevGetPhysPortID(const char *ifname,
+                       char **physPortID)
+{
+    int ret = -1;
+    char *physPortIDFile = NULL;
+
+    *physPortID = NULL;
+
+    if (virNetDevSysfsFile(&physPortIDFile, ifname, "phys_port_id") < 0)
+        goto cleanup;
+
+    /* a failure to read just means the driver doesn't support
+     * phys_port_id, so set success now and ignore the return from
+     * virFileReadAllQuiet().
+     */
+    ret = 0;
+
+    ignore_value(virFileReadAllQuiet(physPortIDFile, 1024, physPortID));
+
+ cleanup:
+    VIR_FREE(physPortIDFile);
+    return ret;
+}
+
+
+/**
  * virNetDevGetVirtualFunctions:
  *
  * @pfname : name of the physical function interface name
@@ -1432,6 +1472,17 @@ virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
 }
 
 #else /* !__linux__ */
+int
+virNetDevGetPhysPortID(const char *ifname ATTRIBUTE_UNUSED,
+                       char **physPortID)
+{
+    /* this actually should never be called, and is just here to
+     * satisfy the linker.
+     */
+    *physPortID = NULL;
+    return 0;
+}
+
 int
 virNetDevGetVirtualFunctions(const char *pfname ATTRIBUTE_UNUSED,
                              char ***vfname ATTRIBUTE_UNUSED,

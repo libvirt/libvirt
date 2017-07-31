@@ -226,6 +226,11 @@ int virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
 int virNetDevPFGetVF(const char *pfname, int vf, char **vfname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
+int virNetDevGetPhysPortID(const char *ifname,
+                           char **physPortID)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_RETURN_CHECK;
+
 int virNetDevGetVirtualFunctions(const char *pfname,
                                  char ***vfname,
                                  virPCIDeviceAddressPtr **virt_fns,
