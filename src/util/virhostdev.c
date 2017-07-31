@@ -326,7 +326,7 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev, char **linkdev,
          * type='hostdev'>, and it is only those devices that should
          * end up calling this function.
          */
-        if (virPCIGetNetName(sysfs_path, linkdev) < 0)
+        if (virPCIGetNetName(sysfs_path, 0, NULL, linkdev) < 0)
             goto cleanup;
 
         if (!linkdev) {
