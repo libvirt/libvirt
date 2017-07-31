@@ -2277,26 +2277,15 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
 }
 
 
-static int
-qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
-                                    const char *dev_name,
-                                    int depth,
-                                    virHashTablePtr hash,
-                                    bool backingChain)
+static qemuBlockStatsPtr
+qemuMonitorJSONBlockStatsCollectData(virJSONValuePtr dev,
+                                     int *nstats)
 {
     qemuBlockStatsPtr bstats = NULL;
-    virJSONValuePtr stats;
+    qemuBlockStatsPtr ret = NULL;
     virJSONValuePtr parent;
     virJSONValuePtr parentstats;
-    int ret = -1;
-    int nstats = 0;
-    char *entry_name = qemuDomainStorageAlias(dev_name, depth);
-    virJSONValuePtr backing;
-
-    if (!entry_name)
-        goto cleanup;
-    if (VIR_ALLOC(bstats) < 0)
-        goto cleanup;
+    virJSONValuePtr stats;
 
     if ((stats = virJSONValueObjectGetObject(dev, "stats")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2304,6 +2293,9 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
                          "in expected format"));
         goto cleanup;
     }
+
+    if (VIR_ALLOC(bstats) < 0)
+        goto cleanup;
 
 #define QEMU_MONITOR_BLOCK_STAT_GET(NAME, VAR, MANDATORY) \
     if (MANDATORY || virJSONValueObjectHasKey(stats, NAME)) { \
@@ -2330,6 +2322,33 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
                                              &bstats->wr_highest_offset) == 0)
             bstats->wr_highest_offset_valid = true;
     }
+
+    VIR_STEAL_PTR(ret, bstats);
+
+ cleanup:
+    VIR_FREE(bstats);
+    return ret;
+}
+
+
+static int
+qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
+                                    const char *dev_name,
+                                    int depth,
+                                    virHashTablePtr hash,
+                                    bool backingChain)
+{
+    qemuBlockStatsPtr bstats = NULL;
+    int ret = -1;
+    int nstats = 0;
+    char *entry_name = qemuDomainStorageAlias(dev_name, depth);
+    virJSONValuePtr backing;
+
+    if (!entry_name)
+        goto cleanup;
+
+    if (!(bstats = qemuMonitorJSONBlockStatsCollectData(dev, &nstats)))
+        goto cleanup;
 
     if (virHashAddEntry(hash, entry_name, bstats) < 0)
         goto cleanup;
