@@ -130,7 +130,7 @@
       </change>
       <change>
         <summary>
-          qemu: Misceleanous domain NS fixes
+          qemu: Miscellaneous domain NS fixes
         </summary>
         <description>
           Libvirt starts qemu domains in separate Linux namespaces for a while
