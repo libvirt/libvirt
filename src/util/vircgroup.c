@@ -253,7 +253,7 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
                               const char *name,
                               const char *drivername,
                               bool stripEmulatorSuffix,
-                              char *machinename)
+                              const char *machinename)
 {
     size_t i;
     bool valid = false;
@@ -340,7 +340,6 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
     VIR_FREE(partname);
     VIR_FREE(scopename_old);
     VIR_FREE(scopename_new);
-    VIR_FREE(machinename);
     return valid;
 }
 
