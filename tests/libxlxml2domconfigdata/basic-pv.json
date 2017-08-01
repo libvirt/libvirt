@@ -1,0 +1,65 @@
+{
+    "c_info": {
+        "type": "pv",
+        "name": "test-pv",
+        "uuid": "039e9ee6-4a84-3055-4c81-8ba426ae2656"
+    },
+    "b_info": {
+        "max_vcpus": 4,
+        "avail_vcpus": [
+            0,
+            1,
+            2,
+            3
+        ],
+        "max_memkb": 524288,
+        "target_memkb": 524288,
+        "sched_params": {
+            "weight": 1000
+        },
+        "type.pv": {
+            "bootloader": "pygrub"
+        },
+        "arch_arm": {
+
+        }
+    },
+    "disks": [
+        {
+            "pdev_path": "/var/lib/xen/images/test-pv.img",
+            "vdev": "xvda",
+            "backend": "qdisk",
+            "format": "raw",
+            "removable": 1,
+            "readwrite": 1
+        }
+    ],
+    "nics": [
+        {
+            "devid": 0,
+            "mac": "00:16:3e:3e:86:60",
+            "bridge": "br0",
+            "script": "/etc/xen/scripts/vif-bridge",
+            "nictype": "vif"
+        }
+    ],
+    "vfbs": [
+        {
+	    "devid": -1,
+            "vnc": {
+                "enable": "True",
+                "listen": "0.0.0.0",
+                "findunused": "False"
+            },
+            "sdl": {
+                "enable": "False"
+            }
+        }
+    ],
+    "vkbs": [
+        {
+	    "devid": -1
+        }
+    ],
+    "on_reboot": "restart"
+}

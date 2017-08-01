@@ -99,6 +99,7 @@ EXTRA_DIST =		\
 	genericxml2xmlindata \
 	genericxml2xmloutdata \
 	interfaceschemadata \
+	libxlxml2domconfigdata \
 	lxcconf2xmldata \
 	lxcxml2xmldata \
 	lxcxml2xmloutdata \
@@ -271,7 +272,8 @@ test_programs += xml2sexprtest sexpr2xmltest \
 endif WITH_XEN
 
 if WITH_LIBXL
-test_programs += xlconfigtest
+test_programs += xlconfigtest libxlxml2domconfigtest
+test_libraries += virmocklibxl.la
 endif WITH_LIBXL
 
 if WITH_QEMU
@@ -528,8 +530,20 @@ xlconfigtest_SOURCES = \
 	xlconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
 xlconfigtest_LDADD =$(libxl_LDADDS)
+
+libxlxml2domconfigtest_SOURCES = \
+	libxlxml2domconfigtest.c testutilsxen.c testutilsxen.h \
+	testutils.c testutils.h
+libxlxml2domconfigtest_LDADD = $(libxl_LDADDS) $(LIBXML_LIBS)
+
+virmocklibxl_la_SOURCES = \
+	virmocklibxl.c
+virmocklibxl_la_CFLAGS = $(AM_CFLAGS)
+virmocklibxl_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virmocklibxl_la_LIBADD = $(MOCKLIBS_LIBS)
+
 else ! WITH_LIBXL
-EXTRA_DIST += xlconfigtest.c
+EXTRA_DIST += xlconfigtest.c libxlxml2domconfigtest.c
 endif ! WITH_LIBXL
 
 QEMUMONITORTESTUTILS_SOURCES = \

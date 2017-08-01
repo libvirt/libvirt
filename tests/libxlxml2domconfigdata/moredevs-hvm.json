@@ -1,0 +1,111 @@
+{
+    "c_info": {
+        "type": "hvm",
+        "hap": "True",
+        "name": "test-hvm",
+        "uuid": "2147d599-9cc6-c0dc-92ab-4064b5446e9b"
+    },
+    "b_info": {
+        "max_vcpus": 4,
+        "avail_vcpus": [
+            0,
+            1,
+            2,
+            3
+        ],
+        "tsc_mode": "native",
+        "max_memkb": 1048576,
+        "target_memkb": 1048576,
+        "video_memkb": 8192,
+        "shadow_memkb": 12288,
+        "device_model_version": "qemu_xen",
+        "device_model": "/bin/true",
+        "sched_params": {
+            "weight": 1000
+        },
+        "type.hvm": {
+            "pae": "True",
+            "apic": "True",
+            "acpi": "True",
+            "hpet": "True",
+            "vga": {
+                "kind": "cirrus"
+            },
+            "vnc": {
+                "enable": "True",
+                "findunused": "False"
+            },
+            "sdl": {
+                "enable": "False"
+            },
+            "spice": {
+
+            },
+            "serial": "pty",
+            "boot": "c",
+            "usbdevice_list": [
+                "mouse",
+                "tablet"
+            ],
+            "rdm": {
+
+            }
+        },
+        "arch_arm": {
+
+        }
+    },
+    "disks": [
+        {
+            "pdev_path": "/var/lib/xen/images/test-hvm.img",
+            "vdev": "hda",
+            "backend": "qdisk",
+            "format": "raw",
+            "removable": 1,
+            "readwrite": 1
+        },
+        {
+            "pdev_path": "/root/boot.iso",
+            "vdev": "hdb",
+            "backend": "qdisk",
+            "format": "raw",
+            "removable": 1,
+            "is_cdrom": 1
+        }
+    ],
+    "nics": [
+        {
+            "devid": 0,
+            "model": "netfront",
+            "mac": "00:16:3e:7a:35:ce",
+            "bridge": "br0",
+            "script": "/etc/xen/scripts/vif-bridge",
+            "nictype": "vif"
+        }
+    ],
+    "pcidevs": [
+        {
+            "dev": 16,
+            "bus": 10,
+	    "rdm_policy": "invalid"
+        }
+    ],
+    "vfbs": [
+        {
+	    "devid": -1,
+            "vnc": {
+                "enable": "True",
+                "findunused": "False"
+            },
+            "sdl": {
+                "enable": "False"
+            }
+        }
+    ],
+    "vkbs": [
+        {
+	    "devid": -1
+        }
+    ],
+    "on_reboot": "restart"
+}

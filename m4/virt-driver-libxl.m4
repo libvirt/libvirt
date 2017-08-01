@@ -80,6 +80,10 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
       LIBXL_LIBS="$LIBXL_LIBS -lxenctrl"
     ])
 
+    dnl Check if libxl_domain_config_from_json is available for domXML to
+    dnl libxl_domain_config tests
+    LIBS="$LIBS -lxenlight -lxenctrl"
+    AC_CHECK_FUNCS([libxl_domain_config_from_json])
     CFLAGS="$old_CFLAGS"
     LIBS="$old_LIBS"
   fi
