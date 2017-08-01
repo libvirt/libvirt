@@ -471,6 +471,7 @@ virNetDaemonGotInhibitReply(DBusPendingCall *pending,
 
  cleanup:
     virObjectUnlock(dmn);
+    dbus_pending_call_unref(pending);
 }
 
 
@@ -483,7 +484,7 @@ virNetDaemonCallInhibit(virNetDaemonPtr dmn,
                         const char *mode)
 {
     DBusMessage *message;
-    DBusPendingCall *pendingReply;
+    DBusPendingCall *pendingReply = NULL;
     DBusConnection *systemBus;
 
     VIR_DEBUG("dmn=%p what=%s who=%s why=%s mode=%s",
@@ -510,13 +511,17 @@ virNetDaemonCallInhibit(virNetDaemonPtr dmn,
                              DBUS_TYPE_STRING, &mode,
                              DBUS_TYPE_INVALID);
 
-    pendingReply = NULL;
     if (dbus_connection_send_with_reply(systemBus, message,
                                         &pendingReply,
-                                        25*1000)) {
-        dbus_pending_call_set_notify(pendingReply,
-                                     virNetDaemonGotInhibitReply,
-                                     dmn, NULL);
+                                        25 * 1000) &&
+        pendingReply) {
+        if (dbus_pending_call_get_completed(pendingReply)) {
+            virNetDaemonGotInhibitReply(pendingReply, dmn);
+        } else {
+            dbus_pending_call_set_notify(pendingReply,
+                                         virNetDaemonGotInhibitReply,
+                                         dmn, NULL);
+        }
         dmn->autoShutdownCallingInhibit = true;
     }
     virDBusMessageUnref(message);
