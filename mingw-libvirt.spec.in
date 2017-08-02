@@ -54,6 +54,8 @@ BuildRequires:  mingw32-libxml2
 BuildRequires:  mingw64-libxml2
 BuildRequires:  mingw32-portablexdr
 BuildRequires:  mingw64-portablexdr
+BuildRequires:  mingw32-dlfcn
+BuildRequires:  mingw64-dlfcn
 
 BuildRequires:  pkgconfig
 # Need native version for msgfmt

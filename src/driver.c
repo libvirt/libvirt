@@ -34,9 +34,10 @@ VIR_LOG_INIT("driver");
 
 
 /* XXX re-implement this for other OS, or use libtools helper lib ? */
-
-#include <dlfcn.h>
 #define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
+
+#ifdef HAVE_DLFCN_H
+# include <dlfcn.h>
 
 
 static void *
@@ -125,6 +126,19 @@ virDriverLoadModuleFull(const char *path,
         dlclose(rethandle);
     return ret;
 }
+
+#else /* ! HAVE_DLFCN_H */
+int
+virDriverLoadModuleFull(const char *path ATTRIBUTE_UNUSED,
+                        const char *regfunc ATTRIBUTE_UNUSED,
+                        void **handle)
+{
+    VIR_DEBUG("dlopen not available on this platform");
+    if (handle)
+        *handle = NULL;
+    return -1;
+}
+#endif /* ! HAVE_DLFCN_H */
 
 
 int
