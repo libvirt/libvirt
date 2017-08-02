@@ -10949,7 +10949,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     char *listen_addr = NULL;
     int port, tls_port = 0;
     char *type_conn = NULL;
-    char *socket = NULL;
+    char *sockpath = NULL;
     char *passwd = NULL;
     char *output = NULL;
     const char *scheme[] = { "vnc", "spice", "rdp", NULL };
@@ -11030,17 +11030,17 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(xpath);
 
         if (STREQ_NULLABLE(type_conn, "socket")) {
-            if (!socket) {
+            if (!sockpath) {
                 if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "listen/@socket") < 0)
                     goto cleanup;
 
-                socket = virXPathString(xpath, ctxt);
+                sockpath = virXPathString(xpath, ctxt);
 
                 VIR_FREE(xpath);
             }
         }
 
-        if (!port && !tls_port && !socket)
+        if (!port && !tls_port && !sockpath)
             continue;
 
         if (!listen_addr) {
@@ -11098,7 +11098,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(xpath);
 
         /* Build up the full URI, starting with the scheme */
-        if (socket)
+        if (sockpath)
             virBufferAsprintf(&buf, "%s+unix://", scheme[iter]);
         else
             virBufferAsprintf(&buf, "%s://", scheme[iter]);
@@ -11108,17 +11108,17 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             virBufferAsprintf(&buf, ":%s@", passwd);
 
         /* Then host name or IP */
-        if (!listen_addr && !socket)
+        if (!listen_addr && !sockpath)
             virBufferAddLit(&buf, "localhost");
-        else if (!socket && strchr(listen_addr, ':'))
+        else if (!sockpath && strchr(listen_addr, ':'))
             virBufferAsprintf(&buf, "[%s]", listen_addr);
-        else if (socket)
-            virBufferAsprintf(&buf, "%s", socket);
+        else if (sockpath)
+            virBufferAsprintf(&buf, "%s", sockpath);
         else
             virBufferAsprintf(&buf, "%s", listen_addr);
 
         /* Free socket to prepare the pointer for the next iteration */
-        VIR_FREE(socket);
+        VIR_FREE(sockpath);
 
         /* Add the port */
         if (port) {
@@ -11177,7 +11177,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     VIR_FREE(xpath);
     VIR_FREE(type_conn);
-    VIR_FREE(socket);
+    VIR_FREE(sockpath);
     VIR_FREE(passwd);
     VIR_FREE(listen_addr);
     VIR_FREE(output);
