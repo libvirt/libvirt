@@ -904,6 +904,7 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
                           bank->size >> (kilos * 10),
                           kilos ? "KiB" : "B",
                           cpus_str);
+        VIR_FREE(cpus_str);
 
         virBufferAdjustIndent(&controlBuf, indent + 4);
         for (j = 0; j < bank->ncontrols; j++) {
@@ -937,8 +938,6 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
         } else {
             virBufferAddLit(buf, "/>\n");
         }
-
-        VIR_FREE(cpus_str);
     }
 
     virBufferAdjustIndent(buf, -2);
