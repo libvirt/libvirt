@@ -1,15 +1,3 @@
-drive-sata0-0-1
-filename    : '/var/lib/libvirt/images/b.qcow2'
-format node : '#block548'
-format drv  : 'qcow2'
-storage node: '#block487'
-storage drv : 'file'
-  filename    : '/var/lib/libvirt/images/base.qcow2'
-  format node : '#block771'
-  format drv  : 'qcow2'
-  storage node: '#block692'
-  storage drv : 'file'
-
 drive-sata0-0-0
 filename    : '/var/lib/libvirt/images/a.qcow2'
 format node : '#block132'
@@ -20,4 +8,16 @@ storage drv : 'file'
   format node : '#block320'
   format drv  : 'qcow2'
   storage node: '#block224'
+  storage drv : 'file'
+
+drive-sata0-0-1
+filename    : '/var/lib/libvirt/images/b.qcow2'
+format node : '#block548'
+format drv  : 'qcow2'
+storage node: '#block487'
+storage drv : 'file'
+  filename    : '/var/lib/libvirt/images/base.qcow2'
+  format node : '#block771'
+  format drv  : 'qcow2'
+  storage node: '#block692'
   storage drv : 'file'

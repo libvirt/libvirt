@@ -1,15 +1,3 @@
-drive-ide0-0-1
-filename    : '/var/lib/libvirt/images/relsnap.qcow2'
-format node : '#block1290'
-format drv  : 'qcow2'
-storage node: '#block1107'
-storage drv : 'file'
-  filename    : '/var/lib/libvirt/images/base.qcow2'
-  format node : '#block927'
-  format drv  : 'qcow2'
-  storage node: '#block800'
-  storage drv : 'file'
-
 drive-ide0-0-0
 filename    : '/var/lib/libvirt/images/img3'
 format node : '#block118'
@@ -31,3 +19,15 @@ storage drv : 'file'
       format drv  : 'qcow2'
       storage node: '#block614'
       storage drv : 'file'
+
+drive-ide0-0-1
+filename    : '/var/lib/libvirt/images/relsnap.qcow2'
+format node : '#block1290'
+format drv  : 'qcow2'
+storage node: '#block1107'
+storage drv : 'file'
+  filename    : '/var/lib/libvirt/images/base.qcow2'
+  format node : '#block927'
+  format drv  : 'qcow2'
+  storage node: '#block800'
+  storage drv : 'file'

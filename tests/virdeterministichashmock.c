@@ -20,10 +20,19 @@
 
 #include <config.h>
 
-#include "virrandom.h"
+#include "util/virhashcode.h"
 
-uint64_t virRandomBits(int nbits ATTRIBUTE_UNUSED)
+uint32_t
+virHashCodeGen(const void *key,
+               size_t len,
+               uint32_t seed ATTRIBUTE_UNUSED)
 {
-    return 4; /* chosen by fair dice roll.
-                 guaranteed to be random. */
+    const uint8_t *k = key;
+    uint32_t h = 0;
+    size_t i;
+
+    for (i = 0; i < len; i++)
+        h += k[i];
+
+    return h;
 }
