@@ -5359,10 +5359,10 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
     }
 
     if ((flags & VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM) &&
-        (info->rombar || info->romfile)) {
+        (info->rombar != VIR_TRISTATE_SWITCH_ABSENT || info->romfile)) {
 
         virBufferAddLit(buf, "<rom");
-        if (info->rombar) {
+        if (info->rombar != VIR_TRISTATE_SWITCH_ABSENT) {
             const char *rombar = virTristateSwitchTypeToString(info->rombar);
 
             if (rombar)
