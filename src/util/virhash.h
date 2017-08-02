@@ -14,6 +14,7 @@
 # define __VIR_HASH_H__
 
 # include <stdint.h>
+# include <stdbool.h>
 
 /*
  * The hash table.
