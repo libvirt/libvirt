@@ -30,6 +30,7 @@
 
 # include "internal.h"
 
-uint32_t virHashCodeGen(const void *key, size_t len, uint32_t seed);
+uint32_t virHashCodeGen(const void *key, size_t len, uint32_t seed)
+    ATTRIBUTE_NOINLINE;
 
 #endif /* __VIR_HASH_CODE_H__ */

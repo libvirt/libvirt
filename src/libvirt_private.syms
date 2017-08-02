@@ -1774,6 +1774,10 @@ virHashUpdateEntry;
 virHashValueFree;
 
 
+# util/virhashcode.h
+virHashCodeGen;
+
+
 # util/virhook.h
 virHookCall;
 virHookInitialize;
