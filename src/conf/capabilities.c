@@ -1647,15 +1647,17 @@ virCapabilitiesInitCaches(virCapsPtr caps)
                 goto cleanup;
 
             typeret = virResctrlGetCacheControlType(bank->level);
+            if (typeret < 0)
+                goto cleanup;
 
-            if (typeret == 0) {
+            if (typeret == 1) {
                 if (virResctrlGetCacheInfo(bank->level,
                                            bank->size,
                                            VIR_CACHE_TYPE_BOTH,
                                            &bank->controls,
                                            &bank->ncontrols) < 0)
                     goto cleanup;
-            } else if (typeret == 1) {
+            } else if (typeret == 2) {
                 if (virResctrlGetCacheInfo(bank->level,
                                            bank->size,
                                            VIR_CACHE_TYPE_CODE,

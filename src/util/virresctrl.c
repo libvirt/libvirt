@@ -45,6 +45,16 @@ VIR_ENUM_IMPL(virCache, VIR_CACHE_TYPE_LAST,
               "code",
               "data")
 
+/*
+ * This is the same enum, but for the resctrl naming
+ * of the type (L<level><type>)
+ */
+VIR_ENUM_DECL(virResctrl)
+VIR_ENUM_IMPL(virResctrl, VIR_CACHE_TYPE_LAST,
+              "",
+              "CODE",
+              "DATA")
+
 int
 virResctrlGetCacheInfo(unsigned int level,
                        unsigned long long size,
@@ -114,40 +124,64 @@ virResctrlGetCacheInfo(unsigned int level,
 }
 
 
+static inline int
+virResctrlGetCacheDir(char **path,
+                      const char *prefix,
+                      unsigned int level,
+                      virCacheType type)
+{
+    return virAsprintf(path,
+                       SYSFS_RESCTRL_PATH "%s/L%u%s",
+                       prefix ? prefix : "",
+                       level,
+                       virResctrlTypeToString(type));
+}
+
+
 /*
- * This function tests which TYPE of cache control is supported
- * Return values are:
- *  -1: not supported
- *   0: CAT
- *   1: CDP
+ * This function tests whether TYPE of cache control is supported or not.
+ *
+ * Returns 0 if not, 1 if yes and negative value on error.
  */
-int
-virResctrlGetCacheControlType(unsigned int level)
+static int
+virResctrlGetCacheSupport(unsigned int level, virCacheType type)
 {
     int ret = -1;
     char *path = NULL;
 
-    if (virAsprintf(&path,
-                    SYSFS_RESCTRL_PATH "/info/L%u",
-                    level) < 0)
+    if (virResctrlGetCacheDir(&path, "/info", level, type) < 0)
         return -1;
 
-    if (virFileExists(path)) {
-        ret = 0;
-    } else {
-        VIR_FREE(path);
-        /*
-         * If CDP is enabled, there will be both CODE and DATA, but it's enough
-         * to check one of those only.
-         */
-        if (virAsprintf(&path,
-                        SYSFS_RESCTRL_PATH "/info/L%uCODE",
-                        level) < 0)
-            return -1;
-        if (virFileExists(path))
-            ret = 1;
-    }
-
+    ret = virFileExists(path);
     VIR_FREE(path);
     return ret;
+}
+
+
+/*
+ * This function tests which TYPE of cache control is supported
+ * Return values are:
+ *  -1: error
+ *   0: none
+ *   1: CAT
+ *   2: CDP
+ */
+int
+virResctrlGetCacheControlType(unsigned int level)
+{
+    int rv = -1;
+
+    rv = virResctrlGetCacheSupport(level, VIR_CACHE_TYPE_BOTH);
+    if (rv < 0)
+        return -1;
+    if (rv)
+        return 1;
+
+    rv = virResctrlGetCacheSupport(level, VIR_CACHE_TYPE_CODE);
+    if (rv < 0)
+        return -1;
+    if (rv)
+        return 2;
+
+    return 0;
 }
