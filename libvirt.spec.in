@@ -292,7 +292,11 @@ BuildRequires: libtool
 BuildRequires: /usr/bin/pod2man
 %endif
 BuildRequires: git
+%if 0%{?fedora} >= 27
+BuildRequires: perl-interpreter
+%else
 BuildRequires: perl
+%endif
 BuildRequires: python
 %if %{with_systemd}
 BuildRequires: systemd-units
