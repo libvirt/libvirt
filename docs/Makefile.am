@@ -273,7 +273,8 @@ MAINTAINERCLEANFILES += \
 	    || { rm $@ && exit 1; }
 
 %.php: %.php.tmp %.php.code.in
-	$(AM_V_GEN)sed -e '/<span id="php_placeholder"><\/span>/r '"$(srcdir)/$@.code.in" \
+	$(AM_V_GEN)sed \
+	    -e '/<span id="php_placeholder"><\/span>/r '"$(srcdir)/$@.code.in" \
 	    -e /php_placeholder/d < $@.tmp > $(srcdir)/$@ \
 	    || { rm $(srcdir)/$@ && exit 1; }
 
