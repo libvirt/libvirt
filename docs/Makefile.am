@@ -52,6 +52,7 @@ devhelphtml =			\
 css =         \
   generic.css \
   libvirt.css \
+  mobile.css \
   main.css
 
 fonts = \

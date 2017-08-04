@@ -88,6 +88,7 @@
       </xsl:comment>
       <head>
         <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <link rel="stylesheet" type="text/css" href="{$href_base}main.css"/>
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
@@ -97,6 +98,39 @@
         <title>libvirt: <xsl:value-of select="html:html/html:body/html:h1"/></title>
         <meta name="description" content="libvirt, virtualization, virtualization API"/>
         <xsl:apply-templates select="/html:html/html:head/*" mode="content"/>
+
+        <script type="text/javascript">
+          <xsl:comment>
+          <![CDATA[
+      function init() {
+      window.addEventListener('scroll', function(e){
+              var distanceY = window.pageYOffset || document.documentElement.scrollTop,
+              shrinkOn = 94
+              home = document.getElementById("home");
+              links = document.getElementById("jumplinks");
+              search = document.getElementById("search");
+              body = document.getElementById("body");
+              if (distanceY > shrinkOn) {
+                  if (home.className != "navhide") {
+                      body.className = "navhide"
+                      home.className = "navhide"
+                      links.className = "navhide"
+                      search.className = "navhide"
+                  }
+              } else {
+                  if (home.className == "navhide") {
+                      body.className = ""
+                      home.className = ""
+                      links.className = ""
+                      search.className = ""
+                  }
+              }
+      });
+      }
+      window.onload = init();
+           ]]>
+          </xsl:comment>
+        </script>
       </head>
       <body>
         <xsl:if test="html:html/html:body/@class">
@@ -117,7 +151,7 @@
             <ul>
               <li><a href="{$href_base}downloads.html">Download</a></li>
               <li><a href="{$href_base}contribute.html">Contribute</a></li>
-              <li><a href="{$href_base}docs.html">Learn</a></li>
+              <li><a href="{$href_base}docs.html">Docs</a></li>
             </ul>
           </div>
           <div id="search">
