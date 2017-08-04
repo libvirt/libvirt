@@ -795,12 +795,16 @@ virTestCompareToFile(const char *strcontent,
     if (virTestLoadFile(filename, &filecontent) < 0 && !virTestGetRegenerate())
         goto failure;
 
-    if (filecontent &&
-        filecontent[strlen(filecontent) - 1] == '\n' &&
-        strcontent[strlen(strcontent) - 1] != '\n') {
-        if (virAsprintf(&fixedcontent, "%s\n", strcontent) < 0)
-            goto failure;
-        cmpcontent = fixedcontent;
+    if (filecontent) {
+        size_t filecontentLen = strlen(filecontent);
+
+        if (filecontentLen > 0 &&
+            filecontent[filecontentLen - 1] == '\n' &&
+            strcontent[strlen(strcontent) - 1] != '\n') {
+            if (virAsprintf(&fixedcontent, "%s\n", strcontent) < 0)
+                goto failure;
+            cmpcontent = fixedcontent;
+        }
     }
 
     if (STRNEQ_NULLABLE(cmpcontent, filecontent)) {
