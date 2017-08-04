@@ -323,6 +323,7 @@ static int testMessageSingleArrayRef(const void *args ATTRIBUTE_UNUSED)
  cleanup:
     if (out_strv1)
         VIR_FREE(out_strv1[0]);
+    VIR_FREE(out_strv1);
     virDBusMessageUnref(msg);
     return ret;
 }
