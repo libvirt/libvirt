@@ -1722,6 +1722,7 @@ qemuDomainObjPrivateFree(void *data)
     virBitmapFree(priv->autoNodeset);
     virBitmapFree(priv->autoCpuset);
 
+    VIR_FREE(priv->machineName);
     VIR_FREE(priv->libDir);
     VIR_FREE(priv->channelTargetDir);
 
