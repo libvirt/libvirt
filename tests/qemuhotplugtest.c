@@ -855,6 +855,7 @@ mymain(void)
     DO_TEST_CPU_INDIVIDUAL("ppc64-modern-individual", "17", true, true, true);
 
     qemuTestDriverFree(&driver);
+    virObjectUnref(data.vm);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
