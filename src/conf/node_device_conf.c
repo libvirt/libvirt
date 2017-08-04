@@ -792,6 +792,9 @@ virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
 
  out:
     ctxt->node = orignode;
+    VIR_FREE(cssid);
+    VIR_FREE(ssid);
+    VIR_FREE(devno);
     return ret;
 }
 
