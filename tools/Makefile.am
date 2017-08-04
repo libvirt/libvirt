@@ -439,7 +439,7 @@ wireshark/src/packet-libvirt.c: wireshark/src/packet-libvirt.h \
 		wireshark/src/libvirt/protocol.h
 
 wireshark/src/plugin.c: wireshark/src/packet-libvirt.c
-	cd wireshark/src && \
+	$(AM_V_GEN)cd wireshark/src && \
 		$(abs_top_srcdir)/tools/wireshark/util/make-dissector-reg \
 		. plugin packet-libvirt.c
 
@@ -451,7 +451,7 @@ WS_DISSECTOR_PROTO_FILES  = \
 
 wireshark/src/libvirt/protocol.h: wireshark/util/genxdrstub.pl \
 		$(WS_DISSECTOR_PROTO_FILES)
-	$(MKDIR_P) wireshark/src/libvirt
+	$(AM_V_GEN)$(MKDIR_P) wireshark/src/libvirt && \
 	cd wireshark/src && \
 	LIBVIRT_VERSION=$(LIBVIRT_VERSION) \
 		  $(PERL) $(abs_top_srcdir)/tools/wireshark/util/genxdrstub.pl \
