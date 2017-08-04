@@ -17892,6 +17892,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                 }
                 def->ioapic = value;
                 def->features[val] = VIR_TRISTATE_SWITCH_ON;
+                VIR_FREE(tmp);
             }
             ctxt->node = node;
             break;
