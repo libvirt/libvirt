@@ -1,10 +1,10 @@
 #! /bin/sh
 # Print a version string.
-scriptversion=2016-01-24.06; # UTC
+scriptversion=2017-01-09.19; # UTC
 
 # Bootstrap this package from checked-out sources.
 
-# Copyright (C) 2003-2016 Free Software Foundation, Inc.
+# Copyright (C) 2003-2017 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -418,28 +418,30 @@ sort_ver() { # sort -V is not generally available
   done
 }
 
+get_version_sed='
+# Move version to start of line.
+s/.*[v ]\([0-9]\)/\1/
+
+# Skip lines that do not start with version.
+/^[0-9]/!d
+
+# Remove characters after the version.
+s/[^.a-z0-9-].*//
+
+# The first component must be digits only.
+s/^\([0-9]*\)[a-z-].*/\1/
+
+#the following essentially does s/5.005/5.5/
+s/\.0*\([1-9]\)/.\1/g
+p
+q'
+
 get_version() {
   app=$1
 
   $app --version >/dev/null 2>&1 || { $app --version; return 1; }
 
-  $app --version 2>&1 |
-  sed -n '# Move version to start of line.
-          s/.*[v ]\([0-9]\)/\1/
-
-          # Skip lines that do not start with version.
-          /^[0-9]/!d
-
-          # Remove characters after the version.
-          s/[^.a-z0-9-].*//
-
-          # The first component must be digits only.
-          s/^\([0-9]*\)[a-z-].*/\1/
-
-          #the following essentially does s/5.005/5.5/
-          s/\.0*\([1-9]\)/.\1/g
-          p
-          q'
+  $app --version 2>&1 | sed -n "$get_version_sed"
 }
 
 check_versions() {
@@ -788,7 +790,7 @@ symlink_to_dir()
       # Leave any existing symlink alone, if it already points to the source,
       # so that broken build tools that care about symlink times
       # aren't confused into doing unnecessary builds.  Conversely, if the
-      # existing symlink's time stamp is older than the source, make it afresh,
+      # existing symlink's timestamp is older than the source, make it afresh,
       # so that broken tools aren't confused into skipping needed builds.  See
       # <http://lists.gnu.org/archive/html/bug-gnulib/2011-05/msg00326.html>.
       test -h "$dst" &&
