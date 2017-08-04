@@ -2931,8 +2931,11 @@ void virDomainDefFree(virDomainDefPtr def)
     for (i = 0; def->os.initargv && def->os.initargv[i]; i++)
         VIR_FREE(def->os.initargv[i]);
     VIR_FREE(def->os.initargv);
-    for (i = 0; def->os.initenv && def->os.initenv[i]; i++)
+    for (i = 0; def->os.initenv && def->os.initenv[i]; i++) {
+        VIR_FREE(def->os.initenv[i]->name);
+        VIR_FREE(def->os.initenv[i]->value);
         VIR_FREE(def->os.initenv[i]);
+    }
     VIR_FREE(def->os.initdir);
     VIR_FREE(def->os.inituser);
     VIR_FREE(def->os.initgroup);
