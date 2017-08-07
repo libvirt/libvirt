@@ -6813,8 +6813,6 @@ qemuProcessReconnect(void *opaque)
     if (qemuDomainMasterKeyReadFile(priv) < 0)
         goto error;
 
-    virNWFilterReadLockFilterUpdates();
-
     VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
 
     /* XXX check PID liveliness & EXE path */
@@ -7043,6 +7041,8 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
     memcpy(data, src, sizeof(*data));
     data->obj = obj;
 
+    virNWFilterReadLockFilterUpdates();
+
     /* this lock and reference will be eventually transferred to the thread
      * that handles the reconnect */
     virObjectLock(obj);
@@ -7068,6 +7068,7 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
         qemuDomainRemoveInactive(src->driver, obj);
 
         virDomainObjEndAPI(&obj);
+        virNWFilterUnlockFilterUpdates();
         virObjectUnref(data->conn);
         VIR_FREE(data);
         return -1;
