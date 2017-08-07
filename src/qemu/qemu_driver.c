@@ -7364,8 +7364,8 @@ qemuDomainUndefineFlags(virDomainPtr dom,
         }
     }
 
-    if (!virDomainObjIsActive(vm) &&
-        vm->def->os.loader && vm->def->os.loader->nvram &&
+    if (vm->def->os.loader &&
+        vm->def->os.loader->nvram &&
         virFileExists(vm->def->os.loader->nvram)) {
         if ((flags & VIR_DOMAIN_UNDEFINE_NVRAM)) {
             if (unlink(vm->def->os.loader->nvram) < 0) {
