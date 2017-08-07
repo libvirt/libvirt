@@ -7325,10 +7325,13 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     if (virDomainUndefineFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!vm->persistent) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cannot undefine transient domain"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!virDomainObjIsActive(vm) &&
@@ -7338,15 +7341,15 @@ qemuDomainUndefineFlags(virDomainPtr dom,
                            _("cannot delete inactive domain with %d "
                              "snapshots"),
                            nsnapshots);
-            goto cleanup;
+            goto endjob;
         }
         if (qemuDomainSnapshotDiscardAllMetadata(driver, vm) < 0)
-            goto cleanup;
+            goto endjob;
     }
 
     name = qemuDomainManagedSavePath(driver, vm);
     if (name == NULL)
-        goto cleanup;
+        goto endjob;
 
     if (virFileExists(name)) {
         if (flags & VIR_DOMAIN_UNDEFINE_MANAGED_SAVE) {
@@ -7354,13 +7357,13 @@ qemuDomainUndefineFlags(virDomainPtr dom,
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Failed to remove domain managed "
                                  "save image"));
-                goto cleanup;
+                goto endjob;
             }
         } else {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Refusing to undefine while domain managed "
                              "save image exists"));
-            goto cleanup;
+            goto endjob;
         }
     }
 
@@ -7372,17 +7375,17 @@ qemuDomainUndefineFlags(virDomainPtr dom,
                 virReportSystemError(errno,
                                      _("failed to remove nvram: %s"),
                                      vm->def->os.loader->nvram);
-                goto cleanup;
+                goto endjob;
             }
         } else if (!(flags & VIR_DOMAIN_UNDEFINE_KEEP_NVRAM)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("cannot delete inactive domain with nvram"));
-            goto cleanup;
+            goto endjob;
         }
     }
 
     if (virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm) < 0)
-        goto cleanup;
+        goto endjob;
 
     event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_UNDEFINED,
@@ -7396,9 +7399,11 @@ qemuDomainUndefineFlags(virDomainPtr dom,
      */
     vm->persistent = 0;
     if (!virDomainObjIsActive(vm))
-        qemuDomainRemoveInactiveJob(driver, vm);
+        qemuDomainRemoveInactive(driver, vm);
 
     ret = 0;
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     VIR_FREE(name);
