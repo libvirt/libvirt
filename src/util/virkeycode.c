@@ -30,7 +30,6 @@
 #include "virkeycodetable_rfb.h"
 #include "virkeycodetable_usb.h"
 #include "virkeycodetable_win32.h"
-#include "virkeycodetable_xt.h"
 #include "virkeycodetable_xtkbd.h"
 #include "virkeynametable_linux.h"
 #include "virkeynametable_osx.h"
@@ -44,7 +43,8 @@ static const char **virKeymapNames[VIR_KEYCODE_SET_LAST] = {
 
 static const unsigned short *virKeymapValues[VIR_KEYCODE_SET_LAST] = {
     [VIR_KEYCODE_SET_LINUX] = virKeyCodeTable_linux,
-    [VIR_KEYCODE_SET_XT] = virKeyCodeTable_xt,
+    /* XT is same as AT Set1 - it was included by mistake */
+    [VIR_KEYCODE_SET_XT] = virKeyCodeTable_atset1,
     [VIR_KEYCODE_SET_ATSET1] = virKeyCodeTable_atset1,
     [VIR_KEYCODE_SET_ATSET2] = virKeyCodeTable_atset2,
     [VIR_KEYCODE_SET_ATSET3] = virKeyCodeTable_atset3,
@@ -57,7 +57,6 @@ static const unsigned short *virKeymapValues[VIR_KEYCODE_SET_LAST] = {
 
 #define VIR_KEYMAP_ENTRY_MAX ARRAY_CARDINALITY(virKeyCodeTable_linux)
 
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_xt));
 verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_atset1));
 verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_atset2));
 verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_atset3));

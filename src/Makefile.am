@@ -253,7 +253,7 @@ util/virkey%.7: util/virkey%.pod
 	rm -f $@-t1 && \
 	mv $@-t2 $@
 
-KEYCODES = linux osx atset1 atset2 atset3 xt xtkbd usb win32 rfb
+KEYCODES = linux osx atset1 atset2 atset3 xtkbd usb win32 rfb
 KEYNAMES = linux osx win32
 
 KEYTABLES = \
