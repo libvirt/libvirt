@@ -2857,7 +2857,7 @@ virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr addr,
  * Returns the network device name of a pci device
  */
 int
-virPCIGetNetName(char *device_link_sysfs_path, char **netname)
+virPCIGetNetName(const char *device_link_sysfs_path, char **netname)
 {
     char *pcidev_sysfs_net_path = NULL;
     int ret = -1;
@@ -2991,7 +2991,7 @@ virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr dev ATTRIBUTE_UNUSED,
 }
 
 int
-virPCIGetNetName(char *device_link_sysfs_path ATTRIBUTE_UNUSED,
+virPCIGetNetName(const char *device_link_sysfs_path ATTRIBUTE_UNUSED,
                  char **netname ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
