@@ -89,7 +89,7 @@ static int testConfParseInt(const void *opaque ATTRIBUTE_UNUSED)
         "string = \"foo\"\n";
 
     int ret = -1;
-    virConfPtr conf = virConfReadMem(srcdata, strlen(srcdata), 0);
+    virConfPtr conf = virConfReadString(srcdata, 0);
     int iv;
     unsigned int ui;
     size_t s;
@@ -238,7 +238,7 @@ static int testConfParseBool(const void *opaque ATTRIBUTE_UNUSED)
         "string = \"foo\"\n";
 
     int ret = -1;
-    virConfPtr conf = virConfReadMem(srcdata, strlen(srcdata), 0);
+    virConfPtr conf = virConfReadString(srcdata, 0);
     bool f = true;
     bool t = false;
 
@@ -302,7 +302,7 @@ static int testConfParseString(const void *opaque ATTRIBUTE_UNUSED)
         "string = \"foo\"\n";
 
     int ret = -1;
-    virConfPtr conf = virConfReadMem(srcdata, strlen(srcdata), 0);
+    virConfPtr conf = virConfReadString(srcdata, 0);
     char *str = NULL;
 
     if (!conf)
@@ -342,7 +342,7 @@ static int testConfParseStringList(const void *opaque ATTRIBUTE_UNUSED)
         "string = \"foo\"\n";
 
     int ret = -1;
-    virConfPtr conf = virConfReadMem(srcdata, strlen(srcdata), 0);
+    virConfPtr conf = virConfReadString(srcdata, 0);
     char **str = NULL;
 
     if (!conf)

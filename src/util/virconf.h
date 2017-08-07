@@ -79,8 +79,8 @@ typedef int (*virConfWalkCallback)(const char* name,
 
 virConfPtr virConfNew(void);
 virConfPtr virConfReadFile(const char *filename, unsigned int flags);
-virConfPtr virConfReadMem(const char *memory,
-                          int len, unsigned int flags);
+virConfPtr virConfReadString(const char *memory,
+                             unsigned int flags);
 int virConfFree(virConfPtr conf);
 void virConfFreeValue(virConfValuePtr val);
 virConfValuePtr virConfGetValue(virConfPtr conf,

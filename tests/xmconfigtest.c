@@ -115,7 +115,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     priv.caps = caps;
     conn->privateData = &priv;
 
-    if (!(conf = virConfReadMem(xmcfgData, strlen(xmcfgData), 0)))
+    if (!(conf = virConfReadString(xmcfgData, 0)))
         goto fail;
 
     if (!(def = xenParseXM(conf, caps, xmlopt)))

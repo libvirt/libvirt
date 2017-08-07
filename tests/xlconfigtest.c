@@ -146,7 +146,7 @@ testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
     if (virTestLoadFile(xlcfg, &xlcfgData) < 0)
         goto fail;
 
-    if (!(conf = virConfReadMem(xlcfgData, strlen(xlcfgData), 0)))
+    if (!(conf = virConfReadString(xlcfgData, 0)))
         goto fail;
 
     if (!(def = xenParseXL(conf, caps, xmlopt)))

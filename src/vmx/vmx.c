@@ -1312,7 +1312,7 @@ virVMXParseConfig(virVMXContext *ctx,
         return NULL;
     }
 
-    conf = virConfReadMem(vmx, strlen(vmx), VIR_CONF_FLAG_VMX_FORMAT);
+    conf = virConfReadString(vmx, VIR_CONF_FLAG_VMX_FORMAT);
 
     if (conf == NULL)
         return NULL;
@@ -1332,7 +1332,7 @@ virVMXParseConfig(virVMXContext *ctx,
         if (utf8 == NULL)
             goto cleanup;
 
-        conf = virConfReadMem(utf8, strlen(utf8), VIR_CONF_FLAG_VMX_FORMAT);
+        conf = virConfReadString(utf8, VIR_CONF_FLAG_VMX_FORMAT);
 
         VIR_FREE(utf8);
 

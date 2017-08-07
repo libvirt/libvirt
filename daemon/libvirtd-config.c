@@ -433,7 +433,7 @@ int daemonConfigLoadData(struct daemonConfig *data,
     virConfPtr conf;
     int ret;
 
-    conf = virConfReadMem(filedata, strlen(filedata), 0);
+    conf = virConfReadString(filedata, 0);
     if (!conf)
         return -1;
 

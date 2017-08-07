@@ -1000,7 +1000,7 @@ lxcParseConfigString(const char *config,
     virConfPtr properties = NULL;
     virConfValuePtr value;
 
-    if (!(properties = virConfReadMem(config, 0, VIR_CONF_FLAG_LXC_FORMAT)))
+    if (!(properties = virConfReadString(config, VIR_CONF_FLAG_LXC_FORMAT)))
         return NULL;
 
     if (!(vmdef = virDomainDefNew()))

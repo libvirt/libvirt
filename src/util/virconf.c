@@ -807,27 +807,27 @@ virConfReadFile(const char *filename, unsigned int flags)
 }
 
 /**
- * virConfReadMem:
+ * virConfReadString:
  * @memory: pointer to the content of the configuration file
- * @len: length in byte
  * @flags: combination of virConfFlag(s)
  *
- * Reads a configuration file loaded in memory. The string can be
- * zero terminated in which case @len can be 0
+ * Reads a configuration file loaded in memory. The string must be
+ * zero terminated.
  *
  * Returns a handle to lookup settings or NULL if it failed to
  *         parse the content, use virConfFree() to free the data.
  */
 virConfPtr
-virConfReadMem(const char *memory, int len, unsigned int flags)
+virConfReadString(const char *memory, unsigned int flags)
 {
-    if ((memory == NULL) || (len < 0)) {
+    size_t len;
+
+    if (memory == NULL) {
         virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return NULL;
     }
-    if (len == 0)
-        len = strlen(memory);
 
+    len = strlen(memory);
     return virConfParse("memory conf", memory, len, flags);
 }
 
