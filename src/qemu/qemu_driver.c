@@ -15325,7 +15325,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virNWFilterReadLockFilterUpdates();
 
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
-        return -1;
+        goto cleanup;
 
     cfg = virQEMUDriverGetConfig(driver);
 
