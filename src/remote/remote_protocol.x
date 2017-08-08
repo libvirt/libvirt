@@ -2565,6 +2565,12 @@ struct remote_domain_managed_save_get_xml_desc_ret {
     remote_nonnull_string xml;
 };
 
+struct remote_domain_managed_save_define_xml_args {
+    remote_nonnull_domain dom;
+    remote_string dxml;
+    unsigned int flags;
+};
+
 struct remote_domain_snapshot_create_xml_args {
     remote_nonnull_domain dom;
     remote_nonnull_string xml_desc;
@@ -6095,5 +6101,12 @@ enum remote_procedure {
      * @acl: domain:read
      * @acl: domain:read_secure:VIR_DOMAIN_XML_SECURE
      */
-    REMOTE_PROC_DOMAIN_MANAGED_SAVE_GET_XML_DESC = 388
+    REMOTE_PROC_DOMAIN_MANAGED_SAVE_GET_XML_DESC = 388,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:hibernate
+     */
+    REMOTE_PROC_DOMAIN_MANAGED_SAVE_DEFINE_XML = 389
 };

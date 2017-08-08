@@ -8412,6 +8412,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainHasManagedSaveImage = remoteDomainHasManagedSaveImage, /* 0.8.0 */
     .domainManagedSaveRemove = remoteDomainManagedSaveRemove, /* 0.8.0 */
     .domainManagedSaveGetXMLDesc = remoteDomainManagedSaveGetXMLDesc, /* 3.7.0 */
+    .domainManagedSaveDefineXML = remoteDomainManagedSaveDefineXML, /* 3.7.0 */
     .domainSnapshotCreateXML = remoteDomainSnapshotCreateXML, /* 0.8.0 */
     .domainSnapshotGetXMLDesc = remoteDomainSnapshotGetXMLDesc, /* 0.8.0 */
     .domainSnapshotNum = remoteDomainSnapshotNum, /* 0.8.0 */

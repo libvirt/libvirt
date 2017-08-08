@@ -9390,6 +9390,63 @@ virDomainManagedSaveGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
 
 /**
+ * virDomainManagedSaveDefineXML:
+ * @domain: a domain object
+ * @dxml: XML config for adjusting guest xml used on restore
+ * @flags: bitwise-OR of virDomainSaveRestoreFlags
+ *
+ * This updates the definition of a domain stored in a saved state
+ * file.
+ *
+ * @dxml can be used to alter host-specific portions of the domain XML
+ * that will be used on the next start of the domain. For example, it is
+ * possible to alter the backing filename that is associated with a
+ * disk device.
+ *
+ * Normally, the saved state file will remember whether the domain was
+ * running or paused, and restore defaults to the same state.
+ * Specifying VIR_DOMAIN_SAVE_RUNNING or VIR_DOMAIN_SAVE_PAUSED in
+ * @flags will override the default saved into the file; omitting both
+ * leaves the file's default unchanged.  These two flags are mutually
+ * exclusive.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainManagedSaveDefineXML(virDomainPtr domain, const char *dxml,
+                              unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
+
+    virResetLastError();
+
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_SAVE_RUNNING,
+                             VIR_DOMAIN_SAVE_PAUSED,
+                             error);
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    if (conn->driver->domainManagedSaveDefineXML) {
+        int ret;
+        ret = conn->driver->domainManagedSaveDefineXML(domain, dxml, flags);
+
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
  * virDomainOpenConsole:
  * @dom: a domain object
  * @dev_name: the console, serial or parallel port device alias, or NULL
