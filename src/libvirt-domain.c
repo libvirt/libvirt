@@ -9339,6 +9339,55 @@ virDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 }
 
 
+/**
+ * virDomainManagedSaveGetXMLDesc:
+ * @domain: a domain object
+ * @flags: bitwise-OR of subset of virDomainXMLFlags
+ *
+ * This method will extract the XML description of the managed save
+ * state file of a domain.
+ *
+ * No security-sensitive data will be included unless @flags contains
+ * VIR_DOMAIN_XML_SECURE; this flag is rejected on read-only
+ * connections.  For this API, @flags should not contain either
+ * VIR_DOMAIN_XML_INACTIVE or VIR_DOMAIN_XML_UPDATE_CPU.
+ *
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of
+ * error.  The caller must free() the returned value.
+ */
+char *
+virDomainManagedSaveGetXMLDesc(virDomainPtr domain, unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, NULL);
+    conn = domain->conn;
+
+    if ((conn->flags & VIR_CONNECT_RO) && (flags & VIR_DOMAIN_XML_SECURE)) {
+        virReportError(VIR_ERR_OPERATION_DENIED, "%s",
+                       _("virDomainManagedSaveGetXMLDesc with secure flag"));
+        goto error;
+    }
+
+    if (conn->driver->domainManagedSaveGetXMLDesc) {
+        char *ret;
+        ret = conn->driver->domainManagedSaveGetXMLDesc(domain, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return NULL;
+}
+
 
 /**
  * virDomainOpenConsole:

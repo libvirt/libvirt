@@ -750,6 +750,10 @@ typedef int
 (*virDrvDomainManagedSaveRemove)(virDomainPtr domain,
                                  unsigned int flags);
 
+typedef char *
+(*virDrvDomainManagedSaveGetXMLDesc)(virDomainPtr domain,
+                                     unsigned int flags);
+
 typedef virDomainSnapshotPtr
 (*virDrvDomainSnapshotCreateXML)(virDomainPtr domain,
                                  const char *xmlDesc,
@@ -1428,6 +1432,7 @@ struct _virHypervisorDriver {
     virDrvDomainManagedSave domainManagedSave;
     virDrvDomainHasManagedSaveImage domainHasManagedSaveImage;
     virDrvDomainManagedSaveRemove domainManagedSaveRemove;
+    virDrvDomainManagedSaveGetXMLDesc domainManagedSaveGetXMLDesc;
     virDrvDomainSnapshotCreateXML domainSnapshotCreateXML;
     virDrvDomainSnapshotGetXMLDesc domainSnapshotGetXMLDesc;
     virDrvDomainSnapshotNum domainSnapshotNum;

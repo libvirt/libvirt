@@ -2556,6 +2556,15 @@ struct remote_domain_managed_save_remove_args {
     unsigned int flags;
 };
 
+struct remote_domain_managed_save_get_xml_desc_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_managed_save_get_xml_desc_ret {
+    remote_nonnull_string xml;
+};
+
 struct remote_domain_snapshot_create_xml_args {
     remote_nonnull_domain dom;
     remote_nonnull_string xml_desc;
@@ -6079,6 +6088,12 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:migrate
      */
-    REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_DOWNTIME = 387
+    REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_DOWNTIME = 387,
 
+    /**
+     * @generate: both
+     * @acl: domain:read
+     * @acl: domain:read_secure:VIR_DOMAIN_XML_SECURE
+     */
+    REMOTE_PROC_DOMAIN_MANAGED_SAVE_GET_XML_DESC = 388
 };
