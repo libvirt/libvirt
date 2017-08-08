@@ -433,6 +433,7 @@ mymain(void)
     DO_TEST("hugepages-pages4", NONE);
     DO_TEST("hugepages-pages5", NONE);
     DO_TEST("hugepages-pages6", NONE);
+    DO_TEST("hugepages-pages7", NONE);
     DO_TEST("hugepages-shared", NONE);
     DO_TEST("hugepages-memaccess", NONE);
     DO_TEST("hugepages-memaccess2", NONE);

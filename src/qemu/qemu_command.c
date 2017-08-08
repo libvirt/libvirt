@@ -3250,8 +3250,6 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
                           virBitmapPtr autoNodeset,
                           bool force)
 {
-    virDomainHugePagePtr master_hugepage = NULL;
-    virDomainHugePagePtr hugepage = NULL;
     virDomainNumatuneMemMode mode;
     const long system_page_size = virGetSystemPageSizeKB();
     virDomainMemoryAccess memAccess = mem->access;
@@ -3264,6 +3262,13 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
     bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numa, mem->targetNode);
     unsigned long long pagesize = mem->pagesize;
     bool needHugepage = !!pagesize;
+    bool useHugepage = !!pagesize;
+
+    /* The difference between @needHugepage and @useHugepage is that the latter
+     * is true whenever huge page is defined for the current memory cell.
+     * Either directly, or transitively via global domain huge pages. The
+     * former is true whenever "memory-backend-file" must be used to satisfy
+     * @useHugepage. */
 
     *backendProps = NULL;
     *backendType = NULL;
@@ -3290,6 +3295,8 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
         mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
 
     if (pagesize == 0) {
+        virDomainHugePagePtr master_hugepage = NULL;
+        virDomainHugePagePtr hugepage = NULL;
         bool thisHugepage = false;
 
         /* Find the huge page size we want to use */
@@ -3327,8 +3334,10 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
             hugepage = master_hugepage;
         }
 
-        if (hugepage)
+        if (hugepage) {
             pagesize = hugepage->size;
+            useHugepage = true;
+        }
     }
 
     if (pagesize == system_page_size) {
@@ -3336,17 +3345,18 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
          * of regular system page size, it's as if they
          * hasn't specified any huge pages at all. */
         pagesize = 0;
-        hugepage = NULL;
+        needHugepage = false;
+        useHugepage = false;
     }
 
     if (!(props = virJSONValueNewObject()))
         return -1;
 
-    if (pagesize || mem->nvdimmPath || memAccess ||
+    if (useHugepage || mem->nvdimmPath || memAccess ||
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
         *backendType = "memory-backend-file";
 
-        if (pagesize) {
+        if (useHugepage) {
             if (qemuGetDomainHupageMemPath(def, cfg, pagesize, &memPath) < 0)
                 goto cleanup;
             prealloc = true;

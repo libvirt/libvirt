@@ -1,0 +1,35 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name fedora \
+-S \
+-M pc-i440fx-2.3 \
+-m size=1048576k,slots=16,maxmem=1099511627776k \
+-smp 2,sockets=2,cores=1,threads=1 \
+-mem-prealloc \
+-mem-path /dev/hugepages2M/libvirt/qemu/-1-fedora \
+-numa node,nodeid=0,cpus=0-1,mem=1024 \
+-object memory-backend-file,id=memdimm0,prealloc=yes,\
+mem-path=/dev/hugepages1G/libvirt/qemu/-1-fedora,size=1073741824,\
+host-nodes=1-3,policy=bind \
+-device pc-dimm,node=0,memdev=memdimm0,id=dimm0,slot=0 \
+-object memory-backend-file,id=memdimm1,prealloc=yes,\
+mem-path=/dev/hugepages2M/libvirt/qemu/-1-fedora,share=no,size=536870912 \
+-device pc-dimm,node=0,memdev=memdimm1,id=dimm1,slot=1 \
+-uuid 63840878-0deb-4095-97e6-fc444d9bc9fa \
+-nographic \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-fedora/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-boot c \
+-usb \
+-drive file=/var/lib/libvirt/images/fedora.qcow2,format=qcow2,if=none,\
+id=drive-virtio-disk0 \
+-device virtio-blk-pci,bus=pci.0,addr=0x7,drive=drive-virtio-disk0,\
+id=virtio-disk0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
