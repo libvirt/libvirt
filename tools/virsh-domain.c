@@ -4705,6 +4705,78 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "managedsave-define" command
+ */
+static const vshCmdInfo info_managed_save_define[] = {
+    {.name = "help",
+     .data = N_("redefine the XML for a domain's managed save state file")
+    },
+    {.name = "desc",
+     .data = N_("Replace the domain XML associated with a managed save state file")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_managed_save_define[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    {.name = "xml",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("filename containing updated XML for the target")
+    },
+    {.name = "running",
+     .type = VSH_OT_BOOL,
+     .help = N_("set domain to be running on start")
+    },
+    {.name = "paused",
+     .type = VSH_OT_BOOL,
+     .help = N_("set domain to be paused on start")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdManagedSaveDefine(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    virDomainPtr dom = NULL;
+    const char *xmlfile = NULL;
+    char *xml = NULL;
+    unsigned int flags = 0;
+
+    if (vshCommandOptBool(cmd, "running"))
+        flags |= VIR_DOMAIN_SAVE_RUNNING;
+    if (vshCommandOptBool(cmd, "paused"))
+        flags |= VIR_DOMAIN_SAVE_PAUSED;
+
+    VSH_EXCLUSIVE_OPTIONS("running", "paused");
+
+    if (vshCommandOptStringReq(ctl, cmd, "xml", &xmlfile) < 0)
+        return false;
+
+    if (virFileReadAll(xmlfile, VSH_MAX_XML_FILE, &xml) < 0)
+        return false;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        goto cleanup;
+
+    if (virDomainManagedSaveDefineXML(dom, xml, flags) < 0) {
+        vshError(ctl, _("Failed to update %s XML configuration"),
+                        virDomainGetName(dom));
+        goto cleanup;
+    }
+
+    vshPrintExtra(ctl, _("Managed save state file of domain %s updated.\n"),
+                         virDomainGetName(dom));
+    ret = true;
+
+ cleanup:
+    virshDomainFree(dom);
+    VIR_FREE(xml);
+    return ret;
+}
+
+/*
  * "schedinfo" command
  */
 static const vshCmdInfo info_schedinfo[] = {
@@ -13884,6 +13956,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdManagedSaveRemove,
      .opts = opts_managedsaveremove,
      .info = info_managedsaveremove,
+     .flags = 0
+    },
+    {.name = "managedsave-define",
+     .handler = cmdManagedSaveDefine,
+     .opts = opts_managed_save_define,
+     .info = info_managed_save_define,
      .flags = 0
     },
     {.name = "memtune",

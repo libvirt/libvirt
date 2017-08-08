@@ -1630,6 +1630,18 @@ has any managed save image.
 Remove the B<managedsave> state file for a domain, if it exists.  This
 ensures the domain will do a full boot the next time it is started.
 
+=item B<managedsave-define> I<domain> I<xml> [{I<--running> | I<--paused>}]
+
+Update the domain XML that will be used when I<domain> is later
+started. The I<xml> argument must be a file name containing
+the alternative XML, with changes only in the host-specific portions of
+the domain XML. For example, it can be used to change disk file paths.
+
+The managed save image records whether the domain should be started to a
+running or paused state.  Normally, this command does not alter the
+recorded state; passing either the I<--running> or I<--paused> flag
+will allow overriding which state the B<start> should use.
+
 =item B<maxvcpus> [I<type>]
 
 Provide the maximum number of virtual CPUs supported for a guest VM on
