@@ -2935,10 +2935,14 @@ virPCIGetNetName(const char *device_link_sysfs_path,
 
 int
 virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
-                             char **pfname, int *vf_index)
+                             int pfNetDevIdx,
+                             char **pfname,
+                             int *vf_index)
 {
     virPCIDeviceAddressPtr pf_config_address = NULL;
     char *pf_sysfs_device_path = NULL;
+    char *vfname = NULL;
+    char *vfPhysPortID = NULL;
     int ret = -1;
 
     if (virPCIGetPhysicalFunction(vf_sysfs_device_path, &pf_config_address) < 0)
@@ -2957,8 +2961,28 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
         goto cleanup;
     }
 
-    if (virPCIGetNetName(pf_sysfs_device_path, 0, NULL, pfname) < 0)
+    /* If the caller hasn't asked for a specific pfNetDevIdx, and VF
+     * is bound to a netdev, learn that netdev's phys_port_id (if
+     * available). This can be used to disambiguate when the PF has
+     * multiple netdevs. If the VF isn't bound to a netdev, then we
+     * return netdev[pfNetDevIdx] on the PF, which may or may not be
+     * correct.
+     */
+    if (pfNetDevIdx == -1) {
+        if (virPCIGetNetName(vf_sysfs_device_path, 0, NULL, &vfname) < 0)
+            goto cleanup;
+
+        if (vfname) {
+            if (virNetDevGetPhysPortID(vfname, &vfPhysPortID) < 0)
+                goto cleanup;
+        }
+        pfNetDevIdx = 0;
+    }
+
+    if (virPCIGetNetName(pf_sysfs_device_path,
+                         pfNetDevIdx, vfPhysPortID, pfname) < 0) {
         goto cleanup;
+    }
 
     if (!*pfname) {
         /* this shouldn't be possible. A VF can't exist unless its
@@ -2974,6 +2998,8 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
  cleanup:
     VIR_FREE(pf_config_address);
     VIR_FREE(pf_sysfs_device_path);
+    VIR_FREE(vfname);
+    VIR_FREE(vfPhysPortID);
 
     return ret;
 }
@@ -3044,6 +3070,7 @@ virPCIGetNetName(const char *device_link_sysfs_path ATTRIBUTE_UNUSED,
 
 int
 virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path ATTRIBUTE_UNUSED,
+                             int pfNetDevIdx ATTRIBUTE_UNUSED,
                              char **pfname ATTRIBUTE_UNUSED,
                              int *vf_index ATTRIBUTE_UNUSED)
 {

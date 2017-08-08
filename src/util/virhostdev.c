@@ -307,7 +307,9 @@ virHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
 
 
 static int
-virHostdevNetDevice(virDomainHostdevDefPtr hostdev, char **linkdev,
+virHostdevNetDevice(virDomainHostdevDefPtr hostdev,
+                    int pfNetDevIdx,
+                    char **linkdev,
                     int *vf)
 {
     int ret = -1;
@@ -317,9 +319,10 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev, char **linkdev,
         return ret;
 
     if (virPCIIsVirtualFunction(sysfs_path) == 1) {
-        if (virPCIGetVirtualFunctionInfo(sysfs_path, linkdev,
-                                         vf) < 0)
+        if (virPCIGetVirtualFunctionInfo(sysfs_path, pfNetDevIdx,
+                                         linkdev, vf) < 0) {
             goto cleanup;
+        }
     } else {
         /* In practice this should never happen, since we currently
          * only support assigning SRIOV VFs via <interface
@@ -444,7 +447,7 @@ virHostdevSaveNetConfig(virDomainHostdevDefPtr hostdev,
         goto cleanup;
     }
 
-    if (virHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
+    if (virHostdevNetDevice(hostdev, -1, &linkdev, &vf) < 0)
         goto cleanup;
 
     if (virNetDevSaveNetConfig(linkdev, vf, stateDir, true) < 0)
@@ -482,7 +485,7 @@ virHostdevSetNetConfig(virDomainHostdevDefPtr hostdev,
     if (!virHostdevIsPCINetDevice(hostdev))
         return 0;
 
-    if (virHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
+    if (virHostdevNetDevice(hostdev, -1, &linkdev, &vf) < 0)
         goto cleanup;
 
     vlan = virDomainNetGetActualVlan(hostdev->parent.data.net);
@@ -545,7 +548,7 @@ virHostdevRestoreNetConfig(virDomainHostdevDefPtr hostdev,
         return ret;
     }
 
-    if (virHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
+    if (virHostdevNetDevice(hostdev, 0, &linkdev, &vf) < 0)
         return ret;
 
     virtPort = virDomainNetGetActualVirtPortProfile(
@@ -564,6 +567,18 @@ virHostdevRestoreNetConfig(virDomainHostdevDefPtr hostdev,
         if (ret < 0 && oldStateDir)
             ret = virNetDevReadNetConfig(linkdev, vf, oldStateDir,
                                          &adminMAC, &vlan, &MAC);
+
+        if (ret < 0) {
+            /* see if the config was saved using the PF's "port 2"
+             * netdev for the file name.
+             */
+            VIR_FREE(linkdev);
+
+            if (virHostdevNetDevice(hostdev, 1, &linkdev, &vf) >= 0) {
+                ret = virNetDevReadNetConfig(linkdev, vf, stateDir,
+                                             &adminMAC, &vlan, &MAC);
+            }
+        }
 
         if (ret == 0) {
             /* if a MAC was stored for the VF, we should now restore

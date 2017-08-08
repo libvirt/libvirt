@@ -226,7 +226,9 @@ int virPCIGetAddrString(unsigned int domain,
 int virPCIDeviceAddressParse(char *address, virPCIDeviceAddressPtr bdf);
 
 int virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
-                                 char **pfname, int *vf_index);
+                                 int pfNetDevIdx,
+                                 char **pfname,
+                                 int *vf_index);
 
 int virPCIDeviceUnbind(virPCIDevicePtr dev);
 int virPCIDeviceRebind(virPCIDevicePtr dev);
