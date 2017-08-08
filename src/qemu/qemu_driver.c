@@ -6797,6 +6797,50 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     return ret;
 }
 
+static char *
+qemuDomainManagedSaveGetXMLDesc(virDomainPtr dom, unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    char *path = NULL;
+    char *ret = NULL;
+    virDomainDefPtr def = NULL;
+    int fd = -1;
+    virQEMUSaveDataPtr data = NULL;
+
+    /* We only take subset of virDomainDefFormat flags.  */
+    virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        return ret;
+
+    if (virDomainManagedSaveGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (!(path = qemuDomainManagedSavePath(driver, vm)))
+        goto cleanup;
+
+    if (!virFileExists(path)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain does not have managed save image"));
+        goto cleanup;
+    }
+
+    if ((fd = qemuDomainSaveImageOpen(driver, path, &def, &data,
+                                      false, NULL, false, false)) < 0)
+        goto cleanup;
+
+    ret = qemuDomainDefFormatXML(driver, def, flags);
+
+ cleanup:
+    virQEMUSaveDataFree(data);
+    virDomainDefFree(def);
+    VIR_FORCE_CLOSE(fd);
+    virDomainObjEndAPI(&vm);
+    VIR_FREE(path);
+    return ret;
+}
+
 /* Return 0 on success, 1 if incomplete saved image was silently unlinked,
  * and -1 on failure with error raised.  */
 static int
@@ -20900,6 +20944,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainManagedSave = qemuDomainManagedSave, /* 0.8.0 */
     .domainHasManagedSaveImage = qemuDomainHasManagedSaveImage, /* 0.8.0 */
     .domainManagedSaveRemove = qemuDomainManagedSaveRemove, /* 0.8.0 */
+    .domainManagedSaveGetXMLDesc = qemuDomainManagedSaveGetXMLDesc, /* 3.7.0 */
     .domainSnapshotCreateXML = qemuDomainSnapshotCreateXML, /* 0.8.0 */
     .domainSnapshotGetXMLDesc = qemuDomainSnapshotGetXMLDesc, /* 0.8.0 */
     .domainSnapshotNum = qemuDomainSnapshotNum, /* 0.8.0 */
