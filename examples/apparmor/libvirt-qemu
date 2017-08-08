@@ -169,3 +169,9 @@
   @{PROC}/device-tree/ r,
   @{PROC}/device-tree/** r,
   /sys/firmware/devicetree/** r,
+
+  # for gathering information about available host resources
+  /sys/devices/system/cpu/ r,
+  /sys/devices/system/node/ r,
+  /sys/devices/system/node/node[0-9]*/meminfo r,
+  /sys/module/vhost/parameters/max_mem_regions r,
