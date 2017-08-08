@@ -4705,6 +4705,54 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "managedsave-dumpxml" command
+ */
+static const vshCmdInfo info_managed_save_dumpxml[] = {
+   {.name = "help",
+    .data = N_("Domain information of managed save state file in XML")
+   },
+   {.name = "desc",
+    .data = N_("Dump XML of domain information for a managed save state file to stdout.")
+   },
+   {.name = NULL}
+};
+
+static const vshCmdOptDef opts_managed_save_dumpxml[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    {.name = "security-info",
+     .type = VSH_OT_BOOL,
+     .help = N_("include security sensitive information in XML dump")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdManagedSaveDumpxml(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    virDomainPtr dom = NULL;
+    unsigned int flags = 0;
+    char *xml = NULL;
+
+    if (vshCommandOptBool(cmd, "security-info"))
+        flags |= VIR_DOMAIN_XML_SECURE;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        goto cleanup;
+
+    if (!(xml = virDomainManagedSaveGetXMLDesc(dom, flags)))
+        goto cleanup;
+
+    vshPrint(ctl, "%s", xml);
+    ret = true;
+
+ cleanup:
+    virshDomainFree(dom);
+    VIR_FREE(xml);
+    return ret;
+}
+
+/*
  * "managedsave-define" command
  */
 static const vshCmdInfo info_managed_save_define[] = {
@@ -13956,6 +14004,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdManagedSaveRemove,
      .opts = opts_managedsaveremove,
      .info = info_managedsaveremove,
+     .flags = 0
+    },
+    {.name = "managedsave-dumpxml",
+     .handler = cmdManagedSaveDumpxml,
+     .opts = opts_managed_save_dumpxml,
+     .info = info_managed_save_dumpxml,
      .flags = 0
     },
     {.name = "managedsave-define",
