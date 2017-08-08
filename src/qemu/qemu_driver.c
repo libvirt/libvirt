@@ -6841,6 +6841,39 @@ qemuDomainManagedSaveGetXMLDesc(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
+static int
+qemuDomainManagedSaveDefineXML(virDomainPtr dom, const char *dxml,
+                               unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virConnectPtr conn = dom->conn;
+    virDomainObjPtr vm;
+    char *path = NULL;
+    int ret = -1;
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainManagedSaveDefineXMLEnsureACL(conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!(path = qemuDomainManagedSavePath(driver, vm)))
+        goto cleanup;
+
+    if (!virFileExists(path)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain does not have managed save image"));
+        goto cleanup;
+    }
+
+    ret = qemuDomainSaveImageDefineXML(conn, path, dxml, flags);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    VIR_FREE(path);
+    return ret;
+}
+
 /* Return 0 on success, 1 if incomplete saved image was silently unlinked,
  * and -1 on failure with error raised.  */
 static int
@@ -20945,6 +20978,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainHasManagedSaveImage = qemuDomainHasManagedSaveImage, /* 0.8.0 */
     .domainManagedSaveRemove = qemuDomainManagedSaveRemove, /* 0.8.0 */
     .domainManagedSaveGetXMLDesc = qemuDomainManagedSaveGetXMLDesc, /* 3.7.0 */
+    .domainManagedSaveDefineXML = qemuDomainManagedSaveDefineXML, /* 3.7.0 */
     .domainSnapshotCreateXML = qemuDomainSnapshotCreateXML, /* 0.8.0 */
     .domainSnapshotGetXMLDesc = qemuDomainSnapshotGetXMLDesc, /* 0.8.0 */
     .domainSnapshotNum = qemuDomainSnapshotNum, /* 0.8.0 */
