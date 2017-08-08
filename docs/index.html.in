@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="js/moment.min.js"></script>
-    <script type="text/javascript" src="js/jquery.rss.min.js"></script>
+    <script type="text/javascript" src="js/jquery-3.1.1.min.js"> </script>
+    <script type="text/javascript" src="js/moment.min.js"> </script>
+    <script type="text/javascript" src="js/jquery.rss.min.js"> </script>
 
     <script type="text/javascript">
       <!--
