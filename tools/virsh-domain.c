@@ -4705,6 +4705,72 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "managedsave-edit" command
+ */
+static const vshCmdInfo info_managed_save_edit[] = {
+   {.name = "help",
+    .data = N_("edit XML for a domain's managed save state file")
+   },
+   {.name = "desc",
+    .data = N_("Edit the domain XML associated with the managed save state file")
+   },
+   {.name = NULL}
+};
+
+static const vshCmdOptDef opts_managed_save_edit[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    {.name = "running",
+     .type = VSH_OT_BOOL,
+     .help = N_("set domain to be running on start")
+    },
+    {.name = "paused",
+     .type = VSH_OT_BOOL,
+     .help = N_("set domain to be paused on start")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdManagedSaveEdit(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    virDomainPtr dom = NULL;
+    unsigned int getxml_flags = VIR_DOMAIN_XML_SECURE;
+    unsigned int define_flags = 0;
+
+    if (vshCommandOptBool(cmd, "running"))
+        define_flags |= VIR_DOMAIN_SAVE_RUNNING;
+    if (vshCommandOptBool(cmd, "paused"))
+        define_flags |= VIR_DOMAIN_SAVE_PAUSED;
+
+    VSH_EXCLUSIVE_OPTIONS("running", "paused");
+
+    dom = virshCommandOptDomain(ctl, cmd, NULL);
+    if (dom == NULL)
+        goto cleanup;
+
+#define EDIT_GET_XML virDomainManagedSaveGetXMLDesc(dom, getxml_flags)
+#define EDIT_NOT_CHANGED                                                          \
+    do {                                                                          \
+        vshPrintExtra(ctl, _("Managed save image of domain %s XML configuration " \
+                             "not changed.\n"), virDomainGetName(dom));           \
+        ret = true;                                                               \
+        goto edit_cleanup;                                                        \
+    } while (0)
+#define EDIT_DEFINE \
+    (virDomainManagedSaveDefineXML(dom, doc_edited, define_flags) == 0)
+#include "virsh-edit.c"
+
+    vshPrintExtra(ctl, _("Managed save image of Domain %s XML configuration edited.\n"),
+                  virDomainGetName(dom));
+    ret = true;
+
+ cleanup:
+    virshDomainFree(dom);
+    return ret;
+}
+
+/*
  * "managedsave-dumpxml" command
  */
 static const vshCmdInfo info_managed_save_dumpxml[] = {
@@ -14004,6 +14070,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdManagedSaveRemove,
      .opts = opts_managedsaveremove,
      .info = info_managedsaveremove,
+     .flags = 0
+    },
+    {.name = "managedsave-edit",
+     .handler = cmdManagedSaveEdit,
+     .opts = opts_managed_save_edit,
+     .info = info_managed_save_edit,
      .flags = 0
     },
     {.name = "managedsave-dumpxml",

@@ -1648,6 +1648,27 @@ Extract the domain XML that was in effect at the time the saved state
 file I<file> was created with the B<managedsave> command.  Using
 I<--security-info> will also include security sensitive information.
 
+=item B<managedsave-edit> I<domain> [{I<--running> | I<--paused>}]
+
+Edit the XML configuration associated with a saved state file of a
+I<domain> was created by the B<managedsave> command.
+
+The managed save image records whether the domain should be started to a
+running or paused state.  Normally, this command does not alter the
+recorded state; passing either the I<--running> or I<--paused> flag
+will allow overriding which state the B<restore> should use.
+
+This is equivalent to:
+
+ virsh managedsave-dumpxml domain-name > state-file.xml
+ vi state-file.xml (or make changes with your other text editor)
+ virsh managedsave-define domain-name state-file-xml
+
+except that it does some error checking.
+
+The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
+variables, and defaults to C<vi>.
+
 =item B<maxvcpus> [I<type>]
 
 Provide the maximum number of virtual CPUs supported for a guest VM on
