@@ -207,6 +207,7 @@
   <flag name='intel-iommu.intremap'/>
   <flag name='intel-iommu.eim'/>
   <flag name='vnc-multi-servers'/>
+  <flag name='chardev-reconnect'/>
   <version>2008000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.8.0)</package>

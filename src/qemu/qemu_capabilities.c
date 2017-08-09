@@ -437,6 +437,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "spapr-pci-host-bridge.numa_node",
               "vnc-multi-servers",
               "virtio-net.tx_queue_size",
+              "chardev-reconnect",
     );
 
 
@@ -3235,6 +3236,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "kernel_irqchip", QEMU_CAPS_MACHINE_KERNEL_IRQCHIP },
     { "machine", "loadparm", QEMU_CAPS_LOADPARM },
     { "vnc", "vnc", QEMU_CAPS_VNC_MULTI_SERVERS },
+    { "chardev", "reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
 };
 
 static int

@@ -165,6 +165,7 @@
   <flag name='kernel-irqchip.split'/>
   <flag name='spapr-pci-host-bridge'/>
   <flag name='vnc-multi-servers'/>
+  <flag name='chardev-reconnect'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
