@@ -1187,8 +1187,9 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
         virMacAddrPtr adminMAC = NULL;
         virNetDevVlanPtr vlan = NULL;
 
-        if (virNetDevReadNetConfig(linkdev, -1, stateDir,
-                                   &adminMAC, &vlan, &MAC) == 0) {
+        if ((virNetDevReadNetConfig(linkdev, -1, stateDir,
+                                    &adminMAC, &vlan, &MAC) == 0) &&
+           (adminMAC || vlan || MAC)) {
 
             ignore_value(virNetDevSetNetConfig(linkdev, -1,
                                                adminMAC, vlan, MAC, !!vlan));

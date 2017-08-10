@@ -1971,7 +1971,9 @@ virNetDevSaveNetConfig(const char *linkdev, int vf,
  * @linkdev:@vf from a file in @stateDir. (see virNetDevSaveNetConfig
  * for details of file name and format).
  *
- * Returns 0 on success, -1 on failure.
+ * Returns 0 on success, -1 on failure. It is *NOT* considered failure
+ * if no file is found to read. In that case, adminMAC, vlan, and MAC
+ * are set to NULL, and success is returned.
  *
  * The caller MUST free adminMAC, vlan, and MAC when it is finished
  * with them (they will be NULL if they weren't found in the file)
@@ -2036,8 +2038,8 @@ virNetDevReadNetConfig(const char *linkdev, int vf,
         if (linkdev && !virFileExists(filePath)) {
             /* the device may have been stored in a file named for the
              * VF due to saveVlan == false (or an older version of
-             * libvirt), so reset filePath so we'll try the other
-             * filename before failing.
+             * libvirt), so reset filePath and pfDevName so we'll try
+             * the other filename.
              */
             VIR_FREE(filePath);
             pfDevName = NULL;
@@ -2047,6 +2049,14 @@ virNetDevReadNetConfig(const char *linkdev, int vf,
     if (!pfDevName) {
         if (virAsprintf(&filePath, "%s/%s", stateDir, linkdev) < 0)
             goto cleanup;
+    }
+
+    if (!virFileExists(filePath)) {
+        /* having no file to read is not necessarily an error, so we
+         * just return success, but with MAC, adminMAC, and vlan set to NULL
+         */
+        ret = 0;
+        goto cleanup;
     }
 
     if (virFileReadAll(filePath, 128, &fileStr) < 0)
