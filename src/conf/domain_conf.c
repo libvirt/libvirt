@@ -2040,6 +2040,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
     VIR_FREE(def->ifname_guest);
     VIR_FREE(def->ifname_guest_actual);
     VIR_FREE(def->virtio);
+    VIR_FREE(def->coalesce);
 
     virNetDevIPInfoClear(&def->guestIP);
     virNetDevIPInfoClear(&def->hostIP);
