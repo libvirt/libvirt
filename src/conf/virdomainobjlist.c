@@ -605,6 +605,8 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
             if (!liveStatus)
                 dom->persistent = 1;
             virObjectUnlock(dom);
+        } else {
+            VIR_ERROR(_("Failed to load config for domain '%s'"), entry->d_name);
         }
     }
 
