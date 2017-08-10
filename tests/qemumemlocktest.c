@@ -50,7 +50,7 @@ testCompareMemLock(const void *data)
     ret = virTestCompareToULL(info->memlock, qemuDomainGetMemLockLimitBytes(def));
 
  cleanup:
-    virObjectUnref(def);
+    virDomainDefFree(def);
     VIR_FREE(xml);
 
     return ret;
