@@ -36,9 +36,9 @@ typedef enum {
 VIR_ENUM_DECL(virCache);
 
 
-typedef struct _virResctrl virResctrl;
-typedef virResctrl *virResctrlPtr;
-struct _virResctrl {
+typedef struct _virResctrlInfo virResctrlInfo;
+typedef virResctrlInfo *virResctrlInfoPtr;
+struct _virResctrlInfo {
     /* Smallest possible increase of the allocation size in bytes */
     unsigned long long granularity;
     /* Minimal allocatable size in bytes (if different from granularity) */
@@ -54,7 +54,7 @@ int
 virResctrlGetCacheInfo(unsigned int level,
                        unsigned long long size,
                        virCacheType scope,
-                       virResctrlPtr **controls,
+                       virResctrlInfoPtr **controls,
                        size_t *ncontrols);
 
 int

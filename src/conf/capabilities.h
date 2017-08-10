@@ -148,7 +148,7 @@ struct _virCapsHostCacheBank {
     virCacheType type;  /* Data, Instruction or Unified */
     virBitmapPtr cpus;  /* All CPUs that share this bank */
     size_t ncontrols;
-    virResctrlPtr *controls;
+    virResctrlInfoPtr *controls;
 };
 
 typedef struct _virCapsHost virCapsHost;
