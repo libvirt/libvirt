@@ -73,8 +73,9 @@ myCleanup(void)
             virFileDeleteTree(mgr->stateDir);
 
         virObjectUnref(mgr->activePCIHostdevs);
-        virObjectUnref(mgr->inactivePCIHostdevs);
         virObjectUnref(mgr->activeUSBHostdevs);
+        virObjectUnref(mgr->inactivePCIHostdevs);
+        virObjectUnref(mgr->activeSCSIHostdevs);
         VIR_FREE(mgr->stateDir);
         VIR_FREE(mgr);
     }
