@@ -337,6 +337,7 @@ mymain(void)
                       "svirt_t", "svirt_image_t",
                       0, 0, 0, 1023);
 
+    virObjectUnref(mgr);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
