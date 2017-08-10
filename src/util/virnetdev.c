@@ -1878,8 +1878,9 @@ virNetDevSaveNetConfig(const char *linkdev, int vf,
             goto cleanup;
 
         linkdev = vfDevOrig;
+        saveVlan = true;
 
-    } else if (saveVlan && virNetDevIsVirtualFunction(linkdev) == 1) {
+    } else if (virNetDevIsVirtualFunction(linkdev) == 1) {
         /* when vf is -1, linkdev might be a standard netdevice (not
          * SRIOV), or it might be an SRIOV VF. If it's a VF, normalize
          * it to PF + VFname
@@ -1894,6 +1895,34 @@ virNetDevSaveNetConfig(const char *linkdev, int vf,
             goto cleanup;
     }
 
+    if (pfDevName) {
+        bool pfIsOnline;
+
+        /* Assure that PF is online before trying to use it to set
+         * anything up for this VF. It *should* be online already,
+         * but if it isn't online the changes made to the VF via the
+         * PF won't take effect, yet there will be no error
+         * reported. In the case that the PF isn't online, we need to
+         * fail and report the error, rather than automatically
+         * setting it online, since setting an unconfigured interface
+         * online automatically turns on IPv6 autoconfig, which may
+         * not be what the admin expects, so we require them to
+         * explicitly enable the PF in the host system network config.
+         */
+        if (virNetDevGetOnline(pfDevName, &pfIsOnline) < 0)
+            goto cleanup;
+
+        if (!pfIsOnline) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to configure VF %d of PF '%s' "
+                             "because the PF is not online. Please "
+                             "change host network config to put the "
+                             "PF online."),
+                           vf, pfDevName);
+            goto cleanup;
+        }
+    }
+
     if (!(configJSON = virJSONValueNewObject()))
         goto cleanup;
 
@@ -1902,7 +1931,7 @@ virNetDevSaveNetConfig(const char *linkdev, int vf,
      * on the host)
      */
 
-    if (pfDevName) {
+    if (pfDevName && saveVlan) {
         if (virAsprintf(&filePath, "%s/%s_vf%d", stateDir, pfDevName, vf) < 0)
             goto cleanup;
 
@@ -2251,32 +2280,6 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
         }
 
     } else {
-        bool pfIsOnline;
-
-        /* Assure that PF is online before trying to use it to set
-         * anything up for this VF. It *should* be online already,
-         * but if it isn't online the changes made to the VF via the
-         * PF won't take effect, yet there will be no error
-         * reported. In the case that the PF isn't online, we need to
-         * fail and report the error, rather than automatically
-         * setting it online, since setting an unconfigured interface
-         * online automatically turns on IPv6 autoconfig, which may
-         * not be what the admin expects, so we require them to
-         * explicitly enable the PF in the host system network config.
-         */
-        if (virNetDevGetOnline(pfDevName, &pfIsOnline) < 0)
-            goto cleanup;
-
-        if (!pfIsOnline) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to configure VF %d of PF '%s' "
-                             "because the PF is not online. Please "
-                             "change host network config to put the "
-                             "PF online."),
-                           vf, pfDevName);
-            goto cleanup;
-        }
-
         if (vlan) {
             if (vlan->nTags != 1 || vlan->trunk) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
