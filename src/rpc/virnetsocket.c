@@ -868,7 +868,7 @@ int virNetSocketNewConnectSSH(const char *nodename,
     if (!netcat)
         netcat = "nc";
 
-    virCommandAddArgList(cmd, nodename, "sh", "-c", NULL);
+    virCommandAddArgList(cmd, "--", nodename, "sh", "-c", NULL);
 
     virBufferEscapeShell(&buf, netcat);
     if (virBufferCheckError(&buf) < 0) {
