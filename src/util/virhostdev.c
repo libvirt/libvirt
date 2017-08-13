@@ -641,9 +641,9 @@ virHostdevRestoreNetConfig(virDomainHostdevDefPtr hostdev,
 
         ignore_value(virNetDevSetNetConfig(linkdev, vf,
                                            adminMAC, vlan, MAC, true));
+        ret = 0;
     }
 
-    ret = 0;
  cleanup:
     VIR_FREE(linkdev);
     VIR_FREE(MAC);
