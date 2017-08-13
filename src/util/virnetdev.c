@@ -1936,10 +1936,8 @@ virNetDevSaveNetConfig(const char *linkdev, int vf,
             goto cleanup;
 
         /* get admin MAC and vlan tag */
-        if (virNetDevGetVfConfig(pfDevName, vf, &oldMAC,
-                                 saveVlan ? &oldVlanTag : NULL) < 0) {
+        if (virNetDevGetVfConfig(pfDevName, vf, &oldMAC, &oldVlanTag) < 0)
             goto cleanup;
-        }
 
         if (virJSONValueObjectAppendString(configJSON,
                                            VIR_NETDEV_KEYNAME_ADMIN_MAC,
