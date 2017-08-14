@@ -10793,9 +10793,9 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
 
 /* Parse the source half of the XML definition for a character device,
  * where node is the first element of node->children of the parent
- * element.  def->type must already be valid.  Return -1 on failure,
- * otherwise the number of ignored children (this intentionally skips
- * <target>, which is used by <serial> but not <smartcard>). */
+ * element.  def->type must already be valid.
+ *
+ * Return -1 on failure, 0 on success. */
 static int
 virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                               xmlNodePtr cur, unsigned int flags,
@@ -10804,6 +10804,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                               virSecurityLabelDefPtr* vmSeclabels,
                               int nvmSeclabels)
 {
+    int ret = -1;
     char *bindHost = NULL;
     char *bindService = NULL;
     char *connectHost = NULL;
@@ -10819,7 +10820,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     char *append = NULL;
     char *haveTLS = NULL;
     char *tlsFromConfig = NULL;
-    int remaining = 0;
 
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
@@ -10912,8 +10912,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
             } else if (virXMLNodeNameEqual(cur, "protocol")) {
                 if (!protocol)
                     protocol = virXMLPropString(cur, "type");
-            } else {
-                remaining++;
             }
         }
         cur = cur->next;
@@ -11099,6 +11097,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         goto error;
     }
 
+    ret = 0;
  cleanup:
     VIR_FREE(mode);
     VIR_FREE(protocol);
@@ -11114,11 +11113,10 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     VIR_FREE(haveTLS);
     VIR_FREE(tlsFromConfig);
 
-    return remaining;
+    return ret;
 
  error:
     virDomainChrSourceDefClear(def);
-    remaining = -1;
     goto cleanup;
 }
 
@@ -13895,7 +13893,6 @@ virDomainRedirdevDefParseXML(virDomainXMLOptionPtr xmlopt,
     xmlNodePtr cur;
     virDomainRedirdevDefPtr def;
     char *bus = NULL, *type = NULL;
-    int remaining;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -13929,11 +13926,9 @@ virDomainRedirdevDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     cur = node->children;
     /* boot gets parsed in virDomainDeviceInfoParseXML
-     * source gets parsed in virDomainChrSourceDefParseXML
-     * we don't know any of the elements that might remain */
-    remaining = virDomainChrSourceDefParseXML(def->source, cur, flags,
-                                              NULL, NULL, NULL, 0);
-    if (remaining < 0)
+     * source gets parsed in virDomainChrSourceDefParseXML */
+    if (virDomainChrSourceDefParseXML(def->source, cur, flags,
+                                      NULL, NULL, NULL, 0) < 0)
         goto error;
 
     if (def->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC)
