@@ -24,8 +24,10 @@
 #             value suitable for your guests.
 #ON_SHUTDOWN=suspend
 
-# If set to non-zero, shutdown will suspend guests concurrently. Number of
-# guests on shutdown at any time will not exceed number set in this variable.
+# Number of guests will be shutdown concurrently, taking effect when
+# "ON_SHUTDOWN" is set to "shutdown". If Set to 0, guests will be shutdown one
+# after another. Number of guests on shutdown at any time will not exceed number
+# set in this variable.
 #PARALLEL_SHUTDOWN=0
 
 # Number of seconds we're willing to wait for a guest to shut down. If parallel
