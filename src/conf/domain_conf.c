@@ -933,7 +933,6 @@ virDomainXMLOptionClassDispose(void *obj)
  *
  * @def  Domain definition
  * @node An XML cipher node
- * @ctxt The XML context
  *
  * Parse the attributes from the cipher node and store the state
  * attribute in @def.
@@ -947,8 +946,7 @@ virDomainXMLOptionClassDispose(void *obj)
  */
 static int
 virDomainKeyWrapCipherDefParseXML(virDomainKeyWrapDefPtr keywrap,
-                                  xmlNodePtr node,
-                                  xmlXPathContextPtr ctxt)
+                                  xmlNodePtr node)
 {
 
     char *name = NULL;
@@ -956,10 +954,8 @@ virDomainKeyWrapCipherDefParseXML(virDomainKeyWrapDefPtr keywrap,
     int state_type;
     int name_type;
     int ret = -1;
-    xmlNodePtr oldnode = ctxt->node;
 
-    ctxt->node = node;
-    if (!(name = virXPathString("string(./@name)", ctxt))) {
+    if (!(name = virXMLPropString(node, "name"))) {
         virReportError(VIR_ERR_CONF_SYNTAX, "%s",
                        _("missing name for cipher"));
         goto cleanup;
@@ -971,7 +967,7 @@ virDomainKeyWrapCipherDefParseXML(virDomainKeyWrapDefPtr keywrap,
         goto cleanup;
     }
 
-    if (!(state = virXPathString("string(./@state)", ctxt))) {
+    if (!(state = virXMLPropString(node, "state"))) {
         virReportError(VIR_ERR_CONF_SYNTAX,
                        _("missing state for cipher named %s"), name);
         goto cleanup;
@@ -1017,7 +1013,6 @@ virDomainKeyWrapCipherDefParseXML(virDomainKeyWrapDefPtr keywrap,
  cleanup:
     VIR_FREE(name);
     VIR_FREE(state);
-    ctxt->node = oldnode;
     return ret;
 }
 
@@ -1036,7 +1031,7 @@ virDomainKeyWrapDefParseXML(virDomainDefPtr def, xmlXPathContextPtr ctxt)
         goto cleanup;
 
     for (i = 0; i < n; i++) {
-        if (virDomainKeyWrapCipherDefParseXML(def->keywrap, nodes[i], ctxt) < 0)
+        if (virDomainKeyWrapCipherDefParseXML(def->keywrap, nodes[i]) < 0)
             goto cleanup;
     }
 
