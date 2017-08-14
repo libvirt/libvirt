@@ -17140,7 +17140,7 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
         if (n == 1) {
             oldnode = ctxt->node;
             ctxt->node = nodes[0];
-            tmp = virXPathString("string(./@type)", ctxt);
+            tmp = virXMLPropString(nodes[0], "type");
 
             if (!tmp) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -17221,7 +17221,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     def->id = (int)id;
 
     /* Find out what type of virtualization to use */
-    if (!(tmp = virXPathString("string(./@type)", ctxt))) {
+    if (!(tmp = virXMLPropString(ctxt->node, "type"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing domain type attribute"));
         goto error;
@@ -17812,9 +17812,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             break;
 
         case VIR_DOMAIN_FEATURE_CAPABILITIES:
-            node = ctxt->node;
-            ctxt->node = nodes[i];
-            if ((tmp = virXPathString("string(./@policy)", ctxt))) {
+            if ((tmp = virXMLPropString(nodes[i], "policy"))) {
                 if ((def->features[val] = virDomainCapabilitiesPolicyTypeFromString(tmp)) == -1) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("unknown state attribute '%s' of feature '%s'"),
@@ -17825,7 +17823,6 @@ virDomainDefParseXML(xmlDocPtr xml,
             } else {
                 def->features[val] = VIR_TRISTATE_SWITCH_ABSENT;
             }
-            ctxt->node = node;
             break;
 
         case VIR_DOMAIN_FEATURE_HAP:
@@ -17833,9 +17830,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         case VIR_DOMAIN_FEATURE_PVSPINLOCK:
         case VIR_DOMAIN_FEATURE_VMPORT:
         case VIR_DOMAIN_FEATURE_SMM:
-            node = ctxt->node;
-            ctxt->node = nodes[i];
-            if ((tmp = virXPathString("string(./@state)", ctxt))) {
+            if ((tmp = virXMLPropString(nodes[i], "state"))) {
                 if ((def->features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("unknown state attribute '%s' of feature '%s'"),
@@ -17846,13 +17841,10 @@ virDomainDefParseXML(xmlDocPtr xml,
             } else {
                 def->features[val] = VIR_TRISTATE_SWITCH_ON;
             }
-            ctxt->node = node;
             break;
 
         case VIR_DOMAIN_FEATURE_GIC:
-            node = ctxt->node;
-            ctxt->node = nodes[i];
-            if ((tmp = virXPathString("string(./@version)", ctxt))) {
+            if ((tmp = virXMLPropString(nodes[i], "version"))) {
                 gic_version = virGICVersionTypeFromString(tmp);
                 if (gic_version < 0 || gic_version == VIR_GIC_VERSION_NONE) {
                     virReportError(VIR_ERR_XML_ERROR,
@@ -17863,13 +17855,10 @@ virDomainDefParseXML(xmlDocPtr xml,
                 VIR_FREE(tmp);
             }
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
-            ctxt->node = node;
             break;
 
         case VIR_DOMAIN_FEATURE_IOAPIC:
-            node = ctxt->node;
-            ctxt->node = nodes[i];
-            tmp = virXPathString("string(./@driver)", ctxt);
+            tmp = virXMLPropString(nodes[i], "driver");
             if (tmp) {
                 int value = virDomainIOAPICTypeFromString(tmp);
                 if (value < 0) {
@@ -17882,7 +17871,6 @@ virDomainDefParseXML(xmlDocPtr xml,
                 def->features[val] = VIR_TRISTATE_SWITCH_ON;
                 VIR_FREE(tmp);
             }
-            ctxt->node = node;
             break;
 
         /* coverity[dead_error_begin] */
@@ -17910,7 +17898,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
             ctxt->node = nodes[i];
 
-            if (!(tmp = virXPathString("string(./@state)", ctxt))) {
+            if (!(tmp = virXMLPropString(nodes[i], "state"))) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("missing 'state' attribute for "
                                  "HyperV Enlightenment feature '%s'"),
@@ -17962,8 +17950,8 @@ virDomainDefParseXML(xmlDocPtr xml,
                 if (value != VIR_TRISTATE_SWITCH_ON)
                     break;
 
-                if (!(def->hyperv_vendor_id = virXPathString("string(./@value)",
-                                                             ctxt))) {
+                if (!(def->hyperv_vendor_id = virXMLPropString(nodes[i],
+                                                               "value"))) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("missing 'value' attribute for "
                                      "HyperV feature 'vendor_id'"));
@@ -17997,7 +17985,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
         int feature;
         int value;
-        node = ctxt->node;
         if ((n = virXPathNodeSet("./features/kvm/*", ctxt, &nodes)) < 0)
             goto error;
 
@@ -18010,11 +17997,9 @@ virDomainDefParseXML(xmlDocPtr xml,
                 goto error;
             }
 
-            ctxt->node = nodes[i];
-
             switch ((virDomainKVM) feature) {
                 case VIR_DOMAIN_KVM_HIDDEN:
-                    if (!(tmp = virXPathString("string(./@state)", ctxt))) {
+                    if (!(tmp = virXMLPropString(nodes[i], "state"))) {
                         virReportError(VIR_ERR_XML_ERROR,
                                        _("missing 'state' attribute for "
                                          "KVM feature '%s'"),
@@ -18040,7 +18025,6 @@ virDomainDefParseXML(xmlDocPtr xml,
             }
         }
         VIR_FREE(nodes);
-        ctxt->node = node;
     }
 
     if ((n = virXPathNodeSet("./features/capabilities/*", ctxt, &nodes)) < 0)
@@ -18055,10 +18039,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         }
 
         if (val >= 0 && val < VIR_DOMAIN_CAPS_FEATURE_LAST) {
-            node = ctxt->node;
-            ctxt->node = nodes[i];
-
-            if ((tmp = virXPathString("string(./@state)", ctxt))) {
+            if ((tmp = virXMLPropString(nodes[i], "state"))) {
                 if ((def->caps_features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("unknown state attribute '%s' of feature capability '%s'"),
@@ -18069,7 +18050,6 @@ virDomainDefParseXML(xmlDocPtr xml,
             } else {
                 def->caps_features[val] = VIR_TRISTATE_SWITCH_ON;
             }
-            ctxt->node = node;
         }
     }
     VIR_FREE(nodes);
@@ -18914,7 +18894,7 @@ virDomainObjParseXML(xmlDocPtr xml,
     if (!obj->def)
         goto error;
 
-    if (!(tmp = virXPathString("string(./@state)", ctxt))) {
+    if (!(tmp = virXMLPropString(ctxt->node, "state"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing domain state"));
         goto error;
@@ -18927,7 +18907,7 @@ virDomainObjParseXML(xmlDocPtr xml,
     }
     VIR_FREE(tmp);
 
-    if ((tmp = virXPathString("string(./@reason)", ctxt))) {
+    if ((tmp = virXMLPropString(ctxt->node, "reason"))) {
         if ((reason = virDomainStateReasonFromString(state, tmp)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("invalid domain state reason '%s'"), tmp);
