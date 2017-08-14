@@ -16362,19 +16362,15 @@ virDomainVcpuPinDefParseXML(virDomainDefPtr def,
  */
 static int
 virDomainIOThreadPinDefParseXML(xmlNodePtr node,
-                                xmlXPathContextPtr ctxt,
                                 virDomainDefPtr def)
 {
     int ret = -1;
     virDomainIOThreadIDDefPtr iothrid;
     virBitmapPtr cpumask = NULL;
-    xmlNodePtr oldnode = ctxt->node;
     unsigned int iothreadid;
     char *tmp = NULL;
 
-    ctxt->node = node;
-
-    if (!(tmp = virXPathString("string(./@iothread)", ctxt))) {
+    if (!(tmp = virXMLPropString(node, "iothread"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing iothread id in iothreadpin"));
         goto cleanup;
@@ -16430,7 +16426,6 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
  cleanup:
     VIR_FREE(tmp);
     virBitmapFree(cpumask);
-    ctxt->node = oldnode;
     return ret;
 }
 
@@ -17705,7 +17700,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     for (i = 0; i < n; i++) {
-        if (virDomainIOThreadPinDefParseXML(nodes[i], ctxt, def) < 0)
+        if (virDomainIOThreadPinDefParseXML(nodes[i], def) < 0)
             goto error;
     }
     VIR_FREE(nodes);
