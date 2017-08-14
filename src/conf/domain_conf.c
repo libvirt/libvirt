@@ -16209,19 +16209,15 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
  *     </iothreadids>
  */
 static virDomainIOThreadIDDefPtr
-virDomainIOThreadIDDefParseXML(xmlNodePtr node,
-                               xmlXPathContextPtr ctxt)
+virDomainIOThreadIDDefParseXML(xmlNodePtr node)
 {
     virDomainIOThreadIDDefPtr iothrid;
-    xmlNodePtr oldnode = ctxt->node;
     char *tmp = NULL;
 
     if (VIR_ALLOC(iothrid) < 0)
         return NULL;
 
-    ctxt->node = node;
-
-    if (!(tmp = virXPathString("string(./@id)", ctxt))) {
+    if (!(tmp = virXMLPropString(node, "id"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Missing 'id' attribute in <iothread> element"));
         goto error;
@@ -16235,7 +16231,6 @@ virDomainIOThreadIDDefParseXML(xmlNodePtr node,
 
  cleanup:
     VIR_FREE(tmp);
-    ctxt->node = oldnode;
     return iothrid;
 
  error:
@@ -16275,7 +16270,7 @@ virDomainDefParseIOThreads(virDomainDefPtr def,
 
     for (i = 0; i < n; i++) {
         virDomainIOThreadIDDefPtr iothrid = NULL;
-        if (!(iothrid = virDomainIOThreadIDDefParseXML(nodes[i], ctxt)))
+        if (!(iothrid = virDomainIOThreadIDDefParseXML(nodes[i])))
             goto error;
 
         if (virDomainIOThreadIDFind(def, iothrid->iothread_id)) {
