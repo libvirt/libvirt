@@ -824,7 +824,7 @@ virInterfaceDefParseNode(xmlDocPtr xml,
     xmlXPathContextPtr ctxt = NULL;
     virInterfaceDefPtr def = NULL;
 
-    if (!xmlStrEqual(root->name, BAD_CAST "interface")) {
+    if (!virXMLNodeNameEqual(root, "interface")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected root element <%s>, "
                          "expecting <interface>"),

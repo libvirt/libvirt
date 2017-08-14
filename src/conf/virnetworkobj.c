@@ -684,7 +684,7 @@ virNetworkLoadState(virNetworkObjListPtr nets,
 
     /* now parse possible status data */
     node = xmlDocGetRootElement(xml);
-    if (xmlStrEqual(node->name, BAD_CAST "networkstatus")) {
+    if (virXMLNodeNameEqual(node, "networkstatus")) {
         /* Newer network status file. Contains useful
          * info which are not to be found in bare config XML */
         char *class_id = NULL;

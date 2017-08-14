@@ -3061,7 +3061,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
 
         while (cur) {
             if (cur->type == XML_ELEMENT_NODE &&
-                xmlStrEqual(cur->name, BAD_CAST element)) {
+                virXMLNodeNameEqual(cur, element)) {
                 value = virXMLPropString(cur, attr);
 
                 if (STRCASEEQ(value, iface)) {
@@ -3084,7 +3084,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
 
     while (cur) {
         if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "link")) {
+            virXMLNodeNameEqual(cur, "link")) {
             /* found, just modify the property */
             xmlSetProp(cur, BAD_CAST "state", BAD_CAST state);
 
@@ -11704,7 +11704,7 @@ virshDomainDetachInterface(char *doc,
         cur = obj->nodesetval->nodeTab[i]->children;
         while (cur != NULL) {
             if (cur->type == XML_ELEMENT_NODE &&
-                xmlStrEqual(cur->name, BAD_CAST "mac")) {
+                virXMLNodeNameEqual(cur, "mac")) {
                 char *tmp_mac = virXMLPropString(cur, "address");
                 diff_mac = virMacAddrCompare(tmp_mac, mac);
                 VIR_FREE(tmp_mac);
@@ -11859,7 +11859,7 @@ virshFindDisk(const char *doc,
             is_supported = false;
 
             /* Check if the disk is CDROM or floppy disk */
-            if (xmlStrEqual(n->name, BAD_CAST "disk")) {
+            if (virXMLNodeNameEqual(n, "disk")) {
                 char *device_value = virXMLPropString(n, "device");
 
                 if (STREQ(device_value, "cdrom") ||
@@ -11878,13 +11878,13 @@ virshFindDisk(const char *doc,
             if (cur->type == XML_ELEMENT_NODE) {
                 char *tmp = NULL;
 
-                if (xmlStrEqual(cur->name, BAD_CAST "source")) {
+                if (virXMLNodeNameEqual(cur, "source")) {
                     if ((tmp = virXMLPropString(cur, "file")) ||
                         (tmp = virXMLPropString(cur, "dev")) ||
                         (tmp = virXMLPropString(cur, "dir")) ||
                         (tmp = virXMLPropString(cur, "name"))) {
                     }
-                } else if (xmlStrEqual(cur->name, BAD_CAST "target")) {
+                } else if (virXMLNodeNameEqual(cur, "target")) {
                     tmp = virXMLPropString(cur, "dev");
                 }
 
@@ -11963,13 +11963,13 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
         if (tmp->type != XML_ELEMENT_NODE)
             continue;
 
-        if (xmlStrEqual(tmp->name, BAD_CAST "source"))
+        if (virXMLNodeNameEqual(tmp, "source"))
             source = tmp;
 
-        if (xmlStrEqual(tmp->name, BAD_CAST "target"))
+        if (virXMLNodeNameEqual(tmp, "target"))
             target_node = tmp;
 
-        if (xmlStrEqual(tmp->name, BAD_CAST "backingStore"))
+        if (virXMLNodeNameEqual(tmp, "backingStore"))
             backingStore = tmp;
 
         /*

@@ -33,6 +33,7 @@
 #include "esx_vi.h"
 #include "esx_vi_types.h"
 #include "virstring.h"
+#include "virxml.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 
@@ -437,7 +438,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
 
 
 #define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(_type, _name)                 \
-    if (xmlStrEqual(childNode->name, BAD_CAST #_name)) {                      \
+    if (virXMLNodeNameEqual(childNode, #_name)) {                      \
         if (esxVI_##_type##_Deserialize(childNode, &(*ptrptr)->_name) < 0) {  \
             goto failure;                                                     \
         }                                                                     \
@@ -448,14 +449,14 @@ VIR_LOG_INIT("esx.esx_vi_types");
 
 
 #define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_IGNORE(_name)                 \
-    if (xmlStrEqual(childNode->name, BAD_CAST #_name)) {                      \
+    if (virXMLNodeNameEqual(childNode, #_name)) {                      \
         continue;                                                             \
     }
 
 
 
 #define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(_type, _name)           \
-    if (xmlStrEqual(childNode->name, BAD_CAST #_name)) {                      \
+    if (virXMLNodeNameEqual(childNode, #_name)) {                      \
         if (esxVI_##_type##_DeserializeValue(childNode,                       \
                                              &(*ptrptr)->_name) < 0) {        \
             goto failure;                                                     \
@@ -467,7 +468,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
 
 
 #define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(_type, _name)            \
-    if (xmlStrEqual(childNode->name, BAD_CAST #_name)) {                      \
+    if (virXMLNodeNameEqual(childNode, #_name)) {                      \
         esxVI_##_type *_name##Item = NULL;                                    \
                                                                               \
         if (esxVI_##_type##_Deserialize(childNode, &_name##Item) < 0) {       \

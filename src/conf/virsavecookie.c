@@ -39,7 +39,7 @@ virSaveCookieParseNode(xmlXPathContextPtr ctxt,
 {
     *obj = NULL;
 
-    if (!xmlStrEqual(ctxt->node->name, BAD_CAST "cookie")) {
+    if (!virXMLNodeNameEqual(ctxt->node, "cookie")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("XML does not contain expected 'cookie' element"));
         return -1;

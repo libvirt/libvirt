@@ -823,7 +823,7 @@ virStoragePoolDefParseNode(xmlDocPtr xml,
     xmlXPathContextPtr ctxt = NULL;
     virStoragePoolDefPtr def = NULL;
 
-    if (!xmlStrEqual(root->name, BAD_CAST "pool")) {
+    if (!virXMLNodeNameEqual(root, "pool")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected root element <%s>, "
                          "expecting <pool>"),
@@ -1267,7 +1267,7 @@ virStorageVolDefParseNode(virStoragePoolDefPtr pool,
     xmlXPathContextPtr ctxt = NULL;
     virStorageVolDefPtr def = NULL;
 
-    if (!xmlStrEqual(root->name, BAD_CAST "volume")) {
+    if (!virXMLNodeNameEqual(root, "volume")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected root element <%s>, "
                          "expecting <volume>"),

@@ -1232,7 +1232,7 @@ testOpenParse(testDriverPtr privconn,
               const char *file,
               xmlXPathContextPtr ctxt)
 {
-    if (!xmlStrEqual(ctxt->node->name, BAD_CAST "node")) {
+    if (!virXMLNodeNameEqual(ctxt->node, "node")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Root element is not 'node'"));
         goto error;

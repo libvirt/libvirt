@@ -125,7 +125,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
     if (VIR_ALLOC(def) < 0)
         return ret;
 
-    if (!node || !xmlStrEqual(node->name, BAD_CAST "bandwidth")) {
+    if (!node || !virXMLNodeNameEqual(node, "bandwidth")) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("invalid argument supplied"));
         goto cleanup;
@@ -135,7 +135,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
 
     while (cur) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "inbound")) {
+            if (virXMLNodeNameEqual(cur, "inbound")) {
                 if (in) {
                     virReportError(VIR_ERR_XML_DETAIL, "%s",
                                    _("Only one child <inbound> "
@@ -143,7 +143,7 @@ virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                     goto cleanup;
                 }
                 in = cur;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "outbound")) {
+            } else if (virXMLNodeNameEqual(cur, "outbound")) {
                 if (out) {
                     virReportError(VIR_ERR_XML_DETAIL, "%s",
                                    _("Only one child <outbound> "

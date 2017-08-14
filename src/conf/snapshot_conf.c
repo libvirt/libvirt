@@ -394,7 +394,7 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
     xmlXPathContextPtr ctxt = NULL;
     virDomainSnapshotDefPtr def = NULL;
 
-    if (!xmlStrEqual(root->name, BAD_CAST "domainsnapshot")) {
+    if (!virXMLNodeNameEqual(root, "domainsnapshot")) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("domainsnapshot"));
         goto cleanup;
     }

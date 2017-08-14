@@ -529,7 +529,7 @@ virNetworkDHCPDefParseXML(const char *networkName,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "range")) {
+            virXMLNodeNameEqual(cur, "range")) {
 
             if (virSocketAddrRangeParseXML(networkName, def, cur, &range) < 0)
                 goto cleanup;
@@ -537,7 +537,7 @@ virNetworkDHCPDefParseXML(const char *networkName,
                 goto cleanup;
 
         } else if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "host")) {
+            virXMLNodeNameEqual(cur, "host")) {
 
             if (virNetworkDHCPHostDefParseXML(networkName, def, cur,
                                               &host, false) < 0)
@@ -547,7 +547,7 @@ virNetworkDHCPDefParseXML(const char *networkName,
 
         } else if (VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET) &&
                    cur->type == XML_ELEMENT_NODE &&
-                   xmlStrEqual(cur->name, BAD_CAST "bootp")) {
+                   virXMLNodeNameEqual(cur, "bootp")) {
             char *file;
             char *server;
             virSocketAddr inaddr;
@@ -609,7 +609,7 @@ virNetworkDNSHostDefParseXML(const char *networkName,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "hostname")) {
+            virXMLNodeNameEqual(cur, "hostname")) {
               if (cur->children != NULL) {
                   char *name = (char *) xmlNodeGetContent(cur);
 
@@ -2034,7 +2034,7 @@ virNetworkDefParseNode(xmlDocPtr xml,
     xmlXPathContextPtr ctxt = NULL;
     virNetworkDefPtr def = NULL;
 
-    if (!xmlStrEqual(root->name, BAD_CAST "network")) {
+    if (!virXMLNodeNameEqual(root, "network")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected root element <%s>, "
                          "expecting <network>"),
@@ -2702,7 +2702,7 @@ virNetworkDefUpdateCheckElementName(virNetworkDefPtr def,
                                     xmlNodePtr node,
                                     const char *section)
 {
-    if (!xmlStrEqual(node->name, BAD_CAST section)) {
+    if (!virXMLNodeNameEqual(node, section)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected element <%s>, expecting <%s>, "
                          "while updating network '%s'"),

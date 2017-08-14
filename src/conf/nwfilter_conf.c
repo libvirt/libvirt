@@ -2452,7 +2452,7 @@ virNWFilterRuleParse(xmlNodePtr node)
                 if (found)
                     i = found_i;
 
-                if (xmlStrEqual(cur->name, BAD_CAST virAttr[i].id)) {
+                if (virXMLNodeNameEqual(cur, virAttr[i].id)) {
 
                     found_i = i;
                     found = true;
@@ -2668,12 +2668,12 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
             if (VIR_ALLOC(entry) < 0)
                 goto cleanup;
 
-            if (xmlStrEqual(curr->name, BAD_CAST "rule")) {
+            if (virXMLNodeNameEqual(curr, "rule")) {
                 if (!(entry->rule = virNWFilterRuleParse(curr))) {
                     virNWFilterEntryFree(entry);
                     goto cleanup;
                 }
-            } else if (xmlStrEqual(curr->name, BAD_CAST "filterref")) {
+            } else if (virXMLNodeNameEqual(curr, "filterref")) {
                 if (!(entry->include = virNWFilterIncludeParse(curr))) {
                     virNWFilterEntryFree(entry);
                     goto cleanup;

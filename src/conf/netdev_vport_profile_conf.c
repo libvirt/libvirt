@@ -61,7 +61,7 @@ virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags)
     }
 
     while (cur != NULL) {
-        if (xmlStrEqual(cur->name, BAD_CAST "parameters")) {
+        if (virXMLNodeNameEqual(cur, "parameters")) {
             virtPortManagerID = virXMLPropString(cur, "managerid");
             virtPortTypeID = virXMLPropString(cur, "typeid");
             virtPortTypeIDVersion = virXMLPropString(cur, "typeidversion");

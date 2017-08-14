@@ -4676,7 +4676,7 @@ prlsdkParseSnapshotTree(const char *treexml)
         goto cleanup;
 
     root = xmlDocGetRootElement(xml);
-    if (!xmlStrEqual(root->name, BAD_CAST "ParallelsSavedStates")) {
+    if (!virXMLNodeNameEqual(root, "ParallelsSavedStates")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected root element: '%s'"), root->name);
         goto cleanup;

@@ -2047,7 +2047,7 @@ virNodeDeviceDefParseNode(xmlDocPtr xml,
     xmlXPathContextPtr ctxt = NULL;
     virNodeDeviceDefPtr def = NULL;
 
-    if (!xmlStrEqual(root->name, BAD_CAST "device")) {
+    if (!virXMLNodeNameEqual(root, "device")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected root element <%s> "
                          "expecting <device>"),

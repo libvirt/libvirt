@@ -810,7 +810,7 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
 
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "parameter")) {
+            if (virXMLNodeNameEqual(cur, "parameter")) {
                 nam = virXMLPropString(cur, "name");
                 val = virXMLPropString(cur, "value");
                 value = NULL;

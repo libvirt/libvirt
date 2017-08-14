@@ -1202,9 +1202,9 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
     node = root->children;
     while (node) {
         if (node->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(node->name, BAD_CAST "path") && !dev->path) {
+            if (virXMLNodeNameEqual(node, "path") && !dev->path) {
                 dev->path = (char *)xmlNodeGetContent(node);
-            } else if (xmlStrEqual(node->name, BAD_CAST "weight")) {
+            } else if (virXMLNodeNameEqual(node, "weight")) {
                 c = (char *)xmlNodeGetContent(node);
                 if (virStrToLong_ui(c, NULL, 10, &dev->weight) < 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1213,7 +1213,7 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
                         goto error;
                 }
                 VIR_FREE(c);
-            } else if (xmlStrEqual(node->name, BAD_CAST "read_bytes_sec")) {
+            } else if (virXMLNodeNameEqual(node, "read_bytes_sec")) {
                 c = (char *)xmlNodeGetContent(node);
                 if (virStrToLong_ull(c, NULL, 10, &dev->rbps) < 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1222,7 +1222,7 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
                     goto error;
                 }
                 VIR_FREE(c);
-            } else if (xmlStrEqual(node->name, BAD_CAST "write_bytes_sec")) {
+            } else if (virXMLNodeNameEqual(node, "write_bytes_sec")) {
                 c = (char *)xmlNodeGetContent(node);
                 if (virStrToLong_ull(c, NULL, 10, &dev->wbps) < 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1231,7 +1231,7 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
                     goto error;
                 }
                 VIR_FREE(c);
-            } else if (xmlStrEqual(node->name, BAD_CAST "read_iops_sec")) {
+            } else if (virXMLNodeNameEqual(node, "read_iops_sec")) {
                 c = (char *)xmlNodeGetContent(node);
                 if (virStrToLong_ui(c, NULL, 10, &dev->riops) < 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1240,7 +1240,7 @@ virDomainBlkioDeviceParseXML(xmlNodePtr root,
                     goto error;
                 }
                 VIR_FREE(c);
-            } else if (xmlStrEqual(node->name, BAD_CAST "write_iops_sec")) {
+            } else if (virXMLNodeNameEqual(node, "write_iops_sec")) {
                 c = (char *)xmlNodeGetContent(node);
                 if (virStrToLong_ui(c, NULL, 10, &dev->wiops) < 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -5913,21 +5913,21 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
         if (cur->type == XML_ELEMENT_NODE) {
             if (alias == NULL &&
                 !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
-                xmlStrEqual(cur->name, BAD_CAST "alias")) {
+                virXMLNodeNameEqual(cur, "alias")) {
                 alias = cur;
             } else if (address == NULL &&
-                       xmlStrEqual(cur->name, BAD_CAST "address")) {
+                       virXMLNodeNameEqual(cur, "address")) {
                 address = cur;
             } else if (master == NULL &&
-                       xmlStrEqual(cur->name, BAD_CAST "master")) {
+                       virXMLNodeNameEqual(cur, "master")) {
                 master = cur;
             } else if (boot == NULL &&
                        (flags & VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) &&
-                       xmlStrEqual(cur->name, BAD_CAST "boot")) {
+                       virXMLNodeNameEqual(cur, "boot")) {
                 boot = cur;
             } else if (rom == NULL &&
                        (flags & VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) &&
-                       xmlStrEqual(cur->name, BAD_CAST "rom")) {
+                       virXMLNodeNameEqual(cur, "rom")) {
                 rom = cur;
             }
         }
@@ -6105,7 +6105,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "vendor")) {
+            if (virXMLNodeNameEqual(cur, "vendor")) {
                 char *vendor = virXMLPropString(cur, "id");
 
                 if (vendor) {
@@ -6122,7 +6122,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
                                    "%s", _("usb vendor needs id"));
                     goto out;
                 }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "product")) {
+            } else if (virXMLNodeNameEqual(cur, "product")) {
                 char* product = virXMLPropString(cur, "id");
 
                 if (product) {
@@ -6141,7 +6141,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
                                    "%s", _("usb product needs id"));
                     goto out;
                 }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "address")) {
+            } else if (virXMLNodeNameEqual(cur, "address")) {
                 char *bus, *device;
 
                 bus = virXMLPropString(cur, "bus");
@@ -6223,11 +6223,11 @@ virDomainHostdevSubsysPCIOrigStatesDefParseXML(xmlNodePtr node,
 
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "unbind")) {
+            if (virXMLNodeNameEqual(cur, "unbind")) {
                 def->states.pci.unbind_from_stub = true;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "removeslot")) {
+            } else if (virXMLNodeNameEqual(cur, "removeslot")) {
                 def->states.pci.remove_slot = true;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "reprobe")) {
+            } else if (virXMLNodeNameEqual(cur, "reprobe")) {
                 def->states.pci.reprobe = true;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -6253,14 +6253,14 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "address")) {
+            if (virXMLNodeNameEqual(cur, "address")) {
                 virPCIDeviceAddressPtr addr =
                     &def->source.subsys.u.pci.addr;
 
                 if (virPCIDeviceAddressParseXML(cur, addr) < 0)
                     goto out;
             } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
-                       xmlStrEqual(cur->name, BAD_CAST "state")) {
+                       virXMLNodeNameEqual(cur, "state")) {
                 /* Legacy back-compat. Don't add any more attributes here */
                 char *devaddr = virXMLPropString(cur, "devaddr");
                 if (devaddr &&
@@ -6274,7 +6274,7 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
                 }
                 def->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
             } else if ((flags & VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES) &&
-                       xmlStrEqual(cur->name, BAD_CAST "origstates")) {
+                       virXMLNodeNameEqual(cur, "origstates")) {
                 virDomainHostdevOrigStatesPtr states = &def->origstates;
                 if (virDomainHostdevSubsysPCIOrigStatesDefParseXML(cur, states) < 0)
                     goto out;
@@ -6371,7 +6371,7 @@ virDomainStorageNetworkParseHosts(xmlNodePtr node,
 
     for (child = node->children; child; child = child->next) {
         if (child->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(child->name, BAD_CAST "host")) {
+            virXMLNodeNameEqual(child, "host")) {
 
             if (virDomainStorageNetworkParseHost(child, hosts, nhosts) < 0)
                 return -1;
@@ -6395,7 +6395,7 @@ virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
     cur = sourcenode->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "address")) {
+            if (virXMLNodeNameEqual(cur, "address")) {
                 if (got_address) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("more than one source addresses is "
@@ -6432,7 +6432,7 @@ virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
                 }
 
                 got_address = true;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "adapter")) {
+            } else if (virXMLNodeNameEqual(cur, "adapter")) {
                 if (got_adapter) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("more than one adapters is specified "
@@ -6508,7 +6508,7 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
     cur = sourcenode->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "auth")) {
+            virXMLNodeNameEqual(cur, "auth")) {
             if (!(authdef = virStorageAuthDefParse(sourcenode->doc, cur)))
                 goto cleanup;
             if ((auth_secret_usage =
@@ -7591,13 +7591,13 @@ virDomainLeaseDefParseXML(xmlNodePtr node)
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (!key && xmlStrEqual(cur->name, BAD_CAST "key")) {
+            if (!key && virXMLNodeNameEqual(cur, "key")) {
                 key = (char *)xmlNodeGetContent(cur);
             } else if (!lockspace &&
-                       xmlStrEqual(cur->name, BAD_CAST "lockspace")) {
+                       virXMLNodeNameEqual(cur, "lockspace")) {
                 lockspace = (char *)xmlNodeGetContent(cur);
             } else if (!path &&
-                       xmlStrEqual(cur->name, BAD_CAST "target")) {
+                       virXMLNodeNameEqual(cur, "target")) {
                 path = virXMLPropString(cur, "path");
                 offset = virXMLPropString(cur, "offset");
             }
@@ -8346,7 +8346,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (cur->type != XML_ELEMENT_NODE)
             continue;
 
-        if (!source && xmlStrEqual(cur->name, BAD_CAST "source")) {
+        if (!source && virXMLNodeNameEqual(cur, "source")) {
             sourceNode = cur;
 
             if (virDomainDiskSourceParse(cur, ctxt, def->src) < 0)
@@ -8364,7 +8364,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             startupPolicy = virXMLPropString(cur, "startupPolicy");
 
         } else if (!target &&
-                   xmlStrEqual(cur->name, BAD_CAST "target")) {
+                   virXMLNodeNameEqual(cur, "target")) {
             target = virXMLPropString(cur, "dev");
             bus = virXMLPropString(cur, "bus");
             tray = virXMLPropString(cur, "tray");
@@ -8376,12 +8376,12 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 STRPREFIX(target, "ioemu:"))
                 memmove(target, target+6, strlen(target)-5);
         } else if (!domain_name &&
-                   xmlStrEqual(cur->name, BAD_CAST "backenddomain")) {
+                   virXMLNodeNameEqual(cur, "backenddomain")) {
             domain_name = virXMLPropString(cur, "name");
-        } else if (xmlStrEqual(cur->name, BAD_CAST "geometry")) {
+        } else if (virXMLNodeNameEqual(cur, "geometry")) {
             if (virDomainDiskDefGeometryParse(def, cur, ctxt) < 0)
                 goto error;
-        } else if (xmlStrEqual(cur->name, BAD_CAST "blockio")) {
+        } else if (virXMLNodeNameEqual(cur, "blockio")) {
             logical_block_size =
                 virXMLPropString(cur, "logical_block_size");
             if (logical_block_size &&
@@ -8403,16 +8403,16 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 goto error;
             }
         } else if (!def->src->driverName &&
-                   xmlStrEqual(cur->name, BAD_CAST "driver")) {
+                   virXMLNodeNameEqual(cur, "driver")) {
             if (virDomainDiskDefDriverParseXML(def, cur) < 0)
                 goto error;
         } else if (!def->mirror &&
-                   xmlStrEqual(cur->name, BAD_CAST "mirror") &&
+                   virXMLNodeNameEqual(cur, "mirror") &&
                    !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
             if (virDomainDiskDefMirrorParse(def, cur, ctxt) < 0)
                 goto error;
         } else if (!authdef &&
-                   xmlStrEqual(cur->name, BAD_CAST "auth")) {
+                   virXMLNodeNameEqual(cur, "auth")) {
             if (!(authdef = virStorageAuthDefParse(node->doc, cur)))
                 goto error;
             /* Disk volume types won't have the secrettype filled in until
@@ -8426,36 +8426,36 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                                authdef->secrettype);
                 goto error;
             }
-        } else if (xmlStrEqual(cur->name, BAD_CAST "iotune")) {
+        } else if (virXMLNodeNameEqual(cur, "iotune")) {
             if (virDomainDiskDefIotuneParse(def, ctxt) < 0)
                 goto error;
-        } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
+        } else if (virXMLNodeNameEqual(cur, "readonly")) {
             def->src->readonly = true;
-        } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
+        } else if (virXMLNodeNameEqual(cur, "shareable")) {
             def->src->shared = true;
-        } else if (xmlStrEqual(cur->name, BAD_CAST "transient")) {
+        } else if (virXMLNodeNameEqual(cur, "transient")) {
             def->transient = true;
         } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
-                   xmlStrEqual(cur->name, BAD_CAST "state")) {
+                   virXMLNodeNameEqual(cur, "state")) {
             /* Legacy back-compat. Don't add any more attributes here */
             devaddr = virXMLPropString(cur, "devaddr");
         } else if (encryption == NULL &&
-                   xmlStrEqual(cur->name, BAD_CAST "encryption")) {
+                   virXMLNodeNameEqual(cur, "encryption")) {
             encryption = virStorageEncryptionParseNode(node->doc,
                                                        cur);
             if (encryption == NULL)
                 goto error;
         } else if (!serial &&
-                   xmlStrEqual(cur->name, BAD_CAST "serial")) {
+                   virXMLNodeNameEqual(cur, "serial")) {
             serial = (char *)xmlNodeGetContent(cur);
         } else if (!wwn &&
-                   xmlStrEqual(cur->name, BAD_CAST "wwn")) {
+                   virXMLNodeNameEqual(cur, "wwn")) {
             wwn = (char *)xmlNodeGetContent(cur);
 
             if (!virValidateWWN(wwn))
                 goto error;
         } else if (!vendor &&
-                   xmlStrEqual(cur->name, BAD_CAST "vendor")) {
+                   virXMLNodeNameEqual(cur, "vendor")) {
             vendor = (char *)xmlNodeGetContent(cur);
 
             if (strlen(vendor) > VENDOR_LEN) {
@@ -8470,7 +8470,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 goto error;
             }
         } else if (!product &&
-                   xmlStrEqual(cur->name, BAD_CAST "product")) {
+                   virXMLNodeNameEqual(cur, "product")) {
             product = (char *)xmlNodeGetContent(cur);
 
             if (strlen(product) > PRODUCT_LEN) {
@@ -8484,7 +8484,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                                _("disk product is not printable string"));
                 goto error;
             }
-        } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
+        } else if (virXMLNodeNameEqual(cur, "boot")) {
             /* boot is parsed as part of virDomainDeviceInfoParseXML */
         }
     }
@@ -9070,13 +9070,13 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "driver")) {
+            if (virXMLNodeNameEqual(cur, "driver")) {
                 queues = virXMLPropString(cur, "queues");
                 cmd_per_lun = virXMLPropString(cur, "cmd_per_lun");
                 max_sectors = virXMLPropString(cur, "max_sectors");
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
                 iothread = virXMLPropString(cur, "iothread");
-            } else if (xmlStrEqual(cur->name, BAD_CAST "model")) {
+            } else if (virXMLNodeNameEqual(cur, "model")) {
                 if (processedModel) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("Multiple <model> elements in "
@@ -9085,7 +9085,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 }
                 modelName = virXMLPropString(cur, "name");
                 processedModel = true;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "target")) {
+            } else if (virXMLNodeNameEqual(cur, "target")) {
                 if (processedTarget) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("Multiple <target> elements in "
@@ -9450,7 +9450,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (!source &&
-                xmlStrEqual(cur->name, BAD_CAST "source")) {
+                virXMLNodeNameEqual(cur, "source")) {
 
                 if (def->type == VIR_DOMAIN_FS_TYPE_MOUNT ||
                     def->type == VIR_DOMAIN_FS_TYPE_BIND) {
@@ -9470,11 +9470,11 @@ virDomainFSDefParseXML(xmlNodePtr node,
                         goto error;
                 }
             } else if (!target &&
-                       xmlStrEqual(cur->name, BAD_CAST "target")) {
+                       virXMLNodeNameEqual(cur, "target")) {
                 target = virXMLPropString(cur, "dir");
-            } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
+            } else if (virXMLNodeNameEqual(cur, "readonly")) {
                 def->readonly = true;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "driver")) {
+            } else if (virXMLNodeNameEqual(cur, "driver")) {
                 if (!fsdriver)
                     fsdriver = virXMLPropString(cur, "type");
                 if (!wrpolicy)
@@ -9857,7 +9857,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "source")) {
+            if (virXMLNodeNameEqual(cur, "source")) {
                 xmlNodePtr tmpnode = ctxt->node;
 
                 ctxt->node = cur;
@@ -9866,27 +9866,27 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
                 ctxt->node = tmpnode;
             }
-            if (!macaddr && xmlStrEqual(cur->name, BAD_CAST "mac")) {
+            if (!macaddr && virXMLNodeNameEqual(cur, "mac")) {
                 macaddr = virXMLPropString(cur, "address");
             } else if (!network &&
                        def->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-                       xmlStrEqual(cur->name, BAD_CAST "source")) {
+                       virXMLNodeNameEqual(cur, "source")) {
                 network = virXMLPropString(cur, "network");
                 portgroup = virXMLPropString(cur, "portgroup");
             } else if (!internal &&
                        def->type == VIR_DOMAIN_NET_TYPE_INTERNAL &&
-                       xmlStrEqual(cur->name, BAD_CAST "source")) {
+                       virXMLNodeNameEqual(cur, "source")) {
                 internal = virXMLPropString(cur, "name");
             } else if (!bridge &&
                        def->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
-                       xmlStrEqual(cur->name, BAD_CAST "source")) {
+                       virXMLNodeNameEqual(cur, "source")) {
                 bridge = virXMLPropString(cur, "bridge");
             } else if (!dev && def->type == VIR_DOMAIN_NET_TYPE_DIRECT &&
-                       xmlStrEqual(cur->name, BAD_CAST "source")) {
+                       virXMLNodeNameEqual(cur, "source")) {
                 dev  = virXMLPropString(cur, "dev");
                 mode = virXMLPropString(cur, "mode");
             } else if (!dev && def->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
-                       xmlStrEqual(cur->name, BAD_CAST "source")) {
+                       virXMLNodeNameEqual(cur, "source")) {
                 /* This clause is only necessary because from 2010 to
                  * 2016 it was possible (but never documented) to
                  * configure the name of the guest-side interface of
@@ -9908,12 +9908,12 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 }
             } else if (!vhostuser_path && !vhostuser_mode && !vhostuser_type
                        && def->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
-                       xmlStrEqual(cur->name, BAD_CAST "source")) {
+                       virXMLNodeNameEqual(cur, "source")) {
                 vhostuser_type = virXMLPropString(cur, "type");
                 vhostuser_path = virXMLPropString(cur, "path");
                 vhostuser_mode = virXMLPropString(cur, "mode");
             } else if (!def->virtPortProfile
-                       && xmlStrEqual(cur->name, BAD_CAST "virtualport")) {
+                       && virXMLNodeNameEqual(cur, "virtualport")) {
                 if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
                     if (!(def->virtPortProfile
                           = virNetDevVPortProfileParse(cur,
@@ -9941,7 +9941,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                         def->type == VIR_DOMAIN_NET_TYPE_CLIENT ||
                         def->type == VIR_DOMAIN_NET_TYPE_MCAST ||
                         def->type == VIR_DOMAIN_NET_TYPE_UDP) &&
-                       xmlStrEqual(cur->name, BAD_CAST "source")) {
+                       virXMLNodeNameEqual(cur, "source")) {
                 address = virXMLPropString(cur, "address");
                 port = virXMLPropString(cur, "port");
                 if (!localaddr && def->type == VIR_DOMAIN_NET_TYPE_UDP) {
@@ -9952,7 +9952,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     ctxt->node = tmpnode;
                 }
             } else if (!ifname &&
-                       xmlStrEqual(cur->name, BAD_CAST "target")) {
+                       virXMLNodeNameEqual(cur, "target")) {
                 ifname = virXMLPropString(cur, "dev");
                 if (ifname &&
                     (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
@@ -9962,21 +9962,21 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     VIR_FREE(ifname);
                 }
             } else if ((!ifname_guest || !ifname_guest_actual) &&
-                       xmlStrEqual(cur->name, BAD_CAST "guest")) {
+                       virXMLNodeNameEqual(cur, "guest")) {
                 ifname_guest = virXMLPropString(cur, "dev");
                 ifname_guest_actual = virXMLPropString(cur, "actual");
             } else if (!linkstate &&
-                       xmlStrEqual(cur->name, BAD_CAST "link")) {
+                       virXMLNodeNameEqual(cur, "link")) {
                 linkstate = virXMLPropString(cur, "state");
             } else if (!script &&
-                       xmlStrEqual(cur->name, BAD_CAST "script")) {
+                       virXMLNodeNameEqual(cur, "script")) {
                 script = virXMLPropString(cur, "path");
             } else if (!domain_name &&
-                       xmlStrEqual(cur->name, BAD_CAST "backenddomain")) {
+                       virXMLNodeNameEqual(cur, "backenddomain")) {
                 domain_name = virXMLPropString(cur, "name");
-            } else if (xmlStrEqual(cur->name, BAD_CAST "model")) {
+            } else if (virXMLNodeNameEqual(cur, "model")) {
                 model = virXMLPropString(cur, "type");
-            } else if (xmlStrEqual(cur->name, BAD_CAST "driver")) {
+            } else if (virXMLNodeNameEqual(cur, "driver")) {
                 backend = virXMLPropString(cur, "name");
                 txmode = virXMLPropString(cur, "txmode");
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
@@ -9984,7 +9984,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 queues = virXMLPropString(cur, "queues");
                 rx_queue_size = virXMLPropString(cur, "rx_queue_size");
                 tx_queue_size = virXMLPropString(cur, "tx_queue_size");
-            } else if (xmlStrEqual(cur->name, BAD_CAST "filterref")) {
+            } else if (virXMLNodeNameEqual(cur, "filterref")) {
                 if (filter) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("Invalid specification of multiple <filterref>s "
@@ -9995,28 +9995,28 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 virNWFilterHashTableFree(filterparams);
                 filterparams = virNWFilterParseParamAttributes(cur);
             } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
-                       xmlStrEqual(cur->name, BAD_CAST "state")) {
+                       virXMLNodeNameEqual(cur, "state")) {
                 /* Legacy back-compat. Don't add any more attributes here */
                 devaddr = virXMLPropString(cur, "devaddr");
-            } else if (xmlStrEqual(cur->name, BAD_CAST "boot")) {
+            } else if (virXMLNodeNameEqual(cur, "boot")) {
                 /* boot is parsed as part of virDomainDeviceInfoParseXML */
             } else if (!actual &&
                        (flags & VIR_DOMAIN_DEF_PARSE_ACTUAL_NET) &&
                        def->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
-                       xmlStrEqual(cur->name, BAD_CAST "actual")) {
+                       virXMLNodeNameEqual(cur, "actual")) {
                 if (virDomainActualNetDefParseXML(cur, ctxt, def,
                                                   &actual, flags) < 0) {
                     goto error;
                 }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "bandwidth")) {
+            } else if (virXMLNodeNameEqual(cur, "bandwidth")) {
                 if (virNetDevBandwidthParse(&def->bandwidth,
                                             cur,
                                             def->type) < 0)
                     goto error;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "vlan")) {
+            } else if (virXMLNodeNameEqual(cur, "vlan")) {
                 if (virNetDevVlanParse(cur, ctxt, &def->vlan) < 0)
                     goto error;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "backend")) {
+            } else if (virXMLNodeNameEqual(cur, "backend")) {
                 char *tmp = NULL;
 
                 if ((tmp = virXMLPropString(cur, "tap")))
@@ -10823,7 +10823,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "source")) {
+            if (virXMLNodeNameEqual(cur, "source")) {
                 if (!mode)
                     mode = virXMLPropString(cur, "mode");
                 if (!haveTLS)
@@ -10904,12 +10904,12 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                     }
                     ctxt->node = saved_node;
                 }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "log")) {
+            } else if (virXMLNodeNameEqual(cur, "log")) {
                 if (!logfile)
                     logfile = virXMLPropString(cur, "file");
                 if (!logappend)
                     logappend = virXMLPropString(cur, "append");
-            } else if (xmlStrEqual(cur->name, BAD_CAST "protocol")) {
+            } else if (virXMLNodeNameEqual(cur, "protocol")) {
                 if (!protocol)
                     protocol = virXMLPropString(cur, "type");
             } else {
@@ -11239,7 +11239,7 @@ virDomainChrDefParseXML(virDomainXMLOptionPtr xmlopt,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "target")) {
+            if (virXMLNodeNameEqual(cur, "target")) {
                 seenTarget = true;
                 if (virDomainChrDefParseTargetXML(def, cur, flags) < 0)
                     goto error;
@@ -11331,7 +11331,7 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
         cur = node->children;
         while (cur) {
             if (cur->type == XML_ELEMENT_NODE &&
-                xmlStrEqual(cur->name, BAD_CAST "certificate")) {
+                virXMLNodeNameEqual(cur, "certificate")) {
                 if (i == 3) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("host-certificates mode needs "
@@ -11345,7 +11345,7 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
                 }
                 i++;
             } else if (cur->type == XML_ELEMENT_NODE &&
-                       xmlStrEqual(cur->name, BAD_CAST "database") &&
+                       virXMLNodeNameEqual(cur, "database") &&
                        !def->data.cert.database) {
                 def->data.cert.database = (char *)xmlNodeGetContent(cur);
                 if (!def->data.cert.database) {
@@ -12477,7 +12477,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if (xmlStrEqual(cur->name, BAD_CAST "channel")) {
+            if (virXMLNodeNameEqual(cur, "channel")) {
                 char *name, *mode;
                 int nameval, modeval;
                 name = virXMLPropString(cur, "name");
@@ -12511,7 +12511,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
                 VIR_FREE(mode);
 
                 def->data.spice.channels[nameval] = modeval;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "image")) {
+            } else if (virXMLNodeNameEqual(cur, "image")) {
                 char *compression = virXMLPropString(cur, "compression");
                 int compressionVal;
 
@@ -12532,7 +12532,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
                 VIR_FREE(compression);
 
                 def->data.spice.image = compressionVal;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "jpeg")) {
+            } else if (virXMLNodeNameEqual(cur, "jpeg")) {
                 char *compression = virXMLPropString(cur, "compression");
                 int compressionVal;
 
@@ -12553,7 +12553,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
                 VIR_FREE(compression);
 
                 def->data.spice.jpeg = compressionVal;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "zlib")) {
+            } else if (virXMLNodeNameEqual(cur, "zlib")) {
                 char *compression = virXMLPropString(cur, "compression");
                 int compressionVal;
 
@@ -12574,7 +12574,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
                 VIR_FREE(compression);
 
                 def->data.spice.zlib = compressionVal;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "playback")) {
+            } else if (virXMLNodeNameEqual(cur, "playback")) {
                 char *compression = virXMLPropString(cur, "compression");
                 int compressionVal;
 
@@ -12595,7 +12595,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
                 VIR_FREE(compression);
 
                 def->data.spice.playback = compressionVal;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "streaming")) {
+            } else if (virXMLNodeNameEqual(cur, "streaming")) {
                 char *mode = virXMLPropString(cur, "mode");
                 int modeVal;
 
@@ -12615,7 +12615,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
                 VIR_FREE(mode);
 
                 def->data.spice.streaming = modeVal;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "clipboard")) {
+            } else if (virXMLNodeNameEqual(cur, "clipboard")) {
                 char *copypaste = virXMLPropString(cur, "copypaste");
                 int copypasteVal;
 
@@ -12635,7 +12635,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
                 VIR_FREE(copypaste);
 
                 def->data.spice.copypaste = copypasteVal;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "filetransfer")) {
+            } else if (virXMLNodeNameEqual(cur, "filetransfer")) {
                 char *enable = virXMLPropString(cur, "enable");
                 int enableVal;
 
@@ -12655,7 +12655,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
                 VIR_FREE(enable);
 
                 def->data.spice.filetransfer = enableVal;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "gl")) {
+            } else if (virXMLNodeNameEqual(cur, "gl")) {
                 char *enable = virXMLPropString(cur, "enable");
                 char *rendernode = virXMLPropString(cur, "rendernode");
                 int enableVal;
@@ -12680,7 +12680,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
                 def->data.spice.gl = enableVal;
                 def->data.spice.rendernode = rendernode;
 
-            } else if (xmlStrEqual(cur->name, BAD_CAST "mouse")) {
+            } else if (virXMLNodeNameEqual(cur, "mouse")) {
                 char *mode = virXMLPropString(cur, "mode");
                 int modeVal;
 
@@ -13237,7 +13237,7 @@ virSysinfoBIOSParseXML(xmlNodePtr node,
     int ret = -1;
     virSysinfoBIOSDefPtr def;
 
-    if (!xmlStrEqual(node->name, BAD_CAST "bios")) {
+    if (!virXMLNodeNameEqual(node, "bios")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("XML does not contain expected 'bios' element"));
         return ret;
@@ -13299,7 +13299,7 @@ virSysinfoSystemParseXML(xmlNodePtr node,
     virSysinfoSystemDefPtr def;
     char *tmpUUID = NULL;
 
-    if (!xmlStrEqual(node->name, BAD_CAST "system")) {
+    if (!virXMLNodeNameEqual(node, "system")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("XML does not contain expected 'system' element"));
         return ret;
@@ -13427,7 +13427,7 @@ virSysinfoParseXML(xmlNodePtr node,
     xmlNodePtr oldnode, tmpnode;
     char *type;
 
-    if (!xmlStrEqual(node->name, BAD_CAST "sysinfo")) {
+    if (!virXMLNodeNameEqual(node, "sysinfo")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("XML does not contain expected 'sysinfo' element"));
         return NULL;
@@ -13564,7 +13564,7 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (!accel3d && !accel2d &&
-                xmlStrEqual(cur->name, BAD_CAST "acceleration")) {
+                virXMLNodeNameEqual(cur, "acceleration")) {
                 accel3d = virXMLPropString(cur, "accel3d");
                 accel2d = virXMLPropString(cur, "accel2d");
             }
@@ -13614,7 +13614,7 @@ virDomainVideoDriverDefParseXML(xmlNodePtr node)
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (!vgaconf &&
-                xmlStrEqual(cur->name, BAD_CAST "driver")) {
+                virXMLNodeNameEqual(cur, "driver")) {
                 vgaconf = virXMLPropString(cur, "vgaconf");
             }
         }
@@ -13665,7 +13665,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if (!type && !vram && !ram && !heads &&
-                xmlStrEqual(cur->name, BAD_CAST "model")) {
+                virXMLNodeNameEqual(cur, "model")) {
                 type = virXMLPropString(cur, "type");
                 ram = virXMLPropString(cur, "ram");
                 vram = virXMLPropString(cur, "vram");
@@ -14516,10 +14516,10 @@ virDomainDeviceDefParse(const char *xmlStr,
     if ((dev->type = virDomainDeviceTypeFromString((const char *) node->name)) < 0) {
         /* Some crazy mapping of serial, parallel, console and channel to
          * VIR_DOMAIN_DEVICE_CHR. */
-        if (xmlStrEqual(node->name, BAD_CAST "channel") ||
-            xmlStrEqual(node->name, BAD_CAST "console") ||
-            xmlStrEqual(node->name, BAD_CAST "parallel") ||
-            xmlStrEqual(node->name, BAD_CAST "serial")) {
+        if (virXMLNodeNameEqual(node, "channel") ||
+            virXMLNodeNameEqual(node, "console") ||
+            virXMLNodeNameEqual(node, "parallel") ||
+            virXMLNodeNameEqual(node, "serial")) {
             dev->type = VIR_DOMAIN_DEVICE_CHR;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -14681,7 +14681,7 @@ virDomainDiskDefSourceParse(const char *xmlStr,
         goto cleanup;
     node = ctxt->node;
 
-    if (!xmlStrEqual(node->name, BAD_CAST "disk")) {
+    if (!virXMLNodeNameEqual(node, "disk")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("expecting root element of 'disk', not '%s'"),
                        node->name);
@@ -19044,7 +19044,7 @@ virDomainDefParseNode(xmlDocPtr xml,
     xmlXPathContextPtr ctxt = NULL;
     virDomainDefPtr def = NULL;
 
-    if (!xmlStrEqual(root->name, BAD_CAST "domain")) {
+    if (!virXMLNodeNameEqual(root, "domain")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected root element <%s>, "
                          "expecting <domain>"),
@@ -19077,7 +19077,7 @@ virDomainObjParseNode(xmlDocPtr xml,
     xmlXPathContextPtr ctxt = NULL;
     virDomainObjPtr obj = NULL;
 
-    if (!xmlStrEqual(root->name, BAD_CAST "domstatus")) {
+    if (!virXMLNodeNameEqual(root, "domstatus")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected root element <%s>, "
                          "expecting <domstatus>"),

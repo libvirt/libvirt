@@ -131,7 +131,7 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
     char *prop = NULL;
     char *uuidstr = NULL;
 
-    if (!xmlStrEqual(root->name, BAD_CAST "secret")) {
+    if (!virXMLNodeNameEqual(root, "secret")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected root element <%s>, "
                          "expecting <secret>"),

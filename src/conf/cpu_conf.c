@@ -280,7 +280,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
-    if (!xmlStrEqual(ctxt->node->name, BAD_CAST "cpu")) {
+    if (!virXMLNodeNameEqual(ctxt->node, "cpu")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("XML does not contain expected 'cpu' element"));
         goto cleanup;

@@ -939,9 +939,9 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
 
         cur = cur->next;
         if ((old->type == XML_ELEMENT_NODE) &&
-            (xmlStrEqual(old->name, BAD_CAST "mac") ||  /* ethernet stuff to move down */
-             xmlStrEqual(old->name, BAD_CAST "bond") || /* bond stuff to move down */
-             xmlStrEqual(old->name, BAD_CAST "vlan"))) { /* vlan stuff to move down */
+            (virXMLNodeNameEqual(old, "mac") ||  /* ethernet stuff to move down */
+             virXMLNodeNameEqual(old, "bond") || /* bond stuff to move down */
+             virXMLNodeNameEqual(old, "vlan"))) { /* vlan stuff to move down */
             xmlUnlinkNode(old);
             if (!xmlAddChild(if_node, old)) {
                 vshError(ctl, _("Failed to move '%s' element in xml document"), old->name);
@@ -1130,9 +1130,9 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
 
         cur = cur->next;
         if ((old->type == XML_ELEMENT_NODE) &&
-            (xmlStrEqual(old->name, BAD_CAST "mac") ||  /* ethernet stuff to move down */
-             xmlStrEqual(old->name, BAD_CAST "bond") || /* bond stuff to move down */
-             xmlStrEqual(old->name, BAD_CAST "vlan"))) { /* vlan stuff to move down */
+            (virXMLNodeNameEqual(old, "mac") ||  /* ethernet stuff to move down */
+             virXMLNodeNameEqual(old, "bond") || /* bond stuff to move down */
+             virXMLNodeNameEqual(old, "vlan"))) { /* vlan stuff to move down */
             xmlUnlinkNode(old);
             if (!xmlAddChild(top_node, old)) {
                 vshError(ctl, _("Failed to move '%s' element in xml document"), old->name);
