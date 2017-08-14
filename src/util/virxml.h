@@ -168,6 +168,9 @@ int virXMLSaveFile(const char *path,
 
 char *virXMLNodeToString(xmlDocPtr doc, xmlNodePtr node);
 
+bool virXMLNodeNameEqual(xmlNodePtr node,
+                         const char *name);
+
 xmlNodePtr virXMLFindChildNodeByNs(xmlNodePtr root,
                                    const char *uri);
 

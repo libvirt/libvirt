@@ -950,6 +950,22 @@ virXMLNodeToString(xmlDocPtr doc,
     return ret;
 }
 
+
+/**
+ * virXMLNodeNameEqual:
+ * @node: xml Node pointer to check
+ * @name: name of the @node
+ *
+ * Compares the @node name with @name.
+ */
+bool
+virXMLNodeNameEqual(xmlNodePtr node,
+                    const char *name)
+{
+    return xmlStrEqual(node->name, BAD_CAST name);
+}
+
+
 typedef int (*virXMLForeachCallback)(xmlNodePtr node,
                                      void *opaque);
 
