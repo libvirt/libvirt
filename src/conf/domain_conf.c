@@ -8029,46 +8029,53 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
 
 static int
 virDomainDiskDefGeometryParse(virDomainDiskDefPtr def,
-                              xmlNodePtr cur,
-                              xmlXPathContextPtr ctxt)
+                              xmlNodePtr cur)
 {
-    char *trans;
+    char *tmp;
 
-    if (virXPathUInt("string(./geometry/@cyls)",
-                     ctxt, &def->geometry.cylinders) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("invalid geometry settings (cyls)"));
-        return -1;
+    if ((tmp = virXMLPropString(cur, "cyls"))) {
+        if (virStrToLong_ui(tmp, NULL, 10, &def->geometry.cylinders) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("invalid geometry settings (cyls)"));
+            goto error;
+        }
+        VIR_FREE(tmp);
     }
 
-    if (virXPathUInt("string(./geometry/@heads)",
-                     ctxt, &def->geometry.heads) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("invalid geometry settings (heads)"));
-        return -1;
+    if ((tmp = virXMLPropString(cur, "heads"))) {
+        if (virStrToLong_ui(tmp, NULL, 10, &def->geometry.heads) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("invalid geometry settings (heads)"));
+            goto error;
+        }
+        VIR_FREE(tmp);
     }
 
-    if (virXPathUInt("string(./geometry/@secs)",
-                     ctxt, &def->geometry.sectors) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("invalid geometry settings (secs)"));
-        return -1;
+    if ((tmp = virXMLPropString(cur, "secs"))) {
+        if (virStrToLong_ui(tmp, NULL, 10, &def->geometry.sectors) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("invalid geometry settings (secs)"));
+            goto error;
+        }
+        VIR_FREE(tmp);
     }
 
-    trans = virXMLPropString(cur, "trans");
-    if (trans) {
-        def->geometry.trans = virDomainDiskGeometryTransTypeFromString(trans);
+    if ((tmp = virXMLPropString(cur, "trans"))) {
+        def->geometry.trans = virDomainDiskGeometryTransTypeFromString(tmp);
         if (def->geometry.trans <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("invalid translation value '%s'"),
-                           trans);
-            VIR_FREE(trans);
-            return -1;
+                           tmp);
+            goto error;
         }
-        VIR_FREE(trans);
+        VIR_FREE(tmp);
     }
 
     return 0;
+
+ error:
+    VIR_FREE(tmp);
+    return -1;
 }
 
 
@@ -8374,7 +8381,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                    virXMLNodeNameEqual(cur, "backenddomain")) {
             domain_name = virXMLPropString(cur, "name");
         } else if (virXMLNodeNameEqual(cur, "geometry")) {
-            if (virDomainDiskDefGeometryParse(def, cur, ctxt) < 0)
+            if (virDomainDiskDefGeometryParse(def, cur) < 0)
                 goto error;
         } else if (virXMLNodeNameEqual(cur, "blockio")) {
             logical_block_size =
