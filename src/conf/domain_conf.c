@@ -14429,6 +14429,7 @@ virDomainIOMMUDefParseXML(xmlNodePtr node,
 {
     virDomainIOMMUDefPtr iommu = NULL, ret = NULL;
     xmlNodePtr save = ctxt->node;
+    xmlNodePtr driver;
     char *tmp = NULL;
     int val;
 
@@ -14450,39 +14451,41 @@ virDomainIOMMUDefParseXML(xmlNodePtr node,
 
     iommu->model = val;
 
-    VIR_FREE(tmp);
-    if ((tmp = virXPathString("string(./driver/@intremap)", ctxt))) {
-        if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, _("unknown intremap value: %s"), tmp);
-            goto cleanup;
+    if ((driver = virXPathNode("./driver", ctxt))) {
+        VIR_FREE(tmp);
+        if ((tmp = virXMLPropString(driver, "intremap"))) {
+            if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, _("unknown intremap value: %s"), tmp);
+                goto cleanup;
+            }
+            iommu->intremap = val;
         }
-        iommu->intremap = val;
-    }
 
-    VIR_FREE(tmp);
-    if ((tmp = virXPathString("string(./driver/@caching_mode)", ctxt))) {
-        if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, _("unknown caching_mode value: %s"), tmp);
-            goto cleanup;
+        VIR_FREE(tmp);
+        if ((tmp = virXMLPropString(driver, "caching_mode"))) {
+            if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, _("unknown caching_mode value: %s"), tmp);
+                goto cleanup;
+            }
+            iommu->caching_mode = val;
         }
-        iommu->caching_mode = val;
-    }
-    VIR_FREE(tmp);
-    if ((tmp = virXPathString("string(./driver/@iotlb)", ctxt))) {
-        if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, _("unknown iotlb value: %s"), tmp);
-            goto cleanup;
+        VIR_FREE(tmp);
+        if ((tmp = virXMLPropString(driver, "iotlb"))) {
+            if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, _("unknown iotlb value: %s"), tmp);
+                goto cleanup;
+            }
+            iommu->iotlb = val;
         }
-        iommu->iotlb = val;
-    }
 
-    VIR_FREE(tmp);
-    if ((tmp = virXPathString("string(./driver/@eim)", ctxt))) {
-        if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, _("unknown eim value: %s"), tmp);
-            goto cleanup;
+        VIR_FREE(tmp);
+        if ((tmp = virXMLPropString(driver, "eim"))) {
+            if ((val = virTristateSwitchTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, _("unknown eim value: %s"), tmp);
+                goto cleanup;
+            }
+            iommu->eim = val;
         }
-        iommu->eim = val;
     }
 
     ret = iommu;
