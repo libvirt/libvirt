@@ -42,7 +42,6 @@ module Test_libvirtd =
         { "min_workers" = "5" }
         { "max_workers" = "20" }
         { "prio_workers" = "5" }
-        { "max_requests" = "20" }
         { "max_client_requests" = "5" }
         { "admin_min_workers" = "1" }
         { "admin_max_workers" = "5" }

@@ -71,7 +71,6 @@ struct daemonConfig {
 
     unsigned int prio_workers;
 
-    unsigned int max_requests;
     unsigned int max_client_requests;
 
     unsigned int log_level;

@@ -153,7 +153,6 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 
     data->prio_workers = 5;
 
-    data->max_requests = 20;
     data->max_client_requests = 5;
 
     data->audit_level = 1;
@@ -348,8 +347,6 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     if (virConfGetValueUInt(conf, "prio_workers", &data->prio_workers) < 0)
         goto error;
 
-    if (virConfGetValueUInt(conf, "max_requests", &data->max_requests) < 0)
-        goto error;
     if (virConfGetValueUInt(conf, "max_client_requests", &data->max_client_requests) < 0)
         goto error;
 
