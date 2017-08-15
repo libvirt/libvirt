@@ -1444,9 +1444,9 @@ struct virNetworkObjListGetHelperData {
     virConnectPtr conn;
     virNetworkObjListFilter filter;
     char **names;
+    int nnames;
     int maxnames;
     bool active;
-    int got;
     bool error;
 };
 
@@ -1462,7 +1462,7 @@ virNetworkObjListGetHelper(void *payload,
         return 0;
 
     if (data->maxnames >= 0 &&
-        data->got == data->maxnames)
+        data->nnames == data->maxnames)
         return 0;
 
     virObjectLock(obj);
@@ -1474,11 +1474,11 @@ virNetworkObjListGetHelper(void *payload,
     if ((data->active && virNetworkObjIsActive(obj)) ||
         (!data->active && !virNetworkObjIsActive(obj))) {
         if (data->names &&
-            VIR_STRDUP(data->names[data->got], obj->def->name) < 0) {
+            VIR_STRDUP(data->names[data->nnames], obj->def->name) < 0) {
             data->error = true;
             goto cleanup;
         }
-        data->got++;
+        data->nnames++;
     }
 
  cleanup:
@@ -1498,8 +1498,8 @@ virNetworkObjListGetNames(virNetworkObjListPtr nets,
     int ret = -1;
 
     struct virNetworkObjListGetHelperData data = {
-        .conn = conn, .filter = filter, .names = names,
-        .maxnames = maxnames, .active = active, .got = 0, .error = false};
+        .conn = conn, .filter = filter, .names = names, .nnames = 0,
+        .maxnames = maxnames, .active = active, .error = false};
 
     virObjectLock(nets);
     virHashForEach(nets->objs, virNetworkObjListGetHelper, &data);
@@ -1508,11 +1508,11 @@ virNetworkObjListGetNames(virNetworkObjListPtr nets,
     if (data.error)
         goto cleanup;
 
-    ret = data.got;
+    ret = data.nnames;
  cleanup:
     if (ret < 0) {
-        while (data.got)
-            VIR_FREE(data.names[--data.got]);
+        while (data.nnames)
+            VIR_FREE(data.names[--data.nnames]);
     }
     return ret;
 }
@@ -1525,14 +1525,14 @@ virNetworkObjListNumOfNetworks(virNetworkObjListPtr nets,
                                virConnectPtr conn)
 {
     struct virNetworkObjListGetHelperData data = {
-        .conn = conn, .filter = filter, .names = NULL,
-        .maxnames = -1, .active = active, .got = 0, .error = false};
+        .conn = conn, .filter = filter, .names = NULL, .nnames = 0,
+        .maxnames = -1, .active = active, .error = false};
 
     virObjectLock(nets);
     virHashForEach(nets->objs, virNetworkObjListGetHelper, &data);
     virObjectUnlock(nets);
 
-    return data.got;
+    return data.nnames;
 }
 
 
