@@ -611,6 +611,9 @@ int qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
 void qemuDomainRemoveInactive(virQEMUDriverPtr driver,
                               virDomainObjPtr vm);
 
+void qemuDomainRemoveInactiveJob(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm);
+
 void qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              bool value);

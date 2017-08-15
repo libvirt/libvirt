@@ -1779,7 +1779,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     def = NULL;
 
     if (qemuProcessBeginJob(driver, vm, VIR_DOMAIN_JOB_OPERATION_START) < 0) {
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactiveJob(driver, vm);
         goto cleanup;
     }
 
@@ -1788,8 +1788,8 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
                          VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                          start_flags) < 0) {
         virDomainAuditStart(vm, "booted", false);
-        qemuProcessEndJob(driver, vm);
         qemuDomainRemoveInactive(driver, vm);
+        qemuProcessEndJob(driver, vm);
         goto cleanup;
     }
 
@@ -2259,9 +2259,9 @@ qemuDomainDestroyFlags(virDomainPtr dom,
 
     ret = 0;
  endjob:
-    qemuDomainObjEndJob(driver, vm);
     if (ret == 0)
         qemuDomainRemoveInactive(driver, vm);
+    qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -3396,7 +3396,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     }
     qemuDomainObjEndAsyncJob(driver, vm);
     if (ret == 0)
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactiveJob(driver, vm);
 
  cleanup:
     virObjectUnref(cookie);
@@ -3916,7 +3916,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
 
     qemuDomainObjEndAsyncJob(driver, vm);
     if (ret == 0 && flags & VIR_DUMP_CRASH)
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactiveJob(driver, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -4227,7 +4227,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
  endjob:
     qemuDomainObjEndAsyncJob(driver, vm);
     if (removeInactive)
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactiveJob(driver, vm);
 
  cleanup:
     virObjectUnref(cfg);
@@ -4729,8 +4729,8 @@ processMonitorEOFEvent(virQEMUDriverPtr driver,
     qemuDomainEventQueue(driver, event);
 
  endjob:
-    qemuDomainObjEndJob(driver, vm);
     qemuDomainRemoveInactive(driver, vm);
+    qemuDomainObjEndJob(driver, vm);
 }
 
 
@@ -6680,7 +6680,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     VIR_FREE(xmlout);
     virFileWrapperFdFree(wrapperFd);
     if (vm && ret < 0)
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactiveJob(driver, vm);
     virDomainObjEndAPI(&vm);
     virNWFilterUnlockFilterUpdates();
     return ret;
@@ -7263,7 +7263,7 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
             /* Brand new domain. Remove it */
             VIR_INFO("Deleting domain '%s'", vm->def->name);
             vm->persistent = 0;
-            qemuDomainRemoveInactive(driver, vm);
+            qemuDomainRemoveInactiveJob(driver, vm);
         }
         goto cleanup;
     }
@@ -7396,7 +7396,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
      */
     vm->persistent = 0;
     if (!virDomainObjIsActive(vm))
-        qemuDomainRemoveInactive(driver, vm);
+        qemuDomainRemoveInactiveJob(driver, vm);
 
     ret = 0;
 
@@ -15646,8 +15646,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         }
 
         if (qemuDomainSnapshotRevertInactive(driver, vm, snap) < 0) {
-            qemuProcessEndJob(driver, vm);
             qemuDomainRemoveInactive(driver, vm);
+            qemuProcessEndJob(driver, vm);
             goto cleanup;
         }
         if (config)
@@ -15668,8 +15668,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                   start_flags);
             virDomainAuditStart(vm, "from-snapshot", rc >= 0);
             if (rc < 0) {
-                qemuProcessEndJob(driver, vm);
                 qemuDomainRemoveInactive(driver, vm);
+                qemuProcessEndJob(driver, vm);
                 goto cleanup;
             }
             detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
@@ -16012,8 +16012,8 @@ static virDomainPtr qemuDomainQemuAttach(virConnectPtr conn,
     if (qemuProcessAttach(conn, driver, vm, pid,
                           pidfile, monConfig, monJSON) < 0) {
         monConfig = NULL;
-        qemuDomainObjEndJob(driver, vm);
         qemuDomainRemoveInactive(driver, vm);
+        qemuDomainObjEndJob(driver, vm);
         goto cleanup;
     }
 

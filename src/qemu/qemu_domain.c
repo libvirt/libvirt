@@ -5330,14 +5330,16 @@ qemuDomainSnapshotDiscardAllMetadata(virQEMUDriverPtr driver,
     return rem.err;
 }
 
-/*
- * The caller must hold a lock the vm.
+
+/**
+ * qemuDomainRemoveInactive:
+ *
+ * The caller must hold a lock to the vm.
  */
 void
 qemuDomainRemoveInactive(virQEMUDriverPtr driver,
                          virDomainObjPtr vm)
 {
-    bool haveJob = true;
     char *snapDir;
     virQEMUDriverConfigPtr cfg;
 
@@ -5347,9 +5349,6 @@ qemuDomainRemoveInactive(virQEMUDriverPtr driver,
     }
 
     cfg = virQEMUDriverGetConfig(driver);
-
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        haveJob = false;
 
     /* Remove any snapshot metadata prior to removing the domain */
     if (qemuDomainSnapshotDiscardAllMetadata(driver, vm) < 0) {
@@ -5383,12 +5382,32 @@ qemuDomainRemoveInactive(virQEMUDriverPtr driver,
      */
     virObjectLock(vm);
     virObjectUnref(cfg);
+    virObjectUnref(vm);
+}
+
+
+/**
+ * qemuDomainRemoveInactiveJob:
+ *
+ * Just like qemuDomainRemoveInactive but it tries to grab a
+ * QEMU_JOB_MODIFY first. Even though it doesn't succeed in
+ * grabbing the job the control carries with
+ * qemuDomainRemoveInactive call.
+ */
+void
+qemuDomainRemoveInactiveJob(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm)
+{
+    bool haveJob;
+
+    haveJob = qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) >= 0;
+
+    qemuDomainRemoveInactive(driver, vm);
 
     if (haveJob)
         qemuDomainObjEndJob(driver, vm);
-
-    virObjectUnref(vm);
 }
+
 
 void
 qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
