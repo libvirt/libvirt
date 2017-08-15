@@ -2497,6 +2497,15 @@ typedef enum {
 typedef struct _virDomainXMLOption virDomainXMLOption;
 typedef virDomainXMLOption *virDomainXMLOptionPtr;
 
+
+/* Called after everything else has been parsed, for adjusting basics.
+ * This has similar semantics to virDomainDefPostParseCallback, but no
+ * parseOpaque is used. This callback is run prior to
+ * virDomainDefPostParseCallback. */
+typedef int (*virDomainDefPostParseBasicCallback)(virDomainDefPtr def,
+                                                  virCapsPtr caps,
+                                                  void *opaque);
+
 /* Called once after everything else has been parsed, for adjusting
  * overall domain defaults.
  * @parseOpaque is opaque data passed by virDomainDefParse* caller,
@@ -2546,6 +2555,7 @@ typedef struct _virDomainDefParserConfig virDomainDefParserConfig;
 typedef virDomainDefParserConfig *virDomainDefParserConfigPtr;
 struct _virDomainDefParserConfig {
     /* driver domain definition callbacks */
+    virDomainDefPostParseBasicCallback domainPostParseBasicCallback;
     virDomainDefPostParseCallback domainPostParseCallback;
     virDomainDeviceDefPostParseCallback devicesPostParseCallback;
     virDomainDefAssignAddressesCallback assignAddressesCallback;

@@ -4828,6 +4828,15 @@ virDomainDefPostParse(virDomainDefPtr def,
         .parseOpaque = parseOpaque,
     };
 
+    /* call the basic post parse callback */
+    if (xmlopt->config.domainPostParseBasicCallback) {
+        ret = xmlopt->config.domainPostParseBasicCallback(def, caps,
+                                                          xmlopt->config.priv);
+
+        if (ret < 0)
+            return ret;
+    }
+
     /* this must be done before the hypervisor-specific callback,
      * in case presence of a controller at a specific index is checked
      */
