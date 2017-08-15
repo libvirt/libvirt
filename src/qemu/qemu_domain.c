@@ -2925,8 +2925,22 @@ qemuDomainDefVerifyFeatures(const virDomainDef *def)
 
 
 static int
+qemuDomainDefPostParseBasic(virDomainDefPtr def,
+                            virCapsPtr caps,
+                            void *opaque ATTRIBUTE_UNUSED)
+{
+    /* check for emulator and create a default one if needed */
+    if (!def->emulator &&
+        !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefPostParse(virDomainDefPtr def,
-                       virCapsPtr caps,
+                       virCapsPtr caps ATTRIBUTE_UNUSED,
                        unsigned int parseFlags,
                        void *opaque,
                        void *parseOpaque)
@@ -2956,11 +2970,6 @@ qemuDomainDefPostParse(virDomainDefPtr def,
                         cfg->nvramDir, def->name) < 0)
             goto cleanup;
     }
-
-    /* check for emulator and create a default one if needed */
-    if (!def->emulator &&
-        !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
-        goto cleanup;
 
     if (qemuCaps) {
         virObjectRef(qemuCaps);
@@ -3716,6 +3725,7 @@ qemuDomainDefAssignAddresses(virDomainDef *def,
 
 
 virDomainDefParserConfig virQEMUDriverDomainDefParserConfig = {
+    .domainPostParseBasicCallback = qemuDomainDefPostParseBasic,
     .devicesPostParseCallback = qemuDomainDeviceDefPostParse,
     .domainPostParseCallback = qemuDomainDefPostParse,
     .assignAddressesCallback = qemuDomainDefAssignAddresses,
