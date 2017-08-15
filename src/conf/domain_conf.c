@@ -7227,8 +7227,8 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     char *p;
     virSecurityLabelDefPtr seclabel = NULL;
 
-    p = virXPathStringLimit("string(./@model)",
-                            VIR_SECURITY_MODEL_BUFLEN - 1, ctxt);
+    p = virXMLPropStringLimit(ctxt->node, "model",
+                              VIR_SECURITY_MODEL_BUFLEN - 1);
 
     if (!(seclabel = virSecurityLabelDefNew(p)))
         goto error;
@@ -7237,8 +7237,8 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     /* set default value */
     seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
 
-    p = virXPathStringLimit("string(./@type)",
-                            VIR_SECURITY_LABEL_BUFLEN - 1, ctxt);
+    p = virXMLPropStringLimit(ctxt->node, "type",
+                              VIR_SECURITY_LABEL_BUFLEN - 1);
     if (p) {
         seclabel->type = virDomainSeclabelTypeFromString(p);
         if (seclabel->type <= 0) {
@@ -7253,8 +7253,8 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         seclabel->relabel = false;
 
     VIR_FREE(p);
-    p = virXPathStringLimit("string(./@relabel)",
-                            VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
+    p = virXMLPropStringLimit(ctxt->node, "relabel",
+                              VIR_SECURITY_LABEL_BUFLEN-1);
     if (p) {
         if (STREQ(p, "yes")) {
             seclabel->relabel = true;
