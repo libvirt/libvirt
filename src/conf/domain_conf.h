@@ -2411,6 +2411,12 @@ struct _virDomainDef {
 
     /* Application-specific custom metadata */
     xmlNodePtr metadata;
+
+    /* internal fields */
+    bool postParseFailed; /* set to true if one of the custom post parse
+                             callbacks failed for a non-critical reason
+                             (was not able to fill in some data) and thus
+                             should be re-run before starting */
 };
 
 
@@ -2510,7 +2516,10 @@ typedef int (*virDomainDefPostParseBasicCallback)(virDomainDefPtr def,
  * overall domain defaults.
  * @parseOpaque is opaque data passed by virDomainDefParse* caller,
  * @opaque is opaque data set by driver (usually pointer to driver
- * private data). */
+ * private data). Non-fatal failures should be reported by returning 1. In
+ * cases when that is allowed, such failure is translated to a success return
+ * value and the failure is noted in def->postParseFailed. Drivers should then
+ * re-run the post parse callback when attempting to use such definition. */
 typedef int (*virDomainDefPostParseCallback)(virDomainDefPtr def,
                                              virCapsPtr caps,
                                              unsigned int parseFlags,
@@ -2825,6 +2834,11 @@ typedef enum {
      * that would break ABI otherwise.  This should be used only if it's safe
      * to do such change. */
     VIR_DOMAIN_DEF_PARSE_ABI_UPDATE_MIGRATION = 1 << 12,
+    /* Allows to ignore certain failures in the post parse callbacks, which
+     * may happen due to missing packages and can be fixed by re-running the
+     * post parse callbacks before starting. Failure of the post parse callback
+     * is recorded as def->postParseFail */
+    VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL = 1 << 13,
 } virDomainDefParseFlags;
 
 typedef enum {
