@@ -3573,146 +3573,147 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
                                    void *opaque)
 {
     size_t i;
+    int rc;
     virDomainDeviceDef device;
 
     device.type = VIR_DOMAIN_DEVICE_DISK;
     for (i = 0; i < def->ndisks; i++) {
         device.data.disk = def->disks[i];
-        if (cb(def, &device, &def->disks[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->disks[i]->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_NET;
     for (i = 0; i < def->nnets; i++) {
         device.data.net = def->nets[i];
-        if (cb(def, &device, &def->nets[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->nets[i]->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_SOUND;
     for (i = 0; i < def->nsounds; i++) {
         device.data.sound = def->sounds[i];
-        if (cb(def, &device, &def->sounds[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->sounds[i]->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_HOSTDEV;
     for (i = 0; i < def->nhostdevs; i++) {
         device.data.hostdev = def->hostdevs[i];
-        if (cb(def, &device, def->hostdevs[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, def->hostdevs[i]->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_VIDEO;
     for (i = 0; i < def->nvideos; i++) {
         device.data.video = def->videos[i];
-        if (cb(def, &device, &def->videos[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->videos[i]->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_CONTROLLER;
     for (i = 0; i < def->ncontrollers; i++) {
         device.data.controller = def->controllers[i];
-        if (cb(def, &device, &def->controllers[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->controllers[i]->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_SMARTCARD;
     for (i = 0; i < def->nsmartcards; i++) {
         device.data.smartcard = def->smartcards[i];
-        if (cb(def, &device, &def->smartcards[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->smartcards[i]->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_CHR;
     for (i = 0; i < def->nserials; i++) {
         device.data.chr = def->serials[i];
-        if (cb(def, &device, &def->serials[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->serials[i]->info, opaque)) != 0)
+            return rc;
     }
     for (i = 0; i < def->nparallels; i++) {
         device.data.chr = def->parallels[i];
-        if (cb(def, &device, &def->parallels[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->parallels[i]->info, opaque)) != 0)
+            return rc;
     }
     for (i = 0; i < def->nchannels; i++) {
         device.data.chr = def->channels[i];
-        if (cb(def, &device, &def->channels[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->channels[i]->info, opaque)) != 0)
+            return rc;
     }
     for (i = 0; i < def->nconsoles; i++) {
         if (virDomainSkipBackcompatConsole(def, i, all))
             continue;
         device.data.chr = def->consoles[i];
-        if (cb(def, &device, &def->consoles[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->consoles[i]->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_INPUT;
     for (i = 0; i < def->ninputs; i++) {
         device.data.input = def->inputs[i];
-        if (cb(def, &device, &def->inputs[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->inputs[i]->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_FS;
     for (i = 0; i < def->nfss; i++) {
         device.data.fs = def->fss[i];
-        if (cb(def, &device, &def->fss[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->fss[i]->info, opaque)) != 0)
+            return rc;
     }
     if (def->watchdog) {
         device.type = VIR_DOMAIN_DEVICE_WATCHDOG;
         device.data.watchdog = def->watchdog;
-        if (cb(def, &device, &def->watchdog->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->watchdog->info, opaque)) != 0)
+            return rc;
     }
     if (def->memballoon) {
         device.type = VIR_DOMAIN_DEVICE_MEMBALLOON;
         device.data.memballoon = def->memballoon;
-        if (cb(def, &device, &def->memballoon->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->memballoon->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_RNG;
     for (i = 0; i < def->nrngs; i++) {
         device.data.rng = def->rngs[i];
-        if (cb(def, &device, &def->rngs[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->rngs[i]->info, opaque)) != 0)
+            return rc;
     }
     if (def->nvram) {
         device.type = VIR_DOMAIN_DEVICE_NVRAM;
         device.data.nvram = def->nvram;
-        if (cb(def, &device, &def->nvram->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->nvram->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_HUB;
     for (i = 0; i < def->nhubs; i++) {
         device.data.hub = def->hubs[i];
-        if (cb(def, &device, &def->hubs[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->hubs[i]->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_SHMEM;
     for (i = 0; i < def->nshmems; i++) {
         device.data.shmem = def->shmems[i];
-        if (cb(def, &device, &def->shmems[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->shmems[i]->info, opaque)) != 0)
+            return rc;
     }
     if (def->tpm) {
         device.type = VIR_DOMAIN_DEVICE_TPM;
         device.data.tpm = def->tpm;
-        if (cb(def, &device, &def->tpm->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->tpm->info, opaque)) != 0)
+            return rc;
     }
     device.type = VIR_DOMAIN_DEVICE_PANIC;
     for (i = 0; i < def->npanics; i++) {
         device.data.panic = def->panics[i];
-        if (cb(def, &device, &def->panics[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->panics[i]->info, opaque)) != 0)
+            return rc;
     }
 
     device.type = VIR_DOMAIN_DEVICE_MEMORY;
     for (i = 0; i < def->nmems; i++) {
         device.data.memory = def->mems[i];
-        if (cb(def, &device, &def->mems[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->mems[i]->info, opaque)) != 0)
+            return rc;
     }
 
     device.type = VIR_DOMAIN_DEVICE_REDIRDEV;
     for (i = 0; i < def->nredirdevs; i++) {
         device.data.redirdev = def->redirdevs[i];
-        if (cb(def, &device, &def->redirdevs[i]->info, opaque) < 0)
-            return -1;
+        if ((rc = cb(def, &device, &def->redirdevs[i]->info, opaque)) != 0)
+            return rc;
     }
 
     /* Coverity is not very happy with this - all dead_error_condition */
