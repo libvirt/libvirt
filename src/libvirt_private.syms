@@ -2960,6 +2960,7 @@ virXMLNodeToString;
 virXMLParseHelper;
 virXMLPickShellSafeComment;
 virXMLPropString;
+virXMLPropStringLimit;
 virXMLSaveFile;
 virXMLValidateAgainstSchema;
 virXMLValidatorFree;

@@ -73,6 +73,9 @@ int              virXPathNodeSet(const char *xpath,
                                  xmlNodePtr **list);
 char *          virXMLPropString(xmlNodePtr node,
                                  const char *name);
+char *     virXMLPropStringLimit(xmlNodePtr node,
+                                 const char *name,
+                                 size_t maxlen);
 long     virXMLChildElementCount(xmlNodePtr node);
 
 /* Internal function; prefer the macros below.  */
