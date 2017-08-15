@@ -1114,7 +1114,7 @@ virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
 }
 
 static int
-virDomainVirtioOptionsParseXML(xmlXPathContextPtr ctxt,
+virDomainVirtioOptionsParseXML(xmlNodePtr driver,
                                virDomainVirtioOptionsPtr *virtio)
 {
     char *str = NULL;
@@ -1122,12 +1122,15 @@ virDomainVirtioOptionsParseXML(xmlXPathContextPtr ctxt,
     int val;
     virDomainVirtioOptionsPtr res;
 
+    if (*virtio || !driver)
+        return 0;
+
     if (VIR_ALLOC(*virtio) < 0)
         return -1;
 
     res = *virtio;
 
-    if ((str = virXPathString("string(./driver/@iommu)", ctxt))) {
+    if ((str = virXMLPropString(driver, "iommu"))) {
         if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("invalid iommu value"));
@@ -1137,7 +1140,7 @@ virDomainVirtioOptionsParseXML(xmlXPathContextPtr ctxt,
     }
     VIR_FREE(str);
 
-    if ((str = virXPathString("string(./driver/@ats)", ctxt))) {
+    if ((str = virXMLPropString(driver, "ats"))) {
         if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("invalid ats value"));
@@ -8406,6 +8409,9 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             }
         } else if (!def->src->driverName &&
                    virXMLNodeNameEqual(cur, "driver")) {
+            if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
+                goto error;
+
             if (virDomainDiskDefDriverParseXML(def, cur) < 0)
                 goto error;
         } else if (!def->mirror &&
@@ -8490,9 +8496,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             /* boot is parsed as part of virDomainDeviceInfoParseXML */
         }
     }
-
-    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
-        goto error;
 
     /* Disk volume types will have authentication information handled in
      * virStorageTranslateDiskSourcePool
@@ -9078,6 +9081,9 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 max_sectors = virXMLPropString(cur, "max_sectors");
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
                 iothread = virXMLPropString(cur, "iothread");
+
+                if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
+                    goto error;
             } else if (virXMLNodeNameEqual(cur, "model")) {
                 if (processedModel) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -9104,9 +9110,6 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         }
         cur = cur->next;
     }
-
-    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
-        goto error;
 
     /* node is parsed differently from target attributes because
      * someone thought it should be a subelement instead...
@@ -9483,6 +9486,9 @@ virDomainFSDefParseXML(xmlNodePtr node,
                     wrpolicy = virXMLPropString(cur, "wrpolicy");
                 if (!format)
                     format = virXMLPropString(cur, "format");
+
+                if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
+                    goto error;
             }
         }
         cur = cur->next;
@@ -9543,9 +9549,6 @@ virDomainFSDefParseXML(xmlNodePtr node,
                             1024, ULLONG_MAX) < 0)
             goto error;
     }
-
-    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
-        goto error;
 
     def->src->path = source;
     source = NULL;
@@ -9986,6 +9989,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 queues = virXMLPropString(cur, "queues");
                 rx_queue_size = virXMLPropString(cur, "rx_queue_size");
                 tx_queue_size = virXMLPropString(cur, "tx_queue_size");
+
+                if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
+                    goto error;
             } else if (virXMLNodeNameEqual(cur, "filterref")) {
                 if (filter) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -10562,9 +10568,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (!def->coalesce)
             goto error;
     }
-
-    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
-        goto error;
 
  cleanup:
     ctxt->node = oldnode;
@@ -11689,7 +11692,8 @@ virDomainInputDefParseXML(const virDomainDef *dom,
         goto error;
     }
 
-    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
+    if (virDomainVirtioOptionsParseXML(virXPathNode("./driver", ctxt),
+                                       &def->virtio) < 0)
         goto error;
 
  cleanup:
@@ -13028,7 +13032,8 @@ virDomainRNGDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
-    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
+    if (virDomainVirtioOptionsParseXML(virXPathNode("./driver", ctxt),
+                                       &def->virtio) < 0)
         goto error;
 
  cleanup:
@@ -13096,7 +13101,8 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
     else if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
         goto error;
 
-    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
+    if (virDomainVirtioOptionsParseXML(virXPathNode("./driver", ctxt),
+                                       &def->virtio) < 0)
         goto error;
 
  cleanup:
@@ -13681,6 +13687,10 @@ virDomainVideoDefParseXML(xmlNodePtr node,
 
                 def->accel = virDomainVideoAccelDefParseXML(cur);
             }
+            if (virXMLNodeNameEqual(cur, "driver")) {
+                if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
+                    goto error;
+            }
         }
         cur = cur->next;
     }
@@ -13757,9 +13767,6 @@ virDomainVideoDefParseXML(xmlNodePtr node,
     }
 
     if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
-        goto error;
-
-    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
         goto error;
 
     def->driver = virDomainVideoDriverDefParseXML(node);
