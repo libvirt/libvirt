@@ -2538,6 +2538,13 @@ typedef int (*virDomainDefAssignAddressesCallback)(virDomainDef *def,
                                                    void *opaque,
                                                    void *parseOpaque);
 
+typedef int (*virDomainDefPostParseDataAlloc)(const virDomainDef *def,
+                                              virCapsPtr caps,
+                                              unsigned int parseFlags,
+                                              void *opaque,
+                                              void **parseOpaque);
+typedef void (*virDomainDefPostParseDataFree)(void *parseOpaque);
+
 /* Called in appropriate places where the domain conf parser can return failure
  * for configurations that were previously accepted. This shall not modify the
  * config. */
@@ -2556,9 +2563,11 @@ typedef virDomainDefParserConfig *virDomainDefParserConfigPtr;
 struct _virDomainDefParserConfig {
     /* driver domain definition callbacks */
     virDomainDefPostParseBasicCallback domainPostParseBasicCallback;
+    virDomainDefPostParseDataAlloc domainPostParseDataAlloc;
     virDomainDefPostParseCallback domainPostParseCallback;
     virDomainDeviceDefPostParseCallback devicesPostParseCallback;
     virDomainDefAssignAddressesCallback assignAddressesCallback;
+    virDomainDefPostParseDataFree domainPostParseDataFree;
 
     /* validation callbacks */
     virDomainDefValidateCallback domainValidateCallback;
