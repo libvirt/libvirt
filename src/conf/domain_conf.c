@@ -9656,18 +9656,22 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     }
 
     if (actual->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
-        actual->data.direct.linkdev = virXPathString("string(./source[1]/@dev)", ctxt);
+        xmlNodePtr sourceNode = virXPathNode("./source[1]", ctxt);
 
-        mode = virXPathString("string(./source[1]/@mode)", ctxt);
-        if (mode) {
-            int m;
-            if ((m = virNetDevMacVLanModeTypeFromString(mode)) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Unknown mode '%s' in interface <actual> element"),
-                               mode);
-                goto error;
+        if (sourceNode) {
+            actual->data.direct.linkdev = virXMLPropString(sourceNode, "dev");
+
+            mode = virXMLPropString(sourceNode, "mode");
+            if (mode) {
+                int m;
+                if ((m = virNetDevMacVLanModeTypeFromString(mode)) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("Unknown mode '%s' in interface <actual> element"),
+                                   mode);
+                    goto error;
+                }
+                actual->data.direct.mode = m;
             }
-            actual->data.direct.mode = m;
         }
     } else if (actual->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         virDomainHostdevDefPtr hostdev = &actual->data.hostdev.def;
@@ -9703,24 +9707,27 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     }
     if (actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         actual->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        char *brname = virXPathString("string(./source/@bridge)", ctxt);
+        xmlNodePtr sourceNode = virXPathNode("./source", ctxt);
+        if (sourceNode) {
+            char *brname = virXMLPropString(sourceNode, "bridge");
 
-        if (!brname && actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing <source> element with bridge name in "
-                             "interface's <actual> element"));
-            goto error;
-        }
-        actual->data.bridge.brname = brname;
-        macTableManager = virXPathString("string(./source/@macTableManager)", ctxt);
-        if (macTableManager &&
-            (actual->data.bridge.macTableManager
-             = virNetworkBridgeMACTableManagerTypeFromString(macTableManager)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid macTableManager setting '%s' "
-                             "in domain interface's <actual> element"),
-                           macTableManager);
-            goto error;
+            if (!brname && actual->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Missing <source> element with bridge name in "
+                                 "interface's <actual> element"));
+                goto error;
+            }
+            actual->data.bridge.brname = brname;
+            macTableManager = virXMLPropString(sourceNode, "macTableManager");
+            if (macTableManager &&
+                (actual->data.bridge.macTableManager
+                 = virNetworkBridgeMACTableManagerTypeFromString(macTableManager)) <= 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Invalid macTableManager setting '%s' "
+                                 "in domain interface's <actual> element"),
+                               macTableManager);
+                goto error;
+            }
         }
     }
 
