@@ -91,12 +91,12 @@ int
 virNodeDeviceObjListNumOfDevices(virNodeDeviceObjListPtr devs,
                                  virConnectPtr conn,
                                  const char *cap,
-                                 virNodeDeviceObjListFilter aclfilter);
+                                 virNodeDeviceObjListFilter filter);
 
 int
 virNodeDeviceObjListGetNames(virNodeDeviceObjListPtr devs,
                              virConnectPtr conn,
-                             virNodeDeviceObjListFilter aclfilter,
+                             virNodeDeviceObjListFilter filter,
                              const char *cap,
                              char **const names,
                              int maxnames);
@@ -105,7 +105,7 @@ int
 virNodeDeviceObjListExport(virConnectPtr conn,
                            virNodeDeviceObjListPtr devobjs,
                            virNodeDevicePtr **devices,
-                           virNodeDeviceObjListFilter aclfilter,
+                           virNodeDeviceObjListFilter filter,
                            unsigned int flags);
 
 #endif /* __VIRNODEDEVICEOBJ_H__ */

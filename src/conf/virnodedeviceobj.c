@@ -732,7 +732,7 @@ virNodeDeviceCapMatch(virNodeDeviceObjPtr obj,
 
 struct virNodeDeviceCountData {
     virConnectPtr conn;
-    virNodeDeviceObjListFilter aclfilter;
+    virNodeDeviceObjListFilter filter;
     const char *matchstr;
     int count;
 };
@@ -745,11 +745,11 @@ virNodeDeviceObjListNumOfDevicesCallback(void *payload,
     virNodeDeviceObjPtr obj = payload;
     virNodeDeviceDefPtr def;
     struct virNodeDeviceCountData *data = opaque;
-    virNodeDeviceObjListFilter aclfilter = data->aclfilter;
+    virNodeDeviceObjListFilter filter = data->filter;
 
     virObjectLock(obj);
     def = obj->def;
-    if ((!aclfilter || aclfilter(data->conn, def)) &&
+    if ((!filter || filter(data->conn, def)) &&
         (!data->matchstr || virNodeDeviceObjHasCap(obj, data->matchstr)))
         data->count++;
 
@@ -762,10 +762,10 @@ int
 virNodeDeviceObjListNumOfDevices(virNodeDeviceObjListPtr devs,
                                  virConnectPtr conn,
                                  const char *cap,
-                                 virNodeDeviceObjListFilter aclfilter)
+                                 virNodeDeviceObjListFilter filter)
 {
     struct virNodeDeviceCountData data = {
-        .conn = conn, .aclfilter = aclfilter, .matchstr = cap, .count = 0 };
+        .conn = conn, .filter = filter, .matchstr = cap, .count = 0 };
 
     virObjectLock(devs);
     virHashForEach(devs->objs, virNodeDeviceObjListNumOfDevicesCallback, &data);
@@ -777,7 +777,7 @@ virNodeDeviceObjListNumOfDevices(virNodeDeviceObjListPtr devs,
 
 struct virNodeDeviceGetNamesData {
     virConnectPtr conn;
-    virNodeDeviceObjListFilter aclfilter;
+    virNodeDeviceObjListFilter filter;
     const char *matchstr;
     int nnames;
     char **names;
@@ -793,7 +793,7 @@ virNodeDeviceObjListGetNamesCallback(void *payload,
     virNodeDeviceObjPtr obj = payload;
     virNodeDeviceDefPtr def;
     struct virNodeDeviceGetNamesData *data = opaque;
-    virNodeDeviceObjListFilter aclfilter = data->aclfilter;
+    virNodeDeviceObjListFilter filter = data->filter;
 
     if (data->error)
         return 0;
@@ -801,7 +801,7 @@ virNodeDeviceObjListGetNamesCallback(void *payload,
     virObjectLock(obj);
     def = obj->def;
 
-    if ((!aclfilter || aclfilter(data->conn, def)) &&
+    if ((!filter || filter(data->conn, def)) &&
         (!data->matchstr || virNodeDeviceObjHasCap(obj, data->matchstr))) {
         if (VIR_STRDUP(data->names[data->nnames], def->name) < 0) {
             data->error = true;
@@ -819,13 +819,13 @@ virNodeDeviceObjListGetNamesCallback(void *payload,
 int
 virNodeDeviceObjListGetNames(virNodeDeviceObjListPtr devs,
                              virConnectPtr conn,
-                             virNodeDeviceObjListFilter aclfilter,
+                             virNodeDeviceObjListFilter filter,
                              const char *cap,
                              char **const names,
                              int maxnames)
 {
     struct virNodeDeviceGetNamesData data = {
-        .conn = conn, .aclfilter = aclfilter, .matchstr = cap, .names = names,
+        .conn = conn, .filter = filter, .matchstr = cap, .names = names,
         .nnames = 0, .maxnames = maxnames, .error = false };
 
     virObjectLock(devs);
@@ -878,7 +878,7 @@ virNodeDeviceMatch(virNodeDeviceObjPtr obj,
 
 struct virNodeDeviceObjListExportData {
     virConnectPtr conn;
-    virNodeDeviceObjListFilter aclfilter;
+    virNodeDeviceObjListFilter filter;
     unsigned int flags;
     virNodeDevicePtr *devices;
     int ndevices;
@@ -901,7 +901,7 @@ virNodeDeviceObjListExportCallback(void *payload,
     virObjectLock(obj);
     def = obj->def;
 
-    if ((!data->aclfilter || data->aclfilter(data->conn, def)) &&
+    if ((!data->filter || data->filter(data->conn, def)) &&
         virNodeDeviceMatch(obj, data->flags)) {
         if (data->devices) {
             if (!(device = virGetNodeDevice(data->conn, def->name)) ||
@@ -925,11 +925,11 @@ int
 virNodeDeviceObjListExport(virConnectPtr conn,
                            virNodeDeviceObjListPtr devs,
                            virNodeDevicePtr **devices,
-                           virNodeDeviceObjListFilter aclfilter,
+                           virNodeDeviceObjListFilter filter,
                            unsigned int flags)
 {
     struct virNodeDeviceObjListExportData data = {
-        .conn = conn, .aclfilter = aclfilter, .flags = flags,
+        .conn = conn, .filter = filter, .flags = flags,
         .devices = NULL, .ndevices = 0, .error = false };
 
     virObjectLock(devs);
