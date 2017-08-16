@@ -5395,9 +5395,10 @@ networkNextClassID(virNetworkObjPtr obj)
     ssize_t ret = 0;
     virBitmapPtr classIdMap = virNetworkObjGetClassIdMap(obj);
 
-    ret = virBitmapNextClearBit(classIdMap, -1);
+    if ((ret = virBitmapNextClearBit(classIdMap, -1)) < 0)
+        ret = virBitmapSize(classIdMap);
 
-    if (ret < 0 || virBitmapSetBit(classIdMap, ret) < 0)
+    if (virBitmapSetBitExpand(classIdMap, ret) < 0)
         return -1;
 
     return ret;

@@ -34,8 +34,10 @@
 
 VIR_LOG_INIT("conf.virnetworkobj");
 
-/* currently, /sbin/tc implementation allows up to 16 bits for minor class size */
-#define CLASS_ID_BITMAP_SIZE (1<<16)
+/* Currently, /sbin/tc implementation allows up to 16 bits for
+ * minor class size. But the initial bitmap doesn't have to be
+ * that big. */
+#define INIT_CLASS_ID_BITMAP_SIZE (1<<4)
 
 struct _virNetworkObj {
     virObjectLockable parent;
@@ -100,13 +102,14 @@ virNetworkObjNew(void)
     if (!(obj = virObjectLockableNew(virNetworkObjClass)))
         return NULL;
 
-    if (!(obj->classIdMap = virBitmapNew(CLASS_ID_BITMAP_SIZE)))
+    if (!(obj->classIdMap = virBitmapNew(INIT_CLASS_ID_BITMAP_SIZE)))
         goto error;
 
     /* The first three class IDs are already taken */
-    ignore_value(virBitmapSetBit(obj->classIdMap, 0));
-    ignore_value(virBitmapSetBit(obj->classIdMap, 1));
-    ignore_value(virBitmapSetBit(obj->classIdMap, 2));
+    if (virBitmapSetBitExpand(obj->classIdMap, 0) < 0 ||
+        virBitmapSetBitExpand(obj->classIdMap, 1) < 0 ||
+        virBitmapSetBitExpand(obj->classIdMap, 2) < 0)
+        goto error;
 
     virObjectLock(obj);
 
@@ -909,8 +912,7 @@ virNetworkLoadState(virNetworkObjListPtr nets,
         ctxt->node = node;
         if ((classIdStr = virXPathString("string(./class_id[1]/@bitmap)",
                                          ctxt))) {
-            if (virBitmapParse(classIdStr, &classIdMap,
-                               CLASS_ID_BITMAP_SIZE) < 0) {
+            if (!(classIdMap = virBitmapParseUnlimited(classIdStr))) {
                 VIR_FREE(classIdStr);
                 goto error;
             }
