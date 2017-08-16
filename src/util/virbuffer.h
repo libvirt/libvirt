@@ -58,7 +58,7 @@ int virBufferCheckErrorInternal(const virBuffer *buf,
                                 const char *filename,
                                 const char *funcname,
                                 size_t linenr)
-    ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1);
+    ATTRIBUTE_NONNULL(1);
 /**
  * virBufferCheckError
  *
