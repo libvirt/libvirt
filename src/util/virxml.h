@@ -76,6 +76,7 @@ char *          virXMLPropString(xmlNodePtr node,
 char *     virXMLPropStringLimit(xmlNodePtr node,
                                  const char *name,
                                  size_t maxlen);
+char *   virXMLNodeContentString(xmlNodePtr node);
 long     virXMLChildElementCount(xmlNodePtr node);
 
 /* Internal function; prefer the macros below.  */

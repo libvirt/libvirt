@@ -541,6 +541,22 @@ virXMLPropStringLimit(xmlNodePtr node,
 
 
 /**
+ * virXMLNodeContentString:
+ * @node: XML dom node pointer
+ *
+ * Convenience function to return copy of content of an XML node.
+ *
+ * Returns the content value as string or NULL in case of failure.
+ * The caller is responsible for freeing the returned buffer.
+ */
+char *
+virXMLNodeContentString(xmlNodePtr node)
+{
+    return (char *)xmlNodeGetContent(node);
+}
+
+
+/**
  * virXPathBoolean:
  * @xpath: the XPath string to evaluate
  * @ctxt: an XPath context
