@@ -16914,65 +16914,69 @@ virDomainVcpuParse(virDomainDefPtr def,
 {
     int n;
     xmlNodePtr *nodes = NULL;
+    xmlNodePtr vcpuNode;
     size_t i;
     char *tmp = NULL;
     unsigned int maxvcpus;
     unsigned int vcpus;
     int ret = -1;
 
-    if ((n = virXPathUInt("string(./vcpu[1])", ctxt, &maxvcpus)) < 0) {
-        if (n == -2) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("maximum vcpus count must be an integer"));
-            goto cleanup;
+    vcpus = maxvcpus = 1;
+
+    if ((vcpuNode = virXPathNode("./vcpu[1]", ctxt))) {
+        if ((tmp = virXMLNodeContentString(vcpuNode))) {
+            if (virStrToLong_ui(tmp, NULL, 10, &maxvcpus) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("maximum vcpus count must be an integer"));
+                goto cleanup;
+            }
+            VIR_FREE(tmp);
         }
 
-        maxvcpus = 1;
+        if ((tmp = virXMLPropString(vcpuNode, "current"))) {
+            if (virStrToLong_ui(tmp, NULL, 10, &vcpus) < 0) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("current vcpus count must be an integer"));
+                goto cleanup;
+            }
+            VIR_FREE(tmp);
+        } else {
+            vcpus = maxvcpus;
+        }
+
+        tmp = virXMLPropString(vcpuNode, "placement");
+        if (tmp) {
+            if ((def->placement_mode =
+                 virDomainCpuPlacementModeTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Unsupported CPU placement mode '%s'"),
+                               tmp);
+                goto cleanup;
+            }
+            VIR_FREE(tmp);
+        } else {
+            def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
+        }
+
+        if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+            tmp = virXMLPropString(vcpuNode, "cpuset");
+            if (tmp) {
+                if (virBitmapParse(tmp, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+                    goto cleanup;
+
+                if (virBitmapIsAllClear(def->cpumask)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("Invalid value of 'cpuset': %s"), tmp);
+                    goto cleanup;
+                }
+
+                VIR_FREE(tmp);
+            }
+        }
     }
 
     if (virDomainDefSetVcpusMax(def, maxvcpus, xmlopt) < 0)
         goto cleanup;
-
-    if ((n = virXPathUInt("string(./vcpu[1]/@current)", ctxt, &vcpus)) < 0) {
-        if (n == -2) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("current vcpus count must be an integer"));
-            goto cleanup;
-        }
-
-        vcpus = maxvcpus;
-    }
-
-
-    tmp = virXPathString("string(./vcpu[1]/@placement)", ctxt);
-    if (tmp) {
-        if ((def->placement_mode =
-             virDomainCpuPlacementModeTypeFromString(tmp)) < 0) {
-             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("Unsupported CPU placement mode '%s'"),
-                            tmp);
-             goto cleanup;
-        }
-        VIR_FREE(tmp);
-    } else {
-        def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
-    }
-
-    if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
-        tmp = virXPathString("string(./vcpu[1]/@cpuset)", ctxt);
-        if (tmp) {
-            if (virBitmapParse(tmp, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
-                goto cleanup;
-
-            if (virBitmapIsAllClear(def->cpumask)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Invalid value of 'cpuset': %s"), tmp);
-                goto cleanup;
-            }
-
-            VIR_FREE(tmp);
-        }
-    }
 
     if ((n = virXPathNodeSet("./vcpus/vcpu", ctxt, &nodes)) < 0)
         goto cleanup;
