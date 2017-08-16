@@ -17062,7 +17062,6 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
                              virHashTablePtr *bootHash)
 {
     xmlNodePtr *nodes = NULL;
-    xmlNodePtr oldnode;
     char *tmp = NULL;
     char *name = NULL;
     int ret = -1;
@@ -17169,8 +17168,6 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
         }
 
         if (n == 1) {
-            oldnode = ctxt->node;
-            ctxt->node = nodes[0];
             tmp = virXMLPropString(nodes[0], "type");
 
             if (!tmp) {
@@ -17181,7 +17178,7 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
 
             if (STREQ_NULLABLE(tmp, "slic")) {
                 VIR_FREE(tmp);
-                tmp = virXPathString("string(.)", ctxt);
+                tmp = virXMLNodeContentString(nodes[0]);
                 def->os.slic_table = virFileSanitizePath(tmp);
                 VIR_FREE(tmp);
             } else {
@@ -17190,7 +17187,6 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
                                tmp);
                 goto error;
             }
-            ctxt->node = oldnode;
         }
 
         if (virDomainDefParseBootXML(ctxt, def) < 0)
