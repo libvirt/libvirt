@@ -3263,6 +3263,15 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 }
 
 
+/**
+ * qemuDomainDefaultNetModel:
+ * @def: domain definition
+ * @qemuCaps: qemu capabilities
+ *
+ * Returns the default network model for a given domain. Note that if @qemuCaps
+ * is NULL this function may return NULL if the default model depends on the
+ * capabilities.
+ */
 static const char *
 qemuDomainDefaultNetModel(const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
@@ -3282,6 +3291,11 @@ qemuDomainDefaultNetModel(const virDomainDef *def,
          * arm boards */
         return "lan9118";
     }
+
+    /* In all other cases the model depends on the capabilities. If they were
+     * not provided don't report any default. */
+    if (!qemuCaps)
+        return NULL;
 
     /* Try several network devices in turn; each of these devices is
      * less likely be supported out-of-the-box by the guest operating
