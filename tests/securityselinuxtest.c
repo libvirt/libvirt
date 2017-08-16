@@ -73,24 +73,27 @@ testBuildDomainDef(bool dynamic,
     if (!(def = virDomainDefNew()))
         goto error;
 
+    def->virtType = VIR_DOMAIN_VIRT_KVM;
     if (VIR_ALLOC_N(def->seclabels, 1) < 0)
         goto error;
 
     if (VIR_ALLOC(secdef) < 0)
         goto error;
 
-    def->virtType = VIR_DOMAIN_VIRT_KVM;
-    def->seclabels[0] = secdef;
-    def->seclabels[0]->type = dynamic ? VIR_DOMAIN_SECLABEL_DYNAMIC : VIR_DOMAIN_SECLABEL_STATIC;
+    if (VIR_STRDUP(secdef->model, "selinux") < 0)
+        goto error;
 
+    secdef->type = dynamic ? VIR_DOMAIN_SECLABEL_DYNAMIC : VIR_DOMAIN_SECLABEL_STATIC;
     if (label &&
-        VIR_STRDUP(def->seclabels[0]->label, label) < 0)
+        VIR_STRDUP(secdef->label, label) < 0)
         goto error;
 
     if (baselabel &&
-        VIR_STRDUP(def->seclabels[0]->baselabel, baselabel) < 0)
+        VIR_STRDUP(secdef->baselabel, baselabel) < 0)
         goto error;
 
+    def->seclabels[0] = secdef;
+    def->nseclabels++;
     return def;
 
  error:
