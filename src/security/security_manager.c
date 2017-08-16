@@ -650,31 +650,33 @@ virSecurityManagerGenLabel(virSecurityManagerPtr mgr,
     for (i = 0; sec_managers[i]; i++) {
         generated = false;
         seclabel = virDomainDefGetSecurityLabelDef(vm, sec_managers[i]->drv->name);
-        if (!seclabel) {
-            if (!(seclabel = virSecurityLabelDefNew(sec_managers[i]->drv->name)))
-                goto cleanup;
-            generated = seclabel->implicit = true;
-        }
-
-        if (seclabel->type == VIR_DOMAIN_SECLABEL_DEFAULT) {
-            if (virSecurityManagerGetDefaultConfined(sec_managers[i])) {
-                seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
-            } else {
-                seclabel->type = VIR_DOMAIN_SECLABEL_NONE;
-                seclabel->relabel = false;
-            }
-        }
-
-        if (seclabel->type == VIR_DOMAIN_SECLABEL_NONE) {
-            if (virSecurityManagerGetRequireConfined(sec_managers[i])) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Unconfined guests are not allowed on this host"));
-                goto cleanup;
-            } else if (vm->nseclabels && generated) {
-                VIR_DEBUG("Skipping auto generated seclabel of type none");
-                virSecurityLabelDefFree(seclabel);
-                seclabel = NULL;
+        if (seclabel == NULL) {
+            /* Only generate seclabel if confinement is enabled */
+            if (!virSecurityManagerGetDefaultConfined(sec_managers[i])) {
+                VIR_DEBUG("Skipping auto generated seclabel");
                 continue;
+            } else {
+                if (!(seclabel = virSecurityLabelDefNew(sec_managers[i]->drv->name)))
+                    goto cleanup;
+                generated = seclabel->implicit = true;
+                seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
+            }
+        } else {
+            if (seclabel->type == VIR_DOMAIN_SECLABEL_DEFAULT) {
+                if (virSecurityManagerGetDefaultConfined(sec_managers[i])) {
+                    seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
+                } else {
+                    seclabel->type = VIR_DOMAIN_SECLABEL_NONE;
+                    seclabel->relabel = false;
+                }
+            }
+
+            if (seclabel->type == VIR_DOMAIN_SECLABEL_NONE) {
+                if (virSecurityManagerGetRequireConfined(sec_managers[i])) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Unconfined guests are not allowed on this host"));
+                    goto cleanup;
+                }
             }
         }
 
