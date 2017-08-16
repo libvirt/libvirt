@@ -86,12 +86,12 @@ typedef bool
 int
 virNWFilterObjListNumOfNWFilters(virNWFilterObjListPtr nwfilters,
                                  virConnectPtr conn,
-                                 virNWFilterObjListFilter aclfilter);
+                                 virNWFilterObjListFilter filter);
 
 int
 virNWFilterObjListGetNames(virNWFilterObjListPtr nwfilters,
                            virConnectPtr conn,
-                           virNWFilterObjListFilter aclfilter,
+                           virNWFilterObjListFilter filter,
                            char **const names,
                            int maxnames);
 
@@ -99,7 +99,7 @@ int
 virNWFilterObjListExport(virConnectPtr conn,
                          virNWFilterObjListPtr nwfilters,
                          virNWFilterPtr **filters,
-                         virNWFilterObjListFilter aclfilter);
+                         virNWFilterObjListFilter filter);
 
 int
 virNWFilterObjListLoadAllConfigs(virNWFilterObjListPtr nwfilters,
