@@ -3438,9 +3438,10 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
-        if (cont->model == -1) {
+        if (cont->model == -1 && qemuCaps) {
             /* Pick a suitable default model for the USB controller if none
-             * has been selected by the user.
+             * has been selected by the user and we have the qemuCaps for
+             * figuring out which contollers are supported.
              *
              * We rely on device availability instead of setting the model
              * unconditionally because, for some machine types, there's a
