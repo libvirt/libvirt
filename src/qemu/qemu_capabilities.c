@@ -5676,7 +5676,8 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
  * @version: GIC version
  *
  * Checks the QEMU binary with capabilities @qemuCaps supports a specific
- * GIC version for a domain of type @virtType.
+ * GIC version for a domain of type @virtType. If @qemuCaps is NULL, the GIC
+ * @version is considered unsupported.
  *
  * Returns: true if the binary supports the requested GIC version, false
  *          otherwise
@@ -5687,6 +5688,9 @@ virQEMUCapsSupportsGICVersion(virQEMUCapsPtr qemuCaps,
                               virGICVersion version)
 {
     size_t i;
+
+    if (!qemuCaps)
+        return false;
 
     for (i = 0; i < qemuCaps->ngicCapabilities; i++) {
         virGICCapabilityPtr cap = &(qemuCaps->gicCapabilities[i]);
