@@ -2932,7 +2932,7 @@ qemuDomainDefPostParseBasic(virDomainDefPtr def,
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
         !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
-        return -1;
+        return 1;
 
     return 0;
 }
@@ -2947,6 +2947,9 @@ qemuDomainDefPostParse(virDomainDefPtr def,
 {
     virQEMUDriverPtr driver = opaque;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    /* Note that qemuCaps may be NULL when this function is called. This
+     * function shall not fail in that case. It will be re-run on VM startup
+     * with the capabilities populated. */
     virQEMUCapsPtr qemuCaps = parseOpaque;
     int ret = -1;
 
@@ -3575,6 +3578,9 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              void *parseOpaque)
 {
     virQEMUDriverPtr driver = opaque;
+    /* Note that qemuCaps may be NULL when this function is called. This
+     * function shall not fail in that case. It will be re-run on VM startup
+     * with the capabilities populated. */
     virQEMUCapsPtr qemuCaps = parseOpaque;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
@@ -3700,8 +3706,18 @@ qemuDomainDefAssignAddresses(virDomainDef *def,
                              void *parseOpaque)
 {
     virQEMUDriverPtr driver = opaque;
+    /* Note that qemuCaps may be NULL when this function is called. This
+     * function shall not fail in that case. It will be re-run on VM startup
+     * with the capabilities populated. */
     virQEMUCapsPtr qemuCaps = parseOpaque;
     bool newDomain = parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
+
+    /* Skip address assignment if @qemuCaps is not present. In such case devices
+     * which are automatically added may be missing. Additionally @qemuCaps should
+     * only be missing when reloading configs, thus addresses were already
+     * assigned. */
+    if (!qemuCaps)
+        return 1;
 
     return qemuDomainAssignAddresses(def, qemuCaps, driver, NULL, newDomain);
 }
@@ -3718,7 +3734,7 @@ qemuDomainPostParseDataAlloc(const virDomainDef *def,
 
     if (!(*parseOpaque = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                                 def->emulator)))
-        return -1;
+        return 1;
 
     return 0;
 }

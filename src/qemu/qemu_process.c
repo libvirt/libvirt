@@ -4691,6 +4691,15 @@ qemuProcessInit(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
+    /* in case when the post parse callback failed we need to re-run it on the
+     * old config prior we start the VM */
+    if (vm->def->postParseFailed) {
+        VIR_DEBUG("re-running the post parse callback");
+
+        if (virDomainDefPostParse(vm->def, caps, 0, driver->xmlopt, NULL) < 0)
+            goto cleanup;
+    }
+
     VIR_DEBUG("Determining emulator version");
     virObjectUnref(priv->qemuCaps);
     if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
