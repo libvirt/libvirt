@@ -63,21 +63,21 @@ typedef bool
 
 int
 virSecretObjListNumOfSecrets(virSecretObjListPtr secrets,
-                             virSecretObjListACLFilter aclfilter,
+                             virSecretObjListACLFilter filter,
                              virConnectPtr conn);
 
 int
 virSecretObjListExport(virConnectPtr conn,
                        virSecretObjListPtr secretobjs,
                        virSecretPtr **secrets,
-                       virSecretObjListACLFilter aclfilter,
+                       virSecretObjListACLFilter filter,
                        unsigned int flags);
 
 int
 virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
                          char **uuids,
                          int maxuuids,
-                         virSecretObjListACLFilter aclfilter,
+                         virSecretObjListACLFilter filter,
                          virConnectPtr conn);
 
 int
