@@ -2739,15 +2739,21 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
 }
 
 
-
-
+/**
+ * virQEMUCapsGetCanonicalMachine:
+ * @qemuCaps: qemu capabilities object
+ * @name: machine name
+ *
+ * Resolves aliased machine names to the actual machine name. If qemuCaps isn't
+ * present @name is returned.
+ */
 const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
                                            const char *name)
 {
     size_t i;
 
-    if (!name)
-        return NULL;
+    if (!name || !qemuCaps)
+        return name;
 
     for (i = 0; i < qemuCaps->nmachineTypes; i++) {
         if (!qemuCaps->machineTypes[i].alias)
