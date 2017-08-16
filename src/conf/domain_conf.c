@@ -16039,6 +16039,7 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
                          virDomainDefPtr def)
 {
     xmlNodePtr *nodes = NULL;
+    xmlNodePtr node;
     size_t i;
     int n;
     char *tmp = NULL;
@@ -16088,62 +16089,66 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
         def->os.bootDevs[0] = VIR_DOMAIN_BOOT_DISK;
     }
 
-    tmp = virXPathString("string(./os/bootmenu[1]/@enable)", ctxt);
-    if (tmp) {
-        def->os.bootmenu = virTristateBoolTypeFromString(tmp);
-        if (def->os.bootmenu <= 0) {
-            /* In order not to break misconfigured machines, this
-             * should not emit an error, but rather set the bootmenu
-             * to disabled */
-            VIR_WARN("disabling bootmenu due to unknown option '%s'",
-                     tmp);
-            def->os.bootmenu = VIR_TRISTATE_BOOL_NO;
+    if ((node = virXPathNode("./os/bootmenu[1]", ctxt))) {
+        tmp = virXMLPropString(node, "enable");
+        if (tmp) {
+            def->os.bootmenu = virTristateBoolTypeFromString(tmp);
+            if (def->os.bootmenu <= 0) {
+                /* In order not to break misconfigured machines, this
+                 * should not emit an error, but rather set the bootmenu
+                 * to disabled */
+                VIR_WARN("disabling bootmenu due to unknown option '%s'",
+                         tmp);
+                def->os.bootmenu = VIR_TRISTATE_BOOL_NO;
+            }
+            VIR_FREE(tmp);
         }
-        VIR_FREE(tmp);
-    }
 
-    tmp = virXPathString("string(./os/bootmenu[1]/@timeout)", ctxt);
-    if (tmp && def->os.bootmenu == VIR_TRISTATE_BOOL_YES) {
-        if (virStrToLong_uip(tmp, NULL, 0, &def->os.bm_timeout) < 0 ||
-            def->os.bm_timeout > 65535) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("invalid value for boot menu timeout, "
-                             "must be in range [0,65535]"));
-            goto cleanup;
-        }
-        def->os.bm_timeout_set = true;
-    }
-    VIR_FREE(tmp);
-
-    tmp = virXPathString("string(./os/bios[1]/@useserial)", ctxt);
-    if (tmp) {
-        if (STREQ(tmp, "yes")) {
-            if (virXPathULong("count(./devices/serial)",
-                              ctxt, &serialPorts) < 0) {
+        tmp = virXMLPropString(node, "timeout");
+        if (tmp && def->os.bootmenu == VIR_TRISTATE_BOOL_YES) {
+            if (virStrToLong_uip(tmp, NULL, 0, &def->os.bm_timeout) < 0 ||
+                def->os.bm_timeout > 65535) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("need at least one serial port "
-                                 "for useserial"));
+                               _("invalid value for boot menu timeout, "
+                                 "must be in range [0,65535]"));
                 goto cleanup;
             }
-            def->os.bios.useserial = VIR_TRISTATE_BOOL_YES;
-        } else {
-            def->os.bios.useserial = VIR_TRISTATE_BOOL_NO;
+            def->os.bm_timeout_set = true;
         }
         VIR_FREE(tmp);
     }
 
-    tmp = virXPathString("string(./os/bios[1]/@rebootTimeout)", ctxt);
-    if (tmp) {
-        /* that was really just for the check if it is there */
-
-        if (virStrToLong_i(tmp, NULL, 0, &def->os.bios.rt_delay) < 0 ||
-            def->os.bios.rt_delay < -1 || def->os.bios.rt_delay > 65535) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("invalid value for rebootTimeout, "
-                             "must be in range [-1,65535]"));
-            goto cleanup;
+    if ((node = virXPathNode("./os/bios[1]", ctxt))) {
+        tmp = virXMLPropString(node, "useserial");
+        if (tmp) {
+            if (STREQ(tmp, "yes")) {
+                if (virXPathULong("count(./devices/serial)",
+                                  ctxt, &serialPorts) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("need at least one serial port "
+                                     "for useserial"));
+                    goto cleanup;
+                }
+                def->os.bios.useserial = VIR_TRISTATE_BOOL_YES;
+            } else {
+                def->os.bios.useserial = VIR_TRISTATE_BOOL_NO;
+            }
+            VIR_FREE(tmp);
         }
-        def->os.bios.rt_set = true;
+
+        tmp = virXMLPropString(node, "rebootTimeout");
+        if (tmp) {
+            /* that was really just for the check if it is there */
+
+            if (virStrToLong_i(tmp, NULL, 0, &def->os.bios.rt_delay) < 0 ||
+                def->os.bios.rt_delay < -1 || def->os.bios.rt_delay > 65535) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("invalid value for rebootTimeout, "
+                                 "must be in range [-1,65535]"));
+                goto cleanup;
+            }
+            def->os.bios.rt_set = true;
+        }
     }
 
     ret = 0;
