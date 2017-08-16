@@ -9793,6 +9793,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     virDomainNetDefPtr def;
     virDomainHostdevDefPtr hostdev;
     xmlNodePtr cur;
+    xmlNodePtr tmpNode;
     char *macaddr = NULL;
     char *type = NULL;
     char *network = NULL;
@@ -9952,8 +9953,10 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 if (!localaddr && def->type == VIR_DOMAIN_NET_TYPE_UDP) {
                     xmlNodePtr tmpnode = ctxt->node;
                     ctxt->node = cur;
-                    localaddr = virXPathString("string(./local/@address)", ctxt);
-                    localport = virXPathString("string(./local/@port)", ctxt);
+                    if ((tmpNode = virXPathNode("./local", ctxt))) {
+                        localaddr = virXMLPropString(tmpNode, "address");
+                        localport = virXMLPropString(tmpNode, "port");
+                    }
                     ctxt->node = tmpnode;
                 }
             } else if (!ifname &&
@@ -10399,124 +10402,130 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             }
             def->driver.virtio.tx_queue_size = q;
         }
-        if ((str = virXPathString("string(./driver/host/@csum)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown host csum mode '%s'"),
-                               str);
-                goto error;
+
+        if ((tmpNode = virXPathNode("./driver/host", ctxt))) {
+            if ((str = virXMLPropString(tmpNode, "csum"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown host csum mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.host.csum = val;
             }
-            def->driver.virtio.host.csum = val;
+            VIR_FREE(str);
+            if ((str = virXMLPropString(tmpNode, "gso"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown host gso mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.host.gso = val;
+            }
+            VIR_FREE(str);
+            if ((str = virXMLPropString(tmpNode, "tso4"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown host tso4 mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.host.tso4 = val;
+            }
+            VIR_FREE(str);
+            if ((str = virXMLPropString(tmpNode, "tso6"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown host tso6 mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.host.tso6 = val;
+            }
+            VIR_FREE(str);
+            if ((str = virXMLPropString(tmpNode, "ecn"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown host ecn mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.host.ecn = val;
+            }
+            VIR_FREE(str);
+            if ((str = virXMLPropString(tmpNode, "ufo"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown host ufo mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.host.ufo = val;
+            }
+            VIR_FREE(str);
+            if ((str = virXMLPropString(tmpNode, "mrg_rxbuf"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown host mrg_rxbuf mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.host.mrg_rxbuf = val;
+            }
+            VIR_FREE(str);
         }
-        VIR_FREE(str);
-        if ((str = virXPathString("string(./driver/host/@gso)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown host gso mode '%s'"),
-                               str);
-                goto error;
+
+        if ((tmpNode = virXPathNode("./driver/guest", ctxt))) {
+            if ((str = virXMLPropString(tmpNode, "csum"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown guest csum mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.guest.csum = val;
             }
-            def->driver.virtio.host.gso = val;
-        }
-        VIR_FREE(str);
-        if ((str = virXPathString("string(./driver/host/@tso4)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown host tso4 mode '%s'"),
-                               str);
-                goto error;
+            VIR_FREE(str);
+            if ((str = virXMLPropString(tmpNode, "tso4"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown guest tso4 mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.guest.tso4 = val;
             }
-            def->driver.virtio.host.tso4 = val;
-        }
-        VIR_FREE(str);
-        if ((str = virXPathString("string(./driver/host/@tso6)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown host tso6 mode '%s'"),
-                               str);
-                goto error;
+            VIR_FREE(str);
+            if ((str = virXMLPropString(tmpNode, "tso6"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown guest tso6 mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.guest.tso6 = val;
             }
-            def->driver.virtio.host.tso6 = val;
-        }
-        VIR_FREE(str);
-        if ((str = virXPathString("string(./driver/host/@ecn)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown host ecn mode '%s'"),
-                               str);
-                goto error;
+            VIR_FREE(str);
+            if ((str = virXMLPropString(tmpNode, "ecn"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown guest ecn mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.guest.ecn = val;
             }
-            def->driver.virtio.host.ecn = val;
-        }
-        VIR_FREE(str);
-        if ((str = virXPathString("string(./driver/host/@ufo)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown host ufo mode '%s'"),
-                               str);
-                goto error;
+            VIR_FREE(str);
+            if ((str = virXMLPropString(tmpNode, "ufo"))) {
+                if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unknown guest ufo mode '%s'"),
+                                   str);
+                    goto error;
+                }
+                def->driver.virtio.guest.ufo = val;
             }
-            def->driver.virtio.host.ufo = val;
-        }
-        VIR_FREE(str);
-        if ((str = virXPathString("string(./driver/host/@mrg_rxbuf)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown host mrg_rxbuf mode '%s'"),
-                               str);
-                goto error;
-            }
-            def->driver.virtio.host.mrg_rxbuf = val;
-        }
-        VIR_FREE(str);
-        if ((str = virXPathString("string(./driver/guest/@csum)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown guest csum mode '%s'"),
-                               str);
-                goto error;
-            }
-            def->driver.virtio.guest.csum = val;
-        }
-        VIR_FREE(str);
-        if ((str = virXPathString("string(./driver/guest/@tso4)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown guest tso4 mode '%s'"),
-                               str);
-                goto error;
-            }
-            def->driver.virtio.guest.tso4 = val;
-        }
-        VIR_FREE(str);
-        if ((str = virXPathString("string(./driver/guest/@tso6)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown guest tso6 mode '%s'"),
-                               str);
-                goto error;
-            }
-            def->driver.virtio.guest.tso6 = val;
-        }
-        VIR_FREE(str);
-        if ((str = virXPathString("string(./driver/guest/@ecn)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown guest ecn mode '%s'"),
-                               str);
-                goto error;
-            }
-            def->driver.virtio.guest.ecn = val;
-        }
-        VIR_FREE(str);
-        if ((str = virXPathString("string(./driver/guest/@ufo)", ctxt))) {
-            if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown guest ufo mode '%s'"),
-                               str);
-                goto error;
-            }
-            def->driver.virtio.guest.ufo = val;
         }
         def->backend.vhost = vhost_path;
         vhost_path = NULL;
