@@ -198,7 +198,7 @@ virStorageVolDefFindByName(virStoragePoolObjPtr obj,
 int
 virStoragePoolObjNumOfVolumes(virStoragePoolObjPtr obj,
                               virConnectPtr conn,
-                              virStoragePoolVolumeACLFilter aclfilter)
+                              virStoragePoolVolumeACLFilter filter)
 {
     virStoragePoolDefPtr pooldef = obj->def;
     virStorageVolDefListPtr volumes = &obj->volumes;
@@ -207,7 +207,7 @@ virStoragePoolObjNumOfVolumes(virStoragePoolObjPtr obj,
 
     for (i = 0; i < volumes->count; i++) {
         virStorageVolDefPtr def = volumes->objs[i];
-        if (aclfilter && !aclfilter(conn, pooldef, def))
+        if (filter && !filter(conn, pooldef, def))
             continue;
         nvolumes++;
     }
@@ -219,7 +219,7 @@ virStoragePoolObjNumOfVolumes(virStoragePoolObjPtr obj,
 int
 virStoragePoolObjVolumeGetNames(virStoragePoolObjPtr obj,
                                 virConnectPtr conn,
-                                virStoragePoolVolumeACLFilter aclfilter,
+                                virStoragePoolVolumeACLFilter filter,
                                 char **const names,
                                 int maxnames)
 {
@@ -230,7 +230,7 @@ virStoragePoolObjVolumeGetNames(virStoragePoolObjPtr obj,
 
     for (i = 0; i < volumes->count && nnames < maxnames; i++) {
         virStorageVolDefPtr def = volumes->objs[i];
-        if (aclfilter && !aclfilter(conn, pooldef, def))
+        if (filter && !filter(conn, pooldef, def))
             continue;
         if (VIR_STRDUP(names[nnames], def->name) < 0)
             goto failure;
@@ -251,7 +251,7 @@ int
 virStoragePoolObjVolumeListExport(virConnectPtr conn,
                                   virStoragePoolObjPtr obj,
                                   virStorageVolPtr **vols,
-                                  virStoragePoolVolumeACLFilter aclfilter)
+                                  virStoragePoolVolumeACLFilter filter)
 {
     virStoragePoolDefPtr pooldef = obj->def;
     virStorageVolDefListPtr volumes = &obj->volumes;
@@ -272,7 +272,7 @@ virStoragePoolObjVolumeListExport(virConnectPtr conn,
 
     for (i = 0; i < volumes->count; i++) {
         virStorageVolDefPtr def = volumes->objs[i];
-        if (aclfilter && !aclfilter(conn, pooldef, def))
+        if (filter && !filter(conn, pooldef, def))
             continue;
         if (!(vol = virGetStorageVol(conn, pooldef->name, def->name, def->key,
                                      NULL, NULL)))
@@ -562,7 +562,7 @@ int
 virStoragePoolObjNumOfStoragePools(virStoragePoolObjListPtr pools,
                                    virConnectPtr conn,
                                    bool wantActive,
-                                   virStoragePoolObjListACLFilter aclfilter)
+                                   virStoragePoolObjListACLFilter filter)
 {
     int npools = 0;
     size_t i;
@@ -570,7 +570,7 @@ virStoragePoolObjNumOfStoragePools(virStoragePoolObjListPtr pools,
     for (i = 0; i < pools->count; i++) {
         virStoragePoolObjPtr obj = pools->objs[i];
         virStoragePoolObjLock(obj);
-        if (!aclfilter || aclfilter(conn, obj->def)) {
+        if (!filter || filter(conn, obj->def)) {
             if (wantActive == virStoragePoolObjIsActive(obj))
                 npools++;
         }
@@ -585,7 +585,7 @@ int
 virStoragePoolObjGetNames(virStoragePoolObjListPtr pools,
                           virConnectPtr conn,
                           bool wantActive,
-                          virStoragePoolObjListACLFilter aclfilter,
+                          virStoragePoolObjListACLFilter filter,
                           char **const names,
                           int maxnames)
 {
@@ -595,7 +595,7 @@ virStoragePoolObjGetNames(virStoragePoolObjListPtr pools,
     for (i = 0; i < pools->count && nnames < maxnames; i++) {
         virStoragePoolObjPtr obj = pools->objs[i];
         virStoragePoolObjLock(obj);
-        if (!aclfilter || aclfilter(conn, obj->def)) {
+        if (!filter || filter(conn, obj->def)) {
             if (wantActive == virStoragePoolObjIsActive(obj)) {
                 if (VIR_STRDUP(names[nnames], obj->def->name) < 0) {
                     virStoragePoolObjUnlock(obj);
