@@ -1946,7 +1946,7 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
     if (!qemuMigrationIsAllowed(driver, vm, true, flags))
         goto cleanup;
 
-    if (!(flags & VIR_MIGRATE_UNSAFE) &&
+    if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
         !qemuMigrationIsSafe(vm->def, nmigrate_disks, migrate_disks, flags))
         goto cleanup;
 
@@ -4809,7 +4809,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
     if (!qemuMigrationIsAllowed(driver, vm, true, flags))
         goto endjob;
 
-    if (!(flags & VIR_MIGRATE_UNSAFE) &&
+    if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
         !qemuMigrationIsSafe(vm->def, nmigrate_disks, migrate_disks, flags))
         goto endjob;
 
