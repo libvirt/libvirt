@@ -10719,6 +10719,47 @@ cmdMigrateSetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+
+/*
+ * "migrate-getmaxdowntime" command
+ */
+static const vshCmdInfo info_migrate_getmaxdowntime[] = {
+    {.name = "help",
+     .data = N_("get maximum tolerable downtime")
+    },
+    {.name = "desc",
+     .data = N_("Get maximum tolerable downtime of a domain which is being live-migrated to another host.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_migrate_getmaxdowntime[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    {.name = NULL}
+};
+
+static bool
+cmdMigrateGetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    unsigned long long downtime;
+    bool ret = false;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (virDomainMigrateGetMaxDowntime(dom, &downtime, 0) < 0)
+        goto done;
+
+    vshPrint(ctl, "%llu\n", downtime);
+    ret = true;
+
+ done:
+    virshDomainFree(dom);
+    return ret;
+}
+
+
 /*
  * "migrate-compcache" command
  */
@@ -13873,6 +13914,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdMigrateSetMaxDowntime,
      .opts = opts_migrate_setmaxdowntime,
      .info = info_migrate_setmaxdowntime,
+     .flags = 0
+    },
+    {.name = "migrate-getmaxdowntime",
+     .handler = cmdMigrateGetMaxDowntime,
+     .opts = opts_migrate_getmaxdowntime,
+     .info = info_migrate_getmaxdowntime,
      .flags = 0
     },
     {.name = "migrate-compcache",

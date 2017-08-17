@@ -1857,6 +1857,12 @@ Set maximum tolerable downtime for a domain which is being live-migrated to
 another host.  The I<downtime> is a number of milliseconds the guest is allowed
 to be down at the end of live migration.
 
+=item B<migrate-getmaxdowntime> I<domain>
+
+Get the maximum tolerable downtime for a domain which is being live-migrated to
+another host.  This is the number of milliseconds the guest is allowed
+to be down at the end of live migration.
+
 =item B<migrate-compcache> I<domain> [I<--size> B<bytes>]
 
 Sets and/or gets size of the cache (in bytes) used for compressing repeatedly
