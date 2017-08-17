@@ -627,6 +627,9 @@ struct _qemuMonitorMigrationParams {
      * whereas, some string value indicates we can support setting/clearing */
     char *migrateTLSAlias;
     char *migrateTLSHostname;
+
+    bool downtimeLimit_set;
+    unsigned long long downtimeLimit;
 };
 
 int qemuMonitorGetMigrationParams(qemuMonitorPtr mon,

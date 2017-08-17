@@ -2705,6 +2705,10 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
 
 #undef PARSE
 
+    if (virJSONValueObjectGetNumberUlong(result, "downtime-limit",
+                                         &params->downtimeLimit) == 0)
+        params->downtimeLimit_set = true;
+
     if ((tlsStr = virJSONValueObjectGetString(result, "tls-creds"))) {
         if (VIR_STRDUP(params->migrateTLSAlias, tlsStr) < 0)
             goto cleanup;

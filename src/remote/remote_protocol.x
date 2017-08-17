@@ -2326,6 +2326,15 @@ struct remote_domain_abort_job_args {
 };
 
 
+struct remote_domain_migrate_get_max_downtime_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_migrate_get_max_downtime_ret {
+     unsigned hyper downtime; /* insert@1 */
+};
+
 struct remote_domain_migrate_set_max_downtime_args {
     remote_nonnull_domain dom;
     unsigned hyper downtime;
@@ -6064,7 +6073,12 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_SET_BLOCK_THRESHOLD = 386
+    REMOTE_PROC_DOMAIN_SET_BLOCK_THRESHOLD = 386,
 
+    /**
+     * @generate: both
+     * @acl: domain:migrate
+     */
+    REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_DOWNTIME = 387
 
 };
