@@ -1039,6 +1039,10 @@ int virDomainMigrateToURI3(virDomainPtr domain,
                            unsigned int nparams,
                            unsigned int flags);
 
+int virDomainMigrateGetMaxDowntime(virDomainPtr domain,
+                                   unsigned long long *downtime,
+                                   unsigned int flags);
+
 int virDomainMigrateSetMaxDowntime (virDomainPtr domain,
                                     unsigned long long downtime,
                                     unsigned int flags);

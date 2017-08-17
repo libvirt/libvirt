@@ -8777,6 +8777,47 @@ virDomainMigrateSetMaxDowntime(virDomainPtr domain,
 
 
 /**
+ * virDomainMigrateGetMaxDowntime:
+ * @domain: a domain object
+ * @downtime: return value of the maximum tolerable downtime for live
+ *            migration, in milliseconds
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Gets current maximum tolerable time for which the domain may be paused
+ * at the end of live migration.
+ *
+ * Returns 0 in case of success, -1 otherwise.
+ */
+int
+virDomainMigrateGetMaxDowntime(virDomainPtr domain,
+                               unsigned long long *downtime,
+                               unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "downtime = %p, flags=%x", downtime, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    virCheckNonNullArgGoto(downtime, error);
+
+    if (conn->driver->domainMigrateGetMaxDowntime) {
+        if (conn->driver->domainMigrateGetMaxDowntime(domain, downtime, flags) < 0)
+            goto error;
+        return 0;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
  * virDomainMigrateGetCompressionCache:
  * @domain: a domain object
  * @cacheSize: return value of current size of the cache (in bytes)

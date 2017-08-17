@@ -697,6 +697,11 @@ typedef int
 (*virDrvDomainAbortJob)(virDomainPtr domain);
 
 typedef int
+(*virDrvDomainMigrateGetMaxDowntime)(virDomainPtr domain,
+                                     unsigned long long *downtime,
+                                     unsigned int flags);
+
+typedef int
 (*virDrvDomainMigrateSetMaxDowntime)(virDomainPtr domain,
                                      unsigned long long downtime,
                                      unsigned int flags);
@@ -1412,6 +1417,7 @@ struct _virHypervisorDriver {
     virDrvDomainGetJobInfo domainGetJobInfo;
     virDrvDomainGetJobStats domainGetJobStats;
     virDrvDomainAbortJob domainAbortJob;
+    virDrvDomainMigrateGetMaxDowntime domainMigrateGetMaxDowntime;
     virDrvDomainMigrateSetMaxDowntime domainMigrateSetMaxDowntime;
     virDrvDomainMigrateGetCompressionCache domainMigrateGetCompressionCache;
     virDrvDomainMigrateSetCompressionCache domainMigrateSetCompressionCache;

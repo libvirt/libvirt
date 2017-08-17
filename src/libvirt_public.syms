@@ -768,4 +768,8 @@ LIBVIRT_3.4.0 {
         virStreamSparseSendAll;
 } LIBVIRT_3.1.0;
 
+LIBVIRT_3.7.0 {
+    global:
+        virDomainMigrateGetMaxDowntime;
+} LIBVIRT_3.4.0;
 # .... define new API here using predicted next version number ....
