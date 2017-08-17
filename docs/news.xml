@@ -35,6 +35,16 @@
 <libvirt>
   <release version="v3.7.0" date="unreleased">
     <section title="New features">
+       <change>
+         <summary>
+          qemu: Add migrate-getmaxdowntime command
+        </summary>
+        <description>
+          Currently, the maximum tolerable downtime for a domain being migrated
+          is write-only from libvirt, via migrate-setmaxdowntime. This
+          implements a complementary migrate-getmaxdowntime command
+        </description>
+      </change>
       <change>
         <summary>
           bhyve: Support autoport for VNC ports
