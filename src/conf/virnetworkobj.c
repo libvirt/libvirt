@@ -1172,7 +1172,7 @@ virNetworkObjBridgeInUseHelper(const void *payload,
 }
 
 
-int
+bool
 virNetworkObjBridgeInUse(virNetworkObjListPtr nets,
                          const char *bridge,
                          const char *skipname)

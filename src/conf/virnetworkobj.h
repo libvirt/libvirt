@@ -174,7 +174,7 @@ virNetworkObjDeleteConfig(const char *configDir,
                           const char *autostartDir,
                           virNetworkObjPtr net);
 
-int
+bool
 virNetworkObjBridgeInUse(virNetworkObjListPtr nets,
                          const char *bridge,
                          const char *skipname);
