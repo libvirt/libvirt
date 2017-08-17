@@ -5083,10 +5083,10 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
         /* Only validate the target index if it's been set */
         if (opts->targetIndex != -1) {
 
-            if (opts->targetIndex < 0 || opts->targetIndex > 31) {
+            if (opts->targetIndex < 0 || opts->targetIndex > 30) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("PCI controller target index '%d' out of "
-                                 "range - must be 0-31"),
+                                 "range - must be 0-30"),
                                opts->targetIndex);
                 return -1;
             }
