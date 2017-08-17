@@ -1764,13 +1764,15 @@ mymain(void)
     DO_TEST("pseries-phb-default-missing",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
-    DO_TEST_PARSE_ERROR("pseries-phb-wrong-target-index", NONE);
     DO_TEST("pseries-phb-numa-node",
             QEMU_CAPS_NUMA,
             QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE);
     DO_TEST_PARSE_ERROR("pseries-default-phb-numa-node", NONE);
+    DO_TEST_PARSE_ERROR("pseries-phb-invalid-target-index-1", NONE);
+    DO_TEST_PARSE_ERROR("pseries-phb-invalid-target-index-2", NONE);
+    DO_TEST_PARSE_ERROR("pseries-phb-invalid-target-index-3", NONE);
 
     DO_TEST("pseries-many-devices",
             QEMU_CAPS_NODEFCONFIG,

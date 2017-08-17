@@ -12,10 +12,6 @@
     <controller type='pci' index='0' model='pci-root'>
       <target index='1'/>
     </controller>
-    <!-- Other PHBs can't have target index 0 -->
-    <controller type='pci' index='1' model='pci-root'>
-      <target index='0'/>
-    </controller>
     <controller type='usb' model='none'/>
     <memballoon model='none'/>
   </devices>
