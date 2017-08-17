@@ -35,6 +35,7 @@
 #include "virfile.h"
 #include "virt-host-validate-common.h"
 #include "virstring.h"
+#include "virarch.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -442,8 +443,7 @@ int virHostValidateIOMMU(const char *hvname,
     virBitmapPtr flags;
     struct stat sb;
     const char *bootarg = NULL;
-    bool isAMD = false, isIntel = false;
-
+    bool isAMD = false, isIntel = false, isPPC = false;
     flags = virHostValidateGetCPUFlags();
 
     if (flags && virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX))
@@ -453,9 +453,10 @@ int virHostValidateIOMMU(const char *hvname,
 
     virBitmapFree(flags);
 
-    virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
+    isPPC = ARCH_IS_PPC64(virArchFromHost());
 
     if (isIntel) {
+        virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
         if (access("/sys/firmware/acpi/tables/DMAR", F_OK) == 0) {
             virHostMsgPass();
             bootarg = "intel_iommu=on";
@@ -467,6 +468,7 @@ int virHostValidateIOMMU(const char *hvname,
             return -1;
         }
     } else if (isAMD) {
+        virHostMsgCheck(hvname, "%s", _("for device assignment IOMMU support"));
         if (access("/sys/firmware/acpi/tables/IVRS", F_OK) == 0) {
             virHostMsgPass();
             bootarg = "iommu=pt iommu=1";
@@ -477,6 +479,8 @@ int virHostValidateIOMMU(const char *hvname,
                            "hardware platform");
             return -1;
         }
+    } else if (isPPC) {
+        /* Empty Block */
     } else {
         virHostMsgFail(level,
                        "Unknown if this platform has IOMMU support");
@@ -493,9 +497,12 @@ int virHostValidateIOMMU(const char *hvname,
 
     virHostMsgCheck(hvname, "%s", _("if IOMMU is enabled by kernel"));
     if (sb.st_nlink <= 2) {
-        virHostMsgFail(level,
-                       "IOMMU appears to be disabled in kernel. "
-                       "Add %s to kernel cmdline arguments", bootarg);
+        if (!isPPC)
+            virHostMsgFail(level,
+                           "IOMMU appears to be disabled in kernel. "
+                           "Add %s to kernel cmdline arguments", bootarg);
+        else
+            virHostMsgFail(level, "IOMMU capability not compiled into kernel.");
         return -1;
     }
     virHostMsgPass();
