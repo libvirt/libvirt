@@ -1029,11 +1029,11 @@ get_files(vahControl * ctl)
             goto cleanup;
 
     if (ctl->def->os.loader && ctl->def->os.loader->path)
-        if (vah_add_file(&buf, ctl->def->os.loader->path, "r") != 0)
+        if (vah_add_file(&buf, ctl->def->os.loader->path, "rk") != 0)
             goto cleanup;
 
     if (ctl->def->os.loader && ctl->def->os.loader->nvram)
-        if (vah_add_file(&buf, ctl->def->os.loader->nvram, "rw") != 0)
+        if (vah_add_file(&buf, ctl->def->os.loader->nvram, "rwk") != 0)
             goto cleanup;
 
     for (i = 0; i < ctl->def->ngraphics; i++) {
