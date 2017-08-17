@@ -13,10 +13,12 @@
     <p>
       The reason for this apparent limitation is the fact that each
       hotplugged PCI device might require additional PCI controllers to
-      be added to the guest, and libvirt has no way of knowing in advance
-      how many devices will be hotplugged during the guest's lifetime,
-      thus making it impossible to automatically provide the right amount
-      of PCI controllers: any arbitrary number would end up being too big
+      be added to the guest. Since most PCI controllers can't be
+      hotplugged, they need to be added before the guest is started;
+      however, libvirt has no way of knowing in advance how many devices
+      will be hotplugged during the guest's lifetime, thus making it
+      impossible to automatically provide the right amount of PCI
+      controllers: any arbitrary number would end up being too big
       for some users, and too small for others.
     </p>
     <p>
@@ -53,6 +55,14 @@
       emulated or assigned from the host.
     </p>
     <p>
+      If you have a very specific use case, such as the appliances
+      used by <a href="http://libguestfs.org/">libguestfs</a> behind
+      the scenes to access disk images, and this automatically-added
+      <code>pcie-root-port</code> controller ends up being a nuisance,
+      you can prevent libvirt from adding it by manually managing PCI
+      controllers and addresses according to your needs.
+    </p>
+    <p>
       Slots on the <code>pcie-root</code> controller do not support
       hotplug, so the device will be hotplugged into the
       <code>pcie-root-port</code> controller. If you plan to hotplug
@@ -73,6 +83,12 @@
       remaining details automatically.
     </p>
     <p>
+      Note that if you're adding PCI controllers to a guest and at
+      the same time you're also adding PCI devices, some of the
+      controllers will be used for the newly-added devices and won't
+      be available for hotplug once the guest has been started.
+    </p>
+    <p>
       If you expect to hotplug legacy PCI devices, then you will need
       specialized controllers, since all those mentioned above are
       intended for PCI Express devices only: add
@@ -84,7 +100,8 @@
 
     <p>
       and you'll be able to hotplug up to 31 legacy PCI devices,
-      either emulated or assigned from the host.
+      either emulated or assigned from the host, in the slots
+      from 0x01 to 0x1f of the <code>pci-bridge</code> controller.
     </p>
 
     <h3><a name="x86_64-i440fx">i440fx (pc) machine type</a></h3>
@@ -98,9 +115,10 @@
 &lt;controller type='pci' index='0' model='pci-root'/&gt;</pre>
 
     <p>
-      where each of the 31 slots on the <code>pci-root</code>
-      controller is hotplug capable and can accept a legacy PCI
-      device, either emulated or assigned from the guest.
+      where each of the 31 slots (from 0x01 to 0x1f) on the
+      <code>pci-root</code> controller is hotplug capable and
+      can accept a legacy PCI device, either emulated or
+      assigned from the guest.
     </p>
 
     <h2><a name="ppc64">ppc64 architecture</a></h2>
@@ -119,12 +137,12 @@
 &lt;/controller&gt;</pre>
 
     <p>
-      The 31 slots on a <code>pci-root</code> controller are all
-      hotplug capable and, despite the name suggesting otherwise,
-      starting with QEMU 2.9 all of them can accept PCI Express
-      devices in addition to legacy PCI devices; however,
-      libvirt will only place emulated devices on the default
-      <code>pci-root</code> controller.
+      The 31 slots, from 0x01 to 0x1f, on a <code>pci-root</code>
+      controller are all hotplug capable and, despite the name
+      suggesting otherwise, starting with QEMU 2.9 all of them
+      can accept PCI Express devices in addition to legacy PCI
+      devices; however, libvirt will only place emulated devices
+      on the default <code>pci-root</code> controller.
     </p>
     <p>
       In order to take advantage of improved error reporting and
