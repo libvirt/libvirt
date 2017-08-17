@@ -105,6 +105,12 @@ mymain(void)
     DO_TEST("cpu-cache-passthrough");
     DO_TEST("cpu-cache-disable");
 
+    DO_TEST_DIFFERENT("chardev-tcp");
+    DO_TEST_FULL("chardev-tcp-missing-host", 0, false,
+                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FULL("chardev-tcp-missing-service", 0, false,
+                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
 
