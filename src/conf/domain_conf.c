@@ -11129,12 +11129,14 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_PTY:
+                /* PTY path is only parsed from live xml.  */
+                if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
+                    def->data.file.path = virXMLPropString(cur, "path");
+                break;
+
             case VIR_DOMAIN_CHR_TYPE_DEV:
             case VIR_DOMAIN_CHR_TYPE_PIPE:
-                /* PTY path is only parsed from live xml.  */
-                if (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
-                    !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-                    def->data.file.path = virXMLPropString(cur, "path");
+                def->data.file.path = virXMLPropString(cur, "path");
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -11209,6 +11211,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
     switch ((virDomainChrType) def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
@@ -11216,11 +11219,9 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-    case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (!def->data.file.path &&
-            def->type != VIR_DOMAIN_CHR_TYPE_PTY) {
+        if (!def->data.file.path) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing source path attribute for char device"));
             goto error;
