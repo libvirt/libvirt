@@ -11075,10 +11075,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                               int nvmSeclabels)
 {
     int ret = -1;
-    char *path = NULL;
-    char *channel = NULL;
-    char *master = NULL;
-    char *slave = NULL;
     char *append = NULL;
     bool logParsed = false;
     bool protocolParsed = false;
@@ -11113,10 +11109,9 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 if (!append && def->type == VIR_DOMAIN_CHR_TYPE_FILE)
                     append = virXMLPropString(cur, "append");
                 /* PTY path is only parsed from live xml.  */
-                if (!path  &&
-                    (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
-                     !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)))
-                    path = virXMLPropString(cur, "path");
+                if (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
+                    !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
+                    def->data.file.path = virXMLPropString(cur, "path");
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -11135,15 +11130,12 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-                if (!channel)
-                    channel = virXMLPropString(cur, "channel");
+                def->data.spiceport.channel = virXMLPropString(cur, "channel");
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_NMDM:
-                if (!master)
-                    master = virXMLPropString(cur, "master");
-                if (!slave)
-                    slave = virXMLPropString(cur, "slave");
+                def->data.nmdm.master = virXMLPropString(cur, "master");
+                def->data.nmdm.slave = virXMLPropString(cur, "slave");
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_LAST:
@@ -11210,34 +11202,26 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                            _("Invalid append attribute value '%s'"), append);
             goto error;
         }
-        if (!path &&
+        if (!def->data.file.path &&
             def->type != VIR_DOMAIN_CHR_TYPE_PTY) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing source path attribute for char device"));
             goto error;
         }
-
-        def->data.file.path = path;
-        path = NULL;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NMDM:
-        if (!master) {
+        if (!def->data.nmdm.master) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing master path attribute for nmdm device"));
             goto error;
         }
 
-        if (!slave) {
+        if (!def->data.nmdm.slave) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing slave path attribute for nmdm device"));
             goto error;
         }
-
-        def->data.nmdm.master = master;
-        def->data.nmdm.slave = slave;
-        master = NULL;
-        slave = NULL;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
@@ -11275,25 +11259,22 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-        if (!channel) {
+        if (!def->data.spiceport.channel) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing source channel attribute for char device"));
             goto error;
         }
-        if (strspn(channel, SERIAL_CHANNEL_NAME_CHARS) < strlen(channel)) {
+        if (strspn(def->data.spiceport.channel,
+                   SERIAL_CHANNEL_NAME_CHARS) < strlen(def->data.spiceport.channel)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("Invalid character in source channel for char device"));
             goto error;
         }
-        def->data.spiceport.channel = channel;
-        channel = NULL;
         break;
     }
 
     ret = 0;
  cleanup:
-    VIR_FREE(path);
-    VIR_FREE(channel);
     VIR_FREE(append);
 
     return ret;
