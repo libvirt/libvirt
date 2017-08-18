@@ -218,7 +218,13 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
 {
     bool connected = false;
     virshControlPtr priv = ctl->privData;
-    bool ro = name ? readonly : priv->readonly;
+
+    /* If the flag was not specified, then it depends on whether we are
+     * reconnecting to the current URI (in which case we want to keep the
+     * readonly flag as it was) or to a specified URI in which case it
+     * should stay false */
+    if (!readonly && !name)
+        readonly = priv->readonly;
 
     if (priv->conn) {
         int ret;
@@ -233,7 +239,7 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
                                   "disconnect from the hypervisor"));
     }
 
-    priv->conn = virshConnect(ctl, name ? name : ctl->connname, ro);
+    priv->conn = virshConnect(ctl, name ? name : ctl->connname, readonly);
 
     if (!priv->conn) {
         if (disconnected)
