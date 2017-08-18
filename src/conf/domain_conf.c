@@ -10928,6 +10928,52 @@ virDomainChrSourceDefParseMode(xmlNodePtr source)
 
 
 static int
+virDomainChrSourceDefParseTCP(virDomainChrSourceDefPtr def,
+                              xmlNodePtr source,
+                              unsigned int flags)
+{
+    int mode;
+    char *tmp = NULL;
+    int tmpVal;
+
+    if ((mode = virDomainChrSourceDefParseMode(source)) < 0)
+        goto error;
+
+    def->data.tcp.listen = mode == VIR_DOMAIN_CHR_SOURCE_MODE_BIND;
+    def->data.tcp.host = virXMLPropString(source, "host");
+    def->data.tcp.service = virXMLPropString(source, "service");
+
+    if ((tmp = virXMLPropString(source, "tls"))) {
+        if ((def->data.tcp.haveTLS = virTristateBoolTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown chardev 'tls' setting '%s'"),
+                           tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
+
+    if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
+        (tmp = virXMLPropString(source, "tlsFromConfig"))) {
+        if (virStrToLong_i(tmp, NULL, 10, &tmpVal) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid tlsFromConfig value: %s"),
+                           tmp);
+            goto error;
+        }
+        def->data.tcp.tlsFromConfig = !!tmpVal;
+        VIR_FREE(tmp);
+    }
+
+    return 0;
+
+ error:
+    VIR_FREE(tmp);
+    return -1;
+}
+
+
+static int
 virDomainChrSourceDefParseProtocol(virDomainChrSourceDefPtr def,
                                    xmlNodePtr protocol)
 {
@@ -10999,8 +11045,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     char *master = NULL;
     char *slave = NULL;
     char *append = NULL;
-    char *haveTLS = NULL;
-    char *tlsFromConfig = NULL;
     bool logParsed = false;
     bool protocolParsed = false;
     int sourceParsed = 0;
@@ -11026,11 +11070,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
             }
             sourceParsed++;
 
-            if (!haveTLS)
-                haveTLS = virXMLPropString(cur, "tls");
-            if (!tlsFromConfig)
-                tlsFromConfig = virXMLPropString(cur, "tlsFromConfig");
-
             switch ((virDomainChrType) def->type) {
             case VIR_DOMAIN_CHR_TYPE_FILE:
             case VIR_DOMAIN_CHR_TYPE_PTY:
@@ -11052,7 +11091,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_UDP:
-            case VIR_DOMAIN_CHR_TYPE_TCP:
                 if ((mode = virDomainChrSourceDefParseMode(cur)) < 0)
                     goto error;
                 if (mode == VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT) {
@@ -11066,7 +11104,11 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                     if (!bindService)
                         bindService = virXMLPropString(cur, "service");
                 }
+                break;
 
+            case VIR_DOMAIN_CHR_TYPE_TCP:
+                if (virDomainChrSourceDefParseTCP(def, cur, flags) < 0)
+                    goto error;
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
@@ -11176,63 +11218,16 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        if (mode == VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT) {
-            if (!connectHost) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Missing source host attribute for char device"));
-                goto error;
-            }
-
-            if (!connectService) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Missing source service attribute for char device"));
-                goto error;
-            }
-
-            def->data.tcp.host = connectHost;
-            connectHost = NULL;
-            def->data.tcp.service = connectService;
-            connectService = NULL;
-            def->data.tcp.listen = false;
-        } else if (mode == VIR_DOMAIN_CHR_SOURCE_MODE_BIND) {
-            if (!bindHost) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Missing source host attribute for char device"));
-                goto error;
-            }
-
-            if (!bindService) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Missing source service attribute for char device"));
-                goto error;
-            }
-
-            def->data.tcp.host = bindHost;
-            bindHost = NULL;
-            def->data.tcp.service = bindService;
-            bindService = NULL;
-            def->data.tcp.listen = true;
-        }
-
-        if (haveTLS &&
-            (def->data.tcp.haveTLS =
-             virTristateBoolTypeFromString(haveTLS)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown chardev 'tls' setting '%s'"),
-                           haveTLS);
+        if (!def->data.tcp.host) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source host attribute for char device"));
             goto error;
         }
 
-        if (tlsFromConfig &&
-            flags & VIR_DOMAIN_DEF_PARSE_STATUS) {
-            int tmp;
-            if (virStrToLong_i(tlsFromConfig, NULL, 10, &tmp) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid tlsFromConfig value: %s"),
-                               tlsFromConfig);
-                goto error;
-            }
-            def->data.tcp.tlsFromConfig = !!tmp;
+        if (!def->data.tcp.service) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source service attribute for char device"));
+            goto error;
         }
         break;
 
@@ -11296,8 +11291,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     VIR_FREE(path);
     VIR_FREE(channel);
     VIR_FREE(append);
-    VIR_FREE(haveTLS);
-    VIR_FREE(tlsFromConfig);
 
     return ret;
 
