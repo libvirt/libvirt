@@ -10917,6 +10917,28 @@ virDomainChrSourceDefParseProtocol(virDomainChrSourceDefPtr def,
 }
 
 
+static int
+virDomainChrSourceDefParseLog(virDomainChrSourceDefPtr def,
+                              xmlNodePtr log)
+{
+    char *append = NULL;
+
+    def->logfile = virXMLPropString(log, "file");
+
+    if ((append = virXMLPropString(log, "append")) &&
+        (def->logappend = virTristateSwitchTypeFromString(append)) <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid append attribute value '%s'"),
+                       append);
+        VIR_FREE(append);
+        return -1;
+    }
+
+    VIR_FREE(append);
+    return 0;
+}
+
+
 #define SERIAL_CHANNEL_NAME_CHARS \
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
 
@@ -10939,8 +10961,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     char *connectHost = NULL;
     char *connectService = NULL;
     char *path = NULL;
-    char *logfile = NULL;
-    char *logappend = NULL;
     char *mode = NULL;
     char *channel = NULL;
     char *master = NULL;
@@ -11061,8 +11081,8 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 goto error;
             }
             logParsed = true;
-            logfile = virXMLPropString(cur, "file");
-            logappend = virXMLPropString(cur, "append");
+            if (virDomainChrSourceDefParseLog(def, cur) < 0)
+                goto error;
         } else if (virXMLNodeNameEqual(cur, "protocol")) {
             if (protocolParsed) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -11236,16 +11256,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         break;
     }
 
-    def->logfile = logfile;
-    logfile = NULL;
-
-    if (logappend != NULL &&
-        (def->logappend = virTristateSwitchTypeFromString(logappend)) <= 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid append attribute value '%s'"), logappend);
-        goto error;
-    }
-
     ret = 0;
  cleanup:
     VIR_FREE(mode);
@@ -11256,8 +11266,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     VIR_FREE(path);
     VIR_FREE(channel);
     VIR_FREE(append);
-    VIR_FREE(logappend);
-    VIR_FREE(logfile);
     VIR_FREE(haveTLS);
     VIR_FREE(tlsFromConfig);
 
