@@ -16135,7 +16135,7 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
     int n;
     char *tmp = NULL;
     int ret = -1;
-    unsigned long deviceBoot, serialPorts;
+    unsigned long deviceBoot;
 
     if (virXPathULong("count(./devices/disk[boot]"
                       "|./devices/interface[boot]"
@@ -16212,18 +16212,10 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
     if ((node = virXPathNode("./os/bios[1]", ctxt))) {
         tmp = virXMLPropString(node, "useserial");
         if (tmp) {
-            if (STREQ(tmp, "yes")) {
-                if (virXPathULong("count(./devices/serial)",
-                                  ctxt, &serialPorts) < 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("need at least one serial port "
-                                     "for useserial"));
-                    goto cleanup;
-                }
+            if (STREQ(tmp, "yes"))
                 def->os.bios.useserial = VIR_TRISTATE_BOOL_YES;
-            } else {
+            else
                 def->os.bios.useserial = VIR_TRISTATE_BOOL_NO;
-            }
             VIR_FREE(tmp);
         }
 
