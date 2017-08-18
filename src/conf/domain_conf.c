@@ -10926,100 +10926,100 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     char *haveTLS = NULL;
     char *tlsFromConfig = NULL;
 
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (virXMLNodeNameEqual(cur, "source")) {
-                if (!mode)
-                    mode = virXMLPropString(cur, "mode");
-                if (!haveTLS)
-                    haveTLS = virXMLPropString(cur, "tls");
-                if (!tlsFromConfig)
-                    tlsFromConfig = virXMLPropString(cur, "tlsFromConfig");
+    for (; cur; cur = cur->next) {
+        if (cur->type != XML_ELEMENT_NODE)
+            continue;
 
-                switch ((virDomainChrType) def->type) {
-                case VIR_DOMAIN_CHR_TYPE_FILE:
-                case VIR_DOMAIN_CHR_TYPE_PTY:
-                case VIR_DOMAIN_CHR_TYPE_DEV:
-                case VIR_DOMAIN_CHR_TYPE_PIPE:
-                case VIR_DOMAIN_CHR_TYPE_UNIX:
-                    if (!append && def->type == VIR_DOMAIN_CHR_TYPE_FILE)
-                        append = virXMLPropString(cur, "append");
-                    /* PTY path is only parsed from live xml.  */
-                    if (!path  &&
-                        (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
-                         !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)))
-                        path = virXMLPropString(cur, "path");
+        if (virXMLNodeNameEqual(cur, "source")) {
+            if (!mode)
+                mode = virXMLPropString(cur, "mode");
+            if (!haveTLS)
+                haveTLS = virXMLPropString(cur, "tls");
+            if (!tlsFromConfig)
+                tlsFromConfig = virXMLPropString(cur, "tlsFromConfig");
 
-                    break;
+            switch ((virDomainChrType) def->type) {
+            case VIR_DOMAIN_CHR_TYPE_FILE:
+            case VIR_DOMAIN_CHR_TYPE_PTY:
+            case VIR_DOMAIN_CHR_TYPE_DEV:
+            case VIR_DOMAIN_CHR_TYPE_PIPE:
+            case VIR_DOMAIN_CHR_TYPE_UNIX:
+                if (!append && def->type == VIR_DOMAIN_CHR_TYPE_FILE)
+                    append = virXMLPropString(cur, "append");
+                /* PTY path is only parsed from live xml.  */
+                if (!path  &&
+                    (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
+                     !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                    path = virXMLPropString(cur, "path");
 
-                case VIR_DOMAIN_CHR_TYPE_UDP:
-                case VIR_DOMAIN_CHR_TYPE_TCP:
-                    if (!mode || STREQ(mode, "connect")) {
-                        if (!connectHost)
-                            connectHost = virXMLPropString(cur, "host");
-                        if (!connectService)
-                            connectService = virXMLPropString(cur, "service");
-                    } else if (STREQ(mode, "bind")) {
-                        if (!bindHost)
-                            bindHost = virXMLPropString(cur, "host");
-                        if (!bindService)
-                            bindService = virXMLPropString(cur, "service");
-                    } else {
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("Unknown source mode '%s'"), mode);
-                        goto error;
-                    }
+                break;
 
-                    if (def->type == VIR_DOMAIN_CHR_TYPE_UDP)
-                        VIR_FREE(mode);
-                    break;
-
-                case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-                    if (!channel)
-                        channel = virXMLPropString(cur, "channel");
-                    break;
-
-                case VIR_DOMAIN_CHR_TYPE_NMDM:
-                    if (!master)
-                        master = virXMLPropString(cur, "master");
-                    if (!slave)
-                        slave = virXMLPropString(cur, "slave");
-                    break;
-
-                case VIR_DOMAIN_CHR_TYPE_LAST:
-                case VIR_DOMAIN_CHR_TYPE_NULL:
-                case VIR_DOMAIN_CHR_TYPE_VC:
-                case VIR_DOMAIN_CHR_TYPE_STDIO:
-                case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
-                    break;
+            case VIR_DOMAIN_CHR_TYPE_UDP:
+            case VIR_DOMAIN_CHR_TYPE_TCP:
+                if (!mode || STREQ(mode, "connect")) {
+                    if (!connectHost)
+                        connectHost = virXMLPropString(cur, "host");
+                    if (!connectService)
+                        connectService = virXMLPropString(cur, "service");
+                } else if (STREQ(mode, "bind")) {
+                    if (!bindHost)
+                        bindHost = virXMLPropString(cur, "host");
+                    if (!bindService)
+                        bindService = virXMLPropString(cur, "service");
+                } else {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Unknown source mode '%s'"), mode);
+                    goto error;
                 }
 
-                /* Check for an optional seclabel override in <source/>. */
-                if (chr_def) {
-                    xmlNodePtr saved_node = ctxt->node;
-                    ctxt->node = cur;
-                    if (virSecurityDeviceLabelDefParseXML(&def->seclabels,
-                                                          &def->nseclabels,
-                                                          vmSeclabels,
-                                                          nvmSeclabels,
-                                                          ctxt,
-                                                          flags) < 0) {
-                        ctxt->node = saved_node;
-                        goto error;
-                    }
-                    ctxt->node = saved_node;
-                }
-            } else if (virXMLNodeNameEqual(cur, "log")) {
-                if (!logfile)
-                    logfile = virXMLPropString(cur, "file");
-                if (!logappend)
-                    logappend = virXMLPropString(cur, "append");
-            } else if (virXMLNodeNameEqual(cur, "protocol")) {
-                if (!protocol)
-                    protocol = virXMLPropString(cur, "type");
+                if (def->type == VIR_DOMAIN_CHR_TYPE_UDP)
+                    VIR_FREE(mode);
+                break;
+
+            case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+                if (!channel)
+                    channel = virXMLPropString(cur, "channel");
+                break;
+
+            case VIR_DOMAIN_CHR_TYPE_NMDM:
+                if (!master)
+                    master = virXMLPropString(cur, "master");
+                if (!slave)
+                    slave = virXMLPropString(cur, "slave");
+                break;
+
+            case VIR_DOMAIN_CHR_TYPE_LAST:
+            case VIR_DOMAIN_CHR_TYPE_NULL:
+            case VIR_DOMAIN_CHR_TYPE_VC:
+            case VIR_DOMAIN_CHR_TYPE_STDIO:
+            case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+                break;
             }
+
+            /* Check for an optional seclabel override in <source/>. */
+            if (chr_def) {
+                xmlNodePtr saved_node = ctxt->node;
+                ctxt->node = cur;
+                if (virSecurityDeviceLabelDefParseXML(&def->seclabels,
+                                                      &def->nseclabels,
+                                                      vmSeclabels,
+                                                      nvmSeclabels,
+                                                      ctxt,
+                                                      flags) < 0) {
+                    ctxt->node = saved_node;
+                    goto error;
+                }
+                ctxt->node = saved_node;
+            }
+        } else if (virXMLNodeNameEqual(cur, "log")) {
+            if (!logfile)
+                logfile = virXMLPropString(cur, "file");
+            if (!logappend)
+                logappend = virXMLPropString(cur, "append");
+        } else if (virXMLNodeNameEqual(cur, "protocol")) {
+            if (!protocol)
+                protocol = virXMLPropString(cur, "type");
         }
-        cur = cur->next;
     }
 
     switch ((virDomainChrType) def->type) {
