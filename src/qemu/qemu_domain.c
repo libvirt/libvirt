@@ -7981,6 +7981,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
     bool isLink = false;
     bool isDev = false;
     bool isReg = false;
+    bool isDir = false;
     bool create = false;
 #ifdef WITH_SELINUX
     char *tcon = NULL;
@@ -8005,6 +8006,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
     isLink = S_ISLNK(sb.st_mode);
     isDev = S_ISCHR(sb.st_mode) || S_ISBLK(sb.st_mode);
     isReg = S_ISREG(sb.st_mode) || S_ISFIFO(sb.st_mode) || S_ISSOCK(sb.st_mode);
+    isDir = S_ISDIR(sb.st_mode);
 
     /* Here, @device might be whatever path in the system. We
      * should create the path in the namespace iff it's "/dev"
@@ -8122,6 +8124,10 @@ qemuDomainCreateDeviceRecursive(const char *device,
             goto cleanup;
         /* Just create the file here so that code below sets
          * proper owner and mode. Bind mount only after that. */
+    } else if (isDir) {
+        if (create &&
+            virFileMakePathWithMode(devicePath, sb.st_mode) < 0)
+            goto cleanup;
     } else {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("unsupported device type %s 0%o"),
@@ -8183,7 +8189,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
 #endif
 
     /* Finish mount process started earlier. */
-    if (isReg &&
+    if ((isReg || isDir) &&
         virFileBindMountDevice(device, devicePath) < 0)
         goto cleanup;
 
@@ -8812,6 +8818,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
     bool isLink = S_ISLNK(data->sb.st_mode);
     bool isDev = S_ISCHR(data->sb.st_mode) || S_ISBLK(data->sb.st_mode);
     bool isReg = S_ISREG(data->sb.st_mode) || S_ISFIFO(data->sb.st_mode) || S_ISSOCK(data->sb.st_mode);
+    bool isDir = S_ISDIR(data->sb.st_mode);
 
     qemuSecurityPostFork(data->driver->securityManager);
 
@@ -8850,7 +8857,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
         } else {
             delDevice = true;
         }
-    } else if (isReg) {
+    } else if (isReg || isDir) {
         /* We are not cleaning up disks on virDomainDetachDevice
          * because disk might be still in use by different disk
          * as its backing chain. This might however clash here.
@@ -8862,7 +8869,8 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
                                  data->file);
             goto cleanup;
         }
-        if (virFileTouch(data->file, data->sb.st_mode) < 0)
+        if ((isReg && virFileTouch(data->file, data->sb.st_mode) < 0) ||
+            (isDir && virFileMakePathWithMode(data->file, data->sb.st_mode) < 0))
             goto cleanup;
         delDevice = true;
         /* Just create the file here so that code below sets
@@ -8914,14 +8922,18 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
 # endif
 
     /* Finish mount process started earlier. */
-    if (isReg &&
+    if ((isReg || isDir) &&
         virFileMoveMount(data->target, data->file) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
-    if (ret < 0 && delDevice)
-        unlink(data->file);
+    if (ret < 0 && delDevice) {
+        if (isDir)
+            virFileDeleteTree(data->file);
+        else
+            unlink(data->file);
+    }
 # ifdef WITH_SELINUX
     freecon(data->tcon);
 # endif
@@ -8944,6 +8956,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
     char *target = NULL;
     bool isLink;
     bool isReg;
+    bool isDir;
 
     if (!ttl) {
         virReportSystemError(ELOOP,
@@ -8966,8 +8979,9 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
 
     isLink = S_ISLNK(data.sb.st_mode);
     isReg = S_ISREG(data.sb.st_mode) || S_ISFIFO(data.sb.st_mode) || S_ISSOCK(data.sb.st_mode);
+    isDir = S_ISDIR(data.sb.st_mode);
 
-    if (isReg && STRPREFIX(file, DEVPREFIX)) {
+    if ((isReg || isDir) && STRPREFIX(file, DEVPREFIX)) {
         cfg = virQEMUDriverGetConfig(driver);
         if (!(target = qemuDomainGetPreservedMountPath(cfg, vm, file)))
             goto cleanup;
