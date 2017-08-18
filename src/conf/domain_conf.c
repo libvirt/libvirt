@@ -10925,12 +10925,29 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     char *append = NULL;
     char *haveTLS = NULL;
     char *tlsFromConfig = NULL;
+    int sourceParsed = 0;
 
     for (; cur; cur = cur->next) {
         if (cur->type != XML_ELEMENT_NODE)
             continue;
 
         if (virXMLNodeNameEqual(cur, "source")) {
+            /* Parse only the first source element since only one is used
+             * for chardev devices, the only exception is UDP type, where
+             * user can specify two source elements. */
+            if (sourceParsed >= 1 && def->type != VIR_DOMAIN_CHR_TYPE_UDP) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("only one source element is allowed for "
+                                 "character device"));
+                goto error;
+            } else if (sourceParsed >= 2) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("only two source elements are allowed for "
+                                 "character device"));
+                goto error;
+            }
+            sourceParsed++;
+
             if (!mode)
                 mode = virXMLPropString(cur, "mode");
             if (!haveTLS)

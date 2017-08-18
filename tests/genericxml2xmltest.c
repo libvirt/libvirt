@@ -110,8 +110,12 @@ mymain(void)
                  TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
     DO_TEST_FULL("chardev-tcp-missing-service", 0, false,
                  TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FULL("chardev-tcp-multiple-source", 0, false,
+                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
     DO_TEST_DIFFERENT("chardev-udp");
     DO_TEST_FULL("chardev-udp-missing-connect-service", 0, false,
+                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FULL("chardev-udp-multiple-source", 0, false,
                  TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
     DO_TEST_DIFFERENT("chardev-unix");
     DO_TEST_FULL("chardev-unix-smartcard-missing-path", 0, false,
