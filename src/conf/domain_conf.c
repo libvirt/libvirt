@@ -10997,6 +10997,23 @@ virDomainChrSourceDefParseUDP(virDomainChrSourceDefPtr def,
 
 
 static int
+virDomainChrSourceDefParseUnix(virDomainChrSourceDefPtr def,
+                               xmlNodePtr source)
+{
+
+    int mode;
+
+    if ((mode = virDomainChrSourceDefParseMode(source)) < 0)
+        return -1;
+
+    def->data.nix.listen = mode == VIR_DOMAIN_CHR_SOURCE_MODE_BIND;
+    def->data.nix.path = virXMLPropString(source, "path");
+
+    return 0;
+}
+
+
+static int
 virDomainChrSourceDefParseProtocol(virDomainChrSourceDefPtr def,
                                    xmlNodePtr protocol)
 {
@@ -11058,7 +11075,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                               int nvmSeclabels)
 {
     int ret = -1;
-    int mode = VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
     char *path = NULL;
     char *channel = NULL;
     char *master = NULL;
@@ -11094,7 +11110,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
             case VIR_DOMAIN_CHR_TYPE_PTY:
             case VIR_DOMAIN_CHR_TYPE_DEV:
             case VIR_DOMAIN_CHR_TYPE_PIPE:
-            case VIR_DOMAIN_CHR_TYPE_UNIX:
                 if (!append && def->type == VIR_DOMAIN_CHR_TYPE_FILE)
                     append = virXMLPropString(cur, "append");
                 /* PTY path is only parsed from live xml.  */
@@ -11102,11 +11117,11 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                     (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
                      !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)))
                     path = virXMLPropString(cur, "path");
-                if (def->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
-                    if ((mode = virDomainChrSourceDefParseMode(cur)) < 0)
-                        goto error;
-                }
+                break;
 
+            case VIR_DOMAIN_CHR_TYPE_UNIX:
+                if (virDomainChrSourceDefParseUnix(def, cur) < 0)
+                    goto error;
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_UDP:
@@ -11249,7 +11264,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         /* path can be auto generated */
-        if (!path &&
+        if (!def->data.nix.path &&
             (!chr_def ||
              (chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN &&
               chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO))) {
@@ -11257,11 +11272,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                            _("Missing source path attribute for char device"));
             goto error;
         }
-
-        def->data.nix.listen = mode == VIR_DOMAIN_CHR_SOURCE_MODE_BIND;
-
-        def->data.nix.path = path;
-        path = NULL;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
