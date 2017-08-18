@@ -10893,6 +10893,30 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
     return ret;
 }
 
+
+static int
+virDomainChrSourceDefParseProtocol(virDomainChrSourceDefPtr def,
+                                   xmlNodePtr protocol)
+{
+    char *prot = NULL;
+
+    if (def->type != VIR_DOMAIN_CHR_TYPE_TCP)
+        return 0;
+
+    if ((prot = virXMLPropString(protocol, "type")) &&
+        (def->data.tcp.protocol =
+         virDomainChrTcpProtocolTypeFromString(prot)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unknown protocol '%s'"), prot);
+        VIR_FREE(prot);
+        return -1;
+    }
+
+    VIR_FREE(prot);
+    return 0;
+}
+
+
 #define SERIAL_CHANNEL_NAME_CHARS \
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
 
@@ -10918,7 +10942,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     char *logfile = NULL;
     char *logappend = NULL;
     char *mode = NULL;
-    char *protocol = NULL;
     char *channel = NULL;
     char *master = NULL;
     char *slave = NULL;
@@ -11048,7 +11071,8 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 goto error;
             }
             protocolParsed = true;
-            protocol = virXMLPropString(cur, "type");
+            if (virDomainChrSourceDefParseProtocol(def, cur) < 0)
+                goto error;
         }
     }
 
@@ -11159,16 +11183,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
             }
             def->data.tcp.tlsFromConfig = !!tmp;
         }
-
-        if (!protocol)
-            def->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW;
-        else if ((def->data.tcp.protocol =
-                  virDomainChrTcpProtocolTypeFromString(protocol)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown protocol '%s'"), protocol);
-            goto error;
-        }
-
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
@@ -11235,7 +11249,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     ret = 0;
  cleanup:
     VIR_FREE(mode);
-    VIR_FREE(protocol);
     VIR_FREE(bindHost);
     VIR_FREE(bindService);
     VIR_FREE(connectHost);
