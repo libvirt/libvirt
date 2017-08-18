@@ -5034,6 +5034,101 @@ virDomainDefHasUSB(const virDomainDef *def)
     return false;
 }
 
+
+#define SERIAL_CHANNEL_NAME_CHARS \
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
+
+
+static int
+virDomainChrSourceDefValidate(const virDomainChrSourceDef *def,
+                              const virDomainChrDef *chr_def)
+{
+    switch ((virDomainChrType) def->type) {
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+        if (!def->data.file.path) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source path attribute for char device"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+        if (!def->data.nmdm.master) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing master path attribute for nmdm device"));
+            return -1;
+        }
+
+        if (!def->data.nmdm.slave) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing slave path attribute for nmdm device"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+        if (!def->data.tcp.host) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source host attribute for char device"));
+            return -1;
+        }
+
+        if (!def->data.tcp.service) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source service attribute for char device"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+        if (!def->data.udp.connectService) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source service attribute for char device"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        /* path can be auto generated */
+        if (!def->data.nix.path &&
+            (!chr_def ||
+             (chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN &&
+              chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing source path attribute for char device"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+        if (!def->data.spiceport.channel) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing source channel attribute for char device"));
+            return -1;
+        }
+        if (strspn(def->data.spiceport.channel,
+                   SERIAL_CHANNEL_NAME_CHARS) < strlen(def->data.spiceport.channel)) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Invalid character in source channel for char device"));
+            return -1;
+        }
+        break;
+    }
+
+    return 0;
+}
+
+
 static int
 virDomainRedirdevDefValidate(const virDomainDef *def,
                              const virDomainRedirdevDef *redirdev)
@@ -5046,7 +5141,7 @@ virDomainRedirdevDefValidate(const virDomainDef *def,
         return -1;
     }
 
-    return 0;
+    return virDomainChrSourceDefValidate(redirdev->source, NULL);
 }
 
 
@@ -5105,6 +5200,33 @@ virDomainControllerDefValidate(const virDomainControllerDef *controller)
 
 
 static int
+virDomainChrDefValidate(const virDomainChrDef *chr)
+{
+    return virDomainChrSourceDefValidate(chr->source, chr);
+}
+
+
+static int
+virDomainSmartcardDefValidate(const virDomainSmartcardDef *smartcard)
+{
+    if (smartcard->type == VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH)
+        return virDomainChrSourceDefValidate(smartcard->data.passthru, NULL);
+
+    return 0;
+}
+
+
+static int
+virDomainRNGDefValidate(const virDomainRNGDef *rng)
+{
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD)
+        return virDomainChrSourceDefValidate(rng->source.chardev, NULL);
+
+    return 0;
+}
+
+
+static int
 virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
                                    const virDomainDef *def)
 {
@@ -5121,6 +5243,15 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_CONTROLLER:
         return virDomainControllerDefValidate(dev->data.controller);
 
+    case VIR_DOMAIN_DEVICE_CHR:
+        return virDomainChrDefValidate(dev->data.chr);
+
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+        return virDomainSmartcardDefValidate(dev->data.smartcard);
+
+    case VIR_DOMAIN_DEVICE_RNG:
+        return virDomainRNGDefValidate(dev->data.rng);
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -5130,11 +5261,8 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:
-    case VIR_DOMAIN_DEVICE_SMARTCARD:
-    case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
-    case VIR_DOMAIN_DEVICE_RNG:
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
@@ -11080,9 +11208,6 @@ virDomainChrSourceDefParseLog(virDomainChrSourceDefPtr def,
 }
 
 
-#define SERIAL_CHANNEL_NAME_CHARS \
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
-
 /* Parse the source half of the XML definition for a character device,
  * where node is the first element of node->children of the parent
  * element.  def->type must already be valid.
@@ -11207,88 +11332,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
             if (virDomainChrSourceDefParseProtocol(def, cur) < 0)
                 goto error;
         }
-    }
-
-    switch ((virDomainChrType) def->type) {
-    case VIR_DOMAIN_CHR_TYPE_NULL:
-    case VIR_DOMAIN_CHR_TYPE_PTY:
-    case VIR_DOMAIN_CHR_TYPE_VC:
-    case VIR_DOMAIN_CHR_TYPE_STDIO:
-    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
-    case VIR_DOMAIN_CHR_TYPE_LAST:
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_FILE:
-    case VIR_DOMAIN_CHR_TYPE_DEV:
-    case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (!def->data.file.path) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing source path attribute for char device"));
-            goto error;
-        }
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_NMDM:
-        if (!def->data.nmdm.master) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing master path attribute for nmdm device"));
-            goto error;
-        }
-
-        if (!def->data.nmdm.slave) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing slave path attribute for nmdm device"));
-            goto error;
-        }
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_TCP:
-        if (!def->data.tcp.host) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing source host attribute for char device"));
-            goto error;
-        }
-
-        if (!def->data.tcp.service) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing source service attribute for char device"));
-            goto error;
-        }
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_UDP:
-        if (!def->data.udp.connectService) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing source service attribute for char device"));
-            goto error;
-        }
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_UNIX:
-        /* path can be auto generated */
-        if (!def->data.nix.path &&
-            (!chr_def ||
-             (chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN &&
-              chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Missing source path attribute for char device"));
-            goto error;
-        }
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-        if (!def->data.spiceport.channel) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing source channel attribute for char device"));
-            goto error;
-        }
-        if (strspn(def->data.spiceport.channel,
-                   SERIAL_CHANNEL_NAME_CHARS) < strlen(def->data.spiceport.channel)) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("Invalid character in source channel for char device"));
-            goto error;
-        }
-        break;
     }
 
     ret = 0;
