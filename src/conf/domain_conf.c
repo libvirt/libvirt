@@ -10974,6 +10974,29 @@ virDomainChrSourceDefParseTCP(virDomainChrSourceDefPtr def,
 
 
 static int
+virDomainChrSourceDefParseUDP(virDomainChrSourceDefPtr def,
+                              xmlNodePtr source)
+{
+    int mode;
+
+    if ((mode = virDomainChrSourceDefParseMode(source)) < 0)
+        return -1;
+
+    if (mode == VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT &&
+        !def->data.udp.connectHost && !def->data.udp.connectService) {
+        def->data.udp.connectHost = virXMLPropString(source, "host");
+        def->data.udp.connectService = virXMLPropString(source, "service");
+    } else if (mode == VIR_DOMAIN_CHR_SOURCE_MODE_BIND &&
+               !def->data.udp.bindHost && !def->data.udp.bindService) {
+        def->data.udp.bindHost = virXMLPropString(source, "host");
+        def->data.udp.bindService = virXMLPropString(source, "service");
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainChrSourceDefParseProtocol(virDomainChrSourceDefPtr def,
                                    xmlNodePtr protocol)
 {
@@ -11036,10 +11059,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 {
     int ret = -1;
     int mode = VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT;
-    char *bindHost = NULL;
-    char *bindService = NULL;
-    char *connectHost = NULL;
-    char *connectService = NULL;
     char *path = NULL;
     char *channel = NULL;
     char *master = NULL;
@@ -11091,19 +11110,8 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_UDP:
-                if ((mode = virDomainChrSourceDefParseMode(cur)) < 0)
+                if (virDomainChrSourceDefParseUDP(def, cur) < 0)
                     goto error;
-                if (mode == VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT) {
-                    if (!connectHost)
-                        connectHost = virXMLPropString(cur, "host");
-                    if (!connectService)
-                        connectService = virXMLPropString(cur, "service");
-                } else if (mode == VIR_DOMAIN_CHR_SOURCE_MODE_BIND) {
-                    if (!bindHost)
-                        bindHost = virXMLPropString(cur, "host");
-                    if (!bindService)
-                        bindService = virXMLPropString(cur, "service");
-                }
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_TCP:
@@ -11232,21 +11240,11 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
-        if (!connectService) {
+        if (!def->data.udp.connectService) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing source service attribute for char device"));
             goto error;
         }
-
-        def->data.udp.connectHost = connectHost;
-        connectHost = NULL;
-        def->data.udp.connectService = connectService;
-        connectService = NULL;
-
-        def->data.udp.bindHost = bindHost;
-        bindHost = NULL;
-        def->data.udp.bindService = bindService;
-        bindService = NULL;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -11284,10 +11282,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
     ret = 0;
  cleanup:
-    VIR_FREE(bindHost);
-    VIR_FREE(bindService);
-    VIR_FREE(connectHost);
-    VIR_FREE(connectService);
     VIR_FREE(path);
     VIR_FREE(channel);
     VIR_FREE(append);
