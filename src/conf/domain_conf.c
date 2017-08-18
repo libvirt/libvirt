@@ -4784,13 +4784,28 @@ virDomainDefPostParseCPU(virDomainDefPtr def)
 
 static int
 virDomainDefPostParseCommon(virDomainDefPtr def,
-                            struct virDomainDefPostParseDeviceIteratorData *data)
+                            struct virDomainDefPostParseDeviceIteratorData *data,
+                            virHashTablePtr bootHash)
 {
     /* verify init path for container based domains */
     if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("init binary must be specified"));
         return -1;
+    }
+
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM && bootHash) {
+        if (def->os.nBootDevs > 0 && virHashSize(bootHash) > 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("per-device boot elements cannot be used"
+                             " together with os/boot elements"));
+            return -1;
+        }
+
+        if (def->os.nBootDevs == 0 && virHashSize(bootHash) == 0) {
+            def->os.nBootDevs = 1;
+            def->os.bootDevs[0] = VIR_DOMAIN_BOOT_DISK;
+        }
     }
 
     if (virDomainVcpuDefPostParse(def) < 0)
@@ -4861,7 +4876,8 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
                               virCapsPtr caps,
                               unsigned int parseFlags,
                               virDomainXMLOptionPtr xmlopt,
-                              void *parseOpaque)
+                              void *parseOpaque,
+                              virHashTablePtr bootHash)
 {
     int ret = -1;
     bool localParseOpaque = false;
@@ -4917,7 +4933,7 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
     if (virDomainDefPostParseCheckFailure(def, parseFlags, ret) < 0)
         goto cleanup;
 
-    if ((ret = virDomainDefPostParseCommon(def, &data)) < 0)
+    if ((ret = virDomainDefPostParseCommon(def, &data, bootHash)) < 0)
         goto cleanup;
 
     if (xmlopt->config.assignAddressesCallback) {
@@ -4952,7 +4968,7 @@ virDomainDefPostParse(virDomainDefPtr def,
                       void *parseOpaque)
 {
     return virDomainDefPostParseInternal(def, caps, parseFlags, xmlopt,
-                                         parseOpaque);
+                                         parseOpaque, NULL);
 }
 
 
@@ -16265,27 +16281,10 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
     int n;
     char *tmp = NULL;
     int ret = -1;
-    unsigned long deviceBoot;
-
-    if (virXPathULong("count(./devices/disk[boot]"
-                      "|./devices/interface[boot]"
-                      "|./devices/hostdev[boot]"
-                      "|./devices/redirdev[boot])", ctxt, &deviceBoot) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot count boot devices"));
-        goto cleanup;
-    }
 
     /* analysis of the boot devices */
     if ((n = virXPathNodeSet("./os/boot", ctxt, &nodes)) < 0)
         goto cleanup;
-
-    if (n > 0 && deviceBoot) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("per-device boot elements cannot be used"
-                         " together with os/boot elements"));
-        goto cleanup;
-    }
 
     for (i = 0; i < n && i < VIR_DOMAIN_BOOT_LAST; i++) {
         int val;
@@ -16304,10 +16303,6 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
         }
         VIR_FREE(dev);
         def->os.bootDevs[def->os.nBootDevs++] = val;
-    }
-    if (def->os.nBootDevs == 0 && !deviceBoot) {
-        def->os.nBootDevs = 1;
-        def->os.bootDevs[0] = VIR_DOMAIN_BOOT_DISK;
     }
 
     if ((node = virXPathNode("./os/bootmenu[1]", ctxt))) {
@@ -19077,7 +19072,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     /* callback to fill driver specific domain aspects */
-    if (virDomainDefPostParse(def, caps, flags, xmlopt, parseOpaque) < 0)
+    if (virDomainDefPostParseInternal(def, caps, flags, xmlopt, parseOpaque,
+                                      bootHash) < 0)
         goto error;
 
     /* valdiate configuration */
