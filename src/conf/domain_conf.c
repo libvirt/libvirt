@@ -11014,6 +11014,28 @@ virDomainChrSourceDefParseUnix(virDomainChrSourceDefPtr def,
 
 
 static int
+virDomainChrSourceDefParseFile(virDomainChrSourceDefPtr def,
+                               xmlNodePtr source)
+{
+    char *append = NULL;
+
+    def->data.file.path = virXMLPropString(source, "path");
+
+    if ((append = virXMLPropString(source, "append")) &&
+        (def->data.file.append = virTristateSwitchTypeFromString(append)) <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid append attribute value '%s'"),
+                       append);
+        VIR_FREE(append);
+        return -1;
+    }
+
+    VIR_FREE(append);
+    return 0;
+}
+
+
+static int
 virDomainChrSourceDefParseProtocol(virDomainChrSourceDefPtr def,
                                    xmlNodePtr protocol)
 {
@@ -11075,7 +11097,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                               int nvmSeclabels)
 {
     int ret = -1;
-    char *append = NULL;
     bool logParsed = false;
     bool protocolParsed = false;
     int sourceParsed = 0;
@@ -11103,11 +11124,13 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
             switch ((virDomainChrType) def->type) {
             case VIR_DOMAIN_CHR_TYPE_FILE:
+                if (virDomainChrSourceDefParseFile(def, cur) < 0)
+                    goto error;
+                break;
+
             case VIR_DOMAIN_CHR_TYPE_PTY:
             case VIR_DOMAIN_CHR_TYPE_DEV:
             case VIR_DOMAIN_CHR_TYPE_PIPE:
-                if (!append && def->type == VIR_DOMAIN_CHR_TYPE_FILE)
-                    append = virXMLPropString(cur, "append");
                 /* PTY path is only parsed from live xml.  */
                 if (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
                     !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
@@ -11196,12 +11219,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (append && def->type == VIR_DOMAIN_CHR_TYPE_FILE &&
-            (def->data.file.append = virTristateSwitchTypeFromString(append)) <= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid append attribute value '%s'"), append);
-            goto error;
-        }
         if (!def->data.file.path &&
             def->type != VIR_DOMAIN_CHR_TYPE_PTY) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -11275,8 +11292,6 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
     ret = 0;
  cleanup:
-    VIR_FREE(append);
-
     return ret;
 
  error:
