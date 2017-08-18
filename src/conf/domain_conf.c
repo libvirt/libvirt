@@ -10925,6 +10925,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     char *append = NULL;
     char *haveTLS = NULL;
     char *tlsFromConfig = NULL;
+    bool logParsed = false;
     int sourceParsed = 0;
 
     for (; cur; cur = cur->next) {
@@ -11029,10 +11030,15 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 ctxt->node = saved_node;
             }
         } else if (virXMLNodeNameEqual(cur, "log")) {
-            if (!logfile)
-                logfile = virXMLPropString(cur, "file");
-            if (!logappend)
-                logappend = virXMLPropString(cur, "append");
+            if (logParsed) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("only one protocol element is allowed for "
+                                 "character device"));
+                goto error;
+            }
+            logParsed = true;
+            logfile = virXMLPropString(cur, "file");
+            logappend = virXMLPropString(cur, "append");
         } else if (virXMLNodeNameEqual(cur, "protocol")) {
             if (!protocol)
                 protocol = virXMLPropString(cur, "type");
