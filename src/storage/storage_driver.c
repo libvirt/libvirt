@@ -1310,7 +1310,7 @@ storagePoolSetAutostart(virStoragePoolPtr pool,
                 goto cleanup;
             }
         }
-        virStoragePoolObjSetAutostart(obj, autostart);
+        virStoragePoolObjSetAutostart(obj, new_autostart);
     }
 
     ret = 0;

@@ -133,13 +133,13 @@ virStoragePoolObjIsAutostart(virStoragePoolObjPtr obj)
     if (!obj->configFile)
         return 0;
 
-    return obj->autostart == 1;
+    return obj->autostart;
 }
 
 
 void
 virStoragePoolObjSetAutostart(virStoragePoolObjPtr obj,
-                              int autostart)
+                              bool autostart)
 {
     obj->autostart = autostart;
 }

@@ -33,7 +33,7 @@ struct _virStoragePoolObj {
     char *configFile;
     char *autostartLink;
     bool active;
-    int autostart;
+    bool autostart;
     unsigned int asyncjobs;
 
     virStoragePoolDefPtr def;
@@ -108,7 +108,7 @@ virStoragePoolObjIsAutostart(virStoragePoolObjPtr obj);
 
 void
 virStoragePoolObjSetAutostart(virStoragePoolObjPtr obj,
-                              int autostart);
+                              bool autostart);
 
 unsigned int
 virStoragePoolObjGetAsyncjobs(virStoragePoolObjPtr obj);
