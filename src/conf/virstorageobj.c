@@ -52,7 +52,7 @@ virStoragePoolObjNew(void)
         return NULL;
     }
     virStoragePoolObjLock(obj);
-    obj->active = 0;
+    obj->active = false;
     return obj;
 }
 
@@ -544,7 +544,7 @@ virStoragePoolObjLoadState(virStoragePoolObjListPtr pools,
      * as active
      */
 
-    obj->active = 1;
+    obj->active = true;
 
  cleanup:
     VIR_FREE(stateFile);
