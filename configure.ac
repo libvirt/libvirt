@@ -627,6 +627,19 @@ if test "$with_linux" = "yes"; then
     AC_CHECK_HEADERS([linux/btrfs.h])
 fi
 
+dnl
+dnl check for kernel headers required by devlink
+dnl
+if test "$with_linux" = "yes"; then
+    AC_CHECK_HEADERS([linux/devlink.h])
+    AC_CHECK_DECLS([DEVLINK_GENL_VERSION, DEVLINK_GENL_NAME, DEVLINK_ATTR_MAX, DEVLINK_CMD_ESWITCH_GET, DEVLINK_ATTR_BUS_NAME, DEVLINK_ATTR_DEV_NAME, DEVLINK_ATTR_ESWITCH_MODE, DEVLINK_ESWITCH_MODE_SWITCHDEV],
+                   [AC_DEFINE([HAVE_DECL_DEVLINK],
+                              [1],
+                              [whether devlink declarations are available])],
+                   [],
+                   [[#include <linux/devlink.h>]])
+fi
+
 dnl Allow perl/python overrides
 AC_PATH_PROGS([PYTHON], [python2 python])
 if test -z "$PYTHON"; then

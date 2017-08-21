@@ -227,6 +227,7 @@
                     <dt><code>rxhash</code></dt><dd>receive-hashing</dd>
                     <dt><code>rdma</code></dt><dd>remote-direct-memory-access</dd>
                     <dt><code>txudptnl</code></dt><dd>tx-udp-tunnel-segmentation</dd>
+                    <dt><code>switchdev</code></dt><dd>kernel-forward-plane-offload</dd>
                 </dl>
               </dd>
               <dt><code>capability</code></dt>

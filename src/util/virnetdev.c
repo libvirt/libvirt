@@ -59,6 +59,10 @@
 # include <net/if_dl.h>
 #endif
 
+#if HAVE_DECL_DEVLINK
+# include <linux/devlink.h>
+#endif
+
 #ifndef IFNAMSIZ
 # define IFNAMSIZ 16
 #endif
@@ -2481,7 +2485,8 @@ VIR_ENUM_IMPL(virNetDevFeature,
               "ntuple",
               "rxhash",
               "rdma",
-              "txudptnl")
+              "txudptnl",
+              "switchdev")
 
 #ifdef __linux__
 int
@@ -3115,6 +3120,181 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
 }
 
 
+# if HAVE_DECL_DEVLINK
+/**
+ * virNetDevPutExtraHeader
+ * reserve and prepare room for an extra header
+ * This function sets to zero the room that is required to put the extra
+ * header after the initial Netlink header. This function also increases
+ * the nlmsg_len field.
+ *
+ * @nlh: pointer to Netlink header
+ * @size: size of the extra header that we want to put
+ *
+ * Returns pointer to the start of the extended header
+ */
+static void *
+virNetDevPutExtraHeader(struct nlmsghdr *nlh,
+                        size_t size)
+{
+    char *ptr = (char *)nlh + nlh->nlmsg_len;
+    size_t len = NLMSG_ALIGN(size);
+    nlh->nlmsg_len += len;
+    return ptr;
+}
+
+
+/**
+ * virNetDevGetFamilyId:
+ * This function supplies the devlink family id
+ *
+ * @family_name: the name of the family to query
+ *
+ * Returns family id or 0 on failure.
+ */
+static uint32_t
+virNetDevGetFamilyId(const char *family_name)
+{
+    struct nl_msg *nl_msg = NULL;
+    struct nlmsghdr *resp = NULL;
+    struct genlmsghdr* gmsgh = NULL;
+    struct nlattr *tb[CTRL_ATTR_MAX + 1] = {NULL, };
+    unsigned int recvbuflen;
+    uint32_t family_id = 0;
+
+    if (!(nl_msg = nlmsg_alloc_simple(GENL_ID_CTRL,
+                                      NLM_F_REQUEST | NLM_F_ACK))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!(gmsgh = virNetDevPutExtraHeader(nlmsg_hdr(nl_msg), sizeof(struct genlmsghdr))))
+        goto cleanup;
+
+    gmsgh->cmd = CTRL_CMD_GETFAMILY;
+    gmsgh->version = DEVLINK_GENL_VERSION;
+
+    if (nla_put_string(nl_msg, CTRL_ATTR_FAMILY_NAME, family_name) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("allocated netlink buffer is too small"));
+        goto cleanup;
+    }
+
+    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0, NETLINK_GENERIC, 0) < 0)
+        goto cleanup;
+
+    if (nlmsg_parse(resp, sizeof(struct nlmsghdr), tb, CTRL_CMD_MAX, NULL) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed netlink response message"));
+        goto cleanup;
+    }
+
+    if (tb[CTRL_ATTR_FAMILY_ID] == NULL)
+        goto cleanup;
+
+    family_id = *(uint32_t *)RTA_DATA(tb[CTRL_ATTR_FAMILY_ID]);
+
+ cleanup:
+    nlmsg_free(nl_msg);
+    VIR_FREE(resp);
+    return family_id;
+}
+
+
+/**
+ * virNetDevSwitchdevFeature
+ * This function checks for the availability of Switchdev feature
+ * and add it to bitmap
+ *
+ * @ifname: name of the interface
+ * @out: add Switchdev feature if exist to bitmap
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+static int
+virNetDevSwitchdevFeature(const char *ifname,
+                          virBitmapPtr *out)
+{
+    struct nl_msg *nl_msg = NULL;
+    struct nlmsghdr *resp = NULL;
+    unsigned int recvbuflen;
+    struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {NULL, };
+    virPCIDevicePtr pci_device_ptr = NULL;
+    struct genlmsghdr* gmsgh = NULL;
+    const char *pci_name;
+    char *pfname = NULL;
+    int is_vf = -1;
+    int ret = -1;
+    uint32_t family_id;
+
+    if ((family_id = virNetDevGetFamilyId(DEVLINK_GENL_NAME)) <= 0)
+        return ret;
+
+    if ((is_vf = virNetDevIsVirtualFunction(ifname)) < 0)
+        return ret;
+
+    if (is_vf == 1 && virNetDevGetPhysicalFunction(ifname, &pfname) < 0)
+        goto cleanup;
+
+    if (!(nl_msg = nlmsg_alloc_simple(family_id,
+                                      NLM_F_REQUEST | NLM_F_ACK))) {
+        virReportOOMError();
+        goto cleanup;
+    }
+
+    if (!(gmsgh = virNetDevPutExtraHeader(nlmsg_hdr(nl_msg), sizeof(struct genlmsghdr))))
+        goto cleanup;
+
+    gmsgh->cmd = DEVLINK_CMD_ESWITCH_GET;
+    gmsgh->version = DEVLINK_GENL_VERSION;
+
+    pci_device_ptr = pfname ? virNetDevGetPCIDevice(pfname) :
+                              virNetDevGetPCIDevice(ifname);
+    if (pci_device_ptr == NULL)
+        goto cleanup;
+
+    pci_name = virPCIDeviceGetName(pci_device_ptr);
+
+    if (nla_put(nl_msg, DEVLINK_ATTR_BUS_NAME, strlen("pci")+1, "pci") < 0 ||
+        nla_put(nl_msg, DEVLINK_ATTR_DEV_NAME, strlen(pci_name)+1, pci_name) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("allocated netlink buffer is too small"));
+        goto cleanup;
+    }
+
+    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0, NETLINK_GENERIC, 0) < 0)
+        goto cleanup;
+
+    if (nlmsg_parse(resp, sizeof(struct genlmsghdr), tb, DEVLINK_ATTR_MAX, NULL) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed netlink response message"));
+        goto cleanup;
+    }
+
+    if (tb[DEVLINK_ATTR_ESWITCH_MODE] &&
+        *(int *)RTA_DATA(tb[DEVLINK_ATTR_ESWITCH_MODE]) == DEVLINK_ESWITCH_MODE_SWITCHDEV) {
+        ignore_value(virBitmapSetBit(*out, VIR_NET_DEV_FEAT_SWITCHDEV));
+    }
+
+    ret = 0;
+
+ cleanup:
+    nlmsg_free(nl_msg);
+    virPCIDeviceFree(pci_device_ptr);
+    VIR_FREE(resp);
+    VIR_FREE(pfname);
+    return ret;
+}
+# else
+static int
+virNetDevSwitchdevFeature(const char *ifname ATTRIBUTE_UNUSED,
+                          virBitmapPtr *out ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+# endif
+
+
 # if HAVE_DECL_ETHTOOL_GFEATURES
 /**
  * virNetDevGFeatureAvailable
@@ -3313,6 +3493,9 @@ virNetDevGetFeatures(const char *ifname,
         goto cleanup;
 
     if (virNetDevRDMAFeature(ifname, out) < 0)
+        goto cleanup;
+
+    if (virNetDevSwitchdevFeature(ifname, out) < 0)
         goto cleanup;
 
     ret = 0;
