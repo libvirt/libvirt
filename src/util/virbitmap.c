@@ -332,11 +332,7 @@ char *virBitmapString(virBitmapPtr bitmap)
                           bitmap->map[sz]);
     }
 
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        return NULL;
-    }
-
+    virBufferCheckError(&buf);
     return virBufferContentAndReset(&buf);
 }
 
