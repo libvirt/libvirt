@@ -1650,6 +1650,18 @@ virVMXParseConfig(virVMXContext *ctx,
             if (def->disks[def->ndisks] != NULL)
                 ++def->ndisks;
         }
+
+    }
+
+    /* add all the SCSI controllers we've seen, up until the last one that is
+     * currently used by a disk */
+    if (def->ndisks != 0) {
+        virDomainDeviceInfoPtr info = &def->disks[def->ndisks - 1]->info;
+        for (controller = 0; controller <= info->addr.drive.controller; controller++) {
+            if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+                                           controller, scsi_virtualDev[controller]))
+                goto cleanup;
+        }
     }
 
     /* def:disks (ide) */
@@ -1687,26 +1699,6 @@ virVMXParseConfig(virVMXContext *ctx,
 
         if (def->disks[def->ndisks] != NULL)
             ++def->ndisks;
-    }
-
-    /* def:controllers */
-    if (virDomainDefAddImplicitDevices(def) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not add controllers"));
-        goto cleanup;
-    }
-
-    for (controller = 0; controller < def->ncontrollers; ++controller) {
-        if (def->controllers[controller]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-            if (def->controllers[controller]->idx > 3) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("SCSI controller index %d out of [0..3] range"),
-                               def->controllers[controller]->idx);
-                goto cleanup;
-            }
-
-            def->controllers[controller]->model =
-              scsi_virtualDev[def->controllers[controller]->idx];
-        }
     }
 
     /* def:fss */
