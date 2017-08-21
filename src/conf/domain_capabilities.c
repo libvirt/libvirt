@@ -516,62 +516,50 @@ virDomainCapsFeatureGICFormat(virBufferPtr buf,
 }
 
 
-static int
-virDomainCapsFormatInternal(virBufferPtr buf,
-                            virDomainCapsPtr const caps)
-{
-    const char *virttype_str = virDomainVirtTypeToString(caps->virttype);
-    const char *arch_str = virArchToString(caps->arch);
-
-    virBufferAddLit(buf, "<domainCapabilities>\n");
-    virBufferAdjustIndent(buf, 2);
-
-    virBufferEscapeString(buf, "<path>%s</path>\n", caps->path);
-    virBufferAsprintf(buf, "<domain>%s</domain>\n", virttype_str);
-    if (caps->machine)
-        virBufferAsprintf(buf, "<machine>%s</machine>\n", caps->machine);
-    virBufferAsprintf(buf, "<arch>%s</arch>\n", arch_str);
-
-    if (caps->maxvcpus)
-        virBufferAsprintf(buf, "<vcpu max='%d'/>\n", caps->maxvcpus);
-
-    virDomainCapsOSFormat(buf, &caps->os);
-    virDomainCapsCPUFormat(buf, &caps->cpu);
-
-    virBufferAddLit(buf, "<devices>\n");
-    virBufferAdjustIndent(buf, 2);
-
-    virDomainCapsDeviceDiskFormat(buf, &caps->disk);
-    virDomainCapsDeviceGraphicsFormat(buf, &caps->graphics);
-    virDomainCapsDeviceVideoFormat(buf, &caps->video);
-    virDomainCapsDeviceHostdevFormat(buf, &caps->hostdev);
-
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</devices>\n");
-
-    virBufferAddLit(buf, "<features>\n");
-    virBufferAdjustIndent(buf, 2);
-
-    virDomainCapsFeatureGICFormat(buf, &caps->gic);
-
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</features>\n");
-
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</domainCapabilities>\n");
-    return 0;
-}
-
-
 char *
 virDomainCapsFormat(virDomainCapsPtr const caps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    const char *virttype_str = virDomainVirtTypeToString(caps->virttype);
+    const char *arch_str = virArchToString(caps->arch);
 
-    if (virDomainCapsFormatInternal(&buf, caps) < 0) {
-        virBufferFreeAndReset(&buf);
-        return NULL;
-    }
+    virBufferAddLit(&buf, "<domainCapabilities>\n");
+    virBufferAdjustIndent(&buf, 2);
 
+    virBufferEscapeString(&buf, "<path>%s</path>\n", caps->path);
+    virBufferAsprintf(&buf, "<domain>%s</domain>\n", virttype_str);
+    if (caps->machine)
+        virBufferAsprintf(&buf, "<machine>%s</machine>\n", caps->machine);
+    virBufferAsprintf(&buf, "<arch>%s</arch>\n", arch_str);
+
+    if (caps->maxvcpus)
+        virBufferAsprintf(&buf, "<vcpu max='%d'/>\n", caps->maxvcpus);
+
+    virDomainCapsOSFormat(&buf, &caps->os);
+    virDomainCapsCPUFormat(&buf, &caps->cpu);
+
+    virBufferAddLit(&buf, "<devices>\n");
+    virBufferAdjustIndent(&buf, 2);
+
+    virDomainCapsDeviceDiskFormat(&buf, &caps->disk);
+    virDomainCapsDeviceGraphicsFormat(&buf, &caps->graphics);
+    virDomainCapsDeviceVideoFormat(&buf, &caps->video);
+    virDomainCapsDeviceHostdevFormat(&buf, &caps->hostdev);
+
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAddLit(&buf, "</devices>\n");
+
+    virBufferAddLit(&buf, "<features>\n");
+    virBufferAdjustIndent(&buf, 2);
+
+    virDomainCapsFeatureGICFormat(&buf, &caps->gic);
+
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAddLit(&buf, "</features>\n");
+
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAddLit(&buf, "</domainCapabilities>\n");
+
+    virBufferCheckError(&buf);
     return virBufferContentAndReset(&buf);
 }
