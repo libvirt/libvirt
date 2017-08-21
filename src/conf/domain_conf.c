@@ -27481,25 +27481,23 @@ virDomainGenerateMachineName(const char *drivername,
                              const char *name,
                              bool privileged)
 {
-    char *machinename = NULL;
     char *username = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (privileged) {
         virBufferAsprintf(&buf, "%s-", drivername);
     } else {
-        if (!(username = virGetUserName(geteuid())))
-            goto cleanup;
-
+        if (!(username = virGetUserName(geteuid()))) {
+            virBufferFreeAndReset(&buf);
+            return NULL;
+        }
         virBufferAsprintf(&buf, "%s-%s-", username, drivername);
+        VIR_FREE(username);
     }
 
     virBufferAsprintf(&buf, "%d-", id);
     virDomainMachineNameAppendValid(&buf, name);
 
-    machinename = virBufferContentAndReset(&buf);
- cleanup:
-    VIR_FREE(username);
-
-    return machinename;
+    virBufferCheckError(&buf);
+    return virBufferContentAndReset(&buf);
 }
