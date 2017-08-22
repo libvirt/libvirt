@@ -1510,7 +1510,7 @@ int virQEMUCapsParseHelpStr(const char *qemu,
                                    qemuCaps, check_yajl) < 0)
         goto cleanup;
 
-    strflags = virBitmapString(qemuCaps->flags, true);
+    strflags = virBitmapToString(qemuCaps->flags, true);
     VIR_DEBUG("Version %u.%u.%u, cooked version %u, flags %s",
               major, minor, micro, *version, NULLSTR(strflags));
     VIR_FREE(strflags);
@@ -2377,7 +2377,7 @@ virQEMUCapsClear(virQEMUCapsPtr qemuCaps,
 
 char *virQEMUCapsFlagsString(virQEMUCapsPtr qemuCaps)
 {
-    return virBitmapString(qemuCaps->flags, true);
+    return virBitmapToString(qemuCaps->flags, true);
 }
 
 

@@ -310,7 +310,7 @@ int virBitmapGetBit(virBitmapPtr bitmap, size_t b, bool *result)
 }
 
 /**
- * virBitmapString:
+ * virBitmapToString:
  * @bitmap: Pointer to bitmap
  * @prefix: Whether to prepend "0x"
  *
@@ -319,8 +319,8 @@ int virBitmapGetBit(virBitmapPtr bitmap, size_t b, bool *result)
  * Returns pointer to the string or NULL on error.
  */
 char *
-virBitmapString(virBitmapPtr bitmap,
-                bool prefix)
+virBitmapToString(virBitmapPtr bitmap,
+                  bool prefix)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t sz;
