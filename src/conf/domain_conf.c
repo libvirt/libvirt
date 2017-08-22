@@ -4367,11 +4367,11 @@ virDomainCheckVirtioOptions(virDomainVirtioOptionsPtr virtio)
 
 
 static int
-virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
-                                    const virDomainDef *def,
-                                    virCapsPtr caps ATTRIBUTE_UNUSED,
-                                    unsigned int parseFlags ATTRIBUTE_UNUSED,
-                                    virDomainXMLOptionPtr xmlopt)
+virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
+                                  const virDomainDef *def,
+                                  virCapsPtr caps ATTRIBUTE_UNUSED,
+                                  unsigned int parseFlags ATTRIBUTE_UNUSED,
+                                  virDomainXMLOptionPtr xmlopt)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_CHR) {
         virDomainChrDefPtr chr = dev->data.chr;
@@ -4667,7 +4667,7 @@ virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             return ret;
     }
 
-    if ((ret = virDomainDeviceDefPostParseInternal(dev, def, caps, flags, xmlopt)) < 0)
+    if ((ret = virDomainDeviceDefPostParseCommon(dev, def, caps, flags, xmlopt)) < 0)
         return ret;
 
     if (virDomainDeviceDefPostParseCheckFeatures(dev, xmlopt) < 0)
@@ -4783,8 +4783,8 @@ virDomainDefPostParseCPU(virDomainDefPtr def)
 
 
 static int
-virDomainDefPostParseInternal(virDomainDefPtr def,
-                              struct virDomainDefPostParseDeviceIteratorData *data)
+virDomainDefPostParseCommon(virDomainDefPtr def,
+                            struct virDomainDefPostParseDeviceIteratorData *data)
 {
     /* verify init path for container based domains */
     if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
@@ -4917,7 +4917,7 @@ virDomainDefPostParse(virDomainDefPtr def,
     if (virDomainDefPostParseCheckFailure(def, parseFlags, ret) < 0)
         goto cleanup;
 
-    if ((ret = virDomainDefPostParseInternal(def, &data)) < 0)
+    if ((ret = virDomainDefPostParseCommon(def, &data)) < 0)
         goto cleanup;
 
     if (xmlopt->config.assignAddressesCallback) {
