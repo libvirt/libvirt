@@ -4856,12 +4856,12 @@ virDomainDefPostParseCheckFailure(virDomainDefPtr def,
 }
 
 
-int
-virDomainDefPostParse(virDomainDefPtr def,
-                      virCapsPtr caps,
-                      unsigned int parseFlags,
-                      virDomainXMLOptionPtr xmlopt,
-                      void *parseOpaque)
+static int
+virDomainDefPostParseInternal(virDomainDefPtr def,
+                              virCapsPtr caps,
+                              unsigned int parseFlags,
+                              virDomainXMLOptionPtr xmlopt,
+                              void *parseOpaque)
 {
     int ret = -1;
     bool localParseOpaque = false;
@@ -4941,6 +4941,18 @@ virDomainDefPostParse(virDomainDefPtr def,
         ret = -1;
 
     return ret;
+}
+
+
+int
+virDomainDefPostParse(virDomainDefPtr def,
+                      virCapsPtr caps,
+                      unsigned int parseFlags,
+                      virDomainXMLOptionPtr xmlopt,
+                      void *parseOpaque)
+{
+    return virDomainDefPostParseInternal(def, caps, parseFlags, xmlopt,
+                                         parseOpaque);
 }
 
 
