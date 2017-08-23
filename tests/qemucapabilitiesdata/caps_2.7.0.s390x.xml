@@ -133,6 +133,7 @@
   <flag name='kernel-irqchip.split'/>
   <flag name='vnc-multi-servers'/>
   <flag name='chardev-reconnect'/>
+  <flag name='virtio-gpu.max_outputs'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

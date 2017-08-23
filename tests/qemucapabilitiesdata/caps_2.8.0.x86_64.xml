@@ -208,6 +208,7 @@
   <flag name='intel-iommu.eim'/>
   <flag name='vnc-multi-servers'/>
   <flag name='chardev-reconnect'/>
+  <flag name='virtio-gpu.max_outputs'/>
   <version>2008000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.8.0)</package>
