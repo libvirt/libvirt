@@ -1883,7 +1883,8 @@ mymain(void)
     DO_TEST("video-virtio-vga",
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
             QEMU_CAPS_DEVICE_VIRTIO_VGA,
-            QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
+            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS);
     DO_TEST_PARSE_ERROR("video-invalid", NONE);
 
     DO_TEST("virtio-rng-default",
