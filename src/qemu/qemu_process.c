@@ -6218,8 +6218,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virFileDeleteTree(priv->libDir);
     virFileDeleteTree(priv->channelTargetDir);
 
-    qemuDomainClearPrivatePaths(vm);
-
     ignore_value(virDomainChrDefForeach(vm->def,
                                         false,
                                         qemuProcessCleanupChardevDevice,
@@ -6269,9 +6267,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
             VIR_FREE(vm->def->seclabels[i]->label);
         VIR_FREE(vm->def->seclabels[i]->imagelabel);
     }
-
-    virStringListFree(priv->qemuDevices);
-    priv->qemuDevices = NULL;
 
     qemuHostdevReAttachDomainDevices(driver, vm->def);
 
@@ -6341,10 +6336,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         VIR_WARN("Failed to remove cgroup for %s",
                  vm->def->name);
     }
-    virCgroupFree(&priv->cgroup);
-
-    virPerfFree(priv->perf);
-    priv->perf = NULL;
 
     qemuProcessRemoveDomainStatus(driver, vm);
 
@@ -6398,37 +6389,14 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         }
     }
 
-    VIR_FREE(priv->machineName);
-
     vm->taint = 0;
     vm->pid = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     for (i = 0; i < vm->def->niothreadids; i++)
         vm->def->iothreadids[i]->thread_id = 0;
-    virObjectUnref(priv->qemuCaps);
-    priv->qemuCaps = NULL;
-    VIR_FREE(priv->pidfile);
 
-    /* remove automatic pinning data */
-    virBitmapFree(priv->autoNodeset);
-    priv->autoNodeset = NULL;
-    virBitmapFree(priv->autoCpuset);
-    priv->autoCpuset = NULL;
-
-    /* remove address data */
-    virDomainPCIAddressSetFree(priv->pciaddrs);
-    priv->pciaddrs = NULL;
-    virDomainUSBAddressSetFree(priv->usbaddrs);
-    priv->usbaddrs = NULL;
-
-    /* clean up migration data */
-    VIR_FREE(priv->migTLSAlias);
-    virCPUDefFree(priv->origCPU);
-    priv->origCPU = NULL;
-
-    /* clear previously used namespaces */
-    virBitmapFree(priv->namespaces);
-    priv->namespaces = NULL;
+    /* clear all private data entries which are no longer needed */
+    qemuDomainObjPrivateDataClear(priv);
 
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {

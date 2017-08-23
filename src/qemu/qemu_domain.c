@@ -1684,16 +1684,6 @@ qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
 }
 
 
-void
-qemuDomainClearPrivatePaths(virDomainObjPtr vm)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-
-    VIR_FREE(priv->libDir);
-    VIR_FREE(priv->channelTargetDir);
-}
-
-
 static void *
 qemuDomainObjPrivateAlloc(void *opaque)
 {
@@ -1721,24 +1711,69 @@ qemuDomainObjPrivateAlloc(void *opaque)
     return NULL;
 }
 
+/**
+ * qemuDomainObjPrivateDataClear:
+ * @priv: domain private data
+ *
+ * Clears private data entries, which are not necessary or stale if the VM is
+ * not running.
+ */
+void
+qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
+{
+    virStringListFree(priv->qemuDevices);
+    priv->qemuDevices = NULL;
+
+    virCgroupFree(&priv->cgroup);
+
+    virPerfFree(priv->perf);
+    priv->perf = NULL;
+
+    VIR_FREE(priv->machineName);
+
+    virObjectUnref(priv->qemuCaps);
+    priv->qemuCaps = NULL;
+
+    VIR_FREE(priv->pidfile);
+
+    VIR_FREE(priv->libDir);
+    VIR_FREE(priv->channelTargetDir);
+
+    /* remove automatic pinning data */
+    virBitmapFree(priv->autoNodeset);
+    priv->autoNodeset = NULL;
+    virBitmapFree(priv->autoCpuset);
+    priv->autoCpuset = NULL;
+
+    /* remove address data */
+    virDomainPCIAddressSetFree(priv->pciaddrs);
+    priv->pciaddrs = NULL;
+    virDomainUSBAddressSetFree(priv->usbaddrs);
+    priv->usbaddrs = NULL;
+
+    /* clean up migration data */
+    VIR_FREE(priv->migTLSAlias);
+    virCPUDefFree(priv->origCPU);
+    priv->origCPU = NULL;
+
+    /* clear previously used namespaces */
+    virBitmapFree(priv->namespaces);
+    priv->namespaces = NULL;
+}
+
+
 static void
 qemuDomainObjPrivateFree(void *data)
 {
     qemuDomainObjPrivatePtr priv = data;
 
-    virObjectUnref(priv->qemuCaps);
+    qemuDomainObjPrivateDataClear(priv);
 
-    virBitmapFree(priv->namespaces);
-
-    virCgroupFree(&priv->cgroup);
-    virDomainPCIAddressSetFree(priv->pciaddrs);
-    virDomainUSBAddressSetFree(priv->usbaddrs);
     virDomainChrSourceDefFree(priv->monConfig);
     qemuDomainObjFreeJob(priv);
     VIR_FREE(priv->lockState);
     VIR_FREE(priv->origname);
 
-    virStringListFree(priv->qemuDevices);
     virChrdevFree(priv->devs);
 
     /* This should never be non-NULL if we get here, but just in case... */
@@ -1751,18 +1786,9 @@ qemuDomainObjPrivateFree(void *data)
         qemuAgentClose(priv->agent);
     }
     VIR_FREE(priv->cleanupCallbacks);
-    virBitmapFree(priv->autoNodeset);
-    virBitmapFree(priv->autoCpuset);
-
-    VIR_FREE(priv->machineName);
-    VIR_FREE(priv->libDir);
-    VIR_FREE(priv->channelTargetDir);
 
     qemuDomainSecretInfoFree(&priv->migSecinfo);
-    VIR_FREE(priv->migTLSAlias);
     qemuDomainMasterKeyFree(priv);
-
-    virCPUDefFree(priv->origCPU);
 
     VIR_FREE(priv);
 }
