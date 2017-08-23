@@ -124,6 +124,11 @@ mymain(void)
                  TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
     DO_TEST_FULL("chardev-unix-rng-missing-path", 0, false,
                  TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_DIFFERENT("chardev-reconnect");
+    DO_TEST_FULL("chardev-reconnect-missing-timeout", 0, false,
+                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_FULL("chardev-reconnect-invalid-mode", 0, false,
+                 TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
