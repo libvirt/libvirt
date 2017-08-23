@@ -5575,6 +5575,24 @@ virDomainDefValidateInternal(const virDomainDef *def)
     if (virDomainDefGetVcpusTopology(def, NULL) < 0)
         return -1;
 
+    if (def->iommu &&
+        def->iommu->intremap == VIR_TRISTATE_SWITCH_ON &&
+        (def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_TRISTATE_SWITCH_ON ||
+         def->ioapic != VIR_DOMAIN_IOAPIC_QEMU)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("IOMMU interrupt remapping requires split I/O APIC "
+                         "(ioapic driver='qemu')"));
+        return -1;
+    }
+
+    if (def->iommu &&
+        def->iommu->eim == VIR_TRISTATE_SWITCH_ON &&
+        def->iommu->intremap != VIR_TRISTATE_SWITCH_ON) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("IOMMU eim requires interrupt remapping to be enabled"));
+        return -1;
+    }
+
     return 0;
 }
 
