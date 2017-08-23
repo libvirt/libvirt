@@ -6527,7 +6527,7 @@ virshVcpuinfoPrintAffinity(vshControl *ctl,
 
     vshPrint(ctl, "%-15s ", _("CPU Affinity:"));
     if (pretty) {
-        if (!(str = virBitmapDataToString(cpumap, VIR_CPU_MAPLEN(maxcpu))))
+        if (!(str = virBitmapDataFormat(cpumap, VIR_CPU_MAPLEN(maxcpu))))
             goto cleanup;
         vshPrint(ctl, _("%s (out of %d)"), str, maxcpu);
     } else {
@@ -6781,7 +6781,7 @@ virshPrintPinInfo(vshControl *ctl,
 {
     char *str = NULL;
 
-    if (!(str = virBitmapDataToString(cpumap, cpumaplen)))
+    if (!(str = virBitmapDataFormat(cpumap, cpumaplen)))
         return false;
 
     vshPrint(ctl, "%s", str);

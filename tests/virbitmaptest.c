@@ -294,7 +294,7 @@ test4(const void *data ATTRIBUTE_UNUSED)
     return -1;
 }
 
-/* test for virBitmapNewData/ToData/DataToString */
+/* test for virBitmapNewData/ToData/DataFormat */
 static int
 test5(const void *v ATTRIBUTE_UNUSED)
 {
@@ -336,12 +336,12 @@ test5(const void *v ATTRIBUTE_UNUSED)
         data2[4] != 0x04)
         goto error;
 
-    if (!(str = virBitmapDataToString(data, sizeof(data))))
+    if (!(str = virBitmapDataFormat(data, sizeof(data))))
         goto error;
     if (STRNEQ(str, "0,9,34"))
         goto error;
     VIR_FREE(str);
-    if (!(str = virBitmapDataToString(data2, len2)))
+    if (!(str = virBitmapDataFormat(data2, len2)))
         goto error;
     if (STRNEQ(str, "0,2,9,15,34"))
         goto error;

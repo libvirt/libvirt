@@ -1046,7 +1046,7 @@ virBitmapCountBits(virBitmapPtr bitmap)
 }
 
 /**
- * virBitmapDataToString:
+ * virBitmapDataFormat:
  * @data: the data
  * @len: length of @data in bytes
  *
@@ -1056,8 +1056,8 @@ virBitmapCountBits(virBitmapPtr bitmap)
  * Returns: a string representation of the data, or NULL on error
  */
 char *
-virBitmapDataToString(const void *data,
-                      int len)
+virBitmapDataFormat(const void *data,
+                    int len)
 {
     virBitmapPtr map = NULL;
     char *ret = NULL;

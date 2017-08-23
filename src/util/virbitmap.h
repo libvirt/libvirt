@@ -136,8 +136,8 @@ ssize_t virBitmapNextClearBit(virBitmapPtr bitmap, ssize_t pos)
 size_t virBitmapCountBits(virBitmapPtr bitmap)
     ATTRIBUTE_NONNULL(1);
 
-char *virBitmapDataToString(const void *data,
-                            int len)
+char *virBitmapDataFormat(const void *data,
+                          int len)
     ATTRIBUTE_NONNULL(1);
 bool virBitmapOverlaps(virBitmapPtr b1,
                        virBitmapPtr b2)

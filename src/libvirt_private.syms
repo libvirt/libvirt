@@ -1350,7 +1350,7 @@ virBitmapClearBit;
 virBitmapClearBitExpand;
 virBitmapCopy;
 virBitmapCountBits;
-virBitmapDataToString;
+virBitmapDataFormat;
 virBitmapEqual;
 virBitmapFormat;
 virBitmapFree;
