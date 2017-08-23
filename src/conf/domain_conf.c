@@ -27287,6 +27287,8 @@ virDomainDefHasMemballoon(const virDomainDef *def)
 }
 
 
+#define VIR_DOMAIN_SHORT_NAME_MAX 20
+
 /**
  * virDomainObjGetShortName:
  * @vm: Machine for which to get a name
@@ -27297,15 +27299,61 @@ virDomainDefHasMemballoon(const virDomainDef *def)
 char *
 virDomainObjGetShortName(const virDomainDef *def)
 {
-    const int dommaxlen = 20;
+    wchar_t wshortname[VIR_DOMAIN_SHORT_NAME_MAX + 1] = {0};
+    size_t len = 0;
+    char *shortname = NULL;
     char *ret = NULL;
 
-    ignore_value(virAsprintf(&ret, "%d-%.*s",
-                             def->id, dommaxlen, def->name));
+    /* No need to do the whole conversion thing when there are no multibyte
+     * characters.  The same applies for illegal sequences as they can occur
+     * with incompatible locales. */
+    len = mbstowcs(NULL, def->name, 0);
+    if ((len == (size_t) -1 && errno == EILSEQ) ||
+        len == strlen(def->name)) {
+        ignore_value(virAsprintf(&ret, "%d-%.*s", def->id,
+                                 VIR_DOMAIN_SHORT_NAME_MAX, def->name));
+        return ret;
+    }
 
+    if (len == (size_t) -1) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot convert domain name to "
+                               "wide character string"));
+        return NULL;
+    }
+
+    if (mbstowcs(wshortname, def->name, VIR_DOMAIN_SHORT_NAME_MAX) == (size_t) -1) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot convert domain name to "
+                               "wide character string"));
+        return NULL;
+    }
+
+    len = wcstombs(NULL, wshortname, 0);
+    if (len == (size_t) -1) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot convert wide character string "
+                               "back to multi-byte domain name"));
+        return NULL;
+    }
+
+    if (VIR_ALLOC_N(shortname, len + 1) < 0)
+        return NULL;
+
+    if (wcstombs(shortname, wshortname, len) == (size_t) -1) {
+        virReportSystemError(errno, "%s",
+                             _("Cannot convert wide character string "
+                               "back to multi-byte domain name"));
+        goto cleanup;
+    }
+
+    ignore_value(virAsprintf(&ret, "%d-%s", def->id, shortname));
+ cleanup:
+    VIR_FREE(shortname);
     return ret;
 }
 
+#undef VIR_DOMAIN_SHORT_NAME_MAX
 
 int
 virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
