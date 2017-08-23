@@ -5255,6 +5255,49 @@ virDomainRNGDefValidate(const virDomainRNGDef *rng)
 
 
 static int
+virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
+{
+    if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            if (hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("PCI host devices must use 'pci' address type"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            if (hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("SCSI host device must use 'drive' "
+                                 "address type"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            if (hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+                hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("SCSI_host host device must use 'pci' "
+                                 "or 'ccw' address type"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
                                    const virDomainDef *def)
 {
@@ -5280,12 +5323,14 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_RNG:
         return virDomainRNGDefValidate(dev->data.rng);
 
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        return virDomainHostdevDefValidate(dev->data.hostdev);
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
-    case VIR_DOMAIN_DEVICE_HOSTDEV:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:
@@ -14085,41 +14130,18 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
                                         | VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) < 0)
             goto error;
     }
-
     if (def->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         switch ((virDomainHostdevSubsysType) def->source.subsys.type) {
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            if (def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("PCI host devices must use 'pci' address type"));
-                goto error;
-            }
-            break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-            if (def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("SCSI host device must use 'drive' "
-                                 "address type"));
-                goto error;
-            }
             if (virXPathBoolean("boolean(./readonly)", ctxt))
                 def->readonly = true;
             if (virXPathBoolean("boolean(./shareable)", ctxt))
                 def->shareable = true;
             break;
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
-            if (def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-                def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("SCSI_host host device must use 'pci' "
-                                 "or 'ccw' address type"));
-                goto error;
-            }
-            break;
+
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
             break;
