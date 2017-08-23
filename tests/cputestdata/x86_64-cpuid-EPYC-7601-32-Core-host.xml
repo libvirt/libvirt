@@ -1,43 +1,12 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Opteron_G3</model>
+  <model>EPYC</model>
   <vendor>AMD</vendor>
-  <feature name='vme'/>
   <feature name='ht'/>
-  <feature name='pclmuldq'/>
-  <feature name='ssse3'/>
-  <feature name='fma'/>
-  <feature name='sse4.1'/>
-  <feature name='sse4.2'/>
-  <feature name='movbe'/>
-  <feature name='aes'/>
-  <feature name='xsave'/>
   <feature name='osxsave'/>
-  <feature name='avx'/>
-  <feature name='f16c'/>
-  <feature name='rdrand'/>
-  <feature name='arat'/>
-  <feature name='fsgsbase'/>
-  <feature name='bmi1'/>
-  <feature name='avx2'/>
-  <feature name='smep'/>
-  <feature name='bmi2'/>
-  <feature name='rdseed'/>
-  <feature name='adx'/>
-  <feature name='smap'/>
-  <feature name='clflushopt'/>
-  <feature name='xsaveopt'/>
-  <feature name='xsavec'/>
-  <feature name='xgetbv1'/>
   <feature name='xsaves'/>
-  <feature name='mmxext'/>
-  <feature name='fxsr_opt'/>
-  <feature name='pdpe1gb'/>
   <feature name='cmp_legacy'/>
   <feature name='extapic'/>
-  <feature name='cr8legacy'/>
-  <feature name='3dnowprefetch'/>
-  <feature name='osvw'/>
   <feature name='skinit'/>
   <feature name='wdt'/>
   <feature name='tce'/>
