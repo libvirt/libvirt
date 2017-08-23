@@ -1365,6 +1365,7 @@ virBitmapNewCopy;
 virBitmapNewData;
 virBitmapNewEmpty;
 virBitmapNewQuiet;
+virBitmapNewString;
 virBitmapNextClearBit;
 virBitmapNextSetBit;
 virBitmapOverlaps;

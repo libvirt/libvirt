@@ -663,6 +663,42 @@ test12(const void *opaque ATTRIBUTE_UNUSED)
     return ret;
 }
 
+
+/* virBitmap(New/To)String */
+static int
+test13(const void *opaque ATTRIBUTE_UNUSED)
+{
+    virBitmapPtr map = NULL;
+    const char *strings[] = { "1234feebee", "000c0fefe" };
+    char *str = NULL;
+    size_t i = 0;
+    int ret = -1;
+
+    for (i = 0; i < ARRAY_CARDINALITY(strings); i++) {
+        map = virBitmapNewString(strings[i]);
+        str = virBitmapToString(map, false, true);
+
+        if (!map || !str)
+            goto cleanup;
+
+        if (STRNEQ(strings[i], str)) {
+            fprintf(stderr, "\n expected bitmap string '%s' actual string "
+                    "'%s'\n", strings[i], str);
+            goto cleanup;
+        }
+
+        VIR_FREE(str);
+        virBitmapFree(map);
+        map = NULL;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(str);
+    virBitmapFree(map);
+    return ret;
+}
+
 #undef TEST_MAP
 
 
@@ -710,6 +746,8 @@ mymain(void)
     TESTBINARYOP("0,2", "1,3", "0,^0", test11);
 
     if (virTestRun("test12", test12, NULL) < 0)
+        ret = -1;
+    if (virTestRun("test13", test13, NULL) < 0)
         ret = -1;
 
     return ret;

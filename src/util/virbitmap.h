@@ -80,6 +80,10 @@ bool virBitmapIsBitSet(virBitmapPtr bitmap, size_t b)
 int virBitmapGetBit(virBitmapPtr bitmap, size_t b, bool *result)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
 
+virBitmapPtr
+virBitmapNewString(const char *string)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
 char *virBitmapToString(virBitmapPtr bitmap, bool prefix, bool trim)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 

@@ -36,6 +36,7 @@
 #include "c-ctype.h"
 #include "count-one-bits.h"
 #include "virstring.h"
+#include "virutil.h"
 #include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -1070,6 +1071,43 @@ virBitmapCountBits(virBitmapPtr bitmap)
 
     return ret;
 }
+
+
+/**
+ * virBitmapNewString:
+ * @string: the string to be converted to a bitmap
+ *
+ * Allocate a bitmap from a string of hexadecimal data.
+ *
+ * Returns a pointer to the allocated bitmap or NULL if
+ * memory cannot be allocated.
+ */
+virBitmapPtr
+virBitmapNewString(const char *string)
+{
+    virBitmapPtr bitmap;
+    size_t i = 0;
+    size_t len = strlen(string);
+
+    if (strspn(string, "0123456789abcdefABCDEF") != len) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Invalid hexadecimal string '%s'"), string);
+        return NULL;
+    }
+
+    bitmap = virBitmapNew(len * 4);
+    if (!bitmap)
+        return NULL;
+
+    for (i = 0; i < len; i++) {
+        unsigned long nibble = virHexToBin(string[len - i - 1]);
+        nibble <<= VIR_BITMAP_BIT_OFFSET(i * 4);
+        bitmap->map[VIR_BITMAP_UNIT_OFFSET(i * 4)] |= nibble;
+    }
+
+    return bitmap;
+}
+
 
 /**
  * virBitmapDataFormat:
