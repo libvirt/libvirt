@@ -68,7 +68,7 @@ testBuildDomainDef(bool dynamic,
                    const char *baselabel)
 {
     virDomainDefPtr def;
-    virSecurityLabelDefPtr secdef;
+    virSecurityLabelDefPtr secdef = NULL;
 
     if (!(def = virDomainDefNew()))
         goto error;
@@ -98,6 +98,7 @@ testBuildDomainDef(bool dynamic,
 
  error:
     virDomainDefFree(def);
+    virSecurityLabelDefFree(secdef);
     return NULL;
 }
 
