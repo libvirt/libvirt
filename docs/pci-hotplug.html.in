@@ -33,9 +33,9 @@
       types, hence the way it's organized.
     </p>
 
-    <h2><a name="x86_64">x86_64 architecture</a></h2>
+    <h2><a id="x86_64">x86_64 architecture</a></h2>
 
-    <h3><a name="x86_64-q35">q35 machine type</a></h3>
+    <h3><a id="x86_64-q35">q35 machine type</a></h3>
 
     <p>
       This is a PCI Express native machine type. The default PCI topology
@@ -104,7 +104,7 @@
       from 0x01 to 0x1f of the <code>pci-bridge</code> controller.
     </p>
 
-    <h3><a name="x86_64-i440fx">i440fx (pc) machine type</a></h3>
+    <h3><a id="x86_64-i440fx">i440fx (pc) machine type</a></h3>
 
     <p>
       This is a legacy PCI native machine type. The default PCI
@@ -121,9 +121,9 @@
       assigned from the guest.
     </p>
 
-    <h2><a name="ppc64">ppc64 architecture</a></h2>
+    <h2><a id="ppc64">ppc64 architecture</a></h2>
 
-    <h3><a name="ppc64-pseries">pseries machine type</a></h3>
+    <h3><a id="ppc64-pseries">pseries machine type</a></h3>
 
     <p>
       The default PCI topology for the <code>pseries</code> machine
@@ -162,9 +162,9 @@
       from the host.
     </p>
 
-    <h2><a name="aarch64">aarch64 architecture</a></h2>
+    <h2><a id="aarch64">aarch64 architecture</a></h2>
 
-    <h3><a name="aarch64-virt">mach-virt (virt) machine type</a></h3>
+    <h3><a id="aarch64-virt">mach-virt (virt) machine type</a></h3>
 
     <p>
       This machine type mostly behaves the same as the
