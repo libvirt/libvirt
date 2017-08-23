@@ -1137,6 +1137,15 @@ typedef enum {
     VIR_DOMAIN_CHR_SPICEVMC_LAST
 } virDomainChrSpicevmcName;
 
+
+struct _virDomainChrSourceReconnectDef {
+    virTristateBool enabled;
+    unsigned int timeout;
+};
+typedef struct _virDomainChrSourceReconnectDef virDomainChrSourceReconnectDef;
+typedef virDomainChrSourceReconnectDef *virDomainChrSourceReconnectDefPtr;
+
+
 /* The host side information for a character device.  */
 struct _virDomainChrSourceDef {
     int type; /* virDomainChrType */
@@ -1159,6 +1168,7 @@ struct _virDomainChrSourceDef {
             bool tlscreds;
             int haveTLS; /* enum virTristateBool */
             bool tlsFromConfig;
+            virDomainChrSourceReconnectDef reconnect;
         } tcp;
         struct {
             char *bindHost;
@@ -1169,6 +1179,7 @@ struct _virDomainChrSourceDef {
         struct {
             char *path;
             bool listen;
+            virDomainChrSourceReconnectDef reconnect;
         } nix;
         int spicevmc;
         struct {

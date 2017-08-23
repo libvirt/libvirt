@@ -5130,6 +5130,12 @@ virDomainChrSourceDefValidate(const virDomainChrSourceDef *def,
                            _("Missing source service attribute for char device"));
             return -1;
         }
+
+        if (def->data.tcp.listen && def->data.tcp.reconnect.enabled) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("chardev reconnect is possible only for connect mode"));
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
@@ -5148,6 +5154,12 @@ virDomainChrSourceDefValidate(const virDomainChrSourceDef *def,
               chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing source path attribute for char device"));
+            return -1;
+        }
+
+        if (def->data.nix.listen && def->data.nix.reconnect.enabled) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("chardev reconnect is possible only for connect mode"));
             return -1;
         }
         break;
@@ -11115,6 +11127,56 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
     return ret;
 }
 
+static int
+virDomainChrSourceReconnectDefParseXML(virDomainChrSourceReconnectDefPtr def,
+                                       xmlNodePtr node,
+                                       xmlXPathContextPtr ctxt)
+{
+    int ret = -1;
+    int tmpVal;
+    char *tmp = NULL;
+    xmlNodePtr saveNode = ctxt->node;
+    xmlNodePtr cur;
+
+    ctxt->node = node;
+
+    if ((cur = virXPathNode("./reconnect", ctxt))) {
+        if ((tmp = virXMLPropString(cur, "enabled"))) {
+            if ((tmpVal = virTristateBoolTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("invalid reconnect enabled value: '%s'"),
+                               tmp);
+                goto cleanup;
+            }
+            def->enabled = tmpVal;
+            VIR_FREE(tmp);
+        }
+
+        if (def->enabled == VIR_TRISTATE_BOOL_YES) {
+            if ((tmp = virXMLPropString(cur, "timeout"))) {
+                if (virStrToLong_ui(tmp, NULL, 10, &def->timeout) < 0) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("invalid reconnect timeout value: '%s'"),
+                                   tmp);
+                    goto cleanup;
+                }
+                VIR_FREE(tmp);
+            } else {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("missing timeout for chardev with "
+                                 "reconnect enabled"));
+                goto cleanup;
+            }
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    ctxt->node = saveNode;
+    VIR_FREE(tmp);
+    return ret;
+}
+
 
 typedef enum {
     VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT,
@@ -11152,6 +11214,7 @@ virDomainChrSourceDefParseMode(xmlNodePtr source)
 static int
 virDomainChrSourceDefParseTCP(virDomainChrSourceDefPtr def,
                               xmlNodePtr source,
+                              xmlXPathContextPtr ctxt,
                               unsigned int flags)
 {
     int mode;
@@ -11187,6 +11250,12 @@ virDomainChrSourceDefParseTCP(virDomainChrSourceDefPtr def,
         VIR_FREE(tmp);
     }
 
+    if (virDomainChrSourceReconnectDefParseXML(&def->data.tcp.reconnect,
+                                               source,
+                                               ctxt) < 0) {
+        goto error;
+    }
+
     return 0;
 
  error:
@@ -11220,7 +11289,8 @@ virDomainChrSourceDefParseUDP(virDomainChrSourceDefPtr def,
 
 static int
 virDomainChrSourceDefParseUnix(virDomainChrSourceDefPtr def,
-                               xmlNodePtr source)
+                               xmlNodePtr source,
+                               xmlXPathContextPtr ctxt)
 {
 
     int mode;
@@ -11230,6 +11300,12 @@ virDomainChrSourceDefParseUnix(virDomainChrSourceDefPtr def,
 
     def->data.nix.listen = mode == VIR_DOMAIN_CHR_SOURCE_MODE_BIND;
     def->data.nix.path = virXMLPropString(source, "path");
+
+    if (virDomainChrSourceReconnectDefParseXML(&def->data.nix.reconnect,
+                                               source,
+                                               ctxt) < 0) {
+        return -1;
+    }
 
     return 0;
 }
@@ -11359,7 +11435,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_UNIX:
-                if (virDomainChrSourceDefParseUnix(def, cur) < 0)
+                if (virDomainChrSourceDefParseUnix(def, cur, ctxt) < 0)
                     goto error;
                 break;
 
@@ -11369,7 +11445,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 break;
 
             case VIR_DOMAIN_CHR_TYPE_TCP:
-                if (virDomainChrSourceDefParseTCP(def, cur, flags) < 0)
+                if (virDomainChrSourceDefParseTCP(def, cur, ctxt, flags) < 0)
                     goto error;
                 break;
 
@@ -11613,6 +11689,7 @@ virDomainChrDefParseXML(virDomainXMLOptionPtr xmlopt,
 static virDomainSmartcardDefPtr
 virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
                               xmlNodePtr node,
+                              xmlXPathContextPtr ctxt,
                               unsigned int flags)
 {
     xmlNodePtr cur;
@@ -11705,7 +11782,7 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
 
         cur = node->children;
         if (virDomainChrSourceDefParseXML(def->data.passthru, cur, flags,
-                                          NULL, NULL, NULL, 0) < 0)
+                                          NULL, ctxt, NULL, 0) < 0)
             goto error;
 
         if (def->data.passthru->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
@@ -14183,6 +14260,7 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
 static virDomainRedirdevDefPtr
 virDomainRedirdevDefParseXML(virDomainXMLOptionPtr xmlopt,
                              xmlNodePtr node,
+                             xmlXPathContextPtr ctxt,
                              virHashTablePtr bootHash,
                              unsigned int flags)
 {
@@ -14224,7 +14302,7 @@ virDomainRedirdevDefParseXML(virDomainXMLOptionPtr xmlopt,
     /* boot gets parsed in virDomainDeviceInfoParseXML
      * source gets parsed in virDomainChrSourceDefParseXML */
     if (virDomainChrSourceDefParseXML(def->source, cur, flags,
-                                      NULL, NULL, NULL, 0) < 0)
+                                      NULL, ctxt, NULL, 0) < 0)
         goto error;
 
     if (def->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC)
@@ -14883,7 +14961,7 @@ virDomainDeviceDefParse(const char *xmlStr,
         break;
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         if (!(dev->data.redirdev = virDomainRedirdevDefParseXML(xmlopt, node,
-                                                                NULL, flags)))
+                                                                ctxt, NULL, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_RNG:
@@ -14902,7 +14980,7 @@ virDomainDeviceDefParse(const char *xmlStr,
         break;
     case VIR_DOMAIN_DEVICE_SMARTCARD:
         if (!(dev->data.smartcard = virDomainSmartcardDefParseXML(xmlopt, node,
-                                                                  flags)))
+                                                                  ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
@@ -18600,6 +18678,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     for (i = 0; i < n; i++) {
         virDomainSmartcardDefPtr card = virDomainSmartcardDefParseXML(xmlopt,
                                                                       nodes[i],
+                                                                      ctxt,
                                                                       flags);
         if (!card)
             goto error;
@@ -18949,7 +19028,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     for (i = 0; i < n; i++) {
         virDomainRedirdevDefPtr redirdev =
-            virDomainRedirdevDefParseXML(xmlopt, nodes[i], bootHash, flags);
+            virDomainRedirdevDefParseXML(xmlopt, nodes[i], ctxt, bootHash, flags);
         if (!redirdev)
             goto error;
 
@@ -23070,6 +23149,24 @@ virDomainChrAttrsDefFormat(virBufferPtr buf,
     return 0;
 }
 
+
+static void
+virDomainChrSourceReconnectDefFormat(virBufferPtr buf,
+                                     virDomainChrSourceReconnectDefPtr def)
+{
+    if (def->enabled == VIR_TRISTATE_BOOL_ABSENT)
+        return;
+
+    virBufferAsprintf(buf, "<reconnect enabled='%s'",
+                      virTristateBoolTypeToString(def->enabled));
+
+    if (def->enabled == VIR_TRISTATE_BOOL_YES)
+        virBufferAsprintf(buf, " timeout='%u'", def->timeout);
+
+    virBufferAddLit(buf, "/>\n");
+}
+
+
 static int
 virDomainChrSourceDefFormat(virBufferPtr buf,
                             virDomainChrSourceDefPtr def,
@@ -23150,6 +23247,9 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
             virBufferAsprintf(&attrBuf, " tlsFromConfig='%d'",
                               def->data.tcp.tlsFromConfig);
 
+        virDomainChrSourceReconnectDefFormat(&childBuf,
+                                             &def->data.tcp.reconnect);
+
         if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
             goto error;
 
@@ -23165,6 +23265,9 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
             virBufferEscapeString(&attrBuf, " path='%s'", def->data.nix.path);
             virDomainSourceDefFormatSeclabel(&childBuf, def->nseclabels,
                                              def->seclabels, flags);
+
+            virDomainChrSourceReconnectDefFormat(&childBuf,
+                                                 &def->data.nix.reconnect);
 
             if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
                 goto error;

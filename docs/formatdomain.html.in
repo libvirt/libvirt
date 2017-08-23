@@ -6298,6 +6298,17 @@ qemu-kvm -net nic,model=? /dev/null
       slot.
     </p>
 
+    <p>
+      For character device with type <code>unix</code> or <code>tcp</code>
+      the <code>source</code> has an optional element <code>reconnect</code>
+      which configures reconnect timeout if the connection is lost.
+      There are two attributes, <code>enabled</code> where possible
+      values are "yes" and "no" and <code>timeout</code> which is in
+      seconds. The <code>reconnect</code> attribute is valid only
+      for <code>connect</code> mode.
+      <span class="since">Since 3.7.0 (QEMU driver only)</span>.
+    </p>
+
     <h5><a id="elementsCharGuestInterface">Guest interface</a></h5>
 
     <p>
