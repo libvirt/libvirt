@@ -55,6 +55,11 @@
           Please refer to the bhyve driver documentation for examples.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Added support for setting heads of virtio GPU
+        </summary>
+      </change>
     </section>
     <section title="Improvements">
     </section>
