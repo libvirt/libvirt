@@ -64,6 +64,26 @@
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: Better support for international domain names (with wide characters)
+        </summary>
+        <description>
+          There were some issues with multi-byte domains getting lost
+          on daemon restart due to truncation, so the code now handles
+          multi-byte names a bit better.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Support long domain names with namespaces
+        </summary>
+        <description>
+          Domains with extremely long names would fail to start due to
+          temporary namespace paths being created with the whole name.
+          The path is now generated with shortened name instead.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.6.0" date="2017-08-02">
