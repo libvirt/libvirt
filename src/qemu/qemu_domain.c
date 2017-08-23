@@ -7827,14 +7827,18 @@ qemuDomainGetPreservedMountPath(virQEMUDriverConfigPtr cfg,
     char *path = NULL;
     char *tmp;
     const char *suffix = mountpoint + strlen(DEVPREFIX);
+    char *domname = virDomainObjGetShortName(vm->def);
     size_t off;
+
+    if (!domname)
+        return NULL;
 
     if (STREQ(mountpoint, "/dev"))
         suffix = "dev";
 
     if (virAsprintf(&path, "%s/%s.%s",
-                    cfg->stateDir, vm->def->name, suffix) < 0)
-        return NULL;
+                    cfg->stateDir, domname, suffix) < 0)
+        goto cleanup;
 
     /* Now consider that @mountpoint is "/dev/blah/blah2".
      * @suffix then points to "blah/blah2". However, caller
@@ -7850,6 +7854,8 @@ qemuDomainGetPreservedMountPath(virQEMUDriverConfigPtr cfg,
         tmp++;
     }
 
+ cleanup:
+    VIR_FREE(domname);
     return path;
 }
 
