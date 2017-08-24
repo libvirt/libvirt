@@ -21500,14 +21500,8 @@ virDomainDiskSourceDefFormatSeclabel(virBufferPtr buf,
     size_t n;
 
     if (nseclabels && !skipSeclables) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
         for (n = 0; n < nseclabels; n++)
             virSecurityDeviceLabelDefFormat(buf, seclabels[n], flags);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</source>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
     }
 }
 
@@ -21580,6 +21574,10 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
                                   bool skipSeclabels)
 {
     const char *startupPolicy = NULL;
+    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+
+    virBufferSetChildIndent(&childBuf, buf);
 
     if (policy)
         startupPolicy = virDomainStartupPolicyTypeToString(policy);
@@ -21587,51 +21585,45 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
     if (src->path || src->nhosts > 0 || src->srcpool || startupPolicy) {
         switch ((virStorageType)src->type) {
         case VIR_STORAGE_TYPE_FILE:
-            virBufferAddLit(buf, "<source");
-            virBufferEscapeString(buf, " file='%s'", src->path);
-            virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
+            virBufferEscapeString(&attrBuf, " file='%s'", src->path);
+            virBufferEscapeString(&attrBuf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
+            virDomainDiskSourceDefFormatSeclabel(&childBuf, src->nseclabels,
                                                  src->seclabels, flags,
                                                  skipSeclabels);
             break;
 
         case VIR_STORAGE_TYPE_BLOCK:
-            virBufferAddLit(buf, "<source");
-            virBufferEscapeString(buf, " dev='%s'", src->path);
-            virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
+            virBufferEscapeString(&attrBuf, " dev='%s'", src->path);
+            virBufferEscapeString(&attrBuf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
+            virDomainDiskSourceDefFormatSeclabel(&childBuf, src->nseclabels,
                                                  src->seclabels, flags,
                                                  skipSeclabels);
             break;
 
         case VIR_STORAGE_TYPE_DIR:
-            virBufferAddLit(buf, "<source");
-            virBufferEscapeString(buf, " dir='%s'", src->path);
-            virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
-            virBufferAddLit(buf, "/>\n");
+            virBufferEscapeString(&attrBuf, " dir='%s'", src->path);
+            virBufferEscapeString(&attrBuf, " startupPolicy='%s'", startupPolicy);
             break;
 
         case VIR_STORAGE_TYPE_NETWORK:
             if (virDomainDiskSourceFormatNetwork(buf, src) < 0)
-                return -1;
+                goto error;
             break;
 
         case VIR_STORAGE_TYPE_VOLUME:
-            virBufferAddLit(buf, "<source");
-
             if (src->srcpool) {
-                virBufferEscapeString(buf, " pool='%s'", src->srcpool->pool);
-                virBufferEscapeString(buf, " volume='%s'",
+                virBufferEscapeString(&attrBuf, " pool='%s'", src->srcpool->pool);
+                virBufferEscapeString(&attrBuf, " volume='%s'",
                                       src->srcpool->volume);
                 if (src->srcpool->mode)
-                    virBufferAsprintf(buf, " mode='%s'",
+                    virBufferAsprintf(&attrBuf, " mode='%s'",
                                       virStorageSourcePoolModeTypeToString(src->srcpool->mode));
             }
-            virBufferEscapeString(buf, " startupPolicy='%s'", startupPolicy);
+            virBufferEscapeString(&attrBuf, " startupPolicy='%s'", startupPolicy);
 
-            virDomainDiskSourceDefFormatSeclabel(buf, src->nseclabels,
+            virDomainDiskSourceDefFormatSeclabel(&childBuf, src->nseclabels,
                                                  src->seclabels, flags,
                                                  skipSeclabels);
             break;
@@ -21640,11 +21632,19 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
         case VIR_STORAGE_TYPE_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected disk type %d"), src->type);
-            return -1;
+            goto error;
         }
+
+        if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
+            goto error;
     }
 
     return 0;
+
+ error:
+    virBufferFreeAndReset(&attrBuf);
+    virBufferFreeAndReset(&childBuf);
+    return -1;
 }
 
 
@@ -23070,11 +23070,15 @@ virDomainChrAttrsDefFormat(virBufferPtr buf,
     return 0;
 }
 
-static void
+static int
 virDomainChrSourceDefFormat(virBufferPtr buf,
                             virDomainChrSourceDefPtr def,
                             unsigned int flags)
 {
+    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+
+    virBufferSetChildIndent(&childBuf, buf);
 
     switch ((virDomainChrType)def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
@@ -23092,14 +23096,17 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         if (def->type != VIR_DOMAIN_CHR_TYPE_PTY ||
             (def->data.file.path &&
              !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))) {
-            virBufferEscapeString(buf, "<source path='%s'",
+            virBufferEscapeString(&attrBuf, " path='%s'",
                                   def->data.file.path);
             if (def->type == VIR_DOMAIN_CHR_TYPE_FILE &&
                 def->data.file.append != VIR_TRISTATE_SWITCH_ABSENT)
-                virBufferAsprintf(buf, " append='%s'",
+                virBufferAsprintf(&attrBuf, " append='%s'",
                     virTristateSwitchTypeToString(def->data.file.append));
-            virDomainSourceDefFormatSeclabel(buf, def->nseclabels,
+            virDomainSourceDefFormatSeclabel(&childBuf, def->nseclabels,
                                              def->seclabels, flags);
+
+            if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
+                goto error;
         }
         break;
 
@@ -23130,19 +23137,21 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        virBufferAsprintf(buf, "<source mode='%s' ",
+        virBufferAsprintf(&attrBuf, " mode='%s' ",
                           def->data.tcp.listen ? "bind" : "connect");
-        virBufferEscapeString(buf, "host='%s' ", def->data.tcp.host);
-        virBufferEscapeString(buf, "service='%s'", def->data.tcp.service);
+        virBufferEscapeString(&attrBuf, "host='%s' ", def->data.tcp.host);
+        virBufferEscapeString(&attrBuf, "service='%s'", def->data.tcp.service);
         if (def->data.tcp.haveTLS != VIR_TRISTATE_BOOL_ABSENT &&
             !(flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
               def->data.tcp.tlsFromConfig))
-            virBufferAsprintf(buf, " tls='%s'",
+            virBufferAsprintf(&attrBuf, " tls='%s'",
                     virTristateBoolTypeToString(def->data.tcp.haveTLS));
         if (flags & VIR_DOMAIN_DEF_FORMAT_STATUS)
-            virBufferAsprintf(buf, " tlsFromConfig='%d'",
+            virBufferAsprintf(&attrBuf, " tlsFromConfig='%d'",
                               def->data.tcp.tlsFromConfig);
-        virBufferAddLit(buf, "/>\n");
+
+        if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
+            goto error;
 
         virBufferAsprintf(buf, "<protocol type='%s'/>\n",
                           virDomainChrTcpProtocolTypeToString(
@@ -23151,11 +23160,14 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (def->data.nix.path) {
-            virBufferAsprintf(buf, "<source mode='%s'",
+            virBufferAsprintf(&attrBuf, " mode='%s'",
                               def->data.nix.listen ? "bind" : "connect");
-            virBufferEscapeString(buf, " path='%s'", def->data.nix.path);
-            virDomainSourceDefFormatSeclabel(buf, def->nseclabels,
+            virBufferEscapeString(&attrBuf, " path='%s'", def->data.nix.path);
+            virDomainSourceDefFormatSeclabel(&childBuf, def->nseclabels,
                                              def->seclabels, flags);
+
+            if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
+                goto error;
         }
         break;
 
@@ -23175,7 +23187,12 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    return;
+    return 0;
+
+ error:
+    virBufferFreeAndReset(&attrBuf);
+    virBufferFreeAndReset(&childBuf);
+    return -1;
 }
 
 static int
