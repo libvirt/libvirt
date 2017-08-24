@@ -3517,6 +3517,58 @@ storageBackendProbeTarget(virStorageSourcePtr target,
 
 
 /**
+ * virStorageBackendRefreshVolTargetUpdate:
+ * @vol: Volume def that needs updating
+ *
+ * Attempt to probe the volume in order to get more details.
+ *
+ * Returns 0 on success, -2 to ignore failure, -1 on failure
+ */
+int
+virStorageBackendRefreshVolTargetUpdate(virStorageVolDefPtr vol)
+{
+    int err;
+
+    /* Real value is filled in during probe */
+    vol->target.format = VIR_STORAGE_FILE_RAW;
+
+    if ((err = storageBackendProbeTarget(&vol->target,
+                                         &vol->target.encryption)) < 0) {
+        if (err == -2) {
+            return -2;
+        } else if (err == -3) {
+            /* The backing file is currently unavailable, its format is not
+             * explicitly specified, the probe to auto detect the format
+             * failed: continue with faked RAW format, since AUTO will
+             * break virStorageVolTargetDefFormat() generating the line
+             * <format type='...'/>. */
+        } else {
+            return -1;
+        }
+    }
+
+    /* directory based volume */
+    if (vol->target.format == VIR_STORAGE_FILE_DIR)
+        vol->type = VIR_STORAGE_VOL_DIR;
+
+    if (vol->target.format == VIR_STORAGE_FILE_PLOOP)
+        vol->type = VIR_STORAGE_VOL_PLOOP;
+
+    if (vol->target.backingStore) {
+        ignore_value(storageBackendUpdateVolTargetInfo(VIR_STORAGE_VOL_FILE,
+                                                       vol->target.backingStore,
+                                                       false,
+                                                       VIR_STORAGE_VOL_OPEN_DEFAULT, 0));
+        /* If this failed, the backing file is currently unavailable,
+         * the capacity, allocation, owner, group and mode are unknown.
+         * An error message was raised, but we just continue. */
+    }
+
+    return 0;
+}
+
+
+/**
  * Iterate over the pool's directory and enumerate all disk images
  * within it. This is non-recursive.
  */
@@ -3552,7 +3604,6 @@ virStorageBackendRefreshLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
             goto cleanup;
 
         vol->type = VIR_STORAGE_VOL_FILE;
-        vol->target.format = VIR_STORAGE_FILE_RAW; /* Real value is filled in during probe */
         if (virAsprintf(&vol->target.path, "%s/%s",
                         pool->def->target.path,
                         vol->name) < 0)
@@ -3561,40 +3612,15 @@ virStorageBackendRefreshLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (VIR_STRDUP(vol->key, vol->target.path) < 0)
             goto cleanup;
 
-        if ((err = storageBackendProbeTarget(&vol->target,
-                                             &vol->target.encryption)) < 0) {
+        if ((err = virStorageBackendRefreshVolTargetUpdate(vol)) < 0) {
             if (err == -2) {
                 /* Silently ignore non-regular files,
                  * eg 'lost+found', dangling symbolic link */
                 virStorageVolDefFree(vol);
                 vol = NULL;
                 continue;
-            } else if (err == -3) {
-                /* The backing file is currently unavailable, its format is not
-                 * explicitly specified, the probe to auto detect the format
-                 * failed: continue with faked RAW format, since AUTO will
-                 * break virStorageVolTargetDefFormat() generating the line
-                 * <format type='...'/>. */
-            } else {
-                goto cleanup;
             }
-        }
-
-        /* directory based volume */
-        if (vol->target.format == VIR_STORAGE_FILE_DIR)
-            vol->type = VIR_STORAGE_VOL_DIR;
-
-        if (vol->target.format == VIR_STORAGE_FILE_PLOOP)
-            vol->type = VIR_STORAGE_VOL_PLOOP;
-
-        if (vol->target.backingStore) {
-            ignore_value(storageBackendUpdateVolTargetInfo(VIR_STORAGE_VOL_FILE,
-                                                           vol->target.backingStore,
-                                                           false,
-                                                           VIR_STORAGE_VOL_OPEN_DEFAULT, 0));
-            /* If this failed, the backing file is currently unavailable,
-             * the capacity, allocation, owner, group and mode are unknown.
-             * An error message was raised, but we just continue. */
+            goto cleanup;
         }
 
         if (VIR_APPEND_ELEMENT(pool->volumes.objs, pool->volumes.count, vol) < 0)

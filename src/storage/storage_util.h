@@ -90,6 +90,9 @@ int virStorageBackendDeleteLocal(virConnectPtr conn,
                                  virStoragePoolObjPtr pool,
                                  unsigned int flags);
 
+int
+virStorageBackendRefreshVolTargetUpdate(virStorageVolDefPtr vol);
+
 int virStorageBackendRefreshLocal(virConnectPtr conn,
                                   virStoragePoolObjPtr pool);
 
