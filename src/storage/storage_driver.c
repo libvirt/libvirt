@@ -2496,8 +2496,11 @@ storageVolWipePattern(virStorageVolPtr vol,
     if (backend->wipeVol(vol->conn, obj, voldef, algorithm, flags) < 0)
         goto cleanup;
 
-    if (backend->refreshVol &&
-        backend->refreshVol(vol->conn, obj, voldef) < 0)
+    /* Instead of using the refreshVol, since much changes on the target
+     * volume, let's update using the same function as refreshPool would
+     * use when it discovers a volume. The only failure to capture is -1,
+     * we can ignore -2. */
+    if (virStorageBackendRefreshVolTargetUpdate(voldef) == -1)
         goto cleanup;
 
     ret = 0;
