@@ -102,6 +102,15 @@ void virBufferURIEncodeString(virBufferPtr buf, const char *str);
 void virBufferAdjustIndent(virBufferPtr buf, int indent);
 void virBufferSetIndent(virBufferPtr, int indent);
 
+/**
+ * virBufferSetChildIndent
+ *
+ * Gets the parent indentation, increments it by 2 and sets it to
+ * child buffer.
+ */
+# define virBufferSetChildIndent(childBuf_, parentBuf_) \
+    virBufferAdjustIndent(childBuf_, virBufferGetIndent(parentBuf_, false) + 2)
+
 int virBufferGetIndent(const virBuffer *buf, bool dynamic);
 
 void virBufferTrim(virBufferPtr buf, const char *trim, int len);

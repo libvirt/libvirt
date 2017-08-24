@@ -22015,7 +22015,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     const char *modelName = NULL;
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
+    virBufferSetChildIndent(&childBuf, buf);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -23298,7 +23298,7 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
+    virBufferSetChildIndent(&childBuf, buf);
 
     if (!mode) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -23407,7 +23407,7 @@ virDomainSoundDefFormat(virBufferPtr buf,
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
+    virBufferSetChildIndent(&childBuf, buf);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -23443,7 +23443,6 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
 {
     const char *model = virDomainMemballoonModelTypeToString(def->model);
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
-    int indent = virBufferGetIndent(buf, false);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -23457,7 +23456,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " autodeflate='%s'",
                           virTristateSwitchTypeToString(def->autodeflate));
 
-    virBufferAdjustIndent(&childrenBuf, indent + 2);
+    virBufferSetChildIndent(&childrenBuf, buf);
 
     if (def->period)
         virBufferAsprintf(&childrenBuf, "<stats period='%i'/>\n", def->period);
@@ -23519,7 +23518,7 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
     const char *action = virDomainWatchdogActionTypeToString(def->action);
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
+    virBufferSetChildIndent(&childBuf, buf);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -23556,7 +23555,6 @@ static int virDomainPanicDefFormat(virBufferPtr buf,
                                    virDomainPanicDefPtr def)
 {
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
-    int indent = virBufferGetIndent(buf, false);
 
     virBufferAddLit(buf, "<panic");
 
@@ -23564,7 +23562,7 @@ static int virDomainPanicDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " model='%s'",
                           virDomainPanicModelTypeToString(def->model));
 
-    virBufferAdjustIndent(&childrenBuf, indent + 2);
+    virBufferSetChildIndent(&childrenBuf, buf);
     virDomainDeviceInfoFormat(&childrenBuf, &def->info, 0);
 
     if (virBufferCheckError(&childrenBuf) < 0)
@@ -23899,7 +23897,7 @@ virDomainInputDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<input type='%s' bus='%s'",
                       type, bus);
 
-    virBufferAdjustIndent(&childbuf, virBufferGetIndent(buf, false) + 2);
+    virBufferSetChildIndent(&childbuf, buf);
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
     if (virBufferCheckError(&driverBuf) < 0)
         return -1;
@@ -24549,7 +24547,7 @@ virDomainHubDefFormat(virBufferPtr buf,
     const char *type = virDomainHubTypeToString(def->type);
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
+    virBufferSetChildIndent(&childBuf, buf);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -24762,7 +24760,7 @@ virDomainCputuneDefFormat(virBufferPtr buf,
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
-    virBufferAdjustIndent(&childrenBuf, virBufferGetIndent(buf, false) + 2);
+    virBufferSetChildIndent(&childrenBuf, buf);
 
     if (def->cputune.sharesSpecified)
         virBufferAsprintf(&childrenBuf, "<shares>%llu</shares>\n",
@@ -24944,7 +24942,7 @@ virDomainIOMMUDefFormat(virBufferPtr buf,
 {
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAdjustIndent(&childBuf, virBufferGetIndent(buf, false) + 2);
+    virBufferSetChildIndent(&childBuf, buf);
 
     if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT ||
         iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT ||
@@ -24998,7 +24996,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     int n;
     size_t i;
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
-    int indent;
     char *netprefix = NULL;
 
     virCheckFlags(VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS |
@@ -25076,8 +25073,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                       def->mem.cur_balloon);
 
     /* start format blkiotune */
-    indent = virBufferGetIndent(buf, false);
-    virBufferAdjustIndent(&childrenBuf, indent + 2);
+    virBufferSetChildIndent(&childrenBuf, buf);
     if (def->blkio.weight)
         virBufferAsprintf(&childrenBuf, "<weight>%u</weight>\n",
                           def->blkio.weight);

@@ -599,7 +599,6 @@ virCPUDefFormatBufFull(virBufferPtr buf,
     int ret = -1;
     virBuffer attributeBuf = VIR_BUFFER_INITIALIZER;
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
-    int indent = virBufferGetIndent(buf, false);
 
     if (!def)
         return 0;
@@ -636,7 +635,7 @@ virCPUDefFormatBufFull(virBufferPtr buf,
     }
 
     /* Format children */
-    virBufferAdjustIndent(&childrenBuf, indent + 2);
+    virBufferSetChildIndent(&childrenBuf, buf);
     if (def->type == VIR_CPU_TYPE_HOST && def->arch)
         virBufferAsprintf(&childrenBuf, "<arch>%s</arch>\n",
                           virArchToString(def->arch));

@@ -872,7 +872,6 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
 {
     size_t i = 0;
     size_t j = 0;
-    int indent = virBufferGetIndent(buf, false);
     virBuffer controlBuf = VIR_BUFFER_INITIALIZER;
 
     if (!ncaches)
@@ -903,7 +902,7 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
                           cpus_str);
         VIR_FREE(cpus_str);
 
-        virBufferAdjustIndent(&controlBuf, indent + 4);
+        virBufferSetChildIndent(&controlBuf, buf);
         for (j = 0; j < bank->ncontrols; j++) {
             bool min_kilos = !(bank->controls[j]->granularity % 1024);
 
