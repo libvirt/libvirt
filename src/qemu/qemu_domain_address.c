@@ -982,8 +982,6 @@ int
 qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
                                    virDomainDeviceDefPtr dev)
 {
-    int ret = -1;
-
     /* Only host devices need their isolation group to be different from
      * the default. Interfaces of type hostdev are just host devices in
      * disguise, but we don't need to handle them separately because for
@@ -1012,12 +1010,11 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
         tmp = virPCIDeviceAddressGetIOMMUGroupNum(hostAddr);
 
         if (tmp < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Can't look up isolation group for host device "
-                             "%04x:%02x:%02x.%x"),
-                           hostAddr->domain, hostAddr->bus,
-                           hostAddr->slot, hostAddr->function);
-            goto cleanup;
+            VIR_WARN("Can't look up isolation group for host device "
+                     "%04x:%02x:%02x.%x, device won't be isolated",
+                     hostAddr->domain, hostAddr->bus,
+                     hostAddr->slot, hostAddr->function);
+            goto skip;
         }
 
         /* The isolation group for a host device is its IOMMU group,
@@ -1057,12 +1054,11 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
         tmp = qemuDomainFindUnusedIsolationGroup(def);
 
         if (tmp == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Can't obtain usable isolation group for "
-                             "interface configured to use hostdev-backed "
-                             "network '%s'"),
-                             iface->data.network.name);
-            goto cleanup;
+            VIR_WARN("Can't obtain usable isolation group for interface "
+                     "configured to use hostdev-backed network '%s', "
+                     "device won't be isolated",
+                     iface->data.network.name);
+            goto skip;
         }
 
         info->isolationGroup = tmp;
@@ -1073,10 +1069,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
     }
 
  skip:
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
