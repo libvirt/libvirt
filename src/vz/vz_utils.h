@@ -116,7 +116,7 @@ struct vzDomObj {
 
 typedef struct vzDomObj *vzDomObjPtr;
 
-void* vzDomObjAlloc(void);
+void* vzDomObjAlloc(void *opaque);
 void vzDomObjFree(void *p);
 
 virDomainObjPtr vzDomObjFromDomain(virDomainPtr domain);
