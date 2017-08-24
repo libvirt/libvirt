@@ -1012,10 +1012,11 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
         tmp = virPCIDeviceAddressGetIOMMUGroupNum(hostAddr);
 
         if (tmp < 0) {
-            VIR_WARN("Can't look up isolation group for host device "
-                     "%04x:%02x:%02x.%x",
-                     hostAddr->domain, hostAddr->bus,
-                     hostAddr->slot, hostAddr->function);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Can't look up isolation group for host device "
+                             "%04x:%02x:%02x.%x"),
+                           hostAddr->domain, hostAddr->bus,
+                           hostAddr->slot, hostAddr->function);
             goto cleanup;
         }
 
@@ -1056,9 +1057,11 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
         tmp = qemuDomainFindUnusedIsolationGroup(def);
 
         if (tmp == 0) {
-            VIR_WARN("Can't obtain usable isolation group for interface "
-                     "configured to use hostdev-backed network '%s'",
-                     iface->data.network.name);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Can't obtain usable isolation group for "
+                             "interface configured to use hostdev-backed "
+                             "network '%s'"),
+                             iface->data.network.name);
             goto cleanup;
         }
 
