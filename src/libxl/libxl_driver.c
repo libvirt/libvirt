@@ -5374,7 +5374,7 @@ libxlDomainBlockStatsVBD(virDomainObjPtr vm,
     int devno = libxlDiskPathToID(dev);
     int size;
     char *path, *name, *val;
-    unsigned long long stat;
+    unsigned long long status;
 
     path = name = val = NULL;
     if (devno < 0) {
@@ -5401,12 +5401,12 @@ libxlDomainBlockStatsVBD(virDomainObjPtr vm,
 # define LIBXL_SET_VBDSTAT(FIELD, VAR, MUL)           \
     if ((virAsprintf(&name, "%s/"FIELD, path) < 0) || \
         (virFileReadAll(name, 256, &val) < 0) ||      \
-        (sscanf(val, "%llu", &stat) != 1)) {          \
+        (sscanf(val, "%llu", &status) != 1)) {        \
         virReportError(VIR_ERR_OPERATION_FAILED,      \
                        _("cannot read %s"), name);    \
         goto cleanup;                                 \
     }                                                 \
-    VAR += (stat * MUL);                              \
+    VAR += (status * MUL);                            \
     VIR_FREE(name);                                   \
     VIR_FREE(val);
 
