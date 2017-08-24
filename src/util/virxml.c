@@ -1354,3 +1354,50 @@ virXMLValidatorFree(virXMLValidatorPtr validator)
     xmlRelaxNGFree(validator->rng);
     VIR_FREE(validator);
 }
+
+
+/**
+ * virXMLFormatElement
+ * @buf: the parent buffer where the element will be placed
+ * @name: the name of the element
+ * @attrBuf: buffer with attributes for element, may be NULL
+ * @childBuf: buffer with child elements, may be NULL
+ *
+ * Helper to format element where attributes or child elements
+ * are optional and may not be formatted.  If both @attrBuf and
+ * @childBuf are NULL or are empty buffers the element is not
+ * formatted.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virXMLFormatElement(virBufferPtr buf,
+                    const char *name,
+                    virBufferPtr attrBuf,
+                    virBufferPtr childBuf)
+{
+    if ((!attrBuf || virBufferUse(attrBuf) == 0) &&
+        (!childBuf || virBufferUse(childBuf) == 0)) {
+        return 0;
+    }
+
+    if ((attrBuf && virBufferCheckError(attrBuf) < 0) ||
+        (childBuf && virBufferCheckError(childBuf) < 0)) {
+        return -1;
+    }
+
+    virBufferAsprintf(buf, "<%s", name);
+
+    if (attrBuf && virBufferUse(attrBuf) > 0)
+        virBufferAddBuffer(buf, attrBuf);
+
+    if (childBuf && virBufferUse(childBuf) > 0) {
+        virBufferAddLit(buf, ">\n");
+        virBufferAddBuffer(buf, childBuf);
+        virBufferAsprintf(buf, "</%s>\n", name);
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    return 0;
+}

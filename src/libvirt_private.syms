@@ -2956,6 +2956,7 @@ virVHBAPathExists;
 virXMLCheckIllegalChars;
 virXMLChildElementCount;
 virXMLExtractNamespaceXML;
+virXMLFormatElement;
 virXMLNodeContentString;
 virXMLNodeNameEqual;
 virXMLNodeSanitizeNamespaces;

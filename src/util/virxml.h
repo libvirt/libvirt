@@ -215,4 +215,10 @@ virXMLValidateAgainstSchema(const char *schemafile,
 void
 virXMLValidatorFree(virXMLValidatorPtr validator);
 
+int
+virXMLFormatElement(virBufferPtr buf,
+                    const char *name,
+                    virBufferPtr attrBuf,
+                    virBufferPtr childBuf);
+
 #endif                          /* __VIR_XML_H__ */
