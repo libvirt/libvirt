@@ -2390,6 +2390,19 @@ esxVI_GetVirtualMachineQuestionInfo
 }
 
 
+int
+esxVI_GetVirtualMachineMORef(esxVI_ObjectContent *virtualMachine,
+                             char **moref)
+{
+    for (; virtualMachine != NULL; virtualMachine = virtualMachine->_next) {
+        if (virtualMachine->obj &&
+            STREQ(virtualMachine->obj->type, "VirtualMachine") &&
+            virtualMachine->obj->value) {
+            return VIR_STRDUP(*moref, virtualMachine->obj->value);
+        }
+    }
+    return -1;
+}
 
 int
 esxVI_GetBoolean(esxVI_ObjectContent *objectContent, const char *propertyName,

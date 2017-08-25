@@ -334,6 +334,10 @@ int esxVI_GetVirtualMachineQuestionInfo
       (esxVI_ObjectContent *virtualMachine,
        esxVI_VirtualMachineQuestionInfo **questionInfo);
 
+int esxVI_GetVirtualMachineMORef
+      (esxVI_ObjectContent *virtualMachine,
+       char **moref);
+
 int esxVI_GetBoolean(esxVI_ObjectContent *objectContent,
                      const char *propertyName,
                      esxVI_Boolean *value, esxVI_Occurrence occurrence);

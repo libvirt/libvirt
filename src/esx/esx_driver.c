@@ -2645,6 +2645,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     esxVI_ObjectContent *virtualMachine = NULL;
     esxVI_VirtualMachinePowerState powerState;
     int id;
+    char *moref = NULL;
     char *vmPathName = NULL;
     char *datastoreName = NULL;
     char *directoryName = NULL;
@@ -2670,6 +2671,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         esxVI_LookupVirtualMachineByUuid(priv->primary, domain->uuid,
                                          propertyNameList, &virtualMachine,
                                          esxVI_Occurrence_RequiredItem) < 0 ||
+        esxVI_GetVirtualMachineMORef(virtualMachine, &moref) < 0 ||
         esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0 ||
         esxVI_GetVirtualMachineIdentity(virtualMachine, &id, NULL, NULL) < 0 ||
         esxVI_GetStringValue(virtualMachine, "config.files.vmPathName",
@@ -2715,6 +2717,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     ctx.formatFileName = NULL;
     ctx.autodetectSCSIControllerModel = NULL;
     ctx.datacenterPath = priv->primary->datacenterPath;
+    ctx.moref = moref;
 
     def = virVMXParseConfig(&ctx, priv->xmlopt, priv->caps, vmx);
 
@@ -2732,6 +2735,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
+    VIR_FREE(moref);
     VIR_FREE(datastoreName);
     VIR_FREE(directoryName);
     VIR_FREE(directoryAndFileName);
@@ -2774,6 +2778,7 @@ esxConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     ctx.formatFileName = NULL;
     ctx.autodetectSCSIControllerModel = NULL;
     ctx.datacenterPath = NULL;
+    ctx.moref = NULL;
 
     def = virVMXParseConfig(&ctx, priv->xmlopt, priv->caps, nativeConfig);
 
@@ -2830,6 +2835,7 @@ esxConnectDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     ctx.formatFileName = esxFormatVMXFileName;
     ctx.autodetectSCSIControllerModel = esxAutodetectSCSIControllerModel;
     ctx.datacenterPath = NULL;
+    ctx.moref = NULL;
 
     vmx = virVMXFormatConfig(&ctx, priv->xmlopt, def, virtualHW_version);
 
@@ -3077,6 +3083,7 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     ctx.formatFileName = esxFormatVMXFileName;
     ctx.autodetectSCSIControllerModel = esxAutodetectSCSIControllerModel;
     ctx.datacenterPath = NULL;
+    ctx.moref = NULL;
 
     vmx = virVMXFormatConfig(&ctx, priv->xmlopt, def, virtualHW_version);
 

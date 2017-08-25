@@ -553,23 +553,41 @@ static virDomainDefParserConfig virVMXDomainDefParserConfig = {
                  VIR_DOMAIN_DEF_FEATURE_NAME_SLASH),
 };
 
+struct virVMXDomainDefNamespaceData {
+    char *datacenterPath;
+    char *moref;
+};
+
 static void
 virVMXDomainDefNamespaceFree(void *nsdata)
 {
-    VIR_FREE(nsdata);
+    struct virVMXDomainDefNamespaceData *data = nsdata;
+
+    if (data) {
+        VIR_FREE(data->datacenterPath);
+        VIR_FREE(data->moref);
+    }
+    VIR_FREE(data);
 }
 
 static int
 virVMXDomainDefNamespaceFormatXML(virBufferPtr buf, void *nsdata)
 {
-    const char *datacenterPath = nsdata;
+    struct virVMXDomainDefNamespaceData *data = nsdata;
 
-    if (!datacenterPath)
+    if (!data)
         return 0;
 
-    virBufferAddLit(buf, "<vmware:datacenterpath>");
-    virBufferEscapeString(buf, "%s", datacenterPath);
-    virBufferAddLit(buf, "</vmware:datacenterpath>\n");
+    if (data->datacenterPath) {
+        virBufferAddLit(buf, "<vmware:datacenterpath>");
+        virBufferEscapeString(buf, "%s", data->datacenterPath);
+        virBufferAddLit(buf, "</vmware:datacenterpath>\n");
+    }
+    if (data->moref) {
+        virBufferAddLit(buf, "<vmware:moref>");
+        virBufferEscapeString(buf, "%s", data->moref);
+        virBufferAddLit(buf, "</vmware:moref>\n");
+    }
 
     return 0;
 }
@@ -1304,7 +1322,6 @@ virVMXParseConfig(virVMXContext *ctx,
     bool hgfs_disabled = true;
     long long sharedFolder_maxNum = 0;
     int cpumasklen;
-    char *namespaceData;
 
     if (ctx->parseFileName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1802,12 +1819,18 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     /* ctx:datacenterPath -> def:namespaceData */
-    if (ctx->datacenterPath) {
-        if (VIR_STRDUP(namespaceData, ctx->datacenterPath) < 0)
+    if (ctx->datacenterPath || ctx->moref) {
+        struct virVMXDomainDefNamespaceData *nsdata = NULL;
+
+        if (VIR_ALLOC(nsdata) < 0 ||
+            VIR_STRDUP(nsdata->datacenterPath, ctx->datacenterPath) < 0 ||
+            VIR_STRDUP(nsdata->moref, ctx->moref) < 0) {
+            virVMXDomainDefNamespaceFree(nsdata);
             goto cleanup;
+        }
 
         def->ns = *virDomainXMLOptionGetNamespace(xmlopt);
-        def->namespaceData = namespaceData;
+        def->namespaceData = nsdata;
     }
 
     if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,

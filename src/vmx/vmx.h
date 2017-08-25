@@ -45,6 +45,7 @@ typedef int (*virVMXAutodetectSCSIControllerModel)(virDomainDiskDefPtr def,
  * formatFileName is only used by virVMXFormatConfig.
  * autodetectSCSIControllerModel is optionally used by virVMXFormatConfig.
  * datacenterPath is only used by virVMXFormatConfig.
+ * moref is only used by virVMXFormatConfig.
  */
 struct _virVMXContext {
     void *opaque;
@@ -52,6 +53,7 @@ struct _virVMXContext {
     virVMXFormatFileName formatFileName;
     virVMXAutodetectSCSIControllerModel autodetectSCSIControllerModel;
     const char *datacenterPath; /* including folders */
+    const char *moref;
 };
 
 
