@@ -286,6 +286,17 @@
         perfect for setting up low-end servers in a cloud or a
         cloud where you want the most bang for the bucks.
       </dd>
+
+      <dt><a href="http://en.zstack.io/">ZStack</a></dt>
+      <dd>
+        ZStack is open source IaaS software aiming to automate
+        datacenters, managing resources of compute, storage,
+        and networking all by APIs. Users can setup ZStack
+        environments in a download-and-run manner, spending 5 minutes
+        building a POC environment all on a single Linux machine,
+        or 30 minutes building a multi-node production environment
+        that can scale to hundreds of thousands of physical servers.
+      </dd>
     </dl>
 
     <h2><a id="libraries">Libraries</a></h2>
