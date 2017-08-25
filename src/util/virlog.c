@@ -1840,6 +1840,13 @@ virLogSetOutputs(const char *src)
     if (src && *src)
         outputstr = src;
 
+    /* This can only happen during daemon init when the default output is not
+     * determined yet. It's safe to do, since it's the only place setting the
+     * default output.
+     */
+    if (!outputstr)
+        return 0;
+
     if ((noutputs = virLogParseOutputs(outputstr, &outputs)) < 0)
         goto cleanup;
 

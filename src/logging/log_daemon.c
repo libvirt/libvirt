@@ -388,19 +388,15 @@ virLogDaemonSetupLogging(virLogDaemonConfigPtr config,
      * Libvirtd's order of precedence is:
      * cmdline > environment > config
      *
-     * The default output is applied only if there was no setting from either
-     * the config or the environment. Because we don't have a way to determine
-     * if the log level has been set, we must process variables in the opposite
+     * Given the precedence, we must process the variables in the opposite
      * order, each one overriding the previous.
      */
     if (config->log_level != 0)
         virLogSetDefaultPriority(config->log_level);
 
-    if (virLogSetDefaultOutput("virtlogd.log", godaemon, privileged) < 0)
-        return -1;
-
-    /* In case the config is empty, the filters become empty and outputs will
-     * be set to default
+    /* In case the config is empty, both filters and outputs will become empty,
+     * however we can't start with empty outputs, thus we'll need to define and
+     * setup a default one.
      */
     ignore_value(virLogSetFilters(config->log_filters));
     ignore_value(virLogSetOutputs(config->log_outputs));
@@ -413,6 +409,15 @@ virLogDaemonSetupLogging(virLogDaemonConfigPtr config,
      */
     if ((verbose) && (virLogGetDefaultPriority() > VIR_LOG_INFO))
         virLogSetDefaultPriority(VIR_LOG_INFO);
+
+    /* Define the default output. This is only applied if there was no setting
+     * from either the config or the environment.
+     */
+    if (virLogSetDefaultOutput("virtlogd.log", godaemon, privileged) < 0)
+        return -1;
+
+    if (virLogGetNbOutputs() == 0)
+        virLogSetOutputs(virLogGetDefaultOutput());
 
     return 0;
 }
