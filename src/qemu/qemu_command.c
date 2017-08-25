@@ -5044,6 +5044,19 @@ qemuBuildChrChardevFileStr(virLogManagerPtr logManager,
     return 0;
 }
 
+
+static void
+qemuBuildChrChardevReconnectStr(virBufferPtr buf,
+                                const virDomainChrSourceReconnectDef *def)
+{
+    if (def->enabled == VIR_TRISTATE_BOOL_YES) {
+        virBufferAsprintf(buf, ",reconnect=%u", def->timeout);
+    } else if (def->enabled == VIR_TRISTATE_BOOL_NO) {
+        virBufferAddLit(buf, ",reconnect=0");
+    }
+}
+
+
 /* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
 static char *
@@ -5142,6 +5155,8 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         if (dev->data.tcp.listen)
             virBufferAdd(&buf, nowait ? ",server,nowait" : ",server", -1);
 
+        qemuBuildChrChardevReconnectStr(&buf, &dev->data.tcp.reconnect);
+
         if (dev->data.tcp.haveTLS == VIR_TRISTATE_BOOL_YES) {
             qemuDomainChrSourcePrivatePtr chrSourcePriv =
                 QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
@@ -5175,6 +5190,8 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         virQEMUBuildBufferEscapeComma(&buf, dev->data.nix.path);
         if (dev->data.nix.listen)
             virBufferAdd(&buf, nowait ? ",server,nowait" : ",server", -1);
+
+        qemuBuildChrChardevReconnectStr(&buf, &dev->data.nix.reconnect);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:

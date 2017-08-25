@@ -3211,6 +3211,95 @@ qemuDomainNetSupportsCoalesce(virDomainNetType type)
 
 
 static int
+qemuDomainChrSourceReconnectDefValidate(const virDomainChrSourceReconnectDef *def)
+{
+    if (def->enabled == VIR_TRISTATE_BOOL_YES &&
+        def->timeout == 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("chardev reconnect source timeout cannot be '0'"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainChrSourceDefValidate(const virDomainChrSourceDef *def)
+{
+    switch ((virDomainChrType)def->type) {
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+        if (qemuDomainChrSourceReconnectDefValidate(&def->data.tcp.reconnect) < 0)
+            return -1;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        if (qemuDomainChrSourceReconnectDefValidate(&def->data.nix.reconnect) < 0)
+            return -1;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainChrDefValidate(const virDomainChrDef *def)
+{
+    if (qemuDomainChrSourceDefValidate(def->source) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuDomainSmartcardDefValidate(const virDomainSmartcardDef *def)
+{
+    if (def->type == VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH &&
+        qemuDomainChrSourceDefValidate(def->data.passthru) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuDomainRNGDefValidate(const virDomainRNGDef *def)
+{
+    if (def->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
+        qemuDomainChrSourceDefValidate(def->source.chardev) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuDomainRedirdevDefValidate(const virDomainRedirdevDef *def)
+{
+    if (qemuDomainChrSourceDefValidate(def->source) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                             const virDomainDef *def ATTRIBUTE_UNUSED,
                             void *opaque)
@@ -3257,6 +3346,18 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                            virDomainNetTypeToString(net->type));
             goto cleanup;
         }
+    } else if (dev->type == VIR_DOMAIN_DEVICE_CHR) {
+        if (qemuDomainChrDefValidate(dev->data.chr) < 0)
+            goto cleanup;
+    } else if (dev->type == VIR_DOMAIN_DEVICE_SMARTCARD) {
+        if (qemuDomainSmartcardDefValidate(dev->data.smartcard) < 0)
+            goto cleanup;
+    } else if (dev->type == VIR_DOMAIN_DEVICE_RNG) {
+        if (qemuDomainRNGDefValidate(dev->data.rng) < 0)
+            goto cleanup;
+    } else if (dev->type == VIR_DOMAIN_DEVICE_REDIRDEV) {
+        if (qemuDomainRedirdevDefValidate(dev->data.redirdev) < 0)
+            goto cleanup;
     }
 
     /* forbid capabilities mode hostdev in this kind of hypervisor */
