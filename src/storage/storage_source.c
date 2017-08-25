@@ -527,14 +527,20 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
               allow_probe, report_broken);
 
     virHashTablePtr cycle = NULL;
+    virStorageType actualType = virStorageSourceGetActualType(src);
     int ret = -1;
 
     if (!(cycle = virHashCreate(5, NULL)))
         return -1;
 
-    if (src->format <= VIR_STORAGE_FILE_NONE)
-        src->format = allow_probe ?
-            VIR_STORAGE_FILE_AUTO : VIR_STORAGE_FILE_RAW;
+    if (src->format <= VIR_STORAGE_FILE_NONE) {
+        if (actualType == VIR_STORAGE_TYPE_DIR)
+            src->format = VIR_STORAGE_FILE_DIR;
+        else if (allow_probe)
+            src->format = VIR_STORAGE_FILE_AUTO;
+        else
+            src->format = VIR_STORAGE_FILE_RAW;
+    }
 
     ret = virStorageFileGetMetadataRecurse(src, src, uid, gid,
                                            allow_probe, report_broken, cycle);

@@ -111,7 +111,6 @@ testStorageFileGetMetadata(const char *path,
     if (stat(path, &st) == 0) {
         if (S_ISDIR(st.st_mode)) {
             ret->type = VIR_STORAGE_TYPE_DIR;
-            ret->format = VIR_STORAGE_FILE_DIR;
         } else if (S_ISBLK(st.st_mode)) {
             ret->type = VIR_STORAGE_TYPE_BLOCK;
         }
@@ -963,7 +962,15 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_DIR,
         .format = VIR_STORAGE_FILE_DIR,
     };
-    TEST_CHAIN(absdir, VIR_STORAGE_FILE_AUTO,
+    testFileData dir_as_raw = {
+        .path = canondir,
+        .type = VIR_STORAGE_TYPE_DIR,
+        .format = VIR_STORAGE_FILE_RAW,
+    };
+    TEST_CHAIN(absdir, VIR_STORAGE_FILE_RAW,
+               (&dir_as_raw), EXP_PASS,
+               (&dir_as_raw), ALLOW_PROBE | EXP_PASS);
+    TEST_CHAIN(absdir, VIR_STORAGE_FILE_NONE,
                (&dir), EXP_PASS,
                (&dir), ALLOW_PROBE | EXP_PASS);
     TEST_CHAIN(absdir, VIR_STORAGE_FILE_DIR,
