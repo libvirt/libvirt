@@ -1341,6 +1341,17 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_CCID_EMULATED);
 
+    DO_TEST("chardev-reconnect",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_CHARDEV_RECONNECT,
+            QEMU_CAPS_USB_REDIR,
+            QEMU_CAPS_DEVICE_VIRTIO_RNG,
+            QEMU_CAPS_OBJECT_RNG_EGD,
+            QEMU_CAPS_CCID_PASSTHRU);
+    DO_TEST_PARSE_ERROR("chardev-reconnect-invalid-timeout",
+                        QEMU_CAPS_NODEFCONFIG,
+                        QEMU_CAPS_CHARDEV_RECONNECT);
+
     DO_TEST("usb-controller",
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("usb-piix3-controller",
