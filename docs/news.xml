@@ -49,6 +49,16 @@
           external host changes.
         </description>
       </change>
+      <change>
+        <summary>
+          nodedev: Add switchdev offload query to NIC capabilities
+        </summary>
+        <description>
+            Allow querying the NIC interface capabilities for the
+            availability of switchdev offloading (also known as
+            kernel-forward-plane-offload introduced in kernel 4.8).
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
