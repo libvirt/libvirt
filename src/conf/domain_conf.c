@@ -5336,7 +5336,18 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
             break;
         }
     }
+    return 0;
+}
 
+
+static int
+virDomainVideoDefValidate(const virDomainVideoDef *video)
+{
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing video model and cannot determine default"));
+        return -1;
+    }
     return 0;
 }
 
@@ -5370,11 +5381,13 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         return virDomainHostdevDefValidate(dev->data.hostdev);
 
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        return virDomainVideoDefValidate(dev->data.video);
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
-    case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:
@@ -13953,7 +13966,7 @@ virDomainVideoDefaultType(const virDomainDef *def)
     case VIR_DOMAIN_VIRT_BHYVE:
         return VIR_DOMAIN_VIDEO_TYPE_GOP;
     default:
-        return -1;
+        return VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
     }
 }
 
@@ -14102,11 +14115,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
             goto error;
         }
     } else {
-        if ((def->type = virDomainVideoDefaultType(dom)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("missing video model and cannot determine default"));
-            goto error;
-        }
+        def->type = virDomainVideoDefaultType(dom);
     }
 
     if (ram) {
@@ -21312,11 +21321,6 @@ virDomainDefAddImplicitVideo(virDomainDefPtr def)
     if (!(video = virDomainVideoDefNew()))
         goto cleanup;
     video->type = virDomainVideoDefaultType(def);
-    if (video->type < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot determine default video type"));
-        goto cleanup;
-    }
     if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
         goto cleanup;
 
