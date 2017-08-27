@@ -13939,9 +13939,6 @@ virDomainVideoDefaultType(const virDomainDef *def)
 {
     switch (def->virtType) {
     case VIR_DOMAIN_VIRT_TEST:
-    case VIR_DOMAIN_VIRT_QEMU:
-    case VIR_DOMAIN_VIRT_KQEMU:
-    case VIR_DOMAIN_VIRT_KVM:
     case VIR_DOMAIN_VIRT_XEN:
         if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
             def->os.type == VIR_DOMAIN_OSTYPE_LINUX)

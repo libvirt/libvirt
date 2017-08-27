@@ -3781,6 +3781,13 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     }
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
+        if (dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
+            if ARCH_IS_PPC64(def->os.arch)
+                dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_VGA;
+            else
+                dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
+        }
+
         if (dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
             !dev->data.video->vgamem) {
             dev->data.video->vgamem = QEMU_QXL_VGAMEM_DEFAULT;
