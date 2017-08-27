@@ -7086,10 +7086,6 @@ qemuBuildObsoleteAccelArg(virCommandPtr cmd,
         }
         break;
 
-    case VIR_DOMAIN_VIRT_XEN:
-        /* XXX better check for xenner */
-        break;
-
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("the QEMU binary does not support %s"),
