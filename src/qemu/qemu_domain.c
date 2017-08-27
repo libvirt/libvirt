@@ -3017,6 +3017,7 @@ qemuDomainDefValidateVideo(const virDomainDef *def)
         case VIR_DOMAIN_VIDEO_TYPE_XEN:
         case VIR_DOMAIN_VIDEO_TYPE_VBOX:
         case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
+        case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("video type '%s' is not supported with QEMU"),
                            virDomainVideoTypeToString(video->type));

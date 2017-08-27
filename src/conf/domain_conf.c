@@ -551,6 +551,7 @@ VIR_ENUM_IMPL(virDomainPanicModel, VIR_DOMAIN_PANIC_MODEL_LAST,
               "s390")
 
 VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
+              "default",
               "vga",
               "cirrus",
               "vmvga",

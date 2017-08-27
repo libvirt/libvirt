@@ -62,6 +62,7 @@
     </graphics>
     <video supported='yes'>
       <enum name='modelType'>
+        <value>default</value>
         <value>vga</value>
         <value>cirrus</value>
         <value>vmvga</value>
