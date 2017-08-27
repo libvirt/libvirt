@@ -1794,6 +1794,8 @@ exit 0
 %dir %attr(0711, root, root) %{_localstatedir}/cache/libvirt/
 
 
+%dir %attr(0755, root, root) %{_libdir}/libvirt/
+%dir %attr(0755, root, root) %{_libdir}/libvirt/connection-driver/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/lockd.so
 
