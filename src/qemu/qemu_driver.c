@@ -419,6 +419,8 @@ qemuSecurityInit(virQEMUDriverPtr driver)
     if (virQEMUDriverIsPrivileged(driver)) {
         if (cfg->dynamicOwnership)
             flags |= VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP;
+        if (virBitmapIsBitSet(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT))
+            flags |= VIR_SECURITY_MANAGER_MOUNT_NAMESPACE;
         if (!(mgr = qemuSecurityNewDAC(QEMU_DRIVER_NAME,
                                        cfg->user,
                                        cfg->group,

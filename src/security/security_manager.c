@@ -146,7 +146,8 @@ virSecurityManagerNewDAC(const char *virtDriver,
     virSecurityManagerPtr mgr;
 
     virCheckFlags(VIR_SECURITY_MANAGER_NEW_MASK |
-                  VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP, NULL);
+                  VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP |
+                  VIR_SECURITY_MANAGER_MOUNT_NAMESPACE, NULL);
 
     mgr = virSecurityManagerNewDriver(&virSecurityDriverDAC,
                                       virtDriver,
@@ -161,6 +162,7 @@ virSecurityManagerNewDAC(const char *virtDriver,
     }
 
     virSecurityDACSetDynamicOwnership(mgr, flags & VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP);
+    virSecurityDACSetMountNamespace(mgr, flags & VIR_SECURITY_MANAGER_MOUNT_NAMESPACE);
     virSecurityDACSetChownCallback(mgr, chownCallback);
 
     return mgr;

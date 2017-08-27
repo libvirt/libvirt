@@ -32,6 +32,9 @@ int virSecurityDACSetUserAndGroup(virSecurityManagerPtr mgr,
 void virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
                                        bool dynamic);
 
+void virSecurityDACSetMountNamespace(virSecurityManagerPtr mgr,
+                                     bool mountNamespace);
+
 void virSecurityDACSetChownCallback(virSecurityManagerPtr mgr,
                                     virSecurityManagerDACChownCallback chownCallback);
 

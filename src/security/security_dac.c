@@ -57,6 +57,7 @@ struct _virSecurityDACData {
     gid_t *groups;
     int ngroups;
     bool dynamicOwnership;
+    bool mountNamespace;
     char *baselabel;
     virSecurityManagerDACChownCallback chownCallback;
 };
@@ -236,6 +237,15 @@ virSecurityDACSetDynamicOwnership(virSecurityManagerPtr mgr,
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     priv->dynamicOwnership = dynamicOwnership;
 }
+
+void
+virSecurityDACSetMountNamespace(virSecurityManagerPtr mgr,
+                                bool mountNamespace)
+{
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    priv->mountNamespace = mountNamespace;
+}
+
 
 void
 virSecurityDACSetChownCallback(virSecurityManagerPtr mgr,
