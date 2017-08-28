@@ -97,7 +97,6 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
     const char *path;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainDiskDefPtr persistDisk = NULL;
-    bool save = false;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
     VIR_DEBUG("disk=%s, mirrorState=%s, type=%d, status=%d",
@@ -164,7 +163,6 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
          * rather than reprobing, but we haven't quite completed
          * that conversion to use our XML tracking. */
         disk->mirror = NULL;
-        save = disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
         ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk,
@@ -175,7 +173,6 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
 
     case VIR_DOMAIN_BLOCK_JOB_READY:
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
-        save = true;
         break;
 
     case VIR_DOMAIN_BLOCK_JOB_FAILED:
@@ -187,7 +184,6 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
         }
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-        save = true;
         diskPriv->blockjob = false;
         break;
 
@@ -195,16 +191,14 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
         break;
     }
 
-    if (save) {
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-            VIR_WARN("Unable to save status on vm %s after block job",
-                     vm->def->name);
-        if (persistDisk && virDomainSaveConfig(cfg->configDir,
-                                               driver->caps,
-                                               vm->newDef) < 0)
-            VIR_WARN("Unable to update persistent definition on vm %s "
-                     "after block job", vm->def->name);
-    }
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+        VIR_WARN("Unable to save status on vm %s after block job", vm->def->name);
+
+    if (persistDisk && virDomainSaveConfig(cfg->configDir,
+                                           driver->caps,
+                                           vm->newDef) < 0)
+        VIR_WARN("Unable to update persistent definition on vm %s "
+                 "after block job", vm->def->name);
 
     qemuDomainEventQueue(driver, event);
     qemuDomainEventQueue(driver, event2);
