@@ -25068,36 +25068,35 @@ virDomainDefIothreadShouldFormat(virDomainDefPtr def)
 }
 
 
-static void
+static int
 virDomainIOMMUDefFormat(virBufferPtr buf,
                         const virDomainIOMMUDef *iommu)
 {
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer driverAttrBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
 
-    if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT ||
-        iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT ||
-        iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT) {
-        virBufferAddLit(&childBuf, "<driver");
-        if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(&childBuf, " intremap='%s'",
-                              virTristateSwitchTypeToString(iommu->intremap));
-        }
-        if (iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(&childBuf, " caching_mode='%s'",
-                              virTristateSwitchTypeToString(iommu->caching_mode));
-        }
-        if (iommu->eim != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(&childBuf, " eim='%s'",
-                              virTristateSwitchTypeToString(iommu->eim));
-        }
-        if (iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(&childBuf, " iotlb='%s'",
-                              virTristateSwitchTypeToString(iommu->iotlb));
-        }
-        virBufferAddLit(&childBuf, "/>\n");
+    if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&driverAttrBuf, " intremap='%s'",
+                          virTristateSwitchTypeToString(iommu->intremap));
     }
+    if (iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&driverAttrBuf, " caching_mode='%s'",
+                          virTristateSwitchTypeToString(iommu->caching_mode));
+    }
+    if (iommu->eim != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&driverAttrBuf, " eim='%s'",
+                          virTristateSwitchTypeToString(iommu->eim));
+    }
+    if (iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&driverAttrBuf, " iotlb='%s'",
+                          virTristateSwitchTypeToString(iommu->iotlb));
+    }
+
+    if (virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL) < 0)
+        goto cleanup;
 
     virBufferAsprintf(buf, "<iommu model='%s'",
                       virDomainIOMMUModelTypeToString(iommu->model));
@@ -25109,6 +25108,13 @@ virDomainIOMMUDefFormat(virBufferPtr buf,
     } else {
         virBufferAddLit(buf, "/>\n");
     }
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&childBuf);
+    virBufferFreeAndReset(&driverAttrBuf);
+    return ret;
 }
 
 
@@ -25878,8 +25884,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             goto error;
     }
 
-    if (def->iommu)
-        virDomainIOMMUDefFormat(buf, def->iommu);
+    if (def->iommu &&
+        virDomainIOMMUDefFormat(buf, def->iommu) < 0)
+        goto error;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</devices>\n");
