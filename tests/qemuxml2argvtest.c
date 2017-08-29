@@ -2708,14 +2708,10 @@ mymain(void)
     DO_TEST("intel-iommu-machine",
             QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_IOMMU);
-    DO_TEST("intel-iommu-ioapic",
+    DO_TEST("intel-iommu-caching-mode",
             QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_KERNEL_IRQCHIP,
             QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT,
-            QEMU_CAPS_INTEL_IOMMU_INTREMAP,
-            QEMU_CAPS_DEVICE_INTEL_IOMMU);
-    DO_TEST("intel-iommu-caching-mode",
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_IOH3420,
