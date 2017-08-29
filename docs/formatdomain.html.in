@@ -5213,7 +5213,10 @@ qemu-kvm -net nic,model=? /dev/null
         The default value is hypervisor dependent and may change
         across its releases. Moreover, some hypervisors may pose
         some restrictions on actual value. For instance, QEMU
-        v2.9  requires value to be a power of two from [256, 1024] range.
+        v2.9  requires value to be a power of two from [256, 1024]
+        range. In addition to that, this may work only for a subset of
+        interface types, e.g. aforementioned QEMU enables this option
+        only for <code>vhostuser</code> type.
         <span class="since">Since 3.7.0 (QEMU and KVM only)</span><br/><br/>
 
         <b>In general you should leave this option alone, unless you
