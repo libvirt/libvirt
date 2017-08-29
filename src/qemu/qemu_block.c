@@ -522,6 +522,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
         case VIR_STORAGE_NET_PROTOCOL_FTPS:
         case VIR_STORAGE_NET_PROTOCOL_TFTP:
         case VIR_STORAGE_NET_PROTOCOL_SSH:
+        case VIR_STORAGE_NET_PROTOCOL_VXHS:
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
             break;
