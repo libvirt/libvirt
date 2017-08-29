@@ -1660,16 +1660,13 @@ static int lxcStateInitialize(bool privileged,
     if (!(lxc_driver->hostdevMgr = virHostdevManagerGetDefault()))
         goto cleanup;
 
-    if ((virLXCDriverGetCapabilities(lxc_driver, true)) == NULL)
+    if (!(caps = virLXCDriverGetCapabilities(lxc_driver, true)))
         goto cleanup;
 
     if (!(lxc_driver->xmlopt = lxcDomainXMLConfInit()))
         goto cleanup;
 
     if (!(lxc_driver->closeCallbacks = virCloseCallbacksNew()))
-        goto cleanup;
-
-    if (!(caps = virLXCDriverGetCapabilities(lxc_driver, false)))
         goto cleanup;
 
     if (virFileMakePath(cfg->stateDir) < 0) {
@@ -1700,6 +1697,7 @@ static int lxcStateInitialize(bool privileged,
         goto cleanup;
 
     virNWFilterRegisterCallbackDriver(&lxcCallbackDriver);
+    virObjectUnref(caps);
     return 0;
 
  cleanup:
