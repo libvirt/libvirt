@@ -426,6 +426,9 @@ typedef enum {
     QEMU_CAPS_CHARDEV_RECONNECT, /* -chardev reconnect */
     QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS, /* -device virtio-(vga|gpu-*),max-outputs= */
 
+    /* 270 */
+    QEMU_CAPS_VXHS, /* -drive file.driver=vxhs via query-qmp-schema */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

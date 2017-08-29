@@ -222,6 +222,7 @@
   <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>
   <flag name='virtio-gpu.max_outputs'/>
+  <flag name='vxhs'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.10.0)</package>
