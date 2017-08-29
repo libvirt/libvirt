@@ -286,6 +286,16 @@
         perfect for setting up low-end servers in a cloud or a
         cloud where you want the most bang for the bucks.
       </dd>
+
+      <dt><a href="http://en.zstack.io/">ZStack</a></dt>
+      <dd>
+        ZStack is an open source IaaS software that aims to automate the
+        management of all resources (compute, storage, networking, etc.) in a
+        datacenter by using APIs, thus conforming to the principles of a
+        software-defined datacenter. The key strengths of ZStack in terms of
+        management are scalability, performance, and a fast, user-friendly
+        deployment.
+      </dd>
     </dl>
 
     <h2><a id="libraries">Libraries</a></h2>
