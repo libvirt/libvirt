@@ -2180,11 +2180,17 @@ virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
 
         dest->data.tcp.haveTLS = src->data.tcp.haveTLS;
         dest->data.tcp.tlsFromConfig = src->data.tcp.tlsFromConfig;
+
+        dest->data.tcp.reconnect.enabled = src->data.tcp.reconnect.enabled;
+        dest->data.tcp.reconnect.timeout = src->data.tcp.reconnect.timeout;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (VIR_STRDUP(dest->data.nix.path, src->data.nix.path) < 0)
             return -1;
+
+        dest->data.nix.reconnect.enabled = src->data.nix.reconnect.enabled;
+        dest->data.nix.reconnect.timeout = src->data.nix.reconnect.timeout;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NMDM:
@@ -2259,11 +2265,15 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
         return src->data.tcp.listen == tgt->data.tcp.listen &&
             src->data.tcp.protocol == tgt->data.tcp.protocol &&
             STREQ_NULLABLE(src->data.tcp.host, tgt->data.tcp.host) &&
-            STREQ_NULLABLE(src->data.tcp.service, tgt->data.tcp.service);
+            STREQ_NULLABLE(src->data.tcp.service, tgt->data.tcp.service) &&
+            src->data.tcp.reconnect.enabled == tgt->data.tcp.reconnect.enabled &&
+            src->data.tcp.reconnect.timeout == tgt->data.tcp.reconnect.timeout;
         break;
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         return src->data.nix.listen == tgt->data.nix.listen &&
-            STREQ_NULLABLE(src->data.nix.path, tgt->data.nix.path);
+            STREQ_NULLABLE(src->data.nix.path, tgt->data.nix.path) &&
+            src->data.nix.reconnect.enabled == tgt->data.nix.reconnect.enabled &&
+            src->data.nix.reconnect.timeout == tgt->data.nix.reconnect.timeout;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
