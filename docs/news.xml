@@ -37,6 +37,16 @@
     <section title="New features">
       <change>
         <summary>
+          qemu: Add managedsave-edit commands
+        </summary>
+        <description>
+          Using managedsave-dumpxml, managedsave-define and managedsave-edit
+          commands, now we can dump and edit the XML configuration of domain
+          which has managedsave image.
+        </description>
+      </change>
+      <change>
+        <summary>
           qemu: Add migrate-getmaxdowntime command
         </summary>
         <description>
