@@ -4580,6 +4580,32 @@ qemuProcessStartValidateShmem(virDomainObjPtr vm)
 
 
 static int
+qemuProcessStartValidateDisks(virDomainObjPtr vm,
+                              virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virStorageSourcePtr src = vm->def->disks[i]->src;
+
+        /* This is a best effort check as we can only check if the command
+         * option exists, but we cannot determine whether the running QEMU
+         * was build with '--enable-vxhs'. */
+        if (src->type == VIR_STORAGE_TYPE_NETWORK &&
+            src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VXHS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("VxHS protocol is not supported with this "
+                             "QEMU binary"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuProcessStartValidateXML(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             virQEMUCapsPtr qemuCaps,
@@ -4663,6 +4689,9 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
 
     if (vm->def->cpu &&
         virCPUValidateFeatures(vm->def->os.arch, vm->def->cpu) < 0)
+        return -1;
+
+    if (qemuProcessStartValidateDisks(vm, qemuCaps) < 0)
         return -1;
 
     VIR_DEBUG("Checking for any possible (non-fatal) issues");

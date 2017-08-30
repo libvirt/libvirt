@@ -516,6 +516,37 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src)
 }
 
 
+static virJSONValuePtr
+qemuBlockStorageSourceGetVxHSProps(virStorageSourcePtr src)
+{
+    const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
+    virJSONValuePtr server = NULL;
+    virJSONValuePtr ret = NULL;
+
+    if (src->nhosts != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("VxHS protocol accepts only one host"));
+        return NULL;
+    }
+
+    if (!(server = qemuBlockStorageSourceBuildJSONSocketAddress(src->hosts, true)))
+        return NULL;
+
+    /* VxHS disk specification example:
+     * { driver:"vxhs",
+     *   vdisk-id:"eb90327c-8302-4725-4e85ed4dc251",
+     *   server:{type:"tcp", host:"1.2.3.4", port:9999}}
+     */
+    if (virJSONValueObjectCreate(&ret,
+                                 "s:driver", protocol,
+                                 "s:vdisk-id", src->path,
+                                 "a:server", server, NULL) < 0)
+        virJSONValueFree(server);
+
+    return ret;
+}
+
+
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
@@ -546,6 +577,11 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
                 goto cleanup;
             break;
 
+        case VIR_STORAGE_NET_PROTOCOL_VXHS:
+            if (!(fileprops = qemuBlockStorageSourceGetVxHSProps(src)))
+                goto cleanup;
+            break;
+
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_RBD:
         case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
@@ -556,7 +592,6 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
         case VIR_STORAGE_NET_PROTOCOL_FTPS:
         case VIR_STORAGE_NET_PROTOCOL_TFTP:
         case VIR_STORAGE_NET_PROTOCOL_SSH:
-        case VIR_STORAGE_NET_PROTOCOL_VXHS:
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
             break;

@@ -994,12 +994,16 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
             ret = virBufferContentAndReset(&buf);
             break;
 
+        case VIR_STORAGE_NET_PROTOCOL_VXHS:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("VxHS protocol does not support URI syntax"));
+            goto cleanup;
+
         case VIR_STORAGE_NET_PROTOCOL_SSH:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'ssh' protocol is not yet supported"));
             goto cleanup;
 
-        case VIR_STORAGE_NET_PROTOCOL_VXHS:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
         case VIR_STORAGE_NET_PROTOCOL_NONE:
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1327,6 +1331,10 @@ qemuDiskSourceNeedsProps(virStorageSourcePtr src)
     if (actualType == VIR_STORAGE_TYPE_NETWORK &&
         src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
         src->nhosts > 1)
+        return true;
+
+    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS)
         return true;
 
     return false;
