@@ -3766,8 +3766,17 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     /* clear auto generated unix socket path for inactive definitions */
     if ((parseFlags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
         dev->type == VIR_DOMAIN_DEVICE_CHR) {
-        if (qemuDomainChrDefDropDefaultPath(dev->data.chr, driver) < 0)
+        virDomainChrDefPtr chr = dev->data.chr;
+        if (qemuDomainChrDefDropDefaultPath(chr, driver) < 0)
             goto cleanup;
+
+        /* For UNIX chardev if no path is provided we generate one.
+         * This also implies that the mode is 'bind'. */
+        if (chr->source &&
+            chr->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+            !chr->source->data.nix.path) {
+            chr->source->data.nix.listen = true;
+        }
     }
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
@@ -7440,8 +7449,6 @@ qemuDomainPrepareChannel(virDomainChrDefPtr channel,
                         channel->info.addr.vioserial.port) < 0)
             return -1;
     }
-
-    channel->source->data.nix.listen = true;
 
     return 0;
 }
