@@ -35,8 +35,8 @@
 <libvirt>
   <release version="v3.7.0" date="unreleased">
     <section title="New features">
-       <change>
-         <summary>
+      <change>
+        <summary>
           qemu: Add migrate-getmaxdowntime command
         </summary>
         <description>
