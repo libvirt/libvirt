@@ -5357,6 +5357,10 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (qemuDomainMasterKeyCreate(vm) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Prepare disk source backends for TLS");
+    if (qemuDomainPrepareDiskSource(vm->def, cfg) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Prepare chardev source backends for TLS");
     qemuDomainPrepareChardevSource(vm->def, cfg);
 

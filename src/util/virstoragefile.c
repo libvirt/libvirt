@@ -2041,6 +2041,7 @@ virStorageSourceCopy(const virStorageSource *src,
     ret->shared = src->shared;
     ret->haveTLS = src->haveTLS;
     ret->tlsFromConfig = src->tlsFromConfig;
+    ret->tlsVerify = src->tlsVerify;
 
     /* storage driver metadata are not copied */
     ret->drv = NULL;
@@ -2054,7 +2055,9 @@ virStorageSourceCopy(const virStorageSource *src,
         VIR_STRDUP(ret->configFile, src->configFile) < 0 ||
         VIR_STRDUP(ret->nodeformat, src->nodeformat) < 0 ||
         VIR_STRDUP(ret->nodestorage, src->nodestorage) < 0 ||
-        VIR_STRDUP(ret->compat, src->compat) < 0)
+        VIR_STRDUP(ret->compat, src->compat) < 0 ||
+        VIR_STRDUP(ret->tlsAlias, src->tlsAlias) < 0 ||
+        VIR_STRDUP(ret->tlsCertdir, src->tlsCertdir) < 0)
         goto error;
 
     if (src->nhosts) {
@@ -2278,6 +2281,9 @@ virStorageSourceClear(virStorageSourcePtr def)
     VIR_FREE(def->nodeformat);
 
     virStorageSourceBackingStoreClear(def);
+
+    VIR_FREE(def->tlsAlias);
+    VIR_FREE(def->tlsCertdir);
 
     memset(def, 0, sizeof(*def));
 }

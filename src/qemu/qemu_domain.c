@@ -7661,6 +7661,79 @@ qemuDomainPrepareChardevSource(virDomainDefPtr def,
 }
 
 
+/* qemuProcessPrepareDiskSourceTLS:
+ * @source: pointer to host interface data for disk device
+ * @diskAlias: alias use for the disk device
+ * @cfg: driver configuration
+ *
+ * Updates host interface TLS encryption setting based on qemu.conf
+ * for disk devices.  This will be presented as "tls='yes|no'" in
+ * live XML of a guest.
+ *
+ * Returns 0 on success, -1 on bad config/failure
+ */
+int
+qemuDomainPrepareDiskSourceTLS(virStorageSourcePtr src,
+                               const char *diskAlias,
+                               virQEMUDriverConfigPtr cfg)
+{
+
+    /* VxHS uses only client certificates and thus has no need for
+     * the server-key.pem nor a secret that could be used to decrypt
+     * the it, so no need to add a secinfo for a secret UUID. */
+    if (src->type == VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS) {
+
+        if (src->haveTLS == VIR_TRISTATE_BOOL_ABSENT) {
+            if (cfg->vxhsTLS)
+                src->haveTLS = VIR_TRISTATE_BOOL_YES;
+            else
+                src->haveTLS = VIR_TRISTATE_BOOL_NO;
+            src->tlsFromConfig = true;
+        }
+
+        if (src->haveTLS == VIR_TRISTATE_BOOL_YES) {
+            if (!diskAlias) {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               _("disk does not have an alias"));
+                return -1;
+            }
+
+            /* Grab the vxhsTLSx509certdir and set the verify/listen values.
+             * NB: tlsAlias filled in during qemuDomainGetTLSObjects. */
+            if (VIR_STRDUP(src->tlsCertdir, cfg->vxhsTLSx509certdir) < 0)
+                return -1;
+
+            src->tlsVerify = true;
+        }
+    }
+
+    return 0;
+}
+
+
+/* qemuProcessPrepareDiskSource:
+ * @def: live domain definition
+ * @driver: qemu driver
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+qemuDomainPrepareDiskSource(virDomainDefPtr def,
+                            virQEMUDriverConfigPtr cfg)
+{
+    size_t i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (qemuDomainPrepareDiskSourceTLS(def->disks[i]->src,
+                                           def->disks[i]->info.alias,
+                                           cfg) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
 
 int
 qemuDomainPrepareShmemChardev(virDomainShmemDefPtr shmem)
