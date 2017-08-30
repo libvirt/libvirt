@@ -2039,6 +2039,8 @@ virStorageSourceCopy(const virStorageSource *src,
     ret->physical = src->physical;
     ret->readonly = src->readonly;
     ret->shared = src->shared;
+    ret->haveTLS = src->haveTLS;
+    ret->tlsFromConfig = src->tlsFromConfig;
 
     /* storage driver metadata are not copied */
     ret->drv = NULL;

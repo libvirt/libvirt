@@ -281,6 +281,13 @@ struct _virStorageSource {
     /* metadata that allows identifying given storage source */
     char *nodeformat;  /* name of the format handler object */
     char *nodestorage; /* name of the storage object */
+
+    /* An optional setting to enable usage of TLS for the storage source */
+    int haveTLS; /* enum virTristateBool */
+
+    /* Indication whether the haveTLS value was altered due to qemu.conf
+     * setting when haveTLS is missing from the domain config file */
+    bool tlsFromConfig;
 };
 
 

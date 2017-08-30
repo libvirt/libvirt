@@ -2995,7 +2995,8 @@ virDomainDiskDefPtr
 virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
 int virDomainDiskSourceParse(xmlNodePtr node,
                              xmlXPathContextPtr ctxt,
-                             virStorageSourcePtr src);
+                             virStorageSourcePtr src,
+                             unsigned int flags);
 
 int virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net);
 virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def, const char *device);

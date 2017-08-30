@@ -2531,10 +2531,21 @@
               specified, the default LUN is zero.
               </p>
 
-              <p>
-              For "vxhs" (<span class="since">since 3.8.0</span>), the
+              <p>For "vxhs" (<span class="since">since 3.8.0</span>), the
               <code>name</code> is the UUID of the volume, assigned by the
-              HyperScale server.
+              HyperScale server. Additionally, an optional attribute
+              <code>tls</code> (QEMU only) can be used to control whether a
+              VxHS block device would utilize a hypervisor configured TLS
+              X.509 certificate environment in order to encrypt the data
+              channel. For the QEMU hypervisor, usage of a TLS environment can
+              also be globally controlled on the host by the
+              <code>vxhs_tls</code> and <code>vxhs_tls_x509_cert_dir</code> or
+              <code>default_tls_x509_cert_dir</code> settings in the file
+              /etc/libvirt/qemu.conf. If <code>vxhs_tls</code> is enabled,
+              then unless the domain <code>tls</code> attribute is set to "no",
+              libvirt will use the host configured TLS environment. If the
+              <code>tls</code> attribute is set to "yes", then regardless of
+              the qemu.conf setting, TLS authentication will be attempted.
               </p>
               <span class="since">Since 0.8.7</span>
               </dd>

@@ -8109,11 +8109,15 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
 int
 virDomainDiskSourceParse(xmlNodePtr node,
                          xmlXPathContextPtr ctxt,
-                         virStorageSourcePtr src)
+                         virStorageSourcePtr src,
+                         unsigned int flags)
 {
     int ret = -1;
     char *protocol = NULL;
     xmlNodePtr saveNode = ctxt->node;
+    char *haveTLS = NULL;
+    char *tlsCfg = NULL;
+    int tlsCfgVal;
 
     ctxt->node = node;
 
@@ -8145,6 +8149,30 @@ virDomainDiskSourceParse(xmlNodePtr node,
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing name for disk source"));
             goto cleanup;
+        }
+
+        /* Check tls=yes|no domain setting for the block device
+         * At present only VxHS. Other block devices may be added later */
+        if (src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
+            (haveTLS = virXMLPropString(node, "tls"))) {
+            if ((src->haveTLS =
+                virTristateBoolTypeFromString(haveTLS)) <= 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown disk source 'tls' setting '%s'"),
+                           haveTLS);
+                goto cleanup;
+            }
+        }
+
+        if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
+            (tlsCfg = virXMLPropString(node, "tlsFromConfig"))) {
+            if (virStrToLong_i(tlsCfg, NULL, 10, &tlsCfgVal) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Invalid tlsFromConfig value: %s"),
+                               tlsCfg);
+                goto cleanup;
+            }
+            src->tlsFromConfig = !!tlsCfgVal;
         }
 
         /* for historical reasons the volume name for gluster volume is stored
@@ -8202,6 +8230,8 @@ virDomainDiskSourceParse(xmlNodePtr node,
 
  cleanup:
     VIR_FREE(protocol);
+    VIR_FREE(haveTLS);
+    VIR_FREE(tlsCfg);
     ctxt->node = saveNode;
     return ret;
 }
@@ -8209,7 +8239,8 @@ virDomainDiskSourceParse(xmlNodePtr node,
 
 static int
 virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
-                               virStorageSourcePtr src)
+                               virStorageSourcePtr src,
+                               unsigned int flags)
 {
     virStorageSourcePtr backingStore = NULL;
     xmlNodePtr save_ctxt = ctxt->node;
@@ -8258,8 +8289,8 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
-    if (virDomainDiskSourceParse(source, ctxt, backingStore) < 0 ||
-        virDomainDiskBackingStoreParse(ctxt, backingStore) < 0)
+    if (virDomainDiskSourceParse(source, ctxt, backingStore, flags) < 0 ||
+        virDomainDiskBackingStoreParse(ctxt, backingStore, flags) < 0)
         goto cleanup;
 
     src->backingStore = backingStore;
@@ -8360,7 +8391,8 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
 static int
 virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
                             xmlNodePtr cur,
-                            xmlXPathContextPtr ctxt)
+                            xmlXPathContextPtr ctxt,
+                            unsigned int flags)
 {
     xmlNodePtr mirrorNode;
     char *mirrorFormat = NULL;
@@ -8398,7 +8430,7 @@ virDomainDiskDefMirrorParse(virDomainDiskDefPtr def,
             goto cleanup;
         }
 
-        if (virDomainDiskSourceParse(mirrorNode, ctxt, def->mirror) < 0)
+        if (virDomainDiskSourceParse(mirrorNode, ctxt, def->mirror, flags) < 0)
             goto cleanup;
     } else {
         /* For back-compat reasons, we handle a file name
@@ -8815,7 +8847,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (!source && virXMLNodeNameEqual(cur, "source")) {
             sourceNode = cur;
 
-            if (virDomainDiskSourceParse(cur, ctxt, def->src) < 0)
+            if (virDomainDiskSourceParse(cur, ctxt, def->src, flags) < 0)
                 goto error;
 
             source = true;
@@ -8871,7 +8903,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         } else if (!def->mirror &&
                    virXMLNodeNameEqual(cur, "mirror") &&
                    !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
-            if (virDomainDiskDefMirrorParse(def, cur, ctxt) < 0)
+            if (virDomainDiskDefMirrorParse(def, cur, ctxt, flags) < 0)
                 goto error;
         } else if (!authdef &&
                    virXMLNodeNameEqual(cur, "auth")) {
@@ -9126,7 +9158,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     product = NULL;
 
     if (!(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
-        if (virDomainDiskBackingStoreParse(ctxt, def->src) < 0)
+        if (virDomainDiskBackingStoreParse(ctxt, def->src, flags) < 0)
             goto error;
     }
 
@@ -21673,7 +21705,8 @@ virDomainSourceDefFormatSeclabel(virBufferPtr buf,
 static int
 virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
                                  virBufferPtr childBuf,
-                                 virStorageSourcePtr src)
+                                 virStorageSourcePtr src,
+                                 unsigned int flags)
 {
     size_t n;
     char *path = NULL;
@@ -21689,6 +21722,14 @@ virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
     virBufferEscapeString(attrBuf, " name='%s'", path ? path : src->path);
 
     VIR_FREE(path);
+
+    if (src->haveTLS != VIR_TRISTATE_BOOL_ABSENT &&
+        !(flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
+          src->tlsFromConfig))
+        virBufferAsprintf(attrBuf, " tls='%s'",
+                          virTristateBoolTypeToString(src->haveTLS));
+    if (flags & VIR_DOMAIN_DEF_FORMAT_STATUS)
+        virBufferAsprintf(attrBuf, " tlsFromConfig='%d'", src->tlsFromConfig);
 
     for (n = 0; n < src->nhosts; n++) {
         virBufferAddLit(childBuf, "<host");
@@ -21754,7 +21795,8 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
             break;
 
         case VIR_STORAGE_TYPE_NETWORK:
-            if (virDomainDiskSourceFormatNetwork(&attrBuf, &childBuf, src) < 0)
+            if (virDomainDiskSourceFormatNetwork(&attrBuf, &childBuf,
+                                                 src, flags) < 0)
                 goto error;
             break;
 
