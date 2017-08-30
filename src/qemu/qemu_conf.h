@@ -203,6 +203,9 @@ struct _virQEMUDriverConfig {
     unsigned int glusterDebugLevel;
 
     char *memoryBackingDir;
+
+    bool vxhsTLS;
+    char *vxhsTLSx509certdir;
 };
 
 /* Main driver state */

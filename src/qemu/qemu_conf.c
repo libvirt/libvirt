@@ -283,6 +283,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     SET_TLS_X509_CERT_DEFAULT(spice);
     SET_TLS_X509_CERT_DEFAULT(chardev);
     SET_TLS_X509_CERT_DEFAULT(migrate);
+    SET_TLS_X509_CERT_DEFAULT(vxhs);
 
 #undef SET_TLS_X509_CERT_DEFAULT
 
@@ -380,6 +381,8 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->chardevTLSx509certdir);
     VIR_FREE(cfg->chardevTLSx509secretUUID);
 
+    VIR_FREE(cfg->vxhsTLSx509certdir);
+
     VIR_FREE(cfg->migrateTLSx509certdir);
     VIR_FREE(cfg->migrateTLSx509secretUUID);
 
@@ -457,6 +460,7 @@ virQEMUDriverConfigTLSDirResetDefaults(virQEMUDriverConfigPtr cfg)
     CHECK_RESET_CERT_DIR_DEFAULT(spice);
     CHECK_RESET_CERT_DIR_DEFAULT(chardev);
     CHECK_RESET_CERT_DIR_DEFAULT(migrate);
+    CHECK_RESET_CERT_DIR_DEFAULT(vxhs);
 
     return 0;
 }
@@ -555,6 +559,10 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueString(conf, "spice_password", &cfg->spicePassword) < 0)
         goto cleanup;
     if (virConfGetValueBool(conf, "spice_auto_unix_socket", &cfg->spiceAutoUnixSocket) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "vxhs_tls", &cfg->vxhsTLS) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "vxhs_tls_x509_cert_dir", &cfg->vxhsTLSx509certdir) < 0)
         goto cleanup;
 
 #define GET_CONFIG_TLS_CERTINFO(val)                                        \
@@ -973,6 +981,14 @@ virQEMUDriverConfigValidate(virQEMUDriverConfigPtr cfg)
         virReportError(VIR_ERR_CONF_SYNTAX,
                        _("migrate_tls_x509_cert_dir directory '%s' does not exist"),
                        cfg->migrateTLSx509certdir);
+        return -1;
+    }
+
+    if (STRNEQ(cfg->vxhsTLSx509certdir, SYSCONFDIR "/pki/qemu") &&
+        !virFileExists(cfg->vxhsTLSx509certdir)) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("vxhs_tls_x509_cert_dir directory '%s' does not exist"),
+                       cfg->vxhsTLSx509certdir);
         return -1;
     }
 
