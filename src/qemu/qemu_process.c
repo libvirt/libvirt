@@ -5323,7 +5323,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Prepare chardev source backends for TLS");
-    qemuDomainPrepareChardevSource(vm->def, driver);
+    qemuDomainPrepareChardevSource(vm->def, cfg);
 
     VIR_DEBUG("Add secrets to disks, hostdevs, and chardevs");
     if (qemuDomainSecretPrepare(conn, driver, vm) < 0)
