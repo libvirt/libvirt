@@ -1636,6 +1636,18 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkProtocolVxHS">
+    <element name="source">
+      <attribute name="protocol">
+        <choice>
+          <value>vxhs</value>
+        </choice>
+      </attribute>
+      <attribute name="name"/>
+      <ref name="diskSourceNetworkHost"/>
+    </element>
+  </define>
+
   <define name="diskSourceNetwork">
     <attribute name="type">
       <value>network</value>
@@ -1646,6 +1658,7 @@
       <ref name="diskSourceNetworkProtocolRBD"/>
       <ref name="diskSourceNetworkProtocolHTTP"/>
       <ref name="diskSourceNetworkProtocolSimple"/>
+      <ref name="diskSourceNetworkProtocolVxHS"/>
     </choice>
   </define>
 

@@ -474,6 +474,7 @@ mymain(void)
     DO_TEST("disk-drive-network-rbd-ipv6", NONE);
     DO_TEST("disk-drive-network-rbd-ceph-env", NONE);
     DO_TEST("disk-drive-network-sheepdog", NONE);
+    DO_TEST("disk-drive-network-vxhs", NONE);
     DO_TEST("disk-scsi-device",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_SCSI_LSI);
     DO_TEST("disk-scsi-vscsi", NONE);

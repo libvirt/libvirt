@@ -2514,9 +2514,9 @@
               <dd>
               The <code>protocol</code> attribute specifies the protocol to
               access to the requested image. Possible values are "nbd",
-              "iscsi", "rbd", "sheepdog" or "gluster".  If the
-              <code>protocol</code> attribute is "rbd", "sheepdog" or
-              "gluster", an additional attribute <code>name</code> is
+              "iscsi", "rbd", "sheepdog", "gluster" or "vxhs".  If the
+              <code>protocol</code> attribute is "rbd", "sheepdog", "gluster"
+              or "vxhs", an additional attribute <code>name</code> is
               mandatory to specify which volume/image will be used. For "nbd",
               the <code>name</code> attribute is optional. For "iscsi"
               (<span class="since">since 1.0.4</span>), the <code>name</code>
@@ -2524,6 +2524,9 @@
               target's name by a slash (e.g.,
               <code>iqn.2013-07.com.example:iscsi-pool/1</code>). If not
               specified, the default LUN is zero.
+              For "vxhs" (<span class="since">since 3.8.0</span>), the
+              <code>name</code> is the UUID of the volume, assigned by the
+              HyperScale server.
               <span class="since">Since 0.8.7</span>
               </dd>
             <dt><code>volume</code></dt>
@@ -2625,6 +2628,12 @@
                 <td> a server running glusterd daemon </td>
                 <td> one or more (<span class="since">Since 2.1.0</span>), just one prior to that </td>
                 <td> 24007 </td>
+              </tr>
+              <tr>
+                <td> vxhs </td>
+                <td> a server running Veritas HyperScale daemon </td>
+                <td> only one </td>
+                <td> 9999 </td>
               </tr>
             </table>
             <p>
