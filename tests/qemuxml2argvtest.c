@@ -942,6 +942,11 @@ mymain(void)
     DO_TEST("disk-drive-network-rbd-ipv6", NONE);
     DO_TEST_FAILURE("disk-drive-network-rbd-no-colon", NONE);
     DO_TEST("disk-drive-network-vxhs", QEMU_CAPS_VXHS);
+    driver.config->vxhsTLS = 1;
+    DO_TEST("disk-drive-network-tlsx509-vxhs", QEMU_CAPS_VXHS,
+            QEMU_CAPS_OBJECT_TLS_CREDS_X509);
+    driver.config->vxhsTLS = 0;
+    VIR_FREE(driver.config->vxhsTLSx509certdir);
     DO_TEST("disk-drive-no-boot",
             QEMU_CAPS_BOOTINDEX);
     DO_TEST_PARSE_ERROR("disk-device-lun-type-invalid",

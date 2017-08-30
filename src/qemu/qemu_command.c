@@ -794,6 +794,35 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
 }
 
 
+/* qemuBuildDiskSrcTLSx509CommandLine:
+ *
+ * Add TLS object if the disk src uses a secure communication channel
+ *
+ * Returns 0 on success, -1 w/ error on some sort of failure.
+ */
+static int
+qemuBuildDiskSrcTLSx509CommandLine(virCommandPtr cmd,
+                                   virStorageSourcePtr src,
+                                   const char *srcalias,
+                                   virQEMUCapsPtr qemuCaps)
+{
+
+
+    /* other protocols may be added later */
+    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
+        src->haveTLS == VIR_TRISTATE_BOOL_YES) {
+        if (!(src->tlsAlias = qemuAliasTLSObjFromSrcAlias(srcalias)))
+            return -1;
+
+        return qemuBuildTLSx509CommandLine(cmd, src->tlsCertdir,
+                                           false, src->tlsVerify,
+                                           false, srcalias, qemuCaps);
+    }
+
+    return 0;
+}
+
+
 static char *
 qemuBuildNetworkDriveURI(virStorageSourcePtr src,
                          qemuDomainSecretInfoPtr secinfo)
@@ -2219,6 +2248,10 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
             return -1;
 
         if (qemuBuildDiskSecinfoCommandLine(cmd, encinfo) < 0)
+            return -1;
+
+        if (qemuBuildDiskSrcTLSx509CommandLine(cmd, disk->src, disk->info.alias,
+                                               qemuCaps) < 0)
             return -1;
 
         virCommandAddArg(cmd, "-drive");
