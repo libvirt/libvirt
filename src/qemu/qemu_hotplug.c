@@ -3067,6 +3067,8 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
          olddev->driver.virtio.ioeventfd != newdev->driver.virtio.ioeventfd ||
          olddev->driver.virtio.event_idx != newdev->driver.virtio.event_idx ||
          olddev->driver.virtio.queues != newdev->driver.virtio.queues ||
+         olddev->driver.virtio.rx_queue_size != newdev->driver.virtio.rx_queue_size ||
+         olddev->driver.virtio.tx_queue_size != newdev->driver.virtio.tx_queue_size ||
          olddev->driver.virtio.host.csum != newdev->driver.virtio.host.csum ||
          olddev->driver.virtio.host.gso != newdev->driver.virtio.host.gso ||
          olddev->driver.virtio.host.tso4 != newdev->driver.virtio.host.tso4 ||
