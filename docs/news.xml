@@ -60,6 +60,15 @@
           qemu: Added support for setting heads of virtio GPU
         </summary>
       </change>
+      <change>
+        <summary>
+          qemu: Added support to configure reconnect timeout for chardev devices
+        </summary>
+        <description>
+          When you have a TCP or UNIX chardev device and it's connected somewhere
+          you can configure reconnect timeout if the connection is closed.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
