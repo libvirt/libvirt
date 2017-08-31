@@ -9781,7 +9781,7 @@ qemuDomainGetMachineName(virDomainObjPtr vm)
     virQEMUDriverPtr driver = priv->driver;
     char *ret = NULL;
 
-    if (vm->pid) {
+    if (vm->pid > 0) {
         ret = virSystemdGetMachineNameByPID(vm->pid);
         if (!ret)
             virResetLastError();
