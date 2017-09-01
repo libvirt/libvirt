@@ -99,10 +99,18 @@ typedef enum {
 } qemuDomainAsyncJob;
 VIR_ENUM_DECL(qemuDomainAsyncJob)
 
+typedef enum {
+    QEMU_DOMAIN_JOB_STATUS_NONE = 0,
+    QEMU_DOMAIN_JOB_STATUS_ACTIVE,
+    QEMU_DOMAIN_JOB_STATUS_COMPLETED,
+    QEMU_DOMAIN_JOB_STATUS_FAILED,
+    QEMU_DOMAIN_JOB_STATUS_CANCELED,
+} qemuDomainJobStatus;
+
 typedef struct _qemuDomainJobInfo qemuDomainJobInfo;
 typedef qemuDomainJobInfo *qemuDomainJobInfoPtr;
 struct _qemuDomainJobInfo {
-    virDomainJobType type;
+    qemuDomainJobStatus status;
     virDomainJobOperation operation;
     unsigned long long started; /* When the async job started */
     unsigned long long stopped; /* When the domain's CPUs were stopped */

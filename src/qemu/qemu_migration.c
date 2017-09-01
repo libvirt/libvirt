@@ -966,7 +966,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
             goto cleanup;
 
         if (priv->job.abortJob) {
-            priv->job.current->type = VIR_DOMAIN_JOB_CANCELLED;
+            priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_CANCELED;
             virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                            qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
                            _("canceled by client"));
@@ -1347,19 +1347,19 @@ qemuMigrationUpdateJobType(qemuDomainJobInfoPtr jobInfo)
 {
     switch ((qemuMonitorMigrationStatus) jobInfo->stats.status) {
     case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
-        jobInfo->type = VIR_DOMAIN_JOB_COMPLETED;
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
-        jobInfo->type = VIR_DOMAIN_JOB_NONE;
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_NONE;
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
-        jobInfo->type = VIR_DOMAIN_JOB_FAILED;
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
-        jobInfo->type = VIR_DOMAIN_JOB_CANCELLED;
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_CANCELED;
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
@@ -1446,32 +1446,30 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
     else if (qemuMigrationUpdateJobStatus(driver, vm, asyncJob) < 0)
         return -1;
 
-    switch (jobInfo->type) {
-    case VIR_DOMAIN_JOB_NONE:
+    switch (jobInfo->status) {
+    case QEMU_DOMAIN_JOB_STATUS_NONE:
         virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
                        qemuMigrationJobName(vm), _("is not active"));
         return -1;
 
-    case VIR_DOMAIN_JOB_FAILED:
+    case QEMU_DOMAIN_JOB_STATUS_FAILED:
         virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
                        qemuMigrationJobName(vm), _("unexpectedly failed"));
         return -1;
 
-    case VIR_DOMAIN_JOB_CANCELLED:
+    case QEMU_DOMAIN_JOB_STATUS_CANCELED:
         virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                        qemuMigrationJobName(vm), _("canceled by client"));
         return -1;
 
-    case VIR_DOMAIN_JOB_COMPLETED:
+    case QEMU_DOMAIN_JOB_STATUS_COMPLETED:
         /* Fetch statistics of a completed migration */
         if (events && updateJobStats &&
             qemuMigrationUpdateJobStatus(driver, vm, asyncJob) < 0)
             return -1;
         break;
 
-    case VIR_DOMAIN_JOB_BOUNDED:
-    case VIR_DOMAIN_JOB_UNBOUNDED:
-    case VIR_DOMAIN_JOB_LAST:
+    case QEMU_DOMAIN_JOB_STATUS_ACTIVE:
         break;
     }
     return 0;
@@ -1529,7 +1527,7 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
      * will continue waiting until the migrate state changes to completed.
      */
     if (flags & QEMU_MIGRATION_COMPLETED_POSTCOPY &&
-        jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED &&
+        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE &&
         jobInfo->stats.status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY) {
         VIR_DEBUG("Migration switched to post-copy");
         if (updateStats &&
@@ -1538,18 +1536,18 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
         return 1;
     }
 
-    if (jobInfo->type == VIR_DOMAIN_JOB_COMPLETED)
+    if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_COMPLETED)
         return 1;
     else
         return 0;
 
  error:
-    if (jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED) {
+    if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE) {
         /* The migration was aborted by us rather than QEMU itself. */
-        jobInfo->type = VIR_DOMAIN_JOB_FAILED;
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
         return -2;
-    } else if (jobInfo->type == VIR_DOMAIN_JOB_COMPLETED) {
-        jobInfo->type = VIR_DOMAIN_JOB_FAILED;
+    } else if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_COMPLETED) {
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
         return -1;
     } else {
         return -1;
@@ -1574,7 +1572,7 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
 
     flags |= QEMU_MIGRATION_COMPLETED_UPDATE_STATS;
 
-    jobInfo->type = VIR_DOMAIN_JOB_UNBOUNDED;
+    jobInfo->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
     while ((rv = qemuMigrationCompleted(driver, vm, asyncJob,
                                         dconn, flags)) != 1) {
         if (rv < 0)
@@ -1582,7 +1580,7 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
 
         if (events) {
             if (virDomainObjWait(vm) < 0) {
-                jobInfo->type = VIR_DOMAIN_JOB_FAILED;
+                jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
                 return -2;
             }
         } else {
@@ -3756,7 +3754,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
          * as this is a critical section so we are guaranteed
          * priv->job.abortJob will not change */
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
-        priv->job.current->type = VIR_DOMAIN_JOB_CANCELLED;
+        priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_CANCELED;
         virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                        qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
                        _("canceled by client"));
@@ -3890,8 +3888,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         ignore_value(virTimeMillisNow(&priv->job.completed->sent));
     }
 
-    if (priv->job.current->type == VIR_DOMAIN_JOB_UNBOUNDED && !inPostCopy)
-        priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
+    if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE && !inPostCopy)
+        priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
 
     cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK |
                    QEMU_MIGRATION_COOKIE_STATS;
@@ -3933,7 +3931,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     goto cleanup;
 
  cancelPostCopy:
-    priv->job.current->type = VIR_DOMAIN_JOB_FAILED;
+    priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
     if (inPostCopy)
         goto cancel;
     else
@@ -5652,7 +5650,7 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
         return -1;
 
     qemuDomainObjSetAsyncJobMask(vm, mask);
-    priv->job.current->type = VIR_DOMAIN_JOB_UNBOUNDED;
+    priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
 
     return 0;
 }

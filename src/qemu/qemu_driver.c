@@ -3310,7 +3310,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         goto endjob;
     }
 
-    priv->job.current->type = VIR_DOMAIN_JOB_UNBOUNDED;
+    priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
 
     /* Pause */
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
@@ -13012,13 +13012,13 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
         info = priv->job.current;
 
     if (!info) {
-        jobInfo->type = VIR_DOMAIN_JOB_NONE;
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_NONE;
         ret = 0;
         goto cleanup;
     }
     *jobInfo = *info;
 
-    if (jobInfo->type == VIR_DOMAIN_JOB_UNBOUNDED) {
+    if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE) {
         if (fetch)
             ret = qemuMigrationFetchJobStatus(driver, vm, QEMU_ASYNC_JOB_NONE,
                                               jobInfo);
@@ -13053,7 +13053,7 @@ qemuDomainGetJobInfo(virDomainPtr dom,
     if (qemuDomainGetJobStatsInternal(driver, vm, false, &jobInfo) < 0)
         goto cleanup;
 
-    if (jobInfo.type == VIR_DOMAIN_JOB_NONE) {
+    if (jobInfo.status == QEMU_DOMAIN_JOB_STATUS_NONE) {
         memset(info, 0, sizeof(*info));
         info->type = VIR_DOMAIN_JOB_NONE;
         ret = 0;
@@ -13094,7 +13094,7 @@ qemuDomainGetJobStats(virDomainPtr dom,
     if (qemuDomainGetJobStatsInternal(driver, vm, completed, &jobInfo) < 0)
         goto cleanup;
 
-    if (jobInfo.type == VIR_DOMAIN_JOB_NONE) {
+    if (jobInfo.status == QEMU_DOMAIN_JOB_STATUS_NONE) {
         *type = VIR_DOMAIN_JOB_NONE;
         *params = NULL;
         *nparams = 0;

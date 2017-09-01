@@ -412,11 +412,34 @@ qemuDomainJobInfoUpdateDowntime(qemuDomainJobInfoPtr jobInfo)
     return 0;
 }
 
+static virDomainJobType
+qemuDomainJobStatusToType(qemuDomainJobStatus status)
+{
+    switch (status) {
+    case QEMU_DOMAIN_JOB_STATUS_NONE:
+        break;
+
+    case QEMU_DOMAIN_JOB_STATUS_ACTIVE:
+        return VIR_DOMAIN_JOB_UNBOUNDED;
+
+    case QEMU_DOMAIN_JOB_STATUS_COMPLETED:
+        return VIR_DOMAIN_JOB_COMPLETED;
+
+    case QEMU_DOMAIN_JOB_STATUS_FAILED:
+        return VIR_DOMAIN_JOB_FAILED;
+
+    case QEMU_DOMAIN_JOB_STATUS_CANCELED:
+        return VIR_DOMAIN_JOB_CANCELLED;
+    }
+
+    return VIR_DOMAIN_JOB_NONE;
+}
+
 int
 qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
                         virDomainJobInfoPtr info)
 {
-    info->type = jobInfo->type;
+    info->type = qemuDomainJobStatusToType(jobInfo->status);
     info->timeElapsed = jobInfo->timeElapsed;
 
     info->memTotal = jobInfo->stats.ram_total;
@@ -576,7 +599,7 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                              stats->cpu_throttle_percentage) < 0)
         goto error;
 
-    *type = jobInfo->type;
+    *type = qemuDomainJobStatusToType(jobInfo->status);
     *params = par;
     *nparams = npar;
     return 0;

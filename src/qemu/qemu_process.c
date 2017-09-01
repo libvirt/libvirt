@@ -4000,7 +4000,7 @@ qemuProcessBeginJob(virQEMUDriverPtr driver,
         return -1;
 
     qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
-    priv->job.current->type = VIR_DOMAIN_JOB_UNBOUNDED;
+    priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
 
     return 0;
 }

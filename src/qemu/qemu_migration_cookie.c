@@ -974,7 +974,7 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
         goto cleanup;
 
     stats = &jobInfo->stats;
-    jobInfo->type = VIR_DOMAIN_JOB_COMPLETED;
+    jobInfo->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
 
     virXPathULongLong("string(./started[1])", ctxt, &jobInfo->started);
     virXPathULongLong("string(./stopped[1])", ctxt, &jobInfo->stopped);
