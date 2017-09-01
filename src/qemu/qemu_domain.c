@@ -420,6 +420,7 @@ qemuDomainJobStatusToType(qemuDomainJobStatus status)
         break;
 
     case QEMU_DOMAIN_JOB_STATUS_ACTIVE:
+    case QEMU_DOMAIN_JOB_STATUS_MIGRATING:
     case QEMU_DOMAIN_JOB_STATUS_POSTCOPY:
         return VIR_DOMAIN_JOB_UNBOUNDED;
 
