@@ -371,6 +371,51 @@ virSaveLastError(void)
     return to;
 }
 
+
+/**
+ * virErrorPreserveLast:
+ * @saveerr: pointer to virErrorPtr for storing last error object
+ *
+ * Preserves the currently set last error (for the thread) into @saveerr so that
+ * it can be restored via virErrorRestore(). @saveerr must be passed to
+ * virErrorRestore()
+ */
+void
+virErrorPreserveLast(virErrorPtr *saveerr)
+{
+    int saved_errno = errno;
+    virErrorPtr lasterr = virGetLastError();
+
+    *saveerr = NULL;
+
+    if (lasterr)
+        *saveerr = virErrorCopyNew(lasterr);
+
+    errno = saved_errno;
+}
+
+
+/**
+ * virErrorRestore:
+ * @savederr: error object holding saved error
+ *
+ * Restores the error passed via @savederr and clears associated memory.
+ */
+void
+virErrorRestore(virErrorPtr *savederr)
+{
+    int saved_errno = errno;
+
+    if (!*savederr)
+        return;
+
+    virSetError(*savederr);
+    virFreeError(*savederr);
+    *savederr = NULL;
+    errno = saved_errno;
+}
+
+
 /**
  * virResetError:
  * @err: pointer to the virError to clean up

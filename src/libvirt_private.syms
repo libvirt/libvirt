@@ -1605,6 +1605,8 @@ ebtablesRemoveForwardAllowIn;
 virDispatchError;
 virErrorCopyNew;
 virErrorInitialize;
+virErrorPreserveLast;
+virErrorRestore;
 virErrorSetErrnoFromLastError;
 virLastErrorIsSystemErrno;
 virRaiseErrorFull;

@@ -196,4 +196,7 @@ void virErrorSetErrnoFromLastError(void);
 
 bool virLastErrorIsSystemErrno(int errnum);
 
+void virErrorPreserveLast(virErrorPtr *saveerr);
+void virErrorRestore(virErrorPtr *savederr);
+
 #endif
