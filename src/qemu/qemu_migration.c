@@ -1548,7 +1548,6 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     int rv;
 
-    jobInfo->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
     while ((rv = qemuMigrationCompleted(driver, vm, asyncJob,
                                         dconn, flags)) != 1) {
         if (rv < 0)
@@ -5611,7 +5610,6 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
                       qemuDomainAsyncJob job)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainJobOperation op;
     unsigned long long mask;
 
@@ -5629,8 +5627,6 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
         return -1;
 
     qemuDomainObjSetAsyncJobMask(vm, mask);
-    priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
-
     return 0;
 }
 

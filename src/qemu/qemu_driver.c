@@ -3310,8 +3310,6 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         goto endjob;
     }
 
-    priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
-
     /* Pause */
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         was_running = true;

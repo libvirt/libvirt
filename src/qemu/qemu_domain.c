@@ -4079,6 +4079,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
         qemuDomainObjResetAsyncJob(priv);
         if (VIR_ALLOC(priv->job.current) < 0)
             goto cleanup;
+        priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
         priv->job.asyncJob = asyncJob;
         priv->job.asyncOwner = virThreadSelfID();
         priv->job.asyncOwnerAPI = virThreadJobGet();
