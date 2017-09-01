@@ -3303,10 +3303,8 @@ qemuDomainRedirdevDefValidate(const virDomainRedirdevDef *def)
 static int
 qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                             const virDomainDef *def ATTRIBUTE_UNUSED,
-                            void *opaque)
+                            void *opaque ATTRIBUTE_UNUSED)
 {
-    virQEMUDriverPtr driver = opaque;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET) {
@@ -3390,7 +3388,6 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 
     ret = 0;
  cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
