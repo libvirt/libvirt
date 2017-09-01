@@ -1387,7 +1387,6 @@ qemuMigrationFetchJobStatus(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    memset(&jobInfo->stats, 0, sizeof(jobInfo->stats));
     rv = qemuMonitorGetMigrationStats(priv->mon, &jobInfo->stats);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
