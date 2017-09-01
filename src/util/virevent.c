@@ -220,6 +220,13 @@ virEventRemoveTimeout(int timer)
  * existing event loop implementation, then the
  * virEventRegisterDefaultImpl() method can be used to setup
  * the generic libvirt implementation.
+ *
+ * Once registered, the event loop implementation cannot be
+ * changed, and must be run continuously. Note that callbacks
+ * may remain registered for a short time even after calling
+ * virConnectClose on all open connections, so it is not safe
+ * to stop running the event loop immediately after closing
+ * the connection.
  */
 void virEventRegisterImpl(virEventAddHandleFunc addHandle,
                           virEventUpdateHandleFunc updateHandle,
@@ -232,6 +239,12 @@ void virEventRegisterImpl(virEventAddHandleFunc addHandle,
               "addTimeout=%p updateTimeout=%p removeTimeout=%p",
               addHandle, updateHandle, removeHandle,
               addTimeout, updateTimeout, removeTimeout);
+
+    if (addHandleImpl || updateHandleImpl || removeHandleImpl ||
+        addTimeoutImpl || updateTimeoutImpl || removeHandleImpl) {
+        VIR_WARN("Ignoring attempt to replace registered event loop");
+        return;
+    }
 
     addHandleImpl = addHandle;
     updateHandleImpl = updateHandle;
