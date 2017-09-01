@@ -439,14 +439,12 @@ virNetDaemonAutoShutdown(virNetDaemonPtr dmn,
 
 #if defined(WITH_DBUS) && defined(DBUS_TYPE_UNIX_FD)
 static void
-virNetDaemonGotInhibitReply(DBusPendingCall *pending,
-                            void *opaque)
+virNetDaemonGotInhibitReplyLocked(DBusPendingCall *pending,
+                                  virNetDaemonPtr dmn)
 {
-    virNetDaemonPtr dmn = opaque;
     DBusMessage *reply;
     int fd;
 
-    virObjectLock(dmn);
     dmn->autoShutdownCallingInhibit = false;
 
     VIR_DEBUG("dmn=%p", dmn);
@@ -470,8 +468,19 @@ virNetDaemonGotInhibitReply(DBusPendingCall *pending,
     virDBusMessageUnref(reply);
 
  cleanup:
-    virObjectUnlock(dmn);
     dbus_pending_call_unref(pending);
+}
+
+
+static void
+virNetDaemonGotInhibitReply(DBusPendingCall *pending,
+                            void *opaque)
+{
+    virNetDaemonPtr dmn = opaque;
+
+    virObjectLock(dmn);
+    virNetDaemonGotInhibitReplyLocked(pending, dmn);
+    virObjectUnlock(dmn);
 }
 
 
@@ -516,7 +525,7 @@ virNetDaemonCallInhibit(virNetDaemonPtr dmn,
                                         25 * 1000) &&
         pendingReply) {
         if (dbus_pending_call_get_completed(pendingReply)) {
-            virNetDaemonGotInhibitReply(pendingReply, dmn);
+            virNetDaemonGotInhibitReplyLocked(pendingReply, dmn);
         } else {
             dbus_pending_call_set_notify(pendingReply,
                                          virNetDaemonGotInhibitReply,
