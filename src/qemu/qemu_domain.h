@@ -109,6 +109,14 @@ typedef enum {
     QEMU_DOMAIN_JOB_STATUS_CANCELED,
 } qemuDomainJobStatus;
 
+
+typedef struct _qemuDomainMirrorStats qemuDomainMirrorStats;
+typedef qemuDomainMirrorStats *qemuDomainMirrorStatsPtr;
+struct _qemuDomainMirrorStats {
+    unsigned long long transferred;
+    unsigned long long total;
+};
+
 typedef struct _qemuDomainJobInfo qemuDomainJobInfo;
 typedef qemuDomainJobInfo *qemuDomainJobInfoPtr;
 struct _qemuDomainJobInfo {
@@ -130,6 +138,7 @@ struct _qemuDomainJobInfo {
     bool timeDeltaSet;
     /* Raw values from QEMU */
     qemuMonitorMigrationStats stats;
+    qemuDomainMirrorStats mirrorStats;
 };
 
 struct qemuDomainJobObj {

@@ -319,4 +319,10 @@ qemuMigrationReset(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
                    qemuDomainAsyncJob job);
 
+int
+qemuMigrationFetchMirrorStats(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              qemuDomainAsyncJob asyncJob,
+                              qemuDomainJobInfoPtr jobInfo);
+
 #endif /* __QEMU_MIGRATION_H__ */

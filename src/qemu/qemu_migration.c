@@ -983,6 +983,9 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
+    qemuMigrationFetchMirrorStats(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                  priv->job.current);
+
     /* Okay, all disks are ready. Modify migrate_flags */
     *migrate_flags &= ~(QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
                         QEMU_MONITOR_MIGRATE_NON_SHARED_INC);
@@ -5917,4 +5920,55 @@ qemuMigrationReset(virQEMUDriverPtr driver,
         virSetError(err);
         virFreeError(err);
     }
+}
+
+
+int
+qemuMigrationFetchMirrorStats(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              qemuDomainAsyncJob asyncJob,
+                              qemuDomainJobInfoPtr jobInfo)
+{
+    size_t i;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool nbd = false;
+    virHashTablePtr blockinfo = NULL;
+    qemuDomainMirrorStatsPtr stats = &jobInfo->mirrorStats;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        if (QEMU_DOMAIN_DISK_PRIVATE(disk)->migrating) {
+            nbd = true;
+            break;
+        }
+    }
+
+    if (!nbd)
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    blockinfo = qemuMonitorGetAllBlockJobInfo(priv->mon);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockinfo)
+        return -1;
+
+    memset(stats, 0, sizeof(*stats));
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        qemuMonitorBlockJobInfoPtr data;
+
+        if (!diskPriv->migrating ||
+            !(data = virHashLookup(blockinfo, disk->info.alias)))
+            continue;
+
+        stats->transferred += data->cur;
+        stats->total += data->end;
+    }
+
+    virHashFree(blockinfo);
+    return 0;
 }

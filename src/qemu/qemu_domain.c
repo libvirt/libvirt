@@ -448,9 +448,13 @@ qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
     info->memRemaining = jobInfo->stats.ram_remaining;
     info->memProcessed = jobInfo->stats.ram_transferred;
 
-    info->fileTotal = jobInfo->stats.disk_total;
-    info->fileRemaining = jobInfo->stats.disk_remaining;
-    info->fileProcessed = jobInfo->stats.disk_transferred;
+    info->fileTotal = jobInfo->stats.disk_total +
+                      jobInfo->mirrorStats.total;
+    info->fileRemaining = jobInfo->stats.disk_remaining +
+                          (jobInfo->mirrorStats.total -
+                           jobInfo->mirrorStats.transferred);
+    info->fileProcessed = jobInfo->stats.disk_transferred +
+                          jobInfo->mirrorStats.transferred;
 
     info->dataTotal = info->memTotal + info->fileTotal;
     info->dataRemaining = info->memRemaining + info->fileRemaining;
@@ -466,9 +470,12 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                           int *nparams)
 {
     qemuMonitorMigrationStats *stats = &jobInfo->stats;
+    qemuDomainMirrorStatsPtr mirrorStats = &jobInfo->mirrorStats;
     virTypedParameterPtr par = NULL;
     int maxpar = 0;
     int npar = 0;
+    unsigned long long mirrorRemaining = mirrorStats->total -
+                                         mirrorStats->transferred;
 
     if (virTypedParamsAddInt(&par, &npar, &maxpar,
                              VIR_DOMAIN_JOB_OPERATION,
@@ -510,15 +517,18 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
     if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DATA_TOTAL,
                                 stats->ram_total +
-                                stats->disk_total) < 0 ||
+                                stats->disk_total +
+                                mirrorStats->total) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DATA_PROCESSED,
                                 stats->ram_transferred +
-                                stats->disk_transferred) < 0 ||
+                                stats->disk_transferred +
+                                mirrorStats->transferred) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DATA_REMAINING,
                                 stats->ram_remaining +
-                                stats->disk_remaining) < 0)
+                                stats->disk_remaining +
+                                mirrorRemaining) < 0)
         goto error;
 
     if (virTypedParamsAddULLong(&par, &npar, &maxpar,
@@ -561,13 +571,16 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
 
     if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DISK_TOTAL,
-                                stats->disk_total) < 0 ||
+                                stats->disk_total +
+                                mirrorStats->total) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DISK_PROCESSED,
-                                stats->disk_transferred) < 0 ||
+                                stats->disk_transferred +
+                                mirrorStats->transferred) < 0 ||
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DISK_REMAINING,
-                                stats->disk_remaining) < 0)
+                                stats->disk_remaining +
+                                mirrorRemaining) < 0)
         goto error;
 
     if (stats->disk_bps &&
