@@ -12975,12 +12975,17 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
                               qemuDomainJobInfoPtr jobInfo)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainJobInfoPtr info;
     bool fetch = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     int ret = -1;
 
-    if (completed)
-        fetch = false;
+    if (completed) {
+        if (priv->job.completed && !priv->job.current)
+            *jobInfo = *priv->job.completed;
+        else
+            jobInfo->status = QEMU_DOMAIN_JOB_STATUS_NONE;
+
+        return 0;
+    }
 
     /* Do not ask QEMU if migration is not even running yet  */
     if (!priv->job.current || !priv->job.current->stats.status)
@@ -12997,26 +13002,18 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
             return -1;
     }
 
-    if (!completed &&
-        !virDomainObjIsActive(vm)) {
+    if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain is not running"));
         goto cleanup;
     }
 
-    if (completed && priv->job.current)
-        info = NULL;
-    else if (completed)
-        info = priv->job.completed;
-    else
-        info = priv->job.current;
-
-    if (!info) {
+    if (!priv->job.current) {
         jobInfo->status = QEMU_DOMAIN_JOB_STATUS_NONE;
         ret = 0;
         goto cleanup;
     }
-    *jobInfo = *info;
+    *jobInfo = *priv->job.current;
 
     if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE ||
         jobInfo->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
