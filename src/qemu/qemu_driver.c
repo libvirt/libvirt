@@ -12987,20 +12987,19 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
         return 0;
     }
 
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+               _("migration statistics are available only on "
+                 "the source host"));
+        return -1;
+    }
+
     /* Do not ask QEMU if migration is not even running yet  */
     if (!priv->job.current || !priv->job.current->stats.status)
         fetch = false;
 
-    if (fetch) {
-        if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("migration statistics are available only on "
-                             "the source host"));
-            return -1;
-        }
-        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
-            return -1;
-    }
+    if (fetch && qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        return -1;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
