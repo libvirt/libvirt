@@ -144,6 +144,7 @@
   <flag name='sclplmconsole'/>
   <flag name='numa.dist'/>
   <flag name='disk-share-rw'/>
+  <flag name='iscsi.password-secret'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

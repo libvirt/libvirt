@@ -175,6 +175,7 @@
   <flag name='virtio-blk.num-queues'/>
   <flag name='spapr-vty'/>
   <flag name='disk-share-rw'/>
+  <flag name='iscsi.password-secret'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.9.0)</package>
