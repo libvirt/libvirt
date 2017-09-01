@@ -91,6 +91,44 @@
           indication for users (and devs).
         </description>
       </change>
+      <change>
+        <summary>
+          apparmor: Update for QEMU 2.10 compatibility
+        </summary>
+        <description>
+          Starting with QEMU 2.10, disk images and NVRAM files get
+          automatically locked to prevent them from being corrupted; however,
+          file locking needs to be explicitly allowed through
+          <code>virt-aa-helper</code> or AppArmor will reject the requests and
+          the guest will not be able to run.
+        </description>
+      </change>
+      <change>
+        <summary>
+          virsh: List Unix sockets in 'domdisplay' output
+        </summary>
+        <description>
+          VNC and SPICE graphics can use Unix sockets instead of TCP/IP sockets
+          as connection endpoints, but such a configuration was not handled
+          correctly by <code>virsh domdisplay</code>, causing the respective
+          endpoints to be missing from the output.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Don't check whether offline migration is safe
+        </summary>
+        <description>
+          Since offline migration only copies the guest definition to the
+          destination host, data corruption is not a concern and the operation
+          can always be performed safely.
+        </description>
+      </change>
+      <change>
+        <summary>
+          virt-host-validate: Fix IOMMU detection on ppc64
+        </summary>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -123,6 +161,35 @@
           fail to parse and thus vanish, if the emulator binary would be
           uninstalled or broken. Libvirt now tolerates when capabilities
           are missing during startup.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Prevent pSeries guests from disappearing in some situations
+        </summary>
+        <description>
+          pSeries guest would disappear if any of the host devices they were
+          configured to use was not available during libvirtd startup, which
+          could easily happen for SR-IOV Virtual Functions. This scenario is
+          now handled correctly.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Honor <code>&lt;on_reboot/&gt;</code> setting
+        </summary>
+        <description>
+          The setting was accepted by the parser, but not actually implemented.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Fix <code>--verbose</code> option for all daemons
+        </summary>
+        <description>
+          Since v3.0.0, the option had been ignored by all libvirt deamons
+          (<code>libvirtd</code>, <code>virtlogd</code> and
+          <code>virtlockd</code>); it's now working as intended once again.
         </description>
       </change>
     </section>
