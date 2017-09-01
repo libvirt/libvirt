@@ -1354,7 +1354,7 @@ qemuMigrationUpdateJobType(qemuDomainJobInfoPtr jobInfo)
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
-        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED;
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
@@ -1455,6 +1455,7 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
     case QEMU_DOMAIN_JOB_STATUS_COMPLETED:
     case QEMU_DOMAIN_JOB_STATUS_ACTIVE:
     case QEMU_DOMAIN_JOB_STATUS_MIGRATING:
+    case QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED:
     case QEMU_DOMAIN_JOB_STATUS_POSTCOPY:
         break;
     }
@@ -1517,19 +1518,19 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
         return 1;
     }
 
-    if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_COMPLETED)
+    if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED)
         return 1;
     else
         return 0;
 
  error:
-    /* state can not be active at this point */
+    /* state can not be active or completed at this point */
     if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_MIGRATING ||
         jobInfo->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
         /* The migration was aborted by us rather than QEMU itself. */
         jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
         return -2;
-    } else if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_COMPLETED) {
+    } else if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED) {
         jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
         return -1;
     } else {
@@ -1583,6 +1584,10 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
     VIR_FREE(priv->job.completed);
     if (VIR_ALLOC(priv->job.completed) == 0)
         *priv->job.completed = *jobInfo;
+
+    if (asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT &&
+        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED)
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
 
     return 0;
 }
