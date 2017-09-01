@@ -112,7 +112,6 @@ struct _qemuDomainJobInfo {
                                     info from the source (migrations only). */
     /* Computed values */
     unsigned long long timeElapsed;
-    unsigned long long timeRemaining;
     long long timeDelta; /* delta = received - sent, i.e., the difference
                             between the source and the destination time plus
                             the time between the end of Perform phase on the

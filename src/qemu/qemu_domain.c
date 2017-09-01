@@ -418,7 +418,6 @@ qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
 {
     info->type = jobInfo->type;
     info->timeElapsed = jobInfo->timeElapsed;
-    info->timeRemaining = jobInfo->timeRemaining;
 
     info->memTotal = jobInfo->stats.ram_total;
     info->memRemaining = jobInfo->stats.ram_remaining;
@@ -461,12 +460,6 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
         virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_TIME_ELAPSED_NET,
                                 jobInfo->timeElapsed - jobInfo->timeDelta) < 0)
-        goto error;
-
-    if (jobInfo->type == VIR_DOMAIN_JOB_BOUNDED &&
-        virTypedParamsAddULLong(&par, &npar, &maxpar,
-                                VIR_DOMAIN_JOB_TIME_REMAINING,
-                                jobInfo->timeRemaining) < 0)
         goto error;
 
     if (stats->downtime_set &&
