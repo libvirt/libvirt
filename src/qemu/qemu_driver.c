@@ -12973,7 +12973,7 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
                               qemuDomainJobInfoPtr jobInfo)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    bool fetch = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
+    bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     int ret = -1;
 
     if (completed) {
@@ -12992,12 +12992,7 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
         return -1;
     }
 
-    /* Do not ask QEMU if migration is not even running yet  */
-    if (!priv->job.current ||
-        priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE)
-        fetch = false;
-
-    if (fetch && qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         return -1;
 
     if (!virDomainObjIsActive(vm)) {
@@ -13016,7 +13011,8 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
     if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE ||
         jobInfo->status == QEMU_DOMAIN_JOB_STATUS_MIGRATING ||
         jobInfo->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
-        if (fetch &&
+        if (events &&
+            jobInfo->status != QEMU_DOMAIN_JOB_STATUS_ACTIVE &&
             qemuMigrationFetchStats(driver, vm, QEMU_ASYNC_JOB_NONE, jobInfo) < 0)
             goto cleanup;
 
@@ -13027,8 +13023,7 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    if (fetch)
-        qemuDomainObjEndJob(driver, vm);
+    qemuDomainObjEndJob(driver, vm);
     return ret;
 }
 
