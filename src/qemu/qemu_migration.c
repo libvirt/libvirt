@@ -1436,8 +1436,7 @@ qemuMigrationUpdateJobStatus(virQEMUDriverPtr driver,
 static int
 qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
-                            qemuDomainAsyncJob asyncJob,
-                            bool updateJobStats)
+                            qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
@@ -1466,12 +1465,6 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
         return -1;
 
     case QEMU_DOMAIN_JOB_STATUS_COMPLETED:
-        /* Fetch statistics of a completed migration */
-        if (events && updateJobStats &&
-            qemuMigrationUpdateJobStatus(driver, vm, asyncJob) < 0)
-            return -1;
-        break;
-
     case QEMU_DOMAIN_JOB_STATUS_ACTIVE:
     case QEMU_DOMAIN_JOB_STATUS_POSTCOPY:
         break;
@@ -1483,9 +1476,9 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
 enum qemuMigrationCompletedFlags {
     QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR = (1 << 0),
     QEMU_MIGRATION_COMPLETED_CHECK_STORAGE  = (1 << 1),
-    QEMU_MIGRATION_COMPLETED_UPDATE_STATS   = (1 << 2),
-    QEMU_MIGRATION_COMPLETED_POSTCOPY       = (1 << 3),
+    QEMU_MIGRATION_COMPLETED_POSTCOPY       = (1 << 2),
 };
+
 
 /**
  * Returns 1 if migration completed successfully,
@@ -1503,9 +1496,8 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
     int pauseReason;
-    bool updateStats = !!(flags & QEMU_MIGRATION_COMPLETED_UPDATE_STATS);
 
-    if (qemuMigrationCheckJobStatus(driver, vm, asyncJob, updateStats) < 0)
+    if (qemuMigrationCheckJobStatus(driver, vm, asyncJob) < 0)
         goto error;
 
     if (flags & QEMU_MIGRATION_COMPLETED_CHECK_STORAGE &&
@@ -1533,9 +1525,6 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
     if (flags & QEMU_MIGRATION_COMPLETED_POSTCOPY &&
         jobInfo->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
         VIR_DEBUG("Migration switched to post-copy");
-        if (updateStats &&
-            qemuMigrationUpdateJobStatus(driver, vm, asyncJob) < 0)
-            goto error;
         return 1;
     }
 
@@ -1574,8 +1563,6 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     int rv;
 
-    flags |= QEMU_MIGRATION_COMPLETED_UPDATE_STATS;
-
     jobInfo->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
     while ((rv = qemuMigrationCompleted(driver, vm, asyncJob,
                                         dconn, flags)) != 1) {
@@ -1596,6 +1583,9 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
             virObjectLock(vm);
         }
     }
+
+    if (events)
+        ignore_value(qemuMigrationUpdateJobStatus(driver, vm, asyncJob));
 
     qemuDomainJobInfoUpdateDowntime(jobInfo);
     VIR_FREE(priv->job.completed);
