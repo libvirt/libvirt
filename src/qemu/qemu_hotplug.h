@@ -80,6 +80,9 @@ int qemuDomainAttachHostDevice(virConnectPtr conn,
 int qemuDomainAttachShmemDevice(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
                                 virDomainShmemDefPtr shmem);
+int qemuDomainAttachWatchdog(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             virDomainWatchdogDefPtr watchdog);
 int qemuDomainFindGraphicsIndex(virDomainDefPtr def,
                                 virDomainGraphicsDefPtr dev);
 int qemuDomainAttachMemory(virQEMUDriverPtr driver,

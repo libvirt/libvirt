@@ -127,6 +127,9 @@ testQemuHotplugAttach(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_SHMEM:
         ret = qemuDomainAttachShmemDevice(&driver, vm, dev->data.shmem);
         break;
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+        ret = qemuDomainAttachWatchdog(&driver, vm, dev->data.watchdog);
+        break;
     default:
         VIR_TEST_VERBOSE("device type '%s' cannot be attached\n",
                 virDomainDeviceTypeToString(dev->type));
@@ -811,8 +814,12 @@ mymain(void)
                    "device_del", QMP_OK,
                    "object-del", QMP_OK);
     DO_TEST_ATTACH("base-live+disk-scsi-wwn",
-                   "disk-scsi-duplicate-wwn", false, true,
+                   "disk-scsi-duplicate-wwn", false, false,
                    "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
+
+    DO_TEST_ATTACH("base-live", "watchdog", false, false,
+                   "watchdog-set-action", QMP_OK,
                    "device_add", QMP_OK);
 
 #define DO_TEST_CPU_GROUP(prefix, vcpus, modernhp, expectfail)                 \

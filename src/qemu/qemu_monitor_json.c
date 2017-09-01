@@ -7695,3 +7695,31 @@ qemuMonitorJSONQueryNamedBlockNodes(qemuMonitorPtr mon)
 
     return ret;
 }
+
+
+int
+qemuMonitorJSONSetWatchdogAction(qemuMonitorPtr mon,
+                                 const char *action)
+{
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    int ret = -1;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("watchdog-set-action",
+                                           "s:action", action,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

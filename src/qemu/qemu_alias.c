@@ -406,6 +406,17 @@ qemuAssignDeviceShmemAlias(virDomainDefPtr def,
 
 
 int
+qemuAssignDeviceWatchdogAlias(virDomainWatchdogDefPtr watchdog)
+{
+    /* Currently, there's just one watchdog per domain */
+
+    if (VIR_STRDUP(watchdog->info.alias, "watchdog0") < 0)
+        return -1;
+    return 0;
+}
+
+
+int
 qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 {
     size_t i;
@@ -482,7 +493,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     if (def->watchdog) {
-        if (virAsprintf(&def->watchdog->info.alias, "watchdog%d", 0) < 0)
+        if (qemuAssignDeviceWatchdogAlias(def->watchdog) < 0)
             return -1;
     }
     if (def->memballoon) {
