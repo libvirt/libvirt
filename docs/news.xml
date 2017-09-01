@@ -71,6 +71,16 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Report a clear error when dropping a VM during startup
+        </summary>
+        <description>
+          "Failed to load config for domain 'DOMNAME'" is now reported if a VM
+          config can't be parsed for some reason, and thus provides a clear
+          indication for users (and devs).
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -91,6 +101,18 @@
           Domains with extremely long names would fail to start due to
           temporary namespace paths being created with the whole name.
           The path is now generated with shortened name instead.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Tolerate missing emulator binary during libvirtd restart
+        </summary>
+        <description>
+          For some time libvirt required qemu capabilities being present when
+          parsing VM configs during startup. As a side effect VM configs would
+          fail to parse and thus vanish, if the emulator binary would be
+          uninstalled or broken. Libvirt now tolerates when capabilities
+          are missing during startup.
         </description>
       </change>
     </section>
