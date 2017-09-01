@@ -13018,7 +13018,8 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
     }
     *jobInfo = *info;
 
-    if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE) {
+    if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE ||
+        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
         if (fetch)
             ret = qemuMigrationFetchJobStatus(driver, vm, QEMU_ASYNC_JOB_NONE,
                                               jobInfo);
@@ -13152,7 +13153,7 @@ static int qemuDomainAbortJob(virDomainPtr dom)
     }
 
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT &&
-        (priv->job.current->stats.status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY ||
+        (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY ||
          (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
           reason == VIR_DOMAIN_PAUSED_POSTCOPY))) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",

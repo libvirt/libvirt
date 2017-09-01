@@ -741,8 +741,8 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         }
 
         if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
-            if (priv->job.current->stats.status ==
-                        QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY) {
+            if (priv->job.current->status ==
+                        QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
                 reason = VIR_DOMAIN_PAUSED_POSTCOPY;
                 detail = VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY;
             } else {

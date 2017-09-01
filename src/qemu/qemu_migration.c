@@ -1346,6 +1346,10 @@ static void
 qemuMigrationUpdateJobType(qemuDomainJobInfoPtr jobInfo)
 {
     switch ((qemuMonitorMigrationStatus) jobInfo->stats.status) {
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_POSTCOPY;
+        break;
+
     case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
         jobInfo->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
         break;
@@ -1364,7 +1368,6 @@ qemuMigrationUpdateJobType(qemuDomainJobInfoPtr jobInfo)
 
     case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
     case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
-    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
     case QEMU_MONITOR_MIGRATION_STATUS_CANCELLING:
     case QEMU_MONITOR_MIGRATION_STATUS_LAST:
         break;
@@ -1470,6 +1473,7 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
         break;
 
     case QEMU_DOMAIN_JOB_STATUS_ACTIVE:
+    case QEMU_DOMAIN_JOB_STATUS_POSTCOPY:
         break;
     }
     return 0;
@@ -1527,8 +1531,7 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
      * will continue waiting until the migrate state changes to completed.
      */
     if (flags & QEMU_MIGRATION_COMPLETED_POSTCOPY &&
-        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE &&
-        jobInfo->stats.status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY) {
+        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
         VIR_DEBUG("Migration switched to post-copy");
         if (updateStats &&
             qemuMigrationUpdateJobStatus(driver, vm, asyncJob) < 0)
@@ -1542,7 +1545,8 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
         return 0;
 
  error:
-    if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE) {
+    if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE ||
+        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
         /* The migration was aborted by us rather than QEMU itself. */
         jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
         return -2;
@@ -3836,7 +3840,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     else if (rc == -1)
         goto cleanup;
 
-    if (priv->job.current->stats.status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY)
+    if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY)
         inPostCopy = true;
 
     /* When migration completed, QEMU will have paused the CPUs for us.
@@ -3888,7 +3892,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         ignore_value(virTimeMillisNow(&priv->job.completed->sent));
     }
 
-    if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE && !inPostCopy)
+    if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE)
         priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
 
     cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK |
@@ -5261,7 +5265,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             goto endjob;
     }
 
-    if (priv->job.current->stats.status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY)
+    if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY)
         inPostCopy = true;
 
     if (!(flags & VIR_MIGRATE_PAUSED)) {
