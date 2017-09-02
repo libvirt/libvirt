@@ -176,7 +176,7 @@
       </change>
       <change>
         <summary>
-          qemu: Honor <code>&lt;on_reboot/&gt;</code> setting
+          qemu: Honor &lt;on_reboot/&gt; setting
         </summary>
         <description>
           The setting was accepted by the parser, but not actually implemented.
@@ -184,7 +184,7 @@
       </change>
       <change>
         <summary>
-          Fix <code>--verbose</code> option for all daemons
+          Fix --verbose option for all daemons
         </summary>
         <description>
           Since v3.0.0, the option had been ignored by all libvirt deamons
