@@ -195,7 +195,7 @@
           Fix --verbose option for all daemons
         </summary>
         <description>
-          Since v3.0.0, the option had been ignored by all libvirt deamons
+          Since v3.0.0, the option had been ignored by all libvirt daemons
           (<code>libvirtd</code>, <code>virtlogd</code> and
           <code>virtlockd</code>); it's now working as intended once again.
         </description>
