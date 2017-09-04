@@ -3125,6 +3125,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
         VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
         VIR_DOMAIN_CONTROLLER_TYPE_CCID,
     };
+    int ret = -1;
 
     for (j = 0; j < ARRAY_CARDINALITY(contOrder); j++) {
         for (i = 0; i < def->ncontrollers; i++) {
@@ -3186,7 +3187,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("Multiple legacy USB controllers are "
                                      "not supported"));
-                    return -1;
+                    goto cleanup;
                 }
                 usblegacy = true;
                 continue;
@@ -3194,7 +3195,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
 
             if (qemuBuildControllerDevStr(def, cont, qemuCaps,
                                           &devstr, &usbcontroller) < 0)
-                return -1;
+                goto cleanup;
 
             if (devstr) {
                 virCommandAddArg(cmd, "-device");
@@ -3204,16 +3205,20 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
         }
     }
 
-    /* We haven't added any USB controller yet, but we haven't been asked
-     * not to add one either. Add a legacy USB controller, unless we're
-     * creating a kind of guest we want to keep legacy-free */
     if (usbcontroller == 0 &&
         !qemuDomainIsQ35(def) &&
         !qemuDomainIsVirt(def) &&
-        !ARCH_IS_S390(def->os.arch))
+        !ARCH_IS_S390(def->os.arch)) {
+        /* We haven't added any USB controller yet, but we haven't been asked
+         * not to add one either. Add a legacy USB controller, unless we're
+         * creating a kind of guest we want to keep legacy-free */
         virCommandAddArg(cmd, "-usb");
+    }
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    return ret;
 }
 
 
