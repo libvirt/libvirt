@@ -5270,7 +5270,7 @@ qemuDomainDetachRNGDevice(virQEMUDriverPtr driver,
     int rc;
     int ret = -1;
 
-    if ((idx = virDomainRNGFind(vm->def, rng) < 0)) {
+    if ((idx = virDomainRNGFind(vm->def, rng)) < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("device not present in domain configuration"));
         return -1;

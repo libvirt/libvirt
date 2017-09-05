@@ -313,7 +313,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriverPtr driver)
                 goto error_unlink;
             }
 
-            if ((rv = virLockManagerSanlockInitLockspace(driver, &ls) < 0)) {
+            if ((rv = virLockManagerSanlockInitLockspace(driver, &ls)) < 0) {
                 char *err = NULL;
                 if (virLockManagerSanlockError(rv, &err)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,

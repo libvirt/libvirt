@@ -1310,7 +1310,7 @@ int main(int argc, char **argv) {
         }
 
         srv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
-        if ((rv = virLockDaemonSetupNetworkingSystemD(srv) < 0)) {
+        if ((rv = virLockDaemonSetupNetworkingSystemD(srv)) < 0) {
             ret = VIR_LOCK_DAEMON_ERR_NETWORK;
             goto cleanup;
         }

@@ -424,7 +424,7 @@ void testTLSWriteCertChain(const char *filename,
 
     for (i = 0; i < ncerts; i++) {
         size = sizeof(buffer);
-        if ((err = gnutls_x509_crt_export(certs[i], GNUTLS_X509_FMT_PEM, buffer, &size) < 0)) {
+        if ((err = gnutls_x509_crt_export(certs[i], GNUTLS_X509_FMT_PEM, buffer, &size)) < 0) {
             VIR_WARN("Failed to export certificate %s", gnutls_strerror(err));
             unlink(filename);
             abort();

@@ -446,7 +446,7 @@ adminDispatchConnectGetLoggingOutputs(virNetServerPtr server ATTRIBUTE_UNUSED,
     char *outputs = NULL;
     int noutputs = 0;
 
-    if ((noutputs = adminConnectGetLoggingOutputs(&outputs, args->flags) < 0)) {
+    if ((noutputs = adminConnectGetLoggingOutputs(&outputs, args->flags)) < 0) {
         virNetMessageSaveError(rerr);
         return -1;
     }
