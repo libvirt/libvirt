@@ -64,6 +64,11 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # Several conditionals expand the same on both branches
     # depending on the particular platform/architecture
     dontwarn="$dontwarn -Wduplicated-branches"
+    # > This warning does not generally indicate that there is anything wrong
+    # > with your code; it merely indicates that GCC's optimizers are unable
+    # > to handle the code effectively.
+    # Source: https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
+    dontwarn="$dontwarn -Wdisabled-optimization"
 
     # gcc 4.2 treats attribute(format) as an implicit attribute(nonnull),
     # which triggers spurious warnings for our usage
