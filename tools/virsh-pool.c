@@ -109,6 +109,10 @@
      .type = VSH_OT_STRING,                                            \
      .help = N_("auth secret usage to be used for underlying storage") \
     },                                                                 \
+    {.name = "secret-uuid",                                            \
+     .type = VSH_OT_STRING,                                            \
+     .help = N_("auth secret UUID to be used for underlying storage")  \
+    },                                                                 \
     {.name = "adapter-name",                                           \
      .type = VSH_OT_STRING,                                            \
      .help = N_("adapter name to be used for underlying storage")      \
@@ -302,8 +306,10 @@ virshBuildPoolXML(vshControl *ctl,
                *srcDev = NULL, *srcName = NULL, *srcFormat = NULL,
                *target = NULL, *authType = NULL, *authUsername = NULL,
                *secretUsage = NULL, *adapterName = NULL, *adapterParent = NULL,
-               *adapterWwnn = NULL, *adapterWwpn = NULL;
+               *adapterWwnn = NULL, *adapterWwpn = NULL, *secretUUID = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    VSH_EXCLUSIVE_OPTIONS("secret-usage", "secret-uuid");
 
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
         goto cleanup;
@@ -319,6 +325,7 @@ virshBuildPoolXML(vshControl *ctl,
         vshCommandOptStringReq(ctl, cmd, "auth-type", &authType) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "auth-username", &authUsername) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "secret-usage", &secretUsage) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "secret-uuid", &secretUUID) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-name", &adapterName) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-wwnn", &adapterWwnn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-wwpn", &adapterWwpn) < 0 ||
@@ -349,11 +356,14 @@ virshBuildPoolXML(vshControl *ctl,
             virBufferAsprintf(&buf, "<adapter type='scsi_host' name='%s'/>\n",
                               adapterName);
         }
-        if (authType && authUsername && secretUsage) {
+        if (authType && authUsername && (secretUsage || secretUUID)) {
             virBufferAsprintf(&buf, "<auth type='%s' username='%s'>\n",
                               authType, authUsername);
             virBufferAdjustIndent(&buf, 2);
-            virBufferAsprintf(&buf, "<secret usage='%s'/>\n", secretUsage);
+            if (secretUsage)
+                virBufferAsprintf(&buf, "<secret usage='%s'/>\n", secretUsage);
+            else
+                virBufferAsprintf(&buf, "<secret uuid='%s'/>\n", secretUUID);
             virBufferAdjustIndent(&buf, -2);
             virBufferAddLit(&buf, "</auth>\n");
         }
