@@ -4412,6 +4412,25 @@ qemuDomainRemoveShmemDevice(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuDomainRemoveWatchdog(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         virDomainWatchdogDefPtr watchdog)
+{
+    virObjectEventPtr event = NULL;
+
+    VIR_DEBUG("Removing watchdog %s from domain %p %s",
+              watchdog->info.alias, vm, vm->def->name);
+
+    event = virDomainEventDeviceRemovedNewFromObj(vm, watchdog->info.alias);
+    qemuDomainEventQueue(driver, event);
+    qemuDomainReleaseDeviceAddress(vm, &watchdog->info, NULL);
+    virDomainWatchdogDefFree(vm->def->watchdog);
+    vm->def->watchdog = NULL;
+    return 0;
+}
+
+
 int
 qemuDomainRemoveDevice(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
@@ -5120,6 +5139,54 @@ qemuDomainDetachShmemDevice(virQEMUDriverPtr driver,
         if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1) {
             qemuDomainReleaseDeviceAddress(vm, &shmem->info, NULL);
             ret = qemuDomainRemoveShmemDevice(driver, vm, shmem);
+        }
+    }
+    qemuDomainResetDeviceRemoval(vm);
+
+    return ret;
+}
+
+
+int
+qemuDomainDetachWatchdog(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         virDomainWatchdogDefPtr dev)
+{
+    int ret = -1;
+    virDomainWatchdogDefPtr watchdog = vm->def->watchdog;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    /* While domains can have up to one watchdog, the one supplied by the user
+     * doesn't necessarily match the one domain has. Refuse to detach in such
+     * case. */
+    if (!(watchdog &&
+          watchdog->model == dev->model &&
+          watchdog->action == dev->action &&
+          virDomainDeviceInfoAddressIsEqual(&dev->info, &watchdog->info))) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("watchdog device not present in domain configuration"));
+        return -1;
+    }
+
+    if (watchdog->model != VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("hot unplug of watchdog of model %s is not supported"),
+                       virDomainWatchdogModelTypeToString(watchdog->model));
+        return -1;
+    }
+
+    qemuDomainMarkDeviceForRemoval(vm, &watchdog->info);
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    ret = qemuMonitorDelDevice(priv->mon, watchdog->info.alias);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+    if (ret == 0) {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1) {
+            qemuDomainReleaseDeviceAddress(vm, &watchdog->info, NULL);
+            ret = qemuDomainRemoveWatchdog(driver, vm, watchdog);
         }
     }
     qemuDomainResetDeviceRemoval(vm);

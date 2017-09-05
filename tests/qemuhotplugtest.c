@@ -155,6 +155,9 @@ testQemuHotplugDetach(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_SHMEM:
         ret = qemuDomainDetachShmemDevice(&driver, vm, dev->data.shmem);
         break;
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+        ret = qemuDomainDetachWatchdog(&driver, vm, dev->data.watchdog);
+        break;
     default:
         VIR_TEST_VERBOSE("device type '%s' cannot be detached\n",
                 virDomainDeviceTypeToString(dev->type));
@@ -818,9 +821,11 @@ mymain(void)
                    "human-monitor-command", HMP("OK\\r\\n"),
                    "device_add", QMP_OK);
 
-    DO_TEST_ATTACH("base-live", "watchdog", false, false,
+    DO_TEST_ATTACH("base-live", "watchdog", false, true,
                    "watchdog-set-action", QMP_OK,
                    "device_add", QMP_OK);
+    DO_TEST_DETACH("base-live", "watchdog-full", false, false,
+                   "device_del", QMP_OK);
 
 #define DO_TEST_CPU_GROUP(prefix, vcpus, modernhp, expectfail)                 \
     do {                                                                       \

@@ -122,6 +122,9 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
 int qemuDomainDetachShmemDevice(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
                                 virDomainShmemDefPtr dev);
+int qemuDomainDetachWatchdog(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             virDomainWatchdogDefPtr watchdog);
 int qemuDomainAttachLease(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainLeaseDefPtr lease);
