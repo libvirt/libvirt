@@ -8169,10 +8169,19 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         break;
 
 
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+        if (!vmdef->watchdog) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("domain has no watchdog"));
+            return -1;
+        }
+        virDomainWatchdogDefFree(vmdef->watchdog);
+        vmdef->watchdog = NULL;
+        break;
+
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
-    case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:
     case VIR_DOMAIN_DEVICE_SMARTCARD:

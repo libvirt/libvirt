@@ -539,6 +539,7 @@ virDomainVirtTypeFromString;
 virDomainVirtTypeToString;
 virDomainWatchdogActionTypeFromString;
 virDomainWatchdogActionTypeToString;
+virDomainWatchdogDefFree;
 virDomainWatchdogModelTypeFromString;
 virDomainWatchdogModelTypeToString;
 virDomainXMLOptionGetNamespace;
