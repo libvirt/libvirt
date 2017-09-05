@@ -26023,13 +26023,9 @@ virDomainDeviceInfoCheckBootIndex(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 int
 virDomainDefCompatibleDevice(virDomainDefPtr def,
-                             virDomainDeviceDefPtr dev,
-                             virDomainDeviceAction action)
+                             virDomainDeviceDefPtr dev)
 {
     virDomainDeviceInfoPtr info = virDomainDeviceGetInfo(dev);
-
-    if (action != VIR_DOMAIN_DEVICE_ACTION_ATTACH)
-        return 0;
 
     if (!virDomainDefHasUSB(def) &&
         def->os.type != VIR_DOMAIN_OSTYPE_EXE &&

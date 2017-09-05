@@ -8303,8 +8303,7 @@ qemuDomainAttachDeviceLiveAndConfig(virConnectPtr conn,
         if (!vmdef)
             goto cleanup;
 
-        if (virDomainDefCompatibleDevice(vmdef, dev,
-                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
+        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
             goto cleanup;
         if ((ret = qemuDomainAttachDeviceConfig(vmdef, dev, conn, caps,
                                                 parse_flags,
@@ -8313,8 +8312,7 @@ qemuDomainAttachDeviceLiveAndConfig(virConnectPtr conn,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefCompatibleDevice(vm->def, dev_copy,
-                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
+        if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
             goto cleanup;
 
         if ((ret = qemuDomainAttachDeviceLive(vm, dev_copy, conn, driver)) < 0)
@@ -8454,8 +8452,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         if (!vmdef)
             goto endjob;
 
-        if (virDomainDefCompatibleDevice(vmdef, dev,
-                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
+        if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
             goto endjob;
 
         if ((ret = qemuDomainUpdateDeviceConfig(vmdef, dev, caps,
@@ -8465,8 +8462,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefCompatibleDevice(vm->def, dev_copy,
-                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
+        if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
             goto endjob;
 
         if ((ret = qemuDomainUpdateDeviceLive(dom->conn, vm, dev_copy, dom, force)) < 0)
@@ -8554,10 +8550,6 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
         if (!vmdef)
             goto cleanup;
 
-        if (virDomainDefCompatibleDevice(vmdef, dev,
-                                         VIR_DOMAIN_DEVICE_ACTION_DETACH) < 0)
-            goto cleanup;
-
         if ((ret = qemuDomainDetachDeviceConfig(vmdef, dev, caps,
                                                 parse_flags,
                                                 driver->xmlopt)) < 0)
@@ -8565,10 +8557,6 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefCompatibleDevice(vm->def, dev_copy,
-                                         VIR_DOMAIN_DEVICE_ACTION_DETACH) < 0)
-            goto cleanup;
-
         if ((ret = qemuDomainDetachDeviceLive(vm, dev_copy, driver)) < 0)
             goto cleanup;
         /*

@@ -2962,8 +2962,7 @@ typedef enum {
 } virDomainDeviceAction;
 
 int virDomainDefCompatibleDevice(virDomainDefPtr def,
-                                 virDomainDeviceDefPtr dev,
-                                 virDomainDeviceAction action);
+                                 virDomainDeviceDefPtr dev);
 
 void virDomainRNGDefFree(virDomainRNGDefPtr def);
 
