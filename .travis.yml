@@ -6,38 +6,38 @@ compiler:
 cache: ccache
 addons:
   apt:
+    # Please keep this list sorted alphabetically
     packages:
-      - xsltproc
       - autopoint
-      - libxml2-dev
-      - libncurses5-dev
-      - libreadline-dev
-      - zlib1g-dev
-      - libgnutls-dev
-      - libgcrypt11-dev
+      - dnsmasq-base
+#     - dwarves
+      - libapparmor-dev
+      - libaudit-dev
       - libavahi-client-dev
-      - libsasl2-dev
-      - libxen-dev
-      - lvm2
-      - libgcrypt11-dev
-      - libparted0-dev
-      - libdevmapper-dev
-      - uuid-dev
-      - libudev-dev
-      - libpciaccess-dev
       - libcap-ng-dev
+      - libdevmapper-dev
+      - libgcrypt11-dev
+      - libgnutls-dev
+      - libncurses5-dev
+      - libnetcf-dev
       - libnl-3-dev
       - libnl-route-3-dev
-      - libyajl-dev
-      - libpcap0.8-dev
       - libnuma-dev
-      - libnetcf-dev
-      - libaudit-dev
-#      - dwarves
-      - libxml2-utils
-      - libapparmor-dev
-      - dnsmasq-base
+      - libparted0-dev
+      - libpcap0.8-dev
+      - libpciaccess-dev
       - librbd-dev
+      - libreadline-dev
+      - libsasl2-dev
+      - libudev-dev
+      - libxen-dev
+      - libxml2-dev
+      - libxml2-utils
+      - libyajl-dev
+      - lvm2
+      - uuid-dev
+      - xsltproc
+      - zlib1g-dev
 
 notifications:
   irc:
