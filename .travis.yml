@@ -60,14 +60,20 @@ git:
   depth: 5
   submodules: true
 
+env:
+  global:
+    # The custom $PATH is just to pick up some extra binaries installed
+    # through homebrew on macOS and it's completely harmless on Linux
+    - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/rpcgen/bin:$PATH"
+    - VIR_TEST_DEBUG=1
+
 before_install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew install gnutls libgcrypt yajl gettext rpcgen ; fi
 
-# the custom PATH is just to pick up OS-X homebrew & its harmless on Linux
 before_script:
-  - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/rpcgen/bin:$PATH" ./autogen.sh
+  - ./autogen.sh
 script:
-  - VIR_TEST_DEBUG=1 make -j3 && make -j3 syntax-check && make -j3 check
+  - make -j3 && make -j3 syntax-check && make -j3 check
 
 # Environments here are run in addition to the main environment defined above
 matrix:
