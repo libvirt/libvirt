@@ -1,8 +1,5 @@
 sudo: false
 language: c
-dist: precise
-compiler:
-  - gcc
 cache: ccache
 addons:
   apt:
@@ -80,14 +77,15 @@ script:
   # syntax-check as well, so skip those steps on that platform for now
   - make -j3 && if [ "$TRAVIS_OS_NAME" != "osx" ]; then make -j3 syntax-check && make -j3 check; fi
 
-# Environments here are run in addition to the main environment defined above
 matrix:
   include:
+    - compiler: gcc
+      dist: precise
+    - compiler: gcc
+      dist: trusty
     - compiler: clang
       dist: precise
     - compiler: clang
-      dist: trusty
-    - compiler: gcc
       dist: trusty
     - compiler: clang
       os: osx
