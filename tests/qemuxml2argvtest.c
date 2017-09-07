@@ -1762,6 +1762,8 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-cpu-exact",
             QEMU_CAPS_NODEFCONFIG);
+    DO_TEST_PARSE_ERROR("pseries-no-parallel",
+            QEMU_CAPS_NODEFCONFIG);
 
     qemuTestSetHostArch(driver.caps, VIR_ARCH_PPC64);
     DO_TEST("pseries-cpu-compat", QEMU_CAPS_KVM,

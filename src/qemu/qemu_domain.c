@@ -3298,7 +3298,7 @@ qemuDomainChrDefValidate(const virDomainChrDef *dev,
         return -1;
 
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL &&
-        ARCH_IS_S390(def->os.arch)) {
+        (ARCH_IS_S390(def->os.arch) || qemuDomainIsPSeries(def))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("parallel ports are not supported"));
             return -1;
