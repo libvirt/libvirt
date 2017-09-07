@@ -56,10 +56,8 @@ Use this name for the PID file, overriding the default value.
 
 =item B<-t, --timeout> I<SECONDS>
 
-Exit after timeout period (in seconds) elapse with no client connections
-or registered resources.  Be aware that resources such as autostart
-networks will result in never reaching the timeout, even when there are
-no client connections.
+Exit after timeout period (in seconds), provided there are neither any client
+connections nor any running domains.
 
 =item B<-v, --verbose>
 
