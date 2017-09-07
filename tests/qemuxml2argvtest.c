@@ -463,6 +463,10 @@ testCompareXMLToArgv(const void *data)
             goto ok;
         goto cleanup;
     }
+    if (flags & FLAG_EXPECT_PARSE_ERROR) {
+        VIR_TEST_DEBUG("passed instead of expected parse error");
+        goto cleanup;
+    }
     priv = vm->privateData;
 
     if (virBitmapParse("0-3", &priv->autoNodeset, 4) < 0)
@@ -500,6 +504,10 @@ testCompareXMLToArgv(const void *data)
                                             VIR_QEMU_PROCESS_START_COLD))) {
         if (flags & FLAG_EXPECT_FAILURE)
             goto ok;
+        goto cleanup;
+    }
+    if (flags & FLAG_EXPECT_FAILURE) {
+        VIR_TEST_DEBUG("passed instead of expected failure");
         goto cleanup;
     }
 
