@@ -636,13 +636,15 @@ the I<--force> flag may be specified, requesting to disconnect any existing
 sessions, such as in a case of a broken connection.
 
 =item B<create> I<FILE> [I<--console>] [I<--paused>] [I<--autodestroy>]
-[I<--pass-fds N,M,...>]
+[I<--pass-fds N,M,...>] [I<--validate>]
 
-Create a domain from an XML <file>. An easy way to create the XML
-<file> is to use the B<dumpxml> command to obtain the definition of a
-pre-existing guest.  The domain will be paused if the I<--paused> option
-is used and supported by the driver; otherwise it will be running.
-If I<--console> is requested, attach to the console after creation.
+Create a domain from an XML <file>. Optionally, I<--validate> option can be
+passed to validate the format of the input XML file against an internal RNG
+schema (identical to using L<virt-xml-validate(1)> tool). An easy way to create
+the XML <file> is to use the B<dumpxml> command to obtain the definition of a
+pre-existing guest.  The domain will be paused if the I<--paused> option is used
+and supported by the driver; otherwise it will be running. If I<--console> is
+requested, attach to the console after creation.
 If I<--autodestroy> is requested, then the guest will be automatically
 destroyed when virsh closes its connection to libvirt, or otherwise
 exits.
@@ -658,10 +660,12 @@ B<Example>
  vi domain.xml (or make changes with your other text editor)
  virsh create domain.xml
 
-=item B<define> I<FILE>
+=item B<define> I<FILE> [I<--validate>]
 
-Define a domain from an XML <file>. The domain definition is registered
-but not started.  If domain is already running, the changes will take
+Define a domain from an XML <file>. Optionally, the format of the input XML
+file can be validated against an internal RNG schema with I<--validate>
+(identical to using L<virt-xml-validate(1)> tool). The domain definition is
+registered but not started.  If domain is already running, the changes will take
 effect on the next boot.
 
 =item B<desc> I<domain> [[I<--live>] [I<--config>] |
