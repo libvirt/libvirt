@@ -3291,9 +3291,10 @@ qemuDomainChrSourceDefValidate(const virDomainChrSourceDef *def)
 
 
 static int
-qemuDomainChrDefValidate(const virDomainChrDef *def)
+qemuDomainChrDefValidate(const virDomainChrDef *dev,
+                         const virDomainDef *def ATTRIBUTE_UNUSED)
 {
-    if (qemuDomainChrSourceDefValidate(def->source) < 0)
+    if (qemuDomainChrSourceDefValidate(dev->source) < 0)
         return -1;
 
     return 0;
@@ -3334,7 +3335,7 @@ qemuDomainRedirdevDefValidate(const virDomainRedirdevDef *def)
 
 static int
 qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
-                            const virDomainDef *def ATTRIBUTE_UNUSED,
+                            const virDomainDef *def,
                             void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
@@ -3429,7 +3430,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
             goto cleanup;
         }
     } else if (dev->type == VIR_DOMAIN_DEVICE_CHR) {
-        if (qemuDomainChrDefValidate(dev->data.chr) < 0)
+        if (qemuDomainChrDefValidate(dev->data.chr, def) < 0)
             goto cleanup;
     } else if (dev->type == VIR_DOMAIN_DEVICE_SMARTCARD) {
         if (qemuDomainSmartcardDefValidate(dev->data.smartcard) < 0)
