@@ -34,9 +34,7 @@
   <define name='secret'>
     <element name='secret'>
       <attribute name='type'>
-        <choice>
-          <value>passphrase</value>
-        </choice>
+        <value>passphrase</value>
       </attribute>
       <choice>
         <attribute name='uuid'>

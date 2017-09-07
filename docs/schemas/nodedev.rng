@@ -220,9 +220,7 @@
               <element name='name'><text/></element>
             </optional>
             <element name='deviceAPI'>
-              <choice>
-                <value>vfio-pci</value>
-              </choice>
+              <value>vfio-pci</value>
             </element>
             <element name='availableInstances'>
               <ref name='unsignedInt'/>

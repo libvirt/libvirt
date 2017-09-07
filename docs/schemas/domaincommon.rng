@@ -1554,9 +1554,7 @@
     <element name="source">
       <interleave>
         <attribute name="protocol">
-          <choice>
-            <value>rbd</value>
-          </choice>
+          <value>rbd</value>
         </attribute>
         <optional>
           <attribute name="name"/>
@@ -1617,9 +1615,7 @@
   <define name="diskSourceNetworkProtocolNBD">
     <element name="source">
       <attribute name="protocol">
-        <choice>
-          <value>nbd</value>
-        </choice>
+        <value>nbd</value>
       </attribute>
       <optional>
         <attribute name="name"/>
@@ -1631,9 +1627,7 @@
   <define name="diskSourceNetworkProtocolGluster">
     <element name="source">
       <attribute name="protocol">
-        <choice>
-          <value>gluster</value>
-        </choice>
+        <value>gluster</value>
       </attribute>
       <attribute name="name"/>
       <oneOrMore>
@@ -2370,9 +2364,7 @@
           <interleave>
               <element name="source">
                 <attribute name="type">
-                  <choice>
-                    <value>unix</value>
-                  </choice>
+                  <value>unix</value>
                 </attribute>
                 <attribute name="path">
                   <ref name="absFilePath"/>
@@ -2475,9 +2467,7 @@
         </group>
         <group>
           <attribute name="type">
-            <choice>
-              <value>udp</value>
-            </choice>
+            <value>udp</value>
           </attribute>
           <interleave>
             <element name="source">
@@ -2967,9 +2957,7 @@
           </optional>
           <optional>
             <attribute name="connected">
-              <choice>
-                <value>keep</value>
-              </choice>
+              <value>keep</value>
             </attribute>
           </optional>
           <ref name="listenElements"/>
@@ -3693,9 +3681,7 @@
           </optional>
           <empty/>
         </group>
-        <choice>
-          <ref name="qemucdev"/>
-        </choice>
+        <ref name="qemucdev"/>
       </choice>
     </element>
   </define>
@@ -3730,9 +3716,7 @@
           <ref name="address"/>
         </optional>
         <zeroOrMore>
-          <choice>
-            <ref name="codec"/>
-          </choice>
+          <ref name="codec"/>
         </zeroOrMore>
       </interleave>
     </element>
@@ -3985,9 +3969,7 @@
     <element name="tpm">
       <optional>
         <attribute name="model">
-          <choice>
-            <value>tpm-tis</value>
-          </choice>
+          <value>tpm-tis</value>
         </attribute>
       </optional>
       <ref name="tpm-backend"/>
@@ -4106,9 +4088,7 @@
   <define name="hub">
     <element name="hub">
       <attribute name="type">
-        <choice>
-          <value>usb</value>
-        </choice>
+        <value>usb</value>
       </attribute>
       <optional>
         <ref name="alias"/>
@@ -4121,9 +4101,7 @@
   <define name="redirdev">
     <element name="redirdev">
       <attribute name="bus">
-        <choice>
-          <value>usb</value>
-        </choice>
+        <value>usb</value>
       </attribute>
       <attribute name="type">
         <ref name="qemucdevSrcTypeChoice"/>
@@ -4286,9 +4264,7 @@
         <group>  <!-- scsi_host adapter -->
           <optional>
             <attribute name="protocol">
-              <choice>
-                <value>adapter</value>   <!-- scsi_host, default, optional -->
-              </choice>
+              <value>adapter</value>   <!-- scsi_host, default, optional -->
             </attribute>
           </optional>
           <interleave>
@@ -4300,9 +4276,7 @@
         </group>
         <group>  <!-- iscsi adapter -->
           <attribute name="protocol">
-            <choice>
-              <value>iscsi</value>     <!-- iscsi, required -->
-            </choice>
+            <value>iscsi</value>     <!-- iscsi, required -->
           </attribute>
           <attribute name="name">
             <text/>
@@ -4338,9 +4312,7 @@
       <choice>
         <group>
           <attribute name="protocol">
-            <choice>
-              <value>vhost</value>     <!-- vhost, required -->
-            </choice>
+            <value>vhost</value>     <!-- vhost, required -->
           </attribute>
           <attribute name="wwpn">
             <data type="string">
@@ -4357,9 +4329,7 @@
       <value>mdev</value>
     </attribute>
     <attribute name="model">
-      <choice>
-        <value>vfio-pci</value>
-      </choice>
+      <value>vfio-pci</value>
     </attribute>
     <element name="source">
       <ref name="mdevaddress"/>
@@ -4821,9 +4791,7 @@
       <zeroOrMore>
         <element name="table">
           <attribute name="type">
-            <choice>
-              <value>slic</value>
-            </choice>
+            <value>slic</value>
           </attribute>
           <ref name="absFilePath"/>
         </element>
@@ -5035,9 +5003,7 @@
   <define name="rng">
     <element name="rng">
       <attribute name="model">
-        <choice>
-          <value>virtio</value>
-        </choice>
+        <value>virtio</value>
       </attribute>
       <interleave>
         <ref name="rng-backend"/>
@@ -5162,9 +5128,7 @@
           </optional>
           <optional>
             <attribute name='job'>
-              <choice>
-                <value>copy</value>
-              </choice>
+              <value>copy</value>
             </attribute>
           </optional>
           <optional>
