@@ -120,10 +120,11 @@ runIO(const char *path, int fd, int oflags)
 
         /* handle last write size align in direct case */
         if (got < buflen && direct && fdout == fd) {
-            memset(buf + got, 0, buflen - got);
-            got = (got + alignMask) & ~alignMask;
+            ssize_t aligned_got = (got + alignMask) & ~alignMask;
 
-            if (safewrite(fdout, buf, got) < 0) {
+            memset(buf + got, 0, aligned_got - got);
+
+            if (safewrite(fdout, buf, aligned_got) < 0) {
                 virReportSystemError(errno, _("Unable to write %s"), fdoutname);
                 goto cleanup;
             }
