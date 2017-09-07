@@ -1952,6 +1952,10 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_CCW,
             QEMU_CAPS_VIRTIO_S390);
+    DO_TEST_PARSE_ERROR("s390-no-parallel",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_VIRTIO_CCW,
+            QEMU_CAPS_VIRTIO_S390);
 
     DO_TEST("ppc-dtb",
             QEMU_CAPS_KVM,
