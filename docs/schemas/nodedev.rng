@@ -228,7 +228,7 @@
           </element>
         </oneOrMore>
       </element>
-   </optional>
+    </optional>
 
     <optional>
       <element name='iommuGroup'>
@@ -531,7 +531,7 @@
     <optional>
       <element name='model'>
         <text/>
-        </element>
+      </element>
     </optional>
     <optional>
       <element name='vendor'>

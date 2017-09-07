@@ -532,7 +532,7 @@
             <attribute name="count">
               <ref name="unsignedInt"/>
             </attribute>
-          <empty/>
+            <empty/>
           </element>
         </zeroOrMore>
       </interleave>
@@ -1866,7 +1866,7 @@
     <attribute name='copy_on_read'>
       <ref name="virOnOff"/>
     </attribute>
-    </define>
+  </define>
   <define name="discard">
     <attribute name='discard'>
       <choice>
@@ -2362,21 +2362,21 @@
             <value>vhostuser</value>
           </attribute>
           <interleave>
-              <element name="source">
-                <attribute name="type">
-                  <value>unix</value>
-                </attribute>
-                <attribute name="path">
-                  <ref name="absFilePath"/>
-                </attribute>
-                <attribute name="mode">
-                  <choice>
-                    <value>server</value>
-                    <value>client</value>
-                  </choice>
-                </attribute>
-                <empty/>
-              </element>
+            <element name="source">
+              <attribute name="type">
+                <value>unix</value>
+              </attribute>
+              <attribute name="path">
+                <ref name="absFilePath"/>
+              </attribute>
+              <attribute name="mode">
+                <choice>
+                  <value>server</value>
+                  <value>client</value>
+                </choice>
+              </attribute>
+              <empty/>
+            </element>
             <ref name="interface-options"/>
           </interleave>
         </group>
@@ -2660,14 +2660,14 @@
       <optional>
         <element name="backend">
           <optional>
-           <attribute name='tap'>
-             <ref name='absFilePath'/>
-           </attribute>
+            <attribute name='tap'>
+              <ref name='absFilePath'/>
+            </attribute>
           </optional>
           <optional>
-           <attribute name='vhost'>
-             <ref name='absFilePath'/>
-           </attribute>
+            <attribute name='vhost'>
+              <ref name='absFilePath'/>
+            </attribute>
           </optional>
         </element>
       </optional>
@@ -3981,14 +3981,14 @@
 
   <define name="tpm-backend">
     <element name="backend">
-       <choice>
-         <group>
-           <attribute name="type">
-              <value>passthrough</value>
-           </attribute>
-           <ref name="tpm-passthrough-device"/>
-         </group>
-       </choice>
+      <choice>
+        <group>
+          <attribute name="type">
+            <value>passthrough</value>
+          </attribute>
+          <ref name="tpm-passthrough-device"/>
+        </group>
+      </choice>
     </element>
   </define>
 
@@ -4001,7 +4001,7 @@
           </attribute>
         </optional>
       </element>
-   </optional>
+    </optional>
   </define>
 
   <define name="iommu">
@@ -4254,7 +4254,7 @@
       <value>scsi</value>
     </attribute>
     <optional>
-        <ref name="sgIO"/>
+      <ref name="sgIO"/>
     </optional>
     <optional>
       <ref name="rawIO"/>

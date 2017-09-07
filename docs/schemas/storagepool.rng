@@ -521,7 +521,7 @@
             <ref name='sourceinfodir'/>
             <ref name='sourcefmtnetfs'/>
             <optional>
-                <ref name='sourceinfovendor'/>
+              <ref name='sourceinfovendor'/>
             </optional>
           </interleave>
         </group>
@@ -538,7 +538,7 @@
               </attribute>
             </element>
             <optional>
-                <ref name='sourceinfovendor'/>
+              <ref name='sourceinfovendor'/>
             </optional>
           </interleave>
         </group>

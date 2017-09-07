@@ -18,7 +18,7 @@
             <ref name="filterref-node-attributes"/>
           </element>
           <element name="rule">
-          <ref name="rule-node-attributes"/>
+            <ref name="rule-node-attributes"/>
             <optional>
               <zeroOrMore>
                 <element name="mac">
@@ -360,7 +360,7 @@
       <ref name='action-type'/>
     </attribute>
     <attribute name="direction">
-       <ref name='direction-type'/>
+      <ref name='direction-type'/>
     </attribute>
     <optional>
       <attribute name="priority">
@@ -377,9 +377,9 @@
   <define name="match-attribute">
     <interleave>
       <optional>
-         <attribute name="match">
-           <ref name="virYesNo"/>
-         </attribute>
+        <attribute name="match">
+          <ref name="virYesNo"/>
+        </attribute>
       </optional>
     </interleave>
   </define>
@@ -387,9 +387,9 @@
   <define name="srcmac-attribute">
     <interleave>
       <optional>
-         <attribute name="srcmacaddr">
-           <ref name="addrMAC"/>
-         </attribute>
+        <attribute name="srcmacaddr">
+          <ref name="addrMAC"/>
+        </attribute>
       </optional>
     </interleave>
   </define>
@@ -398,9 +398,9 @@
     <interleave>
       <ref name="srcmac-attribute"/>
       <optional>
-         <attribute name="srcmacmask">
-           <ref name="addrMAC"/>
-         </attribute>
+        <attribute name="srcmacmask">
+          <ref name="addrMAC"/>
+        </attribute>
       </optional>
     </interleave>
   </define>
@@ -409,14 +409,14 @@
     <interleave>
       <ref name="srcmacandmask-attributes"/>
       <optional>
-         <attribute name="dstmacaddr">
-           <ref name="addrMAC"/>
-         </attribute>
+        <attribute name="dstmacaddr">
+          <ref name="addrMAC"/>
+        </attribute>
       </optional>
       <optional>
-         <attribute name="dstmacmask">
-           <ref name="addrMAC"/>
-         </attribute>
+        <attribute name="dstmacmask">
+          <ref name="addrMAC"/>
+        </attribute>
       </optional>
     </interleave>
   </define>
@@ -794,13 +794,13 @@
           <ref name="boolean"/>
         </attribute>
       </optional>
-   </interleave>
+    </interleave>
   </define>
 
   <define name="ip-attributes">
     <optional>
       <attribute name="protocol">
-          <ref name="ipProtocolType"/>
+        <ref name="ipProtocolType"/>
       </attribute>
     </optional>
   </define>
@@ -854,7 +854,7 @@
       <data type="string">
         <param name="pattern">([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9]</param>
       </data>
-   </choice>
+    </choice>
   </define>
 
   <define name="addrIPv6">
@@ -864,7 +864,7 @@
       <data type="string">
         <param name="pattern">([a-fA-F0-9]{0,4}:){2,7}([a-fA-F0-9]*)(([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9])?</param>
       </data>
-   </choice>
+    </choice>
   </define>
 
   <define name="addrMask">
@@ -879,7 +879,7 @@
       <data type="string">
         <param name="pattern">([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9]</param>
       </data>
-   </choice>
+    </choice>
   </define>
 
   <define name="addrMaskv6">
@@ -894,7 +894,7 @@
       <data type="string">
         <param name="pattern">([a-fA-F0-9]{0,4}:){2,7}([a-fA-F0-9]*)</param>
       </data>
-   </choice>
+    </choice>
   </define>
 
   <define name="sixbitrange">
@@ -1062,10 +1062,10 @@
   </define>
 
   <define name='priority-type'>
-      <data type="int">
-        <param name="minInclusive">-1000</param>
-        <param name="maxInclusive">1000</param>
-      </data>
+    <data type="int">
+      <param name="minInclusive">-1000</param>
+      <param name="maxInclusive">1000</param>
+    </data>
   </define>
   <define name='statematch-type'>
     <data type="string">

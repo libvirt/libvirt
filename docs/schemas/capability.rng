@@ -57,21 +57,21 @@
   <define name='secmodel'>
     <element name='secmodel'>
       <interleave>
-          <element name='model'>
-            <text/>
-          </element>
-          <element name='doi'>
-            <text/>
-          </element>
-          <zeroOrMore>
-            <element name='baselabel'>
-              <attribute name='type'>
-                <text/>
-              </attribute>
+        <element name='model'>
+          <text/>
+        </element>
+        <element name='doi'>
+          <text/>
+        </element>
+        <zeroOrMore>
+          <element name='baselabel'>
+            <attribute name='type'>
               <text/>
-            </element>
-          </zeroOrMore>
-       </interleave>
+            </attribute>
+            <text/>
+          </element>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
 
