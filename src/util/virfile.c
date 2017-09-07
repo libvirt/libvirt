@@ -260,7 +260,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
                                               LIBEXECDIR)))
         goto error;
 
-    ret->cmd = virCommandNewArgList(iohelper_path, name, "0", NULL);
+    ret->cmd = virCommandNewArgList(iohelper_path, name, NULL);
 
     VIR_FREE(iohelper_path);
 
