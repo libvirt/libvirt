@@ -55,7 +55,6 @@ runIO(const char *path, int fd, int oflags)
     const char *fdinname, *fdoutname;
     unsigned long long total = 0;
     bool direct = O_DIRECT && ((oflags & O_DIRECT) != 0);
-    bool shortRead = false; /* true if we hit a short read */
     off_t end = 0;
 
 #if HAVE_POSIX_MEMALIGN
@@ -115,28 +114,30 @@ runIO(const char *path, int fd, int oflags)
             goto cleanup;
         }
         if (got == 0)
-            break; /* End of file before end of requested data */
-        if (got < buflen) {
-            /* O_DIRECT can handle at most one short read, at end of file */
-            if (direct && shortRead) {
-                virReportSystemError(EINVAL, "%s",
-                                     _("Too many short reads for O_DIRECT"));
-            }
-            shortRead = true;
-        }
+            break;
 
         total += got;
-        if (fdout == fd && direct && shortRead) {
-            end = total;
+
+        /* handle last write size align in direct case */
+        if (got < buflen && direct && fdout == fd) {
             memset(buf + got, 0, buflen - got);
             got = (got + alignMask) & ~alignMask;
+
+            if (safewrite(fdout, buf, got) < 0) {
+                virReportSystemError(errno, _("Unable to write %s"), fdoutname);
+                goto cleanup;
+            }
+
+            if (ftruncate(fd, total) < 0) {
+                virReportSystemError(errno, _("Unable to truncate %s"), fdoutname);
+                goto cleanup;
+            }
+
+            break;
         }
+
         if (safewrite(fdout, buf, got) < 0) {
             virReportSystemError(errno, _("Unable to write %s"), fdoutname);
-            goto cleanup;
-        }
-        if (end && ftruncate(fd, end) < 0) {
-            virReportSystemError(errno, _("Unable to truncate %s"), fdoutname);
             goto cleanup;
         }
     }
