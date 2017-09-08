@@ -133,7 +133,7 @@ static int virNetServerProcessMsg(virNetServerPtr srv,
                                                 &msg->header) < 0)
                 goto cleanup;
         } else {
-            VIR_INFO("Dropping client mesage, unknown program %d version %d type %d proc %d",
+            VIR_INFO("Dropping client message, unknown program %d version %d type %d proc %d",
                      msg->header.prog, msg->header.vers,
                      msg->header.type, msg->header.proc);
             /* Send a dummy reply to free up 'msg' & unblock client rx */
