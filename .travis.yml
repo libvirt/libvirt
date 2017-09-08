@@ -5,37 +5,60 @@ addons:
   apt:
     # Please keep this list sorted alphabetically
     packages:
+      - autoconf
+      - automake
       - autopoint
+      - ccache
       - dnsmasq-base
-#     - dwarves
+      - ebtables
+      - gcc
       - gettext
+      - glusterfs-client
+      - libacl1-dev
       - libapparmor-dev
+      - libattr1-dev
       - libaudit-dev
       - libavahi-client-dev
+      - libblkid-dev
+      - libc6-dev
       - libcap-ng-dev
+      - libcurl4-gnutls-dev
+      - libdbus-1-dev
       - libdevmapper-dev
-      - libgcrypt11-dev
+      - libfuse-dev
       - libgnutls-dev
-      - libncurses5-dev
       - libnetcf-dev
       - libnl-3-dev
       - libnl-route-3-dev
       - libnuma-dev
-      - libparted0-dev
-      - libpcap0.8-dev
+      - libopenwsman-dev
+      - libparted-dev
+      - libpcap-dev
       - libpciaccess-dev
       - librbd-dev
       - libreadline-dev
       - libsasl2-dev
+      - libssh2-1-dev
+      - libssl-dev
+      - libtool
       - libudev-dev
       - libxen-dev
       - libxml2-dev
       - libxml2-utils
       - libyajl-dev
       - lvm2
-      - uuid-dev
+      - make
+      - nfs-common
+      - open-iscsi
+      - parted
+      - patch
+      - pkg-config
+      - policykit-1
+      - scrub
+      - sheepdog
+      - systemtap-sdt-dev
       - xsltproc
-      - zlib1g-dev
+      - zfs-fuse
 
 notifications:
   irc:
