@@ -801,8 +801,8 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
 
 
 int
-virDomainNumaDefCPUFormat(virBufferPtr buf,
-                          virDomainNumaPtr def)
+virDomainNumaDefCPUFormatXML(virBufferPtr buf,
+                             virDomainNumaPtr def)
 {
     virDomainMemoryAccess memAccess;
     char *cpustr;
