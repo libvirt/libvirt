@@ -640,9 +640,14 @@ sessions, such as in a case of a broken connection.
 
 Create a domain from an XML <file>. Optionally, I<--validate> option can be
 passed to validate the format of the input XML file against an internal RNG
-schema (identical to using L<virt-xml-validate(1)> tool). An easy way to create
-the XML <file> is to use the B<dumpxml> command to obtain the definition of a
-pre-existing guest.  The domain will be paused if the I<--paused> option is used
+schema (identical to using L<virt-xml-validate(1)> tool). Domains created using
+this command are going to be either transient (temporary ones that will vanish
+once destroyed) or existing persistent domains that will run with one-time use
+configuration, leaving the persistent XML untouched (this can come handy during
+an automated testing of various configurations all based on the original XML).
+See the B<Example> section for usage demonstration.
+
+The domain will be paused if the I<--paused> option is used
 and supported by the driver; otherwise it will be running. If I<--console> is
 requested, attach to the console after creation.
 If I<--autodestroy> is requested, then the guest will be automatically
@@ -656,9 +661,24 @@ is only supported with container based virtualization.
 
 B<Example>
 
- virsh dumpxml <domain> > domain.xml
- vi domain.xml (or make changes with your other text editor)
- virsh create domain.xml
+ 1) prepare a template from an existing domain (skip directly to 3a if writing
+    one from scratch)
+
+ # virsh dumpxml <domain> > domain.xml
+
+ 2) edit the template using an editor of your choice and:
+    a) DO CHANGE! <name> and <uuid> (<uuid> can also be removed), or
+    b) DON'T CHANGE! either <name> or <uuid>
+
+ # $EDITOR domain.xml
+
+ 3) create a domain from domain.xml, depending on whether following 2a or 2b
+    respectively:
+    a) the domain is going to be transient
+    b) an existing persistent domain will run with a modified one-time
+       configuration
+
+ # virsh create domain.xml
 
 =item B<define> I<FILE> [I<--validate>]
 
