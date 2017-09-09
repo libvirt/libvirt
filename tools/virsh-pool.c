@@ -1952,7 +1952,9 @@ VIR_ENUM_IMPL(virshPoolEvent,
               N_("Defined"),
               N_("Undefined"),
               N_("Started"),
-              N_("Stopped"))
+              N_("Stopped"),
+              N_("Created"),
+              N_("Deleted"))
 
 static const char *
 virshPoolEventToString(int event)

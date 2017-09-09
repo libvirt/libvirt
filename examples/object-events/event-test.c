@@ -356,6 +356,10 @@ storagePoolEventToString(int event)
             return "Started";
         case VIR_STORAGE_POOL_EVENT_STOPPED:
             return "Stopped";
+        case VIR_STORAGE_POOL_EVENT_CREATED:
+            return "Created";
+        case VIR_STORAGE_POOL_EVENT_DELETED:
+            return "Deleted";
         case VIR_STORAGE_POOL_EVENT_LAST:
             break;
     }

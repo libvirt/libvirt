@@ -167,6 +167,10 @@ storagePoolLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
         counter->defineEvents++;
     else if (event == VIR_STORAGE_POOL_EVENT_UNDEFINED)
         counter->undefineEvents++;
+    else if (event == VIR_STORAGE_POOL_EVENT_CREATED)
+        counter->createdEvents++;
+    else if (event == VIR_STORAGE_POOL_EVENT_DELETED)
+        counter->deletedEvents++;
 }
 
 static void
@@ -723,6 +727,69 @@ testStoragePoolStartStopEvent(const void *data)
 }
 
 static int
+testStoragePoolBuild(const void *data)
+{
+    const objecteventTest *test = data;
+    lifecycleEventCounter counter;
+    int id;
+    int ret = 0;
+
+    lifecycleEventCounter_reset(&counter);
+
+    id = virConnectStoragePoolEventRegisterAny(test->conn, NULL,
+                      VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE,
+                      VIR_STORAGE_POOL_EVENT_CALLBACK(&storagePoolLifecycleCb),
+                      &counter, NULL);
+
+    virStoragePoolBuild(test->pool, 0);
+
+    if (virEventRunDefaultImpl() < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (counter.createdEvents != 1) {
+        ret = -1;
+        goto cleanup;
+    }
+
+ cleanup:
+    virConnectStoragePoolEventDeregisterAny(test->conn, id);
+    return ret;
+}
+
+static int
+testStoragePoolDelete(const void *data)
+{
+    const objecteventTest *test = data;
+    lifecycleEventCounter counter;
+    int id;
+    int ret = 0;
+
+    lifecycleEventCounter_reset(&counter);
+
+    id = virConnectStoragePoolEventRegisterAny(test->conn, NULL,
+                      VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE,
+                      VIR_STORAGE_POOL_EVENT_CALLBACK(&storagePoolLifecycleCb),
+                      &counter, NULL);
+
+    virStoragePoolDelete(test->pool, 0);
+
+    if (virEventRunDefaultImpl() < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (counter.deletedEvents != 1) {
+        ret = -1;
+        goto cleanup;
+    }
+
+ cleanup:
+    virConnectStoragePoolEventDeregisterAny(test->conn, id);
+    return ret;
+}
+static int
 testNodeDeviceCreateXML(const void *data)
 {
     const objecteventTest *test = data;
@@ -830,6 +897,13 @@ mymain(void)
         ret = EXIT_FAILURE;
     if (virTestRun("Storage pool start stop events ",
                    testStoragePoolStartStopEvent, &test) < 0)
+        ret = EXIT_FAILURE;
+    /* Storage pool build and delete events */
+    if (virTestRun("Storage pool build event ",
+                   testStoragePoolBuild, &test) < 0)
+        ret = EXIT_FAILURE;
+    if (virTestRun("Storage pool delete event ",
+                   testStoragePoolDelete, &test) < 0)
         ret = EXIT_FAILURE;
 
     /* Node device event tests */
