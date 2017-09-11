@@ -446,8 +446,7 @@ static int
 virStorageBackendDiskStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool)
 {
-    const char *format =
-        virStoragePoolFormatDiskTypeToString(pool->def->source.format);
+    const char *format;
     const char *path = pool->def->source.devices[0].path;
 
     virWaitForDevices();
@@ -458,6 +457,9 @@ virStorageBackendDiskStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         return -1;
     }
 
+    if (pool->def->source.format == VIR_STORAGE_POOL_DISK_UNKNOWN)
+        pool->def->source.format = VIR_STORAGE_POOL_DISK_DOS;
+    format = virStoragePoolFormatDiskTypeToString(pool->def->source.format);
     if (!virStorageBackendDeviceIsEmpty(path, format, false))
         return -1;
 
