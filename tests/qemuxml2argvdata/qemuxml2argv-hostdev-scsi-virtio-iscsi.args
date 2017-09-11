@@ -22,7 +22,7 @@ server,nowait \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
--drive file=iscsi://example.org:3260/iqn.1992-01.com.example,if=none,\
+-drive file=iscsi://example.org:3260/iqn.1992-01.com.example/0,if=none,\
 format=raw,id=drive-hostdev0 \
 -device scsi-generic,bus=scsi0.0,channel=0,scsi-id=2,lun=4,\
 drive=drive-hostdev0,id=hostdev0 \

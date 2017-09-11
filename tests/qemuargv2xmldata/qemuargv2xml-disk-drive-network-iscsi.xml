@@ -16,7 +16,7 @@
     <emulator>/usr/bin/qemu-system-i686</emulator>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
-      <source protocol='iscsi' name='iqn.1992-01.com.example'>
+      <source protocol='iscsi' name='iqn.1992-01.com.example/0'>
         <host name='example.org' port='6000'/>
       </source>
       <target dev='vda' bus='virtio'/>

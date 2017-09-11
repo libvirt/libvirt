@@ -4308,16 +4308,54 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
 }
 
 
+/**
+ * virDomainPostParseCheckISCSIPath
+ * @srcpath: Source path read (a/k/a, IQN) either disk or hostdev
+ *
+ * The details of an IQN is defined by RFC 3720 and 3721, but
+ * we just need to make sure there's a lun provided. If not
+ * provided, then default to zero. For an ISCSI LUN that is
+ * is provided by /dev/disk/by-path/... , then that path will
+ * have the specific lun requested.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+static int
+virDomainPostParseCheckISCSIPath(char **srcpath)
+{
+    char *path = NULL;
+
+    if (strchr(*srcpath, '/'))
+        return 0;
+
+    if (virAsprintf(&path, "%s/0", *srcpath) < 0)
+        return -1;
+    VIR_FREE(*srcpath);
+    VIR_STEAL_PTR(*srcpath, path);
+    return 0;
+}
+
+
 static int
 virDomainHostdevDefPostParse(virDomainHostdevDefPtr dev,
                              const virDomainDef *def,
                              virDomainXMLOptionPtr xmlopt)
 {
+    virDomainHostdevSubsysSCSIPtr scsisrc;
+
     if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
         return 0;
 
     switch (dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+        scsisrc = &dev->source.subsys.u.scsi;
+        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+            virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+
+            if (virDomainPostParseCheckISCSIPath(&iscsisrc->path) < 0)
+                return -1;
+        }
+
         if (dev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
             virDomainHostdevAssignAddress(xmlopt, def, dev) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -4454,6 +4492,11 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
                 return -1;
             }
         }
+
+        if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
+            disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI &&
+            virDomainPostParseCheckISCSIPath(&disk->src->path) < 0)
+            return -1;
 
         if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
             virDomainCheckVirtioOptions(disk->virtio) < 0)
