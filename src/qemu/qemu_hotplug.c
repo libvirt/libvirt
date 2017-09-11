@@ -94,6 +94,7 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
     virStorageSourcePtr origsrc = NULL;
+    virErrorPtr orig_err = NULL;
 
     if (overridesrc) {
         origsrc = disk->src;
@@ -102,6 +103,7 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
 
     /* just tear down the disk access */
     if (teardown) {
+        virErrorPreserveLast(&orig_err);
         ret = 0;
         goto rollback_cgroup;
     }
@@ -144,6 +146,8 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
  cleanup:
     if (origsrc)
         disk->src = origsrc;
+
+    virErrorRestore(&orig_err);
 
     virObjectUnref(cfg);
 
