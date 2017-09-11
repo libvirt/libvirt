@@ -3805,13 +3805,13 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     virDomainNetType netType = virDomainNetGetActualType(net);
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     size_t i;
+    char *ret = NULL;
 
     if (net->script && netType != VIR_DOMAIN_NET_TYPE_ETHERNET) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("scripts are not supported on interfaces of type %s"),
                        virDomainNetTypeToString(netType));
-        virObjectUnref(cfg);
-        return NULL;
+        goto cleanup;
     }
 
     switch (netType) {
@@ -3919,13 +3919,16 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
             virBufferAsprintf(&buf, "sndbuf=%lu,", net->tune.sndbuf);
     }
 
-    virObjectUnref(cfg);
 
     virBufferTrim(&buf, ",", -1);
     if (virBufferCheckError(&buf) < 0)
-        return NULL;
+        goto cleanup;
 
-    return virBufferContentAndReset(&buf);
+    ret = virBufferContentAndReset(&buf);
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    virObjectUnref(cfg);
+    return ret;
 }
 
 
