@@ -433,7 +433,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     return ret;
 
  exit_monitor:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     if (driveAdded && qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
         VIR_WARN("Unable to remove drive %s (%s) after failed "
                  "qemuMonitorAddDevice", drivealias, drivestr);
@@ -444,11 +444,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
         ignore_value(qemuMonitorDelObject(priv->mon, encinfo->s.aes.alias));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         releaseaddr = false;
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
-
+    virErrorRestore(&orig_err);
 
     virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
 
@@ -722,7 +718,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     return ret;
 
  exit_monitor:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     if (driveAdded && qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
         VIR_WARN("Unable to remove drive %s (%s) after failed "
                  "qemuMonitorAddDevice", drivealias, drivestr);
@@ -732,10 +728,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     if (encobjAdded)
         ignore_value(qemuMonitorDelObject(priv->mon, encinfo->s.aes.alias));
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 
     virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
 
@@ -819,16 +812,13 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
     return ret;
 
  exit_monitor:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     if (driveAdded && qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
         VIR_WARN("Unable to remove drive %s (%s) after failed "
                  "qemuMonitorAddDevice", drivealias, drivestr);
     }
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 
     virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
 
@@ -1356,7 +1346,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     if (!virDomainObjIsActive(vm))
         goto cleanup;
 
-    originalError = virSaveLastError();
+    virErrorPreserveLast(&originalError);
     if (vlan < 0) {
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV)) {
             char *netdev_name;
@@ -1387,8 +1377,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             VIR_FREE(hostnet_name);
         }
     }
-    virSetError(originalError);
-    virFreeError(originalError);
+    virErrorRestore(&originalError);
     goto cleanup;
 }
 
@@ -1562,7 +1551,7 @@ qemuDomainDelTLSObjects(virQEMUDriverPtr driver,
     if (!tlsAlias && !secAlias)
         return;
 
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
@@ -1576,10 +1565,7 @@ qemuDomainDelTLSObjects(virQEMUDriverPtr driver,
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
 
  cleanup:
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 }
 
 
@@ -1621,12 +1607,9 @@ qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
     return qemuDomainObjExitMonitor(driver, vm);
 
  error:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
 
     return -1;
@@ -1788,15 +1771,12 @@ int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
     return ret;
 
  exit_monitor:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     /* detach associated chardev on error */
     if (chardevAdded)
         ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     qemuDomainDelTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
                             secAlias, tlsAlias);
     goto audit;
@@ -2051,15 +2031,12 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
     return ret;
 
  exit_monitor:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     /* detach associated chardev on error */
     if (chardevAttached)
         qemuMonitorDetachCharDev(priv->mon, charAlias);
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 
     qemuDomainDelTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
                             secAlias, tlsAlias);
@@ -2202,17 +2179,14 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
     return ret;
 
  exit_monitor:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     if (objAdded)
         ignore_value(qemuMonitorDelObject(priv->mon, objAlias));
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD && chardevAdded)
         ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         releaseaddr = false;
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 
     qemuDomainDelTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
                             secAlias, tlsAlias);
@@ -2349,15 +2323,12 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     return ret;
 
  exit_monitor:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     if (objAdded)
         ignore_value(qemuMonitorDelObject(priv->mon, objalias));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         mem = NULL;
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
     if (!mem)
         goto audit;
 
@@ -2368,10 +2339,9 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
         mem = NULL;
 
     /* reset the mlock limit */
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     ignore_value(qemuDomainAdjustMaxMemLock(vm));
-    virSetError(orig_err);
-    virFreeError(orig_err);
+    virErrorRestore(&orig_err);
 
     goto audit;
 }
@@ -2561,17 +2531,14 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     return ret;
 
  exit_monitor:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     if (driveAdded && qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
         VIR_WARN("Unable to remove drive %s (%s) after failed "
                  "qemuMonitorAddDevice",
                  drvstr, devstr);
     }
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 
     virDomainAuditHostdev(vm, hostdev, "attach", false);
 
@@ -2846,7 +2813,7 @@ qemuDomainAttachShmemDevice(virQEMUDriverPtr driver,
     return ret;
 
  exit_monitor:
-    orig_err = virSaveLastError();
+    virErrorPreserveLast(&orig_err);
     if (release_backing) {
         if (shmem->server.enabled)
             ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
@@ -2857,10 +2824,7 @@ qemuDomainAttachShmemDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         release_address = false;
 
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 
     goto audit;
 }
@@ -2948,10 +2912,9 @@ qemuDomainChangeNetFilter(virDomainObjPtr vm,
                        _("failed to add new filter rules to '%s' "
                          "- attempting to restore old rules"),
                        olddev->ifname);
-        errobj = virSaveLastError();
+        virErrorPreserveLast(&errobj);
         ignore_value(virDomainConfNWFilterInstantiate(vm->def->uuid, olddev));
-        virSetError(errobj);
-        virFreeError(errobj);
+        virErrorRestore(&errobj);
         return -1;
     }
     return 0;
