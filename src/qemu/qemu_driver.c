@@ -17005,7 +17005,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         goto endjob;
 
     if (!mirror->format) {
-        if (!reuse) {
+        if (!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT)) {
             mirror->format = disk->src->format;
         } else {
             /* If the user passed the REUSE_EXT flag, then either they
