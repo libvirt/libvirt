@@ -380,6 +380,74 @@ qemuBlockGetNodeData(virJSONValuePtr data)
 
 
 /**
+ * qemuBlockStorageSourceBuildJSONSocketAddress
+ * @host: the virStorageNetHostDefPtr definition to build
+ * @legacy: use 'tcp' instead of 'inet' for compatibility reasons
+ *
+ * Formats @hosts into a json object conforming to the 'SocketAddress' type
+ * in qemu.
+ *
+ * This function can be used when only 1 src->nhosts is expected in order
+ * to build a command without the array indices after "server.". That is
+ * to see "server.type", "server.host", and "server.port" instead of
+ * "server.#.type", "server.#.host", and "server.#.port".
+ *
+ * Returns a virJSONValuePtr for a single server.
+ */
+static virJSONValuePtr
+qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDefPtr host,
+                                             bool legacy)
+{
+    virJSONValuePtr server = NULL;
+    virJSONValuePtr ret = NULL;
+    const char *transport;
+    char *port = NULL;
+
+    switch ((virStorageNetHostTransport) host->transport) {
+    case VIR_STORAGE_NET_HOST_TRANS_TCP:
+        if (legacy)
+            transport = "tcp";
+        else
+            transport = "inet";
+
+        if (virAsprintf(&port, "%u", host->port) < 0)
+            goto cleanup;
+
+        if (virJSONValueObjectCreate(&server,
+                                     "s:type", transport,
+                                     "s:host", host->name,
+                                     "s:port", port,
+                                     NULL) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_STORAGE_NET_HOST_TRANS_UNIX:
+        if (virJSONValueObjectCreate(&server,
+                                     "s:type", "unix",
+                                     "s:socket", host->socket,
+                                     NULL) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_STORAGE_NET_HOST_TRANS_RDMA:
+    case VIR_STORAGE_NET_HOST_TRANS_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("transport protocol '%s' is not yet supported"),
+                       virStorageNetHostTransportTypeToString(host->transport));
+        goto cleanup;
+    }
+
+    VIR_STEAL_PTR(ret, server);
+
+ cleanup:
+    VIR_FREE(port);
+    virJSONValueFree(server);
+
+    return ret;
+}
+
+
+/**
  * qemuBlockStorageSourceBuildHostsJSONSocketAddress:
  * @src: disk storage source
  * @legacy: use 'tcp' instead of 'inet' for compatibility reasons
@@ -395,8 +463,6 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
     virJSONValuePtr server = NULL;
     virJSONValuePtr ret = NULL;
     virStorageNetHostDefPtr host;
-    const char *transport;
-    char *port = NULL;
     size_t i;
 
     if (!(servers = virJSONValueNewArray()))
@@ -405,39 +471,8 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
     for (i = 0; i < src->nhosts; i++) {
         host = src->hosts + i;
 
-        switch ((virStorageNetHostTransport) host->transport) {
-        case VIR_STORAGE_NET_HOST_TRANS_TCP:
-            if (legacy)
-                transport = "tcp";
-            else
-                transport = "inet";
-
-            if (virAsprintf(&port, "%u", host->port) < 0)
-                goto cleanup;
-
-            if (virJSONValueObjectCreate(&server,
-                                         "s:type", transport,
-                                         "s:host", host->name,
-                                         "s:port", port,
-                                         NULL) < 0)
-                goto cleanup;
-            break;
-
-        case VIR_STORAGE_NET_HOST_TRANS_UNIX:
-            if (virJSONValueObjectCreate(&server,
-                                         "s:type", "unix",
-                                         "s:socket", host->socket,
-                                         NULL) < 0)
-                goto cleanup;
-            break;
-
-        case VIR_STORAGE_NET_HOST_TRANS_RDMA:
-        case VIR_STORAGE_NET_HOST_TRANS_LAST:
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("transport protocol '%s' is not yet supported"),
-                           virStorageNetHostTransportTypeToString(host->transport));
-            goto cleanup;
-        }
+        if (!(server = qemuBlockStorageSourceBuildJSONSocketAddress(host, legacy)))
+              goto cleanup;
 
         if (virJSONValueArrayAppend(servers, server) < 0)
             goto cleanup;
@@ -450,7 +485,6 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
  cleanup:
     virJSONValueFree(servers);
     virJSONValueFree(server);
-    VIR_FREE(port);
 
     return ret;
 }
