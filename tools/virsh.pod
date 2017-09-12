@@ -810,16 +810,16 @@ missing from the output. Other fields may appear if communicating with a newer
 version of libvirtd.
 
 B<Explanation of fields>:
-  swap_in           - The amount of data read from swap space (in kB)
-  swap_out          - The amount of memory written out to swap space (in kB)
+  swap_in           - The amount of data read from swap space (in KiB)
+  swap_out          - The amount of memory written out to swap space (in KiB)
   major_fault       - The number of page faults where disk IO was required
   minor_fault       - The number of other page faults
-  unused            - The amount of memory left unused by the system (in kB)
-  available         - The amount of usable memory as seen by the domain (in kB)
-  actual            - Current balloon value (in KB)
-  rss               - Resident Set Size of the running domain's process (in kB)
+  unused            - The amount of memory left unused by the system (in KiB)
+  available         - The amount of usable memory as seen by the domain (in KiB)
+  actual            - Current balloon value (in KiB)
+  rss               - Resident Set Size of the running domain's process (in KiB)
   usable            - The amount of memory which can be reclaimed by balloon
-without causing host swapping (in KB)
+without causing host swapping (in KiB)
   last-update       - Timestamp of the last update of statistics (in seconds)
 
 For QEMU/KVM with a memory balloon, setting the optional I<--period> to a
@@ -906,22 +906,22 @@ I<--cpu-total> returns:
 
 I<--balloon> returns:
 
- "balloon.current" - the memory in kiB currently used
- "balloon.maximum" - the maximum memory in kiB allowed
- "balloon.swap_in" - the amount of data read from swap space (in kB)
+ "balloon.current" - the memory in KiB currently used
+ "balloon.maximum" - the maximum memory in KiB allowed
+ "balloon.swap_in" - the amount of data read from swap space (in KiB)
  "balloon.swap_out" - the amount of memory written out to swap
-                      space (in kB)
+                      space (in KiB)
  "balloon.major_fault" - the number of page faults then disk IO
                          was required
  "balloon.minor_fault" - the number of other page faults
  "balloon.unused" - the amount of memory left unused by the
-                    system (in kB)
+                    system (in KiB)
  "balloon.available" - the amount of usable memory as seen by
-                       the domain (in kB)
+                       the domain (in KiB)
  "balloon.rss" - Resident Set Size of running domain's process
-                 (in kB)
+                 (in KiB)
  "balloon.usable" - the amount of memory which can be reclaimed by
-                    balloon without causing host swapping (in KB)
+                    balloon without causing host swapping (in KiB)
  "balloon.last-update" - timestamp of the last update of statistics
                          (in seconds)
 
