@@ -12990,6 +12990,7 @@ qemuConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
                        unsigned int flags)
 {
     virCPUDefPtr *cpus = NULL;
+    virCPUDefPtr baseline = NULL;
     virCPUDefPtr cpu = NULL;
     char *cpustr = NULL;
 
@@ -13002,8 +13003,16 @@ qemuConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_HOST)))
         goto cleanup;
 
-    if (!(cpu = cpuBaseline(cpus, ncpus, NULL, 0,
-                            !!(flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE))))
+    if (!(baseline = cpuBaseline(cpus, ncpus, NULL, 0,
+                                 !!(flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE))))
+        goto cleanup;
+
+    if (!(cpu = virCPUDefCopyWithoutModel(baseline)))
+        goto cleanup;
+
+    if (virCPUDefCopyModelFilter(cpu, baseline, false,
+                                 virQEMUCapsCPUFilterFeatures,
+                                 &cpus[0]->arch) < 0)
         goto cleanup;
 
     if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
@@ -13014,6 +13023,7 @@ qemuConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
 
  cleanup:
     virCPUDefListFree(cpus);
+    virCPUDefFree(baseline);
     virCPUDefFree(cpu);
 
     return cpustr;
