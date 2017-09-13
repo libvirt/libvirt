@@ -917,6 +917,8 @@ mymain(void)
     DO_TEST("disk-drive-network-nbd-unix", NONE);
     DO_TEST("disk-drive-network-iscsi", NONE);
     DO_TEST("disk-drive-network-iscsi-auth", NONE);
+    DO_TEST_PARSE_ERROR("disk-drive-network-iscsi-auth-secrettype-invalid", NONE);
+    DO_TEST_PARSE_ERROR("disk-drive-network-iscsi-auth-wrong-secrettype", NONE);
     DO_TEST("disk-drive-network-iscsi-lun",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_BLOCK);
