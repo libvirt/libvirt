@@ -16413,7 +16413,6 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
-    bool modern;
     virDomainDiskDefPtr disk;
     virStorageSourcePtr baseSource = NULL;
     unsigned int baseIndex = 0;
@@ -16438,24 +16437,8 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
+    if (qemuDomainSupportsBlockJobs(vm) < 0)
         goto endjob;
-
-    if (!modern) {
-        if (base) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("partial block pull not supported with this "
-                             "QEMU binary"));
-            goto endjob;
-        }
-
-        if (bandwidth) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("setting bandwidth at start of block pull not "
-                             "supported with this QEMU binary"));
-            goto endjob;
-        }
-    }
 
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
@@ -16511,7 +16494,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
                                              baseSource);
     if (!baseSource || basePath)
         ret = qemuMonitorBlockStream(priv->mon, device, basePath, backingPath,
-                                     speed, modern);
+                                     speed, true);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
 
@@ -16542,7 +16525,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     virDomainDiskDefPtr disk = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     bool save = false;
-    bool modern;
     bool pivot = !!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT);
     bool async = !!(flags & VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC);
     virDomainObjPtr vm;
@@ -16566,7 +16548,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         goto endjob;
     }
 
-    if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
+    if (qemuDomainSupportsBlockJobs(vm) < 0)
         goto endjob;
 
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
@@ -16583,7 +16565,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         goto endjob;
     }
 
-    if (modern && !async)
+    if (!async)
         qemuBlockJobSyncBegin(disk);
 
     if (pivot) {
@@ -16596,7 +16578,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         }
 
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorBlockJobCancel(qemuDomainGetMonitor(vm), device, modern);
+        ret = qemuMonitorBlockJobCancel(qemuDomainGetMonitor(vm), device, true);
         if (qemuDomainObjExitMonitor(driver, vm) < 0) {
             ret = -1;
             goto endjob;
@@ -16623,25 +16605,14 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
      * while still holding the VM job, to prevent newly scheduled
      * block jobs from confusing us.  */
     if (!async) {
-        if (!modern) {
-            /* Older qemu that lacked async reporting also lacked
-             * blockcopy and active commit, so we can hardcode the
-             * event to pull and let qemuBlockJobEventProcess() handle
-             * the rest as usual */
-            qemuBlockJobEventProcess(driver, vm, disk,
-                                     QEMU_ASYNC_JOB_NONE,
-                                     VIR_DOMAIN_BLOCK_JOB_TYPE_PULL,
-                                     VIR_DOMAIN_BLOCK_JOB_CANCELED);
-        } else {
-            qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-            qemuBlockJobUpdate(driver, vm, QEMU_ASYNC_JOB_NONE, disk);
-            while (diskPriv->blockjob) {
-                if (virDomainObjWait(vm) < 0) {
-                    ret = -1;
-                    goto endjob;
-                }
-                qemuBlockJobUpdate(driver, vm, QEMU_ASYNC_JOB_NONE, disk);
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        qemuBlockJobUpdate(driver, vm, QEMU_ASYNC_JOB_NONE, disk);
+        while (diskPriv->blockjob) {
+            if (virDomainObjWait(vm) < 0) {
+                ret = -1;
+                goto endjob;
             }
+            qemuBlockJobUpdate(driver, vm, QEMU_ASYNC_JOB_NONE, disk);
         }
     }
 
@@ -16728,7 +16699,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
         goto endjob;
     }
 
-    if (qemuDomainSupportsBlockJobs(vm, NULL) < 0)
+    if (qemuDomainSupportsBlockJobs(vm) < 0)
         goto endjob;
 
     if (!(disk = virDomainDiskByName(vm->def, path, true))) {
@@ -16784,7 +16755,6 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
     virDomainDiskDefPtr disk;
     int ret = -1;
     virDomainObjPtr vm;
-    bool modern;
     const char *device;
     unsigned long long speed = bandwidth;
 
@@ -16816,7 +16786,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
         goto endjob;
     }
 
-    if (qemuDomainSupportsBlockJobs(vm, &modern) < 0)
+    if (qemuDomainSupportsBlockJobs(vm) < 0)
         goto endjob;
 
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
@@ -16829,7 +16799,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
     ret = qemuMonitorBlockJobSetSpeed(qemuDomainGetMonitor(vm),
                                       device,
                                       speed,
-                                      modern);
+                                      true);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
 
