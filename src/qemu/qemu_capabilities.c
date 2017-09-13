@@ -3320,9 +3320,9 @@ static bool
 virQEMUCapsCPUFilterFeatures(const char *name,
                              void *opaque)
 {
-    virQEMUCapsPtr qemuCaps = opaque;
+    virArch *arch = opaque;
 
-    if (!ARCH_IS_X86(qemuCaps->arch))
+    if (!ARCH_IS_X86(*arch))
         return true;
 
     if (STREQ(name, "cmt") ||
@@ -3534,7 +3534,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
         if (!hostCPU ||
             virCPUDefCopyModelFilter(cpu, hostCPU, true,
                                      virQEMUCapsCPUFilterFeatures,
-                                     qemuCaps) < 0)
+                                     &qemuCaps->arch) < 0)
             goto error;
     } else if (type == VIR_DOMAIN_VIRT_KVM &&
                virCPUGetHostIsSupported(qemuCaps->arch)) {
