@@ -3805,6 +3805,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     virDomainNetType netType = virDomainNetGetActualType(net);
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     size_t i;
+    char *addr = NULL;
     char *ret = NULL;
 
     if (net->script && netType != VIR_DOMAIN_NET_TYPE_ETHERNET) {
@@ -3873,6 +3874,26 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
+        virBufferAsprintf(&buf, "user%c", type_sep);
+        for (i = 0; i < net->guestIP.nips; i++) {
+            const virNetDevIPAddr *ip = net->guestIP.ips[i];
+            const char *prefix = "";
+
+            if (!(addr = virSocketAddrFormat(&ip->address)))
+                goto cleanup;
+
+            if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET))
+                prefix = "net=";
+            if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6))
+                prefix = "ipv6-net=";
+
+            virBufferAsprintf(&buf, "%s%s", prefix, addr);
+            if (ip->prefix)
+                virBufferAsprintf(&buf, "/%u", ip->prefix);
+            virBufferAddChar(&buf, ',');
+        }
+        break;
+
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
         virBufferAsprintf(&buf, "user%c", type_sep);
         break;
@@ -3928,6 +3949,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
  cleanup:
     virBufferFreeAndReset(&buf);
     virObjectUnref(cfg);
+    VIR_FREE(addr);
     return ret;
 }
 

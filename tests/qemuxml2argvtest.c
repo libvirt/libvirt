@@ -1161,6 +1161,7 @@ mymain(void)
                     QEMU_CAPS_NETDEV,
                     QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
     DO_TEST("net-user", NONE);
+    DO_TEST("net-user-addr", QEMU_CAPS_NETDEV);
     DO_TEST("net-virtio", NONE);
     DO_TEST("net-virtio-device",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_VIRTIO_TX_ALG);

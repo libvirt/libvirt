@@ -3338,9 +3338,11 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                             void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
+    size_t i;
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         const virDomainNetDef *net = dev->data.net;
+        bool hasIPv4 = false, hasIPv6 = false;
 
         if (net->type == VIR_DOMAIN_NET_TYPE_USER) {
             if (net->guestIP.nroutes) {
@@ -3348,6 +3350,48 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                                _("Invalid attempt to set network interface "
                                  "guest-side IP route, not supported by QEMU"));
                 goto cleanup;
+            }
+
+            for (i = 0; i < net->guestIP.nips; i++) {
+                const virNetDevIPAddr *ip = net->guestIP.ips[i];
+
+                if (VIR_SOCKET_ADDR_VALID(&net->guestIP.ips[i]->peer)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Invalid attempt to set peer IP for guest"));
+                    goto cleanup;
+                }
+
+                if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET)) {
+                    if (hasIPv4) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("Only one IPv4 address per "
+                                         "interface is allowed"));
+                        goto cleanup;
+                    }
+                    hasIPv4 = true;
+
+                    if (ip->prefix > 27) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("prefix too long"));
+                        goto cleanup;
+                    }
+                }
+
+                if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6)) {
+                    if (hasIPv6) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("Only one IPv6 address per "
+                                         "interface is allowed"));
+                        goto cleanup;
+                    }
+                    hasIPv6 = true;
+
+                    if (ip->prefix > 120) {
+                        virReportError(VIR_ERR_XML_ERROR, "%s",
+                                       _("prefix too long"));
+                        goto cleanup;
+                    }
+                }
             }
         } else if (net->guestIP.nroutes || net->guestIP.nips) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
