@@ -174,7 +174,7 @@ typedef enum {
     QEMU_CAPS_TRANSACTION, /* transaction monitor command */
 
     /* 90 */
-    QEMU_CAPS_BLOCKJOB_SYNC, /* old block_job_cancel, block_stream */
+    X_QEMU_CAPS_BLOCKJOB_SYNC, /* old block_job_cancel, block_stream */
     QEMU_CAPS_BLOCKJOB_ASYNC, /* new block-job-cancel, block-stream */
     QEMU_CAPS_SCSI_CD, /* -device scsi-cd */
     QEMU_CAPS_IDE_CD, /* -device ide-cd */
