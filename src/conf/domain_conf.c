@@ -21671,13 +21671,14 @@ virDomainSourceDefFormatSeclabel(virBufferPtr buf,
 
 
 static int
-virDomainDiskSourceFormatNetwork(virBufferPtr buf,
+virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
+                                 virBufferPtr childBuf,
                                  virStorageSourcePtr src)
 {
     size_t n;
     char *path = NULL;
 
-    virBufferAsprintf(buf, "<source protocol='%s'",
+    virBufferAsprintf(attrBuf, " protocol='%s'",
                       virStorageNetProtocolTypeToString(src->protocol));
 
     if (src->volume) {
@@ -21685,37 +21686,27 @@ virDomainDiskSourceFormatNetwork(virBufferPtr buf,
             return -1;
     }
 
-    virBufferEscapeString(buf, " name='%s'", path ? path : src->path);
+    virBufferEscapeString(attrBuf, " name='%s'", path ? path : src->path);
 
     VIR_FREE(path);
 
-    if (src->nhosts == 0 && !src->snapshot && !src->configFile) {
-        virBufferAddLit(buf, "/>\n");
-    } else {
-        virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
+    for (n = 0; n < src->nhosts; n++) {
+        virBufferAddLit(childBuf, "<host");
+        virBufferEscapeString(childBuf, " name='%s'", src->hosts[n].name);
 
-        for (n = 0; n < src->nhosts; n++) {
-            virBufferAddLit(buf, "<host");
-            virBufferEscapeString(buf, " name='%s'", src->hosts[n].name);
+        if (src->hosts[n].port)
+            virBufferAsprintf(childBuf, " port='%u'", src->hosts[n].port);
 
-            if (src->hosts[n].port)
-                virBufferAsprintf(buf, " port='%u'", src->hosts[n].port);
+        if (src->hosts[n].transport)
+            virBufferAsprintf(childBuf, " transport='%s'",
+                              virStorageNetHostTransportTypeToString(src->hosts[n].transport));
 
-            if (src->hosts[n].transport)
-                virBufferAsprintf(buf, " transport='%s'",
-                                  virStorageNetHostTransportTypeToString(src->hosts[n].transport));
-
-            virBufferEscapeString(buf, " socket='%s'", src->hosts[n].socket);
-            virBufferAddLit(buf, "/>\n");
-        }
-
-        virBufferEscapeString(buf, "<snapshot name='%s'/>\n", src->snapshot);
-        virBufferEscapeString(buf, "<config file='%s'/>\n", src->configFile);
-
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</source>\n");
+        virBufferEscapeString(childBuf, " socket='%s'", src->hosts[n].socket);
+        virBufferAddLit(childBuf, "/>\n");
     }
+
+    virBufferEscapeString(childBuf, "<snapshot name='%s'/>\n", src->snapshot);
+    virBufferEscapeString(childBuf, "<config file='%s'/>\n", src->configFile);
 
     return 0;
 }
@@ -21763,7 +21754,7 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
             break;
 
         case VIR_STORAGE_TYPE_NETWORK:
-            if (virDomainDiskSourceFormatNetwork(buf, src) < 0)
+            if (virDomainDiskSourceFormatNetwork(&attrBuf, &childBuf, src) < 0)
                 goto error;
             break;
 
