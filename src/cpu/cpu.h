@@ -196,13 +196,6 @@ virCPUGetHost(virArch arch,
 virCPUDefPtr
 virCPUProbeHost(virArch arch);
 
-char *
-cpuBaselineXML(const char **xmlCPUs,
-               unsigned int ncpus,
-               const char **models,
-               unsigned int nmodels,
-               unsigned int flags);
-
 virCPUDefPtr
 cpuBaseline (virCPUDefPtr *cpus,
              unsigned int ncpus,

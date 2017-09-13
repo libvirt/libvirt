@@ -945,12 +945,32 @@ vzConnectBaselineCPU(virConnectPtr conn,
                      unsigned int ncpus,
                      unsigned int flags)
 {
+    virCPUDefPtr *cpus = NULL;
+    virCPUDefPtr cpu = NULL;
+    char *cpustr = NULL;
+
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
 
     if (virConnectBaselineCPUEnsureACL(conn) < 0)
         return NULL;
 
-    return cpuBaselineXML(xmlCPUs, ncpus, NULL, 0, flags);
+    if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_HOST)))
+        goto cleanup;
+
+    if (!(cpu = cpuBaseline(cpus, ncpus, NULL, 0, false)))
+        goto cleanup;
+
+    if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
+        virCPUExpandFeatures(cpus[0]->arch, cpu) < 0)
+        goto cleanup;
+
+    cpustr = virCPUDefFormat(cpu, NULL, false);
+
+ cleanup:
+    virCPUDefListFree(cpus);
+    virCPUDefFree(cpu);
+
+    return cpustr;
 }
 
 

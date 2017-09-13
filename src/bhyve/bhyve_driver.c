@@ -1420,7 +1420,9 @@ bhyveConnectBaselineCPU(virConnectPtr conn,
                         unsigned int ncpus,
                         unsigned int flags)
 {
-    char *cpu = NULL;
+    virCPUDefPtr *cpus = NULL;
+    virCPUDefPtr cpu = NULL;
+    char *cpustr = NULL;
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
                   VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
@@ -1428,10 +1430,24 @@ bhyveConnectBaselineCPU(virConnectPtr conn,
     if (virConnectBaselineCPUEnsureACL(conn) < 0)
         goto cleanup;
 
-    cpu = cpuBaselineXML(xmlCPUs, ncpus, NULL, 0, flags);
+    if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_HOST)))
+        goto cleanup;
+
+    if (!(cpu = cpuBaseline(cpus, ncpus, NULL, 0,
+                            !!(flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE))))
+        goto cleanup;
+
+    if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
+        virCPUExpandFeatures(cpus[0]->arch, cpu) < 0)
+        goto cleanup;
+
+    cpustr = virCPUDefFormat(cpu, NULL, false);
 
  cleanup:
-    return cpu;
+    virCPUDefListFree(cpus);
+    virCPUDefFree(cpu);
+
+    return cpustr;
 }
 
 static int

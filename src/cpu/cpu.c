@@ -496,64 +496,6 @@ virCPUProbeHost(virArch arch)
 
 
 /**
- * cpuBaselineXML:
- *
- * @xmlCPUs: list of host CPU XML descriptions
- * @ncpus: number of CPUs in @xmlCPUs
- * @models: list of CPU models that can be considered for the baseline CPU
- * @nmodels: number of CPU models in @models
- * @flags: bitwise-OR of virConnectBaselineCPUFlags
- *
- * Computes the most feature-rich CPU which is compatible with all given
- * host CPUs. If @models array is NULL, all models supported by libvirt will
- * be considered when computing the baseline CPU model, otherwise the baseline
- * CPU model will be one of the provided CPU @models.
- *
- * If @flags includes VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES then libvirt
- * will explicitly list all CPU features that are part of the host CPU,
- * without this flag features that are part of the CPU model will not be
- * listed.
- *
- * Returns XML description of the baseline CPU or NULL on error.
- */
-char *
-cpuBaselineXML(const char **xmlCPUs,
-               unsigned int ncpus,
-               const char **models,
-               unsigned int nmodels,
-               unsigned int flags)
-{
-    virCPUDefPtr *cpus = NULL;
-    virCPUDefPtr cpu = NULL;
-    char *cpustr = NULL;
-
-    VIR_DEBUG("ncpus=%u, nmodels=%u", ncpus, nmodels);
-
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
-                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
-
-    if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_HOST)))
-        goto cleanup;
-
-    if (!(cpu = cpuBaseline(cpus, ncpus, models, nmodels,
-                            !!(flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE))))
-        goto cleanup;
-
-    if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
-        virCPUExpandFeatures(cpus[0]->arch, cpu) < 0)
-        goto cleanup;
-
-    cpustr = virCPUDefFormat(cpu, NULL, false);
-
- cleanup:
-    virCPUDefListFree(cpus);
-    virCPUDefFree(cpu);
-
-    return cpustr;
-}
-
-
-/**
  * cpuBaseline:
  *
  * @cpus: list of host CPU definitions

@@ -1535,13 +1535,29 @@ testConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
                        unsigned int ncpus,
                        unsigned int flags)
 {
-    char *cpu;
+    virCPUDefPtr *cpus = NULL;
+    virCPUDefPtr cpu = NULL;
+    char *cpustr = NULL;
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, NULL);
 
-    cpu = cpuBaselineXML(xmlCPUs, ncpus, NULL, 0, flags);
+    if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_HOST)))
+        goto cleanup;
 
-    return cpu;
+    if (!(cpu = cpuBaseline(cpus, ncpus, NULL, 0, false)))
+        goto cleanup;
+
+    if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
+        virCPUExpandFeatures(cpus[0]->arch, cpu) < 0)
+        goto cleanup;
+
+    cpustr = virCPUDefFormat(cpu, NULL, false);
+
+ cleanup:
+    virCPUDefListFree(cpus);
+    virCPUDefFree(cpu);
+
+    return cpustr;
 }
 
 static int testNodeGetInfo(virConnectPtr conn,
