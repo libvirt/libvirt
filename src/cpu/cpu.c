@@ -526,17 +526,11 @@ cpuBaselineXML(const char **xmlCPUs,
     virCPUDefPtr *cpus = NULL;
     virCPUDefPtr cpu = NULL;
     char *cpustr = NULL;
-    size_t i;
 
     VIR_DEBUG("ncpus=%u, nmodels=%u", ncpus, nmodels);
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
                   VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
-
-    if (models) {
-        for (i = 0; i < nmodels; i++)
-            VIR_DEBUG("models[%zu]=%s", i, NULLSTR(models[i]));
-    }
 
     if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_HOST)))
         goto cleanup;
