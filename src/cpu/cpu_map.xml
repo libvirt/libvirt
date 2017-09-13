@@ -248,8 +248,14 @@
     <feature name='avx512ifma'>
       <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00200000'/>
     </feature>
+    <feature name='pcommit'>
+      <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00400000'/>
+    </feature>
     <feature name='clflushopt'>
       <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00800000'/>
+    </feature>
+    <feature name='clwb'>
+      <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x01000000'/>
     </feature>
     <feature name='avx512pf'>
       <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x04000000'/>

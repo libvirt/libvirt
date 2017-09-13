@@ -23,6 +23,7 @@
   <feature policy='require' name='avx512f'/>
   <feature policy='require' name='avx512dq'/>
   <feature policy='require' name='clflushopt'/>
+  <feature policy='require' name='clwb'/>
   <feature policy='require' name='avx512cd'/>
   <feature policy='require' name='avx512bw'/>
   <feature policy='require' name='avx512vl'/>

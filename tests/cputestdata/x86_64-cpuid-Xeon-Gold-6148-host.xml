@@ -24,6 +24,7 @@
   <feature name='avx512f'/>
   <feature name='avx512dq'/>
   <feature name='clflushopt'/>
+  <feature name='clwb'/>
   <feature name='avx512cd'/>
   <feature name='avx512bw'/>
   <feature name='avx512vl'/>
