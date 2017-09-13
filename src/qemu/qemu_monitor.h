@@ -896,19 +896,16 @@ int qemuMonitorBlockStream(qemuMonitorPtr mon,
                            const char *device,
                            const char *base,
                            const char *backingName,
-                           unsigned long long bandwidth,
-                           bool modern)
+                           unsigned long long bandwidth)
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockJobCancel(qemuMonitorPtr mon,
-                              const char *device,
-                              bool modern)
+                              const char *device)
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockJobSetSpeed(qemuMonitorPtr mon,
                                 const char *device,
-                                unsigned long long bandwidth,
-                                bool modern);
+                                unsigned long long bandwidth);
 
 typedef struct _qemuMonitorBlockJobInfo qemuMonitorBlockJobInfo;
 typedef qemuMonitorBlockJobInfo *qemuMonitorBlockJobInfoPtr;

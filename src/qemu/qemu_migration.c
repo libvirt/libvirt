@@ -762,7 +762,7 @@ qemuMigrationCancelOneDriveMirror(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
 
-    rv = qemuMonitorBlockJobCancel(priv->mon, diskAlias, true);
+    rv = qemuMonitorBlockJobCancel(priv->mon, diskAlias);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
         goto cleanup;

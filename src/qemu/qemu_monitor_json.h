@@ -300,19 +300,16 @@ int qemuMonitorJSONBlockStream(qemuMonitorPtr mon,
                                const char *device,
                                const char *base,
                                const char *backingName,
-                               unsigned long long speed,
-                               bool modern)
+                               unsigned long long speed)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONBlockJobCancel(qemuMonitorPtr mon,
-                                  const char *device,
-                                  bool modern)
+                                  const char *device)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
                                     const char *device,
-                                    unsigned long long speed,
-                                    bool modern)
+                                    unsigned long long speed)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 virHashTablePtr qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon)

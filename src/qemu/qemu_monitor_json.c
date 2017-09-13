@@ -4474,13 +4474,12 @@ qemuMonitorJSONBlockStream(qemuMonitorPtr mon,
                            const char *device,
                            const char *base,
                            const char *backingName,
-                           unsigned long long speed,
-                           bool modern)
+                           unsigned long long speed)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
-    const char *cmd_name = modern ? "block-stream" : "block_stream";
+    const char *cmd_name = "block-stream";
 
     if (!(cmd = qemuMonitorJSONMakeCommand(cmd_name,
                                            "s:device", device,
@@ -4507,13 +4506,12 @@ qemuMonitorJSONBlockStream(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONBlockJobCancel(qemuMonitorPtr mon,
-                              const char *device,
-                              bool modern)
+                              const char *device)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
-    const char *cmd_name = modern ? "block-job-cancel" : "block_job_cancel";
+    const char *cmd_name = "block-job-cancel";
 
     if (!(cmd = qemuMonitorJSONMakeCommand(cmd_name,
                                            "s:device", device,
@@ -4538,17 +4536,16 @@ qemuMonitorJSONBlockJobCancel(qemuMonitorPtr mon,
 int
 qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
                                 const char *device,
-                                unsigned long long speed,
-                                bool modern)
+                                unsigned long long speed)
 {
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
-    const char *cmd_name = modern ? "block-job-set-speed" : "block_job_set_speed";
+    const char *cmd_name = "block-job-set-speed";
 
     if (!(cmd = qemuMonitorJSONMakeCommand(cmd_name,
                                            "s:device", device,
-                                           modern ? "J:speed" : "J:value", speed,
+                                           "J:speed", speed,
                                            NULL)))
         return -1;
 

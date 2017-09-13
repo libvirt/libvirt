@@ -16494,7 +16494,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
                                              baseSource);
     if (!baseSource || basePath)
         ret = qemuMonitorBlockStream(priv->mon, device, basePath, backingPath,
-                                     speed, true);
+                                     speed);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
 
@@ -16578,7 +16578,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         }
 
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorBlockJobCancel(qemuDomainGetMonitor(vm), device, true);
+        ret = qemuMonitorBlockJobCancel(qemuDomainGetMonitor(vm), device);
         if (qemuDomainObjExitMonitor(driver, vm) < 0) {
             ret = -1;
             goto endjob;
@@ -16798,8 +16798,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorBlockJobSetSpeed(qemuDomainGetMonitor(vm),
                                       device,
-                                      speed,
-                                      true);
+                                      speed);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
 
