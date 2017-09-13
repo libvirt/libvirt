@@ -1362,6 +1362,9 @@ mymain(void)
     TEST_BACKING_PARSE("rbd:testshare:id=asdf:mon_host=example.com",
                        "<source protocol='rbd' name='testshare'>\n"
                        "  <host name='example.com'/>\n"
+                       "  <auth username='asdf'>\n"
+                       "    <secret type='ceph'/>\n"
+                       "  </auth>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("nbd:example.org:6000:exportname=blah",
                        "<source protocol='nbd' name='blah'>\n"
@@ -1527,6 +1530,9 @@ mymain(void)
                             "}",
                        "<source protocol='rbd' name='testshare'>\n"
                        "  <host name='example.com'/>\n"
+                       "  <auth username='asdf'>\n"
+                       "    <secret type='ceph'/>\n"
+                       "  </auth>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"rbd\","
                                        "\"image\":\"test\","

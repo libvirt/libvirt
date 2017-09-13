@@ -240,6 +240,7 @@ struct _virStorageSource {
     virStorageNetHostDefPtr hosts;
     virStorageSourcePoolDefPtr srcpool;
     virStorageAuthDefPtr auth;
+    bool authInherited;
     virStorageEncryptionPtr encryption;
 
     virObjectPtr privateData;

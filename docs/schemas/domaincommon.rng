@@ -1580,8 +1580,24 @@
             <empty/>
           </element>
         </optional>
+        <optional>
+          <ref name="diskAuth"/>
+        </optional>
         <empty/>
       </interleave>
+    </element>
+  </define>
+
+  <define name="diskSourceNetworkProtocolISCSI">
+    <element name="source">
+      <attribute name="protocol">
+        <value>iscsi</value>
+      </attribute>
+      <attribute name="name"/>
+      <ref name="diskSourceNetworkHost"/>
+      <optional>
+        <ref name="diskAuth"/>
+      </optional>
     </element>
   </define>
 
@@ -1603,7 +1619,6 @@
       <attribute name="protocol">
         <choice>
           <value>sheepdog</value>
-          <value>iscsi</value>
           <value>ftp</value>
           <value>ftps</value>
           <value>tftp</value>
@@ -1663,6 +1678,7 @@
       <ref name="diskSourceNetworkProtocolNBD"/>
       <ref name="diskSourceNetworkProtocolGluster"/>
       <ref name="diskSourceNetworkProtocolRBD"/>
+      <ref name="diskSourceNetworkProtocolISCSI"/>
       <ref name="diskSourceNetworkProtocolHTTP"/>
       <ref name="diskSourceNetworkProtocolSimple"/>
       <ref name="diskSourceNetworkProtocolVxHS"/>

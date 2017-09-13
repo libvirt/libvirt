@@ -932,6 +932,7 @@ mymain(void)
     DO_TEST("disk-drive-network-iscsi-auth", NONE);
     DO_TEST_PARSE_ERROR("disk-drive-network-iscsi-auth-secrettype-invalid", NONE);
     DO_TEST_PARSE_ERROR("disk-drive-network-iscsi-auth-wrong-secrettype", NONE);
+    DO_TEST_PARSE_ERROR("disk-drive-network-source-auth-both", NONE);
     DO_TEST("disk-drive-network-iscsi-lun",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_BLOCK);
@@ -940,6 +941,7 @@ mymain(void)
     DO_TEST("disk-drive-network-rbd", NONE);
     DO_TEST("disk-drive-network-sheepdog", NONE);
     DO_TEST("disk-drive-network-rbd-auth", NONE);
+    DO_TEST("disk-drive-network-source-auth", NONE);
 # ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
     DO_TEST("disk-drive-network-rbd-auth-AES",
             QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_VIRTIO_SCSI);

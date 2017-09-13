@@ -520,6 +520,7 @@ mymain(void)
     DO_TEST("disk-drive-network-rbd-auth", NONE);
     DO_TEST("disk-drive-network-rbd-ipv6", NONE);
     DO_TEST("disk-drive-network-rbd-ceph-env", NONE);
+    DO_TEST("disk-drive-network-source-auth", NONE);
     DO_TEST("disk-drive-network-sheepdog", NONE);
     DO_TEST("disk-drive-network-vxhs", NONE);
     DO_TEST("disk-drive-network-tlsx509-vxhs", NONE);

@@ -2578,6 +2578,7 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
                            virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_CEPH)) < 0)
                 goto error;
             src->auth = authdef;
+            src->authInherited = true;
             authdef = NULL;
 
             /* Cannot formulate a secretType (eg, usage or uuid) given
