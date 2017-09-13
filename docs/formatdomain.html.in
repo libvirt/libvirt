@@ -2385,17 +2385,11 @@
   &lt;disk type='volume' device='disk'&gt;
     &lt;driver name='qemu' type='raw'/&gt;
     &lt;source pool='iscsi-pool' volume='unit:0:0:1' mode='host'/&gt;
-    &lt;auth username='myuser'&gt;
-      &lt;secret type='iscsi' usage='libvirtiscsi'/&gt;
-    &lt;/auth&gt;
     &lt;target dev='vdb' bus='virtio'/&gt;
   &lt;/disk&gt;
   &lt;disk type='volume' device='disk'&gt;
     &lt;driver name='qemu' type='raw'/&gt;
     &lt;source pool='iscsi-pool' volume='unit:0:0:2' mode='direct'/&gt;
-    &lt;auth username='myuser'&gt;
-      &lt;secret type='iscsi' usage='libvirtiscsi'/&gt;
-    &lt;/auth&gt;
     &lt;target dev='vdc' bus='virtio'/&gt;
   &lt;/disk&gt;
   &lt;disk type='file' device='disk'&gt;
