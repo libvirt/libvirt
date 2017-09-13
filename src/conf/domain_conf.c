@@ -8500,6 +8500,36 @@ virDomainDiskDefGeometryParse(virDomainDiskDefPtr def,
 
 
 static int
+virDomainDiskSourceDefParseAuthValidate(const virStorageSource *src)
+{
+    virStorageAuthDefPtr authdef = src->auth;
+    int actUsage;
+
+    if (src->type != VIR_STORAGE_TYPE_NETWORK || !authdef)
+        return 0;
+
+    if ((actUsage = virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown secret type '%s'"),
+                       NULLSTR(authdef->secrettype));
+        return -1;
+    }
+
+    if ((src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI &&
+         actUsage != VIR_SECRET_USAGE_TYPE_ISCSI) ||
+        (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD &&
+         actUsage != VIR_SECRET_USAGE_TYPE_CEPH)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid secret type '%s'"),
+                       virSecretUsageTypeToString(actUsage));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDiskDefParseValidate(const virDomainDiskDef *def)
 {
     if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
@@ -8571,6 +8601,9 @@ virDomainDiskDefParseValidate(const virDomainDiskDef *def)
             return -1;
         }
     }
+
+    if (virDomainDiskSourceDefParseAuthValidate(def->src) < 0)
+        return -1;
 
     return 0;
 }
@@ -8731,8 +8764,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *vendor = NULL;
     char *product = NULL;
     char *domain_name = NULL;
-    int expected_secret_usage = -1;
-    int auth_secret_usage = -1;
 
     if (!(def = virDomainDiskDefNew(xmlopt)))
         return NULL;
@@ -8775,13 +8806,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 goto error;
 
             source = true;
-
-            if (def->src->type == VIR_STORAGE_TYPE_NETWORK) {
-                if (def->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI)
-                    expected_secret_usage = VIR_SECRET_USAGE_TYPE_ISCSI;
-                else if (def->src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
-                    expected_secret_usage = VIR_SECRET_USAGE_TYPE_CEPH;
-            }
 
             startupPolicy = virXMLPropString(cur, "startupPolicy");
 
@@ -8840,17 +8864,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                    virXMLNodeNameEqual(cur, "auth")) {
             if (!(authdef = virStorageAuthDefParse(node->doc, cur)))
                 goto error;
-            /* Disk volume types won't have the secrettype filled in until
-             * after virStorageTranslateDiskSourcePool is run
-             */
-            if (def->src->type != VIR_STORAGE_TYPE_VOLUME &&
-                (auth_secret_usage =
-                 virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("invalid secret type %s"),
-                               authdef->secrettype);
-                goto error;
-            }
         } else if (virXMLNodeNameEqual(cur, "iotune")) {
             if (virDomainDiskDefIotuneParse(def, ctxt) < 0)
                 goto error;
@@ -8913,18 +8926,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             /* boot is parsed as part of virDomainDeviceInfoParseXML */
         }
     }
-
-    /* Disk volume types will have authentication information handled in
-     * virStorageTranslateDiskSourcePool
-     */
-    if (def->src->type != VIR_STORAGE_TYPE_VOLUME &&
-        auth_secret_usage != -1 && auth_secret_usage != expected_secret_usage) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid secret type '%s'"),
-                       virSecretUsageTypeToString(auth_secret_usage));
-        goto error;
-    }
-
 
     /* Only CDROM and Floppy devices are allowed missing source path
      * to indicate no media present. LUN is for raw access CD-ROMs
