@@ -218,4 +218,11 @@ virCPUDefUpdateFeature(virCPUDefPtr cpu,
                        const char *name,
                        int policy);
 
+virCPUDefPtr *
+virCPUDefListParse(const char **xmlCPUs,
+                   unsigned int ncpus,
+                   virCPUType cpuType);
+void
+virCPUDefListFree(virCPUDefPtr *cpus);
+
 #endif /* __VIR_CPU_CONF_H__ */

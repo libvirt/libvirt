@@ -29,8 +29,11 @@
 #include "cpu_conf.h"
 #include "domain_conf.h"
 #include "virstring.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
+
+VIR_LOG_INIT("conf.cpu_conf");
 
 VIR_ENUM_IMPL(virCPU, VIR_CPU_TYPE_LAST,
               "host", "guest", "auto")
@@ -938,4 +941,79 @@ virCPUDefIsEqual(virCPUDefPtr src,
 
  cleanup:
     return identical;
+}
+
+
+/*
+ * Parses a list of CPU XMLs into a NULL-terminated list of CPU defs.
+ */
+virCPUDefPtr *
+virCPUDefListParse(const char **xmlCPUs,
+                   unsigned int ncpus,
+                   virCPUType cpuType)
+{
+    xmlDocPtr doc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    virCPUDefPtr *cpus = NULL;
+    size_t i;
+
+    VIR_DEBUG("xmlCPUs=%p, ncpus=%u", xmlCPUs, ncpus);
+
+    if (xmlCPUs) {
+        for (i = 0; i < ncpus; i++)
+            VIR_DEBUG("xmlCPUs[%zu]=%s", i, NULLSTR(xmlCPUs[i]));
+    }
+
+    if (!xmlCPUs && ncpus != 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("nonzero ncpus doesn't match with NULL xmlCPUs"));
+        goto error;
+    }
+
+    if (ncpus == 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("no CPUs given"));
+        goto error;
+    }
+
+    if (VIR_ALLOC_N(cpus, ncpus + 1))
+        goto error;
+
+    for (i = 0; i < ncpus; i++) {
+        if (!(doc = virXMLParseStringCtxt(xmlCPUs[i], _("(CPU_definition)"), &ctxt)))
+            goto error;
+
+        if (virCPUDefParseXML(ctxt, NULL, cpuType, &cpus[i]) < 0)
+            goto error;
+
+        xmlXPathFreeContext(ctxt);
+        xmlFreeDoc(doc);
+        ctxt = NULL;
+        doc = NULL;
+    }
+
+    return cpus;
+
+ error:
+    virCPUDefListFree(cpus);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(doc);
+    return NULL;
+}
+
+
+/*
+ * Frees NULL-terminated list of CPUs created by virCPUDefListParse.
+ */
+void
+virCPUDefListFree(virCPUDefPtr *cpus)
+{
+    virCPUDefPtr *cpu;
+
+    if (!cpus)
+        return;
+
+    for (cpu = cpus; *cpu != NULL; cpu++)
+        virCPUDefFree(*cpu);
+
+    VIR_FREE(cpus);
 }
