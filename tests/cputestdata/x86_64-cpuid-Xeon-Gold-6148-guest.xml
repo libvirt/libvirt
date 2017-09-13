@@ -1,5 +1,5 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>Skylake-Client</model>
+  <model fallback='forbid'>Skylake-Server</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='ds'/>
   <feature policy='require' name='acpi'/>
@@ -20,17 +20,10 @@
   <feature policy='require' name='osxsave'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='cmt'/>
-  <feature policy='require' name='avx512f'/>
-  <feature policy='require' name='avx512dq'/>
   <feature policy='require' name='clflushopt'/>
-  <feature policy='require' name='clwb'/>
-  <feature policy='require' name='avx512cd'/>
-  <feature policy='require' name='avx512bw'/>
-  <feature policy='require' name='avx512vl'/>
   <feature policy='require' name='pku'/>
   <feature policy='require' name='xsaves'/>
   <feature policy='require' name='mbm_total'/>
   <feature policy='require' name='mbm_local'/>
-  <feature policy='require' name='pdpe1gb'/>
   <feature policy='require' name='invtsc'/>
 </cpu>

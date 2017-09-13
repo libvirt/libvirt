@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Skylake-Client</model>
+  <model>Skylake-Server</model>
   <vendor>Intel</vendor>
   <feature name='ds'/>
   <feature name='acpi'/>
@@ -21,17 +21,10 @@
   <feature name='osxsave'/>
   <feature name='tsc_adjust'/>
   <feature name='cmt'/>
-  <feature name='avx512f'/>
-  <feature name='avx512dq'/>
   <feature name='clflushopt'/>
-  <feature name='clwb'/>
-  <feature name='avx512cd'/>
-  <feature name='avx512bw'/>
-  <feature name='avx512vl'/>
   <feature name='pku'/>
   <feature name='xsaves'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>
-  <feature name='pdpe1gb'/>
   <feature name='invtsc'/>
 </cpu>

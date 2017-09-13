@@ -1,15 +1,8 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>Skylake-Client</model>
+  <model fallback='forbid'>Skylake-Server</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='ss'/>
   <feature policy='require' name='hypervisor'/>
   <feature policy='require' name='tsc_adjust'/>
-  <feature policy='require' name='avx512f'/>
-  <feature policy='require' name='avx512dq'/>
   <feature policy='require' name='clflushopt'/>
-  <feature policy='require' name='clwb'/>
-  <feature policy='require' name='avx512cd'/>
-  <feature policy='require' name='avx512bw'/>
-  <feature policy='require' name='avx512vl'/>
-  <feature policy='require' name='pdpe1gb'/>
 </cpu>
