@@ -523,11 +523,9 @@ cpuBaselineXML(const char **xmlCPUs,
                unsigned int nmodels,
                unsigned int flags)
 {
-    xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
     virCPUDefPtr *cpus = NULL;
     virCPUDefPtr cpu = NULL;
-    char *cpustr;
+    char *cpustr = NULL;
     size_t i;
 
     VIR_DEBUG("ncpus=%u, nmodels=%u", ncpus, nmodels);
@@ -535,67 +533,29 @@ cpuBaselineXML(const char **xmlCPUs,
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
                   VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
 
-    if (xmlCPUs) {
-        for (i = 0; i < ncpus; i++)
-            VIR_DEBUG("xmlCPUs[%zu]=%s", i, NULLSTR(xmlCPUs[i]));
-    }
     if (models) {
         for (i = 0; i < nmodels; i++)
             VIR_DEBUG("models[%zu]=%s", i, NULLSTR(models[i]));
     }
 
-    if (xmlCPUs == NULL && ncpus != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("nonzero ncpus doesn't match with NULL xmlCPUs"));
-        return NULL;
-    }
-
-    if (ncpus < 1) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s", _("No CPUs given"));
-        return NULL;
-    }
-
-    if (VIR_ALLOC_N(cpus, ncpus))
-        goto error;
-
-    for (i = 0; i < ncpus; i++) {
-        if (!(doc = virXMLParseStringCtxt(xmlCPUs[i], _("(CPU_definition)"), &ctxt)))
-            goto error;
-
-        if (virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_HOST, &cpus[i]) < 0)
-            goto error;
-
-        xmlXPathFreeContext(ctxt);
-        xmlFreeDoc(doc);
-        ctxt = NULL;
-        doc = NULL;
-    }
+    if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_HOST)))
+        goto cleanup;
 
     if (!(cpu = cpuBaseline(cpus, ncpus, models, nmodels,
                             !!(flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE))))
-        goto error;
+        goto cleanup;
 
     if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
         virCPUExpandFeatures(cpus[0]->arch, cpu) < 0)
-        goto error;
+        goto cleanup;
 
     cpustr = virCPUDefFormat(cpu, NULL, false);
 
  cleanup:
-    if (cpus) {
-        for (i = 0; i < ncpus; i++)
-            virCPUDefFree(cpus[i]);
-        VIR_FREE(cpus);
-    }
+    virCPUDefListFree(cpus);
     virCPUDefFree(cpu);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(doc);
 
     return cpustr;
-
- error:
-    cpustr = NULL;
-    goto cleanup;
 }
 
 
