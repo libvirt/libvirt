@@ -547,4 +547,7 @@ int virQEMUCapsFillDomainCaps(virCapsPtr caps,
 bool virQEMUCapsGuestIsNative(virArch host,
                               virArch guest);
 
+bool virQEMUCapsCPUFilterFeatures(const char *name,
+                                  void *opaque);
+
 #endif /* __QEMU_CAPABILITIES_H__*/

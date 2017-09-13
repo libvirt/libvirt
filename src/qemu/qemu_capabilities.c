@@ -3316,7 +3316,7 @@ virQEMUCapsProbeQMPGICCapabilities(virQEMUCapsPtr qemuCaps,
 }
 
 
-static bool
+bool
 virQEMUCapsCPUFilterFeatures(const char *name,
                              void *opaque)
 {
