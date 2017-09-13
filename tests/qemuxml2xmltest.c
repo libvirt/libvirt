@@ -531,6 +531,7 @@ mymain(void)
     DO_TEST("misc-uuid", NONE);
     DO_TEST("net-vhostuser", NONE);
     DO_TEST("net-user", NONE);
+    DO_TEST("net-user-addr", QEMU_CAPS_NETDEV);
     DO_TEST("net-virtio", NONE);
     DO_TEST("net-virtio-device", NONE);
     DO_TEST("net-virtio-disable-offloads", NONE);

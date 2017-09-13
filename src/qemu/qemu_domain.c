@@ -3342,7 +3342,14 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         const virDomainNetDef *net = dev->data.net;
 
-        if (net->guestIP.nroutes || net->guestIP.nips) {
+        if (net->type == VIR_DOMAIN_NET_TYPE_USER) {
+            if (net->guestIP.nroutes) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Invalid attempt to set network interface "
+                                 "guest-side IP route, not supported by QEMU"));
+                goto cleanup;
+            }
+        } else if (net->guestIP.nroutes || net->guestIP.nips) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Invalid attempt to set network interface "
                              "guest-side IP route and/or address info, "

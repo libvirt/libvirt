@@ -4695,7 +4695,15 @@
       starting from <code>10.0.2.15</code>. The default router will be
       <code>10.0.2.2</code> and the DNS server will be <code>10.0.2.3</code>.
       This networking is the only option for unprivileged users who need their
-      VMs to have outgoing access.
+      VMs to have outgoing access. <span class="since">Since 3.8.0</span>
+      it is possible to override the default network address by
+      including an <code>ip</code> element specifying an IPv4
+      address in its one mandatory attribute, <code>address</code>.
+      Optionally, a second <code>ip</code> element with a
+      <code>family</code> attribute set to "ipv6" can be
+      specified to add an IPv6 address to the interface.
+      <code>address</code>. Optionally, address
+      <code>prefix</code> can be specified.
     </p>
 
 <pre>
@@ -4705,6 +4713,8 @@
   ...
   &lt;interface type='user'&gt;
     &lt;mac address="00:11:22:33:44:55"/&gt;
+    &lt;ip family='ipv4' address='172.17.2.0' prefix='24'/&gt;
+    &lt;ip family='ipv6' address='2001:db8:ac10:fd01::' prefix='64'/&gt;
   &lt;/interface&gt;
 &lt;/devices&gt;
 ...</pre>
