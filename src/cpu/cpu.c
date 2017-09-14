@@ -1076,3 +1076,32 @@ virCPUCopyMigratable(virArch arch,
     else
         return virCPUDefCopy(cpu);
 }
+
+
+/**
+ * virCPUValidateFeatures:
+ *
+ * @arch: CPU architecture
+ * @cpu: CPU definition to be checked
+ *
+ * Checks whether all CPU features specified in @cpu are valid.
+ *
+ * Returns 0 on success (all features are valid), -1 on error.
+ */
+int
+virCPUValidateFeatures(virArch arch,
+                       virCPUDefPtr cpu)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s, cpu=%p, nfeatures=%zu",
+              virArchToString(arch), cpu, cpu->nfeatures);
+
+    if (!(driver = cpuGetSubDriver(arch)))
+        return -1;
+
+    if (driver->validateFeatures)
+        return driver->validateFeatures(cpu);
+    else
+        return 0;
+}

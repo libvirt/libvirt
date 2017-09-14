@@ -1097,6 +1097,7 @@ virCPUProbeHost;
 virCPUTranslate;
 virCPUUpdate;
 virCPUUpdateLive;
+virCPUValidateFeatures;
 
 
 # cpu/cpu_x86.h

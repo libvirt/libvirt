@@ -121,6 +121,9 @@ typedef int
 typedef virCPUDefPtr
 (*virCPUArchCopyMigratable)(virCPUDefPtr cpu);
 
+typedef int
+(*virCPUArchValidateFeatures)(virCPUDefPtr cpu);
+
 struct cpuArchDriver {
     const char *name;
     const virArch *arch;
@@ -142,6 +145,7 @@ struct cpuArchDriver {
     virCPUArchConvertLegacy convertLegacy;
     virCPUArchExpandFeatures expandFeatures;
     virCPUArchCopyMigratable copyMigratable;
+    virCPUArchValidateFeatures validateFeatures;
 };
 
 
@@ -257,6 +261,11 @@ virCPUExpandFeatures(virArch arch,
 virCPUDefPtr
 virCPUCopyMigratable(virArch arch,
                      virCPUDefPtr cpu);
+
+int
+virCPUValidateFeatures(virArch arch,
+                       virCPUDefPtr cpu)
+    ATTRIBUTE_NONNULL(2);
 
 /* virCPUDataFormat and virCPUDataParse are implemented for unit tests only and
  * have no real-life usage
