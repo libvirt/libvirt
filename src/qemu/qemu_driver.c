@@ -3216,6 +3216,35 @@ qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
     goto cleanup;
 }
 
+
+static int
+qemuFileWrapperFDClose(virDomainObjPtr vm,
+                       virFileWrapperFdPtr fd)
+{
+    int ret;
+
+    /* virFileWrapperFd uses iohelper to write data onto disk.
+     * However, iohelper calls fdatasync() which may take ages to
+     * finish. Therefore, we shouldn't be waiting with the domain
+     * object locked. */
+
+    /* XXX Currently, this function is intended for *Save() only
+     * as restore needs some reworking before it's ready for
+     * this. */
+
+    virObjectUnlock(vm);
+    ret = virFileWrapperFdClose(fd);
+    virObjectLock(vm);
+    if (!virDomainObjIsActive(vm)) {
+        if (!virGetLastError())
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("domain is no longer running"));
+        ret = -1;
+    }
+    return ret;
+}
+
+
 /* Helper function to execute a migration to file with a correct save header
  * the caller needs to make sure that the processors are stopped and do all other
  * actions besides saving memory */
@@ -3276,7 +3305,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (virFileWrapperFdClose(wrapperFd) < 0)
+    if (qemuFileWrapperFDClose(vm, wrapperFd) < 0)
         goto cleanup;
 
     if ((fd = qemuOpenFile(driver, vm, path, O_WRONLY, NULL, NULL)) < 0 ||
@@ -3827,7 +3856,7 @@ doCoreDump(virQEMUDriverPtr driver,
                              path);
         goto cleanup;
     }
-    if (virFileWrapperFdClose(wrapperFd) < 0)
+    if (qemuFileWrapperFDClose(vm, wrapperFd) < 0)
         goto cleanup;
 
     ret = 0;
