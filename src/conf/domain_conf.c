@@ -8605,6 +8605,19 @@ virDomainDiskDefParseValidate(const virDomainDiskDef *def)
     if (virDomainDiskSourceDefParseAuthValidate(def->src) < 0)
         return -1;
 
+    if (def->src->encryption) {
+        virStorageEncryptionPtr encryption = def->src->encryption;
+
+        if (encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
+            encryption->encinfo.cipher_name) {
+
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("supplying <cipher> for domain disk definition "
+                             "is unnecessary"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -9093,17 +9106,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         }
         def->startupPolicy = val;
-    }
-
-    if (encryption) {
-        if (encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
-            encryption->encinfo.cipher_name) {
-
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("supplying the <cipher> for a domain is "
-                             "unnecessary"));
-            goto error;
-        }
     }
 
     def->dst = target;
