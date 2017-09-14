@@ -4659,6 +4659,10 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
     if (qemuProcessStartValidateShmem(vm) < 0)
         return -1;
 
+    if (vm->def->cpu &&
+        virCPUValidateFeatures(vm->def->os.arch, vm->def->cpu) < 0)
+        return -1;
+
     VIR_DEBUG("Checking for any possible (non-fatal) issues");
 
     qemuProcessStartWarnShmem(vm);
