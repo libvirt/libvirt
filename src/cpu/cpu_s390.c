@@ -78,14 +78,6 @@ virCPUs390Update(virCPUDefPtr guest,
          goto cleanup;
 
      for (i = 0; i < guest->nfeatures; i++) {
-         if (guest->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
-             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                            _("only cpu feature policies 'require' and "
-                              "'disable' are supported for %s"),
-                            guest->features[i].name);
-             goto cleanup;
-        }
-
         if (virCPUDefUpdateFeature(updated,
                                    guest->features[i].name,
                                    guest->features[i].policy) < 0)
@@ -102,6 +94,26 @@ virCPUs390Update(virCPUDefPtr guest,
      return ret;
 }
 
+
+static int
+virCPUs390ValidateFeatures(virCPUDefPtr cpu)
+{
+    size_t i;
+
+    for (i = 0; i < cpu->nfeatures; i++) {
+        if (cpu->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("only cpu feature policies 'require' and "
+                             "'disable' are supported for %s"),
+                           cpu->features[i].name);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 struct cpuArchDriver cpuDriverS390 = {
     .name = "s390",
     .arch = archs,
@@ -111,4 +123,5 @@ struct cpuArchDriver cpuDriverS390 = {
     .encode     = NULL,
     .baseline   = NULL,
     .update     = virCPUs390Update,
+    .validateFeatures = virCPUs390ValidateFeatures,
 };
