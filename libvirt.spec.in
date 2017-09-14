@@ -15,6 +15,8 @@
 # touch configure.ac or Makefile.am.
 %{!?enable_autotools:%global enable_autotools 0}
 
+# RHEL6 doesn't have 'license' macro
+%{!?_licensedir:%global license %%doc}
 
 # The hypervisor drivers that run in libvirtd
 %define with_xen           0%{!?_without_xen:1}
@@ -2030,7 +2032,7 @@ exit 0
 %attr(0755, root, root) %{_libexecdir}/libvirt-guests.sh
 
 %files libs -f %{name}.lang
-%doc COPYING COPYING.LESSER
+%license COPYING COPYING.LESSER
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt-admin.conf
 %{_libdir}/libvirt.so.*
