@@ -242,6 +242,7 @@ struct _virStorageSource {
     virStorageAuthDefPtr auth;
     bool authInherited;
     virStorageEncryptionPtr encryption;
+    bool encryptionInherited;
 
     virObjectPtr privateData;
 

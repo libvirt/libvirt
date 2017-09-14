@@ -2712,6 +2712,14 @@
             attribute matching the key that was specified in the
             secret object.
           </dd>
+          <dd><span class="since">Since libvirt 3.9.0</span>, the
+            <code>encryption</code> can be a sub-element of the
+            <code>source</code> element for encrypted storage sources.
+            If present, specifies how the storage source is encrypted
+            See the
+            <a href="formatstorageencryption.html">Storage Encryption</a>
+            page for more information.
+          </dd>
         </dl>
 
         <p>
@@ -3117,8 +3125,11 @@
         <span class="since">Since 0.8.8</span>
       </dd>
       <dt><code>encryption</code></dt>
-      <dd>If present, specifies how the volume is encrypted.  See
-        the <a href="formatstorageencryption.html">Storage Encryption</a> page
+      <dd>Starting with <span class="since">libvirt 3.9.0</span> the
+        <code>encryption</code> element is preferred to be a sub-element
+        of the <code>source</code> element. If present, specifies how the
+        volume is encrypted using "qcow". See the
+        <a href="formatstorageencryption.html">Storage Encryption</a> page
         for more information.
       </dd>
       <dt><code>readonly</code></dt>

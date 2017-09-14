@@ -1471,6 +1471,9 @@
         <optional>
           <ref name="storageStartupPolicy"/>
         </optional>
+        <optional>
+          <ref name="encryption"/>
+        </optional>
         <zeroOrMore>
           <ref name='devSeclabel'/>
         </zeroOrMore>
@@ -1492,6 +1495,9 @@
         <optional>
           <ref name="storageStartupPolicy"/>
         </optional>
+        <optional>
+          <ref name="encryption"/>
+        </optional>
         <zeroOrMore>
           <ref name='devSeclabel'/>
         </zeroOrMore>
@@ -1510,6 +1516,9 @@
         </attribute>
         <optional>
           <ref name="storageStartupPolicy"/>
+        </optional>
+        <optional>
+          <ref name="encryption"/>
         </optional>
         <empty/>
       </element>
@@ -1583,6 +1592,9 @@
         <optional>
           <ref name="diskAuth"/>
         </optional>
+        <optional>
+          <ref name="encryption"/>
+        </optional>
         <empty/>
       </interleave>
     </element>
@@ -1598,6 +1610,9 @@
       <optional>
         <ref name="diskAuth"/>
       </optional>
+      <optional>
+        <ref name="encryption"/>
+      </optional>
     </element>
   </define>
 
@@ -1611,6 +1626,9 @@
       </attribute>
       <attribute name="name"/>
       <ref name="diskSourceNetworkHost"/>
+      <optional>
+        <ref name="encryption"/>
+      </optional>
     </element>
   </define>
 
@@ -1626,6 +1644,9 @@
       </attribute>
       <attribute name="name"/>
       <ref name="diskSourceNetworkHost"/>
+      <optional>
+        <ref name="encryption"/>
+      </optional>
     </element>
   </define>
 
@@ -1638,6 +1659,9 @@
         <attribute name="name"/>
       </optional>
       <ref name="diskSourceNetworkHost"/>
+      <optional>
+        <ref name="encryption"/>
+      </optional>
     </element>
   </define>
 
@@ -1650,6 +1674,9 @@
       <oneOrMore>
         <ref name="diskSourceNetworkHost"/>
       </oneOrMore>
+      <optional>
+        <ref name="encryption"/>
+      </optional>
     </element>
   </define>
 
@@ -1707,6 +1734,9 @@
         </optional>
         <optional>
           <ref name="storageStartupPolicy"/>
+        </optional>
+        <optional>
+          <ref name="encryption"/>
         </optional>
         <zeroOrMore>
           <ref name='devSeclabel'/>

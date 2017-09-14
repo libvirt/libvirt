@@ -8301,6 +8301,29 @@ virDomainDiskSourceAuthParse(xmlNodePtr node,
 }
 
 
+static int
+virDomainDiskSourceEncryptionParse(xmlNodePtr node,
+                                   virStorageEncryptionPtr *encryptionsrc)
+{
+    xmlNodePtr child;
+    virStorageEncryptionPtr encryption = NULL;
+
+    for (child = node->children; child; child = child->next) {
+        if (child->type == XML_ELEMENT_NODE &&
+            virXMLNodeNameEqual(child, "encryption")) {
+
+            if (!(encryption = virStorageEncryptionParseNode(node->doc, child)))
+                return -1;
+
+            *encryptionsrc = encryption;
+            return 0;
+        }
+    }
+
+    return 0;
+}
+
+
 int
 virDomainDiskSourceParse(xmlNodePtr node,
                          xmlXPathContextPtr ctxt,
@@ -8339,6 +8362,9 @@ virDomainDiskSourceParse(xmlNodePtr node,
     }
 
     if (virDomainDiskSourceAuthParse(node, &src->auth) < 0)
+        goto cleanup;
+
+    if (virDomainDiskSourceEncryptionParse(node, &src->encryption) < 0)
         goto cleanup;
 
     /* People sometimes pass a bogus '' source path when they mean to omit the
@@ -9000,6 +9026,18 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             if (def->src->auth)
                 def->src->authInherited = true;
 
+            /* Similarly for <encryption> - it's a child of <source> too
+             * and we cannot find in both places */
+            if (encryption && def->src->encryption) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("an <encryption> definition already found for "
+                                 "the <disk> definition"));
+                goto error;
+            }
+
+            if (def->src->encryption)
+                def->src->encryptionInherited = true;
+
             source = true;
 
             startupPolicy = virXMLPropString(cur, "startupPolicy");
@@ -9081,11 +9119,18 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                    virXMLNodeNameEqual(cur, "state")) {
             /* Legacy back-compat. Don't add any more attributes here */
             devaddr = virXMLPropString(cur, "devaddr");
-        } else if (encryption == NULL &&
+        } else if (!encryption &&
                    virXMLNodeNameEqual(cur, "encryption")) {
-            encryption = virStorageEncryptionParseNode(node->doc,
-                                                       cur);
-            if (encryption == NULL)
+            /* If we've already parsed <source> and found an <encryption> child,
+             * then generate an error to avoid ambiguity */
+            if (def->src->encryptionInherited) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("an <encryption> definition already found for "
+                                 "disk source"));
+                goto error;
+            }
+
+            if (!(encryption = virStorageEncryptionParseNode(node->doc, cur)))
                 goto error;
         } else if (!serial &&
                    virXMLNodeNameEqual(cur, "serial")) {
@@ -9303,8 +9348,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     target = NULL;
     if (authdef)
         VIR_STEAL_PTR(def->src->auth, authdef);
-    def->src->encryption = encryption;
-    encryption = NULL;
+    if (encryption)
+        VIR_STEAL_PTR(def->src->encryption, encryption);
     def->domain_name = domain_name;
     domain_name = NULL;
     def->serial = serial;
@@ -22087,6 +22132,12 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
                 goto error;
         }
 
+        /* If we found encryption as a child of <source>, then format it
+         * as we found it. */
+        if (src->encryption && src->encryptionInherited &&
+            virStorageEncryptionFormat(&childBuf, src->encryption) < 0)
+            return -1;
+
         if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
             goto error;
     }
@@ -22406,7 +22457,10 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferEscapeString(buf, "<wwn>%s</wwn>\n", def->wwn);
     virBufferEscapeString(buf, "<vendor>%s</vendor>\n", def->vendor);
     virBufferEscapeString(buf, "<product>%s</product>\n", def->product);
-    if (def->src->encryption &&
+
+    /* If originally found as a child of <disk>, then format thusly;
+     * otherwise, will be formatted as child of <source> */
+    if (def->src->encryption && !def->src->encryptionInherited &&
         virStorageEncryptionFormat(buf, def->src->encryption) < 0)
         return -1;
     virDomainDeviceInfoFormat(buf, &def->info,
