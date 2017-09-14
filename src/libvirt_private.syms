@@ -276,6 +276,7 @@ virDomainDefGetVcpusTopology;
 virDomainDefHasDeviceAddress;
 virDomainDefHasMemballoon;
 virDomainDefHasMemoryHotplug;
+virDomainDefHasUSB;
 virDomainDefHasVcpusOffline;
 virDomainDefLifecycleActionAllowed;
 virDomainDefMaybeAddController;

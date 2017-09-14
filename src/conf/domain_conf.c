@@ -5225,7 +5225,7 @@ virDomainDiskDefValidate(const virDomainDiskDef *disk)
     return 0;
 }
 
-static bool
+bool
 virDomainDefHasUSB(const virDomainDef *def)
 {
     size_t i;

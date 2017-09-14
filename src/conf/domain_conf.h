@@ -2700,6 +2700,8 @@ int virDomainDefPostParse(virDomainDefPtr def,
                           unsigned int parseFlags,
                           virDomainXMLOptionPtr xmlopt,
                           void *parseOpaque);
+bool
+virDomainDefHasUSB(const virDomainDef *def);
 
 int virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
                                            virDomainDeviceDefPtr dev,
