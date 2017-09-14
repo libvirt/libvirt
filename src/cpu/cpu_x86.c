@@ -2925,6 +2925,28 @@ virCPUx86CopyMigratable(virCPUDefPtr cpu)
 }
 
 
+static int
+virCPUx86ValidateFeatures(virCPUDefPtr cpu)
+{
+    virCPUx86MapPtr map;
+    size_t i;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    for (i = 0; i < cpu->nfeatures; i++) {
+        if (!x86FeatureFind(map, cpu->features[i].name)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown CPU feature: %s"),
+                           cpu->features[i].name);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 int
 virCPUx86DataAddCPUID(virCPUDataPtr cpuData,
                       const virCPUx86CPUID *cpuid)
@@ -3001,4 +3023,5 @@ struct cpuArchDriver cpuDriverX86 = {
     .translate  = virCPUx86Translate,
     .expandFeatures = virCPUx86ExpandFeatures,
     .copyMigratable = virCPUx86CopyMigratable,
+    .validateFeatures = virCPUx86ValidateFeatures,
 };
