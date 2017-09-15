@@ -53,6 +53,7 @@
 #include "device_conf.h"
 #include "network_conf.h"
 #include "virtpm.h"
+#include "virsecret.h"
 #include "virstring.h"
 #include "virnetdev.h"
 #include "virnetdevmacvlan.h"

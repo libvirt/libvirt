@@ -30,6 +30,7 @@
 #include "secret_conf.h"
 #include "virsecretobj.h"
 #include "virerror.h"
+#include "virsecret.h"
 #include "virstring.h"
 #include "virxml.h"
 #include "viruuid.h"
@@ -37,9 +38,6 @@
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
 VIR_LOG_INIT("conf.secret_conf");
-
-VIR_ENUM_IMPL(virSecretUsage, VIR_SECRET_USAGE_TYPE_LAST,
-              "none", "volume", "ceph", "iscsi", "tls")
 
 void
 virSecretDefFree(virSecretDefPtr def)

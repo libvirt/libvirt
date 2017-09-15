@@ -28,9 +28,9 @@
 #include "dirname.h"
 #include "viralloc.h"
 #include "virlog.h"
+#include "virsecret.h"
 #include "virstring.h"
 #include "c-ctype.h"
-#include "secret_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

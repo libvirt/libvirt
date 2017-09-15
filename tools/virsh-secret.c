@@ -32,9 +32,9 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virutil.h"
+#include "virsecret.h"
 #include "virstring.h"
 #include "virtime.h"
-#include "conf/secret_conf.h"
 
 static virSecretPtr
 virshCommandOptSecret(vshControl *ctl, const vshCmd *cmd, const char **name)

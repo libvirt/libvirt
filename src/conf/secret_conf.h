@@ -26,8 +26,6 @@
 # include "internal.h"
 # include "virutil.h"
 
-VIR_ENUM_DECL(virSecretUsage)
-
 typedef struct _virSecretDef virSecretDef;
 typedef virSecretDef *virSecretDefPtr;
 struct _virSecretDef {

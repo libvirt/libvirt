@@ -48,6 +48,7 @@
 #include "virfile.h"
 #include "virfdstream.h"
 #include "configmake.h"
+#include "virsecret.h"
 #include "virstring.h"
 #include "viraccessapicheck.h"
 //#include "dirname.h"
