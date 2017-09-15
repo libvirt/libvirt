@@ -4,7 +4,7 @@
 
 #include <tunables/global>
 
-profile LIBVIRT_TEMPLATE {
+profile LIBVIRT_TEMPLATE flags=(attach_disconnected) {
   #include <abstractions/libvirt-lxc>
 
   # Globally allows everything to run under this profile
