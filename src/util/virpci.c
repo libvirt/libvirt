@@ -2876,6 +2876,7 @@ virPCIGetNetName(const char *device_link_sysfs_path,
     int ret = -1;
     DIR *dir = NULL;
     struct dirent *entry = NULL;
+    char *firstEntryName = NULL;
     char *thisPhysPortID = NULL;
     size_t i = 0;
 
@@ -2902,6 +2903,16 @@ virPCIGetNetName(const char *device_link_sysfs_path,
             /* if this one doesn't match, keep looking */
             if (STRNEQ_NULLABLE(physPortID, thisPhysPortID)) {
                 VIR_FREE(thisPhysPortID);
+                /* save the first entry we find to use as a failsafe
+                 * in case we don't match the phys_port_id. This is
+                 * needed because some NIC drivers (e.g. i40e)
+                 * implement phys_port_id for PFs, but not for VFs
+                 */
+                if (!firstEntryName &&
+                    VIR_STRDUP(firstEntryName, entry->d_name) < 0) {
+                    goto cleanup;
+                }
+
                 continue;
             }
         } else {
@@ -2918,10 +2929,21 @@ virPCIGetNetName(const char *device_link_sysfs_path,
 
     if (ret < 0) {
         if (physPortID) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not find network device with "
-                             "phys_port_id '%s' under PCI device at %s"),
-                           physPortID, device_link_sysfs_path);
+            if (firstEntryName) {
+                /* we didn't match the provided phys_port_id, but this
+                 * is probably because phys_port_id isn't implemented
+                 * for this NIC driver, so just return the first
+                 * (probably only) netname we found.
+                 */
+                *netname = firstEntryName;
+                firstEntryName = NULL;
+                ret = 0;
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Could not find network device with "
+                                 "phys_port_id '%s' under PCI device at %s"),
+                               physPortID, device_link_sysfs_path);
+            }
         } else {
             ret = 0; /* no netdev at the given index is *not* an error */
         }
@@ -2930,6 +2952,7 @@ virPCIGetNetName(const char *device_link_sysfs_path,
     VIR_DIR_CLOSE(dir);
     VIR_FREE(pcidev_sysfs_net_path);
     VIR_FREE(thisPhysPortID);
+    VIR_FREE(firstEntryName);
     return ret;
 }
 
