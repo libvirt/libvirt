@@ -4728,16 +4728,8 @@ qemuDomainDefFormatXMLInternal(virQEMUDriverPtr driver,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (qemuDomainDefFormatBufInternal(driver, def, origCPU, flags, &buf) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (qemuDomainDefFormatBufInternal(driver, def, origCPU, flags, &buf) < 0)
         return NULL;
-    }
-
-    if (virBufferError(&buf)) {
-        virReportOOMError();
-        virBufferFreeAndReset(&buf);
-        return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }
