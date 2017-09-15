@@ -1300,7 +1300,7 @@ qemuSharedDeviceEntryInsert(virQEMUDriverPtr driver,
 
         entry->ref = 1;
 
-        if (virHashAddEntry(driver->sharedDevices, key, entry))
+        if (virHashAddEntry(driver->sharedDevices, key, entry) < 0)
             goto error;
     }
 
