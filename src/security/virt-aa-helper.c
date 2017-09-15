@@ -516,7 +516,8 @@ valid_path(const char *path, const bool readonly)
         "/usr/share/OVMF/",              /* for OVMF images */
         "/usr/share/ovmf/",              /* for OVMF images */
         "/usr/share/AAVMF/",             /* for AAVMF images */
-        "/usr/share/qemu-efi/"           /* for AAVMF images */
+        "/usr/share/qemu-efi/",          /* for AAVMF images */
+        "/usr/share/qemu-efi-aarch64/"   /* for AAVMF images */
     };
     /* override the above with these */
     const char * const override[] = {
