@@ -1185,9 +1185,13 @@ qemuDomainSecretSetup(virConnectPtr conn,
                       virSecretLookupTypeDefPtr seclookupdef,
                       bool isLuks)
 {
+    bool iscsiHasPS = virQEMUCapsGet(priv->qemuCaps,
+                                     QEMU_CAPS_ISCSI_PASSWORD_SECRET);
+
     if (virCryptoHaveCipher(VIR_CRYPTO_CIPHER_AES256CBC) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
         (usageType == VIR_SECRET_USAGE_TYPE_CEPH ||
+         (usageType == VIR_SECRET_USAGE_TYPE_ISCSI && iscsiHasPS) ||
          usageType == VIR_SECRET_USAGE_TYPE_VOLUME ||
          usageType == VIR_SECRET_USAGE_TYPE_TLS)) {
         if (qemuDomainSecretAESSetup(conn, priv, secinfo, srcalias,

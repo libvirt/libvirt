@@ -1465,7 +1465,8 @@ qemuDiskBusNeedsDeviceArg(int bus)
  * the legacy representation.
  */
 static bool
-qemuDiskSourceNeedsProps(virStorageSourcePtr src)
+qemuDiskSourceNeedsProps(virStorageSourcePtr src,
+                         virQEMUCapsPtr qemuCaps)
 {
     int actualType = virStorageSourceGetActualType(src);
 
@@ -1476,6 +1477,11 @@ qemuDiskSourceNeedsProps(virStorageSourcePtr src)
 
     if (actualType == VIR_STORAGE_TYPE_NETWORK &&
         src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS)
+        return true;
+
+    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET))
         return true;
 
     return false;
@@ -1509,6 +1515,7 @@ qemuDiskSourceGetProps(virStorageSourcePtr src)
 
 static int
 qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
+                        virQEMUCapsPtr qemuCaps,
                         virBufferPtr buf)
 {
     int actualType = virStorageSourceGetActualType(disk->src);
@@ -1524,7 +1531,7 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
         encinfo = srcpriv->encinfo;
     }
 
-    if (qemuDiskSourceNeedsProps(disk->src) &&
+    if (qemuDiskSourceNeedsProps(disk->src, qemuCaps) &&
         !(srcprops = qemuDiskSourceGetProps(disk->src)))
         goto cleanup;
 
@@ -1722,7 +1729,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
 
-    if (qemuBuildDriveSourceStr(disk, &opt) < 0)
+    if (qemuBuildDriveSourceStr(disk, qemuCaps, &opt) < 0)
         goto error;
 
     if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
@@ -4956,25 +4963,36 @@ qemuBuildSCSIHostHostdevDrvStr(virDomainHostdevDefPtr dev)
 }
 
 static char *
-qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
+qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
+                                virQEMUCapsPtr qemuCaps)
 {
     char *source = NULL;
     char *netsource = NULL;
+    virJSONValuePtr srcprops = NULL;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
     qemuDomainStorageSourcePrivatePtr srcPriv =
         QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
 
-    /* Rather than pull what we think we want - use the network disk code */
-    netsource = qemuBuildNetworkDriveStr(iscsisrc->src, srcPriv ?
-                                         srcPriv->secinfo : NULL);
-    if (!netsource)
-        goto cleanup;
-    if (virAsprintf(&source, "file=%s,if=none,format=raw", netsource) < 0)
-        goto cleanup;
+    if (qemuDiskSourceNeedsProps(iscsisrc->src, qemuCaps)) {
+        if (!(srcprops = qemuDiskSourceGetProps(iscsisrc->src)))
+            goto cleanup;
+        if (!(netsource = virQEMUBuildDriveCommandlineFromJSON(srcprops)))
+            goto cleanup;
+        if (virAsprintf(&source, "%s,if=none,format=raw", netsource) < 0)
+            goto cleanup;
+    } else {
+        /* Rather than pull what we think we want - use the network disk code */
+        if (!(netsource = qemuBuildNetworkDriveStr(iscsisrc->src, srcPriv ?
+                                                   srcPriv->secinfo : NULL)))
+            goto cleanup;
+        if (virAsprintf(&source, "file=%s,if=none,format=raw", netsource) < 0)
+            goto cleanup;
+    }
 
  cleanup:
     VIR_FREE(netsource);
+    virJSONValueFree(srcprops);
     return source;
 }
 
@@ -5017,7 +5035,8 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
 }
 
 char *
-qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
+qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
+                           virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *source = NULL;
@@ -5025,7 +5044,7 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
 
     if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-        if (!(source = qemuBuildSCSIiSCSIHostdevDrvStr(dev)))
+        if (!(source = qemuBuildSCSIiSCSIHostdevDrvStr(dev, qemuCaps)))
             goto error;
         virBufferAdd(&buf, source, -1);
     } else {
@@ -5524,10 +5543,24 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
         /* SCSI */
         if (virHostdevIsSCSIDevice(hostdev)) {
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
+                virDomainHostdevSubsysSCSIPtr scsisrc =
+                    &hostdev->source.subsys.u.scsi;
                 char *drvstr;
 
+                if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+                    virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc =
+                        &scsisrc->u.iscsi;
+                    qemuDomainStorageSourcePrivatePtr srcPriv =
+                        QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
+
+                    if (qemuBuildDiskSecinfoCommandLine(cmd, srcPriv ?
+                                                        srcPriv->secinfo :
+                                                        NULL) < 0)
+                        return -1;
+                }
+
                 virCommandAddArg(cmd, "-drive");
-                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev)))
+                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps)))
                     return -1;
                 virCommandAddArg(cmd, drvstr);
                 VIR_FREE(drvstr);
