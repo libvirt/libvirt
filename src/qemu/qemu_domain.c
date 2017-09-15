@@ -4536,14 +4536,12 @@ qemuDomainDefCopy(virQEMUDriverPtr driver,
                   virDomainDefPtr src,
                   unsigned int flags)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
     virDomainDefPtr ret = NULL;
-    char *xml = NULL;
+    char *xml;
 
-    if (qemuDomainDefFormatBuf(driver, src, flags, &buf) < 0)
+    if (!(xml = qemuDomainDefFormatXML(driver, src, flags)))
         return NULL;
 
-    xml = virBufferContentAndReset(&buf);
     ret = qemuDomainDefFromXML(driver, xml);
 
     VIR_FREE(xml);
