@@ -44,6 +44,7 @@
 #include "virbuffer.h"
 #include "virjson.h"
 #include "virstorageencryption.h"
+#include "virsecret.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -2547,7 +2548,7 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
                 goto error;
 
             if (VIR_STRDUP(authdef->secrettype,
-                           virStorageAuthTypeToString(VIR_STORAGE_AUTH_TYPE_CEPHX)) < 0)
+                           virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_CEPH)) < 0)
                 goto error;
             src->auth = authdef;
             authdef = NULL;
