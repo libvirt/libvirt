@@ -4035,7 +4035,8 @@ qemuProcessStartHook(virQEMUDriverPtr driver,
 
 static int
 qemuProcessGraphicsReservePorts(virQEMUDriverPtr driver,
-                                virDomainGraphicsDefPtr graphics)
+                                virDomainGraphicsDefPtr graphics,
+                                bool reconnect)
 {
     virDomainGraphicsListenDefPtr glisten;
 
@@ -4050,7 +4051,8 @@ qemuProcessGraphicsReservePorts(virQEMUDriverPtr driver,
 
     switch (graphics->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        if (!graphics->data.vnc.autoport) {
+        if (!graphics->data.vnc.autoport ||
+            reconnect) {
             if (virPortAllocatorSetUsed(driver->remotePorts,
                                         graphics->data.vnc.port,
                                         true) < 0)
@@ -4065,7 +4067,7 @@ qemuProcessGraphicsReservePorts(virQEMUDriverPtr driver,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-        if (graphics->data.spice.autoport)
+        if (graphics->data.spice.autoport && !reconnect)
             return 0;
 
         if (graphics->data.spice.port > 0) {
@@ -4269,7 +4271,7 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
         for (i = 0; i < vm->def->ngraphics; i++) {
             graphics = vm->def->graphics[i];
 
-            if (qemuProcessGraphicsReservePorts(driver, graphics) < 0)
+            if (qemuProcessGraphicsReservePorts(driver, graphics, false) < 0)
                 goto cleanup;
         }
     }
@@ -6878,6 +6880,13 @@ qemuProcessReconnect(void *opaque)
         dev.type = VIR_DOMAIN_DEVICE_DISK;
         dev.data.disk = obj->def->disks[i];
         if (qemuAddSharedDevice(driver, &dev, obj->def->name) < 0)
+            goto error;
+    }
+
+    for (i = 0; i < obj->def->ngraphics; i++) {
+        if (qemuProcessGraphicsReservePorts(driver,
+                                            obj->def->graphics[i],
+                                            true) < 0)
             goto error;
     }
 
