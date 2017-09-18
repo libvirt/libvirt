@@ -11416,6 +11416,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
     virDomainDiskDefPtr disk = NULL;
     virDomainObjPtr vm;
     char *tmpbuf = NULL;
+    ssize_t nread;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -11442,8 +11443,15 @@ qemuDomainBlockPeek(virDomainPtr dom,
     if (qemuDomainStorageFileInit(driver, vm, disk->src) < 0)
         goto cleanup;
 
-    if (virStorageFileRead(disk->src, offset, size, &tmpbuf) < 0)
+    if ((nread = virStorageFileRead(disk->src, offset, size, &tmpbuf)) < 0)
         goto cleanup;
+
+    if (nread < size) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("'%s' starting from %llu has only %zd bytes available"),
+                       path, offset, nread);
+        goto cleanup;
+    }
 
     memcpy(buffer, tmpbuf, size);
 
