@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 #
 # Generate code for an XDR protocol, optionally applying
 # fixups to the glibc rpcgen code so that it compiles

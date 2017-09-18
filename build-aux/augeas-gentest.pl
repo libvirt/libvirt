@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # augeas-gentest.pl: Generate an augeas test file, from an
 #                    example config file + test file template

@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 #
 # Copyright (C) 2010-2015 Red Hat, Inc.
 #
@@ -32,6 +32,7 @@
 # Extended by Matthias Bolte <matthias.bolte@googlemail.com>
 
 use strict;
+use warnings;
 
 use Getopt::Long;
 

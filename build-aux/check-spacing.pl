@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # check-spacing.pl: Report any usage of 'function (..args..)'
 # Also check for other syntax issues, such as correct use of ';'
