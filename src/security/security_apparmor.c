@@ -220,7 +220,7 @@ remove_profile(const char *profile)
 {
     int rc = -1;
     const char * const argv[] = {
-        VIRT_AA_HELPER, "-R", "-u", profile, NULL
+        VIRT_AA_HELPER, "-D", "-u", profile, NULL
     };
 
     if (virRun(argv, NULL) == 0)
