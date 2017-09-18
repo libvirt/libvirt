@@ -1217,6 +1217,10 @@ mymain(void)
     DO_TEST("smartcard-passthrough-spicevmc", NONE);
     DO_TEST("smartcard-controller", NONE);
 
+    DO_TEST("pseries-cpu-compat-power9", NONE);
+    DO_TEST("pseries-cpu-compat", NONE);
+    DO_TEST("pseries-cpu-exact", NONE);
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
