@@ -11415,6 +11415,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainDiskDefPtr disk = NULL;
     virDomainObjPtr vm;
+    char *tmpbuf = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -11441,8 +11442,10 @@ qemuDomainBlockPeek(virDomainPtr dom,
     if (qemuDomainStorageFileInit(driver, vm, disk->src) < 0)
         goto cleanup;
 
-    if (virStorageFileRead(disk->src, offset, size, buffer) < 0)
+    if (virStorageFileRead(disk->src, offset, size, &tmpbuf) < 0)
         goto cleanup;
+
+    memcpy(buffer, tmpbuf, size);
 
     ret = 0;
 
@@ -11450,6 +11453,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
     if (disk)
         virStorageFileDeinit(disk->src);
     virDomainObjEndAPI(&vm);
+    VIR_FREE(tmpbuf);
     return ret;
 }
 
