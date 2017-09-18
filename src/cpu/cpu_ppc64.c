@@ -247,6 +247,12 @@ ppc64ModelFromCPU(const virCPUDef *cpu,
 {
     struct ppc64_model *model;
 
+    if (!cpu->model) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("no CPU model specified"));
+        return NULL;
+    }
+
     if (!(model = ppc64ModelFind(map, cpu->model))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown CPU model %s"), cpu->model);
