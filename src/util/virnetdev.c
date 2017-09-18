@@ -59,7 +59,7 @@
 # include <net/if_dl.h>
 #endif
 
-#if HAVE_DECL_DEVLINK
+#if HAVE_LINUX_DEVLINK_H
 # include <linux/devlink.h>
 #endif
 
@@ -3120,7 +3120,7 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
 }
 
 
-# if HAVE_DECL_DEVLINK
+# if HAVE_DECL_DEVLINK_CMD_ESWITCH_GET
 /**
  * virNetDevPutExtraHeader
  * reserve and prepare room for an extra header
