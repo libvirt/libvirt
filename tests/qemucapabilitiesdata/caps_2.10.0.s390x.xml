@@ -1,0 +1,317 @@
+<qemuCaps>
+  <qemuctime>0</qemuctime>
+  <selfctime>0</selfctime>
+  <selfvers>0</selfvers>
+  <usedQMP/>
+  <flag name='kvm'/>
+  <flag name='mem-path'/>
+  <flag name='drive-serial'/>
+  <flag name='monitor-json'/>
+  <flag name='sdl'/>
+  <flag name='netdev'/>
+  <flag name='rtc'/>
+  <flag name='vhost-net'/>
+  <flag name='nodefconfig'/>
+  <flag name='boot-menu'/>
+  <flag name='fsdev'/>
+  <flag name='name-process'/>
+  <flag name='smbios-type'/>
+  <flag name='vga-none'/>
+  <flag name='boot-index'/>
+  <flag name='drive-aio'/>
+  <flag name='chardev-spicevmc'/>
+  <flag name='virtio-tx-alg'/>
+  <flag name='pci-multifunction'/>
+  <flag name='virtio-blk-pci.ioeventfd'/>
+  <flag name='virtio-blk-pci.event_idx'/>
+  <flag name='virtio-net-pci.event_idx'/>
+  <flag name='cache-directsync'/>
+  <flag name='no-shutdown'/>
+  <flag name='cache-unsafe'/>
+  <flag name='fsdev-readonly'/>
+  <flag name='virtio-blk-pci.scsi'/>
+  <flag name='drive-copy-on-read'/>
+  <flag name='fsdev-writeout'/>
+  <flag name='drive-iotune'/>
+  <flag name='system_wakeup'/>
+  <flag name='scsi-disk.channel'/>
+  <flag name='scsi-block'/>
+  <flag name='transaction'/>
+  <flag name='block-job-async'/>
+  <flag name='scsi-cd'/>
+  <flag name='no-user-config'/>
+  <flag name='dump-guest-memory'/>
+  <flag name='balloon-event'/>
+  <flag name='bridge'/>
+  <flag name='virtio-scsi-pci'/>
+  <flag name='blockio'/>
+  <flag name='scsi-disk.wwn'/>
+  <flag name='seccomp-sandbox'/>
+  <flag name='reboot-timeout'/>
+  <flag name='dump-guest-core'/>
+  <flag name='seamless-migration'/>
+  <flag name='block-commit'/>
+  <flag name='vnc'/>
+  <flag name='drive-mirror'/>
+  <flag name='blockdev-snapshot-sync'/>
+  <flag name='device-video-primary'/>
+  <flag name='s390-sclp'/>
+  <flag name='add-fd'/>
+  <flag name='nbd-server'/>
+  <flag name='virtio-rng'/>
+  <flag name='rng-random'/>
+  <flag name='rng-egd'/>
+  <flag name='virtio-ccw'/>
+  <flag name='dtb'/>
+  <flag name='ipv6-migration'/>
+  <flag name='machine-opt'/>
+  <flag name='machine-usb-opt'/>
+  <flag name='pci-bridge'/>
+  <flag name='vfio-pci'/>
+  <flag name='vfio-pci.bootindex'/>
+  <flag name='scsi-generic'/>
+  <flag name='scsi-generic.bootindex'/>
+  <flag name='mem-merge'/>
+  <flag name='vnc-websocket'/>
+  <flag name='drive-discard'/>
+  <flag name='mlock'/>
+  <flag name='vnc-share-policy'/>
+  <flag name='device-del-event'/>
+  <flag name='virtio-mmio'/>
+  <flag name='boot-strict'/>
+  <flag name='spiceport'/>
+  <flag name='host-pci-multidomain'/>
+  <flag name='msg-timestamp'/>
+  <flag name='active-commit'/>
+  <flag name='change-backing-file'/>
+  <flag name='memory-backend-ram'/>
+  <flag name='numa'/>
+  <flag name='memory-backend-file'/>
+  <flag name='splash-timeout'/>
+  <flag name='iothread'/>
+  <flag name='migrate-rdma'/>
+  <flag name='drive-iotune-max'/>
+  <flag name='machine-vmport-opt'/>
+  <flag name='aes-key-wrap'/>
+  <flag name='dea-key-wrap'/>
+  <flag name='vhost-user-multiqueue'/>
+  <flag name='migration-event'/>
+  <flag name='virtio-net'/>
+  <flag name='gic-version'/>
+  <flag name='incoming-defer'/>
+  <flag name='virtio-gpu'/>
+  <flag name='virtio-keyboard'/>
+  <flag name='virtio-mouse'/>
+  <flag name='virtio-tablet'/>
+  <flag name='virtio-input-host'/>
+  <flag name='chardev-file-append'/>
+  <flag name='vserport-change-event'/>
+  <flag name='virtio-balloon-pci.deflate-on-oom'/>
+  <flag name='chardev-logfile'/>
+  <flag name='debug-threads'/>
+  <flag name='secret'/>
+  <flag name='device-tray-moved-event'/>
+  <flag name='virtio-scsi-pci.iothread'/>
+  <flag name='name-guest'/>
+  <flag name='drive-detect-zeroes'/>
+  <flag name='tls-creds-x509'/>
+  <flag name='display'/>
+  <flag name='smm'/>
+  <flag name='virtio-pci-disable-legacy'/>
+  <flag name='query-hotpluggable-cpus'/>
+  <flag name='virtio-net.rx_queue_size'/>
+  <flag name='drive-iotune-max-length'/>
+  <flag name='query-qmp-schema'/>
+  <flag name='gluster.debug_level'/>
+  <flag name='vhost-scsi'/>
+  <flag name='drive-iotune-group'/>
+  <flag name='query-cpu-model-expansion'/>
+  <flag name='virtio-net.host_mtu'/>
+  <flag name='query-cpu-definitions'/>
+  <flag name='block-write-threshold'/>
+  <flag name='query-named-block-nodes'/>
+  <flag name='kernel-irqchip'/>
+  <flag name='kernel-irqchip.split'/>
+  <flag name='virtio.iommu_platform'/>
+  <flag name='virtio.ats'/>
+  <flag name='loadparm'/>
+  <flag name='vnc-multi-servers'/>
+  <flag name='virtio-net.tx_queue_size'/>
+  <flag name='chardev-reconnect'/>
+  <flag name='virtio-gpu.max_outputs'/>
+  <flag name='vxhs'/>
+  <version>2010000</version>
+  <kvmVersion>0</kvmVersion>
+  <package></package>
+  <arch>s390x</arch>
+  <hostCPU type='kvm' model='z14-base' migratability='no'>
+    <property name='aen' type='boolean' value='true'/>
+    <property name='cmmnt' type='boolean' value='true'/>
+    <property name='aefsi' type='boolean' value='true'/>
+    <property name='mepoch' type='boolean' value='true'/>
+    <property name='msa8' type='boolean' value='true'/>
+    <property name='msa7' type='boolean' value='true'/>
+    <property name='msa6' type='boolean' value='true'/>
+    <property name='msa5' type='boolean' value='true'/>
+    <property name='msa4' type='boolean' value='true'/>
+    <property name='msa3' type='boolean' value='true'/>
+    <property name='msa2' type='boolean' value='true'/>
+    <property name='msa1' type='boolean' value='true'/>
+    <property name='sthyi' type='boolean' value='true'/>
+    <property name='edat' type='boolean' value='true'/>
+    <property name='ri' type='boolean' value='true'/>
+    <property name='edat2' type='boolean' value='true'/>
+    <property name='vx' type='boolean' value='true'/>
+    <property name='ipter' type='boolean' value='true'/>
+    <property name='vxeh' type='boolean' value='true'/>
+    <property name='vxpd' type='boolean' value='true'/>
+    <property name='esop' type='boolean' value='true'/>
+    <property name='iep' type='boolean' value='true'/>
+    <property name='cte' type='boolean' value='true'/>
+    <property name='ais' type='boolean' value='true'/>
+    <property name='gs' type='boolean' value='true'/>
+    <property name='zpci' type='boolean' value='true'/>
+    <property name='sea_esop2' type='boolean' value='true'/>
+    <property name='te' type='boolean' value='true'/>
+    <property name='cmm' type='boolean' value='true'/>
+  </hostCPU>
+  <cpu type='kvm' name='z10EC-base' usable='yes'/>
+  <cpu type='kvm' name='z9EC-base' usable='yes'/>
+  <cpu type='kvm' name='z196.2-base' usable='yes'/>
+  <cpu type='kvm' name='z900-base' usable='yes'/>
+  <cpu type='kvm' name='z990' usable='yes'/>
+  <cpu type='kvm' name='z900.2-base' usable='yes'/>
+  <cpu type='kvm' name='host' usable='yes'/>
+  <cpu type='kvm' name='z900.3' usable='yes'/>
+  <cpu type='kvm' name='z114' usable='yes'/>
+  <cpu type='kvm' name='z890-base' usable='yes'/>
+  <cpu type='kvm' name='z13.2-base' usable='yes'/>
+  <cpu type='kvm' name='zEC12.2' usable='yes'/>
+  <cpu type='kvm' name='z10BC' usable='yes'/>
+  <cpu type='kvm' name='z900.2' usable='yes'/>
+  <cpu type='kvm' name='z10BC.2' usable='yes'/>
+  <cpu type='kvm' name='z196' usable='yes'/>
+  <cpu type='kvm' name='z9EC' usable='yes'/>
+  <cpu type='kvm' name='z990-base' usable='yes'/>
+  <cpu type='kvm' name='z10EC.3' usable='yes'/>
+  <cpu type='kvm' name='z900' usable='yes'/>
+  <cpu type='kvm' name='z9EC.3-base' usable='yes'/>
+  <cpu type='kvm' name='z990.5-base' usable='yes'/>
+  <cpu type='kvm' name='z10EC.2' usable='yes'/>
+  <cpu type='kvm' name='z9BC.2' usable='yes'/>
+  <cpu type='kvm' name='z10EC' usable='yes'/>
+  <cpu type='kvm' name='z990.3-base' usable='yes'/>
+  <cpu type='kvm' name='z14' usable='yes'/>
+  <cpu type='kvm' name='z13s' usable='yes'/>
+  <cpu type='kvm' name='z10EC.3-base' usable='yes'/>
+  <cpu type='kvm' name='zEC12.2-base' usable='yes'/>
+  <cpu type='kvm' name='z890.3-base' usable='yes'/>
+  <cpu type='kvm' name='z9EC.3' usable='yes'/>
+  <cpu type='kvm' name='z990.5' usable='yes'/>
+  <cpu type='kvm' name='z13' usable='yes'/>
+  <cpu type='kvm' name='z13s-base' usable='yes'/>
+  <cpu type='kvm' name='z14-base' usable='yes'/>
+  <cpu type='kvm' name='z9EC.2' usable='yes'/>
+  <cpu type='kvm' name='z990.4' usable='yes'/>
+  <cpu type='kvm' name='zEC12-base' usable='yes'/>
+  <cpu type='kvm' name='z9EC.2-base' usable='yes'/>
+  <cpu type='kvm' name='zBC12' usable='yes'/>
+  <cpu type='kvm' name='z196.2' usable='yes'/>
+  <cpu type='kvm' name='z990.3' usable='yes'/>
+  <cpu type='kvm' name='z990.2-base' usable='yes'/>
+  <cpu type='kvm' name='z900.3-base' usable='yes'/>
+  <cpu type='kvm' name='z890.3' usable='yes'/>
+  <cpu type='kvm' name='z10EC.2-base' usable='yes'/>
+  <cpu type='kvm' name='z990.2' usable='yes'/>
+  <cpu type='kvm' name='z890.2' usable='yes'/>
+  <cpu type='kvm' name='zBC12-base' usable='yes'/>
+  <cpu type='kvm' name='z800-base' usable='yes'/>
+  <cpu type='kvm' name='zEC12' usable='yes'/>
+  <cpu type='kvm' name='z9BC.2-base' usable='yes'/>
+  <cpu type='kvm' name='z9BC' usable='yes'/>
+  <cpu type='kvm' name='z10BC.2-base' usable='yes'/>
+  <cpu type='kvm' name='z990.4-base' usable='yes'/>
+  <cpu type='kvm' name='qemu' usable='yes'/>
+  <cpu type='kvm' name='z10BC-base' usable='yes'/>
+  <cpu type='kvm' name='z9BC-base' usable='yes'/>
+  <cpu type='kvm' name='z800' usable='yes'/>
+  <cpu type='kvm' name='z890.2-base' usable='yes'/>
+  <cpu type='kvm' name='z13.2' usable='yes'/>
+  <cpu type='kvm' name='z114-base' usable='yes'/>
+  <cpu type='kvm' name='z196-base' usable='yes'/>
+  <cpu type='kvm' name='z13-base' usable='yes'/>
+  <cpu type='kvm' name='z890' usable='yes'/>
+  <cpu type='tcg' name='z10EC-base' usable='no'/>
+  <cpu type='tcg' name='z9EC-base' usable='no'/>
+  <cpu type='tcg' name='z196.2-base' usable='no'/>
+  <cpu type='tcg' name='z900-base' usable='yes'/>
+  <cpu type='tcg' name='z990' usable='no'/>
+  <cpu type='tcg' name='z900.2-base' usable='no'/>
+  <cpu type='tcg' name='host'/>
+  <cpu type='tcg' name='z900.3' usable='no'/>
+  <cpu type='tcg' name='z114' usable='no'/>
+  <cpu type='tcg' name='z890-base' usable='no'/>
+  <cpu type='tcg' name='z13.2-base' usable='no'/>
+  <cpu type='tcg' name='zEC12.2' usable='no'/>
+  <cpu type='tcg' name='z10BC' usable='no'/>
+  <cpu type='tcg' name='z900.2' usable='no'/>
+  <cpu type='tcg' name='z10BC.2' usable='no'/>
+  <cpu type='tcg' name='z196' usable='no'/>
+  <cpu type='tcg' name='z9EC' usable='no'/>
+  <cpu type='tcg' name='z990-base' usable='no'/>
+  <cpu type='tcg' name='z10EC.3' usable='no'/>
+  <cpu type='tcg' name='z900' usable='yes'/>
+  <cpu type='tcg' name='z9EC.3-base' usable='no'/>
+  <cpu type='tcg' name='z990.5-base' usable='no'/>
+  <cpu type='tcg' name='z10EC.2' usable='no'/>
+  <cpu type='tcg' name='z9BC.2' usable='no'/>
+  <cpu type='tcg' name='z10EC' usable='no'/>
+  <cpu type='tcg' name='z990.3-base' usable='no'/>
+  <cpu type='tcg' name='z14' usable='no'/>
+  <cpu type='tcg' name='z13s' usable='no'/>
+  <cpu type='tcg' name='z10EC.3-base' usable='no'/>
+  <cpu type='tcg' name='zEC12.2-base' usable='no'/>
+  <cpu type='tcg' name='z890.3-base' usable='no'/>
+  <cpu type='tcg' name='z9EC.3' usable='no'/>
+  <cpu type='tcg' name='z990.5' usable='no'/>
+  <cpu type='tcg' name='z13' usable='no'/>
+  <cpu type='tcg' name='z13s-base' usable='no'/>
+  <cpu type='tcg' name='z14-base' usable='no'/>
+  <cpu type='tcg' name='z9EC.2' usable='no'/>
+  <cpu type='tcg' name='z990.4' usable='no'/>
+  <cpu type='tcg' name='zEC12-base' usable='no'/>
+  <cpu type='tcg' name='z9EC.2-base' usable='no'/>
+  <cpu type='tcg' name='zBC12' usable='no'/>
+  <cpu type='tcg' name='z196.2' usable='no'/>
+  <cpu type='tcg' name='z990.3' usable='no'/>
+  <cpu type='tcg' name='z990.2-base' usable='no'/>
+  <cpu type='tcg' name='z900.3-base' usable='no'/>
+  <cpu type='tcg' name='z890.3' usable='no'/>
+  <cpu type='tcg' name='z10EC.2-base' usable='no'/>
+  <cpu type='tcg' name='z990.2' usable='no'/>
+  <cpu type='tcg' name='z890.2' usable='no'/>
+  <cpu type='tcg' name='zBC12-base' usable='no'/>
+  <cpu type='tcg' name='z800-base' usable='no'/>
+  <cpu type='tcg' name='zEC12' usable='no'/>
+  <cpu type='tcg' name='z9BC.2-base' usable='no'/>
+  <cpu type='tcg' name='z9BC' usable='no'/>
+  <cpu type='tcg' name='z10BC.2-base' usable='no'/>
+  <cpu type='tcg' name='z990.4-base' usable='no'/>
+  <cpu type='tcg' name='qemu' usable='yes'/>
+  <cpu type='tcg' name='z10BC-base' usable='no'/>
+  <cpu type='tcg' name='z9BC-base' usable='no'/>
+  <cpu type='tcg' name='z800' usable='no'/>
+  <cpu type='tcg' name='z890.2-base' usable='no'/>
+  <cpu type='tcg' name='z13.2' usable='no'/>
+  <cpu type='tcg' name='z114-base' usable='no'/>
+  <cpu type='tcg' name='z196-base' usable='no'/>
+  <cpu type='tcg' name='z13-base' usable='no'/>
+  <cpu type='tcg' name='z890' usable='no'/>
+  <machine name='s390-ccw-virtio-2.10' alias='s390-ccw-virtio' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.7' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.6' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.5' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.4' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.9' maxCpus='248'/>
+  <machine name='s390-ccw-virtio-2.8' maxCpus='248'/>
+</qemuCaps>
