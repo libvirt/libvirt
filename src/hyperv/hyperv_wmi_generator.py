@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 #
 # hyperv_wmi_generator.py: generates most of the WMI type mapping code

@@ -1,4 +1,4 @@
-#!/usr/bin/python -u
+#!/usr/bin/env python2
 #
 # imports the API description and fills up a database with
 # name relevance to modules, functions or web pages

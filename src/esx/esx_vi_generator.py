@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 #
 # esx_vi_generator.py: generates most of the SOAP type mapping code

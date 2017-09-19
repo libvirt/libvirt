@@ -1,4 +1,4 @@
-#!/usr/bin/python -u
+#!/usr/bin/env python2
 #
 # This is the API builder, it parses the C sources and build the
 # API formal description in XML.
