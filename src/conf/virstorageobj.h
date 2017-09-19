@@ -86,14 +86,14 @@ virStoragePoolObjGetNewDef(virStoragePoolObjPtr obj);
 void
 virStoragePoolObjDefUseNewDef(virStoragePoolObjPtr obj);
 
-char *
+const char *
 virStoragePoolObjGetConfigFile(virStoragePoolObjPtr obj);
 
 void
 virStoragePoolObjSetConfigFile(virStoragePoolObjPtr obj,
                                char *configFile);
 
-char *
+const char *
 virStoragePoolObjGetAutostartLink(virStoragePoolObjPtr obj);
 
 bool

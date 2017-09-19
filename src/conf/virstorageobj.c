@@ -89,7 +89,7 @@ virStoragePoolObjDefUseNewDef(virStoragePoolObjPtr obj)
 }
 
 
-char *
+const char *
 virStoragePoolObjGetConfigFile(virStoragePoolObjPtr obj)
 {
     return obj->configFile;
@@ -105,7 +105,7 @@ virStoragePoolObjSetConfigFile(virStoragePoolObjPtr obj,
 }
 
 
-char *
+const char *
 virStoragePoolObjGetAutostartLink(virStoragePoolObjPtr obj)
 {
     return obj->autostartLink;
