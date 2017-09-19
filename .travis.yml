@@ -75,7 +75,6 @@ addons:
       - zfs-fuse
 
 git:
-  depth: 5
   submodules: true
 
 env:
