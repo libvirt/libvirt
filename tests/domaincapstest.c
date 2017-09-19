@@ -88,11 +88,11 @@ fillAllCaps(virDomainCapsPtr domCaps)
     cpu->hostModel = virCPUDefCopy(&host);
     if (!(cpu->custom = virDomainCapsCPUModelsNew(3)) ||
         virDomainCapsCPUModelsAdd(cpu->custom, "Model1", -1,
-                                  VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||
+                                  VIR_DOMCAPS_CPU_USABLE_UNKNOWN, NULL) < 0 ||
         virDomainCapsCPUModelsAdd(cpu->custom, "Model2", -1,
-                                  VIR_DOMCAPS_CPU_USABLE_NO) < 0 ||
+                                  VIR_DOMCAPS_CPU_USABLE_NO, NULL) < 0 ||
         virDomainCapsCPUModelsAdd(cpu->custom, "Model3", -1,
-                                  VIR_DOMCAPS_CPU_USABLE_YES) < 0)
+                                  VIR_DOMCAPS_CPU_USABLE_YES, NULL) < 0)
         return -1;
 
     disk->supported = true;

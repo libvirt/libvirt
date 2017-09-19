@@ -796,7 +796,7 @@ virQEMUCapsParseX86Models(const char *output,
         }
 
         if (virDomainCapsCPUModelsAdd(cpus, p, len,
-                                      VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
+                                      VIR_DOMCAPS_CPU_USABLE_UNKNOWN, NULL) < 0)
             goto error;
     } while ((p = next));
 
@@ -854,7 +854,7 @@ virQEMUCapsParsePPCModels(const char *output,
             continue;
 
         if (virDomainCapsCPUModelsAdd(cpus, p, t - p - 1,
-                                      VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
+                                      VIR_DOMCAPS_CPU_USABLE_UNKNOWN, NULL) < 0)
             goto error;
     } while ((p = next));
 
@@ -2526,7 +2526,7 @@ virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
     }
 
     for (i = 0; i < count; i++) {
-        if (virDomainCapsCPUModelsAdd(cpus, name[i], -1, usable) < 0)
+        if (virDomainCapsCPUModelsAdd(cpus, name[i], -1, usable, NULL) < 0)
             return -1;
     }
 
@@ -3007,7 +3007,8 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
         else if (cpus[i]->usable == VIR_TRISTATE_BOOL_NO)
             usable = VIR_DOMCAPS_CPU_USABLE_NO;
 
-        if (virDomainCapsCPUModelsAddSteal(models, &cpus[i]->name, usable) < 0)
+        if (virDomainCapsCPUModelsAddSteal(models, &cpus[i]->name, usable,
+                                           NULL) < 0)
             goto cleanup;
     }
 
@@ -3770,7 +3771,7 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
             goto cleanup;
         }
 
-        if (virDomainCapsCPUModelsAddSteal(cpus, &str, usable) < 0)
+        if (virDomainCapsCPUModelsAddSteal(cpus, &str, usable, NULL) < 0)
             goto cleanup;
     }
 

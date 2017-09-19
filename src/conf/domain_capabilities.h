@@ -116,6 +116,7 @@ typedef virDomainCapsCPUModel *virDomainCapsCPUModelPtr;
 struct _virDomainCapsCPUModel {
     char *name;
     virDomainCapsCPUUsable usable;
+    char **blockers; /* NULL-terminated list of usability blockers */
 };
 
 typedef struct _virDomainCapsCPUModels virDomainCapsCPUModels;
@@ -171,11 +172,13 @@ virDomainCapsCPUModelsPtr virDomainCapsCPUModelsFilter(virDomainCapsCPUModelsPtr
                                                        const char **blacklist);
 int virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
                                    char **name,
-                                   virDomainCapsCPUUsable usable);
+                                   virDomainCapsCPUUsable usable,
+                                   char ***blockers);
 int virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
                               const char *name,
                               ssize_t nameLen,
-                              virDomainCapsCPUUsable usable);
+                              virDomainCapsCPUUsable usable,
+                              char **blockers);
 
 # define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...)            \
     do {                                                    \
