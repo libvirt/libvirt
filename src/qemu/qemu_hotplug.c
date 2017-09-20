@@ -1638,12 +1638,14 @@ qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
         if (qemuBuildSecretInfoProps(secinfo, secProps) < 0)
             return -1;
 
-        if (!(*secAlias = qemuDomainGetSecretAESAlias(srcAlias, false)))
+        if (!secAlias ||
+            !(*secAlias = qemuDomainGetSecretAESAlias(srcAlias, false)))
             return -1;
     }
 
     if (qemuBuildTLSx509BackendProps(tlsCertdir, tlsListen, tlsVerify,
-                                     *secAlias, qemuCaps, tlsProps) < 0)
+                                     secAlias ? *secAlias : NULL, qemuCaps,
+                                     tlsProps) < 0)
         return -1;
 
     if (!(*tlsAlias = qemuAliasTLSObjFromSrcAlias(srcAlias)))
