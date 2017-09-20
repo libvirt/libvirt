@@ -10240,7 +10240,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *vhostuser_mode = NULL;
     char *vhostuser_path = NULL;
     char *vhostuser_type = NULL;
-    char *vhostuser_reconnect = NULL;
     char *trustGuestRxFilters = NULL;
     char *vhost_path = NULL;
     virNWFilterHashTablePtr filterparams = NULL;
@@ -10327,12 +10326,11 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
                 }
             } else if (!vhostuser_path && !vhostuser_mode && !vhostuser_type
-                       && !vhostuser_reconnect && def->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER
-                       && virXMLNodeNameEqual(cur, "source")) {
+                       && def->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
+                       virXMLNodeNameEqual(cur, "source")) {
                 vhostuser_type = virXMLPropString(cur, "type");
                 vhostuser_path = virXMLPropString(cur, "path");
                 vhostuser_mode = virXMLPropString(cur, "mode");
-                vhostuser_reconnect = virXMLPropString(cur, "reconnect");
             } else if (!def->virtPortProfile
                        && virXMLNodeNameEqual(cur, "virtualport")) {
                 if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
@@ -10554,24 +10552,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
 
         if (STREQ(vhostuser_mode, "server")) {
             def->data.vhostuser->data.nix.listen = true;
-            if (vhostuser_reconnect) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("'reconnect' attribute  unsupported "
-                                 "'server' mode for <interface type='vhostuser'>"));
-                goto error;
-            }
         } else if (STREQ(vhostuser_mode, "client")) {
             def->data.vhostuser->data.nix.listen = false;
-            if (vhostuser_reconnect) {
-                def->data.vhostuser->data.nix.reconnect.enabled = true;
-                if (virStrToLong_ui(vhostuser_reconnect, NULL, 10,
-                                    &def->data.vhostuser->data.nix.reconnect.timeout) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("invalid vhostuser reconnect value %s"),
-                                   vhostuser_reconnect);
-                    goto error;
-                }
-            }
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Wrong <source> 'mode' attribute "
@@ -11016,7 +10998,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(portgroup);
     VIR_FREE(address);
     VIR_FREE(port);
-    VIR_FREE(vhostuser_reconnect);
     VIR_FREE(vhostuser_type);
     VIR_FREE(vhostuser_path);
     VIR_FREE(vhostuser_mode);
@@ -23002,11 +22983,6 @@ virDomainNetDefFormat(virBufferPtr buf,
                 virBufferAsprintf(buf, " mode='%s'",
                                   def->data.vhostuser->data.nix.listen ?
                                   "server"  : "client");
-                if (def->data.vhostuser->data.nix.reconnect.enabled == true) {
-                    virBufferAsprintf(buf, " reconnect='%u'",
-                                      def->data.vhostuser->data.nix.reconnect.timeout);
-                }
-
                 sourceLines++;
             }
             break;

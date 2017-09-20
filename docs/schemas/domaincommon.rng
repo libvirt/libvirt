@@ -2388,11 +2388,6 @@
                   <value>client</value>
                 </choice>
               </attribute>
-              <optional>
-                <attribute name="reconnect">
-                  <ref name='positiveInteger'/>
-                </attribute>
-              </optional>
               <empty/>
             </element>
             <ref name="interface-options"/>
