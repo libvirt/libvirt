@@ -242,72 +242,1050 @@
   <cpu type='kvm' name='z196-base' usable='yes'/>
   <cpu type='kvm' name='z13-base' usable='yes'/>
   <cpu type='kvm' name='z890' usable='yes'/>
-  <cpu type='tcg' name='z10EC-base' usable='no'/>
-  <cpu type='tcg' name='z9EC-base' usable='no'/>
-  <cpu type='tcg' name='z196.2-base' usable='no'/>
+  <cpu type='tcg' name='z10EC-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z9EC-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z196.2-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='iacc2'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
   <cpu type='tcg' name='z900-base' usable='yes'/>
-  <cpu type='tcg' name='z990' usable='no'/>
-  <cpu type='tcg' name='z900.2-base' usable='no'/>
+  <cpu type='tcg' name='z990' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z900.2-base' usable='no'>
+    <blocker name='type'/>
+  </cpu>
   <cpu type='tcg' name='host'/>
-  <cpu type='tcg' name='z900.3' usable='no'/>
-  <cpu type='tcg' name='z114' usable='no'/>
-  <cpu type='tcg' name='z890-base' usable='no'/>
-  <cpu type='tcg' name='z13.2-base' usable='no'/>
-  <cpu type='tcg' name='zEC12.2' usable='no'/>
-  <cpu type='tcg' name='z10BC' usable='no'/>
-  <cpu type='tcg' name='z900.2' usable='no'/>
-  <cpu type='tcg' name='z10BC.2' usable='no'/>
-  <cpu type='tcg' name='z196' usable='no'/>
-  <cpu type='tcg' name='z9EC' usable='no'/>
-  <cpu type='tcg' name='z990-base' usable='no'/>
-  <cpu type='tcg' name='z10EC.3' usable='no'/>
+  <cpu type='tcg' name='z900.3' usable='no'>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z114' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='iacc2'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa4'/>
+    <blocker name='msa3'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z890-base' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z13.2-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='dfppc'/>
+    <blocker name='iacc2'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='zEC12.2' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='aen'/>
+    <blocker name='zpci'/>
+    <blocker name='ri'/>
+    <blocker name='iacc2'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa4'/>
+    <blocker name='msa3'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z10BC' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z900.2' usable='no'>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z10BC.2' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z196' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='iacc2'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa4'/>
+    <blocker name='msa3'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z9EC' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990-base' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z10EC.3' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
   <cpu type='tcg' name='z900' usable='yes'/>
-  <cpu type='tcg' name='z9EC.3-base' usable='no'/>
-  <cpu type='tcg' name='z990.5-base' usable='no'/>
-  <cpu type='tcg' name='z10EC.2' usable='no'/>
-  <cpu type='tcg' name='z9BC.2' usable='no'/>
-  <cpu type='tcg' name='z10EC' usable='no'/>
-  <cpu type='tcg' name='z990.3-base' usable='no'/>
-  <cpu type='tcg' name='z14' usable='no'/>
-  <cpu type='tcg' name='z13s' usable='no'/>
-  <cpu type='tcg' name='z10EC.3-base' usable='no'/>
-  <cpu type='tcg' name='zEC12.2-base' usable='no'/>
-  <cpu type='tcg' name='z890.3-base' usable='no'/>
-  <cpu type='tcg' name='z9EC.3' usable='no'/>
-  <cpu type='tcg' name='z990.5' usable='no'/>
-  <cpu type='tcg' name='z13' usable='no'/>
-  <cpu type='tcg' name='z13s-base' usable='no'/>
-  <cpu type='tcg' name='z14-base' usable='no'/>
-  <cpu type='tcg' name='z9EC.2' usable='no'/>
-  <cpu type='tcg' name='z990.4' usable='no'/>
-  <cpu type='tcg' name='zEC12-base' usable='no'/>
-  <cpu type='tcg' name='z9EC.2-base' usable='no'/>
-  <cpu type='tcg' name='zBC12' usable='no'/>
-  <cpu type='tcg' name='z196.2' usable='no'/>
-  <cpu type='tcg' name='z990.3' usable='no'/>
-  <cpu type='tcg' name='z990.2-base' usable='no'/>
-  <cpu type='tcg' name='z900.3-base' usable='no'/>
-  <cpu type='tcg' name='z890.3' usable='no'/>
-  <cpu type='tcg' name='z10EC.2-base' usable='no'/>
-  <cpu type='tcg' name='z990.2' usable='no'/>
-  <cpu type='tcg' name='z890.2' usable='no'/>
-  <cpu type='tcg' name='zBC12-base' usable='no'/>
-  <cpu type='tcg' name='z800-base' usable='no'/>
-  <cpu type='tcg' name='zEC12' usable='no'/>
-  <cpu type='tcg' name='z9BC.2-base' usable='no'/>
-  <cpu type='tcg' name='z9BC' usable='no'/>
-  <cpu type='tcg' name='z10BC.2-base' usable='no'/>
-  <cpu type='tcg' name='z990.4-base' usable='no'/>
+  <cpu type='tcg' name='z9EC.3-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990.5-base' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z10EC.2' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z9BC.2' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z10EC' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990.3-base' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z14' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='vxeh'/>
+    <blocker name='vxpd'/>
+    <blocker name='gs'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='iep'/>
+    <blocker name='vx'/>
+    <blocker name='dfppc'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='ais'/>
+    <blocker name='aen'/>
+    <blocker name='zpci'/>
+    <blocker name='ri'/>
+    <blocker name='tsi'/>
+    <blocker name='sema'/>
+    <blocker name='minste2'/>
+    <blocker name='eec'/>
+    <blocker name='iacc2'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='opc'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa8'/>
+    <blocker name='msa7'/>
+    <blocker name='msa6'/>
+    <blocker name='msa5'/>
+    <blocker name='msa4'/>
+    <blocker name='msa3'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z13s' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='vx'/>
+    <blocker name='dfppc'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='aen'/>
+    <blocker name='zpci'/>
+    <blocker name='ri'/>
+    <blocker name='iacc2'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa5'/>
+    <blocker name='msa4'/>
+    <blocker name='msa3'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z10EC.3-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='zEC12.2-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='iacc2'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z890.3-base' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z9EC.3' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990.5' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z13' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='vx'/>
+    <blocker name='dfppc'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='aen'/>
+    <blocker name='zpci'/>
+    <blocker name='ri'/>
+    <blocker name='iacc2'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa5'/>
+    <blocker name='msa4'/>
+    <blocker name='msa3'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z13s-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='dfppc'/>
+    <blocker name='iacc2'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z14-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='dfppc'/>
+    <blocker name='tsi'/>
+    <blocker name='sema'/>
+    <blocker name='minste2'/>
+    <blocker name='eec'/>
+    <blocker name='iacc2'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='opc'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z9EC.2' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990.4' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='zEC12-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='iacc2'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z9EC.2-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='zBC12' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='aen'/>
+    <blocker name='zpci'/>
+    <blocker name='ri'/>
+    <blocker name='iacc2'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa4'/>
+    <blocker name='msa3'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z196.2' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='iacc2'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa4'/>
+    <blocker name='msa3'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990.3' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990.2-base' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z900.3-base' usable='no'>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z890.3' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z10EC.2-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990.2' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z890.2' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='zBC12-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='iacc2'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z800-base' usable='no'>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='zEC12' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='aen'/>
+    <blocker name='zpci'/>
+    <blocker name='ri'/>
+    <blocker name='iacc2'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa4'/>
+    <blocker name='msa3'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z9BC.2-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z9BC' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='sthyi'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z10BC.2-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z990.4-base' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
   <cpu type='tcg' name='qemu' usable='yes'/>
-  <cpu type='tcg' name='z10BC-base' usable='no'/>
-  <cpu type='tcg' name='z9BC-base' usable='no'/>
-  <cpu type='tcg' name='z800' usable='no'/>
-  <cpu type='tcg' name='z890.2-base' usable='no'/>
-  <cpu type='tcg' name='z13.2' usable='no'/>
-  <cpu type='tcg' name='z114-base' usable='no'/>
-  <cpu type='tcg' name='z196-base' usable='no'/>
-  <cpu type='tcg' name='z13-base' usable='no'/>
-  <cpu type='tcg' name='z890' usable='no'/>
+  <cpu type='tcg' name='z10BC-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z9BC-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z800' usable='no'>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z890.2-base' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z13.2' usable='no'>
+    <blocker name='cmm'/>
+    <blocker name='dateh2'/>
+    <blocker name='esop'/>
+    <blocker name='sea_esop2'/>
+    <blocker name='vx'/>
+    <blocker name='dfppc'/>
+    <blocker name='edat2'/>
+    <blocker name='aefsi'/>
+    <blocker name='sthyi'/>
+    <blocker name='te'/>
+    <blocker name='aen'/>
+    <blocker name='zpci'/>
+    <blocker name='ri'/>
+    <blocker name='iacc2'/>
+    <blocker name='cte'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='ipter'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='edat'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa5'/>
+    <blocker name='msa4'/>
+    <blocker name='msa3'/>
+    <blocker name='msa2'/>
+    <blocker name='msa1'/>
+    <blocker name='msa'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z114-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='iacc2'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z196-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='iacc2'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z13-base' usable='no'>
+    <blocker name='dateh2'/>
+    <blocker name='dfppc'/>
+    <blocker name='iacc2'/>
+    <blocker name='dfpzc'/>
+    <blocker name='cmpsceh'/>
+    <blocker name='pfpo'/>
+    <blocker name='dfphp'/>
+    <blocker name='dfp'/>
+    <blocker name='sprogp'/>
+    <blocker name='fpe'/>
+    <blocker name='emon'/>
+    <blocker name='ectg'/>
+    <blocker name='parseh'/>
+    <blocker name='hfpue'/>
+    <blocker name='hfpm'/>
+    <blocker name='nonqks'/>
+    <blocker name='csske'/>
+    <blocker name='srs'/>
+    <blocker name='asnlxr'/>
+    <blocker name='msa'/>
+    <blocker name='gen13ptff'/>
+    <blocker name='tods'/>
+    <blocker name='type'/>
+  </cpu>
+  <cpu type='tcg' name='z890' usable='no'>
+    <blocker name='hfpm'/>
+    <blocker name='msa'/>
+    <blocker name='type'/>
+  </cpu>
   <machine name='s390-ccw-virtio-2.10' alias='s390-ccw-virtio' maxCpus='248'/>
   <machine name='s390-ccw-virtio-2.7' maxCpus='248'/>
   <machine name='s390-ccw-virtio-2.6' maxCpus='248'/>

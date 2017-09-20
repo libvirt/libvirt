@@ -3736,6 +3736,8 @@ qemuMonitorCPUDefInfoFree(qemuMonitorCPUDefInfoPtr cpu)
 {
     if (!cpu)
         return;
+
+    virStringListFree(cpu->blockers);
     VIR_FREE(cpu->name);
     VIR_FREE(cpu);
 }

@@ -5078,6 +5078,8 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
 
         if (virJSONValueObjectHasKey(child, "unavailable-features")) {
             virJSONValuePtr blockers;
+            size_t j;
+            int len;
 
             blockers = virJSONValueObjectGetArray(child,
                                                   "unavailable-features");
@@ -5088,10 +5090,30 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
                 goto cleanup;
             }
 
-            if (virJSONValueArraySize(blockers) > 0)
-                cpu->usable = VIR_TRISTATE_BOOL_NO;
-            else
+            len = virJSONValueArraySize(blockers);
+
+            if (len == 0) {
                 cpu->usable = VIR_TRISTATE_BOOL_YES;
+                continue;
+            }
+
+            cpu->usable = VIR_TRISTATE_BOOL_NO;
+            if (VIR_ALLOC_N(cpu->blockers, len + 1) < 0)
+                goto cleanup;
+
+            for (j = 0; j < len; j++) {
+                virJSONValuePtr blocker = virJSONValueArrayGet(blockers, j);
+
+                if (blocker->type != VIR_JSON_TYPE_STRING) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("unexpected value in unavailable-features "
+                                     "array"));
+                    goto cleanup;
+                }
+
+                if (VIR_STRDUP(cpu->blockers[j], virJSONValueGetString(blocker)) < 0)
+                    goto cleanup;
+            }
         }
     }
 

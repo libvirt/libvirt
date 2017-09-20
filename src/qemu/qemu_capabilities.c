@@ -3008,7 +3008,7 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
             usable = VIR_DOMCAPS_CPU_USABLE_NO;
 
         if (virDomainCapsCPUModelsAddSteal(models, &cpus[i]->name, usable,
-                                           NULL) < 0)
+                                           &cpus[i]->blockers) < 0)
             goto cleanup;
     }
 

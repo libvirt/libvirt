@@ -973,6 +973,7 @@ typedef qemuMonitorCPUDefInfo *qemuMonitorCPUDefInfoPtr;
 struct _qemuMonitorCPUDefInfo {
     virTristateBool usable;
     char *name;
+    char **blockers; /* NULL-terminated string list */
 };
 
 int qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
