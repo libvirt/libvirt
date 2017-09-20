@@ -28,11 +28,6 @@
 #include <sys/stat.h>
 
 #include "internal.h"
-#include "virutil.h"
-#include "viralloc.h"
-#include "virfile.h"
-#include "testutils.h"
-#include "virstring.h"
 
 #ifndef WIN32
 
@@ -50,11 +45,13 @@ static int envsort(const void *a, const void *b)
     char *bkey;
     int ret;
 
-    ignore_value(VIR_STRNDUP_QUIET(akey, astr, aeq - astr));
-    ignore_value(VIR_STRNDUP_QUIET(bkey, bstr, beq - bstr));
+    if (!(akey = strndup(astr, aeq - astr)))
+        abort();
+    if (!(bkey = strndup(bstr, beq - bstr)))
+        abort();
     ret = strcmp(akey, bkey);
-    VIR_FREE(akey);
-    VIR_FREE(bkey);
+    free(akey);
+    free(bkey);
     return ret;
 }
 
@@ -80,8 +77,8 @@ int main(int argc, char **argv) {
         origenv++;
     }
 
-    if (VIR_ALLOC_N_QUIET(newenv, n) < 0)
-        goto cleanup;
+    if (!(newenv = malloc(sizeof(*newenv) * n)))
+        abort();
 
     origenv = environ;
     n = i = 0;
@@ -120,7 +117,7 @@ int main(int argc, char **argv) {
         STREQ(cwd + strlen(cwd) - strlen("/commanddata"), "/commanddata"))
         strcpy(cwd, ".../commanddata");
     fprintf(log, "CWD:%s\n", cwd);
-    VIR_FREE(cwd);
+    free(cwd);
 
     fprintf(log, "UMASK:%04o\n", umask(0));
 
@@ -144,9 +141,9 @@ int main(int argc, char **argv) {
             goto cleanup;
         if (got == 0)
             break;
-        if (safewrite(STDOUT_FILENO, buf, got) != got)
+        if (write(STDOUT_FILENO, buf, got) != got)
             goto cleanup;
-        if (safewrite(STDERR_FILENO, buf, got) != got)
+        if (write(STDERR_FILENO, buf, got) != got)
             goto cleanup;
     }
 
@@ -158,8 +155,8 @@ int main(int argc, char **argv) {
     ret = EXIT_SUCCESS;
 
  cleanup:
-    VIR_FORCE_FCLOSE(log);
-    VIR_FREE(newenv);
+    fclose(log);
+    free(newenv);
     return ret;
 }
 
