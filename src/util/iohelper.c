@@ -109,7 +109,9 @@ runIO(const char *path, int fd, int oflags)
     while (1) {
         ssize_t got;
 
-        if ((got = saferead(fdin, buf, buflen)) < 0) {
+        if ((got = read(fdin, buf, buflen)) < 0) {
+            if (errno == EINTR)
+                continue;
             virReportSystemError(errno, _("Unable to read %s"), fdinname);
             goto cleanup;
         }
