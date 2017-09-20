@@ -55,6 +55,7 @@
 #include "virrandom.h"
 #include "virstring.h"
 #include "virgettext.h"
+#include "virhostdev.h"
 
 #include "storage/storage_source.h"
 
@@ -1067,6 +1068,9 @@ get_files(vahControl * ctl)
                     virUSBDeviceNew(usbsrc->bus, usbsrc->device, NULL);
 
                 if (usb == NULL)
+                    continue;
+
+                if (virHostdevFindUSBDevice(dev, true, &usb) < 0)
                     continue;
 
                 rc = virUSBDeviceFileIterate(usb, file_iterate_hostdev_cb, &buf);
