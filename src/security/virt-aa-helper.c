@@ -1149,11 +1149,11 @@ get_files(vahControl * ctl)
         }
     }
     if (needsvhost)
-        virBufferAddLit(&buf, "  /dev/vhost-net rw,\n");
+        virBufferAddLit(&buf, "  \"/dev/vhost-net\" rw,\n");
 
     if (needsVfio) {
-        virBufferAddLit(&buf, "  /dev/vfio/vfio rw,\n");
-        virBufferAddLit(&buf, "  /dev/vfio/[0-9]* rw,\n");
+        virBufferAddLit(&buf, "  \"/dev/vfio/vfio\" rw,\n");
+        virBufferAddLit(&buf, "  \"/dev/vfio/[0-9]*\" rw,\n");
     }
 
     if (ctl->newfile)
