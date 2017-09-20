@@ -1335,8 +1335,7 @@ virQEMUCapsComputeCmdFlags(const char *help,
     if ((netdev = strstr(help, "-netdev"))) {
         /* Disable -netdev on 0.12 since although it exists,
          * the corresponding netdev_add/remove monitor commands
-         * do not, and we need them to be able to do hotplug.
-         * But see below about RHEL build. */
+         * do not, and we need them to be able to do hotplug. */
         if (version >= 13000) {
             if (strstr(netdev, "bridge"))
                 virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV_BRIDGE);
@@ -1369,20 +1368,10 @@ virQEMUCapsComputeCmdFlags(const char *help,
     /* While JSON mode was available in 0.12.0, it was too
      * incomplete to contemplate using. The 0.13.0 release
      * is good enough to use, even though it lacks one or
-     * two features. This is also true of versions of qemu
-     * built for RHEL, labeled 0.12.1, but with extra text
-     * in the help output that mentions that features were
-     * backported for libvirt. The benefits of JSON mode now
-     * outweigh the downside.
-     */
+     * two features. */
 #if WITH_YAJL
-    if (version >= 13000) {
+    if (version >= 13000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
-    } else if (version >= 12000 &&
-               strstr(help, "libvirt")) {
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV);
-    }
 #else
     /* Starting with qemu 0.15 and newer, upstream qemu no longer
      * promises to keep the human interface stable, but requests that
@@ -1392,8 +1381,7 @@ virQEMUCapsComputeCmdFlags(const char *help,
      * telling them to recompile (the spec file includes the
      * dependency, so distros won't hit this).  This check is
      * also in m4/virt-yajl.m4 (see $with_yajl).  */
-    if (version >= 15000 ||
-        (version >= 12000 && strstr(help, "libvirt"))) {
+    if (version >= 15000) {
         if (check_yajl) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu binary requires libvirt to be "
