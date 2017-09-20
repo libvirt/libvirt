@@ -449,7 +449,7 @@ valid_name(const char *name)
 {
     /* just try to filter out any dangerous characters in the name that can be
      * used to subvert the profile */
-    const char *bad = " /[]*";
+    const char *bad = "/[]*";
 
     if (strlen(name) == 0)
         return -1;
