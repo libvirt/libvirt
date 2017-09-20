@@ -46,6 +46,9 @@ char **virStringListAdd(const char **strings,
 void virStringListRemove(char ***strings,
                          const char *item);
 
+int virStringListCopy(char ***dst,
+                      const char **src);
+
 void virStringListFree(char **strings);
 void virStringListFreeCount(char **strings,
                             size_t count);
