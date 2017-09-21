@@ -643,6 +643,7 @@ aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
         hints.ai_family = af;
 
         if (getaddrinfo(ipAddr, NULL, &hints, &res0)) {
+            VIR_FREE(ipAaddr);
             addrList++;
             continue;
         }
@@ -654,6 +655,7 @@ aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
         while ((*aip)->ai_next)
            *aip = (*aip)->ai_next;
 
+        VIR_FREE(ipAaddr);
         addrList++;
     }
 }
