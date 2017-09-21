@@ -3729,6 +3729,10 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
     size_t i;
     int n;
     int ret = -1;
+    xmlNodePtr node;
+    xmlNodePtr *blockerNodes = NULL;
+    char **blockers = NULL;
+    int nblockers;
 
     if (type == VIR_DOMAIN_VIRT_KVM)
         n = virXPathNodeSet("./cpu[@type='kvm']", ctxt, &nodes);
@@ -3771,7 +3775,34 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
             goto cleanup;
         }
 
-        if (virDomainCapsCPUModelsAddSteal(cpus, &str, usable, NULL) < 0)
+        node = ctxt->node;
+        ctxt->node = nodes[i];
+        nblockers = virXPathNodeSet("./blocker", ctxt, &blockerNodes);
+        ctxt->node = node;
+
+        if (nblockers < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to parse CPU blockers in QEMU capabilities"));
+            goto cleanup;
+        }
+
+        if (nblockers > 0) {
+            size_t j;
+
+            if (VIR_ALLOC_N(blockers, nblockers + 1) < 0)
+                goto cleanup;
+
+            for (j = 0; j < nblockers; j++) {
+                if (!(blockers[j] = virXMLPropString(blockerNodes[j], "name"))) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("missing blocker name in QEMU "
+                                     "capabilities cache"));
+                    goto cleanup;
+                }
+            }
+        }
+
+        if (virDomainCapsCPUModelsAddSteal(cpus, &str, usable, &blockers) < 0)
             goto cleanup;
     }
 
@@ -3780,6 +3811,8 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
  cleanup:
     VIR_FREE(nodes);
     VIR_FREE(str);
+    VIR_FREE(blockerNodes);
+    virStringListFree(blockers);
     return ret;
 }
 
@@ -4137,7 +4170,21 @@ virQEMUCapsFormatCPUModels(virQEMUCapsPtr qemuCaps,
             virBufferAsprintf(buf, " usable='%s'",
                               virDomainCapsCPUUsableTypeToString(cpu->usable));
         }
-        virBufferAddLit(buf, "/>\n");
+
+        if (cpu->blockers) {
+            size_t j;
+
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+
+            for (j = 0; cpu->blockers[j]; j++)
+                virBufferAsprintf(buf, "<blocker name='%s'/>\n", cpu->blockers[j]);
+
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</cpu>\n");
+        } else {
+            virBufferAddLit(buf, "/>\n");
+        }
     }
 }
 
