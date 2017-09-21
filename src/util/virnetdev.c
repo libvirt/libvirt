@@ -3183,7 +3183,7 @@ virNetDevGetFamilyId(const char *family_name)
     if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0, NETLINK_GENERIC, 0) < 0)
         goto cleanup;
 
-    if (nlmsg_parse(resp, sizeof(struct nlmsghdr), tb, CTRL_CMD_MAX, NULL) < 0) {
+    if (nlmsg_parse(resp, sizeof(struct nlmsghdr), tb, CTRL_ATTR_MAX, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("malformed netlink response message"));
         goto cleanup;
