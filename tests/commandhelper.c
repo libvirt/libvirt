@@ -28,6 +28,8 @@
 #include <sys/stat.h>
 
 #include "internal.h"
+#define NO_LIBVIRT
+#include "testutils.h"
 
 #ifndef WIN32
 
