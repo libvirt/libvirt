@@ -3900,6 +3900,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
             if (ip->prefix)
                 virBufferAsprintf(&buf, "/%u", ip->prefix);
             virBufferAddChar(&buf, ',');
+            VIR_FREE(addr);
         }
         break;
 
