@@ -267,6 +267,14 @@ virHostMemGetStats(int cellNum ATTRIBUTE_UNUSED,
         FILE *meminfo;
         int max_node;
 
+        /*
+         * Even if built without numactl, libvirt claims
+         * to have a one-cells NUMA topology. In such a
+         * case return the statistics for the entire host.
+         */
+        if (!virNumaIsAvailable() && cellNum == 0)
+            cellNum = VIR_NODE_MEMORY_STATS_ALL_CELLS;
+
         if (cellNum == VIR_NODE_MEMORY_STATS_ALL_CELLS) {
             if (VIR_STRDUP(meminfo_path, MEMINFO_PATH) < 0)
                 return -1;
