@@ -4959,21 +4959,13 @@ static char *
 qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
 {
     char *source = NULL;
-    virStorageSource src;
     qemuDomainHostdevPrivatePtr hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(dev);
-
-    memset(&src, 0, sizeof(src));
 
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
 
-    src.protocol = VIR_STORAGE_NET_PROTOCOL_ISCSI;
-    src.path = iscsisrc->path;
-    src.hosts = iscsisrc->hosts;
-    src.nhosts = iscsisrc->nhosts;
-
     /* Rather than pull what we think we want - use the network disk code */
-    source = qemuBuildNetworkDriveStr(&src, hostdevPriv->secinfo);
+    source = qemuBuildNetworkDriveStr(iscsisrc->src, hostdevPriv->secinfo);
 
     return source;
 }

@@ -357,10 +357,7 @@ struct _virDomainHostdevSubsysSCSIHost {
 typedef struct _virDomainHostdevSubsysSCSIiSCSI virDomainHostdevSubsysSCSIiSCSI;
 typedef virDomainHostdevSubsysSCSIiSCSI *virDomainHostdevSubsysSCSIiSCSIPtr;
 struct _virDomainHostdevSubsysSCSIiSCSI {
-    char *path;
-    size_t nhosts;
-    virStorageNetHostDefPtr hosts;
-    virStorageAuthDefPtr auth;
+    virStorageSourcePtr src;
 };
 
 typedef struct _virDomainHostdevSubsysSCSI virDomainHostdevSubsysSCSI;

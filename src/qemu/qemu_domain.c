@@ -1496,9 +1496,10 @@ qemuDomainSecretHostdevPrepare(virConnectPtr conn,
     if (virHostdevIsSCSIDevice(hostdev)) {
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
         virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+        virStorageSourcePtr src = iscsisrc->src;
 
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
-            iscsisrc->auth) {
+            src->auth) {
 
             qemuDomainHostdevPrivatePtr hostdevPriv =
                 QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
@@ -1506,8 +1507,8 @@ qemuDomainSecretHostdevPrepare(virConnectPtr conn,
             if (!(hostdevPriv->secinfo =
                   qemuDomainSecretInfoNew(conn, priv, hostdev->info->alias,
                                           VIR_SECRET_USAGE_TYPE_ISCSI,
-                                          iscsisrc->auth->username,
-                                          &iscsisrc->auth->seclookupdef,
+                                          src->auth->username,
+                                          &src->auth->seclookupdef,
                                           false)))
                 return -1;
         }
@@ -8259,7 +8260,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
                 /* Follow qemuSetupDiskCgroup() and qemuSetImageCgroupInternal()
                  * which does nothing for non local storage
                  */
-                VIR_DEBUG("Not updating /dev for hostdev iSCSI path '%s'", iscsisrc->path);
+                VIR_DEBUG("Not updating /dev for hostdev iSCSI path '%s'", iscsisrc->src->path);
             } else {
                 virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
                 scsi = virSCSIDeviceNew(NULL,

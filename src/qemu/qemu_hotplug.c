@@ -4926,7 +4926,7 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
                 virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
                 virReportError(VIR_ERR_OPERATION_FAILED,
                                _("host scsi iSCSI path %s not found"),
-                               iscsisrc->path);
+                               iscsisrc->src->path);
             } else {
                  virDomainHostdevSubsysSCSIHostPtr scsihostsrc =
                      &scsisrc->u.host;
