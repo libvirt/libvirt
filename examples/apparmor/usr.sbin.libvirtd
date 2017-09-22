@@ -37,6 +37,10 @@
   network packet dgram,
   network packet raw,
 
+  ptrace (trace) peer=unconfined,
+  ptrace (trace) peer=/usr/sbin/libvirtd,
+  ptrace (trace) peer=libvirt-*,
+
   # Very lenient profile for libvirtd since we want to first focus on confining
   # the guests. Guests will have a very restricted profile.
   / r,
