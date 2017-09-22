@@ -1168,18 +1168,8 @@ virQEMUCapsProbeHostCPUForEmulator(virArch hostArch,
                                    virQEMUCapsPtr qemuCaps,
                                    virDomainVirtType type)
 {
-    size_t nmodels;
-    char **models;
-    virCPUDefPtr cpu;
-
-    if (virQEMUCapsGetCPUDefinitions(qemuCaps, type, &models, &nmodels) < 0)
-        return NULL;
-
-    cpu = virCPUGetHost(hostArch, VIR_CPU_TYPE_GUEST, NULL,
-                        (const char **) models, nmodels);
-
-    virStringListFreeCount(models, nmodels);
-    return cpu;
+    return virCPUGetHost(hostArch, VIR_CPU_TYPE_GUEST, NULL,
+                         virQEMUCapsGetCPUDefinitions(qemuCaps, type));
 }
 
 
@@ -2534,45 +2524,14 @@ virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
 }
 
 
-int
+virDomainCapsCPUModelsPtr
 virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
-                             virDomainVirtType type,
-                             char ***names,
-                             size_t *count)
+                             virDomainVirtType type)
 {
-    size_t i;
-    char **models = NULL;
-    virDomainCapsCPUModelsPtr cpus;
-
-    *count = 0;
-    if (names)
-        *names = NULL;
-
     if (type == VIR_DOMAIN_VIRT_KVM)
-        cpus = qemuCaps->kvmCPUModels;
+        return qemuCaps->kvmCPUModels;
     else
-        cpus = qemuCaps->tcgCPUModels;
-
-    if (!cpus)
-        return 0;
-
-    if (names && VIR_ALLOC_N(models, cpus->nmodels) < 0)
-        return -1;
-
-    for (i = 0; i < cpus->nmodels; i++) {
-        virDomainCapsCPUModelPtr cpu = cpus->models + i;
-        if (models && VIR_STRDUP(models[i], cpu->name) < 0)
-            goto error;
-    }
-
-    if (names)
-        *names = models;
-    *count = cpus->nmodels;
-    return 0;
-
- error:
-    virStringListFreeCount(models, i);
-    return -1;
+        return qemuCaps->tcgCPUModels;
 }
 
 
@@ -3394,8 +3353,6 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
     virCPUDataPtr data = NULL;
     unsigned long long sigFamily = 0;
     unsigned long long sigModel = 0;
-    size_t nmodels = 0;
-    char **models = NULL;
     int ret = -1;
     size_t i;
 
@@ -3440,15 +3397,15 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
     if (virCPUx86DataSetSignature(data, sigFamily, sigModel) < 0)
         goto cleanup;
 
-    if (virQEMUCapsGetCPUDefinitions(qemuCaps, type, &models, &nmodels) < 0 ||
-        cpuDecode(cpu, data, (const char **) models, nmodels, NULL) < 0)
+    if (cpuDecode(cpu, data,
+                  virQEMUCapsGetCPUDefinitions(qemuCaps, type),
+                  NULL) < 0)
         goto cleanup;
 
     ret = 0;
 
  cleanup:
     virCPUDataFree(data);
-    virStringListFreeCount(models, nmodels);
     return ret;
 }
 
@@ -3534,7 +3491,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
     } else if (type == VIR_DOMAIN_VIRT_KVM &&
                virCPUGetHostIsSupported(qemuCaps->arch)) {
         if (!(fullCPU = virCPUGetHost(qemuCaps->arch, VIR_CPU_TYPE_GUEST,
-                                      NULL, NULL, 0)))
+                                      NULL, NULL)))
             goto error;
 
         for (i = 0; i < cpu->nfeatures; i++) {

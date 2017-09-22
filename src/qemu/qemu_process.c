@@ -5166,8 +5166,6 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
                           unsigned int flags)
 {
     int ret = -1;
-    size_t nmodels = 0;
-    char **models = NULL;
 
     if (!def->cpu)
         return 0;
@@ -5219,17 +5217,14 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
                                              VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE)) < 0)
         goto cleanup;
 
-    if (virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType,
-                                     &models, &nmodels) < 0 ||
-        virCPUTranslate(def->os.arch, def->cpu,
-                        (const char **) models, nmodels) < 0)
+    if (virCPUTranslate(def->os.arch, def->cpu,
+                        virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType)) < 0)
         goto cleanup;
 
     def->cpu->fallback = VIR_CPU_FALLBACK_FORBID;
     ret = 0;
 
  cleanup:
-    virStringListFreeCount(models, nmodels);
     return ret;
 }
 

@@ -192,7 +192,6 @@ virCPUCompare(virArch arch,
  * @cpu: CPU definition stub to be filled in
  * @data: internal CPU data to be decoded into @cpu definition
  * @models: list of CPU models that can be considered when decoding @data
- * @nmodels: number of CPU models in @models
  * @preferred: CPU models that should be used if possible
  *
  * Decodes internal CPU data into a CPU definition consisting of a CPU model
@@ -214,24 +213,17 @@ virCPUCompare(virArch arch,
 int
 cpuDecode(virCPUDefPtr cpu,
           const virCPUData *data,
-          const char **models,
-          unsigned int nmodels,
+          virDomainCapsCPUModelsPtr models,
           const char *preferred)
 {
     struct cpuArchDriver *driver;
 
-    VIR_DEBUG("cpu=%p, data=%p, nmodels=%u, preferred=%s",
-              cpu, data, nmodels, NULLSTR(preferred));
+    VIR_DEBUG("cpu=%p, data=%p, models=%p, preferred=%s",
+              cpu, data, models, NULLSTR(preferred));
     if (models) {
         size_t i;
-        for (i = 0; i < nmodels; i++)
-            VIR_DEBUG("models[%zu]=%s", i, NULLSTR(models[i]));
-    }
-
-    if (models == NULL && nmodels != 0) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("nonzero nmodels doesn't match with NULL models"));
-        return -1;
+        for (i = 0; i < models->nmodels; i++)
+            VIR_DEBUG("models[%zu]=%s", i, models->models[i].name);
     }
 
     if (cpu->type > VIR_CPU_TYPE_GUEST ||
@@ -251,7 +243,7 @@ cpuDecode(virCPUDefPtr cpu,
         return -1;
     }
 
-    return driver->decode(cpu, data, models, nmodels, preferred);
+    return driver->decode(cpu, data, models, preferred);
 }
 
 
@@ -384,7 +376,6 @@ virCPUGetHostIsSupported(virArch arch)
  * @type: requested type of the CPU
  * @nodeInfo: simplified CPU topology (optional)
  * @models: list of CPU models that can be considered for host CPU
- * @nmodels: number of CPU models in @models
  *
  * Create CPU definition describing the host's CPU.
  *
@@ -412,15 +403,14 @@ virCPUDefPtr
 virCPUGetHost(virArch arch,
               virCPUType type,
               virNodeInfoPtr nodeInfo,
-              const char **models,
-              unsigned int nmodels)
+              virDomainCapsCPUModelsPtr models)
 {
     struct cpuArchDriver *driver;
     virCPUDefPtr cpu = NULL;
 
-    VIR_DEBUG("arch=%s, type=%s, nodeInfo=%p, models=%p, nmodels=%u",
+    VIR_DEBUG("arch=%s, type=%s, nodeInfo=%p, models=%p",
               virArchToString(arch), virCPUTypeToString(type), nodeInfo,
-              models, nmodels);
+              models);
 
     if (!(driver = cpuGetSubDriver(arch)))
         return NULL;
@@ -462,7 +452,7 @@ virCPUGetHost(virArch arch,
      * filled in.
      */
     if (driver->getHost) {
-        if (driver->getHost(cpu, models, nmodels) < 0 &&
+        if (driver->getHost(cpu, models) < 0 &&
             !nodeInfo)
             goto error;
     } else if (nodeInfo) {
@@ -491,7 +481,7 @@ virCPUProbeHost(virArch arch)
     if (virCapabilitiesGetNodeInfo(&nodeinfo))
         return NULL;
 
-    return virCPUGetHost(arch, VIR_CPU_TYPE_HOST, &nodeinfo, NULL, 0);
+    return virCPUGetHost(arch, VIR_CPU_TYPE_HOST, &nodeinfo, NULL);
 }
 
 
@@ -501,11 +491,10 @@ virCPUProbeHost(virArch arch)
  * @cpus: list of host CPU definitions
  * @ncpus: number of CPUs in @cpus
  * @models: list of CPU models that can be considered for the baseline CPU
- * @nmodels: number of CPU models in @models
  * @migratable: requests non-migratable features to be removed from the result
  *
  * Computes the most feature-rich CPU which is compatible with all given
- * host CPUs. If @models array is NULL, all models supported by libvirt will
+ * host CPUs. If @models is NULL, all models supported by libvirt will
  * be considered when computing the baseline CPU model, otherwise the baseline
  * CPU model will be one of the provided CPU @models.
  *
@@ -514,21 +503,20 @@ virCPUProbeHost(virArch arch)
 virCPUDefPtr
 cpuBaseline(virCPUDefPtr *cpus,
             unsigned int ncpus,
-            const char **models,
-            unsigned int nmodels,
+            virDomainCapsCPUModelsPtr models,
             bool migratable)
 {
     struct cpuArchDriver *driver;
     size_t i;
 
-    VIR_DEBUG("ncpus=%u, nmodels=%u", ncpus, nmodels);
+    VIR_DEBUG("ncpus=%u, models=%p, migratable=%d", ncpus, models, migratable);
     if (cpus) {
         for (i = 0; i < ncpus; i++)
             VIR_DEBUG("cpus[%zu]=%p", i, cpus[i]);
     }
     if (models) {
-        for (i = 0; i < nmodels; i++)
-            VIR_DEBUG("models[%zu]=%s", i, NULLSTR(models[i]));
+        for (i = 0; i < models->nmodels; i++)
+            VIR_DEBUG("models[%zu]=%s", i, models->models[i].name);
     }
 
     if (cpus == NULL && ncpus != 0) {
@@ -555,12 +543,6 @@ cpuBaseline(virCPUDefPtr *cpus,
         }
     }
 
-    if (models == NULL && nmodels != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("nonzero nmodels doesn't match with NULL models"));
-        return NULL;
-    }
-
     if ((driver = cpuGetSubDriver(cpus[0]->arch)) == NULL)
         return NULL;
 
@@ -571,7 +553,7 @@ cpuBaseline(virCPUDefPtr *cpus,
         return NULL;
     }
 
-    return driver->baseline(cpus, ncpus, models, nmodels, migratable);
+    return driver->baseline(cpus, ncpus, models, migratable);
 }
 
 
@@ -844,25 +826,23 @@ virCPUDataParse(const char *xmlStr)
  *
  * @model: CPU model to be checked
  * @models: list of supported CPU models
- * @nmodels: number of models in @models
  *
  * Checks whether @model can be found in the list of supported @models.
- * If @models is empty, all models are supported.
+ * If @models is NULL, all models are supported.
  *
  * Returns true if @model is supported, false otherwise.
  */
 bool
 virCPUModelIsAllowed(const char *model,
-                     const char **models,
-                     unsigned int nmodels)
+                     virDomainCapsCPUModelsPtr models)
 {
     size_t i;
 
-    if (!models || !nmodels)
+    if (!models)
         return true;
 
-    for (i = 0; i < nmodels; i++) {
-        if (models[i] && STREQ(models[i], model))
+    for (i = 0; i < models->nmodels; i++) {
+        if (STREQ(models->models[i].name, model))
             return true;
     }
     return false;
@@ -908,8 +888,7 @@ virCPUGetModels(virArch arch, char ***models)
  *
  * @arch: CPU architecture
  * @cpu: CPU definition to be translated
- * @models: NULL-terminated list of allowed CPU models (NULL if all are allowed)
- * @nmodels: number of CPU models in @models
+ * @models: list of allowed CPU models (NULL if all are allowed)
  *
  * Translates @cpu model (if allowed by @cpu->fallback) to a closest CPU model
  * from @models list.
@@ -922,13 +901,12 @@ virCPUGetModels(virArch arch, char ***models)
 int
 virCPUTranslate(virArch arch,
                 virCPUDefPtr cpu,
-                const char **models,
-                unsigned int nmodels)
+                virDomainCapsCPUModelsPtr models)
 {
     struct cpuArchDriver *driver;
 
-    VIR_DEBUG("arch=%s, cpu=%p, model=%s, models=%p, nmodels=%u",
-              virArchToString(arch), cpu, NULLSTR(cpu->model), models, nmodels);
+    VIR_DEBUG("arch=%s, cpu=%p, model=%s, models=%p",
+              virArchToString(arch), cpu, NULLSTR(cpu->model), models);
 
     if (!(driver = cpuGetSubDriver(arch)))
         return -1;
@@ -937,7 +915,7 @@ virCPUTranslate(virArch arch,
         cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
         return 0;
 
-    if (virCPUModelIsAllowed(cpu->model, models, nmodels))
+    if (virCPUModelIsAllowed(cpu->model, models))
         return 0;
 
     if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
@@ -954,7 +932,7 @@ virCPUTranslate(virArch arch,
         return -1;
     }
 
-    if (driver->translate(cpu, models, nmodels) < 0)
+    if (driver->translate(cpu, models) < 0)
         return -1;
 
     VIR_DEBUG("model=%s", NULLSTR(cpu->model));

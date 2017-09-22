@@ -75,8 +75,7 @@ virCPUarmUpdate(virCPUDefPtr guest,
 static virCPUDefPtr
 armBaseline(virCPUDefPtr *cpus,
             unsigned int ncpus ATTRIBUTE_UNUSED,
-            const char **models ATTRIBUTE_UNUSED,
-            unsigned int nmodels ATTRIBUTE_UNUSED,
+            virDomainCapsCPUModelsPtr models ATTRIBUTE_UNUSED,
             bool migratable ATTRIBUTE_UNUSED)
 {
     virCPUDefPtr cpu = NULL;

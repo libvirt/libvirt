@@ -669,8 +669,7 @@ virCPUppc64Compare(virCPUDefPtr host,
 static int
 ppc64DriverDecode(virCPUDefPtr cpu,
                   const virCPUData *data,
-                  const char **models,
-                  unsigned int nmodels,
+                  virDomainCapsCPUModelsPtr models,
                   const char *preferred ATTRIBUTE_UNUSED)
 {
     int ret = -1;
@@ -687,7 +686,7 @@ ppc64DriverDecode(virCPUDefPtr cpu,
         goto cleanup;
     }
 
-    if (!virCPUModelIsAllowed(model->name, models, nmodels)) {
+    if (!virCPUModelIsAllowed(model->name, models)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("CPU model %s is not supported by hypervisor"),
                        model->name);
@@ -720,8 +719,7 @@ virCPUppc64DataFree(virCPUDataPtr data)
 
 static int
 virCPUppc64GetHost(virCPUDefPtr cpu,
-                   const char **models,
-                   unsigned int nmodels)
+                   virDomainCapsCPUModelsPtr models)
 {
     virCPUDataPtr cpuData = NULL;
     virCPUppc64Data *data;
@@ -743,7 +741,7 @@ virCPUppc64GetHost(virCPUDefPtr cpu,
 #endif
     data->pvr[0].mask = 0xfffffffful;
 
-    ret = ppc64DriverDecode(cpu, cpuData, models, nmodels, NULL);
+    ret = ppc64DriverDecode(cpu, cpuData, models, NULL);
 
  cleanup:
     virCPUppc64DataFree(cpuData);
@@ -772,8 +770,7 @@ virCPUppc64Update(virCPUDefPtr guest,
 static virCPUDefPtr
 ppc64DriverBaseline(virCPUDefPtr *cpus,
                     unsigned int ncpus,
-                    const char **models ATTRIBUTE_UNUSED,
-                    unsigned int nmodels ATTRIBUTE_UNUSED,
+                    virDomainCapsCPUModelsPtr models ATTRIBUTE_UNUSED,
                     bool migratable ATTRIBUTE_UNUSED)
 {
     struct ppc64_map *map;

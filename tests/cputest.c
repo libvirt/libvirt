@@ -61,9 +61,8 @@ struct data {
     virArch arch;
     const char *host;
     const char *name;
-    const char **models;
+    virDomainCapsCPUModelsPtr models;
     const char *modelsName;
-    unsigned int nmodels;
     unsigned int flags;
     int result;
 };
@@ -264,13 +263,13 @@ cpuTestGuestCPU(const void *arg)
     }
 
     if (virCPUUpdate(host->arch, cpu, host) < 0 ||
-        virCPUTranslate(host->arch, cpu, data->models, data->nmodels) < 0) {
+        virCPUTranslate(host->arch, cpu, data->models) < 0) {
         ret = -1;
         goto cleanup;
     }
 
     virBufferAsprintf(&buf, "%s+%s", data->host, data->name);
-    if (data->nmodels)
+    if (data->modelsName)
         virBufferAsprintf(&buf, ",%s", data->modelsName);
     virBufferAddLit(&buf, "-result");
 
@@ -322,7 +321,7 @@ cpuTestBaseline(const void *arg)
     if (!(cpus = cpuTestLoadMultiXML(data->arch, data->name, &ncpus)))
         goto cleanup;
 
-    baseline = cpuBaseline(cpus, ncpus, NULL, 0,
+    baseline = cpuBaseline(cpus, ncpus, NULL,
                            !!(data->flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE));
 
     if (baseline &&
@@ -492,7 +491,7 @@ cpuTestCPUID(bool guest, const void *arg)
         cpu->type = VIR_CPU_TYPE_HOST;
     }
 
-    if (cpuDecode(cpu, hostData, NULL, 0, NULL) < 0)
+    if (cpuDecode(cpu, hostData, NULL, NULL) < 0)
         goto cleanup;
 
     if (virAsprintf(&result, "cpuid-%s-%s",
@@ -729,15 +728,43 @@ cpuTestJSONCPUID(const void *arg)
 #endif
 
 
-static const char *model486[]   = { "486" };
-static const char *nomodel[]    = { "nomodel" };
-static const char *models[]     = { "qemu64", "core2duo", "Nehalem" };
-static const char *haswell[]    = { "SandyBridge", "Haswell" };
-static const char *ppc_models[] = { "POWER6", "POWER7", "POWER8" };
+static const char *model486_list[]   = { "486", NULL };
+static const char *nomodel_list[]    = { "nomodel", NULL };
+static const char *models_list[]     = { "qemu64", "core2duo", "Nehalem", NULL };
+static const char *haswell_list[]    = { "SandyBridge", "Haswell", NULL };
+static const char *ppc_models_list[] = { "POWER6", "POWER7", "POWER8", NULL };
+
+static virDomainCapsCPUModelsPtr
+cpuTestInitModels(const char **list)
+{
+    virDomainCapsCPUModelsPtr cpus;
+    const char **model;
+
+    if (!(cpus = virDomainCapsCPUModelsNew(0)))
+        return NULL;
+
+    for (model = list; *model; model++) {
+        if (virDomainCapsCPUModelsAdd(cpus, *model, -1,
+                                      VIR_DOMCAPS_CPU_USABLE_UNKNOWN, NULL) < 0)
+            goto error;
+    }
+
+    return cpus;
+
+ error:
+    virObjectUnref(cpus);
+    return NULL;
+}
+
 
 static int
 mymain(void)
 {
+    virDomainCapsCPUModelsPtr model486 = NULL;
+    virDomainCapsCPUModelsPtr nomodel = NULL;
+    virDomainCapsCPUModelsPtr models = NULL;
+    virDomainCapsCPUModelsPtr haswell = NULL;
+    virDomainCapsCPUModelsPtr ppc_models = NULL;
     int ret = 0;
 
 #if WITH_QEMU && WITH_YAJL
@@ -747,13 +774,22 @@ mymain(void)
     virEventRegisterDefaultImpl();
 #endif
 
+    if (!(model486 = cpuTestInitModels(model486_list)) ||
+        !(nomodel = cpuTestInitModels(nomodel_list)) ||
+        !(models = cpuTestInitModels(models_list)) ||
+        !(haswell = cpuTestInitModels(haswell_list)) ||
+        !(ppc_models = cpuTestInitModels(ppc_models_list))) {
+        ret = -1;
+        goto cleanup;
+    }
+
 #define DO_TEST(arch, api, name, host, cpu,                             \
-                models, nmodels, flags, result)                         \
+                models, flags, result)                                  \
     do {                                                                \
         struct data data = {                                            \
             arch, host, cpu, models,                                    \
             models == NULL ? NULL : #models,                            \
-            nmodels, flags, result                                      \
+            flags, result                                               \
         };                                                              \
         char *testLabel;                                                \
         char *tmp;                                                      \
@@ -784,12 +820,12 @@ mymain(void)
 #define DO_TEST_COMPARE(arch, host, cpu, result)                        \
     DO_TEST(arch, cpuTestCompare,                                       \
             host "/" cpu " (" #result ")",                              \
-            host, cpu, NULL, 0, 0, result)
+            host, cpu, NULL, 0, result)
 
 #define DO_TEST_UPDATE_ONLY(arch, host, cpu)                            \
     DO_TEST(arch, cpuTestUpdate,                                        \
             cpu " on " host,                                            \
-            host, cpu, NULL, 0, 0, 0)
+            host, cpu, NULL, 0, 0)
 
 #define DO_TEST_UPDATE(arch, host, cpu, result)                         \
     do {                                                                \
@@ -809,7 +845,7 @@ mymain(void)
             ret = -1;                                                   \
         } else {                                                        \
             DO_TEST(arch, cpuTestBaseline, label, NULL,                 \
-                    "baseline-" name, NULL, 0, flags, result);          \
+                    "baseline-" name, NULL, flags, result);             \
         }                                                               \
         VIR_FREE(label);                                                \
     } while (0)
@@ -817,21 +853,19 @@ mymain(void)
 #define DO_TEST_HASFEATURE(arch, host, feature, result)                 \
     DO_TEST(arch, cpuTestHasFeature,                                    \
             host "/" feature " (" #result ")",                          \
-            host, feature, NULL, 0, 0, result)
+            host, feature, NULL, 0, result)
 
 #define DO_TEST_GUESTCPU(arch, host, cpu, models, result)               \
     DO_TEST(arch, cpuTestGuestCPU,                                      \
             host "/" cpu " (" #models ")",                              \
-            host, cpu, models,                                          \
-            models == NULL ? 0 : sizeof(models) / sizeof(char *),       \
-            0, result)
+            host, cpu, models, 0, result)
 
 #if WITH_QEMU && WITH_YAJL
 # define DO_TEST_CPUID_JSON(arch, host, json)                           \
     do {                                                                \
         if (json) {                                                     \
             DO_TEST(arch, cpuTestJSONCPUID, host, host,                 \
-                    NULL, NULL, 0, 0, 0);                               \
+                    NULL, NULL, 0, 0);                                  \
         }                                                               \
     } while (0)
 #else
@@ -841,13 +875,13 @@ mymain(void)
 #define DO_TEST_CPUID(arch, host, json)                                 \
     do {                                                                \
         DO_TEST(arch, cpuTestHostCPUID, host, host,                     \
-                NULL, NULL, 0, 0, 0);                                   \
+                NULL, NULL, 0, 0);                                      \
         DO_TEST(arch, cpuTestGuestCPUID, host, host,                    \
-                NULL, NULL, 0, 0, 0);                                   \
+                NULL, NULL, 0, 0);                                      \
         DO_TEST_CPUID_JSON(arch, host, json);                           \
         if (json) {                                                     \
             DO_TEST(arch, cpuTestUpdateLive, host, host,                \
-                    NULL, NULL, 0, 0, 0);                               \
+                    NULL, NULL, 0, 0);                                  \
         }                                                               \
     } while (0)
 
@@ -1012,9 +1046,16 @@ mymain(void)
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-W3520", true);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-X5460", false);
 
+ cleanup:
 #if WITH_QEMU && WITH_YAJL
     qemuTestDriverFree(&driver);
 #endif
+
+    virObjectUnref(model486);
+    virObjectUnref(nomodel);
+    virObjectUnref(models);
+    virObjectUnref(haswell);
+    virObjectUnref(ppc_models);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

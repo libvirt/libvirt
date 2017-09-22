@@ -1820,8 +1820,7 @@ x86DataFilterTSX(virCPUx86Data *data,
 static int
 x86Decode(virCPUDefPtr cpu,
           const virCPUx86Data *cpuData,
-          const char **models,
-          unsigned int nmodels,
+          virDomainCapsCPUModelsPtr models,
           const char *preferred,
           bool migratable)
 {
@@ -1855,7 +1854,7 @@ x86Decode(virCPUDefPtr cpu,
      */
     for (i = map->nmodels - 1; i >= 0; i--) {
         candidate = map->models[i];
-        if (!virCPUModelIsAllowed(candidate->name, models, nmodels)) {
+        if (!virCPUModelIsAllowed(candidate->name, models)) {
             if (preferred && STREQ(candidate->name, preferred)) {
                 if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1946,11 +1945,10 @@ x86Decode(virCPUDefPtr cpu,
 static int
 x86DecodeCPUData(virCPUDefPtr cpu,
                  const virCPUData *data,
-                 const char **models,
-                 unsigned int nmodels,
+                 virDomainCapsCPUModelsPtr models,
                  const char *preferred)
 {
-    return x86Decode(cpu, &data->data.x86, models, nmodels, preferred, false);
+    return x86Decode(cpu, &data->data.x86, models, preferred, false);
 }
 
 
@@ -2402,8 +2400,7 @@ cpuidSet(uint32_t base, virCPUDataPtr data)
 
 static int
 virCPUx86GetHost(virCPUDefPtr cpu,
-                 const char **models,
-                 unsigned int nmodels)
+                 virDomainCapsCPUModelsPtr models)
 {
     virCPUDataPtr cpuData = NULL;
     int ret = -1;
@@ -2415,7 +2412,7 @@ virCPUx86GetHost(virCPUDefPtr cpu,
         cpuidSet(CPUX86_EXTENDED, cpuData) < 0)
         goto cleanup;
 
-    ret = x86DecodeCPUData(cpu, cpuData, models, nmodels, NULL);
+    ret = x86DecodeCPUData(cpu, cpuData, models, NULL);
 
  cleanup:
     virCPUx86DataFree(cpuData);
@@ -2427,8 +2424,7 @@ virCPUx86GetHost(virCPUDefPtr cpu,
 static virCPUDefPtr
 x86Baseline(virCPUDefPtr *cpus,
             unsigned int ncpus,
-            const char **models,
-            unsigned int nmodels,
+            virDomainCapsCPUModelsPtr models,
             bool migratable)
 {
     virCPUx86MapPtr map = NULL;
@@ -2523,7 +2519,7 @@ x86Baseline(virCPUDefPtr *cpus,
         virCPUx86DataAddCPUIDInt(&base_model->data, &vendor->cpuid) < 0)
         goto error;
 
-    if (x86Decode(cpu, &base_model->data, models, nmodels, modelName, migratable) < 0)
+    if (x86Decode(cpu, &base_model->data, models, modelName, migratable) < 0)
         goto error;
 
     if (STREQ_NULLABLE(cpu->model, modelName))
@@ -2805,8 +2801,7 @@ virCPUx86GetModels(char ***models)
 
 static int
 virCPUx86Translate(virCPUDefPtr cpu,
-                   const char **models,
-                   unsigned int nmodels)
+                   virDomainCapsCPUModelsPtr models)
 {
     virCPUDefPtr translated = NULL;
     virCPUx86MapPtr map;
@@ -2830,7 +2825,7 @@ virCPUx86Translate(virCPUDefPtr cpu,
     if (!(translated = virCPUDefCopyWithoutModel(cpu)))
         goto cleanup;
 
-    if (x86Decode(translated, &model->data, models, nmodels, NULL, false) < 0)
+    if (x86Decode(translated, &model->data, models, NULL, false) < 0)
         goto cleanup;
 
     for (i = 0; i < cpu->nfeatures; i++) {
