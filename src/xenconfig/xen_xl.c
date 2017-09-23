@@ -930,7 +930,7 @@ xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
                 goto skipusb;
             if (virStrToLong_i(device, NULL, 16, &devNum) < 0)
                 goto skipusb;
-            if (!(hostdev = virDomainHostdevDefNew(NULL)))
+            if (!(hostdev = virDomainHostdevDefNew()))
                return -1;
 
             hostdev->managed = false;

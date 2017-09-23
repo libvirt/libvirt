@@ -458,7 +458,7 @@ xenParsePCI(virConfPtr conf, virDomainDefPtr def)
                 goto skippci;
             if (virStrToLong_i(func, NULL, 16, &funcID) < 0)
                 goto skippci;
-            if (!(hostdev = virDomainHostdevDefNew(NULL)))
+            if (!(hostdev = virDomainHostdevDefNew()))
                return -1;
 
             hostdev->managed = false;

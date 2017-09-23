@@ -1105,7 +1105,7 @@ xenParseSxprPCI(virDomainDefPtr def,
             goto error;
         }
 
-        if (!(dev = virDomainHostdevDefNew(NULL)))
+        if (!(dev = virDomainHostdevDefNew()))
            goto error;
 
         dev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;

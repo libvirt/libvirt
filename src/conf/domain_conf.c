@@ -2478,7 +2478,7 @@ void virDomainVideoDefFree(virDomainVideoDefPtr def)
 
 
 virDomainHostdevDefPtr
-virDomainHostdevDefNew(virDomainXMLOptionPtr xmlopt)
+virDomainHostdevDefNew(void)
 {
     virDomainHostdevDefPtr def;
 
@@ -2486,11 +2486,6 @@ virDomainHostdevDefNew(virDomainXMLOptionPtr xmlopt)
         return NULL;
 
     if (VIR_ALLOC(def->info) < 0)
-        goto error;
-
-    if (xmlopt &&
-        xmlopt->privateData.hostdevNew &&
-        !(def->privateData = xmlopt->privateData.hostdevNew()))
         goto error;
 
     return def;
@@ -2571,9 +2566,6 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
         }
         break;
     }
-
-    virObjectUnref(def->privateData);
-    def->privateData = NULL;
 }
 
 void virDomainTPMDefFree(virDomainTPMDefPtr def)
@@ -14721,7 +14713,7 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     ctxt->node = node;
 
-    if (!(def = virDomainHostdevDefNew(xmlopt)))
+    if (!(def = virDomainHostdevDefNew()))
         goto error;
 
     if (mode) {

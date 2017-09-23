@@ -376,10 +376,6 @@ struct _qemuDomainStorageSourcePrivate {
 
 virObjectPtr qemuDomainStorageSourcePrivateNew(void);
 
-# define QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev) \
-    ((qemuDomainHostdevPrivatePtr) (hostdev)->privateData)
-
-
 typedef struct _qemuDomainVcpuPrivate qemuDomainVcpuPrivate;
 typedef qemuDomainVcpuPrivate *qemuDomainVcpuPrivatePtr;
 struct _qemuDomainVcpuPrivate {
@@ -412,16 +408,6 @@ struct qemuDomainDiskInfo {
     bool empty;
     int io_status;
     char *nodename;
-};
-
-typedef struct _qemuDomainHostdevPrivate qemuDomainHostdevPrivate;
-typedef qemuDomainHostdevPrivate *qemuDomainHostdevPrivatePtr;
-struct _qemuDomainHostdevPrivate {
-    virObject parent;
-
-    /* for hostdev storage devices using auth/secret
-     * NB: *not* to be written to qemu domain object XML */
-    qemuDomainSecretInfoPtr secinfo;
 };
 
 # define QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev) \
