@@ -4959,15 +4959,22 @@ static char *
 qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
 {
     char *source = NULL;
+    char *netsource = NULL;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
     qemuDomainStorageSourcePrivatePtr srcPriv =
         QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
 
     /* Rather than pull what we think we want - use the network disk code */
-    source = qemuBuildNetworkDriveStr(iscsisrc->src, srcPriv ?
-                                      srcPriv->secinfo : NULL);
+    netsource = qemuBuildNetworkDriveStr(iscsisrc->src, srcPriv ?
+                                         srcPriv->secinfo : NULL);
+    if (!netsource)
+        goto cleanup;
+    if (virAsprintf(&source, "file=%s,if=none,format=raw", netsource) < 0)
+        goto cleanup;
 
+ cleanup:
+    VIR_FREE(netsource);
     return source;
 }
 
@@ -5020,7 +5027,7 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
     if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
         if (!(source = qemuBuildSCSIiSCSIHostdevDrvStr(dev)))
             goto error;
-        virBufferAsprintf(&buf, "file=%s,if=none,format=raw", source);
+        virBufferAdd(&buf, source, -1);
     } else {
         if (!(source = qemuBuildSCSIHostHostdevDrvStr(dev)))
             goto error;
