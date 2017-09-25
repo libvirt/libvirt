@@ -272,11 +272,11 @@ qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
     qemuBlockNodeNameBackingChainDataPtr entry = NULL;
     virStorageSourcePtr src = disk->src;
 
-    if (!(entry = virHashLookup(disktable, disk->info.alias)))
-        return 0;
-
     /* don't attempt the detection if the top level already has node names */
     if (src->nodeformat || src->nodestorage)
+        return 0;
+
+    if (!(entry = virHashLookup(disktable, disk->info.alias)))
         return 0;
 
     while (src && entry) {
