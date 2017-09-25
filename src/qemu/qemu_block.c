@@ -20,6 +20,7 @@
 
 #include "qemu_block.h"
 #include "qemu_domain.h"
+#include "qemu_alias.h"
 
 #include "viralloc.h"
 #include "virstring.h"
@@ -271,36 +272,46 @@ qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
 {
     qemuBlockNodeNameBackingChainDataPtr entry = NULL;
     virStorageSourcePtr src = disk->src;
+    char *alias = NULL;
+    int ret = -1;
 
     /* don't attempt the detection if the top level already has node names */
     if (src->nodeformat || src->nodestorage)
         return 0;
 
-    if (!(entry = virHashLookup(disktable, disk->info.alias)))
-        return 0;
+    if (!(alias = qemuAliasFromDisk(disk)))
+        goto cleanup;
+
+    if (!(entry = virHashLookup(disktable, alias))) {
+        ret = 0;
+        goto cleanup;
+    }
 
     while (src && entry) {
         if (src->nodeformat || src->nodestorage) {
             if (STRNEQ_NULLABLE(src->nodeformat, entry->nodeformat) ||
                 STRNEQ_NULLABLE(src->nodestorage, entry->nodestorage))
-                goto error;
+                goto cleanup;
 
             break;
         } else {
             if (VIR_STRDUP(src->nodeformat, entry->nodeformat) < 0 ||
                 VIR_STRDUP(src->nodestorage, entry->nodestorage) < 0)
-                goto error;
+                goto cleanup;
         }
 
         entry = entry->backing;
         src = src->backingStore;
     }
 
-    return 0;
+    ret = 0;
 
- error:
-    qemuBlockDiskClearDetectedNodes(disk);
-    return -1;
+ cleanup:
+    VIR_FREE(alias);
+    if (ret < 0)
+        qemuBlockDiskClearDetectedNodes(disk);
+
+    return ret;
 }
 
 
