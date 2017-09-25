@@ -1320,7 +1320,7 @@ virStorageFileResize(const char *path,
 {
     int fd = -1;
     int ret = -1;
-    int rc ATTRIBUTE_UNUSED;
+    int rc;
     off_t offset ATTRIBUTE_UNUSED;
     off_t len ATTRIBUTE_UNUSED;
 
@@ -1333,10 +1333,15 @@ virStorageFileResize(const char *path,
     }
 
     if (pre_allocate) {
-        if (safezero(fd, offset, len) != 0) {
-            virReportSystemError(errno,
-                                 _("Failed to pre-allocate space for "
-                                   "file '%s'"), path);
+        if ((rc = virFileAllocate(fd, offset, len)) != 0) {
+            if (rc == -2) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("preallocate is not supported on this platform"));
+            } else {
+                virReportSystemError(errno,
+                                     _("Failed to pre-allocate space for "
+                                       "file '%s'"), path);
+            }
             goto cleanup;
         }
     } else {

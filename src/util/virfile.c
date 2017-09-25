@@ -1216,6 +1216,17 @@ int safezero(int fd, off_t offset, off_t len)
     return safezero_slow(fd, offset, len);
 }
 
+int virFileAllocate(int fd, off_t offset, off_t len)
+{
+    int ret;
+
+    ret = safezero_posix_fallocate(fd, offset, len);
+    if (ret != -2)
+        return ret;
+
+    return safezero_sys_fallocate(fd, offset, len);
+}
+
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 /* search /proc/mounts for mount point of *type; return pointer to
  * malloc'ed string of the path if found, otherwise return NULL
