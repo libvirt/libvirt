@@ -55,7 +55,7 @@ virStreamNew(virConnectPtr conn,
 {
     virStreamPtr st;
 
-    VIR_DEBUG("conn=%p, flags=%x", conn, flags);
+    VIR_DEBUG("conn=%p, flags=0x%x", conn, flags);
 
     virResetLastError();
 
@@ -349,7 +349,7 @@ virStreamRecvFlags(virStreamPtr stream,
                    size_t nbytes,
                    unsigned int flags)
 {
-    VIR_DEBUG("stream=%p, data=%p, nbytes=%zu flags=%x",
+    VIR_DEBUG("stream=%p, data=%p, nbytes=%zu flags=0x%x",
               stream, data, nbytes, flags);
 
     virResetLastError();
@@ -415,7 +415,7 @@ virStreamSendHole(virStreamPtr stream,
                   long long length,
                   unsigned int flags)
 {
-    VIR_DEBUG("stream=%p, length=%lld flags=%x",
+    VIR_DEBUG("stream=%p, length=%lld flags=0x%x",
               stream, length, flags);
 
     virResetLastError();
@@ -458,7 +458,7 @@ virStreamRecvHole(virStreamPtr stream,
                   long long *length,
                   unsigned int flags)
 {
-    VIR_DEBUG("stream=%p, length=%p flags=%x",
+    VIR_DEBUG("stream=%p, length=%p flags=0x%x",
               stream, length, flags);
 
     virResetLastError();

@@ -2143,7 +2143,7 @@ virLXCControllerSetupDevPTS(virLXCControllerPtr ctrl)
                     ptsgid, (mount_options ? mount_options : "")) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Mount devpts on %s type=tmpfs flags=%x, opts=%s",
+    VIR_DEBUG("Mount devpts on %s type=tmpfs flags=0x%x, opts=%s",
               devpts, MS_NOSUID, opts);
     if (mount("devpts", devpts, "devpts", MS_NOSUID, opts) < 0) {
         virReportSystemError(errno,

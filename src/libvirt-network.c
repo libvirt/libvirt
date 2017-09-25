@@ -91,7 +91,7 @@ virConnectListAllNetworks(virConnectPtr conn,
                           virNetworkPtr **nets,
                           unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, nets=%p, flags=%x", conn, nets, flags);
+    VIR_DEBUG("conn=%p, nets=%p, flags=0x%x", conn, nets, flags);
 
     virResetLastError();
 
@@ -790,7 +790,7 @@ char *
 virNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("network=%p, flags=%x", network, flags);
+    VIR_DEBUG("network=%p, flags=0x%x", network, flags);
 
     virResetLastError();
 
@@ -1199,7 +1199,7 @@ virNetworkGetDHCPLeases(virNetworkPtr network,
                         unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("network=%p, mac='%s' leases=%p, flags=%x",
+    VIR_DEBUG("network=%p, mac='%s' leases=%p, flags=0x%x",
                network, NULLSTR(mac), leases, flags);
 
     virResetLastError();

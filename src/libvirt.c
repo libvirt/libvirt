@@ -1242,7 +1242,7 @@ virConnectOpenAuth(const char *name,
     if (virInitialize() < 0)
         goto error;
 
-    VIR_DEBUG("name=%s, auth=%p, flags=%x", NULLSTR(name), auth, flags);
+    VIR_DEBUG("name=%s, auth=%p, flags=0x%x", NULLSTR(name), auth, flags);
     virResetLastError();
     ret = virConnectOpenInternal(name, auth, flags);
     if (!ret)

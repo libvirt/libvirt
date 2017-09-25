@@ -82,7 +82,7 @@ virConnectListAllInterfaces(virConnectPtr conn,
                             virInterfacePtr **ifaces,
                             unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, ifaces=%p, flags=%x", conn, ifaces, flags);
+    VIR_DEBUG("conn=%p, ifaces=%p, flags=0x%x", conn, ifaces, flags);
 
     virResetLastError();
 
@@ -410,7 +410,7 @@ char *
 virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("iface=%p, flags=%x", iface, flags);
+    VIR_DEBUG("iface=%p, flags=0x%x", iface, flags);
 
     virResetLastError();
 
@@ -460,7 +460,7 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
 virInterfacePtr
 virInterfaceDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xml=%s, flags=%x", conn, NULLSTR(xml), flags);
+    VIR_DEBUG("conn=%p, xml=%s, flags=0x%x", conn, NULLSTR(xml), flags);
 
     virResetLastError();
 
@@ -550,7 +550,7 @@ int
 virInterfaceCreate(virInterfacePtr iface, unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("iface=%p, flags=%x", iface, flags);
+    VIR_DEBUG("iface=%p, flags=0x%x", iface, flags);
 
     virResetLastError();
 
@@ -597,7 +597,7 @@ int
 virInterfaceDestroy(virInterfacePtr iface, unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("iface=%p, flags=%x", iface, flags);
+    VIR_DEBUG("iface=%p, flags=0x%x", iface, flags);
 
     virResetLastError();
 
@@ -696,7 +696,7 @@ virInterfaceFree(virInterfacePtr iface)
 int
 virInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, flags=%x", conn, flags);
+    VIR_DEBUG("conn=%p, flags=0x%x", conn, flags);
 
     virResetLastError();
 
@@ -736,7 +736,7 @@ virInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
 int
 virInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, flags=%x", conn, flags);
+    VIR_DEBUG("conn=%p, flags=0x%x", conn, flags);
 
     virResetLastError();
 
@@ -776,7 +776,7 @@ virInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
 int
 virInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, flags=%x", conn, flags);
+    VIR_DEBUG("conn=%p, flags=0x%x", conn, flags);
 
     virResetLastError();
 

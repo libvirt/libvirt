@@ -10938,7 +10938,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     int nstats;
     int ret = -1;
 
-    VIR_DEBUG("params=%p, flags=%x", params, flags);
+    VIR_DEBUG("params=%p, flags=0x%x", params, flags);
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
 

@@ -14194,12 +14194,12 @@ msgstr "Не вдалося зробити змонтований %s прида�
 
 #: src/lxc/lxc_container.c:990
 #, fuzzy, c-format
-msgid "Failed to mount %s on %s type %s flags=%x"
+msgid "Failed to mount %s on %s type %s flags=0x%x"
 msgstr "Не вдалося змонтувати %s до %s, тип %s, прапорці=%x"
 
 #: src/lxc/lxc_container.c:1000
 #, fuzzy, c-format
-msgid "Failed to re-mount %s on %s flags=%x"
+msgid "Failed to re-mount %s on %s flags=0x%x"
 msgstr "Не вдалося повторно змонтувати %s до %s, прапорці=%x"
 
 #: src/lxc/lxc_container.c:1035

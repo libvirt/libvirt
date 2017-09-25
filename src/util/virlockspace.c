@@ -617,7 +617,7 @@ int virLockSpaceAcquireResource(virLockSpacePtr lockspace,
     int ret = -1;
     virLockSpaceResourcePtr res;
 
-    VIR_DEBUG("lockspace=%p resname=%s flags=%x owner=%lld",
+    VIR_DEBUG("lockspace=%p resname=%s flags=0x%x owner=%lld",
               lockspace, resname, flags, (unsigned long long)owner);
 
     virCheckFlags(VIR_LOCK_SPACE_ACQUIRE_SHARED |

@@ -427,7 +427,7 @@ static int virLockManagerSanlockInit(unsigned int version,
 {
     virLockManagerSanlockDriverPtr driver;
 
-    VIR_DEBUG("version=%u configFile=%s flags=%x",
+    VIR_DEBUG("version=%u configFile=%s flags=0x%x",
               version, NULLSTR(configFile), flags);
     virCheckFlags(0, -1);
 

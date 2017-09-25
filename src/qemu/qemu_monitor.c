@@ -2649,7 +2649,7 @@ qemuMonitorMigrateToFd(qemuMonitorPtr mon,
                        int fd)
 {
     int ret;
-    VIR_DEBUG("fd=%d flags=%x", fd, flags);
+    VIR_DEBUG("fd=%d flags=0x%x", fd, flags);
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -2679,7 +2679,7 @@ qemuMonitorMigrateToHost(qemuMonitorPtr mon,
 {
     int ret;
     char *uri = NULL;
-    VIR_DEBUG("hostname=%s port=%d flags=%x", hostname, port, flags);
+    VIR_DEBUG("hostname=%s port=%d flags=0x%x", hostname, port, flags);
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -2708,7 +2708,7 @@ qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
     char *argstr;
     char *dest = NULL;
     int ret = -1;
-    VIR_DEBUG("argv=%p flags=%x", argv, flags);
+    VIR_DEBUG("argv=%p flags=0x%x", argv, flags);
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -3330,7 +3330,7 @@ qemuMonitorDriveMirror(qemuMonitorPtr mon,
                        unsigned int flags)
 {
     VIR_DEBUG("device=%s, file=%s, format=%s, bandwidth=%lld, "
-              "granularity=%#x, buf_size=%lld, flags=%x",
+              "granularity=%#x, buf_size=%lld, flags=0x%x",
               device, file, NULLSTR(format), bandwidth, granularity,
               buf_size, flags);
 

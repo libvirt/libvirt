@@ -198,7 +198,7 @@ virNetServerClientCalculateHandleMode(virNetServerClientPtr client)
 #if WITH_GNUTLS
     }
 #endif
-    VIR_DEBUG("mode=%o", mode);
+    VIR_DEBUG("mode=0%o", mode);
     return mode;
 }
 

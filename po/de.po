@@ -13761,14 +13761,14 @@ msgid "Failed to make mount %s readonly"
 msgstr ""
 
 #: src/lxc/lxc_container.c:990
-#, c-format
-msgid "Failed to mount %s on %s type %s flags=%x"
-msgstr ""
+#, fuzzy, c-format
+msgid "Failed to mount %s on %s type %s flags=0x%x"
+msgstr "Anschließen von %s in %s Typ %s fehlgeschlagen"
 
 #: src/lxc/lxc_container.c:1000
-#, c-format
-msgid "Failed to re-mount %s on %s flags=%x"
-msgstr ""
+#, fuzzy, c-format
+msgid "Failed to re-mount %s on %s flags=0x%x"
+msgstr "Anschließen von %s in %s Typ %s fehlgeschlagen"
 
 #: src/lxc/lxc_container.c:1035
 #, c-format

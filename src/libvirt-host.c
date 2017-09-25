@@ -285,7 +285,7 @@ virConnectGetURI(virConnectPtr conn)
 char *
 virConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, flags=%x", conn, flags);
+    VIR_DEBUG("conn=%p, flags=0x%x", conn, flags);
 
     virResetLastError();
 
@@ -475,7 +475,7 @@ virNodeGetCPUStats(virConnectPtr conn,
                    virNodeCPUStatsPtr params,
                    int *nparams, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, cpuNum=%d, params=%p, nparams=%d, flags=%x",
+    VIR_DEBUG("conn=%p, cpuNum=%d, params=%p, nparams=%d, flags=0x%x",
               conn, cpuNum, params, nparams ? *nparams : -1, flags);
 
     virResetLastError();
@@ -562,7 +562,7 @@ virNodeGetMemoryStats(virConnectPtr conn,
                       virNodeMemoryStatsPtr params,
                       int *nparams, unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, cellNum=%d, params=%p, nparams=%d, flags=%x",
+    VIR_DEBUG("conn=%p, cellNum=%d, params=%p, nparams=%d, flags=0x%x",
               conn, cellNum, params, nparams ? *nparams : -1, flags);
 
     virResetLastError();
@@ -655,7 +655,7 @@ virNodeSuspendForDuration(virConnectPtr conn,
                           unsigned long long duration,
                           unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, target=%d, duration=%lld, flags=%x",
+    VIR_DEBUG("conn=%p, target=%d, duration=%lld, flags=0x%x",
               conn, target, duration, flags);
 
     virResetLastError();
@@ -708,7 +708,7 @@ virNodeGetMemoryParameters(virConnectPtr conn,
                            int *nparams,
                            unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, params=%p, nparams=%p, flags=%x",
+    VIR_DEBUG("conn=%p, params=%p, nparams=%p, flags=0x%x",
               conn, params, nparams, flags);
 
     virResetLastError();
@@ -767,7 +767,7 @@ virNodeSetMemoryParameters(virConnectPtr conn,
                            int nparams,
                            unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, params=%p, nparams=%d, flags=%x",
+    VIR_DEBUG("conn=%p, params=%p, nparams=%d, flags=0x%x",
               conn, params, nparams, flags);
     VIR_TYPED_PARAMS_DEBUG(params, nparams);
 
@@ -968,7 +968,7 @@ virConnectCompareCPU(virConnectPtr conn,
                      const char *xmlDesc,
                      unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=%x", conn, NULLSTR(xmlDesc), flags);
+    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=0x%x", conn, NULLSTR(xmlDesc), flags);
 
     virResetLastError();
 
@@ -1012,7 +1012,7 @@ int
 virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
                            unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, arch=%s, models=%p, flags=%x",
+    VIR_DEBUG("conn=%p, arch=%s, models=%p, flags=0x%x",
               conn, NULLSTR(arch), models, flags);
     virResetLastError();
 
@@ -1069,7 +1069,7 @@ virConnectBaselineCPU(virConnectPtr conn,
 {
     size_t i;
 
-    VIR_DEBUG("conn=%p, xmlCPUs=%p, ncpus=%u, flags=%x",
+    VIR_DEBUG("conn=%p, xmlCPUs=%p, ncpus=%u, flags=0x%x",
               conn, xmlCPUs, ncpus, flags);
     if (xmlCPUs) {
         for (i = 0; i < ncpus; i++)
@@ -1294,7 +1294,7 @@ virNodeGetCPUMap(virConnectPtr conn,
                  unsigned int *online,
                  unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, cpumap=%p, online=%p, flags=%x",
+    VIR_DEBUG("conn=%p, cpumap=%p, online=%p, flags=0x%x",
               conn, cpumap, online, flags);
 
     virResetLastError();
@@ -1384,7 +1384,7 @@ virNodeGetFreePages(virConnectPtr conn,
                     unsigned int flags)
 {
     VIR_DEBUG("conn=%p, npages=%u, pages=%p, startCell=%u, "
-              "cellCount=%u, counts=%p, flags=%x",
+              "cellCount=%u, counts=%p, flags=0x%x",
               conn, npages, pages, startCell, cellCount, counts, flags);
 
     virResetLastError();
@@ -1454,7 +1454,7 @@ virNodeAllocPages(virConnectPtr conn,
                   unsigned int flags)
 {
     VIR_DEBUG("conn=%p npages=%u pageSizes=%p pageCounts=%p "
-              "startCell=%d cellCount=%u flagx=%x",
+              "startCell=%d cellCount=%u flags=0x%x",
               conn, npages, pageSizes, pageCounts, startCell,
               cellCount, flags);
 

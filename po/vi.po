@@ -13504,12 +13504,12 @@ msgstr "Thất bại khi tạo ủy nhiệm xác thực"
 
 #: src/lxc/lxc_container.c:990
 #, fuzzy, c-format
-msgid "Failed to mount %s on %s type %s flags=%x"
+msgid "Failed to mount %s on %s type %s flags=0x%x"
 msgstr "Thất bại khi lắp devpts trên %s"
 
 #: src/lxc/lxc_container.c:1000
 #, fuzzy, c-format
-msgid "Failed to re-mount %s on %s flags=%x"
+msgid "Failed to re-mount %s on %s flags=0x%x"
 msgstr "Thất bại khi lắp devpts trên %s"
 
 #: src/lxc/lxc_container.c:1035

@@ -983,11 +983,11 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
          */
         bindOverReadonly = !!(mnt_mflags & MS_RDONLY);
 
-        VIR_DEBUG("Mount %s on %s type=%s flags=%x",
+        VIR_DEBUG("Mount %s on %s type=%s flags=0x%x",
                   mnt_src, mnt->dst, mnt->type, mnt_mflags & ~MS_RDONLY);
         if (mount(mnt_src, mnt->dst, mnt->type, mnt_mflags & ~MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to mount %s on %s type %s flags=%x"),
+                                 _("Failed to mount %s on %s type %s flags=0x%x"),
                                  mnt_src, mnt->dst, NULLSTR(mnt->type),
                                  mnt_mflags & ~MS_RDONLY);
             goto cleanup;
@@ -997,7 +997,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
             mount(mnt_src, mnt->dst, NULL,
                   MS_BIND|MS_REMOUNT|mnt_mflags|MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
-                                 _("Failed to re-mount %s on %s flags=%x"),
+                                 _("Failed to re-mount %s on %s flags=0x%x"),
                                  mnt_src, mnt->dst,
                                  MS_BIND|MS_REMOUNT|MS_RDONLY);
             goto cleanup;

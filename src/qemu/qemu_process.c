@@ -6028,7 +6028,7 @@ qemuProcessKill(virDomainObjPtr vm, unsigned int flags)
 {
     int ret;
 
-    VIR_DEBUG("vm=%p name=%s pid=%lld flags=%x",
+    VIR_DEBUG("vm=%p name=%s pid=%lld flags=0x%x",
               vm, vm->def->name,
               (long long) vm->pid, flags);
 
@@ -6109,7 +6109,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     VIR_DEBUG("Shutting down vm=%p name=%s id=%d pid=%lld, "
-              "reason=%s, asyncJob=%s, flags=%x",
+              "reason=%s, asyncJob=%s, flags=0x%x",
               vm, vm->def->name, vm->def->id,
               (long long) vm->pid,
               virDomainShutoffReasonTypeToString(reason),

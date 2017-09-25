@@ -13438,12 +13438,12 @@ msgstr "让挂载 %s 成为只读失败"
 
 #: src/lxc/lxc_container.c:990
 #, fuzzy, c-format
-msgid "Failed to mount %s on %s type %s flags=%x"
+msgid "Failed to mount %s on %s type %s flags=0x%x"
 msgstr "在 %s 类型 %s flags=%x 中挂载 %s 失败"
 
 #: src/lxc/lxc_container.c:1000
 #, fuzzy, c-format
-msgid "Failed to re-mount %s on %s flags=%x"
+msgid "Failed to re-mount %s on %s flags=0x%x"
 msgstr "在%s flags=%x 中重新挂载 %s 失败"
 
 #: src/lxc/lxc_container.c:1035

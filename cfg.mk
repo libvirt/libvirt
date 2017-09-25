@@ -284,11 +284,11 @@ sc_avoid_write:
 
 # In debug statements, print flags as bitmask and mode_t as octal.
 sc_flags_debug:
-	@prohibit='\<mode=%[0-9.]*[diux]'				\
-	halt='use %o to debug mode_t values'				\
+	@prohibit='\<mode=%[0-9.]*[diuxo]'				\
+	halt='use \"0%o\" to debug mode_t values'			\
 	  $(_sc_search_regexp)
-	@prohibit='[Ff]lags=%[0-9.]*l*[diou]'				\
-	halt='use %x to debug flag values'				\
+	@prohibit='[Ff]lags=%[0-9.]*l*[dioux]'				\
+	halt='use \"0x%x\" to debug flag values'			\
 	  $(_sc_search_regexp)
 
 # Prefer 'unsigned int flags', along with checks for unknown flags.

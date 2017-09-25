@@ -13533,12 +13533,12 @@ msgstr "माउंट %s फक्तवाचनीय करण्यास 
 
 #: src/lxc/lxc_container.c:990
 #, fuzzy, c-format
-msgid "Failed to mount %s on %s type %s flags=%x"
+msgid "Failed to mount %s on %s type %s flags=0x%x"
 msgstr "%s ला, %s प्रकार %s flags=%x वरील माउंट करण्यास अपयशी"
 
 #: src/lxc/lxc_container.c:1000
 #, fuzzy, c-format
-msgid "Failed to re-mount %s on %s flags=%x"
+msgid "Failed to re-mount %s on %s flags=0x%x"
 msgstr "%s ला %s flags=%x वरील पुन्हा माउंट करण्यास अपयशी"
 
 #: src/lxc/lxc_container.c:1035

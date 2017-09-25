@@ -475,7 +475,7 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
     int rv = -1;
     size_t want;
 
-    VIR_DEBUG("st=%p client=%p data=%p nbytes=%zu nonblock=%d flags=%x",
+    VIR_DEBUG("st=%p client=%p data=%p nbytes=%zu nonblock=%d flags=0x%x",
               st, client, data, nbytes, nonblock, flags);
 
     virCheckFlags(VIR_STREAM_RECV_STOP_AT_HOLE, -1);

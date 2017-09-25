@@ -82,7 +82,7 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
     if (virSecurityManagerInitialize() < 0)
         return NULL;
 
-    VIR_DEBUG("drv=%p (%s) virtDriver=%s flags=%x",
+    VIR_DEBUG("drv=%p (%s) virtDriver=%s flags=0x%x",
               drv, drv->name, virtDriver, flags);
 
     virCheckFlags(VIR_SECURITY_MANAGER_NEW_MASK, NULL);

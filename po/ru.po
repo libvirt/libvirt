@@ -13717,13 +13717,13 @@ msgstr ""
 
 #: src/lxc/lxc_container.c:990
 #, fuzzy, c-format
-msgid "Failed to mount %s on %s type %s flags=%x"
+msgid "Failed to mount %s on %s type %s flags=0x%x"
 msgstr "Не удалось смонтировать %s в %s (тип %s, флаги=%x, параметры)"
 
 #: src/lxc/lxc_container.c:1000
-#, c-format
-msgid "Failed to re-mount %s on %s flags=%x"
-msgstr ""
+#, fuzzy, c-format
+msgid "Failed to re-mount %s on %s flags=0x%x"
+msgstr "Не удалось смонтировать %s в %s (тип %s, флаги=%x, параметры)"
 
 #: src/lxc/lxc_container.c:1035
 #, c-format

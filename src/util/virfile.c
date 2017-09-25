@@ -244,7 +244,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     } else if ((mode & O_ACCMODE) == O_WRONLY) {
         output = true;
     } else if ((mode & O_ACCMODE) != O_RDONLY) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("unexpected mode %x for %s"),
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("unexpected mode 0x%x for %s"),
                        mode & O_ACCMODE, name);
         goto error;
     }
@@ -3593,7 +3593,7 @@ virFileSetupDev(const char *path,
         goto cleanup;
     }
 
-    VIR_DEBUG("Mount devfs on %s type=tmpfs flags=%lx, opts=%s",
+    VIR_DEBUG("Mount devfs on %s type=tmpfs flags=0x%lx, opts=%s",
               path, mount_flags, mount_options);
     if (mount("devfs", path, mount_fs, mount_flags, mount_options) < 0) {
         virReportSystemError(errno,

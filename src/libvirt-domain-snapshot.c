@@ -205,7 +205,7 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "xmlDesc=%s, flags=%x", xmlDesc, flags);
+    VIR_DOMAIN_DEBUG(domain, "xmlDesc=%s, flags=0x%x", xmlDesc, flags);
 
     virResetLastError();
 
@@ -261,7 +261,7 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
                             unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("snapshot=%p, flags=%x", snapshot, flags);
+    VIR_DEBUG("snapshot=%p, flags=0x%x", snapshot, flags);
 
     virResetLastError();
 
@@ -335,7 +335,7 @@ virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
+    VIR_DOMAIN_DEBUG(domain, "flags=0x%x", flags);
 
     virResetLastError();
 
@@ -417,7 +417,7 @@ virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "names=%p, nameslen=%d, flags=%x",
+    VIR_DOMAIN_DEBUG(domain, "names=%p, nameslen=%d, flags=0x%x",
                      names, nameslen, flags);
 
     virResetLastError();
@@ -500,7 +500,7 @@ virDomainListAllSnapshots(virDomainPtr domain, virDomainSnapshotPtr **snaps,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "snaps=%p, flags=%x", snaps, flags);
+    VIR_DOMAIN_DEBUG(domain, "snaps=%p, flags=0x%x", snaps, flags);
 
     virResetLastError();
 
@@ -570,7 +570,7 @@ virDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("snapshot=%p, flags=%x", snapshot, flags);
+    VIR_DEBUG("snapshot=%p, flags=0x%x", snapshot, flags);
 
     virResetLastError();
 
@@ -655,7 +655,7 @@ virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("snapshot=%p, names=%p, nameslen=%d, flags=%x",
+    VIR_DEBUG("snapshot=%p, names=%p, nameslen=%d, flags=0x%x",
               snapshot, names, nameslen, flags);
 
     virResetLastError();
@@ -741,7 +741,7 @@ virDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("snapshot=%p, snaps=%p, flags=%x", snapshot, snaps, flags);
+    VIR_DEBUG("snapshot=%p, snaps=%p, flags=0x%x", snapshot, snaps, flags);
 
     virResetLastError();
 
@@ -785,7 +785,7 @@ virDomainSnapshotLookupByName(virDomainPtr domain,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "name=%s, flags=%x", name, flags);
+    VIR_DOMAIN_DEBUG(domain, "name=%s, flags=0x%x", name, flags);
 
     virResetLastError();
 
@@ -823,7 +823,7 @@ virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
+    VIR_DOMAIN_DEBUG(domain, "flags=0x%x", flags);
 
     virResetLastError();
 
@@ -864,7 +864,7 @@ virDomainSnapshotCurrent(virDomainPtr domain,
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "flags=%x", flags);
+    VIR_DOMAIN_DEBUG(domain, "flags=0x%x", flags);
 
     virResetLastError();
 
@@ -906,7 +906,7 @@ virDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("snapshot=%p, flags=%x", snapshot, flags);
+    VIR_DEBUG("snapshot=%p, flags=0x%x", snapshot, flags);
 
     virResetLastError();
 
@@ -944,7 +944,7 @@ virDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("snapshot=%p, flags=%x", snapshot, flags);
+    VIR_DEBUG("snapshot=%p, flags=0x%x", snapshot, flags);
 
     virResetLastError();
 
@@ -983,7 +983,7 @@ virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("snapshot=%p, flags=%x", snapshot, flags);
+    VIR_DEBUG("snapshot=%p, flags=0x%x", snapshot, flags);
 
     virResetLastError();
 
@@ -1054,7 +1054,7 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("snapshot=%p, flags=%x", snapshot, flags);
+    VIR_DEBUG("snapshot=%p, flags=0x%x", snapshot, flags);
 
     virResetLastError();
 
@@ -1111,7 +1111,7 @@ virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 {
     virConnectPtr conn;
 
-    VIR_DEBUG("snapshot=%p, flags=%x", snapshot, flags);
+    VIR_DEBUG("snapshot=%p, flags=0x%x", snapshot, flags);
 
     virResetLastError();
 

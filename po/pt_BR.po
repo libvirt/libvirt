@@ -13738,14 +13738,14 @@ msgid "Failed to make mount %s readonly"
 msgstr "Incapaz de transformar o volume %s em somente leitura"
 
 #: src/lxc/lxc_container.c:990
-#, c-format
-msgid "Failed to mount %s on %s type %s flags=%x"
-msgstr ""
+#, fuzzy, c-format
+msgid "Failed to mount %s on %s type %s flags=0x%x"
+msgstr "Falha ao montar %s no %s tipo %s "
 
 #: src/lxc/lxc_container.c:1000
-#, c-format
-msgid "Failed to re-mount %s on %s flags=%x"
-msgstr ""
+#, fuzzy, c-format
+msgid "Failed to re-mount %s on %s flags=0x%x"
+msgstr "Falha ao montar %s no %s tipo %s "
 
 #: src/lxc/lxc_container.c:1035
 #, c-format

@@ -221,25 +221,25 @@ int virNetClientProgramDispatch(virNetClientProgramPtr prog,
 
     /* Check version, etc. */
     if (msg->header.prog != prog->program) {
-        VIR_ERROR(_("program mismatch in event (actual %x, expected %x)"),
+        VIR_ERROR(_("program mismatch in event (actual 0x%x, expected 0x%x)"),
                   msg->header.prog, prog->program);
         return -1;
     }
 
     if (msg->header.vers != prog->version) {
-        VIR_ERROR(_("version mismatch in event (actual %x, expected %x)"),
+        VIR_ERROR(_("version mismatch in event (actual 0x%x, expected 0x%x)"),
                   msg->header.vers, prog->version);
         return -1;
     }
 
     if (msg->header.status != VIR_NET_OK) {
-        VIR_ERROR(_("status mismatch in event (actual %x, expected %x)"),
+        VIR_ERROR(_("status mismatch in event (actual 0x%x, expected 0x%x)"),
                   msg->header.status, VIR_NET_OK);
         return -1;
     }
 
     if (msg->header.type != VIR_NET_MESSAGE) {
-        VIR_ERROR(_("type mismatch in event (actual %x, expected %x)"),
+        VIR_ERROR(_("type mismatch in event (actual 0x%x, expected 0x%x)"),
                   msg->header.type, VIR_NET_MESSAGE);
         return -1;
     }
@@ -247,7 +247,7 @@ int virNetClientProgramDispatch(virNetClientProgramPtr prog,
     event = virNetClientProgramGetEvent(prog, msg->header.proc);
 
     if (!event) {
-        VIR_ERROR(_("No event expected with procedure %x"),
+        VIR_ERROR(_("No event expected with procedure 0x%x"),
                   msg->header.proc);
         return -1;
     }

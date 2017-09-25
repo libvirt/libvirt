@@ -103,7 +103,7 @@ virRotatingFileWriterEntryNew(const char *path,
     virRotatingFileWriterEntryPtr entry;
     struct stat sb;
 
-    VIR_DEBUG("Opening %s mode=%02o", path, mode);
+    VIR_DEBUG("Opening %s mode=0%02o", path, mode);
 
     if (VIR_ALLOC(entry) < 0)
         return NULL;

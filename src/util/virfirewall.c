@@ -868,7 +868,7 @@ virFirewallApplyGroup(virFirewallPtr firewall,
     bool ignoreErrors = (group->actionFlags & VIR_FIREWALL_TRANSACTION_IGNORE_ERRORS);
     size_t i;
 
-    VIR_INFO("Starting transaction for firewall=%p group=%p flags=%x",
+    VIR_INFO("Starting transaction for firewall=%p group=%p flags=0x%x",
              firewall, group, group->actionFlags);
     firewall->currentGroup = idx;
     group->addingRollback = false;

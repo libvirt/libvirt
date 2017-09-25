@@ -1227,7 +1227,7 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     struct stat sb;
     virFDStreamThreadDataPtr threadData = NULL;
 
-    VIR_DEBUG("st=%p path=%s oflags=%x offset=%llu length=%llu mode=%o",
+    VIR_DEBUG("st=%p path=%s oflags=0x%x offset=%llu length=%llu mode=0%o",
               st, path, oflags, offset, length, mode);
 
     oflags |= O_NOCTTY | O_BINARY;

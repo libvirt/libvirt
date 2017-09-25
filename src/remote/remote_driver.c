@@ -5646,7 +5646,7 @@ remoteStreamRecvFlags(virStreamPtr st,
                       size_t nbytes,
                       unsigned int flags)
 {
-    VIR_DEBUG("st=%p data=%p nbytes=%zu flags=%x",
+    VIR_DEBUG("st=%p data=%p nbytes=%zu flags=0x%x",
               st, data, nbytes, flags);
     struct private_data *priv = st->conn->privateData;
     virNetClientStreamPtr privst = st->privateData;
@@ -5690,7 +5690,7 @@ remoteStreamSendHole(virStreamPtr st,
                      long long length,
                      unsigned int flags)
 {
-    VIR_DEBUG("st=%p length=%lld flags=%x",
+    VIR_DEBUG("st=%p length=%lld flags=0x%x",
               st, length, flags);
     struct private_data *priv = st->conn->privateData;
     virNetClientStreamPtr privst = st->privateData;
@@ -5724,7 +5724,7 @@ remoteStreamRecvHole(virStreamPtr st,
     virNetClientStreamPtr privst = st->privateData;
     int rv;
 
-    VIR_DEBUG("st=%p length=%p flags=%x",
+    VIR_DEBUG("st=%p length=%p flags=0x%x",
               st, length, flags);
 
     virCheckFlags(0, -1);

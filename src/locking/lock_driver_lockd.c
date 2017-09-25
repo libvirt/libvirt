@@ -328,7 +328,7 @@ static int virLockManagerLockDaemonInit(unsigned int version,
                                         const char *configFile,
                                         unsigned int flags)
 {
-    VIR_DEBUG("version=%u configFile=%s flags=%x", version, NULLSTR(configFile), flags);
+    VIR_DEBUG("version=%u configFile=%s flags=0x%x", version, NULLSTR(configFile), flags);
 
     virCheckFlags(0, -1);
 

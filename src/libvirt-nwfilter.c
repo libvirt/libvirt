@@ -83,7 +83,7 @@ virConnectListAllNWFilters(virConnectPtr conn,
                            virNWFilterPtr **filters,
                            unsigned int flags)
 {
-    VIR_DEBUG("conn=%p, filters=%p, flags=%x", conn, filters, flags);
+    VIR_DEBUG("conn=%p, filters=%p, flags=0x%x", conn, filters, flags);
 
     virResetLastError();
 
@@ -460,7 +460,7 @@ char *
 virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
 {
     virConnectPtr conn;
-    VIR_DEBUG("nwfilter=%p, flags=%x", nwfilter, flags);
+    VIR_DEBUG("nwfilter=%p, flags=0x%x", nwfilter, flags);
 
     virResetLastError();
 

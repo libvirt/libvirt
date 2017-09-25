@@ -13724,12 +13724,12 @@ msgstr "%s ஐ வாசிக்க மட்டுமானதாக மாற
 
 #: src/lxc/lxc_container.c:990
 #, fuzzy, c-format
-msgid "Failed to mount %s on %s type %s flags=%x"
+msgid "Failed to mount %s on %s type %s flags=0x%x"
 msgstr "வகை %3$s flags=%4$x %2$s இல் %1$s ஐ மவுன்ட் செய்தல் தோல்வியடைந்தது"
 
 #: src/lxc/lxc_container.c:1000
 #, fuzzy, c-format
-msgid "Failed to re-mount %s on %s flags=%x"
+msgid "Failed to re-mount %s on %s flags=0x%x"
 msgstr "%2$s flags=%3$x இல் %1$s ஐ மவுன்ட் செய்தல் தோல்வியடைந்தது"
 
 #: src/lxc/lxc_container.c:1035

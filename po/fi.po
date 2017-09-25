@@ -13350,12 +13350,12 @@ msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
 
 #: src/lxc/lxc_container.c:990
 #, fuzzy, c-format
-msgid "Failed to mount %s on %s type %s flags=%x"
+msgid "Failed to mount %s on %s type %s flags=0x%x"
 msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
 
 #: src/lxc/lxc_container.c:1000
 #, fuzzy, c-format
-msgid "Failed to re-mount %s on %s flags=%x"
+msgid "Failed to re-mount %s on %s flags=0x%x"
 msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
 
 #: src/lxc/lxc_container.c:1035
