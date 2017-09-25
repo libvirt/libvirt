@@ -5322,6 +5322,7 @@ qemuDomainRemoveVcpu(virQEMUDriverPtr driver,
     qemuDomainVcpuPrivatePtr vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpuinfo);
     int oldvcpus = virDomainDefGetVcpus(vm->def);
     unsigned int nvcpus = vcpupriv->vcpus;
+    virErrorPtr save_error = NULL;
     size_t i;
 
     if (qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE, false) < 0)
@@ -5346,11 +5347,12 @@ qemuDomainRemoveVcpu(virQEMUDriverPtr driver,
 
     virDomainAuditVcpu(vm, oldvcpus, oldvcpus - nvcpus, "update", true);
 
-    for (i = vcpu; i < vcpu + nvcpus; i++) {
-        vcpuinfo = virDomainDefGetVcpu(vm->def, i);
-        if (virCgroupDelThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i) < 0)
-            return -1;
-    }
+    virErrorPreserveLast(&save_error);
+
+    for (i = vcpu; i < vcpu + nvcpus; i++)
+        ignore_value(virCgroupDelThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i));
+
+    virErrorRestore(&save_error);
 
     return 0;
 }
