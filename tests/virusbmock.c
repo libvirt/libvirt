@@ -87,13 +87,26 @@ int open(const char *pathname, int flags, ...)
 {
     char *path;
     int ret;
+    va_list ap;
+    mode_t mode = 0;
 
     init_syms();
 
     path = get_fake_path(pathname);
     if (!path)
         return -1;
-    ret = realopen(path, flags);
+
+    /* The mode argument is mandatory when O_CREAT is set in flags,
+     * otherwise the argument is ignored.
+     */
+    if (flags & O_CREAT) {
+        va_start(ap, flags);
+        mode = va_arg(ap, mode_t);
+        va_end(ap);
+    }
+
+    ret = realopen(path, flags, mode);
+
     VIR_FREE(path);
     return ret;
 }

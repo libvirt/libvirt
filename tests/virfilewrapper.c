@@ -257,10 +257,21 @@ int open(const char *path, int flags, ...)
 {
     int ret = -1;
     char *newpath = NULL;
+    va_list ap;
+    mode_t mode = 0;
 
     PATH_OVERRIDE(newpath, path);
 
-    ret = real_open(newpath, flags);
+    /* The mode argument is mandatory when O_CREAT is set in flags,
+     * otherwise the argument is ignored.
+     */
+    if (flags & O_CREAT) {
+        va_start(ap, flags);
+        mode = va_arg(ap, mode_t);
+        va_end(ap);
+    }
+
+    ret = real_open(newpath, flags, mode);
 
     VIR_FREE(newpath);
 
