@@ -2329,8 +2329,7 @@ virStorageBackendVolResizeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     bool pre_allocate = flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE;
 
     if (vol->target.format == VIR_STORAGE_FILE_RAW) {
-        return virStorageFileResize(vol->target.path, capacity,
-                                    vol->target.allocation, pre_allocate);
+        return virStorageFileResize(vol->target.path, capacity, pre_allocate);
     } else if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
         return storagePloopResize(vol, capacity);
     } else {

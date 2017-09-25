@@ -328,7 +328,6 @@ virStorageSourcePtr virStorageFileChainLookup(virStorageSourcePtr chain,
 
 int virStorageFileResize(const char *path,
                          unsigned long long capacity,
-                         unsigned long long orig_capacity,
                          bool pre_allocate);
 
 int virStorageFileIsClusterFS(const char *path);

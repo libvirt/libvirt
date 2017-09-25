@@ -1315,17 +1315,11 @@ virStorageFileChainGetBroken(virStorageSourcePtr chain,
 int
 virStorageFileResize(const char *path,
                      unsigned long long capacity,
-                     unsigned long long orig_capacity,
                      bool pre_allocate)
 {
     int fd = -1;
     int ret = -1;
     int rc;
-    off_t offset ATTRIBUTE_UNUSED;
-    off_t len ATTRIBUTE_UNUSED;
-
-    offset = orig_capacity;
-    len = capacity - orig_capacity;
 
     if ((fd = open(path, O_RDWR)) < 0) {
         virReportSystemError(errno, _("Unable to open '%s'"), path);
@@ -1333,7 +1327,7 @@ virStorageFileResize(const char *path,
     }
 
     if (pre_allocate) {
-        if ((rc = virFileAllocate(fd, offset, len)) != 0) {
+        if ((rc = virFileAllocate(fd, 0, capacity)) != 0) {
             if (rc == -2) {
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                                _("preallocate is not supported on this platform"));
