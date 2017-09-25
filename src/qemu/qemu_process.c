@@ -5787,14 +5787,6 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessSetLinkStates(driver, vm, asyncJob) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Fetching list of active devices");
-    if (qemuDomainUpdateDeviceList(driver, vm, asyncJob) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Updating info of memory devices");
-    if (qemuDomainUpdateMemoryDeviceInfo(driver, vm, asyncJob) < 0)
-        goto cleanup;
-
     VIR_DEBUG("Setting initial memory amount");
     if (qemuProcessSetupBalloon(driver, vm, asyncJob) < 0)
         goto cleanup;
@@ -5804,14 +5796,6 @@ qemuProcessLaunch(virConnectPtr conn,
      * and friends return the correct size in case they can't grab the job */
     if (!incoming && !snapshot &&
         qemuProcessRefreshBalloonState(driver, vm, asyncJob) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Detecting actual memory size for video device");
-    if (qemuProcessUpdateVideoRamSize(driver, vm, asyncJob) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Updating disk data");
-    if (qemuProcessRefreshDisks(driver, vm, asyncJob) < 0)
         goto cleanup;
 
     if (flags & VIR_QEMU_PROCESS_START_AUTODESTROY &&
@@ -5832,6 +5816,41 @@ qemuProcessLaunch(virConnectPtr conn,
 
 
 /**
+ * qemuProcessRefreshState:
+ * @driver: qemu driver data
+ * @vm: domain to refresh
+ * @asyncJob: async job type
+ *
+ * This function gathers calls to refresh qemu state after startup. This
+ * function is called after a deferred migration finishes so that we can update
+ * state influenced by the migration stream.
+ */
+static int
+qemuProcessRefreshState(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm,
+                        qemuDomainAsyncJob asyncJob)
+{
+    VIR_DEBUG("Fetching list of active devices");
+    if (qemuDomainUpdateDeviceList(driver, vm, asyncJob) < 0)
+        return -1;
+
+    VIR_DEBUG("Updating info of memory devices");
+    if (qemuDomainUpdateMemoryDeviceInfo(driver, vm, asyncJob) < 0)
+        return -1;
+
+    VIR_DEBUG("Detecting actual memory size for video device");
+    if (qemuProcessUpdateVideoRamSize(driver, vm, asyncJob) < 0)
+        return -1;
+
+    VIR_DEBUG("Updating disk data");
+    if (qemuProcessRefreshDisks(driver, vm, asyncJob) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
  * qemuProcessFinishStartup:
  *
  * Finish starting a new domain.
@@ -5846,6 +5865,9 @@ qemuProcessFinishStartup(virConnectPtr conn,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
+
+    if (qemuProcessRefreshState(driver, vm, asyncJob) < 0)
+        goto cleanup;
 
     if (startCPUs) {
         VIR_DEBUG("Starting domain CPUs");
