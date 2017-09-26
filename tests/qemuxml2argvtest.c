@@ -2259,6 +2259,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_QXL);
     DO_TEST_PARSE_ERROR("440fx-wrong-root", NONE);
+    DO_TEST_PARSE_ERROR("440fx-ide-address-conflict", NONE);
 
     DO_TEST_PARSE_ERROR("pcie-root-port-too-many",
             QEMU_CAPS_DEVICE_IOH3420,

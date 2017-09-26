@@ -1429,15 +1429,24 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
                 cont->info.addr.pci.slot = 1;
                 cont->info.addr.pci.function = 2;
             }
+        } else {
+            /* this controller is not skipped in qemuDomainCollectPCIAddress */
+            continue;
         }
+        if (addrs->nbuses &&
+            virDomainPCIAddressReserveAddr(addrs, &cont->info.addr.pci, flags, 0) < 0)
+            goto cleanup;
     }
 
-    /* PIIX3 (ISA bridge, IDE controller, something else unknown, USB controller)
-     * hardcoded slot=1, multifunction device
-     */
+    /* Implicit PIIX3 devices living on slot 1 not handled above */
     if (addrs->nbuses) {
         memset(&tmp_addr, 0, sizeof(tmp_addr));
         tmp_addr.slot = 1;
+        /* ISA Bridge at 00:01.0 */
+        if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr, flags, 0) < 0)
+            goto cleanup;
+        /* Bridge at 00:01.3 */
+        tmp_addr.function = 3;
         if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr, flags, 0) < 0)
             goto cleanup;
     }
