@@ -34,6 +34,7 @@ struct testInfo {
     char *outInactiveName;
 
     virBitmapPtr activeVcpus;
+    bool blockjobs;
 
     virQEMUCapsPtr qemuCaps;
 };
@@ -43,10 +44,21 @@ qemuXML2XMLActivePreFormatCallback(virDomainDefPtr def,
                                    const void *opaque)
 {
     struct testInfo *info = (struct testInfo *) opaque;
+    size_t i;
 
     /* store vCPU bitmap so that the status XML can be created faithfully */
     if (!info->activeVcpus)
         info->activeVcpus = virDomainDefGetOnlineVcpumap(def);
+
+    info->blockjobs = false;
+
+    /* remember whether we have mirror jobs */
+    for (i = 0; i < def->ndisks; i++) {
+        if (def->disks[i]->mirror) {
+            info->blockjobs = true;
+            break;
+        }
+    }
 
     return 0;
 }
@@ -124,6 +136,15 @@ testGetStatuXMLPrefixVcpus(virBufferPtr buf,
 }
 
 
+static void
+testGetStatusXMLAddBlockjobs(virBufferPtr buf,
+                             const struct testInfo *data)
+{
+    virBufferAsprintf(buf, "<blockjobs active='%s'/>\n",
+                      virTristateBoolTypeToString(virTristateBoolFromBool(data->blockjobs)));
+}
+
+
 static char *
 testGetStatusXMLPrefix(const struct testInfo *data)
 {
@@ -136,9 +157,28 @@ testGetStatusXMLPrefix(const struct testInfo *data)
 
     virBufferAddStr(&buf, testStatusXMLPrefixBodyStatic);
 
+    testGetStatusXMLAddBlockjobs(&buf, data);
+
     virBufferAdjustIndent(&buf, -2);
 
     return virBufferContentAndReset(&buf);
+}
+
+
+static int
+testProcessStatusXML(virDomainObjPtr vm)
+{
+    size_t i;
+
+    /* fix the private 'blockjob' flag for disks */
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+        diskPriv->blockjob = !!disk->mirror;
+    }
+
+    return 0;
 }
 
 
@@ -199,6 +239,10 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
         VIR_TEST_DEBUG("Failed to parse domain status XML:\n%s", source);
         goto cleanup;
     }
+
+    /* process the definition if necessary */
+    if (testProcessStatusXML(obj) < 0)
+        goto cleanup;
 
     /* format it back */
     if (!(actual = virDomainObjFormat(driver.xmlopt, obj, NULL,

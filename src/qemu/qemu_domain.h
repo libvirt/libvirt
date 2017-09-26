@@ -320,6 +320,9 @@ struct _qemuDomainObjPrivate {
 
     /* If true virtlogd is used as stdio handler for character devices. */
     bool chardevStdioLogd;
+
+    /* Tracks blockjob state for vm. Valid only while reconnecting to qemu. */
+    virTristateBool reconnectBlockjobs;
 };
 
 # define QEMU_DOMAIN_PRIVATE(vm)	\

@@ -1759,6 +1759,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
     /* clear previously used namespaces */
     virBitmapFree(priv->namespaces);
     priv->namespaces = NULL;
+
+    priv->reconnectBlockjobs = VIR_TRISTATE_BOOL_ABSENT;
 }
 
 
@@ -1851,6 +1853,20 @@ qemuDomainObjPrivateXMLFormatAutomaticPlacement(virBufferPtr buf,
     VIR_FREE(nodeset);
     VIR_FREE(cpuset);
     return ret;
+}
+
+
+static int
+qemuDomainObjPrivateXMLFormatBlockjobs(virBufferPtr buf,
+                                       virDomainObjPtr vm)
+{
+    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
+    bool bj = qemuDomainHasBlockjob(vm, false);
+
+    virBufferAsprintf(&attrBuf, " active='%s'",
+                      virTristateBoolTypeToString(virTristateBoolFromBool(bj)));
+
+    return virXMLFormatElement(buf, "blockjobs", &attrBuf, NULL);
 }
 
 
@@ -1976,6 +1992,9 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
     if (priv->chardevStdioLogd)
         virBufferAddLit(buf, "<chardevStdioLogd/>\n");
 
+    if (qemuDomainObjPrivateXMLFormatBlockjobs(buf, vm) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -2064,6 +2083,22 @@ qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
     VIR_FREE(cpuset);
 
     return ret;
+}
+
+
+static int
+qemuDomainObjPrivateXMLParseBlockjobs(qemuDomainObjPrivatePtr priv,
+                                      xmlXPathContextPtr ctxt)
+{
+    char *active;
+    int tmp;
+
+    if ((active = virXPathString("string(./blockjobs/@active)", ctxt)) &&
+        (tmp = virTristateBoolTypeFromString(active)) > 0)
+        priv->reconnectBlockjobs = tmp;
+
+    VIR_FREE(active);
+    return 0;
 }
 
 
@@ -2281,6 +2316,9 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 
     priv->chardevStdioLogd = virXPathBoolean("boolean(./chardevStdioLogd)",
                                              ctxt) == 1;
+
+    if (qemuDomainObjPrivateXMLParseBlockjobs(priv, ctxt) < 0)
+        goto error;
 
     return 0;
 
