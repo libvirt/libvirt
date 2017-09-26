@@ -327,11 +327,13 @@ int virNetMessageDecodeNumFDs(virNetMessagePtr msg)
         goto cleanup;
     }
 
-    msg->nfds = numFDs;
-    if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0)
-        goto cleanup;
-    for (i = 0; i < msg->nfds; i++)
-        msg->fds[i] = -1;
+    if (msg->nfds == 0) {
+        msg->nfds = numFDs;
+        if (VIR_ALLOC_N(msg->fds, msg->nfds) < 0)
+            goto cleanup;
+        for (i = 0; i < msg->nfds; i++)
+            msg->fds[i] = -1;
+    }
 
     VIR_DEBUG("Got %zu FDs from peer", msg->nfds);
 

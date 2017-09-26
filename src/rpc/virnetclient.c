@@ -1428,8 +1428,7 @@ virNetClientIOHandleInput(virNetClientPtr client)
                 if (client->msg.header.type == VIR_NET_REPLY_WITH_FDS) {
                     size_t i;
 
-                    if (client->msg.nfds == 0 &&
-                        virNetMessageDecodeNumFDs(&client->msg) < 0)
+                    if (virNetMessageDecodeNumFDs(&client->msg) < 0)
                         return -1;
 
                     for (i = client->msg.donefds; i < client->msg.nfds; i++) {
