@@ -240,6 +240,37 @@ x86cpuidAndBits(virCPUx86CPUID *cpuid,
     cpuid->edx &= mask->edx;
 }
 
+
+static virCPUx86FeaturePtr
+x86FeatureFind(virCPUx86MapPtr map,
+               const char *name)
+{
+    size_t i;
+
+    for (i = 0; i < map->nfeatures; i++) {
+        if (STREQ(map->features[i]->name, name))
+            return map->features[i];
+    }
+
+    return NULL;
+}
+
+
+static virCPUx86FeaturePtr
+x86FeatureFindInternal(const char *name)
+{
+    size_t i;
+    size_t count = ARRAY_CARDINALITY(x86_kvm_features);
+
+    for (i = 0; i < count; i++) {
+        if (STREQ(x86_kvm_features[i].name, name))
+            return x86_kvm_features + i;
+    }
+
+    return NULL;
+}
+
+
 static int
 virCPUx86CPUIDSorter(const void *a, const void *b)
 {
@@ -750,36 +781,6 @@ x86FeatureFree(virCPUx86FeaturePtr feature)
     VIR_FREE(feature->name);
     virCPUx86DataClear(&feature->data);
     VIR_FREE(feature);
-}
-
-
-static virCPUx86FeaturePtr
-x86FeatureFind(virCPUx86MapPtr map,
-               const char *name)
-{
-    size_t i;
-
-    for (i = 0; i < map->nfeatures; i++) {
-        if (STREQ(map->features[i]->name, name))
-            return map->features[i];
-    }
-
-    return NULL;
-}
-
-
-static virCPUx86FeaturePtr
-x86FeatureFindInternal(const char *name)
-{
-    size_t i;
-    size_t count = ARRAY_CARDINALITY(x86_kvm_features);
-
-    for (i = 0; i < count; i++) {
-        if (STREQ(x86_kvm_features[i].name, name))
-            return x86_kvm_features + i;
-    }
-
-    return NULL;
 }
 
 
