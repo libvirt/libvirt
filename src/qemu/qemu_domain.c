@@ -1796,7 +1796,7 @@ qemuDomainObjPrivateXMLFormatVcpus(virBufferPtr buf,
 
 
 static int
-qemuDomainObjPtrivateXMLFormatAutomaticPlacement(virBufferPtr buf,
+qemuDomainObjPrivateXMLFormatAutomaticPlacement(virBufferPtr buf,
                                                  qemuDomainObjPrivatePtr priv)
 {
     char *nodeset = NULL;
@@ -1937,7 +1937,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
         virBufferAddLit(buf, "</devices>\n");
     }
 
-    if (qemuDomainObjPtrivateXMLFormatAutomaticPlacement(buf, priv) < 0)
+    if (qemuDomainObjPrivateXMLFormatAutomaticPlacement(buf, priv) < 0)
         return -1;
 
     /* Various per-domain paths */
