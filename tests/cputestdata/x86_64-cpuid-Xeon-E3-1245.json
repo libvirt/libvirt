@@ -240,3 +240,302 @@
   },
   "id": "model-expansion"
 }
+
+{
+  "return": [
+    {
+      "name": "max",
+      "typename": "max-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": false
+    },
+    {
+      "name": "host",
+      "typename": "host-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": false
+    },
+    {
+      "name": "base",
+      "typename": "base-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": true,
+      "migration-safe": true
+    },
+    {
+      "name": "qemu64",
+      "typename": "qemu64-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "qemu32",
+      "typename": "qemu32-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "phenom",
+      "typename": "phenom-x86_64-cpu",
+      "unavailable-features": [
+        "mmxext",
+        "fxsr-opt",
+        "3dnowext",
+        "3dnow",
+        "sse4a",
+        "npt"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "pentium3",
+      "typename": "pentium3-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "pentium2",
+      "typename": "pentium2-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "pentium",
+      "typename": "pentium-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "n270",
+      "typename": "n270-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "kvm64",
+      "typename": "kvm64-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "kvm32",
+      "typename": "kvm32-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "coreduo",
+      "typename": "coreduo-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "core2duo",
+      "typename": "core2duo-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "athlon",
+      "typename": "athlon-x86_64-cpu",
+      "unavailable-features": [
+        "mmxext",
+        "3dnowext",
+        "3dnow"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Westmere",
+      "typename": "Westmere-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Server",
+      "typename": "Skylake-Server-x86_64-cpu",
+      "unavailable-features": [
+        "avx512f",
+        "avx512dq",
+        "clwb",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "avx512f",
+        "avx512f",
+        "avx512f"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Skylake-Client",
+      "typename": "Skylake-Client-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "SandyBridge",
+      "typename": "SandyBridge-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Penryn",
+      "typename": "Penryn-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G5",
+      "typename": "Opteron_G5-x86_64-cpu",
+      "unavailable-features": [
+        "sse4a",
+        "misalignsse",
+        "xop",
+        "fma4",
+        "tbm"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G4",
+      "typename": "Opteron_G4-x86_64-cpu",
+      "unavailable-features": [
+        "sse4a",
+        "misalignsse",
+        "xop",
+        "fma4"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G3",
+      "typename": "Opteron_G3-x86_64-cpu",
+      "unavailable-features": [
+        "sse4a",
+        "misalignsse"
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G2",
+      "typename": "Opteron_G2-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Opteron_G1",
+      "typename": "Opteron_G1-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Nehalem",
+      "typename": "Nehalem-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "IvyBridge",
+      "typename": "IvyBridge-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Haswell",
+      "typename": "Haswell-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Haswell-noTSX",
+      "typename": "Haswell-noTSX-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Conroe",
+      "typename": "Conroe-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Broadwell",
+      "typename": "Broadwell-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "Broadwell-noTSX",
+      "typename": "Broadwell-noTSX-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    },
+    {
+      "name": "486",
+      "typename": "486-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": true
+    }
+  ],
+  "id": "definitions"
+}
