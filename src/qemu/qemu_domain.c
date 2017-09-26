@@ -1797,7 +1797,7 @@ qemuDomainObjPrivateXMLFormatVcpus(virBufferPtr buf,
 
 static int
 qemuDomainObjPrivateXMLFormatAutomaticPlacement(virBufferPtr buf,
-                                                 qemuDomainObjPrivatePtr priv)
+                                                qemuDomainObjPrivatePtr priv)
 {
     char *nodeset = NULL;
     char *cpuset = NULL;
