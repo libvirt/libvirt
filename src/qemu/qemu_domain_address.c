@@ -1419,7 +1419,7 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
                     cont->info.addr.pci.slot != 1 ||
                     cont->info.addr.pci.function != 2) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("PIIX3 USB controller must have PCI address 0:0:1.2"));
+                                   _("PIIX3 USB controller at index 0 must have PCI address 0:0:1.2"));
                     goto cleanup;
                 }
             } else {
