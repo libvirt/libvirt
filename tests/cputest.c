@@ -670,6 +670,11 @@ cpuTestUpdateLive(const void *arg)
 }
 
 
+typedef enum {
+    JSON_NONE,
+    JSON_HOST,
+} cpuTestCPUIDJson;
+
 #if WITH_QEMU && WITH_YAJL
 static int
 cpuTestJSONCPUID(const void *arg)
@@ -863,7 +868,7 @@ mymain(void)
 #if WITH_QEMU && WITH_YAJL
 # define DO_TEST_CPUID_JSON(arch, host, json)                           \
     do {                                                                \
-        if (json) {                                                     \
+        if (json != JSON_NONE) {                                        \
             DO_TEST(arch, cpuTestJSONCPUID, host, host,                 \
                     NULL, NULL, 0, 0);                                  \
         }                                                               \
@@ -879,7 +884,7 @@ mymain(void)
         DO_TEST(arch, cpuTestGuestCPUID, host, host,                    \
                 NULL, NULL, 0, 0);                                      \
         DO_TEST_CPUID_JSON(arch, host, json);                           \
-        if (json) {                                                     \
+        if (json != JSON_NONE) {                                        \
             DO_TEST(arch, cpuTestUpdateLive, host, host,                \
                     NULL, NULL, 0, 0);                                  \
         }                                                               \
@@ -1010,41 +1015,41 @@ mymain(void)
     DO_TEST_GUESTCPU(VIR_ARCH_PPC64, "host", "guest-legacy-incompatible", ppc_models, -1);
     DO_TEST_GUESTCPU(VIR_ARCH_PPC64, "host", "guest-legacy-invalid", ppc_models, -1);
 
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "A10-5800K", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Atom-D510", false);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Atom-N450", false);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i5-2500", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i5-2540M", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i5-4670T", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i5-6600", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-2600", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-3520M", false);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-3740QM", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-3770", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-4600U", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-4510U", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-5600U", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-5600U-arat", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core2-E6850", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core2-Q9500", false);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "EPYC-7601-32-Core", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "FX-8150", false);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Opteron-1352", false);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Opteron-2350", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Opteron-6234", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Opteron-6282", false);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Pentium-P6100", false);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Phenom-B95", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Ryzen-7-1800X-Eight-Core", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-5110", false);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E3-1245", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E5-2630", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E5-2650", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E7-4820", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E7-8890", false);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-Gold-6148", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-W3520", true);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-X5460", false);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "A10-5800K", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Atom-D510", JSON_NONE);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Atom-N450", JSON_NONE);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i5-2500", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i5-2540M", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i5-4670T", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i5-6600", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-2600", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-3520M", JSON_NONE);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-3740QM", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-3770", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-4600U", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-4510U", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-5600U", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-5600U-arat", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core2-E6850", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core2-Q9500", JSON_NONE);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "EPYC-7601-32-Core", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "FX-8150", JSON_NONE);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Opteron-1352", JSON_NONE);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Opteron-2350", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Opteron-6234", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Opteron-6282", JSON_NONE);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Pentium-P6100", JSON_NONE);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Phenom-B95", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Ryzen-7-1800X-Eight-Core", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-5110", JSON_NONE);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E3-1245", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E5-2630", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E5-2650", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E7-4820", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E7-8890", JSON_NONE);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-Gold-6148", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-W3520", JSON_HOST);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-X5460", JSON_NONE);
 
  cleanup:
 #if WITH_QEMU && WITH_YAJL
