@@ -10,4 +10,5 @@
   <feature policy='require' name='pdpe1gb'/>
   <feature policy='disable' name='xsave'/>
   <feature policy='disable' name='avx'/>
+  <feature policy='disable' name='xsaveopt'/>
 </cpu>
