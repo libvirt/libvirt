@@ -81,23 +81,23 @@ static const char testStatusXMLPrefixHeader[] =
 "  <taint flag='high-privileges'/>\n"
 "  <monitor path='/var/lib/libvirt/qemu/test.monitor' json='1' type='unix'/>\n";
 
-static const char testStatusXMLPrefixFooter[] =
-"  <qemuCaps>\n"
-"    <flag name='vnet-hdr'/>\n"
-"    <flag name='qxl.vgamem_mb'/>\n"
-"    <flag name='qxl-vga.vgamem_mb'/>\n"
-"    <flag name='pc-dimm'/>\n"
-"  </qemuCaps>\n"
-"  <devices>\n"
-"    <device alias='balloon0'/>\n"
-"    <device alias='video0'/>\n"
-"    <device alias='serial0'/>\n"
-"    <device alias='net0'/>\n"
-"    <device alias='usb'/>\n"
-"  </devices>\n"
-"  <numad nodeset='0-2' cpuset='1,3'/>\n"
-"  <libDir path='/tmp'/>\n"
-"  <channelTargetDir path='/tmp/channel'/>\n";
+static const char testStatusXMLPrefixBodyStatic[] =
+"<qemuCaps>\n"
+"  <flag name='vnet-hdr'/>\n"
+"  <flag name='qxl.vgamem_mb'/>\n"
+"  <flag name='qxl-vga.vgamem_mb'/>\n"
+"  <flag name='pc-dimm'/>\n"
+"</qemuCaps>\n"
+"<devices>\n"
+"  <device alias='balloon0'/>\n"
+"  <device alias='video0'/>\n"
+"  <device alias='serial0'/>\n"
+"  <device alias='net0'/>\n"
+"  <device alias='usb'/>\n"
+"</devices>\n"
+"<numad nodeset='0-2' cpuset='1,3'/>\n"
+"<libDir path='/tmp'/>\n"
+"<channelTargetDir path='/tmp/channel'/>\n";
 
 static const char testStatusXMLSuffix[] =
 "</domstatus>\n";
@@ -134,8 +134,9 @@ testGetStatusXMLPrefix(const struct testInfo *data)
 
     testGetStatuXMLPrefixVcpus(&buf, data);
 
+    virBufferAddStr(&buf, testStatusXMLPrefixBodyStatic);
+
     virBufferAdjustIndent(&buf, -2);
-    virBufferAdd(&buf, testStatusXMLPrefixFooter, -1);
 
     return virBufferContentAndReset(&buf);
 }
