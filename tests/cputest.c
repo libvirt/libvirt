@@ -491,7 +491,7 @@ cpuTestCPUID(bool guest, const void *arg)
         cpu->type = VIR_CPU_TYPE_HOST;
     }
 
-    if (cpuDecode(cpu, hostData, NULL, NULL) < 0)
+    if (cpuDecode(cpu, hostData, NULL) < 0)
         goto cleanup;
 
     if (virAsprintf(&result, "cpuid-%s-%s",

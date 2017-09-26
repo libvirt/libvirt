@@ -53,8 +53,7 @@ typedef virCPUCompareResult
 typedef int
 (*cpuArchDecode)    (virCPUDefPtr cpu,
                      const virCPUData *data,
-                     virDomainCapsCPUModelsPtr models,
-                     const char *preferred);
+                     virDomainCapsCPUModelsPtr models);
 
 typedef int
 (*cpuArchEncode)    (virArch arch,
@@ -162,8 +161,7 @@ virCPUCompare(virArch arch,
 int
 cpuDecode   (virCPUDefPtr cpu,
              const virCPUData *data,
-             virDomainCapsCPUModelsPtr models,
-             const char *preferred)
+             virDomainCapsCPUModelsPtr models)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int

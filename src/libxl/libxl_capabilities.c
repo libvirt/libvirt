@@ -192,7 +192,7 @@ libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info,
     ret = 0;
 
     if (!(data = libxlCapsNodeData(cpu, phy_info->hw_cap, version)) ||
-        cpuDecode(cpu, data, NULL, NULL) < 0) {
+        cpuDecode(cpu, data, NULL) < 0) {
         VIR_WARN("Failed to initialize host cpu features");
         goto error;
     }

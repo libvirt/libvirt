@@ -192,34 +192,27 @@ virCPUCompare(virArch arch,
  * @cpu: CPU definition stub to be filled in
  * @data: internal CPU data to be decoded into @cpu definition
  * @models: list of CPU models that can be considered when decoding @data
- * @preferred: CPU models that should be used if possible
  *
  * Decodes internal CPU data into a CPU definition consisting of a CPU model
  * and a list of CPU features. The @cpu model stub is supposed to have arch,
  * type, match and fallback members set, this function will add the rest. If
  * @models list is NULL, all models supported by libvirt will be considered
  * when decoding the data. In general, this function will select the model
- * closest to the CPU specified by @data unless @preferred is non-NULL, in
- * which case the @preferred model will be used as long as it is compatible
- * with @data.
+ * closest to the CPU specified by @data.
  *
  * For VIR_ARCH_I686 and VIR_ARCH_X86_64 architectures this means the computed
  * CPU definition will have the shortest possible list of additional features.
- * When @preferred is non-NULL, the @preferred model will be used even if
- * other models would result in a shorter list of additional features.
  *
  * Returns 0 on success, -1 on error.
  */
 int
 cpuDecode(virCPUDefPtr cpu,
           const virCPUData *data,
-          virDomainCapsCPUModelsPtr models,
-          const char *preferred)
+          virDomainCapsCPUModelsPtr models)
 {
     struct cpuArchDriver *driver;
 
-    VIR_DEBUG("cpu=%p, data=%p, models=%p, preferred=%s",
-              cpu, data, models, NULLSTR(preferred));
+    VIR_DEBUG("cpu=%p, data=%p, models=%p", cpu, data, models);
     if (models) {
         size_t i;
         for (i = 0; i < models->nmodels; i++)
@@ -243,7 +236,7 @@ cpuDecode(virCPUDefPtr cpu,
         return -1;
     }
 
-    return driver->decode(cpu, data, models, preferred);
+    return driver->decode(cpu, data, models);
 }
 
 

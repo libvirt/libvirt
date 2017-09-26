@@ -3397,9 +3397,7 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
     if (virCPUx86DataSetSignature(data, sigFamily, sigModel) < 0)
         goto cleanup;
 
-    if (cpuDecode(cpu, data,
-                  virQEMUCapsGetCPUDefinitions(qemuCaps, type),
-                  NULL) < 0)
+    if (cpuDecode(cpu, data, virQEMUCapsGetCPUDefinitions(qemuCaps, type)) < 0)
         goto cleanup;
 
     ret = 0;

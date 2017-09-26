@@ -669,8 +669,7 @@ virCPUppc64Compare(virCPUDefPtr host,
 static int
 ppc64DriverDecode(virCPUDefPtr cpu,
                   const virCPUData *data,
-                  virDomainCapsCPUModelsPtr models,
-                  const char *preferred ATTRIBUTE_UNUSED)
+                  virDomainCapsCPUModelsPtr models)
 {
     int ret = -1;
     struct ppc64_map *map;
@@ -741,7 +740,7 @@ virCPUppc64GetHost(virCPUDefPtr cpu,
 #endif
     data->pvr[0].mask = 0xfffffffful;
 
-    ret = ppc64DriverDecode(cpu, cpuData, models, NULL);
+    ret = ppc64DriverDecode(cpu, cpuData, models);
 
  cleanup:
     virCPUppc64DataFree(cpuData);
