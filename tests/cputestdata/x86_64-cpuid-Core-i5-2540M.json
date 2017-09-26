@@ -201,3 +201,365 @@
   },
   "id": "model-expansion"
 }
+
+{
+  "return": [
+    {
+      "typename": "max-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": false,
+      "static": false,
+      "name": "max"
+    },
+    {
+      "typename": "host-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": false,
+      "static": false,
+      "name": "host"
+    },
+    {
+      "typename": "base-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": true,
+      "name": "base"
+    },
+    {
+      "typename": "qemu64-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "qemu64"
+    },
+    {
+      "typename": "qemu32-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "qemu32"
+    },
+    {
+      "typename": "phenom-x86_64-cpu",
+      "unavailable-features": [
+        "mmxext",
+        "fxsr-opt",
+        "pdpe1gb",
+        "3dnowext",
+        "3dnow",
+        "abm",
+        "sse4a",
+        "npt"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "phenom"
+    },
+    {
+      "typename": "pentium3-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "pentium3"
+    },
+    {
+      "typename": "pentium2-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "pentium2"
+    },
+    {
+      "typename": "pentium-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "pentium"
+    },
+    {
+      "typename": "n270-x86_64-cpu",
+      "unavailable-features": [
+        "movbe"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "n270"
+    },
+    {
+      "typename": "kvm64-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "kvm64"
+    },
+    {
+      "typename": "kvm32-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "kvm32"
+    },
+    {
+      "typename": "coreduo-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "coreduo"
+    },
+    {
+      "typename": "core2duo-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "core2duo"
+    },
+    {
+      "typename": "athlon-x86_64-cpu",
+      "unavailable-features": [
+        "mmxext",
+        "3dnowext",
+        "3dnow"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "athlon"
+    },
+    {
+      "typename": "Westmere-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "Westmere"
+    },
+    {
+      "typename": "Skylake-Client-x86_64-cpu",
+      "unavailable-features": [
+        "fma",
+        "movbe",
+        "f16c",
+        "rdrand",
+        "fsgsbase",
+        "bmi1",
+        "hle",
+        "avx2",
+        "smep",
+        "bmi2",
+        "erms",
+        "invpcid",
+        "rtm",
+        "mpx",
+        "rdseed",
+        "adx",
+        "smap",
+        "abm",
+        "3dnowprefetch",
+        "xsavec",
+        "xgetbv1",
+        "mpx",
+        "mpx"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "Skylake-Client"
+    },
+    {
+      "typename": "SandyBridge-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "SandyBridge"
+    },
+    {
+      "typename": "Penryn-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "Penryn"
+    },
+    {
+      "typename": "Opteron_G5-x86_64-cpu",
+      "unavailable-features": [
+        "fma",
+        "f16c",
+        "pdpe1gb",
+        "abm",
+        "sse4a",
+        "misalignsse",
+        "3dnowprefetch",
+        "xop",
+        "fma4",
+        "tbm"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "Opteron_G5"
+    },
+    {
+      "typename": "Opteron_G4-x86_64-cpu",
+      "unavailable-features": [
+        "pdpe1gb",
+        "abm",
+        "sse4a",
+        "misalignsse",
+        "3dnowprefetch",
+        "xop",
+        "fma4"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "Opteron_G4"
+    },
+    {
+      "typename": "Opteron_G3-x86_64-cpu",
+      "unavailable-features": [
+        "abm",
+        "sse4a",
+        "misalignsse"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "Opteron_G3"
+    },
+    {
+      "typename": "Opteron_G2-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "Opteron_G2"
+    },
+    {
+      "typename": "Opteron_G1-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "Opteron_G1"
+    },
+    {
+      "typename": "Nehalem-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "Nehalem"
+    },
+    {
+      "typename": "IvyBridge-x86_64-cpu",
+      "unavailable-features": [
+        "f16c",
+        "rdrand",
+        "fsgsbase",
+        "smep",
+        "erms"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "IvyBridge"
+    },
+    {
+      "typename": "Haswell-x86_64-cpu",
+      "unavailable-features": [
+        "fma",
+        "movbe",
+        "f16c",
+        "rdrand",
+        "fsgsbase",
+        "bmi1",
+        "hle",
+        "avx2",
+        "smep",
+        "bmi2",
+        "erms",
+        "invpcid",
+        "rtm",
+        "abm"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "Haswell"
+    },
+    {
+      "typename": "Haswell-noTSX-x86_64-cpu",
+      "unavailable-features": [
+        "fma",
+        "movbe",
+        "f16c",
+        "rdrand",
+        "fsgsbase",
+        "bmi1",
+        "avx2",
+        "smep",
+        "bmi2",
+        "erms",
+        "invpcid",
+        "abm"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "Haswell-noTSX"
+    },
+    {
+      "typename": "Conroe-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "Conroe"
+    },
+    {
+      "typename": "Broadwell-x86_64-cpu",
+      "unavailable-features": [
+        "fma",
+        "movbe",
+        "f16c",
+        "rdrand",
+        "fsgsbase",
+        "bmi1",
+        "hle",
+        "avx2",
+        "smep",
+        "bmi2",
+        "erms",
+        "invpcid",
+        "rtm",
+        "rdseed",
+        "adx",
+        "smap",
+        "abm",
+        "3dnowprefetch"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "Broadwell"
+    },
+    {
+      "typename": "Broadwell-noTSX-x86_64-cpu",
+      "unavailable-features": [
+        "fma",
+        "movbe",
+        "f16c",
+        "rdrand",
+        "fsgsbase",
+        "bmi1",
+        "avx2",
+        "smep",
+        "bmi2",
+        "erms",
+        "invpcid",
+        "rdseed",
+        "adx",
+        "smap",
+        "abm",
+        "3dnowprefetch"
+      ],
+      "migration-safe": true,
+      "static": false,
+      "name": "Broadwell-noTSX"
+    },
+    {
+      "typename": "486-x86_64-cpu",
+      "unavailable-features": [],
+      "migration-safe": true,
+      "static": false,
+      "name": "486"
+    }
+  ],
+  "id": "definitions"
+}
