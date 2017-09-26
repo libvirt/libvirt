@@ -29,7 +29,7 @@
       <target type='virtio' name='test3'/>
     </channel>
     <channel type='udp'>
-      <source mode='bind'/>
+      <source mode='bind' host='localhost'/>
       <source mode='connect' service='5678'/>
       <target type='virtio' name='test4'/>
     </channel>

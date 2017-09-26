@@ -23307,19 +23307,15 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_CHR_TYPE_UDP:
         if (def->data.udp.bindService || def->data.udp.bindHost) {
             virBufferAddLit(buf, "<source mode='bind'");
-            if (def->data.udp.bindService)
-                virBufferEscapeString(buf, " host='%s'", def->data.udp.bindHost);
-            if (def->data.udp.bindService)
-                virBufferEscapeString(buf, " service='%s'", def->data.udp.bindService);
+            virBufferEscapeString(buf, " host='%s'", def->data.udp.bindHost);
+            virBufferEscapeString(buf, " service='%s'", def->data.udp.bindService);
             virBufferAddLit(buf, "/>\n");
         }
 
         if (def->data.udp.connectService || def->data.udp.connectHost) {
             virBufferAddLit(buf, "<source mode='connect'");
-            if (def->data.udp.connectService)
-                virBufferEscapeString(buf, " host='%s'", def->data.udp.connectHost);
-            if (def->data.udp.connectService)
-                virBufferEscapeString(buf, " service='%s'", def->data.udp.connectService);
+            virBufferEscapeString(buf, " host='%s'", def->data.udp.connectHost);
+            virBufferEscapeString(buf, " service='%s'", def->data.udp.connectService);
             virBufferAddLit(buf, "/>\n");
         }
         break;
