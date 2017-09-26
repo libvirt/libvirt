@@ -1415,9 +1415,11 @@
 
   <define name="diskBackingStore">
     <element name="backingStore">
-      <attribute name="index">
-        <ref name="positiveInteger"/>
-      </attribute>
+      <optional>
+        <attribute name="index">
+          <ref name="positiveInteger"/>
+        </attribute>
+      </optional>
       <interleave>
         <ref name="diskSource"/>
         <ref name="diskBackingChain"/>
