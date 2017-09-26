@@ -58,5 +58,6 @@ $(
         qom_get model-id
     fi
 )
+{"execute":"query-cpu-definitions","id":"definitions"}
 {"execute":"quit"}
 EOF

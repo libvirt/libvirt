@@ -228,17 +228,22 @@ def parseFeatureWords(path):
         s = f.read()
 
     props = {}
-    for i in range(5):
+    rest = []
+    chunk = 0
+    while s != "":
         (data, pos) = dec.raw_decode(s)
-        if i == 0:
+        if chunk == 0:
             features = data["return"]
-        else:
+        elif chunk < 5:
             keys = ["family", "model", "stepping", "model-id"]
-            props[keys[i - 1]] = data["return"]
+            props[keys[chunk - 1]] = data["return"]
+        else:
+            rest.append(data)
 
         while pos < len(s) and s[pos] != "{":
             pos += 1
         s = s[pos:]
+        chunk += 1
 
     if props["model-id"].find("Intel") != -1:
         props["vendor"] = "GenuineIntel"
@@ -255,13 +260,13 @@ def parseFeatureWords(path):
         leaf = cpuidLeaf(cpuid, in_eax, in_ecx)
         leaf[feat["cpuid-register"].lower()] = feat["features"]
 
-    return props, cpuid
+    return props, cpuid, rest
 
 
 def parseQemu(path, features):
     cpuid = {}
     with open(path, "r") as f:
-        data = json.load(f)
+        data, pos = json.JSONDecoder().raw_decode(f.read())
 
     for (prop, val) in data["return"]["model"]["props"].iteritems():
         if val and prop in features:
@@ -288,6 +293,7 @@ def parseCpuid(path):
 
 
 def formatCpuid(cpuid, path, comment):
+    print path
     with open(path, "w") as f:
         f.write("<!-- " + comment + " -->\n")
         f.write("<cpudata arch='x86'>\n")
@@ -304,18 +310,24 @@ def formatCpuid(cpuid, path, comment):
 
 
 def convert(path):
-    props, cpuid = parseFeatureWords(path)
+    props, cpuid, rest = parseFeatureWords(path)
 
     for feature in cpuidMap:
         value = cpuidIsSet(cpuid, feature)
         for name in feature["names"]:
             props[name] = value
 
+    print path
     with open(path, "w") as f:
         json.dump({"return": {"model": {"name": "base", "props": props}},
                    "id": "model-expansion"},
                   f, indent = 2, separators = (',', ': '))
         f.write("\n")
+
+        for chunk in rest:
+            f.write("\n")
+            json.dump(chunk, f, indent = 2, separators = (',', ': '))
+            f.write("\n")
 
 
 def diff(features, path):

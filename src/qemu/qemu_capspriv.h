@@ -101,4 +101,9 @@ virQEMUCapsParseHelpStr(const char *qemu,
 int
 virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps,
                           const char *str);
+
+int
+virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
+                                  qemuMonitorPtr mon,
+                                  bool tcg);
 #endif

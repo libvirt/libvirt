@@ -673,6 +673,7 @@ cpuTestUpdateLive(const void *arg)
 typedef enum {
     JSON_NONE,
     JSON_HOST,
+    JSON_MODELS,
 } cpuTestCPUIDJson;
 
 #if WITH_QEMU && WITH_YAJL
@@ -704,9 +705,18 @@ cpuTestJSONCPUID(const void *arg)
     if (!(qemuCaps = virQEMUCapsNew()))
         goto cleanup;
 
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
+    if (data->flags == JSON_MODELS)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_QUERY_CPU_DEFINITIONS);
+
     virQEMUCapsSetArch(qemuCaps, data->arch);
     virQEMUCapsSetCPUModelInfo(qemuCaps, VIR_DOMAIN_VIRT_KVM, model);
     model = NULL;
+
+    if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps,
+                                          qemuMonitorTestGetMonitor(testMon),
+                                          false) < 0)
+        goto cleanup;
 
     if (VIR_ALLOC(cpu) < 0)
         goto cleanup;
@@ -870,7 +880,7 @@ mymain(void)
     do {                                                                \
         if (json != JSON_NONE) {                                        \
             DO_TEST(arch, cpuTestJSONCPUID, host, host,                 \
-                    NULL, NULL, 0, 0);                                  \
+                    NULL, NULL, json, 0);                               \
         }                                                               \
     } while (0)
 #else
