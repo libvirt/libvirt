@@ -296,6 +296,8 @@ struct _virStorageSource {
     char *tlsAlias;
     char *tlsCertdir;
     bool tlsVerify;
+
+    bool detected; /* true if this entry was not provided by the user */
 };
 
 
