@@ -42,7 +42,7 @@ json()
     while read; do
         $first || echo
         first=false
-        json_reformat <<<"$REPLY" | tr -s '\n'
+        $(dirname $0)/cpu-reformat.py <<<"$REPLY"
     done
 }
 
