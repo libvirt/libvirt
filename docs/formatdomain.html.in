@@ -4020,7 +4020,7 @@
   &lt;devices&gt;
     &lt;hostdev mode='subsystem' type='mdev' model='vfio-pci'&gt;
     &lt;source&gt;
-      &lt;address uuid='c2177883-f1bb-47f0-914d-32a22e3a8804'&gt;
+      &lt;address uuid='c2177883-f1bb-47f0-914d-32a22e3a8804'/&gt;
     &lt;/source&gt;
     &lt;/hostdev&gt;
   &lt;/devices&gt;
