@@ -3367,6 +3367,54 @@ qemuDomainRedirdevDefValidate(const virDomainRedirdevDef *def)
 
 
 static int
+qemuDomainWatchdogDefValidate(const virDomainWatchdogDef *dev,
+                              const virDomainDef *def)
+{
+    switch ((virDomainWatchdogModel) dev->model) {
+    case VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB:
+        if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("%s model of watchog can go only on PCI bus"),
+                           virDomainWatchdogModelTypeToString(dev->model));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_WATCHDOG_MODEL_IB700:
+        if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("%s model of watchog can go only on ISA bus"),
+                           virDomainWatchdogModelTypeToString(dev->model));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_WATCHDOG_MODEL_DIAG288:
+        if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("%s model of watchog is virtual and cannot go on any bus."),
+                           virDomainWatchdogModelTypeToString(dev->model));
+            return -1;
+        }
+        if (!(ARCH_IS_S390(def->os.arch))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("%s model of watchdog is allowed for s390 and s390x only"),
+                           virDomainWatchdogModelTypeToString(dev->model));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_WATCHDOG_MODEL_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                             const virDomainDef *def,
                             void *opaque ATTRIBUTE_UNUSED)
@@ -3473,6 +3521,9 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
             goto cleanup;
     } else if (dev->type == VIR_DOMAIN_DEVICE_REDIRDEV) {
         if (qemuDomainRedirdevDefValidate(dev->data.redirdev) < 0)
+            goto cleanup;
+    } else if (dev->type == VIR_DOMAIN_DEVICE_WATCHDOG) {
+        if (qemuDomainWatchdogDefValidate(dev->data.watchdog, def) < 0)
             goto cleanup;
     }
 
