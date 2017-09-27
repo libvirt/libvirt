@@ -605,7 +605,7 @@ cpuTestUpdateLiveCompare(virArch arch,
             (cmp > 0 &&
              featExp->policy == VIR_CPU_FEATURE_DISABLE)) {
             VIR_TEST_VERBOSE("Actual CPU has extra feature '%s'\n",
-                             featAct->name);
+                             cmp <= 0 ? featAct->name : featExp->name);
             ret = -1;
         }
     }
