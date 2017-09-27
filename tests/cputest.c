@@ -460,6 +460,64 @@ cpuTestHasFeature(const void *arg)
 }
 
 
+typedef enum {
+    JSON_NONE,
+    JSON_HOST,
+    JSON_MODELS,
+} cpuTestCPUIDJson;
+
+#if WITH_QEMU && WITH_YAJL
+static virQEMUCapsPtr
+cpuTestMakeQEMUCaps(const struct data *data)
+{
+    virQEMUCapsPtr qemuCaps = NULL;
+    qemuMonitorTestPtr testMon = NULL;
+    qemuMonitorCPUModelInfoPtr model = NULL;
+    char *json = NULL;
+
+    if (virAsprintf(&json, "%s/cputestdata/%s-cpuid-%s.json",
+                    abs_srcdir, virArchToString(data->arch), data->host) < 0)
+        goto error;
+
+    if (!(testMon = qemuMonitorTestNewFromFile(json, driver.xmlopt, true)))
+        goto error;
+
+    if (qemuMonitorGetCPUModelExpansion(qemuMonitorTestGetMonitor(testMon),
+                                        QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC,
+                                        "host", true, &model) < 0)
+        goto error;
+
+    if (!(qemuCaps = virQEMUCapsNew()))
+        goto error;
+
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
+    if (data->flags == JSON_MODELS)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_QUERY_CPU_DEFINITIONS);
+
+    virQEMUCapsSetArch(qemuCaps, data->arch);
+    virQEMUCapsSetCPUModelInfo(qemuCaps, VIR_DOMAIN_VIRT_KVM, model);
+    model = NULL;
+
+    if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps,
+                                          qemuMonitorTestGetMonitor(testMon),
+                                          false) < 0)
+        goto error;
+
+ cleanup:
+    qemuMonitorCPUModelInfoFree(model);
+    qemuMonitorTestFree(testMon);
+    VIR_FREE(json);
+
+    return qemuCaps;
+
+ error:
+    virObjectUnref(qemuCaps);
+    qemuCaps = NULL;
+    goto cleanup;
+}
+#endif
+
+
 static int
 cpuTestCPUID(bool guest, const void *arg)
 {
@@ -670,52 +728,20 @@ cpuTestUpdateLive(const void *arg)
 }
 
 
-typedef enum {
-    JSON_NONE,
-    JSON_HOST,
-    JSON_MODELS,
-} cpuTestCPUIDJson;
-
 #if WITH_QEMU && WITH_YAJL
 static int
 cpuTestJSONCPUID(const void *arg)
 {
     const struct data *data = arg;
-    qemuMonitorCPUModelInfoPtr model = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
     virCPUDefPtr cpu = NULL;
-    qemuMonitorTestPtr testMon = NULL;
-    char *json = NULL;
     char *result = NULL;
     int ret = -1;
 
-    if (virAsprintf(&json, "%s/cputestdata/%s-cpuid-%s.json",
-                    abs_srcdir, virArchToString(data->arch), data->host) < 0 ||
-        virAsprintf(&result, "cpuid-%s-json", data->host) < 0)
+    if (virAsprintf(&result, "cpuid-%s-json", data->host) < 0)
         goto cleanup;
 
-    if (!(testMon = qemuMonitorTestNewFromFile(json, driver.xmlopt, true)))
-        goto cleanup;
-
-    if (qemuMonitorGetCPUModelExpansion(qemuMonitorTestGetMonitor(testMon),
-                                        QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC,
-                                        "host", true, &model) < 0)
-        goto cleanup;
-
-    if (!(qemuCaps = virQEMUCapsNew()))
-        goto cleanup;
-
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
-    if (data->flags == JSON_MODELS)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_QUERY_CPU_DEFINITIONS);
-
-    virQEMUCapsSetArch(qemuCaps, data->arch);
-    virQEMUCapsSetCPUModelInfo(qemuCaps, VIR_DOMAIN_VIRT_KVM, model);
-    model = NULL;
-
-    if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps,
-                                          qemuMonitorTestGetMonitor(testMon),
-                                          false) < 0)
+    if (!(qemuCaps = cpuTestMakeQEMUCaps(data)))
         goto cleanup;
 
     if (VIR_ALLOC(cpu) < 0)
@@ -732,12 +758,9 @@ cpuTestJSONCPUID(const void *arg)
     ret = cpuTestCompareXML(data->arch, cpu, result);
 
  cleanup:
-    qemuMonitorCPUModelInfoFree(model);
     virObjectUnref(qemuCaps);
-    qemuMonitorTestFree(testMon);
     virCPUDefFree(cpu);
     VIR_FREE(result);
-    VIR_FREE(json);
     return ret;
 }
 #endif
