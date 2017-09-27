@@ -6975,12 +6975,16 @@ qemuProcessReconnect(void *opaque)
         if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
             goto error;
 
-        /* XXX we should be able to restore all data from XML in the future.
-         * This should be the only place that calls qemuDomainDetermineDiskChain
-         * with @report_broken == false to guarantee best-effort domain
-         * reconnect */
-        if (qemuDomainDetermineDiskChain(driver, obj, disk, true, false) < 0)
-            goto error;
+        /* backing chains need to be refreshed only if they could change */
+        if (priv->reconnectBlockjobs != VIR_TRISTATE_BOOL_NO) {
+            /* This should be the only place that calls
+             * qemuDomainDetermineDiskChain with @report_broken == false
+             * to guarantee best-effort domain reconnect */
+            if (qemuDomainDetermineDiskChain(driver, obj, disk, true, false) < 0)
+                goto error;
+        } else {
+            VIR_DEBUG("skipping backing chain detection for '%s'", disk->dst);
+        }
 
         dev.type = VIR_DOMAIN_DEVICE_DISK;
         dev.data.disk = disk;
