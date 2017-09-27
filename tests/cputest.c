@@ -515,6 +515,36 @@ cpuTestMakeQEMUCaps(const struct data *data)
     qemuCaps = NULL;
     goto cleanup;
 }
+
+
+static virDomainCapsCPUModelsPtr
+cpuTestGetCPUModels(const struct data *data)
+{
+    virDomainCapsCPUModelsPtr models = NULL;
+    virQEMUCapsPtr qemuCaps;
+
+    if (data->flags != JSON_MODELS)
+        return NULL;
+
+    if (!(qemuCaps = cpuTestMakeQEMUCaps(data)))
+        return NULL;
+
+    models = virQEMUCapsGetCPUDefinitions(qemuCaps, VIR_DOMAIN_VIRT_KVM);
+    virObjectRef(models);
+
+    virObjectUnref(qemuCaps);
+
+    return models;
+}
+
+#else /* if WITH_QEMU && WITH_YAJL */
+
+static virDomainCapsCPUModelsPtr
+cpuTestGetCPUModels(const struct data *data ATTRIBUTE_UNUSED)
+{
+    return NULL;
+}
+
 #endif
 
 
@@ -528,6 +558,7 @@ cpuTestCPUID(bool guest, const void *arg)
     char *host = NULL;
     virCPUDefPtr cpu = NULL;
     char *result = NULL;
+    virDomainCapsCPUModelsPtr models = NULL;
 
     if (virAsprintf(&hostFile, "%s/cputestdata/%s-cpuid-%s.xml",
                     abs_srcdir, virArchToString(data->arch), data->host) < 0)
@@ -549,7 +580,10 @@ cpuTestCPUID(bool guest, const void *arg)
         cpu->type = VIR_CPU_TYPE_HOST;
     }
 
-    if (cpuDecode(cpu, hostData, NULL) < 0)
+    if (guest)
+        models = cpuTestGetCPUModels(data);
+
+    if (cpuDecode(cpu, hostData, models) < 0)
         goto cleanup;
 
     if (virAsprintf(&result, "cpuid-%s-%s",
@@ -565,6 +599,7 @@ cpuTestCPUID(bool guest, const void *arg)
     virCPUDataFree(hostData);
     virCPUDefFree(cpu);
     VIR_FREE(result);
+    virObjectUnref(models);
     return ret;
 }
 
@@ -686,6 +721,8 @@ cpuTestUpdateLive(const void *arg)
     virCPUDataPtr disabledData = NULL;
     char *expectedFile = NULL;
     virCPUDefPtr expected = NULL;
+    virDomainCapsCPUModelsPtr hvModels = NULL;
+    virDomainCapsCPUModelsPtr models = NULL;
     int ret = -1;
 
     if (virAsprintf(&cpuFile, "cpuid-%s-guest", data->host) < 0 ||
@@ -704,11 +741,42 @@ cpuTestUpdateLive(const void *arg)
         !(disabledData = virCPUDataParse(disabled)))
         goto cleanup;
 
-    if (virCPUUpdateLive(data->arch, cpu, enabledData, disabledData) < 0)
-        goto cleanup;
-
     if (virAsprintf(&expectedFile, "cpuid-%s-json", data->host) < 0 ||
         !(expected = cpuTestLoadXML(data->arch, expectedFile)))
+        goto cleanup;
+
+    /* In case the host CPU signature does not exactly match any CPU model from
+     * cpu_map.xml, the CPU model we detect from CPUID may differ from the one
+     * we compute by asking QEMU. Since this test expands both CPU models and
+     * compares their features, we can try to translate the 'actual' CPU to
+     * use the CPU model from 'expected'.
+     */
+    if (STRNEQ(cpu->model, expected->model)) {
+        virDomainCapsCPUModelPtr hvModel;
+        char **blockers = NULL;
+        virDomainCapsCPUUsable usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
+
+        if (!(models = virDomainCapsCPUModelsNew(0)))
+            goto cleanup;
+
+        hvModels = cpuTestGetCPUModels(data);
+        hvModel = virDomainCapsCPUModelsGet(hvModels, expected->model);
+
+        if (hvModel) {
+            blockers = hvModel->blockers;
+            usable = hvModel->usable;
+        }
+
+        if (virDomainCapsCPUModelsAdd(models, expected->model, -1,
+                                      usable, blockers) < 0)
+            goto cleanup;
+
+        cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
+        ignore_value(virCPUTranslate(data->arch, cpu, models));
+        cpu->fallback = VIR_CPU_FALLBACK_FORBID;
+    }
+
+    if (virCPUUpdateLive(data->arch, cpu, enabledData, disabledData) < 0)
         goto cleanup;
 
     ret = cpuTestUpdateLiveCompare(data->arch, cpu, expected);
@@ -724,6 +792,8 @@ cpuTestUpdateLive(const void *arg)
     virCPUDataFree(disabledData);
     VIR_FREE(expectedFile);
     virCPUDefFree(expected);
+    virObjectUnref(hvModels);
+    virObjectUnref(models);
     return ret;
 }
 
@@ -915,11 +985,11 @@ mymain(void)
         DO_TEST(arch, cpuTestHostCPUID, host, host,                     \
                 NULL, NULL, 0, 0);                                      \
         DO_TEST(arch, cpuTestGuestCPUID, host, host,                    \
-                NULL, NULL, 0, 0);                                      \
+                NULL, NULL, json, 0);                                   \
         DO_TEST_CPUID_JSON(arch, host, json);                           \
         if (json != JSON_NONE) {                                        \
             DO_TEST(arch, cpuTestUpdateLive, host, host,                \
-                    NULL, NULL, 0, 0);                                  \
+                    NULL, NULL, json, 0);                               \
         }                                                               \
     } while (0)
 
