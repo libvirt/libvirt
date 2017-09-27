@@ -637,6 +637,7 @@ learnIPAddressThread(void *arg)
                                                    req->filterparams);
             VIR_DEBUG("Result from applying firewall rules on "
                       "%s with IP addr %s : %d", req->ifname, inetaddr, ret);
+            VIR_FREE(inetaddr);
         }
     } else {
         if (showError)
