@@ -2514,19 +2514,28 @@
               <dd>
               The <code>protocol</code> attribute specifies the protocol to
               access to the requested image. Possible values are "nbd",
-              "iscsi", "rbd", "sheepdog", "gluster" or "vxhs".  If the
-              <code>protocol</code> attribute is "rbd", "sheepdog", "gluster"
-              or "vxhs", an additional attribute <code>name</code> is
-              mandatory to specify which volume/image will be used. For "nbd",
-              the <code>name</code> attribute is optional. For "iscsi"
-              (<span class="since">since 1.0.4</span>), the <code>name</code>
-              attribute may include a logical unit number, separated from the
-              target's name by a slash (e.g.,
+              "iscsi", "rbd", "sheepdog", "gluster" or "vxhs".
+
+              <p>If the <code>protocol</code> attribute is "rbd", "sheepdog",
+              "gluster", or "vxhs", an additional attribute <code>name</code>
+              is mandatory to specify which volume/image will be used.
+              </p>
+
+              <p>For "nbd", the <code>name</code> attribute is optional.
+              </p>
+
+              <p>For "iscsi" (<span class="since">since 1.0.4</span>), the
+              <code>name</code> attribute may include a logical unit number,
+              separated from the target's name by a slash (e.g.,
               <code>iqn.2013-07.com.example:iscsi-pool/1</code>). If not
               specified, the default LUN is zero.
+              </p>
+
+              <p>
               For "vxhs" (<span class="since">since 3.8.0</span>), the
               <code>name</code> is the UUID of the volume, assigned by the
               HyperScale server.
+              </p>
               <span class="since">Since 0.8.7</span>
               </dd>
             <dt><code>volume</code></dt>
