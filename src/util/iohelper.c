@@ -109,9 +109,21 @@ runIO(const char *path, int fd, int oflags)
     while (1) {
         ssize_t got;
 
-        if ((got = read(fdin, buf, buflen)) < 0) {
-            if (errno == EINTR)
+        /* If we read with O_DIRECT from file we can't use saferead as
+         * it can lead to unaligned read after reading last bytes.
+         * If we write with O_DIRECT use should use saferead so that
+         * writes will be aligned.
+         * In other cases using saferead reduces number of syscalls.
+         */
+        if (fdin == fd && direct) {
+            if ((got = read(fdin, buf, buflen)) < 0 &&
+                errno == EINTR)
                 continue;
+        } else {
+            got = saferead(fdin, buf, buflen);
+        }
+
+        if (got < 0) {
             virReportSystemError(errno, _("Unable to read %s"), fdinname);
             goto cleanup;
         }
