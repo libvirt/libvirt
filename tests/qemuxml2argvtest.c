@@ -599,6 +599,9 @@ mymain(void)
     VIR_FREE(driver.config->chardevTLSx509certdir);
     if (VIR_STRDUP_QUIET(driver.config->chardevTLSx509certdir, "/etc/pki/libvirt-chardev") < 0)
         return EXIT_FAILURE;
+    VIR_FREE(driver.config->vxhsTLSx509certdir);
+    if (VIR_STRDUP_QUIET(driver.config->vxhsTLSx509certdir, "/etc/pki/libvirt-vxhs") < 0)
+        return EXIT_FAILURE;
 
     VIR_FREE(driver.config->hugetlbfs);
     if (VIR_ALLOC_N(driver.config->hugetlbfs, 2) < 0)
