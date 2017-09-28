@@ -26,9 +26,7 @@
 
 #include "internal.h"
 
-#include "viralloc.h"
 #include "virerror.h"
-#include "virstring.h"
 #include "datatypes.h"
 #include "nwfilter_params.h"
 #include "nwfilter_ipaddrmap.h"
@@ -54,7 +52,6 @@ virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr)
 {
     int ret = -1;
     virNWFilterVarValuePtr val;
-    char *tmp = NULL;
 
     virMutexLock(&ipAddressMapLock);
 
@@ -68,18 +65,14 @@ virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr)
             virNWFilterVarValueFree(val);
         goto cleanup;
     } else {
-        if (VIR_STRDUP(tmp, addr) < 0)
+        if (virNWFilterVarValueAddValue(val, addr) < 0)
             goto cleanup;
-        if (virNWFilterVarValueAddValue(val, tmp) < 0)
-            goto cleanup;
-        tmp = NULL;
     }
 
     ret = 0;
 
  cleanup:
     virMutexUnlock(&ipAddressMapLock);
-    VIR_FREE(tmp);
 
     return ret;
 }
