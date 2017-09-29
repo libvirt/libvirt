@@ -1055,9 +1055,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
             if (virStrToLong_i(values[i], NULL, 10, &wantvlan) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse vlan in '%s'"), val);
-                virDomainNetDefFree(def);
-                def = NULL;
-                goto cleanup;
+                goto error;
             }
         } else if (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
                    STREQ(keywords[i], "script") && STRNEQ(values[i], "")) {
@@ -1076,18 +1074,13 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
      */
 
     nic = qemuFindNICForVLAN(nnics, nics, wantvlan);
-    if (!nic) {
-        virDomainNetDefFree(def);
-        def = NULL;
-        goto cleanup;
-    }
+    if (!nic)
+        goto error;
 
     if (!STRPREFIX(nic, "nic")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot parse NIC definition '%s'"), nic);
-        virDomainNetDefFree(def);
-        def = NULL;
-        goto cleanup;
+        goto error;
     }
 
     for (i = 0; i < nkeywords; i++) {
@@ -1103,9 +1096,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
                               &values,
                               &nkeywords,
                               0) < 0) {
-            virDomainNetDefFree(def);
-            def = NULL;
-            goto cleanup;
+            goto error;
         }
     } else {
         nkeywords = 0;
@@ -1118,9 +1109,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unable to parse mac address '%s'"),
                                values[i]);
-                virDomainNetDefFree(def);
-                def = NULL;
-                goto cleanup;
+                goto error;
             }
         } else if (STREQ(keywords[i], "model")) {
             def->model = values[i];
@@ -1135,9 +1124,7 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
             if (virStrToLong_ul(values[i], NULL, 10, &def->tune.sndbuf) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot parse sndbuf size in '%s'"), val);
-                virDomainNetDefFree(def);
-                def = NULL;
-                goto cleanup;
+                goto error;
             }
             def->tune.sndbuf_specified = true;
         }
@@ -1154,6 +1141,11 @@ qemuParseCommandLineNet(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(keywords);
     VIR_FREE(values);
     return def;
+
+ error:
+    virDomainNetDefFree(def);
+    def = NULL;
+    goto cleanup;
 }
 
 
