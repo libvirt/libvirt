@@ -6027,8 +6027,10 @@ qemuProcessPrepareHostStorage(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               unsigned int flags)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     size_t i;
     bool cold_boot = flags & VIR_QEMU_PROCESS_START_COLD;
+    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     for (i = vm->def->ndisks; i > 0; i--) {
         size_t idx = i - 1;
@@ -6037,7 +6039,9 @@ qemuProcessPrepareHostStorage(virQEMUDriverPtr driver,
         if (virStorageSourceIsEmpty(disk->src))
             continue;
 
-        virStorageSourceBackingStoreClear(disk->src);
+        /* backing chain needs to be redetected if we aren't using blockdev */
+        if (!blockdev)
+            virStorageSourceBackingStoreClear(disk->src);
 
         if (qemuDomainDetermineDiskChain(driver, vm, disk, true) >= 0)
             continue;
@@ -7713,7 +7717,8 @@ qemuProcessReconnect(void *opaque)
             goto error;
 
         /* backing chains need to be refreshed only if they could change */
-        if (priv->reconnectBlockjobs != VIR_TRISTATE_BOOL_NO) {
+        if (priv->reconnectBlockjobs != VIR_TRISTATE_BOOL_NO &&
+            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
             /* This should be the only place that calls
              * qemuDomainDetermineDiskChain with @report_broken == false
              * to guarantee best-effort domain reconnect */
