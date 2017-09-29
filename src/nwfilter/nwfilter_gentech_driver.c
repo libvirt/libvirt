@@ -515,15 +515,13 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                     virNWFilterVarAccessPrint(rule->varAccess[j], &buf);
                     if (virBufferError(&buf)) {
                         virReportOOMError();
-                        rc = -1;
-                        break;
+                        return -1;
                     }
 
                     val = virNWFilterVarValueCreateSimpleCopyValue("1");
                     if (!val) {
                         virBufferFreeAndReset(&buf);
-                        rc = -1;
-                        break;
+                        return -1;
                     }
 
                     varAccess = virBufferContentAndReset(&buf);
@@ -532,21 +530,16 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                     VIR_FREE(varAccess);
                 }
             }
-            if (rc)
-                break;
         } else if (inc) {
             VIR_DEBUG("Following filter %s", inc->filterref);
             if (!(obj = virNWFilterObjListFindInstantiateFilter(driver->nwfilters,
-                                                                inc->filterref))) {
-                rc = -1;
-                break;
-            }
+                                                                inc->filterref)))
+                return -1;
 
             /* create a temporary hashmap for depth-first tree traversal */
             if (!(tmpvars = virNWFilterCreateVarsFrom(inc->params, vars))) {
-                rc = -1;
                 virNWFilterObjUnlock(obj);
-                break;
+                return -1;
             }
 
             next_filter = virNWFilterObjGetDef(obj);
@@ -571,10 +564,10 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
 
             virNWFilterObjUnlock(obj);
             if (rc < 0)
-                break;
+                return -1;
         }
     }
-    return rc;
+    return 0;
 }
 
 
