@@ -1664,7 +1664,11 @@
       <dd>These elements enable ('yes') or disable ('no') BIOS support
         for S3 (suspend-to-mem) and S4 (suspend-to-disk) ACPI sleep
         states. If nothing is specified, then the hypervisor will be
-        left with its default value.</dd>
+        left with its default value.<br/>
+        Note: This setting cannot prevent the guest OS from performing
+        a suspend as the guest OS itself can choose to circumvent the
+        unavailability of the sleep states (e.g. S4 by turning off
+        completely).</dd>
     </dl>
 
     <h3><a id="elementsFeatures">Hypervisor features</a></h3>
