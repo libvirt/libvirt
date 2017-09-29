@@ -525,9 +525,12 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                     }
 
                     varAccess = virBufferContentAndReset(&buf);
-                    virNWFilterHashTablePut(missing_vars, varAccess,
-                                            val);
+                    rc = virNWFilterHashTablePut(missing_vars, varAccess, val);
                     VIR_FREE(varAccess);
+                    if (rc < 0) {
+                        virNWFilterVarValueFree(val);
+                        return -1;
+                    }
                 }
             }
         } else if (inc) {
