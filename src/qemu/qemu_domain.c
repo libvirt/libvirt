@@ -6050,27 +6050,57 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              bool report_broken)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    int ret = 0;
+    virStorageSourcePtr src = disk->src;
+    int ret = -1;
     uid_t uid;
     gid_t gid;
 
-    if (virStorageSourceIsEmpty(disk->src))
+    if (virStorageSourceIsEmpty(src)) {
+        ret = 0;
         goto cleanup;
-
-    if (virStorageSourceHasBacking(disk->src)) {
-        if (force_probe)
-            virStorageSourceBackingStoreClear(disk->src);
-        else
-            goto cleanup;
     }
 
-    qemuDomainGetImageIds(cfg, vm, disk->src, NULL, &uid, &gid);
+    if (virStorageSourceHasBacking(src)) {
+        if (force_probe) {
+            virStorageSourceBackingStoreClear(src);
+        } else {
+            /* skip to the end of the chain */
+            while (virStorageSourceIsBacking(src)) {
+                if (report_broken &&
+                    virStorageFileSupportsAccess(src)) {
 
-    if (virStorageFileGetMetadata(disk->src,
+                    if (qemuDomainStorageFileInit(driver, vm, src, disk->src) < 0)
+                        goto cleanup;
+
+                    if (virStorageFileAccess(src, F_OK) < 0) {
+                        virStorageFileReportBrokenChain(errno, src, disk->src);
+                        virStorageFileDeinit(src);
+                        goto cleanup;
+                    }
+
+                    virStorageFileDeinit(src);
+                }
+                src = src->backingStore;
+            }
+        }
+    }
+
+    /* We skipped to the end of the chain. Skip detection if there's the
+     * terminator. (An allocated but empty backingStore) */
+    if (src->backingStore) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    qemuDomainGetImageIds(cfg, vm, src, disk->src, &uid, &gid);
+
+    if (virStorageFileGetMetadata(src,
                                   uid, gid,
                                   cfg->allowDiskFormatProbing,
                                   report_broken) < 0)
-        ret = -1;
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
     virObjectUnref(cfg);
