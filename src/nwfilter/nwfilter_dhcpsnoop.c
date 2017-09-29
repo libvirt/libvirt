@@ -476,9 +476,6 @@ virNWFilterSnoopIPLeaseInstallRule(virNWFilterSnoopIPLeasePtr ipl,
     if (virNWFilterIPAddrMapAddIPAddr(req->ifname, ipaddr) < 0)
         goto exit_snooprequnlock;
 
-    /* ipaddr now belongs to the map */
-    ipaddr = NULL;
-
     if (!instantiate) {
         rc = 0;
         goto exit_snooprequnlock;
