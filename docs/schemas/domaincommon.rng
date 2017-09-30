@@ -1811,6 +1811,11 @@
       <optional>
         <ref name="detect_zeroes"/>
       </optional>
+      <optional>
+        <attribute name='queues'>
+          <ref name="positiveInteger"/>
+        </attribute>
+      </optional>
       <ref name="virtioOptions"/>
       <empty/>
     </element>

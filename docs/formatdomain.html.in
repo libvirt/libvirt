@@ -2397,7 +2397,7 @@
     &lt;target dev='vdc' bus='virtio'/&gt;
   &lt;/disk&gt;
   &lt;disk type='file' device='disk'&gt;
-    &lt;driver name='qemu' type='qcow2'/&gt;
+    &lt;driver name='qemu' type='qcow2' queues='4'/&gt;
     &lt;source file='/var/lib/libvirt/images/domain.qcow'/&gt;
     &lt;backingStore type='file'&gt;
       &lt;format type='qcow2'/&gt;
@@ -3056,6 +3056,10 @@
             for a disk device <code>target</code> configured to use "virtio"
             <code>bus</code> and "pci" or "ccw" <code>address</code> types.
             <span class='since'>Since 1.2.8 (QEMU 2.1)</span>
+          </li>
+          <li>
+            The optional <code>queues</code> attribute specifies the number of
+            virt queues for virtio-blk. (<span class="since">Since 3.9.0</span>)
           </li>
           <li>
           For virtio disks,

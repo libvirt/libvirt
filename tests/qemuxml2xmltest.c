@@ -449,6 +449,7 @@ mymain(void)
     DO_TEST("disk-usb-device", NONE);
     DO_TEST("disk-virtio", NONE);
     DO_TEST("floppy-drive-fat", NONE);
+    DO_TEST("disk-virtio-drive-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES);
     DO_TEST("disk-drive-boot-disk", NONE);
     DO_TEST("disk-drive-boot-cdrom", NONE);
     DO_TEST("disk-drive-error-policy-stop", NONE);
