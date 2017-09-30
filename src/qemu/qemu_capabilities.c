@@ -442,6 +442,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               /* 270 */
               "vxhs",
+              "virtio-blk.num-queues",
     );
 
 
@@ -1692,6 +1693,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
     { "event_idx", QEMU_CAPS_VIRTIO_BLK_EVENT_IDX },
     { "scsi", QEMU_CAPS_VIRTIO_BLK_SCSI },
     { "logical_block_size", QEMU_CAPS_BLOCKIO },
+    { "num-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioNet[] = {

@@ -136,6 +136,7 @@
   <flag name='vnc-multi-servers'/>
   <flag name='chardev-reconnect'/>
   <flag name='virtio-gpu.max_outputs'/>
+  <flag name='virtio-blk.num-queues'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
