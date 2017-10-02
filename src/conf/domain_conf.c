@@ -26781,7 +26781,7 @@ virDomainStateReasonFromString(virDomainState state, const char *reason)
  */
 
 virDomainNetType
-virDomainNetGetActualType(virDomainNetDefPtr iface)
+virDomainNetGetActualType(const virDomainNetDef *iface)
 {
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
         return iface->type;

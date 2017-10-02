@@ -1468,7 +1468,7 @@ xenHypervisorDomainInterfaceStats(virDomainDefPtr def,
         return -1;
     }
 
-    return virNetDevTapInterfaceStats(path, stats);
+    return virNetDevTapInterfaceStats(path, stats, true);
 #else
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("/proc/net/dev: Interface not found"));

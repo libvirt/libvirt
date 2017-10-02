@@ -11040,7 +11040,8 @@ qemuDomainInterfaceStats(virDomainPtr dom,
         if (virNetDevOpenvswitchInterfaceStats(path, stats) < 0)
             goto cleanup;
     } else {
-        if (virNetDevTapInterfaceStats(path, stats) < 0)
+        if (virNetDevTapInterfaceStats(path, stats,
+                                       !virDomainNetTypeSharesHostView(net)) < 0)
             goto cleanup;
     }
 
@@ -19559,26 +19560,27 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
     /* Check the path is one of the domain's network interfaces. */
     for (i = 0; i < dom->def->nnets; i++) {
+        virDomainNetDefPtr net = dom->def->nets[i];
         virDomainNetType actualType;
 
-        if (!dom->def->nets[i]->ifname)
+        if (!net->ifname)
             continue;
 
         memset(&tmp, 0, sizeof(tmp));
 
-        actualType = virDomainNetGetActualType(dom->def->nets[i]);
+        actualType = virDomainNetGetActualType(net);
 
         QEMU_ADD_NAME_PARAM(record, maxparams,
-                            "net", "name", i, dom->def->nets[i]->ifname);
+                            "net", "name", i, net->ifname);
 
         if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
-            if (virNetDevOpenvswitchInterfaceStats(dom->def->nets[i]->ifname,
-                                                   &tmp) < 0) {
+            if (virNetDevOpenvswitchInterfaceStats(net->ifname, &tmp) < 0) {
                 virResetLastError();
                 continue;
             }
         } else {
-            if (virNetDevTapInterfaceStats(dom->def->nets[i]->ifname, &tmp) < 0) {
+            if (virNetDevTapInterfaceStats(net->ifname, &tmp,
+                                           !virDomainNetTypeSharesHostView(net)) < 0) {
                 virResetLastError();
                 continue;
             }

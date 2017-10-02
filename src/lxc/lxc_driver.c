@@ -2878,7 +2878,8 @@ lxcDomainInterfaceStats(virDomainPtr dom,
         goto endjob;
     }
 
-    if (virNetDevTapInterfaceStats(path, stats) < 0)
+    if (virNetDevTapInterfaceStats(path, stats,
+                                   !virDomainNetTypeSharesHostView(net)) < 0)
         goto endjob;
 
     ret = 0;

@@ -2012,7 +2012,8 @@ openvzDomainInterfaceStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virNetDevTapInterfaceStats(path, stats) < 0)
+    if (virNetDevTapInterfaceStats(path, stats,
+                                   !virDomainNetTypeSharesHostView(net)) < 0)
         goto cleanup;
 
     ret = 0;

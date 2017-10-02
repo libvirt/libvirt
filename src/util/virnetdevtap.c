@@ -676,14 +676,27 @@ int virNetDevTapCreateInBridgePort(const char *brname,
 }
 
 /*-------------------- interface stats --------------------*/
-/* Just reads the named interface, so not Xen or QEMU-specific.
- * NB. Caller must check that libvirt user is trying to query
- * the interface of a domain they own.  We do no such checking.
+
+/**
+ * virNetDevTapInterfaceStats:
+ * @ifname: interface
+ * @stats: where to store statistics
+ * @swapped: whether to swap RX/TX fields
+ *
+ * Fetch RX/TX statistics for given named interface (@ifname) and
+ * store them at @stats. The returned statistics are always from
+ * domain POV. Because in some cases this means swapping RX/TX in
+ * the stats and in others this means no swapping (consider TAP
+ * vs macvtap) caller might choose if the returned stats should
+ * be @swapped or not.
+ *
+ * Returns 0 on success, -1 otherwise (with error reported).
  */
 #ifdef __linux__
 int
 virNetDevTapInterfaceStats(const char *ifname,
-                           virDomainInterfaceStatsPtr stats)
+                           virDomainInterfaceStatsPtr stats,
+                           bool swapped)
 {
     int ifname_len;
     FILE *fp;
@@ -718,30 +731,35 @@ virNetDevTapInterfaceStats(const char *ifname,
         *colon = '\0';
         if (colon-ifname_len >= line &&
             STREQ(colon-ifname_len, ifname)) {
-            /* IMPORTANT NOTE!
-             * /proc/net/dev vif<domid>.nn sees the network from the point
-             * of view of dom0 / hypervisor.  So bytes TRANSMITTED by dom0
-             * are bytes RECEIVED by the domain.  That's why the TX/RX fields
-             * appear to be swapped here.
-             */
             if (sscanf(colon+1,
                        "%lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld",
-                       &tx_bytes, &tx_packets, &tx_errs, &tx_drop,
-                       &dummy, &dummy, &dummy, &dummy,
                        &rx_bytes, &rx_packets, &rx_errs, &rx_drop,
+                       &dummy, &dummy, &dummy, &dummy,
+                       &tx_bytes, &tx_packets, &tx_errs, &tx_drop,
                        &dummy, &dummy, &dummy, &dummy) != 16)
                 continue;
 
-            stats->rx_bytes = rx_bytes;
-            stats->rx_packets = rx_packets;
-            stats->rx_errs = rx_errs;
-            stats->rx_drop = rx_drop;
-            stats->tx_bytes = tx_bytes;
-            stats->tx_packets = tx_packets;
-            stats->tx_errs = tx_errs;
-            stats->tx_drop = tx_drop;
-            VIR_FORCE_FCLOSE(fp);
+            if (swapped) {
+                stats->rx_bytes = tx_bytes;
+                stats->rx_packets = tx_packets;
+                stats->rx_errs = tx_errs;
+                stats->rx_drop = tx_drop;
+                stats->tx_bytes = rx_bytes;
+                stats->tx_packets = rx_packets;
+                stats->tx_errs = rx_errs;
+                stats->tx_drop = rx_drop;
+            } else {
+                stats->rx_bytes = rx_bytes;
+                stats->rx_packets = rx_packets;
+                stats->rx_errs = rx_errs;
+                stats->rx_drop = rx_drop;
+                stats->tx_bytes = tx_bytes;
+                stats->tx_packets = tx_packets;
+                stats->tx_errs = tx_errs;
+                stats->tx_drop = tx_drop;
+            }
 
+            VIR_FORCE_FCLOSE(fp);
             return 0;
         }
     }
@@ -754,7 +772,8 @@ virNetDevTapInterfaceStats(const char *ifname,
 #elif defined(HAVE_GETIFADDRS) && defined(AF_LINK)
 int
 virNetDevTapInterfaceStats(const char *ifname,
-                           virDomainInterfaceStatsPtr stats)
+                           virDomainInterfaceStatsPtr stats,
+                           bool swapped)
 {
     struct ifaddrs *ifap, *ifa;
     struct if_data *ifd;
@@ -775,18 +794,33 @@ virNetDevTapInterfaceStats(const char *ifname,
 
         if (STREQ(ifa->ifa_name, ifname)) {
             ifd = (struct if_data *)ifa->ifa_data;
-            stats->tx_bytes = ifd->ifi_ibytes;
-            stats->tx_packets = ifd->ifi_ipackets;
-            stats->tx_errs = ifd->ifi_ierrors;
-            stats->tx_drop = ifd->ifi_iqdrops;
-            stats->rx_bytes = ifd->ifi_obytes;
-            stats->rx_packets = ifd->ifi_opackets;
-            stats->rx_errs = ifd->ifi_oerrors;
+            if (swapped) {
+                stats->tx_bytes = ifd->ifi_ibytes;
+                stats->tx_packets = ifd->ifi_ipackets;
+                stats->tx_errs = ifd->ifi_ierrors;
+                stats->tx_drop = ifd->ifi_iqdrops;
+                stats->rx_bytes = ifd->ifi_obytes;
+                stats->rx_packets = ifd->ifi_opackets;
+                stats->rx_errs = ifd->ifi_oerrors;
 # ifdef HAVE_STRUCT_IF_DATA_IFI_OQDROPS
-            stats->rx_drop = ifd->ifi_oqdrops;
+                stats->rx_drop = ifd->ifi_oqdrops;
 # else
-            stats->rx_drop = 0;
+                stats->rx_drop = 0;
 # endif
+            } else {
+                stats->tx_bytes = ifd->ifi_obytes;
+                stats->tx_packets = ifd->ifi_opackets;
+                stats->tx_errs = ifd->ifi_oerrors;
+# ifdef HAVE_STRUCT_IF_DATA_IFI_OQDROPS
+                stats->tx_drop = ifd->ifi_oqdrops;
+# else
+                stats->tx_drop = 0;
+# endif
+                stats->rx_bytes = ifd->ifi_ibytes;
+                stats->rx_packets = ifd->ifi_ipackets;
+                stats->rx_errs = ifd->ifi_ierrors;
+                stats->rx_drop = ifd->ifi_iqdrops;
+            }
 
             ret = 0;
             break;
@@ -803,7 +837,8 @@ virNetDevTapInterfaceStats(const char *ifname,
 #else
 int
 virNetDevTapInterfaceStats(const char *ifname ATTRIBUTE_UNUSED,
-                           virDomainInterfaceStatsPtr stats ATTRIBUTE_UNUSED)
+                           virDomainInterfaceStatsPtr stats ATTRIBUTE_UNUSED,
+                           bool swapped ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("interface stats not implemented on this platform"));
