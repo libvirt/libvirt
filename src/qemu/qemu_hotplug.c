@@ -1209,7 +1209,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     actualBandwidth = virDomainNetGetActualBandwidth(net);
     if (actualBandwidth) {
         if (virNetDevSupportBandwidth(actualType)) {
-            if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false) < 0)
+            if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false,
+                                      !virDomainNetTypeSharesHostView(net)) < 0)
                 goto cleanup;
         } else {
             VIR_WARN("setting bandwidth on interfaces of "
@@ -3362,7 +3363,8 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     if (needBandwidthSet) {
         if (virNetDevBandwidthSet(newdev->ifname,
                                   virDomainNetGetActualBandwidth(newdev),
-                                  false) < 0)
+                                  false,
+                                  !virDomainNetTypeSharesHostView(newdev)) < 0)
             goto cleanup;
         needReplaceDevDef = true;
     }

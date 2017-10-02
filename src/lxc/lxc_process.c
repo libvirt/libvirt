@@ -601,7 +601,8 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         actualBandwidth = virDomainNetGetActualBandwidth(net);
         if (actualBandwidth) {
             if (virNetDevSupportBandwidth(type)) {
-                if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false) < 0)
+                if (virNetDevBandwidthSet(net->ifname, actualBandwidth, false,
+                                          !virDomainNetTypeSharesHostView(net)) < 0)
                     goto cleanup;
             } else {
                 VIR_WARN("setting bandwidth on interfaces of "

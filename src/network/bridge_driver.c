@@ -2445,7 +2445,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         VIR_FORCE_CLOSE(tapfd);
     }
 
-    if (virNetDevBandwidthSet(def->bridge, def->bandwidth, true) < 0)
+    if (virNetDevBandwidthSet(def->bridge, def->bandwidth, true, true) < 0)
         goto err5;
 
     VIR_FREE(macTapIfName);

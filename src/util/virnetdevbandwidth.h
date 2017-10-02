@@ -45,7 +45,8 @@ void virNetDevBandwidthFree(virNetDevBandwidthPtr def);
 
 int virNetDevBandwidthSet(const char *ifname,
                           virNetDevBandwidthPtr bandwidth,
-                          bool hierarchical_class)
+                          bool hierarchical_class,
+                          bool swapped)
     ATTRIBUTE_RETURN_CHECK;
 int virNetDevBandwidthClear(const char *ifname);
 int virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
