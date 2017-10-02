@@ -2847,7 +2847,6 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
 }
 
 
-#ifdef __linux__
 static int
 lxcDomainInterfaceStats(virDomainPtr dom,
                         const char *path,
@@ -2895,16 +2894,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
     virDomainObjEndAPI(&vm);
     return ret;
 }
-#else
-static int
-lxcDomainInterfaceStats(virDomainPtr dom,
-                        const char *path ATTRIBUTE_UNUSED,
-                        virDomainInterfaceStatsPtr stats ATTRIBUTE_UNUSED)
-{
-    virReportUnsupportedError();
-    return -1;
-}
-#endif
+
 
 static int lxcDomainGetAutostart(virDomainPtr dom,
                                    int *autostart)
