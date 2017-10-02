@@ -15649,11 +15649,17 @@ int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net)
     return 0;
 }
 
-/* virDomainNetFindIdx: search according to mac address and guest side
- *                      PCI address (if specified)
+/**
+ * virDomainNetFindIdx:
+ * @def: domain definition
+ * @net: interface definition
  *
- * Return: index of match if unique match found
- *         -1 otherwise and an error is logged
+ * Lookup domain's network interface based on passed @net
+ * definition. If @net's MAC address was auto generated,
+ * the MAC comparison is ignored.
+ *
+ * Return: index of match if unique match found,
+ *         -1 otherwise and an error is logged.
  */
 int
 virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
@@ -15661,53 +15667,66 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
     size_t i;
     int matchidx = -1;
     char mac[VIR_MAC_STRING_BUFLEN];
+    bool MACAddrSpecified = !net->mac.generated;
     bool PCIAddrSpecified = virDomainDeviceAddressIsValid(&net->info,
                                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI);
 
     for (i = 0; i < def->nnets; i++) {
-        if (virMacAddrCmp(&def->nets[i]->mac, &net->mac))
+        if (MACAddrSpecified &&
+            virMacAddrCmp(&def->nets[i]->mac, &net->mac) != 0)
             continue;
 
-        if ((matchidx >= 0) && !PCIAddrSpecified) {
+        if (PCIAddrSpecified &&
+            !virPCIDeviceAddressEqual(&def->nets[i]->info.addr.pci,
+                                      &net->info.addr.pci))
+            continue;
+
+        if (matchidx >= 0) {
             /* there were multiple matches on mac address, and no
              * qualifying guest-side PCI address was given, so we must
              * fail (NB: a USB address isn't adequate, since it may
              * specify only vendor and product ID, and there may be
              * multiples of those.
              */
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("multiple devices matching mac address %s found"),
-                           virMacAddrFormat(&net->mac, mac));
+            if (MACAddrSpecified) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("multiple devices matching MAC address %s found"),
+                               virMacAddrFormat(&net->mac, mac));
+            } else {
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("multiple matching devices found"));
+            }
+
             return -1;
         }
-        if (PCIAddrSpecified) {
-            if (virPCIDeviceAddressEqual(&def->nets[i]->info.addr.pci,
-                                         &net->info.addr.pci)) {
-                /* exit early if the pci address was specified and
-                 * it matches, as this guarantees no duplicates.
-                 */
-                matchidx = i;
-                break;
-            }
-        } else {
-            /* no PCI address given, so there may be multiple matches */
-            matchidx = i;
-        }
+
+        matchidx = i;
     }
+
     if (matchidx < 0) {
-        if (PCIAddrSpecified) {
+        if (MACAddrSpecified && PCIAddrSpecified) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("no device matching mac address %s found on "
+                           _("no device matching MAC address %s found on "
                              "%.4x:%.2x:%.2x.%.1x"),
                            virMacAddrFormat(&net->mac, mac),
                            net->info.addr.pci.domain,
                            net->info.addr.pci.bus,
                            net->info.addr.pci.slot,
                            net->info.addr.pci.function);
-        } else {
+        } else if (PCIAddrSpecified) {
             virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("no device matching mac address %s found"),
+                           _("no device found on %.4x:%.2x:%.2x.%.1x"),
+                           net->info.addr.pci.domain,
+                           net->info.addr.pci.bus,
+                           net->info.addr.pci.slot,
+                           net->info.addr.pci.function);
+        } else if (MACAddrSpecified) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("no device matching MAC address %s found"),
                            virMacAddrFormat(&net->mac, mac));
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("no matching device found"));
         }
     }
     return matchidx;
