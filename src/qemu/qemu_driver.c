@@ -11045,7 +11045,7 @@ qemuDomainInterfaceStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+    if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
         if (virNetDevOpenvswitchInterfaceStats(path, stats) < 0)
             goto cleanup;
     } else {
@@ -19568,15 +19568,19 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
     /* Check the path is one of the domain's network interfaces. */
     for (i = 0; i < dom->def->nnets; i++) {
+        virDomainNetType actualType;
+
         if (!dom->def->nets[i]->ifname)
             continue;
 
         memset(&tmp, 0, sizeof(tmp));
 
+        actualType = virDomainNetGetActualType(dom->def->nets[i]);
+
         QEMU_ADD_NAME_PARAM(record, maxparams,
                             "net", "name", i, dom->def->nets[i]->ifname);
 
-        if (dom->def->nets[i]->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+        if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
             if (virNetDevOpenvswitchInterfaceStats(dom->def->nets[i]->ifname,
                                                    &tmp) < 0) {
                 virResetLastError();
