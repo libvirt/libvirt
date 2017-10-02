@@ -107,6 +107,7 @@ void
 virMacAddrSet(virMacAddrPtr dst, const virMacAddr *src)
 {
     memcpy(dst, src, sizeof(*src));
+    dst->generated = false;
 }
 
 /**
@@ -120,6 +121,7 @@ void
 virMacAddrSetRaw(virMacAddrPtr dst, const unsigned char src[VIR_MAC_BUFLEN])
 {
     memcpy(dst->addr, src, VIR_MAC_BUFLEN);
+    dst->generated = false;
 }
 
 /**
@@ -149,6 +151,7 @@ virMacAddrParse(const char* str, virMacAddrPtr addr)
 {
     size_t i;
 
+    addr->generated = false;
     errno = 0;
     for (i = 0; i < VIR_MAC_BUFLEN; i++) {
         char *end_ptr;
@@ -217,6 +220,7 @@ virMacAddrParseHex(const char *str, virMacAddrPtr addr)
         str[VIR_MAC_HEXLEN])
         return -1;
 
+    addr->generated = false;
     for (i = 0; i < VIR_MAC_BUFLEN; i++)
         addr->addr[i] = (virHexToBin(str[2 * i]) << 4 |
                          virHexToBin(str[2 * i + 1]));
@@ -232,6 +236,7 @@ void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
     addr->addr[3] = virRandomBits(8);
     addr->addr[4] = virRandomBits(8);
     addr->addr[5] = virRandomBits(8);
+    addr->generated = true;
 }
 
 /* The low order bit of the first byte is the "multicast" bit. */

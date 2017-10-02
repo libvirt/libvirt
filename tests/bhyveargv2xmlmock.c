@@ -16,6 +16,7 @@ virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
     addr->addr[3] = 0;
     addr->addr[4] = 0;
     addr->addr[5] = 0;
+    addr->generated = true;
 }
 
 int
