@@ -27004,16 +27004,36 @@ virDomainNetFind(virDomainDefPtr def, const char *device)
             }
         }
     } else { /* ifname */
-        for (i = 0; i < def->nnets; i++) {
-            if (STREQ_NULLABLE(device, def->nets[i]->ifname)) {
-                net = def->nets[i];
-                break;
-            }
-        }
+        net = virDomainNetFindByName(def, device);
     }
 
     return net;
 }
+
+
+/**
+ * virDomainNetFindByName:
+ * @def: domain's def
+ * @ifname: interface name
+ *
+ * Finds a domain's net def given the interface name.
+ *
+ * Returns a pointer to the net def or NULL if not found.
+ */
+virDomainNetDefPtr
+virDomainNetFindByName(virDomainDefPtr def,
+                       const char *ifname)
+{
+    size_t i;
+
+    for (i = 0; i < def->nnets; i++) {
+        if (STREQ_NULLABLE(ifname, def->nets[i]->ifname))
+            return def->nets[i];
+    }
+
+    return NULL;
+}
+
 
 /**
  * virDomainDeviceDefCopy:

@@ -422,6 +422,7 @@ virDomainNetDefClear;
 virDomainNetDefFormat;
 virDomainNetDefFree;
 virDomainNetFind;
+virDomainNetFindByName;
 virDomainNetFindIdx;
 virDomainNetGenerateMAC;
 virDomainNetGetActualBandwidth;
