@@ -5523,6 +5523,8 @@ virDomainBlockStatsFlags(virDomainPtr dom,
  * as -1, which indicates that the hypervisor does not support
  * that particular statistic.
  *
+ * The returned stats are from domain's point of view.
+ *
  * Returns: 0 in case of success or -1 in case of failure.
  */
 int
@@ -11301,7 +11303,7 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                         as unsigned long long.
  *
  * VIR_DOMAIN_STATS_INTERFACE:
- *     Return network interface statistics.
+ *     Return network interface statistics (from domain point of view).
  *     The typed parameter keys are in this format:
  *
  *     "net.count" - number of network interfaces on this domain
