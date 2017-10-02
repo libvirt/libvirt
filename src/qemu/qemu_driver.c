@@ -11016,7 +11016,6 @@ qemuDomainInterfaceStats(virDomainPtr dom,
 {
     virDomainObjPtr vm;
     virDomainNetDefPtr net = NULL;
-    size_t i;
     int ret = -1;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -11031,15 +11030,7 @@ qemuDomainInterfaceStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    /* Check the path is one of the domain's network interfaces. */
-    for (i = 0; i < vm->def->nnets; i++) {
-        if (STREQ_NULLABLE(vm->def->nets[i]->ifname, path)) {
-            net = vm->def->nets[i];
-            break;
-        }
-    }
-
-    if (!net) {
+    if (!(net = virDomainNetFindByName(vm->def, path))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid path, '%s' is not a known interface"), path);
         goto cleanup;

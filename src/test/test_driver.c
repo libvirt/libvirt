@@ -593,25 +593,16 @@ testDomainGenerateIfname(virDomainDefPtr domdef)
 {
     int maxif = 1024;
     int ifctr;
-    size_t i;
 
     for (ifctr = 0; ifctr < maxif; ++ifctr) {
+        virDomainNetDefPtr net = NULL;
         char *ifname;
-        int found = 0;
 
         if (virAsprintf(&ifname, "testnet%d", ifctr) < 0)
             return NULL;
 
         /* Generate network interface names */
-        for (i = 0; i < domdef->nnets; i++) {
-            if (domdef->nets[i]->ifname &&
-                STREQ(domdef->nets[i]->ifname, ifname)) {
-                found = 1;
-                break;
-            }
-        }
-
-        if (!found)
+        if (!(net = virDomainNetFindByName(domdef, ifname)))
             return ifname;
         VIR_FREE(ifname);
     }
@@ -3176,8 +3167,9 @@ static int testDomainInterfaceStats(virDomainPtr domain,
     virDomainObjPtr privdom;
     struct timeval tv;
     unsigned long long statbase;
-    size_t i;
-    int found = 0, ret = -1;
+    virDomainNetDefPtr net = NULL;
+    int ret = -1;
+
 
     if (!(privdom = testDomObjFromDomain(domain)))
         return -1;
@@ -3188,15 +3180,7 @@ static int testDomainInterfaceStats(virDomainPtr domain,
         goto error;
     }
 
-    for (i = 0; i < privdom->def->nnets; i++) {
-        if (privdom->def->nets[i]->ifname &&
-            STREQ(privdom->def->nets[i]->ifname, path)) {
-            found = 1;
-            break;
-        }
-    }
-
-    if (!found) {
+    if (!(net = virDomainNetFindByName(privdom->def, path))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid path, '%s' is not a known interface"), path);
         goto error;

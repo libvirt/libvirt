@@ -2853,9 +2853,9 @@ lxcDomainInterfaceStats(virDomainPtr dom,
                         virDomainInterfaceStatsPtr stats)
 {
     virDomainObjPtr vm;
-    size_t i;
     int ret = -1;
     virLXCDriverPtr driver = dom->conn->privateData;
+    virDomainNetDefPtr net = NULL;
 
     if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
@@ -2872,20 +2872,16 @@ lxcDomainInterfaceStats(virDomainPtr dom,
         goto endjob;
     }
 
-    /* Check the path is one of the domain's network interfaces. */
-    for (i = 0; i < vm->def->nnets; i++) {
-        if (vm->def->nets[i]->ifname &&
-            STREQ(vm->def->nets[i]->ifname, path)) {
-            ret = 0;
-            break;
-        }
-    }
-
-    if (ret == 0)
-        ret = virNetDevTapInterfaceStats(path, stats);
-    else
+    if (!(net = virDomainNetFindByName(vm->def, path))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Invalid path, '%s' is not a known interface"), path);
+        goto endjob;
+    }
+
+    if (virNetDevTapInterfaceStats(path, stats) < 0)
+        goto endjob;
+
+    ret = 0;
 
  endjob:
     virLXCDomainObjEndJob(driver, vm);

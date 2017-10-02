@@ -4961,7 +4961,7 @@ libxlDomainInterfaceStats(virDomainPtr dom,
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    size_t i;
+    virDomainNetDefPtr net = NULL;
     int ret = -1;
 
     if (!(vm = libxlDomObjFromDomain(dom)))
@@ -4979,20 +4979,16 @@ libxlDomainInterfaceStats(virDomainPtr dom,
         goto endjob;
     }
 
-    /* Check the path is one of the domain's network interfaces. */
-    for (i = 0; i < vm->def->nnets; i++) {
-        if (vm->def->nets[i]->ifname &&
-            STREQ(vm->def->nets[i]->ifname, path)) {
-            ret = 0;
-            break;
-        }
-    }
-
-    if (ret == 0)
-        ret = virNetDevTapInterfaceStats(path, stats);
-    else
+    if (!(net = virDomainNetFindByName(vm->def, path))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("'%s' is not a known interface"), path);
+        goto endjob;
+    }
+
+    if (virNetDevTapInterfaceStats(path, stats) < 0)
+        goto endjob;
+
+    ret = 0;
 
  endjob:
     libxlDomainObjEndJob(driver, vm);
