@@ -6310,83 +6310,12 @@ virDomainDeviceDimmAddressParseXML(xmlNodePtr node,
 }
 
 
-/* Parse the XML definition for a device address
- * @param node XML nodeset to parse for device address definition
- */
 static int
-virDomainDeviceInfoParseXML(xmlNodePtr node,
-                            virHashTablePtr bootHash,
-                            virDomainDeviceInfoPtr info,
-                            unsigned int flags)
+virDomainDeviceAddressParseXML(xmlNodePtr address,
+                               virDomainDeviceInfoPtr info)
 {
-    xmlNodePtr cur;
-    xmlNodePtr address = NULL;
-    xmlNodePtr master = NULL;
-    xmlNodePtr alias = NULL;
-    xmlNodePtr boot = NULL;
-    xmlNodePtr rom = NULL;
-    char *type = NULL;
     int ret = -1;
-
-    virDomainDeviceInfoClear(info);
-
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (alias == NULL &&
-                !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
-                virXMLNodeNameEqual(cur, "alias")) {
-                alias = cur;
-            } else if (address == NULL &&
-                       virXMLNodeNameEqual(cur, "address")) {
-                address = cur;
-            } else if (master == NULL &&
-                       virXMLNodeNameEqual(cur, "master")) {
-                master = cur;
-            } else if (boot == NULL &&
-                       (flags & VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) &&
-                       virXMLNodeNameEqual(cur, "boot")) {
-                boot = cur;
-            } else if (rom == NULL &&
-                       (flags & VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) &&
-                       virXMLNodeNameEqual(cur, "rom")) {
-                rom = cur;
-            }
-        }
-        cur = cur->next;
-    }
-
-    if (alias)
-        info->alias = virXMLPropString(alias, "name");
-
-    if (master) {
-        info->mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
-        if (virDomainDeviceUSBMasterParseXML(master, &info->master.usb) < 0)
-            goto cleanup;
-    }
-
-    if (boot) {
-        if (virDomainDeviceBootParseXML(boot, info, bootHash))
-            goto cleanup;
-    }
-
-    if (rom) {
-        char *rombar = virXMLPropString(rom, "bar");
-        if (rombar &&
-            ((info->rombar = virTristateSwitchTypeFromString(rombar)) <= 0)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown rom bar value '%s'"), rombar);
-            VIR_FREE(rombar);
-            goto cleanup;
-        }
-        VIR_FREE(rombar);
-        info->romfile = virXMLPropString(rom, "file");
-    }
-
-    if (!address)
-        return 0;
-
-    type = virXMLPropString(address, "type");
+    char *type = virXMLPropString(address, "type");
 
     if (type) {
         if ((info->type = virDomainDeviceAddressTypeFromString(type)) <= 0) {
@@ -6462,11 +6391,94 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
     }
 
     ret = 0;
-
  cleanup:
-    if (ret == -1)
+    VIR_FREE(type);
+    return ret;
+}
+
+
+/* Parse the XML definition for a device address
+ * @param node XML nodeset to parse for device address definition
+ */
+static int
+virDomainDeviceInfoParseXML(xmlNodePtr node,
+                            virHashTablePtr bootHash,
+                            virDomainDeviceInfoPtr info,
+                            unsigned int flags)
+{
+    xmlNodePtr cur;
+    xmlNodePtr address = NULL;
+    xmlNodePtr master = NULL;
+    xmlNodePtr alias = NULL;
+    xmlNodePtr boot = NULL;
+    xmlNodePtr rom = NULL;
+    char *type = NULL;
+    char *rombar = NULL;
+    int ret = -1;
+
+    virDomainDeviceInfoClear(info);
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (alias == NULL &&
+                !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
+                virXMLNodeNameEqual(cur, "alias")) {
+                alias = cur;
+            } else if (address == NULL &&
+                       virXMLNodeNameEqual(cur, "address")) {
+                address = cur;
+            } else if (master == NULL &&
+                       virXMLNodeNameEqual(cur, "master")) {
+                master = cur;
+            } else if (boot == NULL &&
+                       (flags & VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) &&
+                       virXMLNodeNameEqual(cur, "boot")) {
+                boot = cur;
+            } else if (rom == NULL &&
+                       (flags & VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) &&
+                       virXMLNodeNameEqual(cur, "rom")) {
+                rom = cur;
+            }
+        }
+        cur = cur->next;
+    }
+
+    if (alias)
+        info->alias = virXMLPropString(alias, "name");
+
+    if (master) {
+        info->mastertype = VIR_DOMAIN_CONTROLLER_MASTER_USB;
+        if (virDomainDeviceUSBMasterParseXML(master, &info->master.usb) < 0)
+            goto cleanup;
+    }
+
+    if (boot) {
+        if (virDomainDeviceBootParseXML(boot, info, bootHash))
+            goto cleanup;
+    }
+
+    if (rom) {
+        if ((rombar = virXMLPropString(rom, "bar")) &&
+            ((info->rombar = virTristateSwitchTypeFromString(rombar)) <= 0)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown rom bar value '%s'"), rombar);
+            goto cleanup;
+        }
+        info->romfile = virXMLPropString(rom, "file");
+    }
+
+    if (address &&
+        virDomainDeviceAddressParseXML(address, info) < 0)
+        goto cleanup;
+
+
+    ret = 0;
+ cleanup:
+    if (ret < 0)
         VIR_FREE(info->alias);
     VIR_FREE(type);
+    VIR_FREE(rombar);
     return ret;
 }
 
