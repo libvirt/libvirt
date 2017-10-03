@@ -386,6 +386,7 @@ virDomainHubTypeFromString;
 virDomainHubTypeToString;
 virDomainHypervTypeFromString;
 virDomainHypervTypeToString;
+virDomainInputDefFind;
 virDomainInputDefFree;
 virDomainIOMMUModelTypeFromString;
 virDomainIOMMUModelTypeToString;

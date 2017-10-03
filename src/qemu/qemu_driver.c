@@ -8239,6 +8239,14 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         break;
 
     case VIR_DOMAIN_DEVICE_INPUT:
+        if ((idx = virDomainInputDefFind(vmdef, dev->data.input)) < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("matching input device not found"));
+            return -1;
+        }
+        VIR_DELETE_ELEMENT(vmdef->inputs, idx, vmdef->ninputs);
+        break;
+
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:

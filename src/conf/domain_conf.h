@@ -3184,6 +3184,9 @@ ssize_t virDomainShmemDefFind(virDomainDefPtr def, virDomainShmemDefPtr shmem)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 virDomainShmemDefPtr virDomainShmemDefRemove(virDomainDefPtr def, size_t idx)
     ATTRIBUTE_NONNULL(1);
+ssize_t virDomainInputDefFind(const virDomainDef *def,
+                              const virDomainInputDef *input)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 VIR_ENUM_DECL(virDomainTaint)
 VIR_ENUM_DECL(virDomainVirt)

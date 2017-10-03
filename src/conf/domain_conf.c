@@ -16612,6 +16612,43 @@ virDomainShmemDefRemove(virDomainDefPtr def,
 }
 
 
+static bool
+virDomainInputDefEquals(const virDomainInputDef *a,
+                        const virDomainInputDef *b)
+{
+    if (a->type != b->type)
+        return false;
+
+    if (a->bus != b->bus)
+        return false;
+
+    if (a->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH &&
+        STRNEQ_NULLABLE(a->source.evdev, b->source.evdev))
+        return false;
+
+    if (a->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        !virDomainDeviceInfoAddressIsEqual(&a->info, &b->info))
+        return false;
+
+    return true;
+}
+
+
+ssize_t
+virDomainInputDefFind(const virDomainDef *def,
+                      const virDomainInputDef *input)
+{
+    size_t i;
+
+    for (i = 0; i < def->ninputs; i++) {
+        if (virDomainInputDefEquals(input, def->inputs[i]))
+            return i;
+    }
+
+    return -1;
+}
+
+
 char *
 virDomainDefGetDefaultEmulator(virDomainDefPtr def,
                                virCapsPtr caps)
