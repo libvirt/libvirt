@@ -4586,7 +4586,8 @@ qemuProcessStartValidateDisks(virDomainObjPtr vm,
     size_t i;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        virStorageSourcePtr src = vm->def->disks[i]->src;
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        virStorageSourcePtr src = disk->src;
 
         /* This is a best effort check as we can only check if the command
          * option exists, but we cannot determine whether the running QEMU
@@ -4597,6 +4598,14 @@ qemuProcessStartValidateDisks(virDomainObjPtr vm,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("VxHS protocol is not supported with this "
                              "QEMU binary"));
+            return -1;
+        }
+
+        /* PowerPC pseries based VMs do not support floppy device */
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+            qemuDomainIsPSeries(vm->def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("PowerPC pseries machines do not support floppy device"));
             return -1;
         }
     }

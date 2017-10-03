@@ -2258,14 +2258,6 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         qemuDomainSecretInfoPtr secinfo = diskPriv->secinfo;
         qemuDomainSecretInfoPtr encinfo = diskPriv->encinfo;
 
-        /* PowerPC pseries based VMs do not support floppy device */
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-            qemuDomainIsPSeries(def)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("PowerPC pseries machines do not support floppy device"));
-            return -1;
-        }
-
         if (disk->info.bootIndex) {
             bootindex = disk->info.bootIndex;
         } else {
