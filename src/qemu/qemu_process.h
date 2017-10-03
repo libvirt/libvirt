@@ -111,7 +111,7 @@ int qemuProcessPrepareDomain(virConnectPtr conn,
 
 int qemuProcessPrepareHost(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
-                           bool incoming);
+                           unsigned int flags);
 
 int qemuProcessLaunch(virConnectPtr conn,
                       virQEMUDriverPtr driver,

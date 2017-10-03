@@ -5420,7 +5420,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
  * qemuProcessPrepareHost:
  * @driver: qemu driver
  * @vm: domain object
- * @incoming: true if we are preparing an incoming migration
+ * @flags: qemuProcessStartFlags
  *
  * This function groups all code that modifies host system (which also may
  * update live XML) to prepare environment for a domain which is about to start
@@ -5431,7 +5431,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
 int
 qemuProcessPrepareHost(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
-                       bool incoming)
+                       unsigned int flags)
 {
     int ret = -1;
     unsigned int hostdev_flags = 0;
@@ -5453,7 +5453,7 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
     VIR_DEBUG("Preparing host devices");
     if (!cfg->relaxedACS)
         hostdev_flags |= VIR_HOSTDEV_STRICT_ACS_CHECK;
-    if (!incoming)
+    if (flags & VIR_QEMU_PROCESS_START_NEW)
         hostdev_flags |= VIR_HOSTDEV_COLD_BOOT;
     if (qemuHostdevPrepareDomainDevices(driver, vm->def, priv->qemuCaps,
                                         hostdev_flags) < 0)
@@ -5969,7 +5969,7 @@ qemuProcessStart(virConnectPtr conn,
     if (qemuProcessPrepareDomain(conn, driver, vm, flags) < 0)
         goto stop;
 
-    if (qemuProcessPrepareHost(driver, vm, !!incoming) < 0)
+    if (qemuProcessPrepareHost(driver, vm, flags) < 0)
         goto stop;
 
     if ((rv = qemuProcessLaunch(conn, driver, vm, asyncJob, incoming,
