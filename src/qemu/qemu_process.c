@@ -5285,7 +5285,11 @@ qemuProcessPrepareDomainNUMAPlacement(virDomainObjPtr vm,
 
 
 /**
- * qemuProcessPrepareDomain
+ * qemuProcessPrepareDomain:
+ * @conn: connection object (for looking up storage volumes)
+ * @driver: qemu driver
+ * @vm: domain object
+ * @flags: qemuProcessStartFlags
  *
  * This function groups all code that modifies only live XML of a domain which
  * is about to start and it's the only place to do those modifications.
@@ -5413,7 +5417,10 @@ qemuProcessPrepareDomain(virConnectPtr conn,
 
 
 /**
- * qemuProcessPrepareHost
+ * qemuProcessPrepareHost:
+ * @driver: qemu driver
+ * @vm: domain object
+ * @incoming: true if we are preparing an incoming migration
  *
  * This function groups all code that modifies host system (which also may
  * update live XML) to prepare environment for a domain which is about to start
