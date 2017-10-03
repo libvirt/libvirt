@@ -5288,6 +5288,7 @@ static int
 qemuProcessPrepareDomainStorage(virConnectPtr conn,
                                 virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
+                                virQEMUDriverConfigPtr cfg,
                                 unsigned int flags)
 {
     size_t i;
@@ -5304,6 +5305,9 @@ qemuProcessPrepareDomainStorage(virConnectPtr conn,
             /* disk source was dropped */
             continue;
         }
+
+        if (qemuDomainPrepareDiskSourceTLS(disk->src, disk->info.alias, cfg) < 0)
+            return -1;
     }
 
     return 0;
@@ -5387,7 +5391,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting up storage");
-    if (qemuProcessPrepareDomainStorage(conn, driver, vm, flags) < 0)
+    if (qemuProcessPrepareDomainStorage(conn, driver, vm, cfg, flags) < 0)
         goto cleanup;
 
     /* Drop possibly missing disks from the definition. */
@@ -5396,10 +5400,6 @@ qemuProcessPrepareDomain(virConnectPtr conn,
 
     VIR_DEBUG("Create domain masterKey");
     if (qemuDomainMasterKeyCreate(vm) < 0)
-        goto cleanup;
-
-    VIR_DEBUG("Prepare disk source backends for TLS");
-    if (qemuDomainPrepareDiskSource(vm->def, cfg) < 0)
         goto cleanup;
 
     VIR_DEBUG("Prepare chardev source backends for TLS");

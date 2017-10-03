@@ -7720,29 +7720,6 @@ qemuDomainPrepareDiskSourceTLS(virStorageSourcePtr src,
 }
 
 
-/* qemuProcessPrepareDiskSource:
- * @def: live domain definition
- * @driver: qemu driver
- *
- * Returns 0 on success, -1 on failure
- */
-int
-qemuDomainPrepareDiskSource(virDomainDefPtr def,
-                            virQEMUDriverConfigPtr cfg)
-{
-    size_t i;
-
-    for (i = 0; i < def->ndisks; i++) {
-        if (qemuDomainPrepareDiskSourceTLS(def->disks[i]->src,
-                                           def->disks[i]->info.alias,
-                                           cfg) < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
-
 int
 qemuDomainPrepareShmemChardev(virDomainShmemDefPtr shmem)
 {
