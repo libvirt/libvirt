@@ -8060,6 +8060,10 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         break;
 
     case VIR_DOMAIN_DEVICE_INPUT:
+        if (VIR_APPEND_ELEMENT(vmdef->inputs, vmdef->ninputs, dev->data.input) < 0)
+            return -1;
+        break;
+
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
