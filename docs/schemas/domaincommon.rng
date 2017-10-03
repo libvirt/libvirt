@@ -1674,7 +1674,7 @@
     <optional>
       <element name="source">
         <attribute name="pool">
-          <ref name="genericName"/>
+          <ref name="poolName"/>
         </attribute>
         <attribute name="volume">
           <ref name="volName"/>
