@@ -6476,7 +6476,7 @@ virDomainDeviceInfoParseXML(xmlNodePtr node,
     ret = 0;
  cleanup:
     if (ret < 0)
-        VIR_FREE(info->alias);
+        virDomainDeviceInfoClear(info);
     VIR_FREE(type);
     VIR_FREE(rombar);
     return ret;
