@@ -5625,7 +5625,23 @@ qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
     qemuDomainEventQueue(driver, event);
 }
 
-static int
+
+/**
+ * qemuDomainCheckDiskStartupPolicy:
+ * @driver: qemu driver object
+ * @vm: domain object
+ * @disk: index of disk to check
+ * @cold_boot: true if a new VM is being started
+ *
+ * This function should be called when the source storage for a disk device is
+ * missing. The function checks whether the startup policy for the disk allows
+ * removal of the source (or disk) according to the state of the VM.
+ *
+ * The function returns 0 if the source or disk was dropped and -1 if the state
+ * of the VM does not allow this. This function does not report errors, but
+ * clears any reported error if 0 is returned.
+ */
+int
 qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  size_t diskIndex,

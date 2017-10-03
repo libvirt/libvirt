@@ -639,6 +639,11 @@ void qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
 bool qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv,
                           qemuDomainJob job);
 
+int qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     size_t diskIndex,
+                                     bool cold_boot);
+
 int qemuDomainCheckDiskPresence(virConnectPtr conn,
                                 virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
