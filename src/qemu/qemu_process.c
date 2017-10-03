@@ -5394,10 +5394,6 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (qemuProcessPrepareDomainStorage(conn, driver, vm, cfg, flags) < 0)
         goto cleanup;
 
-    /* Drop possibly missing disks from the definition. */
-    if (qemuDomainCheckDiskPresence(driver, vm, flags) < 0)
-        goto cleanup;
-
     VIR_DEBUG("Create domain masterKey");
     if (qemuDomainMasterKeyCreate(vm) < 0)
         goto cleanup;
@@ -5441,6 +5437,44 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
+}
+
+
+static int
+qemuProcessPrepareHostStorage(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              unsigned int flags)
+{
+    size_t i;
+    bool cold_boot = flags & VIR_QEMU_PROCESS_START_COLD;
+
+    for (i = vm->def->ndisks; i > 0; i--) {
+        size_t idx = i - 1;
+        virDomainDiskDefPtr disk = vm->def->disks[idx];
+        virStorageFileFormat format = virDomainDiskGetFormat(disk);
+
+        if (virStorageSourceIsEmpty(disk->src))
+            continue;
+
+        /* There is no need to check the backing chain for disks
+         * without backing support, the fact that the file exists is
+         * more than enough */
+        if (virStorageSourceIsLocalStorage(disk->src) &&
+            format > VIR_STORAGE_FILE_NONE &&
+            format < VIR_STORAGE_FILE_BACKING &&
+            virFileExists(virDomainDiskGetSource(disk)))
+            continue;
+
+        if (qemuDomainDetermineDiskChain(driver, vm, disk, true, true) >= 0)
+            continue;
+
+        if (qemuDomainCheckDiskStartupPolicy(driver, vm, idx, cold_boot) >= 0)
+            continue;
+
+        return -1;
+    }
+
+    return 0;
 }
 
 
@@ -5534,6 +5568,10 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Write domain masterKey");
     if (qemuDomainWriteMasterKeyFile(driver, vm) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Preparing disks (host)");
+    if (qemuProcessPrepareHostStorage(driver, vm, flags) < 0)
         goto cleanup;
 
     ret = 0;

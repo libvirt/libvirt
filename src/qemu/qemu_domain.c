@@ -5681,47 +5681,6 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
 }
 
 
-int
-qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            unsigned int flags)
-{
-    size_t i;
-    bool pretend = flags & VIR_QEMU_PROCESS_START_PRETEND;
-    bool cold_boot = flags & VIR_QEMU_PROCESS_START_COLD;
-
-    VIR_DEBUG("Checking for disk presence");
-    for (i = vm->def->ndisks; i > 0; i--) {
-        size_t idx = i - 1;
-        virDomainDiskDefPtr disk = vm->def->disks[idx];
-        virStorageFileFormat format = virDomainDiskGetFormat(disk);
-
-        if (pretend)
-            continue;
-
-        if (virStorageSourceIsEmpty(disk->src))
-            continue;
-
-        /* There is no need to check the backing chain for disks
-         * without backing support, the fact that the file exists is
-         * more than enough */
-        if (virStorageSourceIsLocalStorage(disk->src) &&
-            format > VIR_STORAGE_FILE_NONE &&
-            format < VIR_STORAGE_FILE_BACKING &&
-            virFileExists(virDomainDiskGetSource(disk)))
-            continue;
-
-        if (qemuDomainDetermineDiskChain(driver, vm, disk, true, true) >= 0)
-            continue;
-
-        if (qemuDomainCheckDiskStartupPolicy(driver, vm, idx, cold_boot) >= 0)
-            continue;
-
-        return -1;
-    }
-
-    return 0;
-}
 
 /*
  * The vm must be locked when any of the following cleanup functions is
