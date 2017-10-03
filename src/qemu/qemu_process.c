@@ -5284,6 +5284,32 @@ qemuProcessPrepareDomainNUMAPlacement(virDomainObjPtr vm,
 }
 
 
+static int
+qemuProcessPrepareDomainStorage(virConnectPtr conn,
+                                virQEMUDriverPtr driver,
+                                virDomainObjPtr vm,
+                                unsigned int flags)
+{
+    size_t i;
+    bool cold_boot = flags & VIR_QEMU_PROCESS_START_COLD;
+
+    for (i = vm->def->ndisks; i > 0; i--) {
+        size_t idx = i - 1;
+        virDomainDiskDefPtr disk = vm->def->disks[idx];
+
+        if (virStorageTranslateDiskSourcePool(conn, disk) < 0) {
+            if (qemuDomainCheckDiskStartupPolicy(driver, vm, idx, cold_boot) < 0)
+                return -1;
+
+            /* disk source was dropped */
+            continue;
+        }
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuProcessPrepareDomain:
  * @conn: connection object (for looking up storage volumes)
@@ -5360,10 +5386,12 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (qemuProcessSetupGraphics(driver, vm, flags) < 0)
         goto cleanup;
 
-    /* Drop possibly missing disks from the definition. This function
-     * also resolves source pool/volume into a path and it needs to
-     * happen after the def is copied and aliases are set. */
-    if (qemuDomainCheckDiskPresence(conn, driver, vm, flags) < 0)
+    VIR_DEBUG("Setting up storage");
+    if (qemuProcessPrepareDomainStorage(conn, driver, vm, flags) < 0)
+        goto cleanup;
+
+    /* Drop possibly missing disks from the definition. */
+    if (qemuDomainCheckDiskPresence(driver, vm, flags) < 0)
         goto cleanup;
 
     VIR_DEBUG("Create domain masterKey");

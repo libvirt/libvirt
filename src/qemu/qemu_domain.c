@@ -5682,8 +5682,7 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
 
 
 int
-qemuDomainCheckDiskPresence(virConnectPtr conn,
-                            virQEMUDriverPtr driver,
+qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             unsigned int flags)
 {
@@ -5696,13 +5695,6 @@ qemuDomainCheckDiskPresence(virConnectPtr conn,
         size_t idx = i - 1;
         virDomainDiskDefPtr disk = vm->def->disks[idx];
         virStorageFileFormat format = virDomainDiskGetFormat(disk);
-
-        if (virStorageTranslateDiskSourcePool(conn, vm->def->disks[idx]) < 0) {
-            if (pretend ||
-                qemuDomainCheckDiskStartupPolicy(driver, vm, idx, cold_boot) < 0)
-                return -1;
-            continue;
-        }
 
         if (pretend)
             continue;

@@ -644,8 +644,7 @@ int qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
                                      size_t diskIndex,
                                      bool cold_boot);
 
-int qemuDomainCheckDiskPresence(virConnectPtr conn,
-                                virQEMUDriverPtr driver,
+int qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
                                 unsigned int flags);
 
