@@ -2511,6 +2511,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     bool tunnel = !!st;
     char *xmlout = NULL;
     unsigned int cookieFlags;
+    unsigned int startFlags;
     virCapsPtr caps = NULL;
     qemuProcessIncomingDefPtr incoming = NULL;
     bool taint_hook = false;
@@ -2671,8 +2672,10 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         goto stopjob;
     }
 
+    startFlags = VIR_QEMU_PROCESS_START_AUTODESTROY;
+
     if (qemuProcessInit(driver, vm, mig->cpu, QEMU_ASYNC_JOB_MIGRATION_IN,
-                        true, VIR_QEMU_PROCESS_START_AUTODESTROY) < 0)
+                        true, startFlags) < 0)
         goto stopjob;
     stopProcess = true;
 
@@ -2681,8 +2684,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                                   dataFD[0])))
         goto stopjob;
 
-    if (qemuProcessPrepareDomain(dconn, driver, vm,
-                                 VIR_QEMU_PROCESS_START_AUTODESTROY) < 0)
+    if (qemuProcessPrepareDomain(dconn, driver, vm, startFlags) < 0)
         goto stopjob;
 
     if (qemuProcessPrepareHost(driver, vm, !!incoming) < 0)
@@ -2691,7 +2693,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     rv = qemuProcessLaunch(dconn, driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
                            incoming, NULL,
                            VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START,
-                           VIR_QEMU_PROCESS_START_AUTODESTROY);
+                           startFlags);
     if (rv < 0) {
         if (rv == -2)
             relabel = true;
