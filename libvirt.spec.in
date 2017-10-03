@@ -1091,10 +1091,6 @@ Libvirt plugin for NSS for translating domain names into IP addresses.
 
 
 %prep
-%if ! %{supported_platform}
-echo "This RPM requires either Fedora >= 20 or RHEL >= 6"
-exit 1
-%endif
 
 %setup -q
 
@@ -1135,6 +1131,11 @@ rm -f $PATCHLIST
 rm -rf .git
 
 %build
+%if ! %{supported_platform}
+echo "This RPM requires either Fedora >= 20 or RHEL >= 6"
+exit 1
+%endif
+
 %if %{with_xen}
     %define arg_xen --with-xen
 %else
