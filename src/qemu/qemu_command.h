@@ -197,4 +197,11 @@ char *qemuBuildWatchdogDevStr(const virDomainDef *def,
                               virDomainWatchdogDefPtr dev,
                               virQEMUCapsPtr qemuCaps);
 
+int qemuBuildInputDevStr(char **devstr,
+                         const virDomainDef *def,
+                         virDomainInputDefPtr input,
+                         virQEMUCapsPtr qemuCaps)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4);
+
 #endif /* __QEMU_COMMAND_H__*/

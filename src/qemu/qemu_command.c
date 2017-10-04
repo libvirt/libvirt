@@ -4325,6 +4325,27 @@ qemuBuildUSBInputDevStr(const virDomainDef *def,
 }
 
 
+int
+qemuBuildInputDevStr(char **devstr,
+                     const virDomainDef *def,
+                     virDomainInputDefPtr input,
+                     virQEMUCapsPtr qemuCaps)
+{
+    switch (input->bus) {
+    case VIR_DOMAIN_INPUT_BUS_USB:
+        if (!(*devstr = qemuBuildUSBInputDevStr(def, input, qemuCaps)))
+            return -1;
+        break;
+
+    case VIR_DOMAIN_INPUT_BUS_VIRTIO:
+        if (!(*devstr = qemuBuildVirtioInputDevStr(def, input, qemuCaps)))
+            return -1;
+        break;
+    }
+    return 0;
+}
+
+
 static int
 qemuBuildInputCommandLine(virCommandPtr cmd,
                           const virDomainDef *def,
@@ -4334,22 +4355,17 @@ qemuBuildInputCommandLine(virCommandPtr cmd,
 
     for (i = 0; i < def->ninputs; i++) {
         virDomainInputDefPtr input = def->inputs[i];
+        char *devstr = NULL;
 
-        if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
-            char *optstr;
+        if (qemuBuildInputDevStr(&devstr, def, input, qemuCaps) < 0)
+            return -1;
+
+        if (devstr) {
             virCommandAddArg(cmd, "-device");
-            if (!(optstr = qemuBuildUSBInputDevStr(def, input, qemuCaps)))
-                return -1;
-            virCommandAddArg(cmd, optstr);
-            VIR_FREE(optstr);
-        } else if (input->bus == VIR_DOMAIN_INPUT_BUS_VIRTIO) {
-            char *optstr;
-            virCommandAddArg(cmd, "-device");
-            if (!(optstr = qemuBuildVirtioInputDevStr(def, input, qemuCaps)))
-                return -1;
-            virCommandAddArg(cmd, optstr);
-            VIR_FREE(optstr);
+            virCommandAddArg(cmd, devstr);
         }
+
+        VIR_FREE(devstr);
     }
 
     return 0;
