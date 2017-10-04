@@ -1843,7 +1843,7 @@ virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                                  withBlockVolFormat,
                                                  VIR_STORAGE_VOL_OPEN_DEFAULT |
                                                  VIR_STORAGE_VOL_OPEN_NOERROR,
-                                                 readflags) < 0))
+                                                 readflags)) < 0)
         return ret;
 
     return 0;
