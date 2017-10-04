@@ -67,6 +67,10 @@ int qemuAssignDeviceShmemAlias(virDomainDefPtr def,
 
 int qemuAssignDeviceWatchdogAlias(virDomainWatchdogDefPtr watchdog);
 
+int qemuAssignDeviceInputAlias(virDomainDefPtr def,
+                               virDomainInputDefPtr input,
+                               int idx);
+
 int qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps);
 
 int qemuDomainDeviceAliasIndex(const virDomainDeviceInfo *info,

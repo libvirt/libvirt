@@ -412,6 +412,28 @@ qemuAssignDeviceWatchdogAlias(virDomainWatchdogDefPtr watchdog)
 
     if (VIR_STRDUP(watchdog->info.alias, "watchdog0") < 0)
         return -1;
+
+    return 0;
+}
+
+int
+qemuAssignDeviceInputAlias(virDomainDefPtr def,
+                           virDomainInputDefPtr input,
+                           int idx)
+{
+    if (idx == -1) {
+        int thisidx;
+        size_t i;
+
+        for (i = 0; i < def->ninputs; i++) {
+            if ((thisidx = qemuDomainDeviceAliasIndex(&def->inputs[i]->info, "input")) >= idx)
+                idx = thisidx + 1;
+        }
+    }
+
+    if (virAsprintf(&input->info.alias, "input%d", idx) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -461,7 +483,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     for (i = 0; i < def->ninputs; i++) {
-        if (virAsprintf(&def->inputs[i]->info.alias, "input%zu", i) < 0)
+        if (qemuAssignDeviceInputAlias(def, def->inputs[i], i) < 0)
             return -1;
     }
     for (i = 0; i < def->nparallels; i++) {
