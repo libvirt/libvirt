@@ -76,6 +76,19 @@
           and also provides various kernel details to crash tools.
         </description>
       </change>
+      <change>
+        <summary>
+          conf: Move the auth and encryption definitions to disk source
+        </summary>
+        <description>
+          Allow parsing and formatting of the <code>auth</code> and
+          <code>encryption</code> sub-elements to be a child of the
+          <code>source</code> element. This will allow adding an
+          <code>auth</code> sub-element to a <code>backingStore</code>
+          or <code>mirror</code> elements as a means to track specific
+          authentication and/or encryption needs.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
