@@ -2905,6 +2905,79 @@ qemuDomainAttachWatchdog(virQEMUDriverPtr driver,
 }
 
 
+int
+qemuDomainAttachInputDevice(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainInputDefPtr input)
+{
+    int ret = -1;
+    char *devstr = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_INPUT,
+                               { .input = input } };
+    bool releaseaddr = false;
+
+    if (input->bus != VIR_DOMAIN_INPUT_BUS_USB &&
+        input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("input device on bus '%s' cannot be hot plugged."),
+                       virDomainInputBusTypeToString(input->bus));
+        return -1;
+    }
+
+    if (input->bus == VIR_DOMAIN_INPUT_BUS_VIRTIO) {
+        if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, "input") < 0)
+            return -1;
+    } else if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
+        if (priv->usbaddrs) {
+            if (virDomainUSBAddressEnsure(priv->usbaddrs, &input->info) < 0)
+                goto cleanup;
+            releaseaddr = true;
+        }
+    }
+
+    if (qemuAssignDeviceInputAlias(vm->def, input, -1) < 0)
+        goto cleanup;
+
+    if (qemuBuildInputDevStr(&devstr, vm->def, input, priv->qemuCaps) < 0)
+        goto cleanup;
+
+    if (VIR_REALLOC_N(vm->def->inputs, vm->def->ninputs + 1) < 0)
+        goto cleanup;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+        goto exit_monitor;
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        releaseaddr = false;
+        goto cleanup;
+    }
+
+    VIR_APPEND_ELEMENT_COPY_INPLACE(vm->def->inputs, vm->def->ninputs, input);
+
+    ret = 0;
+    releaseaddr = false;
+
+ audit:
+    virDomainAuditInput(vm, input, "attach", ret == 0);
+
+ cleanup:
+    if (releaseaddr)
+        qemuDomainReleaseDeviceAddress(vm, &input->info, NULL);
+
+    VIR_FREE(devstr);
+    return ret;
+
+ exit_monitor:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        releaseaddr = false;
+        goto cleanup;
+    }
+    goto audit;
+}
+
+
 static int
 qemuDomainChangeNetBridge(virDomainObjPtr vm,
                           virDomainNetDefPtr olddev,

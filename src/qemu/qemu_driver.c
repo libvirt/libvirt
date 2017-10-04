@@ -7664,9 +7664,16 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         }
         break;
 
+    case VIR_DOMAIN_DEVICE_INPUT:
+        ret = qemuDomainAttachInputDevice(driver, vm, dev->data.input);
+        if (ret == 0) {
+            alias = dev->data.input->info.alias;
+            dev->data.input = NULL;
+        }
+        break;
+
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_FS:
-    case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
