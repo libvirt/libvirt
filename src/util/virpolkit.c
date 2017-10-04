@@ -138,6 +138,7 @@ int virPolkitCheckAuth(const char *actionid,
 
  cleanup:
     virStringListFreeCount(retdetails, nretdetails);
+    virDBusMessageUnref(reply);
     return ret;
 }
 
