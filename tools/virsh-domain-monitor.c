@@ -707,12 +707,15 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (ninterfaces != 1) {
+    if (ninterfaces < 1) {
         if (macstr[0])
             vshError(ctl, _("Interface (mac: %s) not found."), macstr);
         else
             vshError(ctl, _("Interface (dev: %s) not found."), iface);
 
+        goto cleanup;
+    } else if (ninterfaces > 1) {
+        vshError(ctl, _("multiple matching interfaces found"));
         goto cleanup;
     }
 
