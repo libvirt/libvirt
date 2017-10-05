@@ -701,6 +701,39 @@ test13(const void *opaque ATTRIBUTE_UNUSED)
 
 #undef TEST_MAP
 
+static int
+test14(const void *opaque)
+{
+    const struct testBinaryOpData *data = opaque;
+    virBitmapPtr amap = NULL;
+    virBitmapPtr bmap = NULL;
+    virBitmapPtr resmap = NULL;
+    int ret = -1;
+
+    if (virBitmapParse(data->a, &amap, 256) < 0 ||
+        virBitmapParse(data->b, &bmap, 256) < 0 ||
+        virBitmapParse(data->res, &resmap, 256) < 0)
+        goto cleanup;
+
+    virBitmapSubtract(amap, bmap);
+
+    if (!virBitmapEqual(amap, resmap)) {
+        fprintf(stderr,
+                "\n bitmap subtraction failed: '%s' - '%s' != '%s'\n",
+                data->a, data->b, data->res);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virBitmapFree(amap);
+    virBitmapFree(bmap);
+    virBitmapFree(resmap);
+
+    return ret;
+}
+
 
 #define TESTBINARYOP(A, B, RES, FUNC) \
     testBinaryOpData.a = A; \
@@ -749,6 +782,15 @@ mymain(void)
         ret = -1;
     if (virTestRun("test13", test13, NULL) < 0)
         ret = -1;
+
+    virTestCounterReset("test14-");
+    TESTBINARYOP("0", "0", "0,^0", test14);
+    TESTBINARYOP("0-3", "0", "1-3", test14);
+    TESTBINARYOP("0-3", "0,3", "1-2", test14);
+    TESTBINARYOP("0,^0", "0", "0,^0", test14);
+    TESTBINARYOP("0-3", "0-3", "0,^0", test14);
+    TESTBINARYOP("0-3", "0,^0", "0-3", test14);
+    TESTBINARYOP("0,2", "1,3", "0,2", test14);
 
     return ret;
 }
