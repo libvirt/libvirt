@@ -2295,6 +2295,7 @@ virStorageSourceClear(virStorageSourcePtr def)
 
     virStorageNetHostDefFree(def->nhosts, def->hosts);
     virStorageAuthDefFree(def->auth);
+    virObjectUnref(def->privateData);
 
     VIR_FREE(def->nodestorage);
     VIR_FREE(def->nodeformat);
