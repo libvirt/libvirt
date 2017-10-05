@@ -193,6 +193,9 @@ typedef enum {
 VIR_ENUM_DECL(virTristateBool)
 VIR_ENUM_DECL(virTristateSwitch)
 
+virTristateBool virTristateBoolFromBool(bool val);
+virTristateSwitch virTristateSwitchFromBool(bool val);
+
 /* the two enums must be in sync to be able to use helpers interchangeably in
  * some special cases */
 verify((int)VIR_TRISTATE_BOOL_YES == (int)VIR_TRISTATE_SWITCH_ON);
