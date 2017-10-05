@@ -6969,21 +6969,21 @@ qemuProcessReconnect(void *opaque)
      * qemu_driver->sharedDevices.
      */
     for (i = 0; i < obj->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = obj->def->disks[i];
         virDomainDeviceDef dev;
 
-        if (virStorageTranslateDiskSourcePool(conn, obj->def->disks[i]) < 0)
+        if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
             goto error;
 
         /* XXX we should be able to restore all data from XML in the future.
          * This should be the only place that calls qemuDomainDetermineDiskChain
          * with @report_broken == false to guarantee best-effort domain
          * reconnect */
-        if (qemuDomainDetermineDiskChain(driver, obj, obj->def->disks[i],
-                                         true, false) < 0)
+        if (qemuDomainDetermineDiskChain(driver, obj, disk, true, false) < 0)
             goto error;
 
         dev.type = VIR_DOMAIN_DEVICE_DISK;
-        dev.data.disk = obj->def->disks[i];
+        dev.data.disk = disk;
         if (qemuAddSharedDevice(driver, &dev, obj->def->name) < 0)
             goto error;
     }
