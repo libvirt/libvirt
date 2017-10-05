@@ -183,6 +183,16 @@
           order of appearance.
         </description>
       </change>
+      <change>
+        <summary>
+          Securely pass iSCSI authentication data
+        </summary>
+        <description>
+          Rather than supplying the authentication data as part of the
+          iSCSI URL for a disk or host device, utilize the encrypted
+          secret object to securely pass the authentication data.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.9.0" date="2017-11-02">
