@@ -35,6 +35,11 @@
 <libvirt>
   <release version="v3.9.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          Add capability to allow hot (un)plug of a domain watchdog device
+        </summary>
+      </change>
     </section>
     <section title="Improvements">
     </section>
