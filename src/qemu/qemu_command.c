@@ -721,7 +721,7 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
     if (virJSONValueObjectCreate(propsret,
                                  "s:dir", path,
                                  "s:endpoint", (isListen ? "server": "client"),
-                                 "b:verify-peer", verifypeer,
+                                 "b:verify-peer", (isListen ? verifypeer : true),
                                  NULL) < 0)
         goto cleanup;
 
