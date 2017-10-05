@@ -39,6 +39,17 @@
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          Fix swapped interface statistics and QoS
+        </summary>
+        <description>
+          Due to internal implementation, reported statistics for
+          some types of interfaces were swapped (RX appeared in
+          TX and vice versa). Similarly, QoS was set in reversed
+          way.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.8.0" date="2017-10-04">
