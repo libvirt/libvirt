@@ -258,6 +258,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     char *driveAlias = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
     const char *format = NULL;
     char *sourcestr = NULL;
 
@@ -299,7 +300,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     }
 
     if (!virStorageSourceIsEmpty(newsrc)) {
-        if (qemuGetDriveSourceString(newsrc, diskPriv->secinfo, &sourcestr) < 0)
+        if (qemuGetDriveSourceString(newsrc, srcPriv->secinfo, &sourcestr) < 0)
             goto error;
 
         if (virStorageSourceGetActualType(newsrc) != VIR_STORAGE_TYPE_DIR) {
@@ -370,6 +371,7 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
     virJSONValuePtr secobjProps = NULL;
     virJSONValuePtr encobjProps = NULL;
     qemuDomainDiskPrivatePtr diskPriv;
+    qemuDomainStorageSourcePrivatePtr srcPriv;
     qemuDomainSecretInfoPtr secinfo;
     qemuDomainSecretInfoPtr encinfo;
 
@@ -383,7 +385,8 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
         goto error;
 
     diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    secinfo = diskPriv->secinfo;
+    srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
+    secinfo = srcPriv->secinfo;
     if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
         if (qemuBuildSecretInfoProps(secinfo, &secobjProps) < 0)
             goto error;
