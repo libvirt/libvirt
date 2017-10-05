@@ -1302,10 +1302,11 @@ qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
-    if (!diskPriv || !diskPriv->secinfo)
-        return;
+    if (diskPriv && diskPriv->secinfo)
+        qemuDomainSecretInfoFree(&diskPriv->secinfo);
 
-    qemuDomainSecretInfoFree(&diskPriv->secinfo);
+    if (diskPriv && diskPriv->encinfo)
+        qemuDomainSecretInfoFree(&diskPriv->encinfo);
 }
 
 
