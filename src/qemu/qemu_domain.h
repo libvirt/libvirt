@@ -363,6 +363,23 @@ struct _qemuDomainDiskPrivate {
     bool removable; /* device media can be removed/changed */
 };
 
+# define QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src) \
+    ((qemuDomainStorageSourcePrivatePtr) (src)->privateData)
+
+typedef struct _qemuDomainStorageSourcePrivate qemuDomainStorageSourcePrivate;
+typedef qemuDomainStorageSourcePrivate *qemuDomainStorageSourcePrivatePtr;
+struct _qemuDomainStorageSourcePrivate {
+    virObject parent;
+
+    /* data required for authentication to the storage source */
+    qemuDomainSecretInfoPtr secinfo;
+
+    /* data required for decryption of encrypted storage source */
+    qemuDomainSecretInfoPtr encinfo;
+};
+
+virObjectPtr qemuDomainStorageSourcePrivateNew(void);
+
 # define QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev)   \
     ((qemuDomainHostdevPrivatePtr) (hostdev)->privateData)
 

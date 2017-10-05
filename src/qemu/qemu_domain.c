@@ -932,6 +932,49 @@ qemuDomainDiskPrivateDispose(void *obj)
 }
 
 
+static virClassPtr qemuDomainStorageSourcePrivateClass;
+static void qemuDomainStorageSourcePrivateDispose(void *obj);
+
+static int
+qemuDomainStorageSourcePrivateOnceInit(void)
+{
+    qemuDomainStorageSourcePrivateClass = virClassNew(virClassForObject(),
+                                                      "qemuDomainStorageSourcePrivate",
+                                                      sizeof(qemuDomainStorageSourcePrivate),
+                                                      qemuDomainStorageSourcePrivateDispose);
+    if (!qemuDomainStorageSourcePrivateClass)
+        return -1;
+    else
+        return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(qemuDomainStorageSourcePrivate)
+
+virObjectPtr
+qemuDomainStorageSourcePrivateNew(void)
+{
+    qemuDomainStorageSourcePrivatePtr priv;
+
+    if (qemuDomainStorageSourcePrivateInitialize() < 0)
+        return NULL;
+
+    if (!(priv = virObjectNew(qemuDomainStorageSourcePrivateClass)))
+        return NULL;
+
+    return (virObjectPtr) priv;
+}
+
+
+static void
+qemuDomainStorageSourcePrivateDispose(void *obj)
+{
+    qemuDomainStorageSourcePrivatePtr priv = obj;
+
+    qemuDomainSecretInfoFree(&priv->secinfo);
+    qemuDomainSecretInfoFree(&priv->encinfo);
+}
+
+
 static virClassPtr qemuDomainHostdevPrivateClass;
 static void qemuDomainHostdevPrivateDispose(void *obj);
 
