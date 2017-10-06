@@ -514,7 +514,6 @@ hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
     /* Get query and create filter based on it */
     if (virBufferCheckError(p->epr.query) < 0) {
         virBufferFreeAndReset(p->epr.query);
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid query"));
         goto cleanup;
     }
     query_string = virBufferContentAndReset(p->epr.query);
