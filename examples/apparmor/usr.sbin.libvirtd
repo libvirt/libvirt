@@ -39,6 +39,7 @@
 
   ptrace (trace) peer=unconfined,
   ptrace (trace) peer=/usr/sbin/libvirtd,
+  ptrace (trace) peer=/usr/sbin/dnsmasq,
   ptrace (trace) peer=libvirt-*,
 
   # Very lenient profile for libvirtd since we want to first focus on confining
