@@ -1120,17 +1120,14 @@ storageBackendCreateQemuImgSetOptions(virCommandPtr cmd,
  */
 static int
 storageBackendCreateQemuImgSecretObject(virCommandPtr cmd,
-                                        virStorageVolDefPtr vol,
-                                        struct _virStorageBackendQemuImgInfo *info)
+                                        const char *secretPath,
+                                        const char *secretAlias)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *commandStr = NULL;
 
-    if (virAsprintf(&info->secretAlias, "%s_luks0", vol->name) < 0)
-        return -1;
-
-    virBufferAsprintf(&buf, "secret,id=%s,file=", info->secretAlias);
-    virQEMUBuildBufferEscapeComma(&buf, info->secretPath);
+    virBufferAsprintf(&buf, "secret,id=%s,file=", secretAlias);
+    virQEMUBuildBufferEscapeComma(&buf, secretPath);
 
     if (virBufferCheckError(&buf) < 0) {
         virBufferFreeAndReset(&buf);
@@ -1261,7 +1258,10 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
     if (info.format == VIR_STORAGE_FILE_RAW &&
         vol->target.encryption != NULL &&
         vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
-        if (storageBackendCreateQemuImgSecretObject(cmd, vol, &info) < 0)
+        if (virAsprintf(&info.secretAlias, "%s_luks0", vol->name) < 0)
+            goto error;
+        if (storageBackendCreateQemuImgSecretObject(cmd, info.secretPath,
+                                                    info.secretAlias) < 0)
             goto error;
         enc = &vol->target.encryption->encinfo;
     }
