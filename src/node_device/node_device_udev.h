@@ -23,9 +23,6 @@
 #include <libudev.h>
 #include <stdint.h>
 
-typedef struct _udevPrivate udevPrivate;
-
 #define SYSFS_DATA_SIZE 4096
-#define DRV_STATE_UDEV_MONITOR(ds) (((udevPrivate *)((ds)->privateData))->udev_monitor)
 #define DMI_DEVPATH "/sys/devices/virtual/dmi/id"
 #define DMI_DEVPATH_FALLBACK "/sys/class/dmi/id"
