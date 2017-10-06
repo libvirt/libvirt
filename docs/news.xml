@@ -51,6 +51,19 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          Allow a logical volume to be create using LUKS
+        </summary>
+        <description>
+          A logical volume may be created using an <code>encryption</code>
+          element using "luks" format. This does require a previously created
+          <code>secret</code> to store the passphrase used to encrypt the
+          volume Adding the volume to a domain can then either provide the
+          secret or allow the consumer in the guest to provide the passphrase
+          in order to decrypt the volume.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
