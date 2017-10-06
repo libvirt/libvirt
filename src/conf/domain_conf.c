@@ -8327,12 +8327,11 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
         virDomainDiskBackingStoreParse(ctxt, backingStore, flags) < 0)
         goto cleanup;
 
-    src->backingStore = backingStore;
+    VIR_STEAL_PTR(src->backingStore, backingStore);
     ret = 0;
 
  cleanup:
-    if (ret < 0)
-        virStorageSourceFree(backingStore);
+    virStorageSourceFree(backingStore);
     VIR_FREE(type);
     VIR_FREE(format);
     ctxt->node = save_ctxt;
