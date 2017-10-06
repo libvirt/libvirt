@@ -1588,25 +1588,14 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
     const char *start = chain->path;
     char *parentDir = NULL;
     bool nameIsFile = virStorageIsFile(name);
-    size_t i = 0;
 
     if (!parent)
         parent = &prev;
     *parent = NULL;
 
     if (startFrom) {
-        while (chain && chain != startFrom->backingStore) {
+        while (chain && chain != startFrom->backingStore)
             chain = chain->backingStore;
-            i++;
-        }
-
-        if (idx && idx < i) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("requested backing store index %u is above '%s' "
-                             "in chain for '%s'"),
-                           idx, NULLSTR(startFrom->path), NULLSTR(start));
-            return NULL;
-        }
 
         *parent = startFrom;
     }
@@ -1616,8 +1605,8 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
             if (!chain->backingStore)
                 break;
         } else if (idx) {
-            VIR_DEBUG("%zu: %s", i, chain->path);
-            if (idx == i)
+            VIR_DEBUG("%u: %s", chain->id, chain->path);
+            if (idx == chain->id)
                 break;
         } else {
             if (STREQ_NULLABLE(name, chain->relPath) ||
@@ -1649,7 +1638,6 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
         }
         *parent = chain;
         chain = chain->backingStore;
-        i++;
     }
 
     if (!chain)
