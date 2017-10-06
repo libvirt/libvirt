@@ -1143,6 +1143,37 @@ storageBackendCreateQemuImgSecretObject(virCommandPtr cmd,
 }
 
 
+/* Add a --image-opts to the qemu-img resize command line:
+ *    --image-opts driver=luks,file.filename=$volpath,key-secret=$secretAlias
+ *
+ *    NB: format=raw is assumed
+ */
+static int
+storageBackendResizeQemuImgImageOpts(virCommandPtr cmd,
+                                     const char *path,
+                                     const char *secretAlias)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *commandStr = NULL;
+
+    virBufferAsprintf(&buf, "driver=luks,key-secret=%s,file.filename=",
+                      secretAlias);
+    virQEMUBuildBufferEscapeComma(&buf, path);
+
+    if (virBufferCheckError(&buf) < 0) {
+        virBufferFreeAndReset(&buf);
+        return -1;
+    }
+
+    commandStr = virBufferContentAndReset(&buf);
+
+    virCommandAddArgList(cmd, "--image-opts", commandStr, NULL);
+
+    VIR_FREE(commandStr);
+    return 0;
+}
+
+
 /* Create a qemu-img virCommand from the supplied binary path,
  * volume definitions and imgformat
  */
@@ -2286,12 +2317,17 @@ virStorageBackendVolRefreshLocal(virConnectPtr conn,
 
 
 static int
-storageBackendResizeQemuImg(virStorageVolDefPtr vol,
+storageBackendResizeQemuImg(virConnectPtr conn,
+                            virStoragePoolObjPtr pool,
+                            virStorageVolDefPtr vol,
                             unsigned long long capacity)
 {
     int ret = -1;
-    char *img_tool;
+    char *img_tool = NULL;
     virCommandPtr cmd = NULL;
+    const char *type;
+    char *secretPath = NULL;
+    char *secretAlias = NULL;
 
     img_tool = virFindFileInPath("qemu-img");
     if (!img_tool) {
@@ -2300,19 +2336,56 @@ storageBackendResizeQemuImg(virStorageVolDefPtr vol,
         return -1;
     }
 
+    if (vol->target.encryption) {
+        if (vol->target.format == VIR_STORAGE_FILE_RAW)
+            type = "luks";
+        else
+            type = virStorageFileFormatTypeToString(vol->target.format);
+
+        storageBackendLoadDefaultSecrets(conn, vol);
+
+        if (storageBackendCreateQemuImgCheckEncryption(vol->target.format,
+                                                       type, NULL, vol) < 0)
+            goto cleanup;
+
+        if (!(secretPath =
+              storageBackendCreateQemuImgSecretPath(conn, pool, vol)))
+            goto cleanup;
+
+        if (virAsprintf(&secretAlias, "%s_luks0", vol->name) < 0)
+            goto cleanup;
+    }
+
     /* Round capacity as qemu-img resize errors out on sizes which are not
      * a multiple of 512 */
     capacity = VIR_ROUND_UP(capacity, 512);
 
     cmd = virCommandNew(img_tool);
-    virCommandAddArgList(cmd, "resize", vol->target.path, NULL);
+    if (!vol->target.encryption) {
+        virCommandAddArgList(cmd, "resize", vol->target.path, NULL);
+    } else {
+        virCommandAddArg(cmd, "resize");
+
+        if (storageBackendCreateQemuImgSecretObject(cmd, secretPath,
+                                                    secretAlias) < 0)
+            goto cleanup;
+
+        if (storageBackendResizeQemuImgImageOpts(cmd, vol->target.path,
+                                                 secretAlias) < 0)
+            goto cleanup;
+    }
     virCommandAddArgFormat(cmd, "%llu", capacity);
 
     ret = virCommandRun(cmd, NULL);
 
+ cleanup:
     VIR_FREE(img_tool);
+    if (secretPath) {
+        unlink(secretPath);
+        VIR_FREE(secretPath);
+    }
+    VIR_FREE(secretAlias);
     virCommandFree(cmd);
-
     return ret;
 }
 
@@ -2321,8 +2394,8 @@ storageBackendResizeQemuImg(virStorageVolDefPtr vol,
  * Resize a volume
  */
 int
-virStorageBackendVolResizeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendVolResizeLocal(virConnectPtr conn,
+                                virStoragePoolObjPtr pool,
                                 virStorageVolDefPtr vol,
                                 unsigned long long capacity,
                                 unsigned int flags)
@@ -2332,8 +2405,17 @@ virStorageBackendVolResizeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCheckFlags(VIR_STORAGE_VOL_RESIZE_ALLOCATE |
                   VIR_STORAGE_VOL_RESIZE_SHRINK, -1);
 
-    if (vol->target.format == VIR_STORAGE_FILE_RAW) {
+    if (vol->target.format == VIR_STORAGE_FILE_RAW && !vol->target.encryption) {
         return virStorageFileResize(vol->target.path, capacity, pre_allocate);
+    } else if (vol->target.format == VIR_STORAGE_FILE_RAW && vol->target.encryption) {
+        if (pre_allocate) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("preallocate is only supported for raw "
+                             "type volume"));
+            return -1;
+        }
+
+        return storageBackendResizeQemuImg(conn, pool, vol, capacity);
     } else if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
         return storagePloopResize(vol, capacity);
     } else {
@@ -2344,7 +2426,7 @@ virStorageBackendVolResizeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
             return -1;
         }
 
-        return storageBackendResizeQemuImg(vol, capacity);
+        return storageBackendResizeQemuImg(conn, pool, vol, capacity);
     }
 }
 
