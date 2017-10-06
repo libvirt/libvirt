@@ -971,6 +971,10 @@ qemuDomainUpdateCPU(virDomainObjPtr vm,
                     virCPUDefPtr cpu,
                     virCPUDefPtr *origCPU);
 
+int
+qemuDomainFixupCPUs(virDomainObjPtr vm,
+                    virCPUDefPtr *origCPU);
+
 char *
 qemuDomainGetMachineName(virDomainObjPtr vm);
 

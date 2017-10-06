@@ -6881,6 +6881,7 @@ qemuProcessRefreshCPU(virQEMUDriverPtr driver,
                       virDomainObjPtr vm)
 {
     virCapsPtr caps = virQEMUDriverGetCapabilities(driver, false);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     virCPUDefPtr host = NULL;
     virCPUDefPtr cpu = NULL;
     int ret = -1;
@@ -6914,6 +6915,14 @@ qemuProcessRefreshCPU(virQEMUDriverPtr driver,
             goto cleanup;
 
         if (qemuProcessUpdateCPU(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
+            goto cleanup;
+    } else if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
+        /* We only try to fix CPUs when the libvirt/QEMU combo used to start
+         * the domain did not know about query-cpu-model-expansion in which
+         * case the host-model is known to not contain features which QEMU
+         * doesn't know about.
+         */
+        if (qemuDomainFixupCPUs(vm, &priv->origCPU) < 0)
             goto cleanup;
     }
 

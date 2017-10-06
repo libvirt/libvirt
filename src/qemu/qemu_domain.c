@@ -10027,6 +10027,82 @@ qemuDomainUpdateCPU(virDomainObjPtr vm,
     return 0;
 }
 
+
+/**
+ * qemuDomainFixupCPUS:
+ * @vm: domain object
+ * @origCPU: original CPU used when the domain was started
+ *
+ * Libvirt older than 3.9.0 could have messed up the expansion of host-model
+ * CPU when reconnecting to a running domain by adding features QEMU does not
+ * support (such as cmt). This API fixes both the actual CPU provided by QEMU
+ * (stored in the domain object) and the @origCPU used when starting the
+ * domain.
+ *
+ * This is safe even if the original CPU definition used mode='custom' (rather
+ * than host-model) since we know QEMU was able to start the domain and thus
+ * the CPU definitions do not contain any features unknown to QEMU.
+ *
+ * This function can only be used on an active domain or when restoring a
+ * domain which was running.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+qemuDomainFixupCPUs(virDomainObjPtr vm,
+                    virCPUDefPtr *origCPU)
+{
+    virCPUDefPtr fixedCPU = NULL;
+    virCPUDefPtr fixedOrig = NULL;
+    virArch arch = vm->def->os.arch;
+    int ret = 0;
+
+    if (!ARCH_IS_X86(arch))
+        return 0;
+
+    if (!vm->def->cpu ||
+        vm->def->cpu->mode != VIR_CPU_MODE_CUSTOM ||
+        !vm->def->cpu->model)
+        return 0;
+
+    /* Missing origCPU means QEMU created exactly the same virtual CPU which
+     * we asked for or libvirt was too old to mess up the translation from
+     * host-model.
+     */
+    if (!*origCPU)
+        return 0;
+
+    if (virCPUDefFindFeature(vm->def->cpu, "cmt") &&
+        (!(fixedCPU = virCPUDefCopyWithoutModel(vm->def->cpu)) ||
+         virCPUDefCopyModelFilter(fixedCPU, vm->def->cpu, false,
+                                  virQEMUCapsCPUFilterFeatures, &arch) < 0))
+        goto cleanup;
+
+    if (virCPUDefFindFeature(*origCPU, "cmt") &&
+        (!(fixedOrig = virCPUDefCopyWithoutModel(*origCPU)) ||
+         virCPUDefCopyModelFilter(fixedOrig, *origCPU, false,
+                                  virQEMUCapsCPUFilterFeatures, &arch) < 0))
+        goto cleanup;
+
+    if (fixedCPU) {
+        virCPUDefFree(vm->def->cpu);
+        VIR_STEAL_PTR(vm->def->cpu, fixedCPU);
+    }
+
+    if (fixedOrig) {
+        virCPUDefFree(*origCPU);
+        VIR_STEAL_PTR(*origCPU, fixedOrig);
+    }
+
+    ret = 0;
+
+ cleanup:
+    virCPUDefFree(fixedCPU);
+    virCPUDefFree(fixedOrig);
+    return ret;
+}
+
+
 char *
 qemuDomainGetMachineName(virDomainObjPtr vm)
 {

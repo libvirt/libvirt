@@ -6551,6 +6551,13 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         }
     }
 
+    /* No cookie means libvirt which saved the domain was too old to mess up
+     * the CPU definitions.
+     */
+    if (cookie &&
+        qemuDomainFixupCPUs(vm, &cookie->cpu) < 0)
+        goto cleanup;
+
     if (qemuProcessStart(conn, driver, vm, cookie ? cookie->cpu : NULL,
                          asyncJob, "stdio", *fd, path, NULL,
                          VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
@@ -15755,6 +15762,13 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             was_stopped = true;
             if (config)
                 virDomainObjAssignDef(vm, config, false, NULL);
+
+            /* No cookie means libvirt which saved the domain was too old to
+             * mess up the CPU definitions.
+             */
+            if (cookie &&
+                qemuDomainFixupCPUs(vm, &cookie->cpu) < 0)
+                goto cleanup;
 
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm,
                                   cookie ? cookie->cpu : NULL,
