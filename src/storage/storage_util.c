@@ -1261,19 +1261,13 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
     if (info.format == VIR_STORAGE_FILE_RAW &&
         vol->target.encryption != NULL &&
         vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
-        if (storageBackendCreateQemuImgSecretObject(cmd, vol, &info) < 0) {
-            VIR_FREE(info.secretAlias);
-            virCommandFree(cmd);
-            return NULL;
-        }
+        if (storageBackendCreateQemuImgSecretObject(cmd, vol, &info) < 0)
+            goto error;
         enc = &vol->target.encryption->encinfo;
     }
 
-    if (storageBackendCreateQemuImgSetOptions(cmd, imgformat, enc, info) < 0) {
-        VIR_FREE(info.secretAlias);
-        virCommandFree(cmd);
-        return NULL;
-    }
+    if (storageBackendCreateQemuImgSetOptions(cmd, imgformat, enc, info) < 0)
+        goto error;
     VIR_FREE(info.secretAlias);
 
     if (info.inputPath)
@@ -1283,6 +1277,11 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
         virCommandAddArgFormat(cmd, "%lluK", info.size_arg);
 
     return cmd;
+
+ error:
+    VIR_FREE(info.secretAlias);
+    virCommandFree(cmd);
+    return NULL;
 }
 
 
