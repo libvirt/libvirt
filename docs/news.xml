@@ -64,6 +64,16 @@
           way.
         </description>
       </change>
+      <change>
+        <summary>
+          Properly resize local LUKS encrypted volume
+        </summary>
+        <description>
+          Resizing of a local LUKS encrypted volume will now use qemu-img
+          to resize the volume. This will require configuring a secret for
+          the LUKS encrypted volume.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.8.0" date="2017-10-04">
