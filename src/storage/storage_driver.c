@@ -994,8 +994,8 @@ storagePoolBuild(virStoragePoolPtr pool,
         backend->buildPool(pool->conn, obj, flags) < 0)
         goto cleanup;
 
-    event = virStoragePoolEventLifecycleNew(obj->def->name,
-                                            obj->def->uuid,
+    event = virStoragePoolEventLifecycleNew(def->name,
+                                            def->uuid,
                                             VIR_STORAGE_POOL_EVENT_CREATED,
                                             0);
 
@@ -1128,8 +1128,8 @@ storagePoolDelete(virStoragePoolPtr pool,
     if (backend->deletePool(pool->conn, obj, flags) < 0)
         goto cleanup;
 
-    event = virStoragePoolEventLifecycleNew(obj->def->name,
-                                            obj->def->uuid,
+    event = virStoragePoolEventLifecycleNew(def->name,
+                                            def->uuid,
                                             VIR_STORAGE_POOL_EVENT_DELETED,
                                             0);
 
