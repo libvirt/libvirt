@@ -2287,7 +2287,7 @@ virStorageBackendVolRefreshLocal(virConnectPtr conn,
 
 
 static int
-storageBackendResizeQemuImg(const char *path,
+storageBackendResizeQemuImg(virStorageVolDefPtr vol,
                             unsigned long long capacity)
 {
     int ret = -1;
@@ -2306,7 +2306,7 @@ storageBackendResizeQemuImg(const char *path,
     capacity = VIR_ROUND_UP(capacity, 512);
 
     cmd = virCommandNew(img_tool);
-    virCommandAddArgList(cmd, "resize", path, NULL);
+    virCommandAddArgList(cmd, "resize", vol->target.path, NULL);
     virCommandAddArgFormat(cmd, "%llu", capacity);
 
     ret = virCommandRun(cmd, NULL);
@@ -2328,10 +2328,10 @@ virStorageBackendVolResizeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 unsigned long long capacity,
                                 unsigned int flags)
 {
+    bool pre_allocate = flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE;
+
     virCheckFlags(VIR_STORAGE_VOL_RESIZE_ALLOCATE |
                   VIR_STORAGE_VOL_RESIZE_SHRINK, -1);
-
-    bool pre_allocate = flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE;
 
     if (vol->target.format == VIR_STORAGE_FILE_RAW) {
         return virStorageFileResize(vol->target.path, capacity, pre_allocate);
@@ -2345,7 +2345,7 @@ virStorageBackendVolResizeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
             return -1;
         }
 
-        return storageBackendResizeQemuImg(vol->target.path, capacity);
+        return storageBackendResizeQemuImg(vol, capacity);
     }
 }
 
