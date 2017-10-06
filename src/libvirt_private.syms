@@ -1384,6 +1384,7 @@ virBufferEscapeN;
 virBufferEscapeRegex;
 virBufferEscapeSexpr;
 virBufferEscapeShell;
+virBufferEscapeSQL;
 virBufferEscapeString;
 virBufferFreeAndReset;
 virBufferGetIndent;

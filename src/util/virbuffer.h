@@ -93,6 +93,9 @@ void virBufferEscapeSexpr(virBufferPtr buf, const char *format,
 void virBufferEscapeRegex(virBufferPtr buf,
                           const char *format,
                           const char *str);
+void virBufferEscapeSQL(virBufferPtr buf,
+                        const char *format,
+                        const char *str);
 void virBufferEscapeShell(virBufferPtr buf, const char *str);
 void virBufferURIEncodeString(virBufferPtr buf, const char *str);
 

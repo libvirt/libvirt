@@ -895,7 +895,7 @@ hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
          */
         while (!completed && timeout >= 0) {
             virBufferAddLit(&query, MSVM_CONCRETEJOB_WQL_SELECT);
-            virBufferAsprintf(&query, "where InstanceID = \"%s\"", instanceID);
+            virBufferEscapeSQL(&query, "where InstanceID = \"%s\"", instanceID);
 
             if (hypervGetMsvmConcreteJobList(priv, &query, &job) < 0
                     || job == NULL)

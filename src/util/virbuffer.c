@@ -574,6 +574,26 @@ virBufferEscapeRegex(virBufferPtr buf,
     virBufferEscape(buf, '\\', "^$.|?*+()[]{}\\", format, str);
 }
 
+
+/**
+ * virBufferEscapeSQL:
+ * @buf: the buffer to append to
+ * @format: a printf like format string but with only one %s parameter
+ * @str: the string argument which needs to be escaped
+ *
+ * Do a formatted print with a single string to a buffer.  The @str is
+ * escaped to prevent SQL injection (format is expected to contain \"%s\").
+ * Auto indentation may be applied.
+ */
+void
+virBufferEscapeSQL(virBufferPtr buf,
+                   const char *format,
+                   const char *str)
+{
+    virBufferEscape(buf, '\\', "'\"\\", format, str);
+}
+
+
 /**
  * virBufferEscape:
  * @buf: the buffer to append to
