@@ -14429,6 +14429,17 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
 }
 
 
+static void
+qemuDomainSnapshotUpdateDiskSourcesRenumber(virStorageSourcePtr src)
+{
+    virStorageSourcePtr next;
+    unsigned int idx = 1;
+
+    for (next = src->backingStore; next; next = next->backingStore)
+        next->id = idx++;
+}
+
+
 /**
  * qemuDomainSnapshotUpdateDiskSources:
  * @dd: snapshot disk data object
@@ -14450,6 +14461,9 @@ qemuDomainSnapshotUpdateDiskSources(qemuDomainSnapshotDiskDataPtr dd,
     VIR_STEAL_PTR(dd->disk->src->relPath, dd->relPath);
     VIR_STEAL_PTR(dd->src->backingStore, dd->disk->src);
     VIR_STEAL_PTR(dd->disk->src, dd->src);
+
+    /* fix numbering of disks */
+    qemuDomainSnapshotUpdateDiskSourcesRenumber(dd->disk->src);
 
     if (dd->persistdisk) {
         VIR_STEAL_PTR(dd->persistsrc->backingStore, dd->persistdisk->src);

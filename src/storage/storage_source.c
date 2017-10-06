@@ -396,7 +396,8 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                  uid_t uid, gid_t gid,
                                  bool allow_probe,
                                  bool report_broken,
-                                 virHashTablePtr cycle)
+                                 virHashTablePtr cycle,
+                                 unsigned int depth)
 {
     int ret = -1;
     const char *uniqueName;
@@ -474,7 +475,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     if ((ret = virStorageFileGetMetadataRecurse(backingStore, parent,
                                                 uid, gid,
                                                 allow_probe, report_broken,
-                                                cycle)) < 0) {
+                                                cycle, depth + 1)) < 0) {
         if (report_broken)
             goto cleanup;
 
@@ -489,6 +490,8 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     ret = 0;
 
  cleanup:
+    if (src->backingStore)
+        src->backingStore->id = depth;
     VIR_FREE(buf);
     virStorageFileDeinit(src);
     virStorageSourceFree(backingStore);
@@ -543,7 +546,7 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
     }
 
     ret = virStorageFileGetMetadataRecurse(src, src, uid, gid,
-                                           allow_probe, report_broken, cycle);
+                                           allow_probe, report_broken, cycle, 1);
 
     virHashFree(cycle);
     return ret;

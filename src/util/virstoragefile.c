@@ -2030,6 +2030,7 @@ virStorageSourceCopy(const virStorageSource *src,
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
+    ret->id = src->id;
     ret->type = src->type;
     ret->protocol = src->protocol;
     ret->format = src->format;

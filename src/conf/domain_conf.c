@@ -8281,6 +8281,7 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     xmlNodePtr source;
     char *type = NULL;
     char *format = NULL;
+    char *idx = NULL;
     int ret = -1;
 
     if (!(ctxt->node = virXPathNode("./backingStore[*]", ctxt))) {
@@ -8290,6 +8291,13 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
 
     if (VIR_ALLOC(backingStore) < 0)
         goto cleanup;
+
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
+        (idx = virXMLPropString(ctxt->node, "index")) &&
+        virStrToLong_uip(idx, NULL, 10, &backingStore->id) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, _("invalid disk index '%s'"), idx);
+        goto cleanup;
+    }
 
     if (!(type = virXMLPropString(ctxt->node, "type"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -21910,8 +21918,7 @@ virDomainDiskSourceFormat(virBufferPtr buf,
 static int
 virDomainDiskBackingStoreFormat(virBufferPtr buf,
                                 virStorageSourcePtr backingStore,
-                                const char *backingStoreRaw,
-                                unsigned int idx)
+                                const char *backingStoreRaw)
 {
     const char *type;
     const char *format;
@@ -21938,8 +21945,10 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "<backingStore type='%s' index='%u'>\n",
-                      type, idx);
+    virBufferAsprintf(buf, "<backingStore type='%s'", type);
+    if (backingStore->id != 0)
+        virBufferAsprintf(buf, " index='%u'", backingStore->id);
+    virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
     virBufferAsprintf(buf, "<format type='%s'/>\n", format);
@@ -21947,8 +21956,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
     if (virDomainDiskSourceFormatInternal(buf, backingStore, 0, 0, true) < 0 ||
         virDomainDiskBackingStoreFormat(buf,
                                         backingStore->backingStore,
-                                        backingStore->backingStoreRaw,
-                                        idx + 1) < 0)
+                                        backingStore->backingStoreRaw) < 0)
         return -1;
 
     virBufferAdjustIndent(buf, -2);
@@ -22084,7 +22092,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
      * persistent storage of backing chains is ready. */
     if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
         virDomainDiskBackingStoreFormat(buf, def->src->backingStore,
-                                        def->src->backingStoreRaw, 1) < 0)
+                                        def->src->backingStoreRaw) < 0)
         return -1;
 
     virBufferEscapeString(buf, "<backenddomain name='%s'/>\n", def->domain_name);
