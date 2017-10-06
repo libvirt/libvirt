@@ -938,30 +938,11 @@ virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendLogicalCreateVol(virConnectPtr conn,
-                                  virStoragePoolObjPtr pool,
-                                  virStorageVolDefPtr vol)
+virStorageBackendLogicalLVCreate(virStorageVolDefPtr vol,
+                                 virStoragePoolDefPtr def)
 {
-    int fd = -1;
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    int ret;
     virCommandPtr cmd = NULL;
-    virErrorPtr err;
-    struct stat sb;
-    bool created = false;
-
-    if (vol->target.encryption != NULL) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("storage pool does not support encrypted "
-                               "volumes"));
-        return -1;
-    }
-
-    vol->type = VIR_STORAGE_VOL_BLOCK;
-
-    VIR_FREE(vol->target.path);
-    if (virAsprintf(&vol->target.path, "%s/%s",
-                    def->target.path, vol->name) < 0)
-        return -1;
 
     cmd = virCommandNewArgList(LVCREATE,
                                "--name", vol->name,
@@ -982,12 +963,38 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     else
         virCommandAddArg(cmd, def->source.name);
 
-    if (virCommandRun(cmd, NULL) < 0)
-        goto error;
-
-    created = true;
+    ret = virCommandRun(cmd, NULL);
     virCommandFree(cmd);
-    cmd = NULL;
+    return ret;
+}
+
+
+static int
+virStorageBackendLogicalCreateVol(virConnectPtr conn,
+                                  virStoragePoolObjPtr pool,
+                                  virStorageVolDefPtr vol)
+{
+    int fd = -1;
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virErrorPtr err;
+    struct stat sb;
+
+    if (vol->target.encryption != NULL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("storage pool does not support encrypted "
+                               "volumes"));
+        return -1;
+    }
+
+    vol->type = VIR_STORAGE_VOL_BLOCK;
+
+    VIR_FREE(vol->target.path);
+    if (virAsprintf(&vol->target.path, "%s/%s",
+                    def->target.path, vol->name) < 0)
+        return -1;
+
+    if (virStorageBackendLogicalLVCreate(vol, def) < 0)
+        return -1;
 
     if ((fd = virStorageBackendVolOpen(vol->target.path, &sb,
                                        VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
@@ -1031,9 +1038,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
  error:
     err = virSaveLastError();
     VIR_FORCE_CLOSE(fd);
-    if (created)
-        virStorageBackendLogicalDeleteVol(conn, pool, vol, 0);
-    virCommandFree(cmd);
+    virStorageBackendLogicalDeleteVol(conn, pool, vol, 0);
     virSetError(err);
     virFreeError(err);
     return -1;
