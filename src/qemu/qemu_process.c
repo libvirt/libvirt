@@ -6876,6 +6876,49 @@ qemuProcessRefreshDisks(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessRefreshCPU(virQEMUDriverPtr driver,
+                      virDomainObjPtr vm)
+{
+    virCapsPtr caps = virQEMUDriverGetCapabilities(driver, false);
+    virCPUDefPtr host = NULL;
+    int ret = -1;
+
+    if (!caps)
+        return -1;
+
+    if (!virQEMUCapsGuestIsNative(caps->host.arch, vm->def->os.arch) ||
+        !caps->host.cpu ||
+        !vm->def->cpu) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    /* If the domain with a host-model CPU was started by an old libvirt
+     * (< 2.3) which didn't replace the CPU with a custom one, let's do it now
+     * since the rest of our code does not really expect a host-model CPU in a
+     * running domain.
+     */
+    if (vm->def->cpu->mode == VIR_CPU_MODE_HOST_MODEL) {
+        if (!(host = virCPUCopyMigratable(caps->host.cpu->arch, caps->host.cpu)))
+            goto cleanup;
+
+        if (virCPUUpdate(vm->def->os.arch, vm->def->cpu, host) < 0)
+            goto cleanup;
+
+        if (qemuProcessUpdateCPU(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virCPUDefFree(host);
+    virObjectUnref(caps);
+    return ret;
+}
+
+
 struct qemuProcessReconnectData {
     virConnectPtr conn;
     virQEMUDriverPtr driver;
@@ -7042,29 +7085,8 @@ qemuProcessReconnect(void *opaque)
     ignore_value(qemuSecurityCheckAllLabel(driver->securityManager,
                                            obj->def));
 
-    /* If the domain with a host-model CPU was started by an old libvirt
-     * (< 2.3) which didn't replace the CPU with a custom one, let's do it now
-     * since the rest of our code does not really expect a host-model CPU in a
-     * running domain.
-     */
-    if (virQEMUCapsGuestIsNative(caps->host.arch, obj->def->os.arch) &&
-        caps->host.cpu &&
-        obj->def->cpu &&
-        obj->def->cpu->mode == VIR_CPU_MODE_HOST_MODEL) {
-        virCPUDefPtr host;
-
-        if (!(host = virCPUCopyMigratable(caps->host.cpu->arch, caps->host.cpu)))
-            goto error;
-
-        if (virCPUUpdate(obj->def->os.arch, obj->def->cpu, host) < 0) {
-            virCPUDefFree(host);
-            goto error;
-        }
-        virCPUDefFree(host);
-
-        if (qemuProcessUpdateCPU(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
-            goto error;
-    }
+    if (qemuProcessRefreshCPU(driver, obj) < 0)
+        goto error;
 
     if (qemuDomainRefreshVcpuInfo(driver, obj, QEMU_ASYNC_JOB_NONE, true) < 0)
         goto error;
