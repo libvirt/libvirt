@@ -942,13 +942,14 @@ virStorageBackendLogicalLVCreate(virStorageVolDefPtr vol,
                                  virStoragePoolDefPtr def)
 {
     int ret;
+    unsigned long long capacity = vol->target.capacity;
     virCommandPtr cmd = NULL;
 
     cmd = virCommandNewArgList(LVCREATE,
                                "--name", vol->name,
                                NULL);
     virCommandAddArg(cmd, "-L");
-    if (vol->target.capacity != vol->target.allocation) {
+    if (capacity != vol->target.allocation) {
         virCommandAddArgFormat(cmd, "%lluK",
                                VIR_DIV_UP(vol->target.allocation
                                           ? vol->target.allocation : 1, 1024));
@@ -956,8 +957,14 @@ virStorageBackendLogicalLVCreate(virStorageVolDefPtr vol,
         virCommandAddArg(cmd, "--virtualsize");
         vol->target.sparse = true;
     }
-    virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(vol->target.capacity,
-                                                    1024));
+
+    /* If we're going to encrypt using LUKS, then we could need up to
+     * an extra 2MB for the LUKS header - so account for that now */
+    if (vol->target.encryption &&
+        vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS)
+        capacity += 2 * 1024 * 1024;
+    virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(capacity, 1024));
+
     if (virStorageSourceHasBacking(&vol->target))
         virCommandAddArgList(cmd, "-s", vol->target.backingStore->path, NULL);
     else
@@ -979,13 +986,6 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     virErrorPtr err;
     struct stat sb;
 
-    if (vol->target.encryption != NULL) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("storage pool does not support encrypted "
-                               "volumes"));
-        return -1;
-    }
-
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
     VIR_FREE(vol->target.path);
@@ -995,6 +995,10 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
 
     if (virStorageBackendLogicalLVCreate(vol, def) < 0)
         return -1;
+
+    if (vol->target.encryption &&
+        virStorageBackendCreateVolUsingQemuImg(conn, pool, vol, NULL, 0) < 0)
+        goto error;
 
     if ((fd = virStorageBackendVolOpen(vol->target.path, &sb,
                                        VIR_STORAGE_VOL_OPEN_DEFAULT)) < 0)
