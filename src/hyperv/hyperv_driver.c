@@ -919,8 +919,10 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         def->description = virBufferContentAndReset(&buf);
     }
 
-    virDomainDefSetMemoryTotal(def, memorySettingData->data.common->Limit * 1024); /* megabyte to kilobyte */
-    def->mem.cur_balloon = memorySettingData->data.common->VirtualQuantity * 1024; /* megabyte to kilobyte */
+    /* mebibytes to kibibytes */
+    def->mem.max_memory = memorySettingData->data.common->Limit * 1024;
+    def->mem.cur_balloon = memorySettingData->data.common->VirtualQuantity * 1024;
+    virDomainDefSetMemoryTotal(def, memorySettingData->data.common->VirtualQuantity * 1024);
 
     if (virDomainDefSetVcpusMax(def,
                                 processorSettingData->data.common->VirtualQuantity,
