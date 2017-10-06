@@ -1439,6 +1439,48 @@ storageBackendCreateQemuImg(virConnectPtr conn,
     return ret;
 }
 
+
+/**
+ * virStorageBackendCreateVolUsingQemuImg
+ * @conn: Connection pointer
+ * @pool: Storage Pool Object
+ * @vol: Volume definition
+ * @inputvol: Volume to use for creation
+ * @flags: Flags for creation options
+ *
+ * A shim to storageBackendCreateQemuImg to allow other backends to
+ * utilize qemu-img processing in order to create or alter the volume.
+ *
+ * NB: If a volume target format is not supplied (per usual for some
+ * backends), temporarily adjust the format to be RAW. Once completed,
+ * reset the format back to NONE.
+ *
+ * Returns: 0 on success, -1 on failure.
+ */
+int
+virStorageBackendCreateVolUsingQemuImg(virConnectPtr conn,
+                                       virStoragePoolObjPtr pool,
+                                       virStorageVolDefPtr vol,
+                                       virStorageVolDefPtr inputvol,
+                                       unsigned int flags)
+{
+    int ret = -1;
+    bool changeFormat = false;
+
+    if (vol->target.format == VIR_STORAGE_FILE_NONE) {
+        vol->target.format = VIR_STORAGE_FILE_RAW;
+        changeFormat = true;
+    }
+
+    ret = storageBackendCreateQemuImg(conn, pool, vol, inputvol, flags);
+
+    if (changeFormat)
+        vol->target.format = VIR_STORAGE_FILE_NONE;
+
+    return ret;
+}
+
+
 virStorageBackendBuildVolFrom
 virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol)

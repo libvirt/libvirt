@@ -27,6 +27,14 @@
 # include "storage_backend.h"
 
 /* File creation/cloning functions used for cloning between backends */
+
+int
+virStorageBackendCreateVolUsingQemuImg(virConnectPtr conn,
+                                       virStoragePoolObjPtr pool,
+                                       virStorageVolDefPtr vol,
+                                       virStorageVolDefPtr inputvol,
+                                       unsigned int flags);
+
 virStorageBackendBuildVolFrom
 virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol);
