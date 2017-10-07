@@ -29,10 +29,6 @@ typedef virStoragePoolObj *virStoragePoolObjPtr;
 
 typedef struct _virStoragePoolObjList virStoragePoolObjList;
 typedef virStoragePoolObjList *virStoragePoolObjListPtr;
-struct _virStoragePoolObjList {
-    size_t count;
-    virStoragePoolObjPtr *objs;
-};
 
 typedef struct _virStorageDriverState virStorageDriverState;
 typedef virStorageDriverState *virStorageDriverStatePtr;
@@ -40,7 +36,7 @@ typedef virStorageDriverState *virStorageDriverStatePtr;
 struct _virStorageDriverState {
     virMutex lock;
 
-    virStoragePoolObjList pools;
+    virStoragePoolObjListPtr pools;
 
     char *configDir;
     char *autostartDir;
@@ -243,6 +239,9 @@ virStoragePoolObjPtr
 virStoragePoolObjListSearch(virStoragePoolObjListPtr pools,
                             virStoragePoolObjListSearcher searcher,
                             const void *opaque);
+
+virStoragePoolObjListPtr
+virStoragePoolObjListNew(void);
 
 void
 virStoragePoolObjRemove(virStoragePoolObjListPtr pools,

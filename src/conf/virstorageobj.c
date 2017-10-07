@@ -62,6 +62,11 @@ struct _virStoragePoolObj {
     virStorageVolDefList volumes;
 };
 
+struct _virStoragePoolObjList {
+    size_t count;
+    virStoragePoolObjPtr *objs;
+};
+
 
 static int
 virStoragePoolObjOnceInit(void)
@@ -241,7 +246,19 @@ virStoragePoolObjListFree(virStoragePoolObjListPtr pools)
     for (i = 0; i < pools->count; i++)
         virObjectUnref(pools->objs[i]);
     VIR_FREE(pools->objs);
-    pools->count = 0;
+    VIR_FREE(pools);
+}
+
+
+virStoragePoolObjListPtr
+virStoragePoolObjListNew(void)
+{
+    virStoragePoolObjListPtr pools;
+
+    if (VIR_ALLOC(pools) < 0)
+        return NULL;
+
+    return pools;
 }
 
 
