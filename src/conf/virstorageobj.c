@@ -230,6 +230,35 @@ virStoragePoolObjListFree(virStoragePoolObjListPtr pools)
 }
 
 
+/**
+ * virStoragePoolObjListForEach
+ * @pools: Pointer to pools object
+ * @iter: Callback iteration helper
+ * @opaque: Opaque data to use as argument to helper
+ *
+ * For each object in @pools, call the @iter helper using @opaque as
+ * an argument.  This function doesn't care whether the @iter fails or
+ * not as it's being used for Autostart and UpdateAllState callers
+ * that want to iterate over all the @pools objects not stopping if
+ * one happens to fail.
+ */
+void
+virStoragePoolObjListForEach(virStoragePoolObjListPtr pools,
+                             virStoragePoolObjListIterator iter,
+                             const void *opaque)
+{
+    size_t i;
+    virStoragePoolObjPtr obj;
+
+    for (i = 0; i < pools->count; i++) {
+        obj = pools->objs[i];
+        virStoragePoolObjLock(obj);
+        iter(obj, opaque);
+        virStoragePoolObjUnlock(obj);
+    }
+}
+
+
 void
 virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                         virStoragePoolObjPtr obj)

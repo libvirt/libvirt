@@ -226,6 +226,15 @@ virStoragePoolObjFree(virStoragePoolObjPtr obj);
 void
 virStoragePoolObjListFree(virStoragePoolObjListPtr pools);
 
+typedef void
+(*virStoragePoolObjListIterator)(virStoragePoolObjPtr obj,
+                                 const void *opaque);
+
+void
+virStoragePoolObjListForEach(virStoragePoolObjListPtr pools,
+                             virStoragePoolObjListIterator iter,
+                             const void *opaque);
+
 void
 virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                         virStoragePoolObjPtr obj);
