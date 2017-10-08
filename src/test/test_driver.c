@@ -1119,18 +1119,18 @@ testParseStorage(testDriverPtr privconn,
         }
 
         if (testStoragePoolObjSetDefaults(obj) == -1) {
-            virStoragePoolObjUnlock(obj);
+            virStoragePoolObjEndAPI(&obj);
             goto error;
         }
         virStoragePoolObjSetActive(obj, true);
 
         /* Find storage volumes */
         if (testOpenVolumesForPool(file, ctxt, obj, i+1) < 0) {
-            virStoragePoolObjUnlock(obj);
+            virStoragePoolObjEndAPI(&obj);
             goto error;
         }
 
-        virStoragePoolObjUnlock(obj);
+        virStoragePoolObjEndAPI(&obj);
     }
 
     ret = 0;
@@ -4100,7 +4100,7 @@ testStoragePoolObjFindActiveByName(testDriverPtr privconn,
     if (!virStoragePoolObjIsActive(obj)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("storage pool '%s' is not active"), name);
-        virStoragePoolObjUnlock(obj);
+        virStoragePoolObjEndAPI(&obj);
         return NULL;
     }
 
@@ -4120,7 +4120,7 @@ testStoragePoolObjFindInactiveByName(testDriverPtr privconn,
     if (virStoragePoolObjIsActive(obj)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("storage pool '%s' is active"), name);
-        virStoragePoolObjUnlock(obj);
+        virStoragePoolObjEndAPI(&obj);
         return NULL;
     }
 
@@ -4165,7 +4165,7 @@ testStoragePoolLookupByUUID(virConnectPtr conn,
 
     pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
 
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return pool;
 }
 
@@ -4185,7 +4185,7 @@ testStoragePoolLookupByName(virConnectPtr conn,
 
     pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
 
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return pool;
 }
 
@@ -4294,7 +4294,7 @@ testStoragePoolIsActive(virStoragePoolPtr pool)
 
  cleanup:
     if (obj)
-        virStoragePoolObjUnlock(obj);
+        virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -4311,7 +4311,7 @@ testStoragePoolIsPersistent(virStoragePoolPtr pool)
 
     ret = virStoragePoolObjGetConfigFile(obj) ? 1 : 0;
 
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -4336,7 +4336,7 @@ testStoragePoolCreate(virStoragePoolPtr pool,
                                             0);
 
     testObjectEventQueue(privconn, event);
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return 0;
 }
 
@@ -4490,8 +4490,7 @@ testStoragePoolCreateXML(virConnectPtr conn,
  cleanup:
     virStoragePoolDefFree(newDef);
     testObjectEventQueue(privconn, event);
-    if (obj)
-        virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     testDriverUnlock(privconn);
     return pool;
 }
@@ -4539,8 +4538,7 @@ testStoragePoolDefineXML(virConnectPtr conn,
  cleanup:
     virStoragePoolDefFree(newDef);
     testObjectEventQueue(privconn, event);
-    if (obj)
-        virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     testDriverUnlock(privconn);
     return pool;
 }
@@ -4584,7 +4582,7 @@ testStoragePoolBuild(virStoragePoolPtr pool,
                                             VIR_STORAGE_POOL_EVENT_CREATED,
                                             0);
 
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
 
     testObjectEventQueue(privconn, event);
     return 0;
@@ -4660,8 +4658,7 @@ testStoragePoolDestroy(virStoragePoolPtr pool)
 
  cleanup:
     testObjectEventQueue(privconn, event);
-    if (obj)
-        virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -4685,7 +4682,7 @@ testStoragePoolDelete(virStoragePoolPtr pool,
 
     testObjectEventQueue(privconn, event);
 
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return 0;
 }
 
@@ -4706,7 +4703,7 @@ testStoragePoolRefresh(virStoragePoolPtr pool,
     event = virStoragePoolEventRefreshNew(pool->name, pool->uuid);
 
     testObjectEventQueue(privconn, event);
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return 0;
 }
 
@@ -4732,7 +4729,7 @@ testStoragePoolGetInfo(virStoragePoolPtr pool,
     info->allocation = def->allocation;
     info->available = def->available;
 
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return 0;
 }
 
@@ -4752,7 +4749,7 @@ testStoragePoolGetXMLDesc(virStoragePoolPtr pool,
 
     ret = virStoragePoolDefFormat(virStoragePoolObjGetDef(obj));
 
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -4772,7 +4769,7 @@ testStoragePoolGetAutostart(virStoragePoolPtr pool,
     else
         *autostart = virStoragePoolObjIsAutostart(obj) ? 1 : 0;
 
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return 0;
 }
 
@@ -4799,7 +4796,7 @@ testStoragePoolSetAutostart(virStoragePoolPtr pool,
     ret = 0;
 
  cleanup:
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -4816,7 +4813,7 @@ testStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 
     ret = virStoragePoolObjNumOfVolumes(obj, pool->conn, NULL);
 
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -4835,7 +4832,7 @@ testStoragePoolListVolumes(virStoragePoolPtr pool,
 
     n = virStoragePoolObjVolumeGetNames(obj, pool->conn, NULL, names, maxnames);
 
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return n;
 }
 
@@ -4863,7 +4860,7 @@ testStoragePoolListAllVolumes(virStoragePoolPtr pool,
     ret = virStoragePoolObjVolumeListExport(pool->conn, obj, vols, NULL);
 
  cleanup:
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
 
     return ret;
 }
@@ -4906,7 +4903,7 @@ testStorageVolLookupByName(virStoragePoolPtr pool,
                            NULL, NULL);
 
  cleanup:
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -4933,11 +4930,11 @@ testStorageVolLookupByKey(virConnectPtr conn,
                 ret = virGetStorageVol(conn, def->name,
                                        privvol->name, privvol->key,
                                        NULL, NULL);
-                virStoragePoolObjUnlock(obj);
+                virStoragePoolObjEndAPI(&obj);
                 break;
             }
         }
-        virStoragePoolObjUnlock(obj);
+        virStoragePoolObjEndAPI(&obj);
     }
     testDriverUnlock(privconn);
 
@@ -4971,11 +4968,11 @@ testStorageVolLookupByPath(virConnectPtr conn,
                 ret = virGetStorageVol(conn, def->name,
                                        privvol->name, privvol->key,
                                        NULL, NULL);
-                virStoragePoolObjUnlock(obj);
+                virStoragePoolObjEndAPI(&obj);
                 break;
             }
         }
-        virStoragePoolObjUnlock(obj);
+        virStoragePoolObjEndAPI(&obj);
     }
     testDriverUnlock(privconn);
 
@@ -5041,7 +5038,7 @@ testStorageVolCreateXML(virStoragePoolPtr pool,
 
  cleanup:
     virStorageVolDefFree(privvol);
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -5109,7 +5106,7 @@ testStorageVolCreateXMLFrom(virStoragePoolPtr pool,
 
  cleanup:
     virStorageVolDefFree(privvol);
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -5141,7 +5138,7 @@ testStorageVolDelete(virStorageVolPtr vol,
     ret = 0;
 
  cleanup:
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -5185,7 +5182,7 @@ testStorageVolGetInfo(virStorageVolPtr vol,
     ret = 0;
 
  cleanup:
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -5210,7 +5207,7 @@ testStorageVolGetXMLDesc(virStorageVolPtr vol,
     ret = virStorageVolDefFormat(virStoragePoolObjGetDef(obj), privvol);
 
  cleanup:
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 
@@ -5232,7 +5229,7 @@ testStorageVolGetPath(virStorageVolPtr vol)
     ignore_value(VIR_STRDUP(ret, privvol->target.path));
 
  cleanup:
-    virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     return ret;
 }
 

@@ -36,6 +36,9 @@
 
 VIR_LOG_INIT("conf.virstorageobj");
 
+static void
+virStoragePoolObjUnlock(virStoragePoolObjPtr obj);
+
 
 struct _virStorageVolDefList {
     size_t count;
@@ -74,6 +77,16 @@ virStoragePoolObjNew(void)
     virStoragePoolObjLock(obj);
     obj->active = false;
     return obj;
+}
+
+
+void
+virStoragePoolObjEndAPI(virStoragePoolObjPtr *obj)
+{
+    if (!*obj)
+        return;
+
+    virStoragePoolObjUnlock(*obj);
 }
 
 
@@ -1274,7 +1287,7 @@ virStoragePoolObjLock(virStoragePoolObjPtr obj)
 }
 
 
-void
+static void
 virStoragePoolObjUnlock(virStoragePoolObjPtr obj)
 {
     virMutexUnlock(&obj->lock);

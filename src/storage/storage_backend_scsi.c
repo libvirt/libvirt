@@ -166,7 +166,7 @@ virStoragePoolFCRefreshThread(void *opaque)
             virStoragePoolObjClearVols(pool);
             found = virStorageBackendSCSIFindLUs(pool, host);
         }
-        virStoragePoolObjUnlock(pool);
+        virStoragePoolObjEndAPI(&pool);
     } while (!found && --tries);
 
     if (pool && !found)

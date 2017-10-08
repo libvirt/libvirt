@@ -58,6 +58,9 @@ typedef bool
 virStoragePoolObjPtr
 virStoragePoolObjNew(void);
 
+void
+virStoragePoolObjEndAPI(virStoragePoolObjPtr *obj);
+
 virStoragePoolDefPtr
 virStoragePoolObjGetDef(virStoragePoolObjPtr obj);
 
@@ -239,9 +242,6 @@ virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
 
 void
 virStoragePoolObjLock(virStoragePoolObjPtr obj);
-
-void
-virStoragePoolObjUnlock(virStoragePoolObjPtr obj);
 
 int
 virStoragePoolObjListExport(virConnectPtr conn,

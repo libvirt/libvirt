@@ -110,8 +110,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
     virStorageVolDefFree(inputvol);
     virCommandFree(cmd);
     VIR_FREE(actualCmdline);
-    if (obj)
-        virStoragePoolObjUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
     virStoragePoolObjFree(obj);
     virObjectUnref(conn);
     return ret;
