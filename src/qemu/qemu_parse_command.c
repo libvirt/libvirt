@@ -945,9 +945,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     if (virDomainDiskDefAssignAddress(xmlopt, def, dom) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid device name '%s'"), def->dst);
-        virDomainDiskDefFree(def);
-        def = NULL;
-        goto cleanup;
+        goto error;
     }
 
  cleanup:
