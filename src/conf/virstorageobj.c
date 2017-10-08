@@ -259,6 +259,38 @@ virStoragePoolObjListForEach(virStoragePoolObjListPtr pools,
 }
 
 
+/**
+ * virStoragePoolObjListSearch
+ * @pools: Pointer to pools object
+ * @search: Callback searcher helper
+ * @opaque: Opaque data to use as argument to helper
+ *
+ * Search through the @pools objects calling the @search helper using
+ * the @opaque data in order to find an object that matches some criteria
+ * and return that object locked.
+ *
+ * Returns a locked object when found and NULL when not found
+ */
+virStoragePoolObjPtr
+virStoragePoolObjListSearch(virStoragePoolObjListPtr pools,
+                            virStoragePoolObjListSearcher searcher,
+                            const void *opaque)
+{
+    size_t i;
+    virStoragePoolObjPtr obj;
+
+    for (i = 0; i < pools->count; i++) {
+        obj = pools->objs[i];
+        virStoragePoolObjLock(obj);
+        if (searcher(obj, opaque))
+            return obj;
+        virStoragePoolObjUnlock(obj);
+    }
+
+    return NULL;
+}
+
+
 void
 virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                         virStoragePoolObjPtr obj)

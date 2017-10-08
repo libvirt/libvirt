@@ -235,6 +235,15 @@ virStoragePoolObjListForEach(virStoragePoolObjListPtr pools,
                              virStoragePoolObjListIterator iter,
                              const void *opaque);
 
+typedef bool
+(*virStoragePoolObjListSearcher)(virStoragePoolObjPtr obj,
+                                 const void *opaque);
+
+virStoragePoolObjPtr
+virStoragePoolObjListSearch(virStoragePoolObjListPtr pools,
+                            virStoragePoolObjListSearcher searcher,
+                            const void *opaque);
+
 void
 virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
                         virStoragePoolObjPtr obj);

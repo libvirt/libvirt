@@ -1489,148 +1489,174 @@ storageVolLookupByName(virStoragePoolPtr pool,
 }
 
 
+struct storageVolLookupData {
+    virConnectPtr conn;
+    const char *key;
+    char *cleanpath;
+    const char *path;
+    virStorageVolDefPtr voldef;
+};
+
+static bool
+storageVolLookupByKeyCallback(virStoragePoolObjPtr obj,
+                              const void *opaque)
+{
+    struct storageVolLookupData *data = (struct storageVolLookupData *) opaque;
+
+    if (virStoragePoolObjIsActive(obj))
+        data->voldef = virStorageVolDefFindByKey(obj, data->key);
+
+    return !!data->voldef;
+}
+
+
 static virStorageVolPtr
 storageVolLookupByKey(virConnectPtr conn,
                       const char *key)
 {
-    size_t i;
+    virStoragePoolObjPtr obj;
+    virStoragePoolDefPtr def;
+    struct storageVolLookupData data = {
+        .conn = conn, .key = key, .voldef = NULL };
     virStorageVolPtr vol = NULL;
 
     storageDriverLock();
-    for (i = 0; i < driver->pools.count && !vol; i++) {
-        virStoragePoolObjPtr obj = driver->pools.objs[i];
-        virStoragePoolDefPtr def;
-
-        virStoragePoolObjLock(obj);
+    if ((obj = virStoragePoolObjListSearch(&driver->pools,
+                                           storageVolLookupByKeyCallback,
+                                           &data)) && data.voldef) {
         def = virStoragePoolObjGetDef(obj);
-        if (virStoragePoolObjIsActive(obj)) {
-            virStorageVolDefPtr voldef = virStorageVolDefFindByKey(obj, key);
-
-            if (voldef) {
-                if (virStorageVolLookupByKeyEnsureACL(conn, def, voldef) < 0) {
-                    virStoragePoolObjEndAPI(&obj);
-                    goto cleanup;
-                }
-
-                vol = virGetStorageVol(conn, def->name,
-                                       voldef->name, voldef->key,
-                                       NULL, NULL);
-            }
+        if (virStorageVolLookupByKeyEnsureACL(conn, def, data.voldef) == 0) {
+            vol = virGetStorageVol(conn, def->name,
+                                   data.voldef->name, data.voldef->key,
+                                   NULL, NULL);
         }
         virStoragePoolObjEndAPI(&obj);
     }
+    storageDriverUnlock();
 
     if (!vol)
         virReportError(VIR_ERR_NO_STORAGE_VOL,
                        _("no storage vol with matching key %s"), key);
 
- cleanup:
-    storageDriverUnlock();
     return vol;
 }
+
+
+static bool
+storageVolLookupByPathCallback(virStoragePoolObjPtr obj,
+                               const void *opaque)
+{
+    struct storageVolLookupData *data = (struct storageVolLookupData *) opaque;
+    virStoragePoolDefPtr def;
+    char *stable_path = NULL;
+
+    if (!virStoragePoolObjIsActive(obj))
+        return false;
+
+    def = virStoragePoolObjGetDef(obj);
+
+    switch ((virStoragePoolType) def->type) {
+        case VIR_STORAGE_POOL_DIR:
+        case VIR_STORAGE_POOL_FS:
+        case VIR_STORAGE_POOL_NETFS:
+        case VIR_STORAGE_POOL_LOGICAL:
+        case VIR_STORAGE_POOL_DISK:
+        case VIR_STORAGE_POOL_ISCSI:
+        case VIR_STORAGE_POOL_SCSI:
+        case VIR_STORAGE_POOL_MPATH:
+        case VIR_STORAGE_POOL_VSTORAGE:
+            stable_path = virStorageBackendStablePath(obj, data->cleanpath,
+                                                      false);
+            break;
+
+        case VIR_STORAGE_POOL_GLUSTER:
+        case VIR_STORAGE_POOL_RBD:
+        case VIR_STORAGE_POOL_SHEEPDOG:
+        case VIR_STORAGE_POOL_ZFS:
+        case VIR_STORAGE_POOL_LAST:
+            ignore_value(VIR_STRDUP(stable_path, data->path));
+            break;
+    }
+
+    /* Don't break the whole lookup process if it fails on
+     * getting the stable path for some of the pools. */
+    if (!stable_path) {
+        VIR_WARN("Failed to get stable path for pool '%s'", def->name);
+        return false;
+    }
+
+    data->voldef = virStorageVolDefFindByPath(obj, stable_path);
+    VIR_FREE(stable_path);
+
+    return !!data->voldef;
+}
+
 
 static virStorageVolPtr
 storageVolLookupByPath(virConnectPtr conn,
                        const char *path)
 {
-    size_t i;
+    virStoragePoolObjPtr obj;
+    virStoragePoolDefPtr def;
+    struct storageVolLookupData data = {
+        .conn = conn, .path = path, .voldef = NULL };
     virStorageVolPtr vol = NULL;
-    char *cleanpath;
 
-    cleanpath = virFileSanitizePath(path);
-    if (!cleanpath)
+    if (!(data.cleanpath = virFileSanitizePath(path)))
         return NULL;
 
     storageDriverLock();
-    for (i = 0; i < driver->pools.count && !vol; i++) {
-        virStoragePoolObjPtr obj = driver->pools.objs[i];
-        virStoragePoolDefPtr def;
-        virStorageVolDefPtr voldef;
-        char *stable_path = NULL;
-
-        virStoragePoolObjLock(obj);
+    if ((obj = virStoragePoolObjListSearch(&driver->pools,
+                                           storageVolLookupByPathCallback,
+                                           &data)) && data.voldef) {
         def = virStoragePoolObjGetDef(obj);
 
-        if (!virStoragePoolObjIsActive(obj)) {
-           virStoragePoolObjEndAPI(&obj);
-           continue;
-        }
-
-        switch ((virStoragePoolType) def->type) {
-            case VIR_STORAGE_POOL_DIR:
-            case VIR_STORAGE_POOL_FS:
-            case VIR_STORAGE_POOL_NETFS:
-            case VIR_STORAGE_POOL_LOGICAL:
-            case VIR_STORAGE_POOL_DISK:
-            case VIR_STORAGE_POOL_ISCSI:
-            case VIR_STORAGE_POOL_SCSI:
-            case VIR_STORAGE_POOL_MPATH:
-            case VIR_STORAGE_POOL_VSTORAGE:
-                stable_path = virStorageBackendStablePath(obj,
-                                                          cleanpath,
-                                                          false);
-                if (stable_path == NULL) {
-                    /* Don't break the whole lookup process if it fails on
-                     * getting the stable path for some of the pools.
-                     */
-                    VIR_WARN("Failed to get stable path for pool '%s'",
-                             def->name);
-                    virStoragePoolObjEndAPI(&obj);
-                    continue;
-                }
-                break;
-
-            case VIR_STORAGE_POOL_GLUSTER:
-            case VIR_STORAGE_POOL_RBD:
-            case VIR_STORAGE_POOL_SHEEPDOG:
-            case VIR_STORAGE_POOL_ZFS:
-            case VIR_STORAGE_POOL_LAST:
-                if (VIR_STRDUP(stable_path, path) < 0) {
-                     virStoragePoolObjEndAPI(&obj);
-                    goto cleanup;
-                }
-                break;
-        }
-
-        voldef = virStorageVolDefFindByPath(obj, stable_path);
-        VIR_FREE(stable_path);
-
-        if (voldef) {
-            if (virStorageVolLookupByPathEnsureACL(conn, def, voldef) < 0) {
-                virStoragePoolObjEndAPI(&obj);
-                goto cleanup;
-            }
-
+        if (virStorageVolLookupByPathEnsureACL(conn, def, data.voldef) == 0) {
             vol = virGetStorageVol(conn, def->name,
-                                   voldef->name, voldef->key,
+                                   data.voldef->name, data.voldef->key,
                                    NULL, NULL);
         }
-
         virStoragePoolObjEndAPI(&obj);
     }
+    storageDriverUnlock();
 
     if (!vol) {
-        if (STREQ(path, cleanpath)) {
+        if (STREQ(path, data.cleanpath)) {
             virReportError(VIR_ERR_NO_STORAGE_VOL,
                            _("no storage vol with matching path '%s'"), path);
         } else {
             virReportError(VIR_ERR_NO_STORAGE_VOL,
                            _("no storage vol with matching path '%s' (%s)"),
-                           path, cleanpath);
+                           path, data.cleanpath);
         }
     }
 
- cleanup:
-    VIR_FREE(cleanpath);
-    storageDriverUnlock();
+    VIR_FREE(data.cleanpath);
     return vol;
 }
+
+
+static bool
+storagePoolLookupByTargetPathCallback(virStoragePoolObjPtr obj,
+                                      const void *opaque)
+{
+    const char *path = opaque;
+    virStoragePoolDefPtr def;
+
+    if (!virStoragePoolObjIsActive(obj))
+        return false;
+
+    def = virStoragePoolObjGetDef(obj);
+    return STREQ(path, def->target.path);
+}
+
 
 virStoragePoolPtr
 storagePoolLookupByTargetPath(virConnectPtr conn,
                               const char *path)
 {
-    size_t i;
+    virStoragePoolObjPtr obj;
+    virStoragePoolDefPtr def;
     virStoragePoolPtr pool = NULL;
     char *cleanpath;
 
@@ -1639,21 +1665,11 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
         return NULL;
 
     storageDriverLock();
-    for (i = 0; i < driver->pools.count && !pool; i++) {
-        virStoragePoolObjPtr obj = driver->pools.objs[i];
-        virStoragePoolDefPtr def;
-
-        virStoragePoolObjLock(obj);
+    if ((obj == virStoragePoolObjListSearch(&driver->pools,
+                                            storagePoolLookupByTargetPathCallback,
+                                            path))) {
         def = virStoragePoolObjGetDef(obj);
-
-        if (!virStoragePoolObjIsActive(obj)) {
-            virStoragePoolObjEndAPI(&obj);
-            continue;
-        }
-
-        if (STREQ(path, def->target.path))
-            pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
-
+        pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
         virStoragePoolObjEndAPI(&obj);
     }
     storageDriverUnlock();

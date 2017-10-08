@@ -4908,6 +4908,26 @@ testStorageVolLookupByName(virStoragePoolPtr pool,
 }
 
 
+struct storageVolLookupData {
+    virConnectPtr conn;
+    const char *key;
+    const char *path;
+    virStorageVolDefPtr voldef;
+};
+
+static bool
+testStorageVolLookupByKeyCallback(virStoragePoolObjPtr obj,
+                                  const void *opaque)
+{
+    struct storageVolLookupData *data = (struct storageVolLookupData *) opaque;
+
+    if (virStoragePoolObjIsActive(obj))
+        data->voldef = virStorageVolDefFindByKey(obj, data->key);
+
+    return !!data->voldef;
+}
+
+
 static virStorageVolPtr
 testStorageVolLookupByKey(virConnectPtr conn,
                           const char *key)
@@ -4915,34 +4935,40 @@ testStorageVolLookupByKey(virConnectPtr conn,
     testDriverPtr privconn = conn->privateData;
     virStoragePoolObjPtr obj;
     virStoragePoolDefPtr def;
-    size_t i;
-    virStorageVolPtr ret = NULL;
+    struct storageVolLookupData data = {
+        .conn = conn, .key = key, .voldef = NULL };
+    virStorageVolPtr vol = NULL;
 
     testDriverLock(privconn);
-    for (i = 0; i < privconn->pools.count; i++) {
-        obj = privconn->pools.objs[i];
-        virStoragePoolObjLock(obj);
+    if ((obj = virStoragePoolObjListSearch(&privconn->pools,
+                                           testStorageVolLookupByKeyCallback,
+                                           &data)) && data.voldef) {
         def = virStoragePoolObjGetDef(obj);
-        if (virStoragePoolObjIsActive(obj)) {
-            virStorageVolDefPtr privvol = virStorageVolDefFindByKey(obj, key);
-
-            if (privvol) {
-                ret = virGetStorageVol(conn, def->name,
-                                       privvol->name, privvol->key,
-                                       NULL, NULL);
-                virStoragePoolObjEndAPI(&obj);
-                break;
-            }
-        }
+        vol = virGetStorageVol(conn, def->name,
+                               data.voldef->name, data.voldef->key,
+                               NULL, NULL);
         virStoragePoolObjEndAPI(&obj);
     }
     testDriverUnlock(privconn);
 
-    if (!ret)
+    if (!vol)
         virReportError(VIR_ERR_NO_STORAGE_VOL,
                        _("no storage vol with matching key '%s'"), key);
 
-    return ret;
+    return vol;
+}
+
+
+static bool
+testStorageVolLookupByPathCallback(virStoragePoolObjPtr obj,
+                                   const void *opaque)
+{
+    struct storageVolLookupData *data = (struct storageVolLookupData *) opaque;
+
+    if (virStoragePoolObjIsActive(obj))
+        data->voldef = virStorageVolDefFindByPath(obj, data->path);
+
+    return !!data->voldef;
 }
 
 
@@ -4953,34 +4979,27 @@ testStorageVolLookupByPath(virConnectPtr conn,
     testDriverPtr privconn = conn->privateData;
     virStoragePoolObjPtr obj;
     virStoragePoolDefPtr def;
-    size_t i;
-    virStorageVolPtr ret = NULL;
+    struct storageVolLookupData data = {
+        .conn = conn, .path = path, .voldef = NULL };
+    virStorageVolPtr vol = NULL;
 
     testDriverLock(privconn);
-    for (i = 0; i < privconn->pools.count; i++) {
-        obj = privconn->pools.objs[i];
-        virStoragePoolObjLock(obj);
+    if ((obj = virStoragePoolObjListSearch(&privconn->pools,
+                                           testStorageVolLookupByPathCallback,
+                                           &data)) && data.voldef) {
         def = virStoragePoolObjGetDef(obj);
-        if (virStoragePoolObjIsActive(obj)) {
-            virStorageVolDefPtr privvol = virStorageVolDefFindByPath(obj, path);
-
-            if (privvol) {
-                ret = virGetStorageVol(conn, def->name,
-                                       privvol->name, privvol->key,
-                                       NULL, NULL);
-                virStoragePoolObjEndAPI(&obj);
-                break;
-            }
-        }
+        vol = virGetStorageVol(conn, def->name,
+                               data.voldef->name, data.voldef->key,
+                               NULL, NULL);
         virStoragePoolObjEndAPI(&obj);
     }
     testDriverUnlock(privconn);
 
-    if (!ret)
+    if (!vol)
         virReportError(VIR_ERR_NO_STORAGE_VOL,
                        _("no storage vol with matching path '%s'"), path);
 
-    return ret;
+    return vol;
 }
 
 

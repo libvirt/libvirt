@@ -1092,6 +1092,7 @@ virStoragePoolObjIsDuplicate;
 virStoragePoolObjListExport;
 virStoragePoolObjListForEach;
 virStoragePoolObjListFree;
+virStoragePoolObjListSearch;
 virStoragePoolObjLoadAllConfigs;
 virStoragePoolObjLoadAllState;
 virStoragePoolObjLock;
