@@ -2167,7 +2167,7 @@ static int lxcContainerSetUserGroup(virCommandPtr cmd,
  * This function is run in the process clone()'d in lxcStartContainer.
  * Perform a number of container setup tasks:
  *     Setup container file system
- *     mount container /proca
+ *     mount container /proc
  * Then exec's the container init
  *
  * Returns 0 on success or -1 in case of error
