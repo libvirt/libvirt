@@ -40,7 +40,7 @@ struct _virNodeDeviceObj {
 };
 
 struct _virNodeDeviceObjList {
-    virObjectLockable parent;
+    virObjectRWLockable parent;
 
     /* name string -> virNodeDeviceObj mapping
      * for O(1), lockless lookup-by-name */
@@ -63,7 +63,7 @@ virNodeDeviceObjOnceInit(void)
                                               virNodeDeviceObjDispose)))
         return -1;
 
-    if (!(virNodeDeviceObjListClass = virClassNew(virClassForObjectLockable(),
+    if (!(virNodeDeviceObjListClass = virClassNew(virClassForObjectRWLockable(),
                                                   "virNodeDeviceObjList",
                                                   sizeof(virNodeDeviceObjList),
                                                   virNodeDeviceObjListDispose)))
@@ -231,10 +231,10 @@ virNodeDeviceObjListSearch(virNodeDeviceObjListPtr devs,
 {
     virNodeDeviceObjPtr obj;
 
-    virObjectLock(devs);
+    virObjectRWLockRead(devs);
     obj = virHashSearch(devs->objs, callback, data, NULL);
     virObjectRef(obj);
-    virObjectUnlock(devs);
+    virObjectRWUnlock(devs);
 
     if (obj)
         virObjectLock(obj);
@@ -284,9 +284,9 @@ virNodeDeviceObjListFindByName(virNodeDeviceObjListPtr devs,
 {
     virNodeDeviceObjPtr obj;
 
-    virObjectLock(devs);
+    virObjectRWLockRead(devs);
     obj = virNodeDeviceObjListFindByNameLocked(devs, name);
-    virObjectUnlock(devs);
+    virObjectRWUnlock(devs);
     if (obj)
         virObjectLock(obj);
 
@@ -462,7 +462,7 @@ virNodeDeviceObjListNew(void)
     if (virNodeDeviceObjInitialize() < 0)
         return NULL;
 
-    if (!(devs = virObjectLockableNew(virNodeDeviceObjListClass)))
+    if (!(devs = virObjectRWLockableNew(virNodeDeviceObjListClass)))
         return NULL;
 
     if (!(devs->objs = virHashCreate(50, virObjectFreeHashData))) {
@@ -487,7 +487,7 @@ virNodeDeviceObjListAssignDef(virNodeDeviceObjListPtr devs,
 {
     virNodeDeviceObjPtr obj;
 
-    virObjectLock(devs);
+    virObjectRWLockWrite(devs);
 
     if ((obj = virNodeDeviceObjListFindByNameLocked(devs, def->name))) {
         virObjectLock(obj);
@@ -507,7 +507,7 @@ virNodeDeviceObjListAssignDef(virNodeDeviceObjListPtr devs,
     }
 
  cleanup:
-    virObjectUnlock(devs);
+    virObjectRWUnlock(devs);
     return obj;
 }
 
@@ -524,12 +524,12 @@ virNodeDeviceObjListRemove(virNodeDeviceObjListPtr devs,
 
     virObjectRef(obj);
     virObjectUnlock(obj);
-    virObjectLock(devs);
+    virObjectRWLockWrite(devs);
     virObjectLock(obj);
     virHashRemoveEntry(devs->objs, def->name);
     virObjectUnlock(obj);
     virObjectUnref(obj);
-    virObjectUnlock(devs);
+    virObjectRWUnlock(devs);
 }
 
 
@@ -767,9 +767,9 @@ virNodeDeviceObjListNumOfDevices(virNodeDeviceObjListPtr devs,
     struct virNodeDeviceCountData data = {
         .conn = conn, .filter = filter, .matchstr = cap, .count = 0 };
 
-    virObjectLock(devs);
+    virObjectRWLockRead(devs);
     virHashForEach(devs->objs, virNodeDeviceObjListNumOfDevicesCallback, &data);
-    virObjectUnlock(devs);
+    virObjectRWUnlock(devs);
 
     return data.count;
 }
@@ -828,9 +828,9 @@ virNodeDeviceObjListGetNames(virNodeDeviceObjListPtr devs,
         .conn = conn, .filter = filter, .matchstr = cap, .names = names,
         .nnames = 0, .maxnames = maxnames, .error = false };
 
-    virObjectLock(devs);
+    virObjectRWLockRead(devs);
     virHashForEach(devs->objs, virNodeDeviceObjListGetNamesCallback, &data);
-    virObjectUnlock(devs);
+    virObjectRWUnlock(devs);
 
     if (data.error)
         goto error;
@@ -932,15 +932,15 @@ virNodeDeviceObjListExport(virConnectPtr conn,
         .conn = conn, .filter = filter, .flags = flags,
         .devices = NULL, .ndevices = 0, .error = false };
 
-    virObjectLock(devs);
+    virObjectRWLockRead(devs);
     if (devices &&
         VIR_ALLOC_N(data.devices, virHashSize(devs->objs) + 1) < 0) {
-        virObjectUnlock(devs);
+        virObjectRWUnlock(devs);
         return -1;
     }
 
     virHashForEach(devs->objs, virNodeDeviceObjListExportCallback, &data);
-    virObjectUnlock(devs);
+    virObjectRWUnlock(devs);
 
     if (data.error)
         goto cleanup;
