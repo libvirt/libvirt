@@ -1095,7 +1095,6 @@ virStoragePoolObjListFree;
 virStoragePoolObjListSearch;
 virStoragePoolObjLoadAllConfigs;
 virStoragePoolObjLoadAllState;
-virStoragePoolObjLock;
 virStoragePoolObjNew;
 virStoragePoolObjNumOfStoragePools;
 virStoragePoolObjNumOfVolumes;

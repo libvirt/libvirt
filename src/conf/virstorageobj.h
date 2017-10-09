@@ -258,9 +258,6 @@ virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
                                      virStoragePoolObjListPtr pools,
                                      virStoragePoolDefPtr def);
 
-void
-virStoragePoolObjLock(virStoragePoolObjPtr obj);
-
 int
 virStoragePoolObjListExport(virConnectPtr conn,
                             virStoragePoolObjListPtr poolobjs,

@@ -1760,7 +1760,6 @@ virStorageVolDefFromVol(virStorageVolPtr vol,
 
  error:
     virStoragePoolObjEndAPI(obj);
-    *obj = NULL;
 
     return NULL;
 }
@@ -1893,14 +1892,14 @@ storageVolCreateXML(virStoragePoolPtr pool,
         /* Drop the pool lock during volume allocation */
         virStoragePoolObjIncrAsyncjobs(obj);
         voldef->building = true;
-        virStoragePoolObjEndAPI(&obj);
+        virObjectUnlock(obj);
 
         buildret = backend->buildVol(pool->conn, obj, buildvoldef, flags);
 
         VIR_FREE(buildvoldef);
 
         storageDriverLock();
-        virStoragePoolObjLock(obj);
+        virObjectLock(obj);
         storageDriverUnlock();
 
         voldef->building = false;
@@ -1968,9 +1967,9 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
     storageDriverLock();
     obj = virStoragePoolObjFindByUUID(&driver->pools, pool->uuid);
     if (obj && STRNEQ(pool->name, volsrc->pool)) {
-        virStoragePoolObjEndAPI(&obj);
+        virObjectUnlock(obj);
         objsrc = virStoragePoolObjFindByName(&driver->pools, volsrc->pool);
-        virStoragePoolObjLock(obj);
+        virObjectLock(obj);
     }
     storageDriverUnlock();
     if (!obj) {
@@ -2089,19 +2088,19 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
     virStoragePoolObjIncrAsyncjobs(obj);
     voldef->building = true;
     voldefsrc->in_use++;
-    virStoragePoolObjEndAPI(&obj);
+    virObjectUnlock(obj);
 
     if (objsrc) {
         virStoragePoolObjIncrAsyncjobs(objsrc);
-        virStoragePoolObjEndAPI(&objsrc);
+        virObjectUnlock(objsrc);
     }
 
     buildret = backend->buildVolFrom(pool->conn, obj, shadowvol, voldefsrc, flags);
 
     storageDriverLock();
-    virStoragePoolObjLock(obj);
+    virObjectLock(obj);
     if (objsrc)
-        virStoragePoolObjLock(objsrc);
+        virObjectLock(objsrc);
     storageDriverUnlock();
 
     voldefsrc->in_use--;
@@ -2111,7 +2110,6 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
     if (objsrc) {
         virStoragePoolObjDecrAsyncjobs(objsrc);
         virStoragePoolObjEndAPI(&objsrc);
-        objsrc = NULL;
     }
 
     if (buildret < 0 ||
