@@ -120,7 +120,7 @@ virNodeDeviceObjGetDef(virNodeDeviceObjPtr obj)
 }
 
 
-static int
+static bool
 virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
                        const char *cap)
 {
@@ -134,13 +134,13 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
 
     while (caps) {
         if (STREQ(cap, virNodeDevCapTypeToString(caps->data.type))) {
-            return 1;
+            return true;
         } else {
             switch (caps->data.type) {
             case VIR_NODE_DEV_CAP_PCI_DEV:
                 if ((STREQ(cap, mdev_types)) &&
                     (caps->data.pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_MDEV))
-                    return 1;
+                    return true;
                 break;
 
             case VIR_NODE_DEV_CAP_SCSI_HOST:
@@ -148,7 +148,7 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
                     (caps->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST)) ||
                     (STREQ(cap, vports_cap) &&
                     (caps->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)))
-                    return 1;
+                    return true;
                 break;
 
             case VIR_NODE_DEV_CAP_SYSTEM:
@@ -172,7 +172,7 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
 
         caps = caps->next;
     }
-    return 0;
+    return false;
 }
 
 
