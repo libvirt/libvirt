@@ -1073,6 +1073,20 @@ virCommandSetPidFile(virCommandPtr cmd, const char *pidfile)
 }
 
 
+gid_t
+virCommandGetGID(virCommandPtr cmd)
+{
+    return cmd->gid;
+}
+
+
+uid_t
+virCommandGetUID(virCommandPtr cmd)
+{
+    return cmd->uid;
+}
+
+
 void
 virCommandSetGID(virCommandPtr cmd, gid_t gid)
 {

@@ -68,6 +68,10 @@ int virCommandPassFDGetFDIndex(virCommandPtr cmd,
 void virCommandSetPidFile(virCommandPtr cmd,
                           const char *pidfile) ATTRIBUTE_NONNULL(2);
 
+gid_t virCommandGetGID(virCommandPtr cmd) ATTRIBUTE_NONNULL(1);
+
+uid_t virCommandGetUID(virCommandPtr cmd) ATTRIBUTE_NONNULL(1);
+
 void virCommandSetGID(virCommandPtr cmd, gid_t gid);
 
 void virCommandSetUID(virCommandPtr cmd, uid_t uid);

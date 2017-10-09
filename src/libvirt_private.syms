@@ -1506,6 +1506,8 @@ virCommandDaemonize;
 virCommandDoAsyncIO;
 virCommandExec;
 virCommandFree;
+virCommandGetGID;
+virCommandGetUID;
 virCommandHandshakeNotify;
 virCommandHandshakeWait;
 virCommandNew;
