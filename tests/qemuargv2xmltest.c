@@ -265,6 +265,7 @@ mymain(void)
     DO_TEST("hostdev-pci-address");
 
     DO_TEST("mem-scale");
+    DO_TEST("mem-scale-maxmemory");
     DO_TEST("smp");
 
     DO_TEST("hyperv");

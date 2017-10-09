@@ -1627,26 +1627,91 @@ static int
 qemuParseCommandLineMem(virDomainDefPtr dom,
                         const char *val)
 {
-    unsigned long long mem;
+    unsigned long long mem = 0;
+    unsigned long long size = 0;
+    unsigned long long maxmem = 0;
+    unsigned int slots = 0;
     char *end;
+    size_t i;
+    int nkws;
+    char **kws;
+    char **vals;
+    int n;
+    int ret = -1;
 
-    if (virStrToLong_ull(val, &end, 10, &mem) < 0) {
+    if (qemuParseKeywords(val, &kws, &vals, &nkws, 1) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse memory level '%s'"), val);
-        return -1;
+                       _("cannot parse memory '%s'"), val);
+        goto cleanup;
     }
 
-    if (virScaleInteger(&mem, end, 1024*1024, ULLONG_MAX) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot scale memory: %s"),
-                       virGetLastErrorMessage());
-        return -1;
+    for (i = 0; i < nkws; i++) {
+        if (vals[i] == NULL) {
+            if (i > 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot parse memory '%s'"), val);
+                goto cleanup;
+            }
+            if (virStrToLong_ull(kws[i], &end, 10, &mem) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot parse memory value '%s'"), kws[i]);
+                goto cleanup;
+            }
+            if (virScaleInteger(&mem, end, 1024*1024, ULLONG_MAX) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot scale memory: %s"),
+                               virGetLastErrorMessage());
+                goto cleanup;
+            }
+
+            size = mem;
+
+        } else {
+            if (STREQ(kws[i], "size") || STREQ(kws[i], "maxmem")) {
+                if (virStrToLong_ull(vals[i], &end, 10, &mem) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("cannot parse memory value '%s'"), vals[i]);
+                    goto cleanup;
+                }
+                if (virScaleInteger(&mem, end, 1024*1024, ULLONG_MAX) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("cannot scale memory: %s"),
+                                   virGetLastErrorMessage());
+                    goto cleanup;
+                }
+
+                STREQ(kws[i], "size") ? (size = mem) : (maxmem = mem);
+
+            }
+            if (STREQ(kws[i], "slots")) {
+                if (virStrToLong_i(vals[i], &end, 10, &n) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("cannot parse slots value '%s'"), vals[i]);
+                    goto cleanup;
+                }
+
+               slots = n;
+
+            }
+        }
     }
 
-    virDomainDefSetMemoryTotal(dom, mem / 1024);
-    dom->mem.cur_balloon = mem / 1024;
+    virDomainDefSetMemoryTotal(dom, size / 1024);
+    dom->mem.cur_balloon = size / 1024;
+    dom->mem.memory_slots = slots;
+    dom->mem.max_memory = maxmem / 1024;
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    for (i = 0; i < nkws; i++) {
+        VIR_FREE(kws[i]);
+        VIR_FREE(vals[i]);
+    }
+    VIR_FREE(kws);
+    VIR_FREE(vals);
+
+    return ret;
 }
 
 
