@@ -2254,8 +2254,8 @@ static int lxcContainerChild(void *data)
 
     if (!virFileExists(vmDef->os.init)) {
         virReportSystemError(errno,
-                    _("cannot find init path '%s' relative to container root"),
-                    vmDef->os.init);
+                             _("cannot find init path '%s' relative to container root"),
+                             vmDef->os.init);
         goto cleanup;
     }
 
@@ -2275,7 +2275,7 @@ static int lxcContainerChild(void *data)
 
     if (lxcContainerSendContinue(argv->handshakefd) < 0) {
         virReportSystemError(errno, "%s",
-                            _("Failed to send continue signal to controller"));
+                             _("Failed to send continue signal to controller"));
         goto cleanup;
     }
 
