@@ -75,6 +75,7 @@ virCPUDefCopy;
 virCPUDefCopyModel;
 virCPUDefCopyModelFilter;
 virCPUDefCopyWithoutModel;
+virCPUDefFindFeature;
 virCPUDefFormat;
 virCPUDefFormatBuf;
 virCPUDefFormatBufFull;

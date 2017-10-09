@@ -215,6 +215,10 @@ virCPUDefUpdateFeature(virCPUDefPtr cpu,
                        const char *name,
                        int policy);
 
+virCPUFeatureDefPtr
+virCPUDefFindFeature(virCPUDefPtr def,
+                     const char *name);
+
 virCPUDefPtr *
 virCPUDefListParse(const char **xmlCPUs,
                    unsigned int ncpus,

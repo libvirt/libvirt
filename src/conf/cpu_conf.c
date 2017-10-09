@@ -773,24 +773,22 @@ virCPUDefUpdateFeatureInternal(virCPUDefPtr def,
                                int policy,
                                bool update)
 {
-    size_t i;
+    virCPUFeatureDefPtr feat;
 
     if (def->type == VIR_CPU_TYPE_HOST)
         policy = -1;
 
-    for (i = 0; i < def->nfeatures; i++) {
-        if (STREQ(name, def->features[i].name)) {
-            if (update) {
-                def->features[i].policy = policy;
-                return 0;
-            }
-
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("CPU feature '%s' specified more than once"),
-                           name);
-
-            return -1;
+    if ((feat = virCPUDefFindFeature(def, name))) {
+        if (update) {
+            feat->policy = policy;
+            return 0;
         }
+
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("CPU feature '%s' specified more than once"),
+                       name);
+
+        return -1;
     }
 
     if (VIR_RESIZE_N(def->features, def->nfeatures_max,
@@ -821,6 +819,22 @@ virCPUDefAddFeature(virCPUDefPtr def,
 {
     return virCPUDefUpdateFeatureInternal(def, name, policy, false);
 }
+
+
+virCPUFeatureDefPtr
+virCPUDefFindFeature(virCPUDefPtr def,
+                     const char *name)
+{
+    size_t i;
+
+    for (i = 0; i < def->nfeatures; i++) {
+        if (STREQ(name, def->features[i].name))
+            return def->features + i;
+    }
+
+    return NULL;
+}
+
 
 bool
 virCPUDefIsEqual(virCPUDefPtr src,
