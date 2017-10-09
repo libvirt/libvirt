@@ -94,6 +94,7 @@ virStoragePoolUpdateInactive(virStoragePoolObjPtr *objptr)
 
     if (!virStoragePoolObjGetConfigFile(obj)) {
         virStoragePoolObjRemove(driver->pools, obj);
+        virObjectUnref(obj);
         *objptr = NULL;
     } else if (virStoragePoolObjGetNewDef(obj)) {
         virStoragePoolObjDefUseNewDef(obj);
@@ -375,7 +376,7 @@ storageStateCleanup(void)
     virObjectUnref(driver->storageEventState);
 
     /* free inactive pools */
-    virStoragePoolObjListFree(driver->pools);
+    virObjectUnref(driver->pools);
 
     VIR_FREE(driver->configDir);
     VIR_FREE(driver->autostartDir);
@@ -713,6 +714,7 @@ storagePoolCreateXML(virConnectPtr conn,
             (flags & VIR_STORAGE_POOL_CREATE_WITH_BUILD)) {
             if (backend->buildPool(conn, obj, build_flags) < 0) {
                 virStoragePoolObjRemove(driver->pools, obj);
+                virObjectUnref(obj);
                 obj = NULL;
                 goto cleanup;
             }
@@ -722,6 +724,7 @@ storagePoolCreateXML(virConnectPtr conn,
     if (backend->startPool &&
         backend->startPool(conn, obj) < 0) {
         virStoragePoolObjRemove(driver->pools, obj);
+        virObjectUnref(obj);
         obj = NULL;
         goto cleanup;
     }
@@ -736,6 +739,7 @@ storagePoolCreateXML(virConnectPtr conn,
         if (backend->stopPool)
             backend->stopPool(conn, obj);
         virStoragePoolObjRemove(driver->pools, obj);
+        virObjectUnref(obj);
         obj = NULL;
         goto cleanup;
     }
@@ -799,6 +803,7 @@ storagePoolDefineXML(virConnectPtr conn,
 
     if (virStoragePoolObjSaveDef(driver, obj, def) < 0) {
         virStoragePoolObjRemove(driver->pools, obj);
+        virObjectUnref(obj);
         obj = NULL;
         goto cleanup;
     }
@@ -868,6 +873,7 @@ storagePoolUndefine(virStoragePoolPtr pool)
 
     VIR_INFO("Undefining storage pool '%s'", def->name);
     virStoragePoolObjRemove(driver->pools, obj);
+    virObjectUnref(obj);
     obj = NULL;
     ret = 0;
 

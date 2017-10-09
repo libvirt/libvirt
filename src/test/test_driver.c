@@ -155,7 +155,7 @@ testDriverFree(testDriverPtr driver)
     virNodeDeviceObjListFree(driver->devs);
     virObjectUnref(driver->networks);
     virObjectUnref(driver->ifaces);
-    virStoragePoolObjListFree(driver->pools);
+    virObjectUnref(driver->pools);
     virObjectUnref(driver->eventState);
     virMutexUnlock(&driver->lock);
     virMutexDestroy(&driver->lock);
@@ -4463,6 +4463,7 @@ testStoragePoolCreateXML(virConnectPtr conn,
                             def->source.adapter.data.fchost.wwnn,
                             def->source.adapter.data.fchost.wwpn) < 0) {
             virStoragePoolObjRemove(privconn->pools, obj);
+            virObjectUnref(obj);
             obj = NULL;
             goto cleanup;
         }
@@ -4470,6 +4471,7 @@ testStoragePoolCreateXML(virConnectPtr conn,
 
     if (testStoragePoolObjSetDefaults(obj) == -1) {
         virStoragePoolObjRemove(privconn->pools, obj);
+        virObjectUnref(obj);
         obj = NULL;
         goto cleanup;
     }
@@ -4529,6 +4531,7 @@ testStoragePoolDefineXML(virConnectPtr conn,
 
     if (testStoragePoolObjSetDefaults(obj) == -1) {
         virStoragePoolObjRemove(privconn->pools, obj);
+        virObjectUnref(obj);
         obj = NULL;
         goto cleanup;
     }
@@ -4559,6 +4562,7 @@ testStoragePoolUndefine(virStoragePoolPtr pool)
                                             0);
 
     virStoragePoolObjRemove(privconn->pools, obj);
+    virObjectUnref(obj);
 
     testObjectEventQueue(privconn, event);
     return 0;
@@ -4652,6 +4656,7 @@ testStoragePoolDestroy(virStoragePoolPtr pool)
 
     if (!(virStoragePoolObjGetConfigFile(obj))) {
         virStoragePoolObjRemove(privconn->pools, obj);
+        virObjectUnref(obj);
         obj = NULL;
     }
     ret = 0;

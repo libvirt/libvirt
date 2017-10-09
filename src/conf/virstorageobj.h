@@ -219,9 +219,6 @@ virStoragePoolObjGetNames(virStoragePoolObjListPtr pools,
 void
 virStoragePoolObjFree(virStoragePoolObjPtr obj);
 
-void
-virStoragePoolObjListFree(virStoragePoolObjListPtr pools);
-
 typedef void
 (*virStoragePoolObjListIterator)(virStoragePoolObjPtr obj,
                                  const void *opaque);
