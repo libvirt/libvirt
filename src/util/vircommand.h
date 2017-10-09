@@ -173,7 +173,7 @@ void virCommandWriteArgLog(virCommandPtr cmd,
 
 char *virCommandToString(virCommandPtr cmd) ATTRIBUTE_RETURN_CHECK;
 
-int virCommandExec(virCommandPtr cmd) ATTRIBUTE_RETURN_CHECK;
+int virCommandExec(virCommandPtr cmd, gid_t *groups, int ngroups) ATTRIBUTE_RETURN_CHECK;
 
 int virCommandRun(virCommandPtr cmd,
                   int *exitstatus) ATTRIBUTE_RETURN_CHECK;

@@ -465,14 +465,9 @@ virCommandHandshakeChild(virCommandPtr cmd)
 }
 
 static int
-virExecCommon(virCommandPtr cmd)
+virExecCommon(virCommandPtr cmd, gid_t *groups, int ngroups)
 {
-    gid_t *groups = NULL;
-    int ngroups;
     int ret = -1;
-
-    if ((ngroups = virGetGroupList(cmd->uid, cmd->gid, &groups)) < 0)
-        goto cleanup;
 
     if (cmd->uid != (uid_t)-1 || cmd->gid != (gid_t)-1 ||
         cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS)) {
@@ -495,7 +490,6 @@ virExecCommon(virCommandPtr cmd)
     ret = 0;
 
  cleanup:
-    VIR_FREE(groups);
     return ret;
 }
 
@@ -519,6 +513,8 @@ virExec(virCommandPtr cmd)
     const char *binary = NULL;
     int ret;
     struct sigaction waxon, waxoff;
+    gid_t *groups = NULL;
+    int ngroups;
 
     if (cmd->args[0][0] != '/') {
         if (!(binary = binarystr = virFindFileInPath(cmd->args[0]))) {
@@ -588,6 +584,9 @@ virExec(virCommandPtr cmd)
             goto cleanup;
         childerr = null;
     }
+
+    if ((ngroups = virGetGroupList(cmd->uid, cmd->gid, &groups)) < 0)
+        goto cleanup;
 
     pid = virFork();
 
@@ -756,7 +755,7 @@ virExec(virCommandPtr cmd)
     }
 # endif
 
-    if (virExecCommon(cmd) < 0)
+    if (virExecCommon(cmd, groups, ngroups) < 0)
         goto fork_error;
 
     if (virCommandHandshakeChild(cmd) < 0)
@@ -799,6 +798,7 @@ virExec(virCommandPtr cmd)
        should never jump here on error */
 
     VIR_FREE(binarystr);
+    VIR_FREE(groups);
 
     /* NB we don't virReportError() on any failures here
        because the code which jumped here already raised
@@ -2167,6 +2167,8 @@ virCommandProcessIO(virCommandPtr cmd)
 /**
  * virCommandExec:
  * @cmd: command to run
+ * @groups: array of supplementary group IDs used for the command
+ * @ngroups: number of group IDs in @groups
  *
  * Exec the command, replacing the current process. Meant to be called
  * in the hook after already forking / cloning, so does not attempt to
@@ -2176,7 +2178,7 @@ virCommandProcessIO(virCommandPtr cmd)
  * Will not return on success.
  */
 #ifndef WIN32
-int virCommandExec(virCommandPtr cmd)
+int virCommandExec(virCommandPtr cmd, gid_t *groups, int ngroups)
 {
     if (!cmd ||cmd->has_error == ENOMEM) {
         virReportOOMError();
@@ -2188,7 +2190,7 @@ int virCommandExec(virCommandPtr cmd)
         return -1;
     }
 
-    if (virExecCommon(cmd) < 0)
+    if (virExecCommon(cmd, groups, ngroups) < 0)
         return -1;
 
     execve(cmd->args[0], cmd->args, cmd->env);
@@ -2199,7 +2201,8 @@ int virCommandExec(virCommandPtr cmd)
     return -1;
 }
 #else
-int virCommandExec(virCommandPtr cmd ATTRIBUTE_UNUSED)
+int virCommandExec(virCommandPtr cmd ATTRIBUTE_UNUSED, gid_t *groups ATTRIBUTE_UNUSED,
+                   int ngroups ATTRIBUTE_UNUSED)
 {
     /* Mingw execve() has a broken signature. Disable this
      * function until gnulib fixes the signature, since we

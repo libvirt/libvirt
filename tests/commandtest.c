@@ -1070,6 +1070,9 @@ static int test25(const void *unused ATTRIBUTE_UNUSED)
     int rv = 0;
     ssize_t tries = 100;
     pid_t pid;
+    gid_t *groups = NULL;
+    int ngroups;
+    virCommandPtr cmd = virCommandNew("some/nonexistent/binary");
 
     if (pipe(pipeFD) < 0) {
         fprintf(stderr, "Unable to create pipe\n");
@@ -1081,6 +1084,10 @@ static int test25(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
+    if ((ngroups = virGetGroupList(virCommandGetUID(cmd), virCommandGetGID(cmd),
+                                   &groups)) < 0)
+        goto cleanup;
+
     /* Now, fork and try to exec a nonexistent binary. */
     pid = virFork();
     if (pid < 0) {
@@ -1090,11 +1097,7 @@ static int test25(const void *unused ATTRIBUTE_UNUSED)
 
     if (pid == 0) {
         /* Child */
-        virCommandPtr cmd = virCommandNew("some/nonexistent/binary");
-
-        rv = virCommandExec(cmd);
-
-        virCommandFree(cmd);
+        rv = virCommandExec(cmd, groups, ngroups);
 
         if (safewrite(pipeFD[1], &rv, sizeof(rv)) < 0)
             fprintf(stderr, "Unable to write to pipe\n");
@@ -1129,6 +1132,8 @@ static int test25(const void *unused ATTRIBUTE_UNUSED)
  cleanup:
     VIR_FORCE_CLOSE(pipeFD[0]);
     VIR_FORCE_CLOSE(pipeFD[1]);
+    VIR_FREE(groups);
+    virCommandFree(cmd);
     return ret;
 }
 

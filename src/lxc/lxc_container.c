@@ -2182,6 +2182,8 @@ static int lxcContainerChild(void *data)
     virDomainFSDefPtr root;
     virCommandPtr cmd = NULL;
     int hasReboot;
+    gid_t *groups = NULL;
+    int ngroups;
 
     if (NULL == vmDef) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2297,6 +2299,13 @@ static int lxcContainerChild(void *data)
         goto cleanup;
     }
 
+    /* TODO is it safe to call it here or should this call be moved in
+     * front of the clone() as otherwise there might be a risk for a
+     * deadlock */
+    if ((ngroups = virGetGroupList(virCommandGetUID(cmd), virCommandGetGID(cmd),
+                                   &groups)) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     VIR_FREE(ttyPath);
@@ -2307,7 +2316,7 @@ static int lxcContainerChild(void *data)
     if (ret == 0) {
         VIR_DEBUG("Executing init binary");
         /* this function will only return if an error occurred */
-        ret = virCommandExec(cmd);
+        ret = virCommandExec(cmd, groups, ngroups);
     }
 
     if (ret != 0) {
@@ -2317,6 +2326,7 @@ static int lxcContainerChild(void *data)
                 virGetLastErrorMessage());
     }
 
+    VIR_FREE(groups);
     virCommandFree(cmd);
     return ret;
 }
