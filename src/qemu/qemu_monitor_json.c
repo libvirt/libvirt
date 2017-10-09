@@ -2892,6 +2892,8 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
                                                       &stats->ram_normal_bytes));
         ignore_value(virJSONValueObjectGetNumberUlong(ram, "dirty-pages-rate",
                                                       &stats->ram_dirty_rate));
+        ignore_value(virJSONValueObjectGetNumberUlong(ram, "page-size",
+                                                      &stats->ram_page_size));
         ignore_value(virJSONValueObjectGetNumberUlong(ram, "dirty-sync-count",
                                                       &stats->ram_iteration));
 

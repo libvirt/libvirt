@@ -6021,6 +6021,14 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
         }
 
         if ((rc = virTypedParamsGetULLong(params, nparams,
+                                          VIR_DOMAIN_JOB_MEMORY_PAGE_SIZE,
+                                          &value)) < 0) {
+            goto save_error;
+        } else if (rc) {
+            vshPrint(ctl, "%-17s %-12llu bytes\n", _("Page size:"), value);
+        }
+
+        if ((rc = virTypedParamsGetULLong(params, nparams,
                                           VIR_DOMAIN_JOB_MEMORY_ITERATION,
                                           &value)) < 0) {
             goto save_error;
