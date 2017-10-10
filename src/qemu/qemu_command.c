@@ -1370,6 +1370,31 @@ qemuDiskSourceNeedsProps(virStorageSourcePtr src)
 }
 
 
+/**
+ * qemuDiskSourceGetProps:
+ * @src: disk source struct
+ *
+ * Returns the disk source struct wrapped so that it can be used as disk source
+ * directly by converting it from json.
+ */
+static virJSONValuePtr
+qemuDiskSourceGetProps(virStorageSourcePtr src)
+{
+    virJSONValuePtr props;
+    virJSONValuePtr ret;
+
+    if (!(props = qemuBlockStorageSourceGetBackendProps(src)))
+        return NULL;
+
+    if (virJSONValueObjectCreate(&ret, "a:file", props, NULL) < 0) {
+        virJSONValueFree(props);
+        return NULL;
+    }
+
+    return ret;
+}
+
+
 static int
 qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
                         virQEMUDriverConfigPtr cfg,
@@ -1385,7 +1410,7 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
     int ret = -1;
 
     if (qemuDiskSourceNeedsProps(disk->src) &&
-        !(srcprops = qemuBlockStorageSourceGetBackendProps(disk->src)))
+        !(srcprops = qemuDiskSourceGetProps(disk->src)))
         goto cleanup;
 
     if (!srcprops &&

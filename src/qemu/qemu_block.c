@@ -572,7 +572,6 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
 {
     int actualType = virStorageSourceGetActualType(src);
     virJSONValuePtr fileprops = NULL;
-    virJSONValuePtr ret = NULL;
 
     switch ((virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -587,12 +586,12 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
         switch ((virStorageNetProtocol) src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             if (!(fileprops = qemuBlockStorageSourceGetGlusterProps(src)))
-                goto cleanup;
+                return NULL;
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_VXHS:
             if (!(fileprops = qemuBlockStorageSourceGetVxHSProps(src)))
-                goto cleanup;
+                return NULL;
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_NBD:
@@ -612,12 +611,5 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
         break;
     }
 
-    if (virJSONValueObjectCreate(&ret, "a:file", fileprops, NULL) < 0)
-        goto cleanup;
-
-    fileprops = NULL;
-
- cleanup:
-    virJSONValueFree(fileprops);
-    return ret;
+    return fileprops;
 }
