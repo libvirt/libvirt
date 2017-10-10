@@ -61,7 +61,7 @@ struct _virNetworkObj {
 };
 
 struct _virNetworkObjList {
-    virObjectLockable parent;
+    virObjectRWLockable parent;
 
     virHashTablePtr objs;
 };
@@ -80,7 +80,7 @@ virNetworkObjOnceInit(void)
                                            virNetworkObjDispose)))
         return -1;
 
-    if (!(virNetworkObjListClass = virClassNew(virClassForObjectLockable(),
+    if (!(virNetworkObjListClass = virClassNew(virClassForObjectRWLockable(),
                                                "virNetworkObjList",
                                                sizeof(virNetworkObjList),
                                                virNetworkObjListDispose)))
@@ -337,7 +337,7 @@ virNetworkObjListNew(void)
     if (virNetworkObjInitialize() < 0)
         return NULL;
 
-    if (!(nets = virObjectLockableNew(virNetworkObjListClass)))
+    if (!(nets = virObjectRWLockableNew(virNetworkObjListClass)))
         return NULL;
 
     if (!(nets->objs = virHashCreate(50, virObjectFreeHashData))) {
@@ -381,9 +381,9 @@ virNetworkObjFindByUUID(virNetworkObjListPtr nets,
 {
     virNetworkObjPtr obj;
 
-    virObjectLock(nets);
+    virObjectRWLockRead(nets);
     obj = virNetworkObjFindByUUIDLocked(nets, uuid);
-    virObjectUnlock(nets);
+    virObjectRWUnlock(nets);
     if (obj)
         virObjectLock(obj);
     return obj;
@@ -435,9 +435,9 @@ virNetworkObjFindByName(virNetworkObjListPtr nets,
 {
     virNetworkObjPtr obj;
 
-    virObjectLock(nets);
+    virObjectRWLockRead(nets);
     obj = virNetworkObjFindByNameLocked(nets, name);
-    virObjectUnlock(nets);
+    virObjectRWUnlock(nets);
     if (obj)
         virObjectLock(obj);
     return obj;
@@ -638,9 +638,9 @@ virNetworkObjAssignDef(virNetworkObjListPtr nets,
 {
     virNetworkObjPtr obj;
 
-    virObjectLock(nets);
+    virObjectRWLockWrite(nets);
     obj = virNetworkObjAssignDefLocked(nets, def, flags);
-    virObjectUnlock(nets);
+    virObjectRWUnlock(nets);
     return obj;
 }
 
@@ -789,10 +789,10 @@ virNetworkObjRemoveInactive(virNetworkObjListPtr nets,
     virUUIDFormat(obj->def->uuid, uuidstr);
     virObjectRef(obj);
     virObjectUnlock(obj);
-    virObjectLock(nets);
+    virObjectRWLockWrite(nets);
     virObjectLock(obj);
     virHashRemoveEntry(nets->objs, uuidstr);
-    virObjectUnlock(nets);
+    virObjectRWUnlock(nets);
     virObjectUnref(obj);
 }
 
@@ -1180,9 +1180,9 @@ virNetworkObjBridgeInUse(virNetworkObjListPtr nets,
     virNetworkObjPtr obj;
     struct virNetworkObjBridgeInUseHelperData data = {bridge, skipname};
 
-    virObjectLock(nets);
+    virObjectRWLockRead(nets);
     obj = virHashSearch(nets->objs, virNetworkObjBridgeInUseHelper, &data, NULL);
-    virObjectUnlock(nets);
+    virObjectRWUnlock(nets);
 
     return obj != NULL;
 }
@@ -1369,7 +1369,7 @@ virNetworkObjListExport(virConnectPtr conn,
         .conn = conn, .nets = NULL, .filter = filter, .flags = flags,
         .nnets = 0, .error = false };
 
-    virObjectLock(netobjs);
+    virObjectRWLockRead(netobjs);
     if (nets && VIR_ALLOC_N(data.nets, virHashSize(netobjs->objs) + 1) < 0)
         goto cleanup;
 
@@ -1387,7 +1387,7 @@ virNetworkObjListExport(virConnectPtr conn,
 
     ret = data.nnets;
  cleanup:
-    virObjectUnlock(netobjs);
+    virObjectRWUnlock(netobjs);
     while (data.nets && data.nnets)
         virObjectUnref(data.nets[--data.nnets]);
 
@@ -1435,9 +1435,9 @@ virNetworkObjListForEach(virNetworkObjListPtr nets,
 {
     struct virNetworkObjListForEachHelperData data = {
         .callback = callback, .opaque = opaque, .ret = 0};
-    virObjectLock(nets);
+    virObjectRWLockRead(nets);
     virHashForEach(nets->objs, virNetworkObjListForEachHelper, &data);
-    virObjectUnlock(nets);
+    virObjectRWUnlock(nets);
     return data.ret;
 }
 
@@ -1503,9 +1503,9 @@ virNetworkObjListGetNames(virNetworkObjListPtr nets,
         .conn = conn, .filter = filter, .names = names, .nnames = 0,
         .maxnames = maxnames, .active = active, .error = false};
 
-    virObjectLock(nets);
+    virObjectRWLockRead(nets);
     virHashForEach(nets->objs, virNetworkObjListGetHelper, &data);
-    virObjectUnlock(nets);
+    virObjectRWUnlock(nets);
 
     if (data.error)
         goto cleanup;
@@ -1530,9 +1530,9 @@ virNetworkObjListNumOfNetworks(virNetworkObjListPtr nets,
         .conn = conn, .filter = filter, .names = NULL, .nnames = 0,
         .maxnames = -1, .active = active, .error = false};
 
-    virObjectLock(nets);
+    virObjectRWLockRead(nets);
     virHashForEach(nets->objs, virNetworkObjListGetHelper, &data);
-    virObjectUnlock(nets);
+    virObjectRWUnlock(nets);
 
     return data.nnames;
 }
@@ -1572,7 +1572,7 @@ virNetworkObjListPrune(virNetworkObjListPtr nets,
 {
     struct virNetworkObjListPruneHelperData data = {flags};
 
-    virObjectLock(nets);
+    virObjectRWLockWrite(nets);
     virHashRemoveSet(nets->objs, virNetworkObjListPruneHelper, &data);
-    virObjectUnlock(nets);
+    virObjectRWUnlock(nets);
 }
