@@ -6045,9 +6045,9 @@ qemu-kvm -net nic,model=? /dev/null
               TCP port number (with -1 as legacy syntax indicating that it should
               be auto-allocated). The <code>autoport</code> attribute is the new
               preferred syntax for indicating auto-allocation of the TCP port to
-              use. The <code>replaceUser</code> attribute is a boolean deciding
+              use. The <code>multiUser</code> attribute is a boolean deciding
               whether multiple simultaneous connections to the VM are permitted.
-              The <code>multiUser</code> attribute is a boolean deciding whether
+              The <code>replaceUser</code> attribute is a boolean deciding whether
               the existing connection must be dropped and a new connection must
               be established by the VRDP server, when a new client connects in
               single connection mode.
