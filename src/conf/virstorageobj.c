@@ -53,11 +53,6 @@ virStorageVolObjListDispose(void *opaque);
 
 
 
-struct _virStorageVolDefList {
-    size_t count;
-    virStorageVolDefPtr *objs;
-};
-
 typedef struct _virStorageVolObj virStorageVolObj;
 typedef virStorageVolObj *virStorageVolObjPtr;
 struct _virStorageVolObj {
@@ -96,7 +91,7 @@ struct _virStoragePoolObj {
     virStoragePoolDefPtr def;
     virStoragePoolDefPtr newDef;
 
-    virStorageVolDefList volumes;
+    virStorageVolObjListPtr volumes;
 };
 
 struct _virStoragePoolObjList {
@@ -133,7 +128,7 @@ virStorageVolObjOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virStorageVolObj)
 
 
-static virStorageVolObjPtr ATTRIBUTE_UNUSED
+static virStorageVolObjPtr
 virStorageVolObjNew(void)
 {
     virStorageVolObjPtr obj;
@@ -149,7 +144,7 @@ virStorageVolObjNew(void)
 }
 
 
-static void ATTRIBUTE_UNUSED
+static void
 virStorageVolObjEndAPI(virStorageVolObjPtr *obj)
 {
     if (!*obj)
@@ -173,7 +168,7 @@ virStorageVolObjDispose(void *opaque)
 }
 
 
-static virStorageVolObjListPtr ATTRIBUTE_UNUSED
+static virStorageVolObjListPtr
 virStorageVolObjListNew(void)
 {
     virStorageVolObjListPtr vols;
@@ -240,6 +235,11 @@ virStoragePoolObjNew(void)
 
     if (!(obj = virObjectLockableNew(virStoragePoolObjClass)))
         return NULL;
+
+    if (!(obj->volumes = virStorageVolObjListNew())) {
+        virObjectUnref(obj);
+        return NULL;
+    }
 
     virObjectLock(obj);
     obj->active = false;
@@ -377,6 +377,7 @@ virStoragePoolObjDispose(void *opaque)
         return;
 
     virStoragePoolObjClearVols(obj);
+    virObjectUnref(obj->volumes);
 
     virStoragePoolDefFree(obj->def);
     virStoragePoolDefFree(obj->newDef);
@@ -625,12 +626,9 @@ virStoragePoolSourceFindDuplicateDevices(virStoragePoolObjPtr obj,
 void
 virStoragePoolObjClearVols(virStoragePoolObjPtr obj)
 {
-    size_t i;
-    for (i = 0; i < obj->volumes.count; i++)
-        virStorageVolDefFree(obj->volumes.objs[i]);
-
-    VIR_FREE(obj->volumes.objs);
-    obj->volumes.count = 0;
+    virHashRemoveAll(obj->volumes->objsKey);
+    virHashRemoveAll(obj->volumes->objsName);
+    virHashRemoveAll(obj->volumes->objsPath);
 }
 
 
@@ -638,9 +636,40 @@ int
 virStoragePoolObjAddVol(virStoragePoolObjPtr obj,
                         virStorageVolDefPtr voldef)
 {
-    if (VIR_APPEND_ELEMENT(obj->volumes.objs, obj->volumes.count, voldef) < 0)
-        return -1;
+    virStorageVolObjPtr volobj = NULL;
+    virStorageVolObjListPtr volumes = obj->volumes;
+
+    virObjectRWLockWrite(volumes);
+
+    if (!(volobj = virStorageVolObjNew()))
+        goto error;
+
+    if (virHashAddEntry(volumes->objsKey, voldef->key, volobj) < 0)
+        goto error;
+    virObjectRef(volobj);
+
+    if (virHashAddEntry(volumes->objsName, voldef->name, volobj) < 0) {
+        virHashRemoveEntry(volumes->objsKey, voldef->key);
+        goto error;
+    }
+    virObjectRef(volobj);
+
+    if (virHashAddEntry(volumes->objsPath, voldef->target.path, volobj) < 0) {
+        virHashRemoveEntry(volumes->objsKey, voldef->key);
+        virHashRemoveEntry(volumes->objsName, voldef->name);
+        goto error;
+    }
+    virObjectRef(volobj);
+
+    volobj->voldef = voldef;
+    virObjectRWUnlock(volumes);
+    virStorageVolObjEndAPI(&volobj);
     return 0;
+
+ error:
+    virStorageVolObjEndAPI(&volobj);
+    virObjectRWUnlock(volumes);
+    return -1;
 }
 
 
@@ -648,26 +677,64 @@ void
 virStoragePoolObjRemoveVol(virStoragePoolObjPtr obj,
                            virStorageVolDefPtr voldef)
 {
-    virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
-    size_t i;
+    virStorageVolObjListPtr volumes = obj->volumes;
+    virStorageVolObjPtr volobj;
 
-    for (i = 0; i < obj->volumes.count; i++) {
-        if (obj->volumes.objs[i] == voldef) {
-            VIR_INFO("Deleting volume '%s' from storage pool '%s'",
-                     voldef->name, def->name);
-            virStorageVolDefFree(voldef);
-
-            VIR_DELETE_ELEMENT(obj->volumes.objs, i, obj->volumes.count);
-            return;
-        }
+    virObjectRWLockWrite(volumes);
+    volobj = virHashLookup(volumes->objsName, voldef->name);
+    if (!volobj) {
+        VIR_INFO("Cannot find volume '%s' from storage pool '%s'",
+                 voldef->name, obj->def->name);
+        virObjectRWUnlock(volumes);
+        return;
     }
+    VIR_INFO("Deleting volume '%s' from storage pool '%s'",
+             voldef->name, obj->def->name);
+
+    virObjectRef(volobj);
+    virObjectLock(volobj);
+    virHashRemoveEntry(volumes->objsKey, voldef->key);
+    virHashRemoveEntry(volumes->objsName, voldef->name);
+    virHashRemoveEntry(volumes->objsPath, voldef->target.path);
+    virStorageVolObjEndAPI(&volobj);
+
+    virObjectRWUnlock(volumes);
 }
 
 
 size_t
 virStoragePoolObjGetVolumesCount(virStoragePoolObjPtr obj)
 {
-    return obj->volumes.count;
+    size_t nbElems;
+
+    virObjectRWLockRead(obj->volumes);
+    nbElems = virHashSize(obj->volumes->objsKey);
+    virObjectRWUnlock(obj->volumes);
+
+    return nbElems;
+}
+
+
+struct _virStoragePoolObjForEachVolData {
+    virStorageVolObjListIterator iter;
+    const void *opaque;
+};
+
+static int
+virStoragePoolObjForEachVolumeCb(void *payload,
+                                 const void *name ATTRIBUTE_UNUSED,
+                                 void *opaque)
+{
+    int ret = 0;
+    virStorageVolObjPtr volobj = payload;
+    struct _virStoragePoolObjForEachVolData *data = opaque;
+
+    virObjectLock(volobj);
+    if (data->iter(volobj->voldef, data->opaque) < 0)
+        ret = -1;
+    virObjectUnlock(volobj);
+
+    return ret;
 }
 
 
@@ -676,14 +743,38 @@ virStoragePoolObjForEachVolume(virStoragePoolObjPtr obj,
                                virStorageVolObjListIterator iter,
                                const void *opaque)
 {
-    size_t i;
+    struct _virStoragePoolObjForEachVolData data = {
+        .iter = iter, .opaque = opaque };
 
-    for (i = 0; i < obj->volumes.count; i++) {
-        if (iter(obj->volumes.objs[i], opaque) < 0)
-            return -1;
-    }
-
+    virObjectRWLockRead(obj->volumes);
+    virHashForEach(obj->volumes->objsKey, virStoragePoolObjForEachVolumeCb,
+                   &data);
+    virObjectRWUnlock(obj->volumes);
     return 0;
+}
+
+
+struct _virStoragePoolObjSearchVolData {
+    virStorageVolObjListSearcher iter;
+    const void *opaque;
+};
+
+static int
+virStoragePoolObjSearchVolumeCb(const void *payload,
+                                const void *name ATTRIBUTE_UNUSED,
+                                const void *opaque)
+{
+    virStorageVolObjPtr volobj = (virStorageVolObjPtr) payload;
+    struct _virStoragePoolObjSearchVolData *data =
+        (struct _virStoragePoolObjSearchVolData *) opaque;
+    int found = 0;
+
+    virObjectLock(volobj);
+    if (data->iter(volobj->voldef, data->opaque))
+        found = 1;
+    virObjectUnlock(volobj);
+
+    return found;
 }
 
 
@@ -692,12 +783,18 @@ virStoragePoolObjSearchVolume(virStoragePoolObjPtr obj,
                               virStorageVolObjListSearcher iter,
                               const void *opaque)
 {
-    size_t i;
+    virStorageVolObjPtr volobj;
+    struct _virStoragePoolObjSearchVolData data = {
+        .iter = iter, .opaque = opaque };
 
-    for (i = 0; i < obj->volumes.count; i++) {
-        if (iter(obj->volumes.objs[i], opaque))
-            return obj->volumes.objs[i];
-    }
+    virObjectRWLockRead(obj->volumes);
+    volobj = virHashSearch(obj->volumes->objsKey,
+                           virStoragePoolObjSearchVolumeCb,
+                           &data, NULL);
+    virObjectRWUnlock(obj->volumes);
+
+    if (volobj)
+        return volobj->voldef;
 
     return NULL;
 }
@@ -707,12 +804,14 @@ virStorageVolDefPtr
 virStorageVolDefFindByKey(virStoragePoolObjPtr obj,
                           const char *key)
 {
-    size_t i;
+    virStorageVolObjPtr volobj;
 
-    for (i = 0; i < obj->volumes.count; i++)
-        if (STREQ(obj->volumes.objs[i]->key, key))
-            return obj->volumes.objs[i];
+    virObjectRWLockRead(obj->volumes);
+    volobj = virHashLookup(obj->volumes->objsKey, key);
+    virObjectRWUnlock(obj->volumes);
 
+    if (volobj)
+        return volobj->voldef;
     return NULL;
 }
 
@@ -721,12 +820,14 @@ virStorageVolDefPtr
 virStorageVolDefFindByPath(virStoragePoolObjPtr obj,
                            const char *path)
 {
-    size_t i;
+    virStorageVolObjPtr volobj;
 
-    for (i = 0; i < obj->volumes.count; i++)
-        if (STREQ(obj->volumes.objs[i]->target.path, path))
-            return obj->volumes.objs[i];
+    virObjectRWLockRead(obj->volumes);
+    volobj = virHashLookup(obj->volumes->objsPath, path);
+    virObjectRWUnlock(obj->volumes);
 
+    if (volobj)
+        return volobj->voldef;
     return NULL;
 }
 
@@ -735,13 +836,45 @@ virStorageVolDefPtr
 virStorageVolDefFindByName(virStoragePoolObjPtr obj,
                            const char *name)
 {
-    size_t i;
+    virStorageVolObjPtr volobj;
 
-    for (i = 0; i < obj->volumes.count; i++)
-        if (STREQ(obj->volumes.objs[i]->name, name))
-            return obj->volumes.objs[i];
+    virObjectRWLockRead(obj->volumes);
+    volobj = virHashLookup(obj->volumes->objsName, name);
+    virObjectRWUnlock(obj->volumes);
 
+    if (volobj)
+        return volobj->voldef;
     return NULL;
+}
+
+
+struct _virStorageVolObjCountData {
+    virConnectPtr conn;
+    virStoragePoolVolumeACLFilter filter;
+    virStoragePoolDefPtr pooldef;
+    int count;
+};
+
+
+static int
+virStoragePoolObjNumOfVolumesCb(void *payload,
+                                const void *name ATTRIBUTE_UNUSED,
+                                void *opaque)
+{
+    virStorageVolObjPtr volobj = payload;
+    struct _virStorageVolObjCountData *data = opaque;
+
+    virObjectLock(volobj);
+
+    if (data->filter &&
+        !data->filter(data->conn, data->pooldef, volobj->voldef))
+        goto cleanup;
+
+    data->count++;
+
+ cleanup:
+    virObjectUnlock(volobj);
+    return 0;
 }
 
 
@@ -750,19 +883,60 @@ virStoragePoolObjNumOfVolumes(virStoragePoolObjPtr obj,
                               virConnectPtr conn,
                               virStoragePoolVolumeACLFilter filter)
 {
-    virStoragePoolDefPtr pooldef = obj->def;
-    virStorageVolDefListPtr volumes = &obj->volumes;
-    int nvolumes = 0;
-    size_t i;
+    virStorageVolObjListPtr volumes = obj->volumes;
+    struct _virStorageVolObjCountData data = {
+        .conn = conn, .filter = filter, .pooldef = obj->def, .count = 0 };
 
-    for (i = 0; i < volumes->count; i++) {
-        virStorageVolDefPtr def = volumes->objs[i];
-        if (filter && !filter(conn, pooldef, def))
-            continue;
-        nvolumes++;
+    virObjectRWLockRead(volumes);
+    virHashForEach(volumes->objsName, virStoragePoolObjNumOfVolumesCb, &data);
+    virObjectRWUnlock(volumes);
+
+    return data.count;
+}
+
+
+struct _virStorageVolObjNameData {
+    virConnectPtr conn;
+    virStoragePoolVolumeACLFilter filter;
+    virStoragePoolDefPtr pooldef;
+    bool error;
+    int nnames;
+    int maxnames;
+    char **const names;
+};
+
+static int
+virStoragePoolObjVolumeGetNamesCb(void *payload,
+                                  const void *name ATTRIBUTE_UNUSED,
+                                  void *opaque)
+{
+    virStorageVolObjPtr volobj = payload;
+    struct _virStorageVolObjNameData *data = opaque;
+
+    if (data->error)
+        return 0;
+
+    if (data->maxnames >= 0 && data->nnames == data->maxnames)
+        return 0;
+
+    virObjectLock(volobj);
+
+    if (data->filter &&
+        !data->filter(data->conn, data->pooldef, volobj->voldef))
+        goto cleanup;
+
+    if (data->names) {
+        if (VIR_STRDUP(data->names[data->nnames], volobj->voldef->name) < 0) {
+            data->error = true;
+            goto cleanup;
+        }
     }
 
-    return nvolumes;
+    data->nnames++;
+
+ cleanup:
+    virObjectUnlock(volobj);
+    return 0;
 }
 
 
@@ -773,27 +947,69 @@ virStoragePoolObjVolumeGetNames(virStoragePoolObjPtr obj,
                                 char **const names,
                                 int maxnames)
 {
-    virStoragePoolDefPtr pooldef = obj->def;
-    virStorageVolDefListPtr volumes = &obj->volumes;
-    int nnames = 0;
-    size_t i;
+    virStorageVolObjListPtr volumes = obj->volumes;
+    struct _virStorageVolObjNameData data = {
+        .conn = conn, .filter = filter, .pooldef = obj->def, .error = false,
+        .nnames = 0, .maxnames = maxnames, .names = names };
 
-    for (i = 0; i < volumes->count && nnames < maxnames; i++) {
-        virStorageVolDefPtr def = volumes->objs[i];
-        if (filter && !filter(conn, pooldef, def))
-            continue;
-        if (VIR_STRDUP(names[nnames], def->name) < 0)
-            goto failure;
-        nnames++;
+    virObjectRWLockRead(volumes);
+    virHashForEach(volumes->objsName, virStoragePoolObjVolumeGetNamesCb, &data);
+    virObjectRWUnlock(volumes);
+
+    if (data.error)
+        goto error;
+
+    return data.nnames;
+
+ error:
+    while (--data.nnames)
+        VIR_FREE(data.names[data.nnames]);
+    return -1;
+}
+
+
+struct _virStorageVolObjExportData {
+    virConnectPtr conn;
+    virStoragePoolVolumeACLFilter filter;
+    virStoragePoolDefPtr pooldef;
+    bool error;
+    int nvols;
+    virStorageVolPtr *vols;
+};
+
+static int
+virStoragePoolObjVolumeListExportCb(void *payload,
+                                    const void *name ATTRIBUTE_UNUSED,
+                                    void *opaque)
+{
+    virStorageVolObjPtr volobj = payload;
+    struct _virStorageVolObjExportData *data = opaque;
+    virStorageVolPtr vol = NULL;
+
+    if (data->error)
+        return 0;
+
+    virObjectLock(volobj);
+
+    if (data->filter &&
+        !data->filter(data->conn, data->pooldef, volobj->voldef))
+        goto cleanup;
+
+    if (data->vols) {
+        if (!(vol = virGetStorageVol(data->conn, data->pooldef->name,
+                                     volobj->voldef->name, volobj->voldef->key,
+                                     NULL, NULL))) {
+            data->error = true;
+            goto cleanup;
+        }
+        data->vols[data->nvols] = vol;
     }
 
-    return nnames;
+    data->nvols++;
 
- failure:
-    while (--nnames >= 0)
-        VIR_FREE(names[nnames]);
-
-    return -1;
+ cleanup:
+    virObjectUnlock(volobj);
+    return 0;
 }
 
 
@@ -803,45 +1019,37 @@ virStoragePoolObjVolumeListExport(virConnectPtr conn,
                                   virStorageVolPtr **vols,
                                   virStoragePoolVolumeACLFilter filter)
 {
-    virStoragePoolDefPtr pooldef = obj->def;
-    virStorageVolDefListPtr volumes = &obj->volumes;
-    int ret = -1;
-    size_t i;
-    virStorageVolPtr *tmp_vols = NULL;
-    virStorageVolPtr vol = NULL;
-    int nvols = 0;
+    virStorageVolObjListPtr volumes = obj->volumes;
+    struct _virStorageVolObjExportData data = {
+        .conn = conn, .filter = filter, .pooldef = obj->def, .error = false,
+        .nvols = 0, .vols = NULL };
 
-    /* Just returns the volumes count */
+    virObjectRWLockRead(volumes);
+
     if (!vols) {
-        ret = volumes->count;
-        goto cleanup;
+        int ret = virHashSize(volumes->objsName);
+        virObjectRWUnlock(volumes);
+        return ret;
     }
 
-    if (VIR_ALLOC_N(tmp_vols, volumes->count + 1) < 0)
-        goto cleanup;
-
-    for (i = 0; i < volumes->count; i++) {
-        virStorageVolDefPtr def = volumes->objs[i];
-        if (filter && !filter(conn, pooldef, def))
-            continue;
-        if (!(vol = virGetStorageVol(conn, pooldef->name, def->name, def->key,
-                                     NULL, NULL)))
-            goto cleanup;
-        tmp_vols[nvols++] = vol;
+    if (VIR_ALLOC_N(data.vols, virHashSize(volumes->objsName) + 1) < 0) {
+        virObjectRWUnlock(volumes);
+        return -1;
     }
 
-    *vols = tmp_vols;
-    tmp_vols = NULL;
-    ret = nvols;
+    virHashForEach(volumes->objsName, virStoragePoolObjVolumeListExportCb, &data);
+    virObjectRWUnlock(volumes);
 
- cleanup:
-    if (tmp_vols) {
-        for (i = 0; i < nvols; i++)
-            virObjectUnref(tmp_vols[i]);
-        VIR_FREE(tmp_vols);
-    }
+    if (data.error)
+        goto error;
 
-    return ret;
+    *vols = data.vols;
+
+    return data.nvols;
+
+ error:
+    virObjectListFree(data.vols);
+    return -1;
 }
 
 
