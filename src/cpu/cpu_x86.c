@@ -531,7 +531,8 @@ virCPUx86VendorToCPUID(const char *vendor,
 
 static uint32_t
 x86MakeSignature(unsigned int family,
-                 unsigned int model)
+                 unsigned int model,
+                 unsigned int stepping)
 {
     uint32_t sig = 0;
 
@@ -551,6 +552,7 @@ x86MakeSignature(unsigned int family,
      *
      * family = eax[27:20] + eax[11:8]
      * model = eax[19:16] << 4 + eax[7:4]
+     * stepping = eax[3:0]
      */
 
     /* extFam */
@@ -570,9 +572,8 @@ x86MakeSignature(unsigned int family,
     /* Mod */
     sig |= (model & 0xf) << 4;
 
-    /* Step is irrelevant, it is used to distinguish different revisions
-     * of the same CPU model
-     */
+    /* Step */
+    sig |= stepping & 0xf;
 
     return sig;
 }
@@ -1248,7 +1249,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
             goto cleanup;
         }
 
-        model->signature = x86MakeSignature(sigFamily, sigModel);
+        model->signature = x86MakeSignature(sigFamily, sigModel, 0);
     }
 
     if (virXPathBoolean("boolean(./vendor)", ctxt)) {
@@ -2971,9 +2972,10 @@ virCPUx86DataAddCPUID(virCPUDataPtr cpuData,
 int
 virCPUx86DataSetSignature(virCPUDataPtr cpuData,
                           unsigned int family,
-                          unsigned int model)
+                          unsigned int model,
+                          unsigned int stepping)
 {
-    uint32_t signature = x86MakeSignature(family, model);
+    uint32_t signature = x86MakeSignature(family, model, stepping);
 
     return x86DataAddSignature(&cpuData->data.x86, signature);
 }

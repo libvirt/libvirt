@@ -3353,6 +3353,7 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
     virCPUDataPtr data = NULL;
     unsigned long long sigFamily = 0;
     unsigned long long sigModel = 0;
+    unsigned long long sigStepping = 0;
     int ret = -1;
     size_t i;
 
@@ -3387,6 +3388,8 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
                 sigFamily = prop->value.number;
             else if (STREQ(prop->name, "model"))
                 sigModel = prop->value.number;
+            else if (STREQ(prop->name, "stepping"))
+                sigStepping = prop->value.number;
             break;
 
         case QEMU_MONITOR_CPU_PROPERTY_LAST:
@@ -3394,7 +3397,7 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
         }
     }
 
-    if (virCPUx86DataSetSignature(data, sigFamily, sigModel) < 0)
+    if (virCPUx86DataSetSignature(data, sigFamily, sigModel, sigStepping) < 0)
         goto cleanup;
 
     if (cpuDecode(cpu, data, virQEMUCapsGetCPUDefinitions(qemuCaps, type)) < 0)

@@ -34,7 +34,8 @@ int virCPUx86DataAddCPUID(virCPUDataPtr cpuData,
 
 int virCPUx86DataSetSignature(virCPUDataPtr cpuData,
                               unsigned int family,
-                              unsigned int model);
+                              unsigned int model,
+                              unsigned int stepping);
 
 int virCPUx86DataSetVendor(virCPUDataPtr cpuData,
                            const char *vendor);
