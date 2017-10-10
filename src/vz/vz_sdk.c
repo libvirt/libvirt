@@ -1889,7 +1889,7 @@ prlsdkLoadDomain(vzDriverPtr driver,
 
     def->onReboot = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     def->onPoweroff = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
-    def->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
+    def->onCrash = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
 
     /* get RAM parameters */
     pret = PrlVmCfg_GetRamSize(sdkdom, &ram);
@@ -2593,7 +2593,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
 
     if (def->onReboot != VIR_DOMAIN_LIFECYCLE_ACTION_RESTART ||
         def->onPoweroff != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
-        def->onCrash != VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY) {
+        def->onCrash != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY) {
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("on_reboot, on_poweroff and on_crash parameters "

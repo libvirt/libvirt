@@ -1262,13 +1262,13 @@ xenParseSxpr(const struct sexpr *root,
 
     tmp = sexpr_node(root, "domain/on_crash");
     if (tmp != NULL) {
-        if ((def->onCrash = virDomainLifecycleCrashTypeFromString(tmp)) < 0) {
+        if ((def->onCrash = virDomainLifecycleActionTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unknown lifecycle type %s"), tmp);
             goto error;
         }
     } else {
-        def->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
+        def->onCrash = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     }
 
     if (hvm) {
@@ -2223,7 +2223,7 @@ xenFormatSxpr(virConnectPtr conn, virDomainDefPtr def)
     }
     virBufferAsprintf(&buf, "(on_reboot '%s')", tmp);
 
-    if (!(tmp = virDomainLifecycleCrashTypeToString(def->onCrash))) {
+    if (!(tmp = virDomainLifecycleActionTypeToString(def->onCrash))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected lifecycle value %d"), def->onCrash);
         goto error;

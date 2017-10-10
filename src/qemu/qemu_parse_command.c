@@ -1887,7 +1887,7 @@ qemuParseCommandLine(virCapsPtr caps,
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
 
     def->onReboot = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
-    def->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
+    def->onCrash = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     def->onPoweroff = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     def->virtType = VIR_DOMAIN_VIRT_QEMU;
     if (VIR_STRDUP(def->emulator, progargv[0]) < 0)

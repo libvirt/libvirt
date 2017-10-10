@@ -4238,12 +4238,12 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
     VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
     switch (action) {
-    case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
         if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0)
             goto endjob;
         ATTRIBUTE_FALLTHROUGH;
 
-    case VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED,
                         QEMU_ASYNC_JOB_DUMP, 0);
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -4255,17 +4255,17 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
         removeInactive = true;
         break;
 
-    case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
         if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0)
             goto endjob;
         ATTRIBUTE_FALLTHROUGH;
 
-    case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
         qemuDomainSetFakeReboot(driver, vm, true);
         qemuProcessShutdownOrReboot(driver, vm);
         break;
 
-    case VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
         break;
 
     default:

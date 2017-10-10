@@ -474,6 +474,8 @@ libxlDomainShutdownThread(void *opaque)
         case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
             goto restart;
         case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
         case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
             goto endjob;
         }
@@ -484,19 +486,19 @@ libxlDomainShutdownThread(void *opaque)
         dom_event = virDomainEventLifecycleNewFromObj(vm,
                                            VIR_DOMAIN_EVENT_STOPPED,
                                            VIR_DOMAIN_EVENT_STOPPED_CRASHED);
-        switch ((virDomainLifecycleCrashAction) vm->def->onCrash) {
-        case VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY:
+        switch ((virDomainLifecycleAction) vm->def->onCrash) {
+        case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
             goto destroy;
-        case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART:
-        case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART_RENAME:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
             goto restart;
-        case VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE:
-        case VIR_DOMAIN_LIFECYCLE_CRASH_LAST:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
             goto endjob;
-        case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
             libxlDomainAutoCoreDump(driver, vm);
             goto destroy;
-        case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
             libxlDomainAutoCoreDump(driver, vm);
             goto restart;
         }
@@ -514,6 +516,8 @@ libxlDomainShutdownThread(void *opaque)
         case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
             goto restart;
         case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
         case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
             goto endjob;
         }

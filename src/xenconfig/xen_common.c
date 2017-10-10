@@ -379,7 +379,7 @@ xenParseEventsActions(virConfPtr conf, virDomainDefPtr def)
     if (xenConfigGetString(conf, "on_crash", &str, "restart") < 0)
         return -1;
 
-    if ((def->onCrash = virDomainLifecycleCrashTypeFromString(str)) < 0) {
+    if ((def->onCrash = virDomainLifecycleActionTypeFromString(str)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected value %s for on_crash"), str);
         return -1;
@@ -1467,7 +1467,7 @@ xenFormatEventActions(virConfPtr conf, virDomainDefPtr def)
         return -1;
 
 
-    if (!(lifecycle = virDomainLifecycleCrashTypeToString(def->onCrash))) {
+    if (!(lifecycle = virDomainLifecycleActionTypeToString(def->onCrash))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected lifecycle action %d"), def->onCrash);
         return -1;

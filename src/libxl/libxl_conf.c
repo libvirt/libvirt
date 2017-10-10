@@ -110,38 +110,13 @@ libxlActionFromVirLifecycle(virDomainLifecycleAction action)
     case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
         return LIBXL_ACTION_ON_SHUTDOWN_PRESERVE;
 
-    case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
-        break;
-    }
-
-    return 0;
-}
-
-
-static libxl_action_on_shutdown
-libxlActionFromVirLifecycleCrash(virDomainLifecycleCrashAction action)
-{
-
-    switch (action) {
-    case VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY:
-        return LIBXL_ACTION_ON_SHUTDOWN_DESTROY;
-
-    case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART:
-        return  LIBXL_ACTION_ON_SHUTDOWN_RESTART;
-
-    case VIR_DOMAIN_LIFECYCLE_CRASH_RESTART_RENAME:
-        return LIBXL_ACTION_ON_SHUTDOWN_RESTART_RENAME;
-
-    case VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE:
-        return LIBXL_ACTION_ON_SHUTDOWN_PRESERVE;
-
-    case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
         return LIBXL_ACTION_ON_SHUTDOWN_COREDUMP_DESTROY;
 
-    case VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
         return LIBXL_ACTION_ON_SHUTDOWN_COREDUMP_RESTART;
 
-    case VIR_DOMAIN_LIFECYCLE_CRASH_LAST:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
         break;
     }
 
@@ -2247,7 +2222,7 @@ libxlBuildDomainConfig(virPortAllocatorPtr graphicsports,
 
     d_config->on_reboot = libxlActionFromVirLifecycle(def->onReboot);
     d_config->on_poweroff = libxlActionFromVirLifecycle(def->onPoweroff);
-    d_config->on_crash = libxlActionFromVirLifecycleCrash(def->onCrash);
+    d_config->on_crash = libxlActionFromVirLifecycle(def->onCrash);
 
     return 0;
 }

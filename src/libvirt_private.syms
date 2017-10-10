@@ -403,8 +403,6 @@ virDomainLeaseRemove;
 virDomainLeaseRemoveAt;
 virDomainLifecycleActionTypeFromString;
 virDomainLifecycleActionTypeToString;
-virDomainLifecycleCrashTypeFromString;
-virDomainLifecycleCrashTypeToString;
 virDomainLoaderDefFree;
 virDomainLoaderTypeFromString;
 virDomainLoaderTypeToString;

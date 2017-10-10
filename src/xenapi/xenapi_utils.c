@@ -140,20 +140,20 @@ actionShutdownLibvirt2XenapiEnum(virDomainLifecycleAction action)
 
 
 enum xen_on_crash_behaviour
-actionCrashLibvirt2XenapiEnum(virDomainLifecycleCrashAction action)
+actionCrashLibvirt2XenapiEnum(virDomainLifecycleAction action)
 {
     enum xen_on_crash_behaviour num = XEN_ON_CRASH_BEHAVIOUR_RESTART;
-    if (action == VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY)
+    if (action == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY)
         num = XEN_ON_CRASH_BEHAVIOUR_DESTROY;
-    else if (action == VIR_DOMAIN_LIFECYCLE_CRASH_RESTART)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART)
         num = XEN_ON_CRASH_BEHAVIOUR_RESTART;
-    else if (action == VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE)
         num = XEN_ON_CRASH_BEHAVIOUR_PRESERVE;
-    else if (action == VIR_DOMAIN_LIFECYCLE_CRASH_RESTART_RENAME)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME)
         num = XEN_ON_CRASH_BEHAVIOUR_RENAME_RESTART;
-    else if (action == VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY)
         num = XEN_ON_CRASH_BEHAVIOUR_COREDUMP_AND_DESTROY;
-    else if (action == VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART)
         num = XEN_ON_CRASH_BEHAVIOUR_COREDUMP_AND_RESTART;
     return num;
 }
@@ -210,22 +210,22 @@ xenapiNormalExitEnum2virDomainLifecycle(enum xen_on_normal_exit action)
 }
 
 
-virDomainLifecycleCrashAction
+virDomainLifecycleAction
 xenapiCrashExitEnum2virDomainLifecycle(enum xen_on_crash_behaviour action)
 {
-    virDomainLifecycleCrashAction num = VIR_DOMAIN_LIFECYCLE_CRASH_RESTART;
+    virDomainLifecycleAction num = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     if (action == XEN_ON_CRASH_BEHAVIOUR_DESTROY)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_RESTART)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_RESTART;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_PRESERVE)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_PRESERVE;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_RENAME_RESTART)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_RESTART_RENAME;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_COREDUMP_AND_DESTROY)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY;
     else if (action == XEN_ON_CRASH_BEHAVIOUR_COREDUMP_AND_RESTART)
-        num = VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_RESTART;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART;
     return num;
 }
 

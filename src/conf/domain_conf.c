@@ -217,12 +217,6 @@ VIR_ENUM_IMPL(virDomainLifecycleAction, VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
               "destroy",
               "restart",
               "rename-restart",
-              "preserve")
-
-VIR_ENUM_IMPL(virDomainLifecycleCrash, VIR_DOMAIN_LIFECYCLE_CRASH_LAST,
-              "destroy",
-              "restart",
-              "rename-restart",
               "preserve",
               "coredump-destroy",
               "coredump-restart")
@@ -5618,6 +5612,60 @@ virDomainDefCheckDuplicateDriveAddresses(const virDomainDef *def)
 }
 
 
+static bool
+virDomainDefLifecycleActionAllowed(virDomainLifecycle type,
+                                   virDomainLifecycleAction action)
+{
+    switch (type) {
+    case VIR_DOMAIN_LIFECYCLE_POWEROFF:
+    case VIR_DOMAIN_LIFECYCLE_REBOOT:
+        switch (action) {
+        case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
+            return true;
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
+            break;
+        }
+        break;
+    case VIR_DOMAIN_LIFECYCLE_CRASH:
+    case VIR_DOMAIN_LIFECYCLE_LAST:
+        return true;
+    }
+
+    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                   _("Lifecycle event '%s' doesn't support '%s' action"),
+                   virDomainLifecycleTypeToString(type),
+                   virDomainLifecycleActionTypeToString(action));
+    return false;
+}
+
+
+static int
+virDomainDefLifecycleActionValidate(const virDomainDef *def)
+{
+    if (!virDomainDefLifecycleActionAllowed(VIR_DOMAIN_LIFECYCLE_POWEROFF,
+                                            def->onPoweroff)) {
+        return -1;
+    }
+
+    if (!virDomainDefLifecycleActionAllowed(VIR_DOMAIN_LIFECYCLE_REBOOT,
+                                            def->onReboot)) {
+        return -1;
+    }
+
+    if (!virDomainDefLifecycleActionAllowed(VIR_DOMAIN_LIFECYCLE_CRASH,
+                                            def->onCrash)) {
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 virDomainDefValidateInternal(const virDomainDef *def)
 {
@@ -5647,6 +5695,9 @@ virDomainDefValidateInternal(const virDomainDef *def)
                        _("IOMMU eim requires interrupt remapping to be enabled"));
         return -1;
     }
+
+    if (virDomainDefLifecycleActionValidate(def) < 0)
+        return -1;
 
     return 0;
 }
@@ -18612,8 +18663,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virDomainEventActionParseXML(ctxt, "on_crash",
                                      "string(./on_crash[1])",
                                      &def->onCrash,
-                                     VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY,
-                                     virDomainLifecycleCrashTypeFromString) < 0)
+                                     VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY,
+                                     virDomainLifecycleActionTypeFromString) < 0)
         goto error;
 
     if (virDomainEventActionParseXML(ctxt, "on_lockfailure",
@@ -25876,7 +25927,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         goto error;
     if (virDomainEventActionDefFormat(buf, def->onCrash,
                                       "on_crash",
-                                      virDomainLifecycleCrashTypeToString) < 0)
+                                      virDomainLifecycleActionTypeToString) < 0)
         goto error;
     if (def->onLockFailure != VIR_DOMAIN_LOCK_FAILURE_DEFAULT &&
         virDomainEventActionDefFormat(buf, def->onLockFailure,
