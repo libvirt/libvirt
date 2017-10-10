@@ -208,7 +208,7 @@ VIR_ENUM_IMPL(virDomainCapsFeature, VIR_DOMAIN_CAPS_FEATURE_LAST,
               "syslog",
               "wake_alarm")
 
-VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
+VIR_ENUM_IMPL(virDomainLifecycleAction, VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
               "destroy",
               "restart",
               "rename-restart",
@@ -18594,14 +18594,14 @@ virDomainDefParseXML(xmlDocPtr xml,
                                      "string(./on_reboot[1])",
                                      &def->onReboot,
                                      VIR_DOMAIN_LIFECYCLE_ACTION_RESTART,
-                                     virDomainLifecycleTypeFromString) < 0)
+                                     virDomainLifecycleActionTypeFromString) < 0)
         goto error;
 
     if (virDomainEventActionParseXML(ctxt, "on_poweroff",
                                      "string(./on_poweroff[1])",
                                      &def->onPoweroff,
                                      VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY,
-                                     virDomainLifecycleTypeFromString) < 0)
+                                     virDomainLifecycleActionTypeFromString) < 0)
         goto error;
 
     if (virDomainEventActionParseXML(ctxt, "on_crash",
@@ -25863,11 +25863,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     if (virDomainEventActionDefFormat(buf, def->onPoweroff,
                                       "on_poweroff",
-                                      virDomainLifecycleTypeToString) < 0)
+                                      virDomainLifecycleActionTypeToString) < 0)
         goto error;
     if (virDomainEventActionDefFormat(buf, def->onReboot,
                                       "on_reboot",
-                                      virDomainLifecycleTypeToString) < 0)
+                                      virDomainLifecycleActionTypeToString) < 0)
         goto error;
     if (virDomainEventActionDefFormat(buf, def->onCrash,
                                       "on_crash",

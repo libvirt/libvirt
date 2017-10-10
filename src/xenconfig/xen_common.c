@@ -361,7 +361,7 @@ xenParseEventsActions(virConfPtr conf, virDomainDefPtr def)
     if (xenConfigGetString(conf, "on_poweroff", &str, "destroy") < 0)
         return -1;
 
-    if ((def->onPoweroff = virDomainLifecycleTypeFromString(str)) < 0) {
+    if ((def->onPoweroff = virDomainLifecycleActionTypeFromString(str)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected value %s for on_poweroff"), str);
         return -1;
@@ -370,7 +370,7 @@ xenParseEventsActions(virConfPtr conf, virDomainDefPtr def)
     if (xenConfigGetString(conf, "on_reboot", &str, "restart") < 0)
         return -1;
 
-    if ((def->onReboot = virDomainLifecycleTypeFromString(str)) < 0) {
+    if ((def->onReboot = virDomainLifecycleActionTypeFromString(str)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected value %s for on_reboot"), str);
         return -1;
@@ -1449,7 +1449,7 @@ xenFormatEventActions(virConfPtr conf, virDomainDefPtr def)
 {
     const char *lifecycle = NULL;
 
-    if (!(lifecycle = virDomainLifecycleTypeToString(def->onPoweroff))) {
+    if (!(lifecycle = virDomainLifecycleActionTypeToString(def->onPoweroff))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected lifecycle action %d"), def->onPoweroff);
         return -1;
@@ -1458,7 +1458,7 @@ xenFormatEventActions(virConfPtr conf, virDomainDefPtr def)
         return -1;
 
 
-    if (!(lifecycle = virDomainLifecycleTypeToString(def->onReboot))) {
+    if (!(lifecycle = virDomainLifecycleActionTypeToString(def->onReboot))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected lifecycle action %d"), def->onReboot);
         return -1;
