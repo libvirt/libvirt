@@ -39,16 +39,49 @@ VIR_LOG_INIT("conf.virstorageobj");
 
 static virClassPtr virStoragePoolObjClass;
 static virClassPtr virStoragePoolObjListClass;
+static virClassPtr virStorageVolObjClass;
+static virClassPtr virStorageVolObjListClass;
 
 static void
 virStoragePoolObjDispose(void *opaque);
 static void
 virStoragePoolObjListDispose(void *opaque);
+static void
+virStorageVolObjDispose(void *opaque);
+static void
+virStorageVolObjListDispose(void *opaque);
+
 
 
 struct _virStorageVolDefList {
     size_t count;
     virStorageVolDefPtr *objs;
+};
+
+typedef struct _virStorageVolObj virStorageVolObj;
+typedef virStorageVolObj *virStorageVolObjPtr;
+struct _virStorageVolObj {
+    virObjectLockable parent;
+
+    virStorageVolDefPtr voldef;
+};
+
+typedef struct _virStorageVolObjList virStorageVolObjList;
+typedef virStorageVolObjList *virStorageVolObjListPtr;
+struct _virStorageVolObjList {
+    virObjectRWLockable parent;
+
+    /* key string -> virStorageVolObj mapping
+     * for (1), lockless lookup-by-key */
+    virHashTable *objsKey;
+
+    /* name string -> virStorageVolObj mapping
+     * for (1), lockless lookup-by-name */
+    virHashTable *objsName;
+
+    /* path string -> virStorageVolObj mapping
+     * for (1), lockless lookup-by-path */
+    virHashTable *objsPath;
 };
 
 struct _virStoragePoolObj {
@@ -77,6 +110,103 @@ struct _virStoragePoolObjList {
      * for (1), lockless lookup-by-name */
     virHashTable *objsName;
 };
+
+
+static int
+virStorageVolObjOnceInit(void)
+{
+    if (!(virStorageVolObjClass = virClassNew(virClassForObjectLockable(),
+                                              "virStorageVolObj",
+                                              sizeof(virStorageVolObj),
+                                              virStorageVolObjDispose)))
+        return -1;
+
+    if (!(virStorageVolObjListClass = virClassNew(virClassForObjectRWLockable(),
+                                                  "virStorageVolObjList",
+                                                  sizeof(virStorageVolObjList),
+                                                  virStorageVolObjListDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virStorageVolObj)
+
+
+static virStorageVolObjPtr ATTRIBUTE_UNUSED
+virStorageVolObjNew(void)
+{
+    virStorageVolObjPtr obj;
+
+    if (virStorageVolObjInitialize() < 0)
+        return NULL;
+
+    if (!(obj = virObjectLockableNew(virStorageVolObjClass)))
+        return NULL;
+
+    virObjectLock(obj);
+    return obj;
+}
+
+
+static void ATTRIBUTE_UNUSED
+virStorageVolObjEndAPI(virStorageVolObjPtr *obj)
+{
+    if (!*obj)
+        return;
+
+    virObjectUnlock(*obj);
+    virObjectUnref(*obj);
+    *obj = NULL;
+}
+
+
+static void
+virStorageVolObjDispose(void *opaque)
+{
+    virStorageVolObjPtr obj = opaque;
+
+    if (!obj)
+        return;
+
+    virStorageVolDefFree(obj->voldef);
+}
+
+
+static virStorageVolObjListPtr ATTRIBUTE_UNUSED
+virStorageVolObjListNew(void)
+{
+    virStorageVolObjListPtr vols;
+
+    if (virStorageVolObjInitialize() < 0)
+        return NULL;
+
+    if (!(vols = virObjectRWLockableNew(virStorageVolObjListClass)))
+        return NULL;
+
+    if (!(vols->objsKey = virHashCreate(10, virObjectFreeHashData)) ||
+        !(vols->objsName = virHashCreate(10, virObjectFreeHashData)) ||
+        !(vols->objsPath = virHashCreate(10, virObjectFreeHashData))) {
+        virObjectUnref(vols);
+        return NULL;
+    }
+
+    return vols;
+}
+
+
+static void
+virStorageVolObjListDispose(void *opaque)
+{
+    virStorageVolObjListPtr vols = opaque;
+
+    if (!vols)
+        return;
+
+    virHashFree(vols->objsKey);
+    virHashFree(vols->objsName);
+    virHashFree(vols->objsPath);
+}
 
 
 static int
