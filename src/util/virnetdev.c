@@ -3236,6 +3236,14 @@ virNetDevSwitchdevFeature(const char *ifname,
     if (is_vf == 1 && virNetDevGetPhysicalFunction(ifname, &pfname) < 0)
         goto cleanup;
 
+    pci_device_ptr = pfname ? virNetDevGetPCIDevice(pfname) :
+                              virNetDevGetPCIDevice(ifname);
+    /* No PCI device, then no feature bit to check/add */
+    if (pci_device_ptr == NULL) {
+        ret = 0;
+        goto cleanup;
+    }
+
     if (!(nl_msg = nlmsg_alloc_simple(family_id,
                                       NLM_F_REQUEST | NLM_F_ACK))) {
         virReportOOMError();
@@ -3247,11 +3255,6 @@ virNetDevSwitchdevFeature(const char *ifname,
 
     gmsgh->cmd = DEVLINK_CMD_ESWITCH_GET;
     gmsgh->version = DEVLINK_GENL_VERSION;
-
-    pci_device_ptr = pfname ? virNetDevGetPCIDevice(pfname) :
-                              virNetDevGetPCIDevice(ifname);
-    if (pci_device_ptr == NULL)
-        goto cleanup;
 
     pci_name = virPCIDeviceGetName(pci_device_ptr);
 
