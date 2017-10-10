@@ -208,7 +208,7 @@ VIR_ENUM_IMPL(virDomainCapsFeature, VIR_DOMAIN_CAPS_FEATURE_LAST,
               "syslog",
               "wake_alarm")
 
-VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_LAST,
+VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
               "destroy",
               "restart",
               "rename-restart",
@@ -18593,14 +18593,14 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virDomainEventActionParseXML(ctxt, "on_reboot",
                                      "string(./on_reboot[1])",
                                      &def->onReboot,
-                                     VIR_DOMAIN_LIFECYCLE_RESTART,
+                                     VIR_DOMAIN_LIFECYCLE_ACTION_RESTART,
                                      virDomainLifecycleTypeFromString) < 0)
         goto error;
 
     if (virDomainEventActionParseXML(ctxt, "on_poweroff",
                                      "string(./on_poweroff[1])",
                                      &def->onPoweroff,
-                                     VIR_DOMAIN_LIFECYCLE_DESTROY,
+                                     VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY,
                                      virDomainLifecycleTypeFromString) < 0)
         goto error;
 

@@ -1246,7 +1246,7 @@ xenParseSxpr(const struct sexpr *root,
             goto error;
         }
     } else {
-        def->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
+        def->onPoweroff = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     }
 
     tmp = sexpr_node(root, "domain/on_reboot");
@@ -1257,7 +1257,7 @@ xenParseSxpr(const struct sexpr *root,
             goto error;
         }
     } else {
-        def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
+        def->onReboot = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     }
 
     tmp = sexpr_node(root, "domain/on_crash");

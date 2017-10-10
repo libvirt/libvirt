@@ -468,13 +468,13 @@ libxlDomainShutdownThread(void *opaque)
                                            VIR_DOMAIN_EVENT_STOPPED,
                                            VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
         switch ((virDomainLifecycleAction) vm->def->onPoweroff) {
-        case VIR_DOMAIN_LIFECYCLE_DESTROY:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
             goto destroy;
-        case VIR_DOMAIN_LIFECYCLE_RESTART:
-        case VIR_DOMAIN_LIFECYCLE_RESTART_RENAME:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
             goto restart;
-        case VIR_DOMAIN_LIFECYCLE_PRESERVE:
-        case VIR_DOMAIN_LIFECYCLE_LAST:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
             goto endjob;
         }
     } else if (xl_reason == LIBXL_SHUTDOWN_REASON_CRASH) {
@@ -508,13 +508,13 @@ libxlDomainShutdownThread(void *opaque)
                                            VIR_DOMAIN_EVENT_STOPPED,
                                            VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
         switch ((virDomainLifecycleAction) vm->def->onReboot) {
-        case VIR_DOMAIN_LIFECYCLE_DESTROY:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
             goto destroy;
-        case VIR_DOMAIN_LIFECYCLE_RESTART:
-        case VIR_DOMAIN_LIFECYCLE_RESTART_RENAME:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
             goto restart;
-        case VIR_DOMAIN_LIFECYCLE_PRESERVE:
-        case VIR_DOMAIN_LIFECYCLE_LAST:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
             goto endjob;
         }
     } else {

@@ -1578,8 +1578,8 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     /* def:lifecycle */
-    def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
-    def->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
+    def->onReboot = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
+    def->onPoweroff = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     def->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
 
     /* def:os */

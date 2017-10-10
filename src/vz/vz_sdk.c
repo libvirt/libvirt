@@ -1887,8 +1887,8 @@ prlsdkLoadDomain(vzDriverPtr driver,
 
     def->virtType = VIR_DOMAIN_VIRT_VZ;
 
-    def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
-    def->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
+    def->onReboot = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
+    def->onPoweroff = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     def->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
 
     /* get RAM parameters */
@@ -2591,8 +2591,8 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    if (def->onReboot != VIR_DOMAIN_LIFECYCLE_RESTART ||
-        def->onPoweroff != VIR_DOMAIN_LIFECYCLE_DESTROY ||
+    if (def->onReboot != VIR_DOMAIN_LIFECYCLE_ACTION_RESTART ||
+        def->onPoweroff != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
         def->onCrash != VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY) {
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

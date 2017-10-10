@@ -6519,8 +6519,8 @@ qemuBuildPMCommandLine(virCommandPtr cmd,
     bool allowReboot = true;
 
     /* Only add -no-reboot option if each event destroys domain */
-    if (def->onReboot == VIR_DOMAIN_LIFECYCLE_DESTROY &&
-        def->onPoweroff == VIR_DOMAIN_LIFECYCLE_DESTROY &&
+    if (def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY &&
+        def->onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY &&
         (def->onCrash == VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY ||
          def->onCrash == VIR_DOMAIN_LIFECYCLE_CRASH_COREDUMP_DESTROY)) {
         allowReboot = false;

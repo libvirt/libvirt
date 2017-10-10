@@ -1886,9 +1886,9 @@ qemuParseCommandLine(virCapsPtr caps,
         goto error;
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
 
-    def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
+    def->onReboot = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     def->onCrash = VIR_DOMAIN_LIFECYCLE_CRASH_DESTROY;
-    def->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
+    def->onPoweroff = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     def->virtType = VIR_DOMAIN_VIRT_QEMU;
     if (VIR_STRDUP(def->emulator, progargv[0]) < 0)
         goto error;
@@ -2195,7 +2195,7 @@ qemuParseCommandLine(virCapsPtr caps,
         } else if (STREQ(arg, "-no-acpi")) {
             def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ABSENT;
         } else if (STREQ(arg, "-no-reboot")) {
-            def->onReboot = VIR_DOMAIN_LIFECYCLE_DESTROY;
+            def->onReboot = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
         } else if (STREQ(arg, "-no-kvm")) {
             def->virtType = VIR_DOMAIN_VIRT_QEMU;
         } else if (STREQ(arg, "-enable-kvm")) {

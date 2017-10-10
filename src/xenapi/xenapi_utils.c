@@ -131,9 +131,9 @@ enum xen_on_normal_exit
 actionShutdownLibvirt2XenapiEnum(virDomainLifecycleAction action)
 {
     enum xen_on_normal_exit num = XEN_ON_NORMAL_EXIT_RESTART;
-    if (action == VIR_DOMAIN_LIFECYCLE_DESTROY)
+    if (action == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY)
         num = XEN_ON_NORMAL_EXIT_DESTROY;
-    else if (action == VIR_DOMAIN_LIFECYCLE_RESTART)
+    else if (action == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART)
         num = XEN_ON_NORMAL_EXIT_RESTART;
     return num;
 }
@@ -201,11 +201,11 @@ map2LibvirtBootOrder(char c)
 virDomainLifecycleAction
 xenapiNormalExitEnum2virDomainLifecycle(enum xen_on_normal_exit action)
 {
-    virDomainLifecycleAction num = VIR_DOMAIN_LIFECYCLE_RESTART;
+    virDomainLifecycleAction num = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     if (action == XEN_ON_NORMAL_EXIT_DESTROY)
-        num = VIR_DOMAIN_LIFECYCLE_DESTROY;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY;
     else if (action == XEN_ON_NORMAL_EXIT_RESTART)
-        num = VIR_DOMAIN_LIFECYCLE_RESTART;
+        num = VIR_DOMAIN_LIFECYCLE_ACTION_RESTART;
     return num;
 }
 

@@ -1920,22 +1920,22 @@ static int testDomainReboot(virDomainPtr domain,
                          VIR_DOMAIN_SHUTDOWN_USER);
 
     switch (privdom->def->onReboot) {
-    case VIR_DOMAIN_LIFECYCLE_DESTROY:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
         virDomainObjSetState(privdom, VIR_DOMAIN_SHUTOFF,
                              VIR_DOMAIN_SHUTOFF_SHUTDOWN);
         break;
 
-    case VIR_DOMAIN_LIFECYCLE_RESTART:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
         virDomainObjSetState(privdom, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_BOOTED);
         break;
 
-    case VIR_DOMAIN_LIFECYCLE_PRESERVE:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
         virDomainObjSetState(privdom, VIR_DOMAIN_SHUTOFF,
                              VIR_DOMAIN_SHUTOFF_SHUTDOWN);
         break;
 
-    case VIR_DOMAIN_LIFECYCLE_RESTART_RENAME:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
         virDomainObjSetState(privdom, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_BOOTED);
         break;
