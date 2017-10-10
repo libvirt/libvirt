@@ -1792,6 +1792,14 @@ typedef enum {
 } virDomainCapsFeature;
 
 typedef enum {
+    VIR_DOMAIN_LIFECYCLE_POWEROFF,
+    VIR_DOMAIN_LIFECYCLE_REBOOT,
+    VIR_DOMAIN_LIFECYCLE_CRASH,
+
+    VIR_DOMAIN_LIFECYCLE_LAST
+} virDomainLifecycle;
+
+typedef enum {
     VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY,
     VIR_DOMAIN_LIFECYCLE_ACTION_RESTART,
     VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME,
@@ -3211,6 +3219,7 @@ VIR_ENUM_DECL(virDomainBoot)
 VIR_ENUM_DECL(virDomainFeature)
 VIR_ENUM_DECL(virDomainCapabilitiesPolicy)
 VIR_ENUM_DECL(virDomainCapsFeature)
+VIR_ENUM_DECL(virDomainLifecycle)
 VIR_ENUM_DECL(virDomainLifecycleAction)
 VIR_ENUM_DECL(virDomainLifecycleCrash)
 VIR_ENUM_DECL(virDomainDevice)
