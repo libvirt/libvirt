@@ -1737,7 +1737,7 @@ exit 0
 %files
 
 %files docs
-%doc AUTHORS ChangeLog.gz NEWS README TODO
+%doc AUTHORS ChangeLog.gz NEWS README README.md TODO
 %doc libvirt-docs/*
 
 # API docs
