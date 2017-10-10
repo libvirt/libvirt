@@ -1884,6 +1884,98 @@ qemuParseCommandLine(virCapsPtr caps,
         }
     }
 
+    /* Detect machine type before processing any other arguments,
+     * because they might depend on it */
+    for (i = 1; progargv[i]; i++) {
+        const char *arg = progargv[i];
+
+        /* Make sure we have a single - for all options to
+           simplify next logic */
+        if (STRPREFIX(arg, "--"))
+            arg++;
+
+        if (STREQ(arg, "-M") ||
+            STREQ(arg, "-machine")) {
+            char *param;
+            size_t j = 0;
+
+            /* -machine [type=]name[,prop[=value][,...]]
+             * Set os.machine only if first parameter lacks '=' or
+             * contains explicit type='...' */
+            WANT_VALUE();
+            if (!(list = virStringSplit(val, ",", 0)))
+                goto error;
+            param = list[0];
+
+            if (STRPREFIX(param, "type="))
+                param += strlen("type=");
+            if (!strchr(param, '=')) {
+                if (VIR_STRDUP(def->os.machine, param) < 0)
+                    goto error;
+                j++;
+            }
+
+            /* handle all remaining "-machine" parameters */
+            while ((param = list[j++])) {
+                if (STRPREFIX(param, "dump-guest-core=")) {
+                    param += strlen("dump-guest-core=");
+                    def->mem.dump_core = virTristateSwitchTypeFromString(param);
+                    if (def->mem.dump_core <= 0)
+                        def->mem.dump_core = VIR_TRISTATE_SWITCH_ABSENT;
+                } else if (STRPREFIX(param, "mem-merge=off")) {
+                    def->mem.nosharepages = true;
+                } else if (STRPREFIX(param, "accel=kvm")) {
+                    def->virtType = VIR_DOMAIN_VIRT_KVM;
+                    def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
+                } else if (STRPREFIX(param, "aes-key-wrap=")) {
+                    if (STREQ(arg, "-M")) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("aes-key-wrap is not supported with "
+                                         "this QEMU binary"));
+                        goto error;
+                    }
+                    param += strlen("aes-key-wrap=");
+                    if (!def->keywrap && VIR_ALLOC(def->keywrap) < 0)
+                        goto error;
+                    def->keywrap->aes = virTristateSwitchTypeFromString(param);
+                    if (def->keywrap->aes < 0)
+                        def->keywrap->aes = VIR_TRISTATE_SWITCH_ABSENT;
+                } else if (STRPREFIX(param, "dea-key-wrap=")) {
+                    if (STREQ(arg, "-M")) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("dea-key-wrap is not supported with "
+                                         "this QEMU binary"));
+                        goto error;
+                    }
+                    param += strlen("dea-key-wrap=");
+                    if (!def->keywrap && VIR_ALLOC(def->keywrap) < 0)
+                        goto error;
+                    def->keywrap->dea = virTristateSwitchTypeFromString(param);
+                    if (def->keywrap->dea < 0)
+                        def->keywrap->dea = VIR_TRISTATE_SWITCH_ABSENT;
+                }
+            }
+            virStringListFree(list);
+            list = NULL;
+        }
+    }
+
+    /* If no machine type has been found among the arguments, then figure
+     * out a reasonable value by using capabilities */
+    if (!def->os.machine) {
+        virCapsDomainDataPtr capsdata;
+
+        if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
+                def->os.arch, def->virtType, NULL, NULL)))
+            goto error;
+
+        if (VIR_STRDUP(def->os.machine, capsdata->machinetype) < 0) {
+            VIR_FREE(capsdata);
+            goto error;
+        }
+        VIR_FREE(capsdata);
+    }
+
     /* Now the real processing loop */
     for (i = 1; progargv[i]; i++) {
         const char *arg = progargv[i];
@@ -2137,69 +2229,6 @@ qemuParseCommandLine(virCapsPtr caps,
             }
             if (STREQ(def->name, ""))
                 VIR_FREE(def->name);
-        } else if (STREQ(arg, "-M") ||
-                   STREQ(arg, "-machine")) {
-            char *param;
-            size_t j = 0;
-
-            /* -machine [type=]name[,prop[=value][,...]]
-             * Set os.machine only if first parameter lacks '=' or
-             * contains explicit type='...' */
-            WANT_VALUE();
-            if (!(list = virStringSplit(val, ",", 0)))
-                goto error;
-            param = list[0];
-
-            if (STRPREFIX(param, "type="))
-                param += strlen("type=");
-            if (!strchr(param, '=')) {
-                if (VIR_STRDUP(def->os.machine, param) < 0)
-                    goto error;
-                j++;
-            }
-
-            /* handle all remaining "-machine" parameters */
-            while ((param = list[j++])) {
-                if (STRPREFIX(param, "dump-guest-core=")) {
-                    param += strlen("dump-guest-core=");
-                    def->mem.dump_core = virTristateSwitchTypeFromString(param);
-                    if (def->mem.dump_core <= 0)
-                        def->mem.dump_core = VIR_TRISTATE_SWITCH_ABSENT;
-                } else if (STRPREFIX(param, "mem-merge=off")) {
-                    def->mem.nosharepages = true;
-                } else if (STRPREFIX(param, "accel=kvm")) {
-                    def->virtType = VIR_DOMAIN_VIRT_KVM;
-                    def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
-                } else if (STRPREFIX(param, "aes-key-wrap=")) {
-                    if (STREQ(arg, "-M")) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("aes-key-wrap is not supported with "
-                                         "this QEMU binary"));
-                        goto error;
-                    }
-                    param += strlen("aes-key-wrap=");
-                    if (!def->keywrap && VIR_ALLOC(def->keywrap) < 0)
-                        goto error;
-                    def->keywrap->aes = virTristateSwitchTypeFromString(param);
-                    if (def->keywrap->aes < 0)
-                        def->keywrap->aes = VIR_TRISTATE_SWITCH_ABSENT;
-                } else if (STRPREFIX(param, "dea-key-wrap=")) {
-                    if (STREQ(arg, "-M")) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("dea-key-wrap is not supported with "
-                                         "this QEMU binary"));
-                        goto error;
-                    }
-                    param += strlen("dea-key-wrap=");
-                    if (!def->keywrap && VIR_ALLOC(def->keywrap) < 0)
-                        goto error;
-                    def->keywrap->dea = virTristateSwitchTypeFromString(param);
-                    if (def->keywrap->dea < 0)
-                        def->keywrap->dea = VIR_TRISTATE_SWITCH_ABSENT;
-                }
-            }
-            virStringListFree(list);
-            list = NULL;
         } else if (STREQ(arg, "-serial")) {
             WANT_VALUE();
             if (STRNEQ(val, "none")) {
@@ -2489,6 +2518,11 @@ qemuParseCommandLine(virCapsPtr caps,
 
                 argRecognized = false;
             }
+        } else if (STREQ(arg, "-M") ||
+                   STREQ(arg, "-machine")) {
+            /* This option has already been processed before entering this
+             * loop, so we just need to skip its argument and move along */
+            WANT_VALUE();
         } else {
             argRecognized = false;
         }
@@ -2569,20 +2603,6 @@ qemuParseCommandLine(virCapsPtr caps,
                            _("found no rbd hosts in CEPH_ARGS '%s'"), ceph_args);
             goto error;
         }
-    }
-
-    if (!def->os.machine) {
-        virCapsDomainDataPtr capsdata;
-
-        if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
-                def->os.arch, def->virtType, NULL, NULL)))
-            goto error;
-
-        if (VIR_STRDUP(def->os.machine, capsdata->machinetype) < 0) {
-            VIR_FREE(capsdata);
-            goto error;
-        }
-        VIR_FREE(capsdata);
     }
 
     if (!nographics && (def->ngraphics == 0 || have_sdl)) {

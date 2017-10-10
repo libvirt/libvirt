@@ -288,6 +288,10 @@ mymain(void)
     DO_TEST("machine-deakeywrap-off-argv");
     DO_TEST("machine-keywrap-none-argv");
 
+    DO_TEST("nomachine-x86_64");
+    DO_TEST("nomachine-aarch64");
+    DO_TEST("nomachine-ppc64");
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
