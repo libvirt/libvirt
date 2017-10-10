@@ -10152,7 +10152,7 @@ static const vshCmdOptDef opts_domxmltonative[] = {
      .help = N_("domain name, id or uuid")
     },
     {.name = "xml",
-     .type = VSH_OT_ARGV,
+     .type = VSH_OT_STRING,
      .help = N_("xml data file to export from")
     },
     {.name = NULL}
