@@ -5634,20 +5634,17 @@ qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
                             virCommandPtr cmd,
                             virQEMUDriverConfigPtr cfg,
                             virDomainDefPtr def,
-                            virQEMUCapsPtr qemuCaps,
-                            virDomainChrSourceDefPtr monitor_chr,
-                            bool monitor_json,
-                            bool chardevStdioLogd)
+                            qemuDomainObjPrivatePtr priv)
 {
     char *chrdev;
 
-    if (!monitor_chr)
+    if (!priv->monConfig)
         return 0;
 
     if (!(chrdev = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                          monitor_chr, "monitor",
-                                          qemuCaps, true,
-                                          chardevStdioLogd)))
+                                          priv->monConfig, "monitor",
+                                          priv->qemuCaps, true,
+                                          priv->chardevStdioLogd)))
         return -1;
     virCommandAddArg(cmd, "-chardev");
     virCommandAddArg(cmd, chrdev);
@@ -5656,7 +5653,7 @@ qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
     virCommandAddArg(cmd, "-mon");
     virCommandAddArgFormat(cmd,
                            "chardev=charmonitor,id=monitor,mode=%s",
-                           monitor_json ? "control" : "readline");
+                           priv->monJSON ? "control" : "readline");
 
     return 0;
 }
@@ -9988,7 +9985,6 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     unsigned int bootHostdevNet = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
-    virDomainChrSourceDefPtr monitor_chr = priv->monConfig;
     bool monitor_json = priv->monJSON;
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
     virBitmapPtr nodeset = priv->autoNodeset;
@@ -9997,7 +9993,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
 
     VIR_DEBUG("driver=%p def=%p mon=%p json=%d "
               "qemuCaps=%p migrateURI=%s snapshot=%p vmop=%d",
-              driver, def, monitor_chr, monitor_json,
+              driver, def, priv->monConfig, monitor_json,
               qemuCaps, migrateURI, snapshot, vmop);
 
     if (qemuBuildCommandLineValidate(driver, def) < 0)
@@ -10091,10 +10087,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildSgaCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildMonitorCommandLine(logManager, cmd, cfg, def,
-                                    qemuCaps, monitor_chr,
-                                    monitor_json,
-                                    chardevStdioLogd) < 0)
+    if (qemuBuildMonitorCommandLine(logManager, cmd, cfg, def, priv) < 0)
         goto error;
 
     if (qemuBuildClockCommandLine(cmd, def, qemuCaps) < 0)
