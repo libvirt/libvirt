@@ -182,11 +182,6 @@ int qemuCheckDiskConfig(virDomainDiskDefPtr disk);
 bool
 qemuCheckFips(void);
 
-bool qemuCheckCCWS390AddressSupport(const virDomainDef *def,
-                                    virDomainDeviceInfo info,
-                                    virQEMUCapsPtr qemuCaps,
-                                    const char *devicename);
-
 virJSONValuePtr qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
     ATTRIBUTE_NONNULL(1);
 

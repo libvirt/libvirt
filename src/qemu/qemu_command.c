@@ -1262,46 +1262,6 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
 }
 
 
-/* Check whether the device address is using either 'ccw' or default s390
- * address format and whether that's "legal" for the current qemu and/or
- * guest os.machine type. This is the corollary to the code which doesn't
- * find the address type set using an emulator that supports either 'ccw'
- * or s390 and sets the address type based on the capabilities.
- *
- * If the address is using 'ccw' or s390 and it's not supported, generate
- * an error and return false; otherwise, return true.
- */
-bool
-qemuCheckCCWS390AddressSupport(const virDomainDef *def,
-                               virDomainDeviceInfo info,
-                               virQEMUCapsPtr qemuCaps,
-                               const char *devicename)
-{
-    if (info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-        if (!qemuDomainIsS390CCW(def)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("cannot use CCW address type for device "
-                             "'%s' using machine type '%s'"),
-                       devicename, def->os.machine);
-            return false;
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("CCW address type is not supported by "
-                             "this QEMU"));
-            return false;
-        }
-    } else if (info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtio S390 address type is not supported by "
-                             "this QEMU"));
-            return false;
-        }
-    }
-    return true;
-}
-
-
 /* QEMU 1.2 and later have a binary flag -enable-fips that must be
  * used for VNC auth to obey FIPS settings; but the flag only
  * exists on Linux, and with no way to probe for it via QMP.  Our
@@ -1951,7 +1911,7 @@ qemuBuildDriveDevStr(const virDomainDef *def,
     if (qemuCheckDiskConfig(disk) < 0)
         goto error;
 
-    if (!qemuCheckCCWS390AddressSupport(def, disk->info, qemuCaps, disk->dst))
+    if (!qemuDomainCheckCCWS390AddressSupport(def, disk->info, qemuCaps, disk->dst))
         goto error;
 
     if (disk->iothread && !qemuCheckIOThreads(def, disk))
@@ -2685,8 +2645,8 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 
     *devstr = NULL;
 
-    if (!qemuCheckCCWS390AddressSupport(domainDef, def->info, qemuCaps,
-                                        "controller"))
+    if (!qemuDomainCheckCCWS390AddressSupport(domainDef, def->info, qemuCaps,
+                                              "controller"))
         return -1;
 
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
@@ -5895,8 +5855,8 @@ qemuBuildRNGDevStr(const virDomainDef *def,
         goto error;
     }
 
-    if (!qemuCheckCCWS390AddressSupport(def, dev->info, qemuCaps,
-                                        dev->source.file))
+    if (!qemuDomainCheckCCWS390AddressSupport(def, dev->info, qemuCaps,
+                                              dev->source.file))
         goto error;
 
     if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
