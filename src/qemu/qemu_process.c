@@ -5309,6 +5309,26 @@ qemuProcessPrepareDomainStorage(virConnectPtr conn,
 }
 
 
+static void
+qemuProcessPrepareAllowReboot(virDomainObjPtr vm)
+{
+    virDomainDefPtr def = vm->def;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (priv->allowReboot != VIR_TRISTATE_BOOL_ABSENT)
+        return;
+
+    if (def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY &&
+        def->onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY &&
+        (def->onCrash == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
+         def->onCrash == VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY)) {
+        priv->allowReboot = VIR_TRISTATE_BOOL_NO;
+    } else {
+        priv->allowReboot = VIR_TRISTATE_BOOL_YES;
+    }
+}
+
+
 /**
  * qemuProcessPrepareDomain:
  * @conn: connection object (for looking up storage volumes)
@@ -5364,6 +5384,8 @@ qemuProcessPrepareDomain(virConnectPtr conn,
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FILE_APPEND)) {
         priv->chardevStdioLogd = true;
     }
+
+    qemuProcessPrepareAllowReboot(vm);
 
     /*
      * Normally PCI addresses are assigned in the virDomainCreate
@@ -6618,6 +6640,10 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     priv->gotShutdown = false;
 
+    /* Attaching to running QEMU so we need to detect whether it was started
+     * with -no-reboot. */
+    qemuProcessPrepareAllowReboot(vm);
+
     /*
      * Normally PCI addresses are assigned in the virDomainCreate
      * or virDomainDefine methods. We might still need to assign
@@ -6993,6 +7019,10 @@ qemuProcessReconnect(void *opaque)
     /* Restore the masterKey */
     if (qemuDomainMasterKeyReadFile(priv) < 0)
         goto error;
+
+    /* If we are connecting to a guest started by old libvirt there is no
+     * allowReboot in status XML and we need to initialize it. */
+    qemuProcessPrepareAllowReboot(obj);
 
     VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
 

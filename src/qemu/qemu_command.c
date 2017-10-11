@@ -6509,23 +6509,17 @@ qemuBuildPMCommandLine(virCommandPtr cmd,
                        const virDomainDef *def,
                        qemuDomainObjPrivatePtr priv)
 {
-    bool allowReboot = true;
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
 
     /* Only add -no-reboot option if each event destroys domain */
-    if (def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY &&
-        def->onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY &&
-        (def->onCrash == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
-         def->onCrash == VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY)) {
-        allowReboot = false;
+    if (priv->allowReboot == VIR_TRISTATE_BOOL_NO)
         virCommandAddArg(cmd, "-no-reboot");
-    }
 
     /* If JSON monitor is enabled, we can receive an event
      * when QEMU stops. If we use no-shutdown, then we can
      * watch for this event and do a soft/warm reboot.
      */
-    if (priv->monJSON && allowReboot &&
+    if (priv->monJSON && priv->allowReboot == VIR_TRISTATE_BOOL_YES &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
         virCommandAddArg(cmd, "-no-shutdown");
     }

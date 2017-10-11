@@ -1767,6 +1767,7 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
     priv->namespaces = NULL;
 
     priv->reconnectBlockjobs = VIR_TRISTATE_BOOL_ABSENT;
+    priv->allowReboot = VIR_TRISTATE_BOOL_ABSENT;
 }
 
 
@@ -1873,6 +1874,16 @@ qemuDomainObjPrivateXMLFormatBlockjobs(virBufferPtr buf,
                       virTristateBoolTypeToString(virTristateBoolFromBool(bj)));
 
     return virXMLFormatElement(buf, "blockjobs", &attrBuf, NULL);
+}
+
+
+static void
+qemuDomainObjPrivateXMLFormatAllowReboot(virBufferPtr buf,
+                                         virTristateBool allowReboot)
+{
+    virBufferAsprintf(buf, "<allowReboot value='%s'/>\n",
+                      virTristateBoolTypeToString(allowReboot));
+
 }
 
 
@@ -1998,6 +2009,8 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
     if (priv->chardevStdioLogd)
         virBufferAddLit(buf, "<chardevStdioLogd/>\n");
 
+    qemuDomainObjPrivateXMLFormatAllowReboot(buf, priv->allowReboot);
+
     if (qemuDomainObjPrivateXMLFormatBlockjobs(buf, vm) < 0)
         return -1;
 
@@ -2105,6 +2118,31 @@ qemuDomainObjPrivateXMLParseBlockjobs(qemuDomainObjPrivatePtr priv,
 
     VIR_FREE(active);
     return 0;
+}
+
+
+static int
+qemuDomainObjPrivateXMLParseAllowReboot(xmlXPathContextPtr ctxt,
+                                        virTristateBool *allowReboot)
+{
+    int ret = -1;
+    int val;
+    char *valStr;
+
+    if ((valStr = virXPathString("string(./allowReboot/@value)", ctxt))) {
+        if ((val = virTristateBoolTypeFromString(valStr)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid allowReboot value '%s'"), valStr);
+            goto cleanup;
+        }
+        *allowReboot = val;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(valStr);
+    return ret;
 }
 
 
@@ -2322,6 +2360,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 
     priv->chardevStdioLogd = virXPathBoolean("boolean(./chardevStdioLogd)",
                                              ctxt) == 1;
+
+    qemuDomainObjPrivateXMLParseAllowReboot(ctxt, &priv->allowReboot);
 
     if (qemuDomainObjPrivateXMLParseBlockjobs(priv, ctxt) < 0)
         goto error;

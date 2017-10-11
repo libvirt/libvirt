@@ -109,7 +109,8 @@ static const char testStatusXMLPrefixBodyStatic[] =
 "</devices>\n"
 "<numad nodeset='0-2' cpuset='1,3'/>\n"
 "<libDir path='/tmp'/>\n"
-"<channelTargetDir path='/tmp/channel'/>\n";
+"<channelTargetDir path='/tmp/channel'/>\n"
+"<allowReboot value='yes'/>\n";
 
 static const char testStatusXMLSuffix[] =
 "</domstatus>\n";
