@@ -606,6 +606,7 @@ virExec(virCommandPtr cmd)
 
         cmd->pid = pid;
 
+        VIR_FREE(groups);
         VIR_FREE(binarystr);
 
         return 0;
