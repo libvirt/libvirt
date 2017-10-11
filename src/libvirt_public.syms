@@ -774,4 +774,9 @@ LIBVIRT_3.7.0 {
         virDomainManagedSaveGetXMLDesc;
         virDomainManagedSaveDefineXML;
 } LIBVIRT_3.4.0;
+
+LIBVIRT_3.9.0 {
+    global:
+        virDomainSetLifecycleAction;
+} LIBVIRT_3.7.0;
 # .... define new API here using predicted next version number ....

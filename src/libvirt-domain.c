@@ -12035,3 +12035,59 @@ virDomainSetBlockThreshold(virDomainPtr domain,
     virDispatchError(domain->conn);
     return -1;
 }
+
+
+/**
+ * virDomainSetLifecycleAction:
+ * @domain: pointer to domain object
+ * @type: the lifecycle type from virDomainLifecycle
+ * @action: the action type from virDomainLifecycleAction
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *
+ * Changes the actions of lifecycle events for domain represented as
+ * <on_$type>$action</on_$type> in the domain XML.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int virDomainSetLifecycleAction(virDomainPtr domain,
+                                unsigned int type,
+                                unsigned int action,
+                                unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(domain, "type='%u' action='%u' flags='0x%x'",
+                     type, action, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckReadOnlyGoto(domain->conn->flags, error);
+
+    if (type >= VIR_DOMAIN_LIFECYCLE_LAST) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid lifecycle type '%u'"), type);
+        goto error;
+    }
+
+    if (action >= VIR_DOMAIN_LIFECYCLE_ACTION_LAST) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid lifecycle action '%u'"), action);
+        goto error;
+    }
+
+    if (domain->conn->driver->domainSetLifecycleAction) {
+        int ret;
+        ret = domain->conn->driver->domainSetLifecycleAction(domain,
+                                                             type,
+                                                             action,
+                                                             flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}

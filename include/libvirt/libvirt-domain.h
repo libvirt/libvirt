@@ -4728,4 +4728,32 @@ int virDomainSetBlockThreshold(virDomainPtr domain,
                                unsigned long long threshold,
                                unsigned int flags);
 
+typedef enum {
+    VIR_DOMAIN_LIFECYCLE_POWEROFF = 0,
+    VIR_DOMAIN_LIFECYCLE_REBOOT = 1,
+    VIR_DOMAIN_LIFECYCLE_CRASH = 2,
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_LIFECYCLE_LAST
+# endif
+} virDomainLifecycle;
+
+typedef enum {
+    VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY = 0,
+    VIR_DOMAIN_LIFECYCLE_ACTION_RESTART = 1,
+    VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME = 2,
+    VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE = 3,
+    VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY = 4,
+    VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART = 5,
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_DOMAIN_LIFECYCLE_ACTION_LAST
+# endif
+} virDomainLifecycleAction;
+
+int virDomainSetLifecycleAction(virDomainPtr domain,
+                                unsigned int type,
+                                unsigned int action,
+                                unsigned int flags);
+
 #endif /* __VIR_LIBVIRT_DOMAIN_H__ */

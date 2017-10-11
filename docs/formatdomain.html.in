@@ -1623,6 +1623,13 @@
     </dl>
 
     <p>
+      <span class="since">Since 3.9.0</span>, the lifecycle events can
+      be configured via the
+      <a href="html/libvirt-libvirt-domain.html#virDomainSetLifecycleAction">
+        <code>virDomainSetLifecycleAction</code></a> API.
+    </p>
+
+    <p>
       The <code>on_lockfailure</code> element (<span class="since">since
       1.0.0</span>) may be used to configure what action should be
       taken when a lock manager loses resource locks. The following

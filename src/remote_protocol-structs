@@ -2865,6 +2865,12 @@ struct remote_domain_set_block_threshold_args {
         uint64_t                   threshold;
         u_int                      flags;
 };
+struct remote_domain_set_lifecycle_action_args {
+        remote_nonnull_domain      dom;
+        u_int                      type;
+        u_int                      action;
+        u_int                      flags;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3255,4 +3261,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_MIGRATE_GET_MAX_DOWNTIME = 387,
         REMOTE_PROC_DOMAIN_MANAGED_SAVE_GET_XML_DESC = 388,
         REMOTE_PROC_DOMAIN_MANAGED_SAVE_DEFINE_XML = 389,
+        REMOTE_PROC_DOMAIN_SET_LIFECYCLE_ACTION = 390,
 };

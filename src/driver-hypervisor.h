@@ -1277,6 +1277,12 @@ typedef int
                                  unsigned long long threshold,
                                  unsigned int flags);
 
+typedef int
+(*virDrvDomainSetLifecycleAction)(virDomainPtr domain,
+                                  unsigned int type,
+                                  unsigned int action,
+                                  unsigned int flags);
+
 
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
@@ -1521,6 +1527,7 @@ struct _virHypervisorDriver {
     virDrvDomainSetGuestVcpus domainSetGuestVcpus;
     virDrvDomainSetVcpu domainSetVcpu;
     virDrvDomainSetBlockThreshold domainSetBlockThreshold;
+    virDrvDomainSetLifecycleAction domainSetLifecycleAction;
 };
 
 
