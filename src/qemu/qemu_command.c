@@ -6510,10 +6510,10 @@ qemuBuildClockCommandLine(virCommandPtr cmd,
 static int
 qemuBuildPMCommandLine(virCommandPtr cmd,
                        const virDomainDef *def,
-                       virQEMUCapsPtr qemuCaps,
-                       bool monitor_json)
+                       qemuDomainObjPrivatePtr priv)
 {
     bool allowReboot = true;
+    virQEMUCapsPtr qemuCaps = priv->qemuCaps;
 
     /* Only add -no-reboot option if each event destroys domain */
     if (def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY &&
@@ -6528,7 +6528,7 @@ qemuBuildPMCommandLine(virCommandPtr cmd,
      * when QEMU stops. If we use no-shutdown, then we can
      * watch for this event and do a soft/warm reboot.
      */
-    if (monitor_json && allowReboot &&
+    if (priv->monJSON && allowReboot &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
         virCommandAddArg(cmd, "-no-shutdown");
     }
@@ -9985,7 +9985,6 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     unsigned int bootHostdevNet = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
-    bool monitor_json = priv->monJSON;
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
     virBitmapPtr nodeset = priv->autoNodeset;
     const char *domainLibDir = priv->libDir;
@@ -9993,7 +9992,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
 
     VIR_DEBUG("driver=%p def=%p mon=%p json=%d "
               "qemuCaps=%p migrateURI=%s snapshot=%p vmop=%d",
-              driver, def, priv->monConfig, monitor_json,
+              driver, def, priv->monConfig, priv->monJSON,
               qemuCaps, migrateURI, snapshot, vmop);
 
     if (qemuBuildCommandLineValidate(driver, def) < 0)
@@ -10093,7 +10092,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildClockCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildPMCommandLine(cmd, def, qemuCaps, monitor_json) < 0)
+    if (qemuBuildPMCommandLine(cmd, def, priv) < 0)
         goto error;
 
     if (qemuBuildBootCommandLine(cmd, def, qemuCaps) < 0)
