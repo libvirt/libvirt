@@ -12047,6 +12047,10 @@ virDomainSetBlockThreshold(virDomainPtr domain,
  * Changes the actions of lifecycle events for domain represented as
  * <on_$type>$action</on_$type> in the domain XML.
  *
+ * QEMU driver has a limitation that if all lifecycle events are set
+ * to destroy when the domain is started, it's not possible to change
+ * any action for running domain.
+ *
  * Returns 0 on success, -1 on failure.
  */
 int virDomainSetLifecycleAction(virDomainPtr domain,

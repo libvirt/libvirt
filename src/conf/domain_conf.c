@@ -5612,7 +5612,7 @@ virDomainDefCheckDuplicateDriveAddresses(const virDomainDef *def)
 }
 
 
-static bool
+bool
 virDomainDefLifecycleActionAllowed(virDomainLifecycle type,
                                    virDomainLifecycleAction action)
 {

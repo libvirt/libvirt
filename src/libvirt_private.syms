@@ -270,6 +270,7 @@ virDomainDefHasDeviceAddress;
 virDomainDefHasMemballoon;
 virDomainDefHasMemoryHotplug;
 virDomainDefHasVcpusOffline;
+virDomainDefLifecycleActionAllowed;
 virDomainDefMaybeAddController;
 virDomainDefMaybeAddInput;
 virDomainDefNeedsPlacementAdvice;

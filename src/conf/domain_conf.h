@@ -3409,4 +3409,8 @@ virDomainNetTypeSharesHostView(const virDomainNetDef *net)
     return false;
 }
 
+bool
+virDomainDefLifecycleActionAllowed(virDomainLifecycle type,
+                                   virDomainLifecycleAction action);
+
 #endif /* __DOMAIN_CONF_H */
