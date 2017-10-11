@@ -201,8 +201,7 @@ qemuBuildHasMasterKey(virQEMUCapsPtr qemuCaps)
  */
 static int
 qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
-                              virQEMUCapsPtr qemuCaps,
-                              const char *domainLibDir)
+                              qemuDomainObjPrivatePtr priv)
 {
     int ret = -1;
     char *alias = NULL;
@@ -213,7 +212,7 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
      * means the domain won't be able to use a secret master key and is
      * not a failure.
      */
-    if (!qemuBuildHasMasterKey(qemuCaps)) {
+    if (!qemuBuildHasMasterKey(priv->qemuCaps)) {
         VIR_INFO("secret object is not supported by this QEMU binary");
         return 0;
     }
@@ -226,7 +225,7 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
      * than other command line options which do not check for the
      * existence of socket files before using.
      */
-    if (!(path = qemuDomainGetMasterKeyFilePath(domainLibDir)))
+    if (!(path = qemuDomainGetMasterKeyFilePath(priv->libDir)))
         goto cleanup;
 
     virCommandAddArg(cmd, "-object");
@@ -9987,7 +9986,6 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     virDomainDefPtr def = vm->def;
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
     virBitmapPtr nodeset = priv->autoNodeset;
-    const char *domainLibDir = priv->libDir;
     bool chardevStdioLogd = priv->chardevStdioLogd;
 
     VIR_DEBUG("driver=%p def=%p mon=%p json=%d "
@@ -10016,7 +10014,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (!standalone)
         virCommandAddArg(cmd, "-S"); /* freeze CPU */
 
-    if (qemuBuildMasterKeyCommandLine(cmd, qemuCaps, domainLibDir) < 0)
+    if (qemuBuildMasterKeyCommandLine(cmd, priv) < 0)
         goto error;
 
     if (enableFips)
