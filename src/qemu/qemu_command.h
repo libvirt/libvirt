@@ -45,21 +45,14 @@ VIR_ENUM_DECL(qemuVideo)
 
 virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
                                    virLogManagerPtr logManager,
-                                   virDomainDefPtr def,
-                                   virDomainChrSourceDefPtr monitor_chr,
-                                   bool monitor_json,
-                                   virQEMUCapsPtr qemuCaps,
+                                   virDomainObjPtr vm,
                                    const char *migrateURI,
                                    virDomainSnapshotObjPtr snapshot,
                                    virNetDevVPortProfileOp vmop,
                                    bool standalone,
                                    bool enableFips,
-                                   virBitmapPtr nodeset,
                                    size_t *nnicindexes,
-                                   int **nicindexes,
-                                   const char *domainLibDir,
-                                   bool chardevStdioLogd)
-    ATTRIBUTE_NONNULL(15);
+                                   int **nicindexes);
 
 
 /* Generate the object properties for a secret */

@@ -9972,26 +9972,28 @@ qemuBuildCommandLineValidate(virQEMUDriverPtr driver,
 virCommandPtr
 qemuBuildCommandLine(virQEMUDriverPtr driver,
                      virLogManagerPtr logManager,
-                     virDomainDefPtr def,
-                     virDomainChrSourceDefPtr monitor_chr,
-                     bool monitor_json,
-                     virQEMUCapsPtr qemuCaps,
+                     virDomainObjPtr vm,
                      const char *migrateURI,
                      virDomainSnapshotObjPtr snapshot,
                      virNetDevVPortProfileOp vmop,
                      bool standalone,
                      bool enableFips,
-                     virBitmapPtr nodeset,
                      size_t *nnicindexes,
-                     int **nicindexes,
-                     const char *domainLibDir,
-                     bool chardevStdioLogd)
+                     int **nicindexes)
 {
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
     virCommandPtr cmd = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned int bootHostdevNet = 0;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr def = vm->def;
+    virDomainChrSourceDefPtr monitor_chr = priv->monConfig;
+    bool monitor_json = priv->monJSON;
+    virQEMUCapsPtr qemuCaps = priv->qemuCaps;
+    virBitmapPtr nodeset = priv->autoNodeset;
+    const char *domainLibDir = priv->libDir;
+    bool chardevStdioLogd = priv->chardevStdioLogd;
 
     VIR_DEBUG("driver=%p def=%p mon=%p json=%d "
               "qemuCaps=%p migrateURI=%s snapshot=%p vmop=%d",

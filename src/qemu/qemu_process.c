@@ -5650,16 +5650,12 @@ qemuProcessLaunch(virConnectPtr conn,
     VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(driver,
                                      qemuDomainLogContextGetManager(logCtxt),
-                                     vm->def, priv->monConfig,
-                                     priv->monJSON, priv->qemuCaps,
+                                     vm,
                                      incoming ? incoming->launchURI : NULL,
                                      snapshot, vmop,
                                      false,
                                      qemuCheckFips(),
-                                     priv->autoNodeset,
-                                     &nnicindexes, &nicindexes,
-                                     priv->libDir,
-                                     priv->chardevStdioLogd)))
+                                     &nnicindexes, &nicindexes)))
         goto cleanup;
 
     if (incoming && incoming->fd != -1)
@@ -6086,7 +6082,6 @@ qemuProcessCreatePretendCmd(virConnectPtr conn,
                             bool standalone,
                             unsigned int flags)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     virCommandPtr cmd = NULL;
 
     virCheckFlagsGoto(VIR_QEMU_PROCESS_START_COLD |
@@ -6106,20 +6101,14 @@ qemuProcessCreatePretendCmd(virConnectPtr conn,
     VIR_DEBUG("Building emulator command line");
     cmd = qemuBuildCommandLine(driver,
                                NULL,
-                               vm->def,
-                               priv->monConfig,
-                               priv->monJSON,
-                               priv->qemuCaps,
+                               vm,
                                migrateURI,
                                NULL,
                                VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
                                standalone,
                                enableFips,
-                               priv->autoNodeset,
                                NULL,
-                               NULL,
-                               priv->libDir,
-                               priv->chardevStdioLogd);
+                               NULL);
 
  cleanup:
     return cmd;
