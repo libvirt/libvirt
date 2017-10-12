@@ -93,5 +93,12 @@ int virHostValidateLXC(void)
                                         "BLK_CGROUP") < 0)
         ret = -1;
 
+#if WITH_FUSE
+    if (virHostValidateDeviceExists("LXC", "/sys/fs/fuse/connections",
+                                    VIR_HOST_VALIDATE_FAIL,
+                                    _("Load the 'fuse' module to enable /proc/ overrides")) < 0)
+        ret = -1;
+#endif
+
     return ret;
 }
