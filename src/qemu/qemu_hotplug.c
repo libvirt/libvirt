@@ -590,11 +590,8 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (ret == 0) {
-        if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-            controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    if (ret == 0)
         virDomainControllerInsertPreAlloced(vm->def, controller);
-    }
 
  cleanup:
     if (ret != 0 && releaseaddr)
