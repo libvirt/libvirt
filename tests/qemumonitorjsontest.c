@@ -1907,6 +1907,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationStats(const void *data)
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     qemuMonitorMigrationStats stats, expectedStats;
+    char *error = NULL;
 
     if (!test)
         return -1;
@@ -1931,21 +1932,43 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationStats(const void *data)
                                "        }"
                                "    },"
                                "    \"id\": \"libvirt-13\""
+                               "}") < 0 ||
+        qemuMonitorTestAddItem(test, "query-migrate",
+                               "{"
+                               "    \"return\": {"
+                               "        \"status\": \"failed\","
+                               "        \"error-desc\": \"It's broken\""
+                               "    },"
+                               "    \"id\": \"libvirt-14\""
                                "}") < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONGetMigrationStats(qemuMonitorTestGetMonitor(test), &stats) < 0)
+    if (qemuMonitorJSONGetMigrationStats(qemuMonitorTestGetMonitor(test),
+                                         &stats, &error) < 0)
         goto cleanup;
 
-    if (memcmp(&stats, &expectedStats, sizeof(stats)) != 0) {
+    if (memcmp(&stats, &expectedStats, sizeof(stats)) != 0 || error) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "Invalid migration status");
+                       "Invalid migration statistics");
+        goto cleanup;
+    }
+
+    memset(&stats, 0, sizeof(stats));
+    if (qemuMonitorJSONGetMigrationStats(qemuMonitorTestGetMonitor(test),
+                                         &stats, &error) < 0)
+        goto cleanup;
+
+    if (stats.status != QEMU_MONITOR_MIGRATION_STATUS_ERROR ||
+        STRNEQ_NULLABLE(error, "It's broken")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Invalid failed migration status");
         goto cleanup;
     }
 
     ret = 0;
  cleanup:
     qemuMonitorTestFree(test);
+    VIR_FREE(error);
     return ret;
 }
 

@@ -141,7 +141,8 @@ int qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
                                       qemuMonitorMigrationParamsPtr params);
 
 int qemuMonitorJSONGetMigrationStats(qemuMonitorPtr mon,
-                                     qemuMonitorMigrationStatsPtr stats);
+                                     qemuMonitorMigrationStatsPtr stats,
+                                     char **error);
 
 int qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
                                             char ***capabilities);

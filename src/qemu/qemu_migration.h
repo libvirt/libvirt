@@ -282,7 +282,8 @@ int
 qemuMigrationFetchStats(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         qemuDomainAsyncJob asyncJob,
-                        qemuDomainJobInfoPtr jobInfo);
+                        qemuDomainJobInfoPtr jobInfo,
+                        char **error);
 
 int
 qemuMigrationErrorInit(virQEMUDriverPtr driver);

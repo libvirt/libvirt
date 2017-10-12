@@ -2632,12 +2632,16 @@ qemuMonitorSetMigrationParams(qemuMonitorPtr mon,
 
 int
 qemuMonitorGetMigrationStats(qemuMonitorPtr mon,
-                             qemuMonitorMigrationStatsPtr stats)
+                             qemuMonitorMigrationStatsPtr stats,
+                             char **error)
 {
     QEMU_CHECK_MONITOR(mon);
 
+    if (error)
+        *error = NULL;
+
     if (mon->json)
-        return qemuMonitorJSONGetMigrationStats(mon, stats);
+        return qemuMonitorJSONGetMigrationStats(mon, stats, error);
     else
         return qemuMonitorTextGetMigrationStats(mon, stats);
 }

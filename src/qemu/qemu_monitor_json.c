@@ -2792,7 +2792,8 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
 
 static int
 qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
-                                      qemuMonitorMigrationStatsPtr stats)
+                                      qemuMonitorMigrationStatsPtr stats,
+                                      char **error)
 {
     virJSONValuePtr ret;
     virJSONValuePtr ram;
@@ -2801,6 +2802,7 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
     const char *statusstr;
     int rc;
     double mbps;
+    const char *tmp;
 
     ret = virJSONValueObjectGetObject(reply, "return");
 
@@ -2839,9 +2841,16 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
     switch ((qemuMonitorMigrationStatus) stats->status) {
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
     case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
-    case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
     case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
     case QEMU_MONITOR_MIGRATION_STATUS_LAST:
+        break;
+
+    case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
+        if (error) {
+            tmp = virJSONValueObjectGetString(ret, "error-desc");
+            if (tmp && VIR_STRDUP(*error, tmp) < 0)
+                return -1;
+        }
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
@@ -2989,7 +2998,8 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
 
 
 int qemuMonitorJSONGetMigrationStats(qemuMonitorPtr mon,
-                                     qemuMonitorMigrationStatsPtr stats)
+                                     qemuMonitorMigrationStatsPtr stats,
+                                     char **error)
 {
     int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-migrate",
@@ -3007,7 +3017,7 @@ int qemuMonitorJSONGetMigrationStats(qemuMonitorPtr mon,
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONGetMigrationStatsReply(reply, stats) < 0)
+    if (qemuMonitorJSONGetMigrationStatsReply(reply, stats, error) < 0)
         goto cleanup;
 
     ret = 0;

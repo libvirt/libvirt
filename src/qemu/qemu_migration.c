@@ -1382,7 +1382,8 @@ int
 qemuMigrationFetchStats(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         qemuDomainAsyncJob asyncJob,
-                        qemuDomainJobInfoPtr jobInfo)
+                        qemuDomainJobInfoPtr jobInfo,
+                        char **error)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuMonitorMigrationStats stats;
@@ -1391,7 +1392,7 @@ qemuMigrationFetchStats(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    rv = qemuMonitorGetMigrationStats(priv->mon, &stats);
+    rv = qemuMonitorGetMigrationStats(priv->mon, &stats, error);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
         return -1;
@@ -1427,12 +1428,15 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainJobInfoPtr jobInfo = priv->job.current;
-
+    char *error = NULL;
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
+    int ret = -1;
 
-    if (!events &&
-        qemuMigrationFetchStats(driver, vm, asyncJob, jobInfo) < 0)
-        return -1;
+    if (!events ||
+        jobInfo->stats.status == QEMU_MONITOR_MIGRATION_STATUS_ERROR) {
+        if (qemuMigrationFetchStats(driver, vm, asyncJob, jobInfo, &error) < 0)
+            return -1;
+    }
 
     qemuMigrationUpdateJobType(jobInfo);
 
@@ -1440,17 +1444,18 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
     case QEMU_DOMAIN_JOB_STATUS_NONE:
         virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
                        qemuMigrationJobName(vm), _("is not active"));
-        return -1;
+        goto cleanup;
 
     case QEMU_DOMAIN_JOB_STATUS_FAILED:
         virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
-                       qemuMigrationJobName(vm), _("unexpectedly failed"));
-        return -1;
+                       qemuMigrationJobName(vm),
+                       error ? error : _("unexpectedly failed"));
+        goto cleanup;
 
     case QEMU_DOMAIN_JOB_STATUS_CANCELED:
         virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                        qemuMigrationJobName(vm), _("canceled by client"));
-        return -1;
+        goto cleanup;
 
     case QEMU_DOMAIN_JOB_STATUS_COMPLETED:
     case QEMU_DOMAIN_JOB_STATUS_ACTIVE:
@@ -1459,7 +1464,12 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
     case QEMU_DOMAIN_JOB_STATUS_POSTCOPY:
         break;
     }
-    return 0;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(error);
+    return ret;
 }
 
 
@@ -1577,7 +1587,7 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
     }
 
     if (events)
-        ignore_value(qemuMigrationFetchStats(driver, vm, asyncJob, jobInfo));
+        ignore_value(qemuMigrationFetchStats(driver, vm, asyncJob, jobInfo, NULL));
 
     qemuDomainJobInfoUpdateTime(jobInfo);
     qemuDomainJobInfoUpdateDowntime(jobInfo);
@@ -3177,7 +3187,7 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
         if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
             reason == VIR_DOMAIN_PAUSED_POSTCOPY &&
             qemuMigrationFetchStats(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                    jobInfo) < 0)
+                                    jobInfo, NULL) < 0)
             VIR_WARN("Could not refresh migration statistics");
 
         qemuDomainJobInfoUpdateTime(jobInfo);

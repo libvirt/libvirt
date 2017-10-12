@@ -696,7 +696,8 @@ struct _qemuMonitorMigrationStats {
 };
 
 int qemuMonitorGetMigrationStats(qemuMonitorPtr mon,
-                                 qemuMonitorMigrationStatsPtr stats);
+                                 qemuMonitorMigrationStatsPtr stats,
+                                 char **error);
 
 typedef enum {
     QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
