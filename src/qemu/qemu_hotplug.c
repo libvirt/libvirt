@@ -498,7 +498,6 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_CONTROLLER,
                                { .controller = controller } };
-    virDomainCCWAddressSetPtr ccwaddrs = NULL;
     bool releaseaddr = false;
 
     if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
@@ -523,30 +522,9 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-        if (qemuDomainIsS390CCW(vm->def) &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW))
-            controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
-        else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
-            controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
-    } else {
-        if (!qemuDomainCheckCCWS390AddressSupport(vm->def, controller->info,
-                                                  priv->qemuCaps, "controller"))
-            goto cleanup;
-    }
+    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, "controller") < 0)
+        return -1;
 
-    if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
-        controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-        if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
-            goto cleanup;
-    } else if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-        if (!(ccwaddrs = qemuDomainCCWAddrSetCreateFromDomain(vm->def)))
-            goto cleanup;
-        if (virDomainCCWAddressAssign(&controller->info, ccwaddrs,
-                                      !controller->info.addr.ccw.assigned) < 0)
-            goto cleanup;
-    }
-    releaseaddr = true;
     if (qemuAssignDeviceControllerAlias(vm->def, priv->qemuCaps, controller) < 0)
         goto cleanup;
 
@@ -575,7 +553,6 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
         qemuDomainReleaseDeviceAddress(vm, &controller->info, NULL);
 
     VIR_FREE(devstr);
-    virDomainCCWAddressSetFree(ccwaddrs);
     return ret;
 }
 
@@ -2115,7 +2092,6 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
     bool chardevAdded = false;
     bool objAdded = false;
     virJSONValuePtr props = NULL;
-    virDomainCCWAddressSetPtr ccwaddrs = NULL;
     const char *type;
     int ret = -1;
     int rv;
@@ -2127,31 +2103,8 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
     if (VIR_REALLOC_N(vm->def->rngs, vm->def->nrngs + 1) < 0)
         goto cleanup;
 
-    if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-        if (qemuDomainIsS390CCW(vm->def) &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
-            rng->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
-        } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
-            rng->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
-        }
-    } else {
-        if (!qemuDomainCheckCCWS390AddressSupport(vm->def, rng->info, priv->qemuCaps,
-                                                  "rng"))
-            goto cleanup;
-    }
-
-    if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
-        rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-        if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
-            goto cleanup;
-    } else if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-        if (!(ccwaddrs = qemuDomainCCWAddrSetCreateFromDomain(vm->def)))
-            goto cleanup;
-        if (virDomainCCWAddressAssign(&rng->info, ccwaddrs,
-                                      !rng->info.addr.ccw.assigned) < 0)
-            goto cleanup;
-    }
-    releaseaddr = true;
+    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, "rng") < 0)
+        return -1;
 
     if (qemuDomainNamespaceSetupRNG(driver, vm, rng) < 0)
         goto cleanup;
@@ -2226,7 +2179,6 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
     VIR_FREE(charAlias);
     VIR_FREE(objAlias);
     VIR_FREE(devstr);
-    virDomainCCWAddressSetFree(ccwaddrs);
     return ret;
 
  exit_monitor:
