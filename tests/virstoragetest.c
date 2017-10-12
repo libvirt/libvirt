@@ -580,6 +580,7 @@ testPathRelativePrepare(void)
     size_t i;
 
     for (i = 0; i < ARRAY_CARDINALITY(backingchain); i++) {
+        backingchain[i].type = VIR_STORAGE_TYPE_FILE;
         if (i < ARRAY_CARDINALITY(backingchain) - 1)
             backingchain[i].backingStore = &backingchain[i + 1];
         else
