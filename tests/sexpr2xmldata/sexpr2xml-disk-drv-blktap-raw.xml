@@ -18,7 +18,6 @@
     <disk type='file' device='disk'>
       <driver name='tap' type='raw'/>
       <source file='/root/some.img'/>
-      <backingStore/>
       <target dev='xvda' bus='xen'/>
     </disk>
     <console type='pty'>

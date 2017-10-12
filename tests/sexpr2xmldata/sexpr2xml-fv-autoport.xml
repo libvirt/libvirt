@@ -21,14 +21,12 @@
     <disk type='block' device='disk'>
       <driver name='phy'/>
       <source dev='/iscsi/winxp'/>
-      <backingStore/>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='file' device='cdrom'>
       <driver name='file'/>
       <source file='/net/heaped/export/netimage/windows/xp-sp2-vol.iso'/>
-      <backingStore/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>

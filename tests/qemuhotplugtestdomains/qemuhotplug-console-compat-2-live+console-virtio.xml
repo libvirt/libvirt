@@ -29,7 +29,6 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2' cache='none'/>
       <source file='/var/lib/libvirt/images/f17.qcow2'/>
-      <backingStore/>
       <target dev='vda' bus='virtio'/>
       <alias name='virtio-disk0'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
@@ -37,7 +36,6 @@
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw' cache='none'/>
       <source file='/home/user/tmp/Fedora-17-x86_64-Live-KDE.iso'/>
-      <backingStore/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
       <alias name='ide0-1-0'/>

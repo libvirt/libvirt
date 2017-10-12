@@ -16,7 +16,6 @@
     <disk type='file' device='disk'>
       <driver name='tap' type='raw'/>
       <source file='/var/lib/xen/images/rhel5pv.img'/>
-      <backingStore/>
       <target dev='xvda' bus='xen'/>
       <shareable/>
     </disk>

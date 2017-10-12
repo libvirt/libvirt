@@ -22,7 +22,6 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none'/>
       <source file='/dev/null'/>
-      <backingStore/>
       <target dev='hda' bus='virtio'/>
       <readonly/>
       <shareable/>
@@ -32,7 +31,6 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none'/>
       <source file='/dev/null'/>
-      <backingStore/>
       <target dev='hdb' bus='virtio'/>
       <readonly/>
       <shareable/>

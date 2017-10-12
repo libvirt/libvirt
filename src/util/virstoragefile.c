@@ -1577,7 +1577,7 @@ virStorageFileParseChainIndex(const char *diskTarget,
 bool
 virStorageSourceIsBacking(const virStorageSource *src)
 {
-    return !!src;
+    return src && src->type != VIR_STORAGE_TYPE_NONE;
 }
 
 /**
@@ -1589,7 +1589,8 @@ virStorageSourceIsBacking(const virStorageSource *src)
 bool
 virStorageSourceHasBacking(const virStorageSource *src)
 {
-    return virStorageSourceIsBacking(src) && src->backingStore;
+    return virStorageSourceIsBacking(src) && src->backingStore &&
+           src->backingStore->type != VIR_STORAGE_TYPE_NONE;
 }
 
 

@@ -18,7 +18,6 @@
     <disk type='block' device='disk'>
       <driver name='phy'/>
       <source dev='/dev/MainVG/GuestVG'/>
-      <backingStore/>
       <target dev='xvda' bus='xen'/>
     </disk>
     <console type='pty'>

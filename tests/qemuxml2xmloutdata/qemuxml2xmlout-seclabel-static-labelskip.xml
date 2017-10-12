@@ -18,7 +18,6 @@
       <source dev='/dev/HostVG/QEMUGuest1'>
         <seclabel model='selinux' labelskip='yes'/>
       </source>
-      <backingStore/>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>

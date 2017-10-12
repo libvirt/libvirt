@@ -19,7 +19,6 @@
     <disk type='file' device='disk'>
       <driver name='tap' type='raw'/>
       <source file='/xen/rhel5.img'/>
-      <backingStore/>
       <target dev='xvda' bus='xen'/>
     </disk>
     <interface type='bridge'>

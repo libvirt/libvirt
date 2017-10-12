@@ -17,7 +17,6 @@
     <disk type='block' device='disk'>
       <driver name='phy'/>
       <source dev='/dev/vg_dom0test/test2vm'/>
-      <backingStore/>
       <target dev='xvda' bus='xen'/>
     </disk>
     <interface type='bridge'>

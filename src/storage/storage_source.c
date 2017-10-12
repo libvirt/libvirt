@@ -456,33 +456,33 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                           &backingFormat) < 0)
         goto cleanup;
 
-    /* check whether we need to go deeper */
-    if (!src->backingStoreRaw) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (!(backingStore = virStorageSourceNewFromBacking(src)))
-        goto cleanup;
-
-    if (backingFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
-        backingStore->format = VIR_STORAGE_FILE_RAW;
-    else if (backingFormat == VIR_STORAGE_FILE_AUTO_SAFE)
-        backingStore->format = VIR_STORAGE_FILE_AUTO;
-    else
-        backingStore->format = backingFormat;
-
-    if ((ret = virStorageFileGetMetadataRecurse(backingStore, parent,
-                                                uid, gid,
-                                                allow_probe, report_broken,
-                                                cycle, depth + 1)) < 0) {
-        if (report_broken)
+    if (src->backingStoreRaw) {
+        if (!(backingStore = virStorageSourceNewFromBacking(src)))
             goto cleanup;
 
-        /* if we fail somewhere midway, just accept and return a
-         * broken chain */
-        ret = 0;
-        goto cleanup;
+        if (backingFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
+            backingStore->format = VIR_STORAGE_FILE_RAW;
+        else if (backingFormat == VIR_STORAGE_FILE_AUTO_SAFE)
+            backingStore->format = VIR_STORAGE_FILE_AUTO;
+        else
+            backingStore->format = backingFormat;
+
+        if ((ret = virStorageFileGetMetadataRecurse(backingStore, parent,
+                                                    uid, gid,
+                                                    allow_probe, report_broken,
+                                                    cycle, depth + 1)) < 0) {
+            if (report_broken)
+                goto cleanup;
+
+            /* if we fail somewhere midway, just accept and return a
+             * broken chain */
+            ret = 0;
+            goto cleanup;
+        }
+    } else {
+        /* add terminator */
+        if (VIR_ALLOC(backingStore) < 0)
+            goto cleanup;
     }
 
     src->backingStore = backingStore;

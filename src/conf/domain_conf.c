@@ -8289,6 +8289,15 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
+    if (!(type = virXMLPropString(ctxt->node, "type"))) {
+        /* terminator does not have a type */
+        if (VIR_ALLOC(backingStore) < 0)
+            goto cleanup;
+
+        ret = 0;
+        goto cleanup;
+    }
+
     if (VIR_ALLOC(backingStore) < 0)
         goto cleanup;
 
@@ -8296,12 +8305,6 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
         (idx = virXMLPropString(ctxt->node, "index")) &&
         virStrToLong_uip(idx, NULL, 10, &backingStore->id) < 0) {
         virReportError(VIR_ERR_XML_ERROR, _("invalid disk index '%s'"), idx);
-        goto cleanup;
-    }
-
-    if (!(type = virXMLPropString(ctxt->node, "type"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing disk backing store type"));
         goto cleanup;
     }
 
@@ -21917,24 +21920,16 @@ virDomainDiskSourceFormat(virBufferPtr buf,
 
 static int
 virDomainDiskBackingStoreFormat(virBufferPtr buf,
-                                virStorageSourcePtr backingStore,
-                                const char *backingStoreRaw)
+                                virStorageSourcePtr backingStore)
 {
-    const char *type;
     const char *format;
 
-    if (!backingStore) {
-        if (!backingStoreRaw)
-            virBufferAddLit(buf, "<backingStore/>\n");
+    if (!backingStore)
         return 0;
-    }
 
-    if (!backingStore->type ||
-        !(type = virStorageTypeToString(backingStore->type))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected disk backing store type %d"),
-                       backingStore->type);
-        return -1;
+    if (backingStore->type == VIR_STORAGE_TYPE_NONE) {
+        virBufferAddLit(buf, "<backingStore/>\n");
+        return 0;
     }
 
     if (backingStore->format <= 0 ||
@@ -21945,7 +21940,8 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "<backingStore type='%s'", type);
+    virBufferAsprintf(buf, "<backingStore type='%s'",
+                      virStorageTypeToString(backingStore->type));
     if (backingStore->id != 0)
         virBufferAsprintf(buf, " index='%u'", backingStore->id);
     virBufferAddLit(buf, ">\n");
@@ -21955,8 +21951,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
     /* We currently don't output seclabels for backing chain element */
     if (virDomainDiskSourceFormatInternal(buf, backingStore, 0, 0, true) < 0 ||
         virDomainDiskBackingStoreFormat(buf,
-                                        backingStore->backingStore,
-                                        backingStore->backingStoreRaw) < 0)
+                                        backingStore->backingStore) < 0)
         return -1;
 
     virBufferAdjustIndent(buf, -2);
@@ -22091,8 +22086,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     /* Don't format backingStore to inactive XMLs until the code for
      * persistent storage of backing chains is ready. */
     if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
-        virDomainDiskBackingStoreFormat(buf, def->src->backingStore,
-                                        def->src->backingStoreRaw) < 0)
+        virDomainDiskBackingStoreFormat(buf, def->src->backingStore) < 0)
         return -1;
 
     virBufferEscapeString(buf, "<backenddomain name='%s'/>\n", def->domain_name);

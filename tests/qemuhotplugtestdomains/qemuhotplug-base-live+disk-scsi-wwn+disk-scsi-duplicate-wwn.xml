@@ -22,7 +22,6 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none'/>
       <source file='/dev/null'/>
-      <backingStore/>
       <target dev='sdf' bus='scsi'/>
       <readonly/>
       <shareable/>
@@ -33,7 +32,6 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none'/>
       <source file='/dev/null'/>
-      <backingStore/>
       <target dev='sdg' bus='scsi'/>
       <readonly/>
       <shareable/>

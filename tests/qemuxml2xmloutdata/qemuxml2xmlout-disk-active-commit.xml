@@ -20,7 +20,6 @@
       <backingStore type='block' index='1'>
         <format type='raw'/>
         <source dev='/dev/HostVG/QEMUGuest1'/>
-        <backingStore/>
       </backingStore>
       <mirror type='block' job='active-commit'>
         <format type='raw'/>
