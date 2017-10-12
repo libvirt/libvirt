@@ -5929,7 +5929,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     if (virStorageSourceIsEmpty(disk->src))
         goto cleanup;
 
-    if (disk->src->backingStore) {
+    if (virStorageSourceHasBacking(disk->src)) {
         if (force_probe)
             virStorageSourceBackingStoreClear(disk->src);
         else
@@ -8548,7 +8548,7 @@ qemuDomainSetupDisk(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
     char *dst = NULL;
     int ret = -1;
 
-    for (next = disk->src; next; next = next->backingStore) {
+    for (next = disk->src; virStorageSourceIsBacking(next); next = next->backingStore) {
         if (!next->path || !virStorageSourceIsLocalStorage(next)) {
             /* Not creating device. Just continue. */
             continue;
@@ -9449,7 +9449,7 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
                                      &ndevMountsPath) < 0)
         goto cleanup;
 
-    for (next = src; next; next = next->backingStore) {
+    for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
         if (virStorageSourceIsEmpty(next) ||
             !virStorageSourceIsLocalStorage(next)) {
             /* Not creating device. Just continue. */

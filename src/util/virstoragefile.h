@@ -425,4 +425,10 @@ void
 virStorageSourceNetworkAssignDefaultPorts(virStorageSourcePtr src)
     ATTRIBUTE_NONNULL(1);
 
+bool
+virStorageSourceIsBacking(const virStorageSource *src);
+bool
+virStorageSourceHasBacking(const virStorageSource *src);
+
+
 #endif /* __VIR_STORAGE_FILE_H__ */

@@ -942,7 +942,7 @@ get_files(vahControl * ctl)
         /* XXX - if we knew the qemu user:group here we could send it in
          *        so that the open could be re-tried as that user:group.
          */
-        if (!disk->src->backingStore) {
+        if (!virStorageSourceHasBacking(disk->src)) {
             bool probe = ctl->allowDiskFormatProbing;
             virStorageFileGetMetadata(disk->src, -1, -1, probe, false);
         }

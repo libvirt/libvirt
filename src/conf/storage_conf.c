@@ -1169,7 +1169,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         if (virStorageSize(unit, capacity, &ret->target.capacity) < 0)
             goto error;
     } else if (!(flags & VIR_VOL_XML_PARSE_NO_CAPACITY) &&
-               !((flags & VIR_VOL_XML_PARSE_OPT_CAPACITY) && ret->target.backingStore)) {
+               !((flags & VIR_VOL_XML_PARSE_OPT_CAPACITY) &&
+                 virStorageSourceHasBacking(&ret->target))) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("missing capacity element"));
         goto error;
     }
@@ -1497,7 +1498,7 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
                                      &def->target, "target") < 0)
         goto cleanup;
 
-    if (def->target.backingStore &&
+    if (virStorageSourceHasBacking(&def->target) &&
         virStorageVolTargetDefFormat(options, &buf,
                                      def->target.backingStore,
                                      "backingStore") < 0)

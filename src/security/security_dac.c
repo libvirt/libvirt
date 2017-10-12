@@ -730,7 +730,7 @@ virSecurityDACSetDiskLabel(virSecurityManagerPtr mgr,
 {
     virStorageSourcePtr next;
 
-    for (next = disk->src; next; next = next->backingStore) {
+    for (next = disk->src; virStorageSourceIsBacking(next); next = next->backingStore) {
         if (virSecurityDACSetImageLabel(mgr, def, next) < 0)
             return -1;
     }

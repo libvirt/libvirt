@@ -415,7 +415,7 @@ storageBackendCreateRaw(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (vol->target.backingStore) {
+    if (virStorageSourceHasBacking(&vol->target)) {
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
                        _("backing storage not supported for raw volumes"));
         goto cleanup;
@@ -722,7 +722,7 @@ storageBackendCreatePloop(virConnectPtr conn ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    if (vol->target.backingStore != NULL) {
+    if (virStorageSourceHasBacking(&vol->target)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("copy-on-write ploop volumes are not yet supported"));
         return -1;
@@ -1055,7 +1055,7 @@ storageBackendCreateQemuImgSetBacking(virStoragePoolObjPtr pool,
      * backing store, not really sure what use it serves though, and it
      * may cause issues with lvm. Untested essentially.
      */
-    if (inputvol && inputvol->target.backingStore &&
+    if (inputvol && virStorageSourceHasBacking(&inputvol->target) &&
         STRNEQ_NULLABLE(inputvol->target.backingStore->path,
                         info->backingPath)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1230,7 +1230,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
         storageBackendCreateQemuImgSetInput(inputvol, &info) < 0)
         return NULL;
 
-    if (vol->target.backingStore &&
+    if (virStorageSourceHasBacking(&vol->target) &&
         storageBackendCreateQemuImgSetBacking(pool, vol, inputvol, &info) < 0)
         return NULL;
 
@@ -1840,7 +1840,7 @@ virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                                  openflags, readflags)) < 0)
         return ret;
 
-    if (vol->target.backingStore &&
+    if (virStorageSourceHasBacking(&vol->target) &&
         (ret = storageBackendUpdateVolTargetInfo(VIR_STORAGE_VOL_FILE,
                                                  vol->target.backingStore,
                                                  withBlockVolFormat,
@@ -2035,7 +2035,7 @@ createFileDir(virConnectPtr conn ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    if (vol->target.backingStore) {
+    if (virStorageSourceHasBacking(&vol->target)) {
         virReportError(VIR_ERR_NO_SUPPORT, "%s",
                        _("backing storage not supported for directories volumes"));
         return -1;
@@ -3561,7 +3561,7 @@ virStorageBackendRefreshVolTargetUpdate(virStorageVolDefPtr vol)
     if (vol->target.format == VIR_STORAGE_FILE_PLOOP)
         vol->type = VIR_STORAGE_VOL_PLOOP;
 
-    if (vol->target.backingStore) {
+    if (virStorageSourceHasBacking(&vol->target)) {
         ignore_value(storageBackendUpdateVolTargetInfo(VIR_STORAGE_VOL_FILE,
                                                        vol->target.backingStore,
                                                        false,

@@ -977,7 +977,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
     }
     virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(vol->target.capacity,
                                                     1024));
-    if (vol->target.backingStore)
+    if (virStorageSourceHasBacking(&vol->target))
         virCommandAddArgList(cmd, "-s", vol->target.backingStore->path, NULL);
     else
         virCommandAddArg(cmd, def->source.name);

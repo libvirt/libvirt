@@ -257,7 +257,7 @@ qemuBlockDiskClearDetectedNodes(virDomainDiskDefPtr disk)
 {
     virStorageSourcePtr next = disk->src;
 
-    while (next) {
+    while (virStorageSourceIsBacking(next)) {
         VIR_FREE(next->nodeformat);
         VIR_FREE(next->nodestorage);
 
@@ -287,7 +287,7 @@ qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
         goto cleanup;
     }
 
-    while (src && entry) {
+    while (virStorageSourceIsBacking(src) && entry) {
         if (src->nodeformat || src->nodestorage) {
             if (STRNEQ_NULLABLE(src->nodeformat, entry->nodeformat) ||
                 STRNEQ_NULLABLE(src->nodestorage, entry->nodestorage))

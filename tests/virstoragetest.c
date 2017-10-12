@@ -356,7 +356,7 @@ testStorageChain(const void *args)
     }
 
     elt = meta;
-    while (elt) {
+    while (virStorageSourceIsBacking(elt)) {
         char *expect = NULL;
         char *actual = NULL;
 

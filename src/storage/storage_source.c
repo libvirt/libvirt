@@ -490,7 +490,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     ret = 0;
 
  cleanup:
-    if (src->backingStore)
+    if (virStorageSourceHasBacking(src))
         src->backingStore->id = depth;
     VIR_FREE(buf);
     virStorageFileDeinit(src);

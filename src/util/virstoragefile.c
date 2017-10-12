@@ -1292,7 +1292,7 @@ virStorageFileChainGetBroken(virStorageSourcePtr chain,
     if (!chain)
         return 0;
 
-    for (tmp = chain; tmp; tmp = tmp->backingStore) {
+    for (tmp = chain; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
         /* Break when we hit end of chain; report error if we detected
          * a missing backing file, infinite loop, or other error */
         if (!tmp->backingStore && tmp->backingStoreRaw) {
@@ -1566,6 +1566,33 @@ virStorageFileParseChainIndex(const char *diskTarget,
     return ret;
 }
 
+
+/**
+ * virStorageSourceIsBacking:
+ * @src: storage source
+ *
+ * Returns true if @src is a eligible backing store structure. Useful
+ * for iterators.
+ */
+bool
+virStorageSourceIsBacking(const virStorageSource *src)
+{
+    return !!src;
+}
+
+/**
+ * virStorageSourceHasBacking:
+ * @src: storage source
+ *
+ * Returns true if @src has backing store/chain.
+ */
+bool
+virStorageSourceHasBacking(const virStorageSource *src)
+{
+    return virStorageSourceIsBacking(src) && src->backingStore;
+}
+
+
 /* Given a @chain, look for the backing store @name that is a backing file
  * of @startFrom (or any member of @chain if @startFrom is NULL) and return
  * that location within the chain.  @chain must always point to the top of
@@ -1594,15 +1621,16 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
     *parent = NULL;
 
     if (startFrom) {
-        while (chain && chain != startFrom->backingStore)
+        while (virStorageSourceIsBacking(chain) &&
+               chain != startFrom->backingStore)
             chain = chain->backingStore;
 
         *parent = startFrom;
     }
 
-    while (chain) {
+    while (virStorageSourceIsBacking(chain)) {
         if (!name && !idx) {
-            if (!chain->backingStore)
+            if (!virStorageSourceHasBacking(chain))
                 break;
         } else if (idx) {
             VIR_DEBUG("%u: %s", chain->id, chain->path);
@@ -1640,7 +1668,7 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
         chain = chain->backingStore;
     }
 
-    if (!chain)
+    if (!virStorageSourceIsBacking(chain))
         goto error;
 
     return chain;
@@ -3854,7 +3882,7 @@ virStorageFileGetRelativeBackingPath(virStorageSourcePtr top,
 
     *relpath = NULL;
 
-    for (next = top; next; next = next->backingStore) {
+    for (next = top; virStorageSourceIsBacking(next); next = next->backingStore) {
         if (!next->relPath) {
             ret = 1;
             goto cleanup;
@@ -3973,7 +4001,7 @@ virStorageSourceFindByNodeName(virStorageSourcePtr top,
     if (idx)
         *idx = 0;
 
-    for (tmp = top; tmp; tmp = tmp->backingStore) {
+    for (tmp = top; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
         if ((tmp->nodeformat && STREQ(tmp->nodeformat, nodeName)) ||
             (tmp->nodestorage && STREQ(tmp->nodestorage, nodeName)))
             return tmp;
