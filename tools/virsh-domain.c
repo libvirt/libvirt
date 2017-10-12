@@ -5517,6 +5517,102 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "set-lifecycle-action" command
+ */
+static const vshCmdInfo info_setLifecycleAction[] = {
+    {.name = "help",
+     .data = N_("change lifecycle actions")
+    },
+    {.name = "desc",
+     .data = N_("Change lifecycle actions for the guest domain.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_setLifecycleAction[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    {.name = "type",
+     .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("lifecycle type to modify")
+    },
+    {.name = "action",
+     .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("lifecycle action to set")
+    },
+    VIRSH_COMMON_OPT_DOMAIN_CONFIG,
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
+    VIRSH_COMMON_OPT_DOMAIN_CURRENT,
+    {.name = NULL}
+};
+
+VIR_ENUM_IMPL(virDomainLifecycle, VIR_DOMAIN_LIFECYCLE_LAST,
+              "poweroff",
+              "reboot",
+              "crash")
+
+VIR_ENUM_IMPL(virDomainLifecycleAction, VIR_DOMAIN_LIFECYCLE_ACTION_LAST,
+              "destroy",
+              "restart",
+              "rename-restart",
+              "preserve",
+              "coredump-destroy",
+              "coredump-restart")
+
+static bool
+cmdSetLifecycleAction(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    bool ret = true;
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool current = vshCommandOptBool(cmd, "current");
+    const char *typeStr;
+    const char *actionStr;
+    unsigned int type;
+    unsigned int action;
+    unsigned int flags = 0;
+    int tmpVal;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (vshCommandOptStringReq(ctl, cmd, "type", &typeStr) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "action", &actionStr) < 0) {
+        return false;
+    }
+
+    if ((tmpVal = virDomainLifecycleTypeFromString(typeStr)) < 0) {
+        vshError(ctl, _("Invalid lifecycle type '%s'."), typeStr);
+        return false;
+    }
+    type = tmpVal;
+
+    if ((tmpVal = virDomainLifecycleActionTypeFromString(actionStr)) < 0) {
+        vshError(ctl, _("Invalid lifecycle action '%s'."), actionStr);
+        return false;
+    }
+    action = tmpVal;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (virDomainSetLifecycleAction(dom, type, action, flags) < 0) {
+        vshError(ctl, "%s", _("Unable to change lifecycle action."));
+        ret = false;
+    }
+
+    virshDomainFree(dom);
+    return ret;
+}
+
+/*
  * "set-user-password" command
  */
 static const vshCmdInfo info_set_user_password[] = {
@@ -14247,6 +14343,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdScreenshot,
      .opts = opts_screenshot,
      .info = info_screenshot,
+     .flags = 0
+    },
+    {.name = "set-lifecycle-action",
+     .handler = cmdSetLifecycleAction,
+     .opts = opts_setLifecycleAction,
+     .info = info_setLifecycleAction,
      .flags = 0
     },
     {.name = "set-user-password",

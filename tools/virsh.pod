@@ -2331,6 +2331,13 @@ the value from the host, use the B<virsh memtune> command. In order to view
 the current memory in use and the maximum value allowed to set memory, use
 the B<virsh dominfo> command.
 
+=item B<set-lifecycle-action> I<domain> I<type> I<action>
+[[I<--config>] [I<--live>] | [I<--current>]]
+
+Set the lifecycle I<action> for specified lifecycle I<type>. For the list of
+lifecycle types and actions and possible combinations see the documentation at
+L<https://libvirt.org/formatdomain.html#elementsEvents>.
+
 =item B<set-user-password> I<domain> I<user> I<password> [I<--encrypted>]
 
 Set the password for the I<user> account in the guest domain.
