@@ -340,6 +340,7 @@ virStorageBackendLogicalMakeVol(char **const groups,
             goto cleanup;
 
         vol->target.backingStore->format = VIR_STORAGE_POOL_LOGICAL_LVM2;
+        vol->target.backingStore->type = VIR_STORAGE_TYPE_BLOCK;
     }
 
     if (!vol->key && VIR_STRDUP(vol->key, groups[2]) < 0)

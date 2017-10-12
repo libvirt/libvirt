@@ -1109,6 +1109,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
+    ret->target.type = VIR_STORAGE_TYPE_FILE;
+
     ret->name = virXPathString("string(./name)", ctxt);
     if (ret->name == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1132,6 +1134,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     if ((backingStore = virXPathString("string(./backingStore/path)", ctxt))) {
         if (VIR_ALLOC(ret->target.backingStore) < 0)
             goto error;
+
+        ret->target.backingStore->type = VIR_STORAGE_TYPE_FILE;
 
         ret->target.backingStore->path = backingStore;
         backingStore = NULL;
