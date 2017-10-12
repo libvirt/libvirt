@@ -2904,3 +2904,48 @@ qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
         VIR_WARN("Unable to release USB address on %s",
                  NULLSTR(devstr));
 }
+
+
+int
+qemuDomainEnsureVirtioAddress(bool *releaseAddr,
+                              virDomainObjPtr vm,
+                              virDomainDeviceDefPtr dev,
+                              const char *devicename)
+{
+    virDomainDeviceInfoPtr info = virDomainDeviceGetInfo(dev);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainCCWAddressSetPtr ccwaddrs = NULL;
+    virQEMUDriverPtr driver = priv->driver;
+    int ret = -1;
+
+    if (!info->type) {
+        if (qemuDomainIsS390CCW(vm->def) &&
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW))
+            info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
+        else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
+            info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
+    } else {
+        if (!qemuDomainCheckCCWS390AddressSupport(vm->def, *info, priv->qemuCaps,
+                                                  devicename))
+            return -1;
+    }
+
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+        if (!(ccwaddrs = qemuDomainCCWAddrSetCreateFromDomain(vm->def)))
+            goto cleanup;
+        if (virDomainCCWAddressAssign(info, ccwaddrs,
+                                      !info->addr.ccw.assigned) < 0)
+            goto cleanup;
+    } else if (!info->type ||
+               info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        if (qemuDomainEnsurePCIAddress(vm, dev, driver) < 0)
+            goto cleanup;
+        *releaseAddr = true;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virDomainCCWAddressSetFree(ccwaddrs);
+    return ret;
+}

@@ -59,6 +59,10 @@ qemuDomainCCWAddrSetCreateFromDomain(virDomainDefPtr def)
 int qemuDomainAssignMemoryDeviceSlot(virDomainDefPtr def,
                                      virDomainMemoryDefPtr mem);
 
+int qemuDomainEnsureVirtioAddress(bool *releaseAddr,
+                                  virDomainObjPtr vm,
+                                  virDomainDeviceDefPtr dev,
+                                  const char *devicename);
 
 # define __QEMU_DOMAIN_ADDRESS_H__
 

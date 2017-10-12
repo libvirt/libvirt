@@ -363,7 +363,6 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     bool driveAdded = false;
     bool secobjAdded = false;
     bool encobjAdded = false;
-    virDomainCCWAddressSetPtr ccwaddrs = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *src = virDomainDiskGetSource(disk);
     virJSONValuePtr secobjProps = NULL;
@@ -372,33 +371,12 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     qemuDomainSecretInfoPtr secinfo;
     qemuDomainSecretInfoPtr encinfo;
 
-    if (!disk->info.type) {
-        if (qemuDomainIsS390CCW(vm->def) &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW))
-            disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
-        else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
-            disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
-    } else {
-        if (!qemuDomainCheckCCWS390AddressSupport(vm->def, disk->info, priv->qemuCaps,
-                                                  disk->dst))
-            goto cleanup;
-    }
-
     if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
 
-    if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-        if (!(ccwaddrs = qemuDomainCCWAddrSetCreateFromDomain(vm->def)))
-            goto error;
-        if (virDomainCCWAddressAssign(&disk->info, ccwaddrs,
-                                      !disk->info.addr.ccw.assigned) < 0)
-            goto error;
-    } else if (!disk->info.type ||
-                disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-        if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
-            goto error;
-    }
-    releaseaddr = true;
+    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, disk->dst) < 0)
+        goto error;
+
     if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
         goto error;
 
@@ -477,7 +455,6 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     virJSONValueFree(secobjProps);
     virJSONValueFree(encobjProps);
     qemuDomainSecretDiskDestroy(disk);
-    virDomainCCWAddressSetFree(ccwaddrs);
     VIR_FREE(devstr);
     VIR_FREE(drivestr);
     VIR_FREE(drivealias);
