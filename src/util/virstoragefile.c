@@ -1610,7 +1610,7 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
                 break;
         } else {
             if (STREQ_NULLABLE(name, chain->relPath) ||
-                STREQ(name, chain->path))
+                STREQ_NULLABLE(name, chain->path))
                 break;
 
             if (nameIsFile && virStorageSourceIsLocalStorage(chain)) {
