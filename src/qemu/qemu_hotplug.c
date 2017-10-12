@@ -2159,7 +2159,7 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
         }
     } else {
         if (!qemuCheckCCWS390AddressSupport(vm->def, rng->info, priv->qemuCaps,
-                                            rng->source.file))
+                                            "rng"))
             goto cleanup;
     }
 
