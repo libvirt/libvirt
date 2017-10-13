@@ -979,4 +979,12 @@ qemuDomainFixupCPUs(virDomainObjPtr vm,
 char *
 qemuDomainGetMachineName(virDomainObjPtr vm);
 
+void
+qemuDomainObjPrivateXMLFormatAllowReboot(virBufferPtr buf,
+                                         virTristateBool allowReboot);
+
+int
+qemuDomainObjPrivateXMLParseAllowReboot(xmlXPathContextPtr ctxt,
+                                        virTristateBool *allowReboot);
+
 #endif /* __QEMU_DOMAIN_H__ */

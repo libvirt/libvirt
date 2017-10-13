@@ -49,7 +49,8 @@ VIR_ENUM_IMPL(qemuMigrationCookieFlag,
               "statistics",
               "memory-hotplug",
               "cpu-hotplug",
-              "cpu");
+              "cpu",
+              "allowReboot");
 
 
 static void
@@ -538,6 +539,18 @@ qemuMigrationCookieAddCPU(qemuMigrationCookiePtr mig,
 
 
 static void
+qemuMigrationCookieAddAllowReboot(qemuMigrationCookiePtr mig,
+                                  virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    mig->allowReboot = priv->allowReboot;
+
+    mig->flags |= QEMU_MIGRATION_COOKIE_ALLOW_REBOOT;
+}
+
+
+static void
 qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
                                      qemuMigrationCookieGraphicsPtr grap)
 {
@@ -776,6 +789,9 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
 
     if (mig->flags & QEMU_MIGRATION_COOKIE_CPU && mig->cpu)
         virCPUDefFormatBufFull(buf, mig->cpu, NULL);
+
+    if (mig->flags & QEMU_MIGRATION_COOKIE_ALLOW_REBOOT)
+        qemuDomainObjPrivateXMLFormatAllowReboot(buf, mig->allowReboot);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</qemu-migration>\n");
@@ -1225,6 +1241,10 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         virCPUDefParseXML(ctxt, "./cpu[1]", VIR_CPU_TYPE_GUEST, &mig->cpu) < 0)
         goto error;
 
+    if (flags & QEMU_MIGRATION_COOKIE_ALLOW_REBOOT &&
+        qemuDomainObjPrivateXMLParseAllowReboot(ctxt, &mig->allowReboot) < 0)
+        goto error;
+
     virObjectUnref(caps);
     return 0;
 
@@ -1304,6 +1324,9 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
     if (flags & QEMU_MIGRATION_COOKIE_CPU &&
         qemuMigrationCookieAddCPU(mig, dom) < 0)
         return -1;
+
+    if (flags & QEMU_MIGRATION_COOKIE_ALLOW_REBOOT)
+        qemuMigrationCookieAddAllowReboot(mig, dom);
 
     if (!(*cookieout = qemuMigrationCookieXMLFormatStr(driver, mig)))
         return -1;

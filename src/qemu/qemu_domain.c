@@ -1877,7 +1877,7 @@ qemuDomainObjPrivateXMLFormatBlockjobs(virBufferPtr buf,
 }
 
 
-static void
+void
 qemuDomainObjPrivateXMLFormatAllowReboot(virBufferPtr buf,
                                          virTristateBool allowReboot)
 {
@@ -2121,7 +2121,7 @@ qemuDomainObjPrivateXMLParseBlockjobs(qemuDomainObjPrivatePtr priv,
 }
 
 
-static int
+int
 qemuDomainObjPrivateXMLParseAllowReboot(xmlXPathContextPtr ctxt,
                                         virTristateBool *allowReboot)
 {

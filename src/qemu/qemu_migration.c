@@ -2023,6 +2023,8 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
     if (priv->origCPU)
         cookieFlags |= QEMU_MIGRATION_COOKIE_CPU;
 
+    cookieFlags |= QEMU_MIGRATION_COOKIE_ALLOW_REBOOT;
+
     if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))
         goto cleanup;
 
@@ -2649,7 +2651,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                        QEMU_MIGRATION_COOKIE_NBD |
                                        QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG |
                                        QEMU_MIGRATION_COOKIE_CPU_HOTPLUG |
-                                       QEMU_MIGRATION_COOKIE_CPU)))
+                                       QEMU_MIGRATION_COOKIE_CPU |
+                                       QEMU_MIGRATION_COOKIE_ALLOW_REBOOT)))
         goto cleanup;
 
     if (STREQ_NULLABLE(protocol, "rdma") &&
@@ -2688,6 +2691,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                         true, startFlags) < 0)
         goto stopjob;
     stopProcess = true;
+
+    priv->allowReboot = mig->allowReboot;
 
     if (!(incoming = qemuMigrationPrepareIncoming(vm, tunnel, protocol,
                                                   listenAddress, port,
