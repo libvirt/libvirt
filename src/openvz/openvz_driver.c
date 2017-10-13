@@ -2006,11 +2006,8 @@ openvzDomainInterfaceStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!(net = virDomainNetFindByName(vm->def, path))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid path, '%s' is not a known interface"), path);
+    if (!(net = virDomainNetFindByName(vm->def, path)))
         goto cleanup;
-    }
 
     if (virNetDevTapInterfaceStats(path, stats,
                                    !virDomainNetTypeSharesHostView(net)) < 0)

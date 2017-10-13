@@ -26983,13 +26983,12 @@ virDomainGraphicsListenAppendSocket(virDomainGraphicsDefPtr def,
  *
  * Finds a domain's net def, given the interface name or MAC address
  *
- * Returns a pointer to the net def or NULL if not found.
+ * Returns a pointer to the net def or NULL if not found (error is reported).
  */
 virDomainNetDefPtr
 virDomainNetFind(virDomainDefPtr def, const char *device)
 {
     bool isMac = false;
-    virDomainNetDefPtr net = NULL;
     virMacAddr mac;
     size_t i;
 
@@ -26998,16 +26997,19 @@ virDomainNetFind(virDomainDefPtr def, const char *device)
 
     if (isMac) {
         for (i = 0; i < def->nnets; i++) {
-            if (virMacAddrCmp(&mac, &def->nets[i]->mac) == 0) {
-                net = def->nets[i];
-                break;
-            }
+            if (virMacAddrCmp(&mac, &def->nets[i]->mac) == 0)
+                return def->nets[i];
         }
     } else { /* ifname */
-        net = virDomainNetFindByName(def, device);
+        virDomainNetDefPtr net = NULL;
+
+        if ((net = virDomainNetFindByName(def, device)))
+            return net;
     }
 
-    return net;
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("'%s' is not a known interface"), device);
+    return NULL;
 }
 
 

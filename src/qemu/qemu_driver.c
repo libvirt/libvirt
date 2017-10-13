@@ -11040,11 +11040,8 @@ qemuDomainInterfaceStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!(net = virDomainNetFindByName(vm->def, path))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid path, '%s' is not a known interface"), path);
+    if (!(net = virDomainNetFindByName(vm->def, path)))
         goto cleanup;
-    }
 
     if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
         if (virNetDevOpenvswitchInterfaceStats(path, stats) < 0)
@@ -11114,18 +11111,12 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
         goto endjob;
 
     if (def &&
-        !(net = virDomainNetFind(vm->def, device))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Can't find device %s"), device);
+        !(net = virDomainNetFind(vm->def, device)))
         goto endjob;
-    }
 
     if (persistentDef &&
-        !(persistentNet = virDomainNetFind(persistentDef, device))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Can't find device %s"), device);
+        !(persistentNet = virDomainNetFind(persistentDef, device)))
         goto endjob;
-    }
 
     if ((VIR_ALLOC(bandwidth) < 0) ||
         (VIR_ALLOC(bandwidth->in) < 0) ||
@@ -11291,12 +11282,8 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    net = virDomainNetFind(def, device);
-    if (!net) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Can't find device %s"), device);
+    if (!(net = virDomainNetFind(def, device)))
         goto cleanup;
-    }
 
     for (i = 0; i < *nparams && i < QEMU_NB_BANDWIDTH_PARAM; i++) {
         switch (i) {

@@ -3180,11 +3180,8 @@ static int testDomainInterfaceStats(virDomainPtr domain,
         goto error;
     }
 
-    if (!(net = virDomainNetFindByName(privdom->def, path))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid path, '%s' is not a known interface"), path);
+    if (!(net = virDomainNetFindByName(privdom->def, path)))
         goto error;
-    }
 
     if (gettimeofday(&tv, NULL) < 0) {
         virReportSystemError(errno,

@@ -4979,11 +4979,8 @@ libxlDomainInterfaceStats(virDomainPtr dom,
         goto endjob;
     }
 
-    if (!(net = virDomainNetFindByName(vm->def, path))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("'%s' is not a known interface"), path);
+    if (!(net = virDomainNetFindByName(vm->def, path)))
         goto endjob;
-    }
 
     if (virNetDevTapInterfaceStats(path, stats,
                                    !virDomainNetTypeSharesHostView(net)) < 0)
