@@ -627,7 +627,8 @@ x86DataAddSignature(virCPUx86Data *data,
 static virCPUDefPtr
 x86DataToCPU(const virCPUx86Data *data,
              virCPUx86ModelPtr model,
-             virCPUx86MapPtr map)
+             virCPUx86MapPtr map,
+             virDomainCapsCPUModelPtr hvModel)
 {
     virCPUDefPtr cpu;
     virCPUx86Data copy = VIR_CPU_X86_DATA_INIT;
@@ -646,6 +647,21 @@ x86DataToCPU(const virCPUx86Data *data,
 
     x86DataSubtract(&copy, &modelData);
     x86DataSubtract(&modelData, data);
+
+    /* The hypervisor's version of the CPU model (hvModel) may contain
+     * additional features which may be currently unavailable. Such features
+     * block usage of the CPU model and we need to explicitly disable them.
+     */
+    if (hvModel && hvModel->blockers) {
+        char **blocker;
+        virCPUx86FeaturePtr feature;
+
+        for (blocker = hvModel->blockers; *blocker; blocker++) {
+            if ((feature = x86FeatureFind(map, *blocker)) &&
+                !x86DataIsSubset(&copy, &feature->data))
+                x86DataAdd(&modelData, &feature->data);
+        }
+    }
 
     /* because feature policy is ignored for host CPU */
     cpu->type = VIR_CPU_TYPE_GUEST;
@@ -1835,6 +1851,7 @@ x86Decode(virCPUDefPtr cpu,
     virCPUx86Data copy = VIR_CPU_X86_DATA_INIT;
     virCPUx86Data features = VIR_CPU_X86_DATA_INIT;
     virCPUx86VendorPtr vendor;
+    virDomainCapsCPUModelPtr hvModel = NULL;
     uint32_t signature;
     ssize_t i;
     int rc;
@@ -1855,7 +1872,8 @@ x86Decode(virCPUDefPtr cpu,
      */
     for (i = map->nmodels - 1; i >= 0; i--) {
         candidate = map->models[i];
-        if (!virCPUModelIsAllowed(candidate->name, models)) {
+        if (models &&
+            !(hvModel = virDomainCapsCPUModelsGet(models, candidate->name))) {
             if (preferred && STREQ(candidate->name, preferred)) {
                 if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1883,7 +1901,7 @@ x86Decode(virCPUDefPtr cpu,
             continue;
         }
 
-        if (!(cpuCandidate = x86DataToCPU(&data, candidate, map)))
+        if (!(cpuCandidate = x86DataToCPU(&data, candidate, map, hvModel)))
             goto cleanup;
         cpuCandidate->type = cpu->type;
 
