@@ -179,6 +179,10 @@ int virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
                               ssize_t nameLen,
                               virDomainCapsCPUUsable usable,
                               char **blockers);
+virDomainCapsCPUModelPtr
+virDomainCapsCPUModelsGet(virDomainCapsCPUModelsPtr cpuModels,
+                          const char *name);
+
 
 # define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...)            \
     do {                                                    \

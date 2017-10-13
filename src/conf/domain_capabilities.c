@@ -259,6 +259,24 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
 }
 
 
+virDomainCapsCPUModelPtr
+virDomainCapsCPUModelsGet(virDomainCapsCPUModelsPtr cpuModels,
+                          const char *name)
+{
+    size_t i;
+
+    if (!cpuModels)
+        return NULL;
+
+    for (i = 0; i < cpuModels->nmodels; i++) {
+        if (STREQ(cpuModels->models[i].name, name))
+            return cpuModels->models + i;
+    }
+
+    return NULL;
+}
+
+
 int
 virDomainCapsEnumSet(virDomainCapsEnumPtr capsEnum,
                      const char *capsEnumName,

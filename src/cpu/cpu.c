@@ -829,16 +829,10 @@ bool
 virCPUModelIsAllowed(const char *model,
                      virDomainCapsCPUModelsPtr models)
 {
-    size_t i;
-
     if (!models)
         return true;
 
-    for (i = 0; i < models->nmodels; i++) {
-        if (STREQ(models->models[i].name, model))
-            return true;
-    }
-    return false;
+    return !!virDomainCapsCPUModelsGet(models, model);
 }
 
 
