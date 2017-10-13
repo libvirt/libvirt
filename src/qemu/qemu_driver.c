@@ -11044,10 +11044,10 @@ qemuDomainInterfaceStats(virDomainPtr dom,
         goto cleanup;
 
     if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
-        if (virNetDevOpenvswitchInterfaceStats(device, stats) < 0)
+        if (virNetDevOpenvswitchInterfaceStats(net->ifname, stats) < 0)
             goto cleanup;
     } else {
-        if (virNetDevTapInterfaceStats(device, stats,
+        if (virNetDevTapInterfaceStats(net->ifname, stats,
                                        !virDomainNetTypeSharesHostView(net)) < 0)
             goto cleanup;
     }

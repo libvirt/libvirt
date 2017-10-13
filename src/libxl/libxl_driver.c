@@ -4982,7 +4982,7 @@ libxlDomainInterfaceStats(virDomainPtr dom,
     if (!(net = virDomainNetFind(vm->def, device)))
         goto endjob;
 
-    if (virNetDevTapInterfaceStats(device, stats,
+    if (virNetDevTapInterfaceStats(net->ifname, stats,
                                    !virDomainNetTypeSharesHostView(net)) < 0)
         goto endjob;
 
