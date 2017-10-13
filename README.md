@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/libvirt/libvirt.svg)](https://travis-ci.org/libvirt/libvirt)
+ [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/355/badge)](https://bestpractices.coreinfrastructure.org/projects/355)
 
 Libvirt API for virtualization
 ==============================
