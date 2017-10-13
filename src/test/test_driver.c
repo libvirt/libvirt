@@ -3160,9 +3160,10 @@ static int testDomainBlockStats(virDomainPtr domain,
     return ret;
 }
 
-static int testDomainInterfaceStats(virDomainPtr domain,
-                                    const char *path,
-                                    virDomainInterfaceStatsPtr stats)
+static int
+testDomainInterfaceStats(virDomainPtr domain,
+                         const char *device,
+                         virDomainInterfaceStatsPtr stats)
 {
     virDomainObjPtr privdom;
     struct timeval tv;
@@ -3180,7 +3181,7 @@ static int testDomainInterfaceStats(virDomainPtr domain,
         goto error;
     }
 
-    if (!(net = virDomainNetFindByName(privdom->def, path)))
+    if (!(net = virDomainNetFind(privdom->def, device)))
         goto error;
 
     if (gettimeofday(&tv, NULL) < 0) {

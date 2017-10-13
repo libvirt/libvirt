@@ -2849,7 +2849,7 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
 
 static int
 lxcDomainInterfaceStats(virDomainPtr dom,
-                        const char *path,
+                        const char *device,
                         virDomainInterfaceStatsPtr stats)
 {
     virDomainObjPtr vm;
@@ -2872,10 +2872,10 @@ lxcDomainInterfaceStats(virDomainPtr dom,
         goto endjob;
     }
 
-    if (!(net = virDomainNetFindByName(vm->def, path)))
+    if (!(net = virDomainNetFind(vm->def, device)))
         goto endjob;
 
-    if (virNetDevTapInterfaceStats(path, stats,
+    if (virNetDevTapInterfaceStats(device, stats,
                                    !virDomainNetTypeSharesHostView(net)) < 0)
         goto endjob;
 

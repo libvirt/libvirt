@@ -5507,14 +5507,15 @@ virDomainBlockStatsFlags(virDomainPtr dom,
 /**
  * virDomainInterfaceStats:
  * @dom: pointer to the domain object
- * @path: path to the interface
+ * @device: the interface name or MAC address
  * @stats: network interface stats (returned)
  * @size: size of stats structure
  *
  * This function returns network interface stats for interfaces
  * attached to the domain.
  *
- * The path parameter is the name of the network interface.
+ * The @device parameter is the network interface either by name or MAC
+ * address.
  *
  * Domains may have more than one network interface.  To get stats for
  * each you should make multiple calls to this function.
@@ -5528,20 +5529,20 @@ virDomainBlockStatsFlags(virDomainPtr dom,
  * Returns: 0 in case of success or -1 in case of failure.
  */
 int
-virDomainInterfaceStats(virDomainPtr dom, const char *path,
+virDomainInterfaceStats(virDomainPtr dom, const char *device,
                         virDomainInterfaceStatsPtr stats, size_t size)
 {
     virConnectPtr conn;
     virDomainInterfaceStatsStruct stats2 = { -1, -1, -1, -1,
                                              -1, -1, -1, -1 };
 
-    VIR_DOMAIN_DEBUG(dom, "path=%s, stats=%p, size=%zi",
-                     path, stats, size);
+    VIR_DOMAIN_DEBUG(dom, "device=%s, stats=%p, size=%zi",
+                     device, stats, size);
 
     virResetLastError();
 
     virCheckDomainReturn(dom, -1);
-    virCheckNonNullArgGoto(path, error);
+    virCheckNonNullArgGoto(device, error);
     virCheckNonNullArgGoto(stats, error);
     if (size > sizeof(stats2)) {
         virReportInvalidArg(size,
@@ -5553,7 +5554,7 @@ virDomainInterfaceStats(virDomainPtr dom, const char *path,
     conn = dom->conn;
 
     if (conn->driver->domainInterfaceStats) {
-        if (conn->driver->domainInterfaceStats(dom, path, &stats2) == -1)
+        if (conn->driver->domainInterfaceStats(dom, device, &stats2) == -1)
             goto error;
 
         memcpy(stats, &stats2, size);

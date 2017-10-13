@@ -486,7 +486,7 @@ typedef int
 
 typedef int
 (*virDrvDomainInterfaceStats)(virDomainPtr domain,
-                              const char *path,
+                              const char *device,
                               virDomainInterfaceStatsPtr stats);
 
 typedef int

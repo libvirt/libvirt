@@ -1873,7 +1873,7 @@ vzDomainBlockStatsFlags(virDomainPtr domain,
 
 static int
 vzDomainInterfaceStats(virDomainPtr domain,
-                         const char *path,
+                         const char *device,
                          virDomainInterfaceStatsPtr stats)
 {
     virDomainObjPtr dom = NULL;
@@ -1888,7 +1888,7 @@ vzDomainInterfaceStats(virDomainPtr domain,
 
     privdom = dom->privateData;
 
-    ret = prlsdkGetNetStats(privdom->stats, privdom->sdkdom, path, stats);
+    ret = prlsdkGetNetStats(privdom->stats, privdom->sdkdom, device, stats);
 
  cleanup:
     virDomainObjEndAPI(&dom);

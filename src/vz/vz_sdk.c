@@ -4484,7 +4484,7 @@ prlsdkFindNetByPath(PRL_HANDLE sdkdom, const char *path)
 }
 
 int
-prlsdkGetNetStats(PRL_HANDLE sdkstats, PRL_HANDLE sdkdom, const char *path,
+prlsdkGetNetStats(PRL_HANDLE sdkstats, PRL_HANDLE sdkdom, const char *device,
                   virDomainInterfaceStatsPtr stats)
 {
     int ret = -1;
@@ -4492,8 +4492,13 @@ prlsdkGetNetStats(PRL_HANDLE sdkstats, PRL_HANDLE sdkdom, const char *path,
     char *name = NULL;
     PRL_RESULT pret;
     PRL_HANDLE net = PRL_INVALID_HANDLE;
+    virMacAddr mac;
 
-    net = prlsdkFindNetByPath(sdkdom, path);
+    if (virMacAddrParse(device, &mac) == 0)
+        net = prlsdkFindNetByMAC(sdkdom, device);
+    else
+        net = prlsdkFindNetByPath(sdkdom, device);
+
     if (net == PRL_INVALID_HANDLE)
        goto cleanup;
 

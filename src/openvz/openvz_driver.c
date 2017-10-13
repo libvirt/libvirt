@@ -1980,7 +1980,7 @@ openvzGetVEStatus(virDomainObjPtr vm, int *status, int *reason)
 
 static int
 openvzDomainInterfaceStats(virDomainPtr dom,
-                           const char *path,
+                           const char *device,
                            virDomainInterfaceStatsPtr stats)
 {
     struct openvz_driver *driver = dom->conn->privateData;
@@ -2006,10 +2006,10 @@ openvzDomainInterfaceStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!(net = virDomainNetFindByName(vm->def, path)))
+    if (!(net = virDomainNetFind(vm->def, device)))
         goto cleanup;
 
-    if (virNetDevTapInterfaceStats(path, stats,
+    if (virNetDevTapInterfaceStats(device, stats,
                                    !virDomainNetTypeSharesHostView(net)) < 0)
         goto cleanup;
 

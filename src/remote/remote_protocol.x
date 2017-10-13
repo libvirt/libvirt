@@ -682,7 +682,7 @@ struct remote_domain_block_stats_flags_ret {
 
 struct remote_domain_interface_stats_args {
     remote_nonnull_domain dom;
-    remote_nonnull_string path;
+    remote_nonnull_string device;
 };
 
 struct remote_domain_interface_stats_ret { /* insert@2 */

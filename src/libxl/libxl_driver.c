@@ -4956,7 +4956,7 @@ libxlDomainIsUpdated(virDomainPtr dom)
 
 static int
 libxlDomainInterfaceStats(virDomainPtr dom,
-                          const char *path,
+                          const char *device,
                           virDomainInterfaceStatsPtr stats)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
@@ -4979,10 +4979,10 @@ libxlDomainInterfaceStats(virDomainPtr dom,
         goto endjob;
     }
 
-    if (!(net = virDomainNetFindByName(vm->def, path)))
+    if (!(net = virDomainNetFind(vm->def, device)))
         goto endjob;
 
-    if (virNetDevTapInterfaceStats(path, stats,
+    if (virNetDevTapInterfaceStats(device, stats,
                                    !virDomainNetTypeSharesHostView(net)) < 0)
         goto endjob;
 

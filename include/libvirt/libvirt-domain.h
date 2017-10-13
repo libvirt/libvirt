@@ -1571,7 +1571,7 @@ int                     virDomainBlockStatsFlags (virDomainPtr dom,
                                                   int *nparams,
                                                   unsigned int flags);
 int                     virDomainInterfaceStats (virDomainPtr dom,
-                                                 const char *path,
+                                                 const char *device,
                                                  virDomainInterfaceStatsPtr stats,
                                                  size_t size);
 

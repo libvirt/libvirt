@@ -779,7 +779,8 @@ Get network interface stats for a running domain. The network
 interface stats are only available for interfaces that have a
 physical source interface. This does not include, for example, a
 'user' interface type since it is a virtual LAN with NAT to the
-outside world.
+outside world. I<interface-device> can be the interface target by
+name or MAC address.
 
 =item B<domif-setlink> I<domain> I<interface-device> I<state> [I<--config>]
 

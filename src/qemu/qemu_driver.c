@@ -11021,7 +11021,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
 
 static int
 qemuDomainInterfaceStats(virDomainPtr dom,
-                         const char *path,
+                         const char *device,
                          virDomainInterfaceStatsPtr stats)
 {
     virDomainObjPtr vm;
@@ -11040,14 +11040,14 @@ qemuDomainInterfaceStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!(net = virDomainNetFindByName(vm->def, path)))
+    if (!(net = virDomainNetFind(vm->def, device)))
         goto cleanup;
 
     if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
-        if (virNetDevOpenvswitchInterfaceStats(path, stats) < 0)
+        if (virNetDevOpenvswitchInterfaceStats(device, stats) < 0)
             goto cleanup;
     } else {
-        if (virNetDevTapInterfaceStats(path, stats,
+        if (virNetDevTapInterfaceStats(device, stats,
                                        !virDomainNetTypeSharesHostView(net)) < 0)
             goto cleanup;
     }
