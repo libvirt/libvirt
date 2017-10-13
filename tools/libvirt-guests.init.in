@@ -14,7 +14,7 @@
 # Short-Description: suspend/resume libvirt guests on shutdown/boot
 # Description: This is a script for suspending active libvirt guests
 #              on shutdown and resuming them on next boot
-#              See http://libvirt.org
+#              See https://libvirt.org
 ### END INIT INFO
 
 # the following is chkconfig init header
@@ -24,7 +24,7 @@
 # chkconfig: 345 99 01
 # description:  This is a script for suspending active libvirt guests \
 #               on shutdown and resuming them on next boot \
-#               See http://libvirt.org
+#               See https://libvirt.org
 #
 
 exec @libexecdir@/libvirt-guests.sh "$@"

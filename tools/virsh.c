@@ -511,7 +511,7 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 {
     /* FIXME - list a copyright blurb, as in GNU programs?  */
     vshPrint(ctl, _("Virsh command line tool of libvirt %s\n"), VERSION);
-    vshPrint(ctl, _("See web site at %s\n\n"), "http://libvirt.org/");
+    vshPrint(ctl, _("See web site at %s\n\n"), "https://libvirt.org/");
 
     vshPrint(ctl, "%s", _("Compiled with support for:\n"));
     vshPrint(ctl, "%s", _(" Hypervisors:"));

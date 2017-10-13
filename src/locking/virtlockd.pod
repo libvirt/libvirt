@@ -128,7 +128,7 @@ Please report all bugs you discover.  This should be done via either:
 
 =item a) the mailing list
 
-L<http://libvirt.org/contact.html>
+L<https://libvirt.org/contact.html>
 
 =item or,
 
@@ -136,7 +136,7 @@ B<>
 
 =item b) the bug tracker
 
-L<http://libvirt.org/bugs.html>
+L<https://libvirt.org/bugs.html>
 
 =item Alternatively, you may report bugs to your software distributor / vendor.
 
@@ -160,6 +160,6 @@ PURPOSE
 
 =head1 SEE ALSO
 
-L<libvirtd(8)>,  L<http://www.libvirt.org/>
+L<libvirtd(8)>,  L<https://libvirt.org/>
 
 =cut

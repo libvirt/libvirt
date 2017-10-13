@@ -369,7 +369,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         qcow2GetFeatures
     },
     [VIR_STORAGE_FILE_QED] = {
-        /* http://wiki.qemu.org/Features/QED */
+        /* https://wiki.qemu.org/Features/QED */
         0, "QED", NULL,
         LV_LITTLE_ENDIAN, -2, 0, {0},
         QED_HDR_IMAGE_SIZE, 8, 1, NULL, qedGetBackingStore, NULL

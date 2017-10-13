@@ -81,7 +81,7 @@ print <<EOF;
     "http://www.freedesktop.org/software/polkit/policyconfig-1.dtd">
 <policyconfig>
   <vendor>Libvirt Project</vendor>
-  <vendor_url>http://libvirt.org</vendor_url>
+  <vendor_url>https://libvirt.org</vendor_url>
 EOF
 
 foreach my $object (sort { $a cmp $b } keys %perms) {

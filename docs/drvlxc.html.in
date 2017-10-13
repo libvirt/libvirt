@@ -601,7 +601,7 @@ rather than creating new network namespace for the container. In this case privn
 ignored.
 </p>
 <pre>
-&lt;domain type='lxc' xmlns:lxc='http://libvirt.org/schemas/domain/lxc/1.0'&gt;
+&lt;domain type='lxc' xmlns:lxc='https://libvirt.org/schemas/domain/lxc/1.0'&gt;
 ...
 &lt;lxc:namespace&gt;
   &lt;lxc:sharenet type='netns' value='red'/&gt;

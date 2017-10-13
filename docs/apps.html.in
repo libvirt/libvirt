@@ -327,7 +327,7 @@
         Allows using simple ruby objects to manipulate
         hypervisors, guests, storage, network etc.  It is
         based on top of
-        the <a href="http://libvirt.org/ruby">native ruby bindings</a>.
+        the <a href="https://libvirt.org/ruby">native ruby bindings</a>.
       </dd>
     </dl>
 

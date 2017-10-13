@@ -249,7 +249,7 @@ Will print the current directory.
 is automatically run with the I<URI> parameter requested by the C<-c>
 option on the command line. The I<URI> parameter specifies how to
 connect to the hypervisor. The documentation page at
-L<http://libvirt.org/uri.html> list the values supported, but the most
+L<https://libvirt.org/uri.html> list the values supported, but the most
 common are:
 
 =over 4
@@ -275,7 +275,7 @@ connect to a local linux container
 To find the currently used URI, check the I<uri> command documented below.
 
 For remote access see the documentation page at
-L<http://libvirt.org/uri.html> on how to make URIs.
+L<https://libvirt.org/uri.html> on how to make URIs.
 The I<--readonly> option allows for read-only connection
 
 =item B<uri>
@@ -350,7 +350,7 @@ we are currently connected to. This includes a section on the host
 capabilities in terms of CPU and features, and a set of description
 for each kind of guest which can be virtualized. For a more complete
 description see:
-  L<http://libvirt.org/formatcaps.html>
+  L<https://libvirt.org/formatcaps.html>
 The XML also show the NUMA topology information if available.
 
 =item B<domcapabilities> [I<virttype>] [I<emulatorbin>]
@@ -590,7 +590,7 @@ contain either host or guest CPU definition. The host CPU definition is the
 <cpu> element and its contents as printed by B<capabilities> command. The
 guest CPU definition is the <cpu> element and its contents from domain XML
 definition. For more information on guest CPU definition see:
-L<http://libvirt.org/formatdomain.html#elementsCPU>. If I<--error> is
+L<https://libvirt.org/formatdomain.html#elementsCPU>. If I<--error> is
 specified, the command will return an error when the given CPU is
 incompatible with host CPU and a message providing more details about the
 incompatibility will be printed out.
@@ -813,7 +813,7 @@ inbound or outbound bandwidth. I<average,peak,burst,floor> is the same as
 in command I<attach-interface>.  Values for I<average>, I<peak> and I<floor>
 are expressed in kilobytes per second, while I<burst> is expressed in kilobytes
 in a single burst at I<peak> speed as described in the Network XML
-documentation at L<http://libvirt.org/formatnetwork.html#elementQoS>.
+documentation at L<https://libvirt.org/formatnetwork.html#elementQoS>.
 
 To clear inbound or outbound settings, use I<--inbound> or I<--outbound>
 respectfully with average value of zero.
@@ -1897,7 +1897,7 @@ order to comply with local firewall policies.
 
 =back
 
-See L<http://libvirt.org/migration.html#uris> for more details on
+See L<https://libvirt.org/migration.html#uris> for more details on
 migration URIs.
 
 Optional I<graphicsuri> overrides connection parameters used for automatically
@@ -2894,7 +2894,7 @@ is not available the processes will provide an exit code of 1.
 The following commands manipulate devices associated to domains.
 The I<domain> can be specified as a short integer, a name or a full UUID.
 To better understand the values allowed as options for the command
-reading the documentation at L<http://libvirt.org/formatdomain.html> on the
+reading the documentation at L<https://libvirt.org/formatdomain.html> on the
 format of the device sections to get the most accurate set of accepted values.
 
 =over 4
@@ -2905,7 +2905,7 @@ format of the device sections to get the most accurate set of accepted values.
 Attach a device to the domain, using a device definition in an XML
 file using a device definition element such as <disk> or <interface>
 as the top-level element.  See the documentation at
-L<http://libvirt.org/formatdomain.html#elementsDevices> to learn about
+L<https://libvirt.org/formatdomain.html#elementsDevices> to learn about
 libvirt XML format for a device.  If I<--config> is specified the
 command alters the persistent domain configuration with the device
 attach taking effect the next time libvirt starts the domain.
@@ -3049,7 +3049,7 @@ specified.  The other two I<peak> and I<burst> are optional, so
 are expressed in kilobytes per second, while I<burst> is expressed in
 kilobytes in a single burst at I<peak> speed as described in the
 Network XML documentation at
-L<http://libvirt.org/formatnetwork.html#elementQoS>.
+L<https://libvirt.org/formatnetwork.html#elementQoS>.
 
 B<--managed> is usable only for I<hostdev> type and tells libvirt
 that the interface should be managed, which means detached and reattached
@@ -3148,7 +3148,7 @@ Update the characteristics of a device associated with I<domain>,
 based on the device definition in an XML I<file>.  The I<--force> option
 can be used to force device update, e.g., to eject a CD-ROM even if it is
 locked/mounted in the domain. See the documentation at
-L<http://libvirt.org/formatdomain.html#elementsDevices> to learn about
+L<https://libvirt.org/formatdomain.html#elementsDevices> to learn about
 libvirt XML format for a device.
 
 If I<--live> is specified, affect a running domain.
@@ -3214,7 +3214,7 @@ the host's hard disk controller where the guest's disk images live could
 cause the host system to lock up or reboot).
 
 For more information on node device definition see:
-L<http://libvirt.org/formatnode.html>.
+L<https://libvirt.org/formatnode.html>.
 
 Passthrough devices cannot be simultaneously used by the host and its
 guest domains, nor by multiple active guests at once.  If the
@@ -3317,7 +3317,7 @@ before the event.
 The following commands manipulate networks. Libvirt has the capability to
 define virtual networks which can then be used by domains and linked to
 actual network devices. For more detailed information about this feature
-see the documentation at L<http://libvirt.org/formatnetwork.html> . Many
+see the documentation at L<https://libvirt.org/formatnetwork.html> . Many
 of the commands for virtual networks are similar to the ones used for domains,
 but the way to name a virtual network is either by its name or UUID.
 
@@ -3332,7 +3332,7 @@ The I<--disable> option disable autostarting.
 
 Create a transient (temporary) virtual network from an
 XML I<file> and instantiate (start) the network.
-See the documentation at L<http://libvirt.org/formatnetwork.html>
+See the documentation at L<https://libvirt.org/formatnetwork.html>
 to get a description of the XML network format used by libvirt.
 
 =item B<net-define> I<file>
@@ -3605,7 +3605,7 @@ capability to manage various storage solutions, including files, raw
 partitions, and domain-specific formats, used to provide the storage
 volumes visible as devices within virtual machines. For more detailed
 information about this feature, see the documentation at
-L<http://libvirt.org/formatstorage.html> . Many of the commands for
+L<https://libvirt.org/formatstorage.html> . Many of the commands for
 pools are similar to the ones used for domains.
 
 =over 4
@@ -4176,7 +4176,7 @@ The following commands manipulate "secrets" (e.g. passwords, passphrases and
 encryption keys).  Libvirt can store secrets independently from their use, and
 other objects (e.g. volumes or domains) can refer to the secrets for encryption
 or possibly other uses.  Secrets are identified using a UUID.  See
-L<http://libvirt.org/formatsecret.html> for documentation of the XML format
+L<https://libvirt.org/formatsecret.html> for documentation of the XML format
 used to represent properties of secrets.
 
 =over 4
@@ -4242,7 +4242,7 @@ disk, memory, and device state of a domain at a point-of-time, and save it
 for future use.  They have many uses, from saving a "clean" copy of an OS
 image to saving a domain's state before a potentially destructive operation.
 Snapshots are identified with a unique name.  See
-L<http://libvirt.org/formatsnapshot.html> for documentation of the XML format
+L<https://libvirt.org/formatsnapshot.html> for documentation of the XML format
 used to represent properties of snapshots.
 
 =over 4
@@ -4783,15 +4783,15 @@ Messages at level ERROR
 =back
 
 For further information about debugging options consult
-L<http://libvirt.org/logging.html>
+L<https://libvirt.org/logging.html>
 
 =back
 
 =head1 BUGS
 
 Report any bugs discovered to the libvirt community via the mailing
-list L<http://libvirt.org/contact.html> or bug tracker
-L<http://libvirt.org/bugs.html>.
+list L<https://libvirt.org/contact.html> or bug tracker
+L<https://libvirt.org/bugs.html>.
 Alternatively report bugs to your software distributor / vendor.
 
 =head1 AUTHORS
@@ -4817,6 +4817,6 @@ PURPOSE
 =head1 SEE ALSO
 
 L<virt-install(1)>, L<virt-xml-validate(1)>, L<virt-top(1)>, L<virt-df(1)>,
-L<http://www.libvirt.org/>
+L<https://libvirt.org/>
 
 =cut

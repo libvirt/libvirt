@@ -14,7 +14,7 @@
 # Short-Description: daemon for libvirt virtualization API
 # Description: This is a daemon for managing guest instances
 #              and libvirt virtual networks
-#              See http://libvirt.org
+#              See https://libvirt.org
 ### END INIT INFO
 
 # the following is chkconfig init header
@@ -24,7 +24,7 @@
 # chkconfig: 345 97 03
 # description:  This is a daemon for managing guest instances \
 #               and libvirt virtual networks \
-#               See http://libvirt.org
+#               See https://libvirt.org
 #
 # processname: libvirtd
 # pidfile: @localstatedir@/run/libvirtd.pid

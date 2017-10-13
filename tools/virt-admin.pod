@@ -456,15 +456,15 @@ Messages at level ERROR or above
 =back
 
 For further information about debugging options consult
-L<http://libvirt.org/logging.html>
+L<https://libvirt.org/logging.html>
 
 =back
 
 =head1 BUGS
 
 Report any bugs discovered to the libvirt community via the mailing
-list L<http://libvirt.org/contact.html> or bug tracker
-L<http://libvirt.org/bugs.html>.
+list L<https://libvirt.org/contact.html> or bug tracker
+L<https://libvirt.org/bugs.html>.
 Alternatively report bugs to your software distributor / vendor.
 
 =head1 AUTHORS
@@ -488,6 +488,6 @@ PURPOSE
 =head1 SEE ALSO
 
 L<virsh(1)>, L<virt-xml-validate(1)>, L<virt-host-validate(1)>,
-L<http://www.libvirt.org/>
+L<https://libvirt.org/>
 
 =cut

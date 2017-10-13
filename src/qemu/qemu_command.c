@@ -3809,7 +3809,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
              */
             virBufferAddLit(&buf, ",mq=on");
         } else {
-            /* As advised at http://www.linux-kvm.org/page/Multiqueue
+            /* As advised at https://www.linux-kvm.org/page/Multiqueue
              * we should add vectors=2*N+2 where N is the vhostfdSize
              */
             virBufferAsprintf(&buf, ",mq=on,vectors=%zu", 2 * vhostfdSize + 2);

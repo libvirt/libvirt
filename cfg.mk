@@ -1020,6 +1020,23 @@ sc_prohibit_obj_free_apis_in_virsh:
 	halt='avoid using virDomain(Snapshot)Free in virsh, use virsh-prefixed wrappers instead' \
 	  $(_sc_search_regexp)
 
+https_sites = www.libvirt.org
+https_sites += libvirt.org
+https_sites += security.libvirt.org
+https_sites += qemu.org
+https_sites += www.qemu.org
+https_sites += wiki.qemu.org
+https_sites += linux-kvm.org
+https_sites += www.linux-kvm.org
+
+https_re= ($(subst $(space),|,$(https_sites)))
+
+sc_prohibit_http_urls:
+	@prohibit='http://$(https_re)' \
+	exclude="/schemas/" \
+	halt='Links must use https:// protocol' \
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 

@@ -5224,7 +5224,7 @@ qemu-kvm -net nic,model=? /dev/null
       <dd>
         The optional <code>queues</code> attribute controls the number
         of queues to be used for either
-        <a href="http://www.linux-kvm.org/page/Multiqueue"> Multiqueue
+        <a href="https://www.linux-kvm.org/page/Multiqueue"> Multiqueue
         virtio-net</a> or <a href="#elementVhostuser">vhost-user</a> network
         interfaces.  Use of multiple packet processing queues requires the
         interface having the <code>&lt;model type='virtio'/&gt;</code>

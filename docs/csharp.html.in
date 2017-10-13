@@ -38,7 +38,7 @@
 
     <ul>
       <li><a href="ftp://libvirt.org/libvirt/csharp/">libvirt.org FTP server</a></li>
-      <li><a href="http://libvirt.org/sources/csharp/">libvirt.org HTTP server</a></li>
+      <li><a href="https://libvirt.org/sources/csharp/">libvirt.org HTTP server</a></li>
     </ul>
 -->
 
@@ -46,7 +46,7 @@
     <p>
       The C# bindings source code is maintained in a <a
       href="http://git-scm.com/">git</a> repository available on
-      <a href="http://libvirt.org/git/">libvirt.org</a>:
+      <a href="https://libvirt.org/git/">libvirt.org</a>:
     </p>
 
 <pre>
@@ -58,7 +58,7 @@ git clone git://libvirt.org/libvirt-csharp.git
     </p>
 
 <pre>
-<a href="http://libvirt.org/git/?p=libvirt-csharp.git;a=summary">http://libvirt.org/git/?p=libvirt-csharp.git;a=summary</a>
+<a href="https://libvirt.org/git/?p=libvirt-csharp.git;a=summary">https://libvirt.org/git/?p=libvirt-csharp.git;a=summary</a>
 </pre>
 
     <h2><a id="usage">Usage</a></h2>

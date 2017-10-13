@@ -25,7 +25,7 @@
         <p>This is the list of official releases for libvirt, along with an
         overview of the changes introduced by each of them.</p>
         <p>For a more fine-grained view, use the
-        <a href="http://libvirt.org/git/?p=libvirt.git;a=log">git log</a>.
+        <a href="https://libvirt.org/git/?p=libvirt.git;a=log">git log</a>.
         </p>
         <xsl:apply-templates select="release"/>
         <p>Older libvirt releases didn't have proper release notes,

@@ -24,7 +24,7 @@
       </li>
       <li>
         <strong>OCaml</strong>: Richard Jones develops
-        <a href="http://libvirt.org/ocaml/">OCaml bindings</a>.
+        <a href="https://libvirt.org/ocaml/">OCaml bindings</a>.
       </li>
       <li>
         <strong>Perl</strong>: Daniel Berrange develops
@@ -33,7 +33,7 @@
       <li>
         <p>
           <strong>PHP</strong>: Radek Hladik started developing
-          <a href="http://libvirt.org/php">PHP bindings</a> in 2010.
+          <a href="https://libvirt.org/php">PHP bindings</a> in 2010.
         </p>
         <p>
           In February 2011 the binding development has been moved to the libvirt.org website as
@@ -43,13 +43,13 @@
           The project is now maintained by Michal Novotny and it's heavily based
           on Radek's version. For more information, including
           information on posting patches to libvirt-php, please refer
-          to the <a href="http://libvirt.org/php">PHP bindings</a> site.
+          to the <a href="https://libvirt.org/php">PHP bindings</a> site.
         </p>
       </li>
       <li>
         <p>
           <strong>Python</strong>: Libvirt's python bindings are split to a
-          separate <a href="http://libvirt.org/git/?p=libvirt-python.git">package</a>
+          separate <a href="https://libvirt.org/git/?p=libvirt-python.git">package</a>
           since version 1.2.0, older versions came with direct support for the
           Python language.
         </p>
@@ -70,7 +70,7 @@
       </li>
       <li>
         <strong>Ruby</strong>: Chris Lalancette develops
-        <a href="http://libvirt.org/ruby/">Ruby bindings</a>.
+        <a href="https://libvirt.org/ruby/">Ruby bindings</a>.
       </li>
     </ul>
 

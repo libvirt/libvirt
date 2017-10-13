@@ -354,7 +354,7 @@ polkit.addRule(function(action, subject) {
 
     <p>
     See
-    <a href="http://libvirt.org/git/?p=libvirt.git;a=tree;f=examples/polkit;hb=HEAD">source code</a>
+    <a href="https://libvirt.org/git/?p=libvirt.git;a=tree;f=examples/polkit;hb=HEAD">source code</a>
     for a more complex example.
     </p>
 

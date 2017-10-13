@@ -1151,7 +1151,7 @@ virConnectOpenInternal(const char *name,
  * if not already running. This can be prevented by setting the
  * environment variable LIBVIRT_AUTOSTART=0
  *
- * URIs are documented at http://libvirt.org/uri.html
+ * URIs are documented at httsp://libvirt.org/uri.html
  *
  * virConnectClose should be used to release the resources after the connection
  * is no longer needed.
@@ -1190,7 +1190,7 @@ virConnectOpen(const char *name)
  * See virConnectOpen for notes about environment variables which can
  * have an effect on opening drivers and freeing the connection resources
  *
- * URIs are documented at http://libvirt.org/uri.html
+ * URIs are documented at https://libvirt.org/uri.html
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  */
@@ -1228,7 +1228,7 @@ virConnectOpenReadOnly(const char *name)
  * See virConnectOpen for notes about environment variables which can
  * have an effect on opening drivers and freeing the connection resources
  *
- * URIs are documented at http://libvirt.org/uri.html
+ * URIs are documented at https://libvirt.org/uri.html
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  */

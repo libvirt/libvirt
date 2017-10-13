@@ -28,11 +28,11 @@
           <td>libvirt</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/">ftp</a>
-            <a href="http://libvirt.org/sources/">http</a>
+            <a href="https://libvirt.org/sources/">http</a>
             <a href="https://libvirt.org/sources/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt">gitlab</a>
@@ -50,11 +50,11 @@
           <td>C#</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/csharp/">ftp</a>
-            <a href="http://libvirt.org/sources/csharp/">http</a>
+            <a href="https://libvirt.org/sources/csharp/">http</a>
             <a href="https://libvirt.org/sources/csharp/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-csharp.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-csharp.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-csharp">gitlab</a>
@@ -66,11 +66,11 @@
           <td>Go</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/go/">ftp</a>
-            <a href="http://libvirt.org/sources/go/">http</a>
+            <a href="https://libvirt.org/sources/go/">http</a>
             <a href="https://libvirt.org/sources/go/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-go.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-go.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-go">gitlab</a>
@@ -84,11 +84,11 @@
           <td>Java</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/java/">ftp</a>
-            <a href="http://libvirt.org/sources/java/">http</a>
+            <a href="https://libvirt.org/sources/java/">http</a>
             <a href="https://libvirt.org/sources/java/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-java.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-java.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-java">gitlab</a>
@@ -100,11 +100,11 @@
           <td>OCaml</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/ocaml/">ftp</a>
-            <a href="http://libvirt.org/sources/ocaml/">http</a>
+            <a href="https://libvirt.org/sources/ocaml/">http</a>
             <a href="https://libvirt.org/sources/ocaml/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-ocaml.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-ocaml.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-ocaml">gitlab</a>
@@ -118,7 +118,7 @@
             <a href="http://search.cpan.org/dist/Sys-Virt/">cpan</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-perl.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-perl.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-perl">gitlab</a>
@@ -126,18 +126,18 @@
           </td>
           <td>
             <a href="http://search.cpan.org/dist/Sys-Virt/">api ref</a>
-            <a href="http://libvirt.org/git/?p=libvirt-perl.git;a=blob;f=Changes;hb=HEAD">changes</a>
+            <a href="https://libvirt.org/git/?p=libvirt-perl.git;a=blob;f=Changes;hb=HEAD">changes</a>
           </td>
         </tr>
         <tr>
           <td>PHP</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/php/">ftp</a>
-            <a href="http://libvirt.org/sources/php/">http</a>
+            <a href="https://libvirt.org/sources/php/">http</a>
             <a href="https://libvirt.org/sources/php/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-php.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-php.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-php">gitlab</a>
@@ -149,12 +149,12 @@
           <td>Python</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/python/">ftp</a>
-            <a href="http://libvirt.org/sources/python/">http</a>
+            <a href="https://libvirt.org/sources/python/">http</a>
             <a href="https://libvirt.org/sources/python/">https</a>
             <a href="https://pypi.python.org/pypi/libvirt-python">pypi</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-python.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-python.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-python">gitlab</a>
@@ -166,11 +166,11 @@
           <td>Ruby</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/ruby/">ftp</a>
-            <a href="http://libvirt.org/sources/ruby/">http</a>
+            <a href="https://libvirt.org/sources/ruby/">http</a>
             <a href="https://libvirt.org/sources/ruby/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=ruby-libvirt.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=ruby-libvirt.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/ruby-libvirt">gitlab</a>
@@ -182,11 +182,11 @@
           <td>Rust</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/rust/">ftp</a>
-            <a href="http://libvirt.org/sources/rust/">http</a>
+            <a href="https://libvirt.org/sources/rust/">http</a>
             <a href="https://libvirt.org/sources/rust/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-rust.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-rust.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-rust">gitlab</a>
@@ -201,11 +201,11 @@
           <td>GLib / GConfig / GObject</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/glib/">ftp</a>
-            <a href="http://libvirt.org/sources/glib/">http</a>
+            <a href="https://libvirt.org/sources/glib/">http</a>
             <a href="https://libvirt.org/sources/glib/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-glib.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-glib.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-glib">gitlab</a>
@@ -217,11 +217,11 @@
           <td>Go XML</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/go/">ftp</a>
-            <a href="http://libvirt.org/sources/go/">http</a>
+            <a href="https://libvirt.org/sources/go/">http</a>
             <a href="https://libvirt.org/sources/go/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-go-xml.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-go-xml.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-go-xml">gitlab</a>
@@ -235,11 +235,11 @@
           <td>Console Proxy</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/consoleproxy/">ftp</a>
-            <a href="http://libvirt.org/sources/consoleproxy/">http</a>
+            <a href="https://libvirt.org/sources/consoleproxy/">http</a>
             <a href="https://libvirt.org/sources/consoleproxy/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-console-proxy.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-console-proxy.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-console-proxy">gitlab</a>
@@ -251,11 +251,11 @@
           <td>CIM provider</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/CIM/">ftp</a>
-            <a href="http://libvirt.org/sources/CIM/">http</a>
+            <a href="https://libvirt.org/sources/CIM/">http</a>
             <a href="https://libvirt.org/sources/CIM/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-cim.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-cim.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-cim">gitlab</a>
@@ -267,11 +267,11 @@
           <td>CIM utils</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/CIM/">ftp</a>
-            <a href="http://libvirt.org/sources/CIM/">http</a>
+            <a href="https://libvirt.org/sources/CIM/">http</a>
             <a href="https://libvirt.org/sources/CIM/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libcmpiutil.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libcmpiutil.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libcmpiutil">gitlab</a>
@@ -283,11 +283,11 @@
           <td>SNMP</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/snmp/">ftp</a>
-            <a href="http://libvirt.org/sources/snmp/">http</a>
+            <a href="https://libvirt.org/sources/snmp/">http</a>
             <a href="https://libvirt.org/sources/snmp/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-snmp.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-snmp.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-snmp">gitlab</a>
@@ -299,11 +299,11 @@
           <td>Application Sandbox</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/sandbox/">ftp</a>
-            <a href="http://libvirt.org/sources/sandbox/">http</a>
+            <a href="https://libvirt.org/sources/sandbox/">http</a>
             <a href="https://libvirt.org/sources/sandbox/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-sandbox.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-sandbox.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-sandbox">gitlab</a>
@@ -318,11 +318,11 @@
           <td>TCK</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/tck/">ftp</a>
-            <a href="http://libvirt.org/sources/tck/">http</a>
+            <a href="https://libvirt.org/sources/tck/">http</a>
             <a href="https://libvirt.org/sources/tck/">https</a>
           </td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-tck.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-tck.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-tck">gitlab</a>
@@ -334,7 +334,7 @@
           <td>Test API</td>
           <td></td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-test-API.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-test-API.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-test-API">gitlab</a>
@@ -346,7 +346,7 @@
           <td>Jenkins Config</td>
           <td></td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-jenkins-ci.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-jenkins-ci.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-jenkins-ci">gitlab</a>
@@ -358,7 +358,7 @@
           <td>CIM Test</td>
           <td></td>
           <td>
-            <a href="http://libvirt.org/git/?p=cimtest.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=cimtest.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/cimtest">gitlab</a>
@@ -373,7 +373,7 @@
           <td>Publican Brand</td>
           <td></td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-publican.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-publican.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-publican">gitlab</a>
@@ -385,7 +385,7 @@
           <td>App Development Guide</td>
           <td></td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-appdev-guide.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-appdev-guide.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-appdev-guide">gitlab</a>
@@ -397,7 +397,7 @@
           <td>App Development Guide Python</td>
           <td></td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-appdev-guide-python.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-appdev-guide-python.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-appdev-guide-python">gitlab</a>
@@ -409,7 +409,7 @@
           <td>virsh Command Reference</td>
           <td></td>
           <td>
-            <a href="http://libvirt.org/git/?p=libvirt-virshcmdref.git;a=summary">libvirt</a>
+            <a href="https://libvirt.org/git/?p=libvirt-virshcmdref.git;a=summary">libvirt</a>
           </td>
           <td>
             <a href="https://gitlab.com/libvirt/libvirt-virshcmdref">gitlab</a>
@@ -431,7 +431,7 @@
 
     <ul>
       <li><a href="ftp://libvirt.org/libvirt/">libvirt.org FTP server</a></li>
-      <li><a href="http://libvirt.org/sources/">libvirt.org HTTP server</a></li>
+      <li><a href="https://libvirt.org/sources/">libvirt.org HTTP server</a></li>
       <li><a href="https://libvirt.org/sources/">libvirt.org HTTPS server</a></li>
     </ul>
 
@@ -447,7 +447,7 @@
 
     <ul>
       <li><a href="ftp://libvirt.org/libvirt/libvirt-git-snapshot.tar.xz">libvirt.org FTP server</a></li>
-      <li><a href="http://libvirt.org/sources/libvirt-git-snapshot.tar.xz">libvirt.org HTTP server</a></li>
+      <li><a href="https://libvirt.org/sources/libvirt-git-snapshot.tar.xz">libvirt.org HTTP server</a></li>
     </ul>
 
     <h2><a id="schedule">Primary release schedule</a></h2>
@@ -529,7 +529,7 @@
 
     <p>
       All modules maintained by the libvirt project have their primary
-      source available in the <a href="http://libvirt.org/git/">project GIT server</a>.
+      source available in the <a href="https://libvirt.org/git/">project GIT server</a>.
       Each module can be cloned anonymously using:
     </p>
 

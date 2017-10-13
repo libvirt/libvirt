@@ -30,10 +30,10 @@
 
     <ul>
       <li>
-        <a href="http://libvirt.org/sources/virshcmdref/html/">Standard HTML format, multiple pages</a>
+        <a href="https://libvirt.org/sources/virshcmdref/html/">Standard HTML format, multiple pages</a>
       </li>
       <li>
-        <a href="http://libvirt.org/sources/virshcmdref/html-single/">HTML format, one long page</a>
+        <a href="https://libvirt.org/sources/virshcmdref/html-single/">HTML format, one long page</a>
       </li>
     </ul>
 
@@ -46,21 +46,21 @@
     <ul>
       <li>
         Standard HTML format, multiple pages
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.tar.gz">.tar.gz</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.tar.bz2">.tar.bz2</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.zip">.zip</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.tar.gz">.tar.gz</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.tar.bz2">.tar.bz2</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-multi-page.zip">.zip</a>)
       </li>
       <li>
         HTML format, one long page
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.tar.gz">.tar.gz</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.tar.bz2">.tar.bz2</a>)
-        (<a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.zip">.zip</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.tar.gz">.tar.gz</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.tar.bz2">.tar.bz2</a>)
+        (<a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1-html-single.zip">.zip</a>)
       </li>
       <li>
-        <a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1.pdf">PDF format</a>
+        <a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1.pdf">PDF format</a>
       </li>
       <li>
-        <a href="http://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1.epub">ePub format</a>
+        <a href="https://libvirt.org/sources/virshcmdref/Virsh_Command_Reference-0.8.7-1.epub">ePub format</a>
       </li>
     </ul>
 
@@ -68,7 +68,7 @@
     <p>
       The DocBook source is maintained in a <a
       href="http://git-scm.com/">git</a> repository available on
-      <a href="http://libvirt.org/git/">libvirt.org</a>:
+      <a href="https://libvirt.org/git/">libvirt.org</a>:
     </p>
 
 <pre>
@@ -80,7 +80,7 @@ git clone git://libvirt.org/libvirt-virshcmdref.git
     </p>
 
 <pre>
-<a href="http://libvirt.org/git/?p=libvirt-virshcmdref.git">http://libvirt.org/git/?p=libvirt-virshcmdref.git</a>
+<a href="https://libvirt.org/git/?p=libvirt-virshcmdref.git">https://libvirt.org/git/?p=libvirt-virshcmdref.git</a>
 </pre>
 
   </body>

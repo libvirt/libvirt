@@ -3,7 +3,7 @@ Description=Virtual machine lock manager
 Requires=virtlockd.socket
 Before=libvirtd.service
 Documentation=man:virtlockd(8)
-Documentation=http://libvirt.org
+Documentation=https://libvirt.org
 
 [Service]
 EnvironmentFile=-/etc/sysconfig/virtlockd
