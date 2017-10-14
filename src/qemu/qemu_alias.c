@@ -523,7 +523,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nrngs; i++) {
-        if (virAsprintf(&def->rngs[i]->info.alias, "rng%zu", i) < 0)
+        if (qemuAssignDeviceRNGAlias(def, def->rngs[i]) < 0)
             return -1;
     }
     if (def->tpm) {
