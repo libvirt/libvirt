@@ -93,6 +93,9 @@ qemuAssignDeviceChrAlias(virDomainDefPtr def,
 {
     const char *prefix = NULL;
 
+    if (chr->info.alias)
+        return 0;
+
     switch ((virDomainChrDeviceType) chr->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
         prefix = "parallel";
@@ -127,6 +130,9 @@ qemuAssignDeviceControllerAlias(virDomainDefPtr domainDef,
                                 virDomainControllerDefPtr controller)
 {
     const char *prefix = virDomainControllerTypeToString(controller->type);
+
+    if (controller->info.alias)
+        return 0;
 
     if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
         if (!virQEMUCapsHasPCIMultiBus(qemuCaps, domainDef)) {
@@ -182,6 +188,9 @@ qemuAssignDeviceDiskAlias(virDomainDefPtr def,
     const char *prefix = virDomainDiskBusTypeToString(disk->bus);
     int controllerModel = -1;
 
+    if (disk->info.alias)
+        return 0;
+
     if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
         if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
             controllerModel =
@@ -223,6 +232,9 @@ qemuAssignDeviceHostdevAlias(virDomainDefPtr def,
                              char **alias,
                              int idx)
 {
+    if (*alias)
+        return 0;
+
     if (idx == -1) {
         size_t i;
 
@@ -259,6 +271,9 @@ qemuAssignDeviceNetAlias(virDomainDefPtr def,
                          int idx)
 {
 
+    if (net->info.alias)
+        return 0;
+
     /* <interface type='hostdev'> uses "hostdevN" as the alias
      * We must use "-1" as the index because the caller doesn't know
      * that we're now looking for a unique hostdevN rather than netN
@@ -290,6 +305,9 @@ static int
 qemuAssignDeviceFSAlias(virDomainFSDefPtr fss,
                         int idx)
 {
+    if (fss->info.alias)
+        return 0;
+
     return virAsprintf(&fss->info.alias, "fs%d", idx);
 }
 
@@ -298,6 +316,9 @@ static int
 qemuAssignDeviceSoundAlias(virDomainSoundDefPtr sound,
                            int idx)
 {
+    if (sound->info.alias)
+        return 0;
+
     return virAsprintf(&sound->info.alias, "sound%d", idx);
 }
 
@@ -306,6 +327,9 @@ static int
 qemuAssignDeviceVideoAlias(virDomainVideoDefPtr video,
                            int idx)
 {
+    if (video->info.alias)
+        return 0;
+
     return virAsprintf(&video->info.alias, "video%d", idx);
 }
 
@@ -314,6 +338,9 @@ static int
 qemuAssignDeviceHubAlias(virDomainHubDefPtr hub,
                          int idx)
 {
+    if (hub->info.alias)
+        return 0;
+
     return virAsprintf(&hub->info.alias, "hub%d", idx);
 }
 
@@ -322,6 +349,9 @@ static int
 qemuAssignDeviceSmartcardAlias(virDomainSmartcardDefPtr smartcard,
                                int idx)
 {
+    if (smartcard->info.alias)
+        return 0;
+
     return virAsprintf(&smartcard->info.alias, "smartcard%d", idx);
 }
 
@@ -330,6 +360,9 @@ static int
 qemuAssingDeviceMemballoonAlias(virDomainMemballoonDefPtr memballoon,
                                 int idx)
 {
+    if (memballoon->info.alias)
+        return 0;
+
     return virAsprintf(&memballoon->info.alias, "balloon%d", idx);
 }
 
@@ -338,6 +371,9 @@ static int
 qemuAssignDeviceTPMAlias(virDomainTPMDefPtr tpm,
                          int idx)
 {
+    if (tpm->info.alias)
+        return 0;
+
     return virAsprintf(&tpm->info.alias, "tpm%d", idx);
 }
 
@@ -347,6 +383,9 @@ qemuAssignDeviceRedirdevAlias(virDomainDefPtr def,
                               virDomainRedirdevDefPtr redirdev,
                               int idx)
 {
+    if (redirdev->info.alias)
+        return 0;
+
     if (idx == -1) {
         size_t i;
         idx = 0;
@@ -375,6 +414,9 @@ qemuAssignDeviceRNGAlias(virDomainDefPtr def,
     size_t i;
     int maxidx = 0;
     int idx;
+
+    if (rng->info.alias)
+        return 0;
 
     for (i = 0; i < def->nrngs; i++) {
         if ((idx = qemuDomainDeviceAliasIndex(&def->rngs[i]->info, "rng")) >= maxidx)
@@ -410,6 +452,9 @@ qemuAssignDeviceMemoryAlias(virDomainDefPtr def,
     int idx;
     const char *prefix;
 
+    if (mem->info.alias)
+        return 0;
+
     if (mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM)
         prefix = "dimm";
     else
@@ -436,6 +481,9 @@ qemuAssignDeviceShmemAlias(virDomainDefPtr def,
                            virDomainShmemDefPtr shmem,
                            int idx)
 {
+    if (shmem->info.alias)
+        return 0;
+
     if (idx == -1) {
         size_t i;
         idx = 0;
@@ -465,6 +513,9 @@ int
 qemuAssignDeviceWatchdogAlias(virDomainWatchdogDefPtr watchdog)
 {
     /* Currently, there's just one watchdog per domain */
+
+    if (watchdog->info.alias)
+        return 0;
 
     if (VIR_STRDUP(watchdog->info.alias, "watchdog0") < 0)
         return -1;
@@ -522,8 +573,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
          * linked to a NetDef, they will share an info and the alias
          * will already be set, so don't try to set it again.
          */
-        if (!def->hostdevs[i]->info->alias &&
-            qemuAssignDeviceHostdevAlias(def, &def->hostdevs[i]->info->alias, -1) < 0)
+        if (qemuAssignDeviceHostdevAlias(def, &def->hostdevs[i]->info->alias, -1) < 0)
             return -1;
     }
     for (i = 0; i < def->nredirdevs; i++) {

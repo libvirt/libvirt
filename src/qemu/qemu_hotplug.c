@@ -4805,10 +4805,8 @@ qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
 {
     int ret = -1;
 
-    if (!detach->info->alias) {
-        if (qemuAssignDeviceHostdevAlias(vm->def, &detach->info->alias, -1) < 0)
-            return -1;
-    }
+    if (qemuAssignDeviceHostdevAlias(vm->def, &detach->info->alias, -1) < 0)
+        return -1;
 
     switch (detach->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
