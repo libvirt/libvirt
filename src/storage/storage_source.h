@@ -52,4 +52,8 @@ int virStorageFileGetMetadata(virStorageSourcePtr src,
 char *virStorageFileGetBackingStoreStr(virStorageSourcePtr src)
     ATTRIBUTE_NONNULL(1);
 
+void virStorageFileReportBrokenChain(int errcode,
+                                     virStorageSourcePtr src,
+                                     virStorageSourcePtr parent);
+
 #endif /* __VIR_STORAGE_SOURCE_H__ */
