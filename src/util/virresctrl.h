@@ -65,4 +65,53 @@ virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
                        size_t *ncontrols,
                        virResctrlInfoPerCachePtr **controls);
 
+/* Alloc-related things */
+typedef struct _virResctrlAlloc virResctrlAlloc;
+typedef virResctrlAlloc *virResctrlAllocPtr;
+
+typedef int virResctrlAllocForeachSizeCallback(unsigned int level,
+                                               virCacheType type,
+                                               unsigned int cache,
+                                               unsigned long long size,
+                                               void *opaque);
+
+virResctrlAllocPtr
+virResctrlAllocNew(void);
+
+bool
+virResctrlAllocIsEmpty(virResctrlAllocPtr resctrl);
+
+int
+virResctrlAllocSetSize(virResctrlAllocPtr resctrl,
+                       unsigned int level,
+                       virCacheType type,
+                       unsigned int cache,
+                       unsigned long long size);
+
+int
+virResctrlAllocForeachSize(virResctrlAllocPtr resctrl,
+                           virResctrlAllocForeachSizeCallback cb,
+                           void *opaque);
+
+int
+virResctrlAllocSetID(virResctrlAllocPtr alloc,
+                     const char *id);
+const char *
+virResctrlAllocGetID(virResctrlAllocPtr alloc);
+
+char *
+virResctrlAllocFormat(virResctrlAllocPtr alloc);
+
+int
+virResctrlAllocCreate(virResctrlInfoPtr r_info,
+                      virResctrlAllocPtr alloc,
+                      const char *machinename);
+
+int
+virResctrlAllocAddPID(virResctrlAllocPtr alloc,
+                      pid_t pid);
+
+int
+virResctrlAllocRemove(virResctrlAllocPtr alloc);
+
 #endif /*  __VIR_RESCTRL_H__ */
