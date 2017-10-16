@@ -44,24 +44,30 @@ virStorageFileIsInitialized(const virStorageSource *src)
 }
 
 
+static virStorageFileBackendPtr
+virStorageFileGetBackendForSupportCheck(const virStorageSource *src)
+{
+    int actualType;
+
+    if (!src)
+        return NULL;
+
+    if (src->drv)
+        return src->drv->backend;
+
+    actualType = virStorageSourceGetActualType(src);
+
+    return virStorageFileBackendForTypeInternal(actualType, src->protocol, false);
+}
+
+
 static bool
 virStorageFileSupportsBackingChainTraversal(virStorageSourcePtr src)
 {
-    int actualType;
     virStorageFileBackendPtr backend;
 
-    if (!src)
+    if (!(backend = virStorageFileGetBackendForSupportCheck(src)))
         return false;
-    actualType = virStorageSourceGetActualType(src);
-
-    if (src->drv) {
-        backend = src->drv->backend;
-    } else {
-        if (!(backend = virStorageFileBackendForTypeInternal(actualType,
-                                                             src->protocol,
-                                                             false)))
-            return false;
-    }
 
     return backend->storageFileGetUniqueIdentifier &&
            backend->storageFileRead &&
@@ -80,21 +86,10 @@ virStorageFileSupportsBackingChainTraversal(virStorageSourcePtr src)
 bool
 virStorageFileSupportsSecurityDriver(const virStorageSource *src)
 {
-    int actualType;
     virStorageFileBackendPtr backend;
 
-    if (!src)
+    if (!(backend = virStorageFileGetBackendForSupportCheck(src)))
         return false;
-    actualType = virStorageSourceGetActualType(src);
-
-    if (src->drv) {
-        backend = src->drv->backend;
-    } else {
-        if (!(backend = virStorageFileBackendForTypeInternal(actualType,
-                                                             src->protocol,
-                                                             false)))
-            return false;
-    }
 
     return !!backend->storageFileChown;
 }
