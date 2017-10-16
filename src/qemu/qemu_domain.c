@@ -5931,6 +5931,7 @@ static void
 qemuDomainGetImageIds(virQEMUDriverConfigPtr cfg,
                       virDomainObjPtr vm,
                       virStorageSourcePtr src,
+                      virStorageSourcePtr parentSrc,
                       uid_t *uid, gid_t *gid)
 {
     virSecurityLabelDefPtr vmlabel;
@@ -5953,6 +5954,11 @@ qemuDomainGetImageIds(virQEMUDriverConfigPtr cfg,
         vmlabel->label)
         virParseOwnershipIds(vmlabel->label, uid, gid);
 
+    if (parentSrc &&
+        (disklabel = virStorageSourceGetSecurityLabelDef(parentSrc, "dac")) &&
+        disklabel->label)
+        virParseOwnershipIds(disklabel->label, uid, gid);
+
     if ((disklabel = virStorageSourceGetSecurityLabelDef(src, "dac")) &&
         disklabel->label)
         virParseOwnershipIds(disklabel->label, uid, gid);
@@ -5962,14 +5968,15 @@ qemuDomainGetImageIds(virQEMUDriverConfigPtr cfg,
 int
 qemuDomainStorageFileInit(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
-                          virStorageSourcePtr src)
+                          virStorageSourcePtr src,
+                          virStorageSourcePtr parent)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     uid_t uid;
     gid_t gid;
     int ret = -1;
 
-    qemuDomainGetImageIds(cfg, vm, src, &uid, &gid);
+    qemuDomainGetImageIds(cfg, vm, src, parent, &uid, &gid);
 
     if (virStorageFileInitAs(src, uid, gid) < 0)
         goto cleanup;
@@ -6019,7 +6026,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    qemuDomainGetImageIds(cfg, vm, disk->src, &uid, &gid);
+    qemuDomainGetImageIds(cfg, vm, disk->src, NULL, &uid, &gid);
 
     if (virStorageFileGetMetadata(disk->src,
                                   uid, gid,

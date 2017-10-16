@@ -679,7 +679,8 @@ bool qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
 
 int qemuDomainStorageFileInit(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              virStorageSourcePtr src);
+                              virStorageSourcePtr src,
+                              virStorageSourcePtr parent);
 char *qemuDomainStorageAlias(const char *device, int depth);
 
 void qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
