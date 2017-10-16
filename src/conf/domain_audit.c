@@ -868,6 +868,9 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     for (i = 0; i < vm->def->nshmems; i++)
         virDomainAuditShmem(vm, vm->def->shmems[i], "start", true);
 
+    for (i = 0; i < vm->def->ninputs; i++)
+        virDomainAuditInput(vm, vm->def->inputs[i], "start", true);
+
     virDomainAuditMemory(vm, 0, virDomainDefGetMemoryTotal(vm->def),
                          "start", true);
     virDomainAuditVcpu(vm, 0, virDomainDefGetVcpus(vm->def), "start", true);
@@ -982,4 +985,45 @@ virDomainAuditShmem(virDomainObjPtr vm,
     VIR_FREE(vmname);
     VIR_FREE(shmpath);
     return;
+}
+
+
+void
+virDomainAuditInput(virDomainObjPtr vm,
+                    virDomainInputDefPtr input,
+                    const char *reason,
+                    bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname;
+    const char *virt = virDomainVirtTypeToString(vm->def->virtType);
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+
+    if (!(vmname = virAuditEncode("vm", vm->def->name)))
+        goto no_memory;
+
+    switch ((virDomainInputType) input->type) {
+    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+    case VIR_DOMAIN_INPUT_TYPE_KBD:
+        break;
+
+    case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+        VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+                  "virt=%s resrc=evdev reason=%s %s uuid=%s path=%s",
+                  virt, reason, vmname, uuidstr, VIR_AUDIT_STR(input->source.evdev));
+        break;
+
+    case VIR_DOMAIN_INPUT_TYPE_LAST:
+        break;
+    }
+
+ cleanup:
+    VIR_FREE(vmname);
+    return;
+
+ no_memory:
+    VIR_WARN("OOM while encoding audit message");
+    goto cleanup;
 }

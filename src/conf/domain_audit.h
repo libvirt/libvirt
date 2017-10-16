@@ -133,6 +133,11 @@ void virDomainAuditShmem(virDomainObjPtr vm,
                          virDomainShmemDefPtr def,
                          const char *reason, bool success)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+void virDomainAuditInput(virDomainObjPtr vm,
+                         virDomainInputDefPtr input,
+                         const char *reason,
+                         bool success)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 
 #endif /* __VIR_DOMAIN_AUDIT_H__ */
