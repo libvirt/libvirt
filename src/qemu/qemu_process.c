@@ -1730,12 +1730,31 @@ qemuProcessMonitorLogFree(void *opaque)
     virObjectUnref(logCtxt);
 }
 
+
+static int
+qemuProcessInitMonitor(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       qemuDomainAsyncJob asyncJob)
+{
+    int ret;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    ret = qemuMonitorSetCapabilities(QEMU_DOMAIN_PRIVATE(vm)->mon);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+    return ret;
+}
+
+
 static int
 qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
                    qemuDomainLogContextPtr logCtxt)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret = -1;
     qemuMonitorPtr mon = NULL;
     unsigned long long timeout = 0;
 
@@ -1794,12 +1813,11 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
         return -1;
     }
 
+    if (qemuProcessInitMonitor(driver, vm, asyncJob) < 0)
+        return -1;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
-
-    if (qemuMonitorSetCapabilities(priv->mon) < 0)
-        goto cleanup;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT) &&
         qemuMonitorSetMigrationCapability(priv->mon,
@@ -1809,12 +1827,10 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
         virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     }
 
-    ret = 0;
-
- cleanup:
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-    return ret;
+        return -1;
+
+    return 0;
 }
 
 
