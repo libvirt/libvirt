@@ -56,7 +56,6 @@ VIR_LOG_INIT("node_device.node_device_udev");
 struct _udevPrivate {
     struct udev_monitor *udev_monitor;
     int watch;
-    bool privileged;
 };
 
 
@@ -447,9 +446,13 @@ udevProcessPCI(struct udev_device *device,
     virNodeDevCapPCIDevPtr pci_dev = &def->caps->data.pci_dev;
     virPCIEDeviceInfoPtr pci_express = NULL;
     virPCIDevicePtr pciDev = NULL;
-    udevPrivate *priv = driver->privateData;
     int ret = -1;
     char *p;
+    bool privileged;
+
+    nodeDeviceLock();
+    privileged = driver->privileged;
+    nodeDeviceUnlock();
 
     if (udevGetUintProperty(device, "PCI_CLASS", &pci_dev->class, 16) < 0)
         goto cleanup;
@@ -498,7 +501,7 @@ udevProcessPCI(struct udev_device *device,
         goto cleanup;
 
     /* We need to be root to read PCI device configs */
-    if (priv->privileged) {
+    if (privileged) {
         if (virPCIGetHeaderType(pciDev, &pci_dev->hdrType) < 0)
             goto cleanup;
 
@@ -1787,7 +1790,6 @@ nodeStateInitialize(bool privileged,
         return -1;
 
     priv->watch = -1;
-    priv->privileged = privileged;
 
     if (VIR_ALLOC(driver) < 0) {
         VIR_FREE(priv);
@@ -1802,6 +1804,7 @@ nodeStateInitialize(bool privileged,
         return -1;
     }
 
+    driver->privileged = privileged;
     driver->privateData = priv;
     nodeDeviceLock();
 

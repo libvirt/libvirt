@@ -40,6 +40,7 @@ struct _virNodeDeviceDriverState {
 
     virNodeDeviceObjListPtr devs;       /* currently-known devices */
     void *privateData;                  /* driver-specific private data */
+    bool privileged;                    /* whether we run in privileged mode */
 
     /* Immutable pointer, self-locking APIs */
     virObjectEventStatePtr nodeDeviceEventState;
