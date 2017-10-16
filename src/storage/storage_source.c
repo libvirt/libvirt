@@ -95,6 +95,26 @@ virStorageFileSupportsSecurityDriver(const virStorageSource *src)
 }
 
 
+/**
+ * virStorageFileSupportsAccess:
+ *
+ * @src: a storage file structure
+ *
+ * Check if a storage file supports checking if the storage source is accessible
+ * for the given vm.
+ */
+bool
+virStorageFileSupportsAccess(const virStorageSource *src)
+{
+    virStorageFileBackendPtr backend;
+
+    if (!(backend = virStorageFileGetBackendForSupportCheck(src)))
+        return false;
+
+    return !!backend->storageFileAccess;
+}
+
+
 void
 virStorageFileDeinit(virStorageSourcePtr src)
 {
