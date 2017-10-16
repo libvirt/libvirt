@@ -468,17 +468,6 @@ qemuMonitorJSONMakeCommandRaw(bool wrap, const char *cmdname, ...)
 #define qemuMonitorJSONMakeCommand(cmdname, ...) \
     qemuMonitorJSONMakeCommandRaw(false, cmdname, __VA_ARGS__)
 
-static void
-qemuFreeKeywords(int nkeywords, char **keywords, char **values)
-{
-    size_t i;
-    for (i = 0; i < nkeywords; i++) {
-        VIR_FREE(keywords[i]);
-        VIR_FREE(values[i]);
-    }
-    VIR_FREE(keywords);
-    VIR_FREE(values);
-}
 
 static virJSONValuePtr
 qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
@@ -513,11 +502,11 @@ qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
         }
     }
 
-    qemuFreeKeywords(nkeywords, keywords, values);
+    qemuParseKeywordsFree(nkeywords, keywords, values);
     return ret;
 
  error:
-    qemuFreeKeywords(nkeywords, keywords, values);
+    qemuParseKeywordsFree(nkeywords, keywords, values);
     virJSONValueFree(ret);
     return NULL;
 }

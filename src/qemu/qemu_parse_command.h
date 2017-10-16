@@ -43,6 +43,11 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
                                         virDomainChrSourceDefPtr *monConfig,
                                         bool *monJSON);
 
+void
+qemuParseKeywordsFree(int nkeywords,
+                     char **keywords,
+                     char **values);
+
 int
 qemuParseKeywords(const char *str,
                   char ***retkeywords,
