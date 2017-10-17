@@ -28,7 +28,6 @@
           <td>libvirt</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/">ftp</a>
-            <a href="https://libvirt.org/sources/">http</a>
             <a href="https://libvirt.org/sources/">https</a>
           </td>
           <td>
@@ -50,7 +49,6 @@
           <td>C#</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/csharp/">ftp</a>
-            <a href="https://libvirt.org/sources/csharp/">http</a>
             <a href="https://libvirt.org/sources/csharp/">https</a>
           </td>
           <td>
@@ -66,7 +64,6 @@
           <td>Go</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/go/">ftp</a>
-            <a href="https://libvirt.org/sources/go/">http</a>
             <a href="https://libvirt.org/sources/go/">https</a>
           </td>
           <td>
@@ -84,7 +81,6 @@
           <td>Java</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/java/">ftp</a>
-            <a href="https://libvirt.org/sources/java/">http</a>
             <a href="https://libvirt.org/sources/java/">https</a>
           </td>
           <td>
@@ -100,7 +96,6 @@
           <td>OCaml</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/ocaml/">ftp</a>
-            <a href="https://libvirt.org/sources/ocaml/">http</a>
             <a href="https://libvirt.org/sources/ocaml/">https</a>
           </td>
           <td>
@@ -133,7 +128,6 @@
           <td>PHP</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/php/">ftp</a>
-            <a href="https://libvirt.org/sources/php/">http</a>
             <a href="https://libvirt.org/sources/php/">https</a>
           </td>
           <td>
@@ -149,7 +143,6 @@
           <td>Python</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/python/">ftp</a>
-            <a href="https://libvirt.org/sources/python/">http</a>
             <a href="https://libvirt.org/sources/python/">https</a>
             <a href="https://pypi.python.org/pypi/libvirt-python">pypi</a>
           </td>
@@ -166,7 +159,6 @@
           <td>Ruby</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/ruby/">ftp</a>
-            <a href="https://libvirt.org/sources/ruby/">http</a>
             <a href="https://libvirt.org/sources/ruby/">https</a>
           </td>
           <td>
@@ -182,7 +174,6 @@
           <td>Rust</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/rust/">ftp</a>
-            <a href="https://libvirt.org/sources/rust/">http</a>
             <a href="https://libvirt.org/sources/rust/">https</a>
           </td>
           <td>
@@ -201,7 +192,6 @@
           <td>GLib / GConfig / GObject</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/glib/">ftp</a>
-            <a href="https://libvirt.org/sources/glib/">http</a>
             <a href="https://libvirt.org/sources/glib/">https</a>
           </td>
           <td>
@@ -217,7 +207,6 @@
           <td>Go XML</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/go/">ftp</a>
-            <a href="https://libvirt.org/sources/go/">http</a>
             <a href="https://libvirt.org/sources/go/">https</a>
           </td>
           <td>
@@ -235,7 +224,6 @@
           <td>Console Proxy</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/consoleproxy/">ftp</a>
-            <a href="https://libvirt.org/sources/consoleproxy/">http</a>
             <a href="https://libvirt.org/sources/consoleproxy/">https</a>
           </td>
           <td>
@@ -251,7 +239,6 @@
           <td>CIM provider</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/CIM/">ftp</a>
-            <a href="https://libvirt.org/sources/CIM/">http</a>
             <a href="https://libvirt.org/sources/CIM/">https</a>
           </td>
           <td>
@@ -267,7 +254,6 @@
           <td>CIM utils</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/CIM/">ftp</a>
-            <a href="https://libvirt.org/sources/CIM/">http</a>
             <a href="https://libvirt.org/sources/CIM/">https</a>
           </td>
           <td>
@@ -283,7 +269,6 @@
           <td>SNMP</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/snmp/">ftp</a>
-            <a href="https://libvirt.org/sources/snmp/">http</a>
             <a href="https://libvirt.org/sources/snmp/">https</a>
           </td>
           <td>
@@ -299,7 +284,6 @@
           <td>Application Sandbox</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/sandbox/">ftp</a>
-            <a href="https://libvirt.org/sources/sandbox/">http</a>
             <a href="https://libvirt.org/sources/sandbox/">https</a>
           </td>
           <td>
@@ -318,7 +302,6 @@
           <td>TCK</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/tck/">ftp</a>
-            <a href="https://libvirt.org/sources/tck/">http</a>
             <a href="https://libvirt.org/sources/tck/">https</a>
           </td>
           <td>
