@@ -134,7 +134,7 @@ vzBuildCapabilities(void)
         goto error;
 
     if (!(caps->host.cpu = virCPUGetHost(caps->host.arch, VIR_CPU_TYPE_HOST,
-                                         &nodeinfo, NULL, 0)))
+                                         &nodeinfo, NULL)))
         goto error;
 
     if (virCapabilitiesAddHostMigrateTransport(caps, "vzmigr") < 0)
@@ -957,7 +957,7 @@ vzConnectBaselineCPU(virConnectPtr conn,
     if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_HOST)))
         goto cleanup;
 
-    if (!(cpu = cpuBaseline(cpus, ncpus, NULL, 0, false)))
+    if (!(cpu = cpuBaseline(cpus, ncpus, NULL, false)))
         goto cleanup;
 
     if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
