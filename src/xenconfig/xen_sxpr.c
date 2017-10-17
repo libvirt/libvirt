@@ -70,11 +70,6 @@ int xenGetDomIdFromSxpr(const struct sexpr *root, int *id)
     return 0;
 }
 
-/*****************************************************************
- ******
- ****** Parsing of S-Expression into virDomainDef objects
- ******
- *****************************************************************/
 
 /**
  * xenParseSxprOS:

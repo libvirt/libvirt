@@ -50,12 +50,6 @@ struct virParserData {
 };
 
 
-/************************************************************************
- *									*
- * Wrappers around libxml2 XPath specific functions			*
- *									*
- ************************************************************************/
-
 /**
  * virXPathString:
  * @xpath: the XPath string to evaluate

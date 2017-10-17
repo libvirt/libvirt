@@ -59,11 +59,6 @@ VIR_LOG_INIT("xen.xs_internal");
 static void xenStoreWatchEvent(int watch, int fd, int events, void *data);
 static void xenStoreWatchListFree(xenStoreWatchListPtr list);
 
-/************************************************************************
- *									*
- *		Helper internal APIs					*
- *									*
- ************************************************************************/
 
 /**
  * virDomainDoStoreQuery:
@@ -91,11 +86,6 @@ virDomainDoStoreQuery(virConnectPtr conn, int domid, const char *path)
     return xs_read(priv->xshandle, 0, &s[0], &len);
 }
 
-/************************************************************************
- *									*
- *		Canonical internal APIs					*
- *									*
- ************************************************************************/
 /**
  * xenStoreOpen:
  * @conn: pointer to the connection block

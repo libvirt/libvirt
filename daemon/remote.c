@@ -3750,10 +3750,6 @@ remoteDispatchAuthPolkit(virNetServerPtr server,
 }
 
 
-/***************************************************************
- *     NODE INFO APIS
- **************************************************************/
-
 static int
 remoteDispatchNodeDeviceGetParent(virNetServerPtr server ATTRIBUTE_UNUSED,
                                   virNetServerClientPtr client ATTRIBUTE_UNUSED,
@@ -3864,9 +3860,6 @@ remoteDispatchConnectUnregisterCloseCallback(virNetServerPtr server ATTRIBUTE_UN
     return rv;
 }
 
-/***************************
- * Register / deregister events
- ***************************/
 static int
 remoteDispatchConnectDomainEventRegister(virNetServerPtr server ATTRIBUTE_UNUSED,
                                          virNetServerClientPtr client,

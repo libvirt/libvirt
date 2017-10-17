@@ -44,12 +44,6 @@
 
 VIR_LOG_INIT("util.conf");
 
-/************************************************************************
- *									*
- *	Structures and macros used by the mini parser			*
- *									*
- ************************************************************************/
-
 typedef struct _virConfParserCtxt virConfParserCtxt;
 typedef virConfParserCtxt *virConfParserCtxtPtr;
 
@@ -74,12 +68,6 @@ struct _virConfParserCtxt {
 #define SKIP_BLANKS                                                     \
   do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR)))              \
           ctxt->cur++; } while (0)
-
-/************************************************************************
- *									*
- *		Structures used by configuration data			*
- *									*
- ************************************************************************/
 
 VIR_ENUM_IMPL(virConf, VIR_CONF_LAST,
               "*unexpected*",
@@ -132,12 +120,6 @@ virConfErrorHelper(const char *file, const char *func, size_t line,
     }
 }
 
-
-/************************************************************************
- *									*
- *		Structures allocations and deallocations		*
- *									*
- ************************************************************************/
 
 /**
  * virConfFreeList:
@@ -260,11 +242,6 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
     return ret;
 }
 
-/************************************************************************
- *									*
- *			Serialization					*
- *									*
- ************************************************************************/
 
 /**
  * virConfSaveValue:
@@ -353,11 +330,6 @@ virConfSaveEntry(virBufferPtr buf, virConfEntryPtr cur)
     return 0;
 }
 
-/************************************************************************
- *									*
- *			The parser core					*
- *									*
- ************************************************************************/
 
 /**
  * virConfParseLong:
@@ -754,11 +726,6 @@ virConfParse(const char *filename, const char *content, int len,
     return NULL;
 }
 
-/************************************************************************
- *									*
- *			The module entry points				*
- *									*
- ************************************************************************/
 
 /* 10 MB limit on config file size as a sanity check */
 #define MAX_CONFIG_FILE_SIZE (1024*1024*10)

@@ -1122,17 +1122,6 @@ sexpr_to_domain(virConnectPtr conn ATTRIBUTE_UNUSED, const struct sexpr *root)
 }
 
 
-/*****************************************************************
- ******
- ******
- ******
- ******
-             Refactored
- ******
- ******
- ******
- ******
- *****************************************************************/
 /**
  * xenDaemonOpen:
  * @conn: an existing virtual connection block

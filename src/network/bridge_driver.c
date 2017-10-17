@@ -4286,8 +4286,6 @@ networkRegister(void)
 }
 
 
-/********************************************************/
-
 /* A unified function to log network connections and disconnections */
 
 static void
