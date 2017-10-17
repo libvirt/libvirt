@@ -1592,7 +1592,7 @@ static int
 virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
                                         virDomainDefPtr def,
                                         virStorageSourcePtr src,
-                                        bool first)
+                                        virStorageSourcePtr parent)
 {
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr secdef;
@@ -1614,7 +1614,7 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
 
     if (disk_seclabel && disk_seclabel->relabel && disk_seclabel->label) {
         ret = virSecuritySELinuxSetFilecon(mgr, src->path, disk_seclabel->label);
-    } else if (first) {
+    } else if (!parent || parent == src) {
         if (src->shared) {
             ret = virSecuritySELinuxSetFileconOptional(mgr,
                                                        src->path,
@@ -1660,7 +1660,7 @@ virSecuritySELinuxSetImageLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr def,
                                 virStorageSourcePtr src)
 {
-    return virSecuritySELinuxSetImageLabelInternal(mgr, def, src, true);
+    return virSecuritySELinuxSetImageLabelInternal(mgr, def, src, NULL);
 }
 
 
@@ -1670,14 +1670,11 @@ virSecuritySELinuxSetDiskLabel(virSecurityManagerPtr mgr,
                                virDomainDiskDefPtr disk)
 
 {
-    bool first = true;
     virStorageSourcePtr next;
 
     for (next = disk->src; virStorageSourceIsBacking(next); next = next->backingStore) {
-        if (virSecuritySELinuxSetImageLabelInternal(mgr, def, next, first) < 0)
+        if (virSecuritySELinuxSetImageLabelInternal(mgr, def, next, disk->src) < 0)
             return -1;
-
-        first = false;
     }
 
     return 0;
