@@ -1816,18 +1816,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
     if (qemuProcessInitMonitor(driver, vm, asyncJob) < 0)
         return -1;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        return -1;
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT) &&
-        qemuMonitorSetMigrationCapability(priv->mon,
-                                          QEMU_MONITOR_MIGRATION_CAPS_EVENTS,
-                                          true) < 0) {
-        VIR_DEBUG("Cannot enable migration events; clearing capability");
-        virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
-    }
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+    if (qemuDomainCheckMigrationCapabilities(driver, vm, asyncJob) < 0)
         return -1;
 
     return 0;
