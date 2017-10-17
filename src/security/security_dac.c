@@ -688,12 +688,14 @@ virSecurityDACRestoreFileLabel(virSecurityDACDataPtr priv,
 
 
 static int
-virSecurityDACSetImageLabel(virSecurityManagerPtr mgr,
-                            virDomainDefPtr def,
-                            virStorageSourcePtr src)
+virSecurityDACSetImageLabelInternal(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr def,
+                                    virStorageSourcePtr src,
+                                    virStorageSourcePtr parent)
 {
     virSecurityLabelDefPtr secdef;
     virSecurityDeviceLabelDefPtr disk_seclabel;
+    virSecurityDeviceLabelDefPtr parent_seclabel = NULL;
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     uid_t user;
     gid_t group;
@@ -705,13 +707,23 @@ virSecurityDACSetImageLabel(virSecurityManagerPtr mgr,
     if (secdef && !secdef->relabel)
         return 0;
 
-    disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
-                                                        SECURITY_DAC_NAME);
-    if (disk_seclabel && !disk_seclabel->relabel)
-        return 0;
+    disk_seclabel = virStorageSourceGetSecurityLabelDef(src, SECURITY_DAC_NAME);
+    if (parent)
+        parent_seclabel = virStorageSourceGetSecurityLabelDef(parent,
+                                                              SECURITY_DAC_NAME);
 
-    if (disk_seclabel && disk_seclabel->label) {
+    if (disk_seclabel && (!disk_seclabel->relabel || disk_seclabel->label)) {
+        if (!disk_seclabel->relabel)
+            return 0;
+
         if (virParseOwnershipIds(disk_seclabel->label, &user, &group) < 0)
+            return -1;
+    } else if (parent_seclabel &&
+               (!parent_seclabel->relabel || parent_seclabel->label)) {
+        if (!parent_seclabel->relabel)
+            return 0;
+
+        if (virParseOwnershipIds(parent_seclabel->label, &user, &group) < 0)
             return -1;
     } else {
         if (virSecurityDACGetImageIds(secdef, priv, &user, &group))
@@ -723,6 +735,14 @@ virSecurityDACSetImageLabel(virSecurityManagerPtr mgr,
 
 
 static int
+virSecurityDACSetImageLabel(virSecurityManagerPtr mgr,
+                            virDomainDefPtr def,
+                            virStorageSourcePtr src)
+{
+    return virSecurityDACSetImageLabelInternal(mgr, def, src, NULL);
+}
+
+static int
 virSecurityDACSetDiskLabel(virSecurityManagerPtr mgr,
                            virDomainDefPtr def,
                            virDomainDiskDefPtr disk)
@@ -731,7 +751,7 @@ virSecurityDACSetDiskLabel(virSecurityManagerPtr mgr,
     virStorageSourcePtr next;
 
     for (next = disk->src; virStorageSourceIsBacking(next); next = next->backingStore) {
-        if (virSecurityDACSetImageLabel(mgr, def, next) < 0)
+        if (virSecurityDACSetImageLabelInternal(mgr, def, next, disk->src) < 0)
             return -1;
     }
 
