@@ -62,6 +62,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = NULL;
+    const unsigned int parseFlags = 0;
 
     if (!(*vm = virDomainObjNew(xmlopt)))
         goto cleanup;
@@ -87,7 +88,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
                                                driver.caps,
                                                driver.xmlopt,
                                                NULL,
-                                               VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                               parseFlags)))
         goto cleanup;
 
     if (qemuDomainAssignAddresses((*vm)->def, priv->qemuCaps,
