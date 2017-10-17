@@ -714,8 +714,6 @@ VIR_ENUM_DECL(qemuMonitorMigrationCaps);
 
 int qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
                                         char ***capabilities);
-int qemuMonitorGetMigrationCapability(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationCaps capability);
 int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
                                       qemuMonitorMigrationCaps capability,
                                       bool state);

@@ -3938,25 +3938,6 @@ qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
 }
 
 
-/**
- * Returns 1 if @capability is supported, 0 if it's not, or -1 on error.
- */
-int
-qemuMonitorGetMigrationCapability(qemuMonitorPtr mon,
-                                  qemuMonitorMigrationCaps capability)
-{
-    VIR_DEBUG("capability=%d", capability);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    /* No capability is supported without JSON monitor */
-    if (!mon->json)
-        return 0;
-
-    return qemuMonitorJSONGetMigrationCapability(mon, capability);
-}
-
-
 int
 qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
                                   qemuMonitorMigrationCaps capability,

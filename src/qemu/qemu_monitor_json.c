@@ -6069,24 +6069,6 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationCaps capability)
-{
-    int ret;
-    char **capsList = NULL;
-    const char *cap = qemuMonitorMigrationCapsTypeToString(capability);
-
-    if (qemuMonitorJSONGetMigrationCapabilities(mon, &capsList) < 0)
-        return -1;
-
-    ret = virStringListHasString((const char **) capsList, cap);
-
-    virStringListFree(capsList);
-    return ret;
-}
-
-
-int
 qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
                                       qemuMonitorMigrationCaps capability,
                                       bool state)

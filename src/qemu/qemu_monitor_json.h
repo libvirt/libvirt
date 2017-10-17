@@ -146,8 +146,6 @@ int qemuMonitorJSONGetMigrationStats(qemuMonitorPtr mon,
 
 int qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
                                             char ***capabilities);
-int qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
-                                          qemuMonitorMigrationCaps capability);
 int qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
                                           qemuMonitorMigrationCaps capability,
                                           bool state);
