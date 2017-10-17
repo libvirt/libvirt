@@ -1531,18 +1531,31 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
         return 0;
 
  error:
-    /* state can not be active or completed at this point */
-    if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_MIGRATING ||
-        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
+    switch (jobInfo->status) {
+    case QEMU_DOMAIN_JOB_STATUS_MIGRATING:
+    case QEMU_DOMAIN_JOB_STATUS_POSTCOPY:
         /* The migration was aborted by us rather than QEMU itself. */
         jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
         return -2;
-    } else if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED) {
+
+    case QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED:
+        /* Something failed after QEMU already finished the migration. */
         jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
         return -1;
-    } else {
+
+    case QEMU_DOMAIN_JOB_STATUS_FAILED:
+    case QEMU_DOMAIN_JOB_STATUS_CANCELED:
+        /* QEMU aborted the migration. */
         return -1;
+
+    case QEMU_DOMAIN_JOB_STATUS_ACTIVE:
+    case QEMU_DOMAIN_JOB_STATUS_COMPLETED:
+    case QEMU_DOMAIN_JOB_STATUS_NONE:
+        /* Impossible. */
+        break;
     }
+
+    return -1;
 }
 
 
