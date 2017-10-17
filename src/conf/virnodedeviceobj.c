@@ -36,7 +36,7 @@ VIR_LOG_INIT("conf.virnodedeviceobj");
 struct _virNodeDeviceObj {
     virObjectLockable parent;
 
-    virNodeDeviceDefPtr def;		/* device definition */
+    virNodeDeviceDefPtr def;            /* device definition */
 };
 
 struct _virNodeDeviceObjList {

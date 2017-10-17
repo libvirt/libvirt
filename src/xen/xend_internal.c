@@ -1888,13 +1888,13 @@ xenDaemonDomainGetVcpusFlags(virConnectPtr conn,
  * @info: pointer to an array of virVcpuInfo structures (OUT)
  * @maxinfo: number of structures in info array
  * @cpumaps: pointer to a bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT)
- *	If cpumaps is NULL, then no cpumap information is returned by the API.
- *	It's assumed there is <maxinfo> cpumap in cpumaps array.
- *	The memory allocated to cpumaps must be (maxinfo * maplen) bytes
- *	(ie: calloc(maxinfo, maplen)).
- *	One cpumap inside cpumaps has the format described in virDomainPinVcpu() API.
+ *      If cpumaps is NULL, then no cpumap information is returned by the API.
+ *      It's assumed there is <maxinfo> cpumap in cpumaps array.
+ *      The memory allocated to cpumaps must be (maxinfo * maplen) bytes
+ *      (ie: calloc(maxinfo, maplen)).
+ *      One cpumap inside cpumaps has the format described in virDomainPinVcpu() API.
  * @maplen: number of bytes in one cpumap, from 1 up to size of CPU map in
- *	underlying virtualization system (Xen...).
+ *      underlying virtualization system (Xen...).
  *
  * Extract information about virtual CPUs of domain, store it in info array
  * and also in cpumaps if this pointer isn't NULL.

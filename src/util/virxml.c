@@ -704,7 +704,7 @@ catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
 
     const xmlChar *cur, *base;
-    unsigned int n, col;	/* GCC warns if signed, because compared with sizeof() */
+    unsigned int n, col;        /* GCC warns if signed, because compared with sizeof() */
     int domcode = VIR_FROM_XML;
 
     virBuffer buf = VIR_BUFFER_INITIALIZER;

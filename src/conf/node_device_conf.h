@@ -51,17 +51,17 @@ VIR_ENUM_DECL(virNodeDevDevnode)
 
 typedef enum {
     /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
-    VIR_NODE_DEV_CAP_SYSTEM,		/* System capability */
-    VIR_NODE_DEV_CAP_PCI_DEV,		/* PCI device */
-    VIR_NODE_DEV_CAP_USB_DEV,		/* USB device */
-    VIR_NODE_DEV_CAP_USB_INTERFACE,	/* USB interface */
-    VIR_NODE_DEV_CAP_NET,		/* Network device */
-    VIR_NODE_DEV_CAP_SCSI_HOST,		/* SCSI Host Bus Adapter */
-    VIR_NODE_DEV_CAP_SCSI_TARGET,	/* SCSI Target */
-    VIR_NODE_DEV_CAP_SCSI,		/* SCSI device */
-    VIR_NODE_DEV_CAP_STORAGE,		/* Storage device */
-    VIR_NODE_DEV_CAP_FC_HOST,		/* FC Host Bus Adapter */
-    VIR_NODE_DEV_CAP_VPORTS,		/* HBA which is capable of vports */
+    VIR_NODE_DEV_CAP_SYSTEM,            /* System capability */
+    VIR_NODE_DEV_CAP_PCI_DEV,           /* PCI device */
+    VIR_NODE_DEV_CAP_USB_DEV,           /* USB device */
+    VIR_NODE_DEV_CAP_USB_INTERFACE,     /* USB interface */
+    VIR_NODE_DEV_CAP_NET,               /* Network device */
+    VIR_NODE_DEV_CAP_SCSI_HOST,         /* SCSI Host Bus Adapter */
+    VIR_NODE_DEV_CAP_SCSI_TARGET,       /* SCSI Target */
+    VIR_NODE_DEV_CAP_SCSI,              /* SCSI device */
+    VIR_NODE_DEV_CAP_STORAGE,           /* Storage device */
+    VIR_NODE_DEV_CAP_FC_HOST,           /* FC Host Bus Adapter */
+    VIR_NODE_DEV_CAP_VPORTS,            /* HBA which is capable of vports */
     VIR_NODE_DEV_CAP_SCSI_GENERIC,      /* SCSI generic device */
     VIR_NODE_DEV_CAP_DRM,               /* DRM device */
     VIR_NODE_DEV_CAP_MDEV_TYPES,        /* Device capable of mediated devices */
@@ -73,8 +73,8 @@ typedef enum {
 
 typedef enum {
     /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
-    VIR_NODE_DEV_CAP_NET_80203,		/* 802.03 network device */
-    VIR_NODE_DEV_CAP_NET_80211,		/* 802.11 network device */
+    VIR_NODE_DEV_CAP_NET_80203,         /* 802.03 network device */
+    VIR_NODE_DEV_CAP_NET_80211,         /* 802.11 network device */
     VIR_NODE_DEV_CAP_NET_LAST
 } virNodeDevNetCapType;
 
@@ -82,18 +82,18 @@ VIR_ENUM_DECL(virNodeDevCap)
 VIR_ENUM_DECL(virNodeDevNetCap)
 
 typedef enum {
-    VIR_NODE_DEV_CAP_STORAGE_REMOVABLE			= (1 << 0),
-    VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE	= (1 << 1),
-    VIR_NODE_DEV_CAP_STORAGE_HOTPLUGGABLE		= (1 << 2),
+    VIR_NODE_DEV_CAP_STORAGE_REMOVABLE                  = (1 << 0),
+    VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE  = (1 << 1),
+    VIR_NODE_DEV_CAP_STORAGE_HOTPLUGGABLE               = (1 << 2),
 } virNodeDevStorageCapFlags;
 
 typedef enum {
-    VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST			= (1 << 0),
-    VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS			= (1 << 1),
+    VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST                   = (1 << 0),
+    VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS                 = (1 << 1),
 } virNodeDevSCSIHostCapFlags;
 
 typedef enum {
-    VIR_NODE_DEV_CAP_FLAG_FC_RPORT			= (1 << 0),
+    VIR_NODE_DEV_CAP_FLAG_FC_RPORT                      = (1 << 0),
 } virNodeDevSCSITargetCapsFlags;
 
 typedef enum {
@@ -197,7 +197,7 @@ typedef struct _virNodeDevCapUSBIf virNodeDevCapUSBIf;
 typedef virNodeDevCapUSBIf *virNodeDevCapUSBIfPtr;
 struct _virNodeDevCapUSBIf {
     unsigned int number;
-    unsigned int _class;		/* "class" is reserved in C */
+    unsigned int _class;                /* "class" is reserved in C */
     unsigned int subclass;
     unsigned int protocol;
     char *description;
@@ -260,7 +260,7 @@ struct _virNodeDevCapStorage {
     char *vendor;
     char *serial;
     char *media_label;
-    unsigned int flags;	/* virNodeDevStorageCapFlags bits */
+    unsigned int flags; /* virNodeDevStorageCapFlags bits */
 };
 
 typedef struct _virNodeDevCapSCSIGeneric virNodeDevCapSCSIGeneric;
@@ -317,15 +317,15 @@ typedef virNodeDeviceDef *virNodeDeviceDefPtr;
 struct _virNodeDeviceDef {
     char *name;                         /* device name (unique on node) */
     char *sysfs_path;                   /* udev name/sysfs path */
-    char *parent;			/* optional parent device name */
+    char *parent;                       /* optional parent device name */
     char *parent_sysfs_path;            /* udev parent name/sysfs path */
-    char *parent_wwnn;			/* optional parent wwnn */
-    char *parent_wwpn;			/* optional parent wwpn */
-    char *parent_fabric_wwn;		/* optional parent fabric_wwn */
+    char *parent_wwnn;                  /* optional parent wwnn */
+    char *parent_wwpn;                  /* optional parent wwpn */
+    char *parent_fabric_wwn;            /* optional parent fabric_wwn */
     char *driver;                       /* optional driver name */
     char *devnode;                      /* /dev path */
     char **devlinks;                    /* /dev links */
-    virNodeDevCapsDefPtr caps;		/* optional device capabilities */
+    virNodeDevCapsDefPtr caps;          /* optional device capabilities */
 };
 
 char *

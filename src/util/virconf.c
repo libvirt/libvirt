@@ -69,7 +69,7 @@ struct _virConfParserCtxt {
 
 #define SKIP_BLANKS_AND_EOL                                             \
   do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR) || IS_EOL(CUR))) { \
-         if (CUR == '\n') ctxt->line++;	                                \
+         if (CUR == '\n') ctxt->line++;                                 \
          ctxt->cur++; } } while (0)
 #define SKIP_BLANKS                                                     \
   do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR)))              \

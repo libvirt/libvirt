@@ -737,10 +737,10 @@ xenStoreWatchEvent(int watch ATTRIBUTE_UNUSED,
                    int fd ATTRIBUTE_UNUSED,
                    int events, void *data)
 {
-    char		 **event;
-    char		 *path;
-    char		 *token;
-    unsigned int	 stringCount;
+    char                 **event;
+    char                 *path;
+    char                 *token;
+    unsigned int         stringCount;
     xenStoreWatchPtr     sw;
 
     virConnectPtr        conn = data;

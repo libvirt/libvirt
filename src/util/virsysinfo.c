@@ -53,7 +53,7 @@ static const char *sysinfoCpuinfo = "/proc/cpuinfo";
 #define SYSINFO_SMBIOS_DECODER sysinfoDmidecode
 #define SYSINFO sysinfoSysinfo
 #define CPUINFO sysinfoCpuinfo
-#define CPUINFO_FILE_LEN (1024*1024)	/* 1MB limit for /proc/cpuinfo file */
+#define CPUINFO_FILE_LEN (1024*1024)    /* 1MB limit for /proc/cpuinfo file */
 
 
 void

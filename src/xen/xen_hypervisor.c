@@ -170,15 +170,15 @@ static regex_t xen_cap_rec;
 # define SHUTDOWN_crash      3  /* Tell controller we've crashed.             */
 #endif
 
-#define XEN_V0_OP_GETDOMAININFOLIST	38
-#define XEN_V1_OP_GETDOMAININFOLIST	38
-#define XEN_V2_OP_GETDOMAININFOLIST	6
+#define XEN_V0_OP_GETDOMAININFOLIST     38
+#define XEN_V1_OP_GETDOMAININFOLIST     38
+#define XEN_V2_OP_GETDOMAININFOLIST     6
 
 struct xen_v0_getdomaininfo {
-    domid_t  domain;	/* the domain number */
-    uint32_t flags;	/* flags, see before */
-    uint64_t tot_pages;	/* total number of pages used */
-    uint64_t max_pages;	/* maximum number of pages allowed */
+    domid_t  domain;    /* the domain number */
+    uint32_t flags;     /* flags, see before */
+    uint64_t tot_pages; /* total number of pages used */
+    uint64_t max_pages; /* maximum number of pages allowed */
     unsigned long shared_info_frame; /* MFN of shared_info struct */
     uint64_t cpu_time;  /* CPU time used */
     uint32_t nr_online_vcpus;  /* Number of VCPUs currently online. */
@@ -189,10 +189,10 @@ struct xen_v0_getdomaininfo {
 typedef struct xen_v0_getdomaininfo xen_v0_getdomaininfo;
 
 struct xen_v2_getdomaininfo {
-    domid_t  domain;	/* the domain number */
-    uint32_t flags;	/* flags, see before */
-    uint64_t tot_pages;	/* total number of pages used */
-    uint64_t max_pages;	/* maximum number of pages allowed */
+    domid_t  domain;    /* the domain number */
+    uint32_t flags;     /* flags, see before */
+    uint64_t tot_pages; /* total number of pages used */
+    uint64_t max_pages; /* maximum number of pages allowed */
     uint64_t shared_info_frame; /* MFN of shared_info struct */
     uint64_t cpu_time;  /* CPU time used */
     uint32_t nr_online_vcpus;  /* Number of VCPUs currently online. */
@@ -208,10 +208,10 @@ typedef struct xen_v2_getdomaininfo xen_v2_getdomaininfo;
 #define ALIGN_64 __attribute__((aligned(8)))
 
 struct xen_v2d5_getdomaininfo {
-    domid_t  domain;	/* the domain number */
-    uint32_t flags;	/* flags, see before */
-    uint64_t tot_pages ALIGN_64;	/* total number of pages used */
-    uint64_t max_pages ALIGN_64;	/* maximum number of pages allowed */
+    domid_t  domain;    /* the domain number */
+    uint32_t flags;     /* flags, see before */
+    uint64_t tot_pages ALIGN_64;        /* total number of pages used */
+    uint64_t max_pages ALIGN_64;        /* maximum number of pages allowed */
     uint64_t shared_info_frame ALIGN_64; /* MFN of shared_info struct */
     uint64_t cpu_time ALIGN_64;  /* CPU time used */
     uint32_t nr_online_vcpus;  /* Number of VCPUs currently online. */
@@ -222,10 +222,10 @@ struct xen_v2d5_getdomaininfo {
 typedef struct xen_v2d5_getdomaininfo xen_v2d5_getdomaininfo;
 
 struct xen_v2d6_getdomaininfo {
-    domid_t  domain;	/* the domain number */
-    uint32_t flags;	/* flags, see before */
-    uint64_t tot_pages ALIGN_64;	/* total number of pages used */
-    uint64_t max_pages ALIGN_64;	/* maximum number of pages allowed */
+    domid_t  domain;    /* the domain number */
+    uint32_t flags;     /* flags, see before */
+    uint64_t tot_pages ALIGN_64;        /* total number of pages used */
+    uint64_t max_pages ALIGN_64;        /* maximum number of pages allowed */
     uint64_t shr_pages ALIGN_64;    /* number of shared pages */
     uint64_t shared_info_frame ALIGN_64; /* MFN of shared_info struct */
     uint64_t cpu_time ALIGN_64;  /* CPU time used */
@@ -237,10 +237,10 @@ struct xen_v2d6_getdomaininfo {
 typedef struct xen_v2d6_getdomaininfo xen_v2d6_getdomaininfo;
 
 struct xen_v2d7_getdomaininfo {
-    domid_t  domain;	/* the domain number */
-    uint32_t flags;	/* flags, see before */
-    uint64_t tot_pages ALIGN_64;	/* total number of pages used */
-    uint64_t max_pages ALIGN_64;	/* maximum number of pages allowed */
+    domid_t  domain;    /* the domain number */
+    uint32_t flags;     /* flags, see before */
+    uint64_t tot_pages ALIGN_64;        /* total number of pages used */
+    uint64_t max_pages ALIGN_64;        /* maximum number of pages allowed */
     uint64_t shr_pages ALIGN_64;    /* number of shared pages */
     uint64_t shared_info_frame ALIGN_64; /* MFN of shared_info struct */
     uint64_t cpu_time ALIGN_64;  /* CPU time used */
@@ -253,10 +253,10 @@ struct xen_v2d7_getdomaininfo {
 typedef struct xen_v2d7_getdomaininfo xen_v2d7_getdomaininfo;
 
 struct xen_v2d8_getdomaininfo {
-    domid_t  domain;	/* the domain number */
-    uint32_t flags;	/* flags, see before */
-    uint64_t tot_pages ALIGN_64;	/* total number of pages used */
-    uint64_t max_pages ALIGN_64;	/* maximum number of pages allowed */
+    domid_t  domain;    /* the domain number */
+    uint32_t flags;     /* flags, see before */
+    uint64_t tot_pages ALIGN_64;        /* total number of pages used */
+    uint64_t max_pages ALIGN_64;        /* maximum number of pages allowed */
     uint64_t shr_pages ALIGN_64;    /* number of shared pages */
     uint64_t paged_pages ALIGN_64;    /* number of paged pages */
     uint64_t shared_info_frame ALIGN_64; /* MFN of shared_info struct */
@@ -270,10 +270,10 @@ struct xen_v2d8_getdomaininfo {
 typedef struct xen_v2d8_getdomaininfo xen_v2d8_getdomaininfo;
 
 struct xen_v2d9_getdomaininfo {
-    domid_t  domain;	/* the domain number */
-    uint32_t flags;	/* flags, see before */
-    uint64_t tot_pages ALIGN_64;	/* total number of pages used */
-    uint64_t max_pages ALIGN_64;	/* maximum number of pages allowed */
+    domid_t  domain;    /* the domain number */
+    uint32_t flags;     /* flags, see before */
+    uint64_t tot_pages ALIGN_64;        /* total number of pages used */
+    uint64_t max_pages ALIGN_64;        /* maximum number of pages allowed */
     uint64_t outstanding_pages ALIGN_64;
     uint64_t shr_pages ALIGN_64;    /* number of shared pages */
     uint64_t paged_pages ALIGN_64;    /* number of paged pages */
@@ -661,38 +661,38 @@ typedef struct xen_v0_domainop xen_v0_domainop;
 /*
  * The information for a pausedomain system hypercall
  */
-#define XEN_V0_OP_PAUSEDOMAIN	10
-#define XEN_V1_OP_PAUSEDOMAIN	10
-#define XEN_V2_OP_PAUSEDOMAIN	3
+#define XEN_V0_OP_PAUSEDOMAIN   10
+#define XEN_V1_OP_PAUSEDOMAIN   10
+#define XEN_V2_OP_PAUSEDOMAIN   3
 
 /*
  * The information for an unpausedomain system hypercall
  */
-#define XEN_V0_OP_UNPAUSEDOMAIN	11
-#define XEN_V1_OP_UNPAUSEDOMAIN	11
-#define XEN_V2_OP_UNPAUSEDOMAIN	4
+#define XEN_V0_OP_UNPAUSEDOMAIN 11
+#define XEN_V1_OP_UNPAUSEDOMAIN 11
+#define XEN_V2_OP_UNPAUSEDOMAIN 4
 
 /*
  * The information for a setmaxmem system hypercall
  */
-#define XEN_V0_OP_SETMAXMEM	28
-#define XEN_V1_OP_SETMAXMEM	28
-#define XEN_V2_OP_SETMAXMEM	11
+#define XEN_V0_OP_SETMAXMEM     28
+#define XEN_V1_OP_SETMAXMEM     28
+#define XEN_V2_OP_SETMAXMEM     11
 
 struct xen_v0_setmaxmem {
-    domid_t	domain;
-    uint64_t	maxmem;
+    domid_t     domain;
+    uint64_t    maxmem;
 };
 typedef struct xen_v0_setmaxmem xen_v0_setmaxmem;
 typedef struct xen_v0_setmaxmem xen_v1_setmaxmem;
 
 struct xen_v2_setmaxmem {
-    uint64_t	maxmem;
+    uint64_t    maxmem;
 };
 typedef struct xen_v2_setmaxmem xen_v2_setmaxmem;
 
 struct xen_v2d5_setmaxmem {
-    uint64_t	maxmem ALIGN_64;
+    uint64_t    maxmem ALIGN_64;
 };
 typedef struct xen_v2d5_setmaxmem xen_v2d5_setmaxmem;
 
@@ -701,13 +701,13 @@ typedef struct xen_v2d5_setmaxmem xen_v2d5_setmaxmem;
  * Note that between 1 and 2 the limitation to 64 physical CPU was lifted
  * hence the difference in structures
  */
-#define XEN_V0_OP_SETVCPUMAP	20
-#define XEN_V1_OP_SETVCPUMAP	20
-#define XEN_V2_OP_SETVCPUMAP	9
+#define XEN_V0_OP_SETVCPUMAP    20
+#define XEN_V1_OP_SETVCPUMAP    20
+#define XEN_V2_OP_SETVCPUMAP    9
 
 struct xen_v0_setvcpumap {
-    domid_t	domain;
-    uint32_t	vcpu;
+    domid_t     domain;
+    uint32_t    vcpu;
     cpumap_t    cpumap;
 };
 typedef struct xen_v0_setvcpumap xen_v0_setvcpumap;
@@ -718,7 +718,7 @@ struct xen_v2_cpumap {
     uint32_t    nr_cpus;
 };
 struct xen_v2_setvcpumap {
-    uint32_t	vcpu;
+    uint32_t    vcpu;
     struct xen_v2_cpumap cpumap;
 };
 typedef struct xen_v2_setvcpumap xen_v2_setvcpumap;
@@ -739,7 +739,7 @@ struct xen_v2d5_cpumap {
     uint32_t    nr_cpus;
 };
 struct xen_v2d5_setvcpumap {
-    uint32_t	vcpu;
+    uint32_t    vcpu;
     struct xen_v2d5_cpumap cpumap;
 };
 typedef struct xen_v2d5_setvcpumap xen_v2d5_setvcpumap;
@@ -748,63 +748,63 @@ typedef struct xen_v2d5_setvcpumap xen_v2d5_setvcpumap;
  * The information for a vcpuinfo system hypercall
  */
 #define XEN_V0_OP_GETVCPUINFO   43
-#define XEN_V1_OP_GETVCPUINFO	43
+#define XEN_V1_OP_GETVCPUINFO   43
 #define XEN_V2_OP_GETVCPUINFO   14
 
 struct xen_v0_vcpuinfo {
-    domid_t	domain;		/* owner's domain */
-    uint32_t	vcpu;		/* the vcpu number */
-    uint8_t	online;		/* seen as on line */
-    uint8_t	blocked;	/* blocked on event */
-    uint8_t	running;	/* scheduled on CPU */
-    uint64_t    cpu_time;	/* nanosecond of CPU used */
-    uint32_t	cpu;		/* current mapping */
-    cpumap_t	cpumap;		/* deprecated in V2 */
+    domid_t     domain;         /* owner's domain */
+    uint32_t    vcpu;           /* the vcpu number */
+    uint8_t     online;         /* seen as on line */
+    uint8_t     blocked;        /* blocked on event */
+    uint8_t     running;        /* scheduled on CPU */
+    uint64_t    cpu_time;       /* nanosecond of CPU used */
+    uint32_t    cpu;            /* current mapping */
+    cpumap_t    cpumap;         /* deprecated in V2 */
 };
 typedef struct xen_v0_vcpuinfo xen_v0_vcpuinfo;
 typedef struct xen_v0_vcpuinfo xen_v1_vcpuinfo;
 
 struct xen_v2_vcpuinfo {
-    uint32_t	vcpu;		/* the vcpu number */
-    uint8_t	online;		/* seen as on line */
-    uint8_t	blocked;	/* blocked on event */
-    uint8_t	running;	/* scheduled on CPU */
-    uint64_t    cpu_time;	/* nanosecond of CPU used */
-    uint32_t	cpu;		/* current mapping */
+    uint32_t    vcpu;           /* the vcpu number */
+    uint8_t     online;         /* seen as on line */
+    uint8_t     blocked;        /* blocked on event */
+    uint8_t     running;        /* scheduled on CPU */
+    uint64_t    cpu_time;       /* nanosecond of CPU used */
+    uint32_t    cpu;            /* current mapping */
 };
 typedef struct xen_v2_vcpuinfo xen_v2_vcpuinfo;
 
 struct xen_v2d5_vcpuinfo {
-    uint32_t	vcpu;		/* the vcpu number */
-    uint8_t	online;		/* seen as on line */
-    uint8_t	blocked;	/* blocked on event */
-    uint8_t	running;	/* scheduled on CPU */
+    uint32_t    vcpu;           /* the vcpu number */
+    uint8_t     online;         /* seen as on line */
+    uint8_t     blocked;        /* blocked on event */
+    uint8_t     running;        /* scheduled on CPU */
     uint64_t    cpu_time ALIGN_64; /* nanosecond of CPU used */
-    uint32_t	cpu;		/* current mapping */
+    uint32_t    cpu;            /* current mapping */
 };
 typedef struct xen_v2d5_vcpuinfo xen_v2d5_vcpuinfo;
 
 /*
  * from V2 the pinning of a vcpu is read with a separate call
  */
-#define XEN_V2_OP_GETVCPUMAP	25
+#define XEN_V2_OP_GETVCPUMAP    25
 typedef struct xen_v2_setvcpumap xen_v2_getvcpumap;
 typedef struct xen_v2d5_setvcpumap xen_v2d5_getvcpumap;
 
 /*
  * from V2 we get the scheduler information
  */
-#define XEN_V2_OP_GETSCHEDULERID	4
+#define XEN_V2_OP_GETSCHEDULERID        4
 
 /*
  * from V2 we get the available heap information
  */
-#define XEN_V2_OP_GETAVAILHEAP		9
+#define XEN_V2_OP_GETAVAILHEAP          9
 
 /*
  * from V2 we get the scheduler parameter
  */
-#define XEN_V2_OP_SCHEDULER		16
+#define XEN_V2_OP_SCHEDULER             16
 /* Scheduler types. */
 #define XEN_SCHEDULER_SEDF       4
 #define XEN_SCHEDULER_CREDIT     5
@@ -891,10 +891,10 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 
 
 #ifdef __linux__
-# define XEN_HYPERVISOR_SOCKET	"/proc/xen/privcmd"
-# define HYPERVISOR_CAPABILITIES	"/sys/hypervisor/properties/capabilities"
+# define XEN_HYPERVISOR_SOCKET  "/proc/xen/privcmd"
+# define HYPERVISOR_CAPABILITIES        "/sys/hypervisor/properties/capabilities"
 #elif defined(__sun)
-# define XEN_HYPERVISOR_SOCKET	"/dev/xen/privcmd"
+# define XEN_HYPERVISOR_SOCKET  "/dev/xen/privcmd"
 #else
 # error "unsupported platform"
 #endif
@@ -3002,13 +3002,13 @@ xenHypervisorPinVcpu(virConnectPtr conn,
  * @info: pointer to an array of virVcpuInfo structures (OUT)
  * @maxinfo: number of structures in info array
  * @cpumaps: pointer to a bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT)
- *	If cpumaps is NULL, then no cpumap information is returned by the API.
- *	It's assumed there is <maxinfo> cpumap in cpumaps array.
- *	The memory allocated to cpumaps must be (maxinfo * maplen) bytes
- *	(ie: calloc(maxinfo, maplen)).
- *	One cpumap inside cpumaps has the format described in virDomainPinVcpu() API.
+ *      If cpumaps is NULL, then no cpumap information is returned by the API.
+ *      It's assumed there is <maxinfo> cpumap in cpumaps array.
+ *      The memory allocated to cpumaps must be (maxinfo * maplen) bytes
+ *      (ie: calloc(maxinfo, maplen)).
+ *      One cpumap inside cpumaps has the format described in virDomainPinVcpu() API.
  * @maplen: number of bytes in one cpumap, from 1 up to size of CPU map in
- *	underlying virtualization system (Xen...).
+ *      underlying virtualization system (Xen...).
  *
  * Extract information about virtual CPUs of domain, store it in info array
  * and also in cpumaps if this pointer isn't NULL.

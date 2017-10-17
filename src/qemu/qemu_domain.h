@@ -325,10 +325,10 @@ struct _qemuDomainObjPrivate {
     virTristateBool reconnectBlockjobs;
 };
 
-# define QEMU_DOMAIN_PRIVATE(vm)	\
+# define QEMU_DOMAIN_PRIVATE(vm)        \
     ((qemuDomainObjPrivatePtr) (vm)->privateData)
 
-# define QEMU_DOMAIN_DISK_PRIVATE(disk)	\
+# define QEMU_DOMAIN_DISK_PRIVATE(disk) \
     ((qemuDomainDiskPrivatePtr) (disk)->privateData)
 
 typedef struct _qemuDomainDiskPrivate qemuDomainDiskPrivate;
@@ -362,7 +362,7 @@ struct _qemuDomainDiskPrivate {
     bool removable; /* device media can be removed/changed */
 };
 
-# define QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev)	\
+# define QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev)   \
     ((qemuDomainHostdevPrivatePtr) (hostdev)->privateData)
 
 
@@ -410,7 +410,7 @@ struct _qemuDomainHostdevPrivate {
     qemuDomainSecretInfoPtr secinfo;
 };
 
-# define QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev)	\
+# define QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev)    \
     ((qemuDomainChrSourcePrivatePtr) (dev)->privateData)
 
 typedef struct _qemuDomainChrSourcePrivate qemuDomainChrSourcePrivate;

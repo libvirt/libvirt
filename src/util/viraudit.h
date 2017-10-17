@@ -47,11 +47,11 @@ char *virAuditEncode(const char *key, const char *value);
 
 void virAuditClose(void);
 
-# define VIR_AUDIT(type, success, ...)				\
+# define VIR_AUDIT(type, success, ...)                          \
     virAuditSend(&virLogSelf, __FILE__, __LINE__, __func__,     \
                  NULL, NULL, type, success, __VA_ARGS__);
 
-# define VIR_AUDIT_USER(type, success, clienttty, clientaddr, ...)	\
+# define VIR_AUDIT_USER(type, success, clienttty, clientaddr, ...)      \
     virAuditSend(&virLogSelf, __FILE__, __LINE__, __func__,             \
                  clienttty, clientaddr, type, success, __VA_ARGS__);
 

@@ -26,12 +26,12 @@
 # include "internal.h"
 # include "driver.h"
 
-int		xenStoreOpen		(virConnectPtr conn,
+int             xenStoreOpen            (virConnectPtr conn,
                                          virConnectAuthPtr auth,
                                          unsigned int flags);
-int		xenStoreClose		(virConnectPtr conn);
-int		xenStoreNumOfDomains	(virConnectPtr conn);
-int		xenStoreListDomains	(virConnectPtr conn,
+int             xenStoreClose           (virConnectPtr conn);
+int             xenStoreNumOfDomains    (virConnectPtr conn);
+int             xenStoreListDomains     (virConnectPtr conn,
                                          int *ids,
                                          int maxids);
 
@@ -41,13 +41,13 @@ char *          xenStoreDomainGetConsolePath(virConnectPtr conn,
                                          int domid);
 char *          xenStoreDomainGetSerialConsolePath(virConnectPtr conn,
                                          int domid);
-char *		xenStoreDomainGetNetworkID(virConnectPtr conn,
+char *          xenStoreDomainGetNetworkID(virConnectPtr conn,
                                          int id,
                                          const char *mac);
-char *		xenStoreDomainGetDiskID(virConnectPtr conn,
+char *          xenStoreDomainGetDiskID(virConnectPtr conn,
                                          int id,
                                          const char *dev);
-char *		xenStoreDomainGetPCIID(virConnectPtr conn,
+char *          xenStoreDomainGetPCIID(virConnectPtr conn,
                                    int domid,
                                    const char *bdf);
 char *          xenStoreDomainGetName(virConnectPtr conn,

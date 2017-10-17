@@ -38,8 +38,8 @@ typedef virNodeDeviceDriverState *virNodeDeviceDriverStatePtr;
 struct _virNodeDeviceDriverState {
     virMutex lock;
 
-    virNodeDeviceObjListPtr devs;	/* currently-known devices */
-    void *privateData;			/* driver-specific private data */
+    virNodeDeviceObjListPtr devs;       /* currently-known devices */
+    void *privateData;                  /* driver-specific private data */
 
     /* Immutable pointer, self-locking APIs */
     virObjectEventStatePtr nodeDeviceEventState;

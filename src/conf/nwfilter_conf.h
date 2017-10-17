@@ -66,7 +66,7 @@
  *   terminating '0' =
  * 32-3-15-1-1 = 12
  */
-# define MAX_CHAIN_SUFFIX_SIZE	12
+# define MAX_CHAIN_SUFFIX_SIZE  12
 
 
 typedef enum {

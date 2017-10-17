@@ -49,7 +49,7 @@
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
 
-#define VIR_FROM_THIS	VIR_FROM_BHYVE
+#define VIR_FROM_THIS   VIR_FROM_BHYVE
 
 VIR_LOG_INIT("bhyve.bhyve_process");
 

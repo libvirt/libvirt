@@ -59,11 +59,11 @@ typedef struct _virConfValue virConfValue;
 typedef virConfValue *virConfValuePtr;
 
 struct _virConfValue {
-    virConfType type;		/* the virConfType */
-    virConfValuePtr next;	/* next element if in a list */
-    long long  l;		/* very long integer */
-    char *str;			/* pointer to 0 terminated string */
-    virConfValuePtr list;	/* list of a list */
+    virConfType type;           /* the virConfType */
+    virConfValuePtr next;       /* next element if in a list */
+    long long  l;               /* very long integer */
+    char *str;                  /* pointer to 0 terminated string */
+    virConfValuePtr list;       /* list of a list */
 };
 
 /**

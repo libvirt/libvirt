@@ -121,7 +121,7 @@ struct _xenUnifiedPrivate {
      */
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
-    int handle;			/* Xen hypervisor handle */
+    int handle;                 /* Xen hypervisor handle */
 
     /* connection to xend */
     struct sockaddr_storage addr;
