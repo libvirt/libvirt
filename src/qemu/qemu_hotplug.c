@@ -4430,6 +4430,31 @@ qemuDomainRemoveWatchdog(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuDomainRemoveInputDevice(virDomainObjPtr vm,
+                            virDomainInputDefPtr dev)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    virObjectEventPtr event = NULL;
+    size_t i;
+
+    VIR_DEBUG("Removing input device %s from domain %p %s",
+              dev->info.alias, vm, vm->def->name);
+
+    event = virDomainEventDeviceRemovedNewFromObj(vm, dev->info.alias);
+    qemuDomainEventQueue(driver, event);
+    for (i = 0; i < vm->def->ninputs; i++) {
+        if (vm->def->inputs[i] == dev)
+            break;
+    }
+    qemuDomainReleaseDeviceAddress(vm, &dev->info, NULL);
+    virDomainInputDefFree(vm->def->inputs[i]);
+    VIR_DELETE_ELEMENT(vm->def->inputs, i, vm->def->ninputs);
+    return 0;
+}
+
+
 int
 qemuDomainRemoveDevice(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
@@ -6182,5 +6207,56 @@ qemuDomainSetVcpuInternal(virQEMUDriverPtr driver,
  cleanup:
     virBitmapFree(livevcpus);
     virObjectUnref(cfg);
+    return ret;
+}
+
+
+int
+qemuDomainDetachInputDevice(virDomainObjPtr vm,
+                            virDomainInputDefPtr def)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    virDomainInputDefPtr input;
+    int ret = -1;
+    int idx;
+
+    if ((idx = virDomainInputDefFind(vm->def, def)) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("matching input device not found"));
+        return -1;
+    }
+    input = vm->def->inputs[idx];
+
+    switch ((virDomainInputBus) input->bus) {
+    case VIR_DOMAIN_INPUT_BUS_PS2:
+    case VIR_DOMAIN_INPUT_BUS_XEN:
+    case VIR_DOMAIN_INPUT_BUS_PARALLELS:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("input device on bus '%s' cannot be detached"),
+                       virDomainInputBusTypeToString(input->bus));
+        return -1;
+
+    case VIR_DOMAIN_INPUT_BUS_LAST:
+    case VIR_DOMAIN_INPUT_BUS_USB:
+    case VIR_DOMAIN_INPUT_BUS_VIRTIO:
+        break;
+    }
+
+    qemuDomainMarkDeviceForRemoval(vm, &input->info);
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuMonitorDelDevice(priv->mon, input->info.alias)) {
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        goto cleanup;
+    }
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto cleanup;
+
+    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+        ret = qemuDomainRemoveInputDevice(vm, input);
+
+ cleanup:
+    qemuDomainResetDeviceRemoval(vm);
     return ret;
 }

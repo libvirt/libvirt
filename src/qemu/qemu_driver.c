@@ -7764,9 +7764,11 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_WATCHDOG:
         ret = qemuDomainDetachWatchdog(driver, vm, dev->data.watchdog);
         break;
+    case VIR_DOMAIN_DEVICE_INPUT:
+        ret = qemuDomainDetachInputDevice(vm, dev->data.input);
+        break;
 
     case VIR_DOMAIN_DEVICE_FS:
-    case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:

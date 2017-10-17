@@ -184,4 +184,7 @@ int qemuDomainSetVcpuInternal(virQEMUDriverPtr driver,
                               virBitmapPtr vcpus,
                               bool state);
 
+int qemuDomainDetachInputDevice(virDomainObjPtr vm,
+                                virDomainInputDefPtr def);
+
 #endif /* __QEMU_HOTPLUG_H__ */
