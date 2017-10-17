@@ -6188,7 +6188,7 @@ virDomainDeviceBootParseXML(xmlNodePtr node,
                             virHashTablePtr bootHash)
 {
     char *order;
-    char *loadparm;
+    char *loadparm = NULL;
     int ret = -1;
 
     if (!(order = virXMLPropString(node, "order"))) {
