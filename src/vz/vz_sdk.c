@@ -4495,7 +4495,7 @@ prlsdkGetNetStats(PRL_HANDLE sdkstats, PRL_HANDLE sdkdom, const char *device,
     virMacAddr mac;
 
     if (virMacAddrParse(device, &mac) == 0)
-        net = prlsdkFindNetByMAC(sdkdom, device);
+        net = prlsdkFindNetByMAC(sdkdom, &mac);
     else
         net = prlsdkFindNetByPath(sdkdom, device);
 
