@@ -1274,17 +1274,12 @@ qemuMigrationSetOption(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
-        return -1;
+    if (!qemuMigrationCapsGet(vm, capability)) {
+        if (!state) {
+            /* Unsupported but we want it off anyway */
+            return 0;
+        }
 
-    ret = qemuMonitorGetMigrationCapability(priv->mon, capability);
-
-    if (ret < 0) {
-        goto cleanup;
-    } else if (ret == 0 && !state) {
-        /* Unsupported but we want it off anyway */
-        goto cleanup;
-    } else if (ret == 0) {
         if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                            _("Migration option '%s' is not supported by "
@@ -1296,15 +1291,17 @@ qemuMigrationSetOption(virQEMUDriverPtr driver,
                              "source QEMU binary"),
                            qemuMonitorMigrationCapsTypeToString(capability));
         }
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
+        return -1;
 
     ret = qemuMonitorSetMigrationCapability(priv->mon, capability, state);
 
- cleanup:
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
+
     return ret;
 }
 
@@ -5928,12 +5925,8 @@ qemuMigrationReset(virQEMUDriverPtr driver,
         goto cleanup;
 
     for (cap = 0; cap < QEMU_MONITOR_MIGRATION_CAPS_LAST; cap++) {
-        /* "events" capability is set (when supported) in qemuConnectMonitor
-         * and should never be cleared */
-        if (cap == QEMU_MONITOR_MIGRATION_CAPS_EVENTS)
-            continue;
-
-        if (qemuMigrationSetOption(driver, vm, cap, false, job) < 0)
+        if (qemuMigrationCapsGet(vm, cap) &&
+            qemuMigrationSetOption(driver, vm, cap, false, job) < 0)
             goto cleanup;
     }
 
@@ -5993,4 +5986,18 @@ qemuMigrationFetchMirrorStats(virQEMUDriverPtr driver,
 
     virHashFree(blockinfo);
     return 0;
+}
+
+
+bool
+qemuMigrationCapsGet(virDomainObjPtr vm,
+                     qemuMonitorMigrationCaps cap)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool enabled = false;
+
+    if (priv->migrationCaps)
+        ignore_value(virBitmapGetBit(priv->migrationCaps, cap, &enabled));
+
+    return enabled;
 }

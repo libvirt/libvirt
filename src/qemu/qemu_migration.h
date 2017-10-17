@@ -326,4 +326,8 @@ qemuMigrationFetchMirrorStats(virQEMUDriverPtr driver,
                               qemuDomainAsyncJob asyncJob,
                               qemuDomainJobInfoPtr jobInfo);
 
+bool
+qemuMigrationCapsGet(virDomainObjPtr vm,
+                     qemuMonitorMigrationCaps cap);
+
 #endif /* __QEMU_MIGRATION_H__ */

@@ -10304,6 +10304,13 @@ qemuDomainCheckMigrationCapabilities(virQEMUDriverPtr driver,
         }
     }
 
+    /* Migration events capability must always be enabled, clearing it from
+     * migration capabilities bitmap makes sure it won't be touched anywhere
+     * else.
+     */
+    ignore_value(virBitmapClearBit(priv->migrationCaps,
+                                   QEMU_MONITOR_MIGRATION_CAPS_EVENTS));
+
     ret = 0;
 
  cleanup:
