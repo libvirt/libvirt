@@ -26,7 +26,6 @@
       </source>
       <target dev='hdc' bus='ide'/>
       <readonly/>
-      <alias name='ide0-1-0'/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
     <controller type='usb' index='0'/>

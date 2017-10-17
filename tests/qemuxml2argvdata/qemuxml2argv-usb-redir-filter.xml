@@ -33,7 +33,6 @@
       <address type='usb' bus='0' port='4'/>
     </redirdev>
     <redirdev bus='usb' type='spicevmc'>
-      <alias name='redir1'/>
       <address type='usb' bus='0' port='5'/>
     </redirdev>
     <redirfilter>
