@@ -6428,6 +6428,8 @@ static bool
 qemuDomainABIStabilityCheck(const virDomainDef *src,
                             const virDomainDef *dst)
 {
+    size_t i;
+
     if (src->mem.source != dst->mem.source) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target memoryBacking source '%s' doesn't "
@@ -6435,6 +6437,19 @@ qemuDomainABIStabilityCheck(const virDomainDef *src,
                        virDomainMemorySourceTypeToString(dst->mem.source),
                        virDomainMemorySourceTypeToString(src->mem.source));
         return false;
+    }
+
+    for (i = 0; i < src->nmems; i++) {
+        const char *srcAlias = src->mems[i]->info.alias;
+        const char *dstAlias = dst->mems[i]->info.alias;
+
+        if (STRNEQ_NULLABLE(srcAlias, dstAlias)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target memory device alias '%s' doesn't "
+                             "match source alias '%s'"),
+                           NULLSTR(srcAlias), NULLSTR(dstAlias));
+            return false;
+        }
     }
 
     return true;
