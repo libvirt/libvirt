@@ -137,6 +137,14 @@ static virClassPtr qemuDomainSaveCookieClass;
 static void qemuDomainLogContextDispose(void *obj);
 static void qemuDomainSaveCookieDispose(void *obj);
 
+
+static int
+qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDefPtr disk,
+                                       virStorageSourcePtr src,
+                                       qemuDomainObjPrivatePtr priv,
+                                       virQEMUDriverConfigPtr cfg);
+
+
 static int
 qemuDomainOnceInit(void)
 {
@@ -8653,6 +8661,10 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
         if (qemuDomainPrepareDiskSourceData(disk, n, cfg, priv->qemuCaps) < 0)
             goto cleanup;
+
+        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+            qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
+            goto cleanup;
     }
 
     ret = 0;
@@ -13103,6 +13115,62 @@ qemuDomainPrepareDiskSourceLegacy(virDomainDiskDefPtr disk,
 }
 
 
+static int
+qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDefPtr disk,
+                                       virStorageSourcePtr src,
+                                       qemuDomainObjPrivatePtr priv,
+                                       virQEMUDriverConfigPtr cfg)
+{
+    src->id = qemuDomainStorageIdNew(priv);
+
+    if (virAsprintf(&src->nodestorage, "libvirt-%u-storage", src->id) < 0 ||
+        virAsprintf(&src->nodeformat, "libvirt-%u-format", src->id) < 0)
+        return -1;
+
+    if (qemuDomainValidateStorageSource(src, priv->qemuCaps) < 0)
+        return -1;
+
+    if (qemuDomainPrepareDiskSourceData(disk, src, cfg, priv->qemuCaps) < 0)
+        return -1;
+
+    if (qemuDomainSecretStorageSourcePrepare(priv, src,
+                                             src->nodestorage,
+                                             src->nodeformat) < 0)
+        return -1;
+
+    if (qemuDomainPrepareStorageSourcePR(disk->src, priv, src->nodestorage) < 0)
+        return -1;
+
+    if (qemuDomainPrepareStorageSourceTLS(disk->src, cfg, src->nodestorage,
+                                          priv->qemuCaps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuDomainPrepareDiskSourceBlockdev(virDomainDiskDefPtr disk,
+                                    qemuDomainObjPrivatePtr priv,
+                                    virQEMUDriverConfigPtr cfg)
+{
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    virStorageSourcePtr n;
+
+    if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON &&
+        !diskPriv->nodeCopyOnRead &&
+        virAsprintf(&diskPriv->nodeCopyOnRead, "libvirt-CoR-%s", disk->dst) < 0)
+        return -1;
+
+    for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 int
 qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
                             qemuDomainObjPrivatePtr priv,
@@ -13110,8 +13178,13 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
 {
     qemuDomainPrepareDiskCachemode(disk);
 
-    if (qemuDomainPrepareDiskSourceLegacy(disk, priv, cfg) < 0)
-        return -1;
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if (qemuDomainPrepareDiskSourceBlockdev(disk, priv, cfg) < 0)
+            return -1;
+    } else {
+        if (qemuDomainPrepareDiskSourceLegacy(disk, priv, cfg) < 0)
+            return -1;
+    }
 
     return 0;
 }
