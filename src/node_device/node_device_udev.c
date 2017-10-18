@@ -1619,13 +1619,10 @@ nodeStateCleanup(void)
     if (!driver)
         return -1;
 
-    nodeDeviceLock();
-
     virObjectUnref(driver->privateData);
     virObjectUnref(driver->nodeDeviceEventState);
 
     virNodeDeviceObjListFree(driver->devs);
-    nodeDeviceUnlock();
     virMutexDestroy(&driver->lock);
     VIR_FREE(driver);
 
@@ -1846,23 +1843,21 @@ nodeStateInitialize(bool privileged,
         return -1;
     }
 
-    nodeDeviceLock();
-
     if (!(driver->devs = virNodeDeviceObjListNew()) ||
         !(priv = udevEventDataNew()))
-        goto unlock;
+        goto cleanup;
 
     driver->privateData = priv;
     driver->nodeDeviceEventState = virObjectEventStateNew();
 
     if (udevPCITranslateInit(privileged) < 0)
-        goto unlock;
+        goto cleanup;
 
     udev = udev_new();
     if (!udev) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to create udev context"));
-        goto unlock;
+        goto cleanup;
     }
 #if HAVE_UDEV_LOGGING
     /* cast to get rid of missing-format-attribute warning */
@@ -1908,7 +1903,6 @@ nodeStateInitialize(bool privileged,
         goto unlock;
 
     virObjectUnlock(priv);
-    nodeDeviceUnlock();
 
     /* Populate with known devices */
     if (udevEnumerateDevices(udev) != 0)
@@ -1921,9 +1915,7 @@ nodeStateInitialize(bool privileged,
     return -1;
 
  unlock:
-    if (priv)
-        virObjectUnlock(priv);
-    nodeDeviceUnlock();
+    virObjectUnlock(priv);
     goto cleanup;
 }
 
