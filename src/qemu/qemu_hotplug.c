@@ -345,21 +345,24 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuDomainAttachDiskGeneric:
+ *
+ * Attaches disk to a VM. This function aggregates common code for all bus types.
+ * In cases when the VM crashed while adding the disk, -2 is returned. */
 static int
-qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
-                                 virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
-                                 virDomainDiskDefPtr disk)
+qemuDomainAttachDiskGeneric(virConnectPtr conn,
+                            virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainDiskDefPtr disk)
 {
     int ret = -1;
     int rv;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_DISK, { .disk = disk } };
     virErrorPtr orig_err;
     char *devstr = NULL;
     char *drivestr = NULL;
     char *drivealias = NULL;
-    bool releaseaddr = false;
     bool driveAdded = false;
     bool secobjAdded = false;
     bool encobjAdded = false;
@@ -372,9 +375,6 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
 
     if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
-
-    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, disk->dst) < 0)
-        goto error;
 
     if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
         goto error;
@@ -441,7 +441,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
         goto exit_monitor;
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        releaseaddr = false;
+        ret = -2;
         goto error;
     }
 
@@ -471,19 +471,39 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     if (encobjAdded)
         ignore_value(qemuMonitorDelObject(priv->mon, encinfo->s.aes.alias));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        releaseaddr = false;
+        ret = -2;
     virErrorRestore(&orig_err);
 
     virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
 
  error:
     qemuDomainDelDiskSrcTLSObject(driver, vm, disk->src);
-
-    if (releaseaddr)
-        qemuDomainReleaseDeviceAddress(vm, &disk->info, disk->dst);
-
     ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
     goto cleanup;
+}
+
+
+static int
+qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
+                                 virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 virDomainDiskDefPtr disk)
+{
+    virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_DISK, { .disk = disk } };
+    bool releaseaddr = false;
+    int rv;
+
+    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, disk->dst) < 0)
+        return -1;
+
+    if ((rv = qemuDomainAttachDiskGeneric(conn, driver, vm, disk)) < 0) {
+        if (rv == -1 && releaseaddr)
+            qemuDomainReleaseDeviceAddress(vm, &disk->info, disk->dst);
+
+        return -1;
+    }
+
+    return 0;
 }
 
 
