@@ -1719,6 +1719,7 @@ udevGetDMIData(virNodeDevCapSystemPtr syscap)
     virNodeDevCapSystemHardwarePtr hardware = &syscap->hardware;
     virNodeDevCapSystemFirmwarePtr firmware = &syscap->firmware;
 
+    virObjectLock(priv);
     udev = udev_monitor_get_udev(priv->udev_monitor);
 
     device = udev_device_new_from_syspath(udev, DMI_DEVPATH);
@@ -1728,9 +1729,11 @@ udevGetDMIData(virNodeDevCapSystemPtr syscap)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to get udev device for syspath '%s' or '%s'"),
                            DMI_DEVPATH, DMI_DEVPATH_FALLBACK);
+            virObjectUnlock(priv);
             return;
         }
     }
+    virObjectUnlock(priv);
 
     if (udevGetStringSysfsAttr(device, "product_name",
                                &syscap->product_name) < 0)
@@ -1898,11 +1901,11 @@ nodeStateInitialize(bool privileged,
     if (priv->watch == -1)
         goto unlock;
 
+    virObjectUnlock(priv);
+
     /* Create a fictional 'computer' device to root the device tree. */
     if (udevSetupSystemDev() != 0)
-        goto unlock;
-
-    virObjectUnlock(priv);
+        goto cleanup;
 
     /* Populate with known devices */
     if (udevEnumerateDevices(udev) != 0)
