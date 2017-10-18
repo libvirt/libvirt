@@ -8396,6 +8396,9 @@ qemuDomainAttachDeviceLiveAndConfig(virConnectPtr conn,
     if (dev == NULL)
         goto cleanup;
 
+    if (virDomainDeviceValidateAliasForHotplug(vm, dev, flags) < 0)
+        goto cleanup;
+
     if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
         flags & VIR_DOMAIN_AFFECT_LIVE) {
         /* If we are affecting both CONFIG and LIVE

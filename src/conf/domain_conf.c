@@ -5457,6 +5457,137 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
 }
 
 
+struct virDomainDefValidateAliasesData {
+    virHashTablePtr aliases;
+};
+
+
+static int
+virDomainDeviceDefValidateAliasesIterator(virDomainDefPtr def,
+                                          virDomainDeviceDefPtr dev,
+                                          virDomainDeviceInfoPtr info,
+                                          void *opaque)
+{
+    struct virDomainDefValidateAliasesData *data = opaque;
+    const char *alias = info->alias;
+
+    if (!alias)
+        return 0;
+
+    /* Some crazy backcompat for consoles. */
+    if (def->nserials && def->nconsoles &&
+        def->consoles[0]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        def->consoles[0]->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL &&
+        dev->type == VIR_DOMAIN_DEVICE_CHR &&
+        virDomainChrEquals(def->serials[0], dev->data.chr))
+        return 0;
+
+    if (virHashLookup(data->aliases, alias)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("non unique alias detected: %s"),
+                       alias);
+        return -1;
+    }
+
+    if (virHashAddEntry(data->aliases, alias, (void *) 1) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to construct table of device aliases"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * virDomainDefValidateAliases:
+ *
+ * Check for uniqueness of device aliases. If @aliases is not
+ * NULL return hash table of all the aliases in it.
+ *
+ * Returns 0 on success,
+ *        -1 otherwise (with error reported).
+ */
+static int
+virDomainDefValidateAliases(const virDomainDef *def,
+                            virHashTablePtr *aliases)
+{
+    struct virDomainDefValidateAliasesData data;
+    int ret = -1;
+
+    /* We are not storing copies of aliases. Don't free them. */
+    if (!(data.aliases = virHashCreate(10, NULL)))
+        goto cleanup;
+
+    if (virDomainDeviceInfoIterateInternal((virDomainDefPtr) def,
+                                           virDomainDeviceDefValidateAliasesIterator,
+                                           true, &data) < 0)
+        goto cleanup;
+
+    if (aliases) {
+        *aliases = data.aliases;
+        data.aliases = NULL;
+    }
+
+    ret = 0;
+ cleanup:
+    virHashFree(data.aliases);
+    return ret;
+}
+
+
+static int
+virDomainDeviceValidateAliasImpl(const virDomainDef *def,
+                                 virDomainDeviceDefPtr dev)
+{
+    virHashTablePtr aliases = NULL;
+    virDomainDeviceInfoPtr info = virDomainDeviceGetInfo(dev);
+    int ret = -1;
+
+    if (!info || !info->alias)
+        return 0;
+
+    if (virDomainDefValidateAliases(def, &aliases) < 0)
+        goto cleanup;
+
+    if (virHashLookup(aliases, info->alias)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("non unique alias detected: %s"),
+                       info->alias);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+
+    virHashFree(aliases);
+    return ret;
+}
+
+
+int
+virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
+                                       virDomainDeviceDefPtr dev,
+                                       unsigned int flags)
+{
+    virDomainDefPtr persDef = NULL;
+    virDomainDefPtr liveDef = NULL;
+
+    if (virDomainObjGetDefs(vm, flags, &liveDef, &persDef) < 0)
+        return -1;
+
+    if (persDef &&
+        virDomainDeviceValidateAliasImpl(vm->def, dev) < 0)
+        return -1;
+
+    if (liveDef &&
+        virDomainDeviceValidateAliasImpl(vm->newDef, dev) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                            const virDomainDef *def,
@@ -5677,6 +5808,9 @@ virDomainDefValidateInternal(const virDomainDef *def)
         return -1;
 
     if (virDomainDefGetVcpusTopology(def, NULL) < 0)
+        return -1;
+
+    if (virDomainDefValidateAliases(def, NULL) < 0)
         return -1;
 
     if (def->iommu &&
