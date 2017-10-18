@@ -766,7 +766,6 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
     char *devstr = NULL;
     bool driveAdded = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    const char *src = virDomainDiskGetSource(disk);
     bool releaseaddr = false;
 
     if (priv->usbaddrs) {
@@ -777,13 +776,6 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
 
     if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
-
-    /* XXX not correct once we allow attaching a USB CDROM */
-    if (!src) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("disk source path is missing"));
-        goto error;
-    }
 
     if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
         goto error;
