@@ -15,8 +15,8 @@ ExecReload=/bin/kill -USR1 $MAINPID
 OOMScoreAdjust=-900
 # Needs to allow for max guests * average disks per guest
 # libvirtd.service written to expect 4096 guests, so if we
-# allow for 4 disks per guest, we get:
-LimitNOFILE=16384
+# allow for 10 disks per guest, we get:
+LimitNOFILE=40960
 
 [Install]
 Also=virtlockd.socket
