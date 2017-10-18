@@ -3943,7 +3943,8 @@ qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
                                   qemuMonitorMigrationCaps capability,
                                   bool state)
 {
-    VIR_DEBUG("capability=%d", capability);
+    VIR_DEBUG("capability=%s, state=%d",
+              qemuMonitorMigrationCapsTypeToString(capability), state);
 
     QEMU_CHECK_MONITOR_JSON(mon);
 
