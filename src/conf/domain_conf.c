@@ -6458,7 +6458,8 @@ virDomainDeviceAddressParseXML(xmlNodePtr address,
  * @param node XML nodeset to parse for device address definition
  */
 static int
-virDomainDeviceInfoParseXML(xmlNodePtr node,
+virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
+                            xmlNodePtr node,
                             virHashTablePtr bootHash,
                             virDomainDeviceInfoPtr info,
                             unsigned int flags)
@@ -9233,7 +9234,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     } else {
-        if (virDomainDeviceInfoParseXML(node, bootHash, &def->info,
+        if (virDomainDeviceInfoParseXML(xmlopt, node, bootHash, &def->info,
                                         flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) < 0)
             goto error;
     }
@@ -9570,7 +9571,8 @@ virDomainControllerModelTypeToString(virDomainControllerDefPtr def,
  * @param node XML nodeset to parse for controller definition
  */
 static virDomainControllerDefPtr
-virDomainControllerDefParseXML(xmlNodePtr node,
+virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
+                               xmlNodePtr node,
                                xmlXPathContextPtr ctxt,
                                unsigned int flags)
 {
@@ -9719,7 +9721,8 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
         def->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
         VIR_DEBUG("Ignoring device address for none model usb controller");
-    } else if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0) {
+    } else if (virDomainDeviceInfoParseXML(xmlopt, node, NULL,
+                                           &def->info, flags) < 0) {
         goto error;
     }
 
@@ -9946,7 +9949,8 @@ virDomainNetGenerateMAC(virDomainXMLOptionPtr xmlopt,
  * @param node XML nodeset to parse for disk definition
  */
 static virDomainFSDefPtr
-virDomainFSDefParseXML(xmlNodePtr node,
+virDomainFSDefParseXML(virDomainXMLOptionPtr xmlopt,
+                       xmlNodePtr node,
                        xmlXPathContextPtr ctxt,
                        unsigned int flags)
 {
@@ -10103,7 +10107,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
     def->dst = target;
     target = NULL;
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL, &def->info, flags) < 0)
         goto error;
 
  cleanup:
@@ -10624,7 +10628,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     } else {
-        if (virDomainDeviceInfoParseXML(node, bootHash, &def->info,
+        if (virDomainDeviceInfoParseXML(xmlopt, node, bootHash, &def->info,
                                         flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT
                                         | VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) < 0)
             goto error;
@@ -11891,7 +11895,8 @@ virDomainChrDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
         def->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD) {
         VIR_DEBUG("Ignoring device address for gustfwd channel");
-    } else if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0) {
+    } else if (virDomainDeviceInfoParseXML(xmlopt, node, NULL,
+                                           &def->info, flags) < 0) {
         goto error;
     }
 
@@ -12028,7 +12033,7 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL, &def->info, flags) < 0)
         goto error;
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID) {
@@ -12061,7 +12066,8 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
  *
  */
 static virDomainTPMDefPtr
-virDomainTPMDefParseXML(xmlNodePtr node,
+virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
+                        xmlNodePtr node,
                         xmlXPathContextPtr ctxt,
                         unsigned int flags)
 {
@@ -12130,7 +12136,7 @@ virDomainTPMDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL, &def->info, flags) < 0)
         goto error;
 
  cleanup:
@@ -12149,7 +12155,8 @@ virDomainTPMDefParseXML(xmlNodePtr node,
 }
 
 static virDomainPanicDefPtr
-virDomainPanicDefParseXML(xmlNodePtr node,
+virDomainPanicDefParseXML(virDomainXMLOptionPtr xmlopt,
+                          xmlNodePtr node,
                           unsigned int flags)
 {
     virDomainPanicDefPtr panic;
@@ -12158,7 +12165,8 @@ virDomainPanicDefParseXML(xmlNodePtr node,
     if (VIR_ALLOC(panic) < 0)
         return NULL;
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &panic->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL,
+                                    &panic->info, flags) < 0)
         goto error;
 
     model = virXMLPropString(node, "model");
@@ -12181,7 +12189,8 @@ virDomainPanicDefParseXML(xmlNodePtr node,
 
 /* Parse the XML definition for an input device */
 static virDomainInputDefPtr
-virDomainInputDefParseXML(const virDomainDef *dom,
+virDomainInputDefParseXML(virDomainXMLOptionPtr xmlopt,
+                          const virDomainDef *dom,
                           xmlNodePtr node,
                           xmlXPathContextPtr ctxt,
                           unsigned int flags)
@@ -12292,7 +12301,7 @@ virDomainInputDefParseXML(const virDomainDef *dom,
         }
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL, &def->info, flags) < 0)
         goto error;
 
     if (def->bus == VIR_DOMAIN_INPUT_BUS_USB &&
@@ -12332,7 +12341,9 @@ virDomainInputDefParseXML(const virDomainDef *dom,
 
 /* Parse the XML definition for a hub device */
 static virDomainHubDefPtr
-virDomainHubDefParseXML(xmlNodePtr node, unsigned int flags)
+virDomainHubDefParseXML(virDomainXMLOptionPtr xmlopt,
+                        xmlNodePtr node,
+                        unsigned int flags)
 {
     virDomainHubDefPtr def;
     char *type = NULL;
@@ -12354,7 +12365,7 @@ virDomainHubDefParseXML(xmlNodePtr node, unsigned int flags)
         goto error;
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL, &def->info, flags) < 0)
         goto error;
 
  cleanup:
@@ -13431,7 +13442,8 @@ virDomainSoundCodecDefParseXML(xmlNodePtr node)
 
 
 static virDomainSoundDefPtr
-virDomainSoundDefParseXML(xmlNodePtr node,
+virDomainSoundDefParseXML(virDomainXMLOptionPtr xmlopt,
+                          xmlNodePtr node,
                           xmlXPathContextPtr ctxt,
                           unsigned int flags)
 {
@@ -13483,7 +13495,7 @@ virDomainSoundDefParseXML(xmlNodePtr node,
         }
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL, &def->info, flags) < 0)
         goto error;
 
  cleanup:
@@ -13500,7 +13512,8 @@ virDomainSoundDefParseXML(xmlNodePtr node,
 
 
 static virDomainWatchdogDefPtr
-virDomainWatchdogDefParseXML(xmlNodePtr node,
+virDomainWatchdogDefParseXML(virDomainXMLOptionPtr xmlopt,
+                             xmlNodePtr node,
                              unsigned int flags)
 {
 
@@ -13536,7 +13549,7 @@ virDomainWatchdogDefParseXML(xmlNodePtr node,
         }
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL, &def->info, flags) < 0)
         goto error;
 
  cleanup:
@@ -13648,7 +13661,7 @@ virDomainRNGDefParseXML(virDomainXMLOptionPtr xmlopt,
         break;
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL, &def->info, flags) < 0)
         goto error;
 
     if (virDomainVirtioOptionsParseXML(virXPathNode("./driver", ctxt),
@@ -13671,7 +13684,8 @@ virDomainRNGDefParseXML(virDomainXMLOptionPtr xmlopt,
 
 
 static virDomainMemballoonDefPtr
-virDomainMemballoonDefParseXML(xmlNodePtr node,
+virDomainMemballoonDefParseXML(virDomainXMLOptionPtr xmlopt,
+                               xmlNodePtr node,
                                xmlXPathContextPtr ctxt,
                                unsigned int flags)
 {
@@ -13717,7 +13731,8 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
 
     if (def->model == VIR_DOMAIN_MEMBALLOON_MODEL_NONE)
         VIR_DEBUG("Ignoring device address for none model Memballoon");
-    else if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    else if (virDomainDeviceInfoParseXML(xmlopt, node, NULL,
+                                         &def->info, flags) < 0)
         goto error;
 
     if (virDomainVirtioOptionsParseXML(virXPathNode("./driver", ctxt),
@@ -13738,7 +13753,8 @@ virDomainMemballoonDefParseXML(xmlNodePtr node,
 }
 
 static virDomainNVRAMDefPtr
-virDomainNVRAMDefParseXML(xmlNodePtr node,
+virDomainNVRAMDefParseXML(virDomainXMLOptionPtr xmlopt,
+                          xmlNodePtr node,
                           unsigned int flags)
 {
    virDomainNVRAMDefPtr def;
@@ -13746,7 +13762,7 @@ virDomainNVRAMDefParseXML(xmlNodePtr node,
     if (VIR_ALLOC(def) < 0)
         return NULL;
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL, &def->info, flags) < 0)
         goto error;
 
     return def;
@@ -13757,7 +13773,8 @@ virDomainNVRAMDefParseXML(xmlNodePtr node,
 }
 
 static virDomainShmemDefPtr
-virDomainShmemDefParseXML(xmlNodePtr node,
+virDomainShmemDefParseXML(virDomainXMLOptionPtr xmlopt,
+                          xmlNodePtr node,
                           xmlXPathContextPtr ctxt,
                           unsigned int flags)
 {
@@ -13841,7 +13858,7 @@ virDomainShmemDefParseXML(xmlNodePtr node,
         goto cleanup;
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL, &def->info, flags) < 0)
         goto cleanup;
 
 
@@ -14262,7 +14279,8 @@ virDomainVideoDriverDefParseXML(xmlNodePtr node)
 }
 
 static virDomainVideoDefPtr
-virDomainVideoDefParseXML(xmlNodePtr node,
+virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
+                          xmlNodePtr node,
                           xmlXPathContextPtr ctxt,
                           const virDomainDef *dom,
                           unsigned int flags)
@@ -14376,7 +14394,7 @@ virDomainVideoDefParseXML(xmlNodePtr node,
         }
     }
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, node, NULL, &def->info, flags) < 0)
         goto error;
 
     def->driver = virDomainVideoDriverDefParseXML(node);
@@ -14444,7 +14462,7 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (def->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-        if (virDomainDeviceInfoParseXML(node, bootHash, def->info,
+        if (virDomainDeviceInfoParseXML(xmlopt, node, bootHash, def->info,
                                         flags  | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT
                                         | VIR_DOMAIN_DEF_PARSE_ALLOW_ROM) < 0)
             goto error;
@@ -14531,7 +14549,7 @@ virDomainRedirdevDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (def->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC)
         def->source->data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_USBREDIR;
 
-    if (virDomainDeviceInfoParseXML(node, bootHash, &def->info,
+    if (virDomainDeviceInfoParseXML(xmlopt, node, bootHash, &def->info,
                                     flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) < 0)
         goto error;
 
@@ -14943,7 +14961,8 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
 
 
 static virDomainMemoryDefPtr
-virDomainMemoryDefParseXML(xmlNodePtr memdevNode,
+virDomainMemoryDefParseXML(virDomainXMLOptionPtr xmlopt,
+                           xmlNodePtr memdevNode,
                            xmlXPathContextPtr ctxt,
                            unsigned int flags)
 {
@@ -14997,7 +15016,8 @@ virDomainMemoryDefParseXML(xmlNodePtr memdevNode,
     if (virDomainMemoryTargetDefParseXML(node, ctxt, def) < 0)
         goto error;
 
-    if (virDomainDeviceInfoParseXML(memdevNode, NULL, &def->info, flags) < 0)
+    if (virDomainDeviceInfoParseXML(xmlopt, memdevNode,
+                                    NULL, &def->info, flags) < 0)
         goto error;
 
     ctxt->node = save;
@@ -15137,7 +15157,7 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_FS:
-        if (!(dev->data.fs = virDomainFSDefParseXML(node, ctxt, flags)))
+        if (!(dev->data.fs = virDomainFSDefParseXML(xmlopt, node, ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_NET:
@@ -15147,20 +15167,23 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_INPUT:
-        if (!(dev->data.input = virDomainInputDefParseXML(def, node,
+        if (!(dev->data.input = virDomainInputDefParseXML(xmlopt, def, node,
                                                           ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_SOUND:
-        if (!(dev->data.sound = virDomainSoundDefParseXML(node, ctxt, flags)))
+        if (!(dev->data.sound = virDomainSoundDefParseXML(xmlopt, node,
+                                                          ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_WATCHDOG:
-        if (!(dev->data.watchdog = virDomainWatchdogDefParseXML(node, flags)))
+        if (!(dev->data.watchdog = virDomainWatchdogDefParseXML(xmlopt,
+                                                                node, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_VIDEO:
-        if (!(dev->data.video = virDomainVideoDefParseXML(node, ctxt, def, flags)))
+        if (!(dev->data.video = virDomainVideoDefParseXML(xmlopt, node,
+                                                          ctxt, def, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
@@ -15170,8 +15193,8 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_CONTROLLER:
-        if (!(dev->data.controller = virDomainControllerDefParseXML(node, ctxt,
-                                                                    flags)))
+        if (!(dev->data.controller = virDomainControllerDefParseXML(xmlopt, node,
+                                                                    ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_GRAPHICS:
@@ -15179,7 +15202,7 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_HUB:
-        if (!(dev->data.hub = virDomainHubDefParseXML(node, flags)))
+        if (!(dev->data.hub = virDomainHubDefParseXML(xmlopt, node, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_REDIRDEV:
@@ -15207,29 +15230,32 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
-        if (!(dev->data.memballoon = virDomainMemballoonDefParseXML(node,
+        if (!(dev->data.memballoon = virDomainMemballoonDefParseXML(xmlopt,
+                                                                    node,
                                                                     ctxt,
                                                                     flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_NVRAM:
-        if (!(dev->data.nvram = virDomainNVRAMDefParseXML(node, flags)))
+        if (!(dev->data.nvram = virDomainNVRAMDefParseXML(xmlopt, node, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_SHMEM:
-        if (!(dev->data.shmem = virDomainShmemDefParseXML(node, ctxt, flags)))
+        if (!(dev->data.shmem = virDomainShmemDefParseXML(xmlopt, node,
+                                                          ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_TPM:
-        if (!(dev->data.tpm = virDomainTPMDefParseXML(node, ctxt, flags)))
+        if (!(dev->data.tpm = virDomainTPMDefParseXML(xmlopt, node, ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_PANIC:
-        if (!(dev->data.panic = virDomainPanicDefParseXML(node, flags)))
+        if (!(dev->data.panic = virDomainPanicDefParseXML(xmlopt, node, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
-        if (!(dev->data.memory = virDomainMemoryDefParseXML(node, ctxt, flags)))
+        if (!(dev->data.memory = virDomainMemoryDefParseXML(xmlopt, node,
+                                                            ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_IOMMU:
@@ -18843,7 +18869,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainControllerDefPtr controller = virDomainControllerDefParseXML(nodes[i],
+        virDomainControllerDefPtr controller = virDomainControllerDefParseXML(xmlopt,
+                                                                              nodes[i],
                                                                               ctxt,
                                                                               flags);
 
@@ -18909,7 +18936,9 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->fss, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        virDomainFSDefPtr fs = virDomainFSDefParseXML(nodes[i], ctxt,
+        virDomainFSDefPtr fs = virDomainFSDefParseXML(xmlopt,
+                                                      nodes[i],
+                                                      ctxt,
                                                       flags);
         if (!fs)
             goto error;
@@ -19073,7 +19102,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainInputDefPtr input = virDomainInputDefParseXML(def,
+        virDomainInputDefPtr input = virDomainInputDefParseXML(xmlopt,
+                                                               def,
                                                                nodes[i],
                                                                ctxt,
                                                                flags);
@@ -19115,7 +19145,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->sounds, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        virDomainSoundDefPtr sound = virDomainSoundDefParseXML(nodes[i],
+        virDomainSoundDefPtr sound = virDomainSoundDefParseXML(xmlopt,
+                                                               nodes[i],
                                                                ctxt,
                                                                flags);
         if (!sound)
@@ -19134,7 +19165,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         virDomainVideoDefPtr video;
         ssize_t insertAt = -1;
 
-        if (!(video = virDomainVideoDefParseXML(nodes[i], ctxt, def, flags)))
+        if (!(video = virDomainVideoDefParseXML(xmlopt, nodes[i],
+                                                ctxt, def, flags)))
             goto error;
 
         if (video->primary) {
@@ -19203,8 +19235,9 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n > 0) {
-        virDomainWatchdogDefPtr watchdog =
-            virDomainWatchdogDefParseXML(nodes[0], flags);
+        virDomainWatchdogDefPtr watchdog;
+
+        watchdog = virDomainWatchdogDefParseXML(xmlopt, nodes[0], flags);
         if (!watchdog)
             goto error;
 
@@ -19222,8 +19255,9 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
     if (n > 0) {
-        virDomainMemballoonDefPtr memballoon =
-            virDomainMemballoonDefParseXML(nodes[0], ctxt, flags);
+        virDomainMemballoonDefPtr memballoon;
+
+        memballoon = virDomainMemballoonDefParseXML(xmlopt, nodes[0], ctxt, flags);
         if (!memballoon)
             goto error;
 
@@ -19257,7 +19291,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
 
     if (n > 0) {
-        if (!(def->tpm = virDomainTPMDefParseXML(nodes[0], ctxt, flags)))
+        if (!(def->tpm = virDomainTPMDefParseXML(xmlopt, nodes[0], ctxt, flags)))
             goto error;
     }
     VIR_FREE(nodes);
@@ -19271,7 +19305,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     } else if (n == 1) {
         virDomainNVRAMDefPtr nvram =
-            virDomainNVRAMDefParseXML(nodes[0], flags);
+            virDomainNVRAMDefParseXML(xmlopt, nodes[0], flags);
         if (!nvram)
             goto error;
         def->nvram = nvram;
@@ -19284,7 +19318,9 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->hubs, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        virDomainHubDefPtr hub = virDomainHubDefParseXML(nodes[i], flags);
+        virDomainHubDefPtr hub;
+
+        hub = virDomainHubDefParseXML(xmlopt, nodes[i], flags);
         if (!hub)
             goto error;
 
@@ -19340,7 +19376,9 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->panics, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        virDomainPanicDefPtr panic = virDomainPanicDefParseXML(nodes[i], flags);
+        virDomainPanicDefPtr panic;
+
+        panic = virDomainPanicDefParseXML(xmlopt, nodes[i], flags);
         if (!panic)
             goto error;
 
@@ -19358,7 +19396,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     for (i = 0; i < n; i++) {
         virDomainShmemDefPtr shmem;
         ctxt->node = nodes[i];
-        shmem = virDomainShmemDefParseXML(nodes[i], ctxt, flags);
+        shmem = virDomainShmemDefParseXML(xmlopt, nodes[i], ctxt, flags);
         if (!shmem)
             goto error;
 
@@ -19374,7 +19412,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainMemoryDefPtr mem = virDomainMemoryDefParseXML(nodes[i],
+        virDomainMemoryDefPtr mem = virDomainMemoryDefParseXML(xmlopt,
+                                                               nodes[i],
                                                                ctxt,
                                                                flags);
         if (!mem)
