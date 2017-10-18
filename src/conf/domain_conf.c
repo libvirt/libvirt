@@ -5962,10 +5962,9 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
 
         virBufferAddLit(buf, "/>\n");
     }
-    if (info->alias &&
-        !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
+
+    if (info->alias)
         virBufferAsprintf(buf, "<alias name='%s'/>\n", info->alias);
-    }
 
     if (info->mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB) {
         virBufferAsprintf(buf, "<master startport='%d'/>\n",
