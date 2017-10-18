@@ -3751,6 +3751,9 @@ static int qemuComparePCIDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
 static bool qemuIsMultiFunctionDevice(virDomainDefPtr def,
                                       virDomainDeviceInfoPtr dev)
 {
+    if (dev->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+        return false;
+
     if (virDomainDeviceInfoIterate(def, qemuComparePCIDevice, dev) < 0)
         return true;
     return false;
@@ -4852,8 +4855,7 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (detach->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-        qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
+    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("cannot hot unplug multifunction PCI device: %s"),
                        dev->data.disk->dst);
