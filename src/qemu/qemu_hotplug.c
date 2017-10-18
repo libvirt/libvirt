@@ -4634,23 +4634,6 @@ qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (qemuDomainIsS390CCW(vm->def) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
-        if (!virDomainDeviceAddressIsValid(&detach->info,
-                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("device cannot be detached without a valid CCW address"));
-            goto cleanup;
-        }
-    } else {
-        if (!virDomainDeviceAddressIsValid(&detach->info,
-                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("device cannot be detached without a valid PCI address"));
-            goto cleanup;
-        }
-    }
-
     if (!detach->info.alias) {
         if (qemuAssignDeviceDiskAlias(vm->def, detach, priv->qemuCaps) < 0)
             goto cleanup;
@@ -4905,13 +4888,6 @@ qemuDomainDetachHostPCIDevice(virQEMUDriverPtr driver,
                        _("cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"),
                        pcisrc->addr.domain, pcisrc->addr.bus,
                        pcisrc->addr.slot, pcisrc->addr.function);
-        return -1;
-    }
-
-    if (!virDomainDeviceAddressIsValid(detach->info,
-                                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("device cannot be detached without a PCI address"));
         return -1;
     }
 
@@ -5240,28 +5216,12 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
                                              virDomainNetGetActualHostdev(detach));
         goto cleanup;
     }
-    if (qemuDomainIsS390CCW(vm->def) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
-        if (!virDomainDeviceAddressIsValid(&detach->info,
-                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s", _("device cannot be detached without a CCW address"));
-            goto cleanup;
-        }
-    } else {
-        if (!virDomainDeviceAddressIsValid(&detach->info,
-                                           VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                            "%s", _("device cannot be detached without a PCI address"));
-            goto cleanup;
-        }
 
-        if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                            _("cannot hot unplug multifunction PCI device :%s"),
-                            dev->data.disk->dst);
-            goto cleanup;
-        }
+    if (qemuIsMultiFunctionDevice(vm->def, &detach->info)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("cannot hot unplug multifunction PCI device :%s"),
+                       dev->data.disk->dst);
+        goto cleanup;
     }
 
     if (!detach->info.alias) {
