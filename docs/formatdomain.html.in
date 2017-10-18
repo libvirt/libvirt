@@ -2256,6 +2256,29 @@
       </dd>
     </dl>
 
+    <p>
+      To help users identifying devices they care about, every
+      device can have direct child <code>alias</code> element
+      which then has <code>name</code> attribute where users can
+      store identifier for the device. The identifier has to have
+      "ua-" prefix and must be unique within the domain. Additionally, the
+      identifier must consist only of the following characters:
+      <code>[a-zA-Z0-9_-]</code>.
+      <span class="since">Since 3.9.0</span>
+    </p>
+
+<pre>
+&lt;devices&gt;
+  &lt;disk type='file'&gt;
+    &lt;alias name='ua-myDisk'/&gt;
+  &lt;/disk&gt;
+  &lt;interface type='network' trustGuestRxFilters='yes'&gt;
+    &lt;alias name='ua-myNIC'/&gt;
+  &lt;/interface&gt;
+  ...
+&lt;/devices&gt;
+</pre>
+
     <h4><a id="elementsDisks">Hard drives, floppy disks, CDROMs</a></h4>
 
     <p>
