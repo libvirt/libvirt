@@ -3872,8 +3872,36 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                qemuMigrationSetOffline(driver, vm) < 0) {
         goto cancelPostCopy;
     }
-    if (priv->job.completed)
+
+    if (mig && mig->nbd &&
+        qemuMigrationCancelDriveMirror(driver, vm, true,
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                       dconn) < 0)
+        goto cancelPostCopy;
+
+    if (iothread) {
+        qemuMigrationIOThreadPtr io;
+
+        VIR_STEAL_PTR(io, iothread);
+        if (qemuMigrationStopTunnel(io, false) < 0)
+            goto cancelPostCopy;
+    }
+
+    if (priv->job.completed) {
         priv->job.completed->stopped = priv->job.current->stopped;
+        qemuDomainJobInfoUpdateTime(priv->job.completed);
+        qemuDomainJobInfoUpdateDowntime(priv->job.completed);
+        ignore_value(virTimeMillisNow(&priv->job.completed->sent));
+    }
+
+    cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK |
+                   QEMU_MIGRATION_COOKIE_STATS;
+
+    if (qemuMigrationCookieAddPersistent(mig, &persistDef) < 0 ||
+        qemuMigrationBakeCookie(mig, driver, vm, cookieout,
+                                cookieoutlen, cookieFlags) < 0) {
+        VIR_WARN("Unable to encode migration cookie");
+    }
 
     ret = 0;
 
@@ -3882,42 +3910,23 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         orig_err = virSaveLastError();
 
     /* cancel any outstanding NBD jobs */
-    if (mig && mig->nbd) {
-        if (qemuMigrationCancelDriveMirror(driver, vm, ret == 0,
-                                           QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                           dconn) < 0)
-            ret = -1;
-    }
+    if (ret < 0 && mig && mig->nbd)
+        qemuMigrationCancelDriveMirror(driver, vm, false,
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                       dconn);
 
     VIR_FREE(tlsAlias);
     VIR_FREE(secAlias);
     virObjectUnref(cfg);
 
-    if (spec->fwdType != MIGRATION_FWD_DIRECT) {
-        if (iothread && qemuMigrationStopTunnel(iothread, ret < 0) < 0)
-            ret = -1;
-    }
-    VIR_FORCE_CLOSE(fd);
+    if (ret < 0 && iothread)
+        qemuMigrationStopTunnel(iothread, true);
 
-    if (priv->job.completed) {
-        qemuDomainJobInfoUpdateTime(priv->job.completed);
-        qemuDomainJobInfoUpdateDowntime(priv->job.completed);
-        ignore_value(virTimeMillisNow(&priv->job.completed->sent));
-    }
+    VIR_FORCE_CLOSE(fd);
 
     if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE ||
         priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_MIGRATING)
         priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
-
-    cookieFlags |= QEMU_MIGRATION_COOKIE_NETWORK |
-                   QEMU_MIGRATION_COOKIE_STATS;
-
-    if (ret == 0 &&
-        (qemuMigrationCookieAddPersistent(mig, &persistDef) < 0 ||
-         qemuMigrationBakeCookie(mig, driver, vm, cookieout,
-                                 cookieoutlen, cookieFlags) < 0)) {
-        VIR_WARN("Unable to encode migration cookie");
-    }
 
     virDomainDefFree(persistDef);
     qemuMigrationCookieFree(mig);
