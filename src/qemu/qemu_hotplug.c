@@ -656,94 +656,24 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
 
 
 static int
-qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
+qemuDomainAttachUSBMassStorageDevice(virConnectPtr conn,
+                                     virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainDiskDefPtr disk)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virErrorPtr orig_err;
-    int ret = -1;
-    char *drivealias = NULL;
-    char *drivestr = NULL;
-    char *devstr = NULL;
-    bool driveAdded = false;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    bool releaseaddr = false;
 
     if (priv->usbaddrs) {
         if (virDomainUSBAddressEnsure(priv->usbaddrs, &disk->info) < 0)
-            goto cleanup;
-        releaseaddr = true;
+            return -1;
     }
 
-    if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
-        goto cleanup;
-
-    if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
-        goto error;
-
-    if (qemuDomainPrepareDiskSourceTLS(disk->src, disk->info.alias, cfg) < 0)
-        goto error;
-
-    if (disk->src->haveTLS &&
-        qemuDomainAddDiskSrcTLSObject(driver, vm, disk->src,
-                                      disk->info.alias) < 0)
-        goto error;
-
-    if (!(drivestr = qemuBuildDriveStr(disk, cfg, false, priv->qemuCaps)))
-        goto error;
-
-    if (!(drivealias = qemuAliasFromDisk(disk)))
-        goto error;
-
-    if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
-        goto error;
-
-    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
-        goto error;
-
-    qemuDomainObjEnterMonitor(driver, vm);
-
-    if (qemuMonitorAddDrive(priv->mon, drivestr) < 0)
-        goto exit_monitor;
-    driveAdded = true;
-
-    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
-        goto exit_monitor;
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto error;
-
-    virDomainAuditDisk(vm, NULL, disk->src, "attach", true);
-
-    virDomainDiskInsertPreAlloced(vm->def, disk);
-    ret = 0;
-
- cleanup:
-    if (ret < 0 && releaseaddr)
+    if (qemuDomainAttachDiskGeneric(conn, driver, vm, disk) < 0) {
         virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
-    VIR_FREE(devstr);
-    VIR_FREE(drivealias);
-    VIR_FREE(drivestr);
-    virObjectUnref(cfg);
-    return ret;
-
- exit_monitor:
-    virErrorPreserveLast(&orig_err);
-    if (driveAdded && qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
-        VIR_WARN("Unable to remove drive %s (%s) after failed "
-                 "qemuMonitorAddDevice", drivealias, drivestr);
+        return -1;
     }
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    virErrorRestore(&orig_err);
 
-    virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
-
- error:
-    qemuDomainDelDiskSrcTLSObject(driver, vm, disk->src);
-
-    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
-    goto cleanup;
+    return 0;
 }
 
 
@@ -813,7 +743,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                                _("disk device='lun' is not supported for usb bus"));
                 break;
             }
-            ret = qemuDomainAttachUSBMassStorageDevice(driver, vm, disk);
+            ret = qemuDomainAttachUSBMassStorageDevice(conn, driver, vm, disk);
             break;
 
         case VIR_DOMAIN_DISK_BUS_VIRTIO:
