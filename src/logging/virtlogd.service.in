@@ -15,9 +15,11 @@ ExecReload=/bin/kill -USR1 $MAINPID
 OOMScoreAdjust=-900
 # Need to have at least one file open per guest (eg QEMU
 # stdio log), but might be more (eg serial console logs)
+# A common case is OpenStack which often has up to 4 file
+# handles per guest.
 # libvirtd.service written to expect 4096 guests, so if we
-# guess at 2 log files per guest here (stdio + 1 serial):
-LimitNOFILE=8192
+# guess at 4 files per guest here that is 16k:
+LimitNOFILE=16384
 
 [Install]
 Also=virtlogd.socket
