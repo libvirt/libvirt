@@ -2892,11 +2892,8 @@ qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
     if (!devstr)
         devstr = info->alias;
 
-    if (virDeviceInfoPCIAddressPresent(info) &&
-        virDomainPCIAddressReleaseAddr(priv->pciaddrs,
-                                       &info->addr.pci) < 0)
-        VIR_WARN("Unable to release PCI address on %s",
-                 NULLSTR(devstr));
+    if (virDeviceInfoPCIAddressPresent(info))
+        virDomainPCIAddressReleaseAddr(priv->pciaddrs, &info->addr.pci);
 
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB &&
         priv->usbaddrs &&

@@ -687,12 +687,11 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
 }
 
 
-int
+void
 virDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr addr)
 {
     addrs->buses[addr->bus].slot[addr->slot].functions &= ~(1 << addr->function);
-    return 0;
 }
 
 virDomainPCIAddressSetPtr

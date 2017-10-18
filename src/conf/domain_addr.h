@@ -166,8 +166,8 @@ int virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
                                   virDomainPCIConnectFlags flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int virDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
-                                   virPCIDeviceAddressPtr addr)
+void virDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
+                                    virPCIDeviceAddressPtr addr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void virDomainPCIAddressSetAllMulti(virDomainDefPtr def)
