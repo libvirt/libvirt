@@ -364,7 +364,6 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     bool secobjAdded = false;
     bool encobjAdded = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    const char *src = virDomainDiskGetSource(disk);
     virJSONValuePtr secobjProps = NULL;
     virJSONValuePtr encobjProps = NULL;
     qemuDomainDiskPrivatePtr diskPriv;
@@ -481,7 +480,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     qemuDomainDelDiskSrcTLSObject(driver, vm, disk->src);
 
     if (releaseaddr)
-        qemuDomainReleaseDeviceAddress(vm, &disk->info, src);
+        qemuDomainReleaseDeviceAddress(vm, &disk->info, disk->dst);
 
     ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
     goto cleanup;
@@ -855,12 +854,11 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
     int ret = -1;
-    const char *src = virDomainDiskGetSource(disk);
 
     if (STRNEQ_NULLABLE(virDomainDiskGetDriver(disk), "qemu")) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported driver name '%s' for disk '%s'"),
-                       virDomainDiskGetDriver(disk), src);
+                       virDomainDiskGetDriver(disk), disk->dst);
         goto cleanup;
     }
 
