@@ -627,32 +627,13 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
                          virDomainDiskDefPtr disk)
 {
     size_t i;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virErrorPtr orig_err;
-    char *drivestr = NULL;
-    char *devstr = NULL;
-    bool driveAdded = false;
-    bool encobjAdded = false;
-    bool secobjAdded = false;
-    char *drivealias = NULL;
-    int ret = -1;
-    int rv;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virJSONValuePtr encobjProps = NULL;
-    virJSONValuePtr secobjProps = NULL;
-    qemuDomainDiskPrivatePtr diskPriv;
-    qemuDomainSecretInfoPtr encinfo;
-    qemuDomainSecretInfoPtr secinfo;
-
-    if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
-        goto cleanup;
 
     /* We should have an address already, so make sure */
     if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected disk address type %s"),
                        virDomainDeviceAddressTypeToString(disk->info.type));
-        goto error;
+        return -1;
     }
 
     /* Let's make sure the disk has a controller defined and loaded before
@@ -664,111 +645,13 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
      */
     for (i = 0; i <= disk->info.addr.drive.controller; i++) {
         if (!qemuDomainFindOrCreateSCSIDiskController(driver, vm, i))
-            goto error;
+            return -1;
     }
 
-    if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
-        goto error;
+    if (qemuDomainAttachDiskGeneric(conn, driver, vm, disk) < 0)
+        return -1;
 
-    if (qemuDomainSecretDiskPrepare(conn, priv, disk) < 0)
-        goto error;
-
-    diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    secinfo = diskPriv->secinfo;
-    if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
-        if (qemuBuildSecretInfoProps(secinfo, &secobjProps) < 0)
-            goto error;
-    }
-
-    encinfo = diskPriv->encinfo;
-    if (encinfo && qemuBuildSecretInfoProps(encinfo, &encobjProps) < 0)
-        goto error;
-
-    if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
-        goto error;
-
-    if (qemuDomainPrepareDiskSourceTLS(disk->src, disk->info.alias, cfg) < 0)
-        goto error;
-
-    if (disk->src->haveTLS &&
-        qemuDomainAddDiskSrcTLSObject(driver, vm, disk->src,
-                                      disk->info.alias) < 0)
-        goto error;
-
-    if (!(drivestr = qemuBuildDriveStr(disk, cfg, false, priv->qemuCaps)))
-        goto error;
-
-    if (!(drivealias = qemuAliasFromDisk(disk)))
-        goto error;
-
-    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
-        goto error;
-
-    qemuDomainObjEnterMonitor(driver, vm);
-
-    if (secobjProps) {
-        rv = qemuMonitorAddObject(priv->mon, "secret", secinfo->s.aes.alias,
-                                  secobjProps);
-        secobjProps = NULL; /* qemuMonitorAddObject consumes */
-        if (rv < 0)
-            goto exit_monitor;
-        secobjAdded = true;
-    }
-
-    if (encobjProps) {
-        rv = qemuMonitorAddObject(priv->mon, "secret", encinfo->s.aes.alias,
-                                  encobjProps);
-        encobjProps = NULL; /* qemuMonitorAddObject consumes */
-        if (rv < 0)
-            goto exit_monitor;
-        encobjAdded = true;
-    }
-
-    if (qemuMonitorAddDrive(priv->mon, drivestr) < 0)
-        goto exit_monitor;
-    driveAdded = true;
-
-    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
-        goto exit_monitor;
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto error;
-
-    virDomainAuditDisk(vm, NULL, disk->src, "attach", true);
-
-    virDomainDiskInsertPreAlloced(vm->def, disk);
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(secobjProps);
-    virJSONValueFree(encobjProps);
-    qemuDomainSecretDiskDestroy(disk);
-    VIR_FREE(devstr);
-    VIR_FREE(drivestr);
-    VIR_FREE(drivealias);
-    virObjectUnref(cfg);
-    return ret;
-
- exit_monitor:
-    virErrorPreserveLast(&orig_err);
-    if (driveAdded && qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
-        VIR_WARN("Unable to remove drive %s (%s) after failed "
-                 "qemuMonitorAddDevice", drivealias, drivestr);
-    }
-    if (secobjAdded)
-        ignore_value(qemuMonitorDelObject(priv->mon, secinfo->s.aes.alias));
-    if (encobjAdded)
-        ignore_value(qemuMonitorDelObject(priv->mon, encinfo->s.aes.alias));
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    virErrorRestore(&orig_err);
-
-    virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
-
- error:
-    qemuDomainDelDiskSrcTLSObject(driver, vm, disk->src);
-
-    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
-    goto cleanup;
+    return 0;
 }
 
 
