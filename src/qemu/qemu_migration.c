@@ -3793,16 +3793,17 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         VIR_FREE(timestamp);
     }
 
+    rc = -1;
     switch (spec->destType) {
     case MIGRATION_DEST_HOST:
         if (STREQ(spec->dest.host.protocol, "rdma") &&
             virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
             goto exit_monitor;
         }
-        ret = qemuMonitorMigrateToHost(priv->mon, migrate_flags,
-                                       spec->dest.host.protocol,
-                                       spec->dest.host.name,
-                                       spec->dest.host.port);
+        rc = qemuMonitorMigrateToHost(priv->mon, migrate_flags,
+                                      spec->dest.host.protocol,
+                                      spec->dest.host.name,
+                                      spec->dest.host.port);
         break;
 
     case MIGRATION_DEST_CONNECT_HOST:
@@ -3814,16 +3815,14 @@ qemuMigrationRun(virQEMUDriverPtr driver,
             fd = spec->dest.fd.local;
             spec->dest.fd.local = -1;
         }
-        ret = qemuMonitorMigrateToFd(priv->mon, migrate_flags,
-                                     spec->dest.fd.qemu);
+        rc = qemuMonitorMigrateToFd(priv->mon, migrate_flags,
+                                    spec->dest.fd.qemu);
         VIR_FORCE_CLOSE(spec->dest.fd.qemu);
         break;
     }
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-    if (ret < 0)
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         goto error;
-    ret = -1;
 
     /* From this point onwards we *must* call cancel to abort the
      * migration on source if anything goes wrong */
