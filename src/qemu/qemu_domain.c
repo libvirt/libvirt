@@ -4176,7 +4176,8 @@ virDomainDefParserConfig virQEMUDriverDomainDefParserConfig = {
 
     .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG |
                 VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN |
-                VIR_DOMAIN_DEF_FEATURE_INDIVIDUAL_VCPUS,
+                VIR_DOMAIN_DEF_FEATURE_INDIVIDUAL_VCPUS |
+                VIR_DOMAIN_DEF_FEATURE_USER_ALIAS,
 };
 
 
