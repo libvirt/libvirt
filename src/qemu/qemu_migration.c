@@ -3943,9 +3943,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     if (iothread)
         qemuMigrationStopTunnel(iothread, true);
 
-    if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE ||
-        priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_MIGRATING ||
-        priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY)
+    if (priv->job.current->status != QEMU_DOMAIN_JOB_STATUS_CANCELED)
         priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
 
     goto cleanup;
