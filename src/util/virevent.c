@@ -241,7 +241,7 @@ void virEventRegisterImpl(virEventAddHandleFunc addHandle,
               addTimeout, updateTimeout, removeTimeout);
 
     if (addHandleImpl || updateHandleImpl || removeHandleImpl ||
-        addTimeoutImpl || updateTimeoutImpl || removeHandleImpl) {
+        addTimeoutImpl || updateTimeoutImpl || removeTimeoutImpl) {
         VIR_WARN("Ignoring attempt to replace registered event loop");
         return;
     }
