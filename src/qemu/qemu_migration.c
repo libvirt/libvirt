@@ -3770,12 +3770,11 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         /* explicitly do this *after* we entered the monitor,
          * as this is a critical section so we are guaranteed
          * priv->job.abortJob will not change */
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
         priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_CANCELED;
         virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                        qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
                        _("canceled by client"));
-        goto error;
+        goto exit_monitor;
     }
 
     if (qemuMonitorSetMigrationSpeed(priv->mon, migrate_speed) < 0)
