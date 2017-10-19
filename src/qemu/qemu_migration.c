@@ -3621,7 +3621,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     unsigned int cookieFlags = 0;
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
-    bool inPostCopy = false;
+    bool cancel = false;
     unsigned int waitFlags;
     virDomainDefPtr persistDef = NULL;
     char *timestamp;
@@ -3827,10 +3827,11 @@ qemuMigrationRun(virQEMUDriverPtr driver,
 
     /* From this point onwards we *must* call cancel to abort the
      * migration on source if anything goes wrong */
+    cancel = true;
 
     if (spec->fwdType != MIGRATION_FWD_DIRECT) {
         if (!(iothread = qemuMigrationStartTunnel(spec->fwd.stream, fd)))
-            goto cancel;
+            goto error;
         /* If we've created a tunnel, then the 'fd' will be closed in the
          * qemuMigrationIOFunc as data->sock.
          */
@@ -3848,13 +3849,13 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     rc = qemuMigrationWaitForCompletion(driver, vm,
                                         QEMU_ASYNC_JOB_MIGRATION_OUT,
                                         dconn, waitFlags);
-    if (rc == -2)
-        goto cancel;
-    else if (rc == -1)
+    if (rc == -2) {
         goto error;
-
-    if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY)
-        inPostCopy = true;
+    } else if (rc == -1) {
+        /* QEMU reported failed migration, nothing to cancel anymore */
+        cancel = false;
+        goto error;
+    }
 
     /* When migration completed, QEMU will have paused the CPUs for us.
      * Wait for the STOP event to be processed or explicitly stop CPUs
@@ -3866,25 +3867,25 @@ qemuMigrationRun(virQEMUDriverPtr driver,
             rc = virDomainObjWait(vm);
             priv->signalStop = false;
             if (rc < 0)
-                goto cancelPostCopy;
+                goto error;
         }
     } else if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING &&
                qemuMigrationSetOffline(driver, vm) < 0) {
-        goto cancelPostCopy;
+        goto error;
     }
 
     if (mig && mig->nbd &&
         qemuMigrationCancelDriveMirror(driver, vm, true,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT,
                                        dconn) < 0)
-        goto cancelPostCopy;
+        goto error;
 
     if (iothread) {
         qemuMigrationIOThreadPtr io;
 
         VIR_STEAL_PTR(io, iothread);
         if (qemuMigrationStopTunnel(io, false) < 0)
-            goto cancelPostCopy;
+            goto error;
     }
 
     if (priv->job.completed) {
@@ -3924,8 +3925,16 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     return ret;
 
  error:
-    if (!orig_err)
-        orig_err = virSaveLastError();
+    orig_err = virSaveLastError();
+
+    if (cancel &&
+        priv->job.current->status != QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED &&
+        virDomainObjIsActive(vm) &&
+        qemuDomainObjEnterMonitorAsync(driver, vm,
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
+        qemuMonitorMigrateCancel(priv->mon);
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    }
 
     /* cancel any outstanding NBD jobs */
     if (mig && mig->nbd)
@@ -3937,7 +3946,8 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         qemuMigrationStopTunnel(iothread, true);
 
     if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE ||
-        priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_MIGRATING)
+        priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_MIGRATING ||
+        priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY)
         priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
 
     goto cleanup;
@@ -3945,25 +3955,6 @@ qemuMigrationRun(virQEMUDriverPtr driver,
  exit_monitor:
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
     goto error;
-
- cancel:
-    orig_err = virSaveLastError();
-
-    if (virDomainObjIsActive(vm)) {
-        if (qemuDomainObjEnterMonitorAsync(driver, vm,
-                                           QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
-            qemuMonitorMigrateCancel(priv->mon);
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
-        }
-    }
-    goto error;
-
- cancelPostCopy:
-    priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
-    if (inPostCopy)
-        goto cancel;
-    else
-        goto error;
 }
 
 /* Perform migration using QEMU's native migrate support,
