@@ -147,6 +147,7 @@ struct _virDomainCaps {
 
     /* Some machine specific info */
     int maxvcpus;
+    bool iothreads;  /* Whether I/O threads are supported or not. */
 
     virDomainCapsOS os;
     virDomainCapsCPU cpu;

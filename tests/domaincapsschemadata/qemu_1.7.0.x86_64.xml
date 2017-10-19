@@ -4,6 +4,7 @@
   <machine>pc-i440fx-1.7</machine>
   <arch>x86_64</arch>
   <vcpu max='255'/>
+  <iothreads supported='no'/>
   <os supported='yes'>
     <loader supported='yes'>
       <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>

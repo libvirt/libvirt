@@ -4640,6 +4640,16 @@ virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
 
 
 static int
+virQEMUCapsFillDomainIOThreadCaps(virQEMUCapsPtr qemuCaps,
+                                  virDomainCapsPtr domCaps)
+{
+    domCaps->iothreads = virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD);
+
+    return 0;
+}
+
+
+static int
 virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
                                     const char *machine,
                                     virDomainCapsDeviceDiskPtr disk)
@@ -4873,6 +4883,7 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
 
     if (virQEMUCapsFillDomainOSCaps(os, firmwares, nfirmwares) < 0 ||
         virQEMUCapsFillDomainCPUCaps(caps, qemuCaps, domCaps) < 0 ||
+        virQEMUCapsFillDomainIOThreadCaps(qemuCaps, domCaps) < 0 ||
         virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps,
                                             domCaps->machine, disk) < 0 ||
         virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics) < 0 ||

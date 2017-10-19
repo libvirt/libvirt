@@ -29,6 +29,9 @@
           <ref name='vcpu'/>
         </optional>
         <optional>
+          <ref name='iothreads'/>
+        </optional>
+        <optional>
           <ref name='os'/>
         </optional>
         <optional>
@@ -49,6 +52,13 @@
       <attribute name='max'>
         <ref name='unsignedInt'/>
       </attribute>
+      <empty/>
+    </element>
+  </define>
+
+  <define name='iothreads'>
+    <element name='iothreads'>
+      <ref name='supported'/>
       <empty/>
     </element>
   </define>

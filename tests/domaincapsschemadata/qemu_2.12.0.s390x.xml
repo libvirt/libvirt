@@ -4,6 +4,7 @@
   <machine>s390-ccw-virtio-2.12</machine>
   <arch>s390x</arch>
   <vcpu max='248'/>
+  <iothreads supported='yes'/>
   <os supported='yes'>
     <loader supported='yes'>
       <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>

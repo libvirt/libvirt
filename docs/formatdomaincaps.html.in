@@ -208,6 +208,22 @@
       </dd>
     </dl>
 
+    <h3><a id="elementsIothread">CPU configuration</a></h3>
+
+    <p>
+      The <code>iothread</code> elements indicates whether or not
+      <a href="formatdomain.html#elementsIOThreadsAllocation">I/O threads</a>
+      are supported.
+    </p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;iothread supported='yes'/&gt;
+  ...
+&lt;domainCapabilities&gt;
+</pre>
+
     <h3><a id="elementsDevices">Devices</a></h3>
 
     <p>

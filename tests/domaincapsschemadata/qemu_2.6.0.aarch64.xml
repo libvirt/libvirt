@@ -4,6 +4,7 @@
   <machine>integratorcp</machine>
   <arch>aarch64</arch>
   <vcpu max='1'/>
+  <iothreads supported='yes'/>
   <os supported='yes'>
     <loader supported='yes'>
       <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>

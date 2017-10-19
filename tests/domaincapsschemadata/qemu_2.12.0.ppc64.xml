@@ -4,6 +4,7 @@
   <machine>pseries-2.12</machine>
   <arch>ppc64</arch>
   <vcpu max='1024'/>
+  <iothreads supported='yes'/>
   <os supported='yes'>
     <loader supported='yes'>
       <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>

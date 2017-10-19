@@ -562,6 +562,9 @@ virDomainCapsFormat(virDomainCapsPtr const caps)
     if (caps->maxvcpus)
         virBufferAsprintf(&buf, "<vcpu max='%d'/>\n", caps->maxvcpus);
 
+    virBufferAsprintf(&buf, "<iothreads supported='%s'/>\n",
+                      caps->iothreads ? "yes" : "no");
+
     virDomainCapsOSFormat(&buf, &caps->os);
     virDomainCapsCPUFormat(&buf, &caps->cpu);
 
