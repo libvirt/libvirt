@@ -704,6 +704,77 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src)
 }
 
 
+static virJSONValuePtr
+qemuBlockStorageSourceGetISCSIProps(virStorageSourcePtr src)
+{
+    qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+    const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
+    char *target = NULL;
+    char *lunStr = NULL;
+    char *username = NULL;
+    char *objalias = NULL;
+    char *portal = NULL;
+    unsigned int lun = 0;
+    virJSONValuePtr ret = NULL;
+
+    /* { driver:"iscsi",
+     *   transport:"tcp",  ("iser" also possible)
+     *   portal:"example.com",
+     *   target:"iqn.2017-04.com.example:iscsi-disks",
+     *   lun:1,
+     *   user:"username",
+     *   password-secret:"secret-alias",
+     * }
+     */
+
+    if (VIR_STRDUP(target, src->path) < 0)
+        goto cleanup;
+
+    /* Separate the target and lun */
+    if ((lunStr = strchr(target, '/'))) {
+        *(lunStr++) = '\0';
+        if (virStrToLong_ui(lunStr, NULL, 10, &lun) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse target for lunStr '%s'"),
+                           target);
+            goto cleanup;
+        }
+    }
+
+    /* combine host and port into portal */
+    if (virSocketAddrNumericFamily(src->hosts[0].name) == AF_INET6) {
+        if (virAsprintf(&portal, "[%s]:%u",
+                        src->hosts[0].name, src->hosts[0].port) < 0)
+            goto cleanup;
+    } else {
+        if (virAsprintf(&portal, "%s:%u",
+                        src->hosts[0].name, src->hosts[0].port) < 0)
+            goto cleanup;
+    }
+
+    if (src->auth) {
+        username = src->auth->username;
+        objalias = srcPriv->secinfo->s.aes.alias;
+    }
+
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:driver", protocol,
+                                          "s:portal", portal,
+                                          "s:target", target,
+                                          "u:lun", lun,
+                                          "s:transport", "tcp",
+                                          "S:user", username,
+                                          "S:password-secret", objalias,
+                                          NULL));
+        goto cleanup;
+
+ cleanup:
+    VIR_FREE(target);
+    VIR_FREE(portal);
+    return ret;
+}
+
+
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
@@ -753,10 +824,14 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
                 return NULL;
             break;
 
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+            if (!(fileprops = qemuBlockStorageSourceGetISCSIProps(src)))
+                return NULL;
+            break;
+
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_RBD:
         case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
-        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
         case VIR_STORAGE_NET_PROTOCOL_SSH:
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
