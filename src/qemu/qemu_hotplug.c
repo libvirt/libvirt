@@ -370,7 +370,6 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virJSONValuePtr secobjProps = NULL;
     virJSONValuePtr encobjProps = NULL;
-    qemuDomainDiskPrivatePtr diskPriv;
     qemuDomainStorageSourcePrivatePtr srcPriv;
     qemuDomainSecretInfoPtr secinfo;
     qemuDomainSecretInfoPtr encinfo;
@@ -384,7 +383,6 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
     if (qemuDomainSecretDiskPrepare(conn, priv, disk) < 0)
         goto error;
 
-    diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
     secinfo = srcPriv->secinfo;
     if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
@@ -392,7 +390,7 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
             goto error;
     }
 
-    encinfo = diskPriv->encinfo;
+    encinfo = srcPriv->encinfo;
     if (encinfo && qemuBuildSecretInfoProps(encinfo, &encobjProps) < 0)
         goto error;
 
