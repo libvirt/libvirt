@@ -40,6 +40,8 @@ struct _virInterfaceObj {
 };
 
 struct _virInterfaceObjList {
+    virObjectRWLockable parent;
+
     size_t count;
     virInterfaceObjPtr *objs;
 };
@@ -47,7 +49,9 @@ struct _virInterfaceObjList {
 /* virInterfaceObj manipulation */
 
 static virClassPtr virInterfaceObjClass;
+static virClassPtr virInterfaceObjListClass;
 static void virInterfaceObjDispose(void *obj);
+static void virInterfaceObjListDispose(void *obj);
 
 static int
 virInterfaceObjOnceInit(void)
@@ -56,6 +60,12 @@ virInterfaceObjOnceInit(void)
                                              "virInterfaceObj",
                                              sizeof(virInterfaceObj),
                                              virInterfaceObjDispose)))
+        return -1;
+
+    if (!(virInterfaceObjListClass = virClassNew(virClassForObjectRWLockable(),
+                                                 "virInterfaceObjList",
+                                                 sizeof(virInterfaceObjList),
+                                                 virInterfaceObjListDispose)))
         return -1;
 
     return 0;
@@ -130,8 +140,12 @@ virInterfaceObjListNew(void)
 {
     virInterfaceObjListPtr interfaces;
 
-    if (VIR_ALLOC(interfaces) < 0)
+    if (virInterfaceObjInitialize() < 0)
         return NULL;
+
+    if (!(interfaces = virObjectRWLockableNew(virInterfaceObjListClass)))
+        return NULL;
+
     return interfaces;
 }
 
@@ -145,6 +159,7 @@ virInterfaceObjListFindByMACString(virInterfaceObjListPtr interfaces,
     size_t i;
     int matchct = 0;
 
+    virObjectRWLockRead(interfaces);
     for (i = 0; i < interfaces->count; i++) {
         virInterfaceObjPtr obj = interfaces->objs[i];
         virInterfaceDefPtr def;
@@ -162,11 +177,13 @@ virInterfaceObjListFindByMACString(virInterfaceObjListPtr interfaces,
         }
         virObjectUnlock(obj);
     }
+    virObjectRWUnlock(interfaces);
     return matchct;
 
  error:
     while (--matchct >= 0)
         VIR_FREE(matches[matchct]);
+    virObjectRWUnlock(interfaces);
 
     return -1;
 }
@@ -178,30 +195,34 @@ virInterfaceObjListFindByName(virInterfaceObjListPtr interfaces,
 {
     size_t i;
 
+    virObjectRWLockRead(interfaces);
     for (i = 0; i < interfaces->count; i++) {
         virInterfaceObjPtr obj = interfaces->objs[i];
         virInterfaceDefPtr def;
 
         virObjectLock(obj);
         def = obj->def;
-        if (STREQ(def->name, name))
+        if (STREQ(def->name, name)) {
+            virObjectRWUnlock(interfaces);
             return virObjectRef(obj);
+        }
         virObjectUnlock(obj);
     }
+    virObjectRWUnlock(interfaces);
 
     return NULL;
 }
 
 
 void
-virInterfaceObjListFree(virInterfaceObjListPtr interfaces)
+virInterfaceObjListDispose(void *obj)
 {
     size_t i;
+    virInterfaceObjListPtr interfaces = obj;
 
     for (i = 0; i < interfaces->count; i++)
         virObjectUnref(interfaces->objs[i]);
     VIR_FREE(interfaces->objs);
-    VIR_FREE(interfaces);
 }
 
 
@@ -218,6 +239,7 @@ virInterfaceObjListClone(virInterfaceObjListPtr interfaces)
     if (!(dest = virInterfaceObjListNew()))
         return NULL;
 
+    virObjectRWLockRead(interfaces);
     cnt = interfaces->count;
     for (i = 0; i < cnt; i++) {
         virInterfaceObjPtr srcobj = interfaces->objs[i];
@@ -238,11 +260,13 @@ virInterfaceObjListClone(virInterfaceObjListPtr interfaces)
             goto error;
         virInterfaceObjEndAPI(&obj);
     }
+    virObjectRWUnlock(interfaces);
 
     return dest;
 
  error:
-    virInterfaceObjListFree(dest);
+    virObjectUnref(dest);
+    virObjectRWUnlock(interfaces);
     return NULL;
 }
 
@@ -263,12 +287,15 @@ virInterfaceObjListAssignDef(virInterfaceObjListPtr interfaces,
     if (!(obj = virInterfaceObjNew()))
         return NULL;
 
+    virObjectRWLockWrite(interfaces);
     if (VIR_APPEND_ELEMENT_COPY(interfaces->objs,
                                 interfaces->count, obj) < 0) {
         virInterfaceObjEndAPI(&obj);
+        virObjectRWUnlock(interfaces);
         return NULL;
     }
     obj->def = def;
+    virObjectRWUnlock(interfaces);
     return virObjectRef(obj);
 }
 
@@ -280,6 +307,7 @@ virInterfaceObjListRemove(virInterfaceObjListPtr interfaces,
     size_t i;
 
     virObjectUnlock(obj);
+    virObjectRWLockWrite(interfaces);
     for (i = 0; i < interfaces->count; i++) {
         virObjectLock(interfaces->objs[i]);
         if (interfaces->objs[i] == obj) {
@@ -291,6 +319,7 @@ virInterfaceObjListRemove(virInterfaceObjListPtr interfaces,
         }
         virObjectUnlock(interfaces->objs[i]);
     }
+    virObjectRWUnlock(interfaces);
 }
 
 
@@ -301,6 +330,7 @@ virInterfaceObjListNumOfInterfaces(virInterfaceObjListPtr interfaces,
     size_t i;
     int ninterfaces = 0;
 
+    virObjectRWLockRead(interfaces);
     for (i = 0; (i < interfaces->count); i++) {
         virInterfaceObjPtr obj = interfaces->objs[i];
         virObjectLock(obj);
@@ -308,6 +338,7 @@ virInterfaceObjListNumOfInterfaces(virInterfaceObjListPtr interfaces,
             ninterfaces++;
         virObjectUnlock(obj);
     }
+    virObjectRWUnlock(interfaces);
 
     return ninterfaces;
 }
@@ -322,6 +353,7 @@ virInterfaceObjListGetNames(virInterfaceObjListPtr interfaces,
     int nnames = 0;
     size_t i;
 
+    virObjectRWLockRead(interfaces);
     for (i = 0; i < interfaces->count && nnames < maxnames; i++) {
         virInterfaceObjPtr obj = interfaces->objs[i];
         virInterfaceDefPtr def;
@@ -337,6 +369,7 @@ virInterfaceObjListGetNames(virInterfaceObjListPtr interfaces,
         }
         virObjectUnlock(obj);
     }
+    virObjectRWUnlock(interfaces);
 
     return nnames;
 

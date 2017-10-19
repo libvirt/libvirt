@@ -936,7 +936,6 @@ virInterfaceObjListAssignDef;
 virInterfaceObjListClone;
 virInterfaceObjListFindByMACString;
 virInterfaceObjListFindByName;
-virInterfaceObjListFree;
 virInterfaceObjListGetNames;
 virInterfaceObjListNew;
 virInterfaceObjListNumOfInterfaces;

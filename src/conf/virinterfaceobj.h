@@ -57,9 +57,6 @@ virInterfaceObjListFindByName(virInterfaceObjListPtr interfaces,
 void
 virInterfaceObjFree(virInterfaceObjPtr obj);
 
-void
-virInterfaceObjListFree(virInterfaceObjListPtr vms);
-
 virInterfaceObjListPtr
 virInterfaceObjListClone(virInterfaceObjListPtr interfaces);
 

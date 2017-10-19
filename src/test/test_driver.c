@@ -154,7 +154,7 @@ testDriverFree(testDriverPtr driver)
     virObjectUnref(driver->domains);
     virNodeDeviceObjListFree(driver->devs);
     virObjectUnref(driver->networks);
-    virInterfaceObjListFree(driver->ifaces);
+    virObjectUnref(driver->ifaces);
     virStoragePoolObjListFree(&driver->pools);
     virObjectUnref(driver->eventState);
     virMutexUnlock(&driver->lock);
@@ -3878,7 +3878,7 @@ testInterfaceChangeCommit(virConnectPtr conn,
         goto cleanup;
     }
 
-    virInterfaceObjListFree(privconn->backupIfaces);
+    virObjectUnref(privconn->backupIfaces);
     privconn->transaction_running = false;
 
     ret = 0;
@@ -3908,7 +3908,7 @@ testInterfaceChangeRollback(virConnectPtr conn,
         goto cleanup;
     }
 
-    virInterfaceObjListFree(privconn->ifaces);
+    virObjectUnref(privconn->ifaces);
     privconn->ifaces = privconn->backupIfaces;
     privconn->backupIfaces = NULL;
 
