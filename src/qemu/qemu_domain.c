@@ -1369,6 +1369,61 @@ qemuDomainDiskHasEncryptionSecret(virStorageSourcePtr src)
 }
 
 
+/**
+ * qemuDomainSecretStorageSourcePrepare:
+ * @conn: connection object - for secret lookup
+ * @priv: domain private object
+ * @src: storage source struct to setup
+ * @authalias: prefix of the alias for secret holding authentication data
+ * @encalias: prefix of the alias for secret holding encryption password
+ *
+ * Prepares data necessary for encryption and authentication of @src. The two
+ * alias prefixes are provided since in the backing chain authentication belongs
+ * to the storage protocol data whereas encryption is relevant to the format
+ * driver in qemu. The two will have different node names.
+ *
+ * Returns 0 on success; -1 on error while reporting an libvirt error.
+ */
+static int
+qemuDomainSecretStorageSourcePrepare(virConnectPtr conn,
+                                     qemuDomainObjPrivatePtr priv,
+                                     virStorageSourcePtr src,
+                                     const char *authalias,
+                                     const char *encalias)
+{
+    qemuDomainStorageSourcePrivatePtr srcPriv;
+
+    if (!(src->privateData = qemuDomainStorageSourcePrivateNew()))
+        return -1;
+
+    srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
+    if (qemuDomainSecretDiskCapable(src)) {
+        virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
+
+        if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
+            usageType = VIR_SECRET_USAGE_TYPE_CEPH;
+
+        if (!(srcPriv->secinfo =
+              qemuDomainSecretInfoNew(conn, priv, authalias,
+                                      usageType, src->auth->username,
+                                      &src->auth->seclookupdef, false)))
+              return -1;
+    }
+
+    if (qemuDomainDiskHasEncryptionSecret(src)) {
+        if (!(srcPriv->encinfo =
+              qemuDomainSecretInfoNew(conn, priv, encalias,
+                                      VIR_SECRET_USAGE_TYPE_VOLUME, NULL,
+                                      &src->encryption->secrets[0]->seclookupdef,
+                                      true)))
+              return -1;
+    }
+
+    return 0;
+}
+
+
 /* qemuDomainSecretDiskPrepare:
  * @conn: Pointer to connection
  * @priv: pointer to domain private object
@@ -1378,42 +1433,15 @@ qemuDomainDiskHasEncryptionSecret(virStorageSourcePtr src)
  *
  * Returns 0 on success, -1 on failure
  */
+
 int
 qemuDomainSecretDiskPrepare(virConnectPtr conn,
                             qemuDomainObjPrivatePtr priv,
                             virDomainDiskDefPtr disk)
 {
-    virStorageSourcePtr src = disk->src;
-    qemuDomainStorageSourcePrivatePtr srcPriv;
-
-    if (!(disk->src->privateData = qemuDomainStorageSourcePrivateNew()))
-        return -1;
-
-    srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
-
-    if (qemuDomainSecretDiskCapable(src)) {
-        virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
-
-        if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
-            usageType = VIR_SECRET_USAGE_TYPE_CEPH;
-
-        if (!(srcPriv->secinfo =
-              qemuDomainSecretInfoNew(conn, priv, disk->info.alias,
-                                      usageType, src->auth->username,
-                                      &src->auth->seclookupdef, false)))
-              return -1;
-    }
-
-    if (qemuDomainDiskHasEncryptionSecret(src)) {
-        if (!(srcPriv->encinfo =
-              qemuDomainSecretInfoNew(conn, priv, disk->info.alias,
-                                      VIR_SECRET_USAGE_TYPE_VOLUME, NULL,
-                                      &src->encryption->secrets[0]->seclookupdef,
-                                      true)))
-              return -1;
-    }
-
-    return 0;
+    return qemuDomainSecretStorageSourcePrepare(conn, priv, disk->src,
+                                                disk->info.alias,
+                                                disk->info.alias);
 }
 
 
