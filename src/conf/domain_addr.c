@@ -2175,7 +2175,7 @@ virDomainUSBAddressRelease(virDomainUSBAddressSetPtr addrs,
     int targetPort;
     int ret = -1;
 
-    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB ||
+    if (!addrs || info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB ||
         !virDomainUSBAddressPortIsValid(info->addr.usb.port))
         return 0;
 

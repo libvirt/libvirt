@@ -2241,7 +2241,6 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *devstr = NULL;
-    bool releaseaddr = false;
     bool added = false;
     bool teardowncgroup = false;
     bool teardownlabel = false;
@@ -2250,8 +2249,7 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
 
     if (priv->usbaddrs) {
         if (virDomainUSBAddressEnsure(priv->usbaddrs, hostdev->info) < 0)
-            goto cleanup;
-        releaseaddr = true;
+            return -1;
     }
 
     if (qemuHostdevPrepareUSBDevices(driver, vm->def->name, &hostdev, 1, 0) < 0)
@@ -2304,8 +2302,7 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
             VIR_WARN("Unable to remove host device from /dev");
         if (added)
             qemuHostdevReAttachUSBDevices(driver, vm->def->name, &hostdev, 1);
-        if (releaseaddr)
-            virDomainUSBAddressRelease(priv->usbaddrs, hostdev->info);
+        virDomainUSBAddressRelease(priv->usbaddrs, hostdev->info);
     }
     VIR_FREE(devstr);
     return ret;
@@ -3827,8 +3824,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     dev.type = VIR_DOMAIN_DEVICE_DISK;
     dev.data.disk = disk;
     ignore_value(qemuRemoveSharedDevice(driver, &dev, vm->def->name));
-    if (priv->usbaddrs)
-        virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
+    virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
 
     virDomainDiskDefFree(disk);
     return 0;
