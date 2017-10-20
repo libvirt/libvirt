@@ -2152,6 +2152,9 @@ int
 virDomainUSBAddressEnsure(virDomainUSBAddressSetPtr addrs,
                           virDomainDeviceInfoPtr info)
 {
+    if (!addrs)
+        return 0;
+
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
         (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB &&
          !virDomainUSBAddressPortIsValid(info->addr.usb.port))) {

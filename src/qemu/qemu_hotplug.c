@@ -677,10 +677,8 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (priv->usbaddrs) {
-        if (virDomainUSBAddressEnsure(priv->usbaddrs, &disk->info) < 0)
-            return -1;
-    }
+    if (virDomainUSBAddressEnsure(priv->usbaddrs, &disk->info) < 0)
+        return -1;
 
     if (qemuDomainAttachDiskGeneric(driver, vm, disk) < 0) {
         virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
@@ -1827,8 +1825,7 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObjPtr vm,
             return -1;
         return 1;
 
-    } else if (priv->usbaddrs &&
-               chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+    } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
                chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
         if (virDomainUSBAddressEnsure(priv->usbaddrs, &chr->info) < 0)
             return -1;
@@ -2247,10 +2244,8 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
     bool teardowndevice = false;
     int ret = -1;
 
-    if (priv->usbaddrs) {
-        if (virDomainUSBAddressEnsure(priv->usbaddrs, hostdev->info) < 0)
-            return -1;
-    }
+    if (virDomainUSBAddressEnsure(priv->usbaddrs, hostdev->info) < 0)
+        return -1;
 
     if (qemuHostdevPrepareUSBDevices(driver, vm->def->name, &hostdev, 1, 0) < 0)
         goto cleanup;
@@ -2840,11 +2835,9 @@ qemuDomainAttachInputDevice(virQEMUDriverPtr driver,
         if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, "input") < 0)
             return -1;
     } else if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
-        if (priv->usbaddrs) {
-            if (virDomainUSBAddressEnsure(priv->usbaddrs, &input->info) < 0)
-                goto cleanup;
-            releaseaddr = true;
-        }
+        if (virDomainUSBAddressEnsure(priv->usbaddrs, &input->info) < 0)
+            goto cleanup;
+        releaseaddr = true;
     }
 
     if (qemuAssignDeviceInputAlias(vm->def, input, -1) < 0)

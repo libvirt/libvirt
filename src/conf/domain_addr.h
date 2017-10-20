@@ -325,7 +325,7 @@ virDomainUSBAddressAssign(virDomainUSBAddressSetPtr addrs,
 int
 virDomainUSBAddressEnsure(virDomainUSBAddressSetPtr addrs,
                           virDomainDeviceInfoPtr info)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_NONNULL(2);
 
 int
 virDomainUSBAddressRelease(virDomainUSBAddressSetPtr addrs,
