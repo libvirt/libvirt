@@ -1525,6 +1525,16 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
         goto error;
     }
 
+    /* Migration was paused before serializing device state, let's return to
+     * the caller so that it can finish all block jobs, resume migration, and
+     * wait again for the real end of the migration.
+     */
+    if (flags & QEMU_MIGRATION_COMPLETED_PRE_SWITCHOVER &&
+        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_PAUSED) {
+        VIR_DEBUG("Migration paused before switchover");
+        return 1;
+    }
+
     /* In case of postcopy the source considers migration completed at the
      * moment it switched from active to postcopy-active state. The destination
      * will continue waiting until the migrate state changes to completed.
@@ -3600,6 +3610,28 @@ qemuMigrationConnect(virQEMUDriverPtr driver,
     return ret;
 }
 
+
+static int
+qemuMigrationContinue(virQEMUDriverPtr driver,
+                      virDomainObjPtr vm,
+                      qemuMonitorMigrationStatus status,
+                      qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    ret = qemuMonitorMigrateContinue(priv->mon, status);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+    return ret;
+}
+
+
 static int
 qemuMigrationRun(virQEMUDriverPtr driver,
                  virDomainObjPtr vm,
@@ -3769,6 +3801,12 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                                  QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto error;
 
+    if (qemuMigrationCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER) &&
+        qemuMigrationSetOption(driver, vm,
+                               QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER,
+                               true, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        goto error;
+
     if (qemuMigrationSetParams(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                                migParams) < 0)
         goto error;
@@ -3847,7 +3885,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         fd = -1;
     }
 
-    waitFlags = 0;
+    waitFlags = QEMU_MIGRATION_COMPLETED_PRE_SWITCHOVER;
     if (abort_on_error)
         waitFlags |= QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR;
     if (mig->nbd)
@@ -3888,6 +3926,30 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT,
                                        dconn) < 0)
         goto error;
+
+    /* When migration was paused before serializing device state we need to
+     * resume it now once we finished all block jobs and wait for the real
+     * end of the migration.
+     */
+    if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_PAUSED) {
+        if (qemuMigrationContinue(driver, vm,
+                                  QEMU_MONITOR_MIGRATION_STATUS_PRE_SWITCHOVER,
+                                  QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+            goto error;
+
+        waitFlags ^= QEMU_MIGRATION_COMPLETED_PRE_SWITCHOVER;
+
+        rc = qemuMigrationWaitForCompletion(driver, vm,
+                                            QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                            dconn, waitFlags);
+        if (rc == -2) {
+            goto error;
+        } else if (rc == -1) {
+            /* QEMU reported failed migration, nothing to cancel anymore */
+            cancel = false;
+            goto error;
+        }
+    }
 
     if (iothread) {
         qemuMigrationIOThreadPtr io;
