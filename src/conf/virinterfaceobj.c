@@ -160,9 +160,9 @@ virInterfaceObjListNew(void)
 struct _virInterfaceObjFindMACData {
     const char *matchStr;
     bool error;
-    int nmacs;
-    int maxmacs;
-    char **const macs;
+    int nnames;
+    int maxnames;
+    char **const names;
 };
 
 static int
@@ -176,17 +176,17 @@ virInterfaceObjListFindByMACStringCb(void *payload,
     if (data->error)
         return 0;
 
-    if (data->nmacs == data->maxmacs)
+    if (data->nnames == data->maxnames)
         return 0;
 
     virObjectLock(obj);
 
     if (STRCASEEQ(obj->def->mac, data->matchStr)) {
-        if (VIR_STRDUP(data->macs[data->nmacs], obj->def->name) < 0) {
+        if (VIR_STRDUP(data->names[data->nnames], obj->def->name) < 0) {
             data->error = true;
             goto cleanup;
         }
-        data->nmacs++;
+        data->nnames++;
     }
 
  cleanup:
@@ -203,9 +203,9 @@ virInterfaceObjListFindByMACString(virInterfaceObjListPtr interfaces,
 {
     struct _virInterfaceObjFindMACData data = { .matchStr = mac,
                                                 .error = false,
-                                                .nmacs = 0,
-                                                .maxmacs = maxmatches,
-                                                .macs = matches };
+                                                .nnames = 0,
+                                                .maxnames = maxmatches,
+                                                .names = matches };
 
     virObjectRWLockRead(interfaces);
     virHashForEach(interfaces->objsName, virInterfaceObjListFindByMACStringCb,
@@ -215,11 +215,11 @@ virInterfaceObjListFindByMACString(virInterfaceObjListPtr interfaces,
     if (data.error)
         goto error;
 
-    return data.nmacs;
+    return data.nnames;
 
  error:
-    while (--data.nmacs >= 0)
-        VIR_FREE(data.macs[data.nmacs]);
+    while (--data.nnames >= 0)
+        VIR_FREE(data.names[data.nnames]);
 
     return -1;
 }
