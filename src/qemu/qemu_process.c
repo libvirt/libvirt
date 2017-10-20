@@ -5306,7 +5306,7 @@ qemuProcessPrepareDomainStorage(virConnectPtr conn,
             continue;
         }
 
-        if (qemuDomainPrepareDiskSourceTLS(disk->src, disk->info.alias, cfg) < 0)
+        if (qemuDomainPrepareDiskSourceTLS(disk->src, cfg) < 0)
             return -1;
     }
 

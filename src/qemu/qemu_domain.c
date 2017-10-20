@@ -7868,7 +7868,6 @@ qemuDomainPrepareChardevSource(virDomainDefPtr def,
 
 /* qemuProcessPrepareDiskSourceTLS:
  * @source: pointer to host interface data for disk device
- * @diskAlias: alias use for the disk device
  * @cfg: driver configuration
  *
  * Updates host interface TLS encryption setting based on qemu.conf
@@ -7879,7 +7878,6 @@ qemuDomainPrepareChardevSource(virDomainDefPtr def,
  */
 int
 qemuDomainPrepareDiskSourceTLS(virStorageSourcePtr src,
-                               const char *diskAlias,
                                virQEMUDriverConfigPtr cfg)
 {
 
@@ -7898,12 +7896,6 @@ qemuDomainPrepareDiskSourceTLS(virStorageSourcePtr src,
         }
 
         if (src->haveTLS == VIR_TRISTATE_BOOL_YES) {
-            if (!diskAlias) {
-                virReportError(VIR_ERR_INVALID_ARG, "%s",
-                               _("disk does not have an alias"));
-                return -1;
-            }
-
             /* Grab the vxhsTLSx509certdir and set the verify/listen values.
              * NB: tlsAlias filled in during qemuDomainGetTLSObjects. */
             if (VIR_STRDUP(src->tlsCertdir, cfg->vxhsTLSx509certdir) < 0)

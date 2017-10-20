@@ -394,7 +394,7 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
     if (encinfo && qemuBuildSecretInfoProps(encinfo, &encobjProps) < 0)
         goto error;
 
-    if (qemuDomainPrepareDiskSourceTLS(disk->src, disk->info.alias, cfg) < 0)
+    if (qemuDomainPrepareDiskSourceTLS(disk->src, cfg) < 0)
         goto error;
 
     if (disk->src->haveTLS &&
