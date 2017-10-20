@@ -40,6 +40,15 @@
           Add capability to allow hot (un)plug of a domain watchdog device
         </summary>
       </change>
+      <change>
+        <summary>
+          Allow users to set device aliases
+        </summary>
+        <description>
+          Users can set aliases to domain devices and thus identify them
+          easily.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
