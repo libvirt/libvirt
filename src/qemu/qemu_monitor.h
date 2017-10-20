@@ -1119,6 +1119,9 @@ int qemuMonitorMigrateIncoming(qemuMonitorPtr mon,
 
 int qemuMonitorMigrateStartPostCopy(qemuMonitorPtr mon);
 
+int qemuMonitorMigrateContinue(qemuMonitorPtr mon,
+                               qemuMonitorMigrationStatus status);
+
 int qemuMonitorGetRTCTime(qemuMonitorPtr mon,
                           struct tm *tm);
 

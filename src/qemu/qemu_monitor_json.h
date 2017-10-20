@@ -500,6 +500,10 @@ int qemuMonitorJSONMigrateIncoming(qemuMonitorPtr mon,
 int qemuMonitorJSONMigrateStartPostCopy(qemuMonitorPtr mon)
     ATTRIBUTE_NONNULL(1);
 
+int qemuMonitorJSONMigrateContinue(qemuMonitorPtr mon,
+                                   qemuMonitorMigrationStatus status)
+    ATTRIBUTE_NONNULL(1);
+
 int qemuMonitorJSONGetRTCTime(qemuMonitorPtr mon,
                               struct tm *tm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

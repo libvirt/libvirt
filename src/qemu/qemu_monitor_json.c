@@ -7374,6 +7374,33 @@ qemuMonitorJSONMigrateStartPostCopy(qemuMonitorPtr mon)
     return ret;
 }
 
+
+int
+qemuMonitorJSONMigrateContinue(qemuMonitorPtr mon,
+                               qemuMonitorMigrationStatus status)
+{
+    const char *statusStr = qemuMonitorMigrationStatusTypeToString(status);
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("migrate-continue",
+                                           "s:state", statusStr,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    ret = qemuMonitorJSONCheckError(cmd, reply);
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+
 int
 qemuMonitorJSONGetRTCTime(qemuMonitorPtr mon,
                           struct tm *tm)
