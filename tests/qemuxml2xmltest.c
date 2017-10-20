@@ -1271,6 +1271,8 @@ mymain(void)
     DO_TEST("pseries-cpu-compat", NONE);
     DO_TEST("pseries-cpu-exact", NONE);
 
+    DO_TEST("user-aliases", NONE);
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
