@@ -73,11 +73,8 @@ qemuGetNextChrDevIndex(virDomainDefPtr def,
         ssize_t thisidx;
         if (((thisidx = qemuDomainDeviceAliasIndex(&arrPtr[i]->info, prefix)) < 0) &&
             (prefix2 &&
-             (thisidx = qemuDomainDeviceAliasIndex(&arrPtr[i]->info, prefix2)) < 0)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unable to determine device index for character device"));
-            return -1;
-        }
+             (thisidx = qemuDomainDeviceAliasIndex(&arrPtr[i]->info, prefix2)) < 0))
+            continue;
         if (thisidx >= idx)
             idx = thisidx + 1;
     }
@@ -391,11 +388,8 @@ qemuAssignDeviceRedirdevAlias(virDomainDefPtr def,
         idx = 0;
         for (i = 0; i < def->nredirdevs; i++) {
             int thisidx;
-            if ((thisidx = qemuDomainDeviceAliasIndex(&def->redirdevs[i]->info, "redir")) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unable to determine device index for redirected device"));
-                return -1;
-            }
+            if ((thisidx = qemuDomainDeviceAliasIndex(&def->redirdevs[i]->info, "redir")) < 0)
+                continue;
             if (thisidx >= idx)
                 idx = thisidx + 1;
         }
@@ -491,12 +485,8 @@ qemuAssignDeviceShmemAlias(virDomainDefPtr def,
             int thisidx;
 
             if ((thisidx = qemuDomainDeviceAliasIndex(&def->shmems[i]->info,
-                                                      "shmem")) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unable to determine device index "
-                                 "for shmem device"));
-                return -1;
-            }
+                                                      "shmem")) < 0)
+                continue;
 
             if (thisidx >= idx)
                 idx = thisidx + 1;
