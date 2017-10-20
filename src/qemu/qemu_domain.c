@@ -1325,6 +1325,19 @@ qemuDomainSecretInfoTLSNew(virConnectPtr conn,
 }
 
 
+static void
+qemuDomainSecretStorageSourceDestroy(virStorageSourcePtr src)
+{
+    qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
+    if (srcPriv && srcPriv->secinfo)
+        qemuDomainSecretInfoFree(&srcPriv->secinfo);
+
+    if (srcPriv && srcPriv->encinfo)
+        qemuDomainSecretInfoFree(&srcPriv->encinfo);
+}
+
+
 /* qemuDomainSecretDiskDestroy:
  * @disk: Pointer to a disk definition
  *
@@ -1333,13 +1346,10 @@ qemuDomainSecretInfoTLSNew(virConnectPtr conn,
 void
 qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
 {
-    qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
+    virStorageSourcePtr next;
 
-    if (srcPriv && srcPriv->secinfo)
-        qemuDomainSecretInfoFree(&srcPriv->secinfo);
-
-    if (srcPriv && srcPriv->encinfo)
-        qemuDomainSecretInfoFree(&srcPriv->encinfo);
+    for (next = disk->src; virStorageSourceIsBacking(next); next = next->backingStore)
+        qemuDomainSecretStorageSourceDestroy(next);
 }
 
 
