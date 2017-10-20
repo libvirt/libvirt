@@ -1366,6 +1366,14 @@ qemuMigrationUpdateJobType(qemuDomainJobInfoPtr jobInfo)
         jobInfo->status = QEMU_DOMAIN_JOB_STATUS_CANCELED;
         break;
 
+    case QEMU_MONITOR_MIGRATION_STATUS_PRE_SWITCHOVER:
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_PAUSED;
+        break;
+
+    case QEMU_MONITOR_MIGRATION_STATUS_DEVICE:
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_MIGRATING;
+        break;
+
     case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
     case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
     case QEMU_MONITOR_MIGRATION_STATUS_CANCELLING:
@@ -1459,6 +1467,7 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
     case QEMU_DOMAIN_JOB_STATUS_MIGRATING:
     case QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED:
     case QEMU_DOMAIN_JOB_STATUS_POSTCOPY:
+    case QEMU_DOMAIN_JOB_STATUS_PAUSED:
         break;
     }
 
@@ -1474,6 +1483,7 @@ enum qemuMigrationCompletedFlags {
     QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR = (1 << 0),
     QEMU_MIGRATION_COMPLETED_CHECK_STORAGE  = (1 << 1),
     QEMU_MIGRATION_COMPLETED_POSTCOPY       = (1 << 2),
+    QEMU_MIGRATION_COMPLETED_PRE_SWITCHOVER = (1 << 3),
 };
 
 
@@ -1534,6 +1544,7 @@ qemuMigrationCompleted(virQEMUDriverPtr driver,
     switch (jobInfo->status) {
     case QEMU_DOMAIN_JOB_STATUS_MIGRATING:
     case QEMU_DOMAIN_JOB_STATUS_POSTCOPY:
+    case QEMU_DOMAIN_JOB_STATUS_PAUSED:
         /* The migration was aborted by us rather than QEMU itself. */
         jobInfo->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
         return -2;

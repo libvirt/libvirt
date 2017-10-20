@@ -172,14 +172,15 @@ VIR_ONCE_GLOBAL_INIT(qemuMonitor)
 VIR_ENUM_IMPL(qemuMonitorMigrationStatus,
               QEMU_MONITOR_MIGRATION_STATUS_LAST,
               "inactive", "setup",
-              "active", "postcopy-active",
+              "active", "pre-switchover",
+              "device", "postcopy-active",
               "completed", "failed",
               "cancelling", "cancelled")
 
 VIR_ENUM_IMPL(qemuMonitorMigrationCaps,
               QEMU_MONITOR_MIGRATION_CAPS_LAST,
               "xbzrle", "auto-converge", "rdma-pin-all", "events",
-              "postcopy-ram", "compress")
+              "postcopy-ram", "compress", "pause-before-switchover")
 
 VIR_ENUM_IMPL(qemuMonitorVMStatus,
               QEMU_MONITOR_VM_STATUS_LAST,
