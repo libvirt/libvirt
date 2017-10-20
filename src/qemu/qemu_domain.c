@@ -7880,28 +7880,31 @@ int
 qemuDomainPrepareDiskSourceTLS(virStorageSourcePtr src,
                                virQEMUDriverConfigPtr cfg)
 {
+    virStorageSourcePtr next;
 
-    /* VxHS uses only client certificates and thus has no need for
-     * the server-key.pem nor a secret that could be used to decrypt
-     * the it, so no need to add a secinfo for a secret UUID. */
-    if (src->type == VIR_STORAGE_TYPE_NETWORK &&
-        src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS) {
+    for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
+        /* VxHS uses only client certificates and thus has no need for
+         * the server-key.pem nor a secret that could be used to decrypt
+         * the it, so no need to add a secinfo for a secret UUID. */
+        if (next->type == VIR_STORAGE_TYPE_NETWORK &&
+            next->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS) {
 
-        if (src->haveTLS == VIR_TRISTATE_BOOL_ABSENT) {
-            if (cfg->vxhsTLS)
-                src->haveTLS = VIR_TRISTATE_BOOL_YES;
-            else
-                src->haveTLS = VIR_TRISTATE_BOOL_NO;
-            src->tlsFromConfig = true;
-        }
+            if (next->haveTLS == VIR_TRISTATE_BOOL_ABSENT) {
+                if (cfg->vxhsTLS)
+                    next->haveTLS = VIR_TRISTATE_BOOL_YES;
+                else
+                    next->haveTLS = VIR_TRISTATE_BOOL_NO;
+                next->tlsFromConfig = true;
+            }
 
-        if (src->haveTLS == VIR_TRISTATE_BOOL_YES) {
-            /* Grab the vxhsTLSx509certdir and set the verify/listen values.
-             * NB: tlsAlias filled in during qemuDomainGetTLSObjects. */
-            if (VIR_STRDUP(src->tlsCertdir, cfg->vxhsTLSx509certdir) < 0)
-                return -1;
+            if (next->haveTLS == VIR_TRISTATE_BOOL_YES) {
+                /* Grab the vxhsTLSx509certdir and set the verify/listen values.
+                 * NB: tlsAlias filled in during qemuDomainGetTLSObjects. */
+                if (VIR_STRDUP(next->tlsCertdir, cfg->vxhsTLSx509certdir) < 0)
+                    return -1;
 
-            src->tlsVerify = true;
+                next->tlsVerify = true;
+            }
         }
     }
 
