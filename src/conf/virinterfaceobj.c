@@ -182,7 +182,7 @@ virInterfaceObjListFindByMACStringCb(void *payload,
     virObjectLock(obj);
 
     if (STRCASEEQ(obj->def->mac, data->matchStr)) {
-        if (VIR_STRDUP(data->macs[data->nmacs], data->matchStr) < 0) {
+        if (VIR_STRDUP(data->macs[data->nmacs], obj->def->name) < 0) {
             data->error = true;
             goto cleanup;
         }
