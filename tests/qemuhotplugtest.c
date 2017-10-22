@@ -828,6 +828,12 @@ mymain(void)
     DO_TEST_DETACH("base-live", "watchdog-full", false, false,
                    "device_del", QMP_OK);
 
+    DO_TEST_ATTACH("base-live", "watchdog-user-alias", false, true,
+                   "watchdog-set-action", QMP_OK,
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("base-live", "watchdog-user-alias-full", false, false,
+                   "device_del", QMP_OK);
+
 #define DO_TEST_CPU_GROUP(prefix, vcpus, modernhp, expectfail)                 \
     do {                                                                       \
         cpudata.test = prefix;                                                 \

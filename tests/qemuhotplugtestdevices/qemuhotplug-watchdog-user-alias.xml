@@ -1,0 +1,3 @@
+<watchdog model='i6300esb' action='poweroff'>
+  <alias name="ua-UserWatchdog"/>
+</watchdog>
