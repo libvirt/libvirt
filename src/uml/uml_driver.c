@@ -163,6 +163,39 @@ umlVMDriverUnlock(void)
     umlDriverUnlock(uml_driver);
 }
 
+
+static virDomainObjPtr
+umlDomObjFromDomainLocked(struct uml_driver *driver,
+                          const unsigned char *uuid)
+{
+    virDomainObjPtr vm;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (!(vm = virDomainObjListFindByUUID(driver->domains, uuid))) {
+        virUUIDFormat(uuid, uuidstr);
+
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s'"), uuidstr);
+        return NULL;
+    }
+
+    return vm;
+}
+
+
+static virDomainObjPtr
+umlDomObjFromDomain(struct uml_driver *driver,
+                    const unsigned char *uuid)
+{
+    virDomainObjPtr vm;
+
+    umlDriverLock(driver);
+    vm = umlDomObjFromDomainLocked(driver, uuid);
+    umlDriverUnlock(driver);
+    return vm;
+}
+
+
 static virNWFilterCallbackDriver umlCallbackDriver = {
     .name = "UML",
     .vmFilterRebuild = umlVMFilterRebuild,
@@ -1368,20 +1401,14 @@ static virDomainPtr umlDomainLookupByID(virConnectPtr conn,
 }
 
 static virDomainPtr umlDomainLookupByUUID(virConnectPtr conn,
-                                            const unsigned char *uuid)
+                                          const unsigned char *uuid)
 {
     struct uml_driver *driver = (struct uml_driver *)conn->privateData;
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
-    umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, uuid);
-    umlDriverUnlock(driver);
-
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, NULL);
-        goto cleanup;
-    }
+    if (!(vm = umlDomObjFromDomain(driver, uuid)))
+        return NULL;
 
     if (virDomainLookupByUUIDEnsureACL(conn, vm->def) < 0)
         goto cleanup;
@@ -1427,13 +1454,8 @@ static int umlDomainIsActive(virDomainPtr dom)
     virDomainObjPtr obj;
     int ret = -1;
 
-    umlDriverLock(driver);
-    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_DOMAIN, NULL);
-        goto cleanup;
-    }
+    if (!(obj = umlDomObjFromDomain(driver, dom->uuid)))
+        return -1;
 
     if (virDomainIsActiveEnsureACL(dom->conn, obj->def) < 0)
         goto cleanup;
@@ -1453,13 +1475,8 @@ static int umlDomainIsPersistent(virDomainPtr dom)
     virDomainObjPtr obj;
     int ret = -1;
 
-    umlDriverLock(driver);
-    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_DOMAIN, NULL);
-        goto cleanup;
-    }
+    if (!(obj = umlDomObjFromDomain(driver, dom->uuid)))
+        return -1;
 
     if (virDomainIsPersistentEnsureACL(dom->conn, obj->def) < 0)
         goto cleanup;
@@ -1478,13 +1495,8 @@ static int umlDomainIsUpdated(virDomainPtr dom)
     virDomainObjPtr obj;
     int ret = -1;
 
-    umlDriverLock(driver);
-    obj = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_DOMAIN, NULL);
-        goto cleanup;
-    }
+    if (!(obj = umlDomObjFromDomain(driver, dom->uuid)))
+        return -1;
 
     if (virDomainIsUpdatedEnsureACL(dom->conn, obj->def) < 0)
         goto cleanup;
@@ -1637,14 +1649,8 @@ static int umlDomainShutdownFlags(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id %d"), dom->id);
-        goto cleanup;
-    }
+    if (!(vm = umlDomObjFromDomain(driver, dom->uuid)))
+        return -1;
 
     if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
@@ -1683,12 +1689,8 @@ umlDomainDestroyFlags(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching id %d"), dom->id);
-        goto cleanup;
-    }
+    if (!(vm = umlDomObjFromDomainLocked(driver, dom->uuid)))
+        return -1;
 
     if (virDomainDestroyFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1726,14 +1728,8 @@ static char *umlDomainGetOSType(virDomainPtr dom) {
     virDomainObjPtr vm;
     char *type = NULL;
 
-    umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
-        goto cleanup;
-    }
+    if (!(vm = umlDomObjFromDomain(driver, dom->uuid)))
+        return NULL;
 
     if (virDomainGetOSTypeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1755,18 +1751,8 @@ umlDomainGetMaxMemory(virDomainPtr dom)
     virDomainObjPtr vm;
     unsigned long long ret = 0;
 
-    umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
-    }
+    if (!(vm = umlDomObjFromDomain(driver, dom->uuid)))
+        return -1;
 
     if (virDomainGetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1785,18 +1771,8 @@ static int umlDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax)
     virDomainObjPtr vm;
     int ret = -1;
 
-    umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
-    }
+    if (!(vm = umlDomObjFromDomain(driver, dom->uuid)))
+        return -1;
 
     if (virDomainSetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1822,18 +1798,8 @@ static int umlDomainSetMemory(virDomainPtr dom, unsigned long newmem)
     virDomainObjPtr vm;
     int ret = -1;
 
-    umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
-    }
+    if (!(vm = umlDomObjFromDomain(driver, dom->uuid)))
+        return -1;
 
     if (virDomainSetMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1866,15 +1832,8 @@ static int umlDomainGetInfo(virDomainPtr dom,
     virDomainObjPtr vm;
     int ret = -1;
 
-    umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
-        goto cleanup;
-    }
+    if (!(vm = umlDomObjFromDomain(driver, dom->uuid)))
+        return -1;
 
     if (virDomainGetInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1915,15 +1874,8 @@ umlDomainGetState(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
-        goto cleanup;
-    }
+    if (!(vm = umlDomObjFromDomain(driver, dom->uuid)))
+        return -1;
 
     if (virDomainGetStateEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -1948,14 +1900,8 @@ static char *umlDomainGetXMLDesc(virDomainPtr dom,
     /* Flags checked by virDomainDefFormat */
 
     umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
+    if (!(vm = umlDomObjFromDomainLocked(driver, dom->uuid)))
         goto cleanup;
-    }
 
     if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
@@ -2015,13 +1961,8 @@ static int umlDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
     virNWFilterReadLockFilterUpdates();
     umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
+    if (!(vm = umlDomObjFromDomainLocked(driver, dom->uuid)))
         goto cleanup;
-    }
 
     if (virDomainCreateWithFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2115,12 +2056,8 @@ static int umlDomainUndefineFlags(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
+    if (!(vm = umlDomObjFromDomainLocked(driver, dom->uuid)))
         goto cleanup;
-    }
 
     if (virDomainUndefineFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2213,14 +2150,8 @@ static int umlDomainAttachDevice(virDomainPtr dom, const char *xml)
 
     umlDriverLock(driver);
 
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = umlDomObjFromDomainLocked(driver, dom->uuid)))
         goto cleanup;
-    }
 
     if (virDomainAttachDeviceEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2333,14 +2264,8 @@ static int umlDomainDetachDevice(virDomainPtr dom, const char *xml)
     int ret = -1;
 
     umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(dom->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = umlDomObjFromDomainLocked(driver, dom->uuid)))
         goto cleanup;
-    }
 
     if (virDomainDetachDeviceEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2403,13 +2328,8 @@ static int umlDomainGetAutostart(virDomainPtr dom,
     int ret = -1;
 
     umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
+    if (!(vm = umlDomObjFromDomainLocked(driver, dom->uuid)))
         goto cleanup;
-    }
 
     if (virDomainGetAutostartEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2433,13 +2353,8 @@ static int umlDomainSetAutostart(virDomainPtr dom,
     int ret = -1;
 
     umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
+    if (!(vm = umlDomObjFromDomainLocked(driver, dom->uuid)))
         goto cleanup;
-    }
 
     if (virDomainSetAutostartEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2509,15 +2424,8 @@ umlDomainBlockPeek(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching uuid"));
-        goto cleanup;
-    }
+    if (!(vm = umlDomObjFromDomain(driver, dom->uuid)))
+        return -1;
 
     if (virDomainBlockPeekEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2573,7 +2481,6 @@ umlDomainOpenConsole(virDomainPtr dom,
 {
     struct uml_driver *driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
     int ret = -1;
     virDomainChrDefPtr chr = NULL;
     size_t i;
@@ -2581,13 +2488,8 @@ umlDomainOpenConsole(virDomainPtr dom,
     virCheckFlags(0, -1);
 
     umlDriverLock(driver);
-    virUUIDFormat(dom->uuid, uuidstr);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s'"), uuidstr);
+    if (!(vm = umlDomObjFromDomainLocked(driver, dom->uuid)))
         goto cleanup;
-    }
 
     if (virDomainOpenConsoleEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -2921,14 +2823,8 @@ umlDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    umlDriverLock(driver);
-    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-    umlDriverUnlock(driver);
-
-    if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, NULL);
-        goto cleanup;
-    }
+    if (!(vm = umlDomObjFromDomain(driver, dom->uuid)))
+        return -1;
 
     if (virDomainHasManagedSaveImageEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
