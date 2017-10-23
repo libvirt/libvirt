@@ -222,10 +222,10 @@ static int openvzSetInitialConfig(virDomainDefPtr vmdef)
     ret = 0;
 
  cleanup:
-  VIR_FREE(confdir);
-  virCommandFree(cmd);
+    VIR_FREE(confdir);
+    virCommandFree(cmd);
 
-  return ret;
+    return ret;
 }
 
 
@@ -267,9 +267,9 @@ openvzSetDiskQuota(virDomainDefPtr vmdef,
 
     ret = 0;
  cleanup:
-  virCommandFree(cmd);
+    virCommandFree(cmd);
 
-  return ret;
+    return ret;
 }
 
 
@@ -633,40 +633,40 @@ static int openvzDomainSuspend(virDomainPtr dom)
 
 static int openvzDomainResume(virDomainPtr dom)
 {
-  struct openvz_driver *driver = dom->conn->privateData;
-  virDomainObjPtr vm;
-  const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINEL, "--resume", NULL};
-  int ret = -1;
+    struct openvz_driver *driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    const char *prog[] = {VZCTL, "--quiet", "chkpnt", PROGRAM_SENTINEL, "--resume", NULL};
+    int ret = -1;
 
-  openvzDriverLock(driver);
-  vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
-  openvzDriverUnlock(driver);
+    openvzDriverLock(driver);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
+    openvzDriverUnlock(driver);
 
-  if (!vm) {
-      virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                     _("no domain with matching uuid"));
-      goto cleanup;
-  }
+    if (!vm) {
+        virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                       _("no domain with matching uuid"));
+        goto cleanup;
+    }
 
-  if (!virDomainObjIsActive(vm)) {
-      virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                     _("Domain is not running"));
-      goto cleanup;
-  }
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Domain is not running"));
+        goto cleanup;
+    }
 
-  if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
-      openvzSetProgramSentinal(prog, vm->def->name);
-      if (virRun(prog, NULL) < 0)
-          goto cleanup;
-      virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNPAUSED);
-  }
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
+        openvzSetProgramSentinal(prog, vm->def->name);
+        if (virRun(prog, NULL) < 0)
+            goto cleanup;
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_UNPAUSED);
+    }
 
-  ret = 0;
+    ret = 0;
 
  cleanup:
-  if (vm)
-      virObjectUnlock(vm);
-  return ret;
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
 }
 
 static int
@@ -833,7 +833,8 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
     char *guest_ifname = NULL;
 
     if (net == NULL)
-       return 0;
+        return 0;
+
     if (vpsid == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Container ID is not specified"));
@@ -864,9 +865,9 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         } else {
             guest_ifname = openvzGenerateContainerVethName(veid);
             if (guest_ifname == NULL) {
-               virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                              _("Could not generate eth name for container"));
-               goto cleanup;
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Could not generate eth name for container"));
+                goto cleanup;
             }
         }
 
@@ -875,9 +876,9 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         if (net->ifname == NULL) {
             net->ifname = openvzGenerateVethName(veid, guest_ifname);
             if (net->ifname == NULL) {
-               virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                              _("Could not generate veth name"));
-               goto cleanup;
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Could not generate veth name"));
+                goto cleanup;
             }
         }
 
@@ -902,7 +903,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         virCommandAddArg(cmd, "--netif_add");
         virCommandAddArgBuffer(cmd, &buf);
     } else if (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
-              net->guestIP.nips > 0) {
+               net->guestIP.nips > 0) {
         size_t i;
 
         /* --ipadd ip */
@@ -1035,7 +1036,7 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
                                          driver->xmlopt) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not set number of vCPUs"));
-             goto cleanup;
+            goto cleanup;
         }
     }
 
@@ -1043,7 +1044,7 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
         if (openvzDomainSetMemoryInternal(vm, vm->def->mem.cur_balloon) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not set memory size"));
-             goto cleanup;
+            goto cleanup;
         }
     }
 
@@ -2068,7 +2069,7 @@ openvzUpdateDevice(virDomainDefPtr vmdef,
 
 static int
 openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
-                             unsigned int flags)
+                              unsigned int flags)
 {
     int ret = -1;
     int veid;
