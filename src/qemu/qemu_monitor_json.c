@@ -2659,7 +2659,6 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
     virJSONValuePtr result;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
-    const char *tlsStr = NULL;
 
     memset(params, 0, sizeof(*params));
 
@@ -2688,28 +2687,30 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
 #define PARSE_INT(VAR, FIELD)                                               \
     PARSE_SET(virJSONValueObjectGetNumberInt, VAR, FIELD)
 
+#define PARSE_STR(VAR, FIELD)                                               \
+    do {                                                                    \
+        const char *str;                                                    \
+        if ((str = virJSONValueObjectGetString(result, FIELD))) {           \
+            if (VIR_STRDUP(params->VAR, str) < 0)                           \
+                goto cleanup;                                               \
+        }                                                                   \
+    } while (0)
+
     PARSE_INT(compressLevel, "compress-level");
     PARSE_INT(compressThreads, "compress-threads");
     PARSE_INT(decompressThreads, "decompress-threads");
     PARSE_INT(cpuThrottleInitial, "cpu-throttle-initial");
     PARSE_INT(cpuThrottleIncrement, "cpu-throttle-increment");
+    PARSE_STR(migrateTLSAlias, "tls-creds");
+    PARSE_STR(migrateTLSHostname, "tls-hostname");
 
 #undef PARSE_SET
 #undef PARSE_INT
+#undef PARSE_STR
 
     if (virJSONValueObjectGetNumberUlong(result, "downtime-limit",
                                          &params->downtimeLimit) == 0)
         params->downtimeLimit_set = true;
-
-    if ((tlsStr = virJSONValueObjectGetString(result, "tls-creds"))) {
-        if (VIR_STRDUP(params->migrateTLSAlias, tlsStr) < 0)
-            goto cleanup;
-    }
-
-    if ((tlsStr = virJSONValueObjectGetString(result, "tls-hostname"))) {
-        if (VIR_STRDUP(params->migrateTLSHostname, tlsStr) < 0)
-            goto cleanup;
-    }
 
     ret = 0;
  cleanup:
