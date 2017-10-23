@@ -1748,3 +1748,21 @@ qemuGetDomainHupageMemPath(const virDomainDef *def,
 
     return 0;
 }
+
+
+/**
+ * qemuGetMemoryBackingPath:
+ * @cfg: the driver config
+ * @memPath: constructed path
+ *
+ * Constructs path to memory backing dir and stores it at @memPath.
+ *
+ * Returns: 0 on success,
+ *          -1 otherwise (with error reported).
+ */
+int
+qemuGetMemoryBackingPath(virQEMUDriverConfigPtr cfg,
+                         char **memPath)
+{
+    return VIR_STRDUP(*memPath, cfg->memoryBackingDir);
+}
