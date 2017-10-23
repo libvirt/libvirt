@@ -594,6 +594,47 @@ qemuBlockStorageSourceBuildJSONInetSocketAddress(virStorageNetHostDefPtr host)
 }
 
 
+/**
+ * qemuBlockStorageSourceBuildHostsJSONInetSocketAddress:
+ * @src: disk storage source
+ *
+ * Formats src->hosts into a json object conforming to the 'InetSocketAddress'
+ * type in qemu.
+ */
+static virJSONValuePtr
+qemuBlockStorageSourceBuildHostsJSONInetSocketAddress(virStorageSourcePtr src)
+{
+    virJSONValuePtr servers = NULL;
+    virJSONValuePtr server = NULL;
+    virJSONValuePtr ret = NULL;
+    virStorageNetHostDefPtr host;
+    size_t i;
+
+    if (!(servers = virJSONValueNewArray()))
+        goto cleanup;
+
+    for (i = 0; i < src->nhosts; i++) {
+        host = src->hosts + i;
+
+        if (!(server = qemuBlockStorageSourceBuildJSONInetSocketAddress(host)))
+            goto cleanup;
+
+        if (virJSONValueArrayAppend(servers, server) < 0)
+            goto cleanup;
+
+        server = NULL;
+    }
+
+    VIR_STEAL_PTR(ret, servers);
+
+ cleanup:
+    virJSONValueFree(servers);
+    virJSONValueFree(server);
+
+    return ret;
+}
+
+
 static virJSONValuePtr
 qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src)
 {
@@ -803,6 +844,35 @@ qemuBlockStorageSourceGetNBDProps(virStorageSourcePtr src)
 }
 
 
+static virJSONValuePtr
+qemuBlockStorageSourceGetRBDProps(virStorageSourcePtr src)
+{
+    qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+    virJSONValuePtr servers = NULL;
+    virJSONValuePtr ret = NULL;
+    const char *username = NULL;
+
+    if (src->nhosts > 0 &&
+        !(servers = qemuBlockStorageSourceBuildHostsJSONInetSocketAddress(src)))
+        return NULL;
+
+    if (src->auth)
+        username = srcPriv->secinfo->s.aes.username;
+
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:driver", "rbd",
+                                          "s:pool", src->volume,
+                                          "s:image", src->path,
+                                          "S:snapshot", src->snapshot,
+                                          "S:conf", src->configFile,
+                                          "A:server", servers,
+                                          "S:user", username,
+                                          NULL));
+
+    return ret;
+}
+
+
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
@@ -863,6 +933,10 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_RBD:
+            if (!(fileprops = qemuBlockStorageSourceGetRBDProps(src)))
+                return NULL;
+            break;
+
         case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
         case VIR_STORAGE_NET_PROTOCOL_SSH:
         case VIR_STORAGE_NET_PROTOCOL_NONE:
