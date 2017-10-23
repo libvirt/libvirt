@@ -1601,8 +1601,7 @@ mymain(void)
                        "</source>\n");
     TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"vxhs\","
                                        "\"vdisk-id\":\"c6718f6b-0401-441d-a8c3-1f0064d75ee0\","
-                                       "\"server\": { \"type\":\"tcp\","
-                                                      "\"host\":\"example.com\","
+                                       "\"server\": {  \"host\":\"example.com\","
                                                       "\"port\":\"9999\""
                                                    "}"
                                       "}"

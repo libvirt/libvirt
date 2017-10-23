@@ -501,6 +501,40 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
 }
 
 
+/**
+ * qemuBlockStorageSourceBuildJSONInetSocketAddress
+ * @host: the virStorageNetHostDefPtr definition to build
+ *
+ * Formats @hosts into a json object conforming to the 'InetSocketAddress' type
+ * in qemu.
+ *
+ * Returns a virJSONValuePtr for a single server.
+ */
+static virJSONValuePtr
+qemuBlockStorageSourceBuildJSONInetSocketAddress(virStorageNetHostDefPtr host)
+{
+    virJSONValuePtr ret = NULL;
+    char *port = NULL;
+
+    if (host->transport != VIR_STORAGE_NET_HOST_TRANS_TCP) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("only TCP protocol can be converted to InetSocketAddress"));
+        return NULL;
+    }
+
+    if (virAsprintf(&port, "%u", host->port) < 0)
+        return NULL;
+
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:host", host->name,
+                                          "s:port", port,
+                                          NULL));
+
+    VIR_FREE(port);
+    return ret;
+}
+
+
 static virJSONValuePtr
 qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src)
 {
@@ -540,7 +574,7 @@ qemuBlockStorageSourceGetVxHSProps(virStorageSourcePtr src)
         return NULL;
     }
 
-    if (!(server = qemuBlockStorageSourceBuildJSONSocketAddress(src->hosts, true)))
+    if (!(server = qemuBlockStorageSourceBuildJSONInetSocketAddress(&src->hosts[0])))
         return NULL;
 
     /* VxHS disk specification example:
