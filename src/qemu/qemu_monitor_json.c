@@ -2687,6 +2687,9 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
 #define PARSE_INT(VAR, FIELD)                                               \
     PARSE_SET(virJSONValueObjectGetNumberInt, VAR, FIELD)
 
+#define PARSE_ULONG(VAR, FIELD)                                             \
+    PARSE_SET(virJSONValueObjectGetNumberUlong, VAR, FIELD)
+
 #define PARSE_STR(VAR, FIELD)                                               \
     do {                                                                    \
         const char *str;                                                    \
@@ -2703,14 +2706,12 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
     PARSE_INT(cpuThrottleIncrement, "cpu-throttle-increment");
     PARSE_STR(migrateTLSAlias, "tls-creds");
     PARSE_STR(migrateTLSHostname, "tls-hostname");
+    PARSE_ULONG(downtimeLimit, "downtime-limit");
 
 #undef PARSE_SET
 #undef PARSE_INT
+#undef PARSE_ULONG
 #undef PARSE_STR
-
-    if (virJSONValueObjectGetNumberUlong(result, "downtime-limit",
-                                         &params->downtimeLimit) == 0)
-        params->downtimeLimit_set = true;
 
     ret = 0;
  cleanup:
