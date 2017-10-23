@@ -67,7 +67,7 @@ vmwareDomObjFromDomainLocked(struct vmware_driver *driver,
     virDomainObjPtr vm;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (!(vm = virDomainObjListFindByUUID(driver->domains, uuid))) {
+    if (!(vm = virDomainObjListFindByUUIDRef(driver->domains, uuid))) {
         virUUIDFormat(uuid, uuidstr);
 
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -504,13 +504,12 @@ vmwareDomainShutdownFlags(virDomainPtr dom,
 
     if (!vm->persistent) {
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+        virObjectLock(vm);
     }
 
     ret = 0;
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     vmwareDriverUnlock(driver);
     return ret;
 }
@@ -571,8 +570,7 @@ vmwareDomainSuspend(virDomainPtr dom)
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -613,8 +611,7 @@ vmwareDomainResume(virDomainPtr dom)
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -654,8 +651,7 @@ vmwareDomainReboot(virDomainPtr dom, unsigned int flags)
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -766,8 +762,7 @@ vmwareDomainCreateWithFlags(virDomainPtr dom,
     ret = vmwareStartVM(driver, vm);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     vmwareDriverUnlock(driver);
     return ret;
 }
@@ -805,14 +800,13 @@ vmwareDomainUndefineFlags(virDomainPtr dom,
         vm->persistent = 0;
     } else {
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+        virObjectLock(vm);
     }
 
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     vmwareDriverUnlock(driver);
     return ret;
 }
@@ -831,7 +825,7 @@ vmwareDomainLookupByID(virConnectPtr conn, int id)
     virDomainPtr dom = NULL;
 
     vmwareDriverLock(driver);
-    vm = virDomainObjListFindByID(driver->domains, id);
+    vm = virDomainObjListFindByIDRef(driver->domains, id);
     vmwareDriverUnlock(driver);
 
     if (!vm) {
@@ -843,8 +837,7 @@ vmwareDomainLookupByID(virConnectPtr conn, int id)
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return dom;
 }
 
@@ -860,8 +853,7 @@ vmwareDomainGetOSType(virDomainPtr dom)
 
     ignore_value(VIR_STRDUP(ret, virDomainOSTypeToString(vm->def->os.type)));
 
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -878,8 +870,7 @@ vmwareDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return dom;
 }
 
@@ -919,8 +910,7 @@ vmwareDomainIsActive(virDomainPtr dom)
 
     ret = virDomainObjIsActive(obj);
 
-    if (obj)
-        virObjectUnlock(obj);
+    virDomainObjEndAPI(&obj);
     return ret;
 }
 
@@ -937,8 +927,7 @@ vmwareDomainIsPersistent(virDomainPtr dom)
 
     ret = obj->persistent;
 
-    if (obj)
-        virObjectUnlock(obj);
+    virDomainObjEndAPI(&obj);
     return ret;
 }
 
@@ -958,8 +947,7 @@ vmwareDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     ret = virDomainDefFormat(vm->def, driver->caps,
                              virDomainDefFormatConvertXMLFlags(flags));
 
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -1091,8 +1079,7 @@ vmwareDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -1118,8 +1105,7 @@ vmwareDomainGetState(virDomainPtr dom,
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -1161,8 +1147,7 @@ vmwareDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 
     ret = 0;
 
-    if (obj)
-        virObjectUnlock(obj);
+    virDomainObjEndAPI(&obj);
     return ret;
 }
 
