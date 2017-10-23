@@ -64,4 +64,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
 virURIPtr
 qemuBlockStorageSourceGetURI(virStorageSourcePtr src);
 
+virJSONValuePtr
+qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src);
+
 #endif /* __QEMU_BLOCK_H__ */
