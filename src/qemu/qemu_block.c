@@ -900,6 +900,38 @@ qemuBlockStorageSourceGetSheepdogProps(virStorageSourcePtr src)
     return ret;
 }
 
+
+static virJSONValuePtr
+qemuBlockStorageSourceGetSshProps(virStorageSourcePtr src)
+{
+    virJSONValuePtr serverprops;
+    virJSONValuePtr ret = NULL;
+    const char *username = NULL;
+
+    if (src->nhosts != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("sheepdog protocol accepts only one host"));
+        return NULL;
+    }
+
+    serverprops = qemuBlockStorageSourceBuildJSONInetSocketAddress(&src->hosts[0]);
+    if (!serverprops)
+        return NULL;
+
+    if (src->auth)
+        username = src->auth->username;
+
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:driver", "ssh",
+                                          "s:path", src->path,
+                                          "a:server", serverprops,
+                                          "S:user", username,
+                                          NULL));
+
+    return ret;
+}
+
+
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
@@ -970,6 +1002,10 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_SSH:
+            if (!(fileprops = qemuBlockStorageSourceGetSshProps(src)))
+                return NULL;
+            break;
+
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
             break;
