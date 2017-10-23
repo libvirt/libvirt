@@ -168,7 +168,7 @@ bhyveDomObjFromDomain(virDomainPtr domain)
     bhyveConnPtr privconn = domain->conn->privateData;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    vm = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
+    vm = virDomainObjListFindByUUIDRef(privconn->domains, domain->uuid);
     if (!vm) {
         virUUIDFormat(domain->uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -312,8 +312,7 @@ bhyveDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -338,8 +337,7 @@ bhyveDomainGetState(virDomainPtr domain,
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -359,8 +357,7 @@ bhyveDomainGetAutostart(virDomainPtr domain, int *autostart)
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -423,8 +420,7 @@ bhyveDomainSetAutostart(virDomainPtr domain, int autostart)
  cleanup:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -443,8 +439,7 @@ bhyveDomainIsActive(virDomainPtr domain)
     ret = virDomainObjIsActive(obj);
 
  cleanup:
-    if (obj)
-        virObjectUnlock(obj);
+    virDomainObjEndAPI(&obj);
     return ret;
 }
 
@@ -463,8 +458,7 @@ bhyveDomainIsPersistent(virDomainPtr domain)
     ret = obj->persistent;
 
  cleanup:
-    if (obj)
-        virObjectUnlock(obj);
+    virDomainObjEndAPI(&obj);
     return ret;
 }
 
@@ -484,8 +478,7 @@ bhyveDomainGetOSType(virDomainPtr dom)
         goto cleanup;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -512,8 +505,7 @@ bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     virObjectUnref(caps);
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -624,14 +616,13 @@ bhyveDomainUndefine(virDomainPtr domain)
         vm->persistent = 0;
     } else {
         virDomainObjListRemove(privconn->domains, vm);
-        vm = NULL;
+        virObjectLock(vm);
     }
 
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         virObjectEventStateQueue(privconn->domainEventState, event);
     return ret;
@@ -803,7 +794,7 @@ bhyveDomainLookupByUUID(virConnectPtr conn,
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
-    vm = virDomainObjListFindByUUID(privconn->domains, uuid);
+    vm = virDomainObjListFindByUUIDRef(privconn->domains, uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -819,8 +810,7 @@ bhyveDomainLookupByUUID(virConnectPtr conn,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return dom;
 }
 
@@ -857,7 +847,7 @@ bhyveDomainLookupByID(virConnectPtr conn,
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
-    vm = virDomainObjListFindByID(privconn->domains, id);
+    vm = virDomainObjListFindByIDRef(privconn->domains, id);
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -871,8 +861,7 @@ bhyveDomainLookupByID(virConnectPtr conn,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return dom;
 }
 
@@ -913,8 +902,7 @@ bhyveDomainCreateWithFlags(virDomainPtr dom,
                                                   VIR_DOMAIN_EVENT_STARTED_BOOTED);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         virObjectEventStateQueue(privconn->domainEventState, event);
     return ret;
@@ -1024,12 +1012,11 @@ bhyveDomainDestroy(virDomainPtr dom)
 
     if (!vm->persistent) {
         virDomainObjListRemove(privconn->domains, vm);
-        vm = NULL;
+        virObjectLock(vm);
     }
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         virObjectEventStateQueue(privconn->domainEventState, event);
     return ret;
@@ -1056,8 +1043,7 @@ bhyveDomainShutdown(virDomainPtr dom)
     ret = virBhyveProcessShutdown(vm);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -1100,8 +1086,7 @@ bhyveDomainOpenConsole(virDomainPtr dom,
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -1143,7 +1128,7 @@ bhyveDomainSetMetadata(virDomainPtr dom,
 
  cleanup:
     virObjectUnref(caps);
-    virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -1165,7 +1150,7 @@ bhyveDomainGetMetadata(virDomainPtr dom,
     ret = virDomainObjGetMetadata(vm, type, uri, flags);
 
  cleanup:
-    virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -1548,8 +1533,7 @@ bhyveDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
