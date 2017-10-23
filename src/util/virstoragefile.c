@@ -2545,6 +2545,14 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
         *p = '\0';
     }
 
+    /* pool vs. image name */
+    if ((p = strchr(src->path, '/'))) {
+        VIR_STEAL_PTR(src->volume, src->path);
+        if (VIR_STRDUP(src->path, p + 1) < 0)
+            goto error;
+        *p = '\0';
+    }
+
     /* options */
     if (!options)
         return 0; /* all done */
@@ -3178,7 +3186,6 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
     const char *conf = virJSONValueObjectGetString(json, "conf");
     const char *snapshot = virJSONValueObjectGetString(json, "snapshot");
     virJSONValuePtr servers = virJSONValueObjectGetArray(json, "server");
-    char *fullname = NULL;
     size_t nservers;
     size_t i;
     int ret = -1;
@@ -3197,16 +3204,11 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
         return -1;
     }
 
-    /* currently we need to store the pool name and image name together, since
-     * the rest of the code is not prepared for it */
-    if (virAsprintf(&fullname, "%s/%s", pool, image) < 0)
-        return -1;
-
-    if (VIR_STRDUP(src->snapshot, snapshot) < 0 ||
+    if (VIR_STRDUP(src->volume, pool) < 0 ||
+        VIR_STRDUP(src->path, image) < 0 ||
+        VIR_STRDUP(src->snapshot, snapshot) < 0 ||
         VIR_STRDUP(src->configFile, conf) < 0)
         goto cleanup;
-
-    VIR_STEAL_PTR(src->path, fullname);
 
     if (servers) {
         nservers = virJSONValueArraySize(servers);
@@ -3225,8 +3227,6 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
 
     ret = 0;
  cleanup:
-    VIR_FREE(fullname);
-
     return ret;
 }
 

@@ -8388,16 +8388,17 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
         src->tlsFromConfig = !!tlsCfgVal;
     }
 
-    /* for historical reasons the volume name for gluster volume is stored
-     * as a part of the path. This is hard to work with when dealing with
-     * relative names. Split out the volume into a separate variable */
-    if (src->path && src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
+    /* for historical reasons we store the volume and image name in one XML
+     * element although it complicates thing when attempting to access them. */
+    if (src->path &&
+        (src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER ||
+         src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
         char *tmp;
         if (!(tmp = strchr(src->path, '/')) ||
             tmp == src->path) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("missing volume name or file name in "
-                             "gluster source path '%s'"), src->path);
+                           _("can't split path '%s' into pool name and image "
+                             "name"), src->path);
             goto cleanup;
         }
 
