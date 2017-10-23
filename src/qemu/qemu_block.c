@@ -873,6 +873,33 @@ qemuBlockStorageSourceGetRBDProps(virStorageSourcePtr src)
 }
 
 
+static virJSONValuePtr
+qemuBlockStorageSourceGetSheepdogProps(virStorageSourcePtr src)
+{
+    virJSONValuePtr serverprops;
+    virJSONValuePtr ret = NULL;
+
+    if (src->nhosts != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("sheepdog protocol accepts only one host"));
+        return NULL;
+    }
+
+    serverprops = qemuBlockStorageSourceBuildJSONSocketAddress(&src->hosts[0],
+                                                               false);
+    if (!serverprops)
+        return NULL;
+
+    /* libvirt does not support the 'snap-id' and 'tag' properties */
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:driver", "sheepdog",
+                                          "a:server", serverprops,
+                                          "s:vdi", src->path,
+                                          NULL));
+
+    return ret;
+}
+
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
@@ -938,6 +965,10 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+            if (!(fileprops = qemuBlockStorageSourceGetSheepdogProps(src)))
+                return NULL;
+            break;
+
         case VIR_STORAGE_NET_PROTOCOL_SSH:
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
