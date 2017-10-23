@@ -2739,21 +2739,24 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
     if (!(args = virJSONValueNewObject()))
         goto cleanup;
 
-#define APPEND(VAR, FIELD)                                                  \
+#define APPEND(VALID, API, VAR, FIELD)                                      \
     do {                                                                    \
-        if (params->VAR ## _set &&                                          \
-            virJSONValueObjectAppendNumberInt(args, FIELD,                  \
-                                              params->VAR) < 0)             \
+        if (VALID && API(args, FIELD, params->VAR) < 0)                     \
             goto cleanup;                                                   \
     } while (0)
 
-    APPEND(compressLevel, "compress-level");
-    APPEND(compressThreads, "compress-threads");
-    APPEND(decompressThreads, "decompress-threads");
-    APPEND(cpuThrottleInitial, "cpu-throttle-initial");
-    APPEND(cpuThrottleIncrement, "cpu-throttle-increment");
+#define APPEND_INT(VAR, FIELD)                                              \
+    APPEND(params->VAR ## _set,                                             \
+           virJSONValueObjectAppendNumberInt, VAR, FIELD)
+
+    APPEND_INT(compressLevel, "compress-level");
+    APPEND_INT(compressThreads, "compress-threads");
+    APPEND_INT(decompressThreads, "decompress-threads");
+    APPEND_INT(cpuThrottleInitial, "cpu-throttle-initial");
+    APPEND_INT(cpuThrottleIncrement, "cpu-throttle-increment");
 
 #undef APPEND
+#undef APPEND_INT
 
     if (params->migrateTLSAlias &&
         virJSONValueObjectAppendString(args, "tls-creds",
