@@ -2679,20 +2679,23 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
 
     result = virJSONValueObjectGet(reply, "return");
 
-#define PARSE(VAR, FIELD)                                                   \
+#define PARSE_SET(API, VAR, FIELD)                                          \
     do {                                                                    \
-        if (virJSONValueObjectGetNumberInt(result, FIELD,                   \
-                                           &params->VAR) == 0)              \
+        if (API(result, FIELD, &params->VAR) == 0)                          \
             params->VAR ## _set = true;                                     \
     } while (0)
 
-    PARSE(compressLevel, "compress-level");
-    PARSE(compressThreads, "compress-threads");
-    PARSE(decompressThreads, "decompress-threads");
-    PARSE(cpuThrottleInitial, "cpu-throttle-initial");
-    PARSE(cpuThrottleIncrement, "cpu-throttle-increment");
+#define PARSE_INT(VAR, FIELD)                                               \
+    PARSE_SET(virJSONValueObjectGetNumberInt, VAR, FIELD)
 
-#undef PARSE
+    PARSE_INT(compressLevel, "compress-level");
+    PARSE_INT(compressThreads, "compress-threads");
+    PARSE_INT(decompressThreads, "decompress-threads");
+    PARSE_INT(cpuThrottleInitial, "cpu-throttle-initial");
+    PARSE_INT(cpuThrottleIncrement, "cpu-throttle-increment");
+
+#undef PARSE_SET
+#undef PARSE_INT
 
     if (virJSONValueObjectGetNumberUlong(result, "downtime-limit",
                                          &params->downtimeLimit) == 0)
