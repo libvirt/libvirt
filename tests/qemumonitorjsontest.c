@@ -1803,7 +1803,8 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
                                "        \"compress-level\": 1,"
                                "        \"cpu-throttle-initial\": 20,"
                                "        \"tls-creds\": \"tls0\","
-                               "        \"tls-hostname\": \"\""
+                               "        \"tls-hostname\": \"\","
+                               "        \"downtime-limit\": 500"
                                "    }"
                                "}") < 0) {
         goto cleanup;
@@ -1830,6 +1831,9 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
 #define CHECK_INT(VAR, FIELD, VALUE)                                        \
     CHECK_NUM(VAR, FIELD, VALUE, "%d")
 
+#define CHECK_ULONG(VAR, FIELD, VALUE)                                      \
+    CHECK_NUM(VAR, FIELD, VALUE, "%llu")
+
 #define CHECK_STR(VAR, FIELD, VALUE)                                        \
     do {                                                                    \
         if (!params.VAR) {                                                  \
@@ -1851,9 +1855,11 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
     CHECK_INT(cpuThrottleIncrement, "cpu-throttle-increment", 10);
     CHECK_STR(migrateTLSAlias, "tls-creds", "tls0");
     CHECK_STR(migrateTLSHostname, "tls-hostname", "");
+    CHECK_ULONG(downtimeLimit, "downtime-limit", 500ULL);
 
 #undef CHECK_NUM
 #undef CHECK_INT
+#undef CHECK_ULONG
 #undef CHECK_STR
 
     ret = 0;
