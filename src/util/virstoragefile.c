@@ -2450,7 +2450,7 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 
         src->volume = src->path;
 
-        if (VIR_STRDUP(src->path, tmp) < 0)
+        if (VIR_STRDUP(src->path, tmp + 1) < 0)
             goto cleanup;
 
         tmp[0] = '\0';
@@ -2931,7 +2931,7 @@ virStorageSourceParseBackingJSONGluster(virStorageSourcePtr src,
     src->protocol = VIR_STORAGE_NET_PROTOCOL_GLUSTER;
 
     if (VIR_STRDUP(src->volume, volume) < 0 ||
-        virAsprintf(&src->path, "/%s", path) < 0)
+        VIR_STRDUP(src->path, path) < 0)
         return -1;
 
     nservers = virJSONValueArraySize(server);

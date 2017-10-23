@@ -8403,7 +8403,7 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
 
         src->volume = src->path;
 
-        if (VIR_STRDUP(src->path, tmp) < 0)
+        if (VIR_STRDUP(src->path, tmp + 1) < 0)
             goto cleanup;
 
         tmp[0] = '\0';
@@ -22167,7 +22167,7 @@ virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
                       virStorageNetProtocolTypeToString(src->protocol));
 
     if (src->volume) {
-        if (virAsprintf(&path, "%s%s", src->volume, src->path) < 0)
+        if (virAsprintf(&path, "%s/%s", src->volume, src->path) < 0)
             return -1;
     }
 

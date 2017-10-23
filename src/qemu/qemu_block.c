@@ -427,7 +427,7 @@ qemuBlockStorageSourceGetURI(virStorageSourcePtr src)
 
     if (src->path) {
         if (src->volume) {
-            if (virAsprintf(&uri->path, "/%s%s",
+            if (virAsprintf(&uri->path, "/%s/%s",
                             src->volume, src->path) < 0)
                 goto cleanup;
         } else {
