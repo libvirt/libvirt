@@ -1659,7 +1659,7 @@ qemuGetDomainHugepagePath(const virDomainDef *def,
                           virHugeTLBFSPtr hugepage)
 {
     char *base = qemuGetBaseHugepagePath(hugepage);
-    char *domPath = virDomainObjGetShortName(def);
+    char *domPath = virDomainDefGetShortName(def);
     char *ret = NULL;
 
     if (base && domPath)

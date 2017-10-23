@@ -27880,14 +27880,14 @@ virDomainDefHasMemballoon(const virDomainDef *def)
 #define VIR_DOMAIN_SHORT_NAME_MAX 20
 
 /**
- * virDomainObjGetShortName:
+ * virDomainDefGetShortName:
  * @vm: Machine for which to get a name
  * @unique: Make sure the name is unique (use id as well)
  *
  * Shorten domain name to avoid possible path length limitations.
  */
 char *
-virDomainObjGetShortName(const virDomainDef *def)
+virDomainDefGetShortName(const virDomainDef *def)
 {
     wchar_t wshortname[VIR_DOMAIN_SHORT_NAME_MAX + 1] = {0};
     size_t len = 0;
