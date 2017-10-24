@@ -959,11 +959,12 @@ static int
 vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
     size_t i;
-    int type, format, ret = 0;
+    int type, ret = 0;
     const char *src = NULL;
     nsresult rc = 0;
     virDomainDiskDefPtr disk = NULL;
     PRUnichar *storageCtlName = NULL;
+    char *controllerName = NULL;
     IMedium *medium = NULL;
     PRUnichar *mediumFileUtf16 = NULL;
     PRUint32 devicePort, deviceSlot, deviceType, accessMode;
@@ -1015,47 +1016,104 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         disk = def->disks[i];
         src = virDomainDiskGetSource(disk);
         type = virDomainDiskGetType(disk);
-        format = virDomainDiskGetFormat(disk);
         deviceType = DeviceType_Null;
         accessMode = AccessMode_ReadOnly;
         devicePort = disk->info.addr.drive.unit;
         deviceSlot = disk->info.addr.drive.bus;
 
-        VIR_DEBUG("disk(%zu) type:       %d", i, type);
-        VIR_DEBUG("disk(%zu) device:     %d", i, disk->device);
-        VIR_DEBUG("disk(%zu) bus:        %d", i, disk->bus);
-        VIR_DEBUG("disk(%zu) src:        %s", i, src);
-        VIR_DEBUG("disk(%zu) dst:        %s", i, disk->dst);
-        VIR_DEBUG("disk(%zu) driverName: %s", i,
-                  virDomainDiskGetDriver(disk));
-        VIR_DEBUG("disk(%zu) driverType: %s", i,
-                  virStorageFileFormatTypeToString(format));
-        VIR_DEBUG("disk(%zu) cachemode:  %d", i, disk->cachemode);
-        VIR_DEBUG("disk(%zu) readonly:   %s", i, (disk->src->readonly
-                                             ? "True" : "False"));
-        VIR_DEBUG("disk(%zu) shared:     %s", i, (disk->src->shared
-                                             ? "True" : "False"));
+        if (type != VIR_STORAGE_TYPE_FILE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported storage type %s, the only supported "
+                             "type is %s"),
+                           virStorageTypeToString(type),
+                           virStorageTypeToString(VIR_STORAGE_TYPE_FILE));
+            ret = -1;
+            goto cleanup;
+        }
 
-        if (type == VIR_STORAGE_TYPE_FILE && src) {
-            VBOX_UTF8_TO_UTF16(src, &mediumFileUtf16);
-
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                deviceType = DeviceType_HardDisk;
-                accessMode = AccessMode_ReadWrite;
-            } else if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                deviceType = DeviceType_DVD;
-                accessMode = AccessMode_ReadOnly;
-            } else if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                deviceType = DeviceType_Floppy;
-                accessMode = AccessMode_ReadWrite;
-            } else {
+        switch ((virDomainDiskDevice) disk->device) {
+        case VIR_DOMAIN_DISK_DEVICE_DISK:
+            if (!src) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Missing disk source file path"));
                 ret = -1;
                 goto cleanup;
             }
 
-            gVBoxAPI.UIVirtualBox.FindHardDisk(data->vboxObj, mediumFileUtf16,
-                                               deviceType, accessMode, &medium);
+            deviceType = DeviceType_HardDisk;
+            accessMode = AccessMode_ReadWrite;
 
+            break;
+
+        case VIR_DOMAIN_DISK_DEVICE_CDROM:
+            deviceType = DeviceType_DVD;
+            accessMode = AccessMode_ReadOnly;
+
+            break;
+        case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
+            deviceType = DeviceType_Floppy;
+            accessMode = AccessMode_ReadWrite;
+
+            break;
+        case VIR_DOMAIN_DISK_DEVICE_LUN:
+        case VIR_DOMAIN_DISK_DEVICE_LAST:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("The vbox driver does not support %s disk device"),
+                           virDomainDiskDeviceTypeToString(disk->device));
+            ret = -1;
+            goto cleanup;
+        }
+
+        switch ((virDomainDiskBus) disk->bus) {
+        case VIR_DOMAIN_DISK_BUS_IDE:
+            VBOX_UTF8_TO_UTF16("IDE Controller", &storageCtlName);
+            devicePort = def->disks[i]->info.addr.drive.bus;
+            deviceSlot = def->disks[i]->info.addr.drive.unit;
+
+            break;
+        case VIR_DOMAIN_DISK_BUS_SATA:
+            VBOX_UTF8_TO_UTF16("SATA Controller", &storageCtlName);
+
+            break;
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+            VBOX_UTF8_TO_UTF16("SCSI Controller", &storageCtlName);
+
+            break;
+        case VIR_DOMAIN_DISK_BUS_FDC:
+            VBOX_UTF8_TO_UTF16("Floppy Controller", &storageCtlName);
+            devicePort = 0;
+            deviceSlot = disk->info.addr.drive.unit;
+
+            break;
+        case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        case VIR_DOMAIN_DISK_BUS_XEN:
+        case VIR_DOMAIN_DISK_BUS_USB:
+        case VIR_DOMAIN_DISK_BUS_UML:
+        case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_LAST:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("The vbox driver does not support %s bus type"),
+                           virDomainDiskBusTypeToString(disk->bus));
+            ret = -1;
+            goto cleanup;
+        }
+
+        /* If disk source is specified, lookup IMedium - removable drives don't
+         * have either.
+         */
+        if (src) {
+            VBOX_UTF8_TO_UTF16(src, &mediumFileUtf16);
+            VIR_DEBUG("Looking up medium %s, type: %d, mode: %d", src,
+                      deviceType, accessMode);
+
+            rc = gVBoxAPI.UIVirtualBox.FindHardDisk(data->vboxObj, mediumFileUtf16,
+                                                    deviceType, accessMode, &medium);
+
+            /* The following is not needed for vbox 4.2+ but older versions have
+             * distinct find and open operations where the former looks in vbox
+             * media registry while the latter at storage location. In 4.2+, the
+             * OpenMedium call takes care of both cases internally
+             */
             if (!medium) {
                 rc = gVBoxAPI.UIVirtualBox.OpenMedium(data->vboxObj,
                                                       mediumFileUtf16,
@@ -1065,7 +1123,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 
             if (!medium) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to attach the following disk/dvd/floppy "
+                               _("Failed to open the following disk/dvd/floppy "
                                  "to the machine: %s, rc=%08x"), src, rc);
                 ret = -1;
                 goto cleanup;
@@ -1080,57 +1138,53 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
                 ret = -1;
                 goto cleanup;
             }
-
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                if (disk->src->readonly) {
-                    gVBoxAPI.UIMedium.SetType(medium, MediumType_Immutable);
-                    VIR_DEBUG("Setting harddisk to immutable");
-                } else if (!disk->src->readonly) {
-                    gVBoxAPI.UIMedium.SetType(medium, MediumType_Normal);
-                    VIR_DEBUG("Setting harddisk type to normal");
-                }
-            }
-
-            if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
-                VBOX_UTF8_TO_UTF16("IDE Controller", &storageCtlName);
-                devicePort = def->disks[i]->info.addr.drive.bus;
-                deviceSlot = def->disks[i]->info.addr.drive.unit;
-            } else if (disk->bus == VIR_DOMAIN_DISK_BUS_SATA) {
-                VBOX_UTF8_TO_UTF16("SATA Controller", &storageCtlName);
-            } else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
-                VBOX_UTF8_TO_UTF16("SCSI Controller", &storageCtlName);
-            } else if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
-                VBOX_UTF8_TO_UTF16("Floppy Controller", &storageCtlName);
-                devicePort = 0;
-                deviceSlot = disk->info.addr.drive.unit;
-            }
-
-            /* attach the harddisk/dvd/Floppy to the storage controller */
-            rc = gVBoxAPI.UIMachine.AttachDevice(machine,
-                                                 storageCtlName,
-                                                 devicePort,
-                                                 deviceSlot,
-                                                 deviceType,
-                                                 medium);
-
-            if (NS_FAILED(rc)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Could not attach the file as "
-                                 "harddisk/dvd/floppy: %s, rc=%08x"), src, rc);
-                ret = -1;
-                goto cleanup;
-            } else {
-                DEBUGIID("Attached HDD/DVD/Floppy with UUID", &mediumUUID);
-            }
- cleanup:
-            VBOX_MEDIUM_RELEASE(medium);
-            vboxIIDUnalloc(&mediumUUID);
-            VBOX_UTF16_FREE(mediumFileUtf16);
-            VBOX_UTF16_FREE(storageCtlName);
-
-            if (ret < 0)
-                break;
         }
+
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            if (disk->src->readonly) {
+                gVBoxAPI.UIMedium.SetType(medium, MediumType_Immutable);
+                VIR_DEBUG("Setting hard disk to immutable");
+            } else if (!disk->src->readonly) {
+                gVBoxAPI.UIMedium.SetType(medium, MediumType_Normal);
+                VIR_DEBUG("Setting hard disk type to normal");
+            }
+
+        }
+
+        VBOX_UTF16_TO_UTF8(storageCtlName, &controllerName);
+        VIR_DEBUG("Attaching disk(%zu), controller: %s, port: %d, slot: %d, "
+                  "type: %d, medium: %s", i, controllerName, devicePort,
+                    deviceSlot, deviceType, medium == NULL ? "empty" : src);
+        VBOX_UTF8_FREE(controllerName);
+
+        /* Attach the harddisk/dvd/Floppy to the storage controller,
+         * medium == NULL is ok here
+         */
+        rc = gVBoxAPI.UIMachine.AttachDevice(machine,
+                                             storageCtlName,
+                                             devicePort,
+                                             deviceSlot,
+                                             deviceType,
+                                             medium);
+
+        if (NS_FAILED(rc)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not attach the file as "
+                             "harddisk/dvd/floppy: %s, rc=%08x"), src, rc);
+            ret = -1;
+            goto cleanup;
+        } else {
+            DEBUGIID("Attached HDD/DVD/Floppy with UUID", &mediumUUID);
+        }
+
+ cleanup:
+        VBOX_MEDIUM_RELEASE(medium);
+        vboxIIDUnalloc(&mediumUUID);
+        VBOX_UTF16_FREE(mediumFileUtf16);
+        VBOX_UTF16_FREE(storageCtlName);
+
+        if (ret < 0)
+            break;
     }
 
     return ret;
