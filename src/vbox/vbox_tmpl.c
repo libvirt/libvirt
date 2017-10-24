@@ -146,6 +146,9 @@ if (strUtf16) {\
 
 #define VBOX_IID_INITIALIZER { NULL, true }
 
+/* default RDP port range to use for auto-port setting */
+#define VBOX_RDP_AUTOPORT_RANGE "3389-3689"
+
 static void
 _vboxIIDUnalloc(vboxDriverPtr data, vboxIID *iid)
 {
@@ -1595,15 +1598,21 @@ _vrdeServerGetPorts(vboxDriverPtr data ATTRIBUTE_UNUSED,
 }
 
 static nsresult
-_vrdeServerSetPorts(vboxDriverPtr data ATTRIBUTE_UNUSED,
-                    IVRDEServer *VRDEServer, virDomainGraphicsDefPtr graphics)
+_vrdeServerSetPorts(vboxDriverPtr data, IVRDEServer *VRDEServer,
+                    virDomainGraphicsDefPtr graphics)
 {
     nsresult rc = 0;
     PRUnichar *VRDEPortsKey = NULL;
     PRUnichar *VRDEPortsValue = NULL;
 
     VBOX_UTF8_TO_UTF16("TCP/Ports", &VRDEPortsKey);
-    VRDEPortsValue = PRUnicharFromInt(data->pFuncs, graphics->data.rdp.port);
+
+    if (graphics->data.rdp.autoport)
+        VBOX_UTF8_TO_UTF16(VBOX_RDP_AUTOPORT_RANGE, &VRDEPortsValue);
+    else
+        VRDEPortsValue = PRUnicharFromInt(data->pFuncs,
+                                          graphics->data.rdp.port);
+
     rc = VRDEServer->vtbl->SetVRDEProperty(VRDEServer, VRDEPortsKey,
                                            VRDEPortsValue);
     VBOX_UTF16_FREE(VRDEPortsKey);
