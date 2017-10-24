@@ -78,6 +78,17 @@
           set the port via <code>unit</code> attribute.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Generate predictable paths for qemu memory backends
+        </summary>
+        <description>
+          In some cases management applications need to know
+          paths passed to memory-backend-file objects upfront.
+          Libvirt now generates predictable paths so applications
+          can prepare the files if they need to do so.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
