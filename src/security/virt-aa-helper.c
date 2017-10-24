@@ -1157,7 +1157,7 @@ get_files(vahControl * ctl)
     }
 
     if (ctl->newfile)
-        if (vah_add_file(&buf, ctl->newfile, "rw") != 0)
+        if (vah_add_file(&buf, ctl->newfile, "rwk") != 0)
             goto cleanup;
 
     if (virBufferError(&buf)) {
@@ -1341,7 +1341,7 @@ main(int argc, char **argv)
             vah_error(ctl, 1, _("profile exists"));
 
         if (ctl->append && ctl->newfile) {
-            if (vah_add_file(&buf, ctl->newfile, "rw") != 0)
+            if (vah_add_file(&buf, ctl->newfile, "rwk") != 0)
                 goto cleanup;
         } else {
             if (ctl->def->virtType == VIR_DOMAIN_VIRT_QEMU ||
