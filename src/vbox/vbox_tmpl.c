@@ -144,12 +144,6 @@ if (strUtf16) {\
           (unsigned)(iid)->m3[7]);\
 }\
 
-#define VBOX_SESSION_OPEN(/* unused */ iid_value, /* in */ machine) \
-    machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Write)
-
-#define VBOX_SESSION_CLOSE() \
-    data->vboxSession->vtbl->UnlockMachine(data->vboxSession)
-
 #define VBOX_IID_INITIALIZER { NULL, true }
 
 static void
@@ -323,7 +317,7 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
         goto cleanup;
     }
 
-    rc = VBOX_SESSION_OPEN(domiid.value, machine);
+    rc = machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Write);
 #if VBOX_API_VERSION < 5000000
     if (NS_SUCCEEDED(rc))
         rc = data->vboxSession->vtbl->GetConsole(data->vboxSession, &console);
@@ -368,7 +362,7 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
 #if VBOX_API_VERSION < 5000000
     VBOX_RELEASE(console);
 #endif /*VBOX_API_VERSION < 5000000*/
-    VBOX_SESSION_CLOSE();
+    data->vboxSession->vtbl->UnlockMachine(data->vboxSession);
     vboxIIDUnalloc(&domiid);
     return ret;
 }
