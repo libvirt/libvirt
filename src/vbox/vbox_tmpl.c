@@ -400,6 +400,8 @@ _unregisterMachine(vboxDriverPtr data, vboxIID *iid, IMachine **machine)
 {
     nsresult rc;
     vboxArray media = VBOX_ARRAY_INITIALIZER;
+    size_t i;
+
     rc = data->vboxObj->vtbl->FindMachine(data->vboxObj, iid->value, machine);
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_NO_DOMAIN, "%s",
@@ -407,12 +409,24 @@ _unregisterMachine(vboxDriverPtr data, vboxIID *iid, IMachine **machine)
         return rc;
     }
 
-    /* We're not interested in the array returned by the Unregister method,
-     * but in the side effect of unregistering the virtual machine. In order
-     * to call the Unregister method correctly we need to use the vboxArray
-     * wrapper here. */
     rc = vboxArrayGetWithUintArg(&media, *machine, (*machine)->vtbl->Unregister,
-                                 CleanupMode_DetachAllReturnNone);
+                                 CleanupMode_DetachAllReturnHardDisksOnly);
+
+    if (NS_FAILED(rc))
+        goto cleanup;
+
+    /* close each medium attached to VM to remove from media registry */
+    for (i = 0; i < media.count; i++) {
+        IMedium *medium = media.items[i];
+
+        if (!medium)
+            continue;
+
+        /* it's ok to ignore failure here - e.g. it may be used by another VM */
+        ignore_value(medium->vtbl->Close(medium));
+    }
+
+ cleanup:
     vboxArrayUnalloc(&media);
     return rc;
 }
