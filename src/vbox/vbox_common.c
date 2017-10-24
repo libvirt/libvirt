@@ -347,68 +347,6 @@ static bool vboxGetMaxPortSlotValues(IVirtualBox *vbox,
 }
 
 /**
- * function to get the StorageBus, Port number
- * and Device number for the given devicename
- * e.g: hda has StorageBus = IDE, port = 0,
- *      device = 0
- *
- * @returns     true on Success, false on failure.
- * @param       deviceName      Input device name
- * @param       aMaxPortPerInst Input array of max port per device instance
- * @param       aMaxSlotPerPort Input array of max slot per device port
- * @param       storageBus      Input storage bus type
- * @param       deviceInst      Output device instance number
- * @param       devicePort      Output port number
- * @param       deviceSlot      Output slot number
- *
- */
-static bool vboxGetDeviceDetails(const char *deviceName,
-                                 PRUint32 *aMaxPortPerInst,
-                                 PRUint32 *aMaxSlotPerPort,
-                                 PRUint32 storageBus,
-                                 PRInt32 *deviceInst,
-                                 PRInt32 *devicePort,
-                                 PRInt32 *deviceSlot)
-{
-    int total = 0;
-    PRUint32 maxPortPerInst = 0;
-    PRUint32 maxSlotPerPort = 0;
-
-    if (!deviceName ||
-        !deviceInst ||
-        !devicePort ||
-        !deviceSlot ||
-        !aMaxPortPerInst ||
-        !aMaxSlotPerPort)
-        return false;
-
-    if ((storageBus < StorageBus_IDE) ||
-        (storageBus > StorageBus_Floppy))
-        return false;
-
-    total = virDiskNameToIndex(deviceName);
-
-    maxPortPerInst = aMaxPortPerInst[storageBus];
-    maxSlotPerPort = aMaxSlotPerPort[storageBus];
-
-    if (!maxPortPerInst ||
-        !maxSlotPerPort ||
-        (total < 0))
-        return false;
-
-    *deviceInst = total / (maxPortPerInst * maxSlotPerPort);
-    *devicePort = (total % (maxPortPerInst * maxSlotPerPort)) / maxSlotPerPort;
-    *deviceSlot = (total % (maxPortPerInst * maxSlotPerPort)) % maxSlotPerPort;
-
-    VIR_DEBUG("name=%s, total=%d, storageBus=%u, deviceInst=%d, "
-          "devicePort=%d deviceSlot=%d, maxPortPerInst=%u maxSlotPerPort=%u",
-          deviceName, total, storageBus, *deviceInst, *devicePort,
-          *deviceSlot, maxPortPerInst, maxSlotPerPort);
-
-    return true;
-}
-
-/**
  * function to generate the name for medium,
  * for e.g: hda, sda, etc
  *
@@ -1022,14 +960,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
     size_t i;
     nsresult rc = 0;
-    PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
-    PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
     PRUnichar *storageCtlName = NULL;
-    bool error = false;
-
-    /* get the max port/slots/etc for the given storage bus */
-    error = !vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst,
-                                      maxSlotPerPort);
 
     /* add a storage controller for the mediums to be attached */
     /* this needs to change when multiple controller are supported for
@@ -1071,7 +1002,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         VBOX_RELEASE(storageCtl);
     }
 
-    for (i = 0; i < def->ndisks && !error; i++) {
+    for (i = 0; i < def->ndisks; i++) {
         const char *src = virDomainDiskGetSource(def->disks[i]);
         int type = virDomainDiskGetType(def->disks[i]);
         int format = virDomainDiskGetFormat(def->disks[i]);
@@ -1095,12 +1026,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
             IMedium *medium = NULL;
             vboxIID mediumUUID;
             PRUnichar *mediumFileUtf16 = NULL;
-            PRUint32 storageBus = StorageBus_Null;
             PRUint32 deviceType = DeviceType_Null;
             PRUint32 accessMode = AccessMode_ReadOnly;
-            PRInt32 deviceInst = 0;
-            PRInt32 devicePort = 0;
-            PRInt32 deviceSlot = 0;
+            PRInt32 devicePort = def->disks[i]->info.addr.drive.unit;
+            PRInt32 deviceSlot = def->disks[i]->info.addr.drive.bus;
 
             VBOX_IID_INITIALIZE(&mediumUUID);
             VBOX_UTF8_TO_UTF16(src, &mediumFileUtf16);
@@ -1166,35 +1095,16 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 
             if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_IDE) {
                 VBOX_UTF8_TO_UTF16("IDE Controller", &storageCtlName);
-                storageBus = StorageBus_IDE;
+                devicePort = def->disks[i]->info.addr.drive.bus;
+                deviceSlot = def->disks[i]->info.addr.drive.unit;
             } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_SATA) {
                 VBOX_UTF8_TO_UTF16("SATA Controller", &storageCtlName);
-                storageBus = StorageBus_SATA;
             } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
                 VBOX_UTF8_TO_UTF16("SCSI Controller", &storageCtlName);
-                storageBus = StorageBus_SCSI;
             } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_FDC) {
                 VBOX_UTF8_TO_UTF16("Floppy Controller", &storageCtlName);
-                storageBus = StorageBus_Floppy;
-            }
-
-            /* get the device details i.e instance, port and slot */
-            if (!vboxGetDeviceDetails(def->disks[i]->dst,
-                                      maxPortPerInst,
-                                      maxSlotPerPort,
-                                      storageBus,
-                                      &deviceInst,
-                                      &devicePort,
-                                      &deviceSlot)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("can't get the port/slot number of "
-                                 "harddisk/dvd/floppy to be attached: "
-                                 "%s, rc=%08x"),
-                               src, (unsigned)rc);
-                VBOX_MEDIUM_RELEASE(medium);
-                vboxIIDUnalloc(&mediumUUID);
-                VBOX_UTF16_FREE(mediumFileUtf16);
-                continue;
+                devicePort = 0;
+                deviceSlot = def->disks[i]->info.addr.drive.unit;
             }
 
             /* attach the harddisk/dvd/Floppy to the storage controller */
