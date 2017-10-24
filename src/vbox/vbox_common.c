@@ -959,8 +959,17 @@ static void
 vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
     size_t i;
+    int type, format;
+    const char *src = NULL;
     nsresult rc = 0;
+    virDomainDiskDefPtr disk = NULL;
     PRUnichar *storageCtlName = NULL;
+    IMedium *medium = NULL;
+    PRUnichar *mediumFileUtf16 = NULL, *mediumEmpty = NULL;
+    PRUint32 devicePort, deviceSlot, deviceType, accessMode;
+    vboxIID mediumUUID;
+
+    VBOX_IID_INITIALIZE(&mediumUUID);
 
     /* add a storage controller for the mediums to be attached */
     /* this needs to change when multiple controller are supported for
@@ -1003,57 +1012,50 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
     }
 
     for (i = 0; i < def->ndisks; i++) {
-        const char *src = virDomainDiskGetSource(def->disks[i]);
-        int type = virDomainDiskGetType(def->disks[i]);
-        int format = virDomainDiskGetFormat(def->disks[i]);
+        disk = def->disks[i];
+        src = virDomainDiskGetSource(disk);
+        type = virDomainDiskGetType(disk);
+        format = virDomainDiskGetFormat(disk);
+        deviceType = DeviceType_Null;
+        accessMode = AccessMode_ReadOnly;
+        devicePort = disk->info.addr.drive.unit;
+        deviceSlot = disk->info.addr.drive.bus;
 
         VIR_DEBUG("disk(%zu) type:       %d", i, type);
-        VIR_DEBUG("disk(%zu) device:     %d", i, def->disks[i]->device);
-        VIR_DEBUG("disk(%zu) bus:        %d", i, def->disks[i]->bus);
+        VIR_DEBUG("disk(%zu) device:     %d", i, disk->device);
+        VIR_DEBUG("disk(%zu) bus:        %d", i, disk->bus);
         VIR_DEBUG("disk(%zu) src:        %s", i, src);
-        VIR_DEBUG("disk(%zu) dst:        %s", i, def->disks[i]->dst);
+        VIR_DEBUG("disk(%zu) dst:        %s", i, disk->dst);
         VIR_DEBUG("disk(%zu) driverName: %s", i,
-                  virDomainDiskGetDriver(def->disks[i]));
+                  virDomainDiskGetDriver(disk));
         VIR_DEBUG("disk(%zu) driverType: %s", i,
                   virStorageFileFormatTypeToString(format));
-        VIR_DEBUG("disk(%zu) cachemode:  %d", i, def->disks[i]->cachemode);
-        VIR_DEBUG("disk(%zu) readonly:   %s", i, (def->disks[i]->src->readonly
+        VIR_DEBUG("disk(%zu) cachemode:  %d", i, disk->cachemode);
+        VIR_DEBUG("disk(%zu) readonly:   %s", i, (disk->src->readonly
                                              ? "True" : "False"));
-        VIR_DEBUG("disk(%zu) shared:     %s", i, (def->disks[i]->src->shared
+        VIR_DEBUG("disk(%zu) shared:     %s", i, (disk->src->shared
                                              ? "True" : "False"));
 
         if (type == VIR_STORAGE_TYPE_FILE && src) {
-            IMedium *medium = NULL;
-            vboxIID mediumUUID;
-            PRUnichar *mediumFileUtf16 = NULL;
-            PRUint32 deviceType = DeviceType_Null;
-            PRUint32 accessMode = AccessMode_ReadOnly;
-            PRInt32 devicePort = def->disks[i]->info.addr.drive.unit;
-            PRInt32 deviceSlot = def->disks[i]->info.addr.drive.bus;
-
-            VBOX_IID_INITIALIZE(&mediumUUID);
             VBOX_UTF8_TO_UTF16(src, &mediumFileUtf16);
 
-            if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
                 deviceType = DeviceType_HardDisk;
                 accessMode = AccessMode_ReadWrite;
-            } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+            } else if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
                 deviceType = DeviceType_DVD;
                 accessMode = AccessMode_ReadOnly;
-            } else if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+            } else if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
                 deviceType = DeviceType_Floppy;
                 accessMode = AccessMode_ReadWrite;
             } else {
-                VBOX_UTF16_FREE(mediumFileUtf16);
-                continue;
+                goto cleanup;
             }
 
             gVBoxAPI.UIVirtualBox.FindHardDisk(data->vboxObj, mediumFileUtf16,
                                                deviceType, accessMode, &medium);
 
             if (!medium) {
-                PRUnichar *mediumEmpty = NULL;
-
                 VBOX_UTF8_TO_UTF16("", &mediumEmpty);
 
                 rc = gVBoxAPI.UIVirtualBox.OpenMedium(data->vboxObj,
@@ -1066,45 +1068,41 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
             if (!medium) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to attach the following disk/dvd/floppy "
-                                 "to the machine: %s, rc=%08x"),
-                               src, (unsigned)rc);
-                VBOX_UTF16_FREE(mediumFileUtf16);
-                continue;
+                                 "to the machine: %s, rc=%08x"), src, rc);
+                goto cleanup;
             }
 
             rc = gVBoxAPI.UIMedium.GetId(medium, &mediumUUID);
             if (NS_FAILED(rc)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("can't get the uuid of the file to be attached "
+                               _("Can't get the UUID of the file to be attached "
                                  "as harddisk/dvd/floppy: %s, rc=%08x"),
-                               src, (unsigned)rc);
-                VBOX_MEDIUM_RELEASE(medium);
-                VBOX_UTF16_FREE(mediumFileUtf16);
-                continue;
+                               src, rc);
+                goto cleanup;
             }
 
-            if (def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                if (def->disks[i]->src->readonly) {
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+                if (disk->src->readonly) {
                     gVBoxAPI.UIMedium.SetType(medium, MediumType_Immutable);
-                    VIR_DEBUG("setting harddisk to immutable");
-                } else if (!def->disks[i]->src->readonly) {
+                    VIR_DEBUG("Setting harddisk to immutable");
+                } else if (!disk->src->readonly) {
                     gVBoxAPI.UIMedium.SetType(medium, MediumType_Normal);
-                    VIR_DEBUG("setting harddisk type to normal");
+                    VIR_DEBUG("Setting harddisk type to normal");
                 }
             }
 
-            if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_IDE) {
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
                 VBOX_UTF8_TO_UTF16("IDE Controller", &storageCtlName);
                 devicePort = def->disks[i]->info.addr.drive.bus;
                 deviceSlot = def->disks[i]->info.addr.drive.unit;
-            } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_SATA) {
+            } else if (disk->bus == VIR_DOMAIN_DISK_BUS_SATA) {
                 VBOX_UTF8_TO_UTF16("SATA Controller", &storageCtlName);
-            } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+            } else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
                 VBOX_UTF8_TO_UTF16("SCSI Controller", &storageCtlName);
-            } else if (def->disks[i]->bus == VIR_DOMAIN_DISK_BUS_FDC) {
+            } else if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
                 VBOX_UTF8_TO_UTF16("Floppy Controller", &storageCtlName);
                 devicePort = 0;
-                deviceSlot = def->disks[i]->info.addr.drive.unit;
+                deviceSlot = disk->info.addr.drive.unit;
             }
 
             /* attach the harddisk/dvd/Floppy to the storage controller */
@@ -1117,13 +1115,12 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 
             if (NS_FAILED(rc)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("could not attach the file as "
-                                 "harddisk/dvd/floppy: %s, rc=%08x"),
-                               src, (unsigned)rc);
+                               _("Could not attach the file as "
+                                 "harddisk/dvd/floppy: %s, rc=%08x"), src, rc);
             } else {
                 DEBUGIID("Attached HDD/DVD/Floppy with UUID", &mediumUUID);
             }
-
+ cleanup:
             VBOX_MEDIUM_RELEASE(medium);
             vboxIIDUnalloc(&mediumUUID);
             VBOX_UTF16_FREE(mediumFileUtf16);
