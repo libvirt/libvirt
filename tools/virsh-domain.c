@@ -10562,6 +10562,14 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_INT,
      .help = N_("post-copy migration bandwidth limit in MiB/s")
     },
+    {.name = "parallel",
+     .type = VSH_OT_BOOL,
+     .help = N_("enable parallel migration")
+    },
+    {.name = "parallel-connections",
+     .type = VSH_OT_INT,
+     .help = N_("number of connections for parallel migration")
+    },
     {.name = NULL}
 };
 
@@ -10767,6 +10775,14 @@ doMigrate(void *opaque)
             goto save_error;
     }
 
+    if (vshCommandOptInt(ctl, cmd, "parallel-connections", &intOpt) < 0)
+        goto out;
+    if (intOpt &&
+        virTypedParamsAddInt(&params, &nparams, &maxparams,
+                             VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS,
+                             intOpt) < 0)
+        goto save_error;
+
     if (vshCommandOptBool(cmd, "live"))
         flags |= VIR_MIGRATE_LIVE;
     if (vshCommandOptBool(cmd, "p2p"))
@@ -10814,6 +10830,9 @@ doMigrate(void *opaque)
 
     if (vshCommandOptBool(cmd, "tls"))
         flags |= VIR_MIGRATE_TLS;
+
+    if (vshCommandOptBool(cmd, "parallel"))
+        flags |= VIR_MIGRATE_PARALLEL;
 
     if (flags & VIR_MIGRATE_PEER2PEER || vshCommandOptBool(cmd, "direct")) {
         if (virDomainMigrateToURI3(dom, desturi, params, nparams, flags) == 0)
