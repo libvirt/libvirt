@@ -748,6 +748,14 @@ typedef enum {
     VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST
 } virDomainControllerModelUSB;
 
+typedef enum {
+    VIR_DOMAIN_CONTROLLER_MODEL_IDE_PIIX3,
+    VIR_DOMAIN_CONTROLLER_MODEL_IDE_PIIX4,
+    VIR_DOMAIN_CONTROLLER_MODEL_IDE_ICH6,
+
+    VIR_DOMAIN_CONTROLLER_MODEL_IDE_LAST
+} virDomainControllerModelIDE;
+
 # define IS_USB2_CONTROLLER(ctrl) \
     (((ctrl)->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) && \
      ((ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1 || \
@@ -3219,6 +3227,7 @@ VIR_ENUM_DECL(virDomainControllerModelPCI)
 VIR_ENUM_DECL(virDomainControllerPCIModelName)
 VIR_ENUM_DECL(virDomainControllerModelSCSI)
 VIR_ENUM_DECL(virDomainControllerModelUSB)
+VIR_ENUM_DECL(virDomainControllerModelIDE)
 VIR_ENUM_DECL(virDomainFS)
 VIR_ENUM_DECL(virDomainFSDriver)
 VIR_ENUM_DECL(virDomainFSAccessMode)

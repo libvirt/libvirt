@@ -234,6 +234,8 @@ virDomainControllerFindUnusedIndex;
 virDomainControllerInsert;
 virDomainControllerInsertPreAlloced;
 virDomainControllerIsPSeriesPHB;
+virDomainControllerModelIDETypeFromString;
+virDomainControllerModelIDETypeToString;
 virDomainControllerModelPCITypeToString;
 virDomainControllerModelSCSITypeFromString;
 virDomainControllerModelSCSITypeToString;

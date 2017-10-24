@@ -1975,12 +1975,11 @@
           <ref name="address"/>
         </optional>
         <choice>
-          <!-- fdc/ide/sata/ccid have only the common attributes -->
+          <!-- fdc/sata/ccid have only the common attributes -->
           <group>
             <attribute name="type">
               <choice>
                 <value>fdc</value>
-                <value>ide</value>
                 <value>sata</value>
                 <value>ccid</value>
               </choice>
@@ -2038,6 +2037,21 @@
             <optional>
               <attribute name="ports">
                 <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+          </group>
+          <!-- ide has an optional attribute "model" -->
+          <group>
+            <attribute name="type">
+              <value>ide</value>
+            </attribute>
+            <optional>
+              <attribute name="model">
+                <choice>
+                  <value>piix3</value>
+                  <value>piix4</value>
+                  <value>ich6</value>
+                </choice>
               </attribute>
             </optional>
           </group>
