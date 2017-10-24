@@ -687,7 +687,9 @@ _virtualboxCreateHardDisk(IVirtualBox *vboxObj, PRUnichar *format,
 #if VBOX_API_VERSION < 5000000
     return vboxObj->vtbl->CreateHardDisk(vboxObj, format, location, medium);
 #elif VBOX_API_VERSION >= 5000000 /*VBOX_API_VERSION >= 5000000*/
-    return vboxObj->vtbl->CreateMedium(vboxObj, format, location, AccessMode_ReadWrite, DeviceType_HardDisk, medium);
+    return vboxObj->vtbl->CreateMedium(vboxObj, format, location,
+                                       AccessMode_ReadWrite,
+                                       DeviceType_HardDisk, medium);
 #endif /*VBOX_API_VERSION >= 5000000*/
 }
 
@@ -698,38 +700,33 @@ _virtualboxRegisterMachine(IVirtualBox *vboxObj, IMachine *machine)
 }
 
 static nsresult
-_virtualboxFindHardDisk(IVirtualBox *vboxObj, PRUnichar *location,
-                        PRUint32 deviceType ATTRIBUTE_UNUSED,
+_virtualboxFindHardDisk(IVirtualBox *vboxObj,
+                        PRUnichar *location,
+                        PRUint32 deviceType,
                         PRUint32 accessMode ATTRIBUTE_UNUSED,
                         IMedium **medium)
 {
 #if VBOX_API_VERSION < 4002000
-    return vboxObj->vtbl->FindMedium(vboxObj, location,
-                                     deviceType, medium);
+    return vboxObj->vtbl->FindMedium(vboxObj, location, deviceType, medium);
 #else /* VBOX_API_VERSION >= 4002000 */
-    return vboxObj->vtbl->OpenMedium(vboxObj, location,
-                                     deviceType, accessMode, PR_FALSE, medium);
+    return vboxObj->vtbl->OpenMedium(vboxObj, location, deviceType, accessMode,
+                                     PR_FALSE, medium);
 #endif /* VBOX_API_VERSION >= 4002000 */
 }
 
 static nsresult
-_virtualboxOpenMedium(IVirtualBox *vboxObj ATTRIBUTE_UNUSED,
-                      PRUnichar *location ATTRIBUTE_UNUSED,
-                      PRUint32 deviceType ATTRIBUTE_UNUSED,
-                      PRUint32 accessMode ATTRIBUTE_UNUSED,
-                      IMedium **medium ATTRIBUTE_UNUSED)
+_virtualboxOpenMedium(IVirtualBox *vboxObj,
+                      PRUnichar *location,
+                      PRUint32 deviceType,
+                      PRUint32 accessMode,
+                      IMedium **medium)
 {
 #if VBOX_API_VERSION == 4000000
-    return vboxObj->vtbl->OpenMedium(vboxObj,
-                                     location,
-                                     deviceType, accessMode,
+    return vboxObj->vtbl->OpenMedium(vboxObj, location, deviceType, accessMode,
                                      medium);
 #elif VBOX_API_VERSION >= 4001000
-    return vboxObj->vtbl->OpenMedium(vboxObj,
-                                     location,
-                                     deviceType, accessMode,
-                                     false,
-                                     medium);
+    return vboxObj->vtbl->OpenMedium(vboxObj, location, deviceType, accessMode,
+                                     false, medium);
 #endif
 }
 
@@ -781,12 +778,12 @@ _machineGetStorageControllerByName(IMachine *machine, PRUnichar *name,
 }
 
 static nsresult
-_machineAttachDevice(IMachine *machine ATTRIBUTE_UNUSED,
-                     PRUnichar *name ATTRIBUTE_UNUSED,
-                     PRInt32 controllerPort ATTRIBUTE_UNUSED,
-                     PRInt32 device ATTRIBUTE_UNUSED,
-                     PRUint32 type ATTRIBUTE_UNUSED,
-                     IMedium * medium ATTRIBUTE_UNUSED)
+_machineAttachDevice(IMachine *machine,
+                     PRUnichar *name,
+                     PRInt32 controllerPort,
+                     PRInt32 device,
+                     PRUint32 type,
+                     IMedium * medium)
 {
     return machine->vtbl->AttachDevice(machine, name, controllerPort,
                                        device, type, medium);
