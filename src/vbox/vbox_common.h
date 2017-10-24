@@ -235,6 +235,19 @@ enum StorageBus
     StorageBus_SAS = 5
 };
 
+enum StorageControllerType
+{
+    StorageControllerType_Null = 0,
+    StorageControllerType_LsiLogic = 1,
+    StorageControllerType_BusLogic = 2,
+    StorageControllerType_IntelAhci = 3,
+    StorageControllerType_PIIX3 = 4,
+    StorageControllerType_PIIX4 = 5,
+    StorageControllerType_ICH6 = 6,
+    StorageControllerType_I82078 = 7,
+    StorageControllerType_LsiLogicSas = 8
+};
+
 enum AccessMode
 {
     AccessMode_ReadOnly = 1,

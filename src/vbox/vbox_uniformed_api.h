@@ -135,6 +135,7 @@ typedef struct {
     void* (*handleGetMachines)(IVirtualBox *vboxObj);
     void* (*handleGetHardDisks)(IVirtualBox *vboxObj);
     void* (*handleUSBGetDeviceFilters)(IUSBCommon *USBCommon);
+    void* (*handleMachineGetStorageControllers)(IMachine *machine);
     void* (*handleMachineGetMediumAttachments)(IMachine *machine);
     void* (*handleMachineGetSharedFolders)(IMachine *machine);
     void* (*handleSnapshotGetChildren)(ISnapshot *snapshot);
@@ -410,6 +411,8 @@ typedef struct {
 /* Functions for IStorageController */
 typedef struct {
     nsresult (*GetBus)(IStorageController *storageController, PRUint32 *bus);
+    nsresult (*SetControllerType)(IStorageController *storageController, PRUint32 controllerType);
+    nsresult (*GetControllerType)(IStorageController *storageController, PRUint32 *controllerType);
 } vboxUniformedIStorageController;
 
 /* Functions for ISharedFolder */
