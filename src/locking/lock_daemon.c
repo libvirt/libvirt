@@ -278,6 +278,7 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
                                               virLockDaemonClientFree,
                                               (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
+    virObjectUnref(srv);
 
     return lockd;
 

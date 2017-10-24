@@ -312,6 +312,7 @@ virNetDaemonAddServerPostExec(virNetDaemonPtr dmn,
 
     if (virHashAddEntry(dmn->servers, serverName, srv) < 0)
         goto error;
+    virObjectRef(srv);
 
     virJSONValueFree(object);
     virObjectUnlock(dmn);
