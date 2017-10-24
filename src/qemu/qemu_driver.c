@@ -7256,6 +7256,7 @@ qemuDomainObjStart(virConnectPtr conn,
             } else {
                 VIR_WARN("Ignoring incomplete managed state %s", managed_save);
                 priv->job.current->operation = op;
+                vm->hasManagedSave = false;
             }
         }
     }
