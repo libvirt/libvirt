@@ -341,7 +341,7 @@ typedef struct {
     nsresult (*GetEnabled)(IVRDEServer *VRDEServer, PRBool *enabled);
     nsresult (*SetEnabled)(IVRDEServer *VRDEServer, PRBool enabled);
     nsresult (*GetPorts)(vboxDriverPtr driver, IVRDEServer *VRDEServer,
-                         virDomainGraphicsDefPtr graphics);
+                         IMachine *machine, virDomainGraphicsDefPtr graphics);
     nsresult (*SetPorts)(vboxDriverPtr driver, IVRDEServer *VRDEServer,
                          virDomainGraphicsDefPtr graphics);
     nsresult (*GetReuseSingleConnection)(IVRDEServer *VRDEServer, PRBool *enabled);
