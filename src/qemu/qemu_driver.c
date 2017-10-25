@@ -108,6 +108,7 @@
 #include "virnuma.h"
 #include "dirname.h"
 #include "network/bridge_driver.h"
+#include "netdev_bandwidth_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -11107,6 +11108,8 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     virNetDevBandwidthPtr bandwidth = NULL, newBandwidth = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     bool inboundSpecified = false, outboundSpecified = false;
+    int actualType;
+    bool qosSupported = true;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -11149,6 +11152,24 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
     if (persistentDef &&
         !(persistentNet = virDomainNetFind(persistentDef, device)))
         goto endjob;
+
+    if (net) {
+        actualType = virDomainNetGetActualType(net);
+        qosSupported = virNetDevSupportBandwidth(actualType);
+    }
+
+    if (qosSupported && persistentNet) {
+        actualType = virDomainNetGetActualType(persistentNet);
+        qosSupported = virNetDevSupportBandwidth(actualType);
+    }
+
+    if (!qosSupported) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("setting bandwidth on interfaces of "
+                         "type '%s' is not implemented yet"),
+                       virDomainNetTypeToString(actualType));
+        goto endjob;
+    }
 
     if ((VIR_ALLOC(bandwidth) < 0) ||
         (VIR_ALLOC(bandwidth->in) < 0) ||
