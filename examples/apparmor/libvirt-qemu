@@ -32,6 +32,7 @@
   # libusb needs udev data about usb devices (~equal to content of lsusb -v)
   /run/udev/data/c16[6,7]* r,
   /run/udev/data/c18[0,8,9]* r,
+  /run/udev/data/+usb* r,
 
   # WARNING: this gives the guest direct access to host hardware and specific
   # portions of shared memory. This is required for sound using ALSA with kvm,
