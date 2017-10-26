@@ -3184,8 +3184,7 @@
       <dt><code>wwn</code></dt>
       <dd>If present, this element specifies the WWN (World Wide Name)
         of a virtual hard disk or CD-ROM drive. It must be composed
-        of 16 hexadecimal digits and must be unique (at least among
-        disks of a single domain)
+        of 16 hexadecimal digits.
         <span class='since'>Since 0.10.1</span>
       </dd>
       <dt><code>vendor</code></dt>
