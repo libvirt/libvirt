@@ -1813,7 +1813,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
                                           &params) < 0)
         goto cleanup;
 
-#define CHECK(VAR, FIELD, VALUE)                                            \
+#define CHECK_NUM(VAR, FIELD, VALUE, FMT)                                   \
     do {                                                                    \
         if (!params.VAR ## _set) {                                          \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s is not set", FIELD); \
@@ -1821,19 +1821,23 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
         }                                                                   \
         if (params.VAR != VALUE) {                                          \
             virReportError(VIR_ERR_INTERNAL_ERROR,                          \
-                           "Invalid %s: %d, expected %d",                   \
+                           "Invalid %s: " FMT ", expected " FMT,            \
                            FIELD, params.VAR, VALUE);                       \
             goto cleanup;                                                   \
         }                                                                   \
     } while (0)
 
-    CHECK(compressLevel, "compress-level", 1);
-    CHECK(compressThreads, "compress-threads", 8);
-    CHECK(decompressThreads, "decompress-threads", 2);
-    CHECK(cpuThrottleInitial, "cpu-throttle-initial", 20);
-    CHECK(cpuThrottleIncrement, "cpu-throttle-increment", 10);
+#define CHECK_INT(VAR, FIELD, VALUE)                                        \
+    CHECK_NUM(VAR, FIELD, VALUE, "%d")
 
-#undef CHECK
+    CHECK_INT(compressLevel, "compress-level", 1);
+    CHECK_INT(compressThreads, "compress-threads", 8);
+    CHECK_INT(decompressThreads, "decompress-threads", 2);
+    CHECK_INT(cpuThrottleInitial, "cpu-throttle-initial", 20);
+    CHECK_INT(cpuThrottleIncrement, "cpu-throttle-increment", 10);
+
+#undef CHECK_NUM
+#undef CHECK_INT
 
 #define CHECK(VAR, FIELD, VALUE)                                            \
     do {                                                                    \
