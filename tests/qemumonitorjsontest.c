@@ -1853,8 +1853,8 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
     CHECK_INT(decompressThreads, "decompress-threads", 2);
     CHECK_INT(cpuThrottleInitial, "cpu-throttle-initial", 20);
     CHECK_INT(cpuThrottleIncrement, "cpu-throttle-increment", 10);
-    CHECK_STR(migrateTLSAlias, "tls-creds", "tls0");
-    CHECK_STR(migrateTLSHostname, "tls-hostname", "");
+    CHECK_STR(tlsCreds, "tls-creds", "tls0");
+    CHECK_STR(tlsHostname, "tls-hostname", "");
     CHECK_ULONG(downtimeLimit, "downtime-limit", 500ULL);
 
 #undef CHECK_NUM
@@ -1865,8 +1865,8 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
     ret = 0;
 
  cleanup:
-    VIR_FREE(params.migrateTLSAlias);
-    VIR_FREE(params.migrateTLSHostname);
+    VIR_FREE(params.tlsCreds);
+    VIR_FREE(params.tlsHostname);
     qemuMonitorTestFree(test);
     return ret;
 }

@@ -625,8 +625,8 @@ struct _qemuMonitorMigrationParams {
 
     /* Value is either NULL, "", or some string. NULL indicates no support;
      * whereas, some string value indicates we can support setting/clearing */
-    char *migrateTLSAlias;
-    char *migrateTLSHostname;
+    char *tlsCreds;
+    char *tlsHostname;
 
     bool downtimeLimit_set;
     unsigned long long downtimeLimit;

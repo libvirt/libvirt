@@ -114,7 +114,7 @@ qemuMigrationCheckTLSCreds(virQEMUDriverPtr driver,
         goto cleanup;
 
     /* NB: Could steal NULL pointer too! Let caller decide what to do. */
-    VIR_STEAL_PTR(priv->migTLSAlias, migParams.migrateTLSAlias);
+    VIR_STEAL_PTR(priv->migTLSAlias, migParams.tlsCreds);
 
     ret = 0;
 
@@ -225,7 +225,7 @@ qemuMigrationAddTLSObjects(virQEMUDriverPtr driver,
                                 *tlsAlias, &tlsProps) < 0)
         goto error;
 
-    if (VIR_STRDUP(migParams->migrateTLSAlias, *tlsAlias) < 0)
+    if (VIR_STRDUP(migParams->tlsCreds, *tlsAlias) < 0)
         goto error;
 
     return 0;
@@ -2349,8 +2349,8 @@ qemuMigrationParamsClear(qemuMonitorMigrationParamsPtr migParams)
     if (!migParams)
         return;
 
-    VIR_FREE(migParams->migrateTLSAlias);
-    VIR_FREE(migParams->migrateTLSHostname);
+    VIR_FREE(migParams->tlsCreds);
+    VIR_FREE(migParams->tlsHostname);
 }
 
 
@@ -2391,8 +2391,8 @@ qemuMigrationSetEmptyTLSParams(virQEMUDriverPtr driver,
    if (!priv->migTLSAlias)
        return 0;
 
-   if (VIR_STRDUP(migParams->migrateTLSAlias, "") < 0 ||
-       VIR_STRDUP(migParams->migrateTLSHostname, "") < 0)
+   if (VIR_STRDUP(migParams->tlsCreds, "") < 0 ||
+       VIR_STRDUP(migParams->tlsHostname, "") < 0)
        return -1;
 
     return 0;
@@ -2508,8 +2508,8 @@ qemuMigrationResetTLS(virQEMUDriverPtr driver,
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
     qemuDomainSecretInfoFree(&priv->migSecinfo);
 
-    if (VIR_STRDUP(migParams.migrateTLSAlias, "") < 0 ||
-        VIR_STRDUP(migParams.migrateTLSHostname, "") < 0 ||
+    if (VIR_STRDUP(migParams.tlsCreds, "") < 0 ||
+        VIR_STRDUP(migParams.tlsHostname, "") < 0 ||
         qemuMigrationSetParams(driver, vm, asyncJob, &migParams) < 0)
         goto cleanup;
 
@@ -2774,7 +2774,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
             goto stopjob;
 
         /* Force reset of 'tls-hostname', it's a source only parameter */
-        if (VIR_STRDUP(migParams.migrateTLSHostname, "") < 0)
+        if (VIR_STRDUP(migParams.tlsHostname, "") < 0)
             goto stopjob;
 
     } else {
@@ -3737,12 +3737,11 @@ qemuMigrationRun(virQEMUDriverPtr driver,
          * connect directly to the destination. */
         if (spec->destType == MIGRATION_DEST_CONNECT_HOST ||
             spec->destType == MIGRATION_DEST_FD) {
-            if (VIR_STRDUP(migParams->migrateTLSHostname,
-                           spec->dest.host.name) < 0)
+            if (VIR_STRDUP(migParams->tlsHostname, spec->dest.host.name) < 0)
                 goto error;
         } else {
             /* Be sure there's nothing from a previous migration */
-            if (VIR_STRDUP(migParams->migrateTLSHostname, "") < 0)
+            if (VIR_STRDUP(migParams->tlsHostname, "") < 0)
                 goto error;
         }
     } else {
