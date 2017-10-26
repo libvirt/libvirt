@@ -633,6 +633,9 @@ struct _qemuMonitorMigrationParams {
 
     bool downtimeLimit_set;
     unsigned long long downtimeLimit;
+
+    bool blockIncremental_set;
+    bool blockIncremental;
 };
 
 int qemuMonitorGetMigrationParams(qemuMonitorPtr mon,

@@ -1805,7 +1805,8 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
                                "        \"tls-creds\": \"tls0\","
                                "        \"tls-hostname\": \"\","
                                "        \"max-bandwidth\": 1234567890,"
-                               "        \"downtime-limit\": 500"
+                               "        \"downtime-limit\": 500,"
+                               "        \"block-incremental\": true"
                                "    }"
                                "}") < 0) {
         goto cleanup;
@@ -1835,6 +1836,9 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
 #define CHECK_ULONG(VAR, FIELD, VALUE)                                      \
     CHECK_NUM(VAR, FIELD, VALUE, "%llu")
 
+#define CHECK_BOOL(VAR, FIELD, VALUE)                                       \
+    CHECK_NUM(VAR, FIELD, VALUE, "%d")
+
 #define CHECK_STR(VAR, FIELD, VALUE)                                        \
     do {                                                                    \
         if (!params.VAR) {                                                  \
@@ -1858,10 +1862,12 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
     CHECK_STR(tlsHostname, "tls-hostname", "");
     CHECK_ULONG(maxBandwidth, "max-bandwidth", 1234567890ULL);
     CHECK_ULONG(downtimeLimit, "downtime-limit", 500ULL);
+    CHECK_BOOL(blockIncremental, "block-incremental", true);
 
 #undef CHECK_NUM
 #undef CHECK_INT
 #undef CHECK_ULONG
+#undef CHECK_BOOL
 #undef CHECK_STR
 
     ret = 0;

@@ -2690,6 +2690,9 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
 #define PARSE_ULONG(VAR, FIELD)                                             \
     PARSE_SET(virJSONValueObjectGetNumberUlong, VAR, FIELD)
 
+#define PARSE_BOOL(VAR, FIELD)                                              \
+    PARSE_SET(virJSONValueObjectGetBoolean, VAR, FIELD)
+
 #define PARSE_STR(VAR, FIELD)                                               \
     do {                                                                    \
         const char *str;                                                    \
@@ -2708,10 +2711,12 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
     PARSE_STR(tlsHostname, "tls-hostname");
     PARSE_ULONG(maxBandwidth, "max-bandwidth");
     PARSE_ULONG(downtimeLimit, "downtime-limit");
+    PARSE_BOOL(blockIncremental, "block-incremental");
 
 #undef PARSE_SET
 #undef PARSE_INT
 #undef PARSE_ULONG
+#undef PARSE_BOOL
 #undef PARSE_STR
 
     ret = 0;
@@ -2758,6 +2763,10 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
     APPEND(params->VAR ## _set,                                             \
            virJSONValueObjectAppendNumberUlong, VAR, FIELD)
 
+#define APPEND_BOOL(VAR, FIELD)                                             \
+    APPEND(params->VAR ## _set,                                             \
+           virJSONValueObjectAppendBoolean, VAR, FIELD)
+
     APPEND_INT(compressLevel, "compress-level");
     APPEND_INT(compressThreads, "compress-threads");
     APPEND_INT(decompressThreads, "decompress-threads");
@@ -2767,6 +2776,7 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
     APPEND_STR(tlsHostname, "tls-hostname");
     APPEND_ULONG(maxBandwidth, "max-bandwidth");
     APPEND_ULONG(downtimeLimit, "downtime-limit");
+    APPEND_BOOL(blockIncremental, "block-incremental");
 
 #undef APPEND
 #undef APPEND_INT
