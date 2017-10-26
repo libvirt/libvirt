@@ -155,7 +155,7 @@ testfw() {
             -e "s,</os>,<loader readonly='yes' type='pflash'>$fwpath</loader></os>,g" "$template_xml" > "$test_xml"
         testme "0" "$title" "-r -u $valid_uuid" "$test_xml"
     else
-        echo "Skipping FW $title test. Could not find $fwpath"
+        echo "Skipping FW $title test. Could not find $fwpath" >$output
     fi
 }
 
