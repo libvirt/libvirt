@@ -2765,6 +2765,11 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
 #undef APPEND_INT
 #undef APPEND_STR
 
+    if (virJSONValueObjectKeysNumber(args) == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
     if (virJSONValueObjectAppend(cmd, "arguments", args) < 0)
         goto cleanup;
     args = NULL;

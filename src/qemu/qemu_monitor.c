@@ -2618,15 +2618,6 @@ qemuMonitorSetMigrationParams(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR_JSON(mon);
 
-    if (!params->compressLevel_set &&
-        !params->compressThreads_set &&
-        !params->decompressThreads_set &&
-        !params->cpuThrottleInitial_set &&
-        !params->cpuThrottleIncrement_set &&
-        !params->migrateTLSAlias &&
-        !params->migrateTLSHostname)
-        return 0;
-
     return qemuMonitorJSONSetMigrationParams(mon, params);
 }
 
