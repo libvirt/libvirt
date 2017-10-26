@@ -628,6 +628,9 @@ struct _qemuMonitorMigrationParams {
     char *tlsCreds;
     char *tlsHostname;
 
+    bool maxBandwidth_set;
+    unsigned long long maxBandwidth;
+
     bool downtimeLimit_set;
     unsigned long long downtimeLimit;
 };

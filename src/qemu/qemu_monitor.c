@@ -2607,13 +2607,14 @@ qemuMonitorSetMigrationParams(qemuMonitorPtr mon,
     VIR_DEBUG("compressLevel=%d:%d compressThreads=%d:%d "
               "decompressThreads=%d:%d cpuThrottleInitial=%d:%d "
               "cpuThrottleIncrement=%d:%d tlsCreds=%s tlsHostname=%s "
-              "downtimeLimit=%d:%llu",
+              "maxBandwidth=%d:%llu downtimeLimit=%d:%llu",
               params->compressLevel_set, params->compressLevel,
               params->compressThreads_set, params->compressThreads,
               params->decompressThreads_set, params->decompressThreads,
               params->cpuThrottleInitial_set, params->cpuThrottleInitial,
               params->cpuThrottleIncrement_set, params->cpuThrottleIncrement,
               NULLSTR(params->tlsCreds), NULLSTR(params->tlsHostname),
+              params->maxBandwidth_set, params->maxBandwidth,
               params->downtimeLimit_set, params->downtimeLimit);
 
     QEMU_CHECK_MONITOR_JSON(mon);

@@ -2706,6 +2706,7 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
     PARSE_INT(cpuThrottleIncrement, "cpu-throttle-increment");
     PARSE_STR(tlsCreds, "tls-creds");
     PARSE_STR(tlsHostname, "tls-hostname");
+    PARSE_ULONG(maxBandwidth, "max-bandwidth");
     PARSE_ULONG(downtimeLimit, "downtime-limit");
 
 #undef PARSE_SET
@@ -2764,6 +2765,7 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
     APPEND_INT(cpuThrottleIncrement, "cpu-throttle-increment");
     APPEND_STR(tlsCreds, "tls-creds");
     APPEND_STR(tlsHostname, "tls-hostname");
+    APPEND_ULONG(maxBandwidth, "max-bandwidth");
     APPEND_ULONG(downtimeLimit, "downtime-limit");
 
 #undef APPEND

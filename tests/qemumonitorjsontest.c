@@ -1804,6 +1804,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
                                "        \"cpu-throttle-initial\": 20,"
                                "        \"tls-creds\": \"tls0\","
                                "        \"tls-hostname\": \"\","
+                               "        \"max-bandwidth\": 1234567890,"
                                "        \"downtime-limit\": 500"
                                "    }"
                                "}") < 0) {
@@ -1855,6 +1856,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
     CHECK_INT(cpuThrottleIncrement, "cpu-throttle-increment", 10);
     CHECK_STR(tlsCreds, "tls-creds", "tls0");
     CHECK_STR(tlsHostname, "tls-hostname", "");
+    CHECK_ULONG(maxBandwidth, "max-bandwidth", 1234567890ULL);
     CHECK_ULONG(downtimeLimit, "downtime-limit", 500ULL);
 
 #undef CHECK_NUM
