@@ -1830,16 +1830,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
 #define CHECK_INT(VAR, FIELD, VALUE)                                        \
     CHECK_NUM(VAR, FIELD, VALUE, "%d")
 
-    CHECK_INT(compressLevel, "compress-level", 1);
-    CHECK_INT(compressThreads, "compress-threads", 8);
-    CHECK_INT(decompressThreads, "decompress-threads", 2);
-    CHECK_INT(cpuThrottleInitial, "cpu-throttle-initial", 20);
-    CHECK_INT(cpuThrottleIncrement, "cpu-throttle-increment", 10);
-
-#undef CHECK_NUM
-#undef CHECK_INT
-
-#define CHECK(VAR, FIELD, VALUE)                                            \
+#define CHECK_STR(VAR, FIELD, VALUE)                                        \
     do {                                                                    \
         if (!params.VAR) {                                                  \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s is not set", FIELD); \
@@ -1853,10 +1844,17 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
         }                                                                   \
     } while (0)
 
-    CHECK(migrateTLSAlias, "tls-creds", "tls0");
-    CHECK(migrateTLSHostname, "tls-hostname", "");
+    CHECK_INT(compressLevel, "compress-level", 1);
+    CHECK_INT(compressThreads, "compress-threads", 8);
+    CHECK_INT(decompressThreads, "decompress-threads", 2);
+    CHECK_INT(cpuThrottleInitial, "cpu-throttle-initial", 20);
+    CHECK_INT(cpuThrottleIncrement, "cpu-throttle-increment", 10);
+    CHECK_STR(migrateTLSAlias, "tls-creds", "tls0");
+    CHECK_STR(migrateTLSHostname, "tls-hostname", "");
 
-#undef CHECK
+#undef CHECK_NUM
+#undef CHECK_INT
+#undef CHECK_STR
 
     ret = 0;
 
