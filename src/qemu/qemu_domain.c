@@ -892,6 +892,7 @@ qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
 
 
 static virClassPtr qemuDomainDiskPrivateClass;
+static void qemuDomainDiskPrivateDispose(void *obj);
 
 static int
 qemuDomainDiskPrivateOnceInit(void)
@@ -899,7 +900,7 @@ qemuDomainDiskPrivateOnceInit(void)
     qemuDomainDiskPrivateClass = virClassNew(virClassForObject(),
                                              "qemuDomainDiskPrivate",
                                              sizeof(qemuDomainDiskPrivate),
-                                             NULL);
+                                             qemuDomainDiskPrivateDispose);
     if (!qemuDomainDiskPrivateClass)
         return -1;
     else
@@ -922,6 +923,13 @@ qemuDomainDiskPrivateNew(void)
     return (virObjectPtr) priv;
 }
 
+static void
+qemuDomainDiskPrivateDispose(void *obj)
+{
+    qemuDomainDiskPrivatePtr priv = obj;
+
+    VIR_FREE(priv->blockJobError);
+}
 
 static virClassPtr qemuDomainStorageSourcePrivateClass;
 static void qemuDomainStorageSourcePrivateDispose(void *obj);

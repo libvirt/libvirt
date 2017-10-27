@@ -176,6 +176,7 @@ typedef int (*qemuMonitorDomainBlockJobCallback)(qemuMonitorPtr mon,
                                                  const char *diskAlias,
                                                  int type,
                                                  int status,
+                                                 const char *error,
                                                  void *opaque);
 typedef int (*qemuMonitorDomainTrayChangeCallback)(qemuMonitorPtr mon,
                                                    virDomainObjPtr vm,
@@ -375,7 +376,8 @@ int qemuMonitorEmitPMSuspend(qemuMonitorPtr mon);
 int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
                             const char *diskAlias,
                             int type,
-                            int status);
+                            int status,
+                            const char *error);
 int qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
                                  unsigned long long actual);
 int qemuMonitorEmitPMSuspendDisk(qemuMonitorPtr mon);

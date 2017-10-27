@@ -35,6 +35,7 @@
 #include "virthread.h"
 #include "virtime.h"
 #include "locking/domain_lock.h"
+#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -66,6 +67,7 @@ qemuBlockJobUpdate(virQEMUDriverPtr driver,
                                  diskPriv->blockJobType,
                                  diskPriv->blockJobStatus);
         diskPriv->blockJobStatus = -1;
+        VIR_FREE(diskPriv->blockJobError);
     }
 
     return status;

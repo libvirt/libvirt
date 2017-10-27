@@ -1000,6 +1000,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                           const char *diskAlias,
                           int type,
                           int status,
+                          const char *error,
                           void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
@@ -1021,6 +1022,8 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         /* We have a SYNC API waiting for this event, dispatch it back */
         diskPriv->blockJobType = type;
         diskPriv->blockJobStatus = status;
+        VIR_FREE(diskPriv->blockJobError);
+        ignore_value(VIR_STRDUP_QUIET(diskPriv->blockJobError, error));
         virDomainObjBroadcast(vm);
     } else {
         /* there is no waiting SYNC API, dispatch the update to a thread */
