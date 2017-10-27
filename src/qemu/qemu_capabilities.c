@@ -3758,6 +3758,7 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
                     goto cleanup;
                 }
             }
+            VIR_FREE(blockerNodes);
         }
 
         if (virDomainCapsCPUModelsAddSteal(cpus, &str, usable, &blockers) < 0)
