@@ -546,7 +546,7 @@ $ virsh domxml-to-native qemu-argv demo.xml
       (<span class="since">Since 0.8.3</span>).  In order to use the
       XML additions, it is necessary to issue an XML namespace request
       (the special <code>xmlns:<i>name</i></code> attribute) that
-      pulls in <code>https://libvirt.org/schemas/domain/qemu/1.0</code>;
+      pulls in <code>http://libvirt.org/schemas/domain/qemu/1.0</code>;
       typically, the namespace is given the name
       of <code>qemu</code>.  With the namespace in place, it is then
       possible to add an element <code>&lt;qemu:commandline&gt;</code>
@@ -566,7 +566,7 @@ $ virsh domxml-to-native qemu-argv demo.xml
           and optional <code>value</code>.</dd>
       </dl>
       <p>Example:</p><pre>
-&lt;domain type='qemu' xmlns:qemu='https://libvirt.org/schemas/domain/qemu/1.0'&gt;
+&lt;domain type='qemu' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'&gt;
   &lt;name&gt;QEmu-fedora-i686&lt;/name&gt;
   &lt;memory&gt;219200&lt;/memory&gt;
   &lt;os&gt;
