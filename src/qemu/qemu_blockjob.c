@@ -47,6 +47,7 @@ VIR_LOG_INIT("qemu.qemu_blockjob");
  * @driver: qemu driver
  * @vm: domain
  * @disk: domain disk
+ * @error: error (output parameter)
  *
  * Update disk's mirror state in response to a block job event stored in
  * blockJobStatus by qemuProcessHandleBlockJob event handler.
@@ -57,17 +58,24 @@ int
 qemuBlockJobUpdate(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
                    qemuDomainAsyncJob asyncJob,
-                   virDomainDiskDefPtr disk)
+                   virDomainDiskDefPtr disk,
+                   char **error)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     int status = diskPriv->blockJobStatus;
+
+    if (error)
+        *error = NULL;
 
     if (status != -1) {
         qemuBlockJobEventProcess(driver, vm, disk, asyncJob,
                                  diskPriv->blockJobType,
                                  diskPriv->blockJobStatus);
         diskPriv->blockJobStatus = -1;
-        VIR_FREE(diskPriv->blockJobError);
+        if (error)
+            VIR_STEAL_PTR(*error, diskPriv->blockJobError);
+        else
+            VIR_FREE(diskPriv->blockJobError);
     }
 
     return status;
@@ -249,6 +257,6 @@ qemuBlockJobSyncEnd(virQEMUDriverPtr driver,
                     virDomainDiskDefPtr disk)
 {
     VIR_DEBUG("disk=%s", disk->dst);
-    qemuBlockJobUpdate(driver, vm, asyncJob, disk);
+    qemuBlockJobUpdate(driver, vm, asyncJob, disk, NULL);
     QEMU_DOMAIN_DISK_PRIVATE(disk)->blockJobSync = false;
 }
