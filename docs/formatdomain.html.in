@@ -411,6 +411,10 @@
     &lt;entry name='version'&gt;0B98401 Pro&lt;/entry&gt;
     &lt;entry name='serial'&gt;W1KS427111E&lt;/entry&gt;
   &lt;/baseBoard&gt;
+  &lt;oemStrings&gt;
+    &lt;entry&gt;myappname:some arbitrary data&lt;/entry&gt;
+    &lt;entry&gt;otherappname:more arbitrary data&lt;/entry&gt;
+  &lt;/oemStrings&gt;
 &lt;/sysinfo&gt;
 ...</pre>
 
@@ -497,6 +501,15 @@
             blocks will be ignored without error.  Other than <code>uuid</code>
             validation and <code>date</code> format checking, all values are
             passed as strings to the hypervisor driver.
+          </dd>
+          <dt><code>oemStrings</code></dt>
+          <dd>
+            This is block 11 of SMBIOS. This element should appear once and
+            can have multiple <code>entry</code> child elements, each providing
+            arbitrary string data. There are no restrictions on what data can
+            be provided in the entries, however, if the data is intended to be
+            consumed by an application in the guest, it is recommended to use
+            the application name as a prefix in the string. (<span class="since">Since 4.1.0</span>)
           </dd>
         </dl>
       </dd>

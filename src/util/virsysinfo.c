@@ -108,6 +108,20 @@ void virSysinfoBaseBoardDefClear(virSysinfoBaseBoardDefPtr def)
     VIR_FREE(def->location);
 }
 
+void virSysinfoOEMStringsDefFree(virSysinfoOEMStringsDefPtr def)
+{
+    size_t i;
+
+    if (def == NULL)
+        return;
+
+    for (i = 0; i < def->nvalues; i++)
+        VIR_FREE(def->values[i]);
+    VIR_FREE(def->values);
+
+    VIR_FREE(def);
+}
+
 /**
  * virSysinfoDefFree:
  * @def: a sysinfo structure
@@ -156,6 +170,8 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
         VIR_FREE(def->memory[i].memory_part_number);
     }
     VIR_FREE(def->memory);
+
+    virSysinfoOEMStringsDefFree(def->oemStrings);
 
     VIR_FREE(def);
 }
@@ -1294,6 +1310,24 @@ virSysinfoMemoryFormat(virBufferPtr buf, virSysinfoDefPtr def)
     }
 }
 
+static void
+virSysinfoOEMStringsFormat(virBufferPtr buf, virSysinfoOEMStringsDefPtr def)
+{
+    size_t i;
+
+    if (!def)
+        return;
+
+    virBufferAddLit(buf, "<oemStrings>\n");
+    virBufferAdjustIndent(buf, 2);
+    for (i = 0; i < def->nvalues; i++) {
+        virBufferEscapeString(buf, "<entry>%s</entry>\n",
+                              def->values[i]);
+    }
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</oemStrings>\n");
+}
+
 /**
  * virSysinfoFormat:
  * @buf: buffer to append output to (may use auto-indentation)
@@ -1324,6 +1358,7 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
     virSysinfoBaseBoardFormat(&childrenBuf, def->baseBoard, def->nbaseBoard);
     virSysinfoProcessorFormat(&childrenBuf, def);
     virSysinfoMemoryFormat(&childrenBuf, def);
+    virSysinfoOEMStringsFormat(&childrenBuf, def->oemStrings);
 
     virBufferAsprintf(buf, "<sysinfo type='%s'", type);
     if (virBufferUse(&childrenBuf)) {

@@ -14461,6 +14461,42 @@ virSysinfoBaseBoardParseXML(xmlXPathContextPtr ctxt,
     return ret;
 }
 
+
+static int
+virSysinfoOEMStringsParseXML(xmlXPathContextPtr ctxt,
+                             virSysinfoOEMStringsDefPtr *oem)
+{
+    int ret = -1;
+    virSysinfoOEMStringsDefPtr def;
+    xmlNodePtr *strings = NULL;
+    int nstrings;
+    size_t i;
+
+    nstrings = virXPathNodeSet("./entry", ctxt, &strings);
+    if (nstrings < 0)
+        return -1;
+    if (nstrings == 0)
+        return 0;
+
+    if (VIR_ALLOC(def) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(def->values, nstrings) < 0)
+        goto cleanup;
+
+    def->nvalues = nstrings;
+    for (i = 0; i < nstrings; i++)
+        def->values[i] = virXMLNodeContentString(strings[i]);
+
+    *oem = def;
+    def = NULL;
+    ret = 0;
+ cleanup:
+    VIR_FREE(strings);
+    virSysinfoOEMStringsDefFree(def);
+    return ret;
+}
+
 static virSysinfoDefPtr
 virSysinfoParseXML(xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
@@ -14518,6 +14554,17 @@ virSysinfoParseXML(xmlNodePtr node,
     /* Extract system base board metadata */
     if (virSysinfoBaseBoardParseXML(ctxt, &def->baseBoard, &def->nbaseBoard) < 0)
         goto error;
+
+    /* Extract system related metadata */
+    if ((tmpnode = virXPathNode("./oemStrings[1]", ctxt)) != NULL) {
+        oldnode = ctxt->node;
+        ctxt->node = tmpnode;
+        if (virSysinfoOEMStringsParseXML(ctxt, &def->oemStrings) < 0) {
+            ctxt->node = oldnode;
+            goto error;
+        }
+        ctxt->node = oldnode;
+    }
 
  cleanup:
     VIR_FREE(type);
