@@ -173,6 +173,8 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
     if (!(lockd->dmn = virNetDaemonNew()) ||
         virNetDaemonAddServer(lockd->dmn, srv) < 0)
         goto error;
+    virObjectUnref(srv);
+    srv = NULL;
 
     if (!(lockd->lockspaces = virHashCreate(VIR_LOCK_DAEMON_NUM_LOCKSPACES,
                                             virLockDaemonLockSpaceDataFree)))
@@ -184,6 +186,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
     return lockd;
 
  error:
+    virObjectUnref(srv);
     virLockDaemonFree(lockd);
     return NULL;
 }
