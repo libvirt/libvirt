@@ -1037,6 +1037,12 @@ sc_prohibit_http_urls:
 	halt='Links must use https:// protocol' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_backslash_alignment:
+	@prohibit='[[:blank:]][[:blank:]]\\$$' \
+	in_vc_files='*\.([chx]|am|mk)$$' \
+	halt='Do not attempt to right-align backslashes' \
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
