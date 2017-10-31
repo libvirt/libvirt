@@ -43,7 +43,7 @@
 #include "conf/snapshot_conf.h"
 
 #define VIRSH_COMMON_OPT_DOMAIN_FULL \
-    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid")) \
+    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid"))
 
 /* Helper for snapshot-create and snapshot-create-as */
 static bool

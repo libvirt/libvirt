@@ -39,7 +39,7 @@
      .type = VSH_OT_DATA, \
      .flags = VSH_OFLAG_REQ, \
      .help = N_("network name or uuid") \
-    } \
+    }
 
 virNetworkPtr
 virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,

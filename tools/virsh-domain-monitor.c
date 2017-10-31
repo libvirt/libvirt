@@ -41,7 +41,7 @@
 #include "virstring.h"
 
 #define VIRSH_COMMON_OPT_DOMAIN_FULL \
-    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid")) \
+    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid"))
 
 VIR_ENUM_DECL(virshDomainIOError)
 VIR_ENUM_IMPL(virshDomainIOError,

@@ -35,28 +35,28 @@
 #include "virtime.h"
 
 #define VIRSH_COMMON_OPT_POOL_FULL \
-    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid")) \
+    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"))
 
 #define VIRSH_COMMON_OPT_POOL_BUILD \
     {.name = "build", \
      .type = VSH_OT_BOOL, \
      .flags = 0, \
      .help = N_("build the pool as normal") \
-    } \
+    }
 
 #define VIRSH_COMMON_OPT_POOL_NO_OVERWRITE \
     {.name = "no-overwrite", \
      .type = VSH_OT_BOOL, \
      .flags = 0, \
      .help = N_("do not overwrite any existing data") \
-    } \
+    }
 
 #define VIRSH_COMMON_OPT_POOL_OVERWRITE \
     {.name = "overwrite", \
      .type = VSH_OT_BOOL, \
      .flags = 0, \
      .help = N_("overwrite any existing data") \
-    } \
+    }
 
 #define VIRSH_COMMON_OPT_POOL_X_AS \
     {.name = "name", \
@@ -128,7 +128,7 @@
     {.name = "adapter-parent", \
      .type = VSH_OT_STRING, \
      .help = N_("adapter parent to be used for underlying storage") \
-    } \
+    }
 
 virStoragePoolPtr
 virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,

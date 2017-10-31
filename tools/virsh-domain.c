@@ -66,22 +66,22 @@
 #endif
 
 #define VIRSH_COMMON_OPT_DOMAIN_FULL \
-    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid")) \
+    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid"))
 
 #define VIRSH_COMMON_OPT_DOMAIN_PERSISTENT \
     {.name = "persistent", \
      .type = VSH_OT_BOOL, \
      .help = N_("make live change persistent") \
-    } \
+    }
 
 #define VIRSH_COMMON_OPT_DOMAIN_CONFIG \
-    VIRSH_COMMON_OPT_CONFIG(N_("affect next boot")) \
+    VIRSH_COMMON_OPT_CONFIG(N_("affect next boot"))
 
 #define VIRSH_COMMON_OPT_DOMAIN_LIVE \
-    VIRSH_COMMON_OPT_LIVE(N_("affect running domain")) \
+    VIRSH_COMMON_OPT_LIVE(N_("affect running domain"))
 
 #define VIRSH_COMMON_OPT_DOMAIN_CURRENT \
-    VIRSH_COMMON_OPT_CURRENT(N_("affect current domain")) \
+    VIRSH_COMMON_OPT_CURRENT(N_("affect current domain"))
 
 
 static virDomainPtr
@@ -1302,7 +1302,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
                                     VIR_DOMAIN_BLOCK_IOTUNE_##CONST, \
                                     value) < 0) \
             goto save_error; \
-    } \
+    }
 
     VSH_ADD_IOTUNE_SCALED(total-bytes-sec, TOTAL_BYTES_SEC);
     VSH_ADD_IOTUNE_SCALED(read-bytes-sec, READ_BYTES_SEC);
@@ -1320,7 +1320,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
                                     VIR_DOMAIN_BLOCK_IOTUNE_##CONST, \
                                     value) < 0) \
             goto save_error; \
-    } \
+    }
 
     VSH_ADD_IOTUNE(total-iops-sec, TOTAL_IOPS_SEC);
     VSH_ADD_IOTUNE(read-iops-sec, READ_IOPS_SEC);
@@ -9104,7 +9104,7 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
         if (virTypedParamsAddULLong(&params, &nparams, &maxparams, \
                                     FIELD, tmpVal) < 0) \
             goto save_error; \
-    } \
+    }
 
 
     PARSE_MEMTUNE_PARAM("hard-limit", VIR_DOMAIN_MEMORY_HARD_LIMIT);

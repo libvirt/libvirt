@@ -37,7 +37,7 @@
                        _("%s module is not loaded, " err_msg), \
                         #mod); \
         ret = -1; \
-    } \
+    }
 
 #define MODULE_STATUS_FAIL(mod, err_msg) \
     MODULE_STATUS(mod, err_msg, VIR_HOST_VALIDATE_FAIL)

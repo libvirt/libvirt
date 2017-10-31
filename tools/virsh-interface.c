@@ -28,7 +28,7 @@
      .type = VSH_OT_DATA, \
      .flags = VSH_OFLAG_REQ, \
      .help = N_("interface name or MAC address") \
-    } \
+    }
 
 #include <config.h>
 #include "virsh-interface.h"
