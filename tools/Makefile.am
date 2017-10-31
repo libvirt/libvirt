@@ -231,6 +231,15 @@ virsh_SOURCES = \
 		virsh-volume.c virsh-volume.h \
 		$(NULL)
 
+VIRSH_COMPLETER = \
+		virsh-completer.c virsh-completer.h
+
+if WITH_READLINE
+virsh_SOURCES += $(VIRSH_COMPLETER)
+else ! WITH_READLINE
+EXTRA_DIST += $(VIRSH_COMPLETER)
+endif ! WITH_READLINE
+
 virsh_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
