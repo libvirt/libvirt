@@ -1467,8 +1467,7 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
 
 static int
 qemuBuildDriveStrValidate(virDomainDiskDefPtr disk,
-                          virQEMUCapsPtr qemuCaps,
-                          const char *bus)
+                          virQEMUCapsPtr qemuCaps)
 {
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
@@ -1496,8 +1495,8 @@ qemuBuildDriveStrValidate(virDomainDiskDefPtr disk,
         }
         /* We can only have 1 IDE controller (currently) */
         if (disk->info.addr.drive.controller != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Only 1 %s controller is supported"), bus);
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only 1 IDE controller is supported"));
             return -1;
         }
         break;
@@ -1510,14 +1509,14 @@ qemuBuildDriveStrValidate(virDomainDiskDefPtr disk,
         }
         /* We can only have 1 FDC controller (currently) */
         if (disk->info.addr.drive.controller != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Only 1 %s controller is supported"), bus);
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only 1 fdc controller is supported"));
             return -1;
         }
         /* We can only have 1 FDC bus (currently) */
         if (disk->info.addr.drive.bus != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Only 1 %s bus is supported"), bus);
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only 1 fdc bus is supported"));
             return -1;
         }
         if (disk->info.addr.drive.target != 0) {
@@ -1628,12 +1627,11 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
                   virQEMUCapsPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
-    const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     const char *trans =
         virDomainDiskGeometryTransTypeToString(disk->geometry.trans);
     bool emitDeviceSyntax = qemuDiskBusNeedsDeviceArg(disk->bus);
 
-    if (qemuBuildDriveStrValidate(disk, qemuCaps, bus) < 0)
+    if (qemuBuildDriveStrValidate(disk, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildDriveSourceStr(disk, cfg, &opt, qemuCaps) < 0)
@@ -1642,7 +1640,8 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     if (emitDeviceSyntax)
         virBufferAddLit(&opt, "if=none");
     else
-        virBufferAsprintf(&opt, "if=%s", bus);
+        virBufferAsprintf(&opt, "if=%s",
+                          virDomainDiskQEMUBusTypeToString(disk->bus));
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
         if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
