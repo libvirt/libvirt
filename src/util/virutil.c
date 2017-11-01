@@ -562,7 +562,7 @@ int virDiskNameToIndex(const char *name)
 {
     int idx;
 
-    if (virDiskNameParse(name, &idx, NULL))
+    if (virDiskNameParse(name, &idx, NULL) < 0)
         idx = -1;
 
     return idx;
