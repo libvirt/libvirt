@@ -1553,31 +1553,6 @@ qemuBuildDriveStrValidate(virDomainDiskDefPtr disk,
         return -1;
     }
 
-    if (disk->serial &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL)) {
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
-            disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("scsi-block 'lun' devices do not support the "
-                             "serial property"));
-            return -1;
-        }
-    }
-
-    if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("disk cache mode 'directsync' is not supported by this QEMU"));
-        return -1;
-    }
-
-    if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_UNSAFE &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("disk cache mode 'unsafe' is not supported by this QEMU"));
-        return -1;
-    }
-
     if (disk->iomode == VIR_DOMAIN_DISK_IO_NATIVE &&
         disk->cachemode != VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
         disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
@@ -1588,32 +1563,59 @@ qemuBuildDriveStrValidate(virDomainDiskDefPtr disk,
         return -1;
     }
 
-    if (disk->copy_on_read &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("copy_on_read is not supported by this QEMU binary"));
-        return -1;
-    }
+    if (qemuCaps) {
+        if (disk->serial &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL)) {
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+                disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("scsi-block 'lun' devices do not support the "
+                                 "serial property"));
+                return -1;
+            }
+        }
 
-    if (disk->discard &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DISCARD)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("discard is not supported by this QEMU binary"));
-        return -1;
-    }
+        if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk cache mode 'directsync' is not supported by this QEMU"));
+            return -1;
+        }
 
-    if (disk->detect_zeroes &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DETECT_ZEROES)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("detect_zeroes is not supported by this QEMU binary"));
-        return -1;
-    }
+        if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_UNSAFE &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk cache mode 'unsafe' is not supported by this QEMU"));
+            return -1;
+        }
 
-    if (disk->iomode &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_AIO)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("disk aio mode not supported with this QEMU binary"));
-        return -1;
+        if (disk->copy_on_read &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("copy_on_read is not supported by this QEMU binary"));
+            return -1;
+        }
+
+        if (disk->discard &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DISCARD)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("discard is not supported by this QEMU binary"));
+            return -1;
+        }
+
+        if (disk->detect_zeroes &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DETECT_ZEROES)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("detect_zeroes is not supported by this QEMU binary"));
+            return -1;
+        }
+
+        if (disk->iomode &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_AIO)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk aio mode not supported with this QEMU binary"));
+            return -1;
+        }
     }
 
     return 0;
