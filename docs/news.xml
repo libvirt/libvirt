@@ -49,6 +49,38 @@
           easily.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Support multiqueue for virtio-blk
+        </summary>
+        <description>
+          Multiqueue support for <code>virtio-blk</code> has been available
+          in QEMU ever since 2.7.0, and now libvirt guests can enable it.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Add virDomainSetLifecycleAction API
+        </summary>
+        <description>
+          Provided a new API to allow dynamic guest lifecycle control for
+          guest reactions to poweroff, restart, or crash type events related
+          to the domain XML <code>on_poweroff</code>, <code>on_reboot</code>,
+          and <code>on_crash</code> elements. The
+          <code>virsh set-lifecycle-action</code> command was created to
+          control the actions.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Allow cold(un)plugging and hot(un)plugging input devices
+        </summary>
+      </change>
+      <change>
+        <summary>
+          net: Implement QoS for vhostuser
+        </summary>
+      </change>
     </section>
     <section title="Improvements">
       <change>
@@ -62,6 +94,85 @@
           volume Adding the volume to a domain can then either provide the
           secret or allow the consumer in the guest to provide the passphrase
           in order to decrypt the volume.
+        </description>
+      </change>
+      <change>
+        <summary>
+          net: Ignore auto-generated MAC address when detaching an interface
+        </summary>
+        <description>
+          If the MAC address has not been specified by the user, libvirt will
+          try and fill in the gaps by generating one; however, for some error
+          paths that led to some confusing error messages, so when an
+          auto-generated MAC address is specified the error message will not
+          include the auto-generated MAC.
+        </description>
+      </change>
+      <change>
+        <summary>
+          net: Enable MAC address lookup for virDomainInterfaceStats
+        </summary>
+      </change>
+      <change>
+        <summary>
+          apparmor: Several improvements
+        </summary>
+        <description>
+          Changes include permitting access to data about USB devices and
+          <code>dnsmasq</code> instances, allowing spaces in guest names and
+          many more.
+        </description>
+      </change>
+      <change>
+        <summary>
+          cpu: Use CPU information obtained from QEMU when possible
+        </summary>
+        <description>
+          Recent QEMU versions can expose information about which CPU models
+          are available and usable on the host; libvirt will now make use of
+          such information whenever possible.
+        </description>
+      </change>
+      <change>
+        <summary>
+          hyperv: Various improvements
+        </summary>
+        <description>
+          The error reported when clients can't connect to Hyper-V has been
+          made more descriptive, and memory limits for guests are now mapped
+          to more appropriate libvirt equivalents.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Report QEMU error on failed migration
+        </summary>
+        <description>
+          Instead of reporting a generic error, ask QEMU for a more detailed
+          and thus hopefully more helpful one.
+        </description>
+      </change>
+      <change>
+        <summary>
+          vbox: Implement autoport for RDP
+        </summary>
+        <description>
+          libvirt will now obtain the (dynamically allocated) RDP port number
+          from VirtualBox itself, avoiding conflicts between multiple guests
+          wanting to use RDP at the same time.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Allow rotation of small logs
+        </summary>
+        <description>
+          On a host where numerous unique instances are executed per day, it's
+          quite possible that, even though each of the single log files are
+          fairly small, collectively the quantity and volume may add tens of
+          thousands of log files to the <code>/var/log/libvirt/qemu/</code>
+          directory. Removing the constraints that log have to be bigger than
+          100 KiB before they can be rotated solves the issue.
         </description>
       </change>
     </section>
@@ -85,6 +196,40 @@
           Resizing of a local LUKS encrypted volume will now use qemu-img
           to resize the volume. This will require configuring a secret for
           the LUKS encrypted volume.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Reserve PCI addresses for implicit i440fx devices
+        </summary>
+        <description>
+          Failing to do so causes the addresses to be considered usable by
+          libvirt, which means they could be assigned to more than one device
+          resulting in the guest failing to start.
+        </description>
+      </change>
+      <change>
+        <summary>
+          spec: Restart libvirtd only at the end of the upgrade process
+        </summary>
+        <description>
+          Use <code>%posttrans</code> to make sure <code>libvirtd</code>
+          is not restarted before all other components, such as the library
+          itself and storage / hypervisor drivers, have already been upgraded.
+        </description>
+      </change>
+    </section>
+    <section title="Security">
+      <change>
+        <summary>
+          qemu: Ensure TLS clients always verify the server certificate
+        </summary>
+        <description>
+          While it's reasonable to turn off client certificate validation,
+          as setting it up can be non-trivial, clients should always verify
+          the server certificate to avoid MITM attacks. However, libvirt was
+          using the same knob to control both checks, leading to
+          CVE-2017-1000256 / LSN-2017-0002.
         </description>
       </change>
     </section>
