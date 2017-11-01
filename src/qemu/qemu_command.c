@@ -1468,15 +1468,8 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
 static int
 qemuBuildDriveStrValidate(virDomainDiskDefPtr disk,
                           virQEMUCapsPtr qemuCaps,
-                          const char *bus,
-                          int idx)
+                          const char *bus)
 {
-    if (idx < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported disk type '%s'"), disk->dst);
-        return -1;
-    }
-
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
         if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
@@ -1638,10 +1631,9 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     const char *trans =
         virDomainDiskGeometryTransTypeToString(disk->geometry.trans);
-    int idx = virDiskNameToIndex(disk->dst);
     bool emitDeviceSyntax = qemuDiskBusNeedsDeviceArg(disk->bus);
 
-    if (qemuBuildDriveStrValidate(disk, qemuCaps, bus, idx) < 0)
+    if (qemuBuildDriveStrValidate(disk, qemuCaps, bus) < 0)
         goto error;
 
     if (qemuBuildDriveSourceStr(disk, cfg, &opt, qemuCaps) < 0)
@@ -1671,6 +1663,13 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         virBufferAsprintf(&opt, ",id=%s", drivealias);
         VIR_FREE(drivealias);
     } else {
+        int idx = virDiskNameToIndex(disk->dst);
+
+        if (idx < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unsupported disk type '%s'"), disk->dst);
+            goto error;
+        }
         virBufferAsprintf(&opt, ",index=%d", idx);
     }
     if (bootable &&
