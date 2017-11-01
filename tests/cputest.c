@@ -461,9 +461,22 @@ cpuTestHasFeature(const void *arg)
 
 
 typedef enum {
+    /* No JSON data from QEMU. */
     JSON_NONE,
+    /* Only a reply from query-cpu-model-expansion QMP command. */
     JSON_HOST,
+    /* Replies from both query-cpu-model-expansion and query-cpu-definitions
+     * QMP commands.
+     */
     JSON_MODELS,
+    /* Same as JSON_MODELS, but the reply from query-cpu-definitions has to
+     * be parsed for providing the correct result. This happens when the
+     * CPU model detected by libvirt has non-empty unavailable-features array
+     * in query-cpu-definitions reply or when the CPU model detected from CPUID
+     * differs from the one we get from QEMU and we need to translate them for
+     * comparison. Such tests require QEMU driver to be enabled.
+     */
+    JSON_MODELS_REQUIRED,
 } cpuTestCPUIDJson;
 
 #if WITH_QEMU && WITH_YAJL
@@ -491,7 +504,8 @@ cpuTestMakeQEMUCaps(const struct data *data)
         goto error;
 
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
-    if (data->flags == JSON_MODELS)
+    if (data->flags == JSON_MODELS ||
+        data->flags == JSON_MODELS_REQUIRED)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_QUERY_CPU_DEFINITIONS);
 
     virQEMUCapsSetArch(qemuCaps, data->arch);
@@ -517,32 +531,41 @@ cpuTestMakeQEMUCaps(const struct data *data)
 }
 
 
-static virDomainCapsCPUModelsPtr
-cpuTestGetCPUModels(const struct data *data)
+static int
+cpuTestGetCPUModels(const struct data *data,
+                    virDomainCapsCPUModelsPtr *models)
 {
-    virDomainCapsCPUModelsPtr models = NULL;
     virQEMUCapsPtr qemuCaps;
 
-    if (data->flags != JSON_MODELS)
-        return NULL;
+    *models = NULL;
+
+    if (data->flags != JSON_MODELS &&
+        data->flags != JSON_MODELS_REQUIRED)
+        return 0;
 
     if (!(qemuCaps = cpuTestMakeQEMUCaps(data)))
-        return NULL;
+        return -1;
 
-    models = virQEMUCapsGetCPUDefinitions(qemuCaps, VIR_DOMAIN_VIRT_KVM);
-    virObjectRef(models);
+    *models = virQEMUCapsGetCPUDefinitions(qemuCaps, VIR_DOMAIN_VIRT_KVM);
+    virObjectRef(*models);
 
     virObjectUnref(qemuCaps);
 
-    return models;
+    return 0;
 }
 
 #else /* if WITH_QEMU && WITH_YAJL */
 
-static virDomainCapsCPUModelsPtr
-cpuTestGetCPUModels(const struct data *data ATTRIBUTE_UNUSED)
+static int
+cpuTestGetCPUModels(const struct data *data,
+                    virDomainCapsCPUModelsPtr *models)
 {
-    return NULL;
+    *models = NULL;
+
+    if (data->flags == JSON_MODELS_REQUIRED)
+        return EXIT_AM_SKIP;
+
+    return 0;
 }
 
 #endif
@@ -580,8 +603,15 @@ cpuTestCPUID(bool guest, const void *arg)
         cpu->type = VIR_CPU_TYPE_HOST;
     }
 
-    if (guest)
-        models = cpuTestGetCPUModels(data);
+    if (guest) {
+        int rc;
+
+        rc = cpuTestGetCPUModels(data, &models);
+        if (rc != 0) {
+            ret = rc;
+            goto cleanup;
+        }
+    }
 
     if (cpuDecode(cpu, hostData, models) < 0)
         goto cleanup;
@@ -755,11 +785,17 @@ cpuTestUpdateLive(const void *arg)
         virDomainCapsCPUModelPtr hvModel;
         char **blockers = NULL;
         virDomainCapsCPUUsable usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
+        int rc;
 
         if (!(models = virDomainCapsCPUModelsNew(0)))
             goto cleanup;
 
-        hvModels = cpuTestGetCPUModels(data);
+        rc = cpuTestGetCPUModels(data, &hvModels);
+        if (rc != 0) {
+            ret = rc;
+            goto cleanup;
+        }
+
         hvModel = virDomainCapsCPUModelsGet(hvModels, expected->model);
 
         if (hvModel) {
@@ -969,15 +1005,19 @@ mymain(void)
             host, cpu, models, 0, result)
 
 #if WITH_QEMU && WITH_YAJL
-# define DO_TEST_CPUID_JSON(arch, host, json)                           \
+# define DO_TEST_JSON(arch, host, json)                                 \
     do {                                                                \
+        if (json == JSON_MODELS) {                                      \
+            DO_TEST(arch, cpuTestGuestCPUID, host, host,                \
+                    NULL, NULL, 0, 0);                                  \
+        }                                                               \
         if (json != JSON_NONE) {                                        \
             DO_TEST(arch, cpuTestJSONCPUID, host, host,                 \
                     NULL, NULL, json, 0);                               \
         }                                                               \
     } while (0)
 #else
-# define DO_TEST_CPUID_JSON(arch, host, json)
+# define DO_TEST_JSON(arch, host, json)
 #endif
 
 #define DO_TEST_CPUID(arch, host, json)                                 \
@@ -986,7 +1026,7 @@ mymain(void)
                 NULL, NULL, 0, 0);                                      \
         DO_TEST(arch, cpuTestGuestCPUID, host, host,                    \
                 NULL, NULL, json, 0);                                   \
-        DO_TEST_CPUID_JSON(arch, host, json);                           \
+        DO_TEST_JSON(arch, host, json);                                 \
         if (json != JSON_NONE) {                                        \
             DO_TEST(arch, cpuTestUpdateLive, host, host,                \
                     NULL, NULL, json, 0);                               \
@@ -1126,7 +1166,7 @@ mymain(void)
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i5-4670T", JSON_HOST);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i5-6600", JSON_HOST);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-2600", JSON_HOST);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-2600-xsaveopt", JSON_MODELS);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-2600-xsaveopt", JSON_MODELS_REQUIRED);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-3520M", JSON_NONE);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-3740QM", JSON_HOST);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Core-i7-3770", JSON_HOST);
@@ -1150,7 +1190,7 @@ mymain(void)
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E5-2630", JSON_HOST);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E5-2650", JSON_HOST);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E7-4820", JSON_HOST);
-    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E7-4830", JSON_MODELS);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E7-4830", JSON_MODELS_REQUIRED);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E7-8890", JSON_MODELS);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-Gold-6148", JSON_HOST);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-W3520", JSON_HOST);
