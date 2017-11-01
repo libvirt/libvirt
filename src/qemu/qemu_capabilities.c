@@ -490,6 +490,9 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "hda-output",
               "blockdev-del",
               "vmgenid",
+
+              /* 305 */
+              "vhost-vsock",
     );
 
 
@@ -1123,6 +1126,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "vfio-ccw", QEMU_CAPS_DEVICE_VFIO_CCW },
     { "hda-output", QEMU_CAPS_HDA_OUTPUT },
     { "vmgenid", QEMU_CAPS_DEVICE_VMGENID },
+    { "vhost-vsock-device", QEMU_CAPS_DEVICE_VHOST_VSOCK },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {
