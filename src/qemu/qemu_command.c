@@ -1639,37 +1639,10 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     const char *trans =
         virDomainDiskGeometryTransTypeToString(disk->geometry.trans);
     int idx = virDiskNameToIndex(disk->dst);
-    int busid = -1, unitid = -1;
     bool emitDeviceSyntax = qemuDiskBusNeedsDeviceArg(disk->bus);
 
     if (qemuBuildDriveStrValidate(disk, qemuCaps, bus, idx) < 0)
         goto error;
-
-    switch (disk->bus) {
-    case VIR_DOMAIN_DISK_BUS_SCSI:
-        busid = disk->info.addr.drive.controller;
-        unitid = disk->info.addr.drive.unit;
-        break;
-
-    case VIR_DOMAIN_DISK_BUS_IDE:
-        busid = disk->info.addr.drive.bus;
-        unitid = disk->info.addr.drive.unit;
-        break;
-
-    case VIR_DOMAIN_DISK_BUS_FDC:
-        unitid = disk->info.addr.drive.unit;
-        break;
-
-    case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        idx = -1;
-        break;
-
-    case VIR_DOMAIN_DISK_BUS_XEN:
-    case VIR_DOMAIN_DISK_BUS_SD:
-        /* Xen and SD have no address type currently, so assign
-         * based on index */
-        break;
-    }
 
     if (qemuBuildDriveSourceStr(disk, cfg, &opt, qemuCaps) < 0)
         goto error;
@@ -1698,15 +1671,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         virBufferAsprintf(&opt, ",id=%s", drivealias);
         VIR_FREE(drivealias);
     } else {
-        if (busid == -1 && unitid == -1) {
-            if (idx != -1)
-                virBufferAsprintf(&opt, ",index=%d", idx);
-        } else {
-            if (busid != -1)
-                virBufferAsprintf(&opt, ",bus=%d", busid);
-            if (unitid != -1)
-                virBufferAsprintf(&opt, ",unit=%d", unitid);
-        }
+        virBufferAsprintf(&opt, ",index=%d", idx);
     }
     if (bootable &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) &&
