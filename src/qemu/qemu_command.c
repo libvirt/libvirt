@@ -1623,6 +1623,26 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
 }
 
 
+static void
+qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
+                                virBufferPtr buf)
+{
+    /* generate geometry command string */
+    if (disk->geometry.cylinders > 0 &&
+        disk->geometry.heads > 0 &&
+        disk->geometry.sectors > 0) {
+        virBufferAsprintf(buf, ",cyls=%u,heads=%u,secs=%u",
+                          disk->geometry.cylinders,
+                          disk->geometry.heads,
+                          disk->geometry.sectors);
+
+        if (disk->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT)
+            virBufferAsprintf(buf, ",trans=%s",
+                              virDomainDiskGeometryTransTypeToString(disk->geometry.trans));
+    }
+}
+
+
 char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
                   virQEMUDriverConfigPtr cfg,
@@ -1630,8 +1650,6 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
                   virQEMUCapsPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
-    const char *trans =
-        virDomainDiskGeometryTransTypeToString(disk->geometry.trans);
     bool emitDeviceSyntax = qemuDiskBusNeedsDeviceArg(disk->bus);
 
     /* if we are using -device this will be checked elsewhere */
@@ -1685,19 +1703,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     if (disk->src->readonly)
         virBufferAddLit(&opt, ",readonly=on");
 
-    /* generate geometry command string */
-    if (disk->geometry.cylinders > 0 &&
-        disk->geometry.heads > 0 &&
-        disk->geometry.sectors > 0) {
-
-        virBufferAsprintf(&opt, ",cyls=%u,heads=%u,secs=%u",
-                          disk->geometry.cylinders,
-                          disk->geometry.heads,
-                          disk->geometry.sectors);
-
-        if (disk->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT)
-            virBufferAsprintf(&opt, ",trans=%s", trans);
-    }
+    qemuBuildDiskFrontendAttributes(disk, &opt);
 
     if (disk->serial &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL)) {
