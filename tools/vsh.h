@@ -382,6 +382,8 @@ extern const vshCmdInfo info_echo[];
 extern const vshCmdInfo info_pwd[];
 extern const vshCmdInfo info_quit[];
 extern const vshCmdInfo info_selftest[];
+extern const vshCmdOptDef opts_complete[];
+extern const vshCmdInfo info_complete[];
 
 bool cmdHelp(vshControl *ctl, const vshCmd *cmd);
 bool cmdCd(vshControl *ctl, const vshCmd *cmd);
@@ -389,6 +391,7 @@ bool cmdEcho(vshControl *ctl, const vshCmd *cmd);
 bool cmdPwd(vshControl *ctl, const vshCmd *cmd);
 bool cmdQuit(vshControl *ctl, const vshCmd *cmd);
 bool cmdSelfTest(vshControl *ctl, const vshCmd *cmd);
+bool cmdComplete(vshControl *ctl, const vshCmd *cmd);
 
 # define VSH_CMD_CD \
     { \
@@ -453,6 +456,17 @@ bool cmdSelfTest(vshControl *ctl, const vshCmd *cmd);
         .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_ALIAS, \
         .alias = "self-test" \
     }
+
+# define VSH_CMD_COMPLETE \
+    { \
+        .name = "complete", \
+        .handler = cmdComplete, \
+        .opts = opts_complete, \
+        .info = info_complete, \
+        .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_ALIAS, \
+        .alias = "complete" \
+    }
+
 
 
 /* readline */

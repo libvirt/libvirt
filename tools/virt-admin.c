@@ -1351,6 +1351,7 @@ static const vshCmdDef vshAdmCmds[] = {
     VSH_CMD_PWD,
     VSH_CMD_QUIT,
     VSH_CMD_SELF_TEST,
+    VSH_CMD_COMPLETE,
     {.name = "uri",
      .handler = cmdURI,
      .opts = NULL,
