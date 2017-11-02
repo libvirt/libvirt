@@ -1,0 +1,67 @@
+#
+# virsh & virt-admin completion command
+#
+
+_vsh_complete()
+{
+    local words cword c=0 i=0 cur RO URI CMDLINE INPUT A
+
+    # Here, $COMP_WORDS is an array of words on the bash
+    # command line that user wants to complete. However, when
+    # parsing command line, the default set of word breaks is
+    # applied. This doesn't work for us as it mangles libvirt
+    # arguments, e.g. connection URI (with the default set it's
+    # split into multiple items within the array). Fortunately,
+    # there's a fixup function for the array.
+    _get_comp_words_by_ref -n "\"'><=;|&(:" -w words -i cword
+    COMP_WORDS=( "${words[@]}" )
+    COMP_CWORD=${cword}
+    cur=${COMP_WORDS[$COMP_CWORD]}
+
+    # See what URI is user trying to connect to and if they are
+    # connecting RO. Honour that.
+    while [ $c -le $COMP_CWORD ]; do
+        word="${COMP_WORDS[c]}"
+        case "$word" in
+            -r|--readonly) RO=1 ;;
+            -c|--connect) c=$((++c)); URI=${COMP_WORDS[c]} ;;
+            *) if [ $c -ne 0 ] && [ $i -eq 0 ]; then i=$c; break; fi ;;
+        esac
+        c=$((++c))
+    done
+
+    CMDLINE=
+    if [ -n "${RO}" ]; then
+        CMDLINE="${CMDLINE} -r"
+    fi
+    if [ -n "${URI}" ]; then
+        CMDLINE="${CMDLINE} -c ${URI}"
+    fi
+
+    INPUT=( "${COMP_WORDS[@]:$i:$COMP_CWORD}" )
+
+    # Uncomment these lines for easy debug.
+#    echo;
+#    echo "RO=${flag_ro}";
+#    echo "URI=${URI}";
+#    echo "CMDLINE=${CMDLINE}";
+#    echo "INPUT[${#INPUT[@]}]=**${INPUT[@]}**";
+#    echo "cur=${cur}";
+#    echo;
+#    return 0;
+
+    # Small shortcut here. According to manpage:
+    # When the function is executed, the first argument ($1) is
+    # the name of the command whose arguments are being
+    # completed.
+    # Therefore, we might just run $1.
+    A=($($1 ${CMDLINE} complete -- "${INPUT[@]}" 2>/dev/null))
+
+    COMPREPLY=($(compgen -W "${A[*]%--}" -- ${cur}))
+    __ltrim_colon_completions "$cur"
+    return 0
+} &&
+complete -o default -o filenames -F _vsh_complete virsh &&
+complete -o default -o filenames -F _vsh_complete virt-admin
+
+# vim: ft=sh:et:ts=4:sw=4:tw=80

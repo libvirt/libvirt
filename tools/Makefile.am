@@ -73,6 +73,7 @@ EXTRA_DIST = \
 	libvirt-guests.sysconf \
 	virt-login-shell.conf \
 	virsh-edit.c \
+	bash-completion/vsh \
 	$(PODFILES) \
 	$(MANINFILES) \
 	$(NULL)
@@ -326,9 +327,11 @@ POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
 		< $< > $@-t && \
 	mv $@-t $@
 
-install-data-local: install-init install-systemd install-nss
+install-data-local: install-init install-systemd install-nss \
+	install-bash-completion
 
-uninstall-local: uninstall-init uninstall-systemd uninstall-nss
+uninstall-local: uninstall-init uninstall-systemd uninstall-nss \
+	uninstall-bash-completion
 
 install-sysconfig:
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysconfig
@@ -412,6 +415,21 @@ libvirt-guests.service: libvirt-guests.service.in $(top_builddir)/config.status
 	    -e 's|[@]libexecdir[@]|$(libexecdir)|g' \
 	    < $< > $@-t && \
 	    mv $@-t $@
+
+
+if WITH_BASH_COMPLETION
+install-bash-completion:
+	$(MKDIR_P) "$(DESTDIR)$(BASH_COMPLETIONS_DIR)"
+	$(INSTALL_SCRIPT) $(srcdir)/bash-completion/vsh \
+		"$(DESTDIR)$(BASH_COMPLETIONS_DIR)/vsh"
+
+uninstall-bash-completion:
+	rm -f $(DESTDIR)$(BASH_COMPLETIONS_DIR)/vsh
+	rmdir $(DESTDIR)$(BASH_COMPLETIONS_DIR) ||:
+else ! WITH_BASH_COMPLETION
+install-bash-completion:
+uninstall-bash-completion:
+endif ! WITH_BASH_COMPLETION
 
 
 EXTRA_DIST += \

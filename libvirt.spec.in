@@ -306,6 +306,7 @@ BuildRequires: xen-devel
 BuildRequires: libxml2-devel
 BuildRequires: libxslt
 BuildRequires: readline-devel
+BuildRequires: bash-completion >= 2.0
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: libtasn1-devel
@@ -2046,6 +2047,8 @@ exit 0
 %{_datadir}/systemtap/tapset/libvirt_probes*.stp
 %{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
 %{_datadir}/systemtap/tapset/libvirt_functions.stp
+
+%{_datadir}/bash-completion/completions/vsh
 
 
 %if %{with_systemd}
