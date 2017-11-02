@@ -224,7 +224,7 @@
     <feature name='rtm'>
       <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00000800'/>
     </feature>
-    <feature name='cmt'>
+    <feature name='cmt'> <!-- cqm -->
       <cpuid eax_in='0x07' ecx_in='0x00' ebx='0x00001000'/>
     </feature>
     <feature name='mpx'>
