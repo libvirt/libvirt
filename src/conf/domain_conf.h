@@ -3391,40 +3391,9 @@ virDomainGenerateMachineName(const char *drivername,
                              int id,
                              const char *name,
                              bool privileged);
-/**
- * virDomainNetTypeSharesHostView:
- * @net: interface
- *
- * Some types of interfaces "share" the host view. For instance,
- * for macvtap interface, every domain RX is the host RX too. And
- * every domain TX is host TX too. IOW, for some types of
- * interfaces guest and host are on the same side of RX/TX
- * barrier. This is important so that we set up QoS correctly and
- * report proper stats.
- */
-static inline bool
-virDomainNetTypeSharesHostView(const virDomainNetDef *net)
-{
-    virDomainNetType actualType = virDomainNetGetActualType(net);
-    switch (actualType) {
-    case VIR_DOMAIN_NET_TYPE_DIRECT:
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        return true;
-    case VIR_DOMAIN_NET_TYPE_USER:
-    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-    case VIR_DOMAIN_NET_TYPE_SERVER:
-    case VIR_DOMAIN_NET_TYPE_CLIENT:
-    case VIR_DOMAIN_NET_TYPE_MCAST:
-    case VIR_DOMAIN_NET_TYPE_NETWORK:
-    case VIR_DOMAIN_NET_TYPE_BRIDGE:
-    case VIR_DOMAIN_NET_TYPE_INTERNAL:
-    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-    case VIR_DOMAIN_NET_TYPE_UDP:
-    case VIR_DOMAIN_NET_TYPE_LAST:
-        break;
-    }
-    return false;
-}
+
+bool
+virDomainNetTypeSharesHostView(const virDomainNetDef *net);
 
 bool
 virDomainDefLifecycleActionAllowed(virDomainLifecycle type,
