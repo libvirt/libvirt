@@ -16,7 +16,7 @@ fname=`sed -e 's/^ *//;
                s/ \(CPU\|Processor\)\>//;
                s/ @.*//;
                s/ APU .*//;
-               s/ \(v[0-9]\|SE\)$//;
+               s/ SE$//;
                s/ /-/g' <<<"$model"`
 fname="x86_64-cpuid-$fname"
 
