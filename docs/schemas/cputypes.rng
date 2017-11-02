@@ -129,6 +129,24 @@
           </choice>
         </attribute>
       </optional>
+      <optional>
+        <element name="distances">
+          <oneOrMore>
+            <ref name="numaDistance"/>
+          </oneOrMore>
+        </element>
+      </optional>
+    </element>
+  </define>
+
+  <define name="numaDistance">
+    <element name="sibling">
+      <attribute name="id">
+        <ref name="unsignedInt"/>
+      </attribute>
+      <attribute name="value">
+        <ref name="numaDistanceValue"/>
+      </attribute>
     </element>
   </define>
 

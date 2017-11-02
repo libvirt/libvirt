@@ -1529,7 +1529,69 @@
     </p>
 
     <p>
-      This guest NUMA specification is currently available only for QEMU/KVM.
+      This guest NUMA specification is currently available only for
+      QEMU/KVM and Xen.
+    </p>
+
+    <p>
+      A NUMA hardware architecture supports the notion of distances
+      between NUMA cells. <span class="since">Since 3.10.0</span> it
+      is possible to define the distance between NUMA cells using the
+      <code>distances</code> element within a NUMA <code>cell</code>
+      description. The <code>sibling</code> sub-element is used to
+      specify the distance value between sibling NUMA cells. For more
+      details, see the chapter explaining the system's SLIT (System
+      Locality Information Table) within the ACPI (Advanced
+      Configuration and Power Interface) specification.
+    </p>
+
+<pre>
+...
+&lt;cpu&gt;
+  ...
+  &lt;numa&gt;
+    &lt;cell id='0' cpus='0,4-7' memory='512000' unit='KiB'&gt;
+      &lt;distances&gt;
+        &lt;sibling id='0' value='10'/&gt;
+        &lt;sibling id='1' value='21'/&gt;
+        &lt;sibling id='2' value='31'/&gt;
+        &lt;sibling id='3' value='41'/&gt;
+      &lt;/distances&gt;
+    &lt;/cell&gt;
+    &lt;cell id='1' cpus='1,8-10,12-15' memory='512000' unit='KiB' memAccess='shared'&gt;
+      &lt;distances&gt;
+        &lt;sibling id='0' value='21'/&gt;
+        &lt;sibling id='1' value='10'/&gt;
+        &lt;sibling id='2' value='21'/&gt;
+        &lt;sibling id='3' value='31'/&gt;
+      &lt;/distances&gt;
+    &lt;/cell&gt;
+    &lt;cell id='2' cpus='2,11' memory='512000' unit='KiB' memAccess='shared'&gt;
+      &lt;distances&gt;
+        &lt;sibling id='0' value='31'/&gt;
+        &lt;sibling id='1' value='21'/&gt;
+        &lt;sibling id='2' value='10'/&gt;
+        &lt;sibling id='3' value='21'/&gt;
+      &lt;/distances&gt;
+    &lt;/cell&gt;
+    &lt;cell id='3' cpus='3' memory='512000' unit='KiB'&gt;
+      &lt;distances&gt;
+        &lt;sibling id='0' value='41'/&gt;
+        &lt;sibling id='1' value='31'/&gt;
+        &lt;sibling id='2' value='21'/&gt;
+        &lt;sibling id='3' value='10'/&gt;
+      &lt;/distances&gt;
+    &lt;/cell&gt;
+  &lt;/numa&gt;
+  ...
+&lt;/cpu&gt;
+...</pre>
+
+    <p>
+      Describing distances between NUMA cells is currently only supported
+      by Xen. If no <code>distances</code> are given to describe
+      the SLIT data between different cells, it will default to a scheme
+      using 10 for local and 20 for remote distances.
     </p>
 
     <h3><a id="elementsEvents">Events configuration</a></h3>
