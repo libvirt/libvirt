@@ -87,6 +87,11 @@ int virDomainNumatuneMaybeGetNodeset(virDomainNumaPtr numatune,
 
 size_t virDomainNumaGetNodeCount(virDomainNumaPtr numa);
 
+size_t virDomainNumaGetNodeDistance(virDomainNumaPtr numa,
+                                    size_t node,
+                                    size_t sibling)
+    ATTRIBUTE_NONNULL(1);
+
 virBitmapPtr virDomainNumaGetNodeCpumask(virDomainNumaPtr numa,
                                          size_t node)
     ATTRIBUTE_NONNULL(1);
@@ -124,9 +129,29 @@ int virDomainNumatuneSet(virDomainNumaPtr numa,
                          virBitmapPtr nodeset)
     ATTRIBUTE_NONNULL(1);
 
+size_t virDomainNumaSetNodeCount(virDomainNumaPtr numa,
+                                 size_t nmem_nodes)
+    ATTRIBUTE_NONNULL(1);
+
 void virDomainNumaSetNodeMemorySize(virDomainNumaPtr numa,
                                     size_t node,
                                     unsigned long long size)
+    ATTRIBUTE_NONNULL(1);
+
+int virDomainNumaSetNodeDistance(virDomainNumaPtr numa,
+                                 size_t node,
+                                 size_t sibling,
+                                 unsigned int value)
+    ATTRIBUTE_NONNULL(1);
+
+size_t virDomainNumaSetNodeDistanceCount(virDomainNumaPtr numa,
+                                         size_t node,
+                                         size_t ndistances)
+    ATTRIBUTE_NONNULL(1);
+
+virBitmapPtr virDomainNumaSetNodeCpumask(virDomainNumaPtr numa,
+                                         size_t node,
+                                         virBitmapPtr cpumask)
     ATTRIBUTE_NONNULL(1);
 
 /*

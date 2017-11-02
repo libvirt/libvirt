@@ -1114,10 +1114,147 @@ virDomainNumaGetNodeCount(virDomainNumaPtr numa)
 }
 
 
+size_t
+virDomainNumaSetNodeCount(virDomainNumaPtr numa, size_t nmem_nodes)
+{
+    if (!nmem_nodes) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot set an empty mem_nodes set"));
+        return 0;
+    }
+
+    if (numa->mem_nodes) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot alter an existing mem_nodes set"));
+        return 0;
+    }
+
+    if (VIR_ALLOC_N(numa->mem_nodes, nmem_nodes) < 0)
+        return 0;
+
+    numa->nmem_nodes = nmem_nodes;
+
+    return numa->nmem_nodes;
+}
+
+size_t
+virDomainNumaGetNodeDistance(virDomainNumaPtr numa,
+                             size_t node,
+                             size_t cellid)
+{
+    virDomainNumaDistancePtr distances = NULL;
+
+    if (node < numa->nmem_nodes)
+        distances = numa->mem_nodes[node].distances;
+
+    /*
+     * Present the configured distance value. If
+     * out of range or not available set the platform
+     * defined default for local and remote nodes.
+     */
+    if (!distances ||
+        !distances[cellid].value ||
+        !numa->mem_nodes[node].ndistances)
+        return (node == cellid) ? LOCAL_DISTANCE : REMOTE_DISTANCE;
+
+    return distances[cellid].value;
+}
+
+
+int
+virDomainNumaSetNodeDistance(virDomainNumaPtr numa,
+                             size_t node,
+                             size_t cellid,
+                             unsigned int value)
+{
+    virDomainNumaDistancePtr distances;
+
+    if (node >= numa->nmem_nodes) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Argument 'node' %zu outranges "
+                         "defined number of NUMA nodes"),
+                       node);
+        return -1;
+    }
+
+    distances = numa->mem_nodes[node].distances;
+    if (!distances ||
+        cellid >= numa->mem_nodes[node].ndistances) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Arguments under memnode element do not "
+                         "correspond with existing guest's NUMA cell"));
+        return -1;
+    }
+
+    /*
+     * Advanced Configuration and Power Interface
+     * Specification version 6.1. Chapter 5.2.17
+     * System Locality Distance Information Table
+     * ... Distance values of 0-9 are reserved.
+     */
+    if (value < LOCAL_DISTANCE ||
+        value > UNREACHABLE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Distance value of %d is not in valid range"),
+                       value);
+        return -1;
+    }
+
+    if (value == LOCAL_DISTANCE && node != cellid) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Distance value %d under node %zu is "
+                         "LOCAL_DISTANCE and should be set to 10"),
+                       value, node);
+        return -1;
+    }
+
+    distances[cellid].cellid = cellid;
+    distances[cellid].value = value;
+
+    return distances[cellid].value;
+}
+
+
+size_t
+virDomainNumaSetNodeDistanceCount(virDomainNumaPtr numa,
+                                  size_t node,
+                                  size_t ndistances)
+{
+    virDomainNumaDistancePtr distances;
+
+    distances = numa->mem_nodes[node].distances;
+    if (distances) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot alter an existing nmem_nodes distances set for node: %zu"),
+                       node);
+        return 0;
+    }
+
+    if (VIR_ALLOC_N(distances, ndistances) < 0)
+        return 0;
+
+    numa->mem_nodes[node].distances = distances;
+    numa->mem_nodes[node].ndistances = ndistances;
+
+    return numa->mem_nodes[node].ndistances;
+}
+
+
 virBitmapPtr
 virDomainNumaGetNodeCpumask(virDomainNumaPtr numa,
                             size_t node)
 {
+    return numa->mem_nodes[node].cpumask;
+}
+
+
+virBitmapPtr
+virDomainNumaSetNodeCpumask(virDomainNumaPtr numa,
+                            size_t node,
+                            virBitmapPtr cpumask)
+{
+    numa->mem_nodes[node].cpumask = cpumask;
+
     return numa->mem_nodes[node].cpumask;
 }
 

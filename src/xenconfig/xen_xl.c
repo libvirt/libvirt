@@ -309,6 +309,203 @@ xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
     return -1;
 }
 
+#ifdef LIBXL_HAVE_VNUMA
+static int
+xenParseXLVnuma(virConfPtr conf,
+                virDomainDefPtr def)
+{
+    int ret = -1;
+    char *tmp = NULL;
+    char **token = NULL;
+    size_t vcpus = 0;
+    size_t nr_nodes = 0;
+    size_t vnodeCnt = 0;
+    virCPUDefPtr cpu = NULL;
+    virConfValuePtr list;
+    virConfValuePtr vnode;
+    virDomainNumaPtr numa;
+
+    numa = def->numa;
+    if (numa == NULL)
+        return -1;
+
+    list = virConfGetValue(conf, "vnuma");
+    if (!list || list->type != VIR_CONF_LIST)
+        return 0;
+
+    vnode = list->list;
+    while (vnode && vnode->type == VIR_CONF_LIST) {
+        vnode = vnode->next;
+        nr_nodes++;
+    }
+
+    if (!virDomainNumaSetNodeCount(numa, nr_nodes))
+        goto cleanup;
+
+    if (VIR_ALLOC(cpu) < 0)
+        goto cleanup;
+
+    list = list->list;
+    while (list) {
+        int pnode = -1;
+        virBitmapPtr cpumask = NULL;
+        unsigned long long kbsize = 0;
+
+        /* Is there a sublist (vnode)? */
+        if (list && list->type == VIR_CONF_LIST) {
+            vnode = list->list;
+
+            while (vnode && vnode->type == VIR_CONF_STRING) {
+                const char *data;
+                const char *str = vnode->str;
+
+                if (!str ||
+                   !(data = strrchr(str, '='))) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("vnuma vnode invalid format '%s'"),
+                                   str);
+                    goto cleanup;
+                }
+                data++;
+
+                if (*data) {
+                    size_t len;
+                    char vtoken[64];
+
+                    if (STRPREFIX(str, "pnode")) {
+                        unsigned int cellid;
+
+                        len = strlen(data);
+                        if (!virStrncpy(vtoken, data,
+                                        len, sizeof(vtoken))) {
+                            virReportError(VIR_ERR_INTERNAL_ERROR,
+                                           _("vnuma vnode %zu pnode '%s' too long for destination"),
+                                           vnodeCnt, data);
+                            goto cleanup;
+                        }
+
+                        if ((virStrToLong_ui(vtoken, NULL, 10, &cellid) < 0) ||
+                            (cellid >= nr_nodes)) {
+                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                           _("vnuma vnode %zu contains invalid pnode value '%s'"),
+                                           vnodeCnt, data);
+                            goto cleanup;
+                        }
+                        pnode = cellid;
+                    } else if (STRPREFIX(str, "size")) {
+                        len = strlen(data);
+                        if (!virStrncpy(vtoken, data,
+                                        len, sizeof(vtoken))) {
+                            virReportError(VIR_ERR_INTERNAL_ERROR,
+                                           _("vnuma vnode %zu size '%s' too long for destination"),
+                                           vnodeCnt, data);
+                            goto cleanup;
+                        }
+
+                        if (virStrToLong_ull(vtoken, NULL, 10, &kbsize) < 0)
+                            goto cleanup;
+
+                        virDomainNumaSetNodeMemorySize(numa, vnodeCnt, (kbsize * 1024));
+
+                    } else if (STRPREFIX(str, "vcpus")) {
+                        len = strlen(data);
+                        if (!virStrncpy(vtoken, data,
+                                        len, sizeof(vtoken))) {
+                            virReportError(VIR_ERR_INTERNAL_ERROR,
+                                           _("vnuma vnode %zu vcpus '%s' too long for destination"),
+                                           vnodeCnt, data);
+                            goto cleanup;
+                        }
+
+                        if ((virBitmapParse(vtoken, &cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0) ||
+                            (virDomainNumaSetNodeCpumask(numa, vnodeCnt, cpumask) == NULL))
+                            goto cleanup;
+
+                        vcpus += virBitmapCountBits(cpumask);
+
+                    } else if (STRPREFIX(str, "vdistances")) {
+                        size_t i, ndistances;
+                        unsigned int value;
+
+                        len = strlen(data);
+                        if (!virStrncpy(vtoken, data,
+                                        len, sizeof(vtoken))) {
+                            virReportError(VIR_ERR_INTERNAL_ERROR,
+                                           _("vnuma vnode %zu vdistances '%s' too long for destination"),
+                                           vnodeCnt, data);
+                            goto cleanup;
+                        }
+
+                        if (VIR_STRDUP(tmp, vtoken) < 0)
+                            goto cleanup;
+
+                        if (!(token = virStringSplitCount(tmp, ",", 0, &ndistances)))
+                            goto cleanup;
+
+                        if (ndistances != nr_nodes) {
+                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       _("vnuma pnode %d configured '%s' (count %zu) doesn't fit the number of specified vnodes %zu"),
+                                       pnode, str, ndistances, nr_nodes);
+                            goto cleanup;
+                        }
+
+                        if (virDomainNumaSetNodeDistanceCount(numa, vnodeCnt, ndistances) != ndistances)
+                            goto cleanup;
+
+                        for (i = 0; i < ndistances; i++) {
+                            if ((virStrToLong_ui(token[i], NULL, 10, &value) < 0) ||
+                                (virDomainNumaSetNodeDistance(numa, vnodeCnt, i, value) != value))
+                                goto cleanup;
+                        }
+
+                    } else {
+                        virReportError(VIR_ERR_CONF_SYNTAX,
+                                       _("Invalid vnuma configuration for vnode %zu"),
+                                       vnodeCnt);
+                        goto cleanup;
+                    }
+                }
+                vnode = vnode->next;
+            }
+        }
+
+        if ((pnode < 0) ||
+            (cpumask == NULL) ||
+            (kbsize == 0)) {
+            virReportError(VIR_ERR_CONF_SYNTAX,
+                           _("Incomplete vnuma configuration for vnode %zu"),
+                           vnodeCnt);
+            goto cleanup;
+        }
+
+        list = list->next;
+        vnodeCnt++;
+    }
+
+    if (def->maxvcpus == 0)
+        def->maxvcpus = vcpus;
+
+    if (def->maxvcpus < vcpus) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("vnuma configuration contains %zu vcpus, which is greater than %zu maxvcpus"),
+                       vcpus, def->maxvcpus);
+        goto cleanup;
+    }
+
+    cpu->type = VIR_CPU_TYPE_GUEST;
+    def->cpu = cpu;
+
+    ret = 0;
+
+ cleanup:
+    if (ret)
+        VIR_FREE(cpu);
+    virStringListFree(token);
+    VIR_FREE(tmp);
+
+    return ret;
+}
+#endif
 
 static int
 xenParseXLDiskSrc(virDomainDiskDefPtr disk, char *srcstr)
@@ -863,6 +1060,11 @@ xenParseXL(virConfPtr conf,
     if (xenParseXLOS(conf, def, caps) < 0)
         goto cleanup;
 
+#ifdef LIBXL_HAVE_VNUMA
+    if (xenParseXLVnuma(conf, def) < 0)
+        goto cleanup;
+#endif
+
     if (xenParseXLDisk(conf, def) < 0)
         goto cleanup;
 
@@ -1005,6 +1207,134 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
     return 0;
 }
 
+#ifdef LIBXL_HAVE_VNUMA
+static int
+xenFormatXLVnode(virConfValuePtr list,
+                 virBufferPtr buf)
+{
+    int ret = -1;
+    virConfValuePtr numaPnode, tmp;
+
+    if (virBufferCheckError(buf) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC(numaPnode) < 0)
+        goto cleanup;
+
+    /* Place VNODE directive */
+    numaPnode->type = VIR_CONF_STRING;
+    numaPnode->str = virBufferContentAndReset(buf);
+
+    tmp = list->list;
+    while (tmp && tmp->next)
+        tmp = tmp->next;
+    if (tmp)
+        tmp->next = numaPnode;
+    else
+        list->list = numaPnode;
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(buf);
+    return ret;
+}
+
+static int
+xenFormatXLVnuma(virConfValuePtr list,
+                 virDomainNumaPtr numa,
+                 size_t node,
+                 size_t nr_nodes)
+{
+    int ret = -1;
+    size_t i;
+
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virConfValuePtr numaVnode, tmp;
+
+    size_t nodeSize = virDomainNumaGetNodeMemorySize(numa, node) / 1024;
+    char *nodeVcpus = virBitmapFormat(virDomainNumaGetNodeCpumask(numa, node));
+
+    if (VIR_ALLOC(numaVnode) < 0)
+        goto cleanup;
+
+    numaVnode->type = VIR_CONF_LIST;
+    numaVnode->list = NULL;
+
+    /* pnode */
+    virBufferAsprintf(&buf, "pnode=%ld", node);
+    xenFormatXLVnode(numaVnode, &buf);
+
+    /* size */
+    virBufferAsprintf(&buf, "size=%ld", nodeSize);
+    xenFormatXLVnode(numaVnode, &buf);
+
+    /* vcpus */
+    virBufferAsprintf(&buf, "vcpus=%s", nodeVcpus);
+    xenFormatXLVnode(numaVnode, &buf);
+
+    /* distances */
+    virBufferAddLit(&buf, "vdistances=");
+    for (i = 0; i < nr_nodes; i++) {
+        virBufferAsprintf(&buf, "%zu",
+            virDomainNumaGetNodeDistance(numa, node, i));
+        if ((nr_nodes - i) > 1)
+            virBufferAddLit(&buf, ",");
+    }
+    xenFormatXLVnode(numaVnode, &buf);
+
+    tmp = list->list;
+    while (tmp && tmp->next)
+        tmp = tmp->next;
+    if (tmp)
+        tmp->next = numaVnode;
+    else
+        list->list = numaVnode;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(nodeVcpus);
+    return ret;
+}
+
+static int
+xenFormatXLDomainVnuma(virConfPtr conf,
+                       virDomainDefPtr def)
+{
+    virDomainNumaPtr numa = def->numa;
+    virConfValuePtr vnumaVal;
+    size_t i;
+    size_t nr_nodes;
+
+    if (numa == NULL)
+        return -1;
+
+    if (VIR_ALLOC(vnumaVal) < 0)
+        return -1;
+
+    vnumaVal->type = VIR_CONF_LIST;
+    vnumaVal->list = NULL;
+
+    nr_nodes = virDomainNumaGetNodeCount(numa);
+    for (i = 0; i < nr_nodes; i++) {
+        if (xenFormatXLVnuma(vnumaVal, numa, i, nr_nodes) < 0)
+            goto cleanup;
+    }
+
+    if (vnumaVal->list != NULL) {
+        int ret = virConfSetValue(conf, "vnuma", vnumaVal);
+            vnumaVal = NULL;
+            if (ret < 0)
+                return -1;
+    }
+    VIR_FREE(vnumaVal);
+
+    return 0;
+
+ cleanup:
+    virConfFreeValue(vnumaVal);
+    return -1;
+}
+#endif
 
 static char *
 xenFormatXLDiskSrcNet(virStorageSourcePtr src)
@@ -1641,6 +1971,11 @@ xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
 
     if (xenFormatXLOS(conf, def) < 0)
         goto cleanup;
+
+#ifdef LIBXL_HAVE_VNUMA
+    if (xenFormatXLDomainVnuma(conf, def) < 0)
+        goto cleanup;
+#endif
 
     if (xenFormatXLDomainDisks(conf, def) < 0)
         goto cleanup;
