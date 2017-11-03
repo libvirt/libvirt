@@ -282,7 +282,9 @@ test_programs += qemuxml2argvtest qemuxml2xmltest \
 	qemumonitortest qemumonitorjsontest qemuhotplugtest \
 	qemuagenttest qemucapabilitiestest qemucaps2xmltest \
 	qemumemlocktest \
-	qemucommandutiltest
+	qemucommandutiltest \
+	qemublocktest \
+	$(NULL)
 test_helpers += qemucapsprobe
 test_libraries += libqemumonitortestutils.la \
 		libqemutestdriver.la \
@@ -668,6 +670,15 @@ qemuhotplugtest_SOURCES = \
 	$(NULL)
 qemuhotplugtest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS) $(LDADDS)
 
+qemublocktest_SOURCES = \
+	qemublocktest.c testutils.h testutils.c
+qemublocktest_LDADD = $(LDADDS) \
+	../src/libvirt_conf.la \
+	../src/libvirt_util.la \
+	$(qemu_LDADDS) \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
+
 domainsnapshotxml2xmltest_SOURCES = \
 	domainsnapshotxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
@@ -686,6 +697,7 @@ EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c \
 	qemuagenttest.c qemucapabilitiestest.c \
 	qemucaps2xmltest.c qemucommandutiltest.c \
 	qemumemlocktest.c qemucpumock.c testutilshostcpus.h \
+	qemublocktest.c \
 	$(QEMUMONITORTESTUTILS_SOURCES)
 endif ! WITH_QEMU
 
