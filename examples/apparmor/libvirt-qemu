@@ -169,6 +169,9 @@
   # for rbd
   /etc/ceph/ceph.conf r,
 
+  # for file-posix getting limits since 9103f1ce
+  /sys/devices/**/block/*/queue/max_segments r,
+
   # for ppc device-tree access
   @{PROC}/device-tree/ r,
   @{PROC}/device-tree/** r,
