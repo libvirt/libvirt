@@ -10,6 +10,7 @@ profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
 
   # needed for when disk is on a network filesystem
   network inet,
+  network inet6,
 
   deny @{PROC}/[0-9]*/mounts r,
   @{PROC}/[0-9]*/net/psched r,
