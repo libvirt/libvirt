@@ -1208,7 +1208,7 @@ virCapsPtr virTestGenericCapsInit(void)
         goto error;
 
 
-    if (virTestGetDebug()) {
+    if (virTestGetDebug() > 1) {
         char *caps_str;
 
         caps_str = virCapabilitiesFormatXML(caps);
