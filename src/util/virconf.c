@@ -61,12 +61,12 @@ struct _virConfParserCtxt {
 #define NEXT if (ctxt->cur < ctxt->end) ctxt->cur++;
 #define IS_EOL(c) (((c) == '\n') || ((c) == '\r'))
 
-#define SKIP_BLANKS_AND_EOL                                             \
+#define SKIP_BLANKS_AND_EOL \
   do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR) || IS_EOL(CUR))) { \
-         if (CUR == '\n') ctxt->line++;                                 \
+         if (CUR == '\n') ctxt->line++; \
          ctxt->cur++; } } while (0)
-#define SKIP_BLANKS                                                     \
-  do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR)))              \
+#define SKIP_BLANKS \
+  do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR))) \
           ctxt->cur++; } while (0)
 
 VIR_ENUM_IMPL(virConf, VIR_CONF_LAST,

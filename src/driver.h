@@ -56,8 +56,8 @@ typedef enum {
  *   != 0  Feature is supported.
  *   0     Feature is not supported.
  */
-# define VIR_DRV_SUPPORTS_FEATURE(drv, conn, feature)                   \
-    ((drv)->connectSupportsFeature ?                                    \
+# define VIR_DRV_SUPPORTS_FEATURE(drv, conn, feature) \
+    ((drv)->connectSupportsFeature ? \
         (drv)->connectSupportsFeature((conn), (feature)) > 0 : 0)
 
 

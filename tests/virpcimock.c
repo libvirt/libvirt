@@ -53,18 +53,18 @@ char *fakesysfspcidir;
 
 # define SYSFS_PCI_PREFIX "/sys/bus/pci/"
 
-# define STDERR(...)                                                    \
-    fprintf(stderr, "%s %zu: ", __FUNCTION__, (size_t) __LINE__);       \
-    fprintf(stderr, __VA_ARGS__);                                       \
-    fprintf(stderr, "\n");                                              \
+# define STDERR(...) \
+    fprintf(stderr, "%s %zu: ", __FUNCTION__, (size_t) __LINE__); \
+    fprintf(stderr, __VA_ARGS__); \
+    fprintf(stderr, "\n"); \
 
-# define ABORT(...)                                                     \
-    do {                                                                \
-        STDERR(__VA_ARGS__);                                            \
-        abort();                                                        \
+# define ABORT(...) \
+    do { \
+        STDERR(__VA_ARGS__); \
+        abort(); \
     } while (0)
 
-# define ABORT_OOM()                                                    \
+# define ABORT_OOM() \
     ABORT("Out of memory")
 /*
  * The plan:
@@ -834,7 +834,7 @@ init_env(void)
 
     make_file(fakesysfspcidir, "drivers_probe", NULL, -1);
 
-# define MAKE_PCI_DRIVER(name, ...)                                     \
+# define MAKE_PCI_DRIVER(name, ...) \
     pci_driver_new(name, 0, __VA_ARGS__, -1, -1)
 
     MAKE_PCI_DRIVER("iwlwifi", 0x8086, 0x0044);
@@ -842,11 +842,11 @@ init_env(void)
     MAKE_PCI_DRIVER("pci-stub", -1, -1);
     pci_driver_new("vfio-pci", PCI_ACTION_BIND, -1, -1);
 
-# define MAKE_PCI_DEVICE(Id, Vendor, Device, ...)                       \
-    do {                                                                \
-        struct pciDevice dev = {.id = (char *)Id, .vendor = Vendor,     \
-                                .device = Device, __VA_ARGS__};         \
-        pci_device_new_from_stub(&dev);                                 \
+# define MAKE_PCI_DEVICE(Id, Vendor, Device, ...) \
+    do { \
+        struct pciDevice dev = {.id = (char *)Id, .vendor = Vendor, \
+                                .device = Device, __VA_ARGS__}; \
+        pci_device_new_from_stub(&dev); \
     } while (0)
 
     MAKE_PCI_DEVICE("0000:00:00.0", 0x8086, 0x0044);

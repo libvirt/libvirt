@@ -847,11 +847,11 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
         goto endjob;
     }
 
-#define VIR_GET_LIMIT_PARAMETER(PARAM, VALUE)                                \
-    if ((rc = virTypedParamsGetULLong(params, nparams, PARAM, &VALUE)) < 0)  \
-        goto endjob;                                                         \
-                                                                             \
-    if (rc == 1)                                                             \
+#define VIR_GET_LIMIT_PARAMETER(PARAM, VALUE) \
+    if ((rc = virTypedParamsGetULLong(params, nparams, PARAM, &VALUE)) < 0) \
+        goto endjob; \
+ \
+    if (rc == 1) \
         set_ ## VALUE = true;
 
     VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, swap_hard_limit)
@@ -879,16 +879,16 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
         }
     }
 
-#define VIR_SET_MEM_PARAMETER(FUNC, VALUE)                                      \
-    if (set_ ## VALUE) {                                                        \
-        if (def) {                                                              \
-            if ((rc = FUNC(priv->cgroup, VALUE)) < 0)                           \
-                goto endjob;                                                    \
-            def->mem.VALUE = VALUE;                                             \
-        }                                                                       \
-                                                                                \
-        if (persistentDef)                                                      \
-            persistentDef->mem.VALUE = VALUE;                                   \
+#define VIR_SET_MEM_PARAMETER(FUNC, VALUE) \
+    if (set_ ## VALUE) { \
+        if (def) { \
+            if ((rc = FUNC(priv->cgroup, VALUE)) < 0) \
+                goto endjob; \
+            def->mem.VALUE = VALUE; \
+        } \
+ \
+        if (persistentDef) \
+            persistentDef->mem.VALUE = VALUE; \
     }
 
     /* Soft limit doesn't clash with the others */

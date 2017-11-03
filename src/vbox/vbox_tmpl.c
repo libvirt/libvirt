@@ -88,31 +88,31 @@ VIR_LOG_INIT("vbox.vbox_tmpl");
 #define vboxUnsupported() \
     VIR_WARN("No %s in current vbox version %d.", __FUNCTION__, VBOX_API_VERSION);
 
-#define VBOX_UTF16_FREE(arg)                                            \
-    do {                                                                \
-        if (arg) {                                                      \
-            data->pFuncs->pfnUtf16Free(arg);                            \
-            (arg) = NULL;                                               \
-        }                                                               \
+#define VBOX_UTF16_FREE(arg) \
+    do { \
+        if (arg) { \
+            data->pFuncs->pfnUtf16Free(arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
-#define VBOX_UTF8_FREE(arg)                                             \
-    do {                                                                \
-        if (arg) {                                                      \
-            data->pFuncs->pfnUtf8Free(arg);                             \
-            (arg) = NULL;                                               \
-        }                                                               \
+#define VBOX_UTF8_FREE(arg) \
+    do { \
+        if (arg) { \
+            data->pFuncs->pfnUtf8Free(arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
 #define VBOX_UTF16_TO_UTF8(arg1, arg2)  data->pFuncs->pfnUtf16ToUtf8(arg1, arg2)
 #define VBOX_UTF8_TO_UTF16(arg1, arg2)  data->pFuncs->pfnUtf8ToUtf16(arg1, arg2)
 
-#define VBOX_RELEASE(arg)                                                     \
-    do {                                                                      \
-        if (arg) {                                                            \
-            (arg)->vtbl->nsisupports.Release((nsISupports *)(arg));           \
-            (arg) = NULL;                                                     \
-        }                                                                     \
+#define VBOX_RELEASE(arg) \
+    do { \
+        if (arg) { \
+            (arg)->vtbl->nsisupports.Release((nsISupports *)(arg)); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
 #define VBOX_MEDIUM_RELEASE(arg) VBOX_RELEASE(arg)

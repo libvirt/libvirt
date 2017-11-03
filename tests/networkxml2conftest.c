@@ -112,16 +112,16 @@ mymain(void)
     dnsmasqCapsPtr dhcpv6
         = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.64\n--bind-dynamic", DNSMASQ);
 
-#define DO_TEST(xname, xcaps)                                        \
-    do {                                                             \
-        static testInfo info;                                        \
-                                                                     \
-        info.name = xname;                                           \
-        info.caps = xcaps;                                           \
-        if (virTestRun("Network XML-2-Conf " xname,                  \
-                       testCompareXMLToConfHelper, &info) < 0) {     \
-            ret = -1;                                                \
-        }                                                            \
+#define DO_TEST(xname, xcaps) \
+    do { \
+        static testInfo info; \
+ \
+        info.name = xname; \
+        info.caps = xcaps; \
+        if (virTestRun("Network XML-2-Conf " xname, \
+                       testCompareXMLToConfHelper, &info) < 0) { \
+            ret = -1; \
+        } \
     } while (0)
 
     DO_TEST("isolated-network", restricted);

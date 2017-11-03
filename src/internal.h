@@ -77,9 +77,9 @@
 # define STRPREFIX(a, b) (strncmp(a, b, strlen(b)) == 0)
 # define STRSKIP(a, b) (STRPREFIX(a, b) ? (a) + strlen(b) : NULL)
 
-# define STREQ_NULLABLE(a, b)                           \
+# define STREQ_NULLABLE(a, b) \
     ((a) ? (b) && STREQ((a), (b)) : !(b))
-# define STRNEQ_NULLABLE(a, b)                          \
+# define STRNEQ_NULLABLE(a, b) \
     ((a) ? !(b) || STRNEQ((a), (b)) : !!(b))
 
 # define NUL_TERMINATE(buf) do { (buf)[sizeof(buf)-1] = '\0'; } while (0)
@@ -205,11 +205,11 @@
 /* Workaround bogus GCC 6.0 for logical 'or' equal expression warnings.
  * (GCC bz 69602) */
 #  if BROKEN_GCC_WLOGICALOP_EQUAL_EXPR
-#   define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR            \
-     _Pragma ("GCC diagnostic push")                        \
+#   define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR \
+     _Pragma ("GCC diagnostic push") \
      _Pragma ("GCC diagnostic ignored \"-Wlogical-op\"")
 #  else
-#   define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR            \
+#   define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR \
      _Pragma ("GCC diagnostic push")
 #  endif
 
@@ -226,7 +226,7 @@
 /* Workaround bogus GCC < 4.6 that produces false -Wlogical-op warnings for
  * strchr(). Those old GCCs don't support push/pop. */
 # if BROKEN_GCC_WLOGICALOP_STRCHR
-#  define VIR_WARNINGS_NO_WLOGICALOP_STRCHR                \
+#  define VIR_WARNINGS_NO_WLOGICALOP_STRCHR \
     _Pragma ("GCC diagnostic ignored \"-Wlogical-op\"")
 # else
 #  define VIR_WARNINGS_NO_WLOGICALOP_STRCHR
@@ -248,11 +248,11 @@
  *
  * In place exchange of two values
  */
-# define SWAP(a, b)         \
-    do {                    \
-        (a) = (a) ^ (b);    \
-        (b) = (a) ^ (b);    \
-        (a) = (a) ^ (b);    \
+# define SWAP(a, b) \
+    do { \
+        (a) = (a) ^ (b); \
+        (b) = (a) ^ (b); \
+        (a) = (a) ^ (b); \
     } while (0)
 
 /**
@@ -261,10 +261,10 @@
  * Steals pointer passed as second argument into the first argument. Second
  * argument must not have side effects.
  */
-# define VIR_STEAL_PTR(a, b)  \
-    do {                      \
-        (a) = (b);            \
-        (b) = NULL;           \
+# define VIR_STEAL_PTR(a, b) \
+    do { \
+        (a) = (b); \
+        (b) = NULL; \
     } while (0)
 
 /**
@@ -278,15 +278,15 @@
  * Returns nothing. Exits the caller function if unsupported flags were
  * passed to it.
  */
-# define virCheckFlags(supported, retval)                               \
-    do {                                                                \
-        unsigned long __unsuppflags = flags & ~(supported);             \
-        if (__unsuppflags) {                                            \
-            virReportInvalidArg(flags,                                  \
+# define virCheckFlags(supported, retval) \
+    do { \
+        unsigned long __unsuppflags = flags & ~(supported); \
+        if (__unsuppflags) { \
+            virReportInvalidArg(flags, \
                                 _("unsupported flags (0x%lx) in function %s"), \
-                                __unsuppflags, __FUNCTION__);           \
-            return retval;                                              \
-        }                                                               \
+                                __unsuppflags, __FUNCTION__); \
+            return retval; \
+        } \
     } while (0)
 
 /**
@@ -300,15 +300,15 @@
  * Returns nothing. Jumps to a label if unsupported flags were
  * passed to it.
  */
-# define virCheckFlagsGoto(supported, label)                            \
-    do {                                                                \
-        unsigned long __unsuppflags = flags & ~(supported);             \
-        if (__unsuppflags) {                                            \
-            virReportInvalidArg(flags,                                  \
+# define virCheckFlagsGoto(supported, label) \
+    do { \
+        unsigned long __unsuppflags = flags & ~(supported); \
+        if (__unsuppflags) { \
+            virReportInvalidArg(flags, \
                                 _("unsupported flags (0x%lx) in function %s"), \
-                                __unsuppflags, __FUNCTION__);           \
-            goto label;                                                 \
-        }                                                               \
+                                __unsuppflags, __FUNCTION__); \
+            goto label; \
+        } \
     } while (0)
 
 /* Macros to help dealing with mutually exclusive flags. */
@@ -326,15 +326,15 @@
  * This helper does an early return and therefore it has to be called
  * before anything that would require cleanup.
  */
-# define VIR_EXCLUSIVE_FLAGS_RET(FLAG1, FLAG2, RET)                         \
-    do {                                                                    \
-        if ((flags & FLAG1) && (flags & FLAG2)) {                           \
-            virReportInvalidArg(ctl,                                        \
-                                _("Flags '%s' and '%s' are mutually "       \
-                                  "exclusive"),                             \
-                                #FLAG1, #FLAG2);                            \
-            return RET;                                                     \
-        }                                                                   \
+# define VIR_EXCLUSIVE_FLAGS_RET(FLAG1, FLAG2, RET) \
+    do { \
+        if ((flags & FLAG1) && (flags & FLAG2)) { \
+            virReportInvalidArg(ctl, \
+                                _("Flags '%s' and '%s' are mutually " \
+                                  "exclusive"), \
+                                #FLAG1, #FLAG2); \
+            return RET; \
+        } \
     } while (0)
 
 /**
@@ -350,15 +350,15 @@
  * Returns nothing.  Jumps to a label if unsupported flags were
  * passed to it.
  */
-# define VIR_EXCLUSIVE_FLAGS_GOTO(FLAG1, FLAG2, LABEL)                      \
-    do {                                                                    \
-        if ((flags & FLAG1) && (flags & FLAG2)) {                           \
-            virReportInvalidArg(ctl,                                        \
-                                _("Flags '%s' and '%s' are mutually "       \
-                                  "exclusive"),                             \
-                                #FLAG1, #FLAG2);                            \
-            goto LABEL;                                                     \
-        }                                                                   \
+# define VIR_EXCLUSIVE_FLAGS_GOTO(FLAG1, FLAG2, LABEL) \
+    do { \
+        if ((flags & FLAG1) && (flags & FLAG2)) { \
+            virReportInvalidArg(ctl, \
+                                _("Flags '%s' and '%s' are mutually " \
+                                  "exclusive"), \
+                                #FLAG1, #FLAG2); \
+            goto LABEL; \
+        } \
     } while (0)
 
 /* Macros to help dealing with flag requirements. */
@@ -376,14 +376,14 @@
  * This helper does an early return and therefore it has to be called
  * before anything that would require cleanup.
  */
-# define VIR_REQUIRE_FLAG_RET(FLAG1, FLAG2, RET)                            \
-    do {                                                                    \
-        if ((flags & FLAG1) && !(flags & FLAG2)) {                          \
-            virReportInvalidArg(ctl,                                        \
-                                _("Flag '%s' is required by flag '%s'"),    \
-                                #FLAG2, #FLAG1);                            \
-            return RET;                                                     \
-        }                                                                   \
+# define VIR_REQUIRE_FLAG_RET(FLAG1, FLAG2, RET) \
+    do { \
+        if ((flags & FLAG1) && !(flags & FLAG2)) { \
+            virReportInvalidArg(ctl, \
+                                _("Flag '%s' is required by flag '%s'"), \
+                                #FLAG2, #FLAG1); \
+            return RET; \
+        } \
     } while (0)
 
 /**
@@ -398,90 +398,90 @@
  *
  * Returns nothing.  Jumps to a label if required flag is not set.
  */
-# define VIR_REQUIRE_FLAG_GOTO(FLAG1, FLAG2, LABEL)                         \
-    do {                                                                    \
-        if ((flags & FLAG1) && !(flags & FLAG2)) {                          \
-            virReportInvalidArg(ctl,                                        \
-                                _("Flag '%s' is required by flag '%s'"),    \
-                                #FLAG2, #FLAG1);                            \
-            goto LABEL;                                                     \
-        }                                                                   \
+# define VIR_REQUIRE_FLAG_GOTO(FLAG1, FLAG2, LABEL) \
+    do { \
+        if ((flags & FLAG1) && !(flags & FLAG2)) { \
+            virReportInvalidArg(ctl, \
+                                _("Flag '%s' is required by flag '%s'"), \
+                                #FLAG2, #FLAG1); \
+            goto LABEL; \
+        } \
     } while (0)
 
-# define virCheckNonNullArgReturn(argname, retval)  \
-    do {                                            \
-        if (argname == NULL) {                      \
-            virReportInvalidNonNullArg(argname);    \
-            return retval;                          \
-        }                                           \
+# define virCheckNonNullArgReturn(argname, retval) \
+    do { \
+        if (argname == NULL) { \
+            virReportInvalidNonNullArg(argname); \
+            return retval; \
+        } \
     } while (0)
-# define virCheckNullArgGoto(argname, label)        \
-    do {                                            \
-        if (argname != NULL) {                      \
-            virReportInvalidNullArg(argname);       \
-            goto label;                             \
-        }                                           \
+# define virCheckNullArgGoto(argname, label) \
+    do { \
+        if (argname != NULL) { \
+            virReportInvalidNullArg(argname); \
+            goto label; \
+        } \
     } while (0)
-# define virCheckNonNullArgGoto(argname, label)     \
-    do {                                            \
-        if (argname == NULL) {                      \
-            virReportInvalidNonNullArg(argname);    \
-            goto label;                             \
-        }                                           \
+# define virCheckNonNullArgGoto(argname, label) \
+    do { \
+        if (argname == NULL) { \
+            virReportInvalidNonNullArg(argname); \
+            goto label; \
+        } \
     } while (0)
 # define virCheckNonEmptyStringArgGoto(argname, label) \
-    do {                                               \
-        if (argname == NULL) {                         \
-            virReportInvalidNonNullArg(argname);       \
-            goto label;                                \
-        }                                              \
-        if (*argname == '\0') {                        \
-            virReportInvalidEmptyStringArg(argname);   \
-            goto label;                                \
-        }                                              \
+    do { \
+        if (argname == NULL) { \
+            virReportInvalidNonNullArg(argname); \
+            goto label; \
+        } \
+        if (*argname == '\0') { \
+            virReportInvalidEmptyStringArg(argname); \
+            goto label; \
+        } \
     } while (0)
-# define virCheckPositiveArgGoto(argname, label)    \
-    do {                                            \
-        if (argname <= 0) {                         \
-            virReportInvalidPositiveArg(argname);   \
-            goto label;                             \
-        }                                           \
+# define virCheckPositiveArgGoto(argname, label) \
+    do { \
+        if (argname <= 0) { \
+            virReportInvalidPositiveArg(argname); \
+            goto label; \
+        } \
     } while (0)
-# define virCheckPositiveArgReturn(argname, retval)     \
-    do {                                                \
-        if (argname <= 0) {                             \
-            virReportInvalidPositiveArg(argname);       \
-            return retval;                              \
-        }                                               \
+# define virCheckPositiveArgReturn(argname, retval) \
+    do { \
+        if (argname <= 0) { \
+            virReportInvalidPositiveArg(argname); \
+            return retval; \
+        } \
     } while (0)
-# define virCheckNonZeroArgGoto(argname, label)     \
-    do {                                            \
-        if (argname == 0) {                         \
-            virReportInvalidNonZeroArg(argname);    \
-            goto label;                             \
-        }                                           \
+# define virCheckNonZeroArgGoto(argname, label) \
+    do { \
+        if (argname == 0) { \
+            virReportInvalidNonZeroArg(argname); \
+            goto label; \
+        } \
     } while (0)
-# define virCheckZeroArgGoto(argname, label)        \
-    do {                                            \
-        if (argname != 0) {                         \
-            virReportInvalidNonZeroArg(argname);    \
-            goto label;                             \
-        }                                           \
+# define virCheckZeroArgGoto(argname, label) \
+    do { \
+        if (argname != 0) { \
+            virReportInvalidNonZeroArg(argname); \
+            goto label; \
+        } \
     } while (0)
-# define virCheckNonNegativeArgGoto(argname, label)     \
-    do {                                                \
-        if (argname < 0) {                              \
-            virReportInvalidNonNegativeArg(argname);    \
-            goto label;                                 \
-        }                                               \
+# define virCheckNonNegativeArgGoto(argname, label) \
+    do { \
+        if (argname < 0) { \
+            virReportInvalidNonNegativeArg(argname); \
+            goto label; \
+        } \
     } while (0)
-# define virCheckReadOnlyGoto(flags, label)                             \
-    do {                                                                \
-        if ((flags) & VIR_CONNECT_RO) {                                 \
+# define virCheckReadOnlyGoto(flags, label) \
+    do { \
+        if ((flags) & VIR_CONNECT_RO) { \
             virReportRestrictedError(_("read only access prevents %s"), \
-                                     __FUNCTION__);                     \
-            goto label;                                                 \
-        }                                                               \
+                                     __FUNCTION__); \
+            goto label; \
+        } \
     } while (0)
 
 
@@ -494,8 +494,8 @@
 
 /* Round up to the next closest power of 2. It will return rounded number or 0
  * for 0 or number more than 2^31 (for 32bit unsigned int). */
-# define VIR_ROUND_UP_POWER_OF_TWO(value)                                   \
-    ((value) > 0 && (value) <= 1U << (sizeof(unsigned int) * 8 - 1) ?       \
+# define VIR_ROUND_UP_POWER_OF_TWO(value) \
+    ((value) > 0 && (value) <= 1U << (sizeof(unsigned int) * 8 - 1) ? \
      1U << (sizeof(unsigned int) * 8 - count_leading_zeros((value) - 1)) : 0)
 
 

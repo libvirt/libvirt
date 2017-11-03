@@ -871,10 +871,10 @@ phypUUIDTable_Free(uuid_tablePtr uuid_table)
     VIR_FREE(uuid_table);
 }
 
-#define SPECIALCHARACTER_CASES                                                \
-    case '&': case ';': case '`': case '@': case '"': case '|': case '*':     \
-    case '?': case '~': case '<': case '>': case '^': case '(': case ')':     \
-    case '[': case ']': case '{': case '}': case '$': case '%': case '#':     \
+#define SPECIALCHARACTER_CASES \
+    case '&': case ';': case '`': case '@': case '"': case '|': case '*': \
+    case '?': case '~': case '<': case '>': case '^': case '(': case ')': \
+    case '[': case ']': case '{': case '}': case '$': case '%': case '#': \
     case '\\': case '\n': case '\r': case '\t':
 
 static bool

@@ -141,13 +141,13 @@ virFileWrapperOverridePrefix(const char *path)
 }
 
 
-# define PATH_OVERRIDE(newpath, path)                   \
-    do {                                                \
-        init_syms();                                    \
-                                                        \
-        newpath = virFileWrapperOverridePrefix(path);   \
-        if (!newpath)                                   \
-            abort();                                    \
+# define PATH_OVERRIDE(newpath, path) \
+    do { \
+        init_syms(); \
+ \
+        newpath = virFileWrapperOverridePrefix(path); \
+        if (!newpath) \
+            abort(); \
     } while (0)
 
 

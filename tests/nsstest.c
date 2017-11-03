@@ -174,14 +174,14 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST(name, family, ...)                             \
-    do {                                                        \
-        const char *addr[] = { __VA_ARGS__, NULL};              \
-        struct testNSSData data = {                             \
-            .hostname = name, .ipAddr = addr, .af = family,     \
-        };                                                      \
-        if (virTestRun(name, testGetHostByName, &data) < 0)     \
-            ret = -1;                                           \
+# define DO_TEST(name, family, ...) \
+    do { \
+        const char *addr[] = { __VA_ARGS__, NULL}; \
+        struct testNSSData data = { \
+            .hostname = name, .ipAddr = addr, .af = family, \
+        }; \
+        if (virTestRun(name, testGetHostByName, &data) < 0) \
+            ret = -1; \
     } while (0)
 
 # if !defined(LIBVIRT_NSS_GUEST)

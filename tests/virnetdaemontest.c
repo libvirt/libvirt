@@ -316,14 +316,14 @@ mymain(void)
         return ret;
     }
 
-# define EXEC_RESTART_TEST_FULL(file, nservers, pass)         \
-    do {                                                      \
-        struct testExecRestartData data = {                   \
-            file, server_names, nservers, pass                \
-        };                                                    \
-        if (virTestRun("ExecRestart " file,                   \
-                       testExecRestart, &data) < 0)           \
-            ret = -1;                                         \
+# define EXEC_RESTART_TEST_FULL(file, nservers, pass) \
+    do { \
+        struct testExecRestartData data = { \
+            file, server_names, nservers, pass \
+        }; \
+        if (virTestRun("ExecRestart " file, \
+                       testExecRestart, &data) < 0) \
+            ret = -1; \
     } while (0)
 
 # define EXEC_RESTART_TEST(file, N) EXEC_RESTART_TEST_FULL(file, N, true)

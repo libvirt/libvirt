@@ -1807,10 +1807,10 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     if (qemuCheckDiskConfigBlkdeviotune(disk, qemuCaps) < 0)
         goto error;
 
-#define IOTUNE_ADD(_field, _label)                                             \
-    if (disk->blkdeviotune._field) {                                           \
-        virBufferAsprintf(&opt, ",throttling." _label "=%llu",                 \
-                           disk->blkdeviotune._field);                         \
+#define IOTUNE_ADD(_field, _label) \
+    if (disk->blkdeviotune._field) { \
+        virBufferAsprintf(&opt, ",throttling." _label "=%llu", \
+                           disk->blkdeviotune._field); \
     }
 
     IOTUNE_ADD(total_bytes_sec, "bps-total");

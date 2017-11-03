@@ -185,15 +185,15 @@ mymain(void)
                     abs_srcdir) < 0)
         goto cleanup;
 
-#define DO_TEST_NODE(collie)                                            \
-    do {                                                                \
-        struct testNodeInfoParserData data = {                          \
-            .data = collie,                                             \
-            .poolxml = poolxml,                                         \
-        };                                                              \
-        if (virTestRun("node_info_parser", test_node_info_parser,       \
-                       &data) < 0)                                      \
-            ret = -1;                                                   \
+#define DO_TEST_NODE(collie) \
+    do { \
+        struct testNodeInfoParserData data = { \
+            .data = collie, \
+            .poolxml = poolxml, \
+        }; \
+        if (virTestRun("node_info_parser", test_node_info_parser, \
+                       &data) < 0) \
+            ret = -1; \
     } while (0)
 
     while (test->output != NULL) {
@@ -202,16 +202,16 @@ mymain(void)
     }
 
 
-#define DO_TEST_VDI(collie)                                             \
-    do {                                                                \
-        struct testVDIListParserData data = {                           \
-            .data = collie,                                             \
-            .poolxml = poolxml,                                         \
-            .volxml = volxml,                                           \
-        };                                                              \
-        if (virTestRun("vdi_list_parser", test_vdi_list_parser,         \
-                       &data) < 0)                                      \
-            ret = -1;                                                   \
+#define DO_TEST_VDI(collie) \
+    do { \
+        struct testVDIListParserData data = { \
+            .data = collie, \
+            .poolxml = poolxml, \
+            .volxml = volxml, \
+        }; \
+        if (virTestRun("vdi_list_parser", test_vdi_list_parser, \
+                       &data) < 0) \
+            ret = -1; \
     } while (0)
 
     test = vdi_list_tests;

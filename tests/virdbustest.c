@@ -28,26 +28,26 @@
 
 VIR_LOG_INIT("tests.dbustest");
 
-#define VERIFY(typname, valorig, valnew, fmt)                           \
-    do {                                                                \
-        VIR_DEBUG("Compare " typname " '" fmt "' to '"                  \
-                  fmt "'", valorig, valnew);                            \
-        if (valorig != valnew) {                                        \
-            fprintf(stderr, "Failed to round-trip " typname " '"        \
-                    fmt "' to '" fmt "'\n", valorig, valnew);           \
-            goto cleanup;                                               \
-        }                                                               \
+#define VERIFY(typname, valorig, valnew, fmt) \
+    do { \
+        VIR_DEBUG("Compare " typname " '" fmt "' to '" \
+                  fmt "'", valorig, valnew); \
+        if (valorig != valnew) { \
+            fprintf(stderr, "Failed to round-trip " typname " '" \
+                    fmt "' to '" fmt "'\n", valorig, valnew); \
+            goto cleanup; \
+        } \
     } while (0)
 
-#define VERIFY_STR(typname, valorig, valnew, fmt)                       \
-    do {                                                                \
-        VIR_DEBUG("Compare " typname " '" fmt "' to '"                  \
-                  fmt "'", valorig, valnew);                            \
-        if (STRNEQ(valorig, valnew)) {                                  \
-            fprintf(stderr, "Failed to round-trip " typname " '"        \
-                    fmt "' to '" fmt "'\n", valorig, valnew);           \
-            goto cleanup;                                               \
-        }                                                               \
+#define VERIFY_STR(typname, valorig, valnew, fmt) \
+    do { \
+        VIR_DEBUG("Compare " typname " '" fmt "' to '" \
+                  fmt "'", valorig, valnew); \
+        if (STRNEQ(valorig, valnew)) { \
+            fprintf(stderr, "Failed to round-trip " typname " '" \
+                    fmt "' to '" fmt "'\n", valorig, valnew); \
+            goto cleanup; \
+        } \
     } while (0)
 
 static int testMessageSimple(const void *args ATTRIBUTE_UNUSED)

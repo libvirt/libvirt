@@ -69,12 +69,12 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST_LINK(ifname, state, speed)                                 \
-    do {                                                                    \
-        struct testVirNetDevGetLinkInfoData data = {ifname, state, speed};  \
-        if (virTestRun("Link info: " # ifname,                              \
-                       testVirNetDevGetLinkInfo, &data) < 0)                \
-            ret = -1;                                                       \
+# define DO_TEST_LINK(ifname, state, speed) \
+    do { \
+        struct testVirNetDevGetLinkInfoData data = {ifname, state, speed}; \
+        if (virTestRun("Link info: " # ifname, \
+                       testVirNetDevGetLinkInfo, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST_LINK("eth0", VIR_NETDEV_IF_STATE_UP, 1000);

@@ -357,26 +357,26 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
         goto cleanup;
     }
 
-#define GET_STAT(name, member)                                              \
-    do {                                                                    \
-        VIR_FREE(output);                                                   \
-        virCommandFree(cmd);                                                \
-        cmd = virCommandNew(OVSVSCTL);                                      \
-        virNetDevOpenvswitchAddTimeout(cmd);                                \
-        virCommandAddArgList(cmd, "get", "Interface", ifname,               \
-                             "statistics:" name, NULL);                     \
-        virCommandSetOutputBuffer(cmd, &output);                            \
-        if (virCommandRun(cmd, NULL) < 0) {                                 \
-            stats->member = -1;                                             \
-        } else {                                                            \
-            if (virStrToLong_ll(output, &tmp, 10, &stats->member) < 0 ||    \
-                *tmp != '\n') {                                             \
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                \
-                               _("Fail to parse ovs-vsctl output"));        \
-                goto cleanup;                                               \
-            }                                                               \
-            gotStats = true;                                                \
-        }                                                                   \
+#define GET_STAT(name, member) \
+    do { \
+        VIR_FREE(output); \
+        virCommandFree(cmd); \
+        cmd = virCommandNew(OVSVSCTL); \
+        virNetDevOpenvswitchAddTimeout(cmd); \
+        virCommandAddArgList(cmd, "get", "Interface", ifname, \
+                             "statistics:" name, NULL); \
+        virCommandSetOutputBuffer(cmd, &output); \
+        if (virCommandRun(cmd, NULL) < 0) { \
+            stats->member = -1; \
+        } else { \
+            if (virStrToLong_ll(output, &tmp, 10, &stats->member) < 0 || \
+                *tmp != '\n') { \
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                               _("Fail to parse ovs-vsctl output")); \
+                goto cleanup; \
+            } \
+            gotStats = true; \
+        } \
     } while (0)
 
     /* The TX/RX fields appear to be swapped here

@@ -186,28 +186,28 @@ mymain(void)
     if (!(xmlopt = xenDomainXMLConfInit()))
         return EXIT_FAILURE;
 
-#define DO_TEST_PARSE(name)                                             \
-    do {                                                                \
-        struct testInfo info0 = { name, 0 };                            \
-        if (virTestRun("Xen XM-2-XML Parse  " name,                     \
-                       testCompareHelper, &info0) < 0)                  \
-            ret = -1;                                                   \
+#define DO_TEST_PARSE(name) \
+    do { \
+        struct testInfo info0 = { name, 0 }; \
+        if (virTestRun("Xen XM-2-XML Parse  " name, \
+                       testCompareHelper, &info0) < 0) \
+            ret = -1; \
     } while (0)
 
 
-#define DO_TEST_FORMAT(name)                                            \
-    do {                                                                \
-        struct testInfo info1 = { name, 1 };                            \
-        if (virTestRun("Xen XM-2-XML Format " name,                     \
-                       testCompareHelper, &info1) < 0)                  \
-            ret = -1;                                                   \
+#define DO_TEST_FORMAT(name) \
+    do { \
+        struct testInfo info1 = { name, 1 }; \
+        if (virTestRun("Xen XM-2-XML Format " name, \
+                       testCompareHelper, &info1) < 0) \
+            ret = -1; \
     } while (0)
 
 
-#define DO_TEST(name)                                                   \
-    do {                                                                \
-        DO_TEST_PARSE(name);                                            \
-        DO_TEST_FORMAT(name);                                           \
+#define DO_TEST(name) \
+    do { \
+        DO_TEST_PARSE(name); \
+        DO_TEST_FORMAT(name); \
     } while (0)
 
     DO_TEST("paravirt-new-pvfb");

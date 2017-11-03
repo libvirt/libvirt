@@ -215,12 +215,12 @@ mymain(void)
         goto cleanup;
     }
 
-#define CREATE_SYMLINK(src_name, dst_name)                    \
-    do {                                                      \
+#define CREATE_SYMLINK(src_name, dst_name) \
+    do { \
         if (create_symlink(tmpdir, src_name, dst_name) < 0) { \
-            ret = -1;                                         \
-            goto cleanup;                                     \
-        }                                                     \
+            ret = -1; \
+            goto cleanup; \
+        } \
     } while (0)
 
     CREATE_SYMLINK("0-0-0-0", "0:0:0:0");

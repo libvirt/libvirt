@@ -561,7 +561,7 @@ PL_GetEventQueueMonitor(PLEventQueue* self);
 #   define PL_ENTER_EVENT_QUEUE_MONITOR(queue) \
     PR_EnterMonitor(PL_GetEventQueueMonitor(queue))
 
-#   define PL_EXIT_EVENT_QUEUE_MONITOR(queue)  \
+#   define PL_EXIT_EVENT_QUEUE_MONITOR(queue) \
     PR_ExitMonitor(PL_GetEventQueueMonitor(queue))
 
 PR_EXTERN(PRStatus) PL_PostEvent(PLEventQueue* self, PLEvent* event);

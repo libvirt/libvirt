@@ -918,8 +918,8 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-#define DO_TEST(name)                                                  \
-    if (virTestRun(# name, testQemuAgent ## name, driver.xmlopt) < 0)  \
+#define DO_TEST(name) \
+    if (virTestRun(# name, testQemuAgent ## name, driver.xmlopt) < 0) \
         ret = -1
 
     DO_TEST(FSFreeze);

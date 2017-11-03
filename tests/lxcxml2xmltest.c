@@ -66,13 +66,13 @@ mymain(void)
     if (!(xmlopt = lxcDomainXMLConfInit()))
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, is_different, inactive, parse_flags)        \
-    do {                                                                \
-        const struct testInfo info = {name, is_different, inactive,     \
-                                      parse_flags};                     \
-        if (virTestRun("LXC XML-2-XML " name,                           \
-                       testCompareXMLToXMLHelper, &info) < 0)           \
-            ret = -1;                                                   \
+# define DO_TEST_FULL(name, is_different, inactive, parse_flags) \
+    do { \
+        const struct testInfo info = {name, is_different, inactive, \
+                                      parse_flags}; \
+        if (virTestRun("LXC XML-2-XML " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
 # define DO_TEST(name) \

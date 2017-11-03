@@ -192,7 +192,7 @@ int virVasprintfInternal(bool report, int domcode, const char *filename,
  * Returns -1 on failure (with OOM error reported), 0 if @src was NULL,
  * 1 if @src was copied
  */
-# define VIR_STRNDUP(dst, src, n) virStrndup(&(dst), src, n, true,    \
+# define VIR_STRNDUP(dst, src, n) virStrndup(&(dst), src, n, true, \
                                              VIR_FROM_THIS, __FILE__, \
                                              __FUNCTION__, __LINE__)
 

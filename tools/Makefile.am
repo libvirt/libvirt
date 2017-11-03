@@ -16,18 +16,18 @@
 ## <http://www.gnu.org/licenses/>.
 
 INCLUDES = \
-	-I$(top_builddir)/include -I$(top_srcdir)/include	\
-	-I$(top_builddir)/gnulib/lib -I$(top_srcdir)/gnulib/lib	\
-	-I$(top_builddir)/src -I$(top_srcdir)/src		\
-	-I$(top_srcdir)/src/util				\
-	-I$(top_srcdir)						\
+	-I$(top_builddir)/include -I$(top_srcdir)/include \
+	-I$(top_builddir)/gnulib/lib -I$(top_srcdir)/gnulib/lib \
+	-I$(top_builddir)/src -I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/util \
+	-I$(top_srcdir) \
 	$(GETTEXT_CPPFLAGS)
 
 WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
 
 AM_LDFLAGS = \
-	$(RELRO_LDFLAGS)					\
-	$(NO_INDIRECT_LDFLAGS)					\
+	$(RELRO_LDFLAGS) \
+	$(NO_INDIRECT_LDFLAGS) \
 	$(NULL)
 
 ICON_FILES = \
@@ -58,16 +58,16 @@ MANINFILES = \
 	$(NULL)
 
 EXTRA_DIST = \
-	$(ICON_FILES)					\
-	$(conf_DATA)					\
-	virt-xml-validate.in				\
-	virt-pki-validate.in				\
-	virt-sanlock-cleanup.in				\
-	libvirt-guests.sysconf				\
-	virt-login-shell.conf				\
-	virsh-edit.c					\
-	$(PODFILES)					\
-	$(MANINFILES)					\
+	$(ICON_FILES) \
+	$(conf_DATA) \
+	virt-xml-validate.in \
+	virt-pki-validate.in \
+	virt-sanlock-cleanup.in \
+	libvirt-guests.sysconf \
+	virt-login-shell.conf \
+	virsh-edit.c \
+	$(PODFILES) \
+	$(MANINFILES) \
 	$(NULL)
 
 
@@ -121,21 +121,21 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 
 noinst_LTLIBRARIES = libvirt_shell.la
 libvirt_shell_la_CFLAGS = \
-		$(AM_CFLAGS)						\
-		$(PIE_CFLAGS)						\
-		$(READLINE_CFLAGS)					\
-		$(LIBXML_CFLAGS)					\
+		$(AM_CFLAGS) \
+		$(PIE_CFLAGS) \
+		$(READLINE_CFLAGS) \
+		$(LIBXML_CFLAGS) \
 		$(NULL)
 libvirt_shell_la_LDFLAGS = \
-		$(AM_LDFLAGS)						\
-		$(PIE_LDFLAGS)						\
-		$(COVERAGE_LDFLAGS)					\
+		$(AM_LDFLAGS) \
+		$(PIE_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
 		$(NULL)
 libvirt_shell_la_LIBADD = \
-		$(LIBXML_LIBS)						\
-		$(READLINE_LIBS)					\
-		../src/libvirt.la					\
-		../gnulib/lib/libgnu.la				\
+		$(LIBXML_LIBS) \
+		$(READLINE_LIBS) \
+		../src/libvirt.la \
+		../gnulib/lib/libgnu.la \
 		$(NULL)
 libvirt_shell_la_SOURCES = vsh.c vsh.h
 
@@ -177,15 +177,15 @@ virt_host_validate_LDFLAGS = \
 		$(NULL)
 
 virt_host_validate_LDADD = \
-		../src/libvirt.la				\
-		../gnulib/lib/libgnu.la				\
+		../src/libvirt.la \
+		../gnulib/lib/libgnu.la \
 		$(NULL)
 
 virt_host_validate_CFLAGS = \
-		$(LIBXML_CFLAGS)				\
-		$(WARN_CFLAGS)					\
-		$(PIE_CFLAGS)					\
-		$(COVERAGE_CFLAGS)				\
+		$(LIBXML_CFLAGS) \
+		$(WARN_CFLAGS) \
+		$(PIE_CFLAGS) \
+		$(COVERAGE_CFLAGS) \
 		$(NULL)
 
 # Since virt-login-shell will be setuid, we must do everything
@@ -193,80 +193,80 @@ virt_host_validate_CFLAGS = \
 # unsafe things in functions marked __atttribute__((constructor)).
 # This we statically link to a library containing only the minimal
 # libvirt client code, not libvirt.so itself.
-virt_login_shell_SOURCES =					\
+virt_login_shell_SOURCES = \
 		virt-login-shell.c
 
 virt_login_shell_LDFLAGS = \
-		$(AM_LDFLAGS) 					\
-		$(PIE_LDFLAGS)					\
-		$(COVERAGE_LDFLAGS)				\
+		$(AM_LDFLAGS) \
+		$(PIE_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
 		$(NULL)
-virt_login_shell_LDADD =					\
-		$(STATIC_BINARIES)				\
-		../src/libvirt-setuid-rpc-client.la		\
+virt_login_shell_LDADD = \
+		$(STATIC_BINARIES) \
+		../src/libvirt-setuid-rpc-client.la \
 		../gnulib/lib/libgnu.la
 
-virt_login_shell_CFLAGS =					\
-		-DLIBVIRT_SETUID_RPC_CLIENT			\
-		$(LIBXML_CFLAGS)				\
-		$(WARN_CFLAGS)					\
-		$(PIE_CFLAGS)					\
+virt_login_shell_CFLAGS = \
+		-DLIBVIRT_SETUID_RPC_CLIENT \
+		$(LIBXML_CFLAGS) \
+		$(WARN_CFLAGS) \
+		$(PIE_CFLAGS) \
 		$(COVERAGE_CFLAGS)
 
-virsh_SOURCES =							\
-		virsh.c virsh.h					\
-		virsh-console.c virsh-console.h			\
-		virsh-domain.c virsh-domain.h			\
-		virsh-domain-monitor.c virsh-domain-monitor.h	\
-		virsh-host.c virsh-host.h			\
-		virsh-interface.c virsh-interface.h		\
-		virsh-network.c virsh-network.h			\
-		virsh-nodedev.c virsh-nodedev.h			\
-		virsh-nwfilter.c virsh-nwfilter.h		\
-		virsh-pool.c virsh-pool.h			\
-		virsh-secret.c virsh-secret.h			\
-		virsh-snapshot.c virsh-snapshot.h		\
-		virsh-util.c virsh-util.h			\
-		virsh-volume.c virsh-volume.h			\
+virsh_SOURCES = \
+		virsh.c virsh.h \
+		virsh-console.c virsh-console.h \
+		virsh-domain.c virsh-domain.h \
+		virsh-domain-monitor.c virsh-domain-monitor.h \
+		virsh-host.c virsh-host.h \
+		virsh-interface.c virsh-interface.h \
+		virsh-network.c virsh-network.h \
+		virsh-nodedev.c virsh-nodedev.h \
+		virsh-nwfilter.c virsh-nwfilter.h \
+		virsh-pool.c virsh-pool.h \
+		virsh-secret.c virsh-secret.h \
+		virsh-snapshot.c virsh-snapshot.h \
+		virsh-util.c virsh-util.h \
+		virsh-volume.c virsh-volume.h \
 		$(NULL)
 
 virsh_LDFLAGS = \
-		$(AM_LDFLAGS) 					\
-		$(PIE_LDFLAGS)					\
-		$(COVERAGE_LDFLAGS)				\
+		$(AM_LDFLAGS) \
+		$(PIE_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
 		$(NULL)
-virsh_LDADD =							\
-		$(STATIC_BINARIES)				\
-		../src/libvirt-lxc.la				\
-		../src/libvirt-qemu.la				\
+virsh_LDADD = \
+		$(STATIC_BINARIES) \
+		../src/libvirt-lxc.la \
+		../src/libvirt-qemu.la \
 		libvirt_shell.la
-virsh_CFLAGS =							\
-		$(WARN_CFLAGS)					\
-		$(PIE_CFLAGS)					\
-		$(COVERAGE_CFLAGS)				\
-		$(LIBXML_CFLAGS)				\
+virsh_CFLAGS = \
+		$(WARN_CFLAGS) \
+		$(PIE_CFLAGS) \
+		$(COVERAGE_CFLAGS) \
+		$(LIBXML_CFLAGS) \
 		$(READLINE_CFLAGS)
 
-virt_admin_SOURCES =						\
-		virt-admin.c virt-admin.h			\
+virt_admin_SOURCES = \
+		virt-admin.c virt-admin.h \
 		$(NULL)
 
-virt_admin_LDFLAGS =						\
-		$(AM_LDFLAGS)					\
-		$(COVERAGE_LDFLAGS)				\
-		$(STATIC_BINARIES)				\
-		$(PIE_LDFLAGS)					\
+virt_admin_LDFLAGS = \
+		$(AM_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
+		$(STATIC_BINARIES) \
+		$(PIE_LDFLAGS) \
 		$(NULL)
-virt_admin_LDADD =						\
-		../src/libvirt-admin.la				\
-		libvirt_shell.la				\
-		$(LIBXML_LIBS)					\
+virt_admin_LDADD = \
+		../src/libvirt-admin.la \
+		libvirt_shell.la \
+		$(LIBXML_LIBS) \
 		$(NULL)
-virt_admin_CFLAGS =						\
-		$(WARN_CFLAGS)					\
-		$(PIE_CFLAGS)					\
-		$(COVERAGE_CFLAGS)				\
-		$(LIBXML_CFLAGS)				\
+virt_admin_CFLAGS = \
+		$(WARN_CFLAGS) \
+		$(PIE_CFLAGS) \
+		$(COVERAGE_CFLAGS) \
+		$(LIBXML_CFLAGS) \
 		$(READLINE_CFLAGS)
 BUILT_SOURCES =
 
@@ -367,15 +367,15 @@ uninstall-init:
 endif ! LIBVIRT_INIT_SCRIPT_RED_HAT
 
 libvirt-guests.sh: libvirt-guests.sh.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]PACKAGE[@]|$(PACKAGE)|g'			\
-	    -e 's|[@]bindir[@]|$(bindir)|g'			\
-	    -e 's|[@]localedir[@]|$(localedir)|g'		\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
-	    < $< > $@-t &&					\
-	    chmod a+x $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]PACKAGE[@]|$(PACKAGE)|g' \
+	    -e 's|[@]bindir[@]|$(bindir)|g' \
+	    -e 's|[@]localedir[@]|$(localedir)|g' \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    < $< > $@-t && \
+	    chmod a+x $@-t && \
 	    mv $@-t $@
 BUILT_SOURCES += libvirt-guests.sh
 
@@ -408,15 +408,15 @@ uninstall-systemd:
 endif ! LIBVIRT_INIT_SCRIPT_SYSTEMD
 
 libvirt-guests.service: libvirt-guests.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]PACKAGE[@]|$(PACKAGE)|g'			\
-	    -e 's|[@]bindir[@]|$(bindir)|g'			\
-	    -e 's|[@]localedir[@]|$(localedir)|g'		\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
-	    -e 's|[@]libexecdir[@]|$(libexecdir)|g'		\
-	    < $< > $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]PACKAGE[@]|$(PACKAGE)|g' \
+	    -e 's|[@]bindir[@]|$(bindir)|g' \
+	    -e 's|[@]localedir[@]|$(localedir)|g' \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    -e 's|[@]libexecdir[@]|$(libexecdir)|g' \
+	    < $< > $@-t && \
 	    mv $@-t $@
 
 
@@ -491,7 +491,7 @@ uninstall-nss:
 endif ! WITH_BSD_NSS
 
 LIBVIRT_NSS_SOURCES = \
-	nss/libvirt_nss.c	\
+	nss/libvirt_nss.c \
 	nss/libvirt_nss.h
 
 if WITH_NSS
@@ -500,20 +500,20 @@ nss_libnss_libvirt_impl_la_SOURCES = \
 	$(LIBVIRT_NSS_SOURCES)
 
 nss_libnss_libvirt_impl_la_CFLAGS = \
-	-DLIBVIRT_NSS		\
-	$(AM_CFLAGS)		\
-	$(WARN_CFLAGS)		\
-	$(PIE_CFLAGS)		\
-	$(COVERAGE_CFLAGS)	\
+	-DLIBVIRT_NSS \
+	$(AM_CFLAGS) \
+	$(WARN_CFLAGS) \
+	$(PIE_CFLAGS) \
+	$(COVERAGE_CFLAGS) \
 	$(LIBXML_CFLAGS)
 
 nss_libnss_libvirt_impl_la_LIBADD = \
-	../gnulib/lib/libgnu.la		\
+	../gnulib/lib/libgnu.la \
 	../src/libvirt-nss.la
 
 nss_libnss_libvirt_la_SOURCES =
 nss_libnss_libvirt_la_LDFLAGS = \
-	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_NSS_SYMBOL_FILE)	\
+	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_NSS_SYMBOL_FILE) \
 	$(AM_LDFLAGS) \
 	-module \
 	-export-dynamic \
@@ -521,7 +521,7 @@ nss_libnss_libvirt_la_LDFLAGS = \
 	-shared \
 	-shrext .so.$(NSS_SO_VER)
 
-nss_libnss_libvirt_la_LIBADD =  \
+nss_libnss_libvirt_la_LIBADD = \
 	nss/libnss_libvirt_impl.la
 
 noinst_LTLIBRARIES += nss/libnss_libvirt_guest_impl.la
@@ -529,21 +529,21 @@ nss_libnss_libvirt_guest_impl_la_SOURCES = \
 	$(LIBVIRT_NSS_SOURCES)
 
 nss_libnss_libvirt_guest_impl_la_CFLAGS = \
-	-DLIBVIRT_NSS		\
-	-DLIBVIRT_NSS_GUEST	\
-	$(AM_CFLAGS)		\
-	$(WARN_CFLAGS)		\
-	$(PIE_CFLAGS)		\
-	$(COVERAGE_CFLAGS)	\
+	-DLIBVIRT_NSS \
+	-DLIBVIRT_NSS_GUEST \
+	$(AM_CFLAGS) \
+	$(WARN_CFLAGS) \
+	$(PIE_CFLAGS) \
+	$(COVERAGE_CFLAGS) \
 	$(LIBXML_CFLAGS)
 
 nss_libnss_libvirt_guest_impl_la_LIBADD = \
-	../gnulib/lib/libgnu.la		\
+	../gnulib/lib/libgnu.la \
 	../src/libvirt-nss.la
 
 nss_libnss_libvirt_guest_la_SOURCES =
 nss_libnss_libvirt_guest_la_LDFLAGS = \
-	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_GUEST_NSS_SYMBOL_FILE)	\
+	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_GUEST_NSS_SYMBOL_FILE) \
 	$(AM_LDFLAGS) \
 	-module \
 	-export-dynamic \
@@ -551,7 +551,7 @@ nss_libnss_libvirt_guest_la_LDFLAGS = \
 	-shared \
 	-shrext .so.$(NSS_SO_VER)
 
-nss_libnss_libvirt_guest_la_LIBADD =  \
+nss_libnss_libvirt_guest_la_LIBADD = \
 	nss/libnss_libvirt_guest_impl.la
 
 lib_LTLIBRARIES = \
@@ -562,7 +562,7 @@ endif WITH_NSS
 
 EXTRA_DIST += $(LIBVIRT_NSS_SOURCES) \
 	$(srcdir)/nss/libvirt_nss.syms \
-	$(srcdir)/nss/libvirt_nss_bsd.syms	\
+	$(srcdir)/nss/libvirt_nss_bsd.syms \
 	$(srcdir)/nss/libvirt_guest_nss.syms
 
 clean-local:

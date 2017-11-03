@@ -33,17 +33,17 @@ CLEANFILES =
 
 WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
 
-DAEMON_GENERATED =			\
-		remote_dispatch.h	\
-		lxc_dispatch.h		\
-		qemu_dispatch.h		\
-		admin_dispatch.h	\
+DAEMON_GENERATED = \
+		remote_dispatch.h \
+		lxc_dispatch.h \
+		qemu_dispatch.h \
+		admin_dispatch.h \
 		$(NULL)
 
-DAEMON_SOURCES =					\
-		libvirtd.c libvirtd.h			\
-		remote.c remote.h			\
-		stream.c stream.h			\
+DAEMON_SOURCES = \
+		libvirtd.c libvirtd.h \
+		remote.c remote.h \
+		stream.c stream.h \
 		$(DAEMON_GENERATED)
 
 LIBVIRTD_CONF_SOURCES = libvirtd-config.c libvirtd-config.h
@@ -57,33 +57,33 @@ MANINFILES = \
 	$(NULL)
 
 DISTCLEANFILES =
-EXTRA_DIST =						\
-	remote_dispatch.h				\
-	lxc_dispatch.h					\
-	qemu_dispatch.h					\
-	admin_dispatch.h				\
-	libvirtd.conf					\
-	libvirtd.init.in				\
-	libvirtd.upstart				\
-	libvirtd.policy.in				\
-	libvirt.rules					\
-	libvirtd.sasl					\
-	libvirtd.service.in				\
-	virt-guest-shutdown.target		\
-	libvirtd.sysconf				\
-	libvirtd.sysctl					\
-	libvirtd.aug                                    \
-	libvirtd.logrotate.in                           \
-	libvirtd.qemu.logrotate.in                      \
-	libvirtd.lxc.logrotate.in                       \
-	libvirtd.libxl.logrotate.in                     \
-	libvirtd.uml.logrotate.in                       \
-	test_libvirtd.aug.in                             \
-	THREADS.txt					\
-	$(PODFILES)					\
-	$(MANINFILES)					\
-	$(DAEMON_SOURCES)				\
-	$(LIBVIRTD_CONF_SOURCES)			\
+EXTRA_DIST = \
+	remote_dispatch.h \
+	lxc_dispatch.h \
+	qemu_dispatch.h \
+	admin_dispatch.h \
+	libvirtd.conf \
+	libvirtd.init.in \
+	libvirtd.upstart \
+	libvirtd.policy.in \
+	libvirt.rules \
+	libvirtd.sasl \
+	libvirtd.service.in \
+	virt-guest-shutdown.target \
+	libvirtd.sysconf \
+	libvirtd.sysctl \
+	libvirtd.aug \
+	libvirtd.logrotate.in \
+	libvirtd.qemu.logrotate.in \
+	libvirtd.lxc.logrotate.in \
+	libvirtd.libxl.logrotate.in \
+	libvirtd.uml.logrotate.in \
+	test_libvirtd.aug.in \
+	THREADS.txt \
+	$(PODFILES) \
+	$(MANINFILES) \
+	$(DAEMON_SOURCES) \
+	$(LIBVIRTD_CONF_SOURCES) \
 	$(NULL)
 
 BUILT_SOURCES =
@@ -128,11 +128,11 @@ libvirtd_conf_la_CFLAGS = \
 	$(WARN_CFLAGS) $(PIE_CFLAGS) \
 	$(COVERAGE_CFLAGS) \
 	$(NULL)
-libvirtd_conf_la_LDFLAGS =				\
-	$(RELRO_LDFLAGS)				\
-	$(PIE_LDFLAGS)					\
-	$(COVERAGE_LDFLAGS)				\
-	$(NO_INDIRECT_LDFLAGS)				\
+libvirtd_conf_la_LDFLAGS = \
+	$(RELRO_LDFLAGS) \
+	$(PIE_LDFLAGS) \
+	$(COVERAGE_LDFLAGS) \
+	$(NO_INDIRECT_LDFLAGS) \
 	$(NULL)
 libvirtd_conf_la_LIBADD = $(LIBXML_LIBS)
 
@@ -141,20 +141,20 @@ libvirtd_admin_la_SOURCES = \
 		admin.c admin.h admin_server.c admin_server.h
 
 libvirtd_admin_la_CFLAGS = \
-		$(AM_CFLAGS)		\
-		$(XDR_CFLAGS)		\
-		$(PIE_CFLAGS)		\
-		$(WARN_CFLAGS)		\
-		$(LIBXML_CFLAGS)	\
-		$(COVERAGE_CFLAGS)	\
+		$(AM_CFLAGS) \
+		$(XDR_CFLAGS) \
+		$(PIE_CFLAGS) \
+		$(WARN_CFLAGS) \
+		$(LIBXML_CFLAGS) \
+		$(COVERAGE_CFLAGS) \
 		$(NULL)
 libvirtd_admin_la_LDFLAGS = \
-		$(PIE_LDFLAGS)		\
-		$(RELRO_LDFLAGS)	\
-		$(COVERAGE_LDFLAGS)	\
-		$(NO_INDIRECT_LDFLAGS)  \
+		$(PIE_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
+		$(NO_INDIRECT_LDFLAGS) \
 		$(NULL)
-libvirtd_admin_la_LIBADD =	\
+libvirtd_admin_la_LIBADD = \
 		../src/libvirt-admin.la
 
 man8_MANS = libvirtd.8
@@ -182,18 +182,18 @@ libvirtd_CFLAGS = \
 	$(COVERAGE_CFLAGS) \
 	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\""
 
-libvirtd_LDFLAGS =					\
-	$(RELRO_LDFLAGS)				\
-	$(PIE_LDFLAGS)					\
-	$(COVERAGE_LDFLAGS)				\
-	$(NO_INDIRECT_LDFLAGS)				\
+libvirtd_LDFLAGS = \
+	$(RELRO_LDFLAGS) \
+	$(PIE_LDFLAGS) \
+	$(COVERAGE_LDFLAGS) \
+	$(NO_INDIRECT_LDFLAGS) \
 	$(NULL)
 
-libvirtd_LDADD =					\
-	$(LIBXML_LIBS)					\
-	$(GNUTLS_LIBS)					\
-	$(SASL_LIBS)					\
-	$(DBUS_LIBS)					\
+libvirtd_LDADD = \
+	$(LIBXML_LIBS) \
+	$(GNUTLS_LIBS) \
+	$(SASL_LIBS) \
+	$(DBUS_LIBS) \
 	$(LIBNL_LIBS)
 
 if WITH_DTRACE_PROBES
@@ -279,33 +279,33 @@ LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
 BUILT_SOURCES += $(LOGROTATE_CONFS)
 
 libvirtd.logrotate: libvirtd.logrotate.in
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
 	    < $< > $@-t && \
 	mv $@-t $@
 
 libvirtd.qemu.logrotate: libvirtd.qemu.logrotate.in
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
 	    < $< > $@-t && \
 	mv $@-t $@
 
 libvirtd.lxc.logrotate: libvirtd.lxc.logrotate.in
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    < $< > $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
 	    mv $@-t $@
 
 libvirtd.libxl.logrotate: libvirtd.libxl.logrotate.in
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    < $< > $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
 	    mv $@-t $@
 
 libvirtd.uml.logrotate: libvirtd.uml.logrotate.in
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    < $< > $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
 	    mv $@-t $@
 
 install-logrotate: $(LOGROTATE_CONFS)
@@ -415,20 +415,20 @@ uninstall-init-systemd:
 endif ! LIBVIRT_INIT_SCRIPT_SYSTEMD
 
 libvirtd.init: libvirtd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
-	    < $< > $@-t &&					\
-	    chmod a+x $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    < $< > $@-t && \
+	    chmod a+x $@-t && \
 	    mv $@-t $@
 
 libvirtd.service: libvirtd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
-	    < $< > $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    < $< > $@-t && \
 	    mv $@-t $@
 
 

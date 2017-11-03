@@ -176,14 +176,14 @@ mymain(void)
     if ((caps = testXLInitCaps()) == NULL)
         return EXIT_FAILURE;
 
-# define DO_TEST(name)                                                  \
-    do {                                                                \
-        static struct testInfo info = {                                 \
-            name,                                                       \
-        };                                                              \
-        if (virTestRun("LibXL XML-2-JSON " name,                        \
-                        testCompareXMLToDomConfigHelper, &info) < 0)    \
-            ret = -1;                                                   \
+# define DO_TEST(name) \
+    do { \
+        static struct testInfo info = { \
+            name, \
+        }; \
+        if (virTestRun("LibXL XML-2-JSON " name, \
+                        testCompareXMLToDomConfigHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("basic-pv");

@@ -387,68 +387,68 @@ bool cmdPwd(vshControl *ctl, const vshCmd *cmd);
 bool cmdQuit(vshControl *ctl, const vshCmd *cmd);
 bool cmdSelfTest(vshControl *ctl, const vshCmd *cmd);
 
-# define VSH_CMD_CD                                     \
-    {                                                   \
-        .name = "cd",                                   \
-        .handler = cmdCd,                               \
-        .opts = opts_cd,                                \
-        .info = info_cd,                                \
-        .flags = VSH_CMD_FLAG_NOCONNECT                 \
+# define VSH_CMD_CD \
+    { \
+        .name = "cd", \
+        .handler = cmdCd, \
+        .opts = opts_cd, \
+        .info = info_cd, \
+        .flags = VSH_CMD_FLAG_NOCONNECT \
     }
 
-# define VSH_CMD_ECHO                                   \
-    {                                                   \
-        .name = "echo",                                 \
-        .handler = cmdEcho,                             \
-        .opts = opts_echo,                              \
-        .info = info_echo,                              \
-        .flags = VSH_CMD_FLAG_NOCONNECT                 \
+# define VSH_CMD_ECHO \
+    { \
+        .name = "echo", \
+        .handler = cmdEcho, \
+        .opts = opts_echo, \
+        .info = info_echo, \
+        .flags = VSH_CMD_FLAG_NOCONNECT \
     }
 
-# define VSH_CMD_EXIT                                   \
-    {                                                   \
-        .name = "exit",                                 \
-        .handler = cmdQuit,                             \
-        .opts = NULL,                                   \
-        .info = info_quit,                              \
-        .flags = VSH_CMD_FLAG_NOCONNECT                 \
+# define VSH_CMD_EXIT \
+    { \
+        .name = "exit", \
+        .handler = cmdQuit, \
+        .opts = NULL, \
+        .info = info_quit, \
+        .flags = VSH_CMD_FLAG_NOCONNECT \
     }
 
-# define VSH_CMD_HELP                                   \
-    {                                                   \
-        .name = "help",                                 \
-        .handler = cmdHelp,                             \
-        .opts = opts_help,                              \
-        .info = info_help,                              \
-        .flags = VSH_CMD_FLAG_NOCONNECT                 \
+# define VSH_CMD_HELP \
+    { \
+        .name = "help", \
+        .handler = cmdHelp, \
+        .opts = opts_help, \
+        .info = info_help, \
+        .flags = VSH_CMD_FLAG_NOCONNECT \
     }
 
-# define VSH_CMD_PWD                                    \
-    {                                                   \
-        .name = "pwd",                                  \
-        .handler = cmdPwd,                              \
-        .opts = NULL,                                   \
-        .info = info_pwd,                               \
-        .flags = VSH_CMD_FLAG_NOCONNECT                 \
+# define VSH_CMD_PWD \
+    { \
+        .name = "pwd", \
+        .handler = cmdPwd, \
+        .opts = NULL, \
+        .info = info_pwd, \
+        .flags = VSH_CMD_FLAG_NOCONNECT \
     }
 
-# define VSH_CMD_QUIT                                   \
-    {                                                   \
-        .name = "quit",                                 \
-        .handler = cmdQuit,                             \
-        .opts = NULL,                                   \
-        .info = info_quit,                              \
-        .flags = VSH_CMD_FLAG_NOCONNECT                 \
+# define VSH_CMD_QUIT \
+    { \
+        .name = "quit", \
+        .handler = cmdQuit, \
+        .opts = NULL, \
+        .info = info_quit, \
+        .flags = VSH_CMD_FLAG_NOCONNECT \
     }
 
-# define VSH_CMD_SELF_TEST                              \
-    {                                                   \
-        .name = "self-test",                            \
-        .handler = cmdSelfTest,                         \
-        .opts = NULL,                                   \
-        .info = info_selftest,                          \
-        .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_ALIAS,    \
-        .alias = "self-test"                            \
+# define VSH_CMD_SELF_TEST \
+    { \
+        .name = "self-test", \
+        .handler = cmdSelfTest, \
+        .opts = NULL, \
+        .info = info_selftest, \
+        .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_ALIAS, \
+        .alias = "self-test" \
     }
 
 
@@ -483,11 +483,11 @@ char *_vshStrdup(vshControl *ctl, const char *s, const char *filename,
  * This helper does an early return and therefore it has to be called
  * before anything that would require cleanup.
  */
-# define VSH_EXCLUSIVE_OPTIONS_EXPR(NAME1, EXPR1, NAME2, EXPR2)             \
-    if ((EXPR1) && (EXPR2)) {                                               \
-        vshError(ctl, _("Options --%s and --%s are mutually exclusive"),    \
-                 NAME1, NAME2);                                             \
-        return false;                                                       \
+# define VSH_EXCLUSIVE_OPTIONS_EXPR(NAME1, EXPR1, NAME2, EXPR2) \
+    if ((EXPR1) && (EXPR2)) { \
+        vshError(ctl, _("Options --%s and --%s are mutually exclusive"), \
+                 NAME1, NAME2); \
+        return false; \
     }
 
 /* VSH_EXCLUSIVE_OPTIONS:
@@ -501,8 +501,8 @@ char *_vshStrdup(vshControl *ctl, const char *s, const char *filename,
  * This helper does an early return and therefore it has to be called
  * before anything that would require cleanup.
  */
-# define VSH_EXCLUSIVE_OPTIONS(NAME1, NAME2)                                \
-    VSH_EXCLUSIVE_OPTIONS_EXPR(NAME1, vshCommandOptBool(cmd, NAME1),        \
+# define VSH_EXCLUSIVE_OPTIONS(NAME1, NAME2) \
+    VSH_EXCLUSIVE_OPTIONS_EXPR(NAME1, vshCommandOptBool(cmd, NAME1), \
                                NAME2, vshCommandOptBool(cmd, NAME2))
 
 /* VSH_EXCLUSIVE_OPTIONS_VAR:
@@ -516,7 +516,7 @@ char *_vshStrdup(vshControl *ctl, const char *s, const char *filename,
  * This helper does an early return and therefore it has to be called
  * before anything that would require cleanup.
  */
-# define VSH_EXCLUSIVE_OPTIONS_VAR(VARNAME1, VARNAME2)                      \
+# define VSH_EXCLUSIVE_OPTIONS_VAR(VARNAME1, VARNAME2) \
     VSH_EXCLUSIVE_OPTIONS_EXPR(#VARNAME1, VARNAME1, #VARNAME2, VARNAME2)
 
 /* Macros to help dealing with required options. */
@@ -534,13 +534,13 @@ char *_vshStrdup(vshControl *ctl, const char *s, const char *filename,
  * This helper does an early return and therefore it has to be called
  * before anything that would require cleanup.
  */
-# define VSH_REQUIRE_OPTION_EXPR(NAME1, EXPR1, NAME2, EXPR2)                \
-    do {                                                                    \
-        if ((EXPR1) && !(EXPR2)) {                                          \
-            vshError(ctl, _("Option --%s is required by option --%s"),      \
-                     NAME2, NAME1);                                         \
-            return false;                                                   \
-        }                                                                   \
+# define VSH_REQUIRE_OPTION_EXPR(NAME1, EXPR1, NAME2, EXPR2) \
+    do { \
+        if ((EXPR1) && !(EXPR2)) { \
+            vshError(ctl, _("Option --%s is required by option --%s"), \
+                     NAME2, NAME1); \
+            return false; \
+        } \
     } while (0)
 
 /* VSH_REQUIRE_OPTION:
@@ -554,8 +554,8 @@ char *_vshStrdup(vshControl *ctl, const char *s, const char *filename,
  * This helper does an early return and therefore it has to be called
  * before anything that would require cleanup.
  */
-# define VSH_REQUIRE_OPTION(NAME1, NAME2)                                   \
-    VSH_REQUIRE_OPTION_EXPR(NAME1, vshCommandOptBool(cmd, NAME1),           \
+# define VSH_REQUIRE_OPTION(NAME1, NAME2) \
+    VSH_REQUIRE_OPTION_EXPR(NAME1, vshCommandOptBool(cmd, NAME1), \
                             NAME2, vshCommandOptBool(cmd, NAME2))
 
 /* VSH_REQUIRE_OPTION_VAR:
@@ -570,7 +570,7 @@ char *_vshStrdup(vshControl *ctl, const char *s, const char *filename,
  * This helper does an early return and therefore it has to be called
  * before anything that would require cleanup.
  */
-# define VSH_REQUIRE_OPTION_VAR(VARNAME1, VARNAME2)                         \
+# define VSH_REQUIRE_OPTION_VAR(VARNAME1, VARNAME2) \
     VSH_REQUIRE_OPTION_EXPR(#VARNAME1, VARNAME1, #VARNAME2, VARNAME2)
 
 #endif /* VSH_H */

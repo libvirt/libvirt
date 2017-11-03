@@ -427,8 +427,8 @@ virNetClientPtr virNetClientNewSSH(const char *nodename,
     return virNetClientNew(sock, NULL);
 }
 
-#define DEFAULT_VALUE(VAR, VAL)             \
-    if (!VAR)                               \
+#define DEFAULT_VALUE(VAR, VAL) \
+    if (!VAR) \
         VAR = VAL;
 virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        const char *port,
@@ -536,8 +536,8 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
 }
 #undef DEFAULT_VALUE
 
-#define DEFAULT_VALUE(VAR, VAL)             \
-    if (!VAR)                               \
+#define DEFAULT_VALUE(VAR, VAL) \
+    if (!VAR) \
         VAR = VAL;
 virNetClientPtr virNetClientNewLibssh(const char *host,
                                       const char *port,

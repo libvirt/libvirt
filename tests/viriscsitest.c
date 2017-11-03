@@ -179,16 +179,16 @@ mymain(void)
 {
     int rv = 0;
 
-# define DO_SESSION_TEST(name, session)                                     \
-    do {                                                                    \
-        struct testSessionInfo info = {name, 0, session};                   \
-        if (virTestRun("ISCSI get session test" name,                       \
-                       testISCSIGetSession, &info) < 0)                     \
-            rv = -1;                                                        \
-        info.output_version = 1;                                            \
-        if (virTestRun("ISCSI get (non-flash) session test" name,           \
-                       testISCSIGetSession, &info) < 0)                     \
-            rv = -1;                                                        \
+# define DO_SESSION_TEST(name, session) \
+    do { \
+        struct testSessionInfo info = {name, 0, session}; \
+        if (virTestRun("ISCSI get session test" name, \
+                       testISCSIGetSession, &info) < 0) \
+            rv = -1; \
+        info.output_version = 1; \
+        if (virTestRun("ISCSI get (non-flash) session test" name, \
+                       testISCSIGetSession, &info) < 0) \
+            rv = -1; \
     } while (0)
 
     DO_SESSION_TEST("iqn.2004-06.example:example1:iscsi.test", "1");

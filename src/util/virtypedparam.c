@@ -526,16 +526,16 @@ virTypedParamsFilter(virTypedParameterPtr params,
 }
 
 
-#define VIR_TYPED_PARAM_CHECK_TYPE(check_type)                              \
-    do { if (param->type != check_type) {                                   \
-        virReportError(VIR_ERR_INVALID_ARG,                                 \
+#define VIR_TYPED_PARAM_CHECK_TYPE(check_type) \
+    do { if (param->type != check_type) { \
+        virReportError(VIR_ERR_INVALID_ARG, \
                        _("Invalid type '%s' requested for parameter '%s', " \
-                         "actual type is '%s'"),                            \
-                       virTypedParameterTypeToString(check_type),           \
-                       name,                                                \
-                       virTypedParameterTypeToString(param->type));         \
-        virDispatchError(NULL);                                             \
-        return -1;                                                          \
+                         "actual type is '%s'"), \
+                       virTypedParameterTypeToString(check_type), \
+                       name, \
+                       virTypedParameterTypeToString(param->type)); \
+        virDispatchError(NULL); \
+        return -1; \
     } } while (0)
 
 

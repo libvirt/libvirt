@@ -112,27 +112,27 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_FULL(name, test, str, count, pass)                          \
-    do {                                                                    \
-        struct testLogData data = {                                         \
-            str, count, pass                                                \
-        };                                                                  \
-        if (virTestRun(name, test, &data) < 0)                              \
-            ret = -1;                                                       \
+#define DO_TEST_FULL(name, test, str, count, pass) \
+    do { \
+        struct testLogData data = { \
+            str, count, pass \
+        }; \
+        if (virTestRun(name, test, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define TEST_LOG_MATCH_FAIL(str)                                            \
+#define TEST_LOG_MATCH_FAIL(str) \
     DO_TEST_FULL("testLogMatch " # str, testLogMatch, str, 0, false)
-#define TEST_LOG_MATCH(str)                                                 \
+#define TEST_LOG_MATCH(str) \
     DO_TEST_FULL("testLogMatch " # str, testLogMatch, str, 0, true)
 
-#define TEST_PARSE_OUTPUTS_FAIL(str, count)                                 \
+#define TEST_PARSE_OUTPUTS_FAIL(str, count) \
     DO_TEST_FULL("testLogParseOutputs " # str, testLogParseOutputs, str, count, false)
-#define TEST_PARSE_OUTPUTS(str, count)                                      \
+#define TEST_PARSE_OUTPUTS(str, count) \
     DO_TEST_FULL("testLogParseOutputs " # str, testLogParseOutputs, str, count, true)
-#define TEST_PARSE_FILTERS_FAIL(str, count)                                 \
+#define TEST_PARSE_FILTERS_FAIL(str, count) \
     DO_TEST_FULL("testLogParseFilters " # str, testLogParseFilters, str, count, false)
-#define TEST_PARSE_FILTERS(str, count)                                      \
+#define TEST_PARSE_FILTERS(str, count) \
     DO_TEST_FULL("testLogParseFilters " # str, testLogParseFilters, str, count, true)
 
 

@@ -150,7 +150,7 @@ testfw() {
     fwpath="$2"
 
     if [ -f "$fwpath" ]; then
-        sed -e "s,###UUID###,$uuid,g"  \
+        sed -e "s,###UUID###,$uuid,g" \
             -e "s,###DISK###,$disk1,g" \
             -e "s,</os>,<loader readonly='yes' type='pflash'>$fwpath</loader></os>,g" "$template_xml" > "$test_xml"
         testme "0" "$title" "-r -u $valid_uuid" "$test_xml"

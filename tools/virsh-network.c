@@ -34,12 +34,12 @@
 #include "virtime.h"
 #include "conf/network_conf.h"
 
-#define VIRSH_COMMON_OPT_NETWORK                              \
-    {.name = "network",                                       \
-     .type = VSH_OT_DATA,                                     \
-     .flags = VSH_OFLAG_REQ,                                  \
-     .help = N_("network name or uuid")                       \
-    }                                                         \
+#define VIRSH_COMMON_OPT_NETWORK \
+    {.name = "network", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = N_("network name or uuid") \
+    } \
 
 virNetworkPtr
 virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
@@ -647,8 +647,8 @@ static const vshCmdOptDef opts_network_list[] = {
     {.name = NULL}
 };
 
-#define FILTER(NAME, FLAG)              \
-    if (vshCommandOptBool(cmd, NAME))   \
+#define FILTER(NAME, FLAG) \
+    if (vshCommandOptBool(cmd, NAME)) \
         flags |= (FLAG)
 static bool
 cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
@@ -1090,12 +1090,12 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
 #define EDIT_GET_XML virshNetworkGetXMLDesc(network)
-#define EDIT_NOT_CHANGED                                                     \
-    do {                                                                     \
+#define EDIT_NOT_CHANGED \
+    do { \
         vshPrintExtra(ctl, _("Network %s XML configuration not changed.\n"), \
-                      virNetworkGetName(network));                           \
-        ret = true;                                                          \
-        goto edit_cleanup;                                                   \
+                      virNetworkGetName(network)); \
+        ret = true; \
+        goto edit_cleanup; \
     } while (0)
 #define EDIT_DEFINE \
     (network_edited = virNetworkDefineXML(priv->conn, doc_edited))

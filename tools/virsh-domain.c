@@ -65,22 +65,22 @@
 # define SA_SIGINFO 0
 #endif
 
-#define VIRSH_COMMON_OPT_DOMAIN_FULL                       \
+#define VIRSH_COMMON_OPT_DOMAIN_FULL \
     VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid")) \
 
-#define VIRSH_COMMON_OPT_DOMAIN_PERSISTENT             \
-    {.name = "persistent",                             \
-     .type = VSH_OT_BOOL,                              \
-     .help = N_("make live change persistent")         \
-    }                                                  \
+#define VIRSH_COMMON_OPT_DOMAIN_PERSISTENT \
+    {.name = "persistent", \
+     .type = VSH_OT_BOOL, \
+     .help = N_("make live change persistent") \
+    } \
 
-#define VIRSH_COMMON_OPT_DOMAIN_CONFIG                 \
-    VIRSH_COMMON_OPT_CONFIG(N_("affect next boot"))    \
+#define VIRSH_COMMON_OPT_DOMAIN_CONFIG \
+    VIRSH_COMMON_OPT_CONFIG(N_("affect next boot")) \
 
-#define VIRSH_COMMON_OPT_DOMAIN_LIVE                   \
+#define VIRSH_COMMON_OPT_DOMAIN_LIVE \
     VIRSH_COMMON_OPT_LIVE(N_("affect running domain")) \
 
-#define VIRSH_COMMON_OPT_DOMAIN_CURRENT                   \
+#define VIRSH_COMMON_OPT_DOMAIN_CURRENT \
     VIRSH_COMMON_OPT_CURRENT(N_("affect current domain")) \
 
 
@@ -781,14 +781,14 @@ static const vshCmdOptDef opts_attach_interface[] = {
  * 'average,peak,burst,floor', in which peak and burst are optional,
  * thus 'average,,burst' and 'average,peak' are also legal. */
 
-#define VIRSH_PARSE_RATE_FIELD(index, name)                                      \
-    do {                                                                       \
-        if (index < ntok &&                                                    \
-            *tok[index] != '\0' &&                                             \
-            virStrToLong_ullp(tok[index], NULL, 10, &rate->name) < 0) {        \
-            vshError(ctl, _("field '%s' is malformed"), #name);                \
-            goto cleanup;                                                      \
-        }                                                                      \
+#define VIRSH_PARSE_RATE_FIELD(index, name) \
+    do { \
+        if (index < ntok && \
+            *tok[index] != '\0' && \
+            virStrToLong_ullp(tok[index], NULL, 10, &rate->name) < 0) { \
+            vshError(ctl, _("field '%s' is malformed"), #name); \
+            goto cleanup; \
+        } \
     } while (0)
 
 static int
@@ -1293,16 +1293,16 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "device", &disk) < 0)
         goto cleanup;
 
-#define VSH_ADD_IOTUNE_SCALED(PARAM, CONST)                                    \
-    if ((rv = vshCommandOptScaledInt(ctl, cmd, #PARAM, &value,                 \
-                                     1, ULLONG_MAX)) < 0) {                    \
-        goto interror;                                                         \
-    } else if (rv > 0) {                                                       \
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,             \
-                                    VIR_DOMAIN_BLOCK_IOTUNE_##CONST,           \
-                                    value) < 0)                                \
-            goto save_error;                                                   \
-    }                                                                          \
+#define VSH_ADD_IOTUNE_SCALED(PARAM, CONST) \
+    if ((rv = vshCommandOptScaledInt(ctl, cmd, #PARAM, &value, \
+                                     1, ULLONG_MAX)) < 0) { \
+        goto interror; \
+    } else if (rv > 0) { \
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams, \
+                                    VIR_DOMAIN_BLOCK_IOTUNE_##CONST, \
+                                    value) < 0) \
+            goto save_error; \
+    } \
 
     VSH_ADD_IOTUNE_SCALED(total-bytes-sec, TOTAL_BYTES_SEC);
     VSH_ADD_IOTUNE_SCALED(read-bytes-sec, READ_BYTES_SEC);
@@ -1312,15 +1312,15 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     VSH_ADD_IOTUNE_SCALED(write-bytes-sec-max, WRITE_BYTES_SEC_MAX);
 #undef VSH_ADD_IOTUNE_SCALED
 
-#define VSH_ADD_IOTUNE(PARAM, CONST)                                           \
-    if ((rv = vshCommandOptULongLong(ctl, cmd, #PARAM, &value)) < 0) {         \
-        goto interror;                                                         \
-    } else if (rv > 0) {                                                       \
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,             \
-                                    VIR_DOMAIN_BLOCK_IOTUNE_##CONST,           \
-                                    value) < 0)                                \
-            goto save_error;                                                   \
-    }                                                                          \
+#define VSH_ADD_IOTUNE(PARAM, CONST) \
+    if ((rv = vshCommandOptULongLong(ctl, cmd, #PARAM, &value)) < 0) { \
+        goto interror; \
+    } else if (rv > 0) { \
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams, \
+                                    VIR_DOMAIN_BLOCK_IOTUNE_##CONST, \
+                                    value) < 0) \
+            goto save_error; \
+    } \
 
     VSH_ADD_IOTUNE(total-iops-sec, TOTAL_IOPS_SEC);
     VSH_ADD_IOTUNE(read-iops-sec, READ_IOPS_SEC);
@@ -4509,12 +4509,12 @@ cmdSaveImageEdit(vshControl *ctl, const vshCmd *cmd)
 
 #define EDIT_GET_XML \
     virDomainSaveImageGetXMLDesc(priv->conn, file, getxml_flags)
-#define EDIT_NOT_CHANGED                                             \
-    do {                                                             \
-        vshPrintExtra(ctl, _("Saved image %s XML configuration "     \
-                             "not changed.\n"), file);               \
-        ret = true;                                                  \
-        goto edit_cleanup;                                           \
+#define EDIT_NOT_CHANGED \
+    do { \
+        vshPrintExtra(ctl, _("Saved image %s XML configuration " \
+                             "not changed.\n"), file); \
+        ret = true; \
+        goto edit_cleanup; \
     } while (0)
 #define EDIT_DEFINE \
     (virDomainSaveImageDefineXML(priv->conn, file, doc_edited, define_flags) == 0)
@@ -4750,12 +4750,12 @@ cmdManagedSaveEdit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
 #define EDIT_GET_XML virDomainManagedSaveGetXMLDesc(dom, getxml_flags)
-#define EDIT_NOT_CHANGED                                                          \
-    do {                                                                          \
+#define EDIT_NOT_CHANGED \
+    do { \
         vshPrintExtra(ctl, _("Managed save image of domain %s XML configuration " \
-                             "not changed.\n"), virDomainGetName(dom));           \
-        ret = true;                                                               \
-        goto edit_cleanup;                                                        \
+                             "not changed.\n"), virDomainGetName(dom)); \
+        ret = true; \
+        goto edit_cleanup; \
     } while (0)
 #define EDIT_DEFINE \
     (virDomainManagedSaveDefineXML(dom, doc_edited, define_flags) == 0)
@@ -8554,14 +8554,14 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
     } else if (edit) {
 #define EDIT_GET_XML \
         virshDomainGetEditMetadata(ctl, dom, uri, flags)
-#define EDIT_NOT_CHANGED                                        \
-        do {                                                    \
+#define EDIT_NOT_CHANGED \
+        do { \
             vshPrintExtra(ctl, "%s", _("Metadata not changed")); \
-            ret = true;                                         \
-            goto edit_cleanup;                                  \
+            ret = true; \
+            goto edit_cleanup; \
         } while (0)
 
-#define EDIT_DEFINE                                                         \
+#define EDIT_DEFINE \
         (virDomainSetMetadata(dom, VIR_DOMAIN_METADATA_ELEMENT, doc_edited, \
                               key, uri, flags) == 0)
 #include "virsh-edit.c"
@@ -9095,16 +9095,16 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-#define PARSE_MEMTUNE_PARAM(NAME, FIELD)                                    \
-    if ((rc = virshMemtuneGetSize(ctl, cmd, NAME, &tmpVal)) < 0) {            \
-        vshError(ctl, _("Unable to parse integer parameter %s"), NAME);     \
-        goto cleanup;                                                       \
-    }                                                                       \
-    if (rc == 1) {                                                          \
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,          \
-                                    FIELD, tmpVal) < 0)                     \
-            goto save_error;                                                \
-    }                                                                       \
+#define PARSE_MEMTUNE_PARAM(NAME, FIELD) \
+    if ((rc = virshMemtuneGetSize(ctl, cmd, NAME, &tmpVal)) < 0) { \
+        vshError(ctl, _("Unable to parse integer parameter %s"), NAME); \
+        goto cleanup; \
+    } \
+    if (rc == 1) { \
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams, \
+                                    FIELD, tmpVal) < 0) \
+            goto save_error; \
+    } \
 
 
     PARSE_MEMTUNE_PARAM("hard-limit", VIR_DOMAIN_MEMORY_HARD_LIMIT);
@@ -12542,18 +12542,18 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
         define_flags &= ~VIR_DOMAIN_DEFINE_VALIDATE;
 
 #define EDIT_GET_XML virDomainGetXMLDesc(dom, query_flags)
-#define EDIT_NOT_CHANGED                                                     \
-    do {                                                                     \
-        vshPrintExtra(ctl, _("Domain %s XML configuration not changed.\n"),  \
-                      virDomainGetName(dom));                                \
-        ret = true;                                                          \
-        goto edit_cleanup;                                                   \
+#define EDIT_NOT_CHANGED \
+    do { \
+        vshPrintExtra(ctl, _("Domain %s XML configuration not changed.\n"), \
+                      virDomainGetName(dom)); \
+        ret = true; \
+        goto edit_cleanup; \
     } while (0)
 #define EDIT_DEFINE \
     (dom_edited = virshDomainDefine(priv->conn, doc_edited, define_flags))
-#define EDIT_RELAX                                      \
-    do {                                                \
-        define_flags &= ~VIR_DOMAIN_DEFINE_VALIDATE;    \
+#define EDIT_RELAX \
+    do { \
+        define_flags &= ~VIR_DOMAIN_DEFINE_VALIDATE; \
     } while (0);
 
 #include "virsh-edit.c"

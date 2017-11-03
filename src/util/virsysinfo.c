@@ -1063,7 +1063,7 @@ virSysinfoRead(void)
     return virSysinfoReadS390();
 #elif defined(WIN32) || \
     !(defined(__x86_64__) || \
-      defined(__i386__) ||   \
+      defined(__i386__) || \
       defined(__amd64__) || \
       defined(__arm__) || \
       defined(__aarch64__) || \
@@ -1312,14 +1312,14 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
     return ret;
 }
 
-#define CHECK_FIELD(name, desc)                                         \
-    do {                                                                \
-        if (STRNEQ_NULLABLE(src->name, dst->name)) {                    \
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,                  \
+#define CHECK_FIELD(name, desc) \
+    do { \
+        if (STRNEQ_NULLABLE(src->name, dst->name)) { \
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
                            _("Target sysinfo %s %s does not match source %s"), \
                            desc, NULLSTR(dst->name), NULLSTR(src->name)); \
-            goto cleanup;                                               \
-        }                                                               \
+            goto cleanup; \
+        } \
     } while (0)
 
 static bool

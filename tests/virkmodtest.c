@@ -157,13 +157,13 @@ mymain(void)
      * the output of the created command against what we'd expect to be
      * created. So let's at least do that.
      */
-# define DO_TEST(_name, _cb, _blkflag, _exp_cmd)              \
-    do {                                                      \
-        struct testInfo data = {.module = "vfio-pci",         \
-                                .exp_cmd = _exp_cmd,          \
-                                .useBlacklist = _blkflag};    \
-        if (virTestRun(_name, _cb,  &data) < 0)               \
-            ret = -1;                                         \
+# define DO_TEST(_name, _cb, _blkflag, _exp_cmd) \
+    do { \
+        struct testInfo data = {.module = "vfio-pci", \
+                                .exp_cmd = _exp_cmd, \
+                                .useBlacklist = _blkflag}; \
+        if (virTestRun(_name, _cb,  &data) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("load", testKModLoad, false, MODPROBE " vfio-pci\n");

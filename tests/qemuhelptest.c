@@ -128,18 +128,18 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST_FULL(name, version, is_kvm, kvm_version, error, ...)       \
-    do {                                                                    \
-        struct testInfo info = {                                            \
-            name, NULL, version, is_kvm, kvm_version, error                 \
-        };                                                                  \
-        if (!(info.flags = virQEMUCapsNew()))                               \
-            return EXIT_FAILURE;                                            \
-        virQEMUCapsSetList(info.flags, __VA_ARGS__, QEMU_CAPS_LAST);        \
-        if (virTestRun("QEMU Help String Parsing " name,                    \
-                       testHelpStrParsing, &info) < 0)                      \
-            ret = -1;                                                       \
-        virObjectUnref(info.flags);                                         \
+# define DO_TEST_FULL(name, version, is_kvm, kvm_version, error, ...) \
+    do { \
+        struct testInfo info = { \
+            name, NULL, version, is_kvm, kvm_version, error \
+        }; \
+        if (!(info.flags = virQEMUCapsNew())) \
+            return EXIT_FAILURE; \
+        virQEMUCapsSetList(info.flags, __VA_ARGS__, QEMU_CAPS_LAST); \
+        if (virTestRun("QEMU Help String Parsing " name, \
+                       testHelpStrParsing, &info) < 0) \
+            ret = -1; \
+        virObjectUnref(info.flags); \
     } while (0)
 
 # define DO_TEST(name, version, is_kvm, kvm_version, ...) \

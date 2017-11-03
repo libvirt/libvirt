@@ -82,7 +82,7 @@ LDADDS = \
 MOCKLIBS_LIBS = \
 	$(GNULIB_LIBS)
 
-EXTRA_DIST =		\
+EXTRA_DIST = \
 	.valgrind.supp \
 	bhyvexml2argvdata \
 	bhyveargv2xmldata \
@@ -140,7 +140,7 @@ EXTRA_DIST =		\
 	storagevolxml2xmlin \
 	storagevolxml2xmlout \
 	sysinfodata \
-	test-lib.sh	\
+	test-lib.sh \
 	vboxsnapshotxmldata \
 	vircaps2xmldata \
 	vircgroupdata \
@@ -393,28 +393,28 @@ test_programs += virusbtest \
 endif WITH_LINUX
 
 test_scripts =
-libvirtd_test_scripts =		\
-	libvirtd-fail			\
-	libvirtd-pool			\
-	virsh-cpuset			\
-	virsh-define-dev-segfault	\
-	virsh-int-overflow		\
-	virsh-optparse			\
-	virsh-read-bufsiz		\
-	virsh-read-non-seekable		\
-	virsh-schedinfo			\
-	virsh-self-test			\
-	virt-admin-self-test			\
-	virsh-start			\
-	virsh-undefine			\
-	virsh-uriprecedence		\
-	virsh-vcpupin			\
+libvirtd_test_scripts = \
+	libvirtd-fail \
+	libvirtd-pool \
+	virsh-cpuset \
+	virsh-define-dev-segfault \
+	virsh-int-overflow \
+	virsh-optparse \
+	virsh-read-bufsiz \
+	virsh-read-non-seekable \
+	virsh-schedinfo \
+	virsh-self-test \
+	virt-admin-self-test \
+	virsh-start \
+	virsh-undefine \
+	virsh-uriprecedence \
+	virsh-vcpupin \
 	$(NULL)
 
 if WITH_LIBVIRTD
 test_scripts += $(libvirtd_test_scripts)
 
-test_programs += 			\
+test_programs += \
 	eventtest \
 	virdrivermoduletest
 else ! WITH_LIBVIRTD
@@ -465,17 +465,17 @@ TESTS = $(test_programs) \
 lv_abs_top_builddir=$(shell cd '$(top_builddir)' && pwd)
 
 VIR_TEST_EXPENSIVE ?= $(VIR_TEST_EXPENSIVE_DEFAULT)
-TESTS_ENVIRONMENT =				\
-  abs_top_builddir=$(lv_abs_top_builddir)	\
-  abs_top_srcdir=`cd '$(top_srcdir)'; pwd`	\
-  abs_builddir=$(abs_builddir)			\
-  abs_srcdir=$(abs_srcdir)			\
-  CONFIG_HEADER="$(lv_abs_top_builddir)/config.h"	\
-  SHELL="$(SHELL)"				\
+TESTS_ENVIRONMENT = \
+  abs_top_builddir=$(lv_abs_top_builddir) \
+  abs_top_srcdir=`cd '$(top_srcdir)'; pwd` \
+  abs_builddir=$(abs_builddir) \
+  abs_srcdir=$(abs_srcdir) \
+  CONFIG_HEADER="$(lv_abs_top_builddir)/config.h" \
+  SHELL="$(SHELL)" \
   LIBVIRT_DRIVER_DIR="$(lv_abs_top_builddir)/src/.libs" \
-  LIBVIRT_AUTOSTART=0				\
-  LC_ALL=C					\
-  VIR_TEST_EXPENSIVE=$(VIR_TEST_EXPENSIVE)	\
+  LIBVIRT_AUTOSTART=0 \
+  LC_ALL=C \
+  VIR_TEST_EXPENSIVE=$(VIR_TEST_EXPENSIVE) \
   $(VG)
 
 
@@ -1180,20 +1180,20 @@ if WITH_NSS
 nsstest_SOURCES = \
 	nsstest.c testutils.h testutils.c
 nsstest_CFLAGS = \
-	$(AM_CFLAGS)	\
+	$(AM_CFLAGS) \
 	-I$(top_srcdir)/tools/nss
 nsstest_LDADD = \
-	$(LDADDS)	\
+	$(LDADDS) \
 	../tools/nss/libnss_libvirt_impl.la
 
 nssguesttest_SOURCES = \
 	nsstest.c testutils.h testutils.c
 nssguesttest_CFLAGS = \
-	-DLIBVIRT_NSS_GUEST	\
-	$(AM_CFLAGS)	\
+	-DLIBVIRT_NSS_GUEST \
+	$(AM_CFLAGS) \
 	-I$(top_srcdir)/tools/nss
 nssguesttest_LDADD = \
-	$(LDADDS)	\
+	$(LDADDS) \
 	../tools/nss/libnss_libvirt_guest_impl.la
 
 nssmock_la_SOURCES = \
@@ -1205,16 +1205,16 @@ nssmock_la_LIBADD = $(MOCKLIBS_LIBS)
 ## Intentionaly not linking with anything else.
 ## See the test source for more detailed explanation.
 nsslinktest_SOURCES = nsslinktest.c
-nsslinktest_CFLAGS = 	\
-	$(AM_CFLAGS)		\
+nsslinktest_CFLAGS = \
+	$(AM_CFLAGS) \
 	-I$(top_srcdir)/tools/nss
 nsslinktest_LDADD = ../tools/nss/libnss_libvirt_impl.la
 nsslinktest_LDFLAGS = $(NULL)
 
 nssguestlinktest_SOURCES = nsslinktest.c
-nssguestlinktest_CFLAGS = 	\
-	-DLIBVIRT_NSS_GUEST	\
-	$(AM_CFLAGS)		\
+nssguestlinktest_CFLAGS = \
+	-DLIBVIRT_NSS_GUEST \
+	$(AM_CFLAGS) \
 	-I$(top_srcdir)/tools/nss
 nssguestlinktest_LDADD = ../tools/nss/libnss_libvirt_guest_impl.la
 nssguestlinktest_LDFLAGS = $(NULL)

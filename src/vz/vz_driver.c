@@ -1749,7 +1749,7 @@ vzDomainBlockStatsImpl(virDomainObjPtr dom,
     } else {
         virDomainBlockStatsStruct s;
 
-#define PARALLELS_ZERO_STATS(VAR, TYPE, NAME)      \
+#define PARALLELS_ZERO_STATS(VAR, TYPE, NAME) \
         stats->VAR = 0;
 
         PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_ZERO_STATS)
@@ -1763,8 +1763,8 @@ vzDomainBlockStatsImpl(virDomainObjPtr dom,
                                     IS_CT(dom->def)) < 0)
                 return -1;
 
-#define PARALLELS_SUM_STATS(VAR, TYPE, NAME)        \
-    if (s.VAR != -1)                                \
+#define PARALLELS_SUM_STATS(VAR, TYPE, NAME) \
+    if (s.VAR != -1) \
         stats->VAR += s.VAR;
 
         PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_SUM_STATS)
@@ -1809,8 +1809,8 @@ vzDomainBlockStatsToParams(virDomainBlockStatsPtr stats,
     size_t i;
 
     if (*nparams == 0) {
-#define PARALLELS_COUNT_STATS(VAR, TYPE, NAME)      \
-        if ((stats->VAR) != -1)                     \
+#define PARALLELS_COUNT_STATS(VAR, TYPE, NAME) \
+        if ((stats->VAR) != -1) \
             ++*nparams;
 
         PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_COUNT_STATS)
@@ -1820,12 +1820,12 @@ vzDomainBlockStatsToParams(virDomainBlockStatsPtr stats,
     }
 
     i = 0;
-#define PARALLELS_BLOCK_STATS_ASSIGN_PARAM(VAR, TYPE, NAME)                     \
-    if (i < *nparams && (stats->VAR) != -1) {                                   \
-        if (virTypedParameterAssign(params + i, TYPE,                           \
-                                    VIR_TYPED_PARAM_LLONG, (stats->VAR)) < 0)   \
-            return -1;                                                          \
-        i++;                                                                    \
+#define PARALLELS_BLOCK_STATS_ASSIGN_PARAM(VAR, TYPE, NAME) \
+    if (i < *nparams && (stats->VAR) != -1) { \
+        if (virTypedParameterAssign(params + i, TYPE, \
+                                    VIR_TYPED_PARAM_LLONG, (stats->VAR)) < 0) \
+            return -1; \
+        i++; \
     }
 
     PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_BLOCK_STATS_ASSIGN_PARAM)
@@ -2897,14 +2897,14 @@ vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
     goto cleanup;
 }
 
-#define VZ_MIGRATION_FLAGS         (VIR_MIGRATE_PAUSED |          \
-                                    VIR_MIGRATE_PEER2PEER |       \
-                                    VIR_MIGRATE_LIVE |            \
+#define VZ_MIGRATION_FLAGS         (VIR_MIGRATE_PAUSED | \
+                                    VIR_MIGRATE_PEER2PEER | \
+                                    VIR_MIGRATE_LIVE | \
                                     VIR_MIGRATE_UNDEFINE_SOURCE | \
-                                    VIR_MIGRATE_PERSIST_DEST |    \
+                                    VIR_MIGRATE_PERSIST_DEST | \
                                     VIR_MIGRATE_NON_SHARED_INC)
 
-#define VZ_MIGRATION_PARAMETERS                                 \
+#define VZ_MIGRATION_PARAMETERS \
     VIR_MIGRATE_PARAM_DEST_XML,         VIR_TYPED_PARAM_STRING, \
     VIR_MIGRATE_PARAM_URI,              VIR_TYPED_PARAM_STRING, \
     VIR_MIGRATE_PARAM_DEST_NAME,        VIR_TYPED_PARAM_STRING, \
@@ -3509,18 +3509,18 @@ vzDomainGetJobStats(virDomainPtr domain,
     return ret;
 }
 
-#define VZ_ADD_STAT_PARAM_UUL(group, field, counter)            \
-do {                                                            \
-    if (stat.field != -1) {                                     \
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,      \
-                 group ".%zu." counter, i);                     \
-        if (virTypedParamsAddULLong(&record->params,            \
-                                    &record->nparams,           \
-                                    maxparams,                  \
-                                    param_name,                 \
-                                    stat.field) < 0)            \
-            return -1;                                          \
-    }                                                           \
+#define VZ_ADD_STAT_PARAM_UUL(group, field, counter) \
+do { \
+    if (stat.field != -1) { \
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
+                 group ".%zu." counter, i); \
+        if (virTypedParamsAddULLong(&record->params, \
+                                    &record->nparams, \
+                                    maxparams, \
+                                    param_name, \
+                                    stat.field) < 0) \
+            return -1; \
+    } \
 } while (0)
 
 static int
@@ -3710,13 +3710,13 @@ vzDomainGetBalloonStats(virDomainObjPtr dom,
     if (n < 0)
         return -1;
 
-#define STORE_MEM_RECORD(TAG, NAME)                         \
-    if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_ ##TAG)      \
-        if (virTypedParamsAddULLong(&record->params,        \
-                                    &record->nparams,       \
-                                    maxparams,              \
-                                    "balloon." NAME,        \
-                                    stats[i].val) < 0)      \
+#define STORE_MEM_RECORD(TAG, NAME) \
+    if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_ ##TAG) \
+        if (virTypedParamsAddULLong(&record->params, \
+                                    &record->nparams, \
+                                    maxparams, \
+                                    "balloon." NAME, \
+                                    stats[i].val) < 0) \
             return -1;
 
     for (i = 0; i < n; i++) {

@@ -51,20 +51,20 @@
 #include "virobject.h"
 
 #if 0
-# define ERROR(...)                                             \
-do {                                                            \
-    char ebuf[1024];                                            \
-    fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__);  \
-    fprintf(stderr, __VA_ARGS__);                               \
+# define ERROR(...) \
+do { \
+    char ebuf[1024]; \
+    fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__); \
+    fprintf(stderr, __VA_ARGS__); \
     fprintf(stderr, " : %s\n", virStrerror(errno, ebuf, sizeof(ebuf))); \
-    fprintf(stderr, "\n");                                      \
+    fprintf(stderr, "\n"); \
 } while (0)
 
-# define DEBUG(...)                                             \
-do {                                                            \
-    fprintf(stderr, "DEBUG %s:%d : ", __FUNCTION__, __LINE__);  \
-    fprintf(stderr, __VA_ARGS__);                               \
-    fprintf(stderr, "\n");                                      \
+# define DEBUG(...) \
+do { \
+    fprintf(stderr, "DEBUG %s:%d : ", __FUNCTION__, __LINE__); \
+    fprintf(stderr, __VA_ARGS__); \
+    fprintf(stderr, "\n"); \
 } while (0)
 #else
 # define ERROR(...) do { } while (0)

@@ -68,9 +68,9 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST(name)                                           \
-    if (virTestRun("Storage Pool XML-2-XML " name,              \
-                   testCompareXMLToXMLHelper, (name)) < 0)      \
+#define DO_TEST(name) \
+    if (virTestRun("Storage Pool XML-2-XML " name, \
+                   testCompareXMLToXMLHelper, (name)) < 0) \
         ret = -1
 
     DO_TEST("pool-dir");

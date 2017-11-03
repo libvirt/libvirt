@@ -333,13 +333,13 @@ mymain(void)
         "/etc/aliases.db"
     };
 
-# define DO_TEST_MOUNT_SUBTREE(name, path, prefix, mounts, rev)    \
-    do {                                                           \
-        struct testFileGetMountSubtreeData data = {                \
-            path, prefix, mounts, ARRAY_CARDINALITY(mounts), rev   \
-        };                                                         \
-        if (virTestRun(name, testFileGetMountSubtree, &data) < 0)  \
-            ret = -1;                                              \
+# define DO_TEST_MOUNT_SUBTREE(name, path, prefix, mounts, rev) \
+    do { \
+        struct testFileGetMountSubtreeData data = { \
+            path, prefix, mounts, ARRAY_CARDINALITY(mounts), rev \
+        }; \
+        if (virTestRun(name, testFileGetMountSubtree, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST_MOUNT_SUBTREE("/proc normal", MTAB_PATH1, "/proc", wantmounts1, false);
@@ -348,13 +348,13 @@ mymain(void)
     DO_TEST_MOUNT_SUBTREE("/etc/aliases.db", MTAB_PATH2, "/etc/aliases.db", wantmounts2b, false);
 #endif /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
 
-#define DO_TEST_SANITIZE_PATH(PATH, EXPECT)                                    \
-    do {                                                                       \
-        data1.path = PATH;                                                     \
-        data1.expect = EXPECT;                                                 \
-        if (virTestRun(virTestCounterNext(), testFileSanitizePath,             \
-                       &data1) < 0)                                            \
-            ret = -1;                                                          \
+#define DO_TEST_SANITIZE_PATH(PATH, EXPECT) \
+    do { \
+        data1.path = PATH; \
+        data1.expect = EXPECT; \
+        if (virTestRun(virTestCounterNext(), testFileSanitizePath, \
+                       &data1) < 0) \
+            ret = -1; \
     } while (0)
 
 #define DO_TEST_SANITIZE_PATH_SAME(PATH) DO_TEST_SANITIZE_PATH(PATH, PATH)
@@ -378,14 +378,14 @@ mymain(void)
     DO_TEST_SANITIZE_PATH_SAME("gluster://bar.baz/fooo//hoo");
     DO_TEST_SANITIZE_PATH_SAME("gluster://bar.baz/fooo///////hoo");
 
-#define DO_TEST_IN_DATA(inData, ...)                                        \
-    do {                                                                    \
-        off_t offsets[] = {__VA_ARGS__, -1};                                \
-        struct testFileInData data = {                                      \
-            .startData = inData, .offsets = offsets,                        \
-        };                                                                  \
-        if (virTestRun(virTestCounterNext(), testFileInData, &data) < 0)    \
-            ret = -1;                                                       \
+#define DO_TEST_IN_DATA(inData, ...) \
+    do { \
+        off_t offsets[] = {__VA_ARGS__, -1}; \
+        struct testFileInData data = { \
+            .startData = inData, .offsets = offsets, \
+        }; \
+        if (virTestRun(virTestCounterNext(), testFileInData, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     if (holesSupported()) {

@@ -32,15 +32,15 @@
  * @conn: connection
  * @uuid: possibly null UUID array
  */
-# define VIR_UUID_DEBUG(conn, uuid)                             \
-    do {                                                        \
-        if (uuid) {                                             \
-            char _uuidstr[VIR_UUID_STRING_BUFLEN];              \
-            virUUIDFormat(uuid, _uuidstr);                      \
-            VIR_DEBUG("conn=%p, uuid=%s", conn, _uuidstr);      \
-        } else {                                                \
-            VIR_DEBUG("conn=%p, uuid=(null)", conn);            \
-        }                                                       \
+# define VIR_UUID_DEBUG(conn, uuid) \
+    do { \
+        if (uuid) { \
+            char _uuidstr[VIR_UUID_STRING_BUFLEN]; \
+            virUUIDFormat(uuid, _uuidstr); \
+            VIR_DEBUG("conn=%p, uuid=%s", conn, _uuidstr); \
+        } else { \
+            VIR_DEBUG("conn=%p, uuid=(null)", conn); \
+        } \
     } while (0)
 
 

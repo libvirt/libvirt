@@ -215,13 +215,13 @@ mymain(void)
 
     virFileCacheSetPriv(cache, &testPriv);
 
-#define TEST_RUN(name, newData, expectData, expectSave)                     \
-    do {                                                                    \
-        testFileCacheData data = {                                          \
-            cache, name, newData, expectData, expectSave                    \
-        };                                                                  \
-        if (virTestRun(name, testFileCache, &data) < 0)                     \
-            ret = -1;                                                       \
+#define TEST_RUN(name, newData, expectData, expectSave) \
+    do { \
+        testFileCacheData data = { \
+            cache, name, newData, expectData, expectSave \
+        }; \
+        if (virTestRun(name, testFileCache, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     /* The cache file name is created using:

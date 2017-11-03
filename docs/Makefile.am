@@ -18,38 +18,38 @@
 
 DEVHELP_DIR=$(datadir)/gtk-doc/html/libvirt
 
-apihtml =					\
-  html/index.html				\
+apihtml = \
+  html/index.html \
   $(apihtml_generated)
 
 apihtml_generated = \
-  html/libvirt-libvirt-common.html		\
-  html/libvirt-libvirt-domain.html		\
-  html/libvirt-libvirt-domain-snapshot.html	\
-  html/libvirt-libvirt-event.html		\
-  html/libvirt-libvirt-host.html		\
-  html/libvirt-libvirt-interface.html		\
-  html/libvirt-libvirt-network.html		\
-  html/libvirt-libvirt-nodedev.html		\
-  html/libvirt-libvirt-nwfilter.html		\
-  html/libvirt-libvirt-secret.html		\
-  html/libvirt-libvirt-storage.html		\
-  html/libvirt-libvirt-stream.html		\
+  html/libvirt-libvirt-common.html \
+  html/libvirt-libvirt-domain.html \
+  html/libvirt-libvirt-domain-snapshot.html \
+  html/libvirt-libvirt-event.html \
+  html/libvirt-libvirt-host.html \
+  html/libvirt-libvirt-interface.html \
+  html/libvirt-libvirt-network.html \
+  html/libvirt-libvirt-nodedev.html \
+  html/libvirt-libvirt-nwfilter.html \
+  html/libvirt-libvirt-secret.html \
+  html/libvirt-libvirt-storage.html \
+  html/libvirt-libvirt-stream.html \
   html/libvirt-virterror.html
 
-apipng =	\
-  html/left.png	\
-  html/up.png	\
-  html/home.png	\
+apipng = \
+  html/left.png \
+  html/up.png \
+  html/home.png \
   html/right.png
 
-devhelphtml =			\
-  devhelp/libvirt.devhelp	\
-  devhelp/index.html		\
-  devhelp/general.html		\
+devhelphtml = \
+  devhelp/libvirt.devhelp \
+  devhelp/index.html \
+  devhelp/general.html \
   devhelp/libvirt-virterror.html
 
-css =         \
+css = \
   generic.css \
   libvirt.css \
   mobile.css \
@@ -69,10 +69,10 @@ fonts = \
   fonts/overpass-mono-semibold.woff \
   fonts/overpass-regular.woff
 
-devhelppng =		\
-  devhelp/home.png	\
-  devhelp/left.png	\
-  devhelp/right.png	\
+devhelppng = \
+  devhelp/home.png \
+  devhelp/left.png \
+  devhelp/right.png \
   devhelp/up.png
 
 devhelpcss = devhelp/style.css
@@ -170,7 +170,7 @@ fig = \
 schemadir = $(pkgdatadir)/schemas
 schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 
-EXTRA_DIST=					\
+EXTRA_DIST= \
   apibuild.py genaclperms.pl \
   site.xsl subsite.xsl newapi.xsl page.xsl \
   wrapstring.xsl \

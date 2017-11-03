@@ -180,14 +180,14 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST(_in, _out)                                                   \
-        do {                                                                  \
-            struct testInfo info = { _in, _out };                             \
-            virResetLastError();                                              \
-            if (virTestRun("VMware VMX-2-XML "_in" -> "_out,                  \
-                           testCompareHelper, &info) < 0) {                   \
-                ret = -1;                                                     \
-            }                                                                 \
+# define DO_TEST(_in, _out) \
+        do { \
+            struct testInfo info = { _in, _out }; \
+            virResetLastError(); \
+            if (virTestRun("VMware VMX-2-XML "_in" -> "_out, \
+                           testCompareHelper, &info) < 0) { \
+                ret = -1; \
+            } \
         } while (0)
 
     testCapsInit();

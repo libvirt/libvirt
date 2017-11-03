@@ -114,8 +114,8 @@ virStorageDriverLoadBackendModule(const char *name,
 }
 
 
-#define VIR_STORAGE_BACKEND_REGISTER(func, module)                            \
-    if (virStorageDriverLoadBackendModule(module, #func, allbackends) < 0)     \
+#define VIR_STORAGE_BACKEND_REGISTER(func, module) \
+    if (virStorageDriverLoadBackendModule(module, #func, allbackends) < 0) \
         return -1
 
 int

@@ -347,28 +347,28 @@ typedef nsISupports IKeyboard;
 # define RC_SUCCEEDED(rc) NS_SUCCEEDED(rc.resultCode)
 # define RC_FAILED(rc) NS_FAILED(rc.resultCode)
 
-# define VBOX_UTF16_FREE(arg)                                            \
-    do {                                                                \
-        if (arg) {                                                      \
-            gVBoxAPI.UPFN.Utf16Free(data->pFuncs, arg);                 \
-            (arg) = NULL;                                               \
-        }                                                               \
+# define VBOX_UTF16_FREE(arg) \
+    do { \
+        if (arg) { \
+            gVBoxAPI.UPFN.Utf16Free(data->pFuncs, arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
-# define VBOX_UTF8_FREE(arg)                                             \
-    do {                                                                \
-        if (arg) {                                                      \
-            gVBoxAPI.UPFN.Utf8Free(data->pFuncs, arg);                  \
-            (arg) = NULL;                                               \
-        }                                                               \
+# define VBOX_UTF8_FREE(arg) \
+    do { \
+        if (arg) { \
+            gVBoxAPI.UPFN.Utf8Free(data->pFuncs, arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
-# define VBOX_COM_UNALLOC_MEM(arg)                                       \
-    do {                                                                \
-        if (arg) {                                                      \
-            gVBoxAPI.UPFN.ComUnallocMem(data->pFuncs, arg);             \
-            (arg) = NULL;                                               \
-        }                                                               \
+# define VBOX_COM_UNALLOC_MEM(arg) \
+    do { \
+        if (arg) { \
+            gVBoxAPI.UPFN.ComUnallocMem(data->pFuncs, arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
 # define VBOX_UTF16_TO_UTF8(arg1, arg2)  gVBoxAPI.UPFN.Utf16ToUtf8(data->pFuncs, arg1, arg2)
@@ -376,20 +376,20 @@ typedef nsISupports IKeyboard;
 
 # define VBOX_ADDREF(arg)                gVBoxAPI.nsUISupports.AddRef((void *)(arg))
 
-# define VBOX_RELEASE(arg)                                                     \
-    do {                                                                      \
-        if (arg) {                                                            \
-            gVBoxAPI.nsUISupports.Release((void *)arg);                        \
-            (arg) = NULL;                                                     \
-        }                                                                     \
+# define VBOX_RELEASE(arg) \
+    do { \
+        if (arg) { \
+            gVBoxAPI.nsUISupports.Release((void *)arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
-# define VBOX_MEDIUM_RELEASE(arg)                                              \
-    do {                                                                      \
-        if (arg) {                                                            \
-            gVBoxAPI.UIMedium.Release(arg);                                   \
-            (arg) = NULL;                                                     \
-        }                                                                     \
+# define VBOX_MEDIUM_RELEASE(arg) \
+    do { \
+        if (arg) { \
+            gVBoxAPI.UIMedium.Release(arg); \
+            (arg) = NULL; \
+        } \
     } while (0)
 
 # define vboxIIDUnalloc(iid)                     gVBoxAPI.UIID.vboxIIDUnalloc(data, iid)
@@ -406,28 +406,28 @@ typedef nsISupports IKeyboard;
     (gVBoxAPI.UArray.handleGetMachines(data->vboxObj))
 
 /* Set result to -1 in case of failure. */
-# define installUniformedAPI(gVBoxAPI, result)                          \
-    do {                                                                \
-        result = 0;                                                     \
-        if (uVersion >= 3002051 && uVersion < 4000051) {         \
-            vbox40InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 4000051 && uVersion < 4001051) {         \
-            vbox41InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 4001051 && uVersion < 4002020) {         \
-            vbox42InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 4002020 && uVersion < 4002051) {         \
-            vbox42_20InstallUniformedAPI(&gVBoxAPI);                    \
-        } else if (uVersion >= 4002051 && uVersion < 4003004) {         \
-            vbox43InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 4003004 && uVersion < 4003051) {         \
-            vbox43_4InstallUniformedAPI(&gVBoxAPI);                     \
-        } else if (uVersion >= 4003051 && uVersion < 5000051) {         \
-            vbox50InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 5000051 && uVersion < 5001051) {         \
-            vbox51InstallUniformedAPI(&gVBoxAPI);                       \
-        } else {                                                        \
-            result = -1;                                                \
-        }                                                               \
+# define installUniformedAPI(gVBoxAPI, result) \
+    do { \
+        result = 0; \
+        if (uVersion >= 3002051 && uVersion < 4000051) { \
+            vbox40InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4000051 && uVersion < 4001051) { \
+            vbox41InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4001051 && uVersion < 4002020) { \
+            vbox42InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4002020 && uVersion < 4002051) { \
+            vbox42_20InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4002051 && uVersion < 4003004) { \
+            vbox43InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4003004 && uVersion < 4003051) { \
+            vbox43_4InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 4003051 && uVersion < 5000051) { \
+            vbox50InstallUniformedAPI(&gVBoxAPI); \
+        } else if (uVersion >= 5000051 && uVersion < 5001051) { \
+            vbox51InstallUniformedAPI(&gVBoxAPI); \
+        } else { \
+            result = -1; \
+        } \
     } while (0)
 
 #endif /* VBOX_COMMON_H */

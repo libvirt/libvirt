@@ -174,12 +174,12 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-# define DO_TEST(_name)                                                 \
-    do {                                                                \
-        if (virTestRun("qemu monitor "#_name, test##_name,              \
-                       driver.xmlopt) < 0) {                            \
-            result = -1;                                                \
-        }                                                               \
+# define DO_TEST(_name) \
+    do { \
+        if (virTestRun("qemu monitor "#_name, test##_name, \
+                       driver.xmlopt) < 0) { \
+            result = -1; \
+        } \
     } while (0)
 
     DO_TEST(EscapeArg);

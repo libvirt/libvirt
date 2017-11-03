@@ -79,13 +79,13 @@ static int testConfRoundTrip(const void *opaque)
 
 static int testConfParseInt(const void *opaque ATTRIBUTE_UNUSED)
 {
-    const char *srcdata =                       \
-        "int = -1729\n"                         \
-        "uint = 1729\n"                         \
-        "llong = -6963472309248\n"              \
-        "ullong = 6963472309248\n"              \
-        "size_t = 87539319\n"                   \
-        "ssize_t = -87539319\n"                 \
+    const char *srcdata = \
+        "int = -1729\n" \
+        "uint = 1729\n" \
+        "llong = -6963472309248\n" \
+        "ullong = 6963472309248\n" \
+        "size_t = 87539319\n" \
+        "ssize_t = -87539319\n" \
         "string = \"foo\"\n";
 
     int ret = -1;
@@ -231,10 +231,10 @@ static int testConfParseInt(const void *opaque ATTRIBUTE_UNUSED)
 
 static int testConfParseBool(const void *opaque ATTRIBUTE_UNUSED)
 {
-    const char *srcdata =                         \
-        "false = 0\n"                             \
-        "true = 1\n"                              \
-        "int = 6963472309248\n"                   \
+    const char *srcdata = \
+        "false = 0\n" \
+        "true = 1\n" \
+        "int = 6963472309248\n" \
         "string = \"foo\"\n";
 
     int ret = -1;
@@ -297,8 +297,8 @@ static int testConfParseBool(const void *opaque ATTRIBUTE_UNUSED)
 
 static int testConfParseString(const void *opaque ATTRIBUTE_UNUSED)
 {
-    const char *srcdata =                         \
-        "int = 6963472309248\n"                   \
+    const char *srcdata = \
+        "int = 6963472309248\n" \
         "string = \"foo\"\n";
 
     int ret = -1;
@@ -337,8 +337,8 @@ static int testConfParseString(const void *opaque ATTRIBUTE_UNUSED)
 
 static int testConfParseStringList(const void *opaque ATTRIBUTE_UNUSED)
 {
-    const char *srcdata =                         \
-        "string_list = [\"foo\", \"bar\"]\n"      \
+    const char *srcdata = \
+        "string_list = [\"foo\", \"bar\"]\n" \
         "string = \"foo\"\n";
 
     int ret = -1;

@@ -121,13 +121,13 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-#define DO_TEST(in, out)                                               \
-    do {                                                               \
-        struct testInfo info = { in, out };                            \
-        virResetLastError();                                           \
-        if (virTestRun("Xen SEXPR-2-XML " in " -> " out,               \
-                       testCompareHelper, &info) < 0)                  \
-            ret = -1;                                                  \
+#define DO_TEST(in, out) \
+    do { \
+        struct testInfo info = { in, out }; \
+        virResetLastError(); \
+        if (virTestRun("Xen SEXPR-2-XML " in " -> " out, \
+                       testCompareHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("pv", "pv");

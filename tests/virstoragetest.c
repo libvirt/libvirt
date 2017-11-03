@@ -740,28 +740,28 @@ mymain(void)
     if ((ret = testPrepImages()) != 0)
         return ret;
 
-#define TEST_ONE_CHAIN(start, format, flags, ...)                    \
-    do {                                                             \
-        size_t i;                                                    \
-        memset(&data, 0, sizeof(data));                              \
-        data = (struct testChainData){                               \
-            start, format, { __VA_ARGS__ }, 0, flags,                \
-        };                                                           \
-        for (i = 0; i < ARRAY_CARDINALITY(data.files); i++)          \
-            if (data.files[i])                                       \
-                data.nfiles++;                                       \
-        if (virTestRun(virTestCounterNext(),                         \
-                       testStorageChain, &data) < 0)                 \
-            ret = -1;                                                \
+#define TEST_ONE_CHAIN(start, format, flags, ...) \
+    do { \
+        size_t i; \
+        memset(&data, 0, sizeof(data)); \
+        data = (struct testChainData){ \
+            start, format, { __VA_ARGS__ }, 0, flags, \
+        }; \
+        for (i = 0; i < ARRAY_CARDINALITY(data.files); i++) \
+            if (data.files[i]) \
+                data.nfiles++; \
+        if (virTestRun(virTestCounterNext(), \
+                       testStorageChain, &data) < 0) \
+            ret = -1; \
     } while (0)
 
 #define VIR_FLATTEN_2(...) __VA_ARGS__
 #define VIR_FLATTEN_1(_1) VIR_FLATTEN_2 _1
 
-#define TEST_CHAIN(path, format, chain1, flags1, chain2, flags2)      \
-    do {                                                              \
-        TEST_ONE_CHAIN(path, format, flags1, VIR_FLATTEN_1(chain1));  \
-        TEST_ONE_CHAIN(path, format, flags2, VIR_FLATTEN_1(chain2));  \
+#define TEST_CHAIN(path, format, chain1, flags1, chain2, flags2) \
+    do { \
+        TEST_ONE_CHAIN(path, format, flags1, VIR_FLATTEN_1(chain1)); \
+        TEST_ONE_CHAIN(path, format, flags2, VIR_FLATTEN_1(chain2)); \
     } while (0)
 
     /* The actual tests, in several groups. */
@@ -1110,17 +1110,17 @@ mymain(void)
     chain2 = chain->backingStore;
     chain3 = chain2->backingStore;
 
-#define TEST_LOOKUP_TARGET(id, target, from, name, index, result,       \
-                           meta, parent)                                \
-    do {                                                                \
-        data2 = (struct testLookupData){                                \
-            chain, target, from, name, index,                           \
-            result, meta, parent, };                                    \
-        if (virTestRun("Chain lookup " #id,                             \
-                       testStorageLookup, &data2) < 0)                  \
-            ret = -1;                                                   \
+#define TEST_LOOKUP_TARGET(id, target, from, name, index, result, \
+                           meta, parent) \
+    do { \
+        data2 = (struct testLookupData){ \
+            chain, target, from, name, index, \
+            result, meta, parent, }; \
+        if (virTestRun("Chain lookup " #id, \
+                       testStorageLookup, &data2) < 0) \
+            ret = -1; \
     } while (0)
-#define TEST_LOOKUP(id, from, name, result, meta, parent)               \
+#define TEST_LOOKUP(id, from, name, result, meta, parent) \
     TEST_LOOKUP_TARGET(id, NULL, from, name, 0, result, meta, parent)
 
     TEST_LOOKUP(0, NULL, "bogus", NULL, NULL, NULL);
@@ -1251,13 +1251,13 @@ mymain(void)
     TEST_LOOKUP_TARGET(80, "vda", chain3, "vda[2]", 2, NULL, NULL, NULL);
     TEST_LOOKUP_TARGET(81, "vda", NULL, "vda[3]", 3, NULL, NULL, NULL);
 
-#define TEST_PATH_CANONICALIZE(id, PATH, EXPECT)                            \
-    do {                                                                    \
-        data3.path = PATH;                                                  \
-        data3.expect = EXPECT;                                              \
-        if (virTestRun("Path canonicalize " #id,                            \
-                       testPathCanonicalize, &data3) < 0)                   \
-            ret = -1;                                                       \
+#define TEST_PATH_CANONICALIZE(id, PATH, EXPECT) \
+    do { \
+        data3.path = PATH; \
+        data3.expect = EXPECT; \
+        if (virTestRun("Path canonicalize " #id, \
+                       testPathCanonicalize, &data3) < 0) \
+            ret = -1; \
     } while (0)
 
     TEST_PATH_CANONICALIZE(1, "/", "/");
@@ -1294,14 +1294,14 @@ mymain(void)
     TEST_PATH_CANONICALIZE(30, "/cycle2/link", NULL);
     TEST_PATH_CANONICALIZE(31, "///", "/");
 
-#define TEST_RELATIVE_BACKING(id, TOP, BASE, EXPECT)                        \
-    do {                                                                    \
-        data4.top = &TOP;                                                   \
-        data4.base = &BASE;                                                 \
-        data4.expect = EXPECT;                                              \
-        if (virTestRun("Path relative resolve " #id,                        \
-                       testPathRelative, &data4) < 0)                       \
-            ret = -1;                                                       \
+#define TEST_RELATIVE_BACKING(id, TOP, BASE, EXPECT) \
+    do { \
+        data4.top = &TOP; \
+        data4.base = &BASE; \
+        data4.expect = EXPECT; \
+        if (virTestRun("Path relative resolve " #id, \
+                       testPathRelative, &data4) < 0) \
+            ret = -1; \
     } while (0)
 
     testPathRelativePrepare();
@@ -1344,13 +1344,13 @@ mymain(void)
 
     virTestCounterReset("Backing store parse ");
 
-#define TEST_BACKING_PARSE(bck, xml)                                           \
-    do {                                                                       \
-        data5.backing = bck;                                                   \
-        data5.expect = xml;                                                    \
-        if (virTestRun(virTestCounterNext(),                                   \
-                       testBackingParse, &data5) < 0)                          \
-            ret = -1;                                                          \
+#define TEST_BACKING_PARSE(bck, xml) \
+    do { \
+        data5.backing = bck; \
+        data5.expect = xml; \
+        if (virTestRun(virTestCounterNext(), \
+                       testBackingParse, &data5) < 0) \
+            ret = -1; \
     } while (0)
 
     TEST_BACKING_PARSE("path", "<source file='path'/>\n");

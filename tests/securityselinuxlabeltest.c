@@ -360,8 +360,8 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-#define DO_TEST_LABELING(name)                                           \
-    if (virTestRun("Labelling " # name, testSELinuxLabeling, name) < 0)  \
+#define DO_TEST_LABELING(name) \
+    if (virTestRun("Labelling " # name, testSELinuxLabeling, name) < 0) \
         ret = -1;
 
     setcon((security_context_t)"system_r:system_u:libvirtd_t:s0:c0.c1023");

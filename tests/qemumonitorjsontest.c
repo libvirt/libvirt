@@ -374,26 +374,26 @@ testQemuMonitorJSONGetMachines(const void *data)
         goto cleanup;
     }
 
-#define CHECK(i, wantname, wantisDefault, wantalias)                    \
-    do {                                                                \
-        if (STRNEQ(info[i]->name, (wantname))) {                        \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "name %s is not %s",                         \
-                           info[i]->name, (wantname));                  \
-            goto cleanup;                                               \
-        }                                                               \
-        if (info[i]->isDefault != (wantisDefault)) {                    \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "isDefault %d is not %d",                    \
-                           info[i]->isDefault, (wantisDefault));        \
-            goto cleanup;                                               \
-        }                                                               \
-        if (STRNEQ_NULLABLE(info[i]->alias, (wantalias))) {             \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "alias %s is not %s",                        \
-                           info[i]->alias, NULLSTR(wantalias));         \
-            goto cleanup;                                               \
-        }                                                               \
+#define CHECK(i, wantname, wantisDefault, wantalias) \
+    do { \
+        if (STRNEQ(info[i]->name, (wantname))) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "name %s is not %s", \
+                           info[i]->name, (wantname)); \
+            goto cleanup; \
+        } \
+        if (info[i]->isDefault != (wantisDefault)) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "isDefault %d is not %d", \
+                           info[i]->isDefault, (wantisDefault)); \
+            goto cleanup; \
+        } \
+        if (STRNEQ_NULLABLE(info[i]->alias, (wantalias))) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "alias %s is not %s", \
+                           info[i]->alias, NULLSTR(wantalias)); \
+            goto cleanup; \
+        } \
     } while (0)
 
     CHECK(0, "pc-1.0", false, null);
@@ -455,27 +455,27 @@ testQemuMonitorJSONGetCPUDefinitions(const void *data)
         goto cleanup;
     }
 
-#define CHECK_FULL(i, wantname, Usable)                                 \
-    do {                                                                \
-        if (STRNEQ(cpus[i]->name, (wantname))) {                        \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "name %s is not %s",                         \
-                           cpus[i]->name, (wantname));                  \
-            goto cleanup;                                               \
-        }                                                               \
-        if (cpus[i]->usable != (Usable)) {                              \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "%s: expecting usable flag %d, got %d",      \
-                           cpus[i]->name, Usable, cpus[i]->usable);     \
-            goto cleanup;                                               \
-        }                                                               \
+#define CHECK_FULL(i, wantname, Usable) \
+    do { \
+        if (STRNEQ(cpus[i]->name, (wantname))) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "name %s is not %s", \
+                           cpus[i]->name, (wantname)); \
+            goto cleanup; \
+        } \
+        if (cpus[i]->usable != (Usable)) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "%s: expecting usable flag %d, got %d", \
+                           cpus[i]->name, Usable, cpus[i]->usable); \
+            goto cleanup; \
+        } \
     } while (0)
 
-#define CHECK(i, wantname)                                              \
+#define CHECK(i, wantname) \
     CHECK_FULL(i, wantname, VIR_TRISTATE_BOOL_ABSENT)
 
-#define CHECK_USABLE(i, wantname, usable)                               \
-    CHECK_FULL(i, wantname,                                             \
+#define CHECK_USABLE(i, wantname, usable) \
+    CHECK_FULL(i, wantname, \
                usable ? VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO)
 
     CHECK(0, "qemu64");
@@ -536,14 +536,14 @@ testQemuMonitorJSONGetCommands(const void *data)
         goto cleanup;
     }
 
-#define CHECK(i, wantname)                                              \
-    do {                                                                \
-        if (STRNEQ(commands[i], (wantname))) {                          \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "name %s is not %s",                         \
-                           commands[i], (wantname));                    \
-            goto cleanup;                                               \
-        }                                                               \
+#define CHECK(i, wantname) \
+    do { \
+        if (STRNEQ(commands[i], (wantname))) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "name %s is not %s", \
+                           commands[i], (wantname)); \
+            goto cleanup; \
+        } \
     } while (0)
 
     CHECK(0, "system_wakeup");
@@ -592,14 +592,14 @@ testQemuMonitorJSONGetTPMModels(const void *data)
         goto cleanup;
     }
 
-#define CHECK(i, wantname)                                              \
-    do {                                                                \
-        if (STRNEQ(tpmmodels[i], (wantname))) {                         \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "name %s is not %s",                         \
-                           tpmmodels[i], (wantname));                   \
-            goto cleanup;                                               \
-        }                                                               \
+#define CHECK(i, wantname) \
+    do { \
+        if (STRNEQ(tpmmodels[i], (wantname))) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "name %s is not %s", \
+                           tpmmodels[i], (wantname)); \
+            goto cleanup; \
+        } \
     } while (0)
 
     CHECK(0, "passthrough");
@@ -655,14 +655,14 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *data)
         goto cleanup;
     }
 
-#define CHECK(i, wantname)                                              \
-    do {                                                                \
-        if (STRNEQ(params[i], (wantname))) {                            \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "name was %s, expected %s",                  \
-                           params[i], (wantname));                      \
-            goto cleanup;                                               \
-        }                                                               \
+#define CHECK(i, wantname) \
+    do { \
+        if (STRNEQ(params[i], (wantname))) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "name was %s, expected %s", \
+                           params[i], (wantname)); \
+            goto cleanup; \
+        } \
     } while (0)
 
     CHECK(0, "romfile");
@@ -820,9 +820,9 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOptionPtr xmlopt)
     virDomainChrSourceDef chr;
     int ret = 0;
 
-#define CHECK(label, fail, expectargs)                                         \
-    if (qemuMonitorJSONTestAttachOneChardev(xmlopt, label, &chr, expectargs,   \
-                                            NULL, NULL, fail) < 0)             \
+#define CHECK(label, fail, expectargs) \
+    if (qemuMonitorJSONTestAttachOneChardev(xmlopt, label, &chr, expectargs, \
+                                            NULL, NULL, fail) < 0) \
         ret = -1
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_NULL };
@@ -1003,20 +1003,20 @@ testQemuMonitorJSONGetListPaths(const void *data)
         goto cleanup;
     }
 
-#define CHECK(i, wantname, wanttype)                                    \
-    do {                                                                \
-        if (STRNEQ(paths[i]->name, (wantname))) {                       \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "name was %s, expected %s",                  \
-                           paths[i]->name, (wantname));                 \
-            goto cleanup;                                               \
-        }                                                               \
-        if (STRNEQ_NULLABLE(paths[i]->type, (wanttype))) {              \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "type was %s, expected %s",                  \
-                           NULLSTR(paths[i]->type), (wanttype));        \
-            goto cleanup;                                               \
-        }                                                               \
+#define CHECK(i, wantname, wanttype) \
+    do { \
+        if (STRNEQ(paths[i]->name, (wantname))) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "name was %s, expected %s", \
+                           paths[i]->name, (wantname)); \
+            goto cleanup; \
+        } \
+        if (STRNEQ_NULLABLE(paths[i]->type, (wanttype))) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "type was %s, expected %s", \
+                           NULLSTR(paths[i]->type), (wanttype)); \
+            goto cleanup; \
+        } \
     } while (0)
 
     CHECK(0, "machine", "child<container>");
@@ -1286,32 +1286,32 @@ testQemuMonitorJSONSimpleFunc(const void *opaque)
     return ret;
 }
 
-#define GEN_TEST_FUNC(funcName, ...)                                    \
-static int                                                              \
-testQemuMonitorJSON ## funcName(const void *opaque)                     \
-{                                                                       \
-    const testQemuMonitorJSONSimpleFuncData *data = opaque;             \
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;                        \
-    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);   \
-    const char *reply = data->reply;                                    \
-    int ret = -1;                                                       \
-                                                                        \
-    if (!test)                                                          \
-        return -1;                                                      \
-                                                                        \
-    if (!reply)                                                         \
-        reply = "{\"return\":{}}";                                      \
-                                                                        \
-    if (qemuMonitorTestAddItem(test, data->cmd, reply) < 0)             \
-        goto cleanup;                                                   \
-                                                                        \
-    if (funcName(qemuMonitorTestGetMonitor(test), __VA_ARGS__) < 0)     \
-        goto cleanup;                                                   \
-                                                                        \
-    ret = 0;                                                            \
-cleanup:                                                                \
-    qemuMonitorTestFree(test);                                          \
-    return ret;                                                         \
+#define GEN_TEST_FUNC(funcName, ...) \
+static int \
+testQemuMonitorJSON ## funcName(const void *opaque) \
+{ \
+    const testQemuMonitorJSONSimpleFuncData *data = opaque; \
+    virDomainXMLOptionPtr xmlopt = data->xmlopt; \
+    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt); \
+    const char *reply = data->reply; \
+    int ret = -1; \
+ \
+    if (!test) \
+        return -1; \
+ \
+    if (!reply) \
+        reply = "{\"return\":{}}"; \
+ \
+    if (qemuMonitorTestAddItem(test, data->cmd, reply) < 0) \
+        goto cleanup; \
+ \
+    if (funcName(qemuMonitorTestGetMonitor(test), __VA_ARGS__) < 0) \
+        goto cleanup; \
+ \
+    ret = 0; \
+cleanup: \
+    qemuMonitorTestFree(test); \
+    return ret; \
 }
 
 GEN_TEST_FUNC(qemuMonitorJSONSetLink, "vnet0", VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN)
@@ -1738,14 +1738,14 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
 
 #define CHECK0(var, value) CHECK0FULL(var, value, "%lld", "%d")
 
-#define CHECK(NAME, RD_REQ, RD_BYTES, RD_TOTAL_TIMES, WR_REQ, WR_BYTES,        \
-              WR_TOTAL_TIMES, FLUSH_REQ, FLUSH_TOTAL_TIMES,                    \
-              WR_HIGHEST_OFFSET, WR_HIGHEST_OFFSET_VALID)                      \
-    if (!(stats = virHashLookup(blockstats, NAME))) {                          \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                                 \
-                       "block stats for device '%s' is missing", NAME);        \
-        goto cleanup;                                                          \
-    }                                                                          \
+#define CHECK(NAME, RD_REQ, RD_BYTES, RD_TOTAL_TIMES, WR_REQ, WR_BYTES, \
+              WR_TOTAL_TIMES, FLUSH_REQ, FLUSH_TOTAL_TIMES, \
+              WR_HIGHEST_OFFSET, WR_HIGHEST_OFFSET_VALID) \
+    if (!(stats = virHashLookup(blockstats, NAME))) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       "block stats for device '%s' is missing", NAME); \
+        goto cleanup; \
+    } \
     CHECK0(rd_req, RD_REQ) \
     CHECK0(rd_bytes, RD_BYTES) \
     CHECK0(rd_total_times, RD_TOTAL_TIMES) \
@@ -1816,41 +1816,41 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
                                           &params) < 0)
         goto cleanup;
 
-#define CHECK_NUM(VAR, FIELD, VALUE, FMT)                                   \
-    do {                                                                    \
-        if (!params.VAR ## _set) {                                          \
+#define CHECK_NUM(VAR, FIELD, VALUE, FMT) \
+    do { \
+        if (!params.VAR ## _set) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s is not set", FIELD); \
-            goto cleanup;                                                   \
-        }                                                                   \
-        if (params.VAR != VALUE) {                                          \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                          \
-                           "Invalid %s: " FMT ", expected " FMT,            \
-                           FIELD, params.VAR, VALUE);                       \
-            goto cleanup;                                                   \
-        }                                                                   \
+            goto cleanup; \
+        } \
+        if (params.VAR != VALUE) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "Invalid %s: " FMT ", expected " FMT, \
+                           FIELD, params.VAR, VALUE); \
+            goto cleanup; \
+        } \
     } while (0)
 
-#define CHECK_INT(VAR, FIELD, VALUE)                                        \
+#define CHECK_INT(VAR, FIELD, VALUE) \
     CHECK_NUM(VAR, FIELD, VALUE, "%d")
 
-#define CHECK_ULONG(VAR, FIELD, VALUE)                                      \
+#define CHECK_ULONG(VAR, FIELD, VALUE) \
     CHECK_NUM(VAR, FIELD, VALUE, "%llu")
 
-#define CHECK_BOOL(VAR, FIELD, VALUE)                                       \
+#define CHECK_BOOL(VAR, FIELD, VALUE) \
     CHECK_NUM(VAR, FIELD, VALUE, "%d")
 
-#define CHECK_STR(VAR, FIELD, VALUE)                                        \
-    do {                                                                    \
-        if (!params.VAR) {                                                  \
+#define CHECK_STR(VAR, FIELD, VALUE) \
+    do { \
+        if (!params.VAR) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s is not set", FIELD); \
-            goto cleanup;                                                   \
-        }                                                                   \
-        if (STRNEQ(params.VAR, VALUE)) {                                    \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                          \
-                           "Invalid %s:'%s', expected '%s'",                \
-                           FIELD, params.VAR, VALUE);                       \
-            goto cleanup;                                                   \
-        }                                                                   \
+            goto cleanup; \
+        } \
+        if (STRNEQ(params.VAR, VALUE)) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "Invalid %s:'%s', expected '%s'", \
+                           FIELD, params.VAR, VALUE); \
+            goto cleanup; \
+        } \
     } while (0)
 
     CHECK_INT(compressLevel, "compress-level", 1);
@@ -2091,19 +2091,19 @@ testValidateGetBlockIoThrottle(const virDomainBlockIoTuneInfo *info,
 #define VALIDATE_IOTUNE(field) \
     if (info->field != expectedInfo->field) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       "info->%s=%llu != expected=%llu",  \
+                       "info->%s=%llu != expected=%llu", \
                        #field, info->field, expectedInfo->field); \
         return -1; \
     } \
     if (info->field##_max != expectedInfo->field##_max) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       "info->%s_max=%llu != expected=%llu",  \
+                       "info->%s_max=%llu != expected=%llu", \
                        #field, info->field##_max, expectedInfo->field##_max); \
         return -1; \
     } \
     if (info->field##_max_length != expectedInfo->field##_max_length) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       "info->%s_max_length=%llu != expected=%llu",  \
+                       "info->%s_max_length=%llu != expected=%llu", \
                        #field, info->field##_max_length, \
                        expectedInfo->field##_max_length); \
         return -1; \
@@ -2575,20 +2575,20 @@ testQemuMonitorJSONGetIOThreads(const void *data)
         goto cleanup;
     }
 
-#define CHECK(i, wantiothread_id, wantthread_id)                        \
-    do {                                                                \
-        if (info[i]->iothread_id != (wantiothread_id)) {                \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "iothread_id %u is not %u",                  \
-                           info[i]->iothread_id, (wantiothread_id));    \
-            goto cleanup;                                               \
-        }                                                               \
-        if (info[i]->thread_id != (wantthread_id)) {                    \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
-                           "thread_id %d is not %d",                    \
-                           info[i]->thread_id, (wantthread_id));        \
-            goto cleanup;                                               \
-        }                                                               \
+#define CHECK(i, wantiothread_id, wantthread_id) \
+    do { \
+        if (info[i]->iothread_id != (wantiothread_id)) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "iothread_id %u is not %u", \
+                           info[i]->iothread_id, (wantiothread_id)); \
+            goto cleanup; \
+        } \
+        if (info[i]->thread_id != (wantthread_id)) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "thread_id %d is not %d", \
+                           info[i]->thread_id, (wantthread_id)); \
+            goto cleanup; \
+        } \
     } while (0)
 
     CHECK(0, 1, 30992);
@@ -2845,36 +2845,36 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-#define DO_TEST(name)                                                          \
-    if (virTestRun(# name, testQemuMonitorJSON ## name, driver.xmlopt) < 0)    \
+#define DO_TEST(name) \
+    if (virTestRun(# name, testQemuMonitorJSON ## name, driver.xmlopt) < 0) \
         ret = -1
 
-#define DO_TEST_SIMPLE(CMD, FNC, ...)                                          \
+#define DO_TEST_SIMPLE(CMD, FNC, ...) \
     simpleFunc = (testQemuMonitorJSONSimpleFuncData) {.cmd = CMD, .func = FNC, \
                                        .xmlopt = driver.xmlopt, __VA_ARGS__ }; \
-    if (virTestRun(# FNC, testQemuMonitorJSONSimpleFunc, &simpleFunc) < 0)     \
+    if (virTestRun(# FNC, testQemuMonitorJSONSimpleFunc, &simpleFunc) < 0) \
         ret = -1
 
 #define DO_TEST_GEN(name, ...) \
     simpleFunc = (testQemuMonitorJSONSimpleFuncData) {.xmlopt = driver.xmlopt, \
-                                                     __VA_ARGS__ };            \
-    if (virTestRun(# name, testQemuMonitorJSON ## name, &simpleFunc) < 0)      \
+                                                     __VA_ARGS__ }; \
+    if (virTestRun(# name, testQemuMonitorJSON ## name, &simpleFunc) < 0) \
         ret = -1
 
 #define DO_TEST_CPU_DATA(name) \
-    do {                                                                  \
-        struct testCPUData data = { name, driver.xmlopt };                \
-        const char *label = "GetCPUData(" name ")";                       \
-        if (virTestRun(label, testQemuMonitorJSONGetCPUData, &data) < 0)  \
-            ret = -1;                                                     \
+    do { \
+        struct testCPUData data = { name, driver.xmlopt }; \
+        const char *label = "GetCPUData(" name ")"; \
+        if (virTestRun(label, testQemuMonitorJSONGetCPUData, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_CPU_INFO(name, maxvcpus)                                       \
-    do {                                                                       \
-        struct testCPUInfoData data = {name, maxvcpus, driver.xmlopt};         \
-        if (virTestRun("GetCPUInfo(" name ")", testQemuMonitorCPUInfo,         \
-                       &data) < 0)                                             \
-            ret = -1;                                                          \
+#define DO_TEST_CPU_INFO(name, maxvcpus) \
+    do { \
+        struct testCPUInfoData data = {name, maxvcpus, driver.xmlopt}; \
+        if (virTestRun("GetCPUInfo(" name ")", testQemuMonitorCPUInfo, \
+                       &data) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST(GetStatus);
@@ -2962,11 +2962,11 @@ mymain(void)
     DO_TEST_CPU_INFO("ppc64-hotplug-4", 24);
     DO_TEST_CPU_INFO("ppc64-no-threads", 16);
 
-#define DO_TEST_BLOCK_NODE_DETECT(testname)                                    \
-    do {                                                                       \
-        if (virTestRun("node-name-detect(" testname ")",                       \
-                       testBlockNodeNameDetect, testname) < 0)                 \
-            ret = -1;                                                          \
+#define DO_TEST_BLOCK_NODE_DETECT(testname) \
+    do { \
+        if (virTestRun("node-name-detect(" testname ")", \
+                       testBlockNodeNameDetect, testname) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST_BLOCK_NODE_DETECT("basic");

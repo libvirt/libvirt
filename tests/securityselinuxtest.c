@@ -283,19 +283,19 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-#define DO_TEST_GEN_LABEL(desc, pidcon,                                     \
-                          dynamic, label, baselabel,                        \
-                          user, role, imageRole,                            \
-                          type, imageType,                                  \
-                          sensMin, sensMax, catMin, catMax)                 \
-    do {                                                                    \
-        struct testSELinuxGenLabelData data = {                             \
-            mgr, pidcon, dynamic, label, baselabel,                         \
-            user, role, imageRole, type, imageType,                         \
-            sensMin, sensMax, catMin, catMax                                \
-        };                                                                  \
+#define DO_TEST_GEN_LABEL(desc, pidcon, \
+                          dynamic, label, baselabel, \
+                          user, role, imageRole, \
+                          type, imageType, \
+                          sensMin, sensMax, catMin, catMax) \
+    do { \
+        struct testSELinuxGenLabelData data = { \
+            mgr, pidcon, dynamic, label, baselabel, \
+            user, role, imageRole, type, imageType, \
+            sensMin, sensMax, catMin, catMax \
+        }; \
         if (virTestRun("GenLabel " # desc, testSELinuxGenLabel, &data) < 0) \
-            ret = -1;                                                       \
+            ret = -1; \
     } while (0)
 
     DO_TEST_GEN_LABEL("dynamic unconfined, s0, c0.c1023",

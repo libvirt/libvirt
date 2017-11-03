@@ -363,26 +363,26 @@ virDomainCapsStringValuesFormat(virBufferPtr buf,
 }
 
 
-#define FORMAT_PROLOGUE(item)                                       \
-    do {                                                            \
-        virBufferAsprintf(buf, "<" #item " supported='%s'%s\n",     \
-                          item->supported ? "yes" : "no",           \
-                          item->supported ? ">" : "/>");            \
-        if (!item->supported)                                       \
-            return;                                                 \
-        virBufferAdjustIndent(buf, 2);                              \
+#define FORMAT_PROLOGUE(item) \
+    do { \
+        virBufferAsprintf(buf, "<" #item " supported='%s'%s\n", \
+                          item->supported ? "yes" : "no", \
+                          item->supported ? ">" : "/>"); \
+        if (!item->supported) \
+            return; \
+        virBufferAdjustIndent(buf, 2); \
     } while (0)
 
-#define FORMAT_EPILOGUE(item)                                       \
-    do {                                                            \
-        virBufferAdjustIndent(buf, -2);                             \
-        virBufferAddLit(buf, "</" #item ">\n");                     \
+#define FORMAT_EPILOGUE(item) \
+    do { \
+        virBufferAdjustIndent(buf, -2); \
+        virBufferAddLit(buf, "</" #item ">\n"); \
     } while (0)
 
-#define ENUM_PROCESS(master, capsEnum, valToStr)                    \
-    do {                                                            \
-        virDomainCapsEnumFormat(buf, &master->capsEnum,             \
-                                #capsEnum, valToStr);               \
+#define ENUM_PROCESS(master, capsEnum, valToStr) \
+    do { \
+        virDomainCapsEnumFormat(buf, &master->capsEnum, \
+                                #capsEnum, valToStr); \
     } while (0)
 
 

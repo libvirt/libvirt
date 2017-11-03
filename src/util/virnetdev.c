@@ -95,7 +95,7 @@ VIR_LOG_INIT("util.netdev");
 # define GFEATURES_SIZE 2
 # define FEATURE_WORD(blocks, index, field)  ((blocks)[(index) / 32U].field)
 # define FEATURE_FIELD_FLAG(index)      (1U << (index) % 32U)
-# define FEATURE_BIT_IS_SET(blocks, index, field)        \
+# define FEATURE_BIT_IS_SET(blocks, index, field) \
     (FEATURE_WORD(blocks, index, field) & FEATURE_FIELD_FLAG(index))
 #endif
 
@@ -285,7 +285,7 @@ virNetDevSetMACInternal(const char *ifname,
 }
 
 
-#elif defined(SIOCSIFLLADDR) && defined(HAVE_STRUCT_IFREQ) &&   \
+#elif defined(SIOCSIFLLADDR) && defined(HAVE_STRUCT_IFREQ) && \
     HAVE_DECL_LINK_ADDR
 
 

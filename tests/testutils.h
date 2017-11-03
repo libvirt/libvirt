@@ -91,16 +91,16 @@ unsigned int virTestGetVerbose(void);
 unsigned int virTestGetExpensive(void);
 unsigned int virTestGetRegenerate(void);
 
-# define VIR_TEST_DEBUG(...)                    \
-    do {                                        \
-        if (virTestGetDebug())                  \
-            fprintf(stderr, __VA_ARGS__);       \
+# define VIR_TEST_DEBUG(...) \
+    do { \
+        if (virTestGetDebug()) \
+            fprintf(stderr, __VA_ARGS__); \
     } while (0)
 
-# define VIR_TEST_VERBOSE(...)                  \
-    do {                                        \
-        if (virTestGetVerbose())                \
-            fprintf(stderr, __VA_ARGS__);       \
+# define VIR_TEST_VERBOSE(...) \
+    do { \
+        if (virTestGetVerbose()) \
+            fprintf(stderr, __VA_ARGS__); \
     } while (0)
 
 char *virTestLogContentAndReset(void);
@@ -116,34 +116,34 @@ int virTestMain(int argc,
                 ...);
 
 /* Setup, then call func() */
-# define VIR_TEST_MAIN(func)                            \
-    int main(int argc, char **argv) {                   \
-        return virTestMain(argc, argv, func, NULL);     \
+# define VIR_TEST_MAIN(func) \
+    int main(int argc, char **argv) { \
+        return virTestMain(argc, argv, func, NULL); \
     }
 
-# define VIR_TEST_PRELOAD(lib)                                          \
-    do {                                                                \
-        const char *preload = getenv("LD_PRELOAD");                     \
-        if (preload == NULL || strstr(preload, lib) == NULL) {          \
-            char *newenv;                                               \
-            if (!virFileIsExecutable(lib)) {                            \
-                perror(lib);                                            \
-                return EXIT_FAILURE;                                    \
-            }                                                           \
-            if (!preload) {                                             \
-                newenv = (char *) lib;                                  \
-            } else if (virAsprintf(&newenv, "%s:%s", lib, preload) < 0) {   \
-                perror("virAsprintf");                                  \
-                return EXIT_FAILURE;                                    \
-            }                                                           \
-            setenv("LD_PRELOAD", newenv, 1);                            \
-            execv(argv[0], argv);                                       \
-        }                                                               \
+# define VIR_TEST_PRELOAD(lib) \
+    do { \
+        const char *preload = getenv("LD_PRELOAD"); \
+        if (preload == NULL || strstr(preload, lib) == NULL) { \
+            char *newenv; \
+            if (!virFileIsExecutable(lib)) { \
+                perror(lib); \
+                return EXIT_FAILURE; \
+            } \
+            if (!preload) { \
+                newenv = (char *) lib; \
+            } else if (virAsprintf(&newenv, "%s:%s", lib, preload) < 0) { \
+                perror("virAsprintf"); \
+                return EXIT_FAILURE; \
+            } \
+            setenv("LD_PRELOAD", newenv, 1); \
+            execv(argv[0], argv); \
+        } \
     } while (0)
 
-# define VIR_TEST_MAIN_PRELOAD(func, ...)                               \
-    int main(int argc, char **argv) {                                   \
-        return virTestMain(argc, argv, func, __VA_ARGS__, NULL);        \
+# define VIR_TEST_MAIN_PRELOAD(func, ...) \
+    int main(int argc, char **argv) { \
+        return virTestMain(argc, argv, func, __VA_ARGS__, NULL); \
     }
 
 virCapsPtr virTestGenericCapsInit(void);

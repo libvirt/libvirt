@@ -68,12 +68,12 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST(name)                                           \
-    do {                                                        \
-        const struct testInfo info = {name, false};             \
-        if (virTestRun("Secret XML->XML " name,                 \
-                       testCompareXMLToXMLHelper, &info) < 0)   \
-            ret = -1;                                           \
+#define DO_TEST(name) \
+    do { \
+        const struct testInfo info = {name, false}; \
+        if (virTestRun("Secret XML->XML " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("ephemeral-usage-volume");

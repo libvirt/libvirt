@@ -232,13 +232,13 @@ static int testCgroupNewForSelf(const void *args ATTRIBUTE_UNUSED)
 }
 
 
-# define ENSURE_ERRNO(en)                                           \
-    do {                                                            \
-    if (!virLastErrorIsSystemErrno(en)) {                           \
-        virErrorPtr err = virGetLastError();                        \
-        fprintf(stderr, "Did not get " #en " error code: %d:%d\n",  \
-                err ? err->code : 0, err ? err->int1 : 0);          \
-        goto cleanup;                                               \
+# define ENSURE_ERRNO(en) \
+    do { \
+    if (!virLastErrorIsSystemErrno(en)) { \
+        virErrorPtr err = virGetLastError(); \
+        fprintf(stderr, "Did not get " #en " error code: %d:%d\n", \
+                err ? err->code : 0, err ? err->int1 : 0); \
+        goto cleanup; \
     } } while (0)
 
     /* Asking for impossible combination since CPU is co-mounted */
@@ -586,13 +586,13 @@ static int testCgroupControllerAvailable(const void *args ATTRIBUTE_UNUSED)
 {
     int ret = 0;
 
-# define CHECK_CONTROLLER(c, present)                                   \
-    if ((present && !virCgroupControllerAvailable(c)) ||                \
-        (!present && virCgroupControllerAvailable(c))) {                \
-        fprintf(stderr, present ?                                       \
-                "Expected controller %s not available\n" :              \
-                "Unexpected controller %s available\n", #c);            \
-        ret = -1;                                                       \
+# define CHECK_CONTROLLER(c, present) \
+    if ((present && !virCgroupControllerAvailable(c)) || \
+        (!present && virCgroupControllerAvailable(c))) { \
+        fprintf(stderr, present ? \
+                "Expected controller %s not available\n" : \
+                "Unexpected controller %s available\n", #c); \
+        ret = -1; \
     }
 
     CHECK_CONTROLLER(VIR_CGROUP_CONTROLLER_CPU, true)
@@ -870,12 +870,12 @@ mymain(void)
 
     setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
 
-# define DETECT_MOUNTS(file)                                            \
-    do {                                                                \
-        if (virTestRun("Detect cgroup mounts for " file,                \
-                       testCgroupDetectMounts,                          \
-                       file) < 0)                                       \
-            ret = -1;                                                   \
+# define DETECT_MOUNTS(file) \
+    do { \
+        if (virTestRun("Detect cgroup mounts for " file, \
+                       testCgroupDetectMounts, \
+                       file) < 0) \
+            ret = -1; \
     } while (0)
 
     DETECT_MOUNTS("ovirt-node-6.6");

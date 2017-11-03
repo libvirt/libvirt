@@ -32,141 +32,141 @@
 
 
 
-#define ESX_VI__METHOD__CHECK_OUTPUT__None                                    \
+#define ESX_VI__METHOD__CHECK_OUTPUT__None \
     /* nothing */
 
 
 
-#define ESX_VI__METHOD__CHECK_OUTPUT__NotNone                                 \
-    if (!output || *output) {                                                 \
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));  \
-        return -1;                                                            \
+#define ESX_VI__METHOD__CHECK_OUTPUT__NotNone \
+    if (!output || *output) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument")); \
+        return -1; \
     }
 
 
 
-#define ESX_VI__METHOD__CHECK_OUTPUT__RequiredItem                            \
+#define ESX_VI__METHOD__CHECK_OUTPUT__RequiredItem \
     ESX_VI__METHOD__CHECK_OUTPUT__NotNone
 
 
 
-#define ESX_VI__METHOD__CHECK_OUTPUT__RequiredList                            \
+#define ESX_VI__METHOD__CHECK_OUTPUT__RequiredList \
     ESX_VI__METHOD__CHECK_OUTPUT__NotNone
 
 
 
-#define ESX_VI__METHOD__CHECK_OUTPUT__OptionalItem                            \
+#define ESX_VI__METHOD__CHECK_OUTPUT__OptionalItem \
     ESX_VI__METHOD__CHECK_OUTPUT__NotNone
 
 
 
-#define ESX_VI__METHOD__CHECK_OUTPUT__OptionalList                            \
+#define ESX_VI__METHOD__CHECK_OUTPUT__OptionalList \
     ESX_VI__METHOD__CHECK_OUTPUT__NotNone
 
 
 
-#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__None(_type, _suffix)              \
+#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__None(_type, _suffix) \
     /* nothing */
 
 
 
-#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__RequiredItem(_type, _suffix)      \
-    if (esxVI_##_type##_Deserialize##_suffix(response->node, output) < 0) {   \
-        goto cleanup;                                                         \
+#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__RequiredItem(_type, _suffix) \
+    if (esxVI_##_type##_Deserialize##_suffix(response->node, output) < 0) { \
+        goto cleanup; \
     }
 
 
 
-#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__RequiredList(_type, _suffix)      \
-    if (esxVI_##_type##_DeserializeList(response->node, output) < 0) {        \
-        goto cleanup;                                                         \
+#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__RequiredList(_type, _suffix) \
+    if (esxVI_##_type##_DeserializeList(response->node, output) < 0) { \
+        goto cleanup; \
     }
 
 
 
-#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__OptionalItem(_type, _suffix)      \
-    if (response->node &&                                                     \
-        esxVI_##_type##_Deserialize##_suffix(response->node, output) < 0) {   \
-        goto cleanup;                                                         \
+#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__OptionalItem(_type, _suffix) \
+    if (response->node && \
+        esxVI_##_type##_Deserialize##_suffix(response->node, output) < 0) { \
+        goto cleanup; \
     }
 
 
 
-#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__OptionalList(_type, _suffix)      \
-    if (response->node &&                                                     \
-        esxVI_##_type##_DeserializeList(response->node, output) < 0) {        \
-        goto cleanup;                                                         \
+#define ESX_VI__METHOD__DESERIALIZE_OUTPUT__OptionalList(_type, _suffix) \
+    if (response->node && \
+        esxVI_##_type##_DeserializeList(response->node, output) < 0) { \
+        goto cleanup; \
     }
 
 
 
-#define ESX_VI__METHOD(_name, _this_from_service, _parameters, _output_type,  \
-                       _deserialize_suffix, _occurrence, _validate,           \
-                       _serialize)                                            \
-    int                                                                       \
-    esxVI_##_name _parameters                                                 \
-    {                                                                         \
-        int result = -1;                                                      \
-        const char *methodName = #_name;                                      \
-        virBuffer buffer = VIR_BUFFER_INITIALIZER;                            \
-        char *request = NULL;                                                 \
-        esxVI_Response *response = NULL;                                      \
-                                                                              \
-        ESX_VI__METHOD__PARAMETER__THIS__##_this_from_service                 \
-                                                                              \
-        ESX_VI__METHOD__CHECK_OUTPUT__##_occurrence                           \
-                                                                              \
-        _validate                                                             \
-                                                                              \
-        virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER);               \
-        virBufferAddLit(&buffer, "<"#_name" xmlns=\"urn:vim25\">");           \
-                                                                              \
-        _serialize                                                            \
-                                                                              \
-        virBufferAddLit(&buffer, "</"#_name">");                              \
-        virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER);               \
-                                                                              \
-        if (virBufferCheckError(&buffer) < 0)                                 \
-            goto cleanup;                                                     \
-                                                                              \
-        request = virBufferContentAndReset(&buffer);                          \
-                                                                              \
-        if (esxVI_Context_Execute(ctx, methodName, request, &response,        \
-                                  esxVI_Occurrence_##_occurrence) < 0) {      \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        ESX_VI__METHOD__DESERIALIZE_OUTPUT__##_occurrence                     \
-          (_output_type, _deserialize_suffix)                                 \
-                                                                              \
-        result = 0;                                                           \
-                                                                              \
-      cleanup:                                                                \
-        if (result < 0) {                                                     \
-            virBufferFreeAndReset(&buffer);                                   \
-        }                                                                     \
-                                                                              \
-        VIR_FREE(request);                                                    \
-        esxVI_Response_Free(&response);                                       \
-                                                                              \
-        return result;                                                        \
+#define ESX_VI__METHOD(_name, _this_from_service, _parameters, _output_type, \
+                       _deserialize_suffix, _occurrence, _validate, \
+                       _serialize) \
+    int \
+    esxVI_##_name _parameters \
+    { \
+        int result = -1; \
+        const char *methodName = #_name; \
+        virBuffer buffer = VIR_BUFFER_INITIALIZER; \
+        char *request = NULL; \
+        esxVI_Response *response = NULL; \
+ \
+        ESX_VI__METHOD__PARAMETER__THIS__##_this_from_service \
+ \
+        ESX_VI__METHOD__CHECK_OUTPUT__##_occurrence \
+ \
+        _validate \
+ \
+        virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_HEADER); \
+        virBufferAddLit(&buffer, "<"#_name" xmlns=\"urn:vim25\">"); \
+ \
+        _serialize \
+ \
+        virBufferAddLit(&buffer, "</"#_name">"); \
+        virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER); \
+ \
+        if (virBufferCheckError(&buffer) < 0) \
+            goto cleanup; \
+ \
+        request = virBufferContentAndReset(&buffer); \
+ \
+        if (esxVI_Context_Execute(ctx, methodName, request, &response, \
+                                  esxVI_Occurrence_##_occurrence) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        ESX_VI__METHOD__DESERIALIZE_OUTPUT__##_occurrence \
+          (_output_type, _deserialize_suffix) \
+ \
+        result = 0; \
+ \
+      cleanup: \
+        if (result < 0) { \
+            virBufferFreeAndReset(&buffer); \
+        } \
+ \
+        VIR_FREE(request); \
+        esxVI_Response_Free(&response); \
+ \
+        return result; \
     }
 
 
 
-#define ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(_type, _name)            \
-    esxVI_##_type *_this = NULL;                                              \
-                                                                              \
-    if (!ctx->service) {                                                      \
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call"));      \
-        return -1;                                                            \
-    }                                                                         \
-                                                                              \
+#define ESX_VI__METHOD__PARAMETER__THIS_FROM_SERVICE(_type, _name) \
+    esxVI_##_type *_this = NULL; \
+ \
+    if (!ctx->service) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call")); \
+        return -1; \
+    } \
+ \
     _this = ctx->service->_name;
 
 
 
-#define ESX_VI__METHOD__PARAMETER__THIS__/* explicit _this */                 \
+#define ESX_VI__METHOD__PARAMETER__THIS__/* explicit _this */ \
     /* nothing */
 
 
@@ -177,33 +177,33 @@
  *
  * To be used as part of ESX_VI__METHOD.
  */
-#define ESX_VI__METHOD__PARAMETER__REQUIRE(_name)                             \
-    if (_name == 0) {                                                         \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                                \
-                       "Required parameter '%s' is missing for call to %s",   \
-                       #_name, methodName);                                   \
-        return -1;                                                            \
+#define ESX_VI__METHOD__PARAMETER__REQUIRE(_name) \
+    if (_name == 0) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       "Required parameter '%s' is missing for call to %s", \
+                       #_name, methodName); \
+        return -1; \
     }
 
 
 
-#define ESX_VI__METHOD__PARAMETER__SERIALIZE(_type, _name)                    \
-    if (esxVI_##_type##_Serialize(_name, #_name, &buffer) < 0) {              \
-        goto cleanup;                                                         \
+#define ESX_VI__METHOD__PARAMETER__SERIALIZE(_type, _name) \
+    if (esxVI_##_type##_Serialize(_name, #_name, &buffer) < 0) { \
+        goto cleanup; \
     }
 
 
 
-#define ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(_type, _name)               \
-    if (esxVI_##_type##_SerializeList(_name, #_name, &buffer) < 0) {          \
-        goto cleanup;                                                         \
+#define ESX_VI__METHOD__PARAMETER__SERIALIZE_LIST(_type, _name) \
+    if (esxVI_##_type##_SerializeList(_name, #_name, &buffer) < 0) { \
+        goto cleanup; \
     }
 
 
 
-#define ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(_type, _name)              \
-    if (esxVI_##_type##_SerializeValue(_name, #_name, &buffer) < 0) {         \
-        goto cleanup;                                                         \
+#define ESX_VI__METHOD__PARAMETER__SERIALIZE_VALUE(_type, _name) \
+    if (esxVI_##_type##_SerializeValue(_name, #_name, &buffer) < 0) { \
+        goto cleanup; \
     }
 
 

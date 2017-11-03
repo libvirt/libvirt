@@ -34,101 +34,101 @@
 #include "virstring.h"
 #include "virtime.h"
 
-#define VIRSH_COMMON_OPT_POOL_FULL                            \
-    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"))            \
+#define VIRSH_COMMON_OPT_POOL_FULL \
+    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid")) \
 
-#define VIRSH_COMMON_OPT_POOL_BUILD                           \
-    {.name = "build",                                         \
-     .type = VSH_OT_BOOL,                                     \
-     .flags = 0,                                              \
-     .help = N_("build the pool as normal")                   \
-    }                                                         \
+#define VIRSH_COMMON_OPT_POOL_BUILD \
+    {.name = "build", \
+     .type = VSH_OT_BOOL, \
+     .flags = 0, \
+     .help = N_("build the pool as normal") \
+    } \
 
-#define VIRSH_COMMON_OPT_POOL_NO_OVERWRITE                        \
-    {.name = "no-overwrite",                                      \
-     .type = VSH_OT_BOOL,                                         \
-     .flags = 0,                                                  \
-     .help = N_("do not overwrite any existing data")             \
-    }                                                             \
+#define VIRSH_COMMON_OPT_POOL_NO_OVERWRITE \
+    {.name = "no-overwrite", \
+     .type = VSH_OT_BOOL, \
+     .flags = 0, \
+     .help = N_("do not overwrite any existing data") \
+    } \
 
-#define VIRSH_COMMON_OPT_POOL_OVERWRITE                           \
-    {.name = "overwrite",                                         \
-     .type = VSH_OT_BOOL,                                         \
-     .flags = 0,                                                  \
-     .help = N_("overwrite any existing data")                    \
-    }                                                             \
+#define VIRSH_COMMON_OPT_POOL_OVERWRITE \
+    {.name = "overwrite", \
+     .type = VSH_OT_BOOL, \
+     .flags = 0, \
+     .help = N_("overwrite any existing data") \
+    } \
 
-#define VIRSH_COMMON_OPT_POOL_X_AS                                     \
-    {.name = "name",                                                   \
-     .type = VSH_OT_DATA,                                              \
-     .flags = VSH_OFLAG_REQ,                                           \
-     .help = N_("name of the pool")                                    \
-    },                                                                 \
-    {.name = "type",                                                   \
-     .type = VSH_OT_DATA,                                              \
-     .flags = VSH_OFLAG_REQ,                                           \
-     .help = N_("type of the pool")                                    \
-    },                                                                 \
-    {.name = "print-xml",                                              \
-     .type = VSH_OT_BOOL,                                              \
-     .help = N_("print XML document, but don't define/create")         \
-    },                                                                 \
-    {.name = "source-host",                                            \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("source-host for underlying storage")                  \
-    },                                                                 \
-    {.name = "source-path",                                            \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("source path for underlying storage")                  \
-    },                                                                 \
-    {.name = "source-dev",                                             \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("source device for underlying storage")                \
-    },                                                                 \
-    {.name = "source-name",                                            \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("source name for underlying storage")                  \
-    },                                                                 \
-    {.name = "target",                                                 \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("target for underlying storage")                       \
-    },                                                                 \
-    {.name = "source-format",                                          \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("format for underlying storage")                       \
-    },                                                                 \
-    {.name = "auth-type",                                              \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("auth type to be used for underlying storage")         \
-    },                                                                 \
-    {.name = "auth-username",                                          \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("auth username to be used for underlying storage")     \
-    },                                                                 \
-    {.name = "secret-usage",                                           \
-     .type = VSH_OT_STRING,                                            \
+#define VIRSH_COMMON_OPT_POOL_X_AS \
+    {.name = "name", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = N_("name of the pool") \
+    }, \
+    {.name = "type", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = N_("type of the pool") \
+    }, \
+    {.name = "print-xml", \
+     .type = VSH_OT_BOOL, \
+     .help = N_("print XML document, but don't define/create") \
+    }, \
+    {.name = "source-host", \
+     .type = VSH_OT_STRING, \
+     .help = N_("source-host for underlying storage") \
+    }, \
+    {.name = "source-path", \
+     .type = VSH_OT_STRING, \
+     .help = N_("source path for underlying storage") \
+    }, \
+    {.name = "source-dev", \
+     .type = VSH_OT_STRING, \
+     .help = N_("source device for underlying storage") \
+    }, \
+    {.name = "source-name", \
+     .type = VSH_OT_STRING, \
+     .help = N_("source name for underlying storage") \
+    }, \
+    {.name = "target", \
+     .type = VSH_OT_STRING, \
+     .help = N_("target for underlying storage") \
+    }, \
+    {.name = "source-format", \
+     .type = VSH_OT_STRING, \
+     .help = N_("format for underlying storage") \
+    }, \
+    {.name = "auth-type", \
+     .type = VSH_OT_STRING, \
+     .help = N_("auth type to be used for underlying storage") \
+    }, \
+    {.name = "auth-username", \
+     .type = VSH_OT_STRING, \
+     .help = N_("auth username to be used for underlying storage") \
+    }, \
+    {.name = "secret-usage", \
+     .type = VSH_OT_STRING, \
      .help = N_("auth secret usage to be used for underlying storage") \
-    },                                                                 \
-    {.name = "secret-uuid",                                            \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("auth secret UUID to be used for underlying storage")  \
-    },                                                                 \
-    {.name = "adapter-name",                                           \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("adapter name to be used for underlying storage")      \
-    },                                                                 \
-    {.name = "adapter-wwnn",                                           \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("adapter wwnn to be used for underlying storage")      \
-    },                                                                 \
-    {.name = "adapter-wwpn",                                           \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("adapter wwpn to be used for underlying storage")      \
-    },                                                                 \
-    {.name = "adapter-parent",                                         \
-     .type = VSH_OT_STRING,                                            \
-     .help = N_("adapter parent to be used for underlying storage")    \
-    }                                                                  \
+    }, \
+    {.name = "secret-uuid", \
+     .type = VSH_OT_STRING, \
+     .help = N_("auth secret UUID to be used for underlying storage") \
+    }, \
+    {.name = "adapter-name", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter name to be used for underlying storage") \
+    }, \
+    {.name = "adapter-wwnn", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter wwnn to be used for underlying storage") \
+    }, \
+    {.name = "adapter-wwpn", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter wwpn to be used for underlying storage") \
+    }, \
+    {.name = "adapter-parent", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter parent to be used for underlying storage") \
+    } \
 
 virStoragePoolPtr
 virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
@@ -1928,12 +1928,12 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     }
 
 #define EDIT_GET_XML virStoragePoolGetXMLDesc(pool, flags)
-#define EDIT_NOT_CHANGED                                                     \
-    do {                                                                     \
-        vshPrintExtra(ctl, _("Pool %s XML configuration not changed.\n"),    \
-                 virStoragePoolGetName(pool));                               \
-        ret = true;                                                          \
-        goto edit_cleanup;                                                   \
+#define EDIT_NOT_CHANGED \
+    do { \
+        vshPrintExtra(ctl, _("Pool %s XML configuration not changed.\n"), \
+                 virStoragePoolGetName(pool)); \
+        ret = true; \
+        goto edit_cleanup; \
     } while (0)
 #define EDIT_DEFINE \
     (pool_edited = virStoragePoolDefineXML(priv->conn, doc_edited, 0))

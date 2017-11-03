@@ -247,58 +247,58 @@ mymain(void)
     testTLSInit(KEYFILE);
 
 # define DO_SESS_TEST(_caCrt, _serverCrt, _clientCrt, _expectServerFail, \
-                      _expectClientFail, _hostname, _wildcards)          \
-    do {                                                                 \
-        static struct testTLSSessionData data;                           \
-        data.servercacrt = _caCrt;                                       \
-        data.clientcacrt = _caCrt;                                       \
-        data.servercrt = _serverCrt;                                     \
-        data.clientcrt = _clientCrt;                                     \
-        data.expectServerFail = _expectServerFail;                       \
-        data.expectClientFail = _expectClientFail;                       \
-        data.hostname = _hostname;                                       \
-        data.wildcards = _wildcards;                                     \
-        if (virTestRun("TLS Session " #_serverCrt " + " #_clientCrt,     \
-                       testTLSSessionInit, &data) < 0)                   \
-            ret = -1;                                                    \
+                      _expectClientFail, _hostname, _wildcards) \
+    do { \
+        static struct testTLSSessionData data; \
+        data.servercacrt = _caCrt; \
+        data.clientcacrt = _caCrt; \
+        data.servercrt = _serverCrt; \
+        data.clientcrt = _clientCrt; \
+        data.expectServerFail = _expectServerFail; \
+        data.expectClientFail = _expectClientFail; \
+        data.hostname = _hostname; \
+        data.wildcards = _wildcards; \
+        if (virTestRun("TLS Session " #_serverCrt " + " #_clientCrt, \
+                       testTLSSessionInit, &data) < 0) \
+            ret = -1; \
     } while (0)
 
 # define DO_SESS_TEST_EXT(_serverCaCrt, _clientCaCrt, _serverCrt, _clientCrt, \
-                          _expectServerFail, _expectClientFail,               \
-                          _hostname, _wildcards)                              \
-    do {                                                                      \
-        static struct testTLSSessionData data;                                \
-        data.servercacrt = _serverCaCrt;                                      \
-        data.clientcacrt = _clientCaCrt;                                      \
-        data.servercrt = _serverCrt;                                          \
-        data.clientcrt = _clientCrt;                                          \
-        data.expectServerFail = _expectServerFail;                            \
-        data.expectClientFail = _expectClientFail;                            \
-        data.hostname = _hostname;                                            \
-        data.wildcards = _wildcards;                                          \
-        if (virTestRun("TLS Session " #_serverCrt " + " #_clientCrt,          \
-                       testTLSSessionInit, &data) < 0)                        \
-            ret = -1;                                                         \
+                          _expectServerFail, _expectClientFail, \
+                          _hostname, _wildcards) \
+    do { \
+        static struct testTLSSessionData data; \
+        data.servercacrt = _serverCaCrt; \
+        data.clientcacrt = _clientCaCrt; \
+        data.servercrt = _serverCrt; \
+        data.clientcrt = _clientCrt; \
+        data.expectServerFail = _expectServerFail; \
+        data.expectClientFail = _expectClientFail; \
+        data.hostname = _hostname; \
+        data.wildcards = _wildcards; \
+        if (virTestRun("TLS Session " #_serverCrt " + " #_clientCrt, \
+                       testTLSSessionInit, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-# define TLS_CERT_REQ(varname, cavarname,                               \
-                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
-                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
-    static struct testTLSCertReq varname = {                            \
-        NULL, #varname "-sess.pem",                                     \
-        co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
-        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so                     \
-    };                                                                  \
+# define TLS_CERT_REQ(varname, cavarname, \
+                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo) \
+    static struct testTLSCertReq varname = { \
+        NULL, #varname "-sess.pem", \
+        co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so \
+    }; \
     testTLSGenerateCert(&varname, cavarname.crt)
 
-# define TLS_ROOT_REQ(varname,                                          \
-                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
-                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
-    static struct testTLSCertReq varname = {                            \
-        NULL, #varname "-sess.pem",                                     \
-        co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
-        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so                     \
-    };                                                                  \
+# define TLS_ROOT_REQ(varname, \
+                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo) \
+    static struct testTLSCertReq varname = { \
+        NULL, #varname "-sess.pem", \
+        co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, so \
+    }; \
     testTLSGenerateCert(&varname, NULL)
 
     /* A perfect CA, perfect client & perfect server */

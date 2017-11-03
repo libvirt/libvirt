@@ -381,30 +381,30 @@ mymain(void)
     /* TODO: test with format probing disabled too */
     driver.config->allowDiskFormatProbing = true;
 
-# define DO_TEST_FULL(name, when, gic, ...)                                    \
-    do {                                                                       \
-        if (testInfoSet(&info, name, when, gic) < 0) {                         \
-            VIR_TEST_DEBUG("Failed to generate test data for '%s'", name);     \
-            return -1;                                                         \
-        }                                                                      \
-        virQEMUCapsSetList(info.qemuCaps, __VA_ARGS__, QEMU_CAPS_LAST);        \
-                                                                               \
-        if (info.outInactiveName) {                                            \
-            if (virTestRun("QEMU XML-2-XML-inactive " name,                    \
-                            testXML2XMLInactive, &info) < 0)                   \
-                ret = -1;                                                      \
-        }                                                                      \
-                                                                               \
-        if (info.outActiveName) {                                              \
-            if (virTestRun("QEMU XML-2-XML-active " name,                      \
-                            testXML2XMLActive, &info) < 0)                     \
-                ret = -1;                                                      \
-                                                                               \
-            if (virTestRun("QEMU XML-2-XML-status " name,                      \
-                            testCompareStatusXMLToXMLFiles, &info) < 0)        \
-                ret = -1;                                                      \
-        }                                                                      \
-        testInfoFree(&info);                                                   \
+# define DO_TEST_FULL(name, when, gic, ...) \
+    do { \
+        if (testInfoSet(&info, name, when, gic) < 0) { \
+            VIR_TEST_DEBUG("Failed to generate test data for '%s'", name); \
+            return -1; \
+        } \
+        virQEMUCapsSetList(info.qemuCaps, __VA_ARGS__, QEMU_CAPS_LAST); \
+ \
+        if (info.outInactiveName) { \
+            if (virTestRun("QEMU XML-2-XML-inactive " name, \
+                            testXML2XMLInactive, &info) < 0) \
+                ret = -1; \
+        } \
+ \
+        if (info.outActiveName) { \
+            if (virTestRun("QEMU XML-2-XML-active " name, \
+                            testXML2XMLActive, &info) < 0) \
+                ret = -1; \
+ \
+            if (virTestRun("QEMU XML-2-XML-status " name, \
+                            testCompareStatusXMLToXMLFiles, &info) < 0) \
+                ret = -1; \
+        } \
+        testInfoFree(&info); \
     } while (0)
 
 # define NONE QEMU_CAPS_LAST

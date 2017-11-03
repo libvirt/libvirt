@@ -414,13 +414,13 @@ cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
 #define EDIT_GET_XML virNWFilterGetXMLDesc(nwfilter, 0)
-#define EDIT_NOT_CHANGED                                        \
-    do {                                                        \
-        vshPrintExtra(ctl, _("Network filter %s XML "           \
-                        "configuration not changed.\n"),        \
-                 virNWFilterGetName(nwfilter));                 \
-        ret = true;                                             \
-        goto edit_cleanup;                                      \
+#define EDIT_NOT_CHANGED \
+    do { \
+        vshPrintExtra(ctl, _("Network filter %s XML " \
+                        "configuration not changed.\n"), \
+                 virNWFilterGetName(nwfilter)); \
+        ret = true; \
+        goto edit_cleanup; \
     } while (0)
 #define EDIT_DEFINE \
     (nwfilter_edited = virNWFilterDefineXML(priv->conn, doc_edited))

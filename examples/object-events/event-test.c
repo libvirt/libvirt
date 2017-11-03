@@ -1053,7 +1053,7 @@ struct domainEventData {
 };
 
 
-#define DOMAIN_EVENT(event, callback)                                          \
+#define DOMAIN_EVENT(event, callback) \
     {event, -1, VIR_DOMAIN_EVENT_CALLBACK(callback), #event}
 
 struct domainEventData domainEvents[] = {
@@ -1091,7 +1091,7 @@ struct storagePoolEventData {
     const char *name;
 };
 
-#define STORAGE_POOL_EVENT(event, callback)                                          \
+#define STORAGE_POOL_EVENT(event, callback) \
     {event, -1, VIR_STORAGE_POOL_EVENT_CALLBACK(callback), #event}
 
 struct storagePoolEventData storagePoolEvents[] = {
@@ -1106,7 +1106,7 @@ struct nodeDeviceEventData {
     const char *name;
 };
 
-#define NODE_DEVICE_EVENT(event, callback)                                          \
+#define NODE_DEVICE_EVENT(event, callback) \
     {event, -1, VIR_NODE_DEVICE_EVENT_CALLBACK(callback), #event}
 
 struct nodeDeviceEventData nodeDeviceEvents[] = {
@@ -1121,7 +1121,7 @@ struct secretEventData {
     const char *name;
 };
 
-#define SECRET_EVENT(event, callback)                                          \
+#define SECRET_EVENT(event, callback) \
     {event, -1, VIR_SECRET_EVENT_CALLBACK(callback), #event}
 
 struct secretEventData secretEvents[] = {

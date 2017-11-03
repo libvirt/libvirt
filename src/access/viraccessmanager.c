@@ -36,8 +36,8 @@
 
 VIR_LOG_INIT("access.accessmanager");
 
-#define virAccessError(code, ...)                                       \
-    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__,                 \
+#define virAccessError(code, ...) \
+    virReportErrorHelper(VIR_FROM_THIS, code, __FILE__, \
                          __FUNCTION__, __LINE__, __VA_ARGS__)
 
 struct _virAccessManager {

@@ -324,13 +324,13 @@ mymain(void)
 
     /* It's a bit awkward listing result before argument, but that's a
      * limitation of C99 vararg macros.  */
-# define DO_TEST(i, result, ...)                                        \
-    do {                                                                \
-        const char *myargv[] = { VIRSH_DEFAULT, __VA_ARGS__, NULL };    \
-        const struct testInfo info = { myargv, result };                \
-        if (virTestRun("virsh echo " #i,                                \
-                       testCompareEcho, &info) < 0)                     \
-            ret = -1;                                                   \
+# define DO_TEST(i, result, ...) \
+    do { \
+        const char *myargv[] = { VIRSH_DEFAULT, __VA_ARGS__, NULL }; \
+        const struct testInfo info = { myargv, result }; \
+        if (virTestRun("virsh echo " #i, \
+                       testCompareEcho, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     /* Arg parsing quote removal tests.  */

@@ -38,15 +38,15 @@
 
 VIR_LOG_INIT("tests.hostdevtest");
 
-# define CHECK_LIST_COUNT(list, cnt)                                        \
-    do {                                                                    \
-        size_t actualCount;                                                 \
-        if ((actualCount = virPCIDeviceListCount(list)) != cnt) {           \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                          \
-                           "Unexpected count of items in " #list ": %zu, "  \
-                           "expecting %zu", actualCount, (size_t) cnt);     \
-            goto cleanup;                                                   \
-        }                                                                   \
+# define CHECK_LIST_COUNT(list, cnt) \
+    do { \
+        size_t actualCount; \
+        if ((actualCount = virPCIDeviceListCount(list)) != cnt) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "Unexpected count of items in " #list ": %zu, " \
+                           "expecting %zu", actualCount, (size_t) cnt); \
+            goto cleanup; \
+        } \
     } while (0)
 
 # define TEST_STATE_DIR abs_builddir "/hostdevmgr"
@@ -608,11 +608,11 @@ mymain(void)
 
     setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
 
-# define DO_TEST(fnc)                                   \
-    do {                                                \
-        VIR_DEBUG("Testing: %s", #fnc);                 \
-        if (virTestRun(#fnc, fnc, NULL) < 0)            \
-            ret = -1;                                   \
+# define DO_TEST(fnc) \
+    do { \
+        VIR_DEBUG("Testing: %s", #fnc); \
+        if (virTestRun(#fnc, fnc, NULL) < 0) \
+            ret = -1; \
     } while (0)
 
     if (myInit() < 0)

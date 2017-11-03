@@ -616,34 +616,34 @@ mymain(void)
     /* wait only 100ms for DEVICE_DELETED event */
     qemuDomainRemoveDeviceWaitTime = 100;
 
-#define DO_TEST(file, ACTION, dev, event, fial, kep, ...)                   \
-    do {                                                                    \
-        const char *my_mon[] = { __VA_ARGS__, NULL};                        \
-        const char *name = file " " #ACTION " " dev;                        \
-        data.action = ACTION;                                               \
-        data.domain_filename = file;                                        \
-        data.device_filename = dev;                                         \
-        data.fail = fial;                                                   \
-        data.mon = my_mon;                                                  \
-        data.keep = kep;                                                    \
-        data.deviceDeletedEvent = event;                                    \
-        if (virTestRun(name, testQemuHotplug, &data) < 0)                   \
-            ret = -1;                                                       \
+#define DO_TEST(file, ACTION, dev, event, fial, kep, ...) \
+    do { \
+        const char *my_mon[] = { __VA_ARGS__, NULL}; \
+        const char *name = file " " #ACTION " " dev; \
+        data.action = ACTION; \
+        data.domain_filename = file; \
+        data.device_filename = dev; \
+        data.fail = fial; \
+        data.mon = my_mon; \
+        data.keep = kep; \
+        data.deviceDeletedEvent = event; \
+        if (virTestRun(name, testQemuHotplug, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_ATTACH(file, dev, fial, kep, ...)                           \
+#define DO_TEST_ATTACH(file, dev, fial, kep, ...) \
     DO_TEST(file, ATTACH, dev, false, fial, kep, __VA_ARGS__)
 
-#define DO_TEST_DETACH(file, dev, fial, kep, ...)                           \
+#define DO_TEST_DETACH(file, dev, fial, kep, ...) \
     DO_TEST(file, DETACH, dev, false, fial, kep, __VA_ARGS__)
 
-#define DO_TEST_ATTACH_EVENT(file, dev, fial, kep, ...)                     \
+#define DO_TEST_ATTACH_EVENT(file, dev, fial, kep, ...) \
     DO_TEST(file, ATTACH, dev, true, fial, kep, __VA_ARGS__)
 
-#define DO_TEST_DETACH_EVENT(file, dev, fial, kep, ...)                     \
+#define DO_TEST_DETACH_EVENT(file, dev, fial, kep, ...) \
     DO_TEST(file, DETACH, dev, true, fial, kep, __VA_ARGS__)
 
-#define DO_TEST_UPDATE(file, dev, fial, kep, ...)                           \
+#define DO_TEST_UPDATE(file, dev, fial, kep, ...) \
     DO_TEST(file, UPDATE, dev, false, fial, kep, __VA_ARGS__)
 
 
@@ -651,16 +651,16 @@ mymain(void)
 #define HMP(msg)    "{\"return\": \"" msg "\"}"
 
 #define QMP_DEVICE_DELETED(dev) \
-    "{"                                                     \
-    "    \"timestamp\": {"                                  \
-    "        \"seconds\": 1374137171,"                      \
-    "        \"microseconds\": 2659"                        \
-    "    },"                                                \
-    "    \"event\": \"DEVICE_DELETED\","                    \
-    "    \"data\": {"                                       \
-    "        \"device\": \"" dev "\","                      \
-    "        \"path\": \"/machine/peripheral/" dev "\""     \
-    "    }"                                                 \
+    "{" \
+    "    \"timestamp\": {" \
+    "        \"seconds\": 1374137171," \
+    "        \"microseconds\": 2659" \
+    "    }," \
+    "    \"event\": \"DEVICE_DELETED\"," \
+    "    \"data\": {" \
+    "        \"device\": \"" dev "\"," \
+    "        \"path\": \"/machine/peripheral/" dev "\"" \
+    "    }" \
     "}\r\n"
 
     DO_TEST_UPDATE("graphics-spice", "graphics-spice-nochange", false, false, NULL);
@@ -834,15 +834,15 @@ mymain(void)
     DO_TEST_DETACH("base-live", "watchdog-user-alias-full", false, false,
                    "device_del", QMP_OK);
 
-#define DO_TEST_CPU_GROUP(prefix, vcpus, modernhp, expectfail)                 \
-    do {                                                                       \
-        cpudata.test = prefix;                                                 \
-        cpudata.newcpus = vcpus;                                               \
-        cpudata.modern = modernhp;                                             \
-        cpudata.fail = expectfail;                                             \
-        if (virTestRun("hotplug vcpus group " prefix,                          \
-                       testQemuHotplugCpuGroup, &cpudata) < 0)                 \
-            ret = -1;                                                          \
+#define DO_TEST_CPU_GROUP(prefix, vcpus, modernhp, expectfail) \
+    do { \
+        cpudata.test = prefix; \
+        cpudata.newcpus = vcpus; \
+        cpudata.modern = modernhp; \
+        cpudata.fail = expectfail; \
+        if (virTestRun("hotplug vcpus group " prefix, \
+                       testQemuHotplugCpuGroup, &cpudata) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST_CPU_GROUP("x86-modern-bulk", 7, true, false);
@@ -852,16 +852,16 @@ mymain(void)
     DO_TEST_CPU_GROUP("ppc64-modern-bulk", 23, true, true);
     DO_TEST_CPU_GROUP("ppc64-modern-bulk", 25, true, true);
 
-#define DO_TEST_CPU_INDIVIDUAL(prefix, mapstr, statefl, modernhp, expectfail)  \
-    do {                                                                       \
-        cpudata.test = prefix;                                                 \
-        cpudata.cpumap = mapstr;                                               \
-        cpudata.state = statefl;                                               \
-        cpudata.modern = modernhp;                                             \
-        cpudata.fail = expectfail;                                             \
-        if (virTestRun("hotplug vcpus group " prefix,                          \
-                       testQemuHotplugCpuIndividual, &cpudata) < 0)            \
-            ret = -1;                                                          \
+#define DO_TEST_CPU_INDIVIDUAL(prefix, mapstr, statefl, modernhp, expectfail) \
+    do { \
+        cpudata.test = prefix; \
+        cpudata.cpumap = mapstr; \
+        cpudata.state = statefl; \
+        cpudata.modern = modernhp; \
+        cpudata.fail = expectfail; \
+        if (virTestRun("hotplug vcpus group " prefix, \
+                       testQemuHotplugCpuIndividual, &cpudata) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST_CPU_INDIVIDUAL("x86-modern-individual-add", "7", true, true, false);

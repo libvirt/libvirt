@@ -83,13 +83,13 @@ VIR_LOG_INIT("libxl.libxl_driver");
 /* Number of Xen scheduler parameters */
 #define XEN_SCHED_CREDIT_NPARAM   2
 
-#define LIBXL_CHECK_DOM0_GOTO(name, label)                               \
-    do {                                                                  \
-        if (STREQ_NULLABLE(name, "Domain-0")) {                           \
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",               \
+#define LIBXL_CHECK_DOM0_GOTO(name, label) \
+    do { \
+        if (STREQ_NULLABLE(name, "Domain-0")) { \
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s", \
                            _("Domain-0 does not support requested operation")); \
-            goto label;                                                   \
-        }                                                                 \
+            goto label; \
+        } \
     } while (0)
 
 
@@ -5392,16 +5392,16 @@ libxlDomainBlockStatsVBD(virDomainObjPtr vm,
         goto cleanup;
     }
 
-# define LIBXL_SET_VBDSTAT(FIELD, VAR, MUL)           \
+# define LIBXL_SET_VBDSTAT(FIELD, VAR, MUL) \
     if ((virAsprintf(&name, "%s/"FIELD, path) < 0) || \
-        (virFileReadAll(name, 256, &val) < 0) ||      \
-        (sscanf(val, "%llu", &status) != 1)) {        \
-        virReportError(VIR_ERR_OPERATION_FAILED,      \
-                       _("cannot read %s"), name);    \
-        goto cleanup;                                 \
-    }                                                 \
-    VAR += (status * MUL);                            \
-    VIR_FREE(name);                                   \
+        (virFileReadAll(name, 256, &val) < 0) || \
+        (sscanf(val, "%llu", &status) != 1)) { \
+        virReportError(VIR_ERR_OPERATION_FAILED, \
+                       _("cannot read %s"), name); \
+        goto cleanup; \
+    } \
+    VAR += (status * MUL); \
+    VIR_FREE(name); \
     VIR_FREE(val);
 
     LIBXL_SET_VBDSTAT("f_req",  stats->f_req,  1)
@@ -5584,12 +5584,12 @@ libxlDomainBlockStatsFlags(virDomainPtr dom,
 
     nstats = 0;
 
-#define LIBXL_BLKSTAT_ASSIGN_PARAM(VAR, NAME)                              \
-    if (nstats < *nparams && (blkstats.VAR) != -1) {                       \
-        if (virTypedParameterAssign(params + nstats, NAME,                 \
+#define LIBXL_BLKSTAT_ASSIGN_PARAM(VAR, NAME) \
+    if (nstats < *nparams && (blkstats.VAR) != -1) { \
+        if (virTypedParameterAssign(params + nstats, NAME, \
                                     VIR_TYPED_PARAM_LLONG, (blkstats.VAR)) < 0) \
-            goto endjob;                                                   \
-        nstats++;                                                          \
+            goto endjob; \
+        nstats++; \
     }
 
     LIBXL_BLKSTAT_ASSIGN_PARAM(wr_bytes, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES);

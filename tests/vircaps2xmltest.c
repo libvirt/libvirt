@@ -103,12 +103,12 @@ mymain(void)
     int ret = 0;
 
 #define DO_TEST_FULL(filename, arch, offlineMigrate, liveMigrate, resctrl) \
-    do {                                                                \
-        struct virCapabilitiesData data = {filename, arch,              \
-                                           offlineMigrate,              \
-                                           liveMigrate, resctrl};       \
-        if (virTestRun(filename, test_virCapabilities, &data) < 0)      \
-            ret = -1;                                                   \
+    do { \
+        struct virCapabilitiesData data = {filename, arch, \
+                                           offlineMigrate, \
+                                           liveMigrate, resctrl}; \
+        if (virTestRun(filename, test_virCapabilities, &data) < 0) \
+            ret = -1; \
     } while (0)
 
 #define DO_TEST(filename, arch) DO_TEST_FULL(filename, arch, true, true, false)

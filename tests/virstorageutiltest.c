@@ -79,24 +79,24 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_GLUSTER_EXTRACT_POOL_SOURCES_FULL(testname, sffx, pooltype)    \
-    do {                                                                       \
-        struct testGlusterExtractPoolSourcesData data;                         \
-        data.srcxml = abs_srcdir "/virstorageutildata/"                        \
-                      "gluster-parse-" testname "-src.xml";                    \
-        data.dstxml = abs_srcdir "/virstorageutildata/"                        \
-                      "gluster-parse-" testname "-" sffx ".xml";               \
-        data.type = pooltype;                                                  \
-        if (virTestRun("gluster-parse-" testname "-" sffx,                     \
-                       testGlusterExtractPoolSources, &data) < 0)              \
-            ret = -1;                                                          \
+#define DO_TEST_GLUSTER_EXTRACT_POOL_SOURCES_FULL(testname, sffx, pooltype) \
+    do { \
+        struct testGlusterExtractPoolSourcesData data; \
+        data.srcxml = abs_srcdir "/virstorageutildata/" \
+                      "gluster-parse-" testname "-src.xml"; \
+        data.dstxml = abs_srcdir "/virstorageutildata/" \
+                      "gluster-parse-" testname "-" sffx ".xml"; \
+        data.type = pooltype; \
+        if (virTestRun("gluster-parse-" testname "-" sffx, \
+                       testGlusterExtractPoolSources, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_GLUSTER_EXTRACT_POOL_SOURCES_NATIVE(testname)                  \
-    DO_TEST_GLUSTER_EXTRACT_POOL_SOURCES_FULL(testname, "native",              \
+#define DO_TEST_GLUSTER_EXTRACT_POOL_SOURCES_NATIVE(testname) \
+    DO_TEST_GLUSTER_EXTRACT_POOL_SOURCES_FULL(testname, "native", \
                                               VIR_STORAGE_POOL_GLUSTER)
-#define DO_TEST_GLUSTER_EXTRACT_POOL_SOURCES_NETFS(testname)                   \
-    DO_TEST_GLUSTER_EXTRACT_POOL_SOURCES_FULL(testname, "netfs",               \
+#define DO_TEST_GLUSTER_EXTRACT_POOL_SOURCES_NETFS(testname) \
+    DO_TEST_GLUSTER_EXTRACT_POOL_SOURCES_FULL(testname, "netfs", \
                                               VIR_STORAGE_POOL_NETFS)
 
     DO_TEST_GLUSTER_EXTRACT_POOL_SOURCES_NATIVE("basic");

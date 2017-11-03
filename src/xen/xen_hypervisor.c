@@ -104,7 +104,7 @@ typedef struct v1_hypercall_struct
     uint64_t op;
     uint64_t arg[5];
 } v1_hypercall_t;
-# define XEN_V1_IOCTL_HYPERCALL_CMD                  \
+# define XEN_V1_IOCTL_HYPERCALL_CMD \
     _IOC(_IOC_NONE, 'P', 0, sizeof(v1_hypercall_t))
 typedef v1_hypercall_t hypercall_t;
 #elif defined(__sun)
@@ -340,245 +340,245 @@ struct xen_v2s5_availheap {
 typedef struct xen_v2s5_availheap  xen_v2s5_availheap;
 
 
-#define XEN_GETDOMAININFOLIST_ALLOC(domlist, size)                      \
-    (hv_versions.hypervisor < 2 ?                                       \
-     (VIR_ALLOC_N(domlist.v0, (size)) == 0) :                           \
-     (hv_versions.dom_interface >= 9 ?                                  \
-      (VIR_ALLOC_N(domlist.v2d9, (size)) == 0) :                        \
-     (hv_versions.dom_interface == 8 ?                                  \
-      (VIR_ALLOC_N(domlist.v2d8, (size)) == 0) :                        \
-     (hv_versions.dom_interface == 7 ?                                  \
-      (VIR_ALLOC_N(domlist.v2d7, (size)) == 0) :                        \
-     (hv_versions.dom_interface == 6 ?                                  \
-      (VIR_ALLOC_N(domlist.v2d6, (size)) == 0) :                        \
-     (hv_versions.dom_interface == 5 ?                                  \
-      (VIR_ALLOC_N(domlist.v2d5, (size)) == 0) :                        \
+#define XEN_GETDOMAININFOLIST_ALLOC(domlist, size) \
+    (hv_versions.hypervisor < 2 ? \
+     (VIR_ALLOC_N(domlist.v0, (size)) == 0) : \
+     (hv_versions.dom_interface >= 9 ? \
+      (VIR_ALLOC_N(domlist.v2d9, (size)) == 0) : \
+     (hv_versions.dom_interface == 8 ? \
+      (VIR_ALLOC_N(domlist.v2d8, (size)) == 0) : \
+     (hv_versions.dom_interface == 7 ? \
+      (VIR_ALLOC_N(domlist.v2d7, (size)) == 0) : \
+     (hv_versions.dom_interface == 6 ? \
+      (VIR_ALLOC_N(domlist.v2d6, (size)) == 0) : \
+     (hv_versions.dom_interface == 5 ? \
+      (VIR_ALLOC_N(domlist.v2d5, (size)) == 0) : \
       (VIR_ALLOC_N(domlist.v2, (size)) == 0)))))))
 
-#define XEN_GETDOMAININFOLIST_FREE(domlist)            \
-    (hv_versions.hypervisor < 2 ?                      \
-     VIR_FREE(domlist.v0) :                            \
-     (hv_versions.dom_interface >= 9 ?                 \
-      VIR_FREE(domlist.v2d9) :                         \
-     (hv_versions.dom_interface == 8 ?                 \
-      VIR_FREE(domlist.v2d8) :                         \
-     (hv_versions.dom_interface == 7 ?                 \
-      VIR_FREE(domlist.v2d7) :                         \
-     (hv_versions.dom_interface == 6 ?                 \
-      VIR_FREE(domlist.v2d6) :                         \
-     (hv_versions.dom_interface == 5 ?                 \
-      VIR_FREE(domlist.v2d5) :                         \
+#define XEN_GETDOMAININFOLIST_FREE(domlist) \
+    (hv_versions.hypervisor < 2 ? \
+     VIR_FREE(domlist.v0) : \
+     (hv_versions.dom_interface >= 9 ? \
+      VIR_FREE(domlist.v2d9) : \
+     (hv_versions.dom_interface == 8 ? \
+      VIR_FREE(domlist.v2d8) : \
+     (hv_versions.dom_interface == 7 ? \
+      VIR_FREE(domlist.v2d7) : \
+     (hv_versions.dom_interface == 6 ? \
+      VIR_FREE(domlist.v2d6) : \
+     (hv_versions.dom_interface == 5 ? \
+      VIR_FREE(domlist.v2d5) : \
       VIR_FREE(domlist.v2)))))))
 
-#define XEN_GETDOMAININFOLIST_CLEAR(domlist, size)            \
-    (hv_versions.hypervisor < 2 ?                             \
-     memset(domlist.v0, 0, sizeof(*domlist.v0) * size) :      \
-     (hv_versions.dom_interface >= 9 ?                        \
+#define XEN_GETDOMAININFOLIST_CLEAR(domlist, size) \
+    (hv_versions.hypervisor < 2 ? \
+     memset(domlist.v0, 0, sizeof(*domlist.v0) * size) : \
+     (hv_versions.dom_interface >= 9 ? \
       memset(domlist.v2d9, 0, sizeof(*domlist.v2d9) * size) : \
-     (hv_versions.dom_interface == 8 ?                        \
+     (hv_versions.dom_interface == 8 ? \
       memset(domlist.v2d8, 0, sizeof(*domlist.v2d8) * size) : \
-     (hv_versions.dom_interface == 7 ?                        \
+     (hv_versions.dom_interface == 7 ? \
       memset(domlist.v2d7, 0, sizeof(*domlist.v2d7) * size) : \
-     (hv_versions.dom_interface == 6 ?                        \
+     (hv_versions.dom_interface == 6 ? \
       memset(domlist.v2d6, 0, sizeof(*domlist.v2d6) * size) : \
-     (hv_versions.dom_interface == 5 ?                        \
+     (hv_versions.dom_interface == 5 ? \
       memset(domlist.v2d5, 0, sizeof(*domlist.v2d5) * size) : \
       memset(domlist.v2, 0, sizeof(*domlist.v2) * size)))))))
 
-#define XEN_GETDOMAININFOLIST_DOMAIN(domlist, n)    \
-    (hv_versions.hypervisor < 2 ?                   \
-     domlist.v0[n].domain :                         \
-     (hv_versions.dom_interface >= 9 ?              \
-      domlist.v2d9[n].domain :                      \
-     (hv_versions.dom_interface == 8 ?              \
-      domlist.v2d8[n].domain :                      \
-     (hv_versions.dom_interface == 7 ?              \
-      domlist.v2d7[n].domain :                      \
-     (hv_versions.dom_interface == 6 ?              \
-      domlist.v2d6[n].domain :                      \
-     (hv_versions.dom_interface == 5 ?              \
-      domlist.v2d5[n].domain :                      \
+#define XEN_GETDOMAININFOLIST_DOMAIN(domlist, n) \
+    (hv_versions.hypervisor < 2 ? \
+     domlist.v0[n].domain : \
+     (hv_versions.dom_interface >= 9 ? \
+      domlist.v2d9[n].domain : \
+     (hv_versions.dom_interface == 8 ? \
+      domlist.v2d8[n].domain : \
+     (hv_versions.dom_interface == 7 ? \
+      domlist.v2d7[n].domain : \
+     (hv_versions.dom_interface == 6 ? \
+      domlist.v2d6[n].domain : \
+     (hv_versions.dom_interface == 5 ? \
+      domlist.v2d5[n].domain : \
       domlist.v2[n].domain))))))
 
-#define XEN_GETDOMAININFOLIST_UUID(domlist, n)      \
-    (hv_versions.hypervisor < 2 ?                   \
-     domlist.v0[n].handle :                         \
-     (hv_versions.dom_interface >= 9 ?              \
-      domlist.v2d9[n].handle :                      \
-     (hv_versions.dom_interface == 8 ?              \
-      domlist.v2d8[n].handle :                      \
-     (hv_versions.dom_interface == 7 ?              \
-      domlist.v2d7[n].handle :                      \
-     (hv_versions.dom_interface == 6 ?              \
-      domlist.v2d6[n].handle :                      \
-     (hv_versions.dom_interface == 5 ?              \
-      domlist.v2d5[n].handle :                      \
+#define XEN_GETDOMAININFOLIST_UUID(domlist, n) \
+    (hv_versions.hypervisor < 2 ? \
+     domlist.v0[n].handle : \
+     (hv_versions.dom_interface >= 9 ? \
+      domlist.v2d9[n].handle : \
+     (hv_versions.dom_interface == 8 ? \
+      domlist.v2d8[n].handle : \
+     (hv_versions.dom_interface == 7 ? \
+      domlist.v2d7[n].handle : \
+     (hv_versions.dom_interface == 6 ? \
+      domlist.v2d6[n].handle : \
+     (hv_versions.dom_interface == 5 ? \
+      domlist.v2d5[n].handle : \
       domlist.v2[n].handle))))))
 
-#define XEN_GETDOMAININFOLIST_DATA(domlist)        \
-    (hv_versions.hypervisor < 2 ?                  \
-     (void*)(domlist->v0) :                        \
-     (hv_versions.dom_interface >= 9 ?             \
-      (void*)(domlist->v2d9) :                     \
-     (hv_versions.dom_interface == 8 ?             \
-      (void*)(domlist->v2d8) :                     \
-     (hv_versions.dom_interface == 7 ?             \
-      (void*)(domlist->v2d7) :                     \
-     (hv_versions.dom_interface == 6 ?             \
-      (void*)(domlist->v2d6) :                     \
-     (hv_versions.dom_interface == 5 ?             \
-      (void*)(domlist->v2d5) :                     \
+#define XEN_GETDOMAININFOLIST_DATA(domlist) \
+    (hv_versions.hypervisor < 2 ? \
+     (void*)(domlist->v0) : \
+     (hv_versions.dom_interface >= 9 ? \
+      (void*)(domlist->v2d9) : \
+     (hv_versions.dom_interface == 8 ? \
+      (void*)(domlist->v2d8) : \
+     (hv_versions.dom_interface == 7 ? \
+      (void*)(domlist->v2d7) : \
+     (hv_versions.dom_interface == 6 ? \
+      (void*)(domlist->v2d6) : \
+     (hv_versions.dom_interface == 5 ? \
+      (void*)(domlist->v2d5) : \
       (void*)(domlist->v2)))))))
 
-#define XEN_GETDOMAININFO_SIZE                     \
-    (hv_versions.hypervisor < 2 ?                  \
-     sizeof(xen_v0_getdomaininfo) :                \
-     (hv_versions.dom_interface >= 9 ?             \
-      sizeof(xen_v2d9_getdomaininfo) :             \
-     (hv_versions.dom_interface == 8 ?             \
-      sizeof(xen_v2d8_getdomaininfo) :             \
-     (hv_versions.dom_interface == 7 ?             \
-      sizeof(xen_v2d7_getdomaininfo) :             \
-     (hv_versions.dom_interface == 6 ?             \
-      sizeof(xen_v2d6_getdomaininfo) :             \
-     (hv_versions.dom_interface == 5 ?             \
-      sizeof(xen_v2d5_getdomaininfo) :             \
+#define XEN_GETDOMAININFO_SIZE \
+    (hv_versions.hypervisor < 2 ? \
+     sizeof(xen_v0_getdomaininfo) : \
+     (hv_versions.dom_interface >= 9 ? \
+      sizeof(xen_v2d9_getdomaininfo) : \
+     (hv_versions.dom_interface == 8 ? \
+      sizeof(xen_v2d8_getdomaininfo) : \
+     (hv_versions.dom_interface == 7 ? \
+      sizeof(xen_v2d7_getdomaininfo) : \
+     (hv_versions.dom_interface == 6 ? \
+      sizeof(xen_v2d6_getdomaininfo) : \
+     (hv_versions.dom_interface == 5 ? \
+      sizeof(xen_v2d5_getdomaininfo) : \
       sizeof(xen_v2_getdomaininfo)))))))
 
-#define XEN_GETDOMAININFO_CLEAR(dominfo)                           \
-    (hv_versions.hypervisor < 2 ?                                  \
-     memset(&(dominfo.v0), 0, sizeof(xen_v0_getdomaininfo)) :      \
-     (hv_versions.dom_interface >= 9 ?                             \
+#define XEN_GETDOMAININFO_CLEAR(dominfo) \
+    (hv_versions.hypervisor < 2 ? \
+     memset(&(dominfo.v0), 0, sizeof(xen_v0_getdomaininfo)) : \
+     (hv_versions.dom_interface >= 9 ? \
       memset(&(dominfo.v2d9), 0, sizeof(xen_v2d9_getdomaininfo)) : \
-     (hv_versions.dom_interface == 8 ?                             \
+     (hv_versions.dom_interface == 8 ? \
       memset(&(dominfo.v2d8), 0, sizeof(xen_v2d8_getdomaininfo)) : \
-     (hv_versions.dom_interface == 7 ?                             \
+     (hv_versions.dom_interface == 7 ? \
       memset(&(dominfo.v2d7), 0, sizeof(xen_v2d7_getdomaininfo)) : \
-     (hv_versions.dom_interface == 6 ?                             \
+     (hv_versions.dom_interface == 6 ? \
       memset(&(dominfo.v2d6), 0, sizeof(xen_v2d6_getdomaininfo)) : \
-     (hv_versions.dom_interface == 5 ?                             \
+     (hv_versions.dom_interface == 5 ? \
       memset(&(dominfo.v2d5), 0, sizeof(xen_v2d5_getdomaininfo)) : \
       memset(&(dominfo.v2), 0, sizeof(xen_v2_getdomaininfo))))))))
 
-#define XEN_GETDOMAININFO_DOMAIN(dominfo)       \
-    (hv_versions.hypervisor < 2 ?               \
-     dominfo.v0.domain :                        \
-     (hv_versions.dom_interface >= 9 ?          \
-      dominfo.v2d9.domain :                     \
-     (hv_versions.dom_interface == 8 ?          \
-      dominfo.v2d8.domain :                     \
-     (hv_versions.dom_interface == 7 ?          \
-      dominfo.v2d7.domain :                     \
-     (hv_versions.dom_interface == 6 ?          \
-      dominfo.v2d6.domain :                     \
-     (hv_versions.dom_interface == 5 ?          \
-      dominfo.v2d5.domain :                     \
+#define XEN_GETDOMAININFO_DOMAIN(dominfo) \
+    (hv_versions.hypervisor < 2 ? \
+     dominfo.v0.domain : \
+     (hv_versions.dom_interface >= 9 ? \
+      dominfo.v2d9.domain : \
+     (hv_versions.dom_interface == 8 ? \
+      dominfo.v2d8.domain : \
+     (hv_versions.dom_interface == 7 ? \
+      dominfo.v2d7.domain : \
+     (hv_versions.dom_interface == 6 ? \
+      dominfo.v2d6.domain : \
+     (hv_versions.dom_interface == 5 ? \
+      dominfo.v2d5.domain : \
       dominfo.v2.domain))))))
 
-#define XEN_GETDOMAININFO_CPUTIME(dominfo)      \
-    (hv_versions.hypervisor < 2 ?               \
-     dominfo.v0.cpu_time :                      \
-     (hv_versions.dom_interface >= 9 ?          \
-      dominfo.v2d9.cpu_time :                   \
-     (hv_versions.dom_interface == 8 ?          \
-      dominfo.v2d8.cpu_time :                   \
-     (hv_versions.dom_interface == 7 ?          \
-      dominfo.v2d7.cpu_time :                   \
-     (hv_versions.dom_interface == 6 ?          \
-      dominfo.v2d6.cpu_time :                   \
-     (hv_versions.dom_interface == 5 ?          \
-      dominfo.v2d5.cpu_time :                   \
+#define XEN_GETDOMAININFO_CPUTIME(dominfo) \
+    (hv_versions.hypervisor < 2 ? \
+     dominfo.v0.cpu_time : \
+     (hv_versions.dom_interface >= 9 ? \
+      dominfo.v2d9.cpu_time : \
+     (hv_versions.dom_interface == 8 ? \
+      dominfo.v2d8.cpu_time : \
+     (hv_versions.dom_interface == 7 ? \
+      dominfo.v2d7.cpu_time : \
+     (hv_versions.dom_interface == 6 ? \
+      dominfo.v2d6.cpu_time : \
+     (hv_versions.dom_interface == 5 ? \
+      dominfo.v2d5.cpu_time : \
       dominfo.v2.cpu_time))))))
 
 
-#define XEN_GETDOMAININFO_CPUCOUNT(dominfo)     \
-    (hv_versions.hypervisor < 2 ?               \
-     dominfo.v0.nr_online_vcpus :               \
-     (hv_versions.dom_interface >= 9 ?          \
-      dominfo.v2d9.nr_online_vcpus :            \
-     (hv_versions.dom_interface == 8 ?          \
-      dominfo.v2d8.nr_online_vcpus :            \
-     (hv_versions.dom_interface == 7 ?          \
-      dominfo.v2d7.nr_online_vcpus :            \
-     (hv_versions.dom_interface == 6 ?          \
-      dominfo.v2d6.nr_online_vcpus :            \
-     (hv_versions.dom_interface == 5 ?          \
-      dominfo.v2d5.nr_online_vcpus :            \
+#define XEN_GETDOMAININFO_CPUCOUNT(dominfo) \
+    (hv_versions.hypervisor < 2 ? \
+     dominfo.v0.nr_online_vcpus : \
+     (hv_versions.dom_interface >= 9 ? \
+      dominfo.v2d9.nr_online_vcpus : \
+     (hv_versions.dom_interface == 8 ? \
+      dominfo.v2d8.nr_online_vcpus : \
+     (hv_versions.dom_interface == 7 ? \
+      dominfo.v2d7.nr_online_vcpus : \
+     (hv_versions.dom_interface == 6 ? \
+      dominfo.v2d6.nr_online_vcpus : \
+     (hv_versions.dom_interface == 5 ? \
+      dominfo.v2d5.nr_online_vcpus : \
       dominfo.v2.nr_online_vcpus))))))
 
-#define XEN_GETDOMAININFO_MAXCPUID(dominfo)     \
-    (hv_versions.hypervisor < 2 ?               \
-     dominfo.v0.max_vcpu_id :                   \
-     (hv_versions.dom_interface >= 9 ?          \
-      dominfo.v2d9.max_vcpu_id :                \
-     (hv_versions.dom_interface == 8 ?          \
-      dominfo.v2d8.max_vcpu_id :                \
-     (hv_versions.dom_interface == 7 ?          \
-      dominfo.v2d7.max_vcpu_id :                \
-     (hv_versions.dom_interface == 6 ?          \
-      dominfo.v2d6.max_vcpu_id :                \
-     (hv_versions.dom_interface == 5 ?          \
-      dominfo.v2d5.max_vcpu_id :                \
+#define XEN_GETDOMAININFO_MAXCPUID(dominfo) \
+    (hv_versions.hypervisor < 2 ? \
+     dominfo.v0.max_vcpu_id : \
+     (hv_versions.dom_interface >= 9 ? \
+      dominfo.v2d9.max_vcpu_id : \
+     (hv_versions.dom_interface == 8 ? \
+      dominfo.v2d8.max_vcpu_id : \
+     (hv_versions.dom_interface == 7 ? \
+      dominfo.v2d7.max_vcpu_id : \
+     (hv_versions.dom_interface == 6 ? \
+      dominfo.v2d6.max_vcpu_id : \
+     (hv_versions.dom_interface == 5 ? \
+      dominfo.v2d5.max_vcpu_id : \
       dominfo.v2.max_vcpu_id))))))
 
-#define XEN_GETDOMAININFO_FLAGS(dominfo)        \
-    (hv_versions.hypervisor < 2 ?               \
-     dominfo.v0.flags :                         \
-     (hv_versions.dom_interface >= 9 ?          \
-      dominfo.v2d9.flags :                      \
-     (hv_versions.dom_interface == 8 ?          \
-      dominfo.v2d8.flags :                      \
-     (hv_versions.dom_interface == 7 ?          \
-      dominfo.v2d7.flags :                      \
-     (hv_versions.dom_interface == 6 ?          \
-      dominfo.v2d6.flags :                      \
-     (hv_versions.dom_interface == 5 ?          \
-      dominfo.v2d5.flags :                      \
+#define XEN_GETDOMAININFO_FLAGS(dominfo) \
+    (hv_versions.hypervisor < 2 ? \
+     dominfo.v0.flags : \
+     (hv_versions.dom_interface >= 9 ? \
+      dominfo.v2d9.flags : \
+     (hv_versions.dom_interface == 8 ? \
+      dominfo.v2d8.flags : \
+     (hv_versions.dom_interface == 7 ? \
+      dominfo.v2d7.flags : \
+     (hv_versions.dom_interface == 6 ? \
+      dominfo.v2d6.flags : \
+     (hv_versions.dom_interface == 5 ? \
+      dominfo.v2d5.flags : \
       dominfo.v2.flags))))))
 
-#define XEN_GETDOMAININFO_TOT_PAGES(dominfo)    \
-    (hv_versions.hypervisor < 2 ?               \
-     dominfo.v0.tot_pages :                     \
-     (hv_versions.dom_interface >= 9 ?          \
-      dominfo.v2d9.tot_pages :                  \
-     (hv_versions.dom_interface == 8 ?          \
-      dominfo.v2d8.tot_pages :                  \
-     (hv_versions.dom_interface == 7 ?          \
-      dominfo.v2d7.tot_pages :                  \
-     (hv_versions.dom_interface == 6 ?          \
-      dominfo.v2d6.tot_pages :                  \
-     (hv_versions.dom_interface == 5 ?          \
-      dominfo.v2d5.tot_pages :                  \
+#define XEN_GETDOMAININFO_TOT_PAGES(dominfo) \
+    (hv_versions.hypervisor < 2 ? \
+     dominfo.v0.tot_pages : \
+     (hv_versions.dom_interface >= 9 ? \
+      dominfo.v2d9.tot_pages : \
+     (hv_versions.dom_interface == 8 ? \
+      dominfo.v2d8.tot_pages : \
+     (hv_versions.dom_interface == 7 ? \
+      dominfo.v2d7.tot_pages : \
+     (hv_versions.dom_interface == 6 ? \
+      dominfo.v2d6.tot_pages : \
+     (hv_versions.dom_interface == 5 ? \
+      dominfo.v2d5.tot_pages : \
       dominfo.v2.tot_pages))))))
 
-#define XEN_GETDOMAININFO_MAX_PAGES(dominfo)    \
-    (hv_versions.hypervisor < 2 ?               \
-     dominfo.v0.max_pages :                     \
-     (hv_versions.dom_interface >= 9 ?          \
-      dominfo.v2d9.max_pages :                  \
-     (hv_versions.dom_interface == 8 ?          \
-      dominfo.v2d8.max_pages :                  \
-     (hv_versions.dom_interface == 7 ?          \
-      dominfo.v2d7.max_pages :                  \
-     (hv_versions.dom_interface == 6 ?          \
-      dominfo.v2d6.max_pages :                  \
-     (hv_versions.dom_interface == 5 ?          \
-      dominfo.v2d5.max_pages :                  \
+#define XEN_GETDOMAININFO_MAX_PAGES(dominfo) \
+    (hv_versions.hypervisor < 2 ? \
+     dominfo.v0.max_pages : \
+     (hv_versions.dom_interface >= 9 ? \
+      dominfo.v2d9.max_pages : \
+     (hv_versions.dom_interface == 8 ? \
+      dominfo.v2d8.max_pages : \
+     (hv_versions.dom_interface == 7 ? \
+      dominfo.v2d7.max_pages : \
+     (hv_versions.dom_interface == 6 ? \
+      dominfo.v2d6.max_pages : \
+     (hv_versions.dom_interface == 5 ? \
+      dominfo.v2d5.max_pages : \
       dominfo.v2.max_pages))))))
 
-#define XEN_GETDOMAININFO_UUID(dominfo)         \
-    (hv_versions.hypervisor < 2 ?               \
-     dominfo.v0.handle :                        \
-     (hv_versions.dom_interface >= 9 ?          \
-      dominfo.v2d9.handle :                     \
-     (hv_versions.dom_interface == 8 ?          \
-      dominfo.v2d8.handle :                     \
-     (hv_versions.dom_interface == 7 ?          \
-      dominfo.v2d7.handle :                     \
-     (hv_versions.dom_interface == 6 ?          \
-      dominfo.v2d6.handle :                     \
-     (hv_versions.dom_interface == 5 ?          \
-      dominfo.v2d5.handle :                     \
+#define XEN_GETDOMAININFO_UUID(dominfo) \
+    (hv_versions.hypervisor < 2 ? \
+     dominfo.v0.handle : \
+     (hv_versions.dom_interface >= 9 ? \
+      dominfo.v2d9.handle : \
+     (hv_versions.dom_interface == 8 ? \
+      dominfo.v2d8.handle : \
+     (hv_versions.dom_interface == 7 ? \
+      dominfo.v2d7.handle : \
+     (hv_versions.dom_interface == 6 ? \
+      dominfo.v2d6.handle : \
+     (hv_versions.dom_interface == 5 ? \
+      dominfo.v2d5.handle : \
       dominfo.v2.handle))))))
 
 

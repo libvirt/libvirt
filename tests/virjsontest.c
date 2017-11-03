@@ -434,11 +434,11 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_FULL(name, cmd, doc, expect, pass)                  \
-    do {                                                            \
-        struct testInfo info = { doc, expect, pass };               \
-        if (virTestRun(name, testJSON ## cmd, &info) < 0)           \
-            ret = -1;                                               \
+#define DO_TEST_FULL(name, cmd, doc, expect, pass) \
+    do { \
+        struct testInfo info = { doc, expect, pass }; \
+        if (virTestRun(name, testJSON ## cmd, &info) < 0) \
+            ret = -1; \
     } while (0)
 
 /**
@@ -450,10 +450,10 @@ mymain(void)
  * Parses @doc and formats it back. If @expect is NULL the result has to be
  * identical to @doc.
  */
-#define DO_TEST_PARSE(name, doc, expect)                \
+#define DO_TEST_PARSE(name, doc, expect) \
     DO_TEST_FULL(name, FromString, doc, expect, true)
 
-#define DO_TEST_PARSE_FAIL(name, doc)           \
+#define DO_TEST_PARSE_FAIL(name, doc) \
     DO_TEST_FULL(name, FromString, doc, NULL, false)
 
 

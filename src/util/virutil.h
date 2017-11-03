@@ -78,22 +78,22 @@ const char *virEnumToString(const char *const*types,
                             unsigned int ntypes,
                             int type);
 
-# define VIR_ENUM_IMPL(name, lastVal, ...)                               \
-    static const char *const name ## TypeList[] = { __VA_ARGS__ };      \
-    verify(ARRAY_CARDINALITY(name ## TypeList) == lastVal);             \
-    const char *name ## TypeToString(int type) {                        \
-        return virEnumToString(name ## TypeList,                        \
-                               ARRAY_CARDINALITY(name ## TypeList),     \
-                               type);                                   \
-    }                                                                   \
-    int name ## TypeFromString(const char *type) {                      \
-        return virEnumFromString(name ## TypeList,                      \
-                                 ARRAY_CARDINALITY(name ## TypeList),   \
-                                 type);                                 \
+# define VIR_ENUM_IMPL(name, lastVal, ...) \
+    static const char *const name ## TypeList[] = { __VA_ARGS__ }; \
+    verify(ARRAY_CARDINALITY(name ## TypeList) == lastVal); \
+    const char *name ## TypeToString(int type) { \
+        return virEnumToString(name ## TypeList, \
+                               ARRAY_CARDINALITY(name ## TypeList), \
+                               type); \
+    } \
+    int name ## TypeFromString(const char *type) { \
+        return virEnumFromString(name ## TypeList, \
+                                 ARRAY_CARDINALITY(name ## TypeList), \
+                                 type); \
     }
 
-# define VIR_ENUM_DECL(name)                             \
-    const char *name ## TypeToString(int type);         \
+# define VIR_ENUM_DECL(name) \
+    const char *name ## TypeToString(int type); \
     int name ## TypeFromString(const char*type);
 
 /* No-op workarounds for functionality missing in mingw.  */
@@ -219,7 +219,7 @@ unsigned long long virMemoryMaxValue(bool ulong) ATTRIBUTE_NOINLINE;
  * This macro assigns @lvalue to @rvalue and evaluates as true if the value of
  * @rvalue did not fit into the @lvalue.
  */
-# define VIR_ASSIGN_IS_OVERFLOW(lvalue, rvalue)                                \
+# define VIR_ASSIGN_IS_OVERFLOW(lvalue, rvalue) \
     (((lvalue) = (rvalue)) != (rvalue))
 
 #endif /* __VIR_UTIL_H__ */

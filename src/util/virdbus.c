@@ -579,24 +579,24 @@ virDBusIsAllowedRefType(const char *sig)
 }
 
 
-# define SET_NEXT_VAL(dbustype, vargtype, arrtype, sigtype, fmt)        \
-    do {                                                                \
-        dbustype x;                                                     \
-        if (arrayref) {                                                 \
-            arrtype valarray = arrayptr;                                \
-            x = (dbustype)*valarray;                                    \
-            valarray++;                                                 \
-            arrayptr = valarray;                                        \
-        } else {                                                        \
-            x = (dbustype)va_arg(args, vargtype);                       \
-        }                                                               \
-        if (!dbus_message_iter_append_basic(iter, sigtype, &x)) {       \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                      \
+# define SET_NEXT_VAL(dbustype, vargtype, arrtype, sigtype, fmt) \
+    do { \
+        dbustype x; \
+        if (arrayref) { \
+            arrtype valarray = arrayptr; \
+            x = (dbustype)*valarray; \
+            valarray++; \
+            arrayptr = valarray; \
+        } else { \
+            x = (dbustype)va_arg(args, vargtype); \
+        } \
+        if (!dbus_message_iter_append_basic(iter, sigtype, &x)) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
                            _("Cannot append basic type %s"), #vargtype);\
-            goto cleanup;                                               \
-        }                                                               \
+            goto cleanup; \
+        } \
         VIR_DEBUG("Appended basic type '" #dbustype "' varg '" #vargtype\
-                  "' sig '%c' val '" fmt "'", sigtype, (vargtype)x);    \
+                  "' sig '%c' val '" fmt "'", sigtype, (vargtype)x); \
     } while (0)
 
 
@@ -854,25 +854,25 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
 # undef SET_NEXT_VAL
 
 
-# define GET_NEXT_VAL(dbustype, member, vargtype, fmt)                  \
-    do {                                                                \
-        DBusBasicValue v;                                               \
-        dbustype *x = (dbustype *)&v.member;                            \
-        vargtype *y;                                                    \
-        if (arrayref) {                                                 \
-            VIR_DEBUG("Use arrayref");                                  \
-            vargtype **xptrptr = arrayptr;                              \
-            if (VIR_EXPAND_N(*xptrptr, *narrayptr, 1) < 0)              \
-                goto cleanup;                                           \
-            y = (*xptrptr + (*narrayptr - 1));                          \
-            VIR_DEBUG("Expanded to %zu", *narrayptr);                   \
-        } else {                                                        \
-            y = va_arg(args, vargtype *);                               \
-        }                                                               \
-        dbus_message_iter_get_basic(iter, x);                           \
-        *y = *x;                                                        \
-        VIR_DEBUG("Read basic type '" #dbustype "' varg '" #vargtype    \
-                  "' val '" fmt "'", (vargtype)*y);                     \
+# define GET_NEXT_VAL(dbustype, member, vargtype, fmt) \
+    do { \
+        DBusBasicValue v; \
+        dbustype *x = (dbustype *)&v.member; \
+        vargtype *y; \
+        if (arrayref) { \
+            VIR_DEBUG("Use arrayref"); \
+            vargtype **xptrptr = arrayptr; \
+            if (VIR_EXPAND_N(*xptrptr, *narrayptr, 1) < 0) \
+                goto cleanup; \
+            y = (*xptrptr + (*narrayptr - 1)); \
+            VIR_DEBUG("Expanded to %zu", *narrayptr); \
+        } else { \
+            y = va_arg(args, vargtype *); \
+        } \
+        dbus_message_iter_get_basic(iter, x); \
+        *y = *x; \
+        VIR_DEBUG("Read basic type '" #dbustype "' varg '" #vargtype \
+                  "' val '" fmt "'", (vargtype)*y); \
     } while (0)
 
 

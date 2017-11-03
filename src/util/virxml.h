@@ -97,7 +97,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParse(filename, xmlStr, url)                     \
+# define virXMLParse(filename, xmlStr, url) \
     virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, NULL)
 
 /**
@@ -109,7 +109,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParseString(xmlStr, url)                         \
+# define virXMLParseString(xmlStr, url) \
     virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, NULL)
 
 /**
@@ -120,7 +120,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParseFile(filename)                              \
+# define virXMLParseFile(filename) \
     virXMLParseHelper(VIR_FROM_THIS, filename, NULL, NULL, NULL)
 
 /**
@@ -135,7 +135,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParseCtxt(filename, xmlStr, url, pctxt)                  \
+# define virXMLParseCtxt(filename, xmlStr, url, pctxt) \
     virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, pctxt)
 
 /**
@@ -149,7 +149,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParseStringCtxt(xmlStr, url, pctxt)              \
+# define virXMLParseStringCtxt(xmlStr, url, pctxt) \
     virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, pctxt)
 
 /**
@@ -162,7 +162,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParseFileCtxt(filename, pctxt)                           \
+# define virXMLParseFileCtxt(filename, pctxt) \
     virXMLParseHelper(VIR_FROM_THIS, filename, NULL, NULL, pctxt)
 
 int virXMLSaveFile(const char *path,

@@ -83,21 +83,21 @@ mymain(void)
 
     virTestCounterReset("testQemuCommandBuildFromJSON");
 
-#define DO_TEST_COMMAND_FROM_JSON(PROPS, ARRAYFUNC, EXPECT)         \
-    do {                                                            \
-        data1.props = PROPS;                                        \
-        data1.expectprops = EXPECT;                                 \
-        data1.arrayfunc = ARRAYFUNC;                                \
-        if (virTestRun(virTestCounterNext(),                        \
-                       testQemuCommandBuildFromJSON,                \
-                       &data1) < 0)                                 \
-            ret = -1;                                               \
+#define DO_TEST_COMMAND_FROM_JSON(PROPS, ARRAYFUNC, EXPECT) \
+    do { \
+        data1.props = PROPS; \
+        data1.expectprops = EXPECT; \
+        data1.arrayfunc = ARRAYFUNC; \
+        if (virTestRun(virTestCounterNext(), \
+                       testQemuCommandBuildFromJSON, \
+                       &data1) < 0) \
+            ret = -1; \
      } while (0)
 
-#define DO_TEST_COMMAND_OBJECT_FROM_JSON(PROPS, EXPECT)             \
+#define DO_TEST_COMMAND_OBJECT_FROM_JSON(PROPS, EXPECT) \
     DO_TEST_COMMAND_FROM_JSON(PROPS, virQEMUBuildCommandLineJSONArrayBitmap, EXPECT)
 
-#define DO_TEST_COMMAND_DRIVE_FROM_JSON(PROPS, EXPECT)              \
+#define DO_TEST_COMMAND_DRIVE_FROM_JSON(PROPS, EXPECT) \
     DO_TEST_COMMAND_FROM_JSON(PROPS, virQEMUBuildCommandLineJSONArrayNumbered, EXPECT)
 
     DO_TEST_COMMAND_OBJECT_FROM_JSON("{}", NULL);

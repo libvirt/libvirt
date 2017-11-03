@@ -60,13 +60,13 @@ mymain(void)
     if (!(xmlopt = virTestGenericDomainXMLConfInit()))
         return EXIT_FAILURE;
 
-#define DO_TEST_FULL(name, is_different, inactive, expectResult)        \
-    do {                                                                \
-        const struct testInfo info = {name, is_different, inactive,     \
-                                      expectResult};                    \
-        if (virTestRun("GENERIC XML-2-XML " name,                       \
-                       testCompareXMLToXMLHelper, &info) < 0)           \
-            ret = -1;                                                   \
+#define DO_TEST_FULL(name, is_different, inactive, expectResult) \
+    do { \
+        const struct testInfo info = {name, is_different, inactive, \
+                                      expectResult}; \
+        if (virTestRun("GENERIC XML-2-XML " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
 #define DO_TEST(name) \

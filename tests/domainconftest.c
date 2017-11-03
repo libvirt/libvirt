@@ -90,15 +90,15 @@ mymain(void)
     if (!(xmlopt = virTestGenericDomainXMLConfInit()))
         goto cleanup;
 
-#define DO_TEST_GET_FS(fspath, expect)                                  \
-    do {                                                                \
-        struct testGetFilesystemData data = {                           \
-            .filename = "getfilesystem",                                \
-            .path = fspath,                                             \
-            .expectEntry = expect,                                      \
-        };                                                              \
+#define DO_TEST_GET_FS(fspath, expect) \
+    do { \
+        struct testGetFilesystemData data = { \
+            .filename = "getfilesystem", \
+            .path = fspath, \
+            .expectEntry = expect, \
+        }; \
         if (virTestRun("Get FS " fspath, testGetFilesystem, &data) < 0) \
-            ret = -1;                                                   \
+            ret = -1; \
     } while (0)
 
     DO_TEST_GET_FS("/", true);

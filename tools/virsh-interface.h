@@ -33,8 +33,8 @@ virInterfacePtr virshCommandOptInterfaceBy(vshControl *ctl, const vshCmd *cmd,
                                            const char **name, unsigned int flags);
 
 /* default is lookup by Name and MAC */
-# define virshCommandOptInterface(_ctl, _cmd, _name)                    \
-    virshCommandOptInterfaceBy(_ctl, _cmd, NULL, _name,                 \
+# define virshCommandOptInterface(_ctl, _cmd, _name) \
+    virshCommandOptInterfaceBy(_ctl, _cmd, NULL, _name, \
                                VIRSH_BYMAC | VIRSH_BYNAME)
 
 extern const vshCmdDef ifaceCmds[];

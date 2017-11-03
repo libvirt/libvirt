@@ -146,15 +146,15 @@ mymain(void)
 
     data.xmlopt = driver.xmlopt;
 
-#define DO_TEST(arch, name)                                             \
-    do {                                                                \
-        data.archName = arch;                                           \
-        data.base = name;                                               \
-        if (virTestRun(name "(" arch ")", testQemuCaps, &data) < 0)     \
-            ret = -1;                                                   \
-        if (virTestRun("copy " name "(" arch ")",                       \
-                       testQemuCapsCopy, &data) < 0)                    \
-            ret = -1;                                                   \
+#define DO_TEST(arch, name) \
+    do { \
+        data.archName = arch; \
+        data.base = name; \
+        if (virTestRun(name "(" arch ")", testQemuCaps, &data) < 0) \
+            ret = -1; \
+        if (virTestRun("copy " name "(" arch ")", \
+                       testQemuCapsCopy, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("x86_64", "caps_1.2.2");

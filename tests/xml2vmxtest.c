@@ -199,14 +199,14 @@ mymain(void)
 {
     int result = 0;
 
-# define DO_TEST(_in, _out, _version)                                         \
-        do {                                                                  \
-            struct testInfo info = { _in, _out, _version };                   \
-            virResetLastError();                                              \
-            if (virTestRun("VMware XML-2-VMX "_in" -> "_out,                  \
-                           testCompareHelper, &info) < 0) {                   \
-                result = -1;                                                  \
-            }                                                                 \
+# define DO_TEST(_in, _out, _version) \
+        do { \
+            struct testInfo info = { _in, _out, _version }; \
+            virResetLastError(); \
+            if (virTestRun("VMware XML-2-VMX "_in" -> "_out, \
+                           testCompareHelper, &info) < 0) { \
+                result = -1; \
+            } \
         } while (0)
 
     testCapsInit();

@@ -118,36 +118,36 @@ mymain(void)
 
     testTLSInit(KEYFILE);
 
-# define DO_CTX_TEST(_isServer, _caCrt, _crt, _expectFail)              \
-    do {                                                                \
-        static struct testTLSContextData data;                          \
-        data.isServer = _isServer;                                      \
-        data.cacrt = _caCrt;                                            \
-        data.crt = _crt;                                                \
-        data.expectFail = _expectFail;                                  \
-        if (virTestRun("TLS Context " #_caCrt  " + " #_crt,             \
-                       testTLSContextInit, &data) < 0)                  \
-            ret = -1;                                                   \
+# define DO_CTX_TEST(_isServer, _caCrt, _crt, _expectFail) \
+    do { \
+        static struct testTLSContextData data; \
+        data.isServer = _isServer; \
+        data.cacrt = _caCrt; \
+        data.crt = _crt; \
+        data.expectFail = _expectFail; \
+        if (virTestRun("TLS Context " #_caCrt  " + " #_crt, \
+                       testTLSContextInit, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-# define TLS_CERT_REQ(varname, cavarname,                               \
-                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
-                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
-    static struct testTLSCertReq varname = {                            \
-        NULL, #varname "-ctx.pem",                                      \
-        co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
-        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo                     \
-    };                                                                  \
+# define TLS_CERT_REQ(varname, cavarname, \
+                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo) \
+    static struct testTLSCertReq varname = { \
+        NULL, #varname "-ctx.pem", \
+        co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo \
+    }; \
     testTLSGenerateCert(&varname, cavarname.crt)
 
-# define TLS_ROOT_REQ(varname,                                          \
-                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci,        \
-                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo)      \
-    static struct testTLSCertReq varname = {                            \
-        NULL, #varname "-ctx.pem",                                      \
-        co, cn, an1, an2, ia1, ia2, bce, bcc, bci,                      \
-        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo                     \
-    };                                                                  \
+# define TLS_ROOT_REQ(varname, \
+                      co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+                      kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo) \
+    static struct testTLSCertReq varname = { \
+        NULL, #varname "-ctx.pem", \
+        co, cn, an1, an2, ia1, ia2, bce, bcc, bci, \
+        kue, kuc, kuv, kpe, kpc, kpo1, kpo2, so, eo \
+    }; \
     testTLSGenerateCert(&varname, NULL)
 
 

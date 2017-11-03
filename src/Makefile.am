@@ -25,31 +25,31 @@ abs_topsrcdir = $(shell cd $(top_srcdir) && pwd)
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
 # that actually use them. Also keep GETTEXT_CPPFLAGS at the end.
-INCLUDES =	-I../gnulib/lib					\
-		-I$(top_srcdir)/gnulib/lib			\
-		-I$(top_srcdir)					\
-		-I../include					\
-		-I$(top_srcdir)/include				\
-		-I$(srcdir)/util				\
-		-I./util					\
-		-DIN_LIBVIRT					\
-		-Dabs_topbuilddir="\"$(abs_topbuilddir)\""	\
-		-Dabs_topsrcdir="\"$(abs_topsrcdir)\""		\
+INCLUDES =	-I../gnulib/lib \
+		-I$(top_srcdir)/gnulib/lib \
+		-I$(top_srcdir) \
+		-I../include \
+		-I$(top_srcdir)/include \
+		-I$(srcdir)/util \
+		-I./util \
+		-DIN_LIBVIRT \
+		-Dabs_topbuilddir="\"$(abs_topbuilddir)\"" \
+		-Dabs_topsrcdir="\"$(abs_topsrcdir)\"" \
 		$(GETTEXT_CPPFLAGS)
 
 WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
 
-AM_CFLAGS =	$(LIBXML_CFLAGS)				\
-		$(WARN_CFLAGS)					\
-		$(LOCK_CHECKING_CFLAGS)				\
-		$(WIN32_EXTRA_CFLAGS)				\
+AM_CFLAGS =	$(LIBXML_CFLAGS) \
+		$(WARN_CFLAGS) \
+		$(LOCK_CHECKING_CFLAGS) \
+		$(WIN32_EXTRA_CFLAGS) \
 		$(COVERAGE_CFLAGS)
-AM_LDFLAGS =	$(DRIVER_MODULES_LDFLAGS)			\
-		$(COVERAGE_LDFLAGS)				\
-		$(RELRO_LDFLAGS)				\
-		$(NO_INDIRECT_LDFLAGS)				\
-		$(CYGWIN_EXTRA_LDFLAGS) 			\
-		$(MINGW_EXTRA_LDFLAGS)				\
+AM_LDFLAGS =	$(DRIVER_MODULES_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
+		$(RELRO_LDFLAGS) \
+		$(NO_INDIRECT_LDFLAGS) \
+		$(CYGWIN_EXTRA_LDFLAGS) \
+		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
 
 POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
@@ -95,107 +95,107 @@ augeastest_DATA =
 
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
-UTIL_SOURCES =							\
-		util/viralloc.c util/viralloc.h			\
-		util/virarch.h util/virarch.c			\
-		util/viratomic.h util/viratomic.c		\
-		util/viraudit.c util/viraudit.h			\
-		util/virauth.c util/virauth.h			\
-		util/virauthconfig.c util/virauthconfig.h	\
-		util/virbitmap.c util/virbitmap.h		\
-		util/virbuffer.c util/virbuffer.h		\
-		util/virperf.c util/virperf.h			\
-		util/vircgroup.c util/vircgroup.h util/vircgrouppriv.h	\
-		util/virclosecallbacks.c util/virclosecallbacks.h		\
+UTIL_SOURCES = \
+		util/viralloc.c util/viralloc.h \
+		util/virarch.h util/virarch.c \
+		util/viratomic.h util/viratomic.c \
+		util/viraudit.c util/viraudit.h \
+		util/virauth.c util/virauth.h \
+		util/virauthconfig.c util/virauthconfig.h \
+		util/virbitmap.c util/virbitmap.h \
+		util/virbuffer.c util/virbuffer.h \
+		util/virperf.c util/virperf.h \
+		util/vircgroup.c util/vircgroup.h util/vircgrouppriv.h \
+		util/virclosecallbacks.c util/virclosecallbacks.h \
 		util/vircommand.c util/vircommand.h util/vircommandpriv.h \
-		util/virconf.c util/virconf.h			\
-		util/vircrypto.c util/vircrypto.h		\
-		util/virdbus.c util/virdbus.h util/virdbuspriv.h	\
-		util/virdnsmasq.c util/virdnsmasq.h		\
-		util/virebtables.c util/virebtables.h		\
-		util/virendian.h				\
-		util/virerror.c util/virerror.h			\
-		util/virevent.c util/virevent.h			\
-		util/vireventpoll.c util/vireventpoll.h		\
-		util/virfcp.c util/virfcp.h			\
-		util/virfdstream.c util/virfdstream.h		\
-		util/virfile.c util/virfile.h			\
-		util/virfirewall.c util/virfirewall.h		\
-		util/virfirewallpriv.h				\
-		util/virfirmware.c util/virfirmware.h		\
-		util/virgettext.c util/virgettext.h		\
-		util/virgic.c util/virgic.h			\
-		util/virhash.c util/virhash.h			\
-		util/virhashcode.c util/virhashcode.h		\
-		util/virhook.c util/virhook.h			\
+		util/virconf.c util/virconf.h \
+		util/vircrypto.c util/vircrypto.h \
+		util/virdbus.c util/virdbus.h util/virdbuspriv.h \
+		util/virdnsmasq.c util/virdnsmasq.h \
+		util/virebtables.c util/virebtables.h \
+		util/virendian.h \
+		util/virerror.c util/virerror.h \
+		util/virevent.c util/virevent.h \
+		util/vireventpoll.c util/vireventpoll.h \
+		util/virfcp.c util/virfcp.h \
+		util/virfdstream.c util/virfdstream.h \
+		util/virfile.c util/virfile.h \
+		util/virfirewall.c util/virfirewall.h \
+		util/virfirewallpriv.h \
+		util/virfirmware.c util/virfirmware.h \
+		util/virgettext.c util/virgettext.h \
+		util/virgic.c util/virgic.h \
+		util/virhash.c util/virhash.h \
+		util/virhashcode.c util/virhashcode.h \
+		util/virhook.c util/virhook.h \
 		util/virhostcpu.c util/virhostcpu.h util/virhostcpupriv.h \
-		util/virhostdev.c util/virhostdev.h		\
-		util/virhostmem.c util/virhostmem.h		\
-		util/viridentity.c util/viridentity.h		\
-		util/virinitctl.c util/virinitctl.h		\
-		util/viriptables.c util/viriptables.h		\
-		util/viriscsi.c util/viriscsi.h			\
-		util/virjson.c util/virjson.h			\
-		util/virkeycode.c util/virkeycode.h		\
-		util/virkeyfile.c util/virkeyfile.h		\
-		util/virlease.c util/virlease.h			\
-		util/virlockspace.c util/virlockspace.h		\
-		util/virlog.c util/virlog.h			\
-		util/virmacaddr.h util/virmacaddr.c		\
-		util/virmacmap.h util/virmacmap.c		\
-		util/virnetdev.h util/virnetdev.c		\
+		util/virhostdev.c util/virhostdev.h \
+		util/virhostmem.c util/virhostmem.h \
+		util/viridentity.c util/viridentity.h \
+		util/virinitctl.c util/virinitctl.h \
+		util/viriptables.c util/viriptables.h \
+		util/viriscsi.c util/viriscsi.h \
+		util/virjson.c util/virjson.h \
+		util/virkeycode.c util/virkeycode.h \
+		util/virkeyfile.c util/virkeyfile.h \
+		util/virlease.c util/virlease.h \
+		util/virlockspace.c util/virlockspace.h \
+		util/virlog.c util/virlog.h \
+		util/virmacaddr.h util/virmacaddr.c \
+		util/virmacmap.h util/virmacmap.c \
+		util/virnetdev.h util/virnetdev.c \
 		util/virnetdevbandwidth.h util/virnetdevbandwidth.c \
-		util/virnetdevbridge.h util/virnetdevbridge.c	\
-		util/virnetdevip.h util/virnetdevip.c		\
-		util/virnetdevmacvlan.c util/virnetdevmacvlan.h	\
+		util/virnetdevbridge.h util/virnetdevbridge.c \
+		util/virnetdevip.h util/virnetdevip.c \
+		util/virnetdevmacvlan.c util/virnetdevmacvlan.h \
 		util/virnetdevmidonet.h util/virnetdevmidonet.c \
 		util/virnetdevopenvswitch.h util/virnetdevopenvswitch.c \
-		util/virnetdevtap.h util/virnetdevtap.c		\
-		util/virnetdevveth.h util/virnetdevveth.c	\
-		util/virnetdevvlan.h util/virnetdevvlan.c	\
+		util/virnetdevtap.h util/virnetdevtap.c \
+		util/virnetdevveth.h util/virnetdevveth.c \
+		util/virnetdevvlan.h util/virnetdevvlan.c \
 		util/virnetdevvportprofile.h util/virnetdevvportprofile.c \
-		util/virnetlink.c util/virnetlink.h		\
-		util/virnodesuspend.c util/virnodesuspend.h	\
-		util/virkmod.c util/virkmod.h                   \
-		util/virnuma.c util/virnuma.h			\
-		util/virobject.c util/virobject.h		\
-		util/virpci.c util/virpci.h			\
-		util/virpidfile.c util/virpidfile.h		\
-		util/virpolkit.c util/virpolkit.h               \
+		util/virnetlink.c util/virnetlink.h \
+		util/virnodesuspend.c util/virnodesuspend.h \
+		util/virkmod.c util/virkmod.h \
+		util/virnuma.c util/virnuma.h \
+		util/virobject.c util/virobject.h \
+		util/virpci.c util/virpci.h \
+		util/virpidfile.c util/virpidfile.h \
+		util/virpolkit.c util/virpolkit.h \
 		util/virportallocator.c util/virportallocator.h \
-		util/virprobe.h					\
-		util/virprocess.c util/virprocess.h		\
-		util/virqemu.c util/virqemu.h			\
-		util/virrandom.h util/virrandom.c		\
-		util/virresctrl.h util/virresctrl.c		\
-		util/virrotatingfile.h util/virrotatingfile.c   \
-		util/virscsi.c util/virscsi.h			\
-		util/virscsihost.c util/virscsihost.h		\
-		util/virscsivhost.c util/virscsivhost.h		\
-		util/virseclabel.c util/virseclabel.h		\
-		util/virsecret.c util/virsecret.h		\
-		util/virsexpr.c util/virsexpr.h			\
-		util/virsocketaddr.h util/virsocketaddr.c	\
+		util/virprobe.h \
+		util/virprocess.c util/virprocess.h \
+		util/virqemu.c util/virqemu.h \
+		util/virrandom.h util/virrandom.c \
+		util/virresctrl.h util/virresctrl.c \
+		util/virrotatingfile.h util/virrotatingfile.c \
+		util/virscsi.c util/virscsi.h \
+		util/virscsihost.c util/virscsihost.h \
+		util/virscsivhost.c util/virscsivhost.h \
+		util/virseclabel.c util/virseclabel.h \
+		util/virsecret.c util/virsecret.h \
+		util/virsexpr.c util/virsexpr.h \
+		util/virsocketaddr.h util/virsocketaddr.c \
 		util/virstorageencryption.c util/virstorageencryption.h \
-		util/virstoragefile.c util/virstoragefile.h	\
-		util/virstring.h util/virstring.c		\
-		util/virsysinfo.c util/virsysinfo.h util/virsysinfopriv.h		\
+		util/virstoragefile.c util/virstoragefile.h \
+		util/virstring.h util/virstring.c \
+		util/virsysinfo.c util/virsysinfo.h util/virsysinfopriv.h \
 		util/virsystemd.c util/virsystemd.h util/virsystemdpriv.h \
-		util/virthread.c util/virthread.h		\
-		util/virthreadjob.c util/virthreadjob.h		\
-		util/virthreadpool.c util/virthreadpool.h	\
-		util/virtime.h util/virtime.c			\
-		util/virtpm.h util/virtpm.c			\
-		util/virtypedparam.c util/virtypedparam.h	\
-		util/virusb.c util/virusb.h			\
-		util/viruri.h util/viruri.c			\
-		util/virutil.c util/virutil.h			\
-		util/viruuid.c util/viruuid.h			\
-		util/virvhba.c util/virvhba.h			\
-		util/virxdrdefs.h                               \
-		util/virxml.c util/virxml.h			\
-		util/virmdev.c util/virmdev.h			\
-		util/virfilecache.c util/virfilecache.h		\
+		util/virthread.c util/virthread.h \
+		util/virthreadjob.c util/virthreadjob.h \
+		util/virthreadpool.c util/virthreadpool.h \
+		util/virtime.h util/virtime.c \
+		util/virtpm.h util/virtpm.c \
+		util/virtypedparam.c util/virtypedparam.h \
+		util/virusb.c util/virusb.h \
+		util/viruri.h util/viruri.c \
+		util/virutil.c util/virutil.h \
+		util/viruuid.c util/viruuid.h \
+		util/virvhba.c util/virvhba.h \
+		util/virxdrdefs.h \
+		util/virxml.c util/virxml.h \
+		util/virmdev.c util/virmdev.h \
+		util/virfilecache.c util/virfilecache.h \
 		$(NULL)
 
 EXTRA_DIST += \
@@ -274,35 +274,35 @@ CLEANFILES += $(KEYMANS) $(KEYPODS)
 
 # Internal generic driver infrastructure
 DATATYPES_SOURCES = datatypes.h datatypes.c
-DRIVER_SOURCES =							\
-		driver.c driver.h					\
-		driver-hypervisor.h					\
-		driver-interface.h					\
-		driver-network.h					\
-		driver-nodedev.h					\
-		driver-nwfilter.h					\
-		driver-secret.h						\
-		driver-state.h						\
-		driver-storage.h					\
-		driver-stream.h						\
-		internal.h						\
-		$(DATATYPES_SOURCES)					\
-		libvirt.c libvirt_internal.h				\
-		libvirt-domain.c 					\
-		libvirt-domain-snapshot.c 				\
-		libvirt-host.c 						\
-		libvirt-interface.c	 				\
-		libvirt-network.c	 				\
-		libvirt-nodedev.c	 				\
-		libvirt-nwfilter.c	 				\
-		libvirt-secret.c	 				\
-		libvirt-storage.c	 				\
-		libvirt-stream.c	 				\
-		locking/lock_manager.c locking/lock_manager.h		\
-		locking/lock_driver.h					\
-		locking/lock_driver_nop.h locking/lock_driver_nop.c	\
-		locking/domain_lock.h locking/domain_lock.c		\
-		logging/log_manager.c logging/log_manager.h		\
+DRIVER_SOURCES = \
+		driver.c driver.h \
+		driver-hypervisor.h \
+		driver-interface.h \
+		driver-network.h \
+		driver-nodedev.h \
+		driver-nwfilter.h \
+		driver-secret.h \
+		driver-state.h \
+		driver-storage.h \
+		driver-stream.h \
+		internal.h \
+		$(DATATYPES_SOURCES) \
+		libvirt.c libvirt_internal.h \
+		libvirt-domain.c \
+		libvirt-domain-snapshot.c \
+		libvirt-host.c \
+		libvirt-interface.c \
+		libvirt-network.c \
+		libvirt-nodedev.c \
+		libvirt-nwfilter.c \
+		libvirt-secret.c \
+		libvirt-storage.c \
+		libvirt-stream.c \
+		locking/lock_manager.c locking/lock_manager.h \
+		locking/lock_driver.h \
+		locking/lock_driver_nop.h locking/lock_driver_nop.c \
+		locking/domain_lock.h locking/domain_lock.c \
+		logging/log_manager.c logging/log_manager.h \
 		$(NULL)
 
 LOCK_DRIVER_SANLOCK_SOURCES = \
@@ -390,125 +390,125 @@ logging/log_daemon_dispatch_stubs.h: $(LOG_PROTOCOL) \
 	    $(LOG_PROTOCOL) > $(srcdir)/logging/log_daemon_dispatch_stubs.h
 
 
-NETDEV_CONF_SOURCES =						\
+NETDEV_CONF_SOURCES = \
 		conf/netdev_bandwidth_conf.h conf/netdev_bandwidth_conf.c \
 		conf/netdev_vport_profile_conf.h conf/netdev_vport_profile_conf.c \
 		conf/netdev_vlan_conf.h conf/netdev_vlan_conf.c
 
 # XML configuration format handling sources
 # Domain driver generic impl APIs
-DOMAIN_CONF_SOURCES =						\
-		conf/capabilities.c conf/capabilities.h		\
-		conf/domain_addr.c conf/domain_addr.h		\
-		conf/domain_capabilities.c conf/domain_capabilities.h	\
-		conf/domain_conf.c conf/domain_conf.h		\
-		conf/domain_audit.c conf/domain_audit.h		\
-		conf/domain_nwfilter.c conf/domain_nwfilter.h	\
-		conf/virsavecookie.c conf/virsavecookie.h	\
-		conf/snapshot_conf.c conf/snapshot_conf.h	\
-		conf/numa_conf.c conf/numa_conf.h	\
+DOMAIN_CONF_SOURCES = \
+		conf/capabilities.c conf/capabilities.h \
+		conf/domain_addr.c conf/domain_addr.h \
+		conf/domain_capabilities.c conf/domain_capabilities.h \
+		conf/domain_conf.c conf/domain_conf.h \
+		conf/domain_audit.c conf/domain_audit.h \
+		conf/domain_nwfilter.c conf/domain_nwfilter.h \
+		conf/virsavecookie.c conf/virsavecookie.h \
+		conf/snapshot_conf.c conf/snapshot_conf.h \
+		conf/numa_conf.c conf/numa_conf.h \
 		conf/virdomainobjlist.c conf/virdomainobjlist.h
 
-OBJECT_EVENT_SOURCES =						\
+OBJECT_EVENT_SOURCES = \
 		conf/object_event.c conf/object_event.h \
 		conf/object_event_private.h
 
-DOMAIN_EVENT_SOURCES =						\
+DOMAIN_EVENT_SOURCES = \
 		conf/domain_event.c conf/domain_event.h
 
-NETWORK_EVENT_SOURCES =						\
+NETWORK_EVENT_SOURCES = \
 		conf/network_event.c conf/network_event.h
 
-STORAGE_EVENT_SOURCES =						\
+STORAGE_EVENT_SOURCES = \
                 conf/storage_event.c conf/storage_event.h
 
-NODE_DEVICE_EVENT_SOURCES =					\
+NODE_DEVICE_EVENT_SOURCES = \
                 conf/node_device_event.c conf/node_device_event.h
 
-SECRET_EVENT_SOURCES =					\
+SECRET_EVENT_SOURCES = \
                 conf/secret_event.c conf/secret_event.h
 
 # Network driver generic impl APIs
-NETWORK_CONF_SOURCES =						\
-		conf/network_conf.c conf/network_conf.h		\
-		conf/virnetworkobj.c conf/virnetworkobj.h	\
+NETWORK_CONF_SOURCES = \
+		conf/network_conf.c conf/network_conf.h \
+		conf/virnetworkobj.c conf/virnetworkobj.h \
 		conf/networkcommon_conf.c conf/networkcommon_conf.h
 
 # Network filter driver generic impl APIs
-NWFILTER_PARAM_CONF_SOURCES =					\
-		conf/nwfilter_params.c conf/nwfilter_params.h	\
-		conf/nwfilter_ipaddrmap.c			\
-		conf/nwfilter_ipaddrmap.h			\
-		conf/nwfilter_conf.h                            \
+NWFILTER_PARAM_CONF_SOURCES = \
+		conf/nwfilter_params.c conf/nwfilter_params.h \
+		conf/nwfilter_ipaddrmap.c \
+		conf/nwfilter_ipaddrmap.h \
+		conf/nwfilter_conf.h \
 		conf/virnwfilterobj.h
 
-NWFILTER_CONF_SOURCES =						\
-		$(NWFILTER_PARAM_CONF_SOURCES)			\
-		conf/nwfilter_conf.c conf/nwfilter_conf.h	\
+NWFILTER_CONF_SOURCES = \
+		$(NWFILTER_PARAM_CONF_SOURCES) \
+		conf/nwfilter_conf.c conf/nwfilter_conf.h \
 		conf/virnwfilterobj.c conf/virnwfilterobj.h
 
 # Storage driver generic impl APIs
-STORAGE_CONF_SOURCES =                                         \
+STORAGE_CONF_SOURCES = \
 		conf/storage_adapter_conf.h conf/storage_adapter_conf.c \
-		conf/storage_conf.h conf/storage_conf.c        \
+		conf/storage_conf.h conf/storage_conf.c \
 		conf/virstorageobj.h conf/virstorageobj.c
 
 # Interface driver generic impl APIs
-INTERFACE_CONF_SOURCES =                                       \
-		conf/interface_conf.c conf/interface_conf.h    \
+INTERFACE_CONF_SOURCES = \
+		conf/interface_conf.c conf/interface_conf.h \
 		conf/virinterfaceobj.c conf/virinterfaceobj.h
 
 # Secret driver generic impl APIs
-SECRET_CONF_SOURCES =                                          \
-		conf/secret_conf.h conf/secret_conf.c          \
+SECRET_CONF_SOURCES = \
+		conf/secret_conf.h conf/secret_conf.c \
 		conf/virsecretobj.h conf/virsecretobj.c
 
 # Network driver generic impl APIs
-NODE_DEVICE_CONF_SOURCES =                                     \
+NODE_DEVICE_CONF_SOURCES = \
 		conf/node_device_conf.c conf/node_device_conf.h \
 		conf/virnodedeviceobj.c conf/virnodedeviceobj.h
 
-CPU_CONF_SOURCES =						\
+CPU_CONF_SOURCES = \
 		conf/cpu_conf.c conf/cpu_conf.h
 
 # Safe character device handling helper APIs
-CHRDEV_CONF_SOURCES =						\
+CHRDEV_CONF_SOURCES = \
 		conf/virchrdev.c conf/virchrdev.h
 
 # Device Helper APIs
-DEVICE_CONF_SOURCES =                                           \
+DEVICE_CONF_SOURCES = \
 		conf/device_conf.c conf/device_conf.h
 
-CONF_SOURCES =							\
-		$(NETDEV_CONF_SOURCES)				\
-		$(DOMAIN_CONF_SOURCES)				\
-		$(OBJECT_EVENT_SOURCES)				\
-		$(DOMAIN_EVENT_SOURCES)				\
-		$(NETWORK_EVENT_SOURCES)			\
-		$(STORAGE_EVENT_SOURCES)			\
-		$(NODE_DEVICE_EVENT_SOURCES)			\
-		$(SECRET_EVENT_SOURCES)				\
-		$(NETWORK_CONF_SOURCES)				\
-		$(NWFILTER_CONF_SOURCES)			\
-		$(NODE_DEVICE_CONF_SOURCES)			\
-		$(STORAGE_CONF_SOURCES)				\
-		$(INTERFACE_CONF_SOURCES)			\
-		$(SECRET_CONF_SOURCES)				\
-		$(CPU_CONF_SOURCES)				\
-		$(CHRDEV_CONF_SOURCES)				\
+CONF_SOURCES = \
+		$(NETDEV_CONF_SOURCES) \
+		$(DOMAIN_CONF_SOURCES) \
+		$(OBJECT_EVENT_SOURCES) \
+		$(DOMAIN_EVENT_SOURCES) \
+		$(NETWORK_EVENT_SOURCES) \
+		$(STORAGE_EVENT_SOURCES) \
+		$(NODE_DEVICE_EVENT_SOURCES) \
+		$(SECRET_EVENT_SOURCES) \
+		$(NETWORK_CONF_SOURCES) \
+		$(NWFILTER_CONF_SOURCES) \
+		$(NODE_DEVICE_CONF_SOURCES) \
+		$(STORAGE_CONF_SOURCES) \
+		$(INTERFACE_CONF_SOURCES) \
+		$(SECRET_CONF_SOURCES) \
+		$(CPU_CONF_SOURCES) \
+		$(CHRDEV_CONF_SOURCES) \
 		$(DEVICE_CONF_SOURCES)
 
 # The remote RPC driver, covering domains, storage, networks, etc
 REMOTE_DRIVER_GENERATED = \
-		remote/remote_protocol.c		\
-		remote/remote_protocol.h		\
-		remote/remote_client_bodies.h		\
-		remote/lxc_protocol.c			\
-		remote/lxc_protocol.h			\
-		remote/lxc_client_bodies.h		\
-		remote/qemu_protocol.c			\
-		remote/qemu_protocol.h			\
-		remote/qemu_client_bodies.h		\
+		remote/remote_protocol.c \
+		remote/remote_protocol.h \
+		remote/remote_client_bodies.h \
+		remote/lxc_protocol.c \
+		remote/lxc_protocol.h \
+		remote/lxc_client_bodies.h \
+		remote/qemu_protocol.c \
+		remote/qemu_protocol.h \
+		remote/qemu_client_bodies.h \
 		$(NULL)
 
 REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
@@ -534,8 +534,8 @@ remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 	  qemu QEMU $(QEMU_PROTOCOL) \
 	  > $(srcdir)/remote/qemu_client_bodies.h
 
-REMOTE_DRIVER_SOURCES =						\
-		remote/remote_driver.c remote/remote_driver.h	\
+REMOTE_DRIVER_SOURCES = \
+		remote/remote_driver.c remote/remote_driver.h \
 		$(REMOTE_DRIVER_GENERATED)
 
 EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
@@ -544,8 +544,8 @@ EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
 ADMIN_PROTOCOL = $(srcdir)/admin/admin_protocol.x
 
 ADMIN_PROTOCOL_GENERATED = \
-		admin/admin_protocol.c	\
-		admin/admin_protocol.h	\
+		admin/admin_protocol.c \
+		admin/admin_protocol.h \
 		admin/admin_client.h
 
 admin/admin_client.h: $(srcdir)/rpc/gendispatch.pl \
@@ -587,45 +587,45 @@ struct_prefix = ($(libs_prefix)|$(other_prefix))
 # the newest of the two, in case configure options changed and a stale
 # file is left around from an earlier build.
 PDWTAGS = \
-	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then		\
-	  o=`ls -t $(<:.lo=.$(OBJEXT))					\
-	     $(subst /,/.libs/,$(<:.lo=.$(OBJEXT)))			\
-	    2>/dev/null | sed -n 1p`;					\
-	  test -f "$$o" || { echo ".o for $< not found" >&2; exit 1; };	\
-	  pdwtags --verbose $$o > $(@F)-t1 2> $(@F)-t2;			\
-	  if test ! -s $(@F)-t1 && test -s $(@F)-t2; then		\
-	    rm -rf $(@F)-t?;						\
+	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then \
+	  o=`ls -t $(<:.lo=.$(OBJEXT)) \
+	     $(subst /,/.libs/,$(<:.lo=.$(OBJEXT))) \
+	    2>/dev/null | sed -n 1p`; \
+	  test -f "$$o" || { echo ".o for $< not found" >&2; exit 1; }; \
+	  pdwtags --verbose $$o > $(@F)-t1 2> $(@F)-t2; \
+	  if test ! -s $(@F)-t1 && test -s $(@F)-t2; then \
+	    rm -rf $(@F)-t?; \
 	    echo 'WARNING: pdwtags appears broken; skipping the $@ test' >&2;\
-	  else								\
-	    $(PERL) -0777 -n						\
-		-e 'foreach my $$p (split m!\n*(?:$(r1)|$(r2))\n!) {'	\
-		-e '  if ($$p =~ /^(struct|enum) $(struct_prefix)/ ||'	\
-		-e '      $$p =~ /^enum \{/) {'				\
-		-e '    $$p =~ s!\t*/\*.*?\*/!!sg;'			\
-		-e '    $$p =~ s!\s+\n!\n!sg;'				\
-		-e '    $$p =~ s!\s+$$!!;'				\
-		-e '    $$p =~ s!\t!        !g;'			\
-		-e '    print "$$p\n";'					\
-		-e '    $$n++;'						\
-		-e '  }'						\
-		-e '}'							\
-		-e 'BEGIN {'						\
-		-e '  print "/* -*- c -*- */\n";'			\
-		-e '}'							\
-		-e 'END {'						\
-		-e '  if ($$n < 1) {'					\
+	  else \
+	    $(PERL) -0777 -n \
+		-e 'foreach my $$p (split m!\n*(?:$(r1)|$(r2))\n!) {' \
+		-e '  if ($$p =~ /^(struct|enum) $(struct_prefix)/ ||' \
+		-e '      $$p =~ /^enum \{/) {' \
+		-e '    $$p =~ s!\t*/\*.*?\*/!!sg;' \
+		-e '    $$p =~ s!\s+\n!\n!sg;' \
+		-e '    $$p =~ s!\s+$$!!;' \
+		-e '    $$p =~ s!\t!        !g;' \
+		-e '    print "$$p\n";' \
+		-e '    $$n++;' \
+		-e '  }' \
+		-e '}' \
+		-e 'BEGIN {' \
+		-e '  print "/* -*- c -*- */\n";' \
+		-e '}' \
+		-e 'END {' \
+		-e '  if ($$n < 1) {' \
 		-e '    warn "WARNING: your pdwtags program is too old\n";' \
-		-e '    warn "WARNING: skipping the $@ test\n";'	\
+		-e '    warn "WARNING: skipping the $@ test\n";' \
 		-e '    warn "WARNING: install dwarves-1.3 or newer\n";' \
-		-e '    exit 8;'					\
-		-e '  }'						\
-		-e '}'							\
-		< $(@F)-t1 > $(@F)-t3;					\
+		-e '    exit 8;' \
+		-e '  }' \
+		-e '}' \
+		< $(@F)-t1 > $(@F)-t3; \
 	    case $$? in 8) rm -f $(@F)-t?; exit 0;; 0) ;; *) exit 1;; esac;\
-	    diff -u $(@)s $(@F)-t3; st=$$?; rm -f $(@F)-t?; exit $$st;	\
-	  fi;								\
-	else								\
-	  echo 'WARNING: you lack pdwtags; skipping the $@ test' >&2;	\
+	    diff -u $(@)s $(@F)-t3; st=$$?; rm -f $(@F)-t?; exit $$st; \
+	  fi; \
+	else \
+	  echo 'WARNING: you lack pdwtags; skipping the $@ test' >&2; \
 	  echo 'WARNING: install the dwarves package to get pdwtags' >&2; \
 	fi
 
@@ -771,17 +771,17 @@ check-local: check-protocol check-symfile check-symsorting \
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 # Mock driver, covering domains, storage, networks, etc
-TEST_DRIVER_SOURCES =						\
+TEST_DRIVER_SOURCES = \
 		test/test_driver.c test/test_driver.h
 TEST_DRIVER_ASSETS = test/test-screenshot.png
 
 # Now the Hypervisor specific drivers
-XEN_DRIVER_SOURCES =						\
-		xen/block_stats.c xen/block_stats.h		\
-		xen/xen_hypervisor.c xen/xen_hypervisor.h	\
-		xen/xen_driver.c xen/xen_driver.h		\
-		xen/xend_internal.c xen/xend_internal.h		\
-		xen/xm_internal.c xen/xm_internal.h		\
+XEN_DRIVER_SOURCES = \
+		xen/block_stats.c xen/block_stats.h \
+		xen/xen_hypervisor.c xen/xen_hypervisor.h \
+		xen/xen_driver.c xen/xen_driver.h \
+		xen/xend_internal.c xen/xend_internal.h \
+		xen/xm_internal.c xen/xm_internal.h \
 		xen/xs_internal.c xen/xs_internal.h
 if WITH_XEN_INOTIFY
 XEN_DRIVER_SOURCES += xen/xen_inotify.c xen/xen_inotify.h
@@ -829,307 +829,307 @@ BUILT_SOURCES += $(LXC_GENERATED)
 
 CLEANFILES += $(LXC_GENERATED)
 
-LXC_DRIVER_SOURCES =						\
-		$(LXC_MONITOR_PROTOCOL_GENERATED)		\
-		$(LXC_MONITOR_GENERATED)			\
-		lxc/lxc_conf.c lxc/lxc_conf.h			\
-		lxc/lxc_container.c lxc/lxc_container.h		\
-		lxc/lxc_cgroup.c lxc/lxc_cgroup.h		\
-		lxc/lxc_domain.c lxc/lxc_domain.h		\
-		lxc/lxc_hostdev.c lxc/lxc_hostdev.h		\
-		lxc/lxc_monitor.c lxc/lxc_monitor.h		\
-		lxc/lxc_process.c lxc/lxc_process.h		\
-		lxc/lxc_fuse.c lxc/lxc_fuse.h			\
-		lxc/lxc_native.c lxc/lxc_native.h		\
+LXC_DRIVER_SOURCES = \
+		$(LXC_MONITOR_PROTOCOL_GENERATED) \
+		$(LXC_MONITOR_GENERATED) \
+		lxc/lxc_conf.c lxc/lxc_conf.h \
+		lxc/lxc_container.c lxc/lxc_container.h \
+		lxc/lxc_cgroup.c lxc/lxc_cgroup.h \
+		lxc/lxc_domain.c lxc/lxc_domain.h \
+		lxc/lxc_hostdev.c lxc/lxc_hostdev.h \
+		lxc/lxc_monitor.c lxc/lxc_monitor.h \
+		lxc/lxc_process.c lxc/lxc_process.h \
+		lxc/lxc_fuse.c lxc/lxc_fuse.h \
+		lxc/lxc_native.c lxc/lxc_native.h \
 		lxc/lxc_driver.c lxc/lxc_driver.h
 
-LXC_CONTROLLER_SOURCES =					\
-		$(LXC_MONITOR_PROTOCOL_GENERATED)		\
-		$(LXC_CONTROLLER_GENERATED)			\
-		lxc/lxc_conf.c lxc/lxc_conf.h			\
-		lxc/lxc_container.c lxc/lxc_container.h		\
-		lxc/lxc_cgroup.c lxc/lxc_cgroup.h		\
-		lxc/lxc_domain.c lxc/lxc_domain.h		\
-		lxc/lxc_fuse.c lxc/lxc_fuse.h			\
+LXC_CONTROLLER_SOURCES = \
+		$(LXC_MONITOR_PROTOCOL_GENERATED) \
+		$(LXC_CONTROLLER_GENERATED) \
+		lxc/lxc_conf.c lxc/lxc_conf.h \
+		lxc/lxc_container.c lxc/lxc_container.h \
+		lxc/lxc_cgroup.c lxc/lxc_cgroup.h \
+		lxc/lxc_domain.c lxc/lxc_domain.h \
+		lxc/lxc_fuse.c lxc/lxc_fuse.h \
 		lxc/lxc_controller.c
 
-SECURITY_DRIVER_APPARMOR_HELPER_SOURCES =			\
-		$(DATATYPES_SOURCES)				\
+SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
+		$(DATATYPES_SOURCES) \
 		security/virt-aa-helper.c
 
-PHYP_DRIVER_SOURCES =						\
+PHYP_DRIVER_SOURCES = \
 		phyp/phyp_driver.c phyp/phyp_driver.h
 
-OPENVZ_DRIVER_SOURCES =						\
-		openvz/openvz_conf.c openvz/openvz_conf.h	\
-		openvz/openvz_driver.c openvz/openvz_driver.h   \
+OPENVZ_DRIVER_SOURCES = \
+		openvz/openvz_conf.c openvz/openvz_conf.h \
+		openvz/openvz_driver.c openvz/openvz_driver.h \
 		openvz/openvz_util.c openvz/openvz_util.h
 
-VMWARE_DRIVER_SOURCES =						\
-		vmware/vmware_driver.c vmware/vmware_driver.h	\
+VMWARE_DRIVER_SOURCES = \
+		vmware/vmware_driver.c vmware/vmware_driver.h \
 		vmware/vmware_conf.c vmware/vmware_conf.h
 
-VBOX_DRIVER_SOURCES =						\
-	vbox/vbox_glue.c vbox/vbox_glue.h			\
-	vbox/vbox_driver.c vbox/vbox_driver.h			\
-	vbox/vbox_snapshot_conf.c vbox/vbox_snapshot_conf.h     \
-	vbox/vbox_V4_0.c vbox/vbox_CAPI_v4_0.h			\
-	vbox/vbox_V4_1.c vbox/vbox_CAPI_v4_1.h			\
-	vbox/vbox_V4_2.c vbox/vbox_CAPI_v4_2.h			\
-	vbox/vbox_V4_2_20.c vbox/vbox_CAPI_v4_2_20.h		\
-	vbox/vbox_V4_3.c vbox/vbox_CAPI_v4_3.h			\
-	vbox/vbox_V4_3_4.c vbox/vbox_CAPI_v4_3_4.h              \
-	vbox/vbox_V5_0.c vbox/vbox_CAPI_v5_0.h			\
-	vbox/vbox_V5_1.c vbox/vbox_CAPI_v5_1.h			\
-	vbox/vbox_common.c vbox/vbox_common.h                   \
-	vbox/vbox_uniformed_api.h                               \
-	vbox/vbox_get_driver.h					\
-	vbox/vbox_network.c					\
+VBOX_DRIVER_SOURCES = \
+	vbox/vbox_glue.c vbox/vbox_glue.h \
+	vbox/vbox_driver.c vbox/vbox_driver.h \
+	vbox/vbox_snapshot_conf.c vbox/vbox_snapshot_conf.h \
+	vbox/vbox_V4_0.c vbox/vbox_CAPI_v4_0.h \
+	vbox/vbox_V4_1.c vbox/vbox_CAPI_v4_1.h \
+	vbox/vbox_V4_2.c vbox/vbox_CAPI_v4_2.h \
+	vbox/vbox_V4_2_20.c vbox/vbox_CAPI_v4_2_20.h \
+	vbox/vbox_V4_3.c vbox/vbox_CAPI_v4_3.h \
+	vbox/vbox_V4_3_4.c vbox/vbox_CAPI_v4_3_4.h \
+	vbox/vbox_V5_0.c vbox/vbox_CAPI_v5_0.h \
+	vbox/vbox_V5_1.c vbox/vbox_CAPI_v5_1.h \
+	vbox/vbox_common.c vbox/vbox_common.h \
+	vbox/vbox_uniformed_api.h \
+	vbox/vbox_get_driver.h \
+	vbox/vbox_network.c \
 	vbox/vbox_storage.c
 
-VBOX_DRIVER_EXTRA_DIST =					\
-		vbox/vbox_tmpl.c vbox/README			\
-		vbox/vbox_MSCOMGlue.c vbox/vbox_MSCOMGlue.h	\
+VBOX_DRIVER_EXTRA_DIST = \
+		vbox/vbox_tmpl.c vbox/README \
+		vbox/vbox_MSCOMGlue.c vbox/vbox_MSCOMGlue.h \
 		vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h
 
-QEMU_DRIVER_SOURCES =							\
-		qemu/qemu_agent.c qemu/qemu_agent.h			\
-		qemu/qemu_alias.c qemu/qemu_alias.h			\
-		qemu/qemu_block.c qemu/qemu_block.h			\
-		qemu/qemu_blockjob.c qemu/qemu_blockjob.h		\
-		qemu/qemu_capabilities.c qemu/qemu_capabilities.h	\
-		qemu/qemu_command.c qemu/qemu_command.h			\
-		qemu/qemu_parse_command.c qemu/qemu_parse_command.h	\
-		qemu/qemu_domain.c qemu/qemu_domain.h			\
-		qemu/qemu_domain_address.c qemu/qemu_domain_address.h	\
-		qemu/qemu_cgroup.c qemu/qemu_cgroup.h			\
-		qemu/qemu_hostdev.c qemu/qemu_hostdev.h			\
-		qemu/qemu_hotplug.c qemu/qemu_hotplug.h			\
-		qemu/qemu_hotplugpriv.h					\
-		qemu/qemu_conf.c qemu/qemu_conf.h			\
-		qemu/qemu_process.c qemu/qemu_process.h			\
-		qemu/qemu_processpriv.h					\
-		qemu/qemu_migration.c qemu/qemu_migration.h		\
+QEMU_DRIVER_SOURCES = \
+		qemu/qemu_agent.c qemu/qemu_agent.h \
+		qemu/qemu_alias.c qemu/qemu_alias.h \
+		qemu/qemu_block.c qemu/qemu_block.h \
+		qemu/qemu_blockjob.c qemu/qemu_blockjob.h \
+		qemu/qemu_capabilities.c qemu/qemu_capabilities.h \
+		qemu/qemu_command.c qemu/qemu_command.h \
+		qemu/qemu_parse_command.c qemu/qemu_parse_command.h \
+		qemu/qemu_domain.c qemu/qemu_domain.h \
+		qemu/qemu_domain_address.c qemu/qemu_domain_address.h \
+		qemu/qemu_cgroup.c qemu/qemu_cgroup.h \
+		qemu/qemu_hostdev.c qemu/qemu_hostdev.h \
+		qemu/qemu_hotplug.c qemu/qemu_hotplug.h \
+		qemu/qemu_hotplugpriv.h \
+		qemu/qemu_conf.c qemu/qemu_conf.h \
+		qemu/qemu_process.c qemu/qemu_process.h \
+		qemu/qemu_processpriv.h \
+		qemu/qemu_migration.c qemu/qemu_migration.h \
 		qemu/qemu_migration_cookie.c qemu/qemu_migration_cookie.h \
-		qemu/qemu_monitor.c qemu/qemu_monitor.h			\
-		qemu/qemu_monitor_text.c				\
-		qemu/qemu_monitor_text.h				\
-		qemu/qemu_monitor_json.c				\
-		qemu/qemu_monitor_json.h				\
-		qemu/qemu_driver.c qemu/qemu_driver.h	\
-		qemu/qemu_interface.c qemu/qemu_interface.h		\
-		qemu/qemu_capspriv.h					\
+		qemu/qemu_monitor.c qemu/qemu_monitor.h \
+		qemu/qemu_monitor_text.c \
+		qemu/qemu_monitor_text.h \
+		qemu/qemu_monitor_json.c \
+		qemu/qemu_monitor_json.h \
+		qemu/qemu_driver.c qemu/qemu_driver.h \
+		qemu/qemu_interface.c qemu/qemu_interface.h \
+		qemu/qemu_capspriv.h \
 		qemu/qemu_security.c qemu/qemu_security.h
 
-XENAPI_DRIVER_SOURCES =						\
-		xenapi/xenapi_driver.c xenapi/xenapi_driver.h	\
-		xenapi/xenapi_driver_private.h			\
+XENAPI_DRIVER_SOURCES = \
+		xenapi/xenapi_driver.c xenapi/xenapi_driver.h \
+		xenapi/xenapi_driver_private.h \
 		xenapi/xenapi_utils.c xenapi/xenapi_utils.h
 
-LIBXL_DRIVER_SOURCES =							\
-		libxl/libxl_conf.c libxl/libxl_conf.h			\
-		libxl/libxl_capabilities.c libxl/libxl_capabilities.h	\
-		libxl/libxl_domain.c libxl/libxl_domain.h       	\
-		libxl/libxl_driver.c libxl/libxl_driver.h       	\
-		libxl/libxl_logger.c libxl/libxl_logger.h           \
+LIBXL_DRIVER_SOURCES = \
+		libxl/libxl_conf.c libxl/libxl_conf.h \
+		libxl/libxl_capabilities.c libxl/libxl_capabilities.h \
+		libxl/libxl_domain.c libxl/libxl_domain.h \
+		libxl/libxl_driver.c libxl/libxl_driver.h \
+		libxl/libxl_logger.c libxl/libxl_logger.h \
 		libxl/libxl_migration.c libxl/libxl_migration.h
 
-UML_DRIVER_SOURCES =						\
-		uml/uml_conf.c uml/uml_conf.h			\
+UML_DRIVER_SOURCES = \
+		uml/uml_conf.c uml/uml_conf.h \
 		uml/uml_driver.c uml/uml_driver.h
 
-ESX_DRIVER_SOURCES =							\
-		esx/esx_private.h					\
-		esx/esx_driver.c esx/esx_driver.h			\
-		esx/esx_interface_driver.c esx/esx_interface_driver.h	\
-		esx/esx_network_driver.c esx/esx_network_driver.h	\
-		esx/esx_storage_driver.c esx/esx_storage_driver.h	\
-		esx/esx_storage_backend_vmfs.c esx/esx_storage_backend_vmfs.h	\
-		esx/esx_storage_backend_iscsi.c esx/esx_storage_backend_iscsi.h	\
-		esx/esx_stream.c esx/esx_stream.h			\
-		esx/esx_util.c esx/esx_util.h				\
-		esx/esx_vi.c esx/esx_vi.h				\
-		esx/esx_vi_methods.c esx/esx_vi_methods.h		\
+ESX_DRIVER_SOURCES = \
+		esx/esx_private.h \
+		esx/esx_driver.c esx/esx_driver.h \
+		esx/esx_interface_driver.c esx/esx_interface_driver.h \
+		esx/esx_network_driver.c esx/esx_network_driver.h \
+		esx/esx_storage_driver.c esx/esx_storage_driver.h \
+		esx/esx_storage_backend_vmfs.c esx/esx_storage_backend_vmfs.h \
+		esx/esx_storage_backend_iscsi.c esx/esx_storage_backend_iscsi.h \
+		esx/esx_stream.c esx/esx_stream.h \
+		esx/esx_util.c esx/esx_util.h \
+		esx/esx_vi.c esx/esx_vi.h \
+		esx/esx_vi_methods.c esx/esx_vi_methods.h \
 		esx/esx_vi_types.c esx/esx_vi_types.h
 
-ESX_DRIVER_GENERATED =							\
-		esx/esx_vi_methods.generated.c				\
-		esx/esx_vi_methods.generated.h				\
-		esx/esx_vi_methods.generated.macro			\
-		esx/esx_vi_types.generated.c				\
-		esx/esx_vi_types.generated.h				\
-		esx/esx_vi_types.generated.typedef			\
-		esx/esx_vi_types.generated.typeenum			\
-		esx/esx_vi_types.generated.typetostring			\
-		esx/esx_vi_types.generated.typefromstring		\
-		esx/esx_vi.generated.c					\
+ESX_DRIVER_GENERATED = \
+		esx/esx_vi_methods.generated.c \
+		esx/esx_vi_methods.generated.h \
+		esx/esx_vi_methods.generated.macro \
+		esx/esx_vi_types.generated.c \
+		esx/esx_vi_types.generated.h \
+		esx/esx_vi_types.generated.typedef \
+		esx/esx_vi_types.generated.typeenum \
+		esx/esx_vi_types.generated.typetostring \
+		esx/esx_vi_types.generated.typefromstring \
+		esx/esx_vi.generated.c \
 		esx/esx_vi.generated.h
 
-ESX_DRIVER_EXTRA_DIST =							\
-		esx/README						\
-		esx/esx_vi_generator.input				\
-		esx/esx_vi_generator.py					\
+ESX_DRIVER_EXTRA_DIST = \
+		esx/README \
+		esx/esx_vi_generator.input \
+		esx/esx_vi_generator.py \
 		$(ESX_DRIVER_GENERATED)
 
-HYPERV_DRIVER_SOURCES =									\
-		hyperv/hyperv_private.h							\
-		hyperv/hyperv_driver.c hyperv/hyperv_driver.h				\
-		hyperv/hyperv_util.c hyperv/hyperv_util.h				\
-		hyperv/hyperv_wmi.c hyperv/hyperv_wmi.h					\
-		hyperv/hyperv_wmi_classes.c hyperv/hyperv_wmi_classes.h			\
+HYPERV_DRIVER_SOURCES = \
+		hyperv/hyperv_private.h \
+		hyperv/hyperv_driver.c hyperv/hyperv_driver.h \
+		hyperv/hyperv_util.c hyperv/hyperv_util.h \
+		hyperv/hyperv_wmi.c hyperv/hyperv_wmi.h \
+		hyperv/hyperv_wmi_classes.c hyperv/hyperv_wmi_classes.h \
 		hyperv/openwsman.h
 
-HYPERV_DRIVER_GENERATED =							\
-		hyperv/hyperv_wmi_classes.generated.c				\
-		hyperv/hyperv_wmi_classes.generated.h				\
+HYPERV_DRIVER_GENERATED = \
+		hyperv/hyperv_wmi_classes.generated.c \
+		hyperv/hyperv_wmi_classes.generated.h \
 		hyperv/hyperv_wmi_classes.generated.typedef
 
-HYPERV_DRIVER_EXTRA_DIST =							\
-		hyperv/hyperv_wmi_generator.input				\
-		hyperv/hyperv_wmi_generator.py					\
+HYPERV_DRIVER_EXTRA_DIST = \
+		hyperv/hyperv_wmi_generator.input \
+		hyperv/hyperv_wmi_generator.py \
 		$(HYPERV_DRIVER_GENERATED)
 
-VZ_DRIVER_SOURCES =				\
-		vz/vz_driver.h			\
-		vz/vz_driver.c			\
-		vz/vz_utils.c			\
-		vz/vz_utils.h			\
-		vz/vz_sdk.h			\
+VZ_DRIVER_SOURCES = \
+		vz/vz_driver.h \
+		vz/vz_driver.c \
+		vz/vz_utils.c \
+		vz/vz_utils.h \
+		vz/vz_sdk.h \
 		vz/vz_sdk.c
 
-BHYVE_DRIVER_SOURCES =						\
-		bhyve/bhyve_capabilities.c			\
-		bhyve/bhyve_capabilities.h			\
-		bhyve/bhyve_command.c				\
-		bhyve/bhyve_command.h				\
-		bhyve/bhyve_conf.c				\
-		bhyve/bhyve_conf.h				\
-		bhyve/bhyve_parse_command.c			\
-		bhyve/bhyve_parse_command.h			\
-		bhyve/bhyve_device.c				\
-		bhyve/bhyve_device.h				\
-		bhyve/bhyve_domain.c				\
-		bhyve/bhyve_domain.h				\
-		bhyve/bhyve_driver.h				\
-		bhyve/bhyve_driver.c				\
-		bhyve/bhyve_monitor.c				\
-		bhyve/bhyve_monitor.h				\
-		bhyve/bhyve_process.c				\
-		bhyve/bhyve_process.h				\
-		bhyve/bhyve_utils.h				\
+BHYVE_DRIVER_SOURCES = \
+		bhyve/bhyve_capabilities.c \
+		bhyve/bhyve_capabilities.h \
+		bhyve/bhyve_command.c \
+		bhyve/bhyve_command.h \
+		bhyve/bhyve_conf.c \
+		bhyve/bhyve_conf.h \
+		bhyve/bhyve_parse_command.c \
+		bhyve/bhyve_parse_command.h \
+		bhyve/bhyve_device.c \
+		bhyve/bhyve_device.h \
+		bhyve/bhyve_domain.c \
+		bhyve/bhyve_domain.h \
+		bhyve/bhyve_driver.h \
+		bhyve/bhyve_driver.c \
+		bhyve/bhyve_monitor.c \
+		bhyve/bhyve_monitor.h \
+		bhyve/bhyve_process.c \
+		bhyve/bhyve_process.h \
+		bhyve/bhyve_utils.h \
 		$(NULL)
 
-NETWORK_DRIVER_SOURCES =					\
+NETWORK_DRIVER_SOURCES = \
 		network/bridge_driver.h network/bridge_driver.c \
-		network/bridge_driver_platform.h 		\
-		network/bridge_driver_platform.c		\
+		network/bridge_driver_platform.h \
+		network/bridge_driver_platform.c \
 		$(NULL)
 EXTRA_DIST += network/bridge_driver_linux.c network/bridge_driver_nop.c
 
 INTERFACE_DRIVER_SOURCES =
 
 if WITH_INTERFACE
-INTERFACE_DRIVER_SOURCES +=					\
-		interface/interface_driver.h        \
+INTERFACE_DRIVER_SOURCES += \
+		interface/interface_driver.h \
 		interface/interface_driver.c
 
 if WITH_NETCF
-INTERFACE_DRIVER_SOURCES +=					\
+INTERFACE_DRIVER_SOURCES += \
 		interface/interface_backend_netcf.c
 endif WITH_NETCF
 if WITH_UDEV
-INTERFACE_DRIVER_SOURCES +=					\
+INTERFACE_DRIVER_SOURCES += \
 		interface/interface_backend_udev.c
 endif WITH_UDEV
 endif WITH_INTERFACE
 
-SECRET_UTIL_SOURCES =						\
+SECRET_UTIL_SOURCES = \
 		secret/secret_util.h secret/secret_util.c
 
-SECRET_DRIVER_SOURCES =						\
+SECRET_DRIVER_SOURCES = \
 		secret/secret_driver.h secret/secret_driver.c
 
 # Storage backend specific impls
 STORAGE_DRIVER_BACKEND_SOURCES = \
 		storage/storage_backend.h storage/storage_backend.c
 
-STORAGE_DRIVER_SOURCES =						\
-		storage/storage_driver.h storage/storage_driver.c	\
-		storage/storage_source.h storage/storage_source.c	\
+STORAGE_DRIVER_SOURCES = \
+		storage/storage_driver.h storage/storage_driver.c \
+		storage/storage_source.h storage/storage_source.c \
 		$(STORAGE_DRIVER_BACKEND_SOURCES) \
 		storage/storage_util.h storage/storage_util.c
 
-STORAGE_DRIVER_FS_SOURCES =					\
+STORAGE_DRIVER_FS_SOURCES = \
 		storage/storage_backend_fs.h storage/storage_backend_fs.c
 
-STORAGE_DRIVER_LVM_SOURCES =					\
-		storage/storage_backend_logical.h		\
+STORAGE_DRIVER_LVM_SOURCES = \
+		storage/storage_backend_logical.h \
 		storage/storage_backend_logical.c
 
-STORAGE_DRIVER_ISCSI_SOURCES =					\
+STORAGE_DRIVER_ISCSI_SOURCES = \
 		storage/storage_backend_iscsi.h storage/storage_backend_iscsi.c
 
-STORAGE_DRIVER_SCSI_SOURCES =					\
+STORAGE_DRIVER_SCSI_SOURCES = \
 		storage/storage_backend_scsi.h storage/storage_backend_scsi.c
 
-STORAGE_DRIVER_MPATH_SOURCES =					\
+STORAGE_DRIVER_MPATH_SOURCES = \
 		storage/storage_backend_mpath.h storage/storage_backend_mpath.c
 
-STORAGE_DRIVER_DISK_SOURCES =					\
+STORAGE_DRIVER_DISK_SOURCES = \
 		storage/storage_backend_disk.h storage/storage_backend_disk.c
 
-STORAGE_DRIVER_RBD_SOURCES =					\
+STORAGE_DRIVER_RBD_SOURCES = \
 		storage/storage_backend_rbd.h storage/storage_backend_rbd.c
 
-STORAGE_DRIVER_SHEEPDOG_SOURCES =				\
+STORAGE_DRIVER_SHEEPDOG_SOURCES = \
 		storage/storage_backend_sheepdog.h storage/storage_backend_sheepdog.c \
 		storage/storage_backend_sheepdog_priv.h
 
-STORAGE_DRIVER_GLUSTER_SOURCES =				\
+STORAGE_DRIVER_GLUSTER_SOURCES = \
 		storage/storage_backend_gluster.h storage/storage_backend_gluster.c
 
-STORAGE_DRIVER_ZFS_SOURCES =					\
+STORAGE_DRIVER_ZFS_SOURCES = \
                 storage/storage_backend_zfs.h storage/storage_backend_zfs.c
 
-STORAGE_DRIVER_VSTORAGE_SOURCES =				\
-                storage/storage_backend_vstorage.h		\
+STORAGE_DRIVER_VSTORAGE_SOURCES = \
+                storage/storage_backend_vstorage.h \
                 storage/storage_backend_vstorage.c
 
-STORAGE_HELPER_DISK_SOURCES =					\
+STORAGE_HELPER_DISK_SOURCES = \
 		storage/parthelper.c
 
-UTIL_IO_HELPER_SOURCES =					\
+UTIL_IO_HELPER_SOURCES = \
 		util/iohelper.c
 
-NETWORK_LEASES_HELPER_SOURCES =                                 \
+NETWORK_LEASES_HELPER_SOURCES = \
                network/leaseshelper.c
 
 # Network filters
-NWFILTER_DRIVER_SOURCES =						\
-		nwfilter/nwfilter_driver.h nwfilter/nwfilter_driver.c	\
-		nwfilter/nwfilter_tech_driver.h				\
-		nwfilter/nwfilter_gentech_driver.c			\
-		nwfilter/nwfilter_gentech_driver.h			\
-		nwfilter/nwfilter_dhcpsnoop.c				\
-		nwfilter/nwfilter_dhcpsnoop.h				\
-		nwfilter/nwfilter_ebiptables_driver.c			\
-		nwfilter/nwfilter_ebiptables_driver.h			\
-		nwfilter/nwfilter_learnipaddr.c				\
+NWFILTER_DRIVER_SOURCES = \
+		nwfilter/nwfilter_driver.h nwfilter/nwfilter_driver.c \
+		nwfilter/nwfilter_tech_driver.h \
+		nwfilter/nwfilter_gentech_driver.c \
+		nwfilter/nwfilter_gentech_driver.h \
+		nwfilter/nwfilter_dhcpsnoop.c \
+		nwfilter/nwfilter_dhcpsnoop.h \
+		nwfilter/nwfilter_ebiptables_driver.c \
+		nwfilter/nwfilter_ebiptables_driver.h \
+		nwfilter/nwfilter_learnipaddr.c \
 		nwfilter/nwfilter_learnipaddr.h
 
 
 # Security framework and drivers for various models
-SECURITY_DRIVER_SOURCES =						\
-		security/security_driver.h security/security_driver.c	\
-		security/security_nop.h security/security_nop.c		\
-		security/security_stack.h security/security_stack.c	\
-		security/security_dac.h security/security_dac.c		\
+SECURITY_DRIVER_SOURCES = \
+		security/security_driver.h security/security_driver.c \
+		security/security_nop.h security/security_nop.c \
+		security/security_stack.h security/security_stack.c \
+		security/security_dac.h security/security_dac.c \
 		security/security_manager.h security/security_manager.c
 
-SECURITY_DRIVER_SELINUX_SOURCES =				\
+SECURITY_DRIVER_SELINUX_SOURCES = \
 		security/security_selinux.h security/security_selinux.c
 
-SECURITY_DRIVER_APPARMOR_SOURCES =				\
+SECURITY_DRIVER_APPARMOR_SOURCES = \
 		security/security_apparmor.h security/security_apparmor.c
 
 ACCESS_DRIVER_GENERATED = \
@@ -1165,40 +1165,40 @@ ACCESS_DRIVER_POLKIT_POLICY = \
 		$(srcdir)/access/org.libvirt.api.policy
 
 
-NODE_DEVICE_DRIVER_SOURCES =					\
-		node_device/node_device_driver.c		\
-		node_device/node_device_driver.h		\
-		node_device/node_device_linux_sysfs.c           \
+NODE_DEVICE_DRIVER_SOURCES = \
+		node_device/node_device_driver.c \
+		node_device/node_device_driver.h \
+		node_device/node_device_linux_sysfs.c \
 		node_device/node_device_linux_sysfs.h
 
-NODE_DEVICE_DRIVER_HAL_SOURCES =				\
-		node_device/node_device_hal.c			\
+NODE_DEVICE_DRIVER_HAL_SOURCES = \
+		node_device/node_device_hal.c \
 		node_device/node_device_hal.h
 
-NODE_DEVICE_DRIVER_UDEV_SOURCES =				\
-		node_device/node_device_udev.c			\
+NODE_DEVICE_DRIVER_UDEV_SOURCES = \
+		node_device/node_device_udev.c \
 		node_device/node_device_udev.h
 
-CPU_SOURCES =							\
-		cpu/cpu.h cpu/cpu.c				\
-		cpu/cpu_x86.h cpu/cpu_x86.c cpu/cpu_x86_data.h	\
-		cpu/cpu_s390.h cpu/cpu_s390.c			\
-		cpu/cpu_arm.h cpu/cpu_arm.c			\
-		cpu/cpu_ppc64.h cpu/cpu_ppc64.c			\
-		cpu/cpu_ppc64_data.h				\
+CPU_SOURCES = \
+		cpu/cpu.h cpu/cpu.c \
+		cpu/cpu_x86.h cpu/cpu_x86.c cpu/cpu_x86_data.h \
+		cpu/cpu_s390.h cpu/cpu_s390.c \
+		cpu/cpu_arm.h cpu/cpu_arm.c \
+		cpu/cpu_ppc64.h cpu/cpu_ppc64.c \
+		cpu/cpu_ppc64_data.h \
 		cpu/cpu_map.h cpu/cpu_map.c
 
-VMX_SOURCES =							\
+VMX_SOURCES = \
 		vmx/vmx.c vmx/vmx.h
 
-XENCONFIG_SOURCES =						\
-		xenconfig/xenxs_private.h			\
-		xenconfig/xen_common.c xenconfig/xen_common.h   \
-		xenconfig/xen_sxpr.c xenconfig/xen_sxpr.h	\
+XENCONFIG_SOURCES = \
+		xenconfig/xenxs_private.h \
+		xenconfig/xen_common.c xenconfig/xen_common.h \
+		xenconfig/xen_sxpr.c xenconfig/xen_sxpr.h \
 		xenconfig/xen_xm.c xenconfig/xen_xm.h
 if WITH_LIBXL
-XENCONFIG_LIBXL_SOURCES =					\
-		$(XENCONFIG_SOURCES)				\
+XENCONFIG_LIBXL_SOURCES = \
+		$(XENCONFIG_SOURCES) \
 		xenconfig/xen_xl.c xenconfig/xen_xl.h
 endif WITH_LIBXL
 
@@ -1215,11 +1215,11 @@ EXTRA_DIST +=	$(pkgdata_DATA)
 noinst_LTLIBRARIES = libvirt_util.la
 libvirt_la_LIBADD = $(libvirt_la_BUILT_LIBADD)
 libvirt_la_BUILT_LIBADD = libvirt_util.la
-libvirt_util_la_SOURCES =					\
+libvirt_util_la_SOURCES = \
 		$(UTIL_SOURCES)
 libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
 		$(AM_CFLAGS) $(AUDIT_CFLAGS) $(DEVMAPPER_CFLAGS) \
-		$(DBUS_CFLAGS) $(LDEXP_LIBM) $(NUMACTL_CFLAGS)	\
+		$(DBUS_CFLAGS) $(LDEXP_LIBM) $(NUMACTL_CFLAGS) \
 		$(POLKIT_CFLAGS) $(GNUTLS_CFLAGS) $(ACL_CFLAGS)
 libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
 		$(THREAD_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
@@ -1308,11 +1308,11 @@ endif WITH_TEST
 if WITH_REMOTE
 noinst_LTLIBRARIES += libvirt_driver_remote.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_remote.la
-libvirt_driver_remote_la_CFLAGS =				\
-		$(GNUTLS_CFLAGS)				\
-		$(XDR_CFLAGS)					\
-		-I$(srcdir)/conf				\
-		-I$(srcdir)/rpc					\
+libvirt_driver_remote_la_CFLAGS = \
+		$(GNUTLS_CFLAGS) \
+		$(XDR_CFLAGS) \
+		-I$(srcdir)/conf \
+		-I$(srcdir)/rpc \
 		$(AM_CFLAGS)
 libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_remote_la_LIBADD = $(GNUTLS_LIBS) \
@@ -1341,11 +1341,11 @@ mod_LTLIBRARIES += libvirt_driver_xen.la
 libvirt_driver_xen_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_xen_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 
-libvirt_driver_xen_impl_la_CFLAGS =				\
-		$(XEN_CFLAGS)					\
-		-I$(srcdir)/access				\
-		-I$(srcdir)/conf				\
-		-I$(srcdir)/xenconfig				\
+libvirt_driver_xen_impl_la_CFLAGS = \
+		$(XEN_CFLAGS) \
+		-I$(srcdir)/access \
+		-I$(srcdir)/conf \
+		-I$(srcdir)/xenconfig \
 		$(AM_CFLAGS)
 libvirt_driver_xen_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_xen_impl_la_LIBADD = $(XEN_LIBS) libvirt_xenconfig.la
@@ -1387,13 +1387,13 @@ mod_LTLIBRARIES += \
 libvirt_driver_vbox_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_vbox_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 
-libvirt_driver_vbox_impl_la_CFLAGS =				\
-		-I$(srcdir)/conf				\
-		$(AM_CFLAGS)					\
+libvirt_driver_vbox_impl_la_CFLAGS = \
+		-I$(srcdir)/conf \
+		$(AM_CFLAGS) \
 		-DVBOX_DRIVER
 libvirt_driver_vbox_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_vbox_impl_la_LIBADD =  $(DLOPEN_LIBS)		\
-		$(WIN32_EXTRA_LIBS)				\
+libvirt_driver_vbox_impl_la_LIBADD =  $(DLOPEN_LIBS) \
+		$(WIN32_EXTRA_LIBS) \
 		$(LIBXML_LIBS)
 libvirt_driver_vbox_impl_la_SOURCES = $(VBOX_DRIVER_SOURCES)
 endif WITH_VBOX
@@ -1416,12 +1416,12 @@ mod_LTLIBRARIES += libvirt_driver_libxl.la
 libvirt_driver_libxl_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_libxl_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 
-libvirt_driver_libxl_impl_la_CFLAGS = 		\
-		$(LIBXL_CFLAGS)			\
-		-I$(srcdir)/access	\
-		-I$(srcdir)/conf	\
-		-I$(srcdir)/secret      \
-		-I$(srcdir)/xenconfig	\
+libvirt_driver_libxl_impl_la_CFLAGS = \
+		$(LIBXL_CFLAGS) \
+		-I$(srcdir)/access \
+		-I$(srcdir)/conf \
+		-I$(srcdir)/secret \
+		-I$(srcdir)/xenconfig \
 		$(AM_CFLAGS)
 libvirt_driver_libxl_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_libxl_impl_la_LIBADD = $(LIBXL_LIBS) \
@@ -1706,7 +1706,7 @@ libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
 
 
 libvirt_storage_backend_fs_la_SOURCES = $(STORAGE_DRIVER_FS_SOURCES)
-libvirt_storage_backend_fs_la_CFLAGS =	\
+libvirt_storage_backend_fs_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS)
 
@@ -1755,7 +1755,7 @@ if WITH_STORAGE_MPATH
 libvirt_storage_backend_mpath_la_SOURCES = \
 	$(STORAGE_DRIVER_MPATH_SOURCES)
 libvirt_storage_backend_mpath_la_LIBADD = $(DEVMAPPER_LIBS)
-libvirt_storage_backend_mpath_la_CFLAGS =	\
+libvirt_storage_backend_mpath_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(DEVMAPPER_CFLAGS) \
 	$(AM_CFLAGS)
@@ -1767,7 +1767,7 @@ endif WITH_STORAGE_MPATH
 
 if WITH_STORAGE_DISK
 libvirt_storage_backend_disk_la_SOURCES = $(STORAGE_DRIVER_DISK_SOURCES)
-libvirt_storage_backend_disk_la_CFLAGS =	\
+libvirt_storage_backend_disk_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS)
 
@@ -1825,7 +1825,7 @@ endif WITH_STORAGE_GLUSTER
 
 if WITH_STORAGE_ZFS
 libvirt_storage_backend_zfs_la_SOURCES = $(STORAGE_DRIVER_ZFS_SOURCES)
-libvirt_storage_backend_zfs_la_CFLAGS =	\
+libvirt_storage_backend_zfs_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS)
 
@@ -1837,7 +1837,7 @@ endif WITH_STORAGE_ZFS
 if WITH_STORAGE_VSTORAGE
 libvirt_storage_backend_vstorage_la_SOURCES = \
 	$(STORAGE_DRIVER_VSTORAGE_SOURCES)
-libvirt_storage_backend_vstorage_la_CFLAGS =	\
+libvirt_storage_backend_vstorage_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS)
 
@@ -2009,51 +2009,51 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 	  > $(srcdir)/access/viraccessapichecklxc.c
 
 # Add all conditional sources just in case...
-EXTRA_DIST +=							\
-		$(TEST_DRIVER_SOURCES)				\
-		$(TEST_DRIVER_ASSETS)				\
-		$(REMOTE_DRIVER_SOURCES)			\
-		$(XEN_DRIVER_SOURCES)				\
-		$(QEMU_DRIVER_SOURCES)				\
-		$(LXC_DRIVER_SOURCES)				\
-		$(UML_DRIVER_SOURCES)				\
-		$(OPENVZ_DRIVER_SOURCES)			\
-		$(PHYP_DRIVER_SOURCES)				\
-		$(VBOX_DRIVER_SOURCES)				\
-		$(XENAPI_DRIVER_SOURCES)			\
-		$(LIBXL_DRIVER_SOURCES)				\
-		$(ESX_DRIVER_SOURCES)				\
-		$(ESX_DRIVER_EXTRA_DIST)			\
-		$(HYPERV_DRIVER_SOURCES)			\
-		$(HYPERV_DRIVER_EXTRA_DIST)			\
-		$(VZ_DRIVER_SOURCES)				\
-		$(BHYVE_DRIVER_SOURCES)				\
-		$(NETWORK_DRIVER_SOURCES)			\
-		$(INTERFACE_DRIVER_SOURCES)			\
-		$(STORAGE_DRIVER_SOURCES)			\
-		$(STORAGE_DRIVER_FS_SOURCES)			\
-		$(STORAGE_DRIVER_LVM_SOURCES)			\
-		$(STORAGE_DRIVER_ISCSI_SOURCES)			\
-		$(STORAGE_DRIVER_SCSI_SOURCES)			\
-		$(STORAGE_DRIVER_MPATH_SOURCES)			\
-		$(STORAGE_DRIVER_DISK_SOURCES)			\
-		$(STORAGE_DRIVER_RBD_SOURCES)			\
-		$(STORAGE_DRIVER_SHEEPDOG_SOURCES)		\
-		$(STORAGE_DRIVER_GLUSTER_SOURCES)		\
-		$(STORAGE_DRIVER_ZFS_SOURCES)			\
-		$(STORAGE_DRIVER_VSTORAGE_SOURCES)		\
-		$(NODE_DEVICE_DRIVER_SOURCES)			\
-		$(NODE_DEVICE_DRIVER_HAL_SOURCES)		\
-		$(NODE_DEVICE_DRIVER_UDEV_SOURCES)		\
-		$(NWFILTER_DRIVER_SOURCES)			\
-		$(SECURITY_DRIVER_SELINUX_SOURCES)		\
-		$(SECURITY_DRIVER_APPARMOR_SOURCES)		\
-		$(SECRET_DRIVER_SOURCES)			\
-		$(SECRET_UTIL_SOURCES)				\
-		$(VBOX_DRIVER_EXTRA_DIST)			\
-		$(VMWARE_DRIVER_SOURCES)			\
-		$(XENCONFIG_SOURCES)				\
-		$(XENCONFIG_LIBXL_SOURCES)			\
+EXTRA_DIST += \
+		$(TEST_DRIVER_SOURCES) \
+		$(TEST_DRIVER_ASSETS) \
+		$(REMOTE_DRIVER_SOURCES) \
+		$(XEN_DRIVER_SOURCES) \
+		$(QEMU_DRIVER_SOURCES) \
+		$(LXC_DRIVER_SOURCES) \
+		$(UML_DRIVER_SOURCES) \
+		$(OPENVZ_DRIVER_SOURCES) \
+		$(PHYP_DRIVER_SOURCES) \
+		$(VBOX_DRIVER_SOURCES) \
+		$(XENAPI_DRIVER_SOURCES) \
+		$(LIBXL_DRIVER_SOURCES) \
+		$(ESX_DRIVER_SOURCES) \
+		$(ESX_DRIVER_EXTRA_DIST) \
+		$(HYPERV_DRIVER_SOURCES) \
+		$(HYPERV_DRIVER_EXTRA_DIST) \
+		$(VZ_DRIVER_SOURCES) \
+		$(BHYVE_DRIVER_SOURCES) \
+		$(NETWORK_DRIVER_SOURCES) \
+		$(INTERFACE_DRIVER_SOURCES) \
+		$(STORAGE_DRIVER_SOURCES) \
+		$(STORAGE_DRIVER_FS_SOURCES) \
+		$(STORAGE_DRIVER_LVM_SOURCES) \
+		$(STORAGE_DRIVER_ISCSI_SOURCES) \
+		$(STORAGE_DRIVER_SCSI_SOURCES) \
+		$(STORAGE_DRIVER_MPATH_SOURCES) \
+		$(STORAGE_DRIVER_DISK_SOURCES) \
+		$(STORAGE_DRIVER_RBD_SOURCES) \
+		$(STORAGE_DRIVER_SHEEPDOG_SOURCES) \
+		$(STORAGE_DRIVER_GLUSTER_SOURCES) \
+		$(STORAGE_DRIVER_ZFS_SOURCES) \
+		$(STORAGE_DRIVER_VSTORAGE_SOURCES) \
+		$(NODE_DEVICE_DRIVER_SOURCES) \
+		$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
+		$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
+		$(NWFILTER_DRIVER_SOURCES) \
+		$(SECURITY_DRIVER_SELINUX_SOURCES) \
+		$(SECURITY_DRIVER_APPARMOR_SOURCES) \
+		$(SECRET_DRIVER_SOURCES) \
+		$(SECRET_UTIL_SOURCES) \
+		$(VBOX_DRIVER_EXTRA_DIST) \
+		$(VMWARE_DRIVER_SOURCES) \
+		$(XENCONFIG_SOURCES) \
+		$(XENCONFIG_LIBXL_SOURCES) \
 		$(ACCESS_DRIVER_POLKIT_POLICY)
 
 check-local: check-augeas
@@ -2268,12 +2268,12 @@ SYM_FILES += $(srcdir)/libvirt_libssh.syms
 endif ! WITH_LIBSSH
 
 EXTRA_DIST += \
-	libvirt_public.syms		\
-	libvirt_lxc.syms		\
-	libvirt_qemu.syms		\
-	libvirt_admin_public.syms	\
-	$(SYM_FILES)			\
-	$(ADMIN_SYM_FILES)		\
+	libvirt_public.syms \
+	libvirt_lxc.syms \
+	libvirt_qemu.syms \
+	libvirt_admin_public.syms \
+	$(SYM_FILES) \
+	$(ADMIN_SYM_FILES) \
 	$(NULL)
 
 BUILT_SOURCES += $(GENERATED_SYM_FILES)
@@ -2295,7 +2295,7 @@ libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
 %.def: %.syms
 	$(AM_V_GEN)rm -f -- $@-tmp $@ ; \
 	printf 'EXPORTS\n' > $@-tmp && \
-	sed -e '/^$$/d; /#/d; /:/d; /}/d; /\*/d; /LIBVIRT_/d'	\
+	sed -e '/^$$/d; /#/d; /:/d; /}/d; /\*/d; /LIBVIRT_/d' \
 	    -e 's/[	 ]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
 	chmod a-w $@-tmp && \
 	mv $@-tmp $@
@@ -2319,42 +2319,42 @@ EXTRA_DIST += admin/admin_remote.c
 
 lib_LTLIBRARIES += libvirt-admin.la
 libvirt_admin_la_SOURCES = \
-		libvirt-admin.c			\
-		$(ADMIN_PROTOCOL_GENERATED)	\
+		libvirt-admin.c \
+		$(ADMIN_PROTOCOL_GENERATED) \
 		$(DATATYPES_SOURCES)
 
 libvirt_admin_la_LDFLAGS = \
-		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_ADMIN_SYMBOL_FILE)	\
-		-version-info $(LIBVIRT_VERSION_INFO)			\
+		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_ADMIN_SYMBOL_FILE) \
+		-version-info $(LIBVIRT_VERSION_INFO) \
 		$(AM_LDFLAGS)
 
 libvirt_admin_la_LIBADD = \
-		libvirt.la		\
+		libvirt.la \
 		$(CYGWIN_EXTRA_LIBADD)
 
 libvirt_admin_la_CFLAGS = \
-		$(AM_CFLAGS)		\
-		-I$(srcdir)/remote	\
-		-I$(srcdir)/rpc		\
+		$(AM_CFLAGS) \
+		-I$(srcdir)/remote \
+		-I$(srcdir)/rpc \
 		-I$(srcdir)/admin
 
 libvirt_admin_la_CFLAGS += \
-		$(XDR_CFLAGS)			\
-		$(CAPNG_CFLAGS)			\
-		$(YAJL_CFLAGS)			\
-		$(SSH2_CFLAGS)			\
-		$(SASL_CFLAGS)			\
-		$(GNUTLS_CFLAGS)		\
+		$(XDR_CFLAGS) \
+		$(CAPNG_CFLAGS) \
+		$(YAJL_CFLAGS) \
+		$(SSH2_CFLAGS) \
+		$(SASL_CFLAGS) \
+		$(GNUTLS_CFLAGS) \
 		$(LIBSSH_CFLAGS)
 
 libvirt_admin_la_LIBADD += \
-		$(CAPNG_LIBS)			\
-		$(YAJL_LIBS)			\
-		$(DEVMAPPER_LIBS)		\
-		$(LIBXML_LIBS)			\
-		$(SSH2_LIBS)			\
-		$(SASL_LIBS)			\
-		$(GNUTLS_LIBS)			\
+		$(CAPNG_LIBS) \
+		$(YAJL_LIBS) \
+		$(DEVMAPPER_LIBS) \
+		$(LIBXML_LIBS) \
+		$(SSH2_LIBS) \
+		$(SASL_LIBS) \
+		$(GNUTLS_LIBS) \
 		$(LIBSSH_LIBS)
 
 ADMIN_SYM_FILES = $(srcdir)/libvirt_admin_private.syms
@@ -2474,87 +2474,87 @@ libvirt_lxc_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 if WITH_SETUID_RPC_CLIENT
 noinst_LTLIBRARIES += libvirt-setuid-rpc-client.la
 
-libvirt_setuid_rpc_client_la_SOURCES = 		\
-		util/viralloc.c			\
-		util/viratomic.c		\
-		util/viratomic.h		\
-		util/virbitmap.c		\
-		util/virbuffer.c		\
-		util/vircgroup.c		\
-		util/vircommand.c		\
-		util/virconf.c			\
-		util/virdbus.c			\
-		util/virerror.c			\
-		util/virevent.c			\
-		util/vireventpoll.c		\
-		util/virfile.c			\
-		util/virgettext.c		\
-		util/virhash.c			\
-		util/virhashcode.c		\
-		util/virhostcpu.c		\
-		util/virjson.c			\
-		util/virlog.c			\
-		util/virobject.c		\
-		util/virpidfile.c		\
-		util/virprocess.c		\
-		util/virrandom.c		\
-		util/virsocketaddr.c		\
-		util/virstring.c		\
-		util/virsystemd.c		\
-		util/virtime.c			\
-		util/virthread.c		\
-		util/virthreadjob.c		\
-		util/virtypedparam.c		\
-		util/viruri.c			\
-		util/virutil.c			\
-		util/viruuid.c			\
-		conf/domain_event.c		\
-		conf/network_event.c		\
-		conf/object_event.c		\
-		conf/storage_event.c            \
-		conf/node_device_event.c	\
-		conf/secret_event.c		\
-		rpc/virnetsocket.c		\
-		rpc/virnetsocket.h		\
-		rpc/virnetmessage.h		\
-		rpc/virnetmessage.c		\
-		rpc/virkeepalive.c		\
-		rpc/virkeepalive.h		\
-		rpc/virnetclient.c		\
-		rpc/virnetclientprogram.c	\
-		rpc/virnetclientstream.c	\
-		rpc/virnetprotocol.c		\
-		remote/remote_driver.c		\
-		remote/remote_protocol.c	\
-		remote/qemu_protocol.c		\
-		remote/lxc_protocol.c		\
-		datatypes.c			\
-		libvirt.c			\
-		libvirt-domain.c		\
-		libvirt-domain-snapshot.c	\
-		libvirt-host.c			\
-		libvirt-interface.c		\
-		libvirt-network.c		\
-		libvirt-nodedev.c		\
-		libvirt-nwfilter.c		\
-		libvirt-secret.c		\
-		libvirt-storage.c		\
-		libvirt-stream.c		\
-		libvirt-lxc.c			\
+libvirt_setuid_rpc_client_la_SOURCES = \
+		util/viralloc.c \
+		util/viratomic.c \
+		util/viratomic.h \
+		util/virbitmap.c \
+		util/virbuffer.c \
+		util/vircgroup.c \
+		util/vircommand.c \
+		util/virconf.c \
+		util/virdbus.c \
+		util/virerror.c \
+		util/virevent.c \
+		util/vireventpoll.c \
+		util/virfile.c \
+		util/virgettext.c \
+		util/virhash.c \
+		util/virhashcode.c \
+		util/virhostcpu.c \
+		util/virjson.c \
+		util/virlog.c \
+		util/virobject.c \
+		util/virpidfile.c \
+		util/virprocess.c \
+		util/virrandom.c \
+		util/virsocketaddr.c \
+		util/virstring.c \
+		util/virsystemd.c \
+		util/virtime.c \
+		util/virthread.c \
+		util/virthreadjob.c \
+		util/virtypedparam.c \
+		util/viruri.c \
+		util/virutil.c \
+		util/viruuid.c \
+		conf/domain_event.c \
+		conf/network_event.c \
+		conf/object_event.c \
+		conf/storage_event.c \
+		conf/node_device_event.c \
+		conf/secret_event.c \
+		rpc/virnetsocket.c \
+		rpc/virnetsocket.h \
+		rpc/virnetmessage.h \
+		rpc/virnetmessage.c \
+		rpc/virkeepalive.c \
+		rpc/virkeepalive.h \
+		rpc/virnetclient.c \
+		rpc/virnetclientprogram.c \
+		rpc/virnetclientstream.c \
+		rpc/virnetprotocol.c \
+		remote/remote_driver.c \
+		remote/remote_protocol.c \
+		remote/qemu_protocol.c \
+		remote/lxc_protocol.c \
+		datatypes.c \
+		libvirt.c \
+		libvirt-domain.c \
+		libvirt-domain-snapshot.c \
+		libvirt-host.c \
+		libvirt-interface.c \
+		libvirt-network.c \
+		libvirt-nodedev.c \
+		libvirt-nwfilter.c \
+		libvirt-secret.c \
+		libvirt-storage.c \
+		libvirt-stream.c \
+		libvirt-lxc.c \
 		$(NULL)
 
-libvirt_setuid_rpc_client_la_LDFLAGS =		\
-		$(AM_LDFLAGS)			\
-		$(LIBXML_LIBS)			\
-		$(SECDRIVER_LIBS)		\
+libvirt_setuid_rpc_client_la_LDFLAGS = \
+		$(AM_LDFLAGS) \
+		$(LIBXML_LIBS) \
+		$(SECDRIVER_LIBS) \
 		$(NULL)
-libvirt_setuid_rpc_client_la_CFLAGS =		\
-		-DLIBVIRT_SETUID_RPC_CLIENT	\
-		-I$(srcdir)/conf		\
-		-I$(srcdir)/rpc			\
-		$(AM_CFLAGS)			\
-		$(SECDRIVER_CFLAGS)		\
-		$(XDR_CFLAGS)			\
+libvirt_setuid_rpc_client_la_CFLAGS = \
+		-DLIBVIRT_SETUID_RPC_CLIENT \
+		-I$(srcdir)/conf \
+		-I$(srcdir)/rpc \
+		$(AM_CFLAGS) \
+		$(SECDRIVER_CFLAGS) \
+		$(XDR_CFLAGS) \
 		$(NULL)
 endif WITH_SETUID_RPC_CLIENT
 
@@ -2704,21 +2704,21 @@ uninstall-init::
 endif ! WITH_LIBVIRTD
 
 virtlockd.init: locking/virtlockd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
-	    < $< > $@-t &&					\
-	    chmod a+x $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    < $< > $@-t && \
+	    chmod a+x $@-t && \
 	    mv $@-t $@
 
 virtlogd.init: logging/virtlogd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g'		\
-	    < $< > $@-t &&					\
-	    chmod a+x $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    < $< > $@-t && \
+	    chmod a+x $@-t && \
 	    mv $@-t $@
 
 virtlockd.8.in: locking/virtlockd.pod
@@ -2824,27 +2824,27 @@ uninstall-systemd:
 endif ! WITH_LIBVIRTD
 
 virtlockd.service: locking/virtlockd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
-	    < $< > $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    < $< > $@-t && \
 	    mv $@-t $@
 
 virtlockd.socket: locking/virtlockd.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    < $< > $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
 	    mv $@-t $@
 
 virtlogd.service: logging/virtlogd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]sbindir[@]|$(sbindir)|g'			\
-	    < $< > $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    < $< > $@-t && \
 	    mv $@-t $@
 
 virtlogd.socket: logging/virtlogd.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed						\
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g'	\
-	    < $< > $@-t &&					\
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
 	    mv $@-t $@
 
 
@@ -2994,8 +2994,8 @@ libvirt_iohelper_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
 		$(NULL)
-libvirt_iohelper_LDADD =		\
-		libvirt_util.la		\
+libvirt_iohelper_LDADD = \
+		libvirt_util.la \
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
 libvirt_iohelper_LDADD += libvirt_probes.lo
@@ -3013,8 +3013,8 @@ libvirt_leaseshelper_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
 		$(NULL)
-libvirt_leaseshelper_LDADD =           \
-               libvirt_util.la         \
+libvirt_leaseshelper_LDADD = \
+               libvirt_util.la \
                ../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
 libvirt_leaseshelper_LDADD += libvirt_probes.lo
@@ -3039,9 +3039,9 @@ libvirt_parthelper_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
 		$(NULL)
-libvirt_parthelper_LDADD =		\
-		$(LIBPARTED_LIBS)	\
-		libvirt_util.la		\
+libvirt_parthelper_LDADD = \
+		$(LIBPARTED_LIBS) \
+		libvirt_util.la \
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
 libvirt_parthelper_LDADD += libvirt_probes.lo
@@ -3077,14 +3077,14 @@ if WITH_LXC
 if WITH_LIBVIRTD
 libexec_PROGRAMS += libvirt_lxc
 
-libvirt_lxc_SOURCES =						\
-		$(LXC_CONTROLLER_SOURCES)			\
+libvirt_lxc_SOURCES = \
+		$(LXC_CONTROLLER_SOURCES) \
 		$(DATATYPES_SOURCES)
 libvirt_lxc_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
 		$(NULL)
-libvirt_lxc_LDADD =			\
+libvirt_lxc_LDADD = \
 		$(FUSE_LIBS) \
 		libvirt-net-rpc-server.la \
 		libvirt-net-rpc.la \
@@ -3096,14 +3096,14 @@ if WITH_DTRACE_PROBES
 libvirt_lxc_LDADD += libvirt_probes.lo
 endif WITH_DTRACE_PROBES
 libvirt_lxc_LDADD += $(SECDRIVER_LIBS)
-libvirt_lxc_CFLAGS =				\
-		-I$(srcdir)/conf	\
-		$(AM_CFLAGS)                    \
-		$(PIE_CFLAGS)			\
-		$(LIBNL_CFLAGS)			\
-		$(FUSE_CFLAGS)			\
-		$(DBUS_CFLAGS)			\
-		$(XDR_CFLAGS)			\
+libvirt_lxc_CFLAGS = \
+		-I$(srcdir)/conf \
+		$(AM_CFLAGS) \
+		$(PIE_CFLAGS) \
+		$(LIBNL_CFLAGS) \
+		$(FUSE_CFLAGS) \
+		$(DBUS_CFLAGS) \
+		$(XDR_CFLAGS) \
 		$(NULL)
 if WITH_BLKID
 libvirt_lxc_CFLAGS += $(BLKID_CFLAGS)
@@ -3124,20 +3124,20 @@ virt_aa_helper_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
 		$(NULL)
-virt_aa_helper_LDADD =						\
-		libvirt.la					\
-		libvirt_conf.la					\
-		libvirt_util.la					\
-		libvirt_driver_storage_impl.la			\
+virt_aa_helper_LDADD = \
+		libvirt.la \
+		libvirt_conf.la \
+		libvirt_util.la \
+		libvirt_driver_storage_impl.la \
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
 virt_aa_helper_LDADD += libvirt_probes.lo
 endif WITH_DTRACE_PROBES
-virt_aa_helper_CFLAGS =						\
-		-I$(srcdir)/conf				\
-		-I$(srcdir)/security				\
-		$(AM_CFLAGS) 					\
-		$(PIE_CFLAGS) 					\
+virt_aa_helper_CFLAGS = \
+		-I$(srcdir)/conf \
+		-I$(srcdir)/security \
+		$(AM_CFLAGS) \
+		$(PIE_CFLAGS) \
 		$(NULL)
 endif WITH_LIBVIRTD
 endif WITH_SECDRIVER_APPARMOR
@@ -3146,68 +3146,68 @@ EXTRA_DIST += $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 if WITH_NSS
 noinst_LTLIBRARIES += libvirt-nss.la
 
-libvirt_nss_la_SOURCES =		\
-		util/viralloc.c			\
-		util/viralloc.h			\
-		util/viratomic.c		\
-		util/viratomic.h		\
-		util/virbitmap.c		\
-		util/virbitmap.h		\
-		util/virbuffer.c		\
-		util/virbuffer.h		\
-		util/vircommand.c		\
-		util/vircommand.h		\
-		util/virerror.c			\
-		util/virerror.h			\
-		util/virfile.c			\
-		util/virfile.h			\
-		util/virhash.c			\
-		util/virhash.h			\
-		util/virhashcode.c		\
-		util/virhashcode.h		\
-		util/virjson.c			\
-		util/virjson.h			\
-		util/virkmod.c			\
-		util/virkmod.h			\
-		util/virlease.c			\
-		util/virlease.h			\
-		util/virlog.c			\
-		util/virlog.h			\
-		util/virmacmap.c		\
-		util/virmacmap.h		\
-		util/virobject.c		\
-		util/virobject.h		\
-		util/virpidfile.c		\
-		util/virpidfile.h		\
-		util/virprocess.c		\
-		util/virprocess.h		\
-		util/virrandom.c		\
-		util/virrandom.h		\
-		util/virsocketaddr.c	\
-		util/virsocketaddr.h	\
-		util/virstring.c		\
-		util/virstring.h		\
-		util/virthread.c		\
-		util/virthread.h		\
-		util/virthreadjob.c		\
-		util/virthreadjob.h		\
-		util/virtime.c			\
-		util/virtime.h			\
-		util/virutil.c			\
-		util/virutil.h			\
+libvirt_nss_la_SOURCES = \
+		util/viralloc.c \
+		util/viralloc.h \
+		util/viratomic.c \
+		util/viratomic.h \
+		util/virbitmap.c \
+		util/virbitmap.h \
+		util/virbuffer.c \
+		util/virbuffer.h \
+		util/vircommand.c \
+		util/vircommand.h \
+		util/virerror.c \
+		util/virerror.h \
+		util/virfile.c \
+		util/virfile.h \
+		util/virhash.c \
+		util/virhash.h \
+		util/virhashcode.c \
+		util/virhashcode.h \
+		util/virjson.c \
+		util/virjson.h \
+		util/virkmod.c \
+		util/virkmod.h \
+		util/virlease.c \
+		util/virlease.h \
+		util/virlog.c \
+		util/virlog.h \
+		util/virmacmap.c \
+		util/virmacmap.h \
+		util/virobject.c \
+		util/virobject.h \
+		util/virpidfile.c \
+		util/virpidfile.h \
+		util/virprocess.c \
+		util/virprocess.h \
+		util/virrandom.c \
+		util/virrandom.h \
+		util/virsocketaddr.c \
+		util/virsocketaddr.h \
+		util/virstring.c \
+		util/virstring.h \
+		util/virthread.c \
+		util/virthread.h \
+		util/virthreadjob.c \
+		util/virthreadjob.h \
+		util/virtime.c \
+		util/virtime.h \
+		util/virutil.c \
+		util/virutil.h \
 		$(NULL)
 
-libvirt_nss_la_CFLAGS =			\
-		-DLIBVIRT_NSS			\
-		$(AM_CFLAGS)			\
-		$(YAJL_CFLAGS)			\
+libvirt_nss_la_CFLAGS = \
+		-DLIBVIRT_NSS \
+		$(AM_CFLAGS) \
+		$(YAJL_CFLAGS) \
 		$(NULL)
-libvirt_nss_la_LDFLAGS =		\
-		$(AM_LDFLAGS)			\
+libvirt_nss_la_LDFLAGS = \
+		$(AM_LDFLAGS) \
 		$(NULL)
 
-libvirt_nss_la_LIBADD =			\
-		$(YAJL_LIBS)			\
+libvirt_nss_la_LIBADD = \
+		$(YAJL_LIBS) \
 		$(NULL)
 endif WITH_NSS
 

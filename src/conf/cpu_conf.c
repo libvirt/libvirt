@@ -847,8 +847,8 @@ virCPUDefIsEqual(virCPUDefPtr src,
     if (!src && !dst)
         return true;
 
-#define MISMATCH(fmt, ...)                                              \
-    if (reportError)                                                    \
+#define MISMATCH(fmt, ...) \
+    if (reportError) \
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, fmt, __VA_ARGS__)
 
     if ((src && !dst) || (!src && dst)) {

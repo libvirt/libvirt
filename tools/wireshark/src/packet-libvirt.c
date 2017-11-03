@@ -35,9 +35,9 @@
 #include "internal.h"
 
 /* Wireshark 1.12 brings API change */
-#define WIRESHARK_VERSION               \
-    ((VERSION_MAJOR * 1000 * 1000) +    \
-     (VERSION_MINOR * 1000) +           \
+#define WIRESHARK_VERSION \
+    ((VERSION_MAJOR * 1000 * 1000) + \
+     (VERSION_MINOR * 1000) + \
      (VERSION_MICRO))
 
 static int proto_libvirt = -1;
@@ -57,20 +57,20 @@ int hf_libvirt_unknown = -1;
 static gint ett_libvirt = -1;
 static gint ett_libvirt_stream_hole = -1;
 
-#define XDR_PRIMITIVE_DISSECTOR(xtype, ctype, ftype)                    \
-    static gboolean                                                     \
-    dissect_xdr_##xtype(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf)    \
-    {                                                                   \
-        goffset start;                                                  \
-        ctype val;                                                      \
-        start = xdr_getpos(xdrs);                                       \
-        if (xdr_##xtype(xdrs, &val)) {                                  \
+#define XDR_PRIMITIVE_DISSECTOR(xtype, ctype, ftype) \
+    static gboolean \
+    dissect_xdr_##xtype(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf) \
+    { \
+        goffset start; \
+        ctype val; \
+        start = xdr_getpos(xdrs); \
+        if (xdr_##xtype(xdrs, &val)) { \
             proto_tree_add_##ftype(tree, hf, tvb, start, xdr_getpos(xdrs) - start, val); \
-            return TRUE;                                                \
-        } else {                                                        \
+            return TRUE; \
+        } else { \
             proto_tree_add_item(tree, hf_libvirt_unknown, tvb, start, -1, ENC_NA); \
-            return FALSE;                                               \
-        }                                                               \
+            return FALSE; \
+        } \
     }
 
 XDR_PRIMITIVE_DISSECTOR(int,     gint32,  int)

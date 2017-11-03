@@ -58,15 +58,15 @@
 VIR_LOG_INIT("daemon.remote");
 
 #if SIZEOF_LONG < 8
-# define HYPER_TO_TYPE(_type, _to, _from)                               \
-    do {                                                                \
-        if ((_from) != (_type)(_from)) {                                \
-            virReportError(VIR_ERR_OVERFLOW,                            \
+# define HYPER_TO_TYPE(_type, _to, _from) \
+    do { \
+        if ((_from) != (_type)(_from)) { \
+            virReportError(VIR_ERR_OVERFLOW, \
                            _("conversion from hyper to %s overflowed"), \
-                           #_type);                                     \
-            goto cleanup;                                               \
-        }                                                               \
-        (_to) = (_from);                                                \
+                           #_type); \
+            goto cleanup; \
+        } \
+        (_to) = (_from); \
     } while (0)
 
 # define HYPER_TO_LONG(_to, _from) HYPER_TO_TYPE(long, _to, _from)
@@ -1670,22 +1670,22 @@ void remoteRelayConnectionClosedEvent(virConnectPtr conn ATTRIBUTE_UNUSED, int r
                                   &msg);
 }
 
-#define DEREG_CB(conn, eventCallbacks, neventCallbacks, deregFcn, name)     \
-    do {                                                                    \
-        size_t i;                                                           \
-        for (i = 0; i < neventCallbacks; i++) {                             \
-            int callbackID = eventCallbacks[i]->callbackID;                 \
-            if (callbackID < 0) {                                           \
+#define DEREG_CB(conn, eventCallbacks, neventCallbacks, deregFcn, name) \
+    do { \
+        size_t i; \
+        for (i = 0; i < neventCallbacks; i++) { \
+            int callbackID = eventCallbacks[i]->callbackID; \
+            if (callbackID < 0) { \
                 VIR_WARN("unexpected incomplete %s callback %zu", name, i); \
-                continue;                                                   \
-            }                                                               \
-            VIR_DEBUG("Deregistering remote %s event relay %d",             \
-                      name, callbackID);                                    \
-            eventCallbacks[i]->callbackID = -1;                             \
-            if (deregFcn(conn, callbackID) < 0)                             \
-                VIR_WARN("unexpected %s event deregister failure", name);   \
-        }                                                                   \
-        VIR_FREE(eventCallbacks);                                           \
+                continue; \
+            } \
+            VIR_DEBUG("Deregistering remote %s event relay %d", \
+                      name, callbackID); \
+            eventCallbacks[i]->callbackID = -1; \
+            if (deregFcn(conn, callbackID) < 0) \
+                VIR_WARN("unexpected %s event deregister failure", name); \
+        } \
+        VIR_FREE(eventCallbacks); \
     } while (0);
 
 /*

@@ -274,91 +274,91 @@ mymain(void)
      */
     virTestQuiesceLibvirtErrors(false);
 
-#define DO_TEST_PARSE_AND_FORMAT(addrstr, family, pass)                 \
-    do {                                                                \
-        virSocketAddr addr;                                             \
-        struct testParseData data = { &addr, addrstr, family, pass };   \
-        memset(&addr, 0, sizeof(addr));                                 \
-        if (virTestRun("Test parse " addrstr " family " #family,        \
-                       testParseHelper, &data) < 0)                     \
-            ret = -1;                                                   \
-        struct testFormatData data2 = { &addr, addrstr, pass };         \
-        if (virTestRun("Test format " addrstr " family " #family,       \
-                       testFormatHelper, &data2) < 0)                   \
-            ret = -1;                                                   \
+#define DO_TEST_PARSE_AND_FORMAT(addrstr, family, pass) \
+    do { \
+        virSocketAddr addr; \
+        struct testParseData data = { &addr, addrstr, family, pass }; \
+        memset(&addr, 0, sizeof(addr)); \
+        if (virTestRun("Test parse " addrstr " family " #family, \
+                       testParseHelper, &data) < 0) \
+            ret = -1; \
+        struct testFormatData data2 = { &addr, addrstr, pass }; \
+        if (virTestRun("Test format " addrstr " family " #family, \
+                       testFormatHelper, &data2) < 0) \
+            ret = -1; \
     } while (0)
 
 #define DO_TEST_PARSE_AND_CHECK_FORMAT(addrstr, addrformated, family, pass) \
-    do {                                                                    \
-        virSocketAddr addr;                                                 \
-        struct testParseData data = { &addr, addrstr, family, true};        \
-        memset(&addr, 0, sizeof(addr));                                     \
-        if (virTestRun("Test parse " addrstr " family " #family,            \
-                       testParseHelper, &data) < 0)                         \
-            ret = -1;                                                       \
-        struct testFormatData data2 = { &addr, addrformated, pass };        \
-        if (virTestRun("Test format " addrstr " family " #family,           \
-                       testFormatHelper, &data2) < 0)                       \
-            ret = -1;                                                       \
+    do { \
+        virSocketAddr addr; \
+        struct testParseData data = { &addr, addrstr, family, true}; \
+        memset(&addr, 0, sizeof(addr)); \
+        if (virTestRun("Test parse " addrstr " family " #family, \
+                       testParseHelper, &data) < 0) \
+            ret = -1; \
+        struct testFormatData data2 = { &addr, addrformated, pass }; \
+        if (virTestRun("Test format " addrstr " family " #family, \
+                       testFormatHelper, &data2) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_RANGE(saddr, eaddr, netaddr, prefix, size, pass)        \
-    do {                                                                \
-        struct testRangeData data                                       \
-           = { saddr, eaddr, netaddr, prefix, size, pass };             \
-        if (virTestRun("Test range " saddr " -> " eaddr "(" netaddr     \
-                       "/" #prefix") size " #size,                      \
-                       testRangeHelper, &data) < 0)                     \
-            ret = -1;                                                   \
+#define DO_TEST_RANGE(saddr, eaddr, netaddr, prefix, size, pass) \
+    do { \
+        struct testRangeData data \
+           = { saddr, eaddr, netaddr, prefix, size, pass }; \
+        if (virTestRun("Test range " saddr " -> " eaddr "(" netaddr \
+                       "/" #prefix") size " #size, \
+                       testRangeHelper, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_RANGE_SIMPLE(saddr, eaddr, size, pass)                  \
-    do {                                                                \
-        struct testRangeData data                                       \
-           = { saddr, eaddr, NULL, 0, size, pass };                     \
-        if (virTestRun("Test range " saddr " -> " eaddr "size " #size,  \
-                       testRangeHelper, &data) < 0)                     \
-            ret = -1;                                                   \
+#define DO_TEST_RANGE_SIMPLE(saddr, eaddr, size, pass) \
+    do { \
+        struct testRangeData data \
+           = { saddr, eaddr, NULL, 0, size, pass }; \
+        if (virTestRun("Test range " saddr " -> " eaddr "size " #size, \
+                       testRangeHelper, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_NETMASK(addr1, addr2, netmask, pass)                     \
-    do {                                                                 \
-        struct testNetmaskData data = { addr1, addr2, netmask, pass };   \
+#define DO_TEST_NETMASK(addr1, addr2, netmask, pass) \
+    do { \
+        struct testNetmaskData data = { addr1, addr2, netmask, pass }; \
         if (virTestRun("Test netmask " addr1 " + " addr2 " in " netmask, \
-                       testNetmaskHelper, &data) < 0)                    \
-            ret = -1;                                                    \
+                       testNetmaskHelper, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_MASK_NETWORK(addr1, prefix, network)                            \
-    do {                                                                        \
-        struct testMaskNetworkData data = { addr1, prefix, network };           \
+#define DO_TEST_MASK_NETWORK(addr1, prefix, network) \
+    do { \
+        struct testMaskNetworkData data = { addr1, prefix, network }; \
         if (virTestRun("Test mask network " addr1 " / " #prefix " == " network, \
-                       testMaskNetworkHelper, &data) < 0)                       \
-            ret = -1;                                                           \
+                       testMaskNetworkHelper, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_WILDCARD(addr, pass)                                    \
-    do {                                                                \
-        struct testWildcardData data = { addr, pass};                   \
-        if (virTestRun("Test wildcard " addr,                           \
-                       testWildcardHelper, &data) < 0)                  \
-            ret = -1;                                                   \
+#define DO_TEST_WILDCARD(addr, pass) \
+    do { \
+        struct testWildcardData data = { addr, pass}; \
+        if (virTestRun("Test wildcard " addr, \
+                       testWildcardHelper, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_NUMERIC_FAMILY(addr, pass)                              \
-    do {                                                                \
-        struct testNumericData data = { addr, pass };                   \
-        if (virTestRun("Test Numeric Family" addr,                      \
-                       testNumericHelper, &data) < 0)                   \
-            ret = -1;                                                   \
+#define DO_TEST_NUMERIC_FAMILY(addr, pass) \
+    do { \
+        struct testNumericData data = { addr, pass }; \
+        if (virTestRun("Test Numeric Family" addr, \
+                       testNumericHelper, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_LOCALHOST(addr, pass)                                   \
-    do {                                                                \
-        struct testIsLocalhostData data = { addr, pass };               \
-        if (virTestRun("Test localhost " addr,                          \
-                       testIsLocalhostHelper, &data) < 0)               \
-            ret = -1;                                                   \
+#define DO_TEST_LOCALHOST(addr, pass) \
+    do { \
+        struct testIsLocalhostData data = { addr, pass }; \
+        if (virTestRun("Test localhost " addr, \
+                       testIsLocalhostHelper, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST_PARSE_AND_FORMAT("127.0.0.1", AF_UNSPEC, true);

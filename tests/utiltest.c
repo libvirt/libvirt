@@ -228,12 +228,12 @@ testRoundValueToPowerOfTwo(const void *data ATTRIBUTE_UNUSED)
 }
 
 
-#define TEST_OVERFLOW(var, val, expect)                                        \
-    tmp = val;                                                                 \
-    if (VIR_ASSIGN_IS_OVERFLOW(var, tmp) != expect) {                          \
-        fprintf(stderr, "\noverflow check failed: "                            \
-                "var: " #var " val: " #val "\n");                              \
-        return -1;                                                             \
+#define TEST_OVERFLOW(var, val, expect) \
+    tmp = val; \
+    if (VIR_ASSIGN_IS_OVERFLOW(var, tmp) != expect) { \
+        fprintf(stderr, "\noverflow check failed: " \
+                "var: " #var " val: " #val "\n"); \
+        return -1; \
     }
 
 static int
@@ -266,12 +266,12 @@ mymain(void)
 
     virTestQuiesceLibvirtErrors(true);
 
-#define DO_TEST(_name)                                                        \
-        do {                                                                  \
-            if (virTestRun("Util "#_name, test##_name,                        \
-                           NULL) < 0) {                                       \
-                result = -1;                                                  \
-            }                                                                 \
+#define DO_TEST(_name) \
+        do { \
+            if (virTestRun("Util "#_name, test##_name, \
+                           NULL) < 0) { \
+                result = -1; \
+            } \
         } while (0)
 
     DO_TEST(IndexToDiskName);

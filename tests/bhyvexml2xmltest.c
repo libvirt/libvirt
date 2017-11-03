@@ -66,12 +66,12 @@ mymain(void)
     if ((driver.xmlopt = virBhyveDriverCreateXMLConf(&driver)) == NULL)
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, flags)                               \
-    do {                                                         \
-        const struct testInfo info = {name, (flags)};            \
-        if (virTestRun("BHYVE XML-2-XML " name,                  \
-                       testCompareXMLToXMLHelper, &info) < 0)    \
-            ret = -1;                                            \
+# define DO_TEST_FULL(name, flags) \
+    do { \
+        const struct testInfo info = {name, (flags)}; \
+        if (virTestRun("BHYVE XML-2-XML " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
 # define DO_TEST_DIFFERENT(name) \

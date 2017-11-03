@@ -1912,12 +1912,12 @@ qemuParseCommandLine(virCapsPtr caps,
     if (ARCH_IS_X86(def->os.arch))
         def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
 
-#define WANT_VALUE()                                                   \
-    const char *val = progargv[++i];                                   \
-    if (!val) {                                                        \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                         \
-                       _("missing value for %s argument"), arg);       \
-        goto error;                                                    \
+#define WANT_VALUE() \
+    const char *val = progargv[++i]; \
+    if (!val) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       _("missing value for %s argument"), arg); \
+        goto error; \
     }
 
     /* One initial loop to get list of NICs, so we

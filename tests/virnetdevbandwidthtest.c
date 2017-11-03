@@ -41,27 +41,27 @@ struct testSetStruct {
     const bool hierarchical_class;
 };
 
-#define PARSE(xml, var)                                                 \
-    do {                                                                \
-        int rc;                                                         \
-        xmlDocPtr doc;                                                  \
-        xmlXPathContextPtr ctxt = NULL;                                 \
-                                                                        \
-        if (!xml)                                                       \
-            break;                                                      \
-                                                                        \
-        if (!(doc = virXMLParseStringCtxt((xml),                        \
-                                          "bandwidth definition",       \
-                                          &ctxt)))                      \
-            goto cleanup;                                               \
-                                                                        \
-        rc = virNetDevBandwidthParse(&(var),                            \
-                                     ctxt->node,                        \
-                                     VIR_DOMAIN_NET_TYPE_NETWORK);      \
-        xmlFreeDoc(doc);                                                \
-        xmlXPathFreeContext(ctxt);                                      \
-        if (rc < 0)                                                     \
-            goto cleanup;                                               \
+#define PARSE(xml, var) \
+    do { \
+        int rc; \
+        xmlDocPtr doc; \
+        xmlXPathContextPtr ctxt = NULL; \
+ \
+        if (!xml) \
+            break; \
+ \
+        if (!(doc = virXMLParseStringCtxt((xml), \
+                                          "bandwidth definition", \
+                                          &ctxt))) \
+            goto cleanup; \
+ \
+        rc = virNetDevBandwidthParse(&(var), \
+                                     ctxt->node, \
+                                     VIR_DOMAIN_NET_TYPE_NETWORK); \
+        xmlFreeDoc(doc); \
+        xmlXPathFreeContext(ctxt); \
+        if (rc < 0) \
+            goto cleanup; \
     } while (0)
 
 static int
@@ -115,15 +115,15 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_SET(Band, Exp_cmd, ...)                     \
-    do {                                                    \
-        struct testSetStruct data = {.band = Band,          \
-                                     .exp_cmd = Exp_cmd,    \
-                                     __VA_ARGS__};          \
-        if (virTestRun("virNetDevBandwidthSet",             \
-                       testVirNetDevBandwidthSet,           \
-                       &data) < 0)                          \
-            ret = -1;                                       \
+#define DO_TEST_SET(Band, Exp_cmd, ...) \
+    do { \
+        struct testSetStruct data = {.band = Band, \
+                                     .exp_cmd = Exp_cmd, \
+                                     __VA_ARGS__}; \
+        if (virTestRun("virNetDevBandwidthSet", \
+                       testVirNetDevBandwidthSet, \
+                       &data) < 0) \
+            ret = -1; \
     } while (0)
 
 

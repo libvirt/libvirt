@@ -38,39 +38,39 @@
 
 
 
-# define ESX_VI__SOAP__REQUEST_HEADER                                         \
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"                            \
-    "<soapenv:Envelope\n"                                                     \
-    " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"          \
-    " xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\"\n"          \
-    " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"              \
-    " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n"                      \
+# define ESX_VI__SOAP__REQUEST_HEADER \
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" \
+    "<soapenv:Envelope\n" \
+    " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" \
+    " xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\"\n" \
+    " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" \
+    " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" \
     "<soapenv:Body>\n"
 
 
 
-# define ESX_VI__SOAP__REQUEST_FOOTER                                         \
-    "</soapenv:Body>\n"                                                       \
+# define ESX_VI__SOAP__REQUEST_FOOTER \
+    "</soapenv:Body>\n" \
     "</soapenv:Envelope>"
 
 
 
-# define ESV_VI__XML_TAG__OPEN(_buffer, _element, _type)                      \
-    do {                                                                      \
-        virBufferAddLit(_buffer, "<");                                        \
-        virBufferAdd(_buffer, _element, -1);                                  \
-        virBufferAddLit(_buffer, " xmlns=\"urn:vim25\" xsi:type=\"");         \
-        virBufferAdd(_buffer, _type, -1);                                     \
-        virBufferAddLit(_buffer, "\">");                                      \
+# define ESV_VI__XML_TAG__OPEN(_buffer, _element, _type) \
+    do { \
+        virBufferAddLit(_buffer, "<"); \
+        virBufferAdd(_buffer, _element, -1); \
+        virBufferAddLit(_buffer, " xmlns=\"urn:vim25\" xsi:type=\""); \
+        virBufferAdd(_buffer, _type, -1); \
+        virBufferAddLit(_buffer, "\">"); \
     } while (0)
 
 
 
-# define ESV_VI__XML_TAG__CLOSE(_buffer, _element)                            \
-    do {                                                                      \
-        virBufferAddLit(_buffer, "</");                                       \
-        virBufferAdd(_buffer, _element, -1);                                  \
-        virBufferAddLit(_buffer, ">");                                        \
+# define ESV_VI__XML_TAG__CLOSE(_buffer, _element) \
+    do { \
+        virBufferAddLit(_buffer, "</"); \
+        virBufferAdd(_buffer, _element, -1); \
+        virBufferAddLit(_buffer, ">"); \
     } while (0)
 
 

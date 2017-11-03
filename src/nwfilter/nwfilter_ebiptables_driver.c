@@ -1836,37 +1836,37 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
         PRINT_CHAIN(chain, chainPrefix, ifname,
                     chainSuffix);
 
-#define INST_ITEM(STRUCT, ITEM, CLI)                                    \
-        if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) {                     \
-            if (printDataType(vars,                                     \
-                              field, sizeof(field),                     \
-                              &rule->p.STRUCT.ITEM) < 0)                \
-                goto cleanup;                                           \
-            virFirewallRuleAddArg(fw, fwrule, CLI);                     \
-            if (ENTRY_WANT_NEG_SIGN(&rule->p.STRUCT.ITEM))              \
-                virFirewallRuleAddArg(fw, fwrule, "!");                 \
-            virFirewallRuleAddArg(fw, fwrule, field);                   \
+#define INST_ITEM(STRUCT, ITEM, CLI) \
+        if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) { \
+            if (printDataType(vars, \
+                              field, sizeof(field), \
+                              &rule->p.STRUCT.ITEM) < 0) \
+                goto cleanup; \
+            virFirewallRuleAddArg(fw, fwrule, CLI); \
+            if (ENTRY_WANT_NEG_SIGN(&rule->p.STRUCT.ITEM)) \
+                virFirewallRuleAddArg(fw, fwrule, "!"); \
+            virFirewallRuleAddArg(fw, fwrule, field); \
         }
 
-#define INST_ITEM_2PARMS(STRUCT, ITEM, ITEM_HI, CLI, SEP)               \
-        if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) {                     \
-            if (printDataType(vars,                                     \
-                              field, sizeof(field),                     \
-                              &rule->p.STRUCT.ITEM) < 0)                \
-                goto cleanup;                                           \
-            virFirewallRuleAddArg(fw, fwrule, CLI);                     \
-            if (ENTRY_WANT_NEG_SIGN(&rule->p.STRUCT.ITEM))              \
-                virFirewallRuleAddArg(fw, fwrule, "!");                 \
-            if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM_HI)) {              \
-                if (printDataType(vars,                                 \
-                                  fieldalt, sizeof(fieldalt),           \
-                                  &rule->p.STRUCT.ITEM_HI) < 0)         \
-                    goto cleanup;                                       \
-                virFirewallRuleAddArgFormat(fw, fwrule,                 \
+#define INST_ITEM_2PARMS(STRUCT, ITEM, ITEM_HI, CLI, SEP) \
+        if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM)) { \
+            if (printDataType(vars, \
+                              field, sizeof(field), \
+                              &rule->p.STRUCT.ITEM) < 0) \
+                goto cleanup; \
+            virFirewallRuleAddArg(fw, fwrule, CLI); \
+            if (ENTRY_WANT_NEG_SIGN(&rule->p.STRUCT.ITEM)) \
+                virFirewallRuleAddArg(fw, fwrule, "!"); \
+            if (HAS_ENTRY_ITEM(&rule->p.STRUCT.ITEM_HI)) { \
+                if (printDataType(vars, \
+                                  fieldalt, sizeof(fieldalt), \
+                                  &rule->p.STRUCT.ITEM_HI) < 0) \
+                    goto cleanup; \
+                virFirewallRuleAddArgFormat(fw, fwrule, \
                                             "%s%s%s", field, SEP, fieldalt); \
-            } else  {                                                   \
-                virFirewallRuleAddArg(fw, fwrule, field);               \
-            }                                                           \
+            } else  { \
+                virFirewallRuleAddArg(fw, fwrule, field); \
+            } \
         }
 #define INST_ITEM_RANGE(S, I, I_HI, C) \
     INST_ITEM_2PARMS(S, I, I_HI, C, ":")

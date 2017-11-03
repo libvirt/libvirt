@@ -241,33 +241,33 @@ mymain(void)
     int rv = 0;
 
 #define DO_TEST_FIND_FULL(name, vend, prod, bus, devno, vroot, mand, how, fail) \
-    do {                                                                        \
-        struct findTestInfo data = { name, vend, prod, bus,                     \
-            devno, vroot, mand, how, fail                                       \
-        };                                                                      \
-        if (virTestRun("USBDeviceFind " name, testDeviceFind, &data) < 0)       \
-            rv = -1;                                                            \
+    do { \
+        struct findTestInfo data = { name, vend, prod, bus, \
+            devno, vroot, mand, how, fail \
+        }; \
+        if (virTestRun("USBDeviceFind " name, testDeviceFind, &data) < 0) \
+            rv = -1; \
     } while (0)
 
-#define DO_TEST_FIND(name, vend, prod, bus, devno)                          \
-    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, true,             \
+#define DO_TEST_FIND(name, vend, prod, bus, devno) \
+    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, true, \
                       FIND_BY_ALL, false)
-#define DO_TEST_FIND_FAIL(name, vend, prod, bus, devno)                     \
-    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, true,             \
+#define DO_TEST_FIND_FAIL(name, vend, prod, bus, devno) \
+    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, true, \
                       FIND_BY_ALL, true)
 
-#define DO_TEST_FIND_BY_BUS(name, bus, devno)                               \
-    DO_TEST_FIND_FULL(name, 101, 202, bus, devno, NULL, true,               \
+#define DO_TEST_FIND_BY_BUS(name, bus, devno) \
+    DO_TEST_FIND_FULL(name, 101, 202, bus, devno, NULL, true, \
                       FIND_BY_BUS, false)
-#define DO_TEST_FIND_BY_BUS_FAIL(name, bus, devno)                          \
-    DO_TEST_FIND_FULL(name, 101, 202, bus, devno, NULL, true,               \
+#define DO_TEST_FIND_BY_BUS_FAIL(name, bus, devno) \
+    DO_TEST_FIND_FULL(name, 101, 202, bus, devno, NULL, true, \
                       FIND_BY_BUS, true)
 
-#define DO_TEST_FIND_BY_VENDOR(name, vend, prod)                            \
-    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, true,               \
+#define DO_TEST_FIND_BY_VENDOR(name, vend, prod) \
+    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, true, \
                       FIND_BY_VENDOR, false)
-#define DO_TEST_FIND_BY_VENDOR_FAIL(name, vend, prod)                       \
-    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, true,               \
+#define DO_TEST_FIND_BY_VENDOR_FAIL(name, vend, prod) \
+    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, true, \
                       FIND_BY_VENDOR, true)
 
     DO_TEST_FIND("Nexus", 0x18d1, 0x4e22, 1, 20);

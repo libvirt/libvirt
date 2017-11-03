@@ -98,13 +98,13 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-# define DO_TEST(name, expectError)                         \
-    do {                                                    \
+# define DO_TEST(name, expectError) \
+    do { \
         const struct testInfo info = { name, expectError }; \
-        if (virTestRun("LXC Native-2-XML " name,            \
-                       testCompareXMLToConfigHelper,        \
-                       &info) < 0)                          \
-            ret = EXIT_FAILURE;                             \
+        if (virTestRun("LXC Native-2-XML " name, \
+                       testCompareXMLToConfigHelper, \
+                       &info) < 0) \
+            ret = EXIT_FAILURE; \
     } while (0)
 
     DO_TEST("simple", false);

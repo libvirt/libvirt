@@ -86,15 +86,15 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST(NAME, EXPECT_WARN)                                \
-    do {                                                          \
-        test_parms tp = {                                         \
-            .name = NAME,                                         \
-            .expect_warning = EXPECT_WARN,                        \
-        };                                                        \
-        if (virTestRun("NWFilter XML-2-XML " NAME,                \
-                       testCompareXMLToXMLHelper, (&tp)) < 0)     \
-            ret = -1;                                             \
+#define DO_TEST(NAME, EXPECT_WARN) \
+    do { \
+        test_parms tp = { \
+            .name = NAME, \
+            .expect_warning = EXPECT_WARN, \
+        }; \
+        if (virTestRun("NWFilter XML-2-XML " NAME, \
+                       testCompareXMLToXMLHelper, (&tp)) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("mac-test", true);

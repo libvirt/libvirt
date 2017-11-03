@@ -150,23 +150,23 @@ mymain(void)
         return EXIT_FAILURE;
 
 
-# define DO_TEST_FULL(name, flags)                             \
-    do {                                                       \
-        static struct testInfo info = {                        \
-            name, (flags)                                      \
-        };                                                     \
-        if (virTestRun("BHYVE XML-2-ARGV " name,               \
+# define DO_TEST_FULL(name, flags) \
+    do { \
+        static struct testInfo info = { \
+            name, (flags) \
+        }; \
+        if (virTestRun("BHYVE XML-2-ARGV " name, \
                        testCompareXMLToArgvHelper, &info) < 0) \
-            ret = -1;                                          \
+            ret = -1; \
     } while (0)
 
-# define DO_TEST(name)                                         \
+# define DO_TEST(name) \
     DO_TEST_FULL(name, 0)
 
-# define DO_TEST_FAILURE(name)                                 \
+# define DO_TEST_FAILURE(name) \
     DO_TEST_FULL(name, FLAG_EXPECT_FAILURE)
 
-# define DO_TEST_PARSE_ERROR(name)                             \
+# define DO_TEST_PARSE_ERROR(name) \
     DO_TEST_FULL(name, FLAG_EXPECT_PARSE_ERROR)
 
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;

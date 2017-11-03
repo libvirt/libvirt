@@ -23,12 +23,12 @@
  *
  */
 
-#define VIRSH_COMMON_OPT_INTERFACE                     \
-    {.name = "interface",                              \
-     .type = VSH_OT_DATA,                              \
-     .flags = VSH_OFLAG_REQ,                           \
-     .help = N_("interface name or MAC address")       \
-    }                                                  \
+#define VIRSH_COMMON_OPT_INTERFACE \
+    {.name = "interface", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = N_("interface name or MAC address") \
+    } \
 
 #include <config.h>
 #include "virsh-interface.h"
@@ -125,12 +125,12 @@ cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
 #define EDIT_GET_XML virInterfaceGetXMLDesc(iface, flags)
-#define EDIT_NOT_CHANGED                                                       \
-    do {                                                                       \
+#define EDIT_NOT_CHANGED \
+    do { \
         vshPrintExtra(ctl, _("Interface %s XML configuration not changed.\n"), \
-                 virInterfaceGetName(iface));                                  \
-        ret = true;                                                            \
-        goto edit_cleanup;                                                     \
+                 virInterfaceGetName(iface)); \
+        ret = true; \
+        goto edit_cleanup; \
     } while (0)
 #define EDIT_DEFINE \
     (iface_edited = virInterfaceDefineXML(priv->conn, doc_edited, 0))

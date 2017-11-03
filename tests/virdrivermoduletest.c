@@ -54,12 +54,12 @@ mymain(void)
     int ret = 0;
     struct testDriverModuleData data;
 
-#define TEST_FULL(name, fnc)                                                   \
-    do  {                                                                      \
-        data.module = name;                                                    \
-        data.regfunc = fnc;                                                    \
-        if (virTestRun("Test driver " # name, testDriverModule, &data) < 0)    \
-            ret = -1;                                                          \
+#define TEST_FULL(name, fnc) \
+    do  { \
+        data.module = name; \
+        data.regfunc = fnc; \
+        if (virTestRun("Test driver " # name, testDriverModule, &data) < 0) \
+            ret = -1; \
     } while (0)
 
 #define TEST(name) TEST_FULL(name, name "Register")

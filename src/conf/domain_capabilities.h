@@ -184,12 +184,12 @@ virDomainCapsCPUModelsGet(virDomainCapsCPUModelsPtr cpuModels,
                           const char *name);
 
 
-# define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...)            \
-    do {                                                    \
-        unsigned int __values[] = {__VA_ARGS__};            \
-        size_t __nvalues = ARRAY_CARDINALITY(__values);     \
-        virDomainCapsEnumSet(&(capsEnum), #capsEnum,        \
-                             __nvalues, __values);          \
+# define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...) \
+    do { \
+        unsigned int __values[] = {__VA_ARGS__}; \
+        size_t __nvalues = ARRAY_CARDINALITY(__values); \
+        virDomainCapsEnumSet(&(capsEnum), #capsEnum, \
+                             __nvalues, __values); \
     } while (0)
 
 int virDomainCapsEnumSet(virDomainCapsEnumPtr capsEnum,

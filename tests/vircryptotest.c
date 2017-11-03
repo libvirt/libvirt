@@ -129,15 +129,15 @@ mymain(void)
                                        0x1b, 0x8c, 0x3f, 0x48,
                                        0x27, 0xae, 0xb6, 0x7a};
 
-#define VIR_CRYPTO_HASH(h, i, o)                \
-    do {                                        \
-        struct testCryptoHashData data = {      \
-            .hash = h,                          \
-            .input = i,                         \
-            .output = o,                        \
-        };                                      \
-        if (virTestRun("Hash " i, testCryptoHash, &data) < 0)  \
-            ret = -1;                                          \
+#define VIR_CRYPTO_HASH(h, i, o) \
+    do { \
+        struct testCryptoHashData data = { \
+            .hash = h, \
+            .input = i, \
+            .output = o, \
+        }; \
+        if (virTestRun("Hash " i, testCryptoHash, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     VIR_CRYPTO_HASH(VIR_CRYPTO_HASH_MD5, "", "d41d8cd98f00b204e9800998ecf8427e");
@@ -154,17 +154,17 @@ mymain(void)
 
 #undef VIR_CRYPTO_HASH
 
-#define VIR_CRYPTO_ENCRYPT(a, n, i, il, c, cl)   \
-    do {                                         \
-        struct testCryptoEncryptData data = {    \
-            .algorithm = a,                      \
-            .input = i,                          \
-            .inputlen = il,                      \
-            .ciphertext = c,                     \
-            .ciphertextlen = cl,                 \
-        };                                       \
-        if (virTestRun("Encrypt " n, testCryptoEncrypt, &data) < 0)  \
-            ret = -1;                                                \
+#define VIR_CRYPTO_ENCRYPT(a, n, i, il, c, cl) \
+    do { \
+        struct testCryptoEncryptData data = { \
+            .algorithm = a, \
+            .input = i, \
+            .inputlen = il, \
+            .ciphertext = c, \
+            .ciphertextlen = cl, \
+        }; \
+        if (virTestRun("Encrypt " n, testCryptoEncrypt, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     memset(&secretdata, 0, 8);

@@ -85,9 +85,9 @@ struct _virDomainXMLOption {
     virSaveCookieCallbacks saveCookie;
 };
 
-#define VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS             \
-    (VIR_DOMAIN_DEF_FORMAT_SECURE |                    \
-     VIR_DOMAIN_DEF_FORMAT_INACTIVE |                  \
+#define VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS \
+    (VIR_DOMAIN_DEF_FORMAT_SECURE | \
+     VIR_DOMAIN_DEF_FORMAT_INACTIVE | \
      VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)
 
 VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
@@ -8604,12 +8604,12 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     return ret;
 }
 
-#define PARSE_IOTUNE(val)                                                      \
-    if (virXPathULongLong("string(./iotune/" #val ")",                         \
-                          ctxt, &def->blkdeviotune.val) == -2) {               \
-        virReportError(VIR_ERR_XML_ERROR,                                      \
-                       _("disk iotune field '%s' must be an integer"), #val);  \
-        return -1;                                                             \
+#define PARSE_IOTUNE(val) \
+    if (virXPathULongLong("string(./iotune/" #val ")", \
+                          ctxt, &def->blkdeviotune.val) == -2) { \
+        virReportError(VIR_ERR_XML_ERROR, \
+                       _("disk iotune field '%s' must be an integer"), #val); \
+        return -1; \
     }
 
 static int
@@ -22348,10 +22348,10 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
 }
 
 
-#define FORMAT_IOTUNE(val)                                                     \
-        if (def->blkdeviotune.val) {                                           \
-            virBufferAsprintf(buf, "<" #val ">%llu</" #val ">\n",              \
-                              def->blkdeviotune.val);                          \
+#define FORMAT_IOTUNE(val) \
+        if (def->blkdeviotune.val) { \
+            virBufferAsprintf(buf, "<" #val ">%llu</" #val ">\n", \
+                              def->blkdeviotune.val); \
         }
 
 static int
@@ -27946,23 +27946,23 @@ virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
     char *data = NULL;
     size_t i;
 
-#define VIR_BLKIO_ASSIGN(param, format, name)                                  \
-    if (*nparams < maxparams) {                                                \
-        for (i = 0; i < def->blkio.ndevices; i++) {                            \
-            if (!def->blkio.devices[i].param)                                  \
-                continue;                                                      \
-            virBufferAsprintf(&buf, "%s," format ",",                          \
-                              def->blkio.devices[i].path,                      \
-                              def->blkio.devices[i].param);                    \
-        }                                                                      \
-        virBufferTrim(&buf, ",", -1);                                          \
-        if (virBufferCheckError(&buf) < 0)                                     \
-            goto error;                                                        \
-        data = virBufferContentAndReset(&buf);                                 \
-        if (virTypedParameterAssign(&(params[(*nparams)++]), name,             \
-                                    VIR_TYPED_PARAM_STRING, data) < 0)         \
-            goto error;                                                        \
-        data = NULL;                                                           \
+#define VIR_BLKIO_ASSIGN(param, format, name) \
+    if (*nparams < maxparams) { \
+        for (i = 0; i < def->blkio.ndevices; i++) { \
+            if (!def->blkio.devices[i].param) \
+                continue; \
+            virBufferAsprintf(&buf, "%s," format ",", \
+                              def->blkio.devices[i].path, \
+                              def->blkio.devices[i].param); \
+        } \
+        virBufferTrim(&buf, ",", -1); \
+        if (virBufferCheckError(&buf) < 0) \
+            goto error; \
+        data = virBufferContentAndReset(&buf); \
+        if (virTypedParameterAssign(&(params[(*nparams)++]), name, \
+                                    VIR_TYPED_PARAM_STRING, data) < 0) \
+            goto error; \
+        data = NULL; \
     }
 
     /* blkiotune.device_weight */
@@ -28023,7 +28023,7 @@ virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
     return 0;
 }
 
-#define HOSTNAME_CHARS                                                  \
+#define HOSTNAME_CHARS \
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"
 
 static void

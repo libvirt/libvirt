@@ -171,48 +171,48 @@ mymain(void)
 
     memset(&data, 0, sizeof(data));
 
-#define DO_TEST_DIR(sch, ...)                                                  \
-    do {                                                                       \
-        data.schema = sch;                                                     \
-        if (virTestRun("test schema grammar file: " sch,                       \
-                       testSchemaGrammar, &data) == 0) {                       \
-            /* initialize the validator even if the schema test                \
-             * was skipped because of VIR_TEST_RANGE */                        \
-            if (!data.validator && testSchemaGrammar(&data) < 0) {             \
-                ret = -1;                                                      \
-                break;                                                         \
-            }                                                                  \
-            if (testSchemaDirs(sch, data.validator, __VA_ARGS__, NULL) < 0)    \
-                ret = -1;                                                      \
-                                                                               \
-            virXMLValidatorFree(data.validator);                               \
-            data.validator = NULL;                                             \
-        } else {                                                               \
-            ret = -1;                                                          \
-        }                                                                      \
+#define DO_TEST_DIR(sch, ...) \
+    do { \
+        data.schema = sch; \
+        if (virTestRun("test schema grammar file: " sch, \
+                       testSchemaGrammar, &data) == 0) { \
+            /* initialize the validator even if the schema test \
+             * was skipped because of VIR_TEST_RANGE */ \
+            if (!data.validator && testSchemaGrammar(&data) < 0) { \
+                ret = -1; \
+                break; \
+            } \
+            if (testSchemaDirs(sch, data.validator, __VA_ARGS__, NULL) < 0) \
+                ret = -1; \
+ \
+            virXMLValidatorFree(data.validator); \
+            data.validator = NULL; \
+        } else { \
+            ret = -1; \
+        } \
     } while (0)
 
-#define DO_TEST_FILE(sch, xmlfile)                                             \
-    do {                                                                       \
-        data.schema = sch;                                                     \
-        data.xml_path = abs_srcdir "/" xmlfile;                                \
-        if (virTestRun("test schema grammar file: " sch,                       \
-                       testSchemaGrammar, &data) == 0) {                       \
-            /* initialize the validator even if the schema test                \
-             * was skipped because of VIR_TEST_RANGE */                        \
-            if (!data.validator && testSchemaGrammar(&data) < 0) {             \
-                ret = -1;                                                      \
-                break;                                                         \
-            }                                                                  \
-            if (virTestRun("Checking " xmlfile " against " sch,                \
-                           testSchemaFile, &data) < 0)                         \
-                ret = -1;                                                      \
-                                                                               \
-            virXMLValidatorFree(data.validator);                               \
-            data.validator = NULL;                                             \
-        } else {                                                               \
-            ret = -1;                                                          \
-        }                                                                      \
+#define DO_TEST_FILE(sch, xmlfile) \
+    do { \
+        data.schema = sch; \
+        data.xml_path = abs_srcdir "/" xmlfile; \
+        if (virTestRun("test schema grammar file: " sch, \
+                       testSchemaGrammar, &data) == 0) { \
+            /* initialize the validator even if the schema test \
+             * was skipped because of VIR_TEST_RANGE */ \
+            if (!data.validator && testSchemaGrammar(&data) < 0) { \
+                ret = -1; \
+                break; \
+            } \
+            if (virTestRun("Checking " xmlfile " against " sch, \
+                           testSchemaFile, &data) < 0) \
+                ret = -1; \
+ \
+            virXMLValidatorFree(data.validator); \
+            data.validator = NULL; \
+        } else { \
+            ret = -1; \
+        } \
     } while (0)
 
     DO_TEST_DIR("capability.rng", "capabilityschemadata", "xencapsdata",

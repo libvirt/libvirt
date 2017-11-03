@@ -97,11 +97,11 @@ dist-hook: gen-ChangeLog gen-AUTHORS
 gen_start_date = 2009-07-04
 .PHONY: gen-ChangeLog
 gen-ChangeLog:
-	$(AM_V_GEN)if test -d .git; then			\
-	  $(top_srcdir)/build-aux/gitlog-to-changelog		\
-	    --since=$(gen_start_date) > $(distdir)/cl-t;	\
-	  rm -f $(distdir)/ChangeLog;				\
-	  mv $(distdir)/cl-t $(distdir)/ChangeLog;		\
+	$(AM_V_GEN)if test -d .git; then \
+	  $(top_srcdir)/build-aux/gitlog-to-changelog \
+	    --since=$(gen_start_date) > $(distdir)/cl-t; \
+	  rm -f $(distdir)/ChangeLog; \
+	  mv $(distdir)/cl-t $(distdir)/ChangeLog; \
 	fi
 
 .PHONY: gen-AUTHORS

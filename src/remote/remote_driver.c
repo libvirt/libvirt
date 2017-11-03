@@ -58,14 +58,14 @@
 VIR_LOG_INIT("remote.remote_driver");
 
 #if SIZEOF_LONG < 8
-# define HYPER_TO_TYPE(_type, _to, _from)                                     \
-    do {                                                                      \
-        if ((_from) != (_type)(_from)) {                                      \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                               \
+# define HYPER_TO_TYPE(_type, _to, _from) \
+    do { \
+        if ((_from) != (_type)(_from)) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
                            _("conversion from hyper to %s overflowed"), #_type); \
-            goto done;                                                        \
-        }                                                                     \
-        (_to) = (_from);                                                      \
+            goto done; \
+        } \
+        (_to) = (_from); \
     } while (0)
 
 # define HYPER_TO_LONG(_to, _from) HYPER_TO_TYPE(long, _to, _from)
@@ -670,27 +670,27 @@ remoteConnectSupportsFeatureUnlocked(virConnectPtr conn,
 }
 
 /* helper macro to ease extraction of arguments from the URI */
-#define EXTRACT_URI_ARG_STR(ARG_NAME, ARG_VAR)          \
-    if (STRCASEEQ(var->name, ARG_NAME)) {               \
-        VIR_FREE(ARG_VAR);                              \
-        if (VIR_STRDUP(ARG_VAR, var->value) < 0)        \
-            goto failed;                                \
-        var->ignore = 1;                                \
-        continue;                                       \
+#define EXTRACT_URI_ARG_STR(ARG_NAME, ARG_VAR) \
+    if (STRCASEEQ(var->name, ARG_NAME)) { \
+        VIR_FREE(ARG_VAR); \
+        if (VIR_STRDUP(ARG_VAR, var->value) < 0) \
+            goto failed; \
+        var->ignore = 1; \
+        continue; \
     }
 
-#define EXTRACT_URI_ARG_BOOL(ARG_NAME, ARG_VAR)                             \
-    if (STRCASEEQ(var->name, ARG_NAME)) {                                   \
-        int tmp;                                                            \
-        if (virStrToLong_i(var->value, NULL, 10, &tmp) < 0) {               \
-            virReportError(VIR_ERR_INVALID_ARG,                             \
-                           _("Failed to parse value of URI component %s"),  \
-                           var->name);                                      \
-            goto failed;                                                    \
-        }                                                                   \
-        ARG_VAR = tmp == 0;                                                 \
-        var->ignore = 1;                                                    \
-        continue;                                                           \
+#define EXTRACT_URI_ARG_BOOL(ARG_NAME, ARG_VAR) \
+    if (STRCASEEQ(var->name, ARG_NAME)) { \
+        int tmp; \
+        if (virStrToLong_i(var->value, NULL, 10, &tmp) < 0) { \
+            virReportError(VIR_ERR_INVALID_ARG, \
+                           _("Failed to parse value of URI component %s"), \
+                           var->name); \
+            goto failed; \
+        } \
+        ARG_VAR = tmp == 0; \
+        var->ignore = 1; \
+        continue; \
     }
 /*
  * URIs that this driver needs to handle:

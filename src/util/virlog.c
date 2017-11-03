@@ -877,11 +877,11 @@ virLogNewOutputToSyslog(virLogPriority priority,
 
 
 # if USE_JOURNALD
-#  define IOVEC_SET(iov, data, size)            \
-    do {                                        \
-        struct iovec *_i = &(iov);              \
-        _i->iov_base = (void*)(data);           \
-        _i->iov_len = (size);                   \
+#  define IOVEC_SET(iov, data, size) \
+    do { \
+        struct iovec *_i = &(iov); \
+        _i->iov_base = (void*)(data); \
+        _i->iov_len = (size); \
     } while (0)
 
 #  define IOVEC_SET_STRING(iov, str) IOVEC_SET(iov, str, strlen(str))

@@ -205,10 +205,10 @@ static int make_controller(const char *path, mode_t mode)
     if (real_mkdir(path, mode) < 0)
         goto cleanup;
 
-# define MAKE_FILE(name, value)                 \
-    do {                                        \
-        if (make_file(path, name, value) < 0)   \
-            goto cleanup;                       \
+# define MAKE_FILE(name, value) \
+    do { \
+        if (make_file(path, name, value) < 0) \
+            goto cleanup; \
     } while (0)
 
     if (STRPREFIX(controller, "cpu,cpuacct")) {
@@ -422,17 +422,17 @@ static void init_sysfs(void)
         abort();
     }
 
-# define MAKE_CONTROLLER(subpath)                                      \
-    do {                                                               \
-        char *path;                                                    \
+# define MAKE_CONTROLLER(subpath) \
+    do { \
+        char *path; \
         if (asprintf(&path, "%s/%s", fakesysfscgroupdir, subpath) < 0) \
-            abort();                                                   \
-        if (make_controller(path, 0755) < 0) {                         \
-            fprintf(stderr, "Cannot initialize %s\n", path);           \
-            free(path);                                                \
-            abort();                                                   \
-        }                                                              \
-        free(path);                                                    \
+            abort(); \
+        if (make_controller(path, 0755) < 0) { \
+            fprintf(stderr, "Cannot initialize %s\n", path); \
+            free(path); \
+            abort(); \
+        } \
+        free(path); \
     } while (0)
 
     MAKE_CONTROLLER("cpu");

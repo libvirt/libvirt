@@ -463,14 +463,14 @@ mymain(void)
     if (!abs_top_srcdir)
         abs_top_srcdir = abs_srcdir "/..";
 
-# define DO_TEST(name)                                                  \
-    do {                                                                \
-        static struct testInfo info = {                                 \
-            name,                                                       \
-        };                                                              \
-        if (virTestRun("NWFilter XML-2-firewall " name,                 \
-                       testCompareXMLToIPTablesHelper, &info) < 0)      \
-            ret = -1;                                                   \
+# define DO_TEST(name) \
+    do { \
+        static struct testInfo info = { \
+            name, \
+        }; \
+        if (virTestRun("NWFilter XML-2-firewall " name, \
+                       testCompareXMLToIPTablesHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     virFirewallSetLockOverride(true);

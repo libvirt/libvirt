@@ -190,9 +190,9 @@ struct _virPCIDeviceList {
 #define PCI_EXT_CAP_ACS_RR      0x04
 #define PCI_EXT_CAP_ACS_CR      0x08
 #define PCI_EXT_CAP_ACS_UF      0x10
-#define PCI_EXT_CAP_ACS_ENABLED (PCI_EXT_CAP_ACS_SV |   \
-                                 PCI_EXT_CAP_ACS_RR |   \
-                                 PCI_EXT_CAP_ACS_CR |   \
+#define PCI_EXT_CAP_ACS_ENABLED (PCI_EXT_CAP_ACS_SV | \
+                                 PCI_EXT_CAP_ACS_RR | \
+                                 PCI_EXT_CAP_ACS_CR | \
                                  PCI_EXT_CAP_ACS_UF)
 
 #define PCI_EXP_TYPE_ROOT_INT_EP 0x9    /* Root Complex Integrated Endpoint */

@@ -126,14 +126,14 @@ mymain(void)
     if (!abs_top_srcdir)
         abs_top_srcdir = abs_srcdir "/..";
 
-# define DO_TEST(name)                                                  \
-    do {                                                                \
-        static struct testInfo info = {                                 \
-            name,                                                       \
-        };                                                              \
-        if (virTestRun("Network XML-2-iptables " name,                  \
-                       testCompareXMLToIPTablesHelper, &info) < 0)      \
-            ret = -1;                                                   \
+# define DO_TEST(name) \
+    do { \
+        static struct testInfo info = { \
+            name, \
+        }; \
+        if (virTestRun("Network XML-2-iptables " name, \
+                       testCompareXMLToIPTablesHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     virFirewallSetLockOverride(true);

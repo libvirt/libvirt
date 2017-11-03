@@ -39,354 +39,354 @@
 
 VIR_LOG_INIT("esx.esx_vi_types");
 
-#define ESX_VI__TEMPLATE__ALLOC(__type)                                       \
-    int                                                                       \
-    esxVI_##__type##_Alloc(esxVI_##__type **ptrptr)                           \
-    {                                                                         \
-        if (!ptrptr || *ptrptr) {                                             \
+#define ESX_VI__TEMPLATE__ALLOC(__type) \
+    int \
+    esxVI_##__type##_Alloc(esxVI_##__type **ptrptr) \
+    { \
+        if (!ptrptr || *ptrptr) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument")); \
-            return -1;                                                  \
-        }                                                               \
-                                                                        \
-        if (VIR_ALLOC(*ptrptr) < 0)                                     \
-            return -1;                                                  \
-                                                                              \
-        (*ptrptr)->_type = esxVI_Type_##__type;                               \
-                                                                              \
-        return 0;                                                             \
+            return -1; \
+        } \
+ \
+        if (VIR_ALLOC(*ptrptr) < 0) \
+            return -1; \
+ \
+        (*ptrptr)->_type = esxVI_Type_##__type; \
+ \
+        return 0; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__FREE(_type, _body)                                  \
-    void                                                                      \
-    esxVI_##_type##_Free(esxVI_##_type **ptrptr)                              \
-    {                                                                         \
-        esxVI_##_type *item ATTRIBUTE_UNUSED;                                 \
-                                                                              \
-        if (!ptrptr || !(*ptrptr)) {                                          \
-            return;                                                           \
-        }                                                                     \
-                                                                              \
-        item = *ptrptr;                                                       \
-                                                                              \
-        _body                                                                 \
-                                                                              \
-        VIR_FREE(*ptrptr);                                                    \
+#define ESX_VI__TEMPLATE__FREE(_type, _body) \
+    void \
+    esxVI_##_type##_Free(esxVI_##_type **ptrptr) \
+    { \
+        esxVI_##_type *item ATTRIBUTE_UNUSED; \
+ \
+        if (!ptrptr || !(*ptrptr)) { \
+            return; \
+        } \
+ \
+        item = *ptrptr; \
+ \
+        _body \
+ \
+        VIR_FREE(*ptrptr); \
     }
 
 
 
-#define ESX_VI__TEMPLATE__VALIDATE(__type, _require)                          \
-    int                                                                       \
-    esxVI_##__type##_Validate(esxVI_##__type *item)                           \
-    {                                                                         \
-        const char *typeName = esxVI_Type_ToString(esxVI_Type_##__type);      \
-                                                                              \
-        if (item->_type <= esxVI_Type_Undefined ||                            \
-            item->_type >= esxVI_Type_Other) {                                \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                            \
+#define ESX_VI__TEMPLATE__VALIDATE(__type, _require) \
+    int \
+    esxVI_##__type##_Validate(esxVI_##__type *item) \
+    { \
+        const char *typeName = esxVI_Type_ToString(esxVI_Type_##__type); \
+ \
+        if (item->_type <= esxVI_Type_Undefined || \
+            item->_type >= esxVI_Type_Other) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
                            _("%s object has invalid dynamic type"), typeName);\
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        _require                                                              \
-                                                                              \
-        return 0;                                                             \
+            return -1; \
+        } \
+ \
+        _require \
+ \
+        return 0; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__DEEP_COPY(_type, _deep_copy)                        \
-    int                                                                       \
-    esxVI_##_type##_DeepCopy(esxVI_##_type **dest, esxVI_##_type *src)        \
-    {                                                                         \
-        if (!dest || *dest) {                                                 \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
-                           _("Invalid argument"));                            \
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        if (!src) {                                                           \
-            return 0;                                                         \
-        }                                                                     \
-                                                                              \
-        if (esxVI_##_type##_Alloc(dest) < 0) {                                \
-            goto failure;                                                     \
-        }                                                                     \
-                                                                              \
-        _deep_copy                                                            \
-                                                                              \
-        return 0;                                                             \
-                                                                              \
-      failure:                                                                \
-        esxVI_##_type##_Free(dest);                                           \
-                                                                              \
-        return -1;                                                            \
+#define ESX_VI__TEMPLATE__DEEP_COPY(_type, _deep_copy) \
+    int \
+    esxVI_##_type##_DeepCopy(esxVI_##_type **dest, esxVI_##_type *src) \
+    { \
+        if (!dest || *dest) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                           _("Invalid argument")); \
+            return -1; \
+        } \
+ \
+        if (!src) { \
+            return 0; \
+        } \
+ \
+        if (esxVI_##_type##_Alloc(dest) < 0) { \
+            goto failure; \
+        } \
+ \
+        _deep_copy \
+ \
+        return 0; \
+ \
+      failure: \
+        esxVI_##_type##_Free(dest); \
+ \
+        return -1; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__LIST__APPEND(_type)                                 \
-    int                                                                       \
-    esxVI_##_type##_AppendToList(esxVI_##_type **list,  esxVI_##_type *item)  \
-    {                                                                         \
-        return esxVI_List_Append((esxVI_List **)list, (esxVI_List *)item);    \
+#define ESX_VI__TEMPLATE__LIST__APPEND(_type) \
+    int \
+    esxVI_##_type##_AppendToList(esxVI_##_type **list,  esxVI_##_type *item) \
+    { \
+        return esxVI_List_Append((esxVI_List **)list, (esxVI_List *)item); \
     }
 
 
 
-#define ESX_VI__TEMPLATE__LIST__DEEP_COPY(_type)                              \
-    int                                                                       \
-    esxVI_##_type##_DeepCopyList(esxVI_##_type **destList,                    \
-                                 esxVI_##_type *srcList)                      \
-    {                                                                         \
-        return esxVI_List_DeepCopy                                            \
-                 ((esxVI_List **)destList, (esxVI_List *)srcList,             \
-                  (esxVI_List_DeepCopyFunc)esxVI_##_type##_DeepCopy,          \
-                  (esxVI_List_FreeFunc)esxVI_##_type##_Free);                 \
+#define ESX_VI__TEMPLATE__LIST__DEEP_COPY(_type) \
+    int \
+    esxVI_##_type##_DeepCopyList(esxVI_##_type **destList, \
+                                 esxVI_##_type *srcList) \
+    { \
+        return esxVI_List_DeepCopy \
+                 ((esxVI_List **)destList, (esxVI_List *)srcList, \
+                  (esxVI_List_DeepCopyFunc)esxVI_##_type##_DeepCopy, \
+                  (esxVI_List_FreeFunc)esxVI_##_type##_Free); \
     }
 
 
 
-#define ESX_VI__TEMPLATE__LIST__CAST_FROM_ANY_TYPE(_type)                     \
-    int                                                                       \
-    esxVI_##_type##_CastListFromAnyType(esxVI_AnyType *anyType,               \
-                                        esxVI_##_type **list)                 \
-    {                                                                         \
-        return esxVI_List_CastFromAnyType                                     \
-                 (anyType, (esxVI_List **)list,                               \
-                  (esxVI_List_CastFromAnyTypeFunc)                            \
-                    esxVI_##_type##_CastFromAnyType,                          \
-                  (esxVI_List_FreeFunc)esxVI_##_type##_Free);                 \
+#define ESX_VI__TEMPLATE__LIST__CAST_FROM_ANY_TYPE(_type) \
+    int \
+    esxVI_##_type##_CastListFromAnyType(esxVI_AnyType *anyType, \
+                                        esxVI_##_type **list) \
+    { \
+        return esxVI_List_CastFromAnyType \
+                 (anyType, (esxVI_List **)list, \
+                  (esxVI_List_CastFromAnyTypeFunc) \
+                    esxVI_##_type##_CastFromAnyType, \
+                  (esxVI_List_FreeFunc)esxVI_##_type##_Free); \
     }
 
 
 
-#define ESX_VI__TEMPLATE__LIST__SERIALIZE(_type)                              \
-    int                                                                       \
-    esxVI_##_type##_SerializeList(esxVI_##_type *list, const char *element,   \
-                                  virBufferPtr output)                        \
-    {                                                                         \
-        return esxVI_List_Serialize((esxVI_List *)list, element, output,      \
-                                    (esxVI_List_SerializeFunc)                \
-                                      esxVI_##_type##_Serialize);             \
+#define ESX_VI__TEMPLATE__LIST__SERIALIZE(_type) \
+    int \
+    esxVI_##_type##_SerializeList(esxVI_##_type *list, const char *element, \
+                                  virBufferPtr output) \
+    { \
+        return esxVI_List_Serialize((esxVI_List *)list, element, output, \
+                                    (esxVI_List_SerializeFunc) \
+                                      esxVI_##_type##_Serialize); \
     }
 
 
 
-#define ESX_VI__TEMPLATE__LIST__DESERIALIZE(_type)                            \
-    int                                                                       \
-    esxVI_##_type##_DeserializeList(xmlNodePtr node, esxVI_##_type **list)    \
-    {                                                                         \
-        return esxVI_List_Deserialize                                         \
-                 (node, (esxVI_List **)list,                                  \
-                  (esxVI_List_DeserializeFunc)esxVI_##_type##_Deserialize,    \
-                  (esxVI_List_FreeFunc)esxVI_##_type##_Free);                 \
+#define ESX_VI__TEMPLATE__LIST__DESERIALIZE(_type) \
+    int \
+    esxVI_##_type##_DeserializeList(xmlNodePtr node, esxVI_##_type **list) \
+    { \
+        return esxVI_List_Deserialize \
+                 (node, (esxVI_List **)list, \
+                  (esxVI_List_DeserializeFunc)esxVI_##_type##_Deserialize, \
+                  (esxVI_List_FreeFunc)esxVI_##_type##_Free); \
     }
 
 
 
 #define ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(_type, _dest_type, _extra, \
-                                                   _dest_extra)               \
-    int                                                                       \
-    esxVI_##_type##_Cast##_dest_extra##FromAnyType(esxVI_AnyType *anyType,    \
-                                                   _dest_type **ptrptr)       \
-    {                                                                         \
-        _dest_type *item ATTRIBUTE_UNUSED;                                    \
-                                                                              \
-        if (!anyType || !ptrptr || *ptrptr) {                                 \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
-                           _("Invalid argument"));                            \
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        item = *ptrptr;                                                       \
-                                                                              \
-        _extra                                                                \
-                                                                              \
-        return esxVI_##_type##_Deserialize##_dest_extra(anyType->node,        \
-                                                        ptrptr);              \
+                                                   _dest_extra) \
+    int \
+    esxVI_##_type##_Cast##_dest_extra##FromAnyType(esxVI_AnyType *anyType, \
+                                                   _dest_type **ptrptr) \
+    { \
+        _dest_type *item ATTRIBUTE_UNUSED; \
+ \
+        if (!anyType || !ptrptr || *ptrptr) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                           _("Invalid argument")); \
+            return -1; \
+        } \
+ \
+        item = *ptrptr; \
+ \
+        _extra \
+ \
+        return esxVI_##_type##_Deserialize##_dest_extra(anyType->node, \
+                                                        ptrptr); \
     }
 
 
 
-#define ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(_type)                           \
-    ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(_type, esxVI_##_type,          \
-    {                                                                         \
-        if (anyType->type != esxVI_Type_##_type) {                            \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                            \
-                           _("Call to %s for unexpected type '%s', "          \
-                             "expected '%s'"),                                \
-                           __FUNCTION__, anyType->other,                      \
-                           esxVI_Type_ToString(esxVI_Type_##_type));          \
-            return -1;                                                        \
-        }                                                                     \
+#define ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE(_type) \
+    ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(_type, esxVI_##_type, \
+    { \
+        if (anyType->type != esxVI_Type_##_type) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           _("Call to %s for unexpected type '%s', " \
+                             "expected '%s'"), \
+                           __FUNCTION__, anyType->other, \
+                           esxVI_Type_ToString(esxVI_Type_##_type)); \
+            return -1; \
+        } \
     }, /* nothing */)
 
 
 
-#define ESX_VI__TEMPLATE__CAST_VALUE_FROM_ANY_TYPE(_type, _value_type)        \
-    ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(_type, _value_type,            \
-    {                                                                         \
-        if (anyType->type != esxVI_Type_##_type) {                            \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                            \
-                           _("Call to %s for unexpected type '%s', "          \
-                             "expected '%s'"),                                \
-                           __FUNCTION__, anyType->other,                      \
-                           esxVI_Type_ToString(esxVI_Type_##_type));          \
-            return -1;                                                        \
-        }                                                                     \
+#define ESX_VI__TEMPLATE__CAST_VALUE_FROM_ANY_TYPE(_type, _value_type) \
+    ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(_type, _value_type, \
+    { \
+        if (anyType->type != esxVI_Type_##_type) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           _("Call to %s for unexpected type '%s', " \
+                             "expected '%s'"), \
+                           __FUNCTION__, anyType->other, \
+                           esxVI_Type_ToString(esxVI_Type_##_type)); \
+            return -1; \
+        } \
     }, Value)
 
 
 
-#define ESX_VI__TEMPLATE__SERIALIZE_EXTRA(_type, _extra, _serialize)          \
-    int                                                                       \
-    esxVI_##_type##_Serialize(esxVI_##_type *item,                            \
-                              const char *element, virBufferPtr output)       \
-    {                                                                         \
-        if (!element || !output) {                                            \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
-                           _("Invalid argument"));                            \
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        if (!item) {                                                          \
-            return 0;                                                         \
-        }                                                                     \
-                                                                              \
-        _extra                                                                \
-                                                                              \
-        if (esxVI_##_type##_Validate(item) < 0) {                             \
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        ESV_VI__XML_TAG__OPEN(output, element,                                \
-                              esxVI_Type_ToString(esxVI_Type_##_type));       \
-                                                                              \
-        _serialize                                                            \
-                                                                              \
-        ESV_VI__XML_TAG__CLOSE(output, element);                              \
-                                                                              \
-        return 0;                                                             \
+#define ESX_VI__TEMPLATE__SERIALIZE_EXTRA(_type, _extra, _serialize) \
+    int \
+    esxVI_##_type##_Serialize(esxVI_##_type *item, \
+                              const char *element, virBufferPtr output) \
+    { \
+        if (!element || !output) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                           _("Invalid argument")); \
+            return -1; \
+        } \
+ \
+        if (!item) { \
+            return 0; \
+        } \
+ \
+        _extra \
+ \
+        if (esxVI_##_type##_Validate(item) < 0) { \
+            return -1; \
+        } \
+ \
+        ESV_VI__XML_TAG__OPEN(output, element, \
+                              esxVI_Type_ToString(esxVI_Type_##_type)); \
+ \
+        _serialize \
+ \
+        ESV_VI__XML_TAG__CLOSE(output, element); \
+ \
+        return 0; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__SERIALIZE(_type, _serialize)                        \
+#define ESX_VI__TEMPLATE__SERIALIZE(_type, _serialize) \
     ESX_VI__TEMPLATE__SERIALIZE_EXTRA(_type, /* nothing */, _serialize)
 
 
 
-#define ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(_type, _extra1, _extra2,          \
-                                            _deserialize)                     \
-    int                                                                       \
-    esxVI_##_type##_Deserialize(xmlNodePtr node, esxVI_##_type **ptrptr)      \
-    {                                                                         \
-        xmlNodePtr childNode = NULL;                                          \
-                                                                              \
-        _extra1                                                               \
-                                                                              \
-        if (!ptrptr || *ptrptr) {                                             \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
-                           _("Invalid argument"));                            \
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        if (esxVI_##_type##_Alloc(ptrptr) < 0) {                              \
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        _extra2                                                               \
-                                                                              \
-        for (childNode = node->children; childNode;                           \
-             childNode = childNode->next) {                                   \
-            if (childNode->type != XML_ELEMENT_NODE) {                        \
-                virReportError(VIR_ERR_INTERNAL_ERROR,                        \
-                               _("Wrong XML element type %d"),                \
-                               childNode->type);                              \
-                goto failure;                                                 \
-            }                                                                 \
-                                                                              \
-            _deserialize                                                      \
-                                                                              \
-            VIR_WARN("Unexpected '%s' property", childNode->name);            \
-        }                                                                     \
-                                                                              \
-        if (esxVI_##_type##_Validate(*ptrptr) < 0) {                          \
-            goto failure;                                                     \
-        }                                                                     \
-                                                                              \
-        return 0;                                                             \
-                                                                              \
-      failure:                                                                \
-        esxVI_##_type##_Free(ptrptr);                                         \
-                                                                              \
-        return -1;                                                            \
+#define ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(_type, _extra1, _extra2, \
+                                            _deserialize) \
+    int \
+    esxVI_##_type##_Deserialize(xmlNodePtr node, esxVI_##_type **ptrptr) \
+    { \
+        xmlNodePtr childNode = NULL; \
+ \
+        _extra1 \
+ \
+        if (!ptrptr || *ptrptr) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                           _("Invalid argument")); \
+            return -1; \
+        } \
+ \
+        if (esxVI_##_type##_Alloc(ptrptr) < 0) { \
+            return -1; \
+        } \
+ \
+        _extra2 \
+ \
+        for (childNode = node->children; childNode; \
+             childNode = childNode->next) { \
+            if (childNode->type != XML_ELEMENT_NODE) { \
+                virReportError(VIR_ERR_INTERNAL_ERROR, \
+                               _("Wrong XML element type %d"), \
+                               childNode->type); \
+                goto failure; \
+            } \
+ \
+            _deserialize \
+ \
+            VIR_WARN("Unexpected '%s' property", childNode->name); \
+        } \
+ \
+        if (esxVI_##_type##_Validate(*ptrptr) < 0) { \
+            goto failure; \
+        } \
+ \
+        return 0; \
+ \
+      failure: \
+        esxVI_##_type##_Free(ptrptr); \
+ \
+        return -1; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__DESERIALIZE(_type, _deserialize)                    \
-    ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(_type, /* nothing */, /* nothing */,  \
+#define ESX_VI__TEMPLATE__DESERIALIZE(_type, _deserialize) \
+    ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(_type, /* nothing */, /* nothing */, \
                                         _deserialize)
 
 
 
-#define ESX_VI__TEMPLATE__DESERIALIZE_NUMBER(_type, _xsdType, _min, _max)     \
-    int                                                                       \
-    esxVI_##_type##_Deserialize(xmlNodePtr node, esxVI_##_type **number)      \
-    {                                                                         \
-        int result = -1;                                                      \
-        char *string;                                                         \
-        long long value;                                                      \
-                                                                              \
-        if (!number || *number) {                                             \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
-                           _("Invalid argument"));                            \
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        if (esxVI_##_type##_Alloc(number) < 0) {                              \
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        string = (char *)xmlNodeListGetString(node->doc, node->children, 1);  \
-                                                                              \
-        if (!string) {                                                        \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                            \
+#define ESX_VI__TEMPLATE__DESERIALIZE_NUMBER(_type, _xsdType, _min, _max) \
+    int \
+    esxVI_##_type##_Deserialize(xmlNodePtr node, esxVI_##_type **number) \
+    { \
+        int result = -1; \
+        char *string; \
+        long long value; \
+ \
+        if (!number || *number) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                           _("Invalid argument")); \
+            return -1; \
+        } \
+ \
+        if (esxVI_##_type##_Alloc(number) < 0) { \
+            return -1; \
+        } \
+ \
+        string = (char *)xmlNodeListGetString(node->doc, node->children, 1); \
+ \
+        if (!string) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
                            _("XML node doesn't contain text, expecting an %s "\
-                             "value"), _xsdType);                             \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        if (virStrToLong_ll(string, NULL, 10, &value) < 0) {                  \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                            \
+                             "value"), _xsdType); \
+            goto cleanup; \
+        } \
+ \
+        if (virStrToLong_ll(string, NULL, 10, &value) < 0) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
                            _("Unknown value '%s' for %s"), string, _xsdType); \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        if (((_min) != INT64_MIN && value < (_min))                           \
-            || ((_max) != INT64_MAX && value > (_max))) {                     \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                            \
-                           _("Value '%s' is not representable as %s"),        \
-                           string, _xsdType);                                 \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        (*number)->value = value;                                             \
-                                                                              \
-        result = 0;                                                           \
-                                                                              \
-      cleanup:                                                                \
-        if (result < 0) {                                                     \
-            esxVI_##_type##_Free(number);                                     \
-        }                                                                     \
-                                                                              \
-        VIR_FREE(string);                                                     \
-                                                                              \
-        return result;                                                        \
+            goto cleanup; \
+        } \
+ \
+        if (((_min) != INT64_MIN && value < (_min)) \
+            || ((_max) != INT64_MAX && value > (_max))) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           _("Value '%s' is not representable as %s"), \
+                           string, _xsdType); \
+            goto cleanup; \
+        } \
+ \
+        (*number)->value = value; \
+ \
+        result = 0; \
+ \
+      cleanup: \
+        if (result < 0) { \
+            esxVI_##_type##_Free(number); \
+        } \
+ \
+        VIR_FREE(string); \
+ \
+        return result; \
     }
 
 
@@ -395,93 +395,93 @@ VIR_LOG_INIT("esx.esx_vi_types");
  * Macros for property handling to be used as part of other macros
  */
 
-#define ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY(_type, _name)                   \
-    if (esxVI_##_type##_DeepCopy(&(*dest)->_name, src->_name) < 0) {          \
-        goto failure;                                                         \
+#define ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY(_type, _name) \
+    if (esxVI_##_type##_DeepCopy(&(*dest)->_name, src->_name) < 0) { \
+        goto failure; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY_LIST(_type, _name)              \
-    if (esxVI_##_type##_DeepCopyList(&(*dest)->_name, src->_name) < 0) {      \
-        goto failure;                                                         \
+#define ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY_LIST(_type, _name) \
+    if (esxVI_##_type##_DeepCopyList(&(*dest)->_name, src->_name) < 0) { \
+        goto failure; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY_VALUE(_type, _name)             \
-    if (esxVI_##_type##_DeepCopyValue(&(*dest)->_name, src->_name) < 0) {     \
-        goto failure;                                                         \
+#define ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY_VALUE(_type, _name) \
+    if (esxVI_##_type##_DeepCopyValue(&(*dest)->_name, src->_name) < 0) { \
+        goto failure; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(_type, _name)                   \
-    if (esxVI_##_type##_Serialize(item->_name, #_name, output) < 0) {         \
-        return -1;                                                            \
+#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(_type, _name) \
+    if (esxVI_##_type##_Serialize(item->_name, #_name, output) < 0) { \
+        return -1; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(_type, _name)             \
-    if (esxVI_##_type##_SerializeValue(item->_name, #_name, output) < 0) {    \
-        return -1;                                                            \
+#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_VALUE(_type, _name) \
+    if (esxVI_##_type##_SerializeValue(item->_name, #_name, output) < 0) { \
+        return -1; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(_type, _name)              \
-    if (esxVI_##_type##_SerializeList(item->_name, #_name, output) < 0) {     \
-        return -1;                                                            \
+#define ESX_VI__TEMPLATE__PROPERTY__SERIALIZE_LIST(_type, _name) \
+    if (esxVI_##_type##_SerializeList(item->_name, #_name, output) < 0) { \
+        return -1; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(_type, _name)                 \
-    if (virXMLNodeNameEqual(childNode, #_name)) {                      \
-        if (esxVI_##_type##_Deserialize(childNode, &(*ptrptr)->_name) < 0) {  \
-            goto failure;                                                     \
-        }                                                                     \
-                                                                              \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(_type, _name) \
+    if (virXMLNodeNameEqual(childNode, #_name)) { \
+        if (esxVI_##_type##_Deserialize(childNode, &(*ptrptr)->_name) < 0) { \
+            goto failure; \
+        } \
+ \
+        continue; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_IGNORE(_name)                 \
-    if (virXMLNodeNameEqual(childNode, #_name)) {                      \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_IGNORE(_name) \
+    if (virXMLNodeNameEqual(childNode, #_name)) { \
+        continue; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(_type, _name)           \
-    if (virXMLNodeNameEqual(childNode, #_name)) {                      \
-        if (esxVI_##_type##_DeserializeValue(childNode,                       \
-                                             &(*ptrptr)->_name) < 0) {        \
-            goto failure;                                                     \
-        }                                                                     \
-                                                                              \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_VALUE(_type, _name) \
+    if (virXMLNodeNameEqual(childNode, #_name)) { \
+        if (esxVI_##_type##_DeserializeValue(childNode, \
+                                             &(*ptrptr)->_name) < 0) { \
+            goto failure; \
+        } \
+ \
+        continue; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(_type, _name)            \
-    if (virXMLNodeNameEqual(childNode, #_name)) {                      \
-        esxVI_##_type *_name##Item = NULL;                                    \
-                                                                              \
-        if (esxVI_##_type##_Deserialize(childNode, &_name##Item) < 0) {       \
-            goto failure;                                                     \
-        }                                                                     \
-                                                                              \
-        if (esxVI_##_type##_AppendToList(&(*ptrptr)->_name,                   \
-                                         _name##Item) < 0) {                  \
-            esxVI_##_type##_Free(&_name##Item);                               \
-            goto failure;                                                     \
-        }                                                                     \
-                                                                              \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE_LIST(_type, _name) \
+    if (virXMLNodeNameEqual(childNode, #_name)) { \
+        esxVI_##_type *_name##Item = NULL; \
+ \
+        if (esxVI_##_type##_Deserialize(childNode, &_name##Item) < 0) { \
+            goto failure; \
+        } \
+ \
+        if (esxVI_##_type##_AppendToList(&(*ptrptr)->_name, \
+                                         _name##Item) < 0) { \
+            esxVI_##_type##_Free(&_name##Item); \
+            goto failure; \
+        } \
+ \
+        continue; \
     }
 
 
@@ -492,12 +492,12 @@ VIR_LOG_INIT("esx.esx_vi_types");
  *
  * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
  */
-#define ESX_VI__TEMPLATE__PROPERTY__REQUIRE(_name)                            \
-    if (item->_name == 0) {                                                   \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                                \
-                       _("%s object is missing the required '%s' property"),  \
-                       typeName, #_name);                                     \
-        return -1;                                                            \
+#define ESX_VI__TEMPLATE__PROPERTY__REQUIRE(_name) \
+    if (item->_name == 0) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       _("%s object is missing the required '%s' property"), \
+                       typeName, #_name); \
+        return -1; \
     }
 
 
@@ -506,34 +506,34 @@ VIR_LOG_INIT("esx.esx_vi_types");
  * Macros to implement enumerations
  */
 
-#define ESX_VI__TEMPLATE__ENUMERATION__CAST_FROM_ANY_TYPE(_type)              \
-    int                                                                       \
-    esxVI_##_type##_CastFromAnyType(esxVI_AnyType *anyType,                   \
-                                    esxVI_##_type *value)                     \
-    {                                                                         \
-        return esxVI_Enumeration_CastFromAnyType                              \
-                 (&_esxVI_##_type##_Enumeration, anyType, (int *)value);      \
+#define ESX_VI__TEMPLATE__ENUMERATION__CAST_FROM_ANY_TYPE(_type) \
+    int \
+    esxVI_##_type##_CastFromAnyType(esxVI_AnyType *anyType, \
+                                    esxVI_##_type *value) \
+    { \
+        return esxVI_Enumeration_CastFromAnyType \
+                 (&_esxVI_##_type##_Enumeration, anyType, (int *)value); \
     }
 
 
 
-#define ESX_VI__TEMPLATE__ENUMERATION__SERIALIZE(_type)                       \
-    int                                                                       \
-    esxVI_##_type##_Serialize(esxVI_##_type value, const char *element,       \
-                              virBufferPtr output)                            \
-    {                                                                         \
-        return esxVI_Enumeration_Serialize(&_esxVI_##_type##_Enumeration,     \
-                                           value, element, output);           \
+#define ESX_VI__TEMPLATE__ENUMERATION__SERIALIZE(_type) \
+    int \
+    esxVI_##_type##_Serialize(esxVI_##_type value, const char *element, \
+                              virBufferPtr output) \
+    { \
+        return esxVI_Enumeration_Serialize(&_esxVI_##_type##_Enumeration, \
+                                           value, element, output); \
     }
 
 
 
-#define ESX_VI__TEMPLATE__ENUMERATION__DESERIALIZE(_type)                     \
-    int                                                                       \
-    esxVI_##_type##_Deserialize(xmlNodePtr node, esxVI_##_type *value)        \
-    {                                                                         \
-        return esxVI_Enumeration_Deserialize(&_esxVI_##_type##_Enumeration,   \
-                                             node, (int *)value);             \
+#define ESX_VI__TEMPLATE__ENUMERATION__DESERIALIZE(_type) \
+    int \
+    esxVI_##_type##_Deserialize(xmlNodePtr node, esxVI_##_type *value) \
+    { \
+        return esxVI_Enumeration_Deserialize(&_esxVI_##_type##_Enumeration, \
+                                             node, (int *)value); \
     }
 
 
@@ -542,167 +542,167 @@ VIR_LOG_INIT("esx.esx_vi_types");
  * Macros to implement dynamic dispatched functions
  */
 
-#define ESX_VI__TEMPLATE__DISPATCH(_actual_type, _actual_type_name, __type,   \
-                                   _dispatch,  _error_return)                 \
-    switch (_actual_type) {                                                   \
-      _dispatch                                                               \
-                                                                              \
-      case esxVI_Type_##__type:                                               \
-        break;                                                                \
-                                                                              \
-      default:                                                                \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                                \
-                       _("Call to %s for unexpected type '%s'"),              \
-                       __FUNCTION__, _actual_type_name);                      \
-        return _error_return;                                                 \
+#define ESX_VI__TEMPLATE__DISPATCH(_actual_type, _actual_type_name, __type, \
+                                   _dispatch,  _error_return) \
+    switch (_actual_type) { \
+      _dispatch \
+ \
+      case esxVI_Type_##__type: \
+        break; \
+ \
+      default: \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       _("Call to %s for unexpected type '%s'"), \
+                       __FUNCTION__, _actual_type_name); \
+        return _error_return; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__DISPATCH__FREE(_type)                               \
-    case esxVI_Type_##_type:                                                  \
-      esxVI_##_type##_Free((esxVI_##_type **)ptrptr);                         \
+#define ESX_VI__TEMPLATE__DISPATCH__FREE(_type) \
+    case esxVI_Type_##_type: \
+      esxVI_##_type##_Free((esxVI_##_type **)ptrptr); \
       return;
 
 
 
-#define ESX_VI__TEMPLATE__DISPATCH__DEEP_COPY(_type)                          \
-    case esxVI_Type_##_type:                                                  \
-      return esxVI_##_type##_DeepCopy((esxVI_##_type **)dest,                 \
+#define ESX_VI__TEMPLATE__DISPATCH__DEEP_COPY(_type) \
+    case esxVI_Type_##_type: \
+      return esxVI_##_type##_DeepCopy((esxVI_##_type **)dest, \
                                       (esxVI_##_type *)src);
 
 
 
-#define ESX_VI__TEMPLATE__DISPATCH__CAST_FROM_ANY_TYPE(_type)                 \
-    case esxVI_Type_##_type:                                                  \
-      return esxVI_##_type##_Deserialize(anyType->node,                       \
+#define ESX_VI__TEMPLATE__DISPATCH__CAST_FROM_ANY_TYPE(_type) \
+    case esxVI_Type_##_type: \
+      return esxVI_##_type##_Deserialize(anyType->node, \
                                          (esxVI_##_type **)ptrptr);
 
 
 
-#define ESX_VI__TEMPLATE__DISPATCH__SERIALIZE(_type)                          \
-    case esxVI_Type_##_type:                                                  \
-      return esxVI_##_type##_Serialize((esxVI_##_type *)item, element,        \
+#define ESX_VI__TEMPLATE__DISPATCH__SERIALIZE(_type) \
+    case esxVI_Type_##_type: \
+      return esxVI_##_type##_Serialize((esxVI_##_type *)item, element, \
                                        output);
 
 
 
-#define ESX_VI__TEMPLATE__DISPATCH__DESERIALIZE(_type)                        \
-    case esxVI_Type_##_type:                                                  \
+#define ESX_VI__TEMPLATE__DISPATCH__DESERIALIZE(_type) \
+    case esxVI_Type_##_type: \
       return esxVI_##_type##_Deserialize(node, (esxVI_##_type **)ptrptr);
 
 
 
-#define ESX_VI__TEMPLATE__DYNAMIC_FREE(__type, _dispatch, _body)              \
-    ESX_VI__TEMPLATE__FREE(__type,                                            \
-      ESX_VI__TEMPLATE__DISPATCH(item->_type,                                 \
-                                 esxVI_Type_ToString(item->_type),            \
-                                 __type, _dispatch,                           \
-                                 /* nothing */)                               \
+#define ESX_VI__TEMPLATE__DYNAMIC_FREE(__type, _dispatch, _body) \
+    ESX_VI__TEMPLATE__FREE(__type, \
+      ESX_VI__TEMPLATE__DISPATCH(item->_type, \
+                                 esxVI_Type_ToString(item->_type), \
+                                 __type, _dispatch, \
+                                 /* nothing */) \
       _body)
 
 
 
-#define ESX_VI__TEMPLATE__DYNAMIC_CAST__ACCEPT(__type)                        \
-    if (((esxVI_Object *)item)->_type == esxVI_Type_##__type) {               \
-        return item;                                                          \
+#define ESX_VI__TEMPLATE__DYNAMIC_CAST__ACCEPT(__type) \
+    if (((esxVI_Object *)item)->_type == esxVI_Type_##__type) { \
+        return item; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__DYNAMIC_CAST(__type, _accept)                       \
-    esxVI_##__type *                                                          \
-    esxVI_##__type##_DynamicCast(void *item)                                  \
-    {                                                                         \
-        if (!item) {                                                          \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
-                           _("Invalid argument"));                            \
-            return NULL;                                                      \
-        }                                                                     \
-                                                                              \
-        ESX_VI__TEMPLATE__DYNAMIC_CAST__ACCEPT(__type)                        \
-                                                                              \
-        _accept                                                               \
-                                                                              \
-        return NULL;                                                          \
+#define ESX_VI__TEMPLATE__DYNAMIC_CAST(__type, _accept) \
+    esxVI_##__type * \
+    esxVI_##__type##_DynamicCast(void *item) \
+    { \
+        if (!item) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                           _("Invalid argument")); \
+            return NULL; \
+        } \
+ \
+        ESX_VI__TEMPLATE__DYNAMIC_CAST__ACCEPT(__type) \
+ \
+        _accept \
+ \
+        return NULL; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__DYNAMIC_DEEP_COPY(__type, _dispatch, _deep_copy)    \
-    int                                                                       \
-    esxVI_##__type##_DeepCopy(esxVI_##__type **dest, esxVI_##__type *src)     \
-    {                                                                         \
-        if (!dest || *dest) {                                                 \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
-                           _("Invalid argument"));                            \
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        if (!src) {                                                           \
-            return 0;                                                         \
-        }                                                                     \
-                                                                              \
-        ESX_VI__TEMPLATE__DISPATCH(src->_type,                                \
-                                   esxVI_Type_ToString(src->_type),           \
-                                   __type, _dispatch, -1)                     \
-                                                                              \
-        if (esxVI_##__type##_Alloc(dest) < 0) {                               \
-            goto failure;                                                     \
-        }                                                                     \
-                                                                              \
-        _deep_copy                                                            \
-                                                                              \
-        return 0;                                                             \
-                                                                              \
-      failure:                                                                \
-        esxVI_##__type##_Free(dest);                                          \
-                                                                              \
-        return -1;                                                            \
+#define ESX_VI__TEMPLATE__DYNAMIC_DEEP_COPY(__type, _dispatch, _deep_copy) \
+    int \
+    esxVI_##__type##_DeepCopy(esxVI_##__type **dest, esxVI_##__type *src) \
+    { \
+        if (!dest || *dest) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                           _("Invalid argument")); \
+            return -1; \
+        } \
+ \
+        if (!src) { \
+            return 0; \
+        } \
+ \
+        ESX_VI__TEMPLATE__DISPATCH(src->_type, \
+                                   esxVI_Type_ToString(src->_type), \
+                                   __type, _dispatch, -1) \
+ \
+        if (esxVI_##__type##_Alloc(dest) < 0) { \
+            goto failure; \
+        } \
+ \
+        _deep_copy \
+ \
+        return 0; \
+ \
+      failure: \
+        esxVI_##__type##_Free(dest); \
+ \
+        return -1; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__DYNAMIC_CAST_FROM_ANY_TYPE(__type, _dispatch)       \
-    ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(__type, esxVI_##__type,        \
-      ESX_VI__TEMPLATE__DISPATCH(anyType->type,                               \
-                                 esxVI_AnyType_TypeToString(anyType),         \
-                                __type, _dispatch, -1),                       \
+#define ESX_VI__TEMPLATE__DYNAMIC_CAST_FROM_ANY_TYPE(__type, _dispatch) \
+    ESX_VI__TEMPLATE__CAST_FROM_ANY_TYPE_EXTRA(__type, esxVI_##__type, \
+      ESX_VI__TEMPLATE__DISPATCH(anyType->type, \
+                                 esxVI_AnyType_TypeToString(anyType), \
+                                __type, _dispatch, -1), \
       /* nothing */)
 
 
 
-#define ESX_VI__TEMPLATE__DYNAMIC_SERIALIZE(__type, _dispatch, _serialize)    \
-    ESX_VI__TEMPLATE__SERIALIZE_EXTRA(__type,                                 \
-      ESX_VI__TEMPLATE__DISPATCH(item->_type,                                 \
-                                 esxVI_Type_ToString(item->_type),            \
-                                 __type, _dispatch, -1),                      \
+#define ESX_VI__TEMPLATE__DYNAMIC_SERIALIZE(__type, _dispatch, _serialize) \
+    ESX_VI__TEMPLATE__SERIALIZE_EXTRA(__type, \
+      ESX_VI__TEMPLATE__DISPATCH(item->_type, \
+                                 esxVI_Type_ToString(item->_type), \
+                                 __type, _dispatch, -1), \
       _serialize)
 
 
 
-#define ESX_VI__TEMPLATE__DYNAMIC_DESERIALIZE(__type, _dispatch,              \
-                                              _deserialize)                   \
-    ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(__type,                               \
-      esxVI_Type type = esxVI_Type_Undefined;                                 \
-                                                                              \
-      if (esxVI_GetActualObjectType(node, esxVI_Type_##__type, &type) < 0) {  \
-          return -1;                                                          \
-      }                                                                       \
-                                                                              \
-      switch (type) {                                                         \
-        _dispatch                                                             \
-                                                                              \
-        case esxVI_Type_##__type:                                             \
-          break;                                                              \
-                                                                              \
-        default:                                                              \
-          virReportError(VIR_ERR_INTERNAL_ERROR,                              \
-                         _("Call to %s for unexpected type '%s'"),            \
-                         __FUNCTION__, esxVI_Type_ToString(type));            \
-          return -1;                                                          \
-      },                                                                      \
-      /* nothing */,                                                          \
+#define ESX_VI__TEMPLATE__DYNAMIC_DESERIALIZE(__type, _dispatch, \
+                                              _deserialize) \
+    ESX_VI__TEMPLATE__DESERIALIZE_EXTRA(__type, \
+      esxVI_Type type = esxVI_Type_Undefined; \
+ \
+      if (esxVI_GetActualObjectType(node, esxVI_Type_##__type, &type) < 0) { \
+          return -1; \
+      } \
+ \
+      switch (type) { \
+        _dispatch \
+ \
+        case esxVI_Type_##__type: \
+          break; \
+ \
+        default: \
+          virReportError(VIR_ERR_INTERNAL_ERROR, \
+                         _("Call to %s for unexpected type '%s'"), \
+                         __FUNCTION__, esxVI_Type_ToString(type)); \
+          return -1; \
+      }, \
+      /* nothing */, \
       _deserialize)
 
 
@@ -752,36 +752,36 @@ esxVI_GetActualObjectType(xmlNodePtr node, esxVI_Type baseType,
  * Macros to implement managed objects
  */
 
-#define ESX_VI__TEMPLATE__PROPERTY__MANAGED_REQUIRE(_name)                    \
+#define ESX_VI__TEMPLATE__PROPERTY__MANAGED_REQUIRE(_name) \
     /* FIXME: This results in O(n^2) runtime in case of missing required, but \
-     * unselected properties. */                                              \
-    if (item->_name == 0 &&                                                   \
-        esxVI_String_ListContainsValue(selectedPropertyNameList, #_name)) {   \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                                \
-                       _("%s object is missing the required '%s' property"),  \
-                       typeName, #_name);                                     \
-        return -1;                                                            \
+     * unselected properties. */ \
+    if (item->_name == 0 && \
+        esxVI_String_ListContainsValue(selectedPropertyNameList, #_name)) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       _("%s object is missing the required '%s' property"), \
+                       typeName, #_name); \
+        return -1; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__MANAGED_VALIDATE(__type, _require)                  \
-    int                                                                       \
-    esxVI_##__type##_Validate(esxVI_##__type *item,                           \
-                              esxVI_String *selectedPropertyNameList)         \
-    {                                                                         \
-        const char *typeName = esxVI_Type_ToString(esxVI_Type_##__type);      \
-                                                                              \
-        if (item->_type <= esxVI_Type_Undefined ||                            \
-            item->_type >= esxVI_Type_Other) {                                \
-            virReportError(VIR_ERR_INTERNAL_ERROR,                            \
+#define ESX_VI__TEMPLATE__MANAGED_VALIDATE(__type, _require) \
+    int \
+    esxVI_##__type##_Validate(esxVI_##__type *item, \
+                              esxVI_String *selectedPropertyNameList) \
+    { \
+        const char *typeName = esxVI_Type_ToString(esxVI_Type_##__type); \
+ \
+        if (item->_type <= esxVI_Type_Undefined || \
+            item->_type >= esxVI_Type_Other) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
                            _("%s object has invalid dynamic type"), typeName);\
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        _require                                                              \
-                                                                              \
-        return 0;                                                             \
+            return -1; \
+        } \
+ \
+        _require \
+ \
+        return 0; \
     }
 
 
@@ -1051,24 +1051,24 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
     if (!(*anyType)->value && VIR_STRDUP((*anyType)->value, "") < 0)
         goto failure;
 
-#define _DESERIALIZE_NUMBER(_type, _xsdType, _name, _min, _max)               \
-        do {                                                                  \
-            if (virStrToLong_ll((*anyType)->value, NULL, 10, &number) < 0) {  \
-                virReportError(VIR_ERR_INTERNAL_ERROR,                        \
-                               _("Unknown value '%s' for %s"),                \
-                               (*anyType)->value, _xsdType);                  \
-                goto failure;                                                 \
-            }                                                                 \
-                                                                              \
-            if (((_min) != INT64_MIN && number < (_min))                      \
-                || ((_max) != INT64_MAX && number > (_max))) {                \
-                virReportError(VIR_ERR_INTERNAL_ERROR,                        \
-                               _("Value '%s' is out of %s range"),            \
-                               (*anyType)->value, _xsdType);                  \
-                goto failure;                                                 \
-            }                                                                 \
-                                                                              \
-            (*anyType)->_name = number;                                       \
+#define _DESERIALIZE_NUMBER(_type, _xsdType, _name, _min, _max) \
+        do { \
+            if (virStrToLong_ll((*anyType)->value, NULL, 10, &number) < 0) { \
+                virReportError(VIR_ERR_INTERNAL_ERROR, \
+                               _("Unknown value '%s' for %s"), \
+                               (*anyType)->value, _xsdType); \
+                goto failure; \
+            } \
+ \
+            if (((_min) != INT64_MIN && number < (_min)) \
+                || ((_max) != INT64_MAX && number > (_max))) { \
+                virReportError(VIR_ERR_INTERNAL_ERROR, \
+                               _("Value '%s' is out of %s range"), \
+                               (*anyType)->value, _xsdType); \
+                goto failure; \
+            } \
+ \
+            (*anyType)->_name = number; \
         } while (0)
 
     switch ((*anyType)->type) {

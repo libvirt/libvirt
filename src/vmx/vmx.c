@@ -499,10 +499,10 @@ def->parallels[0]...
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#define VMX_BUILD_NAME_EXTRA(_suffix, _extra)                                 \
+#define VMX_BUILD_NAME_EXTRA(_suffix, _extra) \
     snprintf(_suffix##_name, sizeof(_suffix##_name), "%s."_extra, prefix);
 
-#define VMX_BUILD_NAME(_suffix)                                               \
+#define VMX_BUILD_NAME(_suffix) \
     VMX_BUILD_NAME_EXTRA(_suffix, #_suffix)
 
 /* directly map the virDomainControllerModel to virVMXSCSIControllerModel,

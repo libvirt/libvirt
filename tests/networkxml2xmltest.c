@@ -109,12 +109,12 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_FULL(name, flags, expectResult)                         \
-    do {                                                                \
-        const struct testInfo info = {name, flags, expectResult};       \
-        if (virTestRun("Network XML-2-XML " name,                       \
-                       testCompareXMLToXMLHelper, &info) < 0)           \
-            ret = -1;                                                   \
+#define DO_TEST_FULL(name, flags, expectResult) \
+    do { \
+        const struct testInfo info = {name, flags, expectResult}; \
+        if (virTestRun("Network XML-2-XML " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 #define DO_TEST(name) \
     DO_TEST_FULL(name, 0, TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS)

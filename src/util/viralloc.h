@@ -358,7 +358,7 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  * Returns -1 on failure (with OOM error reported), 0 on success
  */
 # define VIR_INSERT_ELEMENT(ptr, at, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count),    \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false, \
                        true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
 # define VIR_INSERT_ELEMENT_COPY(ptr, at, count, newelem) \
@@ -376,7 +376,7 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
 
 /* Quiet version of macros above */
 # define VIR_INSERT_ELEMENT_QUIET(ptr, at, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count),    \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false, \
                        false, 0, NULL, NULL, 0)
 # define VIR_INSERT_ELEMENT_COPY_QUIET(ptr, at, count, newelem) \
@@ -428,33 +428,33 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  * Returns -1 on failure (with OOM error reported), 0 on success
  */
 # define VIR_APPEND_ELEMENT(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false, \
                        true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
 # define VIR_APPEND_ELEMENT_COPY(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false, \
                        true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
 # define VIR_APPEND_ELEMENT_INPLACE(ptr, count, newelem) \
-    ignore_value(virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),   \
-                                    VIR_TYPEMATCH(ptr, &(newelem)),         \
-                                    &(newelem), true, true, false,          \
-                                    VIR_FROM_THIS, __FILE__,                \
+    ignore_value(virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
+                                    VIR_TYPEMATCH(ptr, &(newelem)), \
+                                    &(newelem), true, true, false, \
+                                    VIR_FROM_THIS, __FILE__, \
                                     __FUNCTION__, __LINE__))
 # define VIR_APPEND_ELEMENT_COPY_INPLACE(ptr, count, newelem) \
-    ignore_value(virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),   \
-                                    VIR_TYPEMATCH(ptr, &(newelem)),         \
-                                    &(newelem), false, true, false,         \
-                                    VIR_FROM_THIS, __FILE__,                \
+    ignore_value(virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
+                                    VIR_TYPEMATCH(ptr, &(newelem)), \
+                                    &(newelem), false, true, false, \
+                                    VIR_FROM_THIS, __FILE__, \
                                     __FUNCTION__, __LINE__))
 
 /* Quiet version of macros above */
 # define VIR_APPEND_ELEMENT_QUIET(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, false, \
                        false, 0, NULL, NULL, 0)
 # define VIR_APPEND_ELEMENT_COPY_QUIET(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
+    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false, \
                        false, 0, NULL, NULL, 0)
 
@@ -576,7 +576,7 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  *
  * This macro is not safe to be used on arguments with side effects.
  */
-# define VIR_DISPOSE_STRING(ptr) virDispose(1 ? (void *) &(ptr) : (ptr),      \
+# define VIR_DISPOSE_STRING(ptr) virDispose(1 ? (void *) &(ptr) : (ptr), \
                                             (ptr) ? strlen((ptr)) : 0, 1, NULL)
 
 
@@ -588,7 +588,7 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  *
  * This macro is safe to be used on arguments with side effects.
  */
-# define VIR_DISPOSE(ptr) virDispose(1 ? (void *) &(ptr) : (ptr), 1,          \
+# define VIR_DISPOSE(ptr) virDispose(1 ? (void *) &(ptr) : (ptr), 1, \
                                      sizeof(*(ptr)), NULL)
 
 

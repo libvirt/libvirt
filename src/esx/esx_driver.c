@@ -3779,10 +3779,10 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
 }
 
 /* The subset of migration flags we are able to support.  */
-#define ESX_MIGRATION_FLAGS                     \
-    (VIR_MIGRATE_PERSIST_DEST |                 \
-     VIR_MIGRATE_UNDEFINE_SOURCE |              \
-     VIR_MIGRATE_LIVE |                         \
+#define ESX_MIGRATION_FLAGS \
+    (VIR_MIGRATE_PERSIST_DEST | \
+     VIR_MIGRATE_UNDEFINE_SOURCE | \
+     VIR_MIGRATE_LIVE | \
      VIR_MIGRATE_PAUSED)
 
 static int

@@ -141,12 +141,12 @@ mymain(void)
 
     openvzLocateConfFile = testLocateConfFile;
 
-# define DO_TEST(_name)                                                       \
-        do {                                                                  \
-            if (virTestRun("OpenVZ "#_name, test##_name,                      \
-                            NULL) < 0) {                                      \
-                result = -1;                                                  \
-            }                                                                 \
+# define DO_TEST(_name) \
+        do { \
+            if (virTestRun("OpenVZ "#_name, test##_name, \
+                            NULL) < 0) { \
+                result = -1; \
+            } \
         } while (0)
 
     DO_TEST(ReadConfigParam);

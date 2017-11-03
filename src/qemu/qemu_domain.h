@@ -39,7 +39,7 @@
 # include "virobject.h"
 # include "logging/log_manager.h"
 
-# define QEMU_DOMAIN_FORMAT_LIVE_FLAGS      \
+# define QEMU_DOMAIN_FORMAT_LIVE_FLAGS \
     (VIR_DOMAIN_XML_SECURE)
 
 # if ULONG_MAX == 4294967295
@@ -51,14 +51,14 @@
 # endif
 
 # define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
-# define QEMU_JOB_DEFAULT_MASK          \
-    (JOB_MASK(QEMU_JOB_QUERY) |         \
-     JOB_MASK(QEMU_JOB_DESTROY) |       \
+# define QEMU_JOB_DEFAULT_MASK \
+    (JOB_MASK(QEMU_JOB_QUERY) | \
+     JOB_MASK(QEMU_JOB_DESTROY) | \
      JOB_MASK(QEMU_JOB_ABORT))
 
 /* Jobs which have to be tracked in domain state XML. */
-# define QEMU_DOMAIN_TRACK_JOBS         \
-    (JOB_MASK(QEMU_JOB_DESTROY) |       \
+# define QEMU_DOMAIN_TRACK_JOBS \
+    (JOB_MASK(QEMU_JOB_DESTROY) | \
      JOB_MASK(QEMU_JOB_ASYNC))
 
 /* Only 1 job is allowed at any time
@@ -331,7 +331,7 @@ struct _qemuDomainObjPrivate {
     virBitmapPtr migrationCaps;
 };
 
-# define QEMU_DOMAIN_PRIVATE(vm)        \
+# define QEMU_DOMAIN_PRIVATE(vm) \
     ((qemuDomainObjPrivatePtr) (vm)->privateData)
 
 # define QEMU_DOMAIN_DISK_PRIVATE(disk) \
@@ -376,7 +376,7 @@ struct _qemuDomainStorageSourcePrivate {
 
 virObjectPtr qemuDomainStorageSourcePrivateNew(void);
 
-# define QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev)   \
+# define QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev) \
     ((qemuDomainHostdevPrivatePtr) (hostdev)->privateData)
 
 
@@ -400,7 +400,7 @@ struct _qemuDomainVcpuPrivate {
     int vcpus;
 };
 
-# define QEMU_DOMAIN_VCPU_PRIVATE(vcpu)    \
+# define QEMU_DOMAIN_VCPU_PRIVATE(vcpu) \
     ((qemuDomainVcpuPrivatePtr) (vcpu)->privateData)
 
 
@@ -424,7 +424,7 @@ struct _qemuDomainHostdevPrivate {
     qemuDomainSecretInfoPtr secinfo;
 };
 
-# define QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev)    \
+# define QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev) \
     ((qemuDomainChrSourcePrivatePtr) (dev)->privateData)
 
 typedef struct _qemuDomainChrSourcePrivate qemuDomainChrSourcePrivate;

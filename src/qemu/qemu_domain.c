@@ -6219,16 +6219,16 @@ bool
 qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
                               virDomainDiskDefPtr orig_disk)
 {
-#define CHECK_EQ(field, field_name, nullable)                           \
-    do {                                                                \
-        if (nullable && !disk->field)                                   \
-            break;                                                      \
-        if (disk->field != orig_disk->field) {                          \
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,               \
-                           _("cannot modify field '%s' of the disk"),   \
-                           field_name);                                 \
-            return false;                                               \
-        }                                                               \
+#define CHECK_EQ(field, field_name, nullable) \
+    do { \
+        if (nullable && !disk->field) \
+            break; \
+        if (disk->field != orig_disk->field) { \
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, \
+                           _("cannot modify field '%s' of the disk"), \
+                           field_name); \
+            return false; \
+        } \
     } while (0)
 
     CHECK_EQ(device, "device", false);

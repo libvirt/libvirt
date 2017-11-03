@@ -26,16 +26,16 @@
 
 # include "libxl_conf.h"
 
-# define LIBXL_MIGRATION_FLAGS                  \
-    (VIR_MIGRATE_LIVE |                         \
-     VIR_MIGRATE_PEER2PEER |                    \
-     VIR_MIGRATE_TUNNELLED |                    \
-     VIR_MIGRATE_PERSIST_DEST |                 \
-     VIR_MIGRATE_UNDEFINE_SOURCE |              \
+# define LIBXL_MIGRATION_FLAGS \
+    (VIR_MIGRATE_LIVE | \
+     VIR_MIGRATE_PEER2PEER | \
+     VIR_MIGRATE_TUNNELLED | \
+     VIR_MIGRATE_PERSIST_DEST | \
+     VIR_MIGRATE_UNDEFINE_SOURCE | \
      VIR_MIGRATE_PAUSED)
 
 /* All supported migration parameters and their types. */
-# define LIBXL_MIGRATION_PARAMETERS                             \
+# define LIBXL_MIGRATION_PARAMETERS \
     VIR_MIGRATE_PARAM_URI,              VIR_TYPED_PARAM_STRING, \
     VIR_MIGRATE_PARAM_DEST_NAME,        VIR_TYPED_PARAM_STRING, \
     VIR_MIGRATE_PARAM_DEST_XML,         VIR_TYPED_PARAM_STRING, \

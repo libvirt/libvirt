@@ -144,21 +144,21 @@ mymain(void)
 
     signal(SIGPIPE, SIG_IGN);
 
-#define TEST_FULL(uri, uri_out, scheme, server, port, path, query,                 \
-                  fragment, user, params)                                          \
-    do  {                                                                          \
-        const struct URIParseData data = {                                         \
-            uri, (uri_out) ? (uri_out) : (uri), scheme, server, port,              \
-            path, query, fragment, user, params                                    \
-        };                                                                         \
-        if (virTestRun("Test URI " # uri, testURIParse, &data) < 0)                \
-            ret = -1;                                                              \
+#define TEST_FULL(uri, uri_out, scheme, server, port, path, query, \
+                  fragment, user, params) \
+    do  { \
+        const struct URIParseData data = { \
+            uri, (uri_out) ? (uri_out) : (uri), scheme, server, port, \
+            path, query, fragment, user, params \
+        }; \
+        if (virTestRun("Test URI " # uri, testURIParse, &data) < 0) \
+            ret = -1; \
     } while (0)
 #define TEST_PARSE(uri, scheme, server, port, path, query, fragment, user, params) \
     TEST_FULL(uri, NULL, scheme, server, port, path, query, fragment, user, params)
-#define TEST_PARAMS(query_in, query_out, params)                        \
-    TEST_FULL("test://example.com/?" query_in,                          \
-              *query_out ? "test://example.com/?" query_out : NULL,     \
+#define TEST_PARAMS(query_in, query_out, params) \
+    TEST_FULL("test://example.com/?" query_in, \
+              *query_out ? "test://example.com/?" query_out : NULL, \
               "test", "example.com", 0, "/", query_in, NULL, NULL, params)
 
     virURIParam params[] = {

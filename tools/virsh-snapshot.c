@@ -42,7 +42,7 @@
 #include "virxml.h"
 #include "conf/snapshot_conf.h"
 
-#define VIRSH_COMMON_OPT_DOMAIN_FULL                       \
+#define VIRSH_COMMON_OPT_DOMAIN_FULL \
     VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid")) \
 
 /* Helper for snapshot-create and snapshot-create-as */
@@ -554,16 +554,16 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
 
 #define EDIT_GET_XML \
     virDomainSnapshotGetXMLDesc(snapshot, getxml_flags)
-#define EDIT_NOT_CHANGED                                                     \
-    do {                                                                     \
-        /* Depending on flags, we re-edit even if XML is unchanged.  */      \
-        if (!(define_flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) {          \
-            vshPrintExtra(ctl,                                               \
+#define EDIT_NOT_CHANGED \
+    do { \
+        /* Depending on flags, we re-edit even if XML is unchanged.  */ \
+        if (!(define_flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) { \
+            vshPrintExtra(ctl, \
                           _("Snapshot %s XML configuration not changed.\n"), \
-                          name);                                             \
-            ret = true;                                                      \
-            goto edit_cleanup;                                               \
-        }                                                                    \
+                          name); \
+            ret = true; \
+            goto edit_cleanup; \
+        } \
     } while (0)
 #define EDIT_DEFINE \
     (strstr(doc, "<state>disk-snapshot</state>") ? \
@@ -1501,17 +1501,17 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(roots, from);
     VSH_EXCLUSIVE_OPTIONS_VAR(roots, current);
 
-#define FILTER(option, flag)                                          \
-    do {                                                              \
-        if (vshCommandOptBool(cmd, option)) {                         \
-            if (tree) {                                               \
-                vshError(ctl,                                         \
+#define FILTER(option, flag) \
+    do { \
+        if (vshCommandOptBool(cmd, option)) { \
+            if (tree) { \
+                vshError(ctl, \
                          _("--%s and --tree are mutually exclusive"), \
-                         option);                                     \
-                return false;                                         \
-            }                                                         \
-            flags |= VIR_DOMAIN_SNAPSHOT_LIST_ ## flag;               \
-        }                                                             \
+                         option); \
+                return false; \
+            } \
+            flags |= VIR_DOMAIN_SNAPSHOT_LIST_ ## flag; \
+        } \
     } while (0)
 
     FILTER("leaves", LEAVES);

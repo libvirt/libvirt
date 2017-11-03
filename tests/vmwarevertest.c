@@ -77,14 +77,14 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST(vmware_type, name, version)                            \
-    do {                                                                \
-        struct testInfo info = {                                        \
-            vmware_type, name, version                                  \
-        };                                                              \
-        if (virTestRun("VMware Version String Parsing " name,           \
-                       testVerStrParse, &info) < 0)                     \
-            ret = -1;                                                   \
+# define DO_TEST(vmware_type, name, version) \
+    do { \
+        struct testInfo info = { \
+            vmware_type, name, version \
+        }; \
+        if (virTestRun("VMware Version String Parsing " name, \
+                       testVerStrParse, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("ws", "workstation-7.0.0", 7000000);

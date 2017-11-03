@@ -177,7 +177,7 @@ virInterfaceDefParseNode(xmlDocPtr xml,
 char *
 virInterfaceDefFormat(const virInterfaceDef *def);
 
-# define VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE   \
+# define VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE \
                 (VIR_CONNECT_LIST_INTERFACES_ACTIVE | \
                  VIR_CONNECT_LIST_INTERFACES_INACTIVE)
 

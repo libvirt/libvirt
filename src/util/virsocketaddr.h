@@ -57,13 +57,13 @@ typedef struct {
     socklen_t len;
 } virSocketAddr;
 
-# define VIR_SOCKET_ADDR_VALID(s)               \
+# define VIR_SOCKET_ADDR_VALID(s) \
     ((s)->data.sa.sa_family != AF_UNSPEC)
 
-# define VIR_SOCKET_ADDR_IS_FAMILY(s, f)        \
+# define VIR_SOCKET_ADDR_IS_FAMILY(s, f) \
     ((s)->data.sa.sa_family == f)
 
-# define VIR_SOCKET_ADDR_FAMILY(s)              \
+# define VIR_SOCKET_ADDR_FAMILY(s) \
     ((s)->data.sa.sa_family)
 
 # define VIR_SOCKET_ADDR_IPV4_ALL "0.0.0.0"

@@ -401,16 +401,16 @@ udevFillMdevType(struct udev_device *device,
     int ret = -1;
     char *attrpath = NULL;
 
-#define MDEV_GET_SYSFS_ATTR(attr_name, cb, ...)                             \
-    do {                                                                    \
-        if (virAsprintf(&attrpath, "%s/%s", dir, #attr_name) < 0)           \
-            goto cleanup;                                                   \
-                                                                            \
-        if (cb(device, attrpath, __VA_ARGS__) < 0)                          \
-            goto cleanup;                                                   \
-                                                                            \
-        VIR_FREE(attrpath);                                                 \
-    } while (0)                                                             \
+#define MDEV_GET_SYSFS_ATTR(attr_name, cb, ...) \
+    do { \
+        if (virAsprintf(&attrpath, "%s/%s", dir, #attr_name) < 0) \
+            goto cleanup; \
+ \
+        if (cb(device, attrpath, __VA_ARGS__) < 0) \
+            goto cleanup; \
+ \
+        VIR_FREE(attrpath); \
+    } while (0) \
 
     if (VIR_STRDUP(type->id, last_component(dir)) < 0)
         goto cleanup;

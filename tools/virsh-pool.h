@@ -33,8 +33,8 @@ virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
                       const char **name, unsigned int flags);
 
 /* default is lookup by Name and UUID */
-# define virshCommandOptPool(_ctl, _cmd, _optname, _name)           \
-    virshCommandOptPoolBy(_ctl, _cmd, _optname, _name,              \
+# define virshCommandOptPool(_ctl, _cmd, _optname, _name) \
+    virshCommandOptPoolBy(_ctl, _cmd, _optname, _name, \
                           VIRSH_BYUUID | VIRSH_BYNAME)
 
 extern const vshCmdDef storagePoolCmds[];

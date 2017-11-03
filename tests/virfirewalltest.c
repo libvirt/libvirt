@@ -43,27 +43,27 @@ static bool fwDisabled = true;
 static virBufferPtr fwBuf;
 static bool fwError;
 
-# define TEST_FILTER_TABLE_LIST                                 \
-    "Chain INPUT (policy ACCEPT)\n"                             \
-    "target     prot opt source               destination\n"    \
-    "\n"                                                        \
-    "Chain FORWARD (policy ACCEPT)\n"                           \
-    "target     prot opt source               destination\n"    \
-    "\n"                                                        \
-    "Chain OUTPUT (policy ACCEPT)\n"                            \
+# define TEST_FILTER_TABLE_LIST \
+    "Chain INPUT (policy ACCEPT)\n" \
+    "target     prot opt source               destination\n" \
+    "\n" \
+    "Chain FORWARD (policy ACCEPT)\n" \
+    "target     prot opt source               destination\n" \
+    "\n" \
+    "Chain OUTPUT (policy ACCEPT)\n" \
     "target     prot opt source               destination\n"
 
-# define TEST_NAT_TABLE_LIST                                            \
-    "Chain PREROUTING (policy ACCEPT)\n"                                \
-    "target     prot opt source               destination\n"            \
-    "\n"                                                                \
-    "Chain INPUT (policy ACCEPT)\n"                                     \
-    "target     prot opt source               destination\n"            \
-    "\n"                                                                \
-    "Chain OUTPUT (policy ACCEPT)\n"                                    \
-    "target     prot opt source               destination\n"            \
-    "\n"                                                                \
-    "Chain POSTROUTING (policy ACCEPT)\n"                               \
+# define TEST_NAT_TABLE_LIST \
+    "Chain PREROUTING (policy ACCEPT)\n" \
+    "target     prot opt source               destination\n" \
+    "\n" \
+    "Chain INPUT (policy ACCEPT)\n" \
+    "target     prot opt source               destination\n" \
+    "\n" \
+    "Chain OUTPUT (policy ACCEPT)\n" \
+    "target     prot opt source               destination\n" \
+    "\n" \
+    "Chain POSTROUTING (policy ACCEPT)\n" \
     "target     prot opt source               destination\n"
 
 # if WITH_DBUS
@@ -1141,42 +1141,42 @@ mymain(void)
         return EXIT_AM_SKIP;
     }
 
-# define RUN_TEST_DIRECT(name, method)                                  \
-    do {                                                                \
-        struct testFirewallData data;                                   \
-        data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC;               \
-        data.expectBackend = VIR_FIREWALL_BACKEND_DIRECT;               \
-        data.fwDisabled = true;                                         \
-        if (virTestRun(name " auto direct", method, &data) < 0)         \
-            ret = -1;                                                   \
-        data.tryBackend = VIR_FIREWALL_BACKEND_DIRECT;                  \
-        data.expectBackend = VIR_FIREWALL_BACKEND_DIRECT;               \
-        data.fwDisabled = true;                                         \
-        if (virTestRun(name " manual direct", method, &data) < 0)       \
-            ret = -1;                                                   \
+# define RUN_TEST_DIRECT(name, method) \
+    do { \
+        struct testFirewallData data; \
+        data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC; \
+        data.expectBackend = VIR_FIREWALL_BACKEND_DIRECT; \
+        data.fwDisabled = true; \
+        if (virTestRun(name " auto direct", method, &data) < 0) \
+            ret = -1; \
+        data.tryBackend = VIR_FIREWALL_BACKEND_DIRECT; \
+        data.expectBackend = VIR_FIREWALL_BACKEND_DIRECT; \
+        data.fwDisabled = true; \
+        if (virTestRun(name " manual direct", method, &data) < 0) \
+            ret = -1; \
     } while (0)
 
 # if WITH_DBUS
-#  define RUN_TEST_FIREWALLD(name, method)                              \
-    do {                                                                \
-        struct testFirewallData data;                                   \
-        data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC;               \
-        data.expectBackend = VIR_FIREWALL_BACKEND_FIREWALLD;            \
-        data.fwDisabled = false;                                        \
-        if (virTestRun(name " auto firewalld", method, &data) < 0)      \
-            ret = -1;                                                   \
-        data.tryBackend = VIR_FIREWALL_BACKEND_FIREWALLD;               \
-        data.expectBackend = VIR_FIREWALL_BACKEND_FIREWALLD;            \
-        data.fwDisabled = false;                                        \
-        if (virTestRun(name " manual firewalld", method, &data) < 0)    \
-            ret = -1;                                                   \
+#  define RUN_TEST_FIREWALLD(name, method) \
+    do { \
+        struct testFirewallData data; \
+        data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC; \
+        data.expectBackend = VIR_FIREWALL_BACKEND_FIREWALLD; \
+        data.fwDisabled = false; \
+        if (virTestRun(name " auto firewalld", method, &data) < 0) \
+            ret = -1; \
+        data.tryBackend = VIR_FIREWALL_BACKEND_FIREWALLD; \
+        data.expectBackend = VIR_FIREWALL_BACKEND_FIREWALLD; \
+        data.fwDisabled = false; \
+        if (virTestRun(name " manual firewalld", method, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#  define RUN_TEST(name, method)                \
-    RUN_TEST_DIRECT(name, method);              \
+#  define RUN_TEST(name, method) \
+    RUN_TEST_DIRECT(name, method); \
     RUN_TEST_FIREWALLD(name, method)
 # else /* ! WITH_DBUS */
-#  define RUN_TEST(name, method)                \
+#  define RUN_TEST(name, method) \
     RUN_TEST_DIRECT(name, method)
 # endif /* ! WITH_DBUS */
 

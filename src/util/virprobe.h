@@ -49,51 +49,51 @@
  * arrays into pointers; while any integer can be widened to intptr_t
  * then cast to void *.  */
 #  define VIR_ADD_CAST(a) ((void *)(intptr_t)(a))
-#  define VIR_ADD_CAST1(a)                                  \
+#  define VIR_ADD_CAST1(a) \
     VIR_ADD_CAST(a)
-#  define VIR_ADD_CAST2(a, b)                               \
+#  define VIR_ADD_CAST2(a, b) \
     VIR_ADD_CAST(a), VIR_ADD_CAST(b)
-#  define VIR_ADD_CAST3(a, b, c)                            \
+#  define VIR_ADD_CAST3(a, b, c) \
     VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c)
-#  define VIR_ADD_CAST4(a, b, c, d)                         \
-    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c),      \
+#  define VIR_ADD_CAST4(a, b, c, d) \
+    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c), \
     VIR_ADD_CAST(d)
-#  define VIR_ADD_CAST5(a, b, c, d, e)                      \
-    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c),      \
+#  define VIR_ADD_CAST5(a, b, c, d, e) \
+    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c), \
     VIR_ADD_CAST(d), VIR_ADD_CAST(e)
-#  define VIR_ADD_CAST6(a, b, c, d, e, f)                   \
-    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c),      \
+#  define VIR_ADD_CAST6(a, b, c, d, e, f) \
+    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c), \
     VIR_ADD_CAST(d), VIR_ADD_CAST(e), VIR_ADD_CAST(f)
-#  define VIR_ADD_CAST7(a, b, c, d, e, f, g)                \
-    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c),      \
-    VIR_ADD_CAST(d), VIR_ADD_CAST(e), VIR_ADD_CAST(f),      \
+#  define VIR_ADD_CAST7(a, b, c, d, e, f, g) \
+    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c), \
+    VIR_ADD_CAST(d), VIR_ADD_CAST(e), VIR_ADD_CAST(f), \
     VIR_ADD_CAST(g)
-#  define VIR_ADD_CAST8(a, b, c, d, e, f, g, h)             \
-    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c),      \
-    VIR_ADD_CAST(d), VIR_ADD_CAST(e), VIR_ADD_CAST(f),      \
+#  define VIR_ADD_CAST8(a, b, c, d, e, f, g, h) \
+    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c), \
+    VIR_ADD_CAST(d), VIR_ADD_CAST(e), VIR_ADD_CAST(f), \
     VIR_ADD_CAST(g), VIR_ADD_CAST(h)
-#  define VIR_ADD_CAST9(a, b, c, d, e, f, g, h, i)          \
-    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c),      \
-    VIR_ADD_CAST(d), VIR_ADD_CAST(e), VIR_ADD_CAST(f),      \
+#  define VIR_ADD_CAST9(a, b, c, d, e, f, g, h, i) \
+    VIR_ADD_CAST(a), VIR_ADD_CAST(b), VIR_ADD_CAST(c), \
+    VIR_ADD_CAST(d), VIR_ADD_CAST(e), VIR_ADD_CAST(f), \
     VIR_ADD_CAST(g), VIR_ADD_CAST(h), VIR_ADD_CAST(i)
 
-#  define VIR_ADD_CASTS(...)                                            \
-    VIR_ADD_CAST_EXPAND(VIR_ADD_CAST, VIR_COUNT_ARGS(__VA_ARGS__),      \
+#  define VIR_ADD_CASTS(...) \
+    VIR_ADD_CAST_EXPAND(VIR_ADD_CAST, VIR_COUNT_ARGS(__VA_ARGS__), \
                         __VA_ARGS__)
 
 #  define PROBE_EXPAND(NAME, ARGS) NAME(ARGS)
-#  define PROBE(NAME, FMT, ...)                              \
-    VIR_INFO_INT(&virLogSelf,                                \
-                  __FILE__, __LINE__, __func__,              \
-                  #NAME ": " FMT, __VA_ARGS__);              \
-    if (LIBVIRT_ ## NAME ## _ENABLED()) {                    \
-        PROBE_EXPAND(LIBVIRT_ ## NAME,                       \
-                     VIR_ADD_CASTS(__VA_ARGS__));            \
+#  define PROBE(NAME, FMT, ...) \
+    VIR_INFO_INT(&virLogSelf, \
+                  __FILE__, __LINE__, __func__, \
+                  #NAME ": " FMT, __VA_ARGS__); \
+    if (LIBVIRT_ ## NAME ## _ENABLED()) { \
+        PROBE_EXPAND(LIBVIRT_ ## NAME, \
+                     VIR_ADD_CASTS(__VA_ARGS__)); \
     }
 # else
-#  define PROBE(NAME, FMT, ...)                              \
-    VIR_INFO_INT(&virLogSelf,                                \
-                 __FILE__, __LINE__, __func__,               \
+#  define PROBE(NAME, FMT, ...) \
+    VIR_INFO_INT(&virLogSelf, \
+                 __FILE__, __LINE__, __func__, \
                  #NAME ": " FMT, __VA_ARGS__);
 # endif
 

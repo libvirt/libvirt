@@ -2412,16 +2412,16 @@ qemuMigrationParams(virTypedParameterPtr params,
     if (!params)
         return migParams;
 
-#define GET(PARAM, VAR)                                                     \
-    do {                                                                    \
-        int rc;                                                             \
-        if ((rc = virTypedParamsGetInt(params, nparams,                     \
-                                       VIR_MIGRATE_PARAM_ ## PARAM,         \
-                                       &migParams->VAR)) < 0)               \
-            goto error;                                                     \
-                                                                            \
-        if (rc == 1)                                                        \
-            migParams->VAR ## _set = true;                                  \
+#define GET(PARAM, VAR) \
+    do { \
+        int rc; \
+        if ((rc = virTypedParamsGetInt(params, nparams, \
+                                       VIR_MIGRATE_PARAM_ ## PARAM, \
+                                       &migParams->VAR)) < 0) \
+            goto error; \
+ \
+        if (rc == 1) \
+            migParams->VAR ## _set = true; \
     } while (0)
 
     GET(AUTO_CONVERGE_INITIAL, cpuThrottleInitial);
@@ -5887,17 +5887,17 @@ qemuMigrationCompressionParse(virTypedParameterPtr params,
         compression->methods |= 1ULL << method;
     }
 
-#define GET_PARAM(PARAM, TYPE, VALUE)                                       \
-    do {                                                                    \
-        int rc;                                                             \
-        const char *par = VIR_MIGRATE_PARAM_COMPRESSION_ ## PARAM;          \
-                                                                            \
-        if ((rc = virTypedParamsGet ## TYPE(params, nparams,                \
+#define GET_PARAM(PARAM, TYPE, VALUE) \
+    do { \
+        int rc; \
+        const char *par = VIR_MIGRATE_PARAM_COMPRESSION_ ## PARAM; \
+ \
+        if ((rc = virTypedParamsGet ## TYPE(params, nparams, \
                                             par, &compression->VALUE)) < 0) \
-            goto error;                                                     \
-                                                                            \
-        if (rc == 1)                                                        \
-            compression->VALUE ## _set = true;                              \
+            goto error; \
+ \
+        if (rc == 1) \
+            compression->VALUE ## _set = true; \
     } while (0)
 
     if (params) {

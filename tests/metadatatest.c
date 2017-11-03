@@ -250,15 +250,15 @@ testTextMetadata(const void *data)
     return ret;
 }
 
-#define TEST_TEXT_METADATA(INDEX, TYPE, DATA, FAIL)                         \
-    do {                                                                    \
-        test.type = VIR_DOMAIN_METADATA_ ## TYPE;                           \
-        test.data = DATA;                                                   \
-        test.fail = FAIL;                                                   \
-                                                                            \
-        if (virTestRun("text metadata: " #TYPE " " INDEX " ",               \
-                       testTextMetadata, &test) < 0)                        \
-            ret = EXIT_FAILURE;                                             \
+#define TEST_TEXT_METADATA(INDEX, TYPE, DATA, FAIL) \
+    do { \
+        test.type = VIR_DOMAIN_METADATA_ ## TYPE; \
+        test.data = DATA; \
+        test.fail = FAIL; \
+ \
+        if (virTestRun("text metadata: " #TYPE " " INDEX " ", \
+                       testTextMetadata, &test) < 0) \
+            ret = EXIT_FAILURE; \
     } while (0)
 
 #define TEST_TITLE(INDEX, DATA) TEST_TEXT_METADATA(INDEX, TITLE, DATA, false)

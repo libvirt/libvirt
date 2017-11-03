@@ -28,13 +28,13 @@
 #include "qemu/qemu_monitor.h"
 #include "qemu/qemu_monitor_json.h"
 
-#define REAL_SYM(realFunc)                                                  \
-    do {                                                                    \
-        if (!realFunc && !(realFunc = dlsym(RTLD_NEXT, __FUNCTION__))) {    \
-            fprintf(stderr, "Cannot find real '%s' symbol\n",               \
-                    __FUNCTION__);                                          \
-            abort();                                                        \
-        }                                                                   \
+#define REAL_SYM(realFunc) \
+    do { \
+        if (!realFunc && !(realFunc = dlsym(RTLD_NEXT, __FUNCTION__))) { \
+            fprintf(stderr, "Cannot find real '%s' symbol\n", \
+                    __FUNCTION__); \
+            abort(); \
+        } \
     } while (0)
 
 

@@ -306,33 +306,33 @@ void virFirewallFree(virFirewallPtr firewall)
     VIR_FREE(firewall);
 }
 
-#define VIR_FIREWALL_RETURN_IF_ERROR(firewall)              \
-    do {                                                    \
-        if (!firewall || firewall->err)                     \
-            return;                                         \
+#define VIR_FIREWALL_RETURN_IF_ERROR(firewall) \
+    do { \
+        if (!firewall || firewall->err) \
+            return; \
     } while (0)
 
 #define VIR_FIREWALL_RULE_RETURN_IF_ERROR(firewall, rule)\
-    do {                                                    \
-        if (!firewall || firewall->err || !rule)            \
-            return;                                         \
+    do { \
+        if (!firewall || firewall->err || !rule) \
+            return; \
     } while (0)
 
-#define VIR_FIREWALL_RETURN_NULL_IF_ERROR(firewall)         \
-    do {                                                    \
-        if (!firewall || firewall->err)                     \
-            return NULL;                                    \
+#define VIR_FIREWALL_RETURN_NULL_IF_ERROR(firewall) \
+    do { \
+        if (!firewall || firewall->err) \
+            return NULL; \
     } while (0)
 
-#define ADD_ARG(rule, str)                                  \
-    do {                                                    \
-        if (VIR_RESIZE_N(rule->args,                        \
-                         rule->argsAlloc,                   \
-                         rule->argsLen, 1) < 0)             \
-            goto no_memory;                                 \
-                                                            \
+#define ADD_ARG(rule, str) \
+    do { \
+        if (VIR_RESIZE_N(rule->args, \
+                         rule->argsAlloc, \
+                         rule->argsLen, 1) < 0) \
+            goto no_memory; \
+ \
         if (VIR_STRDUP(rule->args[rule->argsLen++], str) < 0) \
-            goto no_memory;                                 \
+            goto no_memory; \
     } while (0)
 
 static virFirewallRulePtr

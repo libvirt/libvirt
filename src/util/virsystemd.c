@@ -53,18 +53,18 @@ static void virSystemdEscapeName(virBufferPtr buf,
 {
     static const char hextable[16] = "0123456789abcdef";
 
-#define ESCAPE(c)                                                       \
-    do {                                                                \
-        virBufferAddChar(buf, '\\');                                    \
-        virBufferAddChar(buf, 'x');                                     \
-        virBufferAddChar(buf, hextable[(c >> 4) & 15]);                 \
-        virBufferAddChar(buf, hextable[c & 15]);                        \
+#define ESCAPE(c) \
+    do { \
+        virBufferAddChar(buf, '\\'); \
+        virBufferAddChar(buf, 'x'); \
+        virBufferAddChar(buf, hextable[(c >> 4) & 15]); \
+        virBufferAddChar(buf, hextable[c & 15]); \
     } while (0)
 
-#define VALID_CHARS                             \
-        "0123456789"                            \
-        "abcdefghijklmnopqrstuvwxyz"            \
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"            \
+#define VALID_CHARS \
+        "0123456789" \
+        "abcdefghijklmnopqrstuvwxyz" \
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
         ":-_.\\"
 
     if (*name == '.') {

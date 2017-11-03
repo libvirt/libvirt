@@ -52,7 +52,7 @@ domtop_domtop_SOURCES = domtop/domtop.c
 hellolibvirt_hellolibvirt_SOURCES = hellolibvirt/hellolibvirt.c
 
 object_events_event_test_CFLAGS = \
-		$(WARN_CFLAGS)						\
+		$(WARN_CFLAGS) \
 		$(NULL)
 object_events_event_test_SOURCES = object-events/event-test.c
 

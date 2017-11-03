@@ -522,14 +522,14 @@ cmdSrvThreadpoolSet(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
         return false;
 
-#define PARSE_CMD_TYPED_PARAM(NAME, FIELD)                                   \
-    if ((rv = vshCommandOptUInt(ctl, cmd, NAME, &val)) < 0) {                \
-        vshError(ctl, _("Unable to parse integer parameter '%s'"), NAME);    \
-        goto cleanup;                                                        \
-    } else if (rv > 0) {                                                     \
-        if (virTypedParamsAddUInt(&params, &nparams, &maxparams,             \
-                                  FIELD, val) < 0)                           \
-        goto save_error;                                                     \
+#define PARSE_CMD_TYPED_PARAM(NAME, FIELD) \
+    if ((rv = vshCommandOptUInt(ctl, cmd, NAME, &val)) < 0) { \
+        vshError(ctl, _("Unable to parse integer parameter '%s'"), NAME); \
+        goto cleanup; \
+    } else if (rv > 0) { \
+        if (virTypedParamsAddUInt(&params, &nparams, &maxparams, \
+                                  FIELD, val) < 0) \
+        goto save_error; \
     }
 
     PARSE_CMD_TYPED_PARAM("max-workers", VIR_THREADPOOL_WORKERS_MAX);
@@ -918,14 +918,14 @@ cmdSrvClientsSet(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
         return false;
 
-#define PARSE_CMD_TYPED_PARAM(NAME, FIELD)                                   \
-    if ((rv = vshCommandOptUInt(ctl, cmd, NAME, &val)) < 0) {                \
-        vshError(ctl, _("Unable to parse integer parameter '%s'"), NAME);    \
-        goto cleanup;                                                        \
-    } else if (rv > 0) {                                                     \
-        if (virTypedParamsAddUInt(&params, &nparams, &maxparams,             \
-                                  FIELD, val) < 0)                           \
-        goto save_error;                                                     \
+#define PARSE_CMD_TYPED_PARAM(NAME, FIELD) \
+    if ((rv = vshCommandOptUInt(ctl, cmd, NAME, &val)) < 0) { \
+        vshError(ctl, _("Unable to parse integer parameter '%s'"), NAME); \
+        goto cleanup; \
+    } else if (rv > 0) { \
+        if (virTypedParamsAddUInt(&params, &nparams, &maxparams, \
+                                  FIELD, val) < 0) \
+        goto save_error; \
     }
 
     PARSE_CMD_TYPED_PARAM("max-clients", VIR_SERVER_CLIENTS_MAX);

@@ -358,57 +358,57 @@ mymain(void)
         return EXIT_FAILURE;
 #endif
 
-#define DO_TEST(Name, Emulator, Machine, Arch, Type, CapsType)          \
-    do {                                                                \
-        struct testData data = {                                        \
-            .name = Name,                                               \
-            .emulator = Emulator,                                       \
-            .machine = Machine,                                         \
-            .arch = Arch,                                               \
-            .type = Type,                                               \
-            .capsType = CapsType,                                       \
-        };                                                              \
-        if (virTestRun(Name, test_virDomainCapsFormat, &data) < 0)      \
-            ret = -1;                                                   \
+#define DO_TEST(Name, Emulator, Machine, Arch, Type, CapsType) \
+    do { \
+        struct testData data = { \
+            .name = Name, \
+            .emulator = Emulator, \
+            .machine = Machine, \
+            .arch = Arch, \
+            .type = Type, \
+            .capsType = CapsType, \
+        }; \
+        if (virTestRun(Name, test_virDomainCapsFormat, &data) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_QEMU(Name, CapsName, Emulator, Machine, Arch, Type)     \
-    do {                                                                \
-        char *name = NULL;                                              \
-        if (virAsprintf(&name, "qemu_%s%s%s.%s",                        \
-                        Name,                                           \
-                        Machine ? "-" : "", Machine ? Machine : "",     \
-                        Arch) < 0) {                                    \
-            ret = -1;                                                   \
-            break;                                                      \
-        }                                                               \
-        struct testData data = {                                        \
-            .name = name,                                               \
-            .emulator = Emulator,                                       \
-            .machine = Machine,                                         \
-            .arch = Arch,                                               \
-            .type = Type,                                               \
-            .capsType = CAPS_QEMU,                                      \
-            .capsName = CapsName,                                       \
-            .capsOpaque = cfg,                                          \
-        };                                                              \
-        if (virTestRun(name, test_virDomainCapsFormat, &data) < 0)      \
-            ret = -1;                                                   \
-        VIR_FREE(name);                                                 \
+#define DO_TEST_QEMU(Name, CapsName, Emulator, Machine, Arch, Type) \
+    do { \
+        char *name = NULL; \
+        if (virAsprintf(&name, "qemu_%s%s%s.%s", \
+                        Name, \
+                        Machine ? "-" : "", Machine ? Machine : "", \
+                        Arch) < 0) { \
+            ret = -1; \
+            break; \
+        } \
+        struct testData data = { \
+            .name = name, \
+            .emulator = Emulator, \
+            .machine = Machine, \
+            .arch = Arch, \
+            .type = Type, \
+            .capsType = CAPS_QEMU, \
+            .capsName = CapsName, \
+            .capsOpaque = cfg, \
+        }; \
+        if (virTestRun(name, test_virDomainCapsFormat, &data) < 0) \
+            ret = -1; \
+        VIR_FREE(name); \
     } while (0)
 
-#define DO_TEST_LIBXL(Name, Emulator, Machine, Arch, Type)              \
-    do {                                                                \
-        struct testData data = {                                        \
-            .name = Name,                                               \
-            .emulator = Emulator,                                       \
-            .machine = Machine,                                         \
-            .arch = Arch,                                               \
-            .type = Type,                                               \
-            .capsType = CAPS_LIBXL,                                     \
-        };                                                              \
-        if (virTestRun(Name, test_virDomainCapsFormat, &data) < 0)     \
-            ret = -1;                                                   \
+#define DO_TEST_LIBXL(Name, Emulator, Machine, Arch, Type) \
+    do { \
+        struct testData data = { \
+            .name = Name, \
+            .emulator = Emulator, \
+            .machine = Machine, \
+            .arch = Arch, \
+            .type = Type, \
+            .capsType = CAPS_LIBXL, \
+        }; \
+        if (virTestRun(Name, test_virDomainCapsFormat, &data) < 0) \
+            ret = -1; \
     } while (0)
 
     DO_TEST("basic", "/bin/emulatorbin", "my-machine-type",
@@ -417,23 +417,23 @@ mymain(void)
             "x86_64", VIR_DOMAIN_VIRT_KVM, CAPS_ALL);
 
 #define DO_TEST_BHYVE(Name, Emulator, BhyveCaps, Type) \
-    do {                                                                \
-        char *name = NULL;                                              \
-        if (virAsprintf(&name, "bhyve_%s.x86_64", Name) < 0) {          \
-             ret = -1;                                                  \
-             break;                                                     \
-        }                                                               \
-        struct testData data = {                                        \
-            .name = name,                                               \
-            .emulator = Emulator,                                       \
-            .arch = "x86_64",                                           \
-            .type = Type,                                               \
-            .capsType = CAPS_BHYVE,                                     \
-            .capsOpaque = BhyveCaps,                                    \
-        };                                                              \
-        if (virTestRun(name, test_virDomainCapsFormat, &data) < 0)      \
-            ret = -1;                                                   \
-        VIR_FREE(name);                                                 \
+    do { \
+        char *name = NULL; \
+        if (virAsprintf(&name, "bhyve_%s.x86_64", Name) < 0) { \
+             ret = -1; \
+             break; \
+        } \
+        struct testData data = { \
+            .name = name, \
+            .emulator = Emulator, \
+            .arch = "x86_64", \
+            .type = Type, \
+            .capsType = CAPS_BHYVE, \
+            .capsOpaque = BhyveCaps, \
+        }; \
+        if (virTestRun(name, test_virDomainCapsFormat, &data) < 0) \
+            ret = -1; \
+        VIR_FREE(name); \
     } while (0)
 
 #if WITH_QEMU

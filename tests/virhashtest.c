@@ -602,23 +602,23 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_FULL(name, cmd, data, count)                        \
-    do {                                                            \
-        struct testInfo info = { data, count };                     \
-        if (virTestRun(name, testHash ## cmd, &info) < 0)           \
-            ret = -1;                                               \
+#define DO_TEST_FULL(name, cmd, data, count) \
+    do { \
+        struct testInfo info = { data, count }; \
+        if (virTestRun(name, testHash ## cmd, &info) < 0) \
+            ret = -1; \
     } while (0)
 
-#define DO_TEST_DATA(name, cmd, data)                               \
-    DO_TEST_FULL(name "(" #data ")",                                \
-                 cmd,                                               \
-                 testHash ## cmd ## data,                           \
+#define DO_TEST_DATA(name, cmd, data) \
+    DO_TEST_FULL(name "(" #data ")", \
+                 cmd, \
+                 testHash ## cmd ## data, \
                  testHashCount ## cmd ## data)
 
-#define DO_TEST_COUNT(name, cmd, count)                             \
+#define DO_TEST_COUNT(name, cmd, count) \
     DO_TEST_FULL(name "(" #count ")", cmd, NULL, count)
 
-#define DO_TEST(name, cmd)                                          \
+#define DO_TEST(name, cmd) \
     DO_TEST_FULL(name, cmd, NULL, -1)
 
     DO_TEST_COUNT("Grow", Grow, 1);

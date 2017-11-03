@@ -608,24 +608,24 @@ test11(const void *opaque)
     return ret;
 }
 
-#define TEST_MAP(sz, expect)                                                   \
-    do {                                                                       \
-        char *actual;                                                          \
-        if (virBitmapSize(map) != sz) {                                        \
-            fprintf(stderr, "\n expected bitmap size: '%d' actual size: "      \
-                    "'%zu'\n", sz, virBitmapSize(map));                        \
-            goto cleanup;                                                      \
-        }                                                                      \
-                                                                               \
-        actual = virBitmapFormat(map);                                         \
-                                                                               \
-        if (STRNEQ_NULLABLE(expect, actual)) {                                 \
+#define TEST_MAP(sz, expect) \
+    do { \
+        char *actual; \
+        if (virBitmapSize(map) != sz) { \
+            fprintf(stderr, "\n expected bitmap size: '%d' actual size: " \
+                    "'%zu'\n", sz, virBitmapSize(map)); \
+            goto cleanup; \
+        } \
+ \
+        actual = virBitmapFormat(map); \
+ \
+        if (STRNEQ_NULLABLE(expect, actual)) { \
             fprintf(stderr, "\n expected bitmap contents '%s' actual contents "\
-                    "'%s'\n", NULLSTR(expect), NULLSTR(actual));               \
-            VIR_FREE(actual);                                                  \
-            goto cleanup;                                                      \
-        }                                                                      \
-        VIR_FREE(actual);                                                      \
+                    "'%s'\n", NULLSTR(expect), NULLSTR(actual)); \
+            VIR_FREE(actual); \
+            goto cleanup; \
+        } \
+        VIR_FREE(actual); \
     } while (0)
 
 /* test self-expanding bitmap APIs */
@@ -666,11 +666,11 @@ test12(const void *opaque ATTRIBUTE_UNUSED)
 #undef TEST_MAP
 
 
-#define TESTBINARYOP(A, B, RES, FUNC)                                         \
-    testBinaryOpData.a = A;                                                   \
-    testBinaryOpData.b = B;                                                   \
-    testBinaryOpData.res = RES;                                               \
-    if (virTestRun(virTestCounterNext(), FUNC, &testBinaryOpData) < 0)        \
+#define TESTBINARYOP(A, B, RES, FUNC) \
+    testBinaryOpData.a = A; \
+    testBinaryOpData.b = B; \
+    testBinaryOpData.res = RES; \
+    if (virTestRun(virTestCounterNext(), FUNC, &testBinaryOpData) < 0) \
         ret = -1;
 
 static int

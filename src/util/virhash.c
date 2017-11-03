@@ -41,10 +41,10 @@ VIR_LOG_INIT("util.hash");
 
 /* #define DEBUG_GROW */
 
-#define virHashIterationError(ret)                                      \
-    do {                                                                \
-        VIR_ERROR(_("Hash operation not allowed during iteration"));   \
-        return ret;                                                     \
+#define virHashIterationError(ret) \
+    do { \
+        VIR_ERROR(_("Hash operation not allowed during iteration")); \
+        return ret; \
     } while (0)
 
 /*

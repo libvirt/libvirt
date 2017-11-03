@@ -171,14 +171,14 @@ mymain(void)
     }
 
 
-# define DO_TEST(prefix, name, inpath, outpath, uuid, internal, redefine)     \
-    do {                                                                      \
-        const struct testInfo info = {abs_srcdir "/" inpath "/" name ".xml",  \
+# define DO_TEST(prefix, name, inpath, outpath, uuid, internal, redefine) \
+    do { \
+        const struct testInfo info = {abs_srcdir "/" inpath "/" name ".xml", \
                                       abs_srcdir "/" outpath "/" name ".xml", \
-                                      uuid, internal, redefine};              \
-        if (virTestRun("SNAPSHOT XML-2-XML " prefix " " name,                 \
-                       testCompareXMLToXMLHelper, &info) < 0)                 \
-            ret = -1;                                                         \
+                                      uuid, internal, redefine}; \
+        if (virTestRun("SNAPSHOT XML-2-XML " prefix " " name, \
+                       testCompareXMLToXMLHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
 # define DO_TEST_IN(name, uuid) DO_TEST("in->in", name,\

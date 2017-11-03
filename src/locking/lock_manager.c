@@ -42,20 +42,20 @@
 
 VIR_LOG_INIT("locking.lock_manager");
 
-#define CHECK_DRIVER(field, errret)                                  \
-    if (!driver->field) {                                            \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                       \
+#define CHECK_DRIVER(field, errret) \
+    if (!driver->field) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
                      _("Missing '%s' field in lock manager driver"), \
-                     #field);                                        \
-        return errret;                                               \
+                     #field); \
+        return errret; \
     }
 
-#define CHECK_MANAGER(field, errret)                                 \
-    if (!lock->driver->field) {                                      \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                         \
+#define CHECK_MANAGER(field, errret) \
+    if (!lock->driver->field) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
                        _("Missing '%s' field in lock manager driver"), \
-                       #field);                                        \
-        return errret;                                               \
+                       #field); \
+        return errret; \
     }
 
 struct _virLockManagerPlugin {

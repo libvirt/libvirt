@@ -266,17 +266,17 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
      * If the service specific directory doesn't exist, 'assume' that the
      * user has created and populated the "SYSCONFDIR" + "pki/libvirt-default".
      */
-#define SET_TLS_X509_CERT_DEFAULT(val)                                 \
-    do {                                                               \
-        if (virFileExists(SYSCONFDIR "/pki/libvirt-"#val)) {           \
-            if (VIR_STRDUP(cfg->val ## TLSx509certdir,                 \
-                           SYSCONFDIR "/pki/libvirt-"#val) < 0)        \
-                goto error;                                            \
-        } else {                                                       \
-            if (VIR_STRDUP(cfg->val ## TLSx509certdir,                 \
-                           cfg->defaultTLSx509certdir) < 0)            \
-                goto error;                                            \
-        }                                                              \
+#define SET_TLS_X509_CERT_DEFAULT(val) \
+    do { \
+        if (virFileExists(SYSCONFDIR "/pki/libvirt-"#val)) { \
+            if (VIR_STRDUP(cfg->val ## TLSx509certdir, \
+                           SYSCONFDIR "/pki/libvirt-"#val) < 0) \
+                goto error; \
+        } else { \
+            if (VIR_STRDUP(cfg->val ## TLSx509certdir, \
+                           cfg->defaultTLSx509certdir) < 0) \
+                goto error; \
+        } \
     } while (0)
 
     SET_TLS_X509_CERT_DEFAULT(vnc);
@@ -446,14 +446,14 @@ virQEMUDriverConfigTLSDirResetDefaults(virQEMUDriverConfigPtr cfg)
         STREQ(cfg->defaultTLSx509certdir, SYSCONFDIR "/pki/qemu"))
         return 0;
 
-#define CHECK_RESET_CERT_DIR_DEFAULT(val)                                 \
-    do {                                                                  \
-        if (STREQ(cfg->val ## TLSx509certdir, SYSCONFDIR "/pki/qemu")) {  \
-            VIR_FREE(cfg->val ## TLSx509certdir);                         \
-            if (VIR_STRDUP(cfg->val ## TLSx509certdir,                    \
-                           cfg->defaultTLSx509certdir) < 0)               \
-                return -1;                                                \
-        }                                                                 \
+#define CHECK_RESET_CERT_DIR_DEFAULT(val) \
+    do { \
+        if (STREQ(cfg->val ## TLSx509certdir, SYSCONFDIR "/pki/qemu")) { \
+            VIR_FREE(cfg->val ## TLSx509certdir); \
+            if (VIR_STRDUP(cfg->val ## TLSx509certdir, \
+                           cfg->defaultTLSx509certdir) < 0) \
+                return -1; \
+        } \
     } while (0)
 
     CHECK_RESET_CERT_DIR_DEFAULT(vnc);
@@ -565,30 +565,30 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueString(conf, "vxhs_tls_x509_cert_dir", &cfg->vxhsTLSx509certdir) < 0)
         goto cleanup;
 
-#define GET_CONFIG_TLS_CERTINFO(val)                                        \
-    do {                                                                    \
-        if ((rv = virConfGetValueBool(conf, #val "_tls_x509_verify",        \
-                                      &cfg->val## TLSx509verify)) < 0)      \
-            goto cleanup;                                                   \
-        if (rv == 0)                                                        \
-            cfg->val## TLSx509verify = cfg->defaultTLSx509verify;           \
-        if ((rv = virConfGetValueString(conf, #val "_tls_x509_cert_dir",    \
-                                  &cfg->val## TLSx509certdir)) < 0)         \
-            goto cleanup;                                                   \
-        if (virConfGetValueString(conf,                                     \
-                                  #val "_tls_x509_secret_uuid",             \
-                                  &cfg->val## TLSx509secretUUID) < 0)       \
-            goto cleanup;                                                   \
+#define GET_CONFIG_TLS_CERTINFO(val) \
+    do { \
+        if ((rv = virConfGetValueBool(conf, #val "_tls_x509_verify", \
+                                      &cfg->val## TLSx509verify)) < 0) \
+            goto cleanup; \
+        if (rv == 0) \
+            cfg->val## TLSx509verify = cfg->defaultTLSx509verify; \
+        if ((rv = virConfGetValueString(conf, #val "_tls_x509_cert_dir", \
+                                  &cfg->val## TLSx509certdir)) < 0) \
+            goto cleanup; \
+        if (virConfGetValueString(conf, \
+                                  #val "_tls_x509_secret_uuid", \
+                                  &cfg->val## TLSx509secretUUID) < 0) \
+            goto cleanup; \
         /* Only if a *tls_x509_cert_dir wasn't found (e.g. rv == 0), should \
-         * we copy the defaultTLSx509secretUUID. If this environment needs  \
-         * a passphrase to decode the certificate, then it should provide   \
-         * it's own secretUUID for that. */                                 \
-        if (rv == 0 && !cfg->val## TLSx509secretUUID &&                     \
-            cfg->defaultTLSx509secretUUID) {                                \
-            if (VIR_STRDUP(cfg->val## TLSx509secretUUID,                    \
-                           cfg->defaultTLSx509secretUUID) < 0)              \
-                goto cleanup;                                               \
-        }                                                                   \
+         * we copy the defaultTLSx509secretUUID. If this environment needs \
+         * a passphrase to decode the certificate, then it should provide \
+         * it's own secretUUID for that. */ \
+        if (rv == 0 && !cfg->val## TLSx509secretUUID && \
+            cfg->defaultTLSx509secretUUID) { \
+            if (VIR_STRDUP(cfg->val## TLSx509secretUUID, \
+                           cfg->defaultTLSx509secretUUID) < 0) \
+                goto cleanup; \
+        } \
     } while (0)
 
     if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)

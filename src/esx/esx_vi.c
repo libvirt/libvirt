@@ -41,43 +41,43 @@
 
 VIR_LOG_INIT("esx.esx_vi");
 
-#define ESX_VI__SOAP__RESPONSE_XPATH(_type)                                   \
-    ((char *)"/soapenv:Envelope/soapenv:Body/"                                \
+#define ESX_VI__SOAP__RESPONSE_XPATH(_type) \
+    ((char *)"/soapenv:Envelope/soapenv:Body/" \
                "vim:"_type"Response/vim:returnval")
 
 
 
-#define ESX_VI__TEMPLATE__ALLOC(_type)                                        \
-    int                                                                       \
-    esxVI_##_type##_Alloc(esxVI_##_type **ptrptr)                             \
-    {                                                                         \
-        if (!ptrptr || *ptrptr) {                                             \
+#define ESX_VI__TEMPLATE__ALLOC(_type) \
+    int \
+    esxVI_##_type##_Alloc(esxVI_##_type **ptrptr) \
+    { \
+        if (!ptrptr || *ptrptr) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument")); \
-            return -1;                                                  \
-        }                                                               \
-                                                                        \
-        if (VIR_ALLOC(*ptrptr) < 0)                                     \
-            return -1;                                                  \
-        return 0;                                                       \
+            return -1; \
+        } \
+ \
+        if (VIR_ALLOC(*ptrptr) < 0) \
+            return -1; \
+        return 0; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__FREE(_type, _body)                                  \
-    void                                                                      \
-    esxVI_##_type##_Free(esxVI_##_type **ptrptr)                              \
-    {                                                                         \
-        esxVI_##_type *item ATTRIBUTE_UNUSED;                                 \
-                                                                              \
-        if (!ptrptr || !(*ptrptr)) {                                          \
-            return;                                                           \
-        }                                                                     \
-                                                                              \
-        item = *ptrptr;                                                       \
-                                                                              \
-        _body                                                                 \
-                                                                              \
-        VIR_FREE(*ptrptr);                                                    \
+#define ESX_VI__TEMPLATE__FREE(_type, _body) \
+    void \
+    esxVI_##_type##_Free(esxVI_##_type **ptrptr) \
+    { \
+        esxVI_##_type *item ATTRIBUTE_UNUSED; \
+ \
+        if (!ptrptr || !(*ptrptr)) { \
+            return; \
+        } \
+ \
+        item = *ptrptr; \
+ \
+        _body \
+ \
+        VIR_FREE(*ptrptr); \
     }
 
 
@@ -5154,126 +5154,126 @@ esxVI_LookupStoragePoolNameByScsiLunKey(esxVI_Context *ctx,
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE_IGNORE(_name)          \
-    if (STREQ(dynamicProperty->name, #_name)) {                               \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE_IGNORE(_name) \
+    if (STREQ(dynamicProperty->name, #_name)) { \
+        continue; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE(_type, _name)          \
-    if (STREQ(dynamicProperty->name, #_name)) {                               \
-        if (esxVI_##_type##_CastFromAnyType(dynamicProperty->val,             \
-                                            &(*ptrptr)->_name) < 0) {         \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE(_type, _name) \
+    if (STREQ(dynamicProperty->name, #_name)) { \
+        if (esxVI_##_type##_CastFromAnyType(dynamicProperty->val, \
+                                            &(*ptrptr)->_name) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        continue; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__CAST_LIST_FROM_ANY_TYPE(_type, _name)     \
-    if (STREQ(dynamicProperty->name, #_name)) {                               \
-        if (esxVI_##_type##_CastListFromAnyType(dynamicProperty->val,         \
-                                                &(*ptrptr)->_name) < 0) {     \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__CAST_LIST_FROM_ANY_TYPE(_type, _name) \
+    if (STREQ(dynamicProperty->name, #_name)) { \
+        if (esxVI_##_type##_CastListFromAnyType(dynamicProperty->val, \
+                                                &(*ptrptr)->_name) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        continue; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__PROPERTY__CAST_VALUE_FROM_ANY_TYPE(_type, _name)    \
-    if (STREQ(dynamicProperty->name, #_name)) {                               \
-        if (esxVI_##_type##_CastValueFromAnyType(dynamicProperty->val,        \
-                                                 &(*ptrptr)->_name) < 0) {    \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        continue;                                                             \
+#define ESX_VI__TEMPLATE__PROPERTY__CAST_VALUE_FROM_ANY_TYPE(_type, _name) \
+    if (STREQ(dynamicProperty->name, #_name)) { \
+        if (esxVI_##_type##_CastValueFromAnyType(dynamicProperty->val, \
+                                                 &(*ptrptr)->_name) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        continue; \
     }
 
 
 
-#define ESX_VI__TEMPLATE__LOOKUP(_type, _complete_properties,                 \
-                                 _cast_from_anytype)                          \
-    int                                                                       \
-    esxVI_Lookup##_type(esxVI_Context *ctx, const char* name /* optional */,  \
-                        esxVI_ManagedObjectReference *root,                   \
+#define ESX_VI__TEMPLATE__LOOKUP(_type, _complete_properties, \
+                                 _cast_from_anytype) \
+    int \
+    esxVI_Lookup##_type(esxVI_Context *ctx, const char* name /* optional */, \
+                        esxVI_ManagedObjectReference *root, \
                         esxVI_String *selectedPropertyNameList /* optional */,\
-                        esxVI_##_type **ptrptr, esxVI_Occurrence occurrence)  \
-    {                                                                         \
-        int result = -1;                                                      \
-        const char *completePropertyNameValueList = _complete_properties;     \
-        esxVI_String *propertyNameList = NULL;                                \
-        esxVI_ObjectContent *objectContent = NULL;                            \
-        esxVI_ObjectContent *objectContentList = NULL;                        \
-        esxVI_DynamicProperty *dynamicProperty = NULL;                        \
-                                                                              \
-        if (!ptrptr || *ptrptr) {                                             \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",                      \
-                           _("Invalid argument"));                            \
-            return -1;                                                        \
-        }                                                                     \
-                                                                              \
-        propertyNameList = selectedPropertyNameList;                          \
-                                                                              \
-        if (!propertyNameList &&                                              \
-            esxVI_String_AppendValueListToList                                \
-              (&propertyNameList, completePropertyNameValueList) < 0) {       \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        if (esxVI_LookupManagedObjectHelper(ctx, name, root, #_type,          \
+                        esxVI_##_type **ptrptr, esxVI_Occurrence occurrence) \
+    { \
+        int result = -1; \
+        const char *completePropertyNameValueList = _complete_properties; \
+        esxVI_String *propertyNameList = NULL; \
+        esxVI_ObjectContent *objectContent = NULL; \
+        esxVI_ObjectContent *objectContentList = NULL; \
+        esxVI_DynamicProperty *dynamicProperty = NULL; \
+ \
+        if (!ptrptr || *ptrptr) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
+                           _("Invalid argument")); \
+            return -1; \
+        } \
+ \
+        propertyNameList = selectedPropertyNameList; \
+ \
+        if (!propertyNameList && \
+            esxVI_String_AppendValueListToList \
+              (&propertyNameList, completePropertyNameValueList) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        if (esxVI_LookupManagedObjectHelper(ctx, name, root, #_type, \
                                             propertyNameList, &objectContent, \
-                                            &objectContentList,               \
-                                            occurrence) < 0) {                \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        if (!objectContent) {                                                 \
-            /* not found, exit early */                                       \
-            result = 0;                                                       \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        if (esxVI_##_type##_Alloc(ptrptr) < 0) {                              \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        if (esxVI_ManagedObjectReference_DeepCopy(&(*ptrptr)->_reference,     \
-                                                  objectContent->obj) < 0) {  \
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        for (dynamicProperty = objectContent->propSet;                        \
-             dynamicProperty;                                                 \
-             dynamicProperty = dynamicProperty->_next) {                      \
-            _cast_from_anytype                                                \
-                                                                              \
-            VIR_WARN("Unexpected '%s' property", dynamicProperty->name);      \
-        }                                                                     \
-                                                                              \
+                                            &objectContentList, \
+                                            occurrence) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        if (!objectContent) { \
+            /* not found, exit early */ \
+            result = 0; \
+            goto cleanup; \
+        } \
+ \
+        if (esxVI_##_type##_Alloc(ptrptr) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        if (esxVI_ManagedObjectReference_DeepCopy(&(*ptrptr)->_reference, \
+                                                  objectContent->obj) < 0) { \
+            goto cleanup; \
+        } \
+ \
+        for (dynamicProperty = objectContent->propSet; \
+             dynamicProperty; \
+             dynamicProperty = dynamicProperty->_next) { \
+            _cast_from_anytype \
+ \
+            VIR_WARN("Unexpected '%s' property", dynamicProperty->name); \
+        } \
+ \
         if (esxVI_##_type##_Validate(*ptrptr, selectedPropertyNameList) < 0) {\
-            goto cleanup;                                                     \
-        }                                                                     \
-                                                                              \
-        result = 0;                                                           \
-                                                                              \
-      cleanup:                                                                \
-        if (result < 0) {                                                     \
-            esxVI_##_type##_Free(ptrptr);                                     \
-        }                                                                     \
-                                                                              \
-        if (propertyNameList != selectedPropertyNameList) {                   \
-            esxVI_String_Free(&propertyNameList);                             \
-        }                                                                     \
-                                                                              \
-        esxVI_ObjectContent_Free(&objectContentList);                         \
-                                                                              \
-        return result;                                                        \
+            goto cleanup; \
+        } \
+ \
+        result = 0; \
+ \
+      cleanup: \
+        if (result < 0) { \
+            esxVI_##_type##_Free(ptrptr); \
+        } \
+ \
+        if (propertyNameList != selectedPropertyNameList) { \
+            esxVI_String_Free(&propertyNameList); \
+        } \
+ \
+        esxVI_ObjectContent_Free(&objectContentList); \
+ \
+        return result; \
     }
 
 

@@ -60,18 +60,18 @@ struct _virCPUx86Feature {
 };
 
 
-#define KVM_FEATURE_DEF(Name, Eax_in, Eax)                          \
-    static virCPUx86CPUID Name ## _cpuid[] = {                      \
-        { .eax_in = Eax_in, .eax = Eax },                           \
+#define KVM_FEATURE_DEF(Name, Eax_in, Eax) \
+    static virCPUx86CPUID Name ## _cpuid[] = { \
+        { .eax_in = Eax_in, .eax = Eax }, \
     }
 
-#define KVM_FEATURE(Name)                                           \
-    {                                                               \
-        .name = (char *) Name,                                      \
-        .data = {                                                   \
-            .len = ARRAY_CARDINALITY(Name ## _cpuid),               \
-            .data = Name ## _cpuid                                  \
-        }                                                           \
+#define KVM_FEATURE(Name) \
+    { \
+        .name = (char *) Name, \
+        .data = { \
+            .len = ARRAY_CARDINALITY(Name ## _cpuid), \
+            .data = Name ## _cpuid \
+        } \
     }
 
 KVM_FEATURE_DEF(VIR_CPU_x86_KVM_CLOCKSOURCE,
@@ -1497,21 +1497,21 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
  *
  * This macro generates the error string outputs it into logs.
  */
-#define virX86CpuIncompatible(MSG, CPU_DEF)                             \
-        do {                                                            \
-            char *flagsStr = NULL;                                      \
-            if (!(flagsStr = x86FeatureNames(map, ", ", (CPU_DEF)))) {  \
-                virReportOOMError();                                    \
-                goto error;                                             \
-            }                                                           \
-            if (message &&                                              \
+#define virX86CpuIncompatible(MSG, CPU_DEF) \
+        do { \
+            char *flagsStr = NULL; \
+            if (!(flagsStr = x86FeatureNames(map, ", ", (CPU_DEF)))) { \
+                virReportOOMError(); \
+                goto error; \
+            } \
+            if (message && \
                 virAsprintf(message, "%s: %s", _(MSG), flagsStr) < 0) { \
-                VIR_FREE(flagsStr);                                     \
-                goto error;                                             \
-            }                                                           \
-            VIR_DEBUG("%s: %s", MSG, flagsStr);                         \
-            VIR_FREE(flagsStr);                                         \
-            ret = VIR_CPU_COMPARE_INCOMPATIBLE;                         \
+                VIR_FREE(flagsStr); \
+                goto error; \
+            } \
+            VIR_DEBUG("%s: %s", MSG, flagsStr); \
+            VIR_FREE(flagsStr); \
+            ret = VIR_CPU_COMPARE_INCOMPATIBLE; \
         } while (0)
 
 

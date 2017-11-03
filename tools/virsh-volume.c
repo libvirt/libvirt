@@ -43,24 +43,24 @@
 #include "virxml.h"
 #include "virstring.h"
 
-#define VIRSH_COMMON_OPT_POOL_FULL                            \
-    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"))            \
+#define VIRSH_COMMON_OPT_POOL_FULL \
+    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid")) \
 
-#define VIRSH_COMMON_OPT_POOL_NAME                            \
-    VIRSH_COMMON_OPT_POOL(N_("pool name"))                    \
+#define VIRSH_COMMON_OPT_POOL_NAME \
+    VIRSH_COMMON_OPT_POOL(N_("pool name")) \
 
-#define VIRSH_COMMON_OPT_POOL_OPTIONAL                        \
-    {.name = "pool",                                          \
-     .type = VSH_OT_STRING,                                   \
-     .help = N_("pool name or uuid")                          \
-    }                                                         \
+#define VIRSH_COMMON_OPT_POOL_OPTIONAL \
+    {.name = "pool", \
+     .type = VSH_OT_STRING, \
+     .help = N_("pool name or uuid") \
+    } \
 
-#define VIRSH_COMMON_OPT_VOLUME_VOL                           \
-    {.name = "vol",                                           \
-     .type = VSH_OT_DATA,                                     \
-     .flags = VSH_OFLAG_REQ,                                  \
-     .help = N_("vol name, key or path")                      \
-    }                                                         \
+#define VIRSH_COMMON_OPT_VOLUME_VOL \
+    {.name = "vol", \
+     .type = VSH_OT_DATA, \
+     .flags = VSH_OFLAG_REQ, \
+     .help = N_("vol name, key or path") \
+    } \
 
 virStorageVolPtr
 virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,

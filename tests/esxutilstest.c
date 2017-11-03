@@ -247,12 +247,12 @@ mymain(void)
 
     virTestQuiesceLibvirtErrors(true);
 
-# define DO_TEST(_name)                                                       \
-        do {                                                                  \
-            if (virTestRun("VMware "#_name, test##_name,                      \
-                           NULL) < 0) {                                       \
-                result = -1;                                                  \
-            }                                                                 \
+# define DO_TEST(_name) \
+        do { \
+            if (virTestRun("VMware "#_name, test##_name, \
+                           NULL) < 0) { \
+                result = -1; \
+            } \
         } while (0)
 
     DO_TEST(ParseDatastorePath);

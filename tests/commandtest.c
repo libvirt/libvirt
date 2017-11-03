@@ -1260,9 +1260,9 @@ mymain(void)
 
     environ = (char **)newenv;
 
-# define DO_TEST(NAME)                                                \
-    if (virTestRun("Command Exec " #NAME " test",                     \
-                   NAME, NULL) < 0)                                   \
+# define DO_TEST(NAME) \
+    if (virTestRun("Command Exec " #NAME " test", \
+                   NAME, NULL) < 0) \
         ret = -1
 
     DO_TEST(test0);

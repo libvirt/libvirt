@@ -118,20 +118,20 @@ struct _qemuMonitor {
  * the function if not. The macro also adds a debug statement regarding the
  * monitor.
  */
-#define QEMU_CHECK_MONITOR_FULL(mon, force_json, exit)                         \
-    do {                                                                       \
-        if (!mon) {                                                            \
-            virReportError(VIR_ERR_INVALID_ARG, "%s",                          \
-                           _("monitor must not be NULL"));                     \
-            exit;                                                              \
-        }                                                                      \
-        VIR_DEBUG("mon:%p vm:%p json:%d fd:%d",                                \
-                  mon, mon->vm, mon->json, mon->fd);                           \
-        if (force_json && !mon->json) {                                        \
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",                \
-                           _("JSON monitor is required"));                     \
-            exit;                                                              \
-        }                                                                      \
+#define QEMU_CHECK_MONITOR_FULL(mon, force_json, exit) \
+    do { \
+        if (!mon) { \
+            virReportError(VIR_ERR_INVALID_ARG, "%s", \
+                           _("monitor must not be NULL")); \
+            exit; \
+        } \
+        VIR_DEBUG("mon:%p vm:%p json:%d fd:%d", \
+                  mon, mon->vm, mon->json, mon->fd); \
+        if (force_json && !mon->json) { \
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s", \
+                           _("JSON monitor is required")); \
+            exit; \
+        } \
     } while (0)
 
 /* Check monitor and return NULL on error */
@@ -1289,15 +1289,15 @@ qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
 
 
 /* Ensure proper locking around callbacks.  */
-#define QEMU_MONITOR_CALLBACK(mon, ret, callback, ...)          \
-    do {                                                        \
-        virObjectRef(mon);                                      \
-        virObjectUnlock(mon);                                   \
-        if ((mon)->cb && (mon)->cb->callback)                   \
-            (ret) = (mon)->cb->callback(mon, __VA_ARGS__,       \
+#define QEMU_MONITOR_CALLBACK(mon, ret, callback, ...) \
+    do { \
+        virObjectRef(mon); \
+        virObjectUnlock(mon); \
+        if ((mon)->cb && (mon)->cb->callback) \
+            (ret) = (mon)->cb->callback(mon, __VA_ARGS__, \
                                         (mon)->callbackOpaque); \
-        virObjectLock(mon);                                     \
-        virObjectUnref(mon);                                    \
+        virObjectLock(mon); \
+        virObjectUnref(mon); \
     } while (0)
 
 

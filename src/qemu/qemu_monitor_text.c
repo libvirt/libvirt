@@ -932,16 +932,16 @@ qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
             *value = '\0';
             value++;
 
-#define QEMU_MONITOR_TEXT_READ_BLOCK_STAT(NAME, VAR)                           \
-            if (STREQ(key, NAME)) {                                            \
-                nstats++;                                                      \
-                if (virStrToLong_ll(value, NULL, 10, &VAR) < 0) {              \
-                    virReportError(VIR_ERR_INTERNAL_ERROR,                     \
-                                   _("'info blockstats' contains malformed "   \
+#define QEMU_MONITOR_TEXT_READ_BLOCK_STAT(NAME, VAR) \
+            if (STREQ(key, NAME)) { \
+                nstats++; \
+                if (virStrToLong_ll(value, NULL, 10, &VAR) < 0) { \
+                    virReportError(VIR_ERR_INTERNAL_ERROR, \
+                                   _("'info blockstats' contains malformed " \
                                      "parameter '%s' value '%s'"), NAME, value);\
-                    goto cleanup;                                              \
-                }                                                              \
-                continue;                                                      \
+                    goto cleanup; \
+                } \
+                continue; \
             }
 
             QEMU_MONITOR_TEXT_READ_BLOCK_STAT("rd_bytes", stats->rd_bytes);

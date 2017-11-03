@@ -967,8 +967,8 @@ virCommandNewVAList(const char *binary, va_list list)
 }
 
 
-#define VIR_COMMAND_MAYBE_CLOSE_FD(fd, flags)       \
-    if ((fd > STDERR_FILENO) &&                     \
+#define VIR_COMMAND_MAYBE_CLOSE_FD(fd, flags) \
+    if ((fd > STDERR_FILENO) && \
         (flags & VIR_COMMAND_PASS_FD_CLOSE_PARENT)) \
         VIR_FORCE_CLOSE(fd)
 

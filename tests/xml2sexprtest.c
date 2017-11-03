@@ -86,13 +86,13 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST(in, out, name)                                         \
-    do {                                                               \
-        struct testInfo info = { in, out, name };                      \
-        virResetLastError();                                           \
-        if (virTestRun("Xen XML-2-SEXPR " in " -> " out,               \
-                       testCompareHelper, &info) < 0)                  \
-            ret = -1;                                                  \
+#define DO_TEST(in, out, name) \
+    do { \
+        struct testInfo info = { in, out, name }; \
+        virResetLastError(); \
+        if (virTestRun("Xen XML-2-SEXPR " in " -> " out, \
+                       testCompareHelper, &info) < 0) \
+            ret = -1; \
     } while (0)
 
     if (!(caps = testXenCapsInit()))

@@ -86,7 +86,7 @@
  * When __GNUC_PREREQ is not defined, gnulib defines it to 0, which breaks things.
  */
 #ifndef __GNUC_PREREQ
-# define __GNUC_PREREQ(maj, min)                                        \
+# define __GNUC_PREREQ(maj, min) \
     ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
 #endif
 

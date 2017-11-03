@@ -593,8 +593,8 @@ xenUnifiedConnectClose(virConnectPtr conn)
 }
 
 
-#define HV_VERSION ((DOM0_INTERFACE_VERSION >> 24) * 1000000 +         \
-                    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +   \
+#define HV_VERSION ((DOM0_INTERFACE_VERSION >> 24) * 1000000 + \
+                    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 + \
                     (DOM0_INTERFACE_VERSION & 0xFFFF))
 
 unsigned long xenUnifiedVersion(void)
