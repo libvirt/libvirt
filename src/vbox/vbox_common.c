@@ -965,7 +965,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
     virDomainDiskDefPtr disk = NULL;
     PRUnichar *storageCtlName = NULL;
     IMedium *medium = NULL;
-    PRUnichar *mediumFileUtf16 = NULL, *mediumEmpty = NULL;
+    PRUnichar *mediumFileUtf16 = NULL;
     PRUint32 devicePort, deviceSlot, deviceType, accessMode;
     vboxIID mediumUUID;
 
@@ -1056,13 +1056,10 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
                                                deviceType, accessMode, &medium);
 
             if (!medium) {
-                VBOX_UTF8_TO_UTF16("", &mediumEmpty);
-
                 rc = gVBoxAPI.UIVirtualBox.OpenMedium(data->vboxObj,
                                                       mediumFileUtf16,
                                                       deviceType, accessMode,
                                                       &medium);
-                VBOX_UTF16_FREE(mediumEmpty);
             }
 
             if (!medium) {
