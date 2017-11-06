@@ -1297,6 +1297,11 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
+    if (!(dmn = virNetDaemonNew())) {
+        ret = VIR_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
+
     if (!(srv = virNetServerNew("libvirtd", 1,
                                 config->min_workers,
                                 config->max_workers,
@@ -1314,8 +1319,7 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    if (!(dmn = virNetDaemonNew()) ||
-        virNetDaemonAddServer(dmn, srv) < 0) {
+    if (virNetDaemonAddServer(dmn, srv) < 0) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;
     }
