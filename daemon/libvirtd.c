@@ -1503,15 +1503,33 @@ int main(int argc, char **argv) {
                 0, "shutdown", NULL, NULL);
 
  cleanup:
-    virNetlinkEventServiceStopAll();
-    virObjectUnref(remoteProgram);
-    virObjectUnref(lxcProgram);
-    virObjectUnref(qemuProgram);
-    virObjectUnref(adminProgram);
+    /* Keep cleanup order in inverse order of startup */
     virNetDaemonClose(dmn);
-    virObjectUnref(srv);
+
+    virNetlinkEventServiceStopAll();
+
+    if (driversInitialized) {
+        /* NB: Possible issue with timing window between driversInitialized
+         * setting if virNetlinkEventServerStart fails */
+        driversInitialized = false;
+        virStateCleanup();
+    }
+
+    virObjectUnref(adminProgram);
     virObjectUnref(srvAdm);
+    virObjectUnref(qemuProgram);
+    virObjectUnref(lxcProgram);
+    virObjectUnref(remoteProgram);
+    virObjectUnref(srv);
+    virObjectUnref(dmn);
+
     virNetlinkShutdown();
+
+    if (pid_file_fd != -1)
+        virPidFileReleasePath(pid_file, pid_file_fd);
+
+    VIR_FREE(run_dir);
+
     if (statuswrite != -1) {
         if (ret != 0) {
             /* Tell parent of daemon what failed */
@@ -1522,25 +1540,15 @@ int main(int argc, char **argv) {
         }
         VIR_FORCE_CLOSE(statuswrite);
     }
-    if (pid_file_fd != -1)
-        virPidFileReleasePath(pid_file, pid_file_fd);
 
     VIR_FREE(sock_file);
     VIR_FREE(sock_file_ro);
     VIR_FREE(sock_file_adm);
+
     VIR_FREE(pid_file);
+
     VIR_FREE(remote_config_file);
-    VIR_FREE(run_dir);
-
     daemonConfigFree(config);
-
-    if (driversInitialized) {
-        driversInitialized = false;
-        virStateCleanup();
-    }
-    /* Now that the hypervisor shutdown inhibition functions that use
-     * 'dmn' as a parameter are done, we can finally unref 'dmn' */
-    virObjectUnref(dmn);
 
     return ret;
 }
