@@ -299,7 +299,7 @@ int vshBlockJobOptionBandwidth(vshControl *ctl,
                                unsigned long *bandwidth);
 bool vshCommandOptBool(const vshCmd *cmd, const char *name);
 bool vshCommandRun(vshControl *ctl, const vshCmd *cmd);
-bool vshCommandStringParse(vshControl *ctl, char *cmdstr);
+bool vshCommandStringParse(vshControl *ctl, char *cmdstr, vshCmd **partial);
 
 const vshCmdOpt *vshCommandOptArgv(vshControl *ctl, const vshCmd *cmd,
                                    const vshCmdOpt *opt);
