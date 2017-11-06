@@ -1771,7 +1771,7 @@
   &lt;pvspinlock state='on'/&gt;
   &lt;gic version='2'/&gt;
   &lt;ioapic driver='qemu'/&gt;
-
+  &lt;hpt resizing='required'/&gt;
 &lt;/features&gt;
 ...</pre>
 
@@ -1939,6 +1939,17 @@
           and <code>qemu</code> which puts I/O APIC in userspace
           which is also known as a split I/O APIC mode.
           <span class="since">Since 3.4.0</span> (QEMU/KVM only)
+      </dd>
+      <dt><code>hpt</code></dt>
+      <dd>Configure the HPT (Hash Page Table) of a pSeries guest. Possible
+          values for the <code>resizing</code> attribute are
+          <code>enabled</code>, which causes HPT resizing to be enabled if
+          both the guest and the host support it; <code>disabled</code>, which
+          causes HPT resizing to be disabled regardless of guest and host
+          support; and <code>required</code>, which prevents the guest from
+          starting unless both the guest and the host support HPT resizing. If
+          the attribute is not defined, the hypervisor default will be used.
+          <span class="since">Since 3.10.0</span> (QEMU/KVM only)
       </dd>
     </dl>
 
