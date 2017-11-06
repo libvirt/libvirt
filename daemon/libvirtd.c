@@ -1258,6 +1258,12 @@ int main(int argc, char **argv) {
         }
     }
 
+    /* Try to claim the pidfile, exiting if we can't */
+    if ((pid_file_fd = virPidFileAcquirePath(pid_file, false, getpid())) < 0) {
+        ret = VIR_DAEMON_ERR_PIDFILE;
+        goto cleanup;
+    }
+
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (privileged) {
         if (VIR_STRDUP_QUIET(run_dir, LOCALSTATEDIR "/run/libvirt") < 0) {
@@ -1285,12 +1291,6 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
     umask(old_umask);
-
-    /* Try to claim the pidfile, exiting if we can't */
-    if ((pid_file_fd = virPidFileAcquirePath(pid_file, false, getpid())) < 0) {
-        ret = VIR_DAEMON_ERR_PIDFILE;
-        goto cleanup;
-    }
 
     if (virNetlinkStartup() < 0) {
         ret = VIR_DAEMON_ERR_INIT;
