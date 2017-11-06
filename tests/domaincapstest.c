@@ -460,7 +460,7 @@ mymain(void)
 
     DO_TEST_QEMU("2.6.0", "caps_2.6.0",
                  "/usr/bin/qemu-system-ppc64", NULL,
-                 "ppc64le", VIR_DOMAIN_VIRT_KVM);
+                 "ppc64", VIR_DOMAIN_VIRT_KVM);
 
     DO_TEST_QEMU("2.8.0", "caps_2.8.0",
                  "/usr/bin/qemu-system-x86_64", NULL,

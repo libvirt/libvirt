@@ -2,7 +2,7 @@
   <path>/usr/bin/qemu-system-ppc64</path>
   <domain>kvm</domain>
   <machine>pseries-2.6</machine>
-  <arch>ppc64le</arch>
+  <arch>ppc64</arch>
   <vcpu max='255'/>
   <os supported='yes'>
     <loader supported='yes'>
