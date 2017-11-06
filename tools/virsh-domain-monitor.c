@@ -659,6 +659,7 @@ static const vshCmdOptDef opts_domif_getlink[] = {
     {.name = "interface",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainInterfaceCompleter,
      .help = N_("interface device (MAC Address)")
     },
     {.name = "persistent",
@@ -995,6 +996,7 @@ static const vshCmdOptDef opts_domifstat[] = {
     {.name = "interface",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainInterfaceCompleter,
      .help = N_("interface device specified by name or MAC Address")
     },
     {.name = NULL}
@@ -2149,6 +2151,7 @@ static const vshCmdOptDef opts_domifaddr[] = {
     {.name = "interface",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_NONE,
+     .completer = virshDomainInterfaceCompleter,
      .help = N_("network interface name")},
     {.name = "full",
      .type = VSH_OT_BOOL,

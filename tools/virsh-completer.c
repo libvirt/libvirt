@@ -28,6 +28,7 @@
 #include "internal.h"
 #include "viralloc.h"
 #include "virstring.h"
+#include "virxml.h"
 
 
 char **
@@ -85,5 +86,64 @@ virshDomainNameCompleter(vshControl *ctl,
     for (i = 0; i < ndomains; i++)
         VIR_FREE(ret[i]);
     VIR_FREE(ret);
+    return NULL;
+}
+
+
+char **
+virshDomainInterfaceCompleter(vshControl *ctl,
+                              const vshCmd *cmd,
+                              unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    xmlDocPtr xmldoc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    int ninterfaces;
+    xmlNodePtr *interfaces = NULL;
+    size_t i;
+    unsigned int domainXMLFlags = 0;
+    char **ret = NULL;
+
+    virCheckFlags(VIRSH_DOMAIN_INTERFACE_COMPLETER_MAC, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (vshCommandOptBool(cmd, "config"))
+        domainXMLFlags = VIR_DOMAIN_XML_INACTIVE;
+
+    if (virshDomainGetXML(ctl, cmd, domainXMLFlags, &xmldoc, &ctxt) < 0)
+        goto error;
+
+    ninterfaces = virXPathNodeSet("./devices/interface", ctxt, &interfaces);
+    if (ninterfaces < 0)
+        goto error;
+
+    if (VIR_ALLOC_N(ret, ninterfaces + 1) < 0)
+        goto error;
+
+    for (i = 0; i < ninterfaces; i++) {
+        ctxt->node = interfaces[i];
+
+        if (!(flags & VIRSH_DOMAIN_INTERFACE_COMPLETER_MAC) &&
+            (ret[i] = virXPathString("string(./target/@dev)", ctxt)))
+            continue;
+
+        /* In case we are dealing with inactive domain XML there's no
+         * <target dev=''/>. Offer MAC addresses then. */
+        if (!(ret[i] = virXPathString("string(./mac/@address)", ctxt)))
+            goto error;
+    }
+
+    VIR_FREE(interfaces);
+    xmlFreeDoc(xmldoc);
+    xmlXPathFreeContext(ctxt);
+    return ret;
+
+ error:
+    VIR_FREE(interfaces);
+    xmlFreeDoc(xmldoc);
+    xmlXPathFreeContext(ctxt);
+    virStringListFree(ret);
     return NULL;
 }

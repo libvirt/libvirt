@@ -30,4 +30,12 @@ char ** virshDomainNameCompleter(vshControl *ctl,
                                  const vshCmd *cmd,
                                  unsigned int flags);
 
+enum {
+    VIRSH_DOMAIN_INTERFACE_COMPLETER_MAC = 1 << 0, /* Return just MACs */
+};
+
+char ** virshDomainInterfaceCompleter(vshControl *ctl,
+                                      const vshCmd *cmd,
+                                      unsigned int flags);
+
 #endif
