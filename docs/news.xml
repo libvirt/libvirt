@@ -55,6 +55,16 @@
           including specifying distances between NUMA cells.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add the ability to configure HPT resizing for pSeries guests
+        </summary>
+        <description>
+          The user can now decide whether HPT (Hash Page Table) resizing
+          should be enabled, disabled or required instead of leaving it up to
+          hypervisor defaults and negotiation between the guest and the host.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
