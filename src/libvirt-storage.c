@@ -1632,7 +1632,8 @@ virStorageVolDownload(virStorageVolPtr vol,
  * another active stream is writing to the storage volume.
  *
  * When the data stream is closed whether the upload is successful
- * or not the target storage pool will be refreshed to reflect pool
+ * or not an attempt will be made to refresh the target storage pool
+ * if an asynchronous build is not running in order to reflect pool
  * and volume changes as a result of the upload. Depending on
  * the target volume storage backend and the source stream type
  * for a successful upload, the target volume may take on the

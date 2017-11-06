@@ -2267,6 +2267,13 @@ virStorageVolPoolRefreshThread(void *opaque)
         goto cleanup;
     def = virStoragePoolObjGetDef(obj);
 
+    /* If some thread is building a new volume in the pool, then we cannot
+     * clear out all vols and refresh the pool. So we'll just pass. */
+    if (virStoragePoolObjGetAsyncjobs(obj) > 0) {
+        VIR_DEBUG("Asyncjob in process, cannot refresh storage pool");
+        goto cleanup;
+    }
+
     if (!(backend = virStorageBackendForType(def->type)))
         goto cleanup;
 
