@@ -148,7 +148,9 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "vmport",
               "gic",
               "smm",
-              "ioapic")
+              "ioapic",
+              "hpt",
+);
 
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy, VIR_DOMAIN_CAPABILITIES_POLICY_LAST,
               "default",
@@ -881,6 +883,13 @@ VIR_ENUM_IMPL(virDomainIOAPIC,
               VIR_DOMAIN_IOAPIC_LAST,
               "qemu",
               "kvm")
+
+VIR_ENUM_IMPL(virDomainHPTResizing,
+              VIR_DOMAIN_HPT_RESIZING_LAST,
+              "enabled",
+              "disabled",
+              "required",
+);
 
 /* Internal mapping: subset of block job types that can be present in
  * <mirror> XML (remaining types are not two-phase). */
@@ -18775,6 +18784,22 @@ virDomainDefParseXML(xmlDocPtr xml,
             }
             break;
 
+        case VIR_DOMAIN_FEATURE_HPT:
+            tmp = virXMLPropString(nodes[i], "resizing");
+            if (tmp) {
+                int value = virDomainHPTResizingTypeFromString(tmp);
+                if (value < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("Unknown HPT resizing setting: %s"),
+                                   tmp);
+                    goto error;
+                }
+                def->hpt_resizing = value;
+                def->features[val] = VIR_TRISTATE_SWITCH_ON;
+                VIR_FREE(tmp);
+            }
+            break;
+
         /* coverity[dead_error_begin] */
         case VIR_DOMAIN_FEATURE_LAST:
             break;
@@ -20963,6 +20988,18 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
                        virDomainIOAPICTypeToString(src->ioapic),
                        virDomainIOAPICTypeToString(dst->ioapic));
         return false;
+    }
+
+    /* HPT resizing */
+    if (src->features[VIR_DOMAIN_FEATURE_HPT] == VIR_TRISTATE_SWITCH_ON) {
+        if (src->hpt_resizing != dst->hpt_resizing) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("HPT resizing configuration differs: "
+                             "source: '%s', destination: '%s'"),
+                           virDomainHPTResizingTypeToString(src->hpt_resizing),
+                           virDomainHPTResizingTypeToString(dst->hpt_resizing));
+            return false;
+        }
     }
 
     return true;
@@ -26211,6 +26248,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
                     virBufferAsprintf(buf, "<ioapic driver='%s'/>\n",
                                       virDomainIOAPICTypeToString(def->ioapic));
+                }
+                break;
+
+            case VIR_DOMAIN_FEATURE_HPT:
+                if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
+                    virBufferAsprintf(buf, "<hpt resizing='%s'/>\n",
+                                      virDomainHPTResizingTypeToString(def->hpt_resizing));
                 }
                 break;
 

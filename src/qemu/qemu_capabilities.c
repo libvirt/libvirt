@@ -443,6 +443,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               /* 270 */
               "vxhs",
               "virtio-blk.num-queues",
+              "machine.pseries.resize-hpt",
     );
 
 
@@ -4775,6 +4776,13 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     /* no way to query if -machine kernel_irqchip supports split */
     if (qemuCaps->version >= 2006000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT);
+
+    /* HPT resizing is supported since QEMU 2.10 on ppc64; unfortunately
+     * there's no sane way to probe for it */
+    if (qemuCaps->version >= 2010000 &&
+        ARCH_IS_PPC64(qemuCaps->arch)) {
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
+    }
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         goto cleanup;

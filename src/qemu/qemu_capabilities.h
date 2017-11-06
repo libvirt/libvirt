@@ -429,6 +429,7 @@ typedef enum {
     /* 270 */
     QEMU_CAPS_VXHS, /* -drive file.driver=vxhs via query-qmp-schema */
     QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES, /* virtio-blk-*.num-queues */
+    QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT, /* -machine pseries,resize-hpt */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

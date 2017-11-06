@@ -1723,6 +1723,7 @@ typedef enum {
     VIR_DOMAIN_FEATURE_GIC,
     VIR_DOMAIN_FEATURE_SMM,
     VIR_DOMAIN_FEATURE_IOAPIC,
+    VIR_DOMAIN_FEATURE_HPT,
 
     VIR_DOMAIN_FEATURE_LAST
 } virDomainFeature;
@@ -1850,6 +1851,16 @@ typedef enum {
 } virDomainIOAPIC;
 
 VIR_ENUM_DECL(virDomainIOAPIC);
+
+typedef enum {
+    VIR_DOMAIN_HPT_RESIZING_ENABLED = 0,
+    VIR_DOMAIN_HPT_RESIZING_DISABLED,
+    VIR_DOMAIN_HPT_RESIZING_REQUIRED,
+
+    VIR_DOMAIN_HPT_RESIZING_LAST
+} virDomainHPTResizing;
+
+VIR_ENUM_DECL(virDomainHPTResizing);
 
 /* Operating system configuration data & machine / arch */
 typedef struct _virDomainOSEnv virDomainOSEnv;
@@ -2323,6 +2334,7 @@ struct _virDomainDef {
     virGICVersion gic_version;
     char *hyperv_vendor_id;
     virDomainIOAPIC ioapic;
+    virDomainHPTResizing hpt_resizing;
 
     /* These options are of type virTristateSwitch: ON = keep, OFF = drop */
     int caps_features[VIR_DOMAIN_CAPS_FEATURE_LAST];

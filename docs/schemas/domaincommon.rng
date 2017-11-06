@@ -4736,6 +4736,9 @@
           <optional>
             <ref name="ioapic"/>
           </optional>
+          <optional>
+            <ref name="hpt"/>
+          </optional>
         </interleave>
       </element>
     </optional>
@@ -4921,6 +4924,18 @@
         </choice>
       </attribute>
       <empty/>
+    </element>
+  </define>
+
+  <define name="hpt">
+    <element name="hpt">
+      <attribute name="resizing">
+        <choice>
+          <value>enabled</value>
+          <value>disabled</value>
+          <value>required</value>
+        </choice>
+      </attribute>
     </element>
   </define>
 
