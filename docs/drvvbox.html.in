@@ -5,7 +5,8 @@
         <h1>VirtualBox hypervisor driver</h1>
         <p>
         The libvirt VirtualBox driver can manage any VirtualBox version
-        from version 2.2 onwards.
+        from version 4.0 onwards
+        (<span class="since">since libvirt 3.0.0</span>).
     </p>
 
     <h2><a id="project">Project Links</a></h2>
@@ -68,6 +69,14 @@ vbox+ssh://user@example.com/session  (remote access, SSH tunnelled)
   &lt;/features&gt;
 
   &lt;devices&gt;
+    &lt;!--Set IDE controller model to PIIX4 (default PIIX3)--&gt;
+    &lt;controller type='ide' model='piix4'/&gt;
+
+    &lt;controller type='scsi' index='0'/&gt;
+
+    &lt;!--VirtualBox SAS Controller--&gt;
+    &lt;controller type='scsi' index='1' model='lsisas1068'/&gt;
+
     &lt;disk type='file' device='cdrom'&gt;
       &lt;source file='/home/user/Downloads/slax-6.0.9.iso'/&gt;
       &lt;target dev='hdc'/&gt;
@@ -77,6 +86,19 @@ vbox+ssh://user@example.com/session  (remote access, SSH tunnelled)
     &lt;disk type='file' device='disk'&gt;
       &lt;source file='/home/user/tmp/vbox.vdi'/&gt;
       &lt;target dev='hdd'/&gt;
+    &lt;/disk&gt;
+
+    &lt;!--Attach to the SCSI controller (index=0, default)--&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;source file='/home/user/tmp/vbox2.vdi'/&gt;
+      &lt;target dev='sda' bus='scsi'/&gt;
+    &lt;/disk&gt;
+
+    &lt;!--Attach to the SAS controller (index=1)--&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;source file='/home/user/tmp/vbox3.vdi'/&gt;
+      &lt;target dev='sda' bus='scsi'/&gt;
+      &lt;address type='drive' controller='1' bus='0' target='0' unit='0'/&gt;
     &lt;/disk&gt;
 
     &lt;disk type='file' device='floppy'&gt;
@@ -101,6 +123,11 @@ vbox+ssh://user@example.com/session  (remote access, SSH tunnelled)
       &lt;mac address='56:16:3e:5d:c7:9e'/&gt;
       &lt;model type='82540eM'/&gt;
     &lt;/interface&gt;
+
+    &lt;graphics type='desktop'/&gt;
+
+    &lt;!--Activate the VRDE server with a port in 3389-3689 range--&gt;
+    &lt;graphics type='rdp' autoport='yes' multiUser='yes'/&gt;
 
     &lt;sound model='sb16'/&gt;
 
