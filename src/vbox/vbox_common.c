@@ -3336,24 +3336,59 @@ vboxDumpDisks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
             goto cleanup;
         }
 
-        if (storageBus == StorageBus_IDE) {
+        disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+        disk->info.addr.drive.bus = 0;
+        disk->info.addr.drive.unit = devicePort;
+
+        switch ((enum StorageBus) storageBus) {
+        case StorageBus_IDE:
             disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
-        } else if (storageBus == StorageBus_SATA) {
-            sdCount++;
+            disk->info.addr.drive.bus = devicePort; /* primary, secondary */
+            disk->info.addr.drive.unit = deviceSlot; /* master, slave */
+
+            break;
+        case StorageBus_SATA:
             disk->bus = VIR_DOMAIN_DISK_BUS_SATA;
-        } else if (storageBus == StorageBus_SCSI) {
             sdCount++;
+
+            break;
+        case StorageBus_SCSI:
             disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
-        } else if (storageBus == StorageBus_Floppy) {
+            sdCount++;
+
+            break;
+        case StorageBus_Floppy:
             disk->bus = VIR_DOMAIN_DISK_BUS_FDC;
+
+            break;
+        case StorageBus_SAS:
+        case StorageBus_Null:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unsupported null storage bus"));
+            goto cleanup;
         }
 
-        if (deviceType == DeviceType_HardDisk)
+        switch ((enum DeviceType) deviceType) {
+        case DeviceType_HardDisk:
             disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;
-        else if (deviceType == DeviceType_Floppy)
+
+            break;
+        case DeviceType_Floppy:
             disk->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
-        else if (deviceType == DeviceType_DVD)
+
+            break;
+        case DeviceType_DVD:
             disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
+
+            break;
+        case DeviceType_Network:
+        case DeviceType_USB:
+        case DeviceType_SharedFolder:
+        case DeviceType_Null:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unsupported vbox device type: %d"), deviceType);
+            goto cleanup;
+        }
 
         if (readOnly == PR_TRUE)
             disk->src->readonly = true;
