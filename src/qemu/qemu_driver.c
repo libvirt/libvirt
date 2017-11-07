@@ -631,6 +631,7 @@ qemuStateInitialize(bool privileged,
     uid_t run_uid = -1;
     gid_t run_gid = -1;
     char *hugepagePath = NULL;
+    char *memoryBackingPath = NULL;
     size_t i;
 
     if (VIR_ALLOC(qemu_driver) < 0)
@@ -889,6 +890,21 @@ qemuStateInitialize(bool privileged,
         VIR_FREE(hugepagePath);
     }
 
+    if (qemuGetMemoryBackingBasePath(cfg, &memoryBackingPath) < 0)
+        goto error;
+
+    if (virFileMakePath(memoryBackingPath) < 0) {
+        virReportSystemError(errno,
+                             _("unable to create memory backing path %s"),
+                             memoryBackingPath);
+        goto error;
+    }
+
+    if (privileged &&
+        virFileUpdatePerm(memoryBackingPath,
+                          0, S_IXGRP | S_IXOTH) < 0)
+        goto error;
+
     if (!(qemu_driver->closeCallbacks = virCloseCallbacksNew()))
         goto error;
 
@@ -946,6 +962,7 @@ qemuStateInitialize(bool privileged,
     virObjectUnref(conn);
     VIR_FREE(driverConf);
     VIR_FREE(hugepagePath);
+    VIR_FREE(memoryBackingPath);
     qemuStateCleanup();
     return -1;
 }

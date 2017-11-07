@@ -3324,6 +3324,36 @@ qemuProcessNeedHugepagesPath(virDomainDefPtr def,
 }
 
 
+static bool
+qemuProcessNeedMemoryBackingPath(virDomainDefPtr def,
+                                 virDomainMemoryDefPtr mem)
+{
+    size_t i;
+    size_t numaNodes;
+
+    if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE ||
+        def->mem.access != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
+        return true;
+
+    numaNodes = virDomainNumaGetNodeCount(def->numa);
+    for (i = 0; i < numaNodes; i++) {
+        if (virDomainNumaGetNodeMemoryAccessMode(def->numa, i)
+            != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
+            return true;
+    }
+
+    if (mem &&
+        mem->model == VIR_DOMAIN_MEMORY_MODEL_DIMM &&
+        (mem->access != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT ||
+         (mem->targetNode >= 0 &&
+          virDomainNumaGetNodeMemoryAccessMode(def->numa, mem->targetNode)
+          != VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)))
+        return true;
+
+    return false;
+}
+
+
 static int
 qemuProcessBuildDestroyMemoryPathsImpl(virQEMUDriverPtr driver,
                                        virDomainDefPtr def,
@@ -3363,33 +3393,46 @@ qemuProcessBuildDestroyMemoryPaths(virQEMUDriverPtr driver,
                                    bool build)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    char *hugepagePath = NULL;
+    char *path = NULL;
     size_t i;
-    bool shouldBuild = false;
+    bool shouldBuildHP = false;
+    bool shouldBuildMB = false;
     int ret = -1;
 
-    if (build)
-        shouldBuild = qemuProcessNeedHugepagesPath(vm->def, mem);
+    if (build) {
+        shouldBuildHP = qemuProcessNeedHugepagesPath(vm->def, mem);
+        shouldBuildMB = qemuProcessNeedMemoryBackingPath(vm->def, mem);
+    }
 
-    if (!build || shouldBuild) {
+    if (!build || shouldBuildHP) {
         for (i = 0; i < cfg->nhugetlbfs; i++) {
-            VIR_FREE(hugepagePath);
-            hugepagePath = qemuGetDomainHugepagePath(vm->def, &cfg->hugetlbfs[i]);
+            path = qemuGetDomainHugepagePath(vm->def, &cfg->hugetlbfs[i]);
 
-            if (!hugepagePath)
+            if (!path)
                 goto cleanup;
 
             if (qemuProcessBuildDestroyMemoryPathsImpl(driver, vm->def,
-                                                       hugepagePath, build) < 0)
+                                                       path, build) < 0)
                 goto cleanup;
 
-            VIR_FREE(hugepagePath);
+            VIR_FREE(path);
         }
+    }
+
+    if (!build || shouldBuildMB) {
+        if (qemuGetMemoryBackingDomainPath(vm->def, cfg, &path) < 0)
+            goto cleanup;
+
+        if (qemuProcessBuildDestroyMemoryPathsImpl(driver, vm->def,
+                                                   path, build) < 0)
+            goto cleanup;
+
+        VIR_FREE(path);
     }
 
     ret = 0;
  cleanup:
-    VIR_FREE(hugepagePath);
+    VIR_FREE(path);
     virObjectUnref(cfg);
     return ret;
 }

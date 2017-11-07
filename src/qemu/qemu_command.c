@@ -3383,7 +3383,7 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
         } else {
             /* We can have both pagesize and mem source. If that's the case,
              * prefer hugepages as those are more specific. */
-            if (qemuGetMemoryBackingPath(cfg, &memPath) < 0)
+            if (qemuGetMemoryBackingPath(def, cfg, mem->info.alias, &memPath) < 0)
                 goto cleanup;
         }
 
