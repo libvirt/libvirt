@@ -3486,12 +3486,13 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
     unsigned long long memsize = virDomainNumaGetNodeMemorySize(def->numa,
                                                                 cell);
 
+    if (virAsprintf(&alias, "ram-node%zu", cell) < 0)
+        goto cleanup;
+
     *backendStr = NULL;
     mem.size = memsize;
     mem.targetNode = cell;
-
-    if (virAsprintf(&alias, "ram-node%zu", cell) < 0)
-        goto cleanup;
+    mem.info.alias = alias;
 
     if ((rc = qemuBuildMemoryBackendStr(&props, &backendType, cfg, priv->qemuCaps,
                                         def, &mem, priv->autoNodeset, false)) < 0)
