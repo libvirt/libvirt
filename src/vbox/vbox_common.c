@@ -5883,13 +5883,8 @@ vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
     ret = 0;
 
  cleanup:
-    if (ret < 0) {
-        for (i = 0; i < def->ndisks; i++)
-            VIR_FREE(def->disks[i].src);
-        VIR_FREE(def->disks);
-        def->ndisks = 0;
-    }
     VBOX_RELEASE(snap);
+
     return ret;
 }
 
@@ -6105,16 +6100,11 @@ vboxSnapshotGetReadOnlyDisks(virDomainSnapshotPtr snapshot,
     ret = 0;
 
  cleanup:
-    if (ret < 0) {
-        for (i = 0; i < def->dom->ndisks; i++)
-            virDomainDiskDefFree(def->dom->disks[i]);
-        VIR_FREE(def->dom->disks);
-        def->dom->ndisks = 0;
-    }
     VBOX_RELEASE(disk);
     VBOX_RELEASE(storageController);
     gVBoxAPI.UArray.vboxArrayRelease(&mediumAttachments);
     VBOX_RELEASE(snap);
+
     return ret;
 }
 
