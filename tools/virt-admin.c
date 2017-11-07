@@ -39,6 +39,7 @@
 #include "virthread.h"
 #include "virgettext.h"
 #include "virtime.h"
+#include "virt-admin-completer.h"
 
 /* Gnulib doesn't guarantee SA_SIGINFO support.  */
 #ifndef SA_SIGINFO
@@ -428,6 +429,7 @@ static const vshCmdOptDef opts_srv_threadpool_info[] = {
     {.name = "server",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = vshAdmServerCompleter,
      .help = N_("Server to retrieve threadpool attributes from."),
     },
     {.name = NULL}
@@ -489,6 +491,7 @@ static const vshCmdOptDef opts_srv_threadpool_set[] = {
     {.name = "server",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = vshAdmServerCompleter,
      .help = N_("Server to alter threadpool attributes on."),
     },
     {.name = "min-workers",
@@ -595,6 +598,7 @@ static const vshCmdOptDef opts_srv_clients_list[] = {
     {.name = "server",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = vshAdmServerCompleter,
      .help = N_("server which to list connected clients from"),
     },
     {.name = NULL}
@@ -676,6 +680,7 @@ static const vshCmdOptDef opts_client_info[] = {
     {.name = "server",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = vshAdmServerCompleter,
      .help = N_("server to which <client> is connected to"),
     },
     {.name = "client",
@@ -763,6 +768,7 @@ static const vshCmdOptDef opts_client_disconnect[] = {
     {.name = "server",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = vshAdmServerCompleter,
      .help = N_("server which the client is currently connected to"),
     },
     {.name = "client",
@@ -828,6 +834,7 @@ static const vshCmdOptDef opts_srv_clients_info[] = {
     {.name = "server",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = vshAdmServerCompleter,
      .help = N_("Server to retrieve the client limits from."),
     },
     {.name = NULL}
@@ -887,6 +894,7 @@ static const vshCmdOptDef opts_srv_clients_set[] = {
     {.name = "server",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = vshAdmServerCompleter,
      .help = N_("Server to alter the client-related configuration limits on."),
     },
     {.name = "max-clients",

@@ -258,6 +258,15 @@ virt_admin_SOURCES = \
 		virt-admin.c virt-admin.h \
 		$(NULL)
 
+VIRT_ADMIN_COMPLETER = \
+		virt-admin-completer.c virt-admin-completer.h
+
+if WITH_READLINE
+virt_admin_SOURCES += $(VIRT_ADMIN_COMPLETER)
+else ! WITH_READLINE
+EXTRA_DIST += $(VIRT_ADMIN_COMPLETER)
+endif ! WITH_READLINE
+
 virt_admin_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(COVERAGE_LDFLAGS) \
