@@ -290,61 +290,6 @@ static int openSessionForMachine(vboxDriverPtr data, const unsigned char *dom_uu
     return 0;
 }
 
-/**
- * function to get the values for max port per
- * instance and max slots per port for the devices
- *
- * @returns     true on Success, false on failure.
- * @param       vbox            Input IVirtualBox pointer
- * @param       maxPortPerInst  Output array of max port per instance
- * @param       maxSlotPerPort  Output array of max slot per port
- *
- */
-
-static bool vboxGetMaxPortSlotValues(IVirtualBox *vbox,
-                                     PRUint32 *maxPortPerInst,
-                                     PRUint32 *maxSlotPerPort)
-{
-    ISystemProperties *sysProps = NULL;
-
-    if (!vbox)
-        return false;
-
-    gVBoxAPI.UIVirtualBox.GetSystemProperties(vbox, &sysProps);
-
-    if (!sysProps)
-        return false;
-
-    gVBoxAPI.UISystemProperties.GetMaxPortCountForStorageBus(sysProps,
-                                                             StorageBus_IDE,
-                                                             &maxPortPerInst[StorageBus_IDE]);
-    gVBoxAPI.UISystemProperties.GetMaxPortCountForStorageBus(sysProps,
-                                                             StorageBus_SATA,
-                                                             &maxPortPerInst[StorageBus_SATA]);
-    gVBoxAPI.UISystemProperties.GetMaxPortCountForStorageBus(sysProps,
-                                                             StorageBus_SCSI,
-                                                             &maxPortPerInst[StorageBus_SCSI]);
-    gVBoxAPI.UISystemProperties.GetMaxPortCountForStorageBus(sysProps,
-                                                             StorageBus_Floppy,
-                                                             &maxPortPerInst[StorageBus_Floppy]);
-
-    gVBoxAPI.UISystemProperties.GetMaxDevicesPerPortForStorageBus(sysProps,
-                                                                  StorageBus_IDE,
-                                                                  &maxSlotPerPort[StorageBus_IDE]);
-    gVBoxAPI.UISystemProperties.GetMaxDevicesPerPortForStorageBus(sysProps,
-                                                                  StorageBus_SATA,
-                                                                  &maxSlotPerPort[StorageBus_SATA]);
-    gVBoxAPI.UISystemProperties.GetMaxDevicesPerPortForStorageBus(sysProps,
-                                                                  StorageBus_SCSI,
-                                                                  &maxSlotPerPort[StorageBus_SCSI]);
-    gVBoxAPI.UISystemProperties.GetMaxDevicesPerPortForStorageBus(sysProps,
-                                                                  StorageBus_Floppy,
-                                                                  &maxSlotPerPort[StorageBus_Floppy]);
-
-    VBOX_RELEASE(sysProps);
-
-    return true;
-}
 
 /**
  * function to generate the name for medium,
@@ -352,57 +297,39 @@ static bool vboxGetMaxPortSlotValues(IVirtualBox *vbox,
  *
  * @returns     null terminated string with device name or NULL
  *              for failures
- * @param       conn            Input Connection Pointer
  * @param       storageBus      Input storage bus type
- * @param       deviceInst      Input device instance number
  * @param       devicePort      Input port number
  * @param       deviceSlot      Input slot number
- * @param       aMaxPortPerInst Input array of max port per device instance
- * @param       aMaxSlotPerPort Input array of max slot per device port
- *
+ * @param       sdCount         Running total of disk devices with "sd" prefix
  */
-static char *vboxGenerateMediumName(PRUint32 storageBus,
-                                    PRInt32 deviceInst,
-                                    PRInt32 devicePort,
-                                    PRInt32 deviceSlot,
-                                    PRUint32 *aMaxPortPerInst,
-                                    PRUint32 *aMaxSlotPerPort)
+static char *
+vboxGenerateMediumName(PRUint32 storageBus,
+                       PRInt32 devicePort,
+                       PRInt32 deviceSlot,
+                       size_t sdCount)
 {
     const char *prefix = NULL;
     char *name = NULL;
     int total = 0;
-    PRUint32 maxPortPerInst = 0;
-    PRUint32 maxSlotPerPort = 0;
-
-    if (!aMaxPortPerInst ||
-        !aMaxSlotPerPort)
-        return NULL;
 
     if ((storageBus < StorageBus_IDE) ||
         (storageBus > StorageBus_Floppy))
         return NULL;
 
-    maxPortPerInst = aMaxPortPerInst[storageBus];
-    maxSlotPerPort = aMaxSlotPerPort[storageBus];
-    total = (deviceInst * maxPortPerInst * maxSlotPerPort)
-            + (devicePort * maxSlotPerPort)
-            + deviceSlot;
-
     if (storageBus == StorageBus_IDE) {
         prefix = "hd";
+        total = devicePort * 2 + deviceSlot;
     } else if ((storageBus == StorageBus_SATA) ||
                (storageBus == StorageBus_SCSI)) {
         prefix = "sd";
+        total = sdCount;
     } else if (storageBus == StorageBus_Floppy) {
+        total = deviceSlot;
         prefix = "fd";
     }
 
     name = virIndexToDiskName(total, prefix);
 
-    VIR_DEBUG("name=%s, total=%d, storageBus=%u, deviceInst=%d, "
-          "devicePort=%d deviceSlot=%d, maxPortPerInst=%u maxSlotPerPort=%u",
-          NULLSTR(name), total, storageBus, deviceInst, devicePort,
-          deviceSlot, maxPortPerInst, maxSlotPerPort);
     return name;
 }
 
@@ -3259,9 +3186,7 @@ vboxDumpDisks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
     vboxArray mediumAttachments = VBOX_ARRAY_INITIALIZER;
     int ret = -1, diskCount = 0;
-    size_t i;
-    PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
-    PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
+    size_t sdCount = 0, i;
 
     def->ndisks = 0;
     gVBoxAPI.UArray.vboxArrayGet(&mediumAttachments, machine,
@@ -3293,9 +3218,6 @@ vboxDumpDisks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         def->disks[i] = disk;
     }
 
-    if (!vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort))
-        goto cleanup;
-
     /* get the attachment details here */
     for (i = 0; i < mediumAttachments.count && diskCount < def->ndisks; i++) {
         IMediumAttachment *imediumattach = mediumAttachments.items[i];
@@ -3307,7 +3229,6 @@ vboxDumpDisks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         IMedium *medium = NULL;
         PRUnichar *mediumLocUtf16 = NULL;
         char *mediumLocUtf8 = NULL;
-        PRUint32 deviceInst = 0;
         PRInt32 devicePort = 0;
         PRInt32 deviceSlot = 0;
 
@@ -3348,11 +3269,30 @@ vboxDumpDisks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         }
 
         gVBoxAPI.UIStorageController.GetBus(storageController, &storageBus);
+        gVBoxAPI.UIMediumAttachment.GetPort(imediumattach, &devicePort);
+        gVBoxAPI.UIMediumAttachment.GetDevice(imediumattach, &deviceSlot);
+
+        def->disks[diskCount]->dst = vboxGenerateMediumName(storageBus,
+                                                            devicePort,
+                                                            deviceSlot,
+                                                            sdCount);
+        if (!def->disks[diskCount]->dst) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not generate medium name for the disk "
+                             "at: port:%d, slot:%d"), devicePort, deviceSlot);
+            VBOX_RELEASE(medium);
+            VBOX_RELEASE(storageController);
+
+            goto cleanup;
+        }
+
         if (storageBus == StorageBus_IDE) {
             def->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_IDE;
         } else if (storageBus == StorageBus_SATA) {
+            sdCount++;
             def->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SATA;
         } else if (storageBus == StorageBus_SCSI) {
+            sdCount++;
             def->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SCSI;
         } else if (storageBus == StorageBus_Floppy) {
             def->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_FDC;
@@ -3366,24 +3306,6 @@ vboxDumpDisks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         else if (deviceType == DeviceType_DVD)
             def->disks[diskCount]->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
 
-        gVBoxAPI.UIMediumAttachment.GetPort(imediumattach, &devicePort);
-        gVBoxAPI.UIMediumAttachment.GetDevice(imediumattach, &deviceSlot);
-        def->disks[diskCount]->dst = vboxGenerateMediumName(storageBus,
-                                                            deviceInst,
-                                                            devicePort,
-                                                            deviceSlot,
-                                                            maxPortPerInst,
-                                                            maxSlotPerPort);
-        if (!def->disks[diskCount]->dst) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not generate medium name for the disk "
-                             "at: controller instance:%u, port:%d, slot:%d"),
-                           deviceInst, devicePort, deviceSlot);
-            VBOX_RELEASE(medium);
-            VBOX_RELEASE(storageController);
-
-            goto cleanup;
-        }
 
         gVBoxAPI.UIMedium.GetReadOnly(medium, &readOnly);
         if (readOnly == PR_TRUE)
@@ -5664,9 +5586,7 @@ vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
     ISnapshot *snap = NULL;
     IMachine *snapMachine = NULL;
     vboxArray mediumAttachments = VBOX_ARRAY_INITIALIZER;
-    PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
-    PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
-    int diskCount = 0;
+    size_t diskCount = 0, sdCount = 0;
     nsresult rc;
     vboxIID snapIid;
     char *snapshotUuidStr = NULL;
@@ -5735,9 +5655,6 @@ vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
             goto cleanup;
     }
 
-    if (!vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort))
-        goto cleanup;
-
     /* get the attachment details here */
     for (i = 0; i < mediumAttachments.count && diskCount < def->ndisks; i++) {
         IStorageController *storageController = NULL;
@@ -5747,7 +5664,6 @@ vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
         IMedium *disk = NULL;
         PRUnichar *childLocUtf16 = NULL;
         char *childLocUtf8 = NULL;
-        PRUint32 deviceInst = 0;
         PRInt32 devicePort = 0;
         PRInt32 deviceSlot = 0;
         vboxArray children = VBOX_ARRAY_INITIALIZER;
@@ -5865,11 +5781,9 @@ vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
 
                     def->disks[diskCount].src->type = VIR_STORAGE_TYPE_FILE;
                     def->disks[diskCount].name = vboxGenerateMediumName(storageBus,
-                                                                        deviceInst,
                                                                         devicePort,
                                                                         deviceSlot,
-                                                                        maxPortPerInst,
-                                                                        maxSlotPerPort);
+                                                                        sdCount);
                 }
                 VBOX_UTF8_FREE(diskSnapIdStr);
             }
@@ -5877,6 +5791,9 @@ vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
         VBOX_RELEASE(storageController);
         VBOX_RELEASE(disk);
         diskCount++;
+
+        if (storageBus == StorageBus_SATA || storageBus == StorageBus_SCSI)
+            sdCount++;
     }
     gVBoxAPI.UArray.vboxArrayRelease(&mediumAttachments);
 
@@ -5902,10 +5819,7 @@ vboxSnapshotGetReadOnlyDisks(virDomainSnapshotDefPtr def,
     IMedium *disk = NULL;
     nsresult rc;
     vboxArray mediumAttachments = VBOX_ARRAY_INITIALIZER;
-    size_t i = 0;
-    PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
-    PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
-    int diskCount = 0;
+    size_t i = 0, diskCount = 0, sdCount = 0;
     int ret = -1;
 
     if (!data->vboxObj)
@@ -5968,9 +5882,6 @@ vboxSnapshotGetReadOnlyDisks(virDomainSnapshotDefPtr def,
         goto cleanup;
     }
 
-    if (!vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort))
-        goto cleanup;
-
     /* get the attachment details here */
     for (i = 0; i < mediumAttachments.count && diskCount < def->dom->ndisks; i++) {
         PRUnichar *storageControllerName = NULL;
@@ -5979,7 +5890,6 @@ vboxSnapshotGetReadOnlyDisks(virDomainSnapshotDefPtr def,
         PRBool readOnly = PR_FALSE;
         PRUnichar *mediumLocUtf16 = NULL;
         char *mediumLocUtf8 = NULL;
-        PRUint32 deviceInst = 0;
         PRInt32 devicePort = 0;
         PRInt32 deviceSlot = 0;
         IMediumAttachment *imediumattach = mediumAttachments.items[i];
@@ -6054,11 +5964,26 @@ vboxSnapshotGetReadOnlyDisks(virDomainSnapshotDefPtr def,
                            _("Cannot get read only attribute"));
             goto cleanup;
         }
+
+        def->dom->disks[diskCount]->dst = vboxGenerateMediumName(storageBus,
+                                                                 devicePort,
+                                                                 deviceSlot,
+                                                                 sdCount);
+        if (!def->dom->disks[diskCount]->dst) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not generate medium name for the disk "
+                             "at: port:%d, slot:%d"), devicePort, deviceSlot);
+            ret = -1;
+            goto cleanup;
+        }
+
         if (storageBus == StorageBus_IDE) {
             def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_IDE;
         } else if (storageBus == StorageBus_SATA) {
+            sdCount++;
             def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SATA;
         } else if (storageBus == StorageBus_SCSI) {
+            sdCount++;
             def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SCSI;
         } else if (storageBus == StorageBus_Floppy) {
             def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_FDC;
@@ -6080,21 +6005,8 @@ vboxSnapshotGetReadOnlyDisks(virDomainSnapshotDefPtr def,
         if (readOnly == PR_TRUE)
             def->dom->disks[diskCount]->src->readonly = true;
         def->dom->disks[diskCount]->src->type = VIR_STORAGE_TYPE_FILE;
-        def->dom->disks[diskCount]->dst = vboxGenerateMediumName(storageBus,
-                                                                 deviceInst,
-                                                                 devicePort,
-                                                                 deviceSlot,
-                                                                 maxPortPerInst,
-                                                                 maxSlotPerPort);
-        if (!def->dom->disks[diskCount]->dst) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not generate medium name for the disk "
-                             "at: controller instance:%u, port:%d, slot:%d"),
-                           deviceInst, devicePort, deviceSlot);
-            ret = -1;
-            goto cleanup;
-        }
-        diskCount ++;
+
+        diskCount++;
     }
 
     ret = 0;
