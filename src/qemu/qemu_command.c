@@ -1199,9 +1199,17 @@ qemuCheckDiskConfigBlkdeviotune(virDomainDiskDefPtr disk,
 }
 
 
-/* Perform disk definition config validity checks */
+/**
+ * qemuCheckDiskConfig:
+ * @disk: disk definition
+ * @qemuCaps: qemu capabilities, may be NULL for cold-plug check
+ *
+ * Perform disk definition config validity checks. Returns -1 on error with
+ * error reported.
+ */
 int
-qemuCheckDiskConfig(virDomainDiskDefPtr disk)
+qemuCheckDiskConfig(virDomainDiskDefPtr disk,
+                    virQEMUCapsPtr qemuCaps)
 {
     if (virDiskNameToIndex(disk->dst) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1258,6 +1266,156 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
             return -1;
         }
     }
+
+    switch (disk->bus) {
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("unexpected address type for scsi disk"));
+            return -1;
+        }
+
+        /* Setting bus= attr for SCSI drives, causes a controller
+         * to be created. Yes this is slightly odd. It is not possible
+         * to have > 1 bus on a SCSI controller (yet). */
+        if (disk->info.addr.drive.bus != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("SCSI controller only supports 1 bus"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("unexpected address type for ide disk"));
+            return -1;
+        }
+        /* We can only have 1 IDE controller (currently) */
+        if (disk->info.addr.drive.controller != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only 1 IDE controller is supported"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_FDC:
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("unexpected address type for fdc disk"));
+            return -1;
+        }
+        /* We can only have 1 FDC controller (currently) */
+        if (disk->info.addr.drive.controller != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only 1 fdc controller is supported"));
+            return -1;
+        }
+        /* We can only have 1 FDC bus (currently) */
+        if (disk->info.addr.drive.bus != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only 1 fdc bus is supported"));
+            return -1;
+        }
+        if (disk->info.addr.drive.target != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("target must be 0 for controller fdc"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+    case VIR_DOMAIN_DISK_BUS_XEN:
+    case VIR_DOMAIN_DISK_BUS_SD:
+        break;
+    }
+
+    if (disk->src->readonly &&
+        disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("readonly ide disks are not supported"));
+            return -1;
+        }
+
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_SATA) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("readonly sata disks are not supported"));
+            return -1;
+        }
+    }
+
+    if (disk->transient) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("transient disks not supported yet"));
+        return -1;
+    }
+
+    if (disk->iomode == VIR_DOMAIN_DISK_IO_NATIVE &&
+        disk->cachemode != VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
+        disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("native I/O needs either no disk cache "
+                         "or directsync cache mode, QEMU will fallback "
+                         "to aio=threads"));
+        return -1;
+    }
+
+    if (qemuCaps) {
+        if (disk->serial &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL)) {
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+                disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("scsi-block 'lun' devices do not support the "
+                                 "serial property"));
+                return -1;
+            }
+        }
+
+        if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk cache mode 'directsync' is not supported by this QEMU"));
+            return -1;
+        }
+
+        if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_UNSAFE &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk cache mode 'unsafe' is not supported by this QEMU"));
+            return -1;
+        }
+
+        if (disk->copy_on_read &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("copy_on_read is not supported by this QEMU binary"));
+            return -1;
+        }
+
+        if (disk->discard &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DISCARD)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("discard is not supported by this QEMU binary"));
+            return -1;
+        }
+
+        if (disk->detect_zeroes &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DETECT_ZEROES)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("detect_zeroes is not supported by this QEMU binary"));
+            return -1;
+        }
+
+        if (disk->iomode &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_AIO)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk aio mode not supported with this QEMU binary"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -1465,163 +1623,6 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
 }
 
 
-static int
-qemuBuildDriveStrValidate(virDomainDiskDefPtr disk,
-                          virQEMUCapsPtr qemuCaps)
-{
-    switch (disk->bus) {
-    case VIR_DOMAIN_DISK_BUS_SCSI:
-        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("unexpected address type for scsi disk"));
-            return -1;
-        }
-
-        /* Setting bus= attr for SCSI drives, causes a controller
-         * to be created. Yes this is slightly odd. It is not possible
-         * to have > 1 bus on a SCSI controller (yet). */
-        if (disk->info.addr.drive.bus != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("SCSI controller only supports 1 bus"));
-            return -1;
-        }
-        break;
-
-    case VIR_DOMAIN_DISK_BUS_IDE:
-        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("unexpected address type for ide disk"));
-            return -1;
-        }
-        /* We can only have 1 IDE controller (currently) */
-        if (disk->info.addr.drive.controller != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Only 1 IDE controller is supported"));
-            return -1;
-        }
-        break;
-
-    case VIR_DOMAIN_DISK_BUS_FDC:
-        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("unexpected address type for fdc disk"));
-            return -1;
-        }
-        /* We can only have 1 FDC controller (currently) */
-        if (disk->info.addr.drive.controller != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Only 1 fdc controller is supported"));
-            return -1;
-        }
-        /* We can only have 1 FDC bus (currently) */
-        if (disk->info.addr.drive.bus != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Only 1 fdc bus is supported"));
-            return -1;
-        }
-        if (disk->info.addr.drive.target != 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("target must be 0 for controller fdc"));
-            return -1;
-        }
-        break;
-
-    case VIR_DOMAIN_DISK_BUS_VIRTIO:
-    case VIR_DOMAIN_DISK_BUS_XEN:
-    case VIR_DOMAIN_DISK_BUS_SD:
-        break;
-    }
-
-    if (disk->src->readonly &&
-        disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("readonly ide disks are not supported"));
-            return -1;
-        }
-
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_SATA) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("readonly sata disks are not supported"));
-            return -1;
-        }
-    }
-
-    if (disk->transient) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("transient disks not supported yet"));
-        return -1;
-    }
-
-    if (disk->iomode == VIR_DOMAIN_DISK_IO_NATIVE &&
-        disk->cachemode != VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
-        disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("native I/O needs either no disk cache "
-                         "or directsync cache mode, QEMU will fallback "
-                         "to aio=threads"));
-        return -1;
-    }
-
-    if (qemuCaps) {
-        if (disk->serial &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL)) {
-            if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
-                disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("scsi-block 'lun' devices do not support the "
-                                 "serial property"));
-                return -1;
-            }
-        }
-
-        if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk cache mode 'directsync' is not supported by this QEMU"));
-            return -1;
-        }
-
-        if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_UNSAFE &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk cache mode 'unsafe' is not supported by this QEMU"));
-            return -1;
-        }
-
-        if (disk->copy_on_read &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("copy_on_read is not supported by this QEMU binary"));
-            return -1;
-        }
-
-        if (disk->discard &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DISCARD)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("discard is not supported by this QEMU binary"));
-            return -1;
-        }
-
-        if (disk->detect_zeroes &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DETECT_ZEROES)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("detect_zeroes is not supported by this QEMU binary"));
-            return -1;
-        }
-
-        if (disk->iomode &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_AIO)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk aio mode not supported with this QEMU binary"));
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-
 char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
                   virQEMUDriverConfigPtr cfg,
@@ -1633,7 +1634,9 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         virDomainDiskGeometryTransTypeToString(disk->geometry.trans);
     bool emitDeviceSyntax = qemuDiskBusNeedsDeviceArg(disk->bus);
 
-    if (qemuBuildDriveStrValidate(disk, qemuCaps) < 0)
+    /* if we are using -device this will be checked elsewhere */
+    if (!emitDeviceSyntax &&
+        qemuCheckDiskConfig(disk, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildDriveSourceStr(disk, cfg, &opt, qemuCaps) < 0)
@@ -1873,7 +1876,7 @@ qemuBuildDriveDevStr(const virDomainDef *def,
     char *drivealias;
     int controllerModel;
 
-    if (qemuCheckDiskConfig(disk) < 0)
+    if (qemuCheckDiskConfig(disk, qemuCaps) < 0)
         goto error;
 
     if (!qemuDomainCheckCCWS390AddressSupport(def, disk->info, qemuCaps, disk->dst))

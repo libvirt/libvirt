@@ -177,7 +177,8 @@ int qemuGetDriveSourceString(virStorageSourcePtr src,
                              qemuDomainSecretInfoPtr secinfo,
                              char **source);
 
-int qemuCheckDiskConfig(virDomainDiskDefPtr disk);
+int qemuCheckDiskConfig(virDomainDiskDefPtr disk,
+                        virQEMUCapsPtr qemuCaps);
 
 bool
 qemuCheckFips(void);
