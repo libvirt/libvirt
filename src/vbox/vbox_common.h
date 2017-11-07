@@ -326,6 +326,13 @@ enum HardDiskVariant
 # define VBOX_E_INVALID_SESSION_STATE 0x80BB000B
 # define VBOX_E_OBJECT_IN_USE 0x80BB000C
 
+/* VBOX storage controller name definitions */
+
+# define VBOX_CONTROLLER_IDE_NAME "IDE Controller"
+# define VBOX_CONTROLLER_FLOPPY_NAME "Floppy Controller"
+# define VBOX_CONTROLLER_SATA_NAME "SATA Controller"
+# define VBOX_CONTROLLER_SCSI_NAME "SCSI Controller"
+
 /* Simplied definitions in vbox_CAPI_*.h */
 
 typedef void const *PCVBOXXPCOM;
