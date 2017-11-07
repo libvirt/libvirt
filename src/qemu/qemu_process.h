@@ -38,10 +38,10 @@ int qemuProcessStopCPUs(virQEMUDriverPtr driver,
                         virDomainPausedReason reason,
                         qemuDomainAsyncJob asyncJob);
 
-int qemuProcessBuildDestroyHugepagesPath(virQEMUDriverPtr driver,
-                                         virDomainObjPtr vm,
-                                         virDomainMemoryDefPtr mem,
-                                         bool build);
+int qemuProcessBuildDestroyMemoryPaths(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm,
+                                       virDomainMemoryDefPtr mem,
+                                       bool build);
 
 void qemuProcessAutostartAll(virQEMUDriverPtr driver);
 void qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver);

@@ -3324,11 +3324,45 @@ qemuProcessNeedHugepagesPath(virDomainDefPtr def,
 }
 
 
+static int
+qemuProcessBuildDestroyMemoryPathsImpl(virQEMUDriverPtr driver,
+                                       virDomainDefPtr def,
+                                       const char *path,
+                                       bool build)
+{
+    if (build) {
+        if (virFileExists(path))
+            return 0;
+
+        if (virFileMakePathWithMode(path, 0700) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to create %s"),
+                                 path);
+            return -1;
+        }
+
+        if (qemuSecurityDomainSetPathLabel(driver->securityManager,
+                                           def, path) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                            _("Unable to label %s"), path);
+            return -1;
+        }
+    } else {
+        if (rmdir(path) < 0 &&
+            errno != ENOENT)
+            VIR_WARN("Unable to remove hugepage path: %s (errno=%d)",
+                     path, errno);
+    }
+
+    return 0;
+}
+
+
 int
-qemuProcessBuildDestroyHugepagesPath(virQEMUDriverPtr driver,
-                                     virDomainObjPtr vm,
-                                     virDomainMemoryDefPtr mem,
-                                     bool build)
+qemuProcessBuildDestroyMemoryPaths(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   virDomainMemoryDefPtr mem,
+                                   bool build)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     char *hugepagePath = NULL;
@@ -3347,31 +3381,11 @@ qemuProcessBuildDestroyHugepagesPath(virQEMUDriverPtr driver,
             if (!hugepagePath)
                 goto cleanup;
 
-            if (build) {
-                if (virFileExists(hugepagePath)) {
-                    ret = 0;
-                    goto cleanup;
-                }
+            if (qemuProcessBuildDestroyMemoryPathsImpl(driver, vm->def,
+                                                       hugepagePath, build) < 0)
+                goto cleanup;
 
-                if (virFileMakePathWithMode(hugepagePath, 0700) < 0) {
-                    virReportSystemError(errno,
-                                         _("Unable to create %s"),
-                                         hugepagePath);
-                    goto cleanup;
-                }
-
-                if (qemuSecurityDomainSetPathLabel(driver->securityManager,
-                                                   vm->def, hugepagePath) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   "%s", _("Unable to set huge path in security driver"));
-                    goto cleanup;
-                }
-            } else {
-                if (rmdir(hugepagePath) < 0 &&
-                    errno != ENOENT)
-                    VIR_WARN("Unable to remove hugepage path: %s (errno=%d)",
-                             hugepagePath, errno);
-            }
+            VIR_FREE(hugepagePath);
         }
     }
 
@@ -5550,7 +5564,7 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
                                NULL) < 0)
         goto cleanup;
 
-    if (qemuProcessBuildDestroyHugepagesPath(driver, vm, NULL, true) < 0)
+    if (qemuProcessBuildDestroyMemoryPaths(driver, vm, NULL, true) < 0)
         goto cleanup;
 
     /* Ensure no historical cgroup for this VM is lying around bogus
@@ -6254,7 +6268,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    qemuProcessBuildDestroyHugepagesPath(driver, vm, NULL, false);
+    qemuProcessBuildDestroyMemoryPaths(driver, vm, NULL, false);
 
     vm->def->id = -1;
 
@@ -7112,7 +7126,7 @@ qemuProcessReconnect(void *opaque)
         goto cleanup;
     }
 
-    if (qemuProcessBuildDestroyHugepagesPath(driver, obj, NULL, true) < 0)
+    if (qemuProcessBuildDestroyMemoryPaths(driver, obj, NULL, true) < 0)
         goto error;
 
     if ((qemuDomainAssignAddresses(obj->def, priv->qemuCaps,
