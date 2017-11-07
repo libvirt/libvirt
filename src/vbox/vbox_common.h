@@ -332,6 +332,7 @@ enum HardDiskVariant
 # define VBOX_CONTROLLER_FLOPPY_NAME "Floppy Controller"
 # define VBOX_CONTROLLER_SATA_NAME "SATA Controller"
 # define VBOX_CONTROLLER_SCSI_NAME "SCSI Controller"
+# define VBOX_CONTROLLER_SAS_NAME "SAS Controller"
 
 /* Simplied definitions in vbox_CAPI_*.h */
 

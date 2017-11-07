@@ -312,20 +312,27 @@ vboxGenerateMediumName(PRUint32 storageBus,
     char *name = NULL;
     int total = 0;
 
-    if ((storageBus < StorageBus_IDE) ||
-        (storageBus > StorageBus_Floppy))
-        return NULL;
-
-    if (storageBus == StorageBus_IDE) {
+    switch ((enum StorageBus) storageBus) {
+    case StorageBus_IDE:
         prefix = "hd";
         total = devicePort * 2 + deviceSlot;
-    } else if ((storageBus == StorageBus_SATA) ||
-               (storageBus == StorageBus_SCSI)) {
+
+        break;
+    case StorageBus_SATA:
+    case StorageBus_SCSI:
+    case StorageBus_SAS:
         prefix = "sd";
         total = sdCount;
-    } else if (storageBus == StorageBus_Floppy) {
+
+        break;
+    case StorageBus_Floppy:
         total = deviceSlot;
         prefix = "fd";
+
+        break;
+    case StorageBus_Null:
+
+        return NULL;
     }
 
     name = virIndexToDiskName(total, prefix);
@@ -392,10 +399,16 @@ vboxSetStorageController(virDomainControllerDefPtr controller,
             vboxModel = StorageControllerType_BusLogic;
 
             break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
+            /* in vbox, lsisas has a dedicated SAS bus type with no model */
+            VBOX_UTF16_FREE(controllerName);
+            VBOX_UTF8_TO_UTF16(VBOX_CONTROLLER_SAS_NAME, &controllerName);
+            vboxBusType = StorageBus_SAS;
+
+            break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1034,7 +1047,7 @@ static int
 vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
     size_t i;
-    int type, ret = 0;
+    int type, ret = 0, model = -1;
     const char *src = NULL;
     nsresult rc = 0;
     virDomainDiskDefPtr disk = NULL;
@@ -1112,6 +1125,13 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
             break;
         case VIR_DOMAIN_DISK_BUS_SCSI:
             VBOX_UTF8_TO_UTF16(VBOX_CONTROLLER_SCSI_NAME, &storageCtlName);
+
+            model = virDomainDeviceFindControllerModel(def, &disk->info,
+                                                       VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
+            if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068) {
+                VBOX_UTF16_FREE(storageCtlName);
+                VBOX_UTF8_TO_UTF16(VBOX_CONTROLLER_SAS_NAME, &storageCtlName);
+            }
 
             break;
         case VIR_DOMAIN_DISK_BUS_FDC:
@@ -3127,6 +3147,9 @@ vboxDumpStorageControllers(virDomainDefPtr def, IMachine *machine)
 
             break;
         case StorageControllerType_LsiLogicSas:
+            model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068;
+
+            break;
         case StorageControllerType_IntelAhci:
         case StorageControllerType_I82078:
         case StorageControllerType_Null:
@@ -3195,12 +3218,13 @@ vboxDumpDisks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
     PRBool readOnly;
     nsresult rc;
     virDomainDiskDefPtr disk = NULL;
+    virDomainControllerDefPtr ctrl = NULL;
     char *mediumLocUtf8 = NULL;
-    size_t sdCount = 0, i;
+    size_t sdCount = 0, i, j;
 
     def->ndisks = 0;
     gVBoxAPI.UArray.vboxArrayGet(&mediumAttachments, machine,
-                                 gVBoxAPI.UArray.handleMachineGetMediumAttachments(machine));
+                 gVBoxAPI.UArray.handleMachineGetMediumAttachments(machine));
 
     /* get the number of attachments */
     for (i = 0; i < mediumAttachments.count; i++) {
@@ -3353,15 +3377,38 @@ vboxDumpDisks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 
             break;
         case StorageBus_SCSI:
+        case StorageBus_SAS:
             disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
             sdCount++;
+
+            /* In vbox, if there's a disk attached to SAS controller, there will
+             * be libvirt SCSI controller present with model "lsi1068", and we
+             * need to find its index
+             */
+            for (j = 0; j < def->ncontrollers; j++) {
+                ctrl = def->controllers[j];
+
+                if (ctrl->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+                    continue;
+
+                if (storageBus == StorageBus_SAS &&
+                    ctrl->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068) {
+                    disk->info.addr.drive.controller = ctrl->idx;
+                    break;
+                }
+
+                if (storageBus == StorageBus_SCSI &&
+                    ctrl->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068) {
+                    disk->info.addr.drive.controller = ctrl->idx;
+                    break;
+                }
+            }
 
             break;
         case StorageBus_Floppy:
             disk->bus = VIR_DOMAIN_DISK_BUS_FDC;
 
             break;
-        case StorageBus_SAS:
         case StorageBus_Null:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unsupported null storage bus"));
@@ -5829,7 +5876,8 @@ vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
              * in XML, but we need to update "sdCount" so that device names match
              * in domain dumpxml and snapshot dumpxml
              */
-            if (storageBus == StorageBus_SATA || storageBus == StorageBus_SCSI)
+            if (storageBus == StorageBus_SATA || storageBus == StorageBus_SCSI ||
+                storageBus == StorageBus_SAS)
                 sdCount++;
 
             VBOX_RELEASE(storageController);
@@ -5890,8 +5938,10 @@ vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
         VBOX_RELEASE(disk);
         diskCount++;
 
-        if (storageBus == StorageBus_SATA || storageBus == StorageBus_SCSI)
+        if (storageBus == StorageBus_SATA || storageBus == StorageBus_SCSI ||
+            storageBus == StorageBus_SAS)
             sdCount++;
+
     }
     gVBoxAPI.UArray.vboxArrayRelease(&mediumAttachments);
 
@@ -6044,7 +6094,8 @@ vboxSnapshotGetReadOnlyDisks(virDomainSnapshotDefPtr def,
              * in XML, but we need to update "sdCount" so that device names match
              * in domain dumpxml and snapshot dumpxml
              */
-            if (storageBus == StorageBus_SATA || storageBus == StorageBus_SCSI)
+            if (storageBus == StorageBus_SATA || storageBus == StorageBus_SCSI ||
+                storageBus == StorageBus_SAS)
                 sdCount++;
 
             VBOX_RELEASE(storageController);
@@ -6087,7 +6138,8 @@ vboxSnapshotGetReadOnlyDisks(virDomainSnapshotDefPtr def,
         } else if (storageBus == StorageBus_SATA) {
             sdCount++;
             def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SATA;
-        } else if (storageBus == StorageBus_SCSI) {
+        } else if (storageBus == StorageBus_SCSI ||
+                   storageBus == StorageBus_SAS) {
             sdCount++;
             def->dom->disks[diskCount]->bus = VIR_DOMAIN_DISK_BUS_SCSI;
         } else if (storageBus == StorageBus_Floppy) {
