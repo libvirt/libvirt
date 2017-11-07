@@ -66,7 +66,7 @@
 
 #ifdef WITH_READLINE
 /* For autocompletion */
-void *autoCompleteOpaque;
+vshControl *autoCompleteOpaque;
 #endif
 
 /* NOTE: It would be much nicer to have these two as part of vshControl
