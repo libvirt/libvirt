@@ -3254,13 +3254,11 @@ vboxDumpStorageControllers(virDomainDefPtr def, IMachine *machine)
 }
 
 
-static void
-vboxDumpIDEHDDs(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
+static int
+vboxDumpDisks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
-    /* dump IDE hdds if present */
     vboxArray mediumAttachments = VBOX_ARRAY_INITIALIZER;
-    bool error = false;
-    int diskCount = 0;
+    int ret = -1, diskCount = 0;
     size_t i;
     PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
     PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
@@ -3284,24 +3282,22 @@ vboxDumpIDEHDDs(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
     }
 
     /* Allocate mem, if fails return error */
-    if (VIR_ALLOC_N(def->disks, def->ndisks) >= 0) {
-        for (i = 0; i < def->ndisks; i++) {
-            virDomainDiskDefPtr disk = virDomainDiskDefNew(NULL);
-            if (!disk) {
-                error = true;
-                break;
-            }
-            def->disks[i] = disk;
-        }
-    } else {
-        error = true;
+    if (VIR_ALLOC_N(def->disks, def->ndisks) < 0)
+        goto cleanup;
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDefPtr disk = virDomainDiskDefNew(NULL);
+        if (!disk)
+            goto cleanup;
+
+        def->disks[i] = disk;
     }
 
-    if (!error)
-        error = !vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort);
+    if (!vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst, maxSlotPerPort))
+        goto cleanup;
 
     /* get the attachment details here */
-    for (i = 0; i < mediumAttachments.count && diskCount < def->ndisks && !error; i++) {
+    for (i = 0; i < mediumAttachments.count && diskCount < def->ndisks; i++) {
         IMediumAttachment *imediumattach = mediumAttachments.items[i];
         IStorageController *storageController = NULL;
         PRUnichar *storageControllerName = NULL;
@@ -3347,8 +3343,8 @@ vboxDumpIDEHDDs(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         if (!virDomainDiskGetSource(def->disks[diskCount])) {
             VBOX_RELEASE(medium);
             VBOX_RELEASE(storageController);
-            error = true;
-            break;
+
+            goto cleanup;
         }
 
         gVBoxAPI.UIStorageController.GetBus(storageController, &storageBus);
@@ -3385,8 +3381,8 @@ vboxDumpIDEHDDs(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
                            deviceInst, devicePort, deviceSlot);
             VBOX_RELEASE(medium);
             VBOX_RELEASE(storageController);
-            error = true;
-            break;
+
+            goto cleanup;
         }
 
         gVBoxAPI.UIMedium.GetReadOnly(medium, &readOnly);
@@ -3401,15 +3397,12 @@ vboxDumpIDEHDDs(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         diskCount++;
     }
 
+    ret = 0;
+
+ cleanup:
     gVBoxAPI.UArray.vboxArrayRelease(&mediumAttachments);
 
-    /* cleanup on error */
-    if (error) {
-        for (i = 0; i < def->ndisks; i++)
-            VIR_FREE(def->disks[i]);
-        VIR_FREE(def->disks);
-        def->ndisks = 0;
-    }
+    return ret;
 }
 
 static int
@@ -4103,8 +4096,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     if (vboxDumpStorageControllers(def, machine) < 0)
         goto cleanup;
-
-    vboxDumpIDEHDDs(def, data, machine);
+    if (vboxDumpDisks(def, data, machine) < 0)
+        goto cleanup;
 
     vboxDumpSharedFolders(def, data, machine);
     vboxDumpNetwork(def, data, machine, networkAdapterCount);
