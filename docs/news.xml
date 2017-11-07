@@ -39,6 +39,11 @@
     <section title="Improvements">
       <change>
         <summary>
+          vbox: Add VirtualBox 5.2 support
+        </summary>
+      </change>
+      <change>
+        <summary>
           vbox: Add support for configuring storage controllers
         </summary>
         <description>
