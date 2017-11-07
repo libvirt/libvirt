@@ -5889,8 +5889,8 @@ vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
 }
 
 static int
-vboxSnapshotGetReadOnlyDisks(virDomainSnapshotPtr snapshot,
-                             virDomainSnapshotDefPtr def)
+vboxSnapshotGetReadOnlyDisks(virDomainSnapshotDefPtr def,
+                             virDomainSnapshotPtr snapshot)
 {
     virDomainPtr dom = snapshot->domain;
     vboxDriverPtr data = dom->conn->privateData;
@@ -6173,7 +6173,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         if (vboxSnapshotGetReadWriteDisks(def, snapshot) < 0)
             VIR_DEBUG("Could not get read write disks for snapshot");
 
-        if (vboxSnapshotGetReadOnlyDisks(snapshot, def) < 0)
+        if (vboxSnapshotGetReadOnlyDisks(def, snapshot) < 0)
             VIR_DEBUG("Could not get Readonly disks for snapshot");
     }
 
