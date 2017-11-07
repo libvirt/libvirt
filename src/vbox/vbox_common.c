@@ -3147,6 +3147,113 @@ vboxHostDeviceGetXMLDesc(vboxDriverPtr data, virDomainDefPtr def, IMachine *mach
     goto release_filters;
 }
 
+
+static int
+vboxDumpStorageControllers(virDomainDefPtr def, IMachine *machine)
+{
+    vboxArray storageControllers = VBOX_ARRAY_INITIALIZER;
+    IStorageController *controller = NULL;
+    PRUint32 storageBus = StorageBus_Null;
+    PRUint32 controllerType = StorageControllerType_Null;
+    virDomainControllerDefPtr cont = NULL;
+    size_t i = 0;
+    int model = -1, ret = -1;
+    virDomainControllerType type = VIR_DOMAIN_CONTROLLER_TYPE_LAST;
+
+    gVBoxAPI.UArray.vboxArrayGet(&storageControllers, machine,
+                 gVBoxAPI.UArray.handleMachineGetStorageControllers(machine));
+
+    for (i = 0; i < storageControllers.count; i++) {
+        controller = storageControllers.items[i];
+        storageBus = StorageBus_Null;
+        controllerType = StorageControllerType_Null;
+        type = VIR_DOMAIN_CONTROLLER_TYPE_LAST;
+        model = -1;
+
+        if (!controller)
+            continue;
+
+        gVBoxAPI.UIStorageController.GetBus(controller, &storageBus);
+        gVBoxAPI.UIStorageController.GetControllerType(controller,
+                                                       &controllerType);
+
+        /* vbox controller model => libvirt controller model */
+        switch ((enum StorageControllerType) controllerType) {
+        case StorageControllerType_PIIX3:
+            model = VIR_DOMAIN_CONTROLLER_MODEL_IDE_PIIX3;
+
+            break;
+        case StorageControllerType_PIIX4:
+            model = VIR_DOMAIN_CONTROLLER_MODEL_IDE_PIIX4;
+
+            break;
+        case StorageControllerType_ICH6:
+            model = VIR_DOMAIN_CONTROLLER_MODEL_IDE_ICH6;
+
+            break;
+        case StorageControllerType_BusLogic:
+            model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC;
+
+            break;
+        case StorageControllerType_LsiLogic:
+            model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
+
+            break;
+        case StorageControllerType_LsiLogicSas:
+        case StorageControllerType_IntelAhci:
+        case StorageControllerType_I82078:
+        case StorageControllerType_Null:
+            model = -1;
+
+            break;
+        }
+
+        /* vbox controller bus => libvirt controller type */
+        switch ((enum StorageBus) storageBus) {
+        case StorageBus_IDE:
+            type = VIR_DOMAIN_CONTROLLER_TYPE_IDE;
+
+            break;
+        case StorageBus_SCSI:
+        case StorageBus_SAS:
+            type = VIR_DOMAIN_CONTROLLER_TYPE_SCSI;
+
+            break;
+        case StorageBus_SATA:
+            type = VIR_DOMAIN_CONTROLLER_TYPE_SATA;
+
+            break;
+        case StorageBus_Floppy:
+            type = VIR_DOMAIN_CONTROLLER_TYPE_FDC;
+
+            break;
+        case StorageBus_Null:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Unsupported null storage bus"));
+
+            goto cleanup;
+        }
+
+        if (type != VIR_DOMAIN_CONTROLLER_TYPE_LAST) {
+            cont = virDomainDefAddController(def, type, -1, model);
+            if (!cont) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to add %s controller type definition"),
+                               virDomainControllerTypeToString(type));
+                goto cleanup;
+            }
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    gVBoxAPI.UArray.vboxArrayRelease(&storageControllers);
+
+    return ret;
+}
+
+
 static void
 vboxDumpIDEHDDs(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
@@ -3993,6 +4100,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (vboxDumpVideo(def, data, machine) < 0)
         goto cleanup;
     if (vboxDumpDisplay(def, data, machine) < 0)
+        goto cleanup;
+    if (vboxDumpStorageControllers(def, machine) < 0)
         goto cleanup;
 
     vboxDumpIDEHDDs(def, data, machine);
