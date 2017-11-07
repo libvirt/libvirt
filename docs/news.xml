@@ -37,8 +37,82 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          vbox: Add support for configuring storage controllers
+        </summary>
+        <description>
+          The VirtualBox driver now supports the <code>&lt;controller&gt;</code>
+          element in the domain XML for configuring storage controllers in VBOX
+          VMs.  Additionally, libvirt's domain XML schema was updated to allow
+          optional <code>model</code> attribute for <code>&lt;controller
+              type='ide'&gt;</code> which is used by the VBOX driver to set the
+          IDE controller model to be one of 'piix4', 'piix4' (default), or
+          'ich6'.  Finally, with this change <code>dumpxml</code> generates
+          <code>&lt;controller&gt;</code> elements that correspond to current
+          VBOX VM storage controller configuration.
+        </description>
+      </change>
+      <change>
+        <summary>
+          vbox: Add support for attaching empty removable disks
+        </summary>
+        <description>
+          The VirutalBox driver now supports adding CD-ROM and floppy disk
+          devices that do not have the disk source specified. Previously such
+          devices were silently ignored.
+        </description>
+      </change>
+      <change>
+        <summary>
+          vbox: Add support for attaching SAS storage controllers
+        </summary>
+        <description>
+          In VirtualBox, SCSI and SAS are distinct controller types whereas
+          libvirt does not make such distinction. Therefore, the VBOX driver was
+          updated to allow attaching SAS controllers via <code>&lt;controller
+              type='scsi' model='lsisas1068'&gt;</code> element. If there are
+          both SCSI and SAS controllers present in the VBOX VM, the domain XML
+          can associate the disk device using the <code>&lt;address&gt;</code>
+          element with the <code>controller</code> attribute, and optionally,
+          set the port via <code>unit</code> attribute.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          vbox: Do not ignore failures to attach disk devices when defining
+        </summary>
+        <description>
+          The <code>define</code> now fails and reports an error if any of the
+          <code>controller</code> or <code>disk</code> devices specified in the
+          domain XML fail to attach to the VirtualBox VM.
+        </description>
+      </change>
+      <change>
+        <summary>
+          vbox: Fix dumpxml to always output disk devices
+        </summary>
+        <description>
+          The VirtualBox driver was ignoring any disk devices in
+          <code>dumpxml</code> output if there was a SAS storage controller
+          attached to the VM.
+        </description>
+      </change>
+      <change>
+        <summary>
+          vbox: Fix dumpxml to always generate valid domain XML
+        </summary>
+        <description>
+          When a VirtualBox VM has multiple disks attached, each to a different
+          storage controller that uses 'sd' prefix for block device names e.g.
+          one disk attached to SATA and one to SCSI controller, it no longer
+          generates XML where both would have 'sda' device name assigned.
+          Instead it properly assigns 'sda' and 'sdb' to those disks in the
+          order of appearance.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.9.0" date="2017-11-02">
