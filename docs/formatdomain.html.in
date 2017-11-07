@@ -6100,7 +6100,10 @@ qemu-kvm -net nic,model=? /dev/null
               TCP port number (with -1 as legacy syntax indicating that it should
               be auto-allocated). The <code>autoport</code> attribute is the new
               preferred syntax for indicating auto-allocation of the TCP port to
-              use. The <code>multiUser</code> attribute is a boolean deciding
+              use. In the VirtualBox driver, the <code>autoport</code> will make
+              the hypervisor pick available port from 3389-3689 range when the VM
+              is started. The chosen port will be reflected in the <code>port</code>
+              attribute. The <code>multiUser</code> attribute is a boolean deciding
               whether multiple simultaneous connections to the VM are permitted.
               The <code>replaceUser</code> attribute is a boolean deciding whether
               the existing connection must be dropped and a new connection must
