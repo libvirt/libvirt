@@ -1578,6 +1578,26 @@ mymain(void)
                        "<source protocol='iscsi' name='iqn.2016-12.com.virttest:emulated-iscsi-noauth.target/6'>\n"
                        "  <host name='test.org' port='1234'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"iscsi\","
+                                       "\"transport\":\"tcp\","
+                                       "\"portal\":\"[2001::0]:1234\","
+                                       "\"target\":\"iqn.2016-12.com.virttest:emulated-iscsi-noauth.target\","
+                                       "\"lun\":6"
+                                      "}"
+                            "}",
+                       "<source protocol='iscsi' name='iqn.2016-12.com.virttest:emulated-iscsi-noauth.target/6'>\n"
+                       "  <host name='[2001::0]' port='1234'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"iscsi\","
+                                       "\"transport\":\"tcp\","
+                                       "\"portal\":\"[2001::0]\","
+                                       "\"target\":\"iqn.2016-12.com.virttest:emulated-iscsi-noauth.target\","
+                                       "\"lun\":6"
+                                      "}"
+                            "}",
+                       "<source protocol='iscsi' name='iqn.2016-12.com.virttest:emulated-iscsi-noauth.target/6'>\n"
+                       "  <host name='[2001::0]' port='3260'/>\n"
+                       "</source>\n");
     TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"sheepdog\","
                                        "\"vdi\":\"test\","
                                        "\"server\":{ \"type\":\"inet\","

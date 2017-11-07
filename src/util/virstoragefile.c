@@ -3016,7 +3016,8 @@ virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
     if (VIR_STRDUP(src->hosts->name, portal) < 0)
         goto cleanup;
 
-    if ((port = strchr(src->hosts->name, ':'))) {
+    if ((port = strrchr(src->hosts->name, ':')) &&
+        !strchr(port, ']')) {
         if (virStringParsePort(port + 1, &src->hosts->port) < 0)
             goto cleanup;
 
