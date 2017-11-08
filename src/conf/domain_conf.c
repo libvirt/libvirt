@@ -4946,6 +4946,18 @@ virDomainDefPostParseCommon(virDomainDefPtr def,
             return -1;
     }
 
+    if (def->nserials != 0) {
+        virDomainDeviceDef device = {
+            .type = VIR_DOMAIN_DEVICE_CHR,
+            .data.chr = def->serials[0],
+        };
+
+        /* serials[0] might have been added in AddImplicitDevices, after we've
+         * done the per-device post-parse */
+        if (virDomainDefPostParseDeviceIterator(def, &device, NULL, data) < 0)
+            return -1;
+    }
+
     /* clean up possibly duplicated metadata entries */
     virXMLNodeSanitizeNamespaces(def->metadata);
 
