@@ -1647,10 +1647,7 @@ qemuDomainSecretPrepare(virConnectPtr conn,
     size_t i;
     int ret = -1;
 
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (qemuDomainSecretDiskPrepare(conn, priv, vm->def->disks[i]) < 0)
-            goto cleanup;
-    }
+    /* disk secrets are prepared when preparing disks */
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
         if (qemuDomainSecretHostdevPrepare(conn, priv,

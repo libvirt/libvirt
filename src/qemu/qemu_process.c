@@ -5343,6 +5343,7 @@ static int
 qemuProcessPrepareDomainStorage(virConnectPtr conn,
                                 virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
+                                qemuDomainObjPrivatePtr priv,
                                 virQEMUDriverConfigPtr cfg,
                                 unsigned int flags)
 {
@@ -5362,6 +5363,9 @@ qemuProcessPrepareDomainStorage(virConnectPtr conn,
         }
 
         if (qemuDomainPrepareDiskSourceTLS(disk->src, cfg) < 0)
+            return -1;
+
+        if (qemuDomainSecretDiskPrepare(conn, priv, disk) < 0)
             return -1;
     }
 
@@ -5467,18 +5471,18 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (qemuProcessSetupGraphics(driver, vm, flags) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Setting up storage");
-    if (qemuProcessPrepareDomainStorage(conn, driver, vm, cfg, flags) < 0)
-        goto cleanup;
-
     VIR_DEBUG("Create domain masterKey");
     if (qemuDomainMasterKeyCreate(vm) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Setting up storage");
+    if (qemuProcessPrepareDomainStorage(conn, driver, vm, priv, cfg, flags) < 0)
         goto cleanup;
 
     VIR_DEBUG("Prepare chardev source backends for TLS");
     qemuDomainPrepareChardevSource(vm->def, cfg);
 
-    VIR_DEBUG("Add secrets to disks, hostdevs, and chardevs");
+    VIR_DEBUG("Add secrets to hostdevs and chardevs");
     if (qemuDomainSecretPrepare(conn, driver, vm) < 0)
         goto cleanup;
 
