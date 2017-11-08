@@ -10251,7 +10251,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
                               serial->info.alias);
         }
     } else {
-        switch (serial->targetType) {
+        switch ((virDomainChrSerialTargetType) serial->targetType) {
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_SERIAL)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -10290,6 +10290,11 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
                 goto error;
             }
             break;
+
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Invalid target type for serial device"));
+            goto error;
         }
 
         virBufferAsprintf(&cmd, "%s,chardev=char%s,id=%s",

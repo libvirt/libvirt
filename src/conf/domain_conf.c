@@ -4037,26 +4037,39 @@ virDomainDefAddConsoleCompat(virDomainDefPtr def)
             def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
         }
     } else if (def->os.type == VIR_DOMAIN_OSTYPE_HVM && def->nserials > 0 &&
-               def->serials[0]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
-               def->serials[0]->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA) {
-        /* Create a stub console to match the serial port.
-         * console[0] either does not exist
-         *                or has a different type than SERIAL or NONE.
-         */
-        virDomainChrDefPtr chr;
-        if (!(chr = virDomainChrDefNew(NULL)))
-            return -1;
+               def->serials[0]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
 
-        if (VIR_INSERT_ELEMENT(def->consoles,
-                               0,
-                               def->nconsoles,
-                               chr) < 0) {
-            virDomainChrDefFree(chr);
-            return -1;
+        switch ((virDomainChrSerialTargetType) def->serials[0]->targetType) {
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA: {
+
+            /* Create a stub console to match the serial port.
+             * console[0] either does not exist
+             *                or has a different type than SERIAL or NONE.
+             */
+            virDomainChrDefPtr chr;
+            if (!(chr = virDomainChrDefNew(NULL)))
+                return -1;
+
+            if (VIR_INSERT_ELEMENT(def->consoles,
+                                   0,
+                                   def->nconsoles,
+                                   chr) < 0) {
+                virDomainChrDefFree(chr);
+                return -1;
+            }
+
+            def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
+            def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+
+            break;
         }
 
-        def->consoles[0]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
-        def->consoles[0]->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
+            /* Nothing to do */
+            break;
+        }
     }
 
     return 0;
