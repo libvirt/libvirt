@@ -5,20 +5,18 @@ USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc64 \
--name QEMUGuest1 \
+-name guest \
 -S \
 -M pseries \
--cpu POWER7 \
 -m 512 \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
 -nographic \
 -nodefconfig \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,\
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -boot c \
--usb \
 -chardev pty,id=charserial0 \
 -device spapr-vty,chardev=charserial0,id=serial0,reg=0x30000000

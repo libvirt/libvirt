@@ -3585,6 +3585,7 @@
         <value>isa-serial</value>
         <value>usb-serial</value>
         <value>pci-serial</value>
+        <value>spapr-vio-serial</value>
       </choice>
     </attribute>
   </define>
@@ -3596,6 +3597,7 @@
           <value>isa-serial</value>
           <value>usb-serial</value>
           <value>pci-serial</value>
+          <value>spapr-vty</value>
         </choice>
       </attribute>
     </element>

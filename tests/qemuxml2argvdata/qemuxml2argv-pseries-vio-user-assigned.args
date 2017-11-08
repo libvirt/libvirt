@@ -25,6 +25,6 @@ server,nowait \
 -device scsi-disk,bus=scsi1.0,channel=0,scsi-id=0,lun=0,\
 drive=drive-scsi1-0-0-0,id=scsi1-0-0-0 \
 -chardev pty,id=charserial0 \
--device spapr-vty,chardev=charserial0,reg=0x20000000 \
+-device spapr-vty,chardev=charserial0,id=serial0,reg=0x20000000 \
 -chardev pty,id=charserial1 \
--device spapr-vty,chardev=charserial1,reg=0x30001000
+-device spapr-vty,chardev=charserial1,id=serial1,reg=0x30001000

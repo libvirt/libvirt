@@ -1,5 +1,5 @@
 <domain type='qemu'>
-  <name>QEMUGuest1</name>
+  <name>guest</name>
   <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
   <memory unit='KiB'>524288</memory>
   <currentMemory unit='KiB'>524288</currentMemory>
@@ -14,22 +14,16 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
-    <controller type='usb' index='0'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
-    </controller>
+    <controller type='usb' index='0' model='none'/>
     <controller type='pci' index='0' model='pci-root'>
       <model name='spapr-pci-host-bridge'/>
       <target index='0'/>
     </controller>
-    <serial type='pty'>
-      <target type='spapr-vio-serial' port='0'>
-        <model name='spapr-vty'/>
-      </target>
-      <address type='spapr-vio' reg='0x30000000'/>
-    </serial>
+    <controller type='virtio-serial' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </controller>
     <console type='pty'>
-      <target type='serial' port='0'/>
-      <address type='spapr-vio' reg='0x30000000'/>
+      <target type='virtio' port='0'/>
     </console>
     <memballoon model='none'/>
     <panic model='pseries'/>

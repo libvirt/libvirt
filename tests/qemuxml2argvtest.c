@@ -1877,6 +1877,22 @@ mymain(void)
                         QEMU_CAPS_MACHINE_OPT,
                         QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
 
+    DO_TEST("pseries-serial-native",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
+    DO_TEST("pseries-serial+console-native",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
+    DO_TEST("pseries-serial-compat",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
+    DO_TEST("pseries-console-native",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
+    DO_TEST("pseries-console-virtio",
+            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST_PARSE_ERROR("pseries-serial-invalid-machine", NONE);
+
     DO_TEST("disk-ide-drive-split",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_IDE_CD);
