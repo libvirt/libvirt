@@ -8545,22 +8545,20 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     char *idx = NULL;
     int ret = -1;
 
-    if (!(ctxt->node = virXPathNode("./backingStore[*]", ctxt))) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (!(type = virXMLPropString(ctxt->node, "type"))) {
-        /* terminator does not have a type */
-        if (VIR_ALLOC(backingStore) < 0)
-            goto cleanup;
-
+    if (!(ctxt->node = virXPathNode("./backingStore", ctxt))) {
         ret = 0;
         goto cleanup;
     }
 
     if (VIR_ALLOC(backingStore) < 0)
         goto cleanup;
+
+    /* terminator does not have a type */
+    if (!(type = virXMLPropString(ctxt->node, "type"))) {
+        VIR_STEAL_PTR(src->backingStore, backingStore);
+        ret = 0;
+        goto cleanup;
+    }
 
     if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
         (idx = virXMLPropString(ctxt->node, "index")) &&

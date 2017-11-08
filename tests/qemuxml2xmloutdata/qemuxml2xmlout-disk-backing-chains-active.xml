@@ -49,6 +49,7 @@
                 <backingStore type='file' index='6'>
                   <format type='raw'/>
                   <source file='/tmp/Fedora-17-x86_64-Live-KDE.iso'/>
+                  <backingStore/>
                 </backingStore>
               </backingStore>
             </backingStore>
@@ -63,6 +64,7 @@
       <source protocol='gluster' name='Volume1/Image'>
         <host name='example.org' port='6000'/>
       </source>
+      <backingStore/>
       <target dev='vdc' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </disk>
@@ -79,6 +81,7 @@
       <backingStore type='file' index='1'>
         <format type='qcow2'/>
         <source file='/tmp/image.qcow'/>
+        <backingStore/>
       </backingStore>
       <target dev='vdd' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
