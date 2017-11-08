@@ -4086,6 +4086,35 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
     return 0;
 }
 
+static int
+qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
+                          const virDomainDef *def,
+                          virQEMUDriverPtr driver,
+                          unsigned int parseFlags)
+{
+    /* set the default console type for S390 arches */
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE &&
+        ARCH_IS_S390(def->os.arch)) {
+        chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO;
+    }
+
+    /* clear auto generated unix socket path for inactive definitions */
+    if (parseFlags & VIR_DOMAIN_DEF_PARSE_INACTIVE) {
+        if (qemuDomainChrDefDropDefaultPath(chr, driver) < 0)
+            return -1;
+
+        /* For UNIX chardev if no path is provided we generate one.
+         * This also implies that the mode is 'bind'. */
+        if (chr->source &&
+            chr->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+            !chr->source->data.nix.path) {
+            chr->source->data.nix.listen = true;
+        }
+    }
+
+    return 0;
+}
 
 static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
@@ -4146,29 +4175,6 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         }
     }
 
-    /* set the default console type for S390 arches */
-    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
-        dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
-        dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE &&
-        ARCH_IS_S390(def->os.arch))
-        dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO;
-
-    /* clear auto generated unix socket path for inactive definitions */
-    if ((parseFlags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
-        dev->type == VIR_DOMAIN_DEVICE_CHR) {
-        virDomainChrDefPtr chr = dev->data.chr;
-        if (qemuDomainChrDefDropDefaultPath(chr, driver) < 0)
-            goto cleanup;
-
-        /* For UNIX chardev if no path is provided we generate one.
-         * This also implies that the mode is 'bind'. */
-        if (chr->source &&
-            chr->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
-            !chr->source->data.nix.path) {
-            chr->source->data.nix.listen = true;
-        }
-    }
-
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
         if (dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
             if ARCH_IS_PPC64(def->os.arch)
@@ -4203,6 +4209,11 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_SHMEM &&
         qemuDomainShmemDefPostParse(dev->data.shmem) < 0)
         goto cleanup;
+
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+        qemuDomainChrDefPostParse(dev->data.chr, def, driver, parseFlags) < 0) {
+        goto cleanup;
+    }
 
     ret = 0;
 
