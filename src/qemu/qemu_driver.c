@@ -911,7 +911,7 @@ qemuStateInitialize(bool privileged,
     /* Get all the running persistent or transient configs first */
     if (virDomainObjListLoadAllConfigs(qemu_driver->domains,
                                        cfg->stateDir,
-                                       NULL, 1,
+                                       NULL, true,
                                        qemu_driver->caps,
                                        qemu_driver->xmlopt,
                                        NULL, NULL) < 0)
@@ -933,7 +933,7 @@ qemuStateInitialize(bool privileged,
     /* Then inactive persistent configs */
     if (virDomainObjListLoadAllConfigs(qemu_driver->domains,
                                        cfg->configDir,
-                                       cfg->autostartDir, 0,
+                                       cfg->autostartDir, false,
                                        qemu_driver->caps,
                                        qemu_driver->xmlopt,
                                        NULL, NULL) < 0)
@@ -1015,7 +1015,7 @@ qemuStateReload(void)
     cfg = virQEMUDriverGetConfig(qemu_driver);
     virDomainObjListLoadAllConfigs(qemu_driver->domains,
                                    cfg->configDir,
-                                   cfg->autostartDir, 0,
+                                   cfg->autostartDir, false,
                                    caps, qemu_driver->xmlopt,
                                    qemuNotifyLoadDomain, qemu_driver);
  cleanup:

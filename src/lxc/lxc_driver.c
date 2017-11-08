@@ -1679,7 +1679,7 @@ static int lxcStateInitialize(bool privileged,
     /* Get all the running persistent or transient configs first */
     if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
                                        cfg->stateDir,
-                                       NULL, 1,
+                                       NULL, true,
                                        caps,
                                        lxc_driver->xmlopt,
                                        NULL, NULL) < 0)
@@ -1690,7 +1690,7 @@ static int lxcStateInitialize(bool privileged,
     /* Then inactive persistent configs */
     if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
                                        cfg->configDir,
-                                       cfg->autostartDir, 0,
+                                       cfg->autostartDir, false,
                                        caps,
                                        lxc_driver->xmlopt,
                                        NULL, NULL) < 0)
@@ -1755,7 +1755,7 @@ lxcStateReload(void)
 
     virDomainObjListLoadAllConfigs(lxc_driver->domains,
                                    cfg->configDir,
-                                   cfg->autostartDir, 0,
+                                   cfg->autostartDir, false,
                                    caps,
                                    lxc_driver->xmlopt,
                                    lxcNotifyLoadDomain, lxc_driver);

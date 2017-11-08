@@ -1294,7 +1294,7 @@ bhyveStateInitialize(bool privileged,
 
     if (virDomainObjListLoadAllConfigs(bhyve_driver->domains,
                                        BHYVE_STATE_DIR,
-                                       NULL, 1,
+                                       NULL, true,
                                        bhyve_driver->caps,
                                        bhyve_driver->xmlopt,
                                        NULL, NULL) < 0)
@@ -1302,7 +1302,7 @@ bhyveStateInitialize(bool privileged,
 
     if (virDomainObjListLoadAllConfigs(bhyve_driver->domains,
                                        BHYVE_CONFIG_DIR,
-                                       BHYVE_AUTOSTART_DIR, 0,
+                                       BHYVE_AUTOSTART_DIR, false,
                                        bhyve_driver->caps,
                                        bhyve_driver->xmlopt,
                                        NULL, NULL) < 0)

@@ -566,7 +566,7 @@ umlStateInitialize(bool privileged,
 
     if (virDomainObjListLoadAllConfigs(uml_driver->domains,
                                        uml_driver->configDir,
-                                       uml_driver->autostartDir, 0,
+                                       uml_driver->autostartDir, false,
                                        uml_driver->caps,
                                        uml_driver->xmlopt,
                                        NULL, NULL) < 0)
@@ -634,7 +634,7 @@ umlStateReload(void)
     umlDriverLock(uml_driver);
     virDomainObjListLoadAllConfigs(uml_driver->domains,
                                    uml_driver->configDir,
-                                   uml_driver->autostartDir, 0,
+                                   uml_driver->autostartDir, false,
                                    uml_driver->caps,
                                    uml_driver->xmlopt,
                                    umlNotifyLoadDomain, uml_driver);
