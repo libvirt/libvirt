@@ -1753,50 +1753,62 @@ mymain(void)
     DO_TEST_PARSE_ERROR("seclabel-device-duplicates", NONE);
 
     DO_TEST("pseries-basic",
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-vio",
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-usb-default",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_PCI_OHCI,
             QEMU_CAPS_PCI_MULTIFUNCTION);
     DO_TEST("pseries-usb-multi",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_PCI_OHCI,
             QEMU_CAPS_PCI_MULTIFUNCTION);
     DO_TEST("pseries-vio-user-assigned",
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST_PARSE_ERROR("pseries-vio-address-clash",
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-nvram", QEMU_CAPS_DEVICE_NVRAM);
     DO_TEST("pseries-usb-kbd", QEMU_CAPS_PCI_OHCI,
             QEMU_CAPS_DEVICE_USB_KBD,
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-cpu-exact",
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST_PARSE_ERROR("pseries-no-parallel",
             QEMU_CAPS_NODEFCONFIG);
 
     qemuTestSetHostArch(driver.caps, VIR_ARCH_PPC64);
     DO_TEST("pseries-cpu-compat", QEMU_CAPS_KVM,
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-cpu-le", QEMU_CAPS_KVM,
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST_FAILURE("pseries-cpu-compat-power9", QEMU_CAPS_KVM);
 
     qemuTestSetHostCPU(driver.caps, cpuPower9);
     DO_TEST("pseries-cpu-compat-power9",
             QEMU_CAPS_KVM,
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
     qemuTestSetHostCPU(driver.caps, NULL);
 
     qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
 
     DO_TEST("pseries-panic-missing",
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-panic-no-address",
+            QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST_FAILURE("pseries-panic-address",
                     QEMU_CAPS_NODEFCONFIG);

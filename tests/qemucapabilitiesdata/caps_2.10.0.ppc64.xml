@@ -178,6 +178,7 @@
   <flag name='vxhs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='machine.pseries.resize-hpt'/>
+  <flag name='spapr-vty'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.10.0)</package>

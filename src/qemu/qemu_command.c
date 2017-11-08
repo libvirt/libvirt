@@ -10221,6 +10221,12 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
     if (qemuDomainIsPSeries(def)) {
         if (serial->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
             serial->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPAPR_VTY)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("spapr-vty not supported in this QEMU binary"));
+                goto error;
+            }
+
             virBufferAsprintf(&cmd, "spapr-vty,chardev=char%s",
                               serial->info.alias);
         }
