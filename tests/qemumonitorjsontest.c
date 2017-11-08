@@ -1810,7 +1810,8 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
                                "        \"tls-hostname\": \"\","
                                "        \"max-bandwidth\": 1234567890,"
                                "        \"downtime-limit\": 500,"
-                               "        \"block-incremental\": true"
+                               "        \"block-incremental\": true,"
+                               "        \"xbzrle-cache-size\": 67108864"
                                "    }"
                                "}") < 0) {
         goto cleanup;
@@ -1867,6 +1868,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
     CHECK_ULONG(maxBandwidth, "max-bandwidth", 1234567890ULL);
     CHECK_ULONG(downtimeLimit, "downtime-limit", 500ULL);
     CHECK_BOOL(blockIncremental, "block-incremental", true);
+    CHECK_ULONG(xbzrleCacheSize, "xbzrle-cache-size", 67108864ULL);
 
 #undef CHECK_NUM
 #undef CHECK_INT

@@ -2833,6 +2833,7 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
     PARSE_ULONG(maxBandwidth, "max-bandwidth");
     PARSE_ULONG(downtimeLimit, "downtime-limit");
     PARSE_BOOL(blockIncremental, "block-incremental");
+    PARSE_ULONG(xbzrleCacheSize, "xbzrle-cache-size");
 
 #undef PARSE_SET
 #undef PARSE_INT
@@ -2898,6 +2899,7 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
     APPEND_ULONG(maxBandwidth, "max-bandwidth");
     APPEND_ULONG(downtimeLimit, "downtime-limit");
     APPEND_BOOL(blockIncremental, "block-incremental");
+    APPEND_ULONG(xbzrleCacheSize, "xbzrle-cache-size");
 
 #undef APPEND
 #undef APPEND_INT

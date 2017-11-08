@@ -673,6 +673,9 @@ struct _qemuMonitorMigrationParams {
 
     bool blockIncremental_set;
     bool blockIncremental;
+
+    bool xbzrleCacheSize_set;
+    unsigned long long xbzrleCacheSize;
 };
 
 int qemuMonitorGetMigrationParams(qemuMonitorPtr mon,

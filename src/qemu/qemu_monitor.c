@@ -2639,7 +2639,7 @@ qemuMonitorSetMigrationParams(qemuMonitorPtr mon,
               "decompressThreads=%d:%d cpuThrottleInitial=%d:%d "
               "cpuThrottleIncrement=%d:%d tlsCreds=%s tlsHostname=%s "
               "maxBandwidth=%d:%llu downtimeLimit=%d:%llu "
-              "blockIncremental=%d:%d",
+              "blockIncremental=%d:%d xbzrleCacheSize=%d:%llu",
               params->compressLevel_set, params->compressLevel,
               params->compressThreads_set, params->compressThreads,
               params->decompressThreads_set, params->decompressThreads,
@@ -2648,7 +2648,8 @@ qemuMonitorSetMigrationParams(qemuMonitorPtr mon,
               NULLSTR(params->tlsCreds), NULLSTR(params->tlsHostname),
               params->maxBandwidth_set, params->maxBandwidth,
               params->downtimeLimit_set, params->downtimeLimit,
-              params->blockIncremental_set, params->blockIncremental);
+              params->blockIncremental_set, params->blockIncremental,
+              params->xbzrleCacheSize_set, params->xbzrleCacheSize);
 
     QEMU_CHECK_MONITOR_JSON(mon);
 
