@@ -8352,7 +8352,7 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
         while (j < nmounts) {
             char *c = STRSKIP(mounts[j], mounts[i]);
 
-            if (c && *c == '/') {
+            if (c && (*c == '/' || *c == '\0')) {
                 VIR_DEBUG("Dropping path %s because of %s", mounts[j], mounts[i]);
                 VIR_DELETE_ELEMENT(mounts, j, nmounts);
             } else {
