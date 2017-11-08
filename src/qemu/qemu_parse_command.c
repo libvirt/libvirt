@@ -658,10 +658,8 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                           0) < 0)
         return NULL;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainDiskDefNew(xmlopt)))
         goto cleanup;
-    if (VIR_ALLOC(def->src) < 0)
-        goto error;
 
     if (qemuDomainIsPSeries(dom))
         def->bus = VIR_DOMAIN_DISK_BUS_SCSI;
