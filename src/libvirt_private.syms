@@ -1375,6 +1375,7 @@ virBitmapParseUnlimited;
 virBitmapSetAll;
 virBitmapSetBit;
 virBitmapSetBitExpand;
+virBitmapShrink;
 virBitmapSize;
 virBitmapSubtract;
 virBitmapToData;

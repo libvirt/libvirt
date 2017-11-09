@@ -1196,3 +1196,26 @@ virBitmapSubtract(virBitmapPtr a,
     for (i = 0; i < max; i++)
         a->map[i] &= ~b->map[i];
 }
+
+
+/**
+ * virBitmapShrink:
+ * @map: Pointer to bitmap
+ * @b: last bit position to be excluded from bitmap
+ *
+ * Resizes the bitmap so that no more than @b bits will fit into it.  Nothing
+ * will change if the size is already smaller than @b.
+ *
+ * NB: Does not adjust the map->map_len so that a subsequent virBitmapExpand
+ * doesn't necessarily need to reallocate.
+ */
+void
+virBitmapShrink(virBitmapPtr map,
+                size_t b)
+{
+    if (!map)
+        return;
+
+    if (map->max_bit >= b)
+        map->max_bit = b;
+}
