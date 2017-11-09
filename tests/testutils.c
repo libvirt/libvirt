@@ -92,7 +92,7 @@ bool virTestOOMActive(void)
 
 static int virTestUseTerminalColors(void)
 {
-    return isatty(STDIN_FILENO);
+    return isatty(STDOUT_FILENO);
 }
 
 static unsigned int
