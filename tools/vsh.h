@@ -188,7 +188,8 @@ struct _vshCmdDef {
 struct _vshCmd {
     const vshCmdDef *def;       /* command definition */
     vshCmdOpt *opts;            /* list of command arguments */
-    vshCmd *next;      /* next command */
+    vshCmd *next;               /* next command */
+    bool skipChecks;            /* skip validity checks when retrieving opts */
 };
 
 /*
