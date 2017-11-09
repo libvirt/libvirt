@@ -1886,9 +1886,17 @@ qemuBuildDriveDevStr(const virDomainDef *def,
             virBufferAddLit(&opt, "ide-drive");
         }
 
-        if (!(contAlias = virDomainControllerAliasFind(def, VIR_DOMAIN_CONTROLLER_TYPE_IDE,
-                                                       disk->info.addr.drive.controller)))
-           goto error;
+        /* When domain has builtin IDE controller we don't put it onto cmd
+         * line. Therefore we can't set its alias. In that case, use the
+         * default one. */
+        if (qemuDomainHasBuiltinIDE(def)) {
+            contAlias = "ide";
+        } else {
+            if (!(contAlias = virDomainControllerAliasFind(def,
+                                                           VIR_DOMAIN_CONTROLLER_TYPE_IDE,
+                                                           disk->info.addr.drive.controller)))
+                goto error;
+        }
         virBufferAsprintf(&opt, ",bus=%s.%d,unit=%d",
                           contAlias,
                           disk->info.addr.drive.bus,

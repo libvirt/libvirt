@@ -44,8 +44,8 @@ id=drive-ua-myEncryptedDisk1 \
 id=ua-myEncryptedDisk1 \
 -drive file=/home/zippy/tmp/install-amd64-minimal-20140619.iso,format=raw,\
 if=none,media=cdrom,id=drive-ua-WhatAnAwesomeCDROM,readonly=on,cache=none \
--device ide-drive,bus=ua-DoesAnybodyStillUseIDE.1,unit=0,\
-drive=drive-ua-WhatAnAwesomeCDROM,id=ua-WhatAnAwesomeCDROM \
+-device ide-drive,bus=ide.1,unit=0,drive=drive-ua-WhatAnAwesomeCDROM,\
+id=ua-WhatAnAwesomeCDROM \
 -device virtio-net-pci,vlan=0,id=ua-CheckoutThisNIC,mac=52:54:00:d6:c0:0b,\
 bus=pci.0,addr=0x3 \
 -net tap,fd=3,vlan=0,name=hostua-CheckoutThisNIC \
