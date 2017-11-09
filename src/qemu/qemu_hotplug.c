@@ -259,6 +259,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
+    qemuDomainSecretInfoPtr secinfo = NULL;
     const char *format = NULL;
     char *sourcestr = NULL;
 
@@ -267,6 +268,9 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                        _("missing disk device alias name for %s"), disk->dst);
         goto cleanup;
     }
+
+    if (srcPriv)
+        secinfo = srcPriv->secinfo;
 
     if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
         disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM) {
@@ -300,7 +304,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     }
 
     if (!virStorageSourceIsEmpty(newsrc)) {
-        if (qemuGetDriveSourceString(newsrc, srcPriv->secinfo, &sourcestr) < 0)
+        if (qemuGetDriveSourceString(newsrc, secinfo, &sourcestr) < 0)
             goto error;
 
         if (virStorageSourceGetActualType(newsrc) != VIR_STORAGE_TYPE_DIR) {
@@ -371,8 +375,8 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
     virJSONValuePtr secobjProps = NULL;
     virJSONValuePtr encobjProps = NULL;
     qemuDomainStorageSourcePrivatePtr srcPriv;
-    qemuDomainSecretInfoPtr secinfo;
-    qemuDomainSecretInfoPtr encinfo;
+    qemuDomainSecretInfoPtr secinfo = NULL;
+    qemuDomainSecretInfoPtr encinfo = NULL;
 
     if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
@@ -384,13 +388,16 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
         goto error;
 
     srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
-    secinfo = srcPriv->secinfo;
+    if (srcPriv) {
+        secinfo = srcPriv->secinfo;
+        encinfo = srcPriv->encinfo;
+    }
+
     if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
         if (qemuBuildSecretInfoProps(secinfo, &secobjProps) < 0)
             goto error;
     }
 
-    encinfo = srcPriv->encinfo;
     if (encinfo && qemuBuildSecretInfoProps(encinfo, &encobjProps) < 0)
         goto error;
 

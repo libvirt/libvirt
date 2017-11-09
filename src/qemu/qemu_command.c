@@ -1501,11 +1501,16 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
 {
     int actualType = virStorageSourceGetActualType(disk->src);
     qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
-    qemuDomainSecretInfoPtr secinfo = srcpriv->secinfo;
-    qemuDomainSecretInfoPtr encinfo = srcpriv->encinfo;
+    qemuDomainSecretInfoPtr secinfo = NULL;
+    qemuDomainSecretInfoPtr encinfo = NULL;
     virJSONValuePtr srcprops = NULL;
     char *source = NULL;
     int ret = -1;
+
+    if (srcpriv) {
+        secinfo = srcpriv->secinfo;
+        encinfo = srcpriv->encinfo;
+    }
 
     if (qemuDiskSourceNeedsProps(disk->src) &&
         !(srcprops = qemuDiskSourceGetProps(disk->src)))
@@ -2191,8 +2196,13 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         bool driveBoot = false;
         virDomainDiskDefPtr disk = def->disks[i];
         qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
-        qemuDomainSecretInfoPtr secinfo = srcPriv->secinfo;
-        qemuDomainSecretInfoPtr encinfo = srcPriv->encinfo;
+        qemuDomainSecretInfoPtr secinfo = NULL;
+        qemuDomainSecretInfoPtr encinfo = NULL;
+
+        if (srcPriv) {
+            secinfo = srcPriv->secinfo;
+            encinfo = srcPriv->encinfo;
+        }
 
         if (disk->info.bootIndex) {
             bootindex = disk->info.bootIndex;
