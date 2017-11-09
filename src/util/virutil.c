@@ -485,6 +485,57 @@ virFormatIntDecimal(char *buf, size_t buflen, int val)
 }
 
 
+/**
+ * virFormatIntPretty
+ *
+ * @val: Value in bytes to be shortened
+ * @unit: unit to be used
+ *
+ * Similar to vshPrettyCapacity, but operates on integers and not doubles
+ *
+ * Returns shortened value that can be used with @unit.
+ */
+unsigned long long
+virFormatIntPretty(unsigned long long val,
+                   const char **unit)
+{
+    unsigned long long limit = 1024;
+
+    if (val % limit || val == 0) {
+        *unit = "B";
+        return val;
+    }
+    limit *= 1024;
+    if (val % limit) {
+        *unit = "KiB";
+        return val / (limit / 1024);
+    }
+    limit *= 1024;
+    if (val % limit) {
+        *unit = "MiB";
+        return val / (limit / 1024);
+    }
+    limit *= 1024;
+    if (val % limit) {
+        *unit = "GiB";
+        return val / (limit / 1024);
+    }
+    limit *= 1024;
+    if (val % limit) {
+        *unit = "TiB";
+        return val / (limit / 1024);
+    }
+    limit *= 1024;
+    if (val % limit) {
+        *unit = "PiB";
+        return val / (limit / 1024);
+    }
+    limit *= 1024;
+    *unit = "EiB";
+    return val / (limit / 1024);
+}
+
+
 const char *virEnumToString(const char *const*types,
                             unsigned int ntypes,
                             int type)

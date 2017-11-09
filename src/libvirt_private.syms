@@ -2927,6 +2927,7 @@ virDoubleToStr;
 virEnumFromString;
 virEnumToString;
 virFormatIntDecimal;
+virFormatIntPretty;
 virGetDeviceID;
 virGetDeviceUnprivSGIO;
 virGetEnvAllowSUID;
