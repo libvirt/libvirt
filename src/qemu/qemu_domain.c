@@ -1402,13 +1402,18 @@ qemuDomainSecretStorageSourcePrepare(virConnectPtr conn,
                                      const char *encalias)
 {
     qemuDomainStorageSourcePrivatePtr srcPriv;
+    bool hasAuth = qemuDomainSecretDiskCapable(src);
+    bool hasEnc = qemuDomainDiskHasEncryptionSecret(src);
+
+    if (!hasAuth && !hasEnc)
+        return 0;
 
     if (!(src->privateData = qemuDomainStorageSourcePrivateNew()))
         return -1;
 
     srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
 
-    if (qemuDomainSecretDiskCapable(src)) {
+    if (hasAuth) {
         virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
 
         if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
@@ -1421,7 +1426,7 @@ qemuDomainSecretStorageSourcePrepare(virConnectPtr conn,
               return -1;
     }
 
-    if (qemuDomainDiskHasEncryptionSecret(src)) {
+    if (hasEnc) {
         if (!(srcPriv->encinfo =
               qemuDomainSecretInfoNew(conn, priv, encalias,
                                       VIR_SECRET_USAGE_TYPE_VOLUME, NULL,
