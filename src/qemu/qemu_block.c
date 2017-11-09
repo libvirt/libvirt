@@ -958,7 +958,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
     case VIR_STORAGE_TYPE_VOLUME:
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
-        break;
+        return NULL;
 
     case VIR_STORAGE_TYPE_NETWORK:
         switch ((virStorageNetProtocol) src->protocol) {
@@ -1008,7 +1008,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
 
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
-            break;
+            return NULL;
         }
         break;
     }
