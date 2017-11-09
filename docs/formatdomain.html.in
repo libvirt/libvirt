@@ -6547,8 +6547,9 @@ qemu-kvm -net nic,model=? /dev/null
       with x86 guests), <code>usb-serial</code> (usable whenever USB support
       is available) and <code>pci-serial</code> (usable whenever PCI support
       is available); <span class="since">since 3.10.0</span>,
-      <code>spapr-vio-serial</code> (usable with ppc64/pseries guests)
-      is available as well.
+      <code>spapr-vio-serial</code> (usable with ppc64/pseries guests) and
+      <code>system-serial</code> (usable with aarch64/virt guests) are
+      available as well.
     </p>
 
     <p>
@@ -6560,7 +6561,8 @@ qemu-kvm -net nic,model=? /dev/null
       target type); <code>pci-serial</code>
       (usable with the <code>pci-serial</code> target type);
       <code>spapr-vty</code> (usable with the <code>spapr-vio-serial</code>
-      target type).
+      target type); <code>pl011</code> (usable with the
+      <code>system-serial</code> target type).
     </p>
 
     <p>
@@ -6569,12 +6571,13 @@ qemu-kvm -net nic,model=? /dev/null
     </p>
 
     <p>
-      All of the target types support configuring the guest-visible device
+      Most target types support configuring the guest-visible device
       address as <a href="#elementsAddress">documented above</a>; more
       specifically, acceptable address types are <code>isa</code> (for
       <code>isa-serial</code>), <code>usb</code> (for <code>usb-serial</code>),
       <code>pci</code> (for <code>pci-serial</code>) and <code>spapr-vio</code>
-      (for <code>spapr-vio-serial</code>).
+      (for <code>spapr-vio-serial</code>). The <code>system-serial</code>
+      target type doesn't support specifying an address.
     </p>
 
     <p>

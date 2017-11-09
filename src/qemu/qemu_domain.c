@@ -3472,6 +3472,7 @@ qemuDomainChrSerialTargetTypeToAddressType(int targetType)
         return VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO:
         return VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
         break;
@@ -3493,6 +3494,8 @@ qemuDomainChrSerialTargetModelToTargetType(int targetModel)
         return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SPAPR_VTY:
         return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011:
+        return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST:
         break;
@@ -3529,6 +3532,16 @@ qemuDomainChrTargetDefValidate(const virDomainChrDef *chr)
             }
             break;
 
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM:
+            if (chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Target type '%s' cannot have an "
+                                 "associated address"),
+                               virDomainChrSerialTargetTypeToString(chr->targetType));
+                return -1;
+            }
+            break;
+
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
             break;
@@ -3540,6 +3553,7 @@ qemuDomainChrTargetDefValidate(const virDomainChrDef *chr)
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_USB_SERIAL:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PCI_SERIAL:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SPAPR_VTY:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011:
 
             expected = qemuDomainChrSerialTargetModelToTargetType(chr->targetModel);
 
@@ -3593,6 +3607,12 @@ qemuDomainChrDefValidate(const virDomainChrDef *dev,
         if (!qemuDomainIsPSeries(def) &&
             (dev->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO ||
              dev->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SPAPR_VTY)) {
+            isCompatible = false;
+        }
+
+        if (!qemuDomainIsVirt(def) &&
+            (dev->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM ||
+             dev->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011)) {
             isCompatible = false;
         }
 
@@ -4247,6 +4267,8 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA;
         } else if (qemuDomainIsPSeries(def)) {
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO;
+        } else if (qemuDomainIsVirt(def)) {
+            chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM;
         }
     }
 
@@ -4265,6 +4287,9 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
             break;
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO:
             chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SPAPR_VTY;
+            break;
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM:
+            chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011;
             break;
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
@@ -5182,6 +5207,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
             if (flags & VIR_DOMAIN_XML_MIGRATABLE) {
                 switch ((virDomainChrSerialTargetType) serial->targetType) {
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO:
+                case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM:
                     serial->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE;
                     serial->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE;
                     break;

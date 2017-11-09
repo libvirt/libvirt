@@ -1,0 +1,27 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-aarch64 \
+-name guest \
+-S \
+-M virt \
+-m 512 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
+-nographic \
+-nodefconfig \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-no-acpi \
+-boot c \
+-device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\
+addr=0x1 \
+-device pcie-root-port,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
+-device qemu-xhci,id=usb,bus=pci.1,addr=0x0 \
+-chardev pty,id=charserial0 \
+-device usb-serial,chardev=charserial0,id=serial0,bus=usb.0,port=1

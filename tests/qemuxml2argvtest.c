@@ -1900,6 +1900,33 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST_PARSE_ERROR("pseries-serial-invalid-machine", NONE);
 
+    DO_TEST("mach-virt-serial-native",
+            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("mach-virt-serial+console-native",
+            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("mach-virt-serial-compat",
+            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("mach-virt-serial-pci",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_OBJECT_GPEX,
+            QEMU_CAPS_PCI_MULTIFUNCTION,
+            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PCI_SERIAL);
+    DO_TEST("mach-virt-serial-usb",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_OBJECT_GPEX,
+            QEMU_CAPS_PCI_MULTIFUNCTION,
+            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
+            QEMU_CAPS_DEVICE_QEMU_XHCI,
+            QEMU_CAPS_DEVICE_USB_SERIAL);
+    DO_TEST("mach-virt-console-native",
+            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("mach-virt-console-virtio",
+            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST_PARSE_ERROR("mach-virt-serial-invalid-machine", NONE);
+
     DO_TEST("disk-ide-drive-split",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_IDE_CD);

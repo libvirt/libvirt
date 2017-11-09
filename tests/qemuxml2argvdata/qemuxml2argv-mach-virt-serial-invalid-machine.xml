@@ -1,0 +1,21 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory unit='KiB'>524288</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' model='none'/>
+    <!-- The pl011 serial console can only be used for mach-virt guests,
+         so this should be rejected -->
+    <serial type='pty'>
+      <target type='system-serial'>
+        <model name='pl011'/>
+      </target>
+    </serial>
+    <memballoon model='none'/>
+  </devices>
+</domain>

@@ -790,6 +790,32 @@ mymain(void)
     DO_TEST("pseries-console-virtio",
             QEMU_CAPS_NODEFCONFIG);
 
+    DO_TEST("mach-virt-serial-native",
+            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("mach-virt-serial+console-native",
+            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("mach-virt-serial-compat",
+            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("mach-virt-serial-pci",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_OBJECT_GPEX,
+            QEMU_CAPS_PCI_MULTIFUNCTION,
+            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PCI_SERIAL);
+    DO_TEST("mach-virt-serial-usb",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_OBJECT_GPEX,
+            QEMU_CAPS_PCI_MULTIFUNCTION,
+            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
+            QEMU_CAPS_DEVICE_QEMU_XHCI,
+            QEMU_CAPS_DEVICE_USB_SERIAL);
+    DO_TEST("mach-virt-console-native",
+            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("mach-virt-console-virtio",
+            QEMU_CAPS_NODEFCONFIG);
+
     DO_TEST("balloon-device-auto", NONE);
     DO_TEST("balloon-device-period", NONE);
     DO_TEST("channel-virtio-auto", NONE);
