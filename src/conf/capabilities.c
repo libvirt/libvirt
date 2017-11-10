@@ -1561,6 +1561,23 @@ virCapsHostCacheBankFree(virCapsHostCacheBankPtr ptr)
     VIR_FREE(ptr);
 }
 
+
+static int
+virCapsHostCacheBankSorter(const void *a,
+                           const void *b)
+{
+    virCapsHostCacheBankPtr ca = *(virCapsHostCacheBankPtr *)a;
+    virCapsHostCacheBankPtr cb = *(virCapsHostCacheBankPtr *)b;
+
+    if (ca->level < cb->level)
+        return -1;
+    if (ca->level > cb->level)
+        return 1;
+
+    return ca->id - cb->id;
+}
+
+
 int
 virCapabilitiesInitCaches(virCapsPtr caps)
 {
@@ -1699,6 +1716,12 @@ virCapabilitiesInitCaches(virCapsPtr caps)
         if (rv < 0)
             goto cleanup;
     }
+
+    /* Sort the array in order for the tests to be predictable.  This way we can
+     * still traverse the directory instead of guessing names (in case there is
+     * 'index1' and 'index3' but no 'index2'). */
+    qsort(caps->host.caches, caps->host.ncaches,
+          sizeof(*caps->host.caches), virCapsHostCacheBankSorter);
 
     ret = 0;
  cleanup:
