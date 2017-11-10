@@ -4099,6 +4099,27 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
         chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO;
     }
 
+    /* Historically, isa-serial and the default matched, so in order to
+     * maintain backwards compatibility we map them here. The actual default
+     * will be picked below based on the architecture and machine type. */
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+        chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA) {
+        chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE;
+    }
+
+    /* Set the default serial type */
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+        chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE) {
+        if (ARCH_IS_X86(def->os.arch)) {
+            chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA;
+        } else if (qemuDomainIsPSeries(def)) {
+            /* Setting TYPE_ISA here is just a temporary hack to reduce test
+             * suite churn. Later on we will have a proper serial type for
+             * pSeries and this line will be updated accordingly. */
+            chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA;
+        }
+    }
+
     /* clear auto generated unix socket path for inactive definitions */
     if (parseFlags & VIR_DOMAIN_DEF_PARSE_INACTIVE) {
         if (qemuDomainChrDefDropDefaultPath(chr, driver) < 0)

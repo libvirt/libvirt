@@ -9259,6 +9259,14 @@ qemuChrIsPlatformDevice(const virDomainDef *def,
             return true;
     }
 
+    /* If we got all the way here and we're still stuck with the default
+     * target type for a serial device, it means we have no clue what kind of
+     * device we're talking about and we must treat it as a platform device. */
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+        chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE) {
+        return true;
+    }
+
     return false;
 }
 
@@ -10407,7 +10415,12 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
             }
             break;
 
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
+            /* Except from _LAST, which is just a guard value and will never
+             * be used, all of the above are platform devices, which means
+             * qemuBuildSerialCommandLine() will have taken the appropriate
+             * branch and we will not have ended up here. */
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Invalid target type for serial device"));
             goto error;
