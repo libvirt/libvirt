@@ -9264,15 +9264,6 @@ static bool
 qemuChrIsPlatformDevice(const virDomainDef *def,
                         virDomainChrDefPtr chr)
 {
-    if ((def->os.arch == VIR_ARCH_PPC) || ARCH_IS_PPC64(def->os.arch)) {
-        if (!qemuDomainIsPSeries(def))
-            return true;
-        /* only pseries need -device spapr-vty with -chardev */
-        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
-            chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO)
-            return true;
-    }
-
     if (def->os.arch == VIR_ARCH_ARMV7L || def->os.arch == VIR_ARCH_AARCH64) {
         /* TARGET_TYPE_ISA here really means 'the default platform device' */
         if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&

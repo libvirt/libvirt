@@ -246,8 +246,9 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
 
     for (i = 0; i < def->nserials; i++) {
         if (def->serials[i]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
-            qemuDomainIsPSeries(def))
+            def->serials[i]->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO) {
             def->serials[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
+        }
         if (qemuDomainAssignSpaprVIOAddress(def, &def->serials[i]->info,
                                             VIO_ADDR_SERIAL) < 0)
             goto cleanup;

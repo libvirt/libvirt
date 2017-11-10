@@ -777,6 +777,13 @@ mymain(void)
     DO_TEST("pseries-serial-compat",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
+    DO_TEST("pseries-serial-pci",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_PCI_SERIAL);
+    DO_TEST("pseries-serial-usb",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_QEMU_XHCI,
+            QEMU_CAPS_DEVICE_USB_SERIAL);
     DO_TEST("pseries-console-native",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
