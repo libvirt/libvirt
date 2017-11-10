@@ -52,6 +52,19 @@ VIR_MOCK_STUB_RET_ARGS(xc_interface_close,
                        int, 0,
                        xc_interface *, handle)
 
+VIR_MOCK_STUB_RET_ARGS(xc_physinfo,
+                       int, 0,
+                       xc_interface *, handle,
+                       xc_physinfo_t *, put_info)
+
+VIR_MOCK_STUB_RET_ARGS(xc_sharing_freed_pages,
+                       long, 0,
+                       xc_interface *, handle)
+
+VIR_MOCK_STUB_RET_ARGS(xc_sharing_used_frames,
+                       long, 0,
+                       xc_interface *, handle)
+
 VIR_MOCK_STUB_VOID_ARGS(xs_daemon_close,
                         struct xs_handle *, handle)
 

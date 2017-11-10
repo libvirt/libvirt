@@ -189,6 +189,7 @@ mymain(void)
     DO_TEST("basic-pv");
     DO_TEST("basic-hvm");
     DO_TEST("moredevs-hvm");
+    DO_TEST("vnuma-hvm");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
