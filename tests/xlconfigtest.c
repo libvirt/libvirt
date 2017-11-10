@@ -270,6 +270,12 @@ mymain(void)
     DO_TEST("fullvirt-multi-timer");
     DO_TEST("fullvirt-nestedhvm");
     DO_TEST("fullvirt-nestedhvm-disabled");
+#ifdef LIBXL_HAVE_VNUMA
+    DO_TEST("fullvirt-vnuma");
+    DO_TEST_PARSE("fullvirt-vnuma-autocomplete", false);
+    DO_TEST_PARSE("fullvirt-vnuma-nodistances", false);
+    DO_TEST_PARSE("fullvirt-vnuma-partialdist", false);
+#endif
 
     DO_TEST("paravirt-cmdline");
     DO_TEST_FORMAT("paravirt-cmdline-extra-root", false);

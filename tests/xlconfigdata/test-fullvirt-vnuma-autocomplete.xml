@@ -1,0 +1,85 @@
+<domain type='xen'>
+  <name>XenGuest2</name>
+  <uuid>c7a5fdb2-cdaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>8388608</memory>
+  <currentMemory unit='KiB'>8388608</currentMemory>
+  <vcpu placement='static'>12</vcpu>
+  <os>
+    <type arch='x86_64' machine='xenfv'>hvm</type>
+    <loader type='rom'>/usr/lib/xen/boot/hvmloader</loader>
+    <boot dev='cdrom'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <cpu>
+    <numa>
+      <cell id='0' cpus='0,11' memory='2097152' unit='KiB'>
+        <distances>
+          <sibling id='1' value='21'/>
+          <sibling id='2' value='31'/>
+          <sibling id='3' value='41'/>
+          <sibling id='4' value='51'/>
+          <sibling id='5' value='61'/>
+        </distances>
+      </cell>
+      <cell id='1' cpus='1,10' memory='2097152' unit='KiB'>
+        <distances>
+          <sibling id='2' value='21'/>
+          <sibling id='3' value='31'/>
+          <sibling id='4' value='41'/>
+          <sibling id='5' value='51'/>
+        </distances>
+      </cell>
+      <cell id='2' cpus='2,9' memory='2097152' unit='KiB'>
+        <distances>
+          <sibling id='3' value='21'/>
+          <sibling id='4' value='31'/>
+          <sibling id='5' value='41'/>
+        </distances>
+      </cell>
+      <cell id='3' cpus='3,8' memory='2097152' unit='KiB'>
+        <distances>
+          <sibling id='4' value='21'/>
+          <sibling id='5' value='31'/>
+        </distances>
+      </cell>
+      <cell id='4' cpus='4,7' memory='2097152' unit='KiB'>
+        <distances>
+          <sibling id='5' value='21'/>
+        </distances>
+      </cell>
+      <cell id='5' cpus='5-6' memory='2097152' unit='KiB'/>
+    </numa>
+  </cpu>
+  <clock offset='variable' adjustment='0' basis='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/lib/xen/bin/qemu-system-i386</emulator>
+    <disk type='block' device='disk'>
+      <driver name='phy' type='raw'/>
+      <source dev='/dev/HostVG/XenGuest2'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='ide' index='0'/>
+    <interface type='bridge'>
+      <mac address='00:16:3e:66:92:9c'/>
+      <source bridge='xenbr1'/>
+      <script path='vif-bridge'/>
+      <model type='e1000'/>
+    </interface>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1'>
+      <listen type='address' address='127.0.0.1'/>
+    </graphics>
+    <video>
+      <model type='cirrus' vram='8192' heads='1' primary='yes'/>
+    </video>
+  </devices>
+</domain>
