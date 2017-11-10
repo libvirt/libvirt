@@ -22,8 +22,8 @@
       </cells>
     </topology>
     <cache>
-      <bank id='0' level='3' type='both' size='33792' unit='KiB' cpus='0'>
-        <control granularity='3072' unit='KiB' type='both' maxAllocs='16'/>
+      <bank id='0' level='3' type='both' size='33' unit='MiB' cpus='0'>
+        <control granularity='3' unit='MiB' type='both' maxAllocs='16'/>
       </bank>
     </cache>
   </host>

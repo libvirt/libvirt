@@ -883,7 +883,8 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
     for (i = 0; i < ncaches; i++) {
         virCapsHostCacheBankPtr bank = caches[i];
         char *cpus_str = virBitmapFormat(bank->cpus);
-        bool kilos = !(bank->size % 1024);
+        const char *unit = NULL;
+        unsigned long long short_size = virFormatIntPretty(bank->size, &unit);
 
         if (!cpus_str)
             return -1;
@@ -897,34 +898,47 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
                           "size='%llu' unit='%s' cpus='%s'",
                           bank->id, bank->level,
                           virCacheTypeToString(bank->type),
-                          bank->size >> (kilos * 10),
-                          kilos ? "KiB" : "B",
-                          cpus_str);
+                          short_size, unit, cpus_str);
         VIR_FREE(cpus_str);
 
         virBufferSetChildIndent(&controlBuf, buf);
         for (j = 0; j < bank->ncontrols; j++) {
-            bool min_kilos = !(bank->controls[j]->granularity % 1024);
+            const char *min_unit;
+            virResctrlInfoPtr controls = bank->controls[j];
+            unsigned long long gran_short_size = controls->granularity;
+            unsigned long long min_short_size = controls->min;
 
-            /* Only use KiB if both values are divisible */
-            if (bank->controls[j]->min)
-                min_kilos = min_kilos && !(bank->controls[j]->min % 1024);
+            gran_short_size = virFormatIntPretty(gran_short_size, &unit);
+            min_short_size = virFormatIntPretty(min_short_size, &min_unit);
 
-            virBufferAsprintf(&controlBuf,
-                              "<control granularity='%llu'",
-                              bank->controls[j]->granularity >> (min_kilos * 10));
+            /* Only use the smaller unit if they are different */
+            if (min_short_size) {
+                unsigned long long gran_div;
+                unsigned long long min_div;
 
-            if (bank->controls[j]->min) {
-                virBufferAsprintf(&controlBuf,
-                                  " min='%llu'",
-                                  bank->controls[j]->min >> (min_kilos * 10));
+                gran_div = controls->granularity / gran_short_size;
+                min_div = controls->min / min_short_size;
+
+                if (min_div > gran_div) {
+                    min_short_size *= min_div / gran_div;
+                } else if (min_div < gran_div) {
+                    unit = min_unit;
+                    gran_short_size *= gran_div / min_div;
+                }
             }
 
             virBufferAsprintf(&controlBuf,
+                              "<control granularity='%llu'",
+                              gran_short_size);
+
+            if (min_short_size)
+                virBufferAsprintf(&controlBuf, " min='%llu'", min_short_size);
+
+            virBufferAsprintf(&controlBuf,
                               " unit='%s' type='%s' maxAllocs='%u'/>\n",
-                              min_kilos ? "KiB" : "B",
-                              virCacheTypeToString(bank->controls[j]->scope),
-                              bank->controls[j]->max_allocation);
+                              unit,
+                              virCacheTypeToString(controls->scope),
+                              controls->max_allocation);
         }
 
         if (virBufferCheckError(&controlBuf) < 0)

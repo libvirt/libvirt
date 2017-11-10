@@ -41,11 +41,11 @@
       </cells>
     </topology>
     <cache>
-      <bank id='0' level='3' type='both' size='15360' unit='KiB' cpus='0-5'>
+      <bank id='0' level='3' type='both' size='15' unit='MiB' cpus='0-5'>
         <control granularity='768' unit='KiB' type='code' maxAllocs='8'/>
         <control granularity='768' unit='KiB' type='data' maxAllocs='8'/>
       </bank>
-      <bank id='1' level='3' type='both' size='15360' unit='KiB' cpus='6-11'>
+      <bank id='1' level='3' type='both' size='15' unit='MiB' cpus='6-11'>
         <control granularity='768' unit='KiB' type='code' maxAllocs='8'/>
         <control granularity='768' unit='KiB' type='data' maxAllocs='8'/>
       </bank>
