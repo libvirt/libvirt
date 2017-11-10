@@ -702,6 +702,10 @@
     &lt;iothread_quota&gt;-1&lt;/iothread_quota&gt;
     &lt;vcpusched vcpus='0-4,^3' scheduler='fifo' priority='1'/&gt;
     &lt;iothreadsched iothreads='2' scheduler='batch'/&gt;
+    &lt;cachetune vcpus='0-3'&gt;
+      &lt;cache id='0' level='3' type='both' size='3' unit='MiB'/&gt;
+      &lt;cache id='1' level='3' type='both' size='3' unit='MiB'/&gt;
+    &lt;/cachetune&gt;
   &lt;/cputune&gt;
   ...
 &lt;/domain&gt;
@@ -847,6 +851,56 @@
         <span class="since">Since 1.2.13</span>
       </dd>
 
+      <dt><code>cachetune</code><span class="since">Since 4.1.0</span></dt>
+      <dd>
+        Optional <code>cachetune</code> element can control allocations for CPU
+        caches using the resctrl on the host. Whether or not is this supported
+        can be gathered from capabilities where some limitations like minimum
+        size and required granularity are reported as well. The required
+        attribute <code>vcpus</code> specifies to which vCPUs this allocation
+        applies. A vCPU can only be member of one <code>cachetune</code> element
+        allocations. Supported subelements are:
+        <dl>
+          <dt><code>cache</code></dt>
+          <dd>
+            This element controls the allocation of CPU cache and has the
+            following attributes:
+            <dl>
+              <dt><code>level</code></dt>
+              <dd>
+                Host cache level from which to allocate.
+              </dd>
+              <dt><code>id</code></dt>
+              <dd>
+                Host cache id from which to allocate.
+              </dd>
+              <dt><code>type</code></dt>
+              <dd>
+                Type of allocation. Can be <code>code</code> for code
+                (instructions), <code>data</code> for data or <code>both</code>
+                for both code and data (unified). Currently the allocation can
+                be done only with the same type as the host supports, meaning
+                you cannot request <code>both</code> for host with CDP
+                (code/data prioritization) enabled.
+              </dd>
+              <dt><code>size</code></dt>
+              <dd>
+                The size of the region to allocate. The value by default is in
+                bytes, but the <code>unit</code> attribute can be used to scale
+                the value.
+              </dd>
+              <dt><code>unit</code> (optional)</dt>
+              <dd>
+                If specified it is the unit such as KiB, MiB, GiB, or TiB
+                (described in the <code>memory</code> element
+                for <a href="#elementsMemoryAllocation">Memory Allocation</a>)
+                in which <code>size</code> is specified, defaults to bytes.
+              </dd>
+            </dl>
+          </dd>
+        </dl>
+
+      </dd>
     </dl>
 
 

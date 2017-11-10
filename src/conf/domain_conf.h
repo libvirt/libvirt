@@ -56,6 +56,7 @@
 # include "virperf.h"
 # include "virtypedparam.h"
 # include "virsavecookie.h"
+# include "virresctrl.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef
@@ -2194,6 +2195,15 @@ struct _virDomainCputune {
 };
 
 
+typedef struct _virDomainCachetuneDef virDomainCachetuneDef;
+typedef virDomainCachetuneDef *virDomainCachetuneDefPtr;
+
+struct _virDomainCachetuneDef {
+    virBitmapPtr vcpus;
+    virResctrlAllocPtr alloc;
+};
+
+
 typedef struct _virDomainVcpuDef virDomainVcpuDef;
 typedef virDomainVcpuDef *virDomainVcpuDefPtr;
 
@@ -2321,6 +2331,9 @@ struct _virDomainDef {
     virDomainIOThreadIDDefPtr *iothreadids;
 
     virDomainCputune cputune;
+
+    virDomainCachetuneDefPtr *cachetunes;
+    size_t ncachetunes;
 
     virDomainNumaPtr numa;
     virDomainResourceDefPtr resource;
