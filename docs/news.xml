@@ -35,6 +35,26 @@
 <libvirt>
   <release version="v3.10.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          conf: Support defining distances between virtual NUMA cells
+        </summary>
+        <description>
+          A NUMA hardware architecture supports the notion of distances
+          between NUMA cells. This can now be specified using the
+          <code>&lt;distances&gt;</code> element within the NUMA cell
+          configuration.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Xen: Support defining vNUMA topology
+        </summary>
+        <description>
+          Xen now supports defining a virtual NUMA topology for VMs,
+          including specifying distances between NUMA cells.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
