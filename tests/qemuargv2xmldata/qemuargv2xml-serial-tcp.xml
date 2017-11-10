@@ -30,7 +30,7 @@
     <serial type='tcp'>
       <source mode='connect' host='127.0.0.1' service='9999'/>
       <protocol type='raw'/>
-      <target port='0'/>
+      <target type='isa-serial' port='0'/>
     </serial>
     <console type='tcp'>
       <source mode='connect' host='127.0.0.1' service='9999'/>

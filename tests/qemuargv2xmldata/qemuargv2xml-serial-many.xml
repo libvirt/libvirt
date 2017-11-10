@@ -28,11 +28,11 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
     </controller>
     <serial type='pty'>
-      <target port='0'/>
+      <target type='isa-serial' port='0'/>
     </serial>
     <serial type='file'>
       <source path='/tmp/serial.log'/>
-      <target port='1'/>
+      <target type='isa-serial' port='1'/>
     </serial>
     <console type='pty'>
       <target type='serial' port='0'/>

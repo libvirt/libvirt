@@ -1191,7 +1191,6 @@ prlsdkGetSerialInfo(PRL_HANDLE serialPort, virDomainChrDefPtr chr)
     int ret = -1;
 
     chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
-    chr->targetTypeAttr = false;
     pret = PrlVmDev_GetIndex(serialPort, &serialPortIndex);
     prlsdkCheckRetGoto(pret, cleanup);
     chr->target.port = serialPortIndex;
@@ -2864,7 +2863,7 @@ static int prlsdkCheckSerialUnsupportedParams(virDomainChrDefPtr chr)
         return -1;
     }
 
-    if (chr->targetTypeAttr) {
+    if (chr->targetType != VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Specified character device target type is not "
                          "supported by vz driver."));

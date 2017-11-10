@@ -29,12 +29,12 @@
     <serial type='udp'>
       <source mode='bind' host='127.0.0.1' service='1111'/>
       <source mode='connect' host='127.0.0.1' service='2222'/>
-      <target port='0'/>
+      <target type='isa-serial' port='0'/>
     </serial>
     <serial type='tcp'>
       <source mode='connect' host='127.0.0.1' service='5555'/>
       <protocol type='raw'/>
-      <target port='0'/>
+      <target type='isa-serial' port='0'/>
     </serial>
     <console type='udp'>
       <source mode='bind' host='127.0.0.1' service='1111'/>

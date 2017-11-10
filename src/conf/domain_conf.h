@@ -1203,7 +1203,6 @@ struct _virDomainChrSourceDef {
 struct _virDomainChrDef {
     int deviceType; /* enum virDomainChrDeviceType */
 
-    bool targetTypeAttr;
     int targetType; /* enum virDomainChrConsoleTargetType ||
                        enum virDomainChrChannelTargetType ||
                        enum virDomainChrSerialTargetType according to deviceType */

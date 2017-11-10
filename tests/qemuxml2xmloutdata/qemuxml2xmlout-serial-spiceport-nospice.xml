@@ -28,7 +28,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <serial type='spiceport'>
       <source channel='org.qemu.console.serial.0'/>
-      <target port='0'/>
+      <target type='isa-serial' port='0'/>
     </serial>
     <console type='spiceport'>
       <source channel='org.qemu.console.serial.0'/>

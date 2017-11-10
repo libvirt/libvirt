@@ -28,7 +28,7 @@
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <serial type='pty'>
-      <target port='0'/>
+      <target type='isa-serial' port='0'/>
     </serial>
     <console type='pty'>
       <target type='serial' port='0'/>

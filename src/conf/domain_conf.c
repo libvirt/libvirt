@@ -11507,8 +11507,7 @@ virDomainChrDefaultTargetType(int devtype)
 }
 
 static int
-virDomainChrTargetTypeFromString(virDomainChrDefPtr def,
-                                 int devtype,
+virDomainChrTargetTypeFromString(int devtype,
                                  const char *targetType)
 {
     int ret = -1;
@@ -11536,8 +11535,6 @@ virDomainChrTargetTypeFromString(virDomainChrDefPtr def,
         break;
     }
 
-    def->targetTypeAttr = true;
-
     return ret;
 }
 
@@ -11554,7 +11551,7 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
     char *stateStr = NULL;
 
     if ((def->targetType =
-         virDomainChrTargetTypeFromString(def, def->deviceType,
+         virDomainChrTargetTypeFromString(def->deviceType,
                                           targetType)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown target type '%s' specified for character device"),
@@ -16474,7 +16471,7 @@ virDomainChrEquals(virDomainChrDefPtr src,
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
-        if (src->targetTypeAttr != tgt->targetTypeAttr)
+        if (src->targetType != tgt->targetType)
             return false;
 
         ATTRIBUTE_FALLTHROUGH;
@@ -24035,7 +24032,7 @@ virDomainChrDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
-        if (def->targetTypeAttr) {
+        if (def->targetType != VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE) {
             virBufferAsprintf(buf,
                               "<target type='%s' port='%d'/>\n",
                               virDomainChrTargetTypeToString(def->deviceType,

@@ -29,7 +29,7 @@
     </controller>
     <serial type='unix'>
       <source mode='connect' path='/tmp/serial.sock'/>
-      <target port='0'/>
+      <target type='isa-serial' port='0'/>
     </serial>
     <console type='unix'>
       <source mode='connect' path='/tmp/serial.sock'/>
