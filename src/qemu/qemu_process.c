@@ -2508,6 +2508,32 @@ qemuProcessSetupEmulator(virDomainObjPtr vm)
 
 
 static int
+qemuProcessResctrlCreate(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm)
+{
+    int ret = -1;
+    size_t i = 0;
+    virCapsPtr caps = virQEMUDriverGetCapabilities(driver, false);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (!caps)
+        return -1;
+
+    for (i = 0; i < vm->def->ncachetunes; i++) {
+        if (virResctrlAllocCreate(caps->host.resctrl,
+                                  vm->def->cachetunes[i]->alloc,
+                                  priv->machineName) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virObjectUnref(caps);
+    return ret;
+}
+
+
+static int
 qemuProcessInitPasswords(virConnectPtr conn,
                          virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
@@ -5018,12 +5044,26 @@ qemuProcessSetupVcpu(virDomainObjPtr vm,
 {
     pid_t vcpupid = qemuDomainGetVcpuPid(vm, vcpuid);
     virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, vcpuid);
+    size_t i = 0;
 
-    return qemuProcessSetupPid(vm, vcpupid, VIR_CGROUP_THREAD_VCPU,
-                               vcpuid, vcpu->cpumask,
-                               vm->def->cputune.period,
-                               vm->def->cputune.quota,
-                               &vcpu->sched);
+    if (qemuProcessSetupPid(vm, vcpupid, VIR_CGROUP_THREAD_VCPU,
+                            vcpuid, vcpu->cpumask,
+                            vm->def->cputune.period,
+                            vm->def->cputune.quota,
+                            &vcpu->sched) < 0)
+        return -1;
+
+    for (i = 0; i < vm->def->ncachetunes; i++) {
+        virDomainCachetuneDefPtr ct = vm->def->cachetunes[i];
+
+        if (virBitmapIsBitSet(ct->vcpus, vcpuid)) {
+            if (virResctrlAllocAddPID(ct->alloc, vcpupid) < 0)
+                return -1;
+            break;
+        }
+    }
+
+    return 0;
 }
 
 
@@ -5896,6 +5936,10 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessSetupEmulator(vm) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Setting up resctrlfs");
+    if (qemuProcessResctrlCreate(driver, vm) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Setting domain security labels");
     if (qemuSecuritySetAllLabel(driver,
                                 vm,
@@ -6543,6 +6587,12 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         VIR_WARN("Failed to remove cgroup for %s",
                  vm->def->name);
     }
+
+    /* Remove resctrl allocation after cgroups are cleaned up which makes it
+     * kind of safer (although removing the allocation should work even with
+     * pids in tasks file */
+    for (i = 0; i < vm->def->ncachetunes; i++)
+        virResctrlAllocRemove(vm->def->cachetunes[i]->alloc);
 
     qemuProcessRemoveDomainStatus(driver, vm);
 
