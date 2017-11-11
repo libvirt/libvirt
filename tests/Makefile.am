@@ -165,6 +165,7 @@ EXTRA_DIST = \
 	xml2vmxdata \
 	virstorageutildata \
 	virfilecachedata \
+	virresctrldata \
 	$(NULL)
 
 test_helpers = commandhelper ssh
@@ -232,6 +233,7 @@ if WITH_LINUX
 test_programs += fchosttest
 test_programs += scsihosttest
 test_programs += vircaps2xmltest
+test_programs += virresctrltest
 test_libraries += virusbmock.la \
 	virnetdevbandwidthmock.la \
 	virnumamock.la \
@@ -1165,8 +1167,13 @@ virnumamock_la_SOURCES = \
 virnumamock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virnumamock_la_LIBADD = $(MOCKLIBS_LIBS)
 
+virresctrltest_SOURCES = \
+	virresctrltest.c testutils.h testutils.c virfilewrapper.h virfilewrapper.c
+virresctrltest_LDADD = $(LDADDS)
+
 else ! WITH_LINUX
-EXTRA_DIST += vircaps2xmltest.c virnumamock.c virfilewrapper.c virfilewrapper.h
+EXTRA_DIST += vircaps2xmltest.c virnumamock.c virfilewrapper.c \
+			  virfilewrapper.h virresctrltest.c
 endif ! WITH_LINUX
 
 if WITH_NSS
