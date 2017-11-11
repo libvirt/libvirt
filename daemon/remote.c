@@ -1686,6 +1686,7 @@ void remoteRelayConnectionClosedEvent(virConnectPtr conn ATTRIBUTE_UNUSED, int r
                 VIR_WARN("unexpected %s event deregister failure", name); \
         } \
         VIR_FREE(eventCallbacks); \
+        neventCallbacks = 0; \
     } while (0);
 
 /*
