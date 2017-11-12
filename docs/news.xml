@@ -35,6 +35,15 @@
 <libvirt>
   <release version="v4.1.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          Added support for CAT (Cache allocation Technology)
+        </summary>
+        <description>
+          Domain vCPU threads can now have allocated some parts of host cache
+          using the <code>cachetune</code> element in <code>cputune</code>.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
