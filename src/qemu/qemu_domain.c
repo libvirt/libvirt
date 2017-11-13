@@ -10227,7 +10227,7 @@ qemuDomainFixupCPUs(virDomainObjPtr vm,
     virCPUDefPtr fixedCPU = NULL;
     virCPUDefPtr fixedOrig = NULL;
     virArch arch = vm->def->os.arch;
-    int ret = 0;
+    int ret = -1;
 
     if (!ARCH_IS_X86(arch))
         return 0;
