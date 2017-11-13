@@ -1491,6 +1491,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                 }
             } else if (tkdata[0] == '-' && tkdata[1] == '-' &&
                        tkdata[2] == '\0') {
+                VIR_FREE(tkdata);
                 data_only = true;
                 continue;
             } else {
