@@ -1689,6 +1689,44 @@ void remoteRelayConnectionClosedEvent(virConnectPtr conn ATTRIBUTE_UNUSED, int r
         neventCallbacks = 0; \
     } while (0);
 
+
+static void
+remoteClientFreePrivateCallbacks(struct daemonClientPrivate *priv)
+{
+    virIdentityPtr sysident = virIdentityGetSystem();
+    virIdentitySetCurrent(sysident);
+
+    DEREG_CB(priv->conn, priv->domainEventCallbacks,
+             priv->ndomainEventCallbacks,
+             virConnectDomainEventDeregisterAny, "domain");
+    DEREG_CB(priv->conn, priv->networkEventCallbacks,
+             priv->nnetworkEventCallbacks,
+             virConnectNetworkEventDeregisterAny, "network");
+    DEREG_CB(priv->conn, priv->storageEventCallbacks,
+             priv->nstorageEventCallbacks,
+             virConnectStoragePoolEventDeregisterAny, "storage");
+    DEREG_CB(priv->conn, priv->nodeDeviceEventCallbacks,
+             priv->nnodeDeviceEventCallbacks,
+             virConnectNodeDeviceEventDeregisterAny, "node device");
+    DEREG_CB(priv->conn, priv->secretEventCallbacks,
+             priv->nsecretEventCallbacks,
+             virConnectSecretEventDeregisterAny, "secret");
+    DEREG_CB(priv->conn, priv->qemuEventCallbacks,
+             priv->nqemuEventCallbacks,
+             virConnectDomainQemuMonitorEventDeregister, "qemu monitor");
+
+    if (priv->closeRegistered) {
+        if (virConnectUnregisterCloseCallback(priv->conn,
+                                              remoteRelayConnectionClosedEvent) < 0)
+            VIR_WARN("unexpected close callback event deregister failure");
+    }
+
+    virIdentitySetCurrent(NULL);
+    virObjectUnref(sysident);
+}
+#undef DEREG_CB
+
+
 /*
  * You must hold lock for at least the client
  * We don't free stuff here, merely disconnect the client's
@@ -1702,44 +1740,11 @@ void remoteClientFreeFunc(void *data)
 
     /* Deregister event delivery callback */
     if (priv->conn) {
-        virIdentityPtr sysident = virIdentityGetSystem();
-
-        virIdentitySetCurrent(sysident);
-
-        DEREG_CB(priv->conn, priv->domainEventCallbacks,
-                 priv->ndomainEventCallbacks,
-                 virConnectDomainEventDeregisterAny, "domain");
-        DEREG_CB(priv->conn, priv->networkEventCallbacks,
-                 priv->nnetworkEventCallbacks,
-                 virConnectNetworkEventDeregisterAny, "network");
-        DEREG_CB(priv->conn, priv->storageEventCallbacks,
-                 priv->nstorageEventCallbacks,
-                 virConnectStoragePoolEventDeregisterAny, "storage");
-        DEREG_CB(priv->conn, priv->nodeDeviceEventCallbacks,
-                 priv->nnodeDeviceEventCallbacks,
-                 virConnectNodeDeviceEventDeregisterAny, "node device");
-        DEREG_CB(priv->conn, priv->secretEventCallbacks,
-                 priv->nsecretEventCallbacks,
-                 virConnectSecretEventDeregisterAny, "secret");
-        DEREG_CB(priv->conn, priv->qemuEventCallbacks,
-                 priv->nqemuEventCallbacks,
-                 virConnectDomainQemuMonitorEventDeregister, "qemu monitor");
-
-        if (priv->closeRegistered) {
-            if (virConnectUnregisterCloseCallback(priv->conn,
-                                                  remoteRelayConnectionClosedEvent) < 0)
-                VIR_WARN("unexpected close callback event deregister failure");
-        }
-
+        remoteClientFreePrivateCallbacks(priv);
         virConnectClose(priv->conn);
-
-        virIdentitySetCurrent(NULL);
-        virObjectUnref(sysident);
     }
-
     VIR_FREE(priv);
 }
-#undef DEREG_CB
 
 
 static void remoteClientCloseFunc(virNetServerClientPtr client)
