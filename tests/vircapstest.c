@@ -188,11 +188,10 @@ doCapsCompare(virCapsPtr caps,
         goto error;
     }
 
-    if (data->machinetype != expect_machinetype &&
-        STRNEQ(data->machinetype, expect_machinetype)) {
+    if (STRNEQ_NULLABLE(data->machinetype, expect_machinetype)) {
         fprintf(stderr, "data->machinetype=%s doesn't match "
                 "expect_machinetype=%s\n",
-                data->machinetype, expect_machinetype);
+                NULLSTR(data->machinetype), NULLSTR(expect_machinetype));
         goto error;
     }
 
