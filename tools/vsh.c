@@ -2735,6 +2735,14 @@ vshReadlineParse(const char *text, int state)
         res = vshReadlineOptionsGenerator(text, state, cmd);
     }
 
+    if (res &&
+        !rl_completion_quote_character) {
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        virBufferEscapeShell(&buf, res);
+        VIR_FREE(res);
+        res = virBufferContentAndReset(&buf);
+    }
+
     if (!res) {
         vshCommandFree(partial);
         partial = NULL;
@@ -2754,6 +2762,16 @@ vshReadlineCompletion(const char *text,
     return matches;
 }
 
+
+static int
+vshReadlineCharIsQuoted(char *line, int idx)
+{
+    return idx > 0 &&
+           line[idx - 1] == '\\' &&
+           !vshReadlineCharIsQuoted(line, idx - 1);
+}
+
+
 # define HISTSIZE_MAX 500000
 
 static int
@@ -2765,6 +2783,7 @@ vshReadlineInit(vshControl *ctl)
     char *histsize_env = NULL;
     const char *histsize_str = NULL;
     const char *break_characters = " \t\n\\`@$><=;|&{(";
+    const char *quote_characters = "\"'";
 
     /* Opaque data for autocomplete callbacks. */
     autoCompleteOpaque = ctl;
@@ -2786,6 +2805,14 @@ vshReadlineInit(vshControl *ctl)
     rl_basic_word_break_characters = break_characters;
 # else
     rl_basic_word_break_characters = (char *) break_characters;
+# endif
+
+# if defined(RL_READLINE_VERSION) && RL_READLINE_VERSION > 0x0402
+    rl_completer_quote_characters = quote_characters;
+    rl_char_is_quoted_p = vshReadlineCharIsQuoted;
+# else
+    rl_completer_quote_characters = (char *) quote_characters;
+    rl_char_is_quoted_p = (Function *) vshReadlineCharIsQuoted;
 # endif
 
     if (virAsprintf(&histsize_env, "%s_HISTSIZE", ctl->env_prefix) < 0)
