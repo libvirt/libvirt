@@ -1738,11 +1738,9 @@ void remoteClientFreeFunc(void *data)
 {
     struct daemonClientPrivate *priv = data;
 
-    /* Deregister event delivery callback */
-    if (priv->conn) {
-        remoteClientFreePrivateCallbacks(priv);
+    if (priv->conn)
         virConnectClose(priv->conn);
-    }
+
     VIR_FREE(priv);
 }
 
@@ -1752,6 +1750,10 @@ static void remoteClientCloseFunc(virNetServerClientPtr client)
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
 
     daemonRemoveAllClientStreams(priv->streams);
+
+    /* Deregister event delivery callback */
+    if (priv->conn)
+        remoteClientFreePrivateCallbacks(priv);
 }
 
 
