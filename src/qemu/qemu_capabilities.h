@@ -435,6 +435,7 @@ typedef enum {
 
     /* 275 */
     QEMU_CAPS_DEVICE_SCLPLMCONSOLE, /* -device sclplmconsole */
+    QEMU_CAPS_NUMA_DIST, /* -numa dist */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

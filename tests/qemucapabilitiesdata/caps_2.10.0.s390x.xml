@@ -142,6 +142,7 @@
   <flag name='vxhs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='sclplmconsole'/>
+  <flag name='numa.dist'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

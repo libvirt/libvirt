@@ -179,6 +179,7 @@
   <flag name='virtio-blk.num-queues'/>
   <flag name='machine.pseries.resize-hpt'/>
   <flag name='spapr-vty'/>
+  <flag name='numa.dist'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.10.0)</package>
