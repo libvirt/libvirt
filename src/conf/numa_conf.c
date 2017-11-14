@@ -1137,6 +1137,27 @@ virDomainNumaSetNodeCount(virDomainNumaPtr numa, size_t nmem_nodes)
     return numa->nmem_nodes;
 }
 
+
+bool
+virDomainNumaNodeDistanceIsUsingDefaults(virDomainNumaPtr numa,
+                                         size_t node,
+                                         size_t sibling)
+{
+    if (node >= numa->nmem_nodes ||
+        sibling >= numa->nmem_nodes)
+        return false;
+
+    if (!numa->mem_nodes[node].distances)
+        return true;
+
+    if (numa->mem_nodes[node].distances[sibling].value == LOCAL_DISTANCE ||
+        numa->mem_nodes[node].distances[sibling].value == REMOTE_DISTANCE)
+        return true;
+
+    return false;
+}
+
+
 size_t
 virDomainNumaGetNodeDistance(virDomainNumaPtr numa,
                              size_t node,
