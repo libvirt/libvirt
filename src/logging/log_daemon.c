@@ -59,7 +59,6 @@ VIR_LOG_INIT("logging.log_daemon");
 struct _virLogDaemon {
     virMutex lock;
     virNetDaemonPtr dmn;
-    virNetServerPtr srv;
     virLogHandlerPtr handler;
 };
 
@@ -117,7 +116,6 @@ virLogDaemonFree(virLogDaemonPtr logd)
 
     virObjectUnref(logd->handler);
     virMutexDestroy(&logd->lock);
-    virObjectUnref(logd->srv);
     virObjectUnref(logd->dmn);
 
     VIR_FREE(logd);
@@ -139,6 +137,7 @@ static virLogDaemonPtr
 virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
 {
     virLogDaemonPtr logd;
+    virNetServerPtr srv;
 
     if (VIR_ALLOC(logd) < 0)
         return NULL;
@@ -150,19 +149,21 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
         return NULL;
     }
 
-    if (!(logd->srv = virNetServerNew("virtlogd", 1,
-                                      1, 1, 0, config->max_clients,
-                                      config->max_clients, -1, 0,
-                                      NULL,
-                                      virLogDaemonClientNew,
-                                      virLogDaemonClientPreExecRestart,
-                                      virLogDaemonClientFree,
-                                      (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
+    if (!(srv = virNetServerNew("virtlogd", 1,
+                                1, 1, 0, config->max_clients,
+                                config->max_clients, -1, 0,
+                                NULL,
+                                virLogDaemonClientNew,
+                                virLogDaemonClientPreExecRestart,
+                                virLogDaemonClientFree,
+                                (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
 
     if (!(logd->dmn = virNetDaemonNew()) ||
-        virNetDaemonAddServer(logd->dmn, logd->srv) < 0)
+        virNetDaemonAddServer(logd->dmn, srv) < 0)
         goto error;
+    virObjectUnref(srv);
+    srv = NULL;
 
     if (!(logd->handler = virLogHandlerNew(privileged,
                                            config->max_size,
@@ -174,6 +175,7 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
     return logd;
 
  error:
+    virObjectUnref(srv);
     virLogDaemonFree(logd);
     return NULL;
 }
@@ -191,6 +193,7 @@ virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged,
                                virLogDaemonConfigPtr config)
 {
     virLogDaemonPtr logd;
+    virNetServerPtr srv;
     virJSONValuePtr child;
 
     if (VIR_ALLOC(logd) < 0)
@@ -212,14 +215,15 @@ virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged,
     if (!(logd->dmn = virNetDaemonNewPostExecRestart(child)))
         goto error;
 
-    if (!(logd->srv = virNetDaemonAddServerPostExec(logd->dmn,
-                                                    "virtlogd",
-                                                    virLogDaemonClientNew,
-                                                    virLogDaemonClientNewPostExecRestart,
-                                                    virLogDaemonClientPreExecRestart,
-                                                    virLogDaemonClientFree,
-                                                    (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
+    if (!(srv = virNetDaemonAddServerPostExec(logd->dmn,
+                                              "virtlogd",
+                                              virLogDaemonClientNew,
+                                              virLogDaemonClientNewPostExecRestart,
+                                              virLogDaemonClientPreExecRestart,
+                                              virLogDaemonClientFree,
+                                              (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
+    virObjectUnref(srv);
 
     if (!(child = virJSONValueObjectGet(object, "handler"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -857,6 +861,7 @@ virLogDaemonUsage(const char *argv0, bool privileged)
 }
 
 int main(int argc, char **argv) {
+    virNetServerPtr srv = NULL;
     virNetServerProgramPtr logProgram = NULL;
     char *remote_config_file = NULL;
     int statuswrite = -1;
@@ -1076,18 +1081,22 @@ int main(int argc, char **argv) {
             goto cleanup;
         }
 
-        if ((rv = virLogDaemonSetupNetworkingSystemD(logDaemon->srv)) < 0) {
+        srv = virNetDaemonGetServer(logDaemon->dmn, "virtlogd");
+        if ((rv = virLogDaemonSetupNetworkingSystemD(srv)) < 0) {
             ret = VIR_LOG_DAEMON_ERR_NETWORK;
             goto cleanup;
         }
 
         /* Only do this, if systemd did not pass a FD */
         if (rv == 0 &&
-            virLogDaemonSetupNetworkingNative(logDaemon->srv, sock_file) < 0) {
+            virLogDaemonSetupNetworkingNative(srv, sock_file) < 0) {
             ret = VIR_LOG_DAEMON_ERR_NETWORK;
             goto cleanup;
         }
+        virObjectUnref(srv);
     }
+
+    srv = virNetDaemonGetServer(logDaemon->dmn, "virtlogd");
 
     if (timeout != -1) {
         VIR_DEBUG("Registering shutdown timeout %d", timeout);
@@ -1107,7 +1116,7 @@ int main(int argc, char **argv) {
         ret = VIR_LOG_DAEMON_ERR_INIT;
         goto cleanup;
     }
-    if (virNetServerAddProgram(logDaemon->srv, logProgram) < 0) {
+    if (virNetServerAddProgram(srv, logProgram) < 0) {
         ret = VIR_LOG_DAEMON_ERR_INIT;
         goto cleanup;
     }
@@ -1129,7 +1138,7 @@ int main(int argc, char **argv) {
 
     /* Start accepting new clients from network */
 
-    virNetServerUpdateServices(logDaemon->srv, true);
+    virNetServerUpdateServices(srv, true);
     virNetDaemonRun(logDaemon->dmn);
 
     if (execRestart &&
@@ -1142,6 +1151,7 @@ int main(int argc, char **argv) {
 
  cleanup:
     virObjectUnref(logProgram);
+    virObjectUnref(srv);
     virLogDaemonFree(logDaemon);
     if (statuswrite != -1) {
         if (ret != 0) {
