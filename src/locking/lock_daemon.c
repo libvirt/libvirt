@@ -1325,9 +1325,10 @@ int main(int argc, char **argv) {
             ret = VIR_LOCK_DAEMON_ERR_NETWORK;
             goto cleanup;
         }
-    } else if (rv == 1) {
-        srv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
+        virObjectUnref(srv);
     }
+
+    srv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
 
     if (timeout != -1) {
         VIR_DEBUG("Registering shutdown timeout %d", timeout);
