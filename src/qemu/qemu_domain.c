@@ -3589,101 +3589,111 @@ qemuDomainWatchdogDefValidate(const virDomainWatchdogDef *dev,
 
 
 static int
+qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net)
+{
+    bool hasIPv4 = false;
+    bool hasIPv6 = false;
+    size_t i;
+
+    if (net->type == VIR_DOMAIN_NET_TYPE_USER) {
+        if (net->guestIP.nroutes) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid attempt to set network interface "
+                             "guest-side IP route, not supported by QEMU"));
+            return -1;
+        }
+
+        for (i = 0; i < net->guestIP.nips; i++) {
+            const virNetDevIPAddr *ip = net->guestIP.ips[i];
+
+            if (VIR_SOCKET_ADDR_VALID(&net->guestIP.ips[i]->peer)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Invalid attempt to set peer IP for guest"));
+                return -1;
+            }
+
+            if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET)) {
+                if (hasIPv4) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Only one IPv4 address per "
+                                     "interface is allowed"));
+                    return -1;
+                }
+                hasIPv4 = true;
+
+                if (ip->prefix > 27) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("prefix too long"));
+                    return -1;
+                }
+            }
+
+            if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6)) {
+                if (hasIPv6) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Only one IPv6 address per "
+                                     "interface is allowed"));
+                    return -1;
+                }
+                hasIPv6 = true;
+
+                if (ip->prefix > 120) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("prefix too long"));
+                    return -1;
+                }
+            }
+        }
+    } else if (net->guestIP.nroutes || net->guestIP.nips) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Invalid attempt to set network interface "
+                         "guest-side IP route and/or address info, "
+                         "not supported by QEMU"));
+        return -1;
+    }
+
+    if (STREQ_NULLABLE(net->model, "virtio")) {
+        if (net->driver.virtio.rx_queue_size & (net->driver.virtio.rx_queue_size - 1)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("rx_queue_size has to be a power of two"));
+            return -1;
+        }
+        if (net->driver.virtio.tx_queue_size & (net->driver.virtio.tx_queue_size - 1)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("tx_queue_size has to be a power of two"));
+            return -1;
+        }
+    }
+
+    if (net->mtu &&
+        !qemuDomainNetSupportsMTU(net->type)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("setting MTU on interface type %s is not supported yet"),
+                       virDomainNetTypeToString(net->type));
+        return -1;
+    }
+
+    if (net->coalesce && !qemuDomainNetSupportsCoalesce(net->type)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("coalesce settings on interface type %s are not supported"),
+                       virDomainNetTypeToString(net->type));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                             const virDomainDef *def,
                             void *opaque ATTRIBUTE_UNUSED)
 {
     int ret = -1;
-    size_t i;
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-        const virDomainNetDef *net = dev->data.net;
-        bool hasIPv4 = false, hasIPv6 = false;
-
-        if (net->type == VIR_DOMAIN_NET_TYPE_USER) {
-            if (net->guestIP.nroutes) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Invalid attempt to set network interface "
-                                 "guest-side IP route, not supported by QEMU"));
-                goto cleanup;
-            }
-
-            for (i = 0; i < net->guestIP.nips; i++) {
-                const virNetDevIPAddr *ip = net->guestIP.ips[i];
-
-                if (VIR_SOCKET_ADDR_VALID(&net->guestIP.ips[i]->peer)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Invalid attempt to set peer IP for guest"));
-                    goto cleanup;
-                }
-
-                if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET)) {
-                    if (hasIPv4) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("Only one IPv4 address per "
-                                         "interface is allowed"));
-                        goto cleanup;
-                    }
-                    hasIPv4 = true;
-
-                    if (ip->prefix > 27) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("prefix too long"));
-                        goto cleanup;
-                    }
-                }
-
-                if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6)) {
-                    if (hasIPv6) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("Only one IPv6 address per "
-                                         "interface is allowed"));
-                        goto cleanup;
-                    }
-                    hasIPv6 = true;
-
-                    if (ip->prefix > 120) {
-                        virReportError(VIR_ERR_XML_ERROR, "%s",
-                                       _("prefix too long"));
-                        goto cleanup;
-                    }
-                }
-            }
-        } else if (net->guestIP.nroutes || net->guestIP.nips) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Invalid attempt to set network interface "
-                             "guest-side IP route and/or address info, "
-                             "not supported by QEMU"));
+        if (qemuDomainDeviceDefValidateNetwork(dev->data.net) < 0)
             goto cleanup;
-        }
-
-        if (STREQ_NULLABLE(net->model, "virtio")) {
-            if (net->driver.virtio.rx_queue_size & (net->driver.virtio.rx_queue_size - 1)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("rx_queue_size has to be a power of two"));
-                goto cleanup;
-            }
-            if (net->driver.virtio.tx_queue_size & (net->driver.virtio.tx_queue_size - 1)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("tx_queue_size has to be a power of two"));
-                goto cleanup;
-            }
-        }
-
-        if (net->mtu &&
-            !qemuDomainNetSupportsMTU(net->type)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("setting MTU on interface type %s is not supported yet"),
-                           virDomainNetTypeToString(net->type));
-            goto cleanup;
-        }
-
-        if (net->coalesce && !qemuDomainNetSupportsCoalesce(net->type)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("coalesce settings on interface type %s are not supported"),
-                           virDomainNetTypeToString(net->type));
-            goto cleanup;
-        }
     } else if (dev->type == VIR_DOMAIN_DEVICE_CHR) {
         if (qemuDomainChrDefValidate(dev->data.chr, def) < 0)
             goto cleanup;
