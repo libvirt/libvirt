@@ -43,7 +43,7 @@
           A NUMA hardware architecture supports the notion of distances
           between NUMA cells. This can now be specified using the
           <code>&lt;distances&gt;</code> element within the NUMA cell
-          configuration.
+          configuration. Drivers which support this include Xen and QEMU.
         </description>
       </change>
       <change>
