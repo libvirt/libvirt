@@ -1,0 +1,63 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name QEMUGuest \
+-S \
+-M xenfv \
+-m 12288 \
+-smp 12,sockets=12,cores=1,threads=1 \
+-numa node,nodeid=0,cpus=0,cpus=11,mem=2048 \
+-numa node,nodeid=1,cpus=1,cpus=10,mem=2048 \
+-numa node,nodeid=2,cpus=2,cpus=9,mem=2048 \
+-numa node,nodeid=3,cpus=3,cpus=8,mem=2048 \
+-numa node,nodeid=4,cpus=4,cpus=7,mem=2048 \
+-numa node,nodeid=5,cpus=5-6,mem=2048 \
+-numa dist,src=0,dst=0,val=10 \
+-numa dist,src=0,dst=1,val=21 \
+-numa dist,src=0,dst=2,val=31 \
+-numa dist,src=0,dst=3,val=41 \
+-numa dist,src=0,dst=4,val=51 \
+-numa dist,src=0,dst=5,val=61 \
+-numa dist,src=1,dst=0,val=21 \
+-numa dist,src=1,dst=1,val=10 \
+-numa dist,src=1,dst=2,val=21 \
+-numa dist,src=1,dst=3,val=31 \
+-numa dist,src=1,dst=4,val=41 \
+-numa dist,src=1,dst=5,val=51 \
+-numa dist,src=2,dst=0,val=31 \
+-numa dist,src=2,dst=1,val=21 \
+-numa dist,src=2,dst=2,val=10 \
+-numa dist,src=2,dst=3,val=21 \
+-numa dist,src=2,dst=4,val=31 \
+-numa dist,src=2,dst=5,val=41 \
+-numa dist,src=3,dst=0,val=41 \
+-numa dist,src=3,dst=1,val=31 \
+-numa dist,src=3,dst=2,val=21 \
+-numa dist,src=3,dst=3,val=10 \
+-numa dist,src=3,dst=4,val=21 \
+-numa dist,src=3,dst=5,val=31 \
+-numa dist,src=4,dst=0,val=51 \
+-numa dist,src=4,dst=1,val=41 \
+-numa dist,src=4,dst=2,val=31 \
+-numa dist,src=4,dst=3,val=21 \
+-numa dist,src=4,dst=4,val=10 \
+-numa dist,src=4,dst=5,val=21 \
+-numa dist,src=5,dst=0,val=61 \
+-numa dist,src=5,dst=1,val=51 \
+-numa dist,src=5,dst=2,val=41 \
+-numa dist,src=5,dst=3,val=31 \
+-numa dist,src=5,dst=4,val=21 \
+-numa dist,src=5,dst=5,val=10 \
+-uuid c7a5fdb2-cdaf-9455-926a-d65c16db1809 \
+-nographic \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-boot c \
+-usb \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2

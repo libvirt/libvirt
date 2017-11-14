@@ -1589,7 +1589,7 @@
 
     <p>
       Describing distances between NUMA cells is currently only supported
-      by Xen. If no <code>distances</code> are given to describe
+      by Xen and QEMU. If no <code>distances</code> are given to describe
       the SLIT data between different cells, it will default to a scheme
       using 10 for local and 20 for remote distances.
     </p>

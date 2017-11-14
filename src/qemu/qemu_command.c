@@ -7751,7 +7751,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
                     virCommandPtr cmd,
                     qemuDomainObjPrivatePtr priv)
 {
-    size_t i;
+    size_t i, j;
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *cpumask = NULL, *tmpmask = NULL, *next = NULL;
@@ -7761,6 +7761,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     int ret = -1;
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
     const long system_page_size = virGetSystemPageSizeKB();
+    bool numa_distances = false;
 
     if (virDomainNumatuneHasPerNodeBinding(def->numa) &&
         !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
@@ -7869,6 +7870,42 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
         virCommandAddArgBuffer(cmd, &buf);
     }
+
+    /* If NUMA node distance is specified for at least one pair
+     * of nodes, we have to specify all the distances. Even
+     * though they might be the default ones. */
+    for (i = 0; i < ncells; i++) {
+        for (j = 0; j < ncells; j++) {
+            if (virDomainNumaNodeDistanceIsUsingDefaults(def->numa, i, j))
+                continue;
+
+            numa_distances = true;
+            break;
+        }
+        if (numa_distances)
+            break;
+    }
+
+    if (numa_distances) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA_DIST)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("setting NUMA distances is not "
+                             "supported with this qemu"));
+            goto cleanup;
+        }
+
+        for (i = 0; i < ncells; i++) {
+            for (j = 0; j < ncells; j++) {
+                size_t distance = virDomainNumaGetNodeDistance(def->numa, i, j);
+
+                virCommandAddArg(cmd, "-numa");
+                virBufferAsprintf(&buf, "dist,src=%zu,dst=%zu,val=%zu", i, j, distance);
+
+                virCommandAddArgBuffer(cmd, &buf);
+            }
+        }
+    }
+
     ret = 0;
 
  cleanup:
