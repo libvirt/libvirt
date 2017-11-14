@@ -18,8 +18,5 @@ QEMU_AUDIO_DRV=none \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -boot c \
--device virtio-serial-ccw,id=virtio-serial0,devno=fe.0.0000 \
 -chardev pty,id=charserial0 \
--device sclpconsole,chardev=charserial0,id=serial0 \
--chardev pty,id=charconsole1 \
--device virtconsole,chardev=charconsole1,id=console1
+-device sclpconsole,chardev=charserial0,id=serial0

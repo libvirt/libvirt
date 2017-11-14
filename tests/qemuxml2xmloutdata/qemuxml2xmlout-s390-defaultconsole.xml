@@ -14,9 +14,13 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-s390x</emulator>
-    <controller type='virtio-serial' index='0'/>
+    <serial type='pty'>
+      <target type='sclp-serial' port='0'>
+        <model name='sclpconsole'/>
+      </target>
+    </serial>
     <console type='pty'>
-      <target type='virtio' port='0'/>
+      <target type='serial' port='0'/>
     </console>
     <memballoon model='none'/>
     <panic model='s390'/>

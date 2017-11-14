@@ -4259,13 +4259,6 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
                           virQEMUDriverPtr driver,
                           unsigned int parseFlags)
 {
-    /* set the default console type for S390 arches */
-    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
-        chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE &&
-        ARCH_IS_S390(def->os.arch)) {
-        chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO;
-    }
-
     /* Historically, isa-serial and the default matched, so in order to
      * maintain backwards compatibility we map them here. The actual default
      * will be picked below based on the architecture and machine type. */
