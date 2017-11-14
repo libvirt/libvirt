@@ -3702,6 +3702,29 @@ qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
 
 
 static int
+qemuDomainDeviceDefValidateVideo(const virDomainVideoDef *video)
+{
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
+        video->vgamem) {
+        if (video->vgamem < 1024) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("value for 'vgamem' must be at least 1 MiB "
+                             "(1024 KiB)"));
+            return -1;
+        }
+
+        if (video->vgamem != VIR_ROUND_UP_POWER_OF_TWO(video->vgamem)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("value for 'vgamem' must be power of two"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                             const virDomainDef *def,
                             void *opaque ATTRIBUTE_UNUSED)
@@ -3729,23 +3752,9 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         if (qemuDomainDeviceDefValidateHostdev(dev->data.hostdev, def) < 0)
             goto cleanup;
-    }
-
-    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
-        if (dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
-            dev->data.video->vgamem) {
-            if (dev->data.video->vgamem < 1024) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("value for 'vgamem' must be at least 1 MiB "
-                                 "(1024 KiB)"));
-                goto cleanup;
-            }
-            if (dev->data.video->vgamem != VIR_ROUND_UP_POWER_OF_TWO(dev->data.video->vgamem)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("value for 'vgamem' must be power of two"));
-                goto cleanup;
-            }
-        }
+    } else if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
+        if (qemuDomainDeviceDefValidateVideo(dev->data.video) < 0)
+            goto cleanup;
     }
 
     ret = 0;
