@@ -25,6 +25,7 @@
 
 #include "qemu_domain.h"
 #include "qemu_alias.h"
+#include "qemu_block.h"
 #include "qemu_cgroup.h"
 #include "qemu_command.h"
 #include "qemu_process.h"
@@ -3725,6 +3726,29 @@ qemuDomainDeviceDefValidateVideo(const virDomainVideoDef *video)
 
 
 static int
+qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk)
+{
+    if (disk->src->shared && !disk->src->readonly) {
+        if (disk->src->format <= VIR_STORAGE_FILE_AUTO) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("shared access for disk '%s' requires use of "
+                             "explicitly specified disk format"), disk->dst);
+            return -1;
+        }
+
+        if (!qemuBlockStorageSourceSupportsConcurrentAccess(disk->src)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("shared access for disk '%s' requires use of "
+                             "supported storage format"), disk->dst);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                             const virDomainDef *def,
                             void *opaque ATTRIBUTE_UNUSED)
@@ -3765,6 +3789,9 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_DISK:
+        ret = qemuDomainDeviceDefValidateDisk(dev->data.disk);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:

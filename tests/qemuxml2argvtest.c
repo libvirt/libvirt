@@ -908,6 +908,7 @@ mymain(void)
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-shared",
             QEMU_CAPS_DRIVE_SERIAL);
+    DO_TEST_PARSE_ERROR("disk-drive-shared-qcow", NONE);
     DO_TEST("disk-drive-error-policy-stop",
             QEMU_CAPS_MONITOR_JSON);
     DO_TEST("disk-drive-error-policy-enospace",

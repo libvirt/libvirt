@@ -15,19 +15,11 @@
   <devices>
     <emulator>/usr/bin/qemu-system-i686</emulator>
     <disk type='block' device='disk'>
-      <driver name='qemu' type='raw'/>
+      <driver name='qemu' type='qcow2'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
       <shareable/>
-      <serial>XYZXYZXYZYXXYZYZYXYZY</serial>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
-    </disk>
-    <disk type='block' device='cdrom'>
-      <driver name='qemu' type='raw'/>
-      <source dev='/dev/HostVG/QEMUGuest2'/>
-      <target dev='hdc' bus='ide'/>
-      <readonly/>
-      <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
