@@ -100,7 +100,8 @@ VIR_ENUM_IMPL(virDomainTaint, VIR_DOMAIN_TAINT_LAST,
               "host-cpu",
               "hook-script",
               "cdrom-passthrough",
-              "custom-dtb");
+              "custom-dtb",
+              "custom-ga-command");
 
 VIR_ENUM_IMPL(virDomainVirt, VIR_DOMAIN_VIRT_LAST,
               "none",

@@ -18737,6 +18737,8 @@ qemuDomainQemuAgentCommand(virDomainPtr domain,
     if (!qemuDomainAgentAvailable(vm, true))
         goto endjob;
 
+    qemuDomainObjTaint(driver, vm, VIR_DOMAIN_TAINT_CUSTOM_GA_COMMAND, NULL);
+
     agent = qemuDomainObjEnterAgent(vm);
     ret = qemuAgentArbitraryCommand(agent, cmd, &result, timeout);
     qemuDomainObjExitAgent(vm, agent);

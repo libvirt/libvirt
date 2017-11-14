@@ -2456,6 +2456,7 @@ typedef enum {
     VIR_DOMAIN_TAINT_HOOK,             /* Domain (possibly) changed via hook script */
     VIR_DOMAIN_TAINT_CDROM_PASSTHROUGH,/* CDROM passthrough */
     VIR_DOMAIN_TAINT_CUSTOM_DTB,       /* Custom device tree blob was specified */
+    VIR_DOMAIN_TAINT_CUSTOM_GA_COMMAND, /* Custom guest agent command */
 
     VIR_DOMAIN_TAINT_LAST
 } virDomainTaintFlags;
