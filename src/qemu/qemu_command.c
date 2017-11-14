@@ -1657,26 +1657,16 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
                   virQEMUCapsPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
-    bool emitDeviceSyntax = qemuDiskBusNeedsDeviceArg(disk->bus);
-
-    /* if we are using -device this will be checked elsewhere */
-    if (!emitDeviceSyntax &&
-        qemuCheckDiskConfig(disk, qemuCaps) < 0)
-        goto error;
 
     if (qemuBuildDriveSourceStr(disk, cfg, &opt, qemuCaps) < 0)
         goto error;
 
-    if (emitDeviceSyntax)
-        virBufferAddLit(&opt, "if=none");
-    else
-        virBufferAsprintf(&opt, "if=%s",
-                          virDomainDiskQEMUBusTypeToString(disk->bus));
-
-    if (emitDeviceSyntax) {
+    if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
         char *drivealias = qemuAliasFromDisk(disk);
         if (!drivealias)
             goto error;
+
+        virBufferAddLit(&opt, "if=none");
         virBufferAsprintf(&opt, ",id=%s", drivealias);
         VIR_FREE(drivealias);
     } else {
@@ -1687,6 +1677,13 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
                            _("unsupported disk type '%s'"), disk->dst);
             goto error;
         }
+
+        /* if we are using -device this will be checked elsewhere */
+        if (qemuCheckDiskConfig(disk, qemuCaps) < 0)
+            goto error;
+
+        virBufferAsprintf(&opt, "if=%s",
+                          virDomainDiskQEMUBusTypeToString(disk->bus));
         virBufferAsprintf(&opt, ",index=%d", idx);
     }
 
