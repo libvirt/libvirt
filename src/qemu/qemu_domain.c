@@ -3729,36 +3729,61 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                             const virDomainDef *def,
                             void *opaque ATTRIBUTE_UNUSED)
 {
-    int ret = -1;
+    int ret = 0;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-        if (qemuDomainDeviceDefValidateNetwork(dev->data.net) < 0)
-            goto cleanup;
-    } else if (dev->type == VIR_DOMAIN_DEVICE_CHR) {
-        if (qemuDomainChrDefValidate(dev->data.chr, def) < 0)
-            goto cleanup;
-    } else if (dev->type == VIR_DOMAIN_DEVICE_SMARTCARD) {
-        if (qemuDomainSmartcardDefValidate(dev->data.smartcard) < 0)
-            goto cleanup;
-    } else if (dev->type == VIR_DOMAIN_DEVICE_RNG) {
-        if (qemuDomainRNGDefValidate(dev->data.rng) < 0)
-            goto cleanup;
-    } else if (dev->type == VIR_DOMAIN_DEVICE_REDIRDEV) {
-        if (qemuDomainRedirdevDefValidate(dev->data.redirdev) < 0)
-            goto cleanup;
-    } else if (dev->type == VIR_DOMAIN_DEVICE_WATCHDOG) {
-        if (qemuDomainWatchdogDefValidate(dev->data.watchdog, def) < 0)
-            goto cleanup;
-    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
-        if (qemuDomainDeviceDefValidateHostdev(dev->data.hostdev, def) < 0)
-            goto cleanup;
-    } else if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
-        if (qemuDomainDeviceDefValidateVideo(dev->data.video) < 0)
-            goto cleanup;
+    switch ((virDomainDeviceType) dev->type) {
+    case VIR_DOMAIN_DEVICE_NET:
+        ret = qemuDomainDeviceDefValidateNetwork(dev->data.net);
+        break;
+
+    case VIR_DOMAIN_DEVICE_CHR:
+        ret = qemuDomainChrDefValidate(dev->data.chr, def);
+        break;
+
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+        ret = qemuDomainSmartcardDefValidate(dev->data.smartcard);
+        break;
+
+    case VIR_DOMAIN_DEVICE_RNG:
+        ret = qemuDomainRNGDefValidate(dev->data.rng);
+        break;
+
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        ret = qemuDomainRedirdevDefValidate(dev->data.redirdev);
+        break;
+
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+        ret = qemuDomainWatchdogDefValidate(dev->data.watchdog, def);
+        break;
+
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        ret = qemuDomainDeviceDefValidateHostdev(dev->data.hostdev, def);
+        break;
+
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        ret = qemuDomainDeviceDefValidateVideo(dev->data.video);
+        break;
+
+    case VIR_DOMAIN_DEVICE_DISK:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_LAST:
+        break;
     }
 
-    ret = 0;
- cleanup:
     return ret;
 }
 
