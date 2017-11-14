@@ -318,16 +318,30 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
 
             if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
                 cont->idx == info->addr.pci.bus) {
-                contAlias = cont->info.alias;
                 contIsPHB = virDomainControllerIsPSeriesPHB(cont);
                 contTargetIndex = cont->opts.pciopts.targetIndex;
-                if (!contAlias) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Device alias was not set for PCI "
-                                     "controller with index %u required "
-                                     "for device at address %s"),
-                                   info->addr.pci.bus, devStr);
-                    goto cleanup;
+
+                /* When domain has builtin pci-root controller we don't put it
+                 * onto cmd line. Therefore we can't set its alias. In that
+                 * case, use the default one. */
+                if (!qemuDomainIsPSeries(domainDef) &&
+                    cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
+                    if (virQEMUCapsHasPCIMultiBus(qemuCaps, domainDef))
+                        contAlias = "pci.0";
+                    else
+                        contAlias = "pci";
+                } else if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
+                    contAlias = "pcie.0";
+                } else {
+                    contAlias = cont->info.alias;
+                    if (!contAlias) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("Device alias was not set for PCI "
+                                         "controller with index %u required "
+                                         "for device at address %s"),
+                                       info->addr.pci.bus, devStr);
+                        goto cleanup;
+                    }
                 }
                 break;
             }
