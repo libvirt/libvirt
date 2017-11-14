@@ -3473,6 +3473,7 @@ qemuDomainChrSerialTargetTypeToAddressType(int targetType)
     case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO:
         return VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM:
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
         break;
@@ -3496,6 +3497,9 @@ qemuDomainChrSerialTargetModelToTargetType(int targetModel)
         return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011:
         return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPCONSOLE:
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPLMCONSOLE:
+        return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST:
         break;
@@ -3533,6 +3537,7 @@ qemuDomainChrTargetDefValidate(const virDomainChrDef *chr)
             break;
 
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP:
             if (chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Target type '%s' cannot have an "
@@ -3554,6 +3559,8 @@ qemuDomainChrTargetDefValidate(const virDomainChrDef *chr)
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PCI_SERIAL:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SPAPR_VTY:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPCONSOLE:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPLMCONSOLE:
 
             expected = qemuDomainChrSerialTargetModelToTargetType(chr->targetModel);
 
@@ -3613,6 +3620,13 @@ qemuDomainChrDefValidate(const virDomainChrDef *dev,
         if (!qemuDomainIsVirt(def) &&
             (dev->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM ||
              dev->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011)) {
+            isCompatible = false;
+        }
+
+        if (!ARCH_IS_S390(def->os.arch) &&
+            (dev->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP ||
+             dev->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPCONSOLE ||
+             dev->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPLMCONSOLE)) {
             isCompatible = false;
         }
 
@@ -4269,6 +4283,8 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO;
         } else if (qemuDomainIsVirt(def)) {
             chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM;
+        } else if (ARCH_IS_S390(def->os.arch)) {
+            chr->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP;
         }
     }
 
@@ -4290,6 +4306,9 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
             break;
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM:
             chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011;
+            break;
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP:
+            chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPCONSOLE;
             break;
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
@@ -5214,6 +5233,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
+                case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP:
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
                     /* Nothing to do */

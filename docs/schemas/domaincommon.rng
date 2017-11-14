@@ -3587,6 +3587,7 @@
         <value>pci-serial</value>
         <value>spapr-vio-serial</value>
         <value>system-serial</value>
+        <value>sclp-serial</value>
       </choice>
     </attribute>
   </define>
@@ -3600,6 +3601,8 @@
           <value>pci-serial</value>
           <value>spapr-vty</value>
           <value>pl011</value>
+          <value>sclpconsole</value>
+          <value>sclplmconsole</value>
         </choice>
       </attribute>
     </element>
