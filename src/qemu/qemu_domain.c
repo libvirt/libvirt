@@ -3685,6 +3685,23 @@ qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net)
 
 
 static int
+qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
+                                   const virDomainDef *def)
+{
+    /* forbid capabilities mode hostdev in this kind of hypervisor */
+    if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("hostdev mode 'capabilities' is not "
+                         "supported in %s"),
+                       virDomainVirtTypeToString(def->virtType));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                             const virDomainDef *def,
                             void *opaque ATTRIBUTE_UNUSED)
@@ -3709,16 +3726,9 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     } else if (dev->type == VIR_DOMAIN_DEVICE_WATCHDOG) {
         if (qemuDomainWatchdogDefValidate(dev->data.watchdog, def) < 0)
             goto cleanup;
-    }
-
-    /* forbid capabilities mode hostdev in this kind of hypervisor */
-    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
-        dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("hostdev mode 'capabilities' is not "
-                         "supported in %s"),
-                       virDomainVirtTypeToString(def->virtType));
-        goto cleanup;
+    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
+        if (qemuDomainDeviceDefValidateHostdev(dev->data.hostdev, def) < 0)
+            goto cleanup;
     }
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
