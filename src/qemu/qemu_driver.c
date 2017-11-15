@@ -16501,6 +16501,16 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
+    /* When pivoting to a shareable disk we need to make sure that the disk can
+     * be safely shared, since block copy might have changed the format. */
+    if (disk->src->shared && !disk->src->readonly &&
+        !qemuBlockStorageSourceSupportsConcurrentAccess(disk->mirror)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("can't pivot a shared disk to a storage volume not "
+                         "supporting sharing"));
+        goto cleanup;
+    }
+
     /* For active commit, the mirror is part of the already labeled
      * chain.  For blockcopy, we previously labeled only the top-level
      * image; but if the user is reusing an external image that
