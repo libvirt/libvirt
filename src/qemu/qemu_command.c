@@ -2159,6 +2159,10 @@ qemuBuildDriveDevStr(const virDomainDef *def,
         goto error;
     }
 
+    if (disk->src->shared &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_SHARE_RW))
+        virBufferAddLit(&opt, ",share-rw=on");
+
     if (!(drivealias = qemuAliasFromDisk(disk)))
         goto error;
     virBufferAsprintf(&opt, ",drive=%s,id=%s", drivealias, disk->info.alias);
