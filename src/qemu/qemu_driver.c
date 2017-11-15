@@ -13945,6 +13945,24 @@ qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
 
 
 static int
+qemuDomainSnapshotPrepareDiskShared(virDomainSnapshotDiskDefPtr snapdisk,
+                                    virDomainDiskDefPtr domdisk)
+{
+    if (!domdisk->src->shared || domdisk->src->readonly)
+        return 0;
+
+    if (!qemuBlockStorageSourceSupportsConcurrentAccess(snapdisk->src)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("shared access for disk '%s' requires use of "
+                         "supported storage format"), domdisk->dst);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainSnapshotPrepareDiskExternalInactive(virDomainSnapshotDiskDefPtr snapdisk,
                                               virDomainDiskDefPtr domdisk)
 {
@@ -14006,6 +14024,9 @@ qemuDomainSnapshotPrepareDiskExternalInactive(virDomainSnapshotDiskDefPtr snapdi
         return -1;
     }
 
+    if (qemuDomainSnapshotPrepareDiskShared(snapdisk, domdisk) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -14064,6 +14085,9 @@ qemuDomainSnapshotPrepareDiskExternalActive(virDomainSnapshotDiskDefPtr snapdisk
                          "'%s' disks"), virStorageTypeToString(actualType));
         return -1;
     }
+
+    if (qemuDomainSnapshotPrepareDiskShared(snapdisk, domdisk) < 0)
+        return -1;
 
     return 0;
 }
