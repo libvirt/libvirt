@@ -13945,17 +13945,19 @@ qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
 
 
 static int
-qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
+qemuDomainSnapshotPrepareDiskExternalInactive(virDomainSnapshotDiskDefPtr snapdisk,
+                                              virDomainDiskDefPtr domdisk)
 {
-    int actualType = virStorageSourceGetActualType(disk->src);
+    int domDiskType = virStorageSourceGetActualType(domdisk->src);
+    int snapDiskType = virStorageSourceGetActualType(snapdisk->src);
 
-    switch ((virStorageType) actualType) {
+    switch ((virStorageType) domDiskType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
-        return 0;
+        break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((virStorageNetProtocol) disk->src->protocol) {
+        switch ((virStorageNetProtocol) domdisk->src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_RBD:
@@ -13973,7 +13975,7 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("external inactive snapshots are not supported on "
                              "'network' disks using '%s' protocol"),
-                           virStorageNetProtocolTypeToString(disk->src->protocol));
+                           virStorageNetProtocolTypeToString(domdisk->src->protocol));
             return -1;
         }
         break;
@@ -13984,7 +13986,23 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
     case VIR_STORAGE_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("external inactive snapshots are not supported on "
-                         "'%s' disks"), virStorageTypeToString(actualType));
+                         "'%s' disks"), virStorageTypeToString(domDiskType));
+        return -1;
+    }
+
+    switch ((virStorageType) snapDiskType) {
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_FILE:
+        break;
+
+    case VIR_STORAGE_TYPE_NETWORK:
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("external inactive snapshots are not supported on "
+                         "'%s' disks"), virStorageTypeToString(snapDiskType));
         return -1;
     }
 
@@ -13993,33 +14011,27 @@ qemuDomainSnapshotPrepareDiskExternalBackingInactive(virDomainDiskDefPtr disk)
 
 
 static int
-qemuDomainSnapshotPrepareDiskExternalBackingActive(virDomainDiskDefPtr disk)
+qemuDomainSnapshotPrepareDiskExternalActive(virDomainSnapshotDiskDefPtr snapdisk,
+                                            virDomainDiskDefPtr domdisk)
 {
-    if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+    int actualType = virStorageSourceGetActualType(snapdisk->src);
+
+    if (domdisk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("external active snapshots are not supported on scsi "
                          "passthrough devices"));
         return -1;
     }
 
-    return 0;
-}
-
-
-static int
-qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr disk)
-{
-    int actualType = virStorageSourceGetActualType(disk->src);
-
     switch ((virStorageType) actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
-        return 0;
+        break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        switch ((virStorageNetProtocol) disk->src->protocol) {
+        switch ((virStorageNetProtocol) snapdisk->src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-            return 0;
+            break;
 
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_NBD:
@@ -14037,7 +14049,7 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("external active snapshots are not supported on "
                              "'network' disks using '%s' protocol"),
-                           virStorageNetProtocolTypeToString(disk->src->protocol));
+                           virStorageNetProtocolTypeToString(snapdisk->src->protocol));
             return -1;
 
         }
@@ -14049,31 +14061,6 @@ qemuDomainSnapshotPrepareDiskExternalOverlayActive(virDomainSnapshotDiskDefPtr d
     case VIR_STORAGE_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("external active snapshots are not supported on "
-                         "'%s' disks"), virStorageTypeToString(actualType));
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
-qemuDomainSnapshotPrepareDiskExternalOverlayInactive(virDomainSnapshotDiskDefPtr disk)
-{
-    int actualType = virStorageSourceGetActualType(disk->src);
-
-    switch ((virStorageType) actualType) {
-    case VIR_STORAGE_TYPE_BLOCK:
-    case VIR_STORAGE_TYPE_FILE:
-        return 0;
-
-    case VIR_STORAGE_TYPE_NETWORK:
-    case VIR_STORAGE_TYPE_DIR:
-    case VIR_STORAGE_TYPE_VOLUME:
-    case VIR_STORAGE_TYPE_NONE:
-    case VIR_STORAGE_TYPE_LAST:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("external inactive snapshots are not supported on "
                          "'%s' disks"), virStorageTypeToString(actualType));
         return -1;
     }
@@ -14099,16 +14086,10 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
         if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
             return -1;
 
-        if (qemuDomainSnapshotPrepareDiskExternalBackingInactive(disk) < 0)
-            return -1;
-
-        if (qemuDomainSnapshotPrepareDiskExternalOverlayInactive(snapdisk) < 0)
+        if (qemuDomainSnapshotPrepareDiskExternalInactive(snapdisk, disk) < 0)
             return -1;
     } else {
-        if (qemuDomainSnapshotPrepareDiskExternalBackingActive(disk) < 0)
-            return -1;
-
-        if (qemuDomainSnapshotPrepareDiskExternalOverlayActive(snapdisk) < 0)
+        if (qemuDomainSnapshotPrepareDiskExternalActive(snapdisk, disk) < 0)
             return -1;
     }
 
