@@ -1330,7 +1330,7 @@ mymain(void)
     DO_TEST("console-sclp",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_S390,
-            QEMU_CAPS_SCLP_S390);
+            QEMU_CAPS_DEVICE_SCLPCONSOLE);
     DO_TEST("channel-spicevmc",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SPICE,

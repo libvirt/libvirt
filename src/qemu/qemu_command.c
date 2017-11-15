@@ -9308,9 +9308,9 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
         switch (console->targetType) {
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCLP_S390)) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCLPCONSOLE)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("sclp console requires QEMU to support s390-sclp"));
+                               _("sclpconsole is not supported in this QEMU binary"));
                 return -1;
             }
 

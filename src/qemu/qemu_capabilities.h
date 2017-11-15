@@ -220,7 +220,7 @@ typedef enum {
     QEMU_CAPS_DEVICE_CIRRUS_VGA, /* -device cirrus-vga */
     QEMU_CAPS_DEVICE_VMWARE_SVGA, /* -device vmware-svga */
     QEMU_CAPS_DEVICE_VIDEO_PRIMARY, /* -device safe for primary video device */
-    QEMU_CAPS_SCLP_S390, /* -device sclp* */
+    QEMU_CAPS_DEVICE_SCLPCONSOLE, /* -device sclpconsole */
 
     /* 125 */
     QEMU_CAPS_DEVICE_USB_SERIAL, /* -device usb-serial */
