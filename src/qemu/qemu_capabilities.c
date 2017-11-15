@@ -2398,7 +2398,7 @@ virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
 
 
 bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
-                               virDomainDefPtr def)
+                               const virDomainDef *def)
 {
     /* x86_64 and i686 support PCI-multibus on all machine types
      * since forever */
