@@ -138,6 +138,7 @@
   <flag name='chardev-reconnect'/>
   <flag name='virtio-gpu.max_outputs'/>
   <flag name='virtio-blk.num-queues'/>
+  <flag name='sclplmconsole'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

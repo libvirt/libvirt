@@ -9307,10 +9307,30 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
 
         switch (console->targetType) {
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
-        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCLPCONSOLE)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("sclpconsole is not supported in this QEMU binary"));
+                return -1;
+            }
+
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
+                                                  console->source,
+                                                  console->info.alias,
+                                                  qemuCaps, true,
+                                                  chardevStdioLogd)))
+                return -1;
+            virCommandAddArg(cmd, "-chardev");
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
+
+            if (qemuBuildChrDeviceCommandLine(cmd, def, console, qemuCaps) < 0)
+                return -1;
+            break;
+
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCLPLMCONSOLE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("sclplmconsole is not supported in this QEMU binary"));
                 return -1;
             }
 
