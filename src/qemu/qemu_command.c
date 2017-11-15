@@ -2020,9 +2020,18 @@ qemuBuildDriveDevStr(const virDomainDef *def,
             virBufferAddLit(&opt, "ide-drive");
         }
 
-        if (!(contAlias = virDomainControllerAliasFind(def, VIR_DOMAIN_CONTROLLER_TYPE_SATA,
-                                                      disk->info.addr.drive.controller)))
-           goto error;
+        /* When domain has builtin SATA controller we don't put it onto cmd
+         * line. Therefore we can't set its alias. In that case, use the
+         * default one. */
+        if (qemuDomainIsQ35(def) &&
+            disk->info.addr.drive.controller == 0) {
+            contAlias = "ide";
+        } else {
+            if (!(contAlias = virDomainControllerAliasFind(def,
+                                                           VIR_DOMAIN_CONTROLLER_TYPE_SATA,
+                                                           disk->info.addr.drive.controller)))
+                goto error;
+        }
         virBufferAsprintf(&opt, ",bus=%s.%d",
                           contAlias,
                           disk->info.addr.drive.unit);
