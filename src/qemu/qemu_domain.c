@@ -9933,16 +9933,18 @@ qemuDomainDetachDeviceUnlink(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 }
 
 
-int
-qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             virStorageSourcePtr src)
+static int
+qemuDomainNamespaceMknodPaths(virDomainObjPtr vm,
+                              const char **paths,
+                              size_t npaths)
 {
-    virQEMUDriverConfigPtr cfg = NULL;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    virQEMUDriverConfigPtr cfg;
     char **devMountsPath = NULL;
     size_t ndevMountsPath = 0;
-    virStorageSourcePtr next;
     int ret = -1;
+    size_t i;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
@@ -9953,16 +9955,10 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
                                      &ndevMountsPath) < 0)
         goto cleanup;
 
-    for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
-        if (virStorageSourceIsEmpty(next) ||
-            !virStorageSourceIsLocalStorage(next)) {
-            /* Not creating device. Just continue. */
-            continue;
-        }
-
+    for (i = 0; i < npaths; i++) {
         if (qemuDomainAttachDeviceMknod(driver,
                                         vm,
-                                        next->path,
+                                        paths[i],
                                         devMountsPath, ndevMountsPath) < 0)
             goto cleanup;
     }
@@ -9971,6 +9967,40 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
  cleanup:
     virStringListFreeCount(devMountsPath, ndevMountsPath);
     virObjectUnref(cfg);
+    return ret;
+}
+
+
+int
+qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                             virDomainObjPtr vm,
+                             virStorageSourcePtr src)
+{
+    virStorageSourcePtr next;
+    char **paths = NULL;
+    size_t npaths;
+    int ret = -1;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
+    for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
+        if (virStorageSourceIsEmpty(next) ||
+            !virStorageSourceIsLocalStorage(next)) {
+            /* Not creating device. Just continue. */
+            continue;
+        }
+
+        if (VIR_APPEND_ELEMENT_COPY(paths, npaths, next->path) < 0)
+            goto cleanup;
+    }
+
+    if (qemuDomainNamespaceMknodPaths(vm, (const char **)paths, npaths) < 0)
+        return -1;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(paths);
     return ret;
 }
 
@@ -9991,13 +10021,10 @@ qemuDomainNamespaceTeardownDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver,
+qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                 virDomainObjPtr vm,
                                 virDomainHostdevDefPtr hostdev)
 {
-    virQEMUDriverConfigPtr cfg = NULL;
-    char **devMountsPath = NULL;
-    size_t ndevMountsPath = 0;
     int ret = -1;
     char **paths = NULL;
     size_t i, npaths = 0;
@@ -10008,27 +10035,14 @@ qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver,
     if (qemuDomainGetHostdevPath(NULL, hostdev, false, &npaths, &paths, NULL) < 0)
         goto cleanup;
 
-    cfg = virQEMUDriverGetConfig(driver);
-    if (qemuDomainGetPreservedMounts(cfg, vm,
-                                     &devMountsPath, NULL,
-                                     &ndevMountsPath) < 0)
+    if (qemuDomainNamespaceMknodPaths(vm, (const char **)paths, npaths) < 0)
         goto cleanup;
-
-    for (i = 0; i < npaths; i++) {
-        if (qemuDomainAttachDeviceMknod(driver,
-                                        vm,
-                                        paths[i],
-                                        devMountsPath, ndevMountsPath) < 0)
-        goto cleanup;
-    }
 
     ret = 0;
  cleanup:
     for (i = 0; i < npaths; i++)
         VIR_FREE(paths[i]);
     VIR_FREE(paths);
-    virStringListFreeCount(devMountsPath, ndevMountsPath);
-    virObjectUnref(cfg);
     return ret;
 }
 
