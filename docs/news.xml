@@ -161,6 +161,18 @@
           supported format (raw) to avoid metadata corruption.
         </description>
       </change>
+      <change>
+        <summary>
+          Improve serial console behavior on non-x86 architectures
+        </summary>
+        <description>
+          ppc64, aarch64 and s390x guests were treating the &lt;serial&gt;
+          and &lt;console&gt; elements differently from x86, in some cases
+          presenting misleading information to the user. The behavior is now
+          consistent across all architectures and the information reported
+          is always accurate.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
