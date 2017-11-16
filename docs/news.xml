@@ -65,6 +65,17 @@
           hypervisor defaults and negotiation between the guest and the host.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add vmcoreinfo feature
+        </summary>
+        <description>
+          Starting with QEMU 2.11, the guest can save kernel debug
+          details when this feature is enabled and the kernel supports
+          it. It is useful to process kernel dump with KASLR enabled,
+          and also provides various kernel details to crash tools.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
