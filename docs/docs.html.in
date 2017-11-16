@@ -110,6 +110,9 @@
         <dt><a href="drivers.html">Drivers</a></dt>
         <dd>Hypervisor specific driver information</dd>
 
+        <dt><a href="support.html">Support guarantees</a></dt>
+        <dd>Details of support status for various interfaces</dd>
+
         <dt><a href="hvsupport.html">Driver support</a></dt>
         <dd>matrix of API support per hypervisor per release</dd>
 
