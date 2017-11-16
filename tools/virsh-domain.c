@@ -5532,12 +5532,12 @@ static const vshCmdInfo info_setLifecycleAction[] = {
 static const vshCmdOptDef opts_setLifecycleAction[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL,
     {.name = "type",
-     .type = VSH_OT_STRING,
+     .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("lifecycle type to modify")
     },
     {.name = "action",
-     .type = VSH_OT_STRING,
+     .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("lifecycle action to set")
     },
