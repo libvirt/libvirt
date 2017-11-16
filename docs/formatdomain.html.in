@@ -1951,6 +1951,10 @@
           the attribute is not defined, the hypervisor default will be used.
           <span class="since">Since 3.10.0</span> (QEMU/KVM only)
       </dd>
+      <dt><code>vmcoreinfo</code></dt>
+      <dd>Enable QEMU vmcoreinfo device to let the guest kernel save debug
+          details. <span class="since">Since 3.10.0</span> (QEMU only)
+      </dd>
     </dl>
 
     <h3><a id="elementsTime">Time keeping</a></h3>

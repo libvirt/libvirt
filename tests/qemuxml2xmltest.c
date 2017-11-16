@@ -1265,6 +1265,7 @@ mymain(void)
     DO_TEST("cpu-check-default-none2", NONE);
     DO_TEST("cpu-check-default-partial", NONE);
     DO_TEST("cpu-check-default-partial2", NONE);
+    DO_TEST("vmcoreinfo", NONE);
 
     DO_TEST("smartcard-host", NONE);
     DO_TEST("smartcard-host-certificates", NONE);

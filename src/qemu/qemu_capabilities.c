@@ -444,6 +444,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "vxhs",
               "virtio-blk.num-queues",
               "machine.pseries.resize-hpt",
+              "vmcoreinfo",
     );
 
 
@@ -1671,6 +1672,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "pcie-root-port", QEMU_CAPS_DEVICE_PCIE_ROOT_PORT },
     { "qemu-xhci", QEMU_CAPS_DEVICE_QEMU_XHCI },
     { "spapr-pci-host-bridge", QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE },
+    { "vmcoreinfo", QEMU_CAPS_DEVICE_VMCOREINFO },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {
