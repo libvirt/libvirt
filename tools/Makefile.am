@@ -427,7 +427,7 @@ EXTRA_DIST += \
 if WITH_WIRESHARK_DISSECTOR
 
 ws_plugin_LTLIBRARIES = wireshark/src/libvirt.la
-wireshark_src_libvirt_la_CPPFLAGS = \
+wireshark_src_libvirt_la_CFLAGS = \
 	-I wireshark/src $(WIRESHARK_DISSECTOR_CFLAGS) $(XDR_CFLAGS)
 wireshark_src_libvirt_la_LDFLAGS = -avoid-version -module
 nodist_wireshark_src_libvirt_la_SOURCES = wireshark/src/plugin.c
