@@ -25,6 +25,13 @@ INCLUDES = \
 
 WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
 
+AM_CFLAGS = \
+	$(WARN_CFLAGS) \
+	$(COVERAGE_CFLAGS) \
+	$(PIE_CFLAGS) \
+	$(LIBXML_CFLAGS) \
+	$(NULL)
+
 AM_LDFLAGS = \
 	$(RELRO_LDFLAGS) \
 	$(NO_INDIRECT_LDFLAGS) \
@@ -122,9 +129,7 @@ virt-sanlock-cleanup: virt-sanlock-cleanup.in Makefile
 noinst_LTLIBRARIES = libvirt_shell.la
 libvirt_shell_la_CFLAGS = \
 		$(AM_CFLAGS) \
-		$(PIE_CFLAGS) \
 		$(READLINE_CFLAGS) \
-		$(LIBXML_CFLAGS) \
 		$(NULL)
 libvirt_shell_la_LDFLAGS = \
 		$(AM_LDFLAGS) \
@@ -182,10 +187,7 @@ virt_host_validate_LDADD = \
 		$(NULL)
 
 virt_host_validate_CFLAGS = \
-		$(LIBXML_CFLAGS) \
-		$(WARN_CFLAGS) \
-		$(PIE_CFLAGS) \
-		$(COVERAGE_CFLAGS) \
+		$(AM_CFLAGS) \
 		$(NULL)
 
 # Since virt-login-shell will be setuid, we must do everything
@@ -208,10 +210,8 @@ virt_login_shell_LDADD = \
 
 virt_login_shell_CFLAGS = \
 		-DLIBVIRT_SETUID_RPC_CLIENT \
-		$(LIBXML_CFLAGS) \
-		$(WARN_CFLAGS) \
-		$(PIE_CFLAGS) \
-		$(COVERAGE_CFLAGS)
+		$(AM_CFLAGS) \
+		$(NULL)
 
 virsh_SOURCES = \
 		virsh.c virsh.h \
@@ -241,10 +241,7 @@ virsh_LDADD = \
 		../src/libvirt-qemu.la \
 		libvirt_shell.la
 virsh_CFLAGS = \
-		$(WARN_CFLAGS) \
-		$(PIE_CFLAGS) \
-		$(COVERAGE_CFLAGS) \
-		$(LIBXML_CFLAGS) \
+		$(AM_CFLAGS) \
 		$(READLINE_CFLAGS)
 
 virt_admin_SOURCES = \
@@ -263,10 +260,7 @@ virt_admin_LDADD = \
 		$(LIBXML_LIBS) \
 		$(NULL)
 virt_admin_CFLAGS = \
-		$(WARN_CFLAGS) \
-		$(PIE_CFLAGS) \
-		$(COVERAGE_CFLAGS) \
-		$(LIBXML_CFLAGS) \
+		$(AM_CFLAGS) \
 		$(READLINE_CFLAGS)
 BUILT_SOURCES =
 
@@ -502,10 +496,7 @@ nss_libnss_libvirt_impl_la_SOURCES = \
 nss_libnss_libvirt_impl_la_CFLAGS = \
 	-DLIBVIRT_NSS \
 	$(AM_CFLAGS) \
-	$(WARN_CFLAGS) \
-	$(PIE_CFLAGS) \
-	$(COVERAGE_CFLAGS) \
-	$(LIBXML_CFLAGS)
+	$(NULL)
 
 nss_libnss_libvirt_impl_la_LIBADD = \
 	../gnulib/lib/libgnu.la \
@@ -532,10 +523,7 @@ nss_libnss_libvirt_guest_impl_la_CFLAGS = \
 	-DLIBVIRT_NSS \
 	-DLIBVIRT_NSS_GUEST \
 	$(AM_CFLAGS) \
-	$(WARN_CFLAGS) \
-	$(PIE_CFLAGS) \
-	$(COVERAGE_CFLAGS) \
-	$(LIBXML_CFLAGS)
+	$(NULL)
 
 nss_libnss_libvirt_guest_impl_la_LIBADD = \
 	../gnulib/lib/libgnu.la \
