@@ -138,6 +138,7 @@
   <flag name='virtio-gpu.max_outputs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='sclplmconsole'/>
+  <flag name='dump-completed'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>242460</microcodeVersion>

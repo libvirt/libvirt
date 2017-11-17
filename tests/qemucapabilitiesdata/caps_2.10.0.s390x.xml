@@ -145,6 +145,7 @@
   <flag name='numa.dist'/>
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
+  <flag name='dump-completed'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>304153</microcodeVersion>

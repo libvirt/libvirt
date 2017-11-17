@@ -209,6 +209,7 @@
   <flag name='virtio-gpu.max_outputs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='isa-serial'/>
+  <flag name='dump-completed'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>239276</microcodeVersion>

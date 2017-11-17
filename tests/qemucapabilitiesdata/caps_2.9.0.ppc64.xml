@@ -177,6 +177,7 @@
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
   <flag name='isa-serial'/>
+  <flag name='dump-completed'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>347135</microcodeVersion>

@@ -185,6 +185,7 @@
   <flag name='iscsi.password-secret'/>
   <flag name='isa-serial'/>
   <flag name='pl011'/>
+  <flag name='dump-completed'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>304138</microcodeVersion>
