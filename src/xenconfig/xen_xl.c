@@ -1261,11 +1261,11 @@ xenFormatXLVnuma(virConfValuePtr list,
     numaVnode->list = NULL;
 
     /* pnode */
-    virBufferAsprintf(&buf, "pnode=%ld", node);
+    virBufferAsprintf(&buf, "pnode=%zu", node);
     xenFormatXLVnode(numaVnode, &buf);
 
     /* size */
-    virBufferAsprintf(&buf, "size=%ld", nodeSize);
+    virBufferAsprintf(&buf, "size=%zu", nodeSize);
     xenFormatXLVnode(numaVnode, &buf);
 
     /* vcpus */
