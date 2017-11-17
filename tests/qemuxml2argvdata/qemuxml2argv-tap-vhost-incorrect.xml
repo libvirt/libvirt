@@ -22,14 +22,16 @@
     </controller>
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
-    <interface type='user'>
+    <interface type='network'>
       <mac address='52:54:00:e5:48:58'/>
+      <source network='default'/>
       <model type='e1000'/>
       <driver name='vhost' queues='5'/>
       <backend tap='/dev/null' vhost='/dev/zero'/>
     </interface>
-    <interface type='user'>
+    <interface type='network'>
       <mac address='52:54:00:e5:48:59'/>
+      <source network='default'/>
       <model type='virtio'/>
       <driver name='vhost' queues='1'/>
       <backend tap='/dev/null' vhost='/dev/zero'/>
