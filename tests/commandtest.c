@@ -843,7 +843,7 @@ static const char *const newenv[] = {
     "LANG=C",
     "HOME=/home/test",
     "USER=test",
-    "LOGNAME=test"
+    "LOGNAME=test",
     "TMPDIR=/tmp",
     "DISPLAY=:0.0",
     NULL

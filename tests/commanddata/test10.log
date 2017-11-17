@@ -4,8 +4,9 @@ ENV:DISPLAY=:0.0
 ENV:HOME=/home/test
 ENV:HOSTNAME=test
 ENV:LANG=C
-ENV:LOGNAME=testTMPDIR=/tmp
+ENV:LOGNAME=test
 ENV:PATH=/usr/bin:/bin
+ENV:TMPDIR=/tmp
 ENV:USER=test
 FD:0
 FD:1
