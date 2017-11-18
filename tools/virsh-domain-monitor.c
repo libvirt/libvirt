@@ -995,7 +995,7 @@ static const vshCmdOptDef opts_domifstat[] = {
     {.name = "interface",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("interface device")
+     .help = N_("interface device specified by name or MAC Address")
     },
     {.name = NULL}
 };
