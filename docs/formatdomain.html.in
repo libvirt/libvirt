@@ -6531,7 +6531,9 @@ qemu-kvm -net nic,model=? /dev/null
 &lt;devices&gt;
   &lt;!-- USB serial port --&gt;
   &lt;serial type='pty'&gt;
-    &lt;target type='usb-serial' port='0'/&gt;
+    &lt;target type='usb-serial' port='0'&gt;
+      &lt;model name='usb-serial'/&gt;
+    &lt;/target&gt;
     &lt;address type='usb' bus='0' port='1'/&gt;
   &lt;/serial&gt;
 &lt;/devices&gt;
@@ -6545,6 +6547,16 @@ qemu-kvm -net nic,model=? /dev/null
       with x86 guests), <code>usb-serial</code> (usable whenever USB support
       is available) and <code>pci-serial</code> (usable whenever PCI support
       is available).
+    </p>
+
+    <p>
+      <span class="since">Since 3.10.0</span>, the <code>target</code>
+      element can have an optional <code>model</code> subelement;
+      valid values for its <code>name</code> attribute are:
+      <code>isa-serial</code> (usable with the <code>isa-serial</code> target
+      type); <code>usb-serial</code> (usable with the <code>usb-serial</code>
+      target type); <code>pci-serial</code>
+      (usable with the <code>pci-serial</code> target type).
     </p>
 
     <p>
@@ -6573,7 +6585,7 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;!-- Serial console --&gt;
   &lt;console type='pty'&gt;
     &lt;source path='/dev/pts/2'/&gt;
-    &lt;target type='serial' port='0'/&gt;
+   &lt;target type='serial' port='0'/&gt;
   &lt;/console&gt;
 &lt;/devices&gt;
 ...</pre>

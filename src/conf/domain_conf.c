@@ -472,6 +472,14 @@ VIR_ENUM_IMPL(virDomainChrConsoleTarget,
               "sclp",
               "sclplm")
 
+VIR_ENUM_IMPL(virDomainChrSerialTargetModel,
+              VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST,
+              "none",
+              "isa-serial",
+              "usb-serial",
+              "pci-serial",
+);
+
 VIR_ENUM_IMPL(virDomainChrDevice, VIR_DOMAIN_CHR_DEVICE_TYPE_LAST,
               "parallel",
               "serial",
@@ -11539,13 +11547,41 @@ virDomainChrTargetTypeFromString(int devtype,
 }
 
 static int
+virDomainChrTargetModelFromString(int devtype,
+                                  const char *targetModel)
+{
+    int ret = -1;
+
+    if (!targetModel)
+        return 0;
+
+    switch ((virDomainChrDeviceType) devtype) {
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+        ret = virDomainChrSerialTargetModelTypeFromString(targetModel);
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
+        /* Target model not supported yet */
+        ret = 0;
+        break;
+    }
+
+    return ret;
+}
+
+static int
 virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
                               xmlNodePtr cur,
                               unsigned int flags)
 {
     int ret = -1;
+    xmlNodePtr child;
     unsigned int port;
     char *targetType = virXMLPropString(cur, "type");
+    char *targetModel = NULL;
     char *addrStr = NULL;
     char *portStr = NULL;
     char *stateStr = NULL;
@@ -11556,6 +11592,24 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown target type '%s' specified for character device"),
                        targetType);
+        goto error;
+    }
+
+    child = cur->children;
+    while (child != NULL) {
+        if (child->type == XML_ELEMENT_NODE &&
+            virXMLNodeNameEqual(child, "model")) {
+            targetModel = virXMLPropString(child, "name");
+        }
+        child = child->next;
+    }
+
+    if ((def->targetModel =
+         virDomainChrTargetModelFromString(def->deviceType,
+                                           targetModel)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown target model '%s' specified for character device"),
+                       targetModel);
         goto error;
     }
 
@@ -11647,6 +11701,7 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
     ret = 0;
  error:
     VIR_FREE(targetType);
+    VIR_FREE(targetModel);
     VIR_FREE(addrStr);
     VIR_FREE(portStr);
     VIR_FREE(stateStr);
@@ -24028,8 +24083,23 @@ virDomainChrTargetDefFormat(virBufferPtr buf,
         }
 
         virBufferAsprintf(buf,
-                          "port='%d'/>\n",
+                          "port='%d'",
                           def->target.port);
+
+        if (def->targetModel != VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE) {
+            virBufferAddLit(buf, ">\n");
+
+            virBufferAdjustIndent(buf, 2);
+            virBufferAsprintf(buf,
+                              "<model name='%s'/>\n",
+                              virDomainChrSerialTargetModelTypeToString(def->targetModel));
+            virBufferAdjustIndent(buf, -2);
+
+            virBufferAddLit(buf, "</target>\n");
+        } else {
+            virBufferAddLit(buf, "/>\n");
+        }
+
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:

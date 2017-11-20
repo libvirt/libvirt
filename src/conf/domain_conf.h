@@ -1109,6 +1109,17 @@ typedef enum {
 } virDomainChrConsoleTargetType;
 
 typedef enum {
+    VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE = 0,
+    VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_SERIAL,
+    VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_USB_SERIAL,
+    VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PCI_SERIAL,
+
+    VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST
+} virDomainChrSerialTargetModel;
+
+VIR_ENUM_DECL(virDomainChrSerialTargetModel);
+
+typedef enum {
     VIR_DOMAIN_CHR_TYPE_NULL,
     VIR_DOMAIN_CHR_TYPE_VC,
     VIR_DOMAIN_CHR_TYPE_PTY,
@@ -1206,6 +1217,7 @@ struct _virDomainChrDef {
     int targetType; /* enum virDomainChrConsoleTargetType ||
                        enum virDomainChrChannelTargetType ||
                        enum virDomainChrSerialTargetType according to deviceType */
+    int targetModel; /* enum virDomainChrSerialTargetModel */
 
     union {
         int port; /* parallel, serial, console */

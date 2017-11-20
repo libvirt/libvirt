@@ -3589,6 +3589,18 @@
     </attribute>
   </define>
 
+  <define name='qemucdevSerialTgtModel'>
+    <element name='model'>
+      <attribute name='name'>
+        <choice>
+          <value>isa-serial</value>
+          <value>usb-serial</value>
+          <value>pci-serial</value>
+        </choice>
+      </attribute>
+    </element>
+  </define>
+
   <define  name="qemucdevTgtDef">
     <element name="target">
       <interleave>
@@ -3602,6 +3614,9 @@
         </choice>
         <optional>
           <attribute name="port"/>
+        </optional>
+        <optional>
+          <ref name="qemucdevSerialTgtModel"/>
         </optional>
       </interleave>
     </element>
