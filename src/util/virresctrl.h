@@ -65,15 +65,4 @@ virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
                        size_t *ncontrols,
                        virResctrlInfoPerCachePtr **controls);
 
-/* To be removed */
-int
-virResctrlGetCacheInfo(unsigned int level,
-                       unsigned long long size,
-                       virCacheType scope,
-                       virResctrlInfoPerCachePtr **controls,
-                       size_t *ncontrols);
-
-int
-virResctrlGetCacheControlType(unsigned int level);
-
 #endif /*  __VIR_RESCTRL_H__ */
