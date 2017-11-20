@@ -23945,38 +23945,15 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
     return -1;
 }
 
+
 static int
-virDomainChrDefFormat(virBufferPtr buf,
-                      virDomainChrDefPtr def,
-                      unsigned int flags)
+virDomainChrTargetDefFormat(virBufferPtr buf,
+                            const virDomainChrDef *def,
+                            unsigned int flags)
 {
-    const char *elementName = virDomainChrDeviceTypeToString(def->deviceType);
     const char *targetType = virDomainChrTargetTypeToString(def->deviceType,
                                                             def->targetType);
-    bool tty_compat;
 
-    int ret = 0;
-
-    if (!elementName) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected char device type %d"),
-                       def->deviceType);
-        return -1;
-    }
-
-    virBufferAsprintf(buf, "<%s", elementName);
-    virBufferAdjustIndent(buf, 2);
-    tty_compat = (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
-                  def->target.port == 0 &&
-                  def->source->type == VIR_DOMAIN_CHR_TYPE_PTY &&
-                  !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
-                  def->source->data.file.path);
-    if (virDomainChrAttrsDefFormat(buf, def->source, tty_compat) < 0)
-        return -1;
-    virBufferAddLit(buf, ">\n");
-    virDomainChrSourceDefFormat(buf, def->source, flags);
-
-    /* Format <target> block */
     switch (def->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL: {
         if (!targetType) {
@@ -24047,6 +24024,42 @@ virDomainChrDefFormat(virBufferPtr buf,
                           def->target.port);
         break;
     }
+
+    return 0;
+}
+
+
+static int
+virDomainChrDefFormat(virBufferPtr buf,
+                      virDomainChrDefPtr def,
+                      unsigned int flags)
+{
+    const char *elementName = virDomainChrDeviceTypeToString(def->deviceType);
+    bool tty_compat;
+
+    int ret = 0;
+
+    if (!elementName) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected char device type %d"),
+                       def->deviceType);
+        return -1;
+    }
+
+    virBufferAsprintf(buf, "<%s", elementName);
+    virBufferAdjustIndent(buf, 2);
+    tty_compat = (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+                  def->target.port == 0 &&
+                  def->source->type == VIR_DOMAIN_CHR_TYPE_PTY &&
+                  !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
+                  def->source->data.file.path);
+    if (virDomainChrAttrsDefFormat(buf, def->source, tty_compat) < 0)
+        return -1;
+    virBufferAddLit(buf, ">\n");
+    virDomainChrSourceDefFormat(buf, def->source, flags);
+
+    if (virDomainChrTargetDefFormat(buf, def, flags) < 0)
+       return -1;
 
     virDomainDeviceInfoFormat(buf, &def->info, flags);
 
