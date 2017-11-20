@@ -209,6 +209,8 @@ virDomainChrGetDomainPtrs;
 virDomainChrInsertPreAlloced;
 virDomainChrPreAlloc;
 virDomainChrRemove;
+virDomainChrSerialTargetModelTypeFromString;
+virDomainChrSerialTargetModelTypeToString;
 virDomainChrSerialTargetTypeFromString;
 virDomainChrSerialTargetTypeToString;
 virDomainChrSourceDefClear;

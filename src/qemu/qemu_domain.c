@@ -3480,6 +3480,25 @@ qemuDomainChrSerialTargetTypeToAddressType(int targetType)
 
 
 static int
+qemuDomainChrSerialTargetModelToTargetType(int targetModel)
+{
+    switch ((virDomainChrSerialTargetModel) targetModel) {
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_SERIAL:
+        return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_USB_SERIAL:
+        return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PCI_SERIAL:
+        return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE:
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST:
+        break;
+    }
+
+    return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE;
+}
+
+
+static int
 qemuDomainChrTargetDefValidate(const virDomainDef *def,
                                const virDomainChrDef *chr)
 {
@@ -3513,6 +3532,28 @@ qemuDomainChrTargetDefValidate(const virDomainDef *def,
 
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
+            break;
+        }
+
+        /* Validate target model */
+        switch ((virDomainChrSerialTargetModel) chr->targetModel) {
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_SERIAL:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_USB_SERIAL:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PCI_SERIAL:
+
+            expected = qemuDomainChrSerialTargetModelToTargetType(chr->targetModel);
+
+            if (chr->targetType != expected) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Target model '%s' requires target type '%s'"),
+                               virDomainChrSerialTargetModelTypeToString(chr->targetModel),
+                               virDomainChrSerialTargetTypeToString(expected));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST:
             break;
         }
         break;
