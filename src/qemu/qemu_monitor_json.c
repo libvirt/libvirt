@@ -3263,7 +3263,8 @@ qemuMonitorJSONGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
 int
 qemuMonitorJSONDump(qemuMonitorPtr mon,
                     const char *protocol,
-                    const char *dumpformat)
+                    const char *dumpformat,
+                    bool detach)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
@@ -3273,6 +3274,7 @@ qemuMonitorJSONDump(qemuMonitorPtr mon,
                                      "b:paging", false,
                                      "s:protocol", protocol,
                                      "S:format", dumpformat,
+                                     "B:detach", detach,
                                      NULL);
     if (!cmd)
         return -1;
