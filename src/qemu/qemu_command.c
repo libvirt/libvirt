@@ -1764,8 +1764,13 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         virBufferAsprintf(&opt, ",index=%d", idx);
     }
 
+    /* Format attributes for the drive itself (not the storage backing it) which
+     * we've formatted historically with -drive */
     qemuBuildDiskFrontendAttributes(disk, qemuCaps, &opt);
 
+    /* While this is a frontend attribute, it only makes sense to be used when
+     * legacy -drive is used. In modern qemu the 'ide-cd' or 'scsi-cd' are used.
+     * virtio and other just ignore the attribute anyways */
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
         if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD))
@@ -1778,12 +1783,15 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         }
     }
 
+    /* This is a frontend attribute which was replaced by bootindex passed in
+     * with -device arguments. */
     if (bootable &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) &&
         (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
          disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
         disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
         virBufferAddLit(&opt, ",boot=on");
+
     if (disk->src->readonly)
         virBufferAddLit(&opt, ",readonly=on");
 
