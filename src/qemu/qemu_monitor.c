@@ -210,6 +210,10 @@ VIR_ENUM_IMPL(qemuMonitorBlockIOStatus,
               QEMU_MONITOR_BLOCK_IO_STATUS_LAST,
               "ok", "failed", "nospace")
 
+VIR_ENUM_IMPL(qemuMonitorDumpStatus,
+              QEMU_MONITOR_DUMP_STATUS_LAST,
+              "none", "active", "completed", "failed")
+
 char *
 qemuMonitorEscapeArg(const char *in)
 {
@@ -1661,6 +1665,23 @@ qemuMonitorEmitBlockThreshold(qemuMonitorPtr mon,
 
     QEMU_MONITOR_CALLBACK(mon, ret, domainBlockThreshold, mon->vm,
                           nodename, threshold, excess);
+
+    return ret;
+}
+
+
+int
+qemuMonitorEmitDumpCompleted(qemuMonitorPtr mon,
+                             int status,
+                             qemuMonitorDumpStatsPtr stats,
+                             const char *error)
+{
+    int ret = -1;
+
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainDumpCompleted, mon->vm,
+                          status, stats, error);
 
     return ret;
 }
