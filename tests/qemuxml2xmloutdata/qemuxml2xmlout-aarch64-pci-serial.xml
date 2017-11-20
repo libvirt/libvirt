@@ -34,7 +34,9 @@
     </controller>
     <serial type='pty'>
       <log file='/tmp/log' append='on'/>
-      <target type='pci-serial' port='0'/>
+      <target type='pci-serial' port='0'>
+        <model name='pci-serial'/>
+      </target>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x01' function='0x0'/>
     </serial>
   </devices>

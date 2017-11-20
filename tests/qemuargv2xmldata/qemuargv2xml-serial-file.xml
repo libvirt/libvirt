@@ -29,7 +29,9 @@
     </controller>
     <serial type='file'>
       <source path='/tmp/serial.log'/>
-      <target type='isa-serial' port='0'/>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
     </serial>
     <console type='file'>
       <source path='/tmp/serial.log'/>

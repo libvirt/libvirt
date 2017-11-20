@@ -4192,6 +4192,26 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
         }
     }
 
+    /* Set the default target model */
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+        chr->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE) {
+        switch ((virDomainChrSerialTargetType) chr->targetType) {
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
+            chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_SERIAL;
+            break;
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
+            chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_USB_SERIAL;
+            break;
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
+            chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PCI_SERIAL;
+            break;
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
+            /* Nothing to do */
+            break;
+        }
+    }
+
     /* clear auto generated unix socket path for inactive definitions */
     if (parseFlags & VIR_DOMAIN_DEF_PARSE_INACTIVE) {
         if (qemuDomainChrDefDropDefaultPath(chr, driver) < 0)

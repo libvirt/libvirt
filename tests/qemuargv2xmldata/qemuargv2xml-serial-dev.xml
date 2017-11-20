@@ -29,7 +29,9 @@
     </controller>
     <serial type='dev'>
       <source path='/dev/ttyS2'/>
-      <target type='isa-serial' port='0'/>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
     </serial>
     <console type='dev'>
       <source path='/dev/ttyS2'/>

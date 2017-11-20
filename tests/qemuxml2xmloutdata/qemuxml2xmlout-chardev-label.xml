@@ -25,13 +25,17 @@
       <source path='/tmp/serial.file'>
         <seclabel model='dac' relabel='no'/>
       </source>
-      <target type='isa-serial' port='0'/>
+      <target type='isa-serial' port='0'>
+        <model name='isa-serial'/>
+      </target>
     </serial>
     <serial type='unix'>
       <source mode='connect' path='/tmp/serial.sock'>
         <seclabel model='dac' relabel='no'/>
       </source>
-      <target type='isa-serial' port='1'/>
+      <target type='isa-serial' port='1'>
+        <model name='isa-serial'/>
+      </target>
     </serial>
     <console type='file'>
       <source path='/tmp/serial.file'>
