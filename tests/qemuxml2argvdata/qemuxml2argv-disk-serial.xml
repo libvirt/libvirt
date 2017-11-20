@@ -26,6 +26,11 @@
       <serial>abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_ .+</serial>
       <address type='drive' controller='0' bus='0' target='0' unit='2'/>
     </disk>
+    <disk type='file' device='disk'>
+      <source file='/some/file'/>
+      <target dev='sda' bus='sd'/>
+      <serial>sdserial</serial>
+    </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <memballoon model='virtio'/>
