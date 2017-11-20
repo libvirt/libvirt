@@ -59,7 +59,7 @@ int
 virResctrlGetCacheInfo(unsigned int level,
                        unsigned long long size,
                        virCacheType scope,
-                       virResctrlInfoPtr **controls,
+                       virResctrlInfoPerCachePtr **controls,
                        size_t *ncontrols)
 {
     int ret = -1;
@@ -69,7 +69,7 @@ virResctrlGetCacheInfo(unsigned int level,
     char *type_upper = NULL;
     unsigned int bits = 0;
     unsigned int min_cbm_bits = 0;
-    virResctrlInfoPtr control;
+    virResctrlInfoPerCachePtr control;
 
     if (VIR_ALLOC(control) < 0)
         goto cleanup;

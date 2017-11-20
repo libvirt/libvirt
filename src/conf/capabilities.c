@@ -904,7 +904,7 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
         virBufferSetChildIndent(&controlBuf, buf);
         for (j = 0; j < bank->ncontrols; j++) {
             const char *min_unit;
-            virResctrlInfoPtr controls = bank->controls[j];
+            virResctrlInfoPerCachePtr controls = bank->controls[j];
             unsigned long long gran_short_size = controls->granularity;
             unsigned long long min_short_size = controls->min;
 
