@@ -252,6 +252,7 @@ src/util/virportallocator.c
 src/util/virprocess.c
 src/util/virqemu.c
 src/util/virrandom.c
+src/util/virresctrl.c
 src/util/virrotatingfile.c
 src/util/virscsi.c
 src/util/virscsihost.c

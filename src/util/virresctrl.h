@@ -49,7 +49,23 @@ struct _virResctrlInfoPerCache {
     unsigned int max_allocation;
 };
 
+typedef struct _virResctrlInfo virResctrlInfo;
+typedef virResctrlInfo *virResctrlInfoPtr;
 
+virResctrlInfoPtr
+virResctrlInfoNew(void);
+
+int
+virResctrlGetInfo(virResctrlInfoPtr resctrl);
+
+int
+virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
+                       unsigned int level,
+                       unsigned long long size,
+                       size_t *ncontrols,
+                       virResctrlInfoPerCachePtr **controls);
+
+/* To be removed */
 int
 virResctrlGetCacheInfo(unsigned int level,
                        unsigned long long size,
