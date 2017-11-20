@@ -1664,6 +1664,41 @@ qemuBuildDiskThrottling(virDomainDiskDefPtr disk,
 
 
 static void
+qemuBuildDiskFrontendAttributeErrorPolicy(virDomainDiskDefPtr disk,
+                                          virQEMUCapsPtr qemuCaps,
+                                          virBufferPtr buf)
+{
+    const char *wpolicy = NULL;
+    const char *rpolicy = NULL;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON))
+        return;
+
+    if (disk->error_policy)
+        wpolicy = virDomainDiskErrorPolicyTypeToString(disk->error_policy);
+
+    if (disk->rerror_policy)
+        rpolicy = virDomainDiskErrorPolicyTypeToString(disk->rerror_policy);
+
+    if (disk->error_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE) {
+        /* in the case of enospace, the option is spelled
+         * differently in qemu, and it's only valid for werror,
+         * not for rerror, so leave rerror NULL.
+         */
+        wpolicy = "enospc";
+    } else if (!rpolicy) {
+        /* for other policies, rpolicy can match wpolicy */
+        rpolicy = wpolicy;
+    }
+
+    if (wpolicy)
+        virBufferAsprintf(buf, ",werror=%s", wpolicy);
+    if (rpolicy)
+        virBufferAsprintf(buf, ",rerror=%s", rpolicy);
+}
+
+
+static void
 qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
                                 virQEMUCapsPtr qemuCaps,
                                 virBufferPtr buf)
@@ -1687,6 +1722,8 @@ qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
         virBufferAddLit(buf, ",serial=");
         virBufferEscape(buf, '\\', " ", "%s", disk->serial);
     }
+
+    qemuBuildDiskFrontendAttributeErrorPolicy(disk, qemuCaps, buf);
 }
 
 
@@ -1784,31 +1821,6 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
 
         virBufferAsprintf(&opt, ",detect-zeroes=%s",
                           virDomainDiskDetectZeroesTypeToString(detect_zeroes));
-    }
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON)) {
-        const char *wpolicy = NULL, *rpolicy = NULL;
-
-        if (disk->error_policy)
-            wpolicy = virDomainDiskErrorPolicyTypeToString(disk->error_policy);
-        if (disk->rerror_policy)
-            rpolicy = virDomainDiskErrorPolicyTypeToString(disk->rerror_policy);
-
-        if (disk->error_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE) {
-            /* in the case of enospace, the option is spelled
-             * differently in qemu, and it's only valid for werror,
-             * not for rerror, so leave rerror NULL.
-             */
-            wpolicy = "enospc";
-        } else if (!rpolicy) {
-            /* for other policies, rpolicy can match wpolicy */
-            rpolicy = wpolicy;
-        }
-
-        if (wpolicy)
-            virBufferAsprintf(&opt, ",werror=%s", wpolicy);
-        if (rpolicy)
-            virBufferAsprintf(&opt, ",rerror=%s", rpolicy);
     }
 
     if (disk->iomode) {
