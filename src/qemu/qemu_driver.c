@@ -3760,6 +3760,49 @@ qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 }
 
 
+/**
+ * qemuDumpWaitForCompletion:
+ * @vm: domain object
+ *
+ * If the query dump capability exists, then it's possible to start a
+ * guest memory dump operation using a thread via a 'detach' qualifier
+ * to the dump guest memory command. This allows the async check if the
+ * dump is done.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+static int
+qemuDumpWaitForCompletion(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+
+    VIR_DEBUG("Waiting for dump completion");
+    while (!priv->job.dumpCompleted && !priv->job.abortJob) {
+        if (virDomainObjWait(vm) < 0)
+            return -1;
+    }
+
+    if (priv->job.current->stats.dump.status == QEMU_MONITOR_DUMP_STATUS_FAILED) {
+        if (priv->job.error)
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("memory-only dump failed: %s"),
+                           priv->job.error);
+        else
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("memory-only dump failed for unknown reason"));
+
+        goto cleanup;
+    }
+    qemuDomainJobInfoUpdateTime(priv->job.current);
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
 static int
 qemuDumpToFd(virQEMUDriverPtr driver,
              virDomainObjPtr vm,
@@ -3768,6 +3811,7 @@ qemuDumpToFd(virQEMUDriverPtr driver,
              const char *dumpformat)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool detach = false;
     int ret = -1;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DUMP_GUEST_MEMORY)) {
@@ -3776,11 +3820,17 @@ qemuDumpToFd(virQEMUDriverPtr driver,
         return -1;
     }
 
+    detach = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DUMP_COMPLETED);
+
     if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
         return -1;
 
-    VIR_FREE(priv->job.current);
-    priv->job.dump_memory_only = true;
+    if (detach) {
+        priv->job.current->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP;
+    } else {
+        VIR_FREE(priv->job.current);
+        priv->job.dump_memory_only = true;
+    }
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
@@ -3794,15 +3844,20 @@ qemuDumpToFd(virQEMUDriverPtr driver,
                              "for this QEMU binary"),
                            dumpformat);
             ret = -1;
+            ignore_value(qemuDomainObjExitMonitor(driver, vm));
             goto cleanup;
         }
     }
 
-    ret = qemuMonitorDumpToFd(priv->mon, fd, dumpformat, false);
+    ret = qemuMonitorDumpToFd(priv->mon, fd, dumpformat, detach);
+
+    if ((qemuDomainObjExitMonitor(driver, vm) < 0) || ret < 0)
+        goto cleanup;
+
+    if (detach)
+        ret = qemuDumpWaitForCompletion(vm);
 
  cleanup:
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
-
     return ret;
 }
 
