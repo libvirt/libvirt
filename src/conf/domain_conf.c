@@ -23954,7 +23954,7 @@ virDomainChrTargetDefFormat(virBufferPtr buf,
     const char *targetType = virDomainChrTargetTypeToString(def->deviceType,
                                                             def->targetType);
 
-    switch (def->deviceType) {
+    switch ((virDomainChrDeviceType) def->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL: {
         if (!targetType) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -24001,28 +24001,43 @@ virDomainChrTargetDefFormat(virBufferPtr buf,
     }
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+        if (!targetType) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Could not format console target type"));
+            return -1;
+        }
+
         virBufferAsprintf(buf,
                           "<target type='%s' port='%d'/>\n",
-                          virDomainChrTargetTypeToString(def->deviceType,
-                                                         def->targetType),
-                          def->target.port);
+                          targetType, def->target.port);
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+        if (!targetType) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Could not format serial target type"));
+            return -1;
+        }
+
         if (def->targetType != VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE) {
             virBufferAsprintf(buf,
                               "<target type='%s' port='%d'/>\n",
-                              virDomainChrTargetTypeToString(def->deviceType,
-                                                             def->targetType),
+                              targetType,
                               def->target.port);
             break;
         }
         ATTRIBUTE_FALLTHROUGH;
 
-    default:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
         virBufferAsprintf(buf, "<target port='%d'/>\n",
                           def->target.port);
         break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected char device type %d"),
+                       def->deviceType);
+        return -1;
     }
 
     return 0;
