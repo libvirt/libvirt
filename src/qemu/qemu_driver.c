@@ -13185,6 +13185,57 @@ qemuDomainGetJobInfoMigrationStats(virQEMUDriverPtr driver,
 
 
 static int
+qemuDomainGetJobInfoDumpStats(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              qemuDomainJobInfoPtr jobInfo)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuMonitorDumpStats stats = { 0 };
+    int rc;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
+        return -1;
+
+    rc = qemuMonitorQueryDump(priv->mon, &stats);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        return -1;
+
+    jobInfo->stats.dump = stats;
+
+    if (qemuDomainJobInfoUpdateTime(jobInfo) < 0)
+        return -1;
+
+    switch (jobInfo->stats.dump.status) {
+    case QEMU_MONITOR_DUMP_STATUS_NONE:
+    case QEMU_MONITOR_DUMP_STATUS_FAILED:
+    case QEMU_MONITOR_DUMP_STATUS_LAST:
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("dump query failed, status=%d"),
+                       jobInfo->stats.dump.status);
+        return -1;
+        break;
+
+    case QEMU_MONITOR_DUMP_STATUS_ACTIVE:
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
+        VIR_DEBUG("dump active, bytes written='%llu' remaining='%llu'",
+                  jobInfo->stats.dump.completed,
+                  jobInfo->stats.dump.total -
+                  jobInfo->stats.dump.completed);
+        break;
+
+    case QEMU_MONITOR_DUMP_STATUS_COMPLETED:
+        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
+        VIR_DEBUG("dump completed, bytes written='%llu'",
+                  jobInfo->stats.dump.completed);
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               bool completed,
@@ -13233,6 +13284,10 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
         break;
 
     case QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP:
+        if (qemuDomainGetJobInfoDumpStats(driver, vm, jobInfo) < 0)
+            goto cleanup;
+        break;
+
     case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
         break;
     }
