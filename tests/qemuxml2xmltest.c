@@ -712,6 +712,8 @@ mymain(void)
     DO_TEST("disk-drive-discard", NONE);
     DO_TEST("disk-drive-detect-zeroes", NONE);
 
+    DO_TEST("disk-serial", NONE);
+
     DO_TEST("virtio-rng-random", NONE);
     DO_TEST("virtio-rng-egd", NONE);
 
