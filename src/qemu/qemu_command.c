@@ -10382,35 +10382,15 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
                                _("usb-serial is not supported in this QEMU binary"));
                 goto error;
             }
-
-            if (serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("usb-serial requires address of usb type"));
-                goto error;
-            }
             break;
 
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
-            if (serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("isa-serial requires address of isa type"));
-                goto error;
-            }
             break;
 
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_SERIAL)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("pci-serial is not supported with this QEMU binary"));
-                goto error;
-            }
-
-            if (serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                serial->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("pci-serial requires address of pci type"));
                 goto error;
             }
             break;

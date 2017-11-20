@@ -3461,10 +3461,72 @@ qemuDomainChrSourceDefValidate(const virDomainChrSourceDef *def)
 
 
 static int
+qemuDomainChrTargetDefValidate(const virDomainDef *def,
+                               const virDomainChrDef *chr)
+{
+    switch ((virDomainChrDeviceType) chr->deviceType) {
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+
+        /* Validate target type */
+        switch ((virDomainChrSerialTargetType) chr->targetType) {
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
+            /* Hack required until we have a proper type for pSeries
+             * serial consoles */
+            if (qemuDomainIsPSeries(def))
+                return 0;
+
+            if (chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("isa-serial requires address of isa type"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
+            if (chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("usb-serial requires address of usb type"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
+            if (chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("pci-serial requires address of pci type"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
+            break;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
+        /* Nothing to do */
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainChrDefValidate(const virDomainChrDef *dev,
                          const virDomainDef *def)
 {
     if (qemuDomainChrSourceDefValidate(dev->source) < 0)
+        return -1;
+
+    if (qemuDomainChrTargetDefValidate(def, dev) < 0)
         return -1;
 
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL &&
