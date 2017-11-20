@@ -245,6 +245,7 @@ virCapabilitiesDispose(void *object)
     VIR_FREE(caps->host.netprefix);
     VIR_FREE(caps->host.pagesSize);
     virCPUDefFree(caps->host.cpu);
+    virObjectUnref(caps->host.resctrl);
 }
 
 /**
@@ -1592,6 +1593,20 @@ virCapsHostCacheBankSorter(const void *a,
 }
 
 
+static int
+virCapabilitiesInitResctrl(virCapsPtr caps)
+{
+    if (caps->host.resctrl)
+        return 0;
+
+    caps->host.resctrl = virResctrlInfoNew();
+    if (!caps->host.resctrl)
+        return -1;
+
+    return virResctrlGetInfo(caps->host.resctrl);
+}
+
+
 int
 virCapabilitiesInitCaches(virCapsPtr caps)
 {
@@ -1600,7 +1615,6 @@ virCapabilitiesInitCaches(virCapsPtr caps)
     ssize_t pos = -1;
     DIR *dirp = NULL;
     int ret = -1;
-    int typeret;
     char *path = NULL;
     char *type = NULL;
     struct dirent *ent = NULL;
@@ -1610,6 +1624,9 @@ virCapabilitiesInitCaches(virCapsPtr caps)
      * the appropriate code below), but should not be increased, because we'd
      * lose information. */
     const int cache_min_level = 3;
+
+    if (virCapabilitiesInitResctrl(caps) < 0)
+        return -1;
 
     /* offline CPUs don't provide cache info */
     if (virFileReadValueBitmap(&cpus, "%s/cpu/online", SYSFS_SYSTEM_PATH) < 0)
@@ -1676,32 +1693,6 @@ virCapabilitiesInitCaches(virCapsPtr caps)
                                        SYSFS_SYSTEM_PATH, pos, ent->d_name) < 0)
                 goto cleanup;
 
-            typeret = virResctrlGetCacheControlType(bank->level);
-            if (typeret < 0)
-                goto cleanup;
-
-            if (typeret == 1) {
-                if (virResctrlGetCacheInfo(bank->level,
-                                           bank->size,
-                                           VIR_CACHE_TYPE_BOTH,
-                                           &bank->controls,
-                                           &bank->ncontrols) < 0)
-                    goto cleanup;
-            } else if (typeret == 2) {
-                if (virResctrlGetCacheInfo(bank->level,
-                                           bank->size,
-                                           VIR_CACHE_TYPE_CODE,
-                                           &bank->controls,
-                                           &bank->ncontrols) < 0)
-                    goto cleanup;
-                if (virResctrlGetCacheInfo(bank->level,
-                                           bank->size,
-                                           VIR_CACHE_TYPE_DATA,
-                                           &bank->controls,
-                                           &bank->ncontrols) < 0)
-                    goto cleanup;
-            }
-
             kernel_type = virCacheKernelTypeFromString(type);
             if (kernel_type < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1717,6 +1708,14 @@ virCapabilitiesInitCaches(virCapsPtr caps)
                     break;
             }
             if (i == caps->host.ncaches) {
+                /* If it is a new cache, then update its resctrl information. */
+                if (virResctrlInfoGetCache(caps->host.resctrl,
+                                           bank->level,
+                                           bank->size,
+                                           &bank->ncontrols,
+                                           &bank->controls) < 0)
+                    goto cleanup;
+
                 if (VIR_APPEND_ELEMENT(caps->host.caches,
                                        caps->host.ncaches,
                                        bank) < 0) {

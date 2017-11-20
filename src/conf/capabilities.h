@@ -170,6 +170,8 @@ struct _virCapsHost {
     size_t nnumaCell_max;
     virCapsHostNUMACellPtr *numaCell;
 
+    virResctrlInfoPtr resctrl;
+
     size_t ncaches;
     virCapsHostCacheBankPtr *caches;
 
