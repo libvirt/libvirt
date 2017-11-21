@@ -2708,6 +2708,36 @@ vshReadlineOptionsGenerator(const char *text, const vshCmdDef *cmd)
     return ret;
 }
 
+
+static const vshCmdOptDef *
+vshReadlineCommandFindOpt(const vshCmd *partial,
+                          const char *text)
+{
+    const vshCmd *tmp = partial;
+
+    while (tmp && tmp->next) {
+        if (tmp->def == tmp->next->def &&
+            !tmp->next->opts)
+            break;
+        tmp = tmp->next;
+    }
+
+    if (tmp && tmp->opts) {
+        const vshCmdOpt *opt = tmp->opts;
+
+        while (opt) {
+            if (STREQ_NULLABLE(opt->data, text) ||
+                STREQ_NULLABLE(opt->data, " "))
+                return opt->def;
+
+            opt = opt->next;
+        }
+    }
+
+    return NULL;
+}
+
+
 static char *
 vshReadlineParse(const char *text, int state)
 {
@@ -2715,6 +2745,7 @@ vshReadlineParse(const char *text, int state)
     static char **list;
     static size_t list_index;
     const vshCmdDef *cmd = NULL;
+    const vshCmdOptDef *opt = NULL;
     char *ret = NULL;
 
     if (!state) {
@@ -2732,8 +2763,10 @@ vshReadlineParse(const char *text, int state)
 
         VIR_FREE(buf);
 
-        if (partial)
+        if (partial) {
             cmd = partial->def;
+            partial->skipChecks = true;
+        }
 
         if (cmd && STREQ(cmd->name, text)) {
             /* Corner case - some commands share prefix (e.g.
@@ -2745,13 +2778,26 @@ vshReadlineParse(const char *text, int state)
              */
             cmd = NULL;
         }
+
+        opt = vshReadlineCommandFindOpt(partial, text);
     }
 
     if (!list) {
         if (!cmd) {
             list = vshReadlineCommandGenerator(text);
         } else {
-            list = vshReadlineOptionsGenerator(text, cmd);
+            if (!opt || (opt->type != VSH_OT_DATA && opt->type != VSH_OT_STRING))
+                list = vshReadlineOptionsGenerator(text, cmd);
+
+            if (opt && opt->completer) {
+                char **completer_list = opt->completer(autoCompleteOpaque,
+                                                       partial,
+                                                       opt->completer_flags);
+                if (virStringListMerge(&list, &completer_list) < 0) {
+                    virStringListFree(completer_list);
+                    goto cleanup;
+                }
+            }
         }
     }
 
@@ -2768,6 +2814,7 @@ vshReadlineParse(const char *text, int state)
         ret = virBufferContentAndReset(&buf);
     }
 
+ cleanup:
     if (!ret) {
         vshCommandFree(partial);
         partial = NULL;

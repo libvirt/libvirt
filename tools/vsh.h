@@ -124,6 +124,7 @@ typedef struct _vshCmdOptDef vshCmdOptDef;
 typedef struct _vshControl vshControl;
 
 typedef char **(*vshCompleter)(vshControl *ctl,
+                               const vshCmd *cmd,
                                unsigned int flags);
 
 /*
