@@ -2605,25 +2605,25 @@ vshTreePrint(vshControl *ctl, vshTreeLookup lookup, void *opaque,
  * -----------------
  */
 
-/*
- * Generator function for command completion.  STATE lets us
- * know whether to start from scratch; without any state
- * (i.e. STATE == 0), then we start at the top of the list.
+/**
+ * vshReadlineCommandGenerator:
+ * @text: optional command prefix
+ *
+ * Generator function for command completion.
+ *
+ * Returns a string list of commands with @text prefix,
+ * NULL if there's no such command.
  */
-static char *
-vshReadlineCommandGenerator(const char *text, int state)
+static char **
+vshReadlineCommandGenerator(const char *text)
 {
-    static unsigned int grp_list_index, cmd_list_index;
-    static size_t len;
+    size_t grp_list_index = 0, cmd_list_index = 0;
+    size_t len = strlen(text);
     const char *name;
     const vshCmdGrp *grp;
     const vshCmdDef *cmds;
-
-    if (!state) {
-        grp_list_index = 0;
-        cmd_list_index = 0;
-        len = strlen(text);
-    }
+    size_t ret_size = 0;
+    char **ret = NULL;
 
     grp = cmdGroups;
 
@@ -2638,8 +2638,16 @@ vshReadlineCommandGenerator(const char *text, int state)
                 if (cmds[cmd_list_index++].flags & VSH_CMD_FLAG_ALIAS)
                     continue;
 
-                if (STREQLEN(name, text, len))
-                    return vshStrdup(NULL, name);
+                if (STREQLEN(name, text, len)) {
+                    if (VIR_REALLOC_N(ret, ret_size + 2) < 0) {
+                        virStringListFree(ret);
+                        return NULL;
+                    }
+                    ret[ret_size] = vshStrdup(NULL, name);
+                    ret_size++;
+                    /* Terminate the string list properly. */
+                    ret[ret_size] = NULL;
+                }
             }
         } else {
             cmd_list_index = 0;
@@ -2647,23 +2655,17 @@ vshReadlineCommandGenerator(const char *text, int state)
         }
     }
 
-    /* If no names matched, then return NULL. */
-    return NULL;
+    return ret;
 }
 
-static char *
-vshReadlineOptionsGenerator(const char *text, int state, const vshCmdDef *cmd_parsed)
+static char **
+vshReadlineOptionsGenerator(const char *text, const vshCmdDef *cmd)
 {
-    static unsigned int list_index;
-    static size_t len;
-    static const vshCmdDef *cmd;
+    size_t list_index = 0;
+    size_t len = strlen(text);
     const char *name;
-
-    if (!state) {
-        cmd = cmd_parsed;
-        list_index = 0;
-        len = strlen(text);
-    }
+    size_t ret_size = 0;
+    char **ret = NULL;
 
     if (!cmd)
         return NULL;
@@ -2672,7 +2674,7 @@ vshReadlineOptionsGenerator(const char *text, int state, const vshCmdDef *cmd_pa
         return NULL;
 
     while ((name = cmd->opts[list_index].name)) {
-        char *res;
+        size_t name_len;
 
         list_index++;
 
@@ -2685,28 +2687,40 @@ vshReadlineOptionsGenerator(const char *text, int state, const vshCmdDef *cmd_pa
         } else if (STRNEQLEN(text, "--", len)) {
             return NULL;
         }
-        res = vshMalloc(NULL, strlen(name) + 3);
-        snprintf(res, strlen(name) + 3,  "--%s", name);
-        return res;
+
+        if (VIR_REALLOC_N(ret, ret_size + 2) < 0) {
+            virStringListFree(ret);
+            return NULL;
+        }
+
+        name_len = strlen(name);
+        ret[ret_size] = vshMalloc(NULL, name_len + 3);
+        snprintf(ret[ret_size], name_len + 3,  "--%s", name);
+        ret_size++;
+        /* Terminate the string list properly. */
+        ret[ret_size] = NULL;
     }
 
-    /* If no names matched, then return NULL. */
-    return NULL;
+    return ret;
 }
 
 static char *
 vshReadlineParse(const char *text, int state)
 {
     static vshCmd *partial;
-    static const vshCmdDef *cmd;
-    char *res = NULL;
+    static char **list;
+    static size_t list_index;
+    const vshCmdDef *cmd = NULL;
+    char *ret = NULL;
 
     if (!state) {
         char *buf = vshStrdup(NULL, rl_line_buffer);
 
         vshCommandFree(partial);
         partial = NULL;
-        cmd = NULL;
+        virStringListFree(list);
+        list = NULL;
+        list_index = 0;
 
         *(buf + rl_point) = '\0';
 
@@ -2729,26 +2743,37 @@ vshReadlineParse(const char *text, int state)
         }
     }
 
-    if (!cmd) {
-        res = vshReadlineCommandGenerator(text, state);
-    } else {
-        res = vshReadlineOptionsGenerator(text, state, cmd);
+    if (!list) {
+        if (!cmd) {
+            list = vshReadlineCommandGenerator(text);
+        } else {
+            list = vshReadlineOptionsGenerator(text, cmd);
+        }
     }
 
-    if (res &&
+    if (list) {
+        ret = vshStrdup(NULL, list[list_index]);
+        list_index++;
+    }
+
+    if (ret &&
         !rl_completion_quote_character) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
-        virBufferEscapeShell(&buf, res);
-        VIR_FREE(res);
-        res = virBufferContentAndReset(&buf);
+        virBufferEscapeShell(&buf, ret);
+        VIR_FREE(ret);
+        ret = virBufferContentAndReset(&buf);
     }
 
-    if (!res) {
+    if (!ret) {
         vshCommandFree(partial);
         partial = NULL;
+        virStringListFree(list);
+        list = NULL;
+        list_index = 0;
     }
 
-    return res;
+    return ret;
+
 }
 
 static char **
