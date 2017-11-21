@@ -2743,7 +2743,11 @@ qemuDomainAttachInputDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_INPUT,
                                { .input = input } };
+    virErrorPtr originalError = NULL;
     bool releaseaddr = false;
+    bool teardowndevice = false;
+    bool teardownlabel = false;
+    bool teardowncgroup = false;
 
     if (input->bus != VIR_DOMAIN_INPUT_BUS_USB &&
         input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO) {
@@ -2770,6 +2774,18 @@ qemuDomainAttachInputDevice(virQEMUDriverPtr driver,
     if (qemuBuildInputDevStr(&devstr, vm->def, input, priv->qemuCaps) < 0)
         goto cleanup;
 
+    if (qemuDomainNamespaceSetupInput(vm, input) < 0)
+        goto cleanup;
+    teardowndevice = true;
+
+    if (qemuSetupInputCgroup(vm, input) < 0)
+        goto cleanup;
+    teardowncgroup = true;
+
+    if (qemuSecuritySetInputLabel(vm, input) < 0)
+        goto cleanup;
+    teardownlabel = true;
+
     if (VIR_REALLOC_N(vm->def->inputs, vm->def->ninputs + 1) < 0)
         goto cleanup;
 
@@ -2785,14 +2801,23 @@ qemuDomainAttachInputDevice(virQEMUDriverPtr driver,
     VIR_APPEND_ELEMENT_COPY_INPLACE(vm->def->inputs, vm->def->ninputs, input);
 
     ret = 0;
-    releaseaddr = false;
 
  audit:
     virDomainAuditInput(vm, input, "attach", ret == 0);
 
  cleanup:
-    if (releaseaddr)
-        qemuDomainReleaseDeviceAddress(vm, &input->info, NULL);
+    if (ret < 0) {
+        virErrorPreserveLast(&originalError);
+        if (teardownlabel)
+            qemuSecurityRestoreInputLabel(vm, input);
+        if (teardowncgroup)
+            qemuTeardownInputCgroup(vm, input);
+        if (teardowndevice)
+            qemuDomainNamespaceTeardownInput(vm, input);
+        if (releaseaddr)
+            qemuDomainReleaseDeviceAddress(vm, &input->info, NULL);
+        virErrorRestore(&originalError);
+    }
 
     VIR_FREE(devstr);
     return ret;
@@ -4280,6 +4305,15 @@ qemuDomainRemoveInputDevice(virDomainObjPtr vm,
             break;
     }
     qemuDomainReleaseDeviceAddress(vm, &dev->info, NULL);
+    if (qemuSecurityRestoreInputLabel(vm, dev) < 0)
+        VIR_WARN("Unable to restore security label on input device");
+
+    if (qemuTeardownInputCgroup(vm, dev) < 0)
+        VIR_WARN("Unable to remove input device cgroup ACL");
+
+    if (qemuDomainNamespaceTeardownInput(vm, dev) < 0)
+        VIR_WARN("Unable to remove input device from /dev");
+
     virDomainInputDefFree(vm->def->inputs[i]);
     VIR_DELETE_ELEMENT(vm->def->inputs, i, vm->def->ninputs);
     return 0;
