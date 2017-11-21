@@ -172,6 +172,14 @@ int virSecurityManagerRestoreMemoryLabel(virSecurityManagerPtr mgr,
                                         virDomainDefPtr vm,
                                         virDomainMemoryDefPtr mem);
 
+int virSecurityManagerSetInputLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr vm,
+                                    virDomainInputDefPtr input);
+int virSecurityManagerRestoreInputLabel(virSecurityManagerPtr mgr,
+                                        virDomainDefPtr vm,
+                                        virDomainInputDefPtr input);
+
+
 int virSecurityManagerDomainSetPathLabel(virSecurityManagerPtr mgr,
                                          virDomainDefPtr vm,
                                          const char *path);

@@ -131,6 +131,12 @@ typedef int (*virSecurityDomainSetMemoryLabel) (virSecurityManagerPtr mgr,
 typedef int (*virSecurityDomainRestoreMemoryLabel) (virSecurityManagerPtr mgr,
                                                     virDomainDefPtr def,
                                                     virDomainMemoryDefPtr mem);
+typedef int (*virSecurityDomainSetInputLabel) (virSecurityManagerPtr mgr,
+                                               virDomainDefPtr def,
+                                               virDomainInputDefPtr input);
+typedef int (*virSecurityDomainRestoreInputLabel) (virSecurityManagerPtr mgr,
+                                                   virDomainDefPtr def,
+                                                   virDomainInputDefPtr input);
 typedef int (*virSecurityDomainSetPathLabel) (virSecurityManagerPtr mgr,
                                               virDomainDefPtr def,
                                               const char *path);
@@ -162,6 +168,9 @@ struct _virSecurityDriver {
 
     virSecurityDomainSetMemoryLabel domainSetSecurityMemoryLabel;
     virSecurityDomainRestoreMemoryLabel domainRestoreSecurityMemoryLabel;
+
+    virSecurityDomainSetInputLabel domainSetSecurityInputLabel;
+    virSecurityDomainRestoreInputLabel domainRestoreSecurityInputLabel;
 
     virSecurityDomainSetDaemonSocketLabel domainSetSecurityDaemonSocketLabel;
     virSecurityDomainSetSocketLabel domainSetSecuritySocketLabel;

@@ -667,6 +667,41 @@ virSecurityStackRestoreMemoryLabel(virSecurityManagerPtr mgr,
 }
 
 static int
+virSecurityStackSetInputLabel(virSecurityManagerPtr mgr,
+                              virDomainDefPtr vm,
+                              virDomainInputDefPtr input)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetInputLabel(item->securityManager, vm, input) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
+static int
+virSecurityStackRestoreInputLabel(virSecurityManagerPtr mgr,
+                                  virDomainDefPtr vm,
+                                  virDomainInputDefPtr input)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerRestoreInputLabel(item->securityManager,
+                                                vm, input) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
+static int
 virSecurityStackDomainSetPathLabel(virSecurityManagerPtr mgr,
                                    virDomainDefPtr vm,
                                    const char *path)
@@ -710,6 +745,9 @@ virSecurityDriver virSecurityDriverStack = {
 
     .domainSetSecurityMemoryLabel       = virSecurityStackSetMemoryLabel,
     .domainRestoreSecurityMemoryLabel   = virSecurityStackRestoreMemoryLabel,
+
+    .domainSetSecurityInputLabel        = virSecurityStackSetInputLabel,
+    .domainRestoreSecurityInputLabel    = virSecurityStackRestoreInputLabel,
 
     .domainSetSecurityDaemonSocketLabel = virSecurityStackSetDaemonSocketLabel,
     .domainSetSecuritySocketLabel       = virSecurityStackSetSocketLabel,

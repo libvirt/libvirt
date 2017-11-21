@@ -1116,3 +1116,39 @@ virSecurityManagerRestoreMemoryLabel(virSecurityManagerPtr mgr,
     virReportUnsupportedError();
     return -1;
 }
+
+
+int
+virSecurityManagerSetInputLabel(virSecurityManagerPtr mgr,
+                                virDomainDefPtr vm,
+                                virDomainInputDefPtr input)
+{
+    if (mgr->drv->domainSetSecurityInputLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainSetSecurityInputLabel(mgr, vm, input);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}
+
+
+int
+virSecurityManagerRestoreInputLabel(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr vm,
+                                    virDomainInputDefPtr input)
+{
+    if (mgr->drv->domainRestoreSecurityInputLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainRestoreSecurityInputLabel(mgr, vm, input);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}

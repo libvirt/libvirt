@@ -2123,6 +2123,9 @@ virSecurityDriver virSecurityDriverDAC = {
     .domainSetSecurityMemoryLabel       = virSecurityDACSetMemoryLabel,
     .domainRestoreSecurityMemoryLabel   = virSecurityDACRestoreMemoryLabel,
 
+    .domainSetSecurityInputLabel        = virSecurityDACSetInputLabel,
+    .domainRestoreSecurityInputLabel    = virSecurityDACRestoreInputLabel,
+
     .domainSetSecurityDaemonSocketLabel = virSecurityDACSetDaemonSocketLabel,
     .domainSetSecuritySocketLabel       = virSecurityDACSetSocketLabel,
     .domainClearSecuritySocketLabel     = virSecurityDACClearSocketLabel,
