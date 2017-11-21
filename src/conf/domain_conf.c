@@ -24019,14 +24019,18 @@ virDomainChrTargetDefFormat(virBufferPtr buf,
             return -1;
         }
 
+        virBufferAddLit(buf, "<target ");
+
         if (def->targetType != VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE) {
             virBufferAsprintf(buf,
-                              "<target type='%s' port='%d'/>\n",
-                              targetType,
-                              def->target.port);
-            break;
+                              "type='%s' ",
+                              targetType);
         }
-        ATTRIBUTE_FALLTHROUGH;
+
+        virBufferAsprintf(buf,
+                          "port='%d'/>\n",
+                          def->target.port);
+        break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
         virBufferAsprintf(buf, "<target port='%d'/>\n",
