@@ -362,6 +362,9 @@ virDomainNumaFree(virDomainNumaPtr numa)
     for (i = 0; i < numa->nmem_nodes; i++) {
         virBitmapFree(numa->mem_nodes[i].cpumask);
         virBitmapFree(numa->mem_nodes[i].nodeset);
+
+        if (numa->mem_nodes[i].ndistances > 0)
+            VIR_FREE(numa->mem_nodes[i].distances);
     }
     VIR_FREE(numa->mem_nodes);
 
