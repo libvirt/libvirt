@@ -714,7 +714,7 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNumaPtr def,
     xmlNodePtr *nodes = NULL;
     size_t i, ndistances = def->nmem_nodes;
 
-    if (!ndistances)
+    if (ndistances == 0)
         return 0;
 
     /* check if NUMA distances definition is present */
@@ -805,11 +805,11 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNumaPtr def,
             ldist[cur_cell].value = LOCAL_DISTANCE;
             ldist[cur_cell].cellid = cur_cell;
             def->mem_nodes[cur_cell].ndistances = ndistances;
+            def->mem_nodes[cur_cell].distances = ldist;
         }
 
         ldist[sibling_id].cellid = sibling_id;
         ldist[sibling_id].value = sibling_value;
-        def->mem_nodes[cur_cell].distances = ldist;
 
         /* Apply symmetry if none given */
         rdist = def->mem_nodes[sibling_id].distances;
@@ -820,20 +820,21 @@ virDomainNumaDefNodeDistanceParseXML(virDomainNumaPtr def,
             rdist[sibling_id].value = LOCAL_DISTANCE;
             rdist[sibling_id].cellid = sibling_id;
             def->mem_nodes[sibling_id].ndistances = ndistances;
+            def->mem_nodes[sibling_id].distances = rdist;
         }
 
         rdist[cur_cell].cellid = cur_cell;
         if (!rdist[cur_cell].value)
             rdist[cur_cell].value = sibling_value;
-        def->mem_nodes[sibling_id].distances = rdist;
     }
 
     ret = 0;
 
  cleanup:
-    if (ret) {
+    if (ret < 0) {
         for (i = 0; i < ndistances; i++)
             VIR_FREE(def->mem_nodes[i].distances);
+        def->mem_nodes[i].ndistances = 0;
     }
     VIR_FREE(nodes);
     VIR_FREE(tmp);
