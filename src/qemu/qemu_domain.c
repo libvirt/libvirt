@@ -10061,6 +10061,78 @@ qemuDomainNamespaceTeardownRNG(virQEMUDriverPtr driver,
 }
 
 
+int
+qemuDomainNamespaceSetupInput(virDomainObjPtr vm,
+                              virDomainInputDefPtr input)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    virQEMUDriverConfigPtr cfg = NULL;
+    char **devMountsPath = NULL;
+    size_t ndevMountsPath = 0;
+    const char *path = NULL;
+    int ret = -1;
+
+    if (!(path = virDomainInputDefGetPath(input)))
+        return 0;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if (qemuDomainGetPreservedMounts(cfg, vm,
+                                     &devMountsPath, NULL,
+                                     &ndevMountsPath) < 0)
+        goto cleanup;
+
+    if (qemuDomainAttachDeviceMknod(driver, vm, path,
+                                    devMountsPath, ndevMountsPath) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virStringListFreeCount(devMountsPath, ndevMountsPath);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
+int
+qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
+                                 virDomainInputDefPtr input)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    virQEMUDriverConfigPtr cfg = NULL;
+    char **devMountsPath = NULL;
+    size_t ndevMountsPath = 0;
+    const char *path = NULL;
+    int ret = -1;
+
+    if (!(path = virDomainInputDefGetPath(input)))
+        return 0;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if (qemuDomainGetPreservedMounts(cfg, vm,
+                                     &devMountsPath, NULL,
+                                     &ndevMountsPath) < 0)
+        goto cleanup;
+
+    if (qemuDomainDetachDeviceUnlink(driver, vm, path,
+                                     devMountsPath, ndevMountsPath) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virStringListFreeCount(devMountsPath, ndevMountsPath);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
 /**
  * qemuDomainDiskLookupByNodename:
  * @def: domain definition to look for the disk

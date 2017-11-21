@@ -959,6 +959,12 @@ int qemuDomainNamespaceTeardownRNG(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainRNGDefPtr rng);
 
+int qemuDomainNamespaceSetupInput(virDomainObjPtr vm,
+                                  virDomainInputDefPtr input);
+
+int qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
+                                     virDomainInputDefPtr input);
+
 virDomainDiskDefPtr qemuDomainDiskLookupByNodename(virDomainDefPtr def,
                                                    const char *nodename,
                                                    virStorageSourcePtr *src,
