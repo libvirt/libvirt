@@ -1404,6 +1404,22 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
     VIR_FREE(def);
 }
 
+const char *virDomainInputDefGetPath(virDomainInputDefPtr input)
+{
+    switch ((virDomainInputType) input->type) {
+    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+    case VIR_DOMAIN_INPUT_TYPE_KBD:
+    case VIR_DOMAIN_INPUT_TYPE_LAST:
+        return NULL;
+        break;
+
+    case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+        return input->source.evdev;
+    }
+    return NULL;
+}
+
 void virDomainInputDefFree(virDomainInputDefPtr def)
 {
     if (!def)

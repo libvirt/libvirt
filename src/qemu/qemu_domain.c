@@ -9041,25 +9041,12 @@ qemuDomainSetupInput(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
                      virDomainInputDefPtr input,
                      const struct qemuDomainCreateDeviceData *data)
 {
-    int ret = -1;
+    const char *path = virDomainInputDefGetPath(input);
 
-    switch ((virDomainInputType) input->type) {
-    case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
-        if (qemuDomainCreateDevice(input->source.evdev, data, false) < 0)
-            goto cleanup;
-        break;
+    if (path && qemuDomainCreateDevice(path, data, false) < 0)
+        return -1;
 
-    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
-    case VIR_DOMAIN_INPUT_TYPE_TABLET:
-    case VIR_DOMAIN_INPUT_TYPE_KBD:
-    case VIR_DOMAIN_INPUT_TYPE_LAST:
-        /* nada */
-        break;
-    }
-
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

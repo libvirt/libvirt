@@ -395,6 +395,7 @@ virDomainHypervTypeToString;
 virDomainInputBusTypeToString;
 virDomainInputDefFind;
 virDomainInputDefFree;
+virDomainInputDefGetPath;
 virDomainIOMMUModelTypeFromString;
 virDomainIOMMUModelTypeToString;
 virDomainIOThreadIDAdd;

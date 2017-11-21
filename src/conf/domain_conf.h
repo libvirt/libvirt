@@ -2706,6 +2706,7 @@ int virDomainObjWaitUntil(virDomainObjPtr vm,
 void virDomainPanicDefFree(virDomainPanicDefPtr panic);
 void virDomainResourceDefFree(virDomainResourceDefPtr resource);
 void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def);
+const char *virDomainInputDefGetPath(virDomainInputDefPtr input);
 void virDomainInputDefFree(virDomainInputDefPtr def);
 virDomainDiskDefPtr virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt);
 void virDomainDiskDefFree(virDomainDiskDefPtr def);
