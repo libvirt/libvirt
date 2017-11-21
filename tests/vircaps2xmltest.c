@@ -111,12 +111,13 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-#define DO_TEST(filename, arch) DO_TEST_FULL(filename, arch, true, true, false)
-
     DO_TEST_FULL("basic", VIR_ARCH_X86_64, false, false, false);
     DO_TEST_FULL("basic", VIR_ARCH_AARCH64, true, false, false);
 
-    DO_TEST("caches", VIR_ARCH_X86_64);
+    /* We say there is 'resctrl' even though there is none.  This is special
+     * case because we want to use this test data for a negative tests for
+     * resctrl. */
+    DO_TEST_FULL("caches", VIR_ARCH_X86_64, true, true, true);
 
     DO_TEST_FULL("resctrl", VIR_ARCH_X86_64, true, true, true);
     DO_TEST_FULL("resctrl-cdp", VIR_ARCH_X86_64, true, true, true);
