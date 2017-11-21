@@ -37,6 +37,10 @@ int qemuSetupDiskCgroup(virDomainObjPtr vm,
                         virDomainDiskDefPtr disk);
 int qemuTeardownDiskCgroup(virDomainObjPtr vm,
                            virDomainDiskDefPtr disk);
+int qemuSetupInputCgroup(virDomainObjPtr vm,
+                         virDomainInputDefPtr dev);
+int qemuTeardownInputCgroup(virDomainObjPtr vm,
+                            virDomainInputDefPtr dev);
 int qemuSetupHostdevCgroup(virDomainObjPtr vm,
                            virDomainHostdevDefPtr dev)
    ATTRIBUTE_RETURN_CHECK;

@@ -246,7 +246,7 @@ qemuSetupTPMCgroup(virDomainObjPtr vm)
 }
 
 
-static int
+int
 qemuSetupInputCgroup(virDomainObjPtr vm,
                      virDomainInputDefPtr dev)
 {
@@ -262,6 +262,29 @@ qemuSetupInputCgroup(virDomainObjPtr vm,
         ret = virCgroupAllowDevicePath(priv->cgroup, dev->source.evdev,
                                        VIR_CGROUP_DEVICE_RW, false);
         virDomainAuditCgroupPath(vm, priv->cgroup, "allow", dev->source.evdev, "rw", ret == 0);
+        break;
+    }
+
+    return ret;
+}
+
+
+int
+qemuTeardownInputCgroup(virDomainObjPtr vm,
+                        virDomainInputDefPtr dev)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = 0;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
+
+    switch (dev->type) {
+    case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+        VIR_DEBUG("Process path '%s' for input device", dev->source.evdev);
+        ret = virCgroupDenyDevicePath(priv->cgroup, dev->source.evdev,
+                                      VIR_CGROUP_DEVICE_RWM, false);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "deny", dev->source.evdev, "rwm", ret == 0);
         break;
     }
 
