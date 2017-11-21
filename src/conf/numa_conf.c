@@ -992,7 +992,7 @@ virDomainNumaDefCPUFormatXML(virBufferPtr buf,
                               virDomainMemoryAccessTypeToString(memAccess));
 
         ndistances = def->mem_nodes[i].ndistances;
-        if (!ndistances) {
+        if (ndistances == 0) {
             virBufferAddLit(buf, "/>\n");
         } else {
             size_t j;
