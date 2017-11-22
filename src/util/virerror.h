@@ -24,6 +24,8 @@
 
 # include "internal.h"
 
+# define VIR_ERROR_MAX_LENGTH 1024
+
 extern virErrorFunc virErrorHandler;
 extern void *virUserData;
 

@@ -1480,7 +1480,7 @@ void virReportErrorHelper(int domcode,
 {
     int save_errno = errno;
     va_list args;
-    char errorMessage[1024];
+    char errorMessage[VIR_ERROR_MAX_LENGTH];
     const char *virerr;
 
     if (fmt) {
@@ -1541,8 +1541,8 @@ void virReportSystemErrorFull(int domcode,
                               const char *fmt, ...)
 {
     int save_errno = errno;
-    char strerror_buf[1024];
-    char msgDetailBuf[1024];
+    char strerror_buf[VIR_ERROR_MAX_LENGTH];
+    char msgDetailBuf[VIR_ERROR_MAX_LENGTH];
 
     const char *errnoDetail = virStrerror(theerrno, strerror_buf,
                                           sizeof(strerror_buf));
