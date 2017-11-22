@@ -1891,6 +1891,25 @@ udevSetupSystemDev(void)
 }
 
 
+static void
+nodeStateInitializeEnumerate(void *opaque)
+{
+    struct udev *udev = opaque;
+    udevEventDataPtr priv = driver->privateData;
+
+    /* Populate with known devices */
+    if (udevEnumerateDevices(udev) != 0)
+        goto error;
+
+    return;
+
+ error:
+    virObjectLock(priv);
+    priv->threadQuit = true;
+    virObjectUnlock(priv);
+}
+
+
 static int
 udevPCITranslateInit(bool privileged ATTRIBUTE_UNUSED)
 {
@@ -1922,6 +1941,7 @@ nodeStateInitialize(bool privileged,
 {
     udevEventDataPtr priv = NULL;
     struct udev *udev = NULL;
+    virThread enumThread;
 
     if (VIR_ALLOC(driver) < 0)
         return -1;
@@ -2002,9 +2022,12 @@ nodeStateInitialize(bool privileged,
     if (udevSetupSystemDev() != 0)
         goto cleanup;
 
-    /* Populate with known devices */
-    if (udevEnumerateDevices(udev) != 0)
+    if (virThreadCreate(&enumThread, false, nodeStateInitializeEnumerate,
+                        udev) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("failed to create udev enumerate thread"));
         goto cleanup;
+    }
 
     return 0;
 
