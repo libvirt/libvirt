@@ -28,7 +28,7 @@ id=virtio-disk1 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
 -drive file=/dev/HostVG/hdb,format=raw,if=none,id=drive-ide0-0-1 \
 -device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
--drive file=/dev/HostVG/hdc,format=raw,if=none,media=cdrom,id=drive-ide0-1-0,\
+-drive file=/dev/HostVG/hdc,format=raw,if=none,id=drive-ide0-1-0,media=cdrom,\
 readonly=on \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,\
 bootindex=1 \

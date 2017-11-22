@@ -1673,18 +1673,6 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         virBufferAsprintf(&opt, "if=%s",
                           virDomainDiskQEMUBusTypeToString(disk->bus));
 
-    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD))
-                virBufferAddLit(&opt, ",media=cdrom");
-        } else if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_IDE_CD))
-                virBufferAddLit(&opt, ",media=cdrom");
-        } else {
-            virBufferAddLit(&opt, ",media=cdrom");
-        }
-    }
-
     if (emitDeviceSyntax) {
         char *drivealias = qemuAliasFromDisk(disk);
         if (!drivealias)
@@ -1701,6 +1689,21 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         }
         virBufferAsprintf(&opt, ",index=%d", idx);
     }
+
+    qemuBuildDiskFrontendAttributes(disk, qemuCaps, &opt);
+
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_CD))
+                virBufferAddLit(&opt, ",media=cdrom");
+        } else if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_IDE_CD))
+                virBufferAddLit(&opt, ",media=cdrom");
+        } else {
+            virBufferAddLit(&opt, ",media=cdrom");
+        }
+    }
+
     if (bootable &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) &&
         (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
@@ -1710,7 +1713,6 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     if (disk->src->readonly)
         virBufferAddLit(&opt, ",readonly=on");
 
-    qemuBuildDiskFrontendAttributes(disk, qemuCaps, &opt);
 
     if (disk->cachemode) {
         virBufferAsprintf(&opt, ",cache=%s",

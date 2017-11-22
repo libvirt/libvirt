@@ -19,8 +19,8 @@ server,nowait \
 -device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.0,addr=0x3 \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.0,addr=0x4 \
 -usb \
--drive file=/var/iso/f18kde.iso,format=raw,if=none,media=cdrom,\
-id=drive-ide0-1-0,readonly=on \
+-drive file=/var/iso/f18kde.iso,format=raw,if=none,id=drive-ide0-1-0,\
+media=cdrom,readonly=on \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
 -device rtl8139,vlan=0,id=net0,mac=52:54:00:f1:95:51,bus=pci.0,addr=0x5 \
 -net user,vlan=0,name=hostnet0 \

@@ -20,10 +20,10 @@ server,nowait \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/some/block/device/cdrom,if=none,media=cdrom,id=drive-ide0-0-1,\
+-drive file=/some/block/device/cdrom,if=none,id=drive-ide0-0-1,media=cdrom,\
 readonly=on \
 -device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
--drive if=none,media=cdrom,id=drive-ide0-1-0,readonly=on \
+-drive if=none,id=drive-ide0-1-0,media=cdrom,readonly=on \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
 -drive file=/tmp/idedisk.img,format=raw,if=none,id=drive-ide0-0-2 \
 -device ide-drive,bus=ide.0,unit=2,drive=drive-ide0-0-2,id=ide0-0-2 \

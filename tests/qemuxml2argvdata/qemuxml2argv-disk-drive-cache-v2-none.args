@@ -22,6 +22,6 @@ server,nowait \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,\
 cache=none \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
--drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,media=cdrom,\
-id=drive-ide0-1-0,readonly=on \
+-drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-ide0-1-0,\
+media=cdrom,readonly=on \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0

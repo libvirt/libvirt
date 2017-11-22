@@ -18,8 +18,8 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -boot c \
 -usb \
--drive file=/var/iso/f18kde.iso,format=raw,if=none,media=cdrom,\
-id=drive-ide0-1-0,readonly=on \
+-drive file=/var/iso/f18kde.iso,format=raw,if=none,id=drive-ide0-1-0,\
+media=cdrom,readonly=on \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
 -drive file=/var/lib/libvirt/images/test.img,format=raw,if=none,\
 id=drive-virtio-disk0 \
