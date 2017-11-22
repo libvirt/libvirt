@@ -1933,6 +1933,8 @@ nodeStateInitialize(bool privileged,
         return -1;
     }
 
+    driver->privileged = privileged;
+
     if (!(driver->devs = virNodeDeviceObjListNew()) ||
         !(priv = udevEventDataNew()))
         goto cleanup;
