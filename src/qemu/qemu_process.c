@@ -1827,17 +1827,24 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
  * qemuProcessReadLog: Read log file of a qemu VM
  * @logCtxt: the domain log context
  * @msg: pointer to buffer to store the read messages in
+ * @max: maximum length of the message returned in @msg
  *
  * Reads log of a qemu VM. Skips messages not produced by qemu or irrelevant
- * messages. Returns returns 0 on success or -1 on error
+ * messages. If @max is not zero, @msg will contain at most @max characters
+ * from the end of the log and @msg will start after a new line if possible.
+ *
+ * Returns 0 on success or -1 on error
  */
 static int
-qemuProcessReadLog(qemuDomainLogContextPtr logCtxt, char **msg)
+qemuProcessReadLog(qemuDomainLogContextPtr logCtxt,
+                   char **msg,
+                   size_t max)
 {
     char *buf;
     ssize_t got;
     char *eol;
     char *filter_next;
+    size_t skip;
 
     if ((got = qemuDomainLogContextRead(logCtxt, &buf)) < 0)
         return -1;
@@ -1848,7 +1855,7 @@ qemuProcessReadLog(qemuDomainLogContextPtr logCtxt, char **msg)
         *eol = '\0';
         if (virLogProbablyLogMessage(filter_next) ||
             strstr(filter_next, "char device redirected to")) {
-            size_t skip = (eol + 1) - filter_next;
+            skip = (eol + 1) - filter_next;
             memmove(filter_next, eol + 1, buf + got - eol);
             got -= skip;
         } else {
@@ -1863,6 +1870,19 @@ qemuProcessReadLog(qemuDomainLogContextPtr logCtxt, char **msg)
         buf[got - 1] = '\0';
         got--;
     }
+
+    if (max > 0 && got > max) {
+        skip = got - max;
+
+        if (buf[skip - 1] != '\n' &&
+            (eol = strchr(buf + skip, '\n')) &&
+            !virStringIsEmpty(eol + 1))
+            skip = eol + 1 - buf;
+
+        memmove(buf, buf + skip, got - skip + 1);
+        got -= skip;
+    }
+
     ignore_value(VIR_REALLOC_N_QUIET(buf, got + 1));
     *msg = buf;
     return 0;
@@ -1874,8 +1894,14 @@ qemuProcessReportLogError(qemuDomainLogContextPtr logCtxt,
                           const char *msgprefix)
 {
     char *logmsg = NULL;
+    size_t max;
 
-    if (qemuProcessReadLog(logCtxt, &logmsg) < 0)
+    max = VIR_ERROR_MAX_LENGTH - 1;
+    max -= strlen(msgprefix);
+    /* The length of the formatting string minus two '%s' */
+    max -= strlen(_("%s: %s")) - 4;
+
+    if (qemuProcessReadLog(logCtxt, &logmsg, max) < 0)
         return -1;
 
     virResetLastError();
