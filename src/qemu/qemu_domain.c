@@ -10018,6 +10018,16 @@ qemuDomainNamespaceUnlinkPaths(virDomainObjPtr vm,
 }
 
 
+static int
+qemuDomainNamespaceUnlinkPath(virDomainObjPtr vm,
+                              const char *path)
+{
+    const char *paths[] = { path };
+
+    return qemuDomainNamespaceUnlinkPaths(vm, paths, 1);
+}
+
+
 int
 qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                              virDomainObjPtr vm,
@@ -10139,35 +10149,17 @@ qemuDomainNamespaceSetupMemory(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceTeardownMemory(virQEMUDriverPtr driver,
+qemuDomainNamespaceTeardownMemory(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                   virDomainObjPtr vm,
                                   virDomainMemoryDefPtr mem)
 {
-    virQEMUDriverConfigPtr cfg = NULL;
-    char **devMountsPath = NULL;
-    size_t ndevMountsPath = 0;
-    int ret = -1;
-
     if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
         return 0;
 
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
-        return 0;
+    if (qemuDomainNamespaceUnlinkPath(vm, mem->nvdimmPath) < 0)
+        return -1;
 
-    cfg = virQEMUDriverGetConfig(driver);
-    if (qemuDomainGetPreservedMounts(cfg, vm,
-                                     &devMountsPath, NULL,
-                                     &ndevMountsPath) < 0)
-        goto cleanup;
-
-    if (qemuDomainDetachDeviceUnlink(driver, vm, mem->nvdimmPath,
-                                     devMountsPath, ndevMountsPath) < 0)
-        goto cleanup;
-    ret = 0;
- cleanup:
-    virStringListFreeCount(devMountsPath, ndevMountsPath);
-    virObjectUnref(cfg);
-    return ret;
+    return 0;
 }
 
 
@@ -10194,39 +10186,21 @@ qemuDomainNamespaceSetupChardev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceTeardownChardev(virQEMUDriverPtr driver,
+qemuDomainNamespaceTeardownChardev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                    virDomainObjPtr vm,
                                    virDomainChrDefPtr chr)
 {
-    virQEMUDriverConfigPtr cfg = NULL;
-    char **devMountsPath = NULL;
-    size_t ndevMountsPath = 0;
-    int ret = -1;
     const char *path = NULL;
-
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
-        return 0;
 
     if (chr->source->type != VIR_DOMAIN_CHR_TYPE_DEV)
         return 0;
 
     path = chr->source->data.file.path;
 
-    cfg = virQEMUDriverGetConfig(driver);
-    if (qemuDomainGetPreservedMounts(cfg, vm,
-                                     &devMountsPath, NULL,
-                                     &ndevMountsPath) < 0)
-        goto cleanup;
+    if (qemuDomainNamespaceUnlinkPath(vm, path) < 0)
+        return -1;
 
-    if (qemuDomainDetachDeviceUnlink(driver, vm, path,
-                                     devMountsPath, ndevMountsPath) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virStringListFreeCount(devMountsPath, ndevMountsPath);
-    virObjectUnref(cfg);
-    return ret;
+    return 0;
 }
 
 
@@ -10255,18 +10229,11 @@ qemuDomainNamespaceSetupRNG(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceTeardownRNG(virQEMUDriverPtr driver,
+qemuDomainNamespaceTeardownRNG(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                virDomainObjPtr vm,
                                virDomainRNGDefPtr rng)
 {
-    virQEMUDriverConfigPtr cfg = NULL;
-    char **devMountsPath = NULL;
-    size_t ndevMountsPath = 0;
-    int ret = -1;
     const char *path = NULL;
-
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
-        return 0;
 
     switch ((virDomainRNGBackend) rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
@@ -10275,25 +10242,13 @@ qemuDomainNamespaceTeardownRNG(virQEMUDriverPtr driver,
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:
     case VIR_DOMAIN_RNG_BACKEND_LAST:
-        ret = 0;
-        goto cleanup;
+        break;
     }
 
-    cfg = virQEMUDriverGetConfig(driver);
-    if (qemuDomainGetPreservedMounts(cfg, vm,
-                                     &devMountsPath, NULL,
-                                     &ndevMountsPath) < 0)
-        goto cleanup;
+    if (path && qemuDomainNamespaceUnlinkPath(vm, path) < 0)
+        return -1;
 
-    if (qemuDomainDetachDeviceUnlink(driver, vm, path,
-                                     devMountsPath, ndevMountsPath) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virStringListFreeCount(devMountsPath, ndevMountsPath);
-    virObjectUnref(cfg);
-    return ret;
+    return 0;
 }
 
 
@@ -10316,35 +10271,15 @@ int
 qemuDomainNamespaceTeardownInput(virDomainObjPtr vm,
                                  virDomainInputDefPtr input)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverPtr driver = priv->driver;
-    virQEMUDriverConfigPtr cfg = NULL;
-    char **devMountsPath = NULL;
-    size_t ndevMountsPath = 0;
     const char *path = NULL;
-    int ret = -1;
 
     if (!(path = virDomainInputDefGetPath(input)))
         return 0;
 
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
-        return 0;
+    if (path && qemuDomainNamespaceUnlinkPath(vm, path) < 0)
+        return -1;
 
-    cfg = virQEMUDriverGetConfig(driver);
-    if (qemuDomainGetPreservedMounts(cfg, vm,
-                                     &devMountsPath, NULL,
-                                     &ndevMountsPath) < 0)
-        goto cleanup;
-
-    if (qemuDomainDetachDeviceUnlink(driver, vm, path,
-                                     devMountsPath, ndevMountsPath) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virStringListFreeCount(devMountsPath, ndevMountsPath);
-    virObjectUnref(cfg);
-    return ret;
+    return 0;
 }
 
 
