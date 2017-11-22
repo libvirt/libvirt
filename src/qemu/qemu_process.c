@@ -1847,7 +1847,7 @@ qemuProcessReadLog(qemuDomainLogContextPtr logCtxt, char **msg)
     while ((eol = strchr(filter_next, '\n'))) {
         *eol = '\0';
         if (virLogProbablyLogMessage(filter_next) ||
-            STRPREFIX(filter_next, "char device redirected to")) {
+            strstr(filter_next, "char device redirected to")) {
             size_t skip = (eol + 1) - filter_next;
             memmove(filter_next, eol + 1, buf + got - eol);
             got -= skip;
