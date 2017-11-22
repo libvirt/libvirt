@@ -1394,9 +1394,13 @@ virStringEncodeBase64(const uint8_t *buf, size_t buflen)
  */
 void virStringTrimOptionalNewline(char *str)
 {
-    char *tmp = str + strlen(str) - 1;
-    if (*tmp == '\n')
-        *tmp = '\0';
+    size_t len = strlen(str);
+
+    if (!len)
+        return;
+
+    if (str[len - 1] == '\n')
+        str[len - 1] = '\0';
 }
 
 
