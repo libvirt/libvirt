@@ -689,7 +689,8 @@ void qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
 int qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
                                       virDomainObjPtr vm,
                                       virStorageSourcePtr elem,
-                                      bool readonly);
+                                      bool readonly,
+                                      bool newSource);
 
 int qemuDomainCleanupAdd(virDomainObjPtr vm,
                          qemuDomainCleanupCallback cb);

@@ -6146,15 +6146,25 @@ qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
 
 /**
  * qemuDomainDiskChainElementPrepare:
+ * @driver: qemu driver data
+ * @vm: domain object
+ * @elem: source structure to set access for
+ * @readonly: setup read-only access if true
+ * @newSource: @elem describes a storage source which @vm can't access yet
  *
  * Allow a VM access to a single element of a disk backing chain; this helper
  * ensures that the lock manager, cgroup device controller, and security manager
- * labelling are all aware of each new file before it is added to a chain */
+ * labelling are all aware of each new file before it is added to a chain.
+ *
+ * When modifying permissions of @elem which @vm can already access (is in the
+ * backing chain) @newSource needs to be set to false.
+ */
 int
 qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virStorageSourcePtr elem,
-                                  bool readonly)
+                                  bool readonly,
+                                  bool newSource)
 {
     bool was_readonly = elem->readonly;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -6167,7 +6177,8 @@ qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
     if (virDomainLockImageAttach(driver->lockManager, cfg->uri, vm, elem) < 0)
         goto cleanup;
 
-    if (qemuDomainNamespaceSetupDisk(driver, vm, elem) < 0)
+    if (newSource &&
+        qemuDomainNamespaceSetupDisk(driver, vm, elem) < 0)
         goto cleanup;
 
     if (qemuSetupImageCgroup(vm, elem) < 0)

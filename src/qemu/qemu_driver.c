@@ -14570,7 +14570,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     }
 
     /* set correct security, cgroup and locking options on the new image */
-    if (qemuDomainDiskChainElementPrepare(driver, vm, dd->src, false) < 0) {
+    if (qemuDomainDiskChainElementPrepare(driver, vm, dd->src, false, true) < 0) {
         qemuDomainDiskChainElementRevoke(driver, vm, dd->src);
         goto cleanup;
     }
@@ -17165,7 +17165,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                                          keepParentLabel) < 0)
         goto endjob;
 
-    if (qemuDomainDiskChainElementPrepare(driver, vm, mirror, false) < 0) {
+    if (qemuDomainDiskChainElementPrepare(driver, vm, mirror, false, true) < 0) {
         qemuDomainDiskChainElementRevoke(driver, vm, mirror);
         goto endjob;
     }
@@ -17558,9 +17558,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
      * operation succeeds, but doing that requires tracking the
      * operation in XML across libvirtd restarts.  */
     clean_access = true;
-    if (qemuDomainDiskChainElementPrepare(driver, vm, baseSource, false) < 0 ||
+    if (qemuDomainDiskChainElementPrepare(driver, vm, baseSource, false, false) < 0 ||
         (top_parent && top_parent != disk->src &&
-         qemuDomainDiskChainElementPrepare(driver, vm, top_parent, false) < 0))
+         qemuDomainDiskChainElementPrepare(driver, vm, top_parent, false, false) < 0))
         goto endjob;
 
     /* Start the commit operation.  Pass the user's original spelling,
@@ -17604,9 +17604,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (ret < 0 && clean_access) {
         virErrorPtr orig_err = virSaveLastError();
         /* Revert access to read-only, if possible.  */
-        qemuDomainDiskChainElementPrepare(driver, vm, baseSource, true);
+        qemuDomainDiskChainElementPrepare(driver, vm, baseSource, true, false);
         if (top_parent && top_parent != disk->src)
-            qemuDomainDiskChainElementPrepare(driver, vm, top_parent, true);
+            qemuDomainDiskChainElementPrepare(driver, vm, top_parent, true, false);
 
         if (orig_err) {
             virSetError(orig_err);
