@@ -70,7 +70,7 @@ unsigned long long qemuDomainRemoveDeviceWaitTime = 1000ull * 5;
 
 
 /**
- * qemuDomainPrepareDisk:
+ * qemuHotplugPrepareDiskAccess:
  * @driver: qemu driver struct
  * @vm: domain object
  * @disk: disk to prepare
@@ -85,11 +85,11 @@ unsigned long long qemuDomainRemoveDeviceWaitTime = 1000ull * 5;
  * Returns 0 on success and -1 on error. Reports libvirt error.
  */
 static int
-qemuDomainPrepareDisk(virQEMUDriverPtr driver,
-                      virDomainObjPtr vm,
-                      virDomainDiskDefPtr disk,
-                      virStorageSourcePtr overridesrc,
-                      bool teardown)
+qemuHotplugPrepareDiskAccess(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             virDomainDiskDefPtr disk,
+                             virStorageSourcePtr overridesrc,
+                             bool teardown)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
@@ -280,7 +280,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (qemuDomainPrepareDisk(driver, vm, disk, newsrc, false) < 0)
+    if (qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, false) < 0)
         goto cleanup;
 
     if (!(driveAlias = qemuAliasFromDisk(disk)))
@@ -331,7 +331,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
 
     /* remove the old source from shared device list */
     ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
-    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
+    ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true));
 
     virStorageSourceFree(disk->src);
     disk->src = newsrc;
@@ -345,7 +345,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
 
  error:
     virDomainAuditDisk(vm, disk->src, newsrc, "update", false);
-    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, newsrc, true));
+    ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, true));
     goto cleanup;
 }
 
@@ -378,7 +378,7 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
     qemuDomainSecretInfoPtr secinfo = NULL;
     qemuDomainSecretInfoPtr encinfo = NULL;
 
-    if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
+    if (qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
 
     if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
@@ -486,7 +486,7 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
 
  error:
     qemuDomainDelDiskSrcTLSObject(driver, vm, disk->src);
-    ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
+    ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true));
     goto cleanup;
 }
 
