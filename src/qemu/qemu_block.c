@@ -654,6 +654,7 @@ static virJSONValuePtr
 qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src)
 {
     virJSONValuePtr servers = NULL;
+    virJSONValuePtr props = NULL;
     virJSONValuePtr ret = NULL;
 
     if (!(servers = qemuBlockStorageSourceBuildHostsJSONSocketAddress(src, true)))
@@ -665,12 +666,24 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src)
       *   server :[{type:"tcp", host:"1.2.3.4", port:24007},
       *            {type:"unix", socket:"/tmp/glusterd.socket"}, ...]}
       */
-    if (virJSONValueObjectCreate(&ret,
+    if (virJSONValueObjectCreate(&props,
                                  "s:driver", "gluster",
                                  "s:volume", src->volume,
                                  "s:path", src->path,
                                  "a:server", servers, NULL) < 0)
-          virJSONValueFree(servers);
+        goto cleanup;
+
+    servers = NULL;
+
+    if (src->debug &&
+        virJSONValueObjectAdd(props, "u:debug", src->debugLevel, NULL) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret, props);
+
+ cleanup:
+    virJSONValueFree(servers);
+    virJSONValueFree(props);
 
     return ret;
 }
