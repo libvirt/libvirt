@@ -1578,6 +1578,9 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
         }
 
         virQEMUBuildBufferEscapeComma(buf, source);
+
+        if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
+            virBufferAsprintf(buf, ",file.password-secret=%s", secinfo->s.aes.alias);
     } else {
         if (!(source = virQEMUBuildDriveCommandlineFromJSON(srcprops)))
             goto cleanup;
@@ -1590,16 +1593,6 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
         disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_GLUSTER_DEBUG_LEVEL))
             virBufferAsprintf(buf, "file.debug=%d,", cfg->glusterDebugLevel);
-    }
-
-    if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
-        /* NB: If libvirt starts using the more modern option based
-         *     syntax to build the command line (e.g., "-drive driver=rbd,
-         *     filename=%s,...") instead of the legacy model (e.g."-drive
-         *     file=%s,..."), then the "file." prefix can be removed
-         */
-        virBufferAsprintf(buf, "file.password-secret=%s,",
-                          secinfo->s.aes.alias);
     }
 
     if (encinfo)
