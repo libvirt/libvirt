@@ -1509,9 +1509,7 @@ qemuDiskSourceGetProps(virStorageSourcePtr src)
 
 static int
 qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
-                        virQEMUDriverConfigPtr cfg,
-                        virBufferPtr buf,
-                        virQEMUCapsPtr qemuCaps)
+                        virBufferPtr buf)
 {
     int actualType = virStorageSourceGetActualType(disk->src);
     qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
@@ -1581,6 +1579,9 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
 
         if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
             virBufferAsprintf(buf, ",file.password-secret=%s", secinfo->s.aes.alias);
+
+        if (disk->src->debug)
+            virBufferAsprintf(buf, ",file.debug=%d", disk->src->debugLevel);
     } else {
         if (!(source = virQEMUBuildDriveCommandlineFromJSON(srcprops)))
             goto cleanup;
@@ -1588,12 +1589,6 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
         virBufferAdd(buf, source, -1);
     }
     virBufferAddLit(buf, ",");
-
-    if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
-        disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_GLUSTER_DEBUG_LEVEL))
-            virBufferAsprintf(buf, "file.debug=%d,", cfg->glusterDebugLevel);
-    }
 
     if (encinfo)
         virQEMUBuildLuksOpts(buf, &disk->src->encryption->encinfo,
@@ -1722,13 +1717,12 @@ qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
 
 char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
-                  virQEMUDriverConfigPtr cfg,
                   bool bootable,
                   virQEMUCapsPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
 
-    if (qemuBuildDriveSourceStr(disk, cfg, &opt, qemuCaps) < 0)
+    if (qemuBuildDriveSourceStr(disk, &opt) < 0)
         goto error;
 
     if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
@@ -2213,7 +2207,6 @@ qemuBuildDriveDevStr(const virDomainDef *def,
 
 static int
 qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
-                              virQEMUDriverConfigPtr cfg,
                               const virDomainDef *def,
                               virQEMUCapsPtr qemuCaps)
 {
@@ -2293,7 +2286,7 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
 
         virCommandAddArg(cmd, "-drive");
 
-        if (!(optstr = qemuBuildDriveStr(disk, cfg, driveBoot, qemuCaps)))
+        if (!(optstr = qemuBuildDriveStr(disk, driveBoot, qemuCaps)))
             return -1;
 
         virCommandAddArg(cmd, optstr);
@@ -10188,7 +10181,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildHubCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildDiskDriveCommandLine(cmd, cfg, def, qemuCaps) < 0)
+    if (qemuBuildDiskDriveCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildFSDevCommandLine(cmd, def, qemuCaps) < 0)

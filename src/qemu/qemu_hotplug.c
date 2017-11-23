@@ -406,7 +406,7 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
                                       disk->info.alias) < 0)
         goto error;
 
-    if (!(drivestr = qemuBuildDriveStr(disk, cfg, false, priv->qemuCaps)))
+    if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))
         goto error;
 
     if (!(drivealias = qemuAliasFromDisk(disk)))

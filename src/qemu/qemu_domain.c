@@ -10520,5 +10520,12 @@ qemuDomainPrepareDiskSource(virConnectPtr conn,
     if (qemuDomainSecretDiskPrepare(conn, priv, disk) < 0)
         return -1;
 
+    if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
+        disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_GLUSTER_DEBUG_LEVEL)) {
+        disk->src->debug = true;
+        disk->src->debugLevel = cfg->glusterDebugLevel;
+    }
+
     return 0;
 }
