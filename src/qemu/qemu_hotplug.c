@@ -384,7 +384,7 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
     if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
         goto error;
 
-    if (qemuDomainSecretDiskPrepare(conn, priv, disk) < 0)
+    if (qemuDomainPrepareDiskSource(conn, disk, priv, cfg) < 0)
         goto error;
 
     srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
@@ -399,9 +399,6 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
     }
 
     if (encinfo && qemuBuildSecretInfoProps(encinfo, &encobjProps) < 0)
-        goto error;
-
-    if (qemuDomainPrepareDiskSourceTLS(disk->src, cfg) < 0)
         goto error;
 
     if (disk->src->haveTLS &&

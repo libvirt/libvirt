@@ -1450,7 +1450,7 @@ qemuDomainSecretStorageSourcePrepare(virConnectPtr conn,
  * Returns 0 on success, -1 on failure
  */
 
-int
+static int
 qemuDomainSecretDiskPrepare(virConnectPtr conn,
                             qemuDomainObjPrivatePtr priv,
                             virDomainDiskDefPtr disk)
@@ -8008,7 +8008,7 @@ qemuDomainPrepareChardevSource(virDomainDefPtr def,
  *
  * Returns 0 on success, -1 on bad config/failure
  */
-int
+static int
 qemuDomainPrepareDiskSourceTLS(virStorageSourcePtr src,
                                virQEMUDriverConfigPtr cfg)
 {
@@ -10505,4 +10505,20 @@ qemuDomainCheckMigrationCapabilities(virQEMUDriverPtr driver,
  cleanup:
     virStringListFree(caps);
     return ret;
+}
+
+
+int
+qemuDomainPrepareDiskSource(virConnectPtr conn,
+                            virDomainDiskDefPtr disk,
+                            qemuDomainObjPrivatePtr priv,
+                            virQEMUDriverConfigPtr cfg)
+{
+    if (qemuDomainPrepareDiskSourceTLS(disk->src, cfg) < 0)
+        return -1;
+
+    if (qemuDomainSecretDiskPrepare(conn, priv, disk) < 0)
+        return -1;
+
+    return 0;
 }

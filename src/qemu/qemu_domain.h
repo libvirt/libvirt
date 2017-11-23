@@ -839,11 +839,6 @@ qemuDomainSecretInfoTLSNew(virConnectPtr conn,
                            const char *srcAlias,
                            const char *secretUUID);
 
-int qemuDomainSecretDiskPrepare(virConnectPtr conn,
-                                qemuDomainObjPrivatePtr priv,
-                                virDomainDiskDefPtr disk)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
 void qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr disk)
     ATTRIBUTE_NONNULL(1);
 
@@ -884,11 +879,6 @@ void qemuDomainPrepareChardevSourceTLS(virDomainChrSourceDefPtr source,
 
 void qemuDomainPrepareChardevSource(virDomainDefPtr def,
                                     virQEMUDriverConfigPtr cfg)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-int
-qemuDomainPrepareDiskSourceTLS(virStorageSourcePtr src,
-                               virQEMUDriverConfigPtr cfg)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int qemuDomainPrepareShmemChardev(virDomainShmemDefPtr shmem)
@@ -1010,5 +1000,11 @@ int
 qemuDomainCheckMigrationCapabilities(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      qemuDomainAsyncJob asyncJob);
+
+int
+qemuDomainPrepareDiskSource(virConnectPtr conn,
+                            virDomainDiskDefPtr disk,
+                            qemuDomainObjPrivatePtr priv,
+                            virQEMUDriverConfigPtr cfg);
 
 #endif /* __QEMU_DOMAIN_H__ */

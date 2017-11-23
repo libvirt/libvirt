@@ -5388,10 +5388,7 @@ qemuProcessPrepareDomainStorage(virConnectPtr conn,
             continue;
         }
 
-        if (qemuDomainPrepareDiskSourceTLS(disk->src, cfg) < 0)
-            return -1;
-
-        if (qemuDomainSecretDiskPrepare(conn, priv, disk) < 0)
+        if (qemuDomainPrepareDiskSource(conn, disk, priv, cfg) < 0)
             return -1;
     }
 
