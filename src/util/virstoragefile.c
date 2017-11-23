@@ -2061,6 +2061,8 @@ virStorageSourceCopy(const virStorageSource *src,
     ret->tlsFromConfig = src->tlsFromConfig;
     ret->tlsVerify = src->tlsVerify;
     ret->detected = src->detected;
+    ret->debugLevel = src->debugLevel;
+    ret->debug = src->debug;
 
     /* storage driver metadata are not copied */
     ret->drv = NULL;

@@ -303,6 +303,9 @@ struct _virStorageSource {
     bool tlsVerify;
 
     bool detected; /* true if this entry was not provided by the user */
+
+    unsigned int debugLevel;
+    bool debug;
 };
 
 
