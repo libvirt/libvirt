@@ -24054,7 +24054,9 @@ virDomainChrDefFormat(virBufferPtr buf,
     if (virDomainChrAttrsDefFormat(buf, def->source, tty_compat) < 0)
         return -1;
     virBufferAddLit(buf, ">\n");
-    virDomainChrSourceDefFormat(buf, def->source, flags);
+
+    if (virDomainChrSourceDefFormat(buf, def->source, flags) < 0)
+        return -1;
 
     if (virDomainChrTargetDefFormat(buf, def, flags) < 0)
         return -1;
@@ -24075,13 +24077,14 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
     const char *mode = virDomainSmartcardTypeToString(def->type);
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
+    int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
 
     if (!mode) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected smartcard type %d"), def->type);
-        return -1;
+        goto cleanup;
     }
 
     switch (def->type) {
@@ -24098,23 +24101,25 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        virDomainChrSourceDefFormat(&childBuf, def->data.passthru, flags);
+        if (virDomainChrSourceDefFormat(&childBuf, def->data.passthru, flags) < 0)
+            goto cleanup;
         break;
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected smartcard type %d"), def->type);
-        return -1;
+        goto cleanup;
     }
     virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     if (virBufferCheckError(&childBuf) < 0)
-        return -1;
+        goto cleanup;
 
     virBufferAsprintf(buf, "<smartcard mode='%s'", mode);
     if (def->type == VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH &&
-        virDomainChrAttrsDefFormat(buf, def->data.passthru, false) < 0)
-        return -1;
+        virDomainChrAttrsDefFormat(buf, def->data.passthru, false) < 0) {
+        goto cleanup;
+    }
 
     if (virBufferUse(&childBuf)) {
         virBufferAddLit(buf, ">\n");
@@ -24123,7 +24128,12 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
     } else {
         virBufferAddLit(buf, "/>\n");
     }
-    return 0;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&childBuf);
+    return ret;
 }
 
 static int
@@ -24425,7 +24435,8 @@ virDomainRNGDefFormat(virBufferPtr buf,
             return -1;
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
-        virDomainChrSourceDefFormat(buf, def->source.chardev, flags);
+        if (virDomainChrSourceDefFormat(buf, def->source.chardev, flags) < 0)
+            return -1;
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</backend>\n");
 
@@ -25270,7 +25281,10 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
         return -1;
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
-    virDomainChrSourceDefFormat(buf, def->source, flags);
+
+    if (virDomainChrSourceDefFormat(buf, def->source, flags) < 0)
+        return -1;
+
     virDomainDeviceInfoFormat(buf, &def->info,
                               flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT);
     virBufferAdjustIndent(buf, -2);
