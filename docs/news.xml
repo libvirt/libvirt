@@ -148,6 +148,19 @@
           can prepare the files if they need to do so.
         </description>
       </change>
+      <change>
+        <summary>
+          Shareable disks work properly with recent qemu
+        </summary>
+        <description>
+          Recent qemu versions added image locking to avoid potential corruption
+          of disk images. This broke shareable disks with libvirt since the
+          feature was turned on by default in qemu. Libvirt now enables sharing
+          of those disks in qemu so that the image locking is not applied in
+          that case. Additionally libvirt now checks that shareable disks have
+          supported format (raw) to avoid metadata corruption.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
