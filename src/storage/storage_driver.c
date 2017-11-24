@@ -1665,9 +1665,9 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
         return NULL;
 
     storageDriverLock();
-    if ((obj == virStoragePoolObjListSearch(&driver->pools,
-                                            storagePoolLookupByTargetPathCallback,
-                                            path))) {
+    if ((obj = virStoragePoolObjListSearch(&driver->pools,
+                                           storagePoolLookupByTargetPathCallback,
+                                           path))) {
         def = virStoragePoolObjGetDef(obj);
         pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
         virStoragePoolObjEndAPI(&obj);
