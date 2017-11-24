@@ -6385,6 +6385,11 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
+        /* terminate the chain for such images as the code below would do */
+        if (!src->backingStore &&
+            VIR_ALLOC(src->backingStore) < 0)
+            goto cleanup;
+
         ret = 0;
         goto cleanup;
     }
