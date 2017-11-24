@@ -6369,29 +6369,26 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (virStorageSourceHasBacking(src)) {
-        if (force_probe) {
-            virStorageSourceBackingStoreClear(src);
-        } else {
-            /* skip to the end of the chain */
-            while (virStorageSourceIsBacking(src)) {
-                if (report_broken &&
-                    virStorageFileSupportsAccess(src)) {
+    if (force_probe)
+        virStorageSourceBackingStoreClear(src);
 
-                    if (qemuDomainStorageFileInit(driver, vm, src, disk->src) < 0)
-                        goto cleanup;
+    /* skip to the end of the chain if there is any */
+    while (virStorageSourceHasBacking(src)) {
+        if (report_broken &&
+            virStorageFileSupportsAccess(src)) {
 
-                    if (virStorageFileAccess(src, F_OK) < 0) {
-                        virStorageFileReportBrokenChain(errno, src, disk->src);
-                        virStorageFileDeinit(src);
-                        goto cleanup;
-                    }
+            if (qemuDomainStorageFileInit(driver, vm, src, disk->src) < 0)
+                goto cleanup;
 
-                    virStorageFileDeinit(src);
-                }
-                src = src->backingStore;
+            if (virStorageFileAccess(src, F_OK) < 0) {
+                virStorageFileReportBrokenChain(errno, src, disk->src);
+                virStorageFileDeinit(src);
+                goto cleanup;
             }
+
+            virStorageFileDeinit(src);
         }
+        src = src->backingStore;
     }
 
     /* We skipped to the end of the chain. Skip detection if there's the
