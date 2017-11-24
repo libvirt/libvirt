@@ -906,44 +906,34 @@ void qemuDomainDestroyNamespace(virQEMUDriverPtr driver,
 
 bool qemuDomainNamespaceAvailable(qemuDomainNamespace ns);
 
-int qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
+int qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
                                  virStorageSourcePtr src);
 
-int qemuDomainNamespaceTeardownDisk(virQEMUDriverPtr driver,
-                                    virDomainObjPtr vm,
+int qemuDomainNamespaceTeardownDisk(virDomainObjPtr vm,
                                     virStorageSourcePtr src);
 
-int qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver,
-                                    virDomainObjPtr vm,
+int qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
                                     virDomainHostdevDefPtr hostdev);
 
-int qemuDomainNamespaceTeardownHostdev(virQEMUDriverPtr driver,
-                                       virDomainObjPtr vm,
+int qemuDomainNamespaceTeardownHostdev(virDomainObjPtr vm,
                                        virDomainHostdevDefPtr hostdev);
 
-int qemuDomainNamespaceSetupMemory(virQEMUDriverPtr driver,
-                                   virDomainObjPtr vm,
+int qemuDomainNamespaceSetupMemory(virDomainObjPtr vm,
                                    virDomainMemoryDefPtr memory);
 
-int qemuDomainNamespaceTeardownMemory(virQEMUDriverPtr driver,
-                                      virDomainObjPtr vm,
+int qemuDomainNamespaceTeardownMemory(virDomainObjPtr vm,
                                       virDomainMemoryDefPtr memory);
 
-int qemuDomainNamespaceSetupChardev(virQEMUDriverPtr driver,
-                                    virDomainObjPtr vm,
+int qemuDomainNamespaceSetupChardev(virDomainObjPtr vm,
                                     virDomainChrDefPtr chr);
 
-int qemuDomainNamespaceTeardownChardev(virQEMUDriverPtr driver,
-                                       virDomainObjPtr vm,
+int qemuDomainNamespaceTeardownChardev(virDomainObjPtr vm,
                                        virDomainChrDefPtr chr);
 
-int qemuDomainNamespaceSetupRNG(virQEMUDriverPtr driver,
-                                virDomainObjPtr vm,
+int qemuDomainNamespaceSetupRNG(virDomainObjPtr vm,
                                 virDomainRNGDefPtr rng);
 
-int qemuDomainNamespaceTeardownRNG(virQEMUDriverPtr driver,
-                                   virDomainObjPtr vm,
+int qemuDomainNamespaceTeardownRNG(virDomainObjPtr vm,
                                    virDomainRNGDefPtr rng);
 
 int qemuDomainNamespaceSetupInput(virDomainObjPtr vm,

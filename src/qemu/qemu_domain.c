@@ -6462,7 +6462,7 @@ qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
     if (qemuSecurityRestoreImageLabel(driver, vm, elem) < 0)
         VIR_WARN("Unable to restore security label on %s", NULLSTR(elem->path));
 
-    if (qemuDomainNamespaceTeardownDisk(driver, vm, elem) < 0)
+    if (qemuDomainNamespaceTeardownDisk(vm, elem) < 0)
         VIR_WARN("Unable to remove /dev entry for %s", NULLSTR(elem->path));
 
     if (virDomainLockImageDetach(driver->lockManager, vm, elem) < 0)
@@ -6504,7 +6504,7 @@ qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (newSource &&
-        qemuDomainNamespaceSetupDisk(driver, vm, elem) < 0)
+        qemuDomainNamespaceSetupDisk(vm, elem) < 0)
         goto cleanup;
 
     if (qemuSetupImageCgroup(vm, elem) < 0)
@@ -10029,8 +10029,7 @@ qemuDomainNamespaceUnlinkPath(virDomainObjPtr vm,
 
 
 int
-qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                             virDomainObjPtr vm,
+qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
                              virStorageSourcePtr src)
 {
     virStorageSourcePtr next;
@@ -10063,8 +10062,7 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceTeardownDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                                virDomainObjPtr vm ATTRIBUTE_UNUSED,
+qemuDomainNamespaceTeardownDisk(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                 virStorageSourcePtr src ATTRIBUTE_UNUSED)
 {
     /* While in hotplug case we create the whole backing chain,
@@ -10078,8 +10076,7 @@ qemuDomainNamespaceTeardownDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                                virDomainObjPtr vm,
+qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
                                 virDomainHostdevDefPtr hostdev)
 {
     int ret = -1;
@@ -10105,8 +10102,7 @@ qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceTeardownHostdev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                                   virDomainObjPtr vm,
+qemuDomainNamespaceTeardownHostdev(virDomainObjPtr vm,
                                    virDomainHostdevDefPtr hostdev)
 {
     int ret = -1;
@@ -10134,8 +10130,7 @@ qemuDomainNamespaceTeardownHostdev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceSetupMemory(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                               virDomainObjPtr vm,
+qemuDomainNamespaceSetupMemory(virDomainObjPtr vm,
                                virDomainMemoryDefPtr mem)
 {
     if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
@@ -10149,8 +10144,7 @@ qemuDomainNamespaceSetupMemory(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceTeardownMemory(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                                  virDomainObjPtr vm,
+qemuDomainNamespaceTeardownMemory(virDomainObjPtr vm,
                                   virDomainMemoryDefPtr mem)
 {
     if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
@@ -10164,8 +10158,7 @@ qemuDomainNamespaceTeardownMemory(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceSetupChardev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                                virDomainObjPtr vm,
+qemuDomainNamespaceSetupChardev(virDomainObjPtr vm,
                                 virDomainChrDefPtr chr)
 {
     const char *path;
@@ -10186,8 +10179,7 @@ qemuDomainNamespaceSetupChardev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceTeardownChardev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                                   virDomainObjPtr vm,
+qemuDomainNamespaceTeardownChardev(virDomainObjPtr vm,
                                    virDomainChrDefPtr chr)
 {
     const char *path = NULL;
@@ -10205,8 +10197,7 @@ qemuDomainNamespaceTeardownChardev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceSetupRNG(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                            virDomainObjPtr vm,
+qemuDomainNamespaceSetupRNG(virDomainObjPtr vm,
                             virDomainRNGDefPtr rng)
 {
     const char *path = NULL;
@@ -10229,8 +10220,7 @@ qemuDomainNamespaceSetupRNG(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 int
-qemuDomainNamespaceTeardownRNG(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                               virDomainObjPtr vm,
+qemuDomainNamespaceTeardownRNG(virDomainObjPtr vm,
                                virDomainRNGDefPtr rng)
 {
     const char *path = NULL;
