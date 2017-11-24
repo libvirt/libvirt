@@ -1667,7 +1667,7 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
     storageDriverLock();
     if ((obj = virStoragePoolObjListSearch(&driver->pools,
                                            storagePoolLookupByTargetPathCallback,
-                                           path))) {
+                                           cleanpath))) {
         def = virStoragePoolObjGetDef(obj);
         pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
         virStoragePoolObjEndAPI(&obj);
@@ -1675,9 +1675,15 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
     storageDriverUnlock();
 
     if (!pool) {
-        virReportError(VIR_ERR_NO_STORAGE_VOL,
-                       _("no storage pool with matching target path '%s'"),
-                       path);
+        if (STREQ(path, cleanpath)) {
+            virReportError(VIR_ERR_NO_STORAGE_POOL,
+                           _("no storage pool with matching target path '%s'"),
+                           path);
+        } else {
+            virReportError(VIR_ERR_NO_STORAGE_POOL,
+                           _("no storage pool with matching target path '%s' (%s)"),
+                           path, cleanpath);
+        }
     }
 
     VIR_FREE(cleanpath);
