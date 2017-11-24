@@ -3306,10 +3306,13 @@ virQEMUCapsCPUFilterFeatures(const char *name,
 /**
  * Returns  0 when host CPU model provided by QEMU was filled in qemuCaps,
  *          1 when the caller should fall back to using virCapsPtr->host.cpu,
+ *          2 when cpu model info is not supported for this configuration and
+ *            fall back should not be used.
  *         -1 on error.
  */
 static int
 virQEMUCapsInitCPUModelS390(virQEMUCapsPtr qemuCaps,
+                            virDomainVirtType type,
                             qemuMonitorCPUModelInfoPtr modelInfo,
                             virCPUDefPtr cpu,
                             bool migratable)
@@ -3317,11 +3320,14 @@ virQEMUCapsInitCPUModelS390(virQEMUCapsPtr qemuCaps,
     size_t i;
 
     if (!modelInfo) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing host CPU model info from QEMU capabilities "
-                         "for binary %s"),
-                       qemuCaps->binary);
-        return -1;
+        if (type == VIR_DOMAIN_VIRT_KVM) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("missing host CPU model info from QEMU "
+                             "capabilities for binary %s"),
+                           qemuCaps->binary);
+            return -1;
+        }
+        return 2;
     }
 
     if (VIR_STRDUP(cpu->model, modelInfo->name) < 0 ||
@@ -3429,6 +3435,8 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
 /**
  * Returns  0 when host CPU model provided by QEMU was filled in qemuCaps,
  *          1 when the caller should fall back to other methods
+ *          2 when cpu model info is not supported for this configuration and
+ *            fall back should not be used.
  *         -1 on error.
  */
 int
@@ -3444,7 +3452,7 @@ virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
         return 1;
 
     if (ARCH_IS_S390(qemuCaps->arch)) {
-        ret = virQEMUCapsInitCPUModelS390(qemuCaps, cpuData->info,
+        ret = virQEMUCapsInitCPUModelS390(qemuCaps, type, cpuData->info,
                                           cpu, migratable);
     } else if (ARCH_IS_X86(qemuCaps->arch)) {
         ret = virQEMUCapsInitCPUModelX86(qemuCaps, type, cpuData->info,
@@ -3504,6 +3512,11 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
                                      virQEMUCapsCPUFilterFeatures,
                                      &qemuCaps->arch) < 0)
             goto error;
+    } else if (rc == 2) {
+        VIR_DEBUG("QEMU does not provide CPU model for arch=%s virttype=%s",
+                  virArchToString(qemuCaps->arch),
+                  virDomainVirtTypeToString(type));
+        goto error;
     } else if (type == VIR_DOMAIN_VIRT_KVM &&
                virCPUGetHostIsSupported(qemuCaps->arch)) {
         if (!(fullCPU = virCPUGetHost(qemuCaps->arch, VIR_CPU_TYPE_GUEST,
