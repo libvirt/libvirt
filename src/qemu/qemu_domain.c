@@ -3461,42 +3461,52 @@ qemuDomainChrSourceDefValidate(const virDomainChrSourceDef *def)
 
 
 static int
+qemuDomainChrSerialTargetTypeToAddressType(int targetType)
+{
+    switch ((virDomainChrSerialTargetType) targetType) {
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
+        return VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
+        return VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
+        return VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
+        break;
+    }
+
+    return VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
+}
+
+
+static int
 qemuDomainChrTargetDefValidate(const virDomainDef *def,
                                const virDomainChrDef *chr)
 {
+    int expected;
+
     switch ((virDomainChrDeviceType) chr->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
 
         /* Validate target type */
         switch ((virDomainChrSerialTargetType) chr->targetType) {
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
+
             /* Hack required until we have a proper type for pSeries
              * serial consoles */
             if (qemuDomainIsPSeries(def))
                 return 0;
 
-            if (chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("isa-serial requires address of isa type"));
-                return -1;
-            }
-            break;
+            expected = qemuDomainChrSerialTargetTypeToAddressType(chr->targetType);
 
-        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
             if (chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("usb-serial requires address of usb type"));
-                return -1;
-            }
-            break;
-
-        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
-            if (chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("pci-serial requires address of pci type"));
+                chr->info.type != expected) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Target type '%s' requires address type '%s'"),
+                               virDomainChrSerialTargetTypeToString(chr->targetType),
+                               virDomainDeviceAddressTypeToString(expected));
                 return -1;
             }
             break;
