@@ -6372,6 +6372,23 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     if (force_probe)
         virStorageSourceBackingStoreClear(src);
 
+    /* There is no need to check the backing chain for disks without backing
+     * support */
+    if (virStorageSourceIsLocalStorage(src) &&
+        src->format > VIR_STORAGE_FILE_NONE &&
+        src->format < VIR_STORAGE_FILE_BACKING) {
+
+        if (!virFileExists(src->path)) {
+            if (report_broken)
+                virStorageFileReportBrokenChain(errno, src, disk->src);
+
+            goto cleanup;
+        }
+
+        ret = 0;
+        goto cleanup;
+    }
+
     /* skip to the end of the chain if there is any */
     while (virStorageSourceHasBacking(src)) {
         if (report_broken &&
