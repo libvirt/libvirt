@@ -2769,6 +2769,7 @@ virStringListGetFirstWithPrefix;
 virStringListHasString;
 virStringListJoin;
 virStringListLength;
+virStringListMerge;
 virStringListRemove;
 virStringMatch;
 virStringParsePort;

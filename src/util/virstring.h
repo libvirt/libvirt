@@ -46,6 +46,9 @@ char **virStringListAdd(const char **strings,
 void virStringListRemove(char ***strings,
                          const char *item);
 
+int virStringListMerge(char ***dst,
+                       char ***src);
+
 int virStringListCopy(char ***dst,
                       const char **src);
 

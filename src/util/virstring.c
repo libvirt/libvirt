@@ -240,6 +240,42 @@ virStringListRemove(char ***strings,
 
 
 /**
+ * virStringListMerge:
+ * @dst: a NULL-terminated array of strings to expand
+ * @src: a NULL-terminated array of strings
+ *
+ * Merges @src into @dst. Upon successful return from this
+ * function, @dst is resized to $(dst + src) elements and @src is
+ * freed.
+ *
+ * Returns 0 on success, -1 otherwise.
+ */
+int
+virStringListMerge(char ***dst,
+                   char ***src)
+{
+    size_t dst_len, src_len, i;
+
+    if (!src || !*src)
+        return 0;
+
+    dst_len = virStringListLength((const char **) *dst);
+    src_len = virStringListLength((const char **) *src);
+
+    if (VIR_REALLOC_N(*dst, dst_len + src_len + 1) < 0)
+        return -1;
+
+    for (i = 0; i <= src_len; i++)
+        (*dst)[i + dst_len] = (*src)[i];
+
+    /* Don't call virStringListFree() as it would free strings in
+     * @src. */
+    VIR_FREE(*src);
+    return 0;
+}
+
+
+/**
  * virStringListCopy:
  * @dst: where to store the copy of @strings
  * @src: a NULL-terminated array of strings
