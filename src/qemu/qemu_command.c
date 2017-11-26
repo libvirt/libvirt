@@ -9222,6 +9222,25 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
     return 0;
 }
 
+
+static virQEMUCapsFlags
+qemuChrSerialTargetModelToCaps(virDomainChrSerialTargetModel targetModel)
+{
+    switch (targetModel) {
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_USB_SERIAL:
+        return QEMU_CAPS_DEVICE_USB_SERIAL;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PCI_SERIAL:
+        return QEMU_CAPS_DEVICE_PCI_SERIAL;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_SERIAL:
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE:
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuBuildChrDeviceCommandLine(virCommandPtr cmd,
                               const virDomainDef *def,
@@ -10351,6 +10370,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     return NULL;
 }
 
+
 /* This function generates the correct '-device' string for character
  * devices of each architecture.
  */
@@ -10361,6 +10381,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
                             virQEMUCapsPtr qemuCaps)
 {
     virBuffer cmd = VIR_BUFFER_INITIALIZER;
+    virQEMUCapsFlags caps;
 
     if (qemuDomainIsPSeries(def)) {
         if (serial->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
@@ -10377,22 +10398,19 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
     } else {
         switch ((virDomainChrSerialTargetModel) serial->targetModel) {
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_USB_SERIAL:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_SERIAL)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("usb-serial is not supported in this QEMU binary"));
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PCI_SERIAL:
+
+            caps = qemuChrSerialTargetModelToCaps(serial->targetModel);
+
+            if (caps && !virQEMUCapsGet(qemuCaps, caps)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("'%s' is not supported in this QEMU binary"),
+                               virDomainChrSerialTargetModelTypeToString(serial->targetModel));
                 goto error;
             }
             break;
 
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_SERIAL:
-            break;
-
-        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PCI_SERIAL:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_SERIAL)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("pci-serial is not supported with this QEMU binary"));
-                goto error;
-            }
             break;
 
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE:
