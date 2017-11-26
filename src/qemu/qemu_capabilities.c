@@ -452,6 +452,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "numa.dist",
               "disk-share-rw",
               "iscsi.password-secret",
+              "isa-serial",
     );
 
 
@@ -1682,6 +1683,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "vmcoreinfo", QEMU_CAPS_DEVICE_VMCOREINFO },
     { "spapr-vty", QEMU_CAPS_DEVICE_SPAPR_VTY },
     { "sclplmconsole", QEMU_CAPS_DEVICE_SCLPLMCONSOLE },
+    { "isa-serial", QEMU_CAPS_DEVICE_ISA_SERIAL },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {

@@ -174,6 +174,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_USB_KBD,
             QEMU_CAPS_DEVICE_RTL8139,
             QEMU_CAPS_DEVICE_E1000,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_DEVICE_VIRTIO_NET);
     DO_TEST("qemu-kvm-0.12.3", 12003, 1, 0,
             QEMU_CAPS_DRIVE_BOOT,
@@ -210,6 +211,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_USB_KBD,
             QEMU_CAPS_DEVICE_RTL8139,
             QEMU_CAPS_DEVICE_E1000,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_DEVICE_VIRTIO_NET);
     DO_TEST("qemu-kvm-0.13.0", 13000, 1, 0,
             QEMU_CAPS_DRIVE_BOOT,
@@ -258,6 +260,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_IVSHMEM,
             QEMU_CAPS_DEVICE_RTL8139,
             QEMU_CAPS_DEVICE_E1000,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_DEVICE_VIRTIO_NET);
     DO_TEST("qemu-1.0", 1000000, 0, 0,
             QEMU_CAPS_DRIVE_CACHE_UNSAFE,
@@ -328,6 +331,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_RTL8139,
             QEMU_CAPS_DEVICE_E1000,
             QEMU_CAPS_DEVICE_VIRTIO_NET,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_DISPLAY);
     DO_TEST("qemu-1.1.0", 1001000, 0, 0,
             QEMU_CAPS_DRIVE_CACHE_UNSAFE,
@@ -411,6 +415,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_RTL8139,
             QEMU_CAPS_DEVICE_E1000,
             QEMU_CAPS_DEVICE_VIRTIO_NET,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_DISPLAY);
     DO_TEST_FULL("qemu-1.2.0", 1002000, 0, 0, VIR_ERR_CONFIG_UNSUPPORTED,
             QEMU_CAPS_LAST);

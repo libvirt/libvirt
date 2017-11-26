@@ -188,6 +188,7 @@
   <flag name='vnc-multi-servers'/>
   <flag name='chardev-reconnect'/>
   <flag name='virtio-gpu.max_outputs'/>
+  <flag name='isa-serial'/>
   <version>2004000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

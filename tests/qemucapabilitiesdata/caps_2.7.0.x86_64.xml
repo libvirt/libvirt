@@ -208,6 +208,7 @@
   <flag name='chardev-reconnect'/>
   <flag name='virtio-gpu.max_outputs'/>
   <flag name='virtio-blk.num-queues'/>
+  <flag name='isa-serial'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.7.0)</package>

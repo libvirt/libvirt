@@ -168,6 +168,7 @@
   <flag name='chardev-reconnect'/>
   <flag name='virtio-gpu.max_outputs'/>
   <flag name='spapr-vty'/>
+  <flag name='isa-serial'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
