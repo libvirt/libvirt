@@ -771,6 +771,7 @@ mymain(void)
     DO_TEST_FAILURE("reboot-timeout-enabled", NONE);
 
     DO_TEST("bios",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_SGA);
     DO_TEST("bios-nvram", NONE);
     DO_TEST("bios-nvram-secure",
@@ -814,6 +815,7 @@ mymain(void)
             QEMU_CAPS_SPICE,
             QEMU_CAPS_HDA_DUPLEX,
             QEMU_CAPS_USB_HUB,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("eoi-disabled", NONE);
     DO_TEST("eoi-enabled", NONE);
@@ -1231,48 +1233,64 @@ mymain(void)
 
     DO_TEST("serial-file-log",
             QEMU_CAPS_CHARDEV_FILE_APPEND,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_CHARDEV_LOGFILE);
     DO_TEST("serial-spiceport",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_CHARDEV_SPICEPORT);
     DO_TEST("serial-spiceport-nospice", NONE);
 
-    DO_TEST("console-compat", NONE);
-    DO_TEST("console-compat-auto", NONE);
+    DO_TEST("console-compat",
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
+    DO_TEST("console-compat-auto",
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
 
     DO_TEST("serial-vc-chardev",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("serial-pty-chardev",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("serial-dev-chardev",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("serial-dev-chardev-iobase",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("serial-file-chardev",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_CHARDEV_FILE_APPEND);
     DO_TEST("serial-unix-chardev",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("serial-tcp-chardev",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("serial-udp-chardev",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("serial-tcp-telnet-chardev",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_NODEFCONFIG);
     driver.config->chardevTLS = 1;
     DO_TEST("serial-tcp-tlsx509-chardev",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
     driver.config->chardevTLSx509verify = 1;
     DO_TEST("serial-tcp-tlsx509-chardev-verify",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
     driver.config->chardevTLSx509verify = 0;
     DO_TEST("serial-tcp-tlsx509-chardev-notls",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
     VIR_FREE(driver.config->chardevTLSx509certdir);
     if (VIR_STRDUP_QUIET(driver.config->chardevTLSx509certdir, "/etc/pki/libvirt-chardev") < 0)
@@ -1284,22 +1302,26 @@ mymain(void)
     DO_TEST("serial-tcp-tlsx509-secret-chardev",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_OBJECT_SECRET,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
 # else
     DO_TEST_FAILURE("serial-tcp-tlsx509-secret-chardev",
                     QEMU_CAPS_NODEFCONFIG,
                     QEMU_CAPS_OBJECT_SECRET,
+                    QEMU_CAPS_DEVICE_ISA_SERIAL,
                     QEMU_CAPS_OBJECT_TLS_CREDS_X509);
 # endif
     driver.config->chardevTLS = 0;
     VIR_FREE(driver.config->chardevTLSx509certdir);
     DO_TEST("serial-many-chardev",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("parallel-tcp-chardev",
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("parallel-parport-chardev",
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("console-compat-chardev",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pci-serial-dev-chardev",
             QEMU_CAPS_NODEFCONFIG,
@@ -1320,6 +1342,7 @@ mymain(void)
     DO_TEST("console-virtio",
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("console-virtio-many",
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("console-virtio-s390",
             QEMU_CAPS_NODEFCONFIG,
@@ -2312,6 +2335,7 @@ mymain(void)
             QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_HDA_DUPLEX,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_USB_REDIR);
 
     /* Test automatic and manual setting of pcie-root-port attributes */
@@ -2916,6 +2940,7 @@ mymain(void)
     DO_TEST("user-aliases", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_OBJECT_MEMORY_FILE, QEMU_CAPS_PIIX_DISABLE_S3,
             QEMU_CAPS_PIIX_DISABLE_S4, QEMU_CAPS_VNC,
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_HDA_DUPLEX);
     DO_TEST("user-aliases2", QEMU_CAPS_DEVICE_IOH3420, QEMU_CAPS_ICH9_AHCI);
 
