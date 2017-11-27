@@ -3314,8 +3314,7 @@ virQEMUCapsCPUFilterFeatures(const char *name,
 /**
  * Returns  0 when host CPU model provided by QEMU was filled in qemuCaps,
  *          1 when the caller should fall back to using virCapsPtr->host.cpu,
- *          2 when cpu model info is not supported for this configuration and
- *            fall back should not be used.
+ *          2 when cpu model info is not supported for this configuration,
  *         -1 on error.
  */
 static int
@@ -3442,9 +3441,8 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
 
 /**
  * Returns  0 when host CPU model provided by QEMU was filled in qemuCaps,
- *          1 when the caller should fall back to other methods
- *          2 when cpu model info is not supported for this configuration and
- *            fall back should not be used.
+ *          1 when the caller should fall back to other methods,
+ *          2 when cpu model info is not supported for this configuration,
  *         -1 on error.
  */
 int
