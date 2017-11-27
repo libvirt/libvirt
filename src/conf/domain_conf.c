@@ -5206,6 +5206,13 @@ virDomainDiskDefValidate(const virDomainDiskDef *disk)
         }
     }
 
+    if (disk->src->pr &&
+        disk->device != VIR_DOMAIN_DISK_DEVICE_LUN) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("<reservations/> allowed only for lun devices"));
+        return -1;
+    }
+
     /* Reject disks with a bus type that is not compatible with the
      * given address type. The function considers only buses that are
      * handled in common code. For other bus types it's not possible
@@ -8633,6 +8640,31 @@ virDomainDiskSourcePrivateDataParse(xmlNodePtr node,
 
 
 static int
+virDomainDiskSourcePRParse(xmlNodePtr node,
+                           xmlXPathContextPtr ctxt,
+                           virStoragePRDefPtr *pr)
+{
+    xmlNodePtr saveNode = ctxt->node;
+    int ret = -1;
+
+    ctxt->node = node;
+
+    if (!(ctxt->node = virXPathNode("./reservations", ctxt))) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (!(*pr = virStoragePRDefParseXML(ctxt)))
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    ctxt->node = saveNode;
+    return ret;
+}
+
+
+static int
 virDomainStorageSourceParse(xmlNodePtr node,
                             xmlXPathContextPtr ctxt,
                             virStorageSourcePtr src,
@@ -8676,6 +8708,9 @@ virDomainStorageSourceParse(xmlNodePtr node,
 
     if ((tmp = virXPathNode("./encryption", ctxt)) &&
         !(src->encryption = virStorageEncryptionParseNode(tmp, ctxt)))
+        goto cleanup;
+
+    if (virDomainDiskSourcePRParse(node, ctxt, &src->pr) < 0)
         goto cleanup;
 
     if (virSecurityDeviceLabelDefParseXML(&src->seclabels, &src->nseclabels,
@@ -22952,6 +22987,9 @@ virDomainStorageSourceFormat(virBufferPtr attrBuf,
     if (src->encryption && src->encryptionInherited &&
         virStorageEncryptionFormat(childBuf, src->encryption) < 0)
         return -1;
+
+    if (src->pr)
+        virStoragePRDefFormat(childBuf, src->pr);
 
     return 0;
 }

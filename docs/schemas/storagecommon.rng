@@ -39,6 +39,56 @@
     </element>
   </define>
 
+  <define name="reconnect">
+    <element name="reconnect">
+      <attribute name="enabled">
+        <ref name="virYesNo"/>
+      </attribute>
+      <optional>
+        <attribute name="timeout">
+          <ref name="unsignedInt"/>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+
+  <define name='unixSocketSource'>
+    <element name="source">
+      <attribute name="type">
+        <value>unix</value>
+      </attribute>
+      <attribute name="path">
+        <ref name="absFilePath"/>
+      </attribute>
+      <attribute name="mode">
+        <choice>
+          <value>server</value>
+          <value>client</value>
+        </choice>
+      </attribute>
+      <optional>
+         <ref name="reconnect"/>
+      </optional>
+      <empty/>
+    </element>
+  </define>
+
+  <define name='reservations'>
+    <element name='reservations'>
+      <attribute name='enabled'>
+        <ref name='virYesNo'/>
+      </attribute>
+      <optional>
+        <attribute name='managed'>
+          <ref name='virYesNo'/>
+        </attribute>
+      </optional>
+      <optional>
+        <ref name='unixSocketSource'/>
+      </optional>
+    </element>
+  </define>
+
   <define name='secret'>
     <element name='secret'>
       <attribute name='type'>

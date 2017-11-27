@@ -1530,6 +1530,9 @@
         <optional>
           <ref name="encryption"/>
         </optional>
+        <optional>
+          <ref name="reservations"/>
+        </optional>
         <zeroOrMore>
           <ref name='devSeclabel'/>
         </zeroOrMore>
@@ -2434,18 +2437,6 @@
       </attribute>
     </optional>
   </define>
-  <define name="reconnect">
-    <element name="reconnect">
-      <attribute name="enabled">
-        <ref name="virYesNo"/>
-      </attribute>
-      <optional>
-        <attribute name="timeout">
-          <ref name="unsignedInt"/>
-        </attribute>
-      </optional>
-    </element>
-  </define>
 
   <!--
       An interface description can either be of type bridge in which case
@@ -2494,24 +2485,7 @@
             <value>vhostuser</value>
           </attribute>
           <interleave>
-            <element name="source">
-              <attribute name="type">
-                <value>unix</value>
-              </attribute>
-              <attribute name="path">
-                <ref name="absFilePath"/>
-              </attribute>
-              <attribute name="mode">
-                <choice>
-                  <value>server</value>
-                  <value>client</value>
-                </choice>
-              </attribute>
-              <optional>
-                 <ref name="reconnect"/>
-              </optional>
-              <empty/>
-            </element>
+            <ref name="unixSocketSource"/>
             <ref name="interface-options"/>
           </interleave>
         </group>

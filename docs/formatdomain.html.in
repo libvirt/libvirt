@@ -2566,7 +2566,10 @@
   &lt;/disk&gt;
   &lt;disk type='block' device='lun'&gt;
     &lt;driver name='qemu' type='raw'/&gt;
-    &lt;source dev='/dev/sda'/&gt;
+    &lt;source dev='/dev/sda'&gt;
+      &lt;reservations enabled='yes' managed='no'&gt;
+        &lt;source type='unix' path='/path/to/qemu-pr-helper' mode='client'/&gt;
+      &lt;/reservations&gt;
     &lt;target dev='sda' bus='scsi'/&gt;
     &lt;address type='drive' controller='0' bus='0' target='3' unit='0'/&gt;
   &lt;/disk&gt;
@@ -2928,6 +2931,26 @@
             See the
             <a href="formatstorageencryption.html">Storage Encryption</a>
             page for more information.
+          </dd>
+          <dt><code>reservations</code></dt>
+          <dd><span class="since">Since libvirt 4.4.0</span>, the
+            <code>reservations</code> can be a sub-element of the
+            <code>source</code> element for storage sources (QEMU driver only).
+            If present (and enabled) it enables persistent reservations for SCSI
+            based disks. The element has one mandatory attribute
+            <code>enabled</code> with accepted values <code>yes</code> and
+            <code>no</code>. If the feature is enabled, then there's another
+            mandatory attribute <code>managed</code> (accepted values are the
+            same as for <code>enabled</code>) that enables or disables libvirt
+            spawning a helper process. When the PR is unmanaged, then hypervisor
+            acts as a client and path to server socket must be provided in child
+            element <code>source</code>, which currently accepts only the
+            following attributes: <code>type</code> with one value
+            <code>unix</code>, <code>path</code> with path the socket, and
+            finally <code>mode</code> which accepts one value
+            <code>client</code> and specifies the role of hypervisor.
+            It's recommended to allow libvirt manage the persistent
+            reservations.
           </dd>
         </dl>
 
