@@ -2580,44 +2580,6 @@ qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
 }
 
 
-/* qemuCheckSCSIControllerIOThreads:
- * @domainDef: Pointer to domain def
- * @def: Pointer to controller def
- * @qemuCaps: Capabilities
- *
- * If this controller definition has iothreads set, let's make sure the
- * configuration is right before adding to the command line
- *
- * Returns true if either supported or there are no iothreads for controller;
- * otherwise, returns false if configuration is not quite right.
- */
-static bool
-qemuCheckSCSIControllerIOThreads(const virDomainDef *domainDef,
-                                 virDomainControllerDefPtr def)
-{
-    if (!def->iothread)
-        return true;
-
-    if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-        def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-       virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("IOThreads only available for virtio pci and "
-                         "virtio ccw controllers"));
-       return false;
-    }
-
-    /* Can we find the controller iothread in the iothreadid list? */
-    if (!virDomainIOThreadIDFind(domainDef, def->iothread)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("controller iothread '%u' not defined in iothreadid"),
-                       def->iothread);
-        return false;
-    }
-
-    return true;
-}
-
-
 /**
  * qemuBuildControllerDevStr:
  * @domainDef: domain definition
@@ -2656,12 +2618,9 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
             if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
                 virBufferAddLit(&buf, "virtio-scsi-ccw");
-                if (def->iothread) {
-                    if (!qemuCheckSCSIControllerIOThreads(domainDef, def))
-                        goto error;
+                if (def->iothread)
                     virBufferAsprintf(&buf, ",iothread=iothread%u",
                                       def->iothread);
-                }
             } else if (def->info.type ==
                        VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
                 virBufferAddLit(&buf, "virtio-scsi-s390");
@@ -2670,12 +2629,9 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                 virBufferAddLit(&buf, "virtio-scsi-device");
             } else {
                 virBufferAddLit(&buf, "virtio-scsi-pci");
-                if (def->iothread) {
-                    if (!qemuCheckSCSIControllerIOThreads(domainDef, def))
-                        goto error;
+                if (def->iothread)
                     virBufferAsprintf(&buf, ",iothread=iothread%u",
                                       def->iothread);
-                }
             }
             if (qemuBuildVirtioOptionsStr(&buf, def->virtio, qemuCaps) < 0)
                 goto error;
