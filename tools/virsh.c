@@ -251,8 +251,10 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
         if (name) {
             VIR_FREE(ctl->connname);
             ctl->connname = vshStrdup(ctl, name);
-            priv->readonly = readonly;
         }
+
+        priv->readonly = readonly;
+
         if (virConnectRegisterCloseCallback(priv->conn, virshCatchDisconnect,
                                             ctl, NULL) < 0)
             vshError(ctl, "%s", _("Unable to register disconnect callback"));
