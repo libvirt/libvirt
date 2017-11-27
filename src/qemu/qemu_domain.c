@@ -4109,6 +4109,48 @@ qemuDomainDeviceDefValidateControllerSCSI(const virDomainControllerDef *controll
 
 
 static int
+qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controller,
+                                         const virDomainDef *def)
+{
+    virDomainControllerModelPCI model = controller->model;
+
+    /* skip pcie-root */
+    if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)
+        return 0;
+
+    /* Skip pci-root, except for pSeries guests (which actually
+     * support more than one PCI Host Bridge per guest) */
+    if (!qemuDomainIsPSeries(def) &&
+        controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT)
+        return 0;
+
+    switch (model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+    case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+        if (controller->idx == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("index for pci controllers of model '%s' must be > 0"),
+                           virDomainControllerModelPCITypeToString(model));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidateController(const virDomainControllerDef *controller,
                                       const virDomainDef *def,
                                       virQEMUCapsPtr qemuCaps)
@@ -4135,12 +4177,15 @@ qemuDomainDeviceDefValidateController(const virDomainControllerDef *controller,
         ret = qemuDomainDeviceDefValidateControllerSCSI(controller, def);
         break;
 
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+        ret = qemuDomainDeviceDefValidateControllerPCI(controller, def);
+        break;
+
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
-    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
     case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
         break;
     }
