@@ -1924,10 +1924,13 @@ mymain(void)
     DO_TEST_PARSE_ERROR("pseries-serial-invalid-machine", NONE);
 
     DO_TEST("mach-virt-serial-native",
+            QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("mach-virt-serial+console-native",
+            QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("mach-virt-serial-compat",
+            QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("mach-virt-serial-pci",
             QEMU_CAPS_NODEFCONFIG,
@@ -1945,6 +1948,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_QEMU_XHCI,
             QEMU_CAPS_DEVICE_USB_SERIAL);
     DO_TEST("mach-virt-console-native",
+            QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("mach-virt-console-virtio",
             QEMU_CAPS_NODEFCONFIG);
@@ -2500,11 +2504,13 @@ mymain(void)
     DO_TEST("arm-virt-virtio",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
+            QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
 
     DO_TEST("aarch64-virt-virtio",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
+            QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
 
     /* Demonstrates the virtio-pci default... namely that there isn't any!
@@ -2520,6 +2526,7 @@ mymain(void)
             QEMU_CAPS_PCI_MULTIFUNCTION,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("aarch64-virt-2.6-virtio-pci-default",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
@@ -2528,6 +2535,7 @@ mymain(void)
             QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_PCI_MULTIFUNCTION,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_DEVICE_IOH3420);
     /* Example of using virtio-pci with no explicit PCI controller
        but with manual PCI addresses */
@@ -2646,6 +2654,7 @@ mymain(void)
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST("aarch64-kvm-32-on-64",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
+            QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_KVM, QEMU_CAPS_CPU_AARCH64_OFF);
     DO_TEST_FAILURE("aarch64-kvm-32-on-64",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,

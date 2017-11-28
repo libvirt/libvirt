@@ -9240,6 +9240,7 @@ qemuChrSerialTargetModelToCaps(virDomainChrSerialTargetModel targetModel)
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPLMCONSOLE:
         return QEMU_CAPS_DEVICE_SCLPLMCONSOLE;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011:
+        return QEMU_CAPS_DEVICE_PL011;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST:
         break;
@@ -9332,6 +9333,17 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
             if (qemuBuildChrDeviceCommandLine(cmd, def, serial, qemuCaps) < 0)
                 return -1;
         } else {
+            virQEMUCapsFlags caps;
+
+            caps = qemuChrSerialTargetModelToCaps(serial->targetModel);
+
+            if (caps && !virQEMUCapsGet(qemuCaps, caps)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("'%s' is not supported in this QEMU binary"),
+                               virDomainChrSerialTargetModelTypeToString(serial->targetModel));
+                return -1;
+            }
+
             virCommandAddArg(cmd, "-serial");
             virCommandAddArgFormat(cmd, "chardev:char%s", serial->info.alias);
         }
