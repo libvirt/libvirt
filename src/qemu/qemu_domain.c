@@ -4110,7 +4110,8 @@ qemuDomainDeviceDefValidateControllerSCSI(const virDomainControllerDef *controll
 
 static int
 qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controller,
-                                         const virDomainDef *def)
+                                         const virDomainDef *def,
+                                         virQEMUCapsPtr qemuCaps)
 {
     virDomainControllerModelPCI model = controller->model;
     const virDomainPCIControllerOpts *pciopts;
@@ -4187,6 +4188,13 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
             return -1;
         }
 
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_BRIDGE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the pci-bridge controller is not supported "
+                             "in this QEMU binary"));
+            return -1;
+        }
+
         break;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
@@ -4204,6 +4212,13 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
             return -1;
         }
 
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PXB)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the pxb controller is not supported in this "
+                             "QEMU binary"));
+            return -1;
+        }
+
         break;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
@@ -4212,6 +4227,13 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
                            _("PCI controller model name '%s' is not valid "
                              "for a dmi-to-pci-bridge"),
                            modelName);
+            return -1;
+        }
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the dmi-to-pci-bridge (i82801b11-bridge) "
+                             "controller is not supported in this QEMU binary"));
             return -1;
         }
 
@@ -4233,6 +4255,22 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
             return -1;
         }
 
+        if ((pciopts->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_IOH3420) &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IOH3420)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the pcie-root-port (ioh3420) controller "
+                             "is not supported in this QEMU binary"));
+            return -1;
+        }
+
+        if ((pciopts->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_ROOT_PORT) &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCIE_ROOT_PORT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the pcie-root-port (pcie-root-port) controller "
+                             "is not supported in this QEMU binary"));
+            return -1;
+        }
+
         break;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
@@ -4241,6 +4279,13 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
                            _("PCI controller model name '%s' is not valid "
                              "for a pcie-switch-upstream-port"),
                            modelName);
+            return -1;
+        }
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_X3130_UPSTREAM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the pcie-switch-upstream-port (x3130-upstream) "
+                             "controller is not supported in this QEMU binary"));
             return -1;
         }
 
@@ -4262,6 +4307,14 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
             return -1;
         }
 
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("The pcie-switch-downstream-port "
+                             "(xio3130-downstream) controller is not "
+                             "supported in this QEMU binary"));
+            return -1;
+        }
+
         break;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
@@ -4277,6 +4330,13 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
                              "for a pcie-expander-bus"),
                             modelName);
              return -1;
+        }
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PXB_PCIE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the pxb-pcie controller is not supported "
+                             "in this QEMU binary"));
+            return -1;
         }
 
         break;
@@ -4298,6 +4358,21 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
                              "for a pci-root"),
                            modelName);
             return 0;
+        }
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the spapr-pci-host-bridge controller is not "
+                             "supported in this QEMU binary"));
+            return -1;
+        }
+
+        if (pciopts->numaNode != -1 &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("the spapr-pci-host-bridge controller doesn't "
+                                 "support numa_node in this QEMU binary"));
+                return -1;
         }
 
         break;
@@ -4339,7 +4414,8 @@ qemuDomainDeviceDefValidateController(const virDomainControllerDef *controller,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
-        ret = qemuDomainDeviceDefValidateControllerPCI(controller, def);
+        ret = qemuDomainDeviceDefValidateControllerPCI(controller, def,
+                                                       qemuCaps);
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:

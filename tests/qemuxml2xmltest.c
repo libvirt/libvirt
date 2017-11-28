@@ -1317,7 +1317,10 @@ mymain(void)
     DO_TEST("intel-iommu-machine",
             QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_IOMMU);
-    DO_TEST("intel-iommu-caching-mode", NONE);
+    DO_TEST("intel-iommu-caching-mode",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420);
     DO_TEST("intel-iommu-eim", NONE);
     DO_TEST("intel-iommu-device-iotlb", NONE);
 

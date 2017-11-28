@@ -2719,23 +2719,11 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 
         switch ((virDomainControllerModelPCI) def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_BRIDGE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("the pci-bridge controller "
-                                 "is not supported in this QEMU binary"));
-                goto error;
-            }
             virBufferAsprintf(&buf, "%s,chassis_nr=%d,id=%s",
                               modelName, pciopts->chassisNr,
                               def->info.alias);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PXB)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("the pxb controller "
-                                 "is not supported in this QEMU binary"));
-                goto error;
-            }
             virBufferAsprintf(&buf, "%s,bus_nr=%d,id=%s",
                               modelName, pciopts->busNr,
                               def->info.alias);
@@ -2744,65 +2732,22 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                                  pciopts->numaNode);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("the dmi-to-pci-bridge (i82801b11-bridge) "
-                                 "controller is not supported in this QEMU binary"));
-                goto error;
-            }
             virBufferAsprintf(&buf, "%s,id=%s", modelName, def->info.alias);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
-            if ((pciopts->modelName ==
-                 VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_IOH3420) &&
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IOH3420)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("the pcie-root-port (ioh3420) "
-                                 "controller is not supported in this QEMU binary"));
-                goto error;
-            }
-            if ((pciopts->modelName ==
-                 VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_ROOT_PORT) &&
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCIE_ROOT_PORT)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("the pcie-root-port (pcie-root-port) "
-                                 "controller is not supported in this QEMU binary"));
-                goto error;
-            }
-
             virBufferAsprintf(&buf, "%s,port=0x%x,chassis=%d,id=%s",
                               modelName, pciopts->port,
                               pciopts->chassis, def->info.alias);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_X3130_UPSTREAM)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("the pcie-switch-upstream-port (x3130-upstream) "
-                                 "controller is not supported in this QEMU binary"));
-                goto error;
-            }
-
             virBufferAsprintf(&buf, "%s,id=%s", modelName, def->info.alias);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("The pcie-switch-downstream-port "
-                                 "(xio3130-downstream) controller "
-                                 "is not supported in this QEMU binary"));
-                goto error;
-            }
             virBufferAsprintf(&buf, "%s,port=0x%x,chassis=%d,id=%s",
                               modelName, pciopts->port,
                               pciopts->chassis, def->info.alias);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PXB_PCIE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("the pxb-pcie controller "
-                                 "is not supported in this QEMU binary"));
-                goto error;
-            }
             virBufferAsprintf(&buf, "%s,bus_nr=%d,id=%s",
                               modelName, pciopts->busNr,
                               def->info.alias);
@@ -2815,25 +2760,12 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             if (pciopts->targetIndex == 0)
                 goto done;
 
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("the spapr-pci-host-bridge controller "
-                                 "is not supported in this QEMU binary"));
-                goto error;
-            }
             virBufferAsprintf(&buf, "%s,index=%d,id=%s",
                               modelName, pciopts->targetIndex,
                               def->info.alias);
 
-            if (pciopts->numaNode != -1) {
-                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("the spapr-pci-host-bridge controller "
-                                     "doesn't support numa_node on this QEMU binary"));
-                    goto error;
-                }
+            if (pciopts->numaNode != -1)
                 virBufferAsprintf(&buf, ",numa_node=%d", pciopts->numaNode);
-            }
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
