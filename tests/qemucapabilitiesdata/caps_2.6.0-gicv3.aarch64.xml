@@ -173,6 +173,7 @@
   <flag name='chardev-reconnect'/>
   <flag name='virtio-gpu.max_outputs'/>
   <flag name='isa-serial'/>
+  <flag name='pl011'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

@@ -184,6 +184,7 @@
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
   <flag name='isa-serial'/>
+  <flag name='pl011'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.10.0)</package>
