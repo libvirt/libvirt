@@ -3709,9 +3709,6 @@
           <attribute name="service"/>
         </optional>
         <optional>
-          <attribute name="wiremode"/>
-        </optional>
-        <optional>
           <attribute name="channel"/>
         </optional>
         <optional>

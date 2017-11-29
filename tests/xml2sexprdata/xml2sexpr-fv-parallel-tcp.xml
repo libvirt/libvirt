@@ -32,7 +32,7 @@
       <target dev='ioemu:hda'/>
     </disk>
     <parallel type='tcp'>
-      <source mode='connect' host='localhost' service='9999' wiremode='raw'/>
+      <source mode='connect' host='localhost' service='9999'/>
       <target port='0'/>
     </parallel>
     <graphics type='vnc' port='5917' keymap='ja'/>
