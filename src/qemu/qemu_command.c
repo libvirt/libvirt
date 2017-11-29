@@ -3175,6 +3175,44 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 }
 
 
+/**
+ * qemuBuildSkipController:
+ * @controller: Controller to check
+ * @def: Domain definition
+ *
+ * Returns true if this controller can be skipped for command line
+ * generation or device validation.
+ */
+static bool
+qemuBuildSkipController(const virDomainControllerDef *controller,
+                        const virDomainDef *def)
+{
+    /* skip pcie-root */
+    if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
+        controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)
+        return true;
+
+    /* Skip pci-root, except for pSeries guests (which actually
+     * support more than one PCI Host Bridge per guest) */
+    if (!qemuDomainIsPSeries(def) &&
+        controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
+        controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT)
+        return true;
+
+    /* first SATA controller on Q35 machines is implicit */
+    if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA &&
+        controller->idx == 0 && qemuDomainIsQ35(def))
+        return true;
+
+    /* first IDE controller is implicit on various machines */
+    if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
+        controller->idx == 0 && qemuDomainHasBuiltinIDE(def))
+        return true;
+
+    return false;
+}
+
+
 static int
 qemuBuildControllerDevCommandLine(virCommandPtr cmd,
                                   const virDomainDef *def,
@@ -3217,36 +3255,15 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
             if (cont->type != contOrder[j])
                 continue;
 
+            if (qemuBuildSkipController(cont, def))
+                continue;
+
             /* skip USB controllers with type none.*/
             if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                 cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE) {
                 usbcontroller = -1; /* mark we don't want a controller */
                 continue;
             }
-
-            /* skip pcie-root */
-            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
-                cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
-                continue;
-            }
-
-            /* Skip pci-root, except for pSeries guests (which actually
-             * support more than one PCI Host Bridge per guest) */
-            if (!qemuDomainIsPSeries(def) &&
-                cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
-                cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
-                continue;
-            }
-
-            /* first SATA controller on Q35 machines is implicit */
-            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA &&
-                cont->idx == 0 && qemuDomainIsQ35(def))
-                    continue;
-
-            /* first IDE controller is implicit on various machines */
-            if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
-                cont->idx == 0 && qemuDomainHasBuiltinIDE(def))
-                    continue;
 
             if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                 cont->model == -1 &&
