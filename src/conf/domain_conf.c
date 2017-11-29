@@ -29362,3 +29362,25 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
     virStoragePoolDefFree(pooldef);
     return ret;
 }
+
+
+/**
+ * virDomainDiskGetDetectZeroesMode:
+ * @discard: disk/image sector discard setting
+ * @detect_zeroes: disk/image zero sector detection mode
+ *
+ * As a convenience syntax, if discards are ignored and zero detection is set
+ * to 'unmap', then simply behave like zero detection is set to 'on'.  But
+ * don't change it in the XML for easier adjustments.  This behaviour is
+ * documented.
+ */
+int
+virDomainDiskGetDetectZeroesMode(virDomainDiskDiscard discard,
+                                 virDomainDiskDetectZeroes detect_zeroes)
+{
+    if (discard != VIR_DOMAIN_DISK_DISCARD_UNMAP &&
+        detect_zeroes == VIR_DOMAIN_DISK_DETECT_ZEROES_UNMAP)
+        return VIR_DOMAIN_DISK_DETECT_ZEROES_ON;
+
+    return detect_zeroes;
+}
