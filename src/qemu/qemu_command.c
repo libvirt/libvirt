@@ -2662,10 +2662,6 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 
     *devstr = NULL;
 
-    if (!qemuDomainCheckCCWS390AddressSupport(domainDef, def->info, qemuCaps,
-                                              "controller"))
-        return -1;
-
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
         if ((qemuDomainSetSCSIControllerModel(domainDef, qemuCaps, &model)) < 0)
             return -1;
