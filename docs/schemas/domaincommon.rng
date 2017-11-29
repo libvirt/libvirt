@@ -1169,7 +1169,7 @@
       <optional>
         <element name="bootloader">
           <choice>
-            <ref name="absFilePath"/>
+            <text/>
             <empty/>
           </choice>
         </element>
@@ -2764,6 +2764,7 @@
                 <choice>
                   <value>kvm</value>
                   <value>vfio</value>
+                  <value>xen</value>
                 </choice>
               </attribute>
             </group>
