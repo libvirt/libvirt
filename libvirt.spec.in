@@ -1300,6 +1300,8 @@ exit 1
 
 # place macros above and build commands below this comment
 
+export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
+
 %if 0%{?enable_autotools}
  autoreconf -if
 %endif
@@ -1371,6 +1373,8 @@ gzip -9 ChangeLog
 
 %install
 rm -fr %{buildroot}
+
+export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 
 # Avoid using makeinstall macro as it changes prefixes rather than setting
 # DESTDIR. Newer make_install macro would be better but it's not available
