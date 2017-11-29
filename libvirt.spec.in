@@ -1366,7 +1366,7 @@ rm -f po/stamp-po
            %{?enable_werror} \
            --enable-expensive-tests \
            %{arg_init_script}
-make %{?_smp_mflags}
+make %{?_smp_mflags} V=1
 gzip -9 ChangeLog
 
 %install
@@ -1375,9 +1375,9 @@ rm -fr %{buildroot}
 # Avoid using makeinstall macro as it changes prefixes rather than setting
 # DESTDIR. Newer make_install macro would be better but it's not available
 # on RHEL 5, thus we need to expand it here.
-make %{?_smp_mflags} install DESTDIR=%{?buildroot} SYSTEMD_UNIT_DIR=%{_unitdir}
+make %{?_smp_mflags} install DESTDIR=%{?buildroot} SYSTEMD_UNIT_DIR=%{_unitdir} V=1
 
-make %{?_smp_mflags} -C examples distclean
+make %{?_smp_mflags} -C examples distclean V=1
 
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
