@@ -384,11 +384,6 @@ testUpdateQEMUCaps(const struct testInfo *info,
 
     virQEMUCapsInitQMPBasicArch(info->qemuCaps);
 
-    /* We need to pretend QEMU 2.0.0 is in use so that pSeries guests
-     * will get the correct alias assigned to their buses.
-     * See virQEMUCapsHasPCIMultiBus() */
-    virQEMUCapsSetVersion(info->qemuCaps, 2000000);
-
     if (testAddCPUModels(info->qemuCaps, info->skipLegacyCPUs) < 0)
         goto cleanup;
 

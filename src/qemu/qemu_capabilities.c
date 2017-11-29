@@ -2436,6 +2436,14 @@ bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
          *     ppce500: 1.6.0
          */
 
+        /* We do not store the qemu version in domain status XML.
+         * Hope the user is using a QEMU new enough to use 'pci.0',
+         * otherwise the results of this function will be wrong
+         * for domains already running at the time of daemon
+         * restart */
+        if (qemuCaps->version == 0)
+            return true;
+
         if (qemuCaps->version >= 2000000)
             return true;
 
@@ -2484,14 +2492,6 @@ virQEMUCapsSetArch(virQEMUCapsPtr qemuCaps,
 virArch virQEMUCapsGetArch(virQEMUCapsPtr qemuCaps)
 {
     return qemuCaps->arch;
-}
-
-
-void
-virQEMUCapsSetVersion(virQEMUCapsPtr qemuCaps,
-                      unsigned int version)
-{
-    qemuCaps->version = version;
 }
 
 
