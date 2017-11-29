@@ -4387,6 +4387,24 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
 
 
 static int
+qemuDomainDeviceDefValidateControllerSATA(const virDomainControllerDef *controller,
+                                          const virDomainDef *def,
+                                          virQEMUCapsPtr qemuCaps)
+{
+    /* first SATA controller on Q35 machines is implicit */
+    if (controller->idx == 0 && qemuDomainIsQ35(def))
+        return 0;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_AHCI)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("SATA is not supported with this QEMU binary"));
+        return -1;
+    }
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidateController(const virDomainControllerDef *controller,
                                       const virDomainDef *def,
                                       virQEMUCapsPtr qemuCaps)
@@ -4418,8 +4436,12 @@ qemuDomainDeviceDefValidateController(const virDomainControllerDef *controller,
                                                        qemuCaps);
         break;
 
-    case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+        ret = qemuDomainDeviceDefValidateControllerSATA(controller, def,
+                                                        qemuCaps);
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:

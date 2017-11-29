@@ -2693,12 +2693,6 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_AHCI)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("SATA is not supported with this "
-                             "QEMU binary"));
-            goto error;
-        }
         virBufferAsprintf(&buf, "ahci,id=%s", def->info.alias);
         break;
 
