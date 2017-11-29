@@ -2416,7 +2416,7 @@ bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
 {
     /* x86_64 and i686 support PCI-multibus on all machine types
      * since forever */
-    if (ARCH_IS_X86(qemuCaps->arch))
+    if (ARCH_IS_X86(def->os.arch))
         return true;
 
     if (def->os.arch == VIR_ARCH_PPC ||
