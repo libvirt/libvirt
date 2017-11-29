@@ -6660,6 +6660,13 @@ virDomainDeviceAddressParseXML(xmlNodePtr address,
 #define USER_ALIAS_CHARS \
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"
 
+bool
+virDomainDeviceAliasIsUserAlias(const char *aliasStr)
+{
+    return STRPREFIX(aliasStr, USER_ALIAS_PREFIX);
+}
+
+
 /* Parse the XML definition for a device address
  * @param node XML nodeset to parse for device address definition
  */
@@ -6713,7 +6720,7 @@ virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
 
         if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) ||
             (xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_USER_ALIAS &&
-             STRPREFIX(aliasStr, USER_ALIAS_PREFIX) &&
+             virDomainDeviceAliasIsUserAlias(aliasStr) &&
              strspn(aliasStr, USER_ALIAS_CHARS) == strlen(aliasStr)))
             VIR_STEAL_PTR(info->alias, aliasStr);
     }

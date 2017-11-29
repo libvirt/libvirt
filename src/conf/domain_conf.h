@@ -2679,6 +2679,8 @@ int virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
                                            virDomainDeviceDefPtr dev,
                                            unsigned int flags);
 
+bool virDomainDeviceAliasIsUserAlias(const char *aliasStr);
+
 int virDomainDefValidate(virDomainDefPtr def,
                          virCapsPtr caps,
                          unsigned int parseFlags,
