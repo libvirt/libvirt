@@ -25166,6 +25166,18 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
             break;
 
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
+            /* If socket is auto-generated based on config option we don't
+             * add any listen element into migratable XML because the original
+             * listen type is "address".
+             * We need to set autoport to make sure that libvirt on destination
+             * will parse it as listen type "address", without autoport it is
+             * parsed as listen type "none". */
+            if ((flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE) &&
+                glisten->fromConfig) {
+                virBufferAddStr(buf, " autoport='yes'");
+            }
+            break;
+
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
             break;
         }
