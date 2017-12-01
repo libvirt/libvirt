@@ -8500,6 +8500,8 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
     ret = 0;
 
  cleanup:
+    VIR_FREE(tlsCfg);
+    VIR_FREE(haveTLS);
     VIR_FREE(protocol);
     return ret;
 }
