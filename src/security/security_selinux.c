@@ -3095,4 +3095,7 @@ virSecurityDriver virSecurityDriverSELinux = {
     .getBaseLabel                       = virSecuritySELinuxGetBaseLabel,
 
     .domainSetPathLabel                 = virSecuritySELinuxDomainSetPathLabel,
+
+    .domainSetSecurityChardevLabel      = virSecuritySELinuxSetChardevLabel,
+    .domainRestoreSecurityChardevLabel  = virSecuritySELinuxRestoreChardevLabel,
 };

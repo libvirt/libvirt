@@ -719,6 +719,46 @@ virSecurityStackDomainSetPathLabel(virSecurityManagerPtr mgr,
     return rc;
 }
 
+static int
+virSecurityStackDomainSetChardevLabel(virSecurityManagerPtr mgr,
+                                      virDomainDefPtr def,
+                                      virDomainChrSourceDefPtr dev_source,
+                                      bool chardevStdioLogd)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerSetChardevLabel(item->securityManager,
+                                              def, dev_source,
+                                              chardevStdioLogd) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
+static int
+virSecurityStackDomainRestoreChardevLabel(virSecurityManagerPtr mgr,
+                                          virDomainDefPtr def,
+                                          virDomainChrSourceDefPtr dev_source,
+                                          bool chardevStdioLogd)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerRestoreChardevLabel(item->securityManager,
+                                                  def, dev_source,
+                                                  chardevStdioLogd) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
 virSecurityDriver virSecurityDriverStack = {
     .privateDataLen                     = sizeof(virSecurityStackData),
     .name                               = "stack",
@@ -778,4 +818,7 @@ virSecurityDriver virSecurityDriverStack = {
     .getBaseLabel                       = virSecurityStackGetBaseLabel,
 
     .domainSetPathLabel                 = virSecurityStackDomainSetPathLabel,
+
+    .domainSetSecurityChardevLabel      = virSecurityStackDomainSetChardevLabel,
+    .domainRestoreSecurityChardevLabel  = virSecurityStackDomainRestoreChardevLabel,
 };

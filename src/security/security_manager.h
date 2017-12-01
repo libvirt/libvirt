@@ -184,4 +184,14 @@ int virSecurityManagerDomainSetPathLabel(virSecurityManagerPtr mgr,
                                          virDomainDefPtr vm,
                                          const char *path);
 
+int virSecurityManagerSetChardevLabel(virSecurityManagerPtr mgr,
+                                      virDomainDefPtr def,
+                                      virDomainChrSourceDefPtr dev_source,
+                                      bool chardevStdioLogd);
+
+int virSecurityManagerRestoreChardevLabel(virSecurityManagerPtr mgr,
+                                          virDomainDefPtr def,
+                                          virDomainChrSourceDefPtr dev_source,
+                                          bool chardevStdioLogd);
+
 #endif /* VIR_SECURITY_MANAGER_H__ */

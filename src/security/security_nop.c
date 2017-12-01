@@ -262,6 +262,23 @@ virSecurityDomainInputLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+virSecurityDomainSetChardevLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                    virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                    virDomainChrSourceDefPtr dev_source ATTRIBUTE_UNUSED,
+                                    bool chardevStdioLogd ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
+virSecurityDomainRestoreChardevLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                        virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                        virDomainChrSourceDefPtr dev_source ATTRIBUTE_UNUSED,
+                                        bool chardevStdioLogd ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
 
 virSecurityDriver virSecurityDriverNop = {
     .privateDataLen                     = 0,
@@ -314,4 +331,7 @@ virSecurityDriver virSecurityDriverNop = {
     .domainGetSecurityMountOptions      = virSecurityDomainGetMountOptionsNop,
 
     .getBaseLabel                       = virSecurityGetBaseLabel,
+
+    .domainSetSecurityChardevLabel      = virSecurityDomainSetChardevLabelNop,
+    .domainRestoreSecurityChardevLabel  = virSecurityDomainRestoreChardevLabelNop,
 };

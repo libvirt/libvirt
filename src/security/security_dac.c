@@ -2155,4 +2155,7 @@ virSecurityDriver virSecurityDriverDAC = {
     .getBaseLabel                       = virSecurityDACGetBaseLabel,
 
     .domainSetPathLabel                 = virSecurityDACDomainSetPathLabel,
+
+    .domainSetSecurityChardevLabel      = virSecurityDACSetChardevLabel,
+    .domainRestoreSecurityChardevLabel  = virSecurityDACRestoreChardevLabel,
 };
