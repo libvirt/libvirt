@@ -1815,6 +1815,7 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
     bool chardevAttached = false;
     bool teardowncgroup = false;
     bool teardowndevice = false;
+    bool teardownlabel = false;
     char *tlsAlias = NULL;
     char *secAlias = NULL;
     bool need_release = false;
@@ -1834,6 +1835,10 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
     if (qemuDomainNamespaceSetupChardev(driver, vm, chr) < 0)
         goto cleanup;
     teardowndevice = true;
+
+    if (qemuSecuritySetChardevLabel(driver, vm, chr) < 0)
+        goto cleanup;
+    teardownlabel = true;
 
     if (qemuSetupChardevCgroup(vm, chr) < 0)
         goto cleanup;
@@ -1877,6 +1882,8 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
             qemuDomainReleaseDeviceAddress(vm, &chr->info, NULL);
         if (teardowncgroup && qemuTeardownChardevCgroup(vm, chr) < 0)
             VIR_WARN("Unable to remove chr device cgroup ACL on hotplug fail");
+        if (teardownlabel && qemuSecurityRestoreChardevLabel(driver, vm, chr) < 0)
+            VIR_WARN("Unable to restore security label on char device");
         if (teardowndevice && qemuDomainNamespaceTeardownChardev(driver, vm, chr) < 0)
             VIR_WARN("Unable to remove chr device from /dev");
     }
@@ -4153,6 +4160,9 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
 
     if (qemuTeardownChardevCgroup(vm, chr) < 0)
         VIR_WARN("Failed to remove chr device cgroup ACL");
+
+    if (qemuSecurityRestoreChardevLabel(driver, vm, chr) < 0)
+        VIR_WARN("Unable to restore security label on char device");
 
     if (qemuDomainNamespaceTeardownChardev(driver, vm, chr) < 0)
         VIR_WARN("Unable to remove chr device from /dev");

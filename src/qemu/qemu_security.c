@@ -364,3 +364,63 @@ qemuSecurityRestoreInputLabel(virDomainObjPtr vm,
     virSecurityManagerTransactionAbort(driver->securityManager);
     return ret;
 }
+
+
+int
+qemuSecuritySetChardevLabel(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainChrDefPtr chr)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
+        virSecurityManagerTransactionStart(driver->securityManager) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerSetChardevLabel(driver->securityManager,
+                                          vm->def,
+                                          chr->source,
+                                          priv->chardevStdioLogd) < 0)
+        goto cleanup;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
+        virSecurityManagerTransactionCommit(driver->securityManager,
+                                            vm->pid) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virSecurityManagerTransactionAbort(driver->securityManager);
+    return ret;
+}
+
+
+int
+qemuSecurityRestoreChardevLabel(virQEMUDriverPtr driver,
+                                virDomainObjPtr vm,
+                                virDomainChrDefPtr chr)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
+        virSecurityManagerTransactionStart(driver->securityManager) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerRestoreChardevLabel(driver->securityManager,
+                                              vm->def,
+                                              chr->source,
+                                              priv->chardevStdioLogd) < 0)
+        goto cleanup;
+
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
+        virSecurityManagerTransactionCommit(driver->securityManager,
+                                            vm->pid) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virSecurityManagerTransactionAbort(driver->securityManager);
+    return ret;
+}
