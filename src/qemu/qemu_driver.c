@@ -904,6 +904,7 @@ qemuStateInitialize(bool privileged,
         virFileUpdatePerm(memoryBackingPath,
                           0, S_IXGRP | S_IXOTH) < 0)
         goto error;
+    VIR_FREE(memoryBackingPath);
 
     if (!(qemu_driver->closeCallbacks = virCloseCallbacksNew()))
         goto error;
