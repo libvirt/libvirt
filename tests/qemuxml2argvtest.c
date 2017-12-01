@@ -437,7 +437,7 @@ testCompareXMLToArgv(const void *data)
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
         goto cleanup;
 
-    if (virAsprintf(&xml, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
+    if (virAsprintf(&xml, "%s/qemuxml2argvdata/%s.xml",
                     abs_srcdir, info->name) < 0 ||
         virAsprintf(&args, "%s/qemuxml2argvdata/qemuxml2argv-%s.args",
                     abs_srcdir, info->name) < 0)

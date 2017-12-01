@@ -306,7 +306,7 @@ testInfoSet(struct testInfo *info,
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
         goto error;
 
-    if (virAsprintf(&info->inName, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
+    if (virAsprintf(&info->inName, "%s/qemuxml2argvdata/%s.xml",
                     abs_srcdir, name) < 0)
         goto error;
 
