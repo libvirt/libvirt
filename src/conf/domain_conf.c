@@ -8682,6 +8682,7 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     virStorageSourceFree(backingStore);
     VIR_FREE(type);
     VIR_FREE(format);
+    VIR_FREE(idx);
     ctxt->node = save_ctxt;
     return ret;
 }
