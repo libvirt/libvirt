@@ -2695,7 +2695,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         }
     }
 
-    switch (def->type) {
+    switch ((virDomainControllerType) def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         switch (model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
@@ -3140,7 +3140,8 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                              "this QEMU binary or machine type"));
         goto error;
 
-    default:
+    case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
+    case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported controller type: %s"),
                        virDomainControllerTypeToString(def->type));
