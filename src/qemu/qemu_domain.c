@@ -9999,13 +9999,13 @@ qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver,
     char **devMountsPath = NULL;
     size_t ndevMountsPath = 0;
     int ret = -1;
-    char **path = NULL;
+    char **paths = NULL;
     size_t i, npaths = 0;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (qemuDomainGetHostdevPath(NULL, hostdev, false, &npaths, &path, NULL) < 0)
+    if (qemuDomainGetHostdevPath(NULL, hostdev, false, &npaths, &paths, NULL) < 0)
         goto cleanup;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -10017,7 +10017,7 @@ qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver,
     for (i = 0; i < npaths; i++) {
         if (qemuDomainAttachDeviceMknod(driver,
                                         vm,
-                                        path[i],
+                                        paths[i],
                                         devMountsPath, ndevMountsPath) < 0)
         goto cleanup;
     }
@@ -10025,8 +10025,8 @@ qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver,
     ret = 0;
  cleanup:
     for (i = 0; i < npaths; i++)
-        VIR_FREE(path[i]);
-    VIR_FREE(path);
+        VIR_FREE(paths[i]);
+    VIR_FREE(paths);
     virStringListFreeCount(devMountsPath, ndevMountsPath);
     virObjectUnref(cfg);
     return ret;
