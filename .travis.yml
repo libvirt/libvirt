@@ -88,7 +88,7 @@ env:
     - VIR_TEST_DEBUG=1
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew install gnutls libgcrypt yajl gettext rpcgen; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew upgrade && brew install gnutls libgcrypt yajl gettext rpcgen; fi
 
 before_script:
   - ./autogen.sh
