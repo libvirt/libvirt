@@ -1037,8 +1037,10 @@ sc_prohibit_http_urls:
 	halt='Links must use https:// protocol' \
 	  $(_sc_search_regexp)
 
+# Alignment is usually achieved through spaces (at least two of them)
+# or tabs (at least one of them) right before the trailing backslash
 sc_prohibit_backslash_alignment:
-	@prohibit='([[:blank:]][[:blank:]]|	)\\$$' \
+	@prohibit='(  |	)\\$$' \
 	in_vc_files='*\.([chx]|am|mk)$$' \
 	halt='Do not attempt to right-align backslashes' \
 	  $(_sc_search_regexp)
