@@ -33,7 +33,7 @@
      -->
 
 <libvirt>
-  <release version="v3.10.0" date="unreleased">
+  <release version="v3.10.0" date="2017-12-04">
     <section title="New features">
       <change>
         <summary>
