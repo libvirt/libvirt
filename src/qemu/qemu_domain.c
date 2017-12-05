@@ -7399,6 +7399,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virStorageSourcePtr src = disk->src;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
     uid_t uid;
     gid_t gid;
@@ -7465,6 +7466,10 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                                   uid, gid,
                                   cfg->allowDiskFormatProbing,
                                   report_broken) < 0)
+        goto cleanup;
+
+    /* fill in data for the rest of the chain */
+    if (qemuDomainPrepareDiskSourceChain(disk, src, cfg, priv->qemuCaps) < 0)
         goto cleanup;
 
     ret = 0;
@@ -11803,6 +11808,41 @@ qemuDomainCheckMigrationCapabilities(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuDomainPrepareDiskSourceChain:
+ *
+ * @disk: Disk config object
+ * @src: source to start from
+ * @cfg: qemu driver config object
+ *
+ * Prepares various aspects of the disk source and it's backing chain. This
+ * function should be also called for detected backing chains. If @src is NULL
+ * the root source is used.
+ */
+int
+qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
+                                 virStorageSourcePtr src,
+                                 virQEMUDriverConfigPtr cfg,
+                                 virQEMUCapsPtr qemuCaps)
+{
+    virStorageSourcePtr n;
+
+    if (!src)
+        src = disk->src;
+
+    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (n->type == VIR_STORAGE_TYPE_NETWORK &&
+            n->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_GLUSTER_DEBUG_LEVEL)) {
+            n->debug = true;
+            n->debugLevel = cfg->glusterDebugLevel;
+        }
+    }
+
+    return 0;
+}
+
+
 int
 qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
                             qemuDomainObjPrivatePtr priv,
@@ -11814,12 +11854,8 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
     if (qemuDomainSecretDiskPrepare(priv, disk) < 0)
         return -1;
 
-    if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
-        disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_GLUSTER_DEBUG_LEVEL)) {
-        disk->src->debug = true;
-        disk->src->debugLevel = cfg->glusterDebugLevel;
-    }
+    if (qemuDomainPrepareDiskSourceChain(disk, NULL, cfg, priv->qemuCaps) < 0)
+        return -1;
 
     return 0;
 }

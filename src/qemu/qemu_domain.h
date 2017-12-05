@@ -991,6 +991,12 @@ int
 qemuDomainCheckMigrationCapabilities(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      qemuDomainAsyncJob asyncJob);
+int
+qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
+                                 virStorageSourcePtr src,
+                                 virQEMUDriverConfigPtr cfg,
+                                 virQEMUCapsPtr qemuCaps)
+    ATTRIBUTE_RETURN_CHECK;
 
 int
 qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
