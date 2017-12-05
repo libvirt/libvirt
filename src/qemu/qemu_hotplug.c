@@ -2286,7 +2286,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
     qemuDomainStorageSourcePrivatePtr srcPriv;
-    qemuDomainSecretInfoPtr secinfo;
+    qemuDomainSecretInfoPtr secinfo = NULL;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -2328,7 +2328,8 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
         goto cleanup;
 
     srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
-    secinfo = srcPriv->secinfo;
+    if (srcPriv)
+        secinfo = srcPriv->secinfo;
     if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
         if (qemuBuildSecretInfoProps(secinfo, &secobjProps) < 0)
             goto cleanup;
