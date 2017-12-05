@@ -189,6 +189,8 @@ nwfilterStateInitialize(bool privileged,
     /* remember that we are going to use firewalld */
     driver->watchingFirewallD = (sysbus != NULL);
     driver->privileged = privileged;
+    if (!(driver->nwfilters = virNWFilterObjListNew()))
+        goto error;
 
     if (!privileged)
         return 0;
@@ -244,9 +246,6 @@ nwfilterStateInitialize(bool privileged,
         goto error;
     }
 
-    if (!(driver->nwfilters = virNWFilterObjListNew()))
-        goto error;
-
     if (virNWFilterObjListLoadAllConfigs(driver->nwfilters, driver->configDir) < 0)
         goto error;
 
@@ -271,6 +270,7 @@ nwfilterStateInitialize(bool privileged,
     virNWFilterIPAddrMapShutdown();
 
  err_free_driverstate:
+    virNWFilterObjListFree(driver->nwfilters);
     VIR_FREE(driver);
 
     return -1;
@@ -349,12 +349,12 @@ nwfilterStateCleanup(void)
 
         nwfilterDriverRemoveDBusMatches();
 
-        /* free inactive nwfilters */
-        virNWFilterObjListFree(driver->nwfilters);
-
         VIR_FREE(driver->configDir);
         nwfilterDriverUnlock();
     }
+
+    /* free inactive nwfilters */
+    virNWFilterObjListFree(driver->nwfilters);
 
     virMutexDestroy(&driver->lock);
     VIR_FREE(driver);
