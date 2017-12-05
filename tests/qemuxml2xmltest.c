@@ -312,7 +312,7 @@ testInfoSet(struct testInfo *info,
 
     if (when & WHEN_INACTIVE) {
         if (virAsprintf(&info->outInactiveName,
-                        "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s-inactive.xml",
+                        "%s/qemuxml2xmloutdata/%s-inactive.xml",
                         abs_srcdir, name) < 0)
             goto error;
 
@@ -320,7 +320,7 @@ testInfoSet(struct testInfo *info,
             VIR_FREE(info->outInactiveName);
 
             if (virAsprintf(&info->outInactiveName,
-                            "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
+                            "%s/qemuxml2xmloutdata/%s.xml",
                             abs_srcdir, name) < 0)
                 goto error;
         }
@@ -328,7 +328,7 @@ testInfoSet(struct testInfo *info,
 
     if (when & WHEN_ACTIVE) {
         if (virAsprintf(&info->outActiveName,
-                        "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s-active.xml",
+                        "%s/qemuxml2xmloutdata/%s-active.xml",
                         abs_srcdir, name) < 0)
             goto error;
 
@@ -336,7 +336,7 @@ testInfoSet(struct testInfo *info,
             VIR_FREE(info->outActiveName);
 
             if (virAsprintf(&info->outActiveName,
-                            "%s/qemuxml2xmloutdata/qemuxml2xmlout-%s.xml",
+                            "%s/qemuxml2xmloutdata/%s.xml",
                             abs_srcdir, name) < 0)
                 goto error;
         }
