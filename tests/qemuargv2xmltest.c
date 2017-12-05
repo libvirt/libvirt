@@ -130,9 +130,9 @@ testCompareXMLToArgvHelper(const void *data)
     char *xml = NULL;
     char *args = NULL;
 
-    if (virAsprintf(&xml, "%s/qemuargv2xmldata/qemuargv2xml-%s.xml",
+    if (virAsprintf(&xml, "%s/qemuargv2xmldata/%s.xml",
                     abs_srcdir, info->name) < 0 ||
-        virAsprintf(&args, "%s/qemuargv2xmldata/qemuargv2xml-%s.args",
+        virAsprintf(&args, "%s/qemuargv2xmldata/%s.args",
                     abs_srcdir, info->name) < 0)
         goto cleanup;
 
