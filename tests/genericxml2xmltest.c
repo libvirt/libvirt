@@ -32,9 +32,9 @@ testCompareXMLToXMLHelper(const void *data)
     char *xml_out = NULL;
     int ret = -1;
 
-    if (virAsprintf(&xml_in, "%s/genericxml2xmlindata/generic-%s.xml",
+    if (virAsprintf(&xml_in, "%s/genericxml2xmlindata/%s.xml",
                     abs_srcdir, info->name) < 0 ||
-        virAsprintf(&xml_out, "%s/genericxml2xmloutdata/generic-%s.xml",
+        virAsprintf(&xml_out, "%s/genericxml2xmloutdata/%s.xml",
                     abs_srcdir, info->name) < 0)
         goto cleanup;
 
