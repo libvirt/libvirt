@@ -974,6 +974,18 @@ qemuBlockStorageSourceGetSshProps(virStorageSourcePtr src)
 }
 
 
+static virJSONValuePtr
+qemuBlockStorageSourceGetFileProps(virStorageSourcePtr src)
+{
+    virJSONValuePtr ret = NULL;
+
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:driver", "file",
+                                          "s:filename", src->path, NULL) < 0);
+    return ret;
+}
+
+
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
@@ -991,9 +1003,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:
-        if (virJSONValueObjectCreate(&fileprops,
-                                     "s:driver", "file",
-                                     "s:filename", src->path, NULL) < 0)
+        if (!(fileprops = qemuBlockStorageSourceGetFileProps(src)))
             return NULL;
         break;
 
