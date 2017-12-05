@@ -2042,6 +2042,10 @@ virStorageSourceCopy(const virStorageSource *src,
     ret->detected = src->detected;
     ret->debugLevel = src->debugLevel;
     ret->debug = src->debug;
+    ret->iomode = src->iomode;
+    ret->cachemode = src->cachemode;
+    ret->discard = src->discard;
+    ret->detect_zeroes = src->detect_zeroes;
 
     /* storage driver metadata are not copied */
     ret->drv = NULL;
