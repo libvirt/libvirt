@@ -180,7 +180,7 @@ testQemuAgentGetFSInfo(const void *data)
     if (!test)
         return -1;
 
-    if (virAsprintf(&domain_filename, "%s/qemuagentdata/qemuagent-fsinfo.xml",
+    if (virAsprintf(&domain_filename, "%s/qemuagentdata/fsinfo.xml",
                     abs_srcdir) < 0)
         goto cleanup;
 
