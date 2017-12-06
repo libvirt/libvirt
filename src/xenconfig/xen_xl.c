@@ -436,9 +436,11 @@ xenParseXLVnuma(virConfPtr conf,
                             goto cleanup;
                         }
 
+                        VIR_FREE(tmp);
                         if (VIR_STRDUP(tmp, vtoken) < 0)
                             goto cleanup;
 
+                        virStringListFree(token);
                         if (!(token = virStringSplitCount(tmp, ",", 0, &ndistances)))
                             goto cleanup;
 
