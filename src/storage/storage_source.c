@@ -419,19 +419,33 @@ virStorageFileReportBrokenChain(int errcode,
                                 virStorageSourcePtr src,
                                 virStorageSourcePtr parent)
 {
-    unsigned int access_user = src->drv->uid;
-    unsigned int access_group = src->drv->gid;
 
-    if (src == parent) {
-        virReportSystemError(errcode,
-                             _("Cannot access storage file '%s' "
-                               "(as uid:%u, gid:%u)"),
-                             src->path, access_user, access_group);
+    if (src->drv) {
+        unsigned int access_user = src->drv->uid;
+        unsigned int access_group = src->drv->gid;
+
+        if (src == parent) {
+            virReportSystemError(errcode,
+                                 _("Cannot access storage file '%s' "
+                                   "(as uid:%u, gid:%u)"),
+                                 src->path, access_user, access_group);
+        } else {
+            virReportSystemError(errcode,
+                                 _("Cannot access backing file '%s' "
+                                   "of storage file '%s' (as uid:%u, gid:%u)"),
+                                 src->path, parent->path, access_user, access_group);
+        }
     } else {
-        virReportSystemError(errcode,
-                             _("Cannot access backing file '%s' "
-                               "of storage file '%s' (as uid:%u, gid:%u)"),
-                             src->path, parent->path, access_user, access_group);
+        if (src == parent) {
+            virReportSystemError(errcode,
+                                 _("Cannot access storage file '%s'"),
+                                 src->path);
+        } else {
+            virReportSystemError(errcode,
+                                 _("Cannot access backing file '%s' "
+                                   "of storage file '%s'"),
+                                 src->path, parent->path);
+        }
     }
 }
 
