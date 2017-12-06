@@ -169,9 +169,7 @@
 
     <p>
       You can also cross-compile to a Windows target from a Fedora machine
-      using the packages available
-      <a href="http://hg.et.redhat.com/misc/fedora-mingw--devel/">from the Fedora MinGW project</a>
-      (which includes a working libvirt specfile).
+      using the packages available in the Fedora repos.
     </p>
 
     <h3><a id="configure">By hand</a></h3>
