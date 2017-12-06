@@ -159,10 +159,12 @@ fillQemuCaps(virDomainCapsPtr domCaps,
         !(qemuCaps = qemuTestParseCapabilities(caps, path)))
         goto cleanup;
 
-    if (machine &&
-        VIR_STRDUP(domCaps->machine,
-                   virQEMUCapsGetCanonicalMachine(qemuCaps, machine)) < 0)
-        goto cleanup;
+    if (machine) {
+        VIR_FREE(domCaps->machine);
+        if (VIR_STRDUP(domCaps->machine,
+                       virQEMUCapsGetCanonicalMachine(qemuCaps, machine)) < 0)
+            goto cleanup;
+    }
 
     if (!domCaps->machine &&
         VIR_STRDUP(domCaps->machine,
