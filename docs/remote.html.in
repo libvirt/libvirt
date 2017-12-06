@@ -30,7 +30,8 @@ to <code>virConnectOpen</code> (or <code>virsh -c ...</code>).
 For example, if you normally use <code>qemu:///system</code>
 to access the system-wide QEMU daemon, then to access
 the system-wide QEMU daemon on a remote machine called
-<code>oirase</code> you would use <code>qemu://oirase/system</code>.
+<code>compute1.libvirt.org</code> you would use
+<code>qemu://compute1.libvirt.org/system</code>.
 </p>
     <p>
 The <a href="#Remote_URI_reference">section on remote URIs</a>
@@ -412,7 +413,9 @@ next section.
         <td> Server's certificate signed by the CA.
  (<a href="#Remote_TLS_server_certificates">more info</a>) </td>
         <td> CommonName (CN) must be the hostname of the server as it
-  is seen by clients. </td>
+          is seen by clients. All hostname and IP address variants that might
+          be used to reach the server should be listed in Subject Alt Name
+          fields.</td>
       </tr>
       <tr>
         <td>
@@ -564,8 +567,8 @@ X.509 certificate info:
 
 Version: 3
 Serial Number (hex): 00
-Subject: CN=Red Hat Emerging Technologies
-Issuer: CN=Red Hat Emerging Technologies
+Subject: CN=Libvirt Project
+Issuer: CN=Libvirt Project
 Signature Algorithm: RSA-SHA
 Validity:
         Not Before: Mon Jun 18 16:22:18 2007
@@ -582,14 +585,21 @@ for your clients and servers.
     </h3>
     <p>
 For each server (libvirtd) you need to issue a certificate
-with the X.509 CommonName (CN) field set to the hostname
-of the server.  The CN must match the hostname which
-clients will be using to connect to the server.
+containing one or more hostnames and/or IP addresses.
+Historically the CommonName (CN) field would contain the
+hostname of the server and would match the hostname used
+in the URI that clients pass to libvirt. In most TLS implementations
+the CN field is considered legacy data. The preferential mechanism
+is to use Subject Alt Name (SAN) extension fields to validate
+against. In the future use of the CN field for validation may be
+discontinued entirely, so it is strongly recommended to
+include the SAN fields.
 </p>
     <p>
 In the example below, clients will be connecting to the
 server using a <a href="#Remote_URI_reference">URI</a> of
-<code>xen://oirase/</code>, so the CN must be "<code>oirase</code>".
+<code>qemu://compute1.libvirt.org/system</code>, so the CN
+must be "<code>compute1.libvirt.org</code>".
 </p>
     <p>
 Make a private key for the server:
@@ -599,19 +609,36 @@ certtool --generate-privkey &gt; serverkey.pem
 </pre>
     <p>
 and sign that key with the CA's private key by first
-creating a template file called <code>server.info</code>
-(only the CN field matters, which as explained above must
-be the server's hostname):
+creating a template file called <code>server.info</code>.
+The template file will contain a number of fields to define
+the server as follows:
 </p>
     <pre>
 organization = <i>Name of your organization</i>
-cn = oirase
+cn = compute1.libvirt.org
+dns_name = compute1
+dns_name = compute1.libvirt.org
+ip_address = 10.0.0.74
+ip_address = 192.168.1.24
+ip_address = 2001:cafe::74
+ip_address = fe20::24
 tls_www_server
 encryption_key
 signing_key
 </pre>
+<p>
+The 'cn' field should refer to the fully qualified public
+hostname of the server. For the SAN extension data, there
+must also be one or more 'dns_name' fields that contain all
+possible hostnames that can be reasonably used by clients
+to reach the server, both with and without domain name
+qualifiers. If clients are likely to connect to the server
+by IP address, then one or more 'ip_address' fields should
+also be added.
+</p>
     <p>
-and sign:
+Use the template file as input to a <code>certtool</code>
+command to sign the server certificate:
 </p>
     <pre>
 certtool --generate-certificate --load-privkey serverkey.pem \
@@ -635,16 +662,28 @@ X.509 certificate info:
 
 Version: 3
 Serial Number (hex): 00
-Subject: O=Red Hat Emerging Technologies,CN=oirase
-Issuer: CN=Red Hat Emerging Technologies
+Subject: O=Libvirt Project,CN=compute1.libvirt.org
+Issuer: CN=Libvirt Project
 Signature Algorithm: RSA-SHA
 Validity:
-        Not Before: Mon Jun 18 16:34:49 2007
-        Not After: Tue Jun 17 16:34:49 2008
+        Not Before: Wed Oct 04 09:09:44 UTC 2017
+        Not After: Thu Oct 04 09:09:44 UTC 2018
+Extensions:
+        Basic Constraints (critical):
+                Certificate Authority (CA): FALSE
+        Subject Alternative Name (not critical):
+                DNSname: compute1
+                DNSname: compute1.libvirt.org
+                IPAddress: 10.0.0.74
+                IPAddress: 192.168.1.24
+                IPAddress: 2001:cafe::74
+                IPAddress: fe20::24
 </pre>
     <p>
-Note the "Issuer" CN is "Red Hat Emerging Technologies" (the CA) and
-the "Subject" CN is "oirase" (the server).
+Note the "Issuer" CN is "Libvirt Project" (the CA) and
+the "Subject" CN is "compute1.libvirt.org" (the server).
+Notice that the hostname listed in the CN must also
+be duplicated as a DNSname entry
 </p>
     <p>
 Finally we have two files to install:
@@ -665,13 +704,13 @@ which can be installed on the server as
     </h3>
     <p>
 For each client (ie. any program linked with libvirt, such as
-<a href="http://virt-manager.et.redhat.com/">virt-manager</a>)
+<a href="http://virt-manager.org/">virt-manager</a>)
 you need to issue a certificate with the X.509 Distinguished Name (DN)
 set to a suitable name.  You can decide this on a company / organisation
-policy.  For example, I use:
+policy.  For example:
 </p>
     <pre>
-C=GB,ST=London,L=London,O=Red Hat,CN=<i>name_of_client</i>
+C=GB,ST=London,L=London,O=Libvirt Project,CN=<i>name_of_client</i>
 </pre>
     <p>
 The process is the same as for
@@ -692,7 +731,7 @@ Act as CA and sign the certificate.  Create client.info containing:
 country = GB
 state = London
 locality = London
-organization = Red Hat
+organization = Libvirt Project
 cn = client1
 tls_www_client
 encryption_key
@@ -884,7 +923,7 @@ Blank lines and comments beginning with <code>#</code> are ignored.
   The default is that DNs are not checked.
   </p>
           <p>
-  This list may contain wildcards such as <code>"C=GB,ST=London,L=London,O=Red Hat,CN=*"</code>
+  This list may contain wildcards such as <code>"C=GB,ST=London,L=London,O=Libvirt Project,CN=*"</code>
   See the POSIX <code>fnmatch</code> function for the format
   of the wildcards.
   </p>
