@@ -19,58 +19,37 @@
           </element>
           <element name="rule">
             <ref name="rule-node-attributes"/>
-            <optional>
-              <zeroOrMore>
+            <choice>
                 <element name="mac">
                   <ref name="match-attribute"/>
                   <ref name="common-l2-attributes"/>
                   <ref name="mac-attributes"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="vlan">
                   <ref name="match-attribute"/>
                   <ref name="common-l2-attributes"/>
                   <ref name="vlan-attributes"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="stp">
                   <ref name="match-attribute"/>
                   <ref name="srcmacandmask-attributes"/>
                   <ref name="stp-attributes"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="arp">
                   <ref name="match-attribute"/>
                   <ref name="common-l2-attributes"/>
                   <ref name="arp-attributes"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="rarp">
                   <ref name="match-attribute"/>
                   <ref name="common-l2-attributes"/>
                   <ref name="arp-attributes"/> <!-- same as arp -->
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="ip">
                   <ref name="match-attribute"/>
                   <ref name="common-l2-attributes"/>
@@ -80,10 +59,6 @@
                   <ref name="dscp-attribute"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="ipv6">
                   <ref name="match-attribute"/>
                   <ref name="common-l2-attributes"/>
@@ -93,10 +68,6 @@
                   <ref name="icmp-attribute-ranges"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="tcp">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -106,10 +77,6 @@
                   <ref name="tcp-attributes"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="udp">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -118,10 +85,6 @@
                   <ref name="common-ip-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="sctp">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -130,10 +93,6 @@
                   <ref name="common-ip-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="icmp">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -142,10 +101,6 @@
                   <ref name="icmp-attributes"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="igmp">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -153,10 +108,6 @@
                   <ref name="common-ip-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="all">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -164,10 +115,6 @@
                   <ref name="common-ip-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="esp">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -175,10 +122,6 @@
                   <ref name="common-ip-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="ah">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -186,10 +129,6 @@
                   <ref name="common-ip-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="udplite">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -197,10 +136,6 @@
                   <ref name="common-ip-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="tcp-ipv6">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -210,10 +145,6 @@
                   <ref name="tcp-attributes"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="udp-ipv6">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -222,10 +153,6 @@
                   <ref name="common-ipv6-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="sctp-ipv6">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -234,10 +161,6 @@
                   <ref name="common-ipv6-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="icmpv6">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -246,10 +169,6 @@
                   <ref name="icmp-attributes"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="all-ipv6">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -257,10 +176,6 @@
                   <ref name="common-ipv6-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="esp-ipv6">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -268,10 +183,6 @@
                   <ref name="common-ipv6-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="ah-ipv6">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -279,10 +190,6 @@
                   <ref name="common-ipv6-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
-            <optional>
-              <zeroOrMore>
                 <element name="udplite-ipv6">
                   <ref name="match-attribute"/>
                   <ref name="srcmac-attribute"/>
@@ -290,8 +197,7 @@
                   <ref name="common-ipv6-attributes-p2"/>
                   <ref name="comment-attribute"/>
                 </element>
-              </zeroOrMore>
-            </optional>
+            </choice>
           </element>
         </choice>
       </zeroOrMore>
