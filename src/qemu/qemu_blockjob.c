@@ -175,6 +175,7 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
         disk->mirror = NULL;
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
+        disk->src->id = 0;
         ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk,
                                                   true, true));
         ignore_value(qemuBlockNodeNamesDetect(driver, vm, asyncJob));
