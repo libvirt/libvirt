@@ -2956,30 +2956,19 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
 }
 
 
-int
-virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
-                                  qemuMonitorPtr mon,
-                                  bool tcg)
+virDomainCapsCPUModelsPtr
+virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon)
 {
-    virDomainCapsCPUModelsPtr models;
-    qemuMonitorCPUDefInfoPtr *cpus;
-    int ncpus;
-    int ret = -1;
+    virDomainCapsCPUModelsPtr models = NULL;
+    qemuMonitorCPUDefInfoPtr *cpus = NULL;
+    int ncpus = 0;
     size_t i;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_DEFINITIONS))
-        return 0;
-
     if ((ncpus = qemuMonitorGetCPUDefinitions(mon, &cpus)) < 0)
-        return -1;
+        goto error;
 
     if (!(models = virDomainCapsCPUModelsNew(ncpus)))
-        goto cleanup;
-
-    if (tcg || !virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-        qemuCaps->tcgCPUModels = models;
-    else
-        qemuCaps->kvmCPUModels = models;
+        goto error;
 
     for (i = 0; i < ncpus; i++) {
         virDomainCapsCPUUsable usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
@@ -2991,17 +2980,43 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
 
         if (virDomainCapsCPUModelsAddSteal(models, &cpus[i]->name, usable,
                                            &cpus[i]->blockers) < 0)
-            goto cleanup;
+            goto error;
     }
-
-    ret = 0;
 
  cleanup:
     for (i = 0; i < ncpus; i++)
         qemuMonitorCPUDefInfoFree(cpus[i]);
     VIR_FREE(cpus);
-    return ret;
+    return models;
+
+ error:
+    virObjectUnref(models);
+    models = NULL;
+    goto cleanup;
 }
+
+
+int
+virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
+                                  qemuMonitorPtr mon,
+                                  bool tcg)
+{
+    virDomainCapsCPUModelsPtr models = NULL;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_DEFINITIONS))
+        return 0;
+
+    if (!(models = virQEMUCapsFetchCPUDefinitions(mon)))
+        return -1;
+
+    if (tcg || !virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
+        qemuCaps->tcgCPUModels = models;
+    else
+        qemuCaps->kvmCPUModels = models;
+
+    return 0;
+}
+
 
 static int
 virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
