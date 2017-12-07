@@ -49,6 +49,7 @@
 #include "virstoragefile.h"
 #include "secret_util.h"
 #include "cpu/cpu.h"
+#include "xen_common.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
@@ -1144,7 +1145,7 @@ libxlMakeNic(virDomainDefPtr def,
             if (VIR_STRDUP(x_nic->script, l_nic->script) < 0)
                 goto cleanup;
             if (l_nic->guestIP.nips > 0) {
-                x_nic->ip = virSocketAddrFormat(&l_nic->guestIP.ips[0]->address);
+                x_nic->ip = xenMakeIPList(&l_nic->guestIP);
                 if (!x_nic->ip)
                     goto cleanup;
             }
@@ -1160,7 +1161,7 @@ libxlMakeNic(virDomainDefPtr def,
             }
 
             if (l_nic->guestIP.nips > 0) {
-                x_nic->ip = virSocketAddrFormat(&l_nic->guestIP.ips[0]->address);
+                x_nic->ip = xenMakeIPList(&l_nic->guestIP);
                 if (!x_nic->ip)
                     goto cleanup;
             }

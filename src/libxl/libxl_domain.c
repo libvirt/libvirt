@@ -294,18 +294,6 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         def->os.type != VIR_DOMAIN_OSTYPE_HVM)
         dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_NET &&
-            (dev->data.net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-             dev->data.net->type == VIR_DOMAIN_NET_TYPE_ETHERNET ||
-             dev->data.net->type == VIR_DOMAIN_NET_TYPE_NETWORK)) {
-        if (dev->data.net->guestIP.nips > 1) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                    _("multiple IP addresses not supported on device type %s"),
-                    virDomainNetTypeToString(dev->data.net->type));
-            return -1;
-        }
-    }
-
     if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV ||
         (dev->type == VIR_DOMAIN_DEVICE_NET &&
          dev->data.net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV)) {

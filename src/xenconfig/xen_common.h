@@ -67,6 +67,7 @@ int xenFormatConfigCommon(virConfPtr conf,
                           virConnectPtr conn,
                           const char *nativeFormat);
 
+char *xenMakeIPList(virNetDevIPInfoPtr guestIP);
 
 int xenDomainDefAddImplicitInputDevice(virDomainDefPtr def);
 

@@ -1166,6 +1166,30 @@ xenFormatSerial(virConfValuePtr list, virDomainChrDefPtr serial)
     return -1;
 }
 
+char *
+xenMakeIPList(virNetDevIPInfoPtr guestIP)
+{
+    size_t i;
+    char **address_array;
+    char *ret = NULL;
+
+    if (VIR_ALLOC_N(address_array, guestIP->nips + 1) < 0)
+        return NULL;
+
+    for (i = 0; i < guestIP->nips; i++) {
+        address_array[i] = virSocketAddrFormat(&guestIP->ips[i]->address);
+        if (!address_array[i])
+            goto cleanup;
+    }
+    address_array[guestIP->nips] = NULL;
+
+    ret = virStringListJoin((const char**)address_array, " ");
+
+ cleanup:
+    while (i > 0)
+        VIR_FREE(address_array[--i]);
+    return ret;
+}
 
 static int
 xenFormatNet(virConnectPtr conn,
