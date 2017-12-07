@@ -1441,7 +1441,7 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("Client not found: %s");
             break;
-        case VIR_ERR_AGENT_UNSYNCED:
+        case VIR_ERR_AGENT_UNSYNCED: /* DEPRECATED */
             if (info == NULL)
                 errmsg = _("guest agent replied with wrong id to guest-sync command");
             else
