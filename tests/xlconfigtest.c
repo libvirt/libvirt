@@ -298,6 +298,7 @@ mymain(void)
     DO_TEST_FORMAT("fullvirt-direct-kernel-boot-bogus-extra", false);
 #endif
     DO_TEST("vif-typename");
+    DO_TEST("vif-multi-ip");
     DO_TEST("usb");
     DO_TEST("usbctrl");
 
