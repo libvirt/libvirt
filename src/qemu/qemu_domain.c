@@ -10034,7 +10034,7 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
 {
     virStorageSourcePtr next;
     char **paths = NULL;
-    size_t npaths;
+    size_t npaths = 0;
     int ret = -1;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
