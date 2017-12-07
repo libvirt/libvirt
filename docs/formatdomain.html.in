@@ -2584,17 +2584,16 @@
           <dt><code>snapshot</code></dt>
             <dd>
             Indicates the default behavior of the disk during disk snapshots:
-            "internal" requires a file format such as qcow2 that can store
-            both the snapshot and the data changes since the snapshot;
-            "external" will separate the snapshot from the live data; and
-            "no" means the disk will not participate in snapshots. Read-only
-            disks default to "no", while the default for other disks depends
-            on the hypervisor's capabilities.  Some hypervisors allow a
-            per-snapshot choice as well, during
+            "<code>internal</code>" requires a file format such as qcow2 that
+            can store both the snapshot and the data changes since the snapshot;
+            "<code>external</code>" will separate the snapshot from the live
+            data; and "<code>no</code>" means the disk will not participate in
+            snapshots. Read-only disks default to "<code>no</code>", while the
+            default for other disks depends on the hypervisor's capabilities.
+            Some hypervisors allow a per-snapshot choice as well, during
             <a href="formatsnapshot.html">domain snapshot creation</a>.
-            Not all snapshot modes are supported; for example,
-            <code>snapshot='yes'</code> with a transient disk generally
-            does not make sense.
+            Not all snapshot modes are supported; for example, enabling
+            snapshots with a transient disk generally does not make sense.
             <span class="since">Since 0.9.5</span>
             </dd>
         </dl>
