@@ -2598,14 +2598,6 @@ qemuCheckSCSIControllerIOThreads(const virDomainDef *domainDef,
     if (!def->iothread)
         return true;
 
-    if (def->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("IOThreads only supported for virtio-scsi "
-                         "controllers model is '%s'"),
-                       virDomainControllerModelSCSITypeToString(def->model));
-        return false;
-    }
-
     if (def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
         def->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
