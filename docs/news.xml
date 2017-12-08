@@ -37,6 +37,12 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          Xen: Add support for multiple IP addresses on
+          <code>&lt;interface&gt;</code> devices
+        </summary>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
