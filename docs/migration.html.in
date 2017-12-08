@@ -206,14 +206,14 @@
     <h2><a id="config">Configuration file handling</a></h2>
 
     <p>
-      There are two types of virtual machine known to libvirt. A <em>transient</em>
+      There are two types of virtual machines known to libvirt. A <em>transient</em>
       guest only exists while it is running, and has no configuration file stored
       on disk. A <em>persistent</em> guest maintains a configuration file on disk
       even when it is not running.
     </p>
 
     <p>
-      By default, a migration operation will not attempt to change any configuration
+      By default, a migration operation will not attempt to modify any configuration
       files that may be stored on either the source or destination host. It is the
       administrator, or management application's, responsibility to manage distribution
       of configuration files (if desired). It is important to note that the <code>/etc/libvirt</code>
@@ -230,14 +230,14 @@
         host and removed on the original.
       </li>
       <li>Centralized configuration files outside libvirt, in a database. A data center
-        management application may not storage configuration files at all. Instead it
+        management application may not store configuration files at all. Instead it
         may generate libvirt XML on the fly when a guest is booted. It will typically
         use transient guests, and thus not have to consider configuration files during
         migration.
       </li>
       <li>Distributed configuration inside libvirt. The configuration file for each
         guest is copied to every host where the guest is able to run. Upon migration
-        the existing config merely needs to be updated with any changes
+        the existing config merely needs to be updated with any changes.
       </li>
       <li>Ad-hoc configuration management inside libvirt. Each guest is tied to a
         specific host and rarely migrated. When migration is required, the config
@@ -246,7 +246,7 @@
     </ul>
 
     <p>
-      As mentioned above, libvirt will not touch configuration files during
+      As mentioned above, libvirt will not modify configuration files during
       migration by default. The <code>virsh</code> command has two flags to
       influence this behaviour. The  <code>--undefine-source</code> flag
       will cause the configuration file to be removed on the source host
@@ -265,12 +265,12 @@
           <th colspan="3">After migration</th>
         </tr>
         <tr class="subhead">
-          <th>Guest type</th>
+          <th>Source type</th>
           <th>Source config</th>
           <th>Dest config</th>
           <th>--undefine-source</th>
           <th>--persist</th>
-          <th>Guest type</th>
+          <th>Dest type</th>
           <th>Source config</th>
           <th>Dest config</th>
         </tr>
@@ -325,9 +325,9 @@
           <td class="y">Y</td>
           <td class="n">N</td>
           <td class="n">N</td>
-          <td>Transient</td>
+          <td>Persistent</td>
           <td class="n">N</td>
-          <td class="n">N</td>
+          <td class="y">Y<br/>(unchanged dest config)</td>
         </tr>
         <tr>
           <td>Transient</td>
@@ -335,9 +335,9 @@
           <td class="y">Y</td>
           <td class="y">Y</td>
           <td class="n">N</td>
-          <td>Transient</td>
+          <td>Persistent</td>
           <td class="n">N</td>
-          <td class="n">N</td>
+          <td class="y">Y<br/>(unchanged dest config)</td>
         </tr>
         <tr>
           <td>Transient</td>
@@ -347,7 +347,7 @@
           <td class="y">Y</td>
           <td>Persistent</td>
           <td class="n">N</td>
-          <td class="y">Y</td>
+          <td class="y">Y<br/>(replaced with source)</td>
         </tr>
         <tr>
           <td>Transient</td>
@@ -357,7 +357,7 @@
           <td class="y">Y</td>
           <td>Persistent</td>
           <td class="n">N</td>
-          <td class="y">Y</td>
+          <td class="y">Y<br/>(replaced with source)</td>
         </tr>
 
         <!-- src:Y dst:N -->
@@ -411,7 +411,7 @@
           <td class="n">N</td>
           <td>Persistent</td>
           <td class="y">Y</td>
-          <td class="y">Y</td>
+          <td class="y">Y<br/>(unchanged dest config)</td>
         </tr>
         <tr>
           <td>Persistent</td>
@@ -421,7 +421,7 @@
           <td class="n">N</td>
           <td>Persistent</td>
           <td class="n">N</td>
-          <td class="y">Y</td>
+          <td class="y">Y<br/>(unchanged dest config)</td>
         </tr>
         <tr>
           <td>Persistent</td>
@@ -431,7 +431,7 @@
           <td class="y">Y</td>
           <td>Persistent</td>
           <td class="y">Y</td>
-          <td class="y">Y</td>
+          <td class="y">Y<br/>(replaced with source)</td>
         </tr>
         <tr>
           <td>Persistent</td>
@@ -441,7 +441,7 @@
           <td class="y">Y</td>
           <td>Persistent</td>
           <td class="n">N</td>
-          <td class="y">Y</td>
+          <td class="y">Y<br/>(replaced with source)</td>
         </tr>
       </tbody>
     </table>
