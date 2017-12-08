@@ -3923,6 +3923,37 @@ qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk)
 
 
 static int
+qemuDomainDeviceDefValidateControllerAttributes(const virDomainControllerDef *controller)
+{
+    if (!(controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
+          controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI)) {
+        if (controller->queues) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'queues' is only supported by virtio-scsi controller"));
+            return -1;
+        }
+        if (controller->cmd_per_lun) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'cmd_per_lun' is only supported by virtio-scsi controller"));
+            return -1;
+        }
+        if (controller->max_sectors) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'max_sectors' is only supported by virtio-scsi controller"));
+            return -1;
+        }
+        if (controller->ioeventfd) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'ioeventfd' is only supported by virtio-scsi controller"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidateControllerIDE(const virDomainControllerDef *controller,
                                          const virDomainDef *def)
 {
@@ -3957,6 +3988,9 @@ qemuDomainDeviceDefValidateController(const virDomainControllerDef *controller,
 
     if (!qemuDomainCheckCCWS390AddressSupport(def, controller->info, qemuCaps,
                                               "controller"))
+        return -1;
+
+    if (qemuDomainDeviceDefValidateControllerAttributes(controller) < 0)
         return -1;
 
     switch ((virDomainControllerType) controller->type) {

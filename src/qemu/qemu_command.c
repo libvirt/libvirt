@@ -2725,30 +2725,6 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             return -1;
     }
 
-    if (!(def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
-          def->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI)) {
-        if (def->queues) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'queues' is only supported by virtio-scsi controller"));
-            return -1;
-        }
-        if (def->cmd_per_lun) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'cmd_per_lun' is only supported by virtio-scsi controller"));
-            return -1;
-        }
-        if (def->max_sectors) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'max_sectors' is only supported by virtio-scsi controller"));
-            return -1;
-        }
-        if (def->ioeventfd) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'ioeventfd' is only supported by virtio-scsi controller"));
-            return -1;
-        }
-    }
-
     switch ((virDomainControllerType) def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         switch (def->model) {
