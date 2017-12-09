@@ -3694,7 +3694,7 @@ qemuDomainWatchdogDefValidate(const virDomainWatchdogDef *dev,
         if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
             dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("%s model of watchog can go only on PCI bus"),
+                           _("%s model of watchdog can go only on PCI bus"),
                            virDomainWatchdogModelTypeToString(dev->model));
             return -1;
         }
@@ -3704,7 +3704,7 @@ qemuDomainWatchdogDefValidate(const virDomainWatchdogDef *dev,
         if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
             dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("%s model of watchog can go only on ISA bus"),
+                           _("%s model of watchdog can go only on ISA bus"),
                            virDomainWatchdogModelTypeToString(dev->model));
             return -1;
         }
@@ -3713,7 +3713,7 @@ qemuDomainWatchdogDefValidate(const virDomainWatchdogDef *dev,
     case VIR_DOMAIN_WATCHDOG_MODEL_DIAG288:
         if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("%s model of watchog is virtual and cannot go on any bus."),
+                           _("%s model of watchdog is virtual and cannot go on any bus."),
                            virDomainWatchdogModelTypeToString(dev->model));
             return -1;
         }
