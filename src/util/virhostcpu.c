@@ -509,6 +509,27 @@ virHostCPUHasValidSubcoreConfiguration(int threads_per_subcore)
 }
 
 
+/**
+ * virHostCPUParseFrequencyString:
+ * @str: string to be parsed
+ * @prefix: expected prefix
+ * @mhz: output location
+ *
+ * Parse a /proc/cpuinfo line and extract the CPU frequency, if present.
+ *
+ * The expected format of @str looks like
+ *
+ *   cpu MHz : 2100.000
+ *
+ * where @prefix ("cpu MHz" in the example), is architecture-dependent.
+ *
+ * The decimal part of the CPU frequency, as well as all whitespace, is
+ * ignored.
+ *
+ * Returns: 0 when the string has been parsed successfully and the CPU
+ *          frequency has been stored in @mhz, >0 when the string has not
+ *          been parsed but no error has occurred, <0 on failure.
+ */
 static int
 virHostCPUParseFrequencyString(const char *str,
                                const char *prefix,
@@ -517,26 +538,49 @@ virHostCPUParseFrequencyString(const char *str,
     char *p;
     unsigned int ui;
 
+    /* If the string doesn't start with the expected prefix, then
+     * we're not looking at the right string and we should move on */
     if (!STRPREFIX(str, prefix))
         return 1;
 
+    /* Skip the prefix */
     str += strlen(prefix);
 
-    while (*str && c_isspace(*str))
+    /* Skip all whitespace */
+    while (c_isspace(*str))
         str++;
+    if (*str == '\0')
+        goto error;
 
-    if (*str != ':' || !str[1]) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("parsing cpu MHz from cpuinfo"));
-        return -1;
+    /* Skip the colon. If anything but a colon is found, then we're
+     * not looking at the right string and we should move on */
+    if (*str != ':')
+        return 1;
+    str++;
+
+    /* Skip all whitespace */
+    while (c_isspace(*str))
+        str++;
+    if (*str == '\0')
+        goto error;
+
+    /* Parse the frequency. We expect an unsigned value, optionally
+     * followed by a fractional part (which gets discarded) or some
+     * leading whitespace */
+    if (virStrToLong_ui(str, &p, 10, &ui) < 0 ||
+        (*p != '.' && *p != '\0' && !c_isspace(*p))) {
+        goto error;
     }
 
-    if (virStrToLong_ui(str + 1, &p, 10, &ui) == 0 &&
-        /* Accept trailing fractional part. */
-        (*p == '\0' || *p == '.' || c_isspace(*p)))
-        *mhz = ui;
+    *mhz = ui;
 
     return 0;
+
+ error:
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Missing or invalid CPU frequency in %s"),
+                   CPUINFO_PATH);
+    return -1;
 }
 
 
