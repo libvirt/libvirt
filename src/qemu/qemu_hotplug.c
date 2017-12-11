@@ -3319,11 +3319,19 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     }
 
     if (needBandwidthSet) {
-        if (virNetDevBandwidthSet(newdev->ifname,
-                                  virDomainNetGetActualBandwidth(newdev),
-                                  false,
-                                  !virDomainNetTypeSharesHostView(newdev)) < 0)
-            goto cleanup;
+        virNetDevBandwidthPtr newb = virDomainNetGetActualBandwidth(newdev);
+
+        if (newb) {
+            if (virNetDevBandwidthSet(newdev->ifname, newb, false,
+                                      !virDomainNetTypeSharesHostView(newdev)) < 0)
+                goto cleanup;
+        } else {
+            /*
+             * virNetDevBandwidthSet() doesn't clear any existing
+             * setting unless something new is being set.
+             */
+            virNetDevBandwidthClear(newdev->ifname);
+        }
         needReplaceDevDef = true;
     }
 
