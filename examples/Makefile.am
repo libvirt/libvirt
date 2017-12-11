@@ -67,6 +67,9 @@ admin_client_info_SOURCES = admin/client_info.c
 admin_client_close_SOURCES = admin/client_close.c
 admin_logging_SOURCES = admin/logging.c
 
+INSTALL_DATA_LOCAL =
+UNINSTALL_LOCAL =
+
 if WITH_APPARMOR_PROFILES
 apparmordir = $(sysconfdir)/apparmor.d/
 apparmor_DATA = \
@@ -85,20 +88,37 @@ templates_DATA = \
 	apparmor/TEMPLATE.qemu \
 	apparmor/TEMPLATE.lxc \
 	$(NULL)
+
+APPARMOR_LOCAL_DIR = "$(DESTDIR)$(apparmordir)/local"
+install-apparmor-local:
+	$(MKDIR_P) "$(APPARMOR_LOCAL_DIR)"
+	echo "# Site-specific additions and overrides for \
+		'usr.lib.libvirt.virt-aa-helper'" \
+		>$(APPARMOR_LOCAL_DIR)/usr.lib.libvirt.virt-aa-helper
+
+INSTALL_DATA_LOCAL += install-apparmor-local
+UNINSTALL_LOCAL += uninstall-apparmor-local
 endif WITH_APPARMOR_PROFILES
 
 if WITH_NWFILTER
 NWFILTER_DIR = "$(DESTDIR)$(sysconfdir)/libvirt/nwfilter"
 
-install-data-local:
+install-nwfilter-local:
 	$(MKDIR_P) "$(NWFILTER_DIR)"
 	for f in $(FILTERS); do \
 		$(INSTALL_DATA) $$f "$(NWFILTER_DIR)"; \
 	done
 
-uninstall-local::
+uninstall-nwfilter-local::
 	for f in $(FILTERS); do \
 		rm -f "$(NWFILTER_DIR)/`basename $$f`"; \
 	done
 	-test -z "$(shell ls $(NWFILTER_DIR))" || rmdir $(NWFILTER_DIR)
+
+INSTALL_DATA_LOCAL += install-nwfilter-local
+UNINSTALL_LOCAL += uninstall-nwfilter-local
 endif WITH_NWFILTER
+
+install-data-local: $(INSTALL_DATA_LOCAL)
+
+uninstall-local: $(UNINSTALL_LOCAL)
