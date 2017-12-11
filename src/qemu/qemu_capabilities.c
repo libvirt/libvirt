@@ -2965,7 +2965,7 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon)
     size_t i;
 
     if ((ncpus = qemuMonitorGetCPUDefinitions(mon, &cpus)) < 0)
-        goto error;
+        return NULL;
 
     if (!(models = virDomainCapsCPUModelsNew(ncpus)))
         goto error;
