@@ -239,6 +239,7 @@ mymain(void)
         {"raspberrypi", VIR_ARCH_ARMV6L},
         {"f21-mustang", VIR_ARCH_AARCH64},
         {"rhelsa-3.19.0-mustang", VIR_ARCH_AARCH64},
+        {"rhel74-moonshot", VIR_ARCH_AARCH64},
         {"deconf-cpus", VIR_ARCH_PPC64},
         /* subcores, default configuration */
         {"subcores1", VIR_ARCH_PPC64},
