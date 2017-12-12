@@ -507,6 +507,7 @@ struct _virQEMUCaps {
     unsigned int version;
     unsigned int kvmVersion;
     unsigned int libvirtVersion;
+    unsigned int microcodeVersion;
     char *package;
 
     virArch arch;
@@ -2296,6 +2297,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 
     ret->version = qemuCaps->version;
     ret->kvmVersion = qemuCaps->kvmVersion;
+    ret->microcodeVersion = qemuCaps->microcodeVersion;
 
     if (VIR_STRDUP(ret->package, qemuCaps->package) < 0)
         goto error;
@@ -3830,6 +3832,7 @@ struct _virQEMUCapsCachePriv {
     uid_t runUid;
     gid_t runGid;
     virArch hostArch;
+    unsigned int microcodeVersion;
 };
 typedef struct _virQEMUCapsCachePriv virQEMUCapsCachePriv;
 typedef virQEMUCapsCachePriv *virQEMUCapsCachePrivPtr;
@@ -3949,6 +3952,13 @@ virQEMUCapsLoadCache(virArch hostArch,
     if (virXPathUInt("string(./kvmVersion)", ctxt, &qemuCaps->kvmVersion) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing version in QEMU capabilities cache"));
+        goto cleanup;
+    }
+
+    if (virXPathUInt("string(./microcodeVersion)", ctxt,
+                     &qemuCaps->microcodeVersion) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing microcode version in QEMU capabilities cache"));
         goto cleanup;
     }
 
@@ -4230,6 +4240,9 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
     virBufferAsprintf(&buf, "<kvmVersion>%d</kvmVersion>\n",
                       qemuCaps->kvmVersion);
 
+    virBufferAsprintf(&buf, "<microcodeVersion>%u</microcodeVersion>\n",
+                      qemuCaps->microcodeVersion);
+
     if (qemuCaps->package)
         virBufferAsprintf(&buf, "<package>%s</package>\n",
                           qemuCaps->package);
@@ -4368,6 +4381,16 @@ virQEMUCapsIsValid(void *data,
         VIR_DEBUG("KVM was enabled when probing '%s', "
                   "but it is not available now",
                   qemuCaps->binary);
+        return false;
+    }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
+        priv->microcodeVersion != qemuCaps->microcodeVersion) {
+        VIR_DEBUG("Outdated capabilities for '%s': microcode version changed "
+                  "(%u vs %u)",
+                  qemuCaps->binary,
+                  priv->microcodeVersion,
+                  qemuCaps->microcodeVersion);
         return false;
     }
 
@@ -5197,6 +5220,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 const char *libDir,
                                 uid_t runUid,
                                 gid_t runGid,
+                                unsigned int microcodeVersion,
                                 bool qmpOnly)
 {
     virQEMUCapsPtr qemuCaps;
@@ -5253,6 +5277,9 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_KVM);
     virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_QEMU);
 
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
+        qemuCaps->microcodeVersion = microcodeVersion;
+
  cleanup:
     VIR_FREE(qmperr);
     return qemuCaps;
@@ -5274,6 +5301,7 @@ virQEMUCapsNewData(const char *binary,
                                            priv->libDir,
                                            priv->runUid,
                                            priv->runGid,
+                                           priv->microcodeVersion,
                                            false);
 }
 
@@ -5356,7 +5384,8 @@ virFileCachePtr
 virQEMUCapsCacheNew(const char *libDir,
                     const char *cacheDir,
                     uid_t runUid,
-                    gid_t runGid)
+                    gid_t runGid,
+                    unsigned int microcodeVersion)
 {
     char *capsCacheDir = NULL;
     virFileCachePtr cache = NULL;
@@ -5379,6 +5408,7 @@ virQEMUCapsCacheNew(const char *libDir,
 
     priv->runUid = runUid;
     priv->runGid = runGid;
+    priv->microcodeVersion = microcodeVersion;
 
  cleanup:
     VIR_FREE(capsCacheDir);
@@ -5855,4 +5885,12 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
         virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps) < 0)
         return -1;
     return 0;
+}
+
+
+void
+virQEMUCapsSetMicrocodeVersion(virQEMUCapsPtr qemuCaps,
+                               unsigned int microcodeVersion)
+{
+    qemuCaps->microcodeVersion = microcodeVersion;
 }

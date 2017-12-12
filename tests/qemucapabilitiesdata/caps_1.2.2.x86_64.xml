@@ -112,6 +112,7 @@
   <flag name='isa-serial'/>
   <version>1002002</version>
   <kvmVersion>0</kvmVersion>
+  <microcodeVersion>26900</microcodeVersion>
   <package></package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='qemu64'/>

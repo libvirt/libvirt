@@ -61,10 +61,16 @@ testQemuCaps(const void *opaque)
                                   qemuMonitorTestGetMonitor(mon)) < 0)
         goto cleanup;
 
-    if (virQEMUCapsGet(capsActual, QEMU_CAPS_KVM) &&
-        virQEMUCapsInitQMPMonitorTCG(capsActual,
-                                     qemuMonitorTestGetMonitor(mon)) < 0)
-        goto cleanup;
+    if (virQEMUCapsGet(capsActual, QEMU_CAPS_KVM)) {
+        if (virQEMUCapsInitQMPMonitorTCG(capsActual,
+                                         qemuMonitorTestGetMonitor(mon)) < 0)
+            goto cleanup;
+
+        /* Fill microcodeVersion with a "random" value which is the file
+         * length to provide a reproducible number for testing.
+         */
+        virQEMUCapsSetMicrocodeVersion(capsActual, virFileLength(repliesFile, -1));
+    }
 
     if (!(actual = virQEMUCapsFormatCache(capsActual)))
         goto cleanup;

@@ -147,6 +147,7 @@
   <flag name='iscsi.password-secret'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
+  <microcodeVersion>304153</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='z14-base' migratability='no'>

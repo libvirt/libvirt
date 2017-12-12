@@ -143,6 +143,7 @@
   <flag name='isa-serial'/>
   <version>1005003</version>
   <kvmVersion>0</kvmVersion>
+  <microcodeVersion>47019</microcodeVersion>
   <package></package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='Opteron_G5'/>
