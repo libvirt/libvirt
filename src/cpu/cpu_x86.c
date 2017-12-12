@@ -33,6 +33,7 @@
 #include "virbuffer.h"
 #include "virendian.h"
 #include "virstring.h"
+#include "virhostcpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
@@ -153,6 +154,8 @@ struct _virCPUx86Map {
 };
 
 static virCPUx86MapPtr cpuMap;
+static unsigned int microcodeVersion;
+
 int virCPUx86DriverOnceInit(void);
 VIR_ONCE_GLOBAL_INIT(virCPUx86Driver);
 
@@ -1409,6 +1412,8 @@ virCPUx86DriverOnceInit(void)
     if (!(cpuMap = virCPUx86LoadMap()))
         return -1;
 
+    microcodeVersion = virHostCPUGetMicrocodeVersion();
+
     return 0;
 }
 
@@ -2424,6 +2429,9 @@ virCPUx86GetHost(virCPUDefPtr cpu,
     virCPUDataPtr cpuData = NULL;
     int ret = -1;
 
+    if (virCPUx86DriverInitialize() < 0)
+        goto cleanup;
+
     if (!(cpuData = virCPUDataNew(archs[0])))
         goto cleanup;
 
@@ -2432,6 +2440,7 @@ virCPUx86GetHost(virCPUDefPtr cpu,
         goto cleanup;
 
     ret = x86DecodeCPUData(cpu, cpuData, models);
+    cpu->microcodeVersion = microcodeVersion;
 
  cleanup:
     virCPUx86DataFree(cpuData);

@@ -130,6 +130,7 @@ virCPUDefCopyModelFilter(virCPUDefPtr dst,
         VIR_STRDUP(dst->vendor_id, src->vendor_id) < 0 ||
         VIR_ALLOC_N(dst->features, src->nfeatures) < 0)
         return -1;
+    dst->microcodeVersion = src->microcodeVersion;
     dst->nfeatures_max = src->nfeatures;
     dst->nfeatures = 0;
 
@@ -181,6 +182,7 @@ virCPUDefStealModel(virCPUDefPtr dst,
 
     VIR_STEAL_PTR(dst->model, src->model);
     VIR_STEAL_PTR(dst->features, src->features);
+    dst->microcodeVersion = src->microcodeVersion;
     dst->nfeatures_max = src->nfeatures_max;
     src->nfeatures_max = 0;
     dst->nfeatures = src->nfeatures;
@@ -382,6 +384,14 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
             goto cleanup;
         }
         VIR_FREE(arch);
+
+        if (virXPathBoolean("boolean(./microcode[1]/@version)", ctxt) > 0 &&
+            virXPathUInt("string(./microcode[1]/@version)", ctxt,
+                         &def->microcodeVersion) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("invalid microcode version"));
+            goto cleanup;
+        }
     }
 
     if (!(def->model = virXPathString("string(./model[1])", ctxt)) &&
@@ -719,6 +729,10 @@ virCPUDefFormatBuf(virBufferPtr buf,
 
     if (formatModel && def->vendor)
         virBufferEscapeString(buf, "<vendor>%s</vendor>\n", def->vendor);
+
+    if (def->type == VIR_CPU_TYPE_HOST && def->microcodeVersion)
+        virBufferAsprintf(buf, "<microcode version='%u'/>\n",
+                          def->microcodeVersion);
 
     if (def->sockets && def->cores && def->threads) {
         virBufferAddLit(buf, "<topology");

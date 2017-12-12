@@ -133,6 +133,7 @@ struct _virCPUDef {
     char *vendor_id;    /* vendor id returned by CPUID in the guest */
     int fallback;       /* enum virCPUFallback */
     char *vendor;
+    unsigned int microcodeVersion;
     unsigned int sockets;
     unsigned int cores;
     unsigned int threads;
