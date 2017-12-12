@@ -87,7 +87,7 @@ int
 virSCSIVHostOpenVhostSCSI(int *vhostfd)
 {
     if (!virFileExists(VHOST_SCSI_DEVICE))
-        goto error;
+        return -1;
 
     *vhostfd = open(VHOST_SCSI_DEVICE, O_RDWR);
 
