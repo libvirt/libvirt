@@ -1196,8 +1196,7 @@ xenMakeIPList(virNetDevIPInfoPtr guestIP)
     ret = virStringListJoin((const char**)address_array, " ");
 
  cleanup:
-    while (i > 0)
-        VIR_FREE(address_array[--i]);
+    virStringListFree(address_array);
     return ret;
 }
 
