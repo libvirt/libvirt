@@ -86,8 +86,12 @@ VIR_ONCE_GLOBAL_INIT(virSCSIVHost)
 int
 virSCSIVHostOpenVhostSCSI(int *vhostfd)
 {
-    if (!virFileExists(VHOST_SCSI_DEVICE))
+    if (!virFileExists(VHOST_SCSI_DEVICE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("vhost-scsi device file '%s' cannot be found"),
+                       VHOST_SCSI_DEVICE);
         return -1;
+    }
 
     *vhostfd = open(VHOST_SCSI_DEVICE, O_RDWR);
 
