@@ -110,7 +110,8 @@ static int
 virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
                                  xmlXPathContextPtr ctxt,
                                  virDomainSnapshotDiskDefPtr def,
-                                 unsigned int flags)
+                                 unsigned int flags,
+                                 virDomainXMLOptionPtr xmlopt)
 {
     int ret = -1;
     char *snapshot = NULL;
@@ -155,7 +156,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     }
 
     if ((cur = virXPathNode("./source", ctxt)) &&
-        virDomainDiskSourceParse(cur, ctxt, def->src, flags) < 0)
+        virDomainDiskSourceParse(cur, ctxt, def->src, flags, xmlopt) < 0)
         goto cleanup;
 
     if ((driver = virXPathString("string(./driver/@type)", ctxt))) {
@@ -348,8 +349,8 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
             goto cleanup;
         def->ndisks = n;
         for (i = 0; i < def->ndisks; i++) {
-            if (virDomainSnapshotDiskDefParseXML(nodes[i], ctxt,
-                                                 &def->disks[i], flags) < 0)
+            if (virDomainSnapshotDiskDefParseXML(nodes[i], ctxt, &def->disks[i],
+                                                 flags, xmlopt) < 0)
                 goto cleanup;
         }
         VIR_FREE(nodes);
@@ -663,7 +664,8 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
 
 static void
 virDomainSnapshotDiskDefFormat(virBufferPtr buf,
-                               virDomainSnapshotDiskDefPtr disk)
+                               virDomainSnapshotDiskDefPtr disk,
+                               virDomainXMLOptionPtr xmlopt)
 {
     int type = disk->src->type;
 
@@ -686,7 +688,7 @@ virDomainSnapshotDiskDefFormat(virBufferPtr buf,
     if (disk->src->format > 0)
         virBufferEscapeString(buf, "<driver type='%s'/>\n",
                               virStorageFileFormatTypeToString(disk->src->format));
-    virDomainDiskSourceFormat(buf, disk->src, 0, 0);
+    virDomainDiskSourceFormat(buf, disk->src, 0, 0, xmlopt);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</disk>\n");
@@ -740,13 +742,13 @@ virDomainSnapshotDefFormat(const char *domain_uuid,
         virBufferAddLit(&buf, "<disks>\n");
         virBufferAdjustIndent(&buf, 2);
         for (i = 0; i < def->ndisks; i++)
-            virDomainSnapshotDiskDefFormat(&buf, &def->disks[i]);
+            virDomainSnapshotDiskDefFormat(&buf, &def->disks[i], xmlopt);
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</disks>\n");
     }
 
     if (def->dom) {
-        if (virDomainDefFormatInternal(def->dom, caps, flags, &buf) < 0)
+        if (virDomainDefFormatInternal(def->dom, caps, flags, &buf, xmlopt) < 0)
             goto error;
     } else if (domain_uuid) {
         virBufferAddLit(&buf, "<domain>\n");

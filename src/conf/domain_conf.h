@@ -2631,6 +2631,12 @@ typedef int (*virDomainXMLPrivateDataParseFunc)(xmlXPathContextPtr,
                                                 virDomainObjPtr,
                                                 virDomainDefParserConfigPtr);
 
+typedef int (*virDomainXMLPrivateDataStorageSourceParseFunc)(xmlXPathContextPtr ctxt,
+                                                             virStorageSourcePtr src);
+typedef int (*virDomainXMLPrivateDataStorageSourceFormatFunc)(virStorageSourcePtr src,
+                                                              virBufferPtr buf);
+
+
 typedef struct _virDomainXMLPrivateDataCallbacks virDomainXMLPrivateDataCallbacks;
 typedef virDomainXMLPrivateDataCallbacks *virDomainXMLPrivateDataCallbacksPtr;
 struct _virDomainXMLPrivateDataCallbacks {
@@ -2643,6 +2649,8 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataNewFunc    chrSourceNew;
     virDomainXMLPrivateDataFormatFunc format;
     virDomainXMLPrivateDataParseFunc  parse;
+    virDomainXMLPrivateDataStorageSourceParseFunc storageParse;
+    virDomainXMLPrivateDataStorageSourceFormatFunc storageFormat;
 };
 
 typedef bool (*virDomainABIStabilityDomain)(const virDomainDef *src,
@@ -2967,12 +2975,14 @@ char *virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
 int virDomainDefFormatInternal(virDomainDefPtr def,
                                virCapsPtr caps,
                                unsigned int flags,
-                               virBufferPtr buf);
+                               virBufferPtr buf,
+                               virDomainXMLOptionPtr xmlopt);
 
 int virDomainDiskSourceFormat(virBufferPtr buf,
                               virStorageSourcePtr src,
                               int policy,
-                              unsigned int flags);
+                              unsigned int flags,
+                              virDomainXMLOptionPtr xmlopt);
 
 int virDomainNetDefFormat(virBufferPtr buf,
                           virDomainNetDefPtr def,
@@ -3021,7 +3031,8 @@ virDomainDiskRemoveByName(virDomainDefPtr def, const char *name);
 int virDomainDiskSourceParse(xmlNodePtr node,
                              xmlXPathContextPtr ctxt,
                              virStorageSourcePtr src,
-                             unsigned int flags);
+                             unsigned int flags,
+                             virDomainXMLOptionPtr xmlopt);
 
 int virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net);
 virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def, const char *device);

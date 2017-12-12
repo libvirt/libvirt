@@ -5325,7 +5325,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
  format:
     ret = virDomainDefFormatInternal(def, caps,
                                      virDomainDefFormatConvertXMLFlags(flags),
-                                     buf);
+                                     buf, driver->xmlopt);
 
  cleanup:
     virDomainDefFree(copy);
