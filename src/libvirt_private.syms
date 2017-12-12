@@ -1760,6 +1760,7 @@ virFileReadAll;
 virFileReadAllQuiet;
 virFileReadBufQuiet;
 virFileReadHeaderFD;
+virFileReadHeaderQuiet;
 virFileReadLimFD;
 virFileReadLink;
 virFileReadValueBitmap;

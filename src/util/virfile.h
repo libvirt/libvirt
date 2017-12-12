@@ -131,6 +131,8 @@ int virFileDeleteTree(const char *dir);
 
 int virFileReadHeaderFD(int fd, int maxlen, char **buf)
     ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(3);
+int virFileReadHeaderQuiet(const char *path, int maxlen, char **buf)
+    ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 int virFileReadLimFD(int fd, int maxlen, char **buf)
     ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(3);
 int virFileReadAll(const char *path, int maxlen, char **buf)

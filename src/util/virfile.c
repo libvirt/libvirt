@@ -1367,6 +1367,25 @@ virFileReadHeaderFD(int fd, int maxlen, char **buf)
 }
 
 
+int
+virFileReadHeaderQuiet(const char *path,
+                       int maxlen,
+                       char **buf)
+{
+    int fd;
+    int len;
+
+    fd = open(path, O_RDONLY);
+    if (fd < 0)
+        return -1;
+
+    len = virFileReadHeaderFD(fd, maxlen, buf);
+    VIR_FORCE_CLOSE(fd);
+
+    return len;
+}
+
+
 /* A wrapper around saferead_lim that maps a failure due to
    exceeding the maximum size limitation to EOVERFLOW.  */
 int
