@@ -8545,15 +8545,25 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     }
 
     /* and only TAP devices support nwfilter rules */
-    if (net->filter &&
-        !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("filterref is not supported for "
-                         "network interfaces of type %s"),
-                       virDomainNetTypeToString(actualType));
-        return -1;
+    if (net->filter) {
+        virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(net);
+        if (!(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+              actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+              actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("filterref is not supported for "
+                             "network interfaces of type %s"),
+                           virDomainNetTypeToString(actualType));
+            return -1;
+        }
+        if (vport && vport->virtPortType != VIR_NETDEV_VPORT_PROFILE_NONE) {
+            /* currently none of the defined virtualport types support iptables */
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("filterref is not supported for "
+                             "network interfaces with virtualport type %s"),
+                           virNetDevVPortTypeToString(vport->virtPortType));
+            return -1;
+        }
     }
 
     if (net->backend.tap &&
