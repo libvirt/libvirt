@@ -66,4 +66,6 @@ virBitmapPtr virHostCPUGetSiblingsList(unsigned int cpu);
 
 int virHostCPUGetOnline(unsigned int cpu, bool *online);
 
+unsigned int virHostCPUGetMicrocodeVersion(void);
+
 #endif /* __VIR_HOSTCPU_H__*/

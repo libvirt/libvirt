@@ -1869,6 +1869,7 @@ virHostCPUGetCount;
 virHostCPUGetInfo;
 virHostCPUGetKVMMaxVCPUs;
 virHostCPUGetMap;
+virHostCPUGetMicrocodeVersion;
 virHostCPUGetOnline;
 virHostCPUGetOnlineBitmap;
 virHostCPUGetPresentBitmap;

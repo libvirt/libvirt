@@ -1206,3 +1206,50 @@ virHostCPUGetKVMMaxVCPUs(void)
     return -1;
 }
 #endif /* HAVE_LINUX_KVM_H */
+
+
+#ifdef __linux__
+
+/*
+ * Returns 0 if the microcode version is unknown or cannot be read for
+ * some reason.
+ */
+unsigned int
+virHostCPUGetMicrocodeVersion(void)
+{
+    char *outbuf = NULL;
+    char *cur;
+    unsigned int version = 0;
+
+    if (virFileReadHeaderQuiet(CPUINFO_PATH, 4096, &outbuf) < 0) {
+        char ebuf[1024];
+        VIR_DEBUG("Failed to read microcode version from %s: %s",
+                  CPUINFO_PATH, virStrerror(errno, ebuf, sizeof(ebuf)));
+        return 0;
+    }
+
+    /* Account for format 'microcode    : XXXX'*/
+    if (!(cur = strstr(outbuf, "microcode")) ||
+        !(cur = strchr(cur, ':')))
+        goto cleanup;
+    cur++;
+
+    /* Linux places the microcode revision in a 32-bit integer, so
+     * ui is fine for us too.  */
+    if (virStrToLong_ui(cur, &cur, 0, &version) < 0)
+        goto cleanup;
+
+ cleanup:
+    VIR_FREE(outbuf);
+    return version;
+}
+
+#else
+
+unsigned int
+virHostCPUGetMicrocodeVersion(void)
+{
+    return 0;
+}
+
+#endif /* __linux__ */
