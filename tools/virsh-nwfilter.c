@@ -272,7 +272,7 @@ virshNWFilterListCollect(vshControl *ctl,
     }
 
     /* there was an error during the call */
-    vshError(ctl, "%s", _("Failed to list node filters"));
+    vshError(ctl, "%s", _("Failed to list network filters"));
     goto cleanup;
 
 
