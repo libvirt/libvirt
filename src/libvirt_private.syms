@@ -718,6 +718,8 @@ virNodeDeviceEventUpdateNew;
 
 
 # conf/numa_conf.h
+virDomainMemoryAccessTypeFromString;
+virDomainMemoryAccessTypeToString;
 virDomainNumaCheckABIStability;
 virDomainNumaEquals;
 virDomainNumaFree;
