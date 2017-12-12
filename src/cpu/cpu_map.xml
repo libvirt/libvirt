@@ -292,6 +292,9 @@
     <feature name='avx512-4fmaps'>
       <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00000008'/>
     </feature>
+    <feature name='spec-ctrl'>
+      <cpuid eax_in='0x07' ecx_in='0x00' edx='0x04000000'/>
+    </feature>
 
     <!-- Processor Extended State Enumeration sub leaf 1 -->
     <feature name='xsaveopt'>
@@ -418,6 +421,11 @@
     <!-- Advanced Power Management edx features -->
     <feature name='invtsc' migratable='no'>
       <cpuid eax_in='0x80000007' edx='0x00000100'/>
+    </feature>
+
+    <!-- More AMD-specific features -->
+    <feature name='ibpb'>
+      <cpuid eax_in='0x80000008' ebx='0x00001000'/>
     </feature>
 
     <!-- models -->
