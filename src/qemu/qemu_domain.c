@@ -2451,6 +2451,8 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .chrSourceNew = qemuDomainChrSourcePrivateNew,
     .parse = qemuDomainObjPrivateXMLParse,
     .format = qemuDomainObjPrivateXMLFormat,
+    .storageParse = virStorageSourcePrivateDataParseRelPath,
+    .storageFormat = virStorageSourcePrivateDataFormatRelPath,
 };
 
 
