@@ -968,6 +968,9 @@ xenParseVif(virConfPtr conf, virDomainDefPtr def, const char *vif_typename)
                 char **ip_list = virStringSplit(ip, " ", 0);
                 size_t i;
 
+                if (!ip_list)
+                    goto cleanup;
+
                 for (i = 0; ip_list[i]; i++) {
                     if (virDomainNetAppendIPAddress(net, ip_list[i], 0, 0) < 0) {
                         virStringListFree(ip_list);
