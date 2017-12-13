@@ -638,6 +638,17 @@ bool virNetServerClientGetReadonly(virNetServerClientPtr client)
     return readonly;
 }
 
+
+void
+virNetServerClientSetReadonly(virNetServerClientPtr client,
+                              bool readonly)
+{
+    virObjectLock(client);
+    client->readonly = readonly;
+    virObjectUnlock(client);
+}
+
+
 unsigned long long virNetServerClientGetID(virNetServerClientPtr client)
 {
     return client->id;

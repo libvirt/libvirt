@@ -153,6 +153,7 @@ virNetServerClientSendMessage;
 virNetServerClientSetAuth;
 virNetServerClientSetCloseHook;
 virNetServerClientSetDispatcher;
+virNetServerClientSetReadonly;
 virNetServerClientStartKeepAlive;
 virNetServerClientWantClose;
 

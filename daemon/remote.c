@@ -1814,6 +1814,11 @@ remoteDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (priv->conn == NULL)
         goto cleanup;
 
+    /* force update the @readonly attribute which was inherited from the
+     * virNetServerService object - this is important for sockets that are RW
+     * by default, but do accept RO flags, e.g. TCP
+     */
+    virNetServerClientSetReadonly(client, (flags & VIR_CONNECT_RO));
     rv = 0;
 
  cleanup:
