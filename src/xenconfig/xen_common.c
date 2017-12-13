@@ -1191,8 +1191,6 @@ xenMakeIPList(virNetDevIPInfoPtr guestIP)
         if (!address_array[i])
             goto cleanup;
     }
-    address_array[guestIP->nips] = NULL;
-
     ret = virStringListJoin((const char**)address_array, " ");
 
  cleanup:
