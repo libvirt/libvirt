@@ -609,6 +609,7 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
 
     def = NULL;
 
+    vm->persistent = 1;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
     if (virDomainDefSetVcpusMax(vm->def, d_info.vcpu_max_id + 1, driver->xmlopt))
         goto cleanup;
