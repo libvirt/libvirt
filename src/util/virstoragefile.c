@@ -4086,3 +4086,23 @@ virStorageSourceNetworkAssignDefaultPorts(virStorageSourcePtr src)
             src->hosts[i].port = virStorageSourceNetworkDefaultPort(src->protocol);
     }
 }
+
+
+int
+virStorageSourcePrivateDataParseRelPath(xmlXPathContextPtr ctxt,
+                                        virStorageSourcePtr src)
+{
+    src->relPath = virXPathString("string(./relPath)", ctxt);
+    return 0;
+}
+
+
+int
+virStorageSourcePrivateDataFormatRelPath(virStorageSourcePtr src,
+                                         virBufferPtr buf)
+{
+    if (src->relPath)
+        virBufferEscapeString(buf, "<relPath>%s</relPath>\n", src->relPath);
+
+    return 0;
+}

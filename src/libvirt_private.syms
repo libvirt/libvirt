@@ -2734,6 +2734,8 @@ virStorageSourceParseRBDColonString;
 virStorageSourcePoolDefFree;
 virStorageSourcePoolModeTypeFromString;
 virStorageSourcePoolModeTypeToString;
+virStorageSourcePrivateDataFormatRelPath;
+virStorageSourcePrivateDataParseRelPath;
 virStorageSourceUpdateBackingSizes;
 virStorageSourceUpdateCapacity;
 virStorageSourceUpdatePhysicalSize;

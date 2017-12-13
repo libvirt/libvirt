@@ -441,4 +441,12 @@ bool
 virStorageSourceHasBacking(const virStorageSource *src);
 
 
+int
+virStorageSourcePrivateDataParseRelPath(xmlXPathContextPtr ctxt,
+                                        virStorageSourcePtr src);
+int
+virStorageSourcePrivateDataFormatRelPath(virStorageSourcePtr src,
+                                         virBufferPtr buf);
+
+
 #endif /* __VIR_STORAGE_FILE_H__ */
