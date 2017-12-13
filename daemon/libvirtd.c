@@ -1422,7 +1422,7 @@ int main(int argc, char **argv) {
 
     if (config->audit_level) {
         VIR_DEBUG("Attempting to configure auditing subsystem");
-        if (virAuditOpen() < 0) {
+        if (virAuditOpen(config->audit_level) < 0) {
             if (config->audit_level > 1) {
                 ret = VIR_DAEMON_ERR_AUDIT;
                 goto cleanup;
