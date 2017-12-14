@@ -3289,6 +3289,36 @@ qemuDomainDefValidateVideo(const virDomainDef *def)
 }
 
 
+/**
+ * qemuDomainDefGetVcpuHotplugGranularity:
+ * @def: domain definition
+ *
+ * With QEMU 2.7 and newer, vCPUs can only be hotplugged in groups that
+ * respect the guest's hotplug granularity; because of that, QEMU will
+ * not allow guests to start unless the initial number of vCPUs is a
+ * multiple of the hotplug granularity.
+ *
+ * Returns the vCPU hotplug granularity.
+ */
+static unsigned int
+qemuDomainDefGetVcpuHotplugGranularity(const virDomainDef *def)
+{
+    /* If the guest CPU topology has not been configured, assume we
+     * can hotplug vCPUs one at a time */
+    if (!def->cpu || def->cpu->sockets == 0)
+        return 1;
+
+    /* For pSeries guests, hotplug can only be performed one core
+     * at a time, so the vCPU hotplug granularity is the number
+     * of threads per core */
+    if (qemuDomainIsPSeries(def))
+        return def->cpu->threads;
+
+    /* In all other cases, we can hotplug vCPUs one at a time */
+    return 1;
+}
+
+
 #define QEMU_MAX_VCPUS_WITHOUT_EIM 255
 
 
@@ -3363,6 +3393,7 @@ qemuDomainDefValidate(const virDomainDef *def,
      * CPU topology. Verify known constraints are respected */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS)) {
         unsigned int topologycpus;
+        unsigned int granularity;
 
         /* Starting from QEMU 2.5, max vCPU count and overall vCPU topology
          * must agree. We only actually enforce this with QEMU 2.7+, due
@@ -3371,6 +3402,16 @@ qemuDomainDefValidate(const virDomainDef *def,
             topologycpus != virDomainDefGetVcpusMax(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("CPU topology doesn't match maximum vcpu count"));
+            goto cleanup;
+        }
+
+        /* vCPU hotplug granularity must be respected */
+        granularity = qemuDomainDefGetVcpuHotplugGranularity(def);
+        if ((virDomainDefGetVcpus(def) % granularity) != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("vCPUs count must be a multiple of the vCPU "
+                             "hotplug granularity (%u)"),
+                           granularity);
             goto cleanup;
         }
     }

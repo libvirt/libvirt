@@ -2900,6 +2900,9 @@ mymain(void)
             QEMU_CAPS_DEVICE_INTEL_IOMMU);
 
     DO_TEST("cpu-hotplug-startup", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
+    DO_TEST_PARSE_ERROR("cpu-hotplug-granularity",
+                        QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
+
     DO_TEST("virtio-options", QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_VIRTIO_KEYBOARD,
             QEMU_CAPS_VIRTIO_MOUSE, QEMU_CAPS_VIRTIO_TABLET,
             QEMU_CAPS_VIRTIO_INPUT_HOST,
