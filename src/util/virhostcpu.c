@@ -556,7 +556,8 @@ virHostCPUParseFrequency(FILE *cpuinfo,
         prefix = "BogoMIPS";
 
     if (!prefix) {
-        VIR_WARN("Your architecture is not supported by the %s parser",
+        VIR_WARN("%s is not supported by the %s parser",
+                 virArchToString(arch),
                  CPUINFO_PATH);
         return 1;
     }
