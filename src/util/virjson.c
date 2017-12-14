@@ -2132,6 +2132,58 @@ virJSONValueObjectDeflattenKeys(virJSONValuePtr json)
 
 
 /**
+ * virJSONValueObjectDeflattenArrays:
+ *
+ * Reconstruct JSON arrays from objects which only have sequential numeric
+ * keys starting from 0.
+ */
+static void
+virJSONValueObjectDeflattenArrays(virJSONValuePtr json)
+{
+    g_autofree virJSONValuePtr *arraymembers = NULL;
+    virJSONObjectPtr obj;
+    size_t i;
+
+    if (!json ||
+        json->type != VIR_JSON_TYPE_OBJECT)
+        return;
+
+    obj = &json->data.object;
+
+    arraymembers = g_new0(virJSONValuePtr, obj->npairs);
+
+    for (i = 0; i < obj->npairs; i++)
+        virJSONValueObjectDeflattenArrays(obj->pairs[i].value);
+
+    for (i = 0; i < obj->npairs; i++) {
+        virJSONObjectPairPtr pair = obj->pairs + i;
+        unsigned int keynum;
+
+        if (virStrToLong_uip(pair->key, NULL, 10, &keynum) < 0)
+            return;
+
+        if (keynum >= obj->npairs)
+            return;
+
+        if (arraymembers[keynum])
+            return;
+
+        arraymembers[keynum] = pair->value;
+    }
+
+    for (i = 0; i < obj->npairs; i++)
+        g_free(obj->pairs[i].key);
+
+    g_free(json->data.object.pairs);
+
+    i = obj->npairs;
+    json->type = VIR_JSON_TYPE_ARRAY;
+    json->data.array.nvalues = i;
+    json->data.array.values = g_steal_pointer(&arraymembers);
+}
+
+
+/**
  * virJSONValueObjectDeflatten:
  *
  * In some cases it's possible to nest JSON objects by prefixing object members
@@ -2146,5 +2198,12 @@ virJSONValueObjectDeflattenKeys(virJSONValuePtr json)
 virJSONValuePtr
 virJSONValueObjectDeflatten(virJSONValuePtr json)
 {
-    return virJSONValueObjectDeflattenKeys(json);
+    virJSONValuePtr deflattened;
+
+    if (!(deflattened = virJSONValueObjectDeflattenKeys(json)))
+        return NULL;
+
+    virJSONValueObjectDeflattenArrays(deflattened);
+
+    return deflattened;
 }
