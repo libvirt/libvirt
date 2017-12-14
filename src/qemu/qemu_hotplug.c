@@ -4412,10 +4412,13 @@ qemuDomainRemoveDevice(virQEMUDriverPtr driver,
         ret = qemuDomainRemoveShmemDevice(driver, vm, dev->data.shmem);
         break;
 
+    case VIR_DOMAIN_DEVICE_INPUT:
+        ret = qemuDomainRemoveInputDevice(vm, dev->data.input);
+        break;
+
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
-    case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
