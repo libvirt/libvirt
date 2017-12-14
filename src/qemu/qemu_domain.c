@@ -7842,6 +7842,14 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
     CHECK_EQ(src->readonly, "readonly", true);
     CHECK_EQ(src->shared, "shared", true);
 
+    if (!virStoragePRDefIsEqual(disk->src->pr,
+                                orig_disk->src->pr)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("cannot modify field '%s' of the disk"),
+                       "reservations");
+        return false;
+    }
+
 #undef CHECK_EQ
 
     return true;

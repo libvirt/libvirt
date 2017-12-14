@@ -2022,6 +2022,25 @@ virStoragePRDefFormat(virBufferPtr buf,
 }
 
 
+bool
+virStoragePRDefIsEqual(virStoragePRDefPtr a,
+                       virStoragePRDefPtr b)
+{
+    if (!a && !b)
+        return true;
+
+    if (!a || !b)
+        return false;
+
+    if (a->enabled != b->enabled ||
+        a->managed != b->managed ||
+        STRNEQ_NULLABLE(a->path, b->path))
+        return false;
+
+    return true;
+}
+
+
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
                                     const char *model)

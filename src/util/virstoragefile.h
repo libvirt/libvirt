@@ -395,6 +395,8 @@ void virStoragePRDefFree(virStoragePRDefPtr prd);
 virStoragePRDefPtr virStoragePRDefParseXML(xmlXPathContextPtr ctxt);
 void virStoragePRDefFormat(virBufferPtr buf,
                            virStoragePRDefPtr prd);
+bool virStoragePRDefIsEqual(virStoragePRDefPtr a,
+                            virStoragePRDefPtr b);
 
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
