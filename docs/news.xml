@@ -39,8 +39,7 @@
     <section title="Improvements">
       <change>
         <summary>
-          Xen: Add support for multiple IP addresses on
-          <code>&lt;interface&gt;</code> devices
+          Xen: Add support for multiple IP addresses on interface devices
         </summary>
       </change>
     </section>
