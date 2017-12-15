@@ -121,7 +121,7 @@ list_guests() {
         return 1
     fi
 
-    echo "$list" | grep -v 00000000-0000-0000-0000-000000000000
+    echo "$list" | sed "/00000000-0000-0000-0000-000000000000/d"
 }
 
 # guest_name URI UUID
