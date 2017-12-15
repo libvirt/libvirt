@@ -1109,6 +1109,13 @@ mymain(void)
     DO_TEST("hostdev-scsi-vhost-scsi-pci",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_VHOST_SCSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC);
+    DO_TEST("hostdev-scsi-vhost-scsi-pcie",
+            QEMU_CAPS_KVM,
+            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_VHOST_SCSI,
+            QEMU_CAPS_DEVICE_SCSI_GENERIC,
+            QEMU_CAPS_PCI_MULTIFUNCTION,
+            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
+            QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY);
     DO_TEST("hostdev-scsi-lsi",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_LSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC);

@@ -656,6 +656,13 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV)
             return pcieFlags;
 
+        /* according to pbonzini, from the guest PoV vhost-scsi devices
+         * are the same as virtio-scsi, so they should use virtioFlags
+         * (same as virtio-scsi) to determine Express vs. legacy placement
+         */
+        if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST)
+            return virtioFlags;
+
         if (!(pciDev = virPCIDeviceNew(hostAddr->domain,
                                        hostAddr->bus,
                                        hostAddr->slot,
