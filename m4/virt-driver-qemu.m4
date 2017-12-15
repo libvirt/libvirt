@@ -57,6 +57,11 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_QEMU], [
                [/usr/libexec:/usr/lib/qemu:/usr/lib])
   AC_DEFINE_UNQUOTED([QEMU_BRIDGE_HELPER], ["$QEMU_BRIDGE_HELPER"],
                      [QEMU bridge helper])
+  AC_PATH_PROG([QEMU_PR_HELPER], [qemu-pr-helper],
+               [/usr/bin/qemu-pr-helper],
+               [/usr/bin:/usr/libexec])
+  AC_DEFINE_UNQUOTED([QEMU_PR_HELPER], ["$QEMU_PR_HELPER"],
+                     [QEMU PR helper])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_RESULT_QEMU], [

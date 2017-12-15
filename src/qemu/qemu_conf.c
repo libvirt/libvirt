@@ -302,7 +302,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             goto error;
     }
 
-    if (VIR_STRDUP(cfg->bridgeHelperName, QEMU_BRIDGE_HELPER) < 0)
+    if (VIR_STRDUP(cfg->bridgeHelperName, QEMU_BRIDGE_HELPER) < 0 ||
+        VIR_STRDUP(cfg->prHelperName, QEMU_PR_HELPER) < 0)
         goto error;
 
     cfg->clearEmulatorCapabilities = true;
@@ -387,6 +388,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     }
     VIR_FREE(cfg->hugetlbfs);
     VIR_FREE(cfg->bridgeHelperName);
+    VIR_FREE(cfg->prHelperName);
 
     VIR_FREE(cfg->saveImageFormat);
     VIR_FREE(cfg->dumpImageFormat);
@@ -752,6 +754,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     }
 
     if (virConfGetValueString(conf, "bridge_helper", &cfg->bridgeHelperName) < 0)
+        goto cleanup;
+
+    if (virConfGetValueString(conf, "pr_helper", &cfg->prHelperName) < 0)
         goto cleanup;
 
     if (virConfGetValueBool(conf, "mac_filter", &cfg->macFilter) < 0)

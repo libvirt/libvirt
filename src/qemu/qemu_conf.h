@@ -153,6 +153,7 @@ struct _virQEMUDriverConfig {
     size_t nhugetlbfs;
 
     char *bridgeHelperName;
+    char *prHelperName;
 
     bool macFilter;
 
