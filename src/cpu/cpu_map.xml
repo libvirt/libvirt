@@ -285,6 +285,9 @@
     <feature name='ospke'>
       <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00000010'/>
     </feature>
+    <feature name='la57'>
+      <cpuid eax_in='0x07' ecx_in='0x00' ecx='0x00010000'/>
+    </feature>
 
     <feature name='avx512-4vnniw'>
       <cpuid eax_in='0x07' ecx_in='0x00' edx='0x00000004'/>
