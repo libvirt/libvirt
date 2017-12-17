@@ -748,7 +748,7 @@ virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
     }
 
     if (!(obj = virStoragePoolObjNew()))
-        return NULL;
+        goto error;
 
     virUUIDFormat(def->uuid, uuidstr);
     if (virHashAddEntry(pools->objs, uuidstr, obj) < 0)
