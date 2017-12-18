@@ -2159,6 +2159,37 @@ static int lxcContainerSetUserGroup(virCommandPtr cmd,
     return 0;
 }
 
+static const char hostname_validchars[] =
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "0123456789-";
+
+static int lxcContainerSetHostname(virDomainDefPtr def)
+{
+    int ret = -1;
+    char *name = NULL;
+    char *hostname = NULL;
+
+    /* Filter the VM name to get a valid hostname */
+    if (VIR_STRDUP(name, def->name) < 0)
+        goto cleanup;
+
+    /* RFC 1123 allows 0-9 digits as a first character in hostname */
+    virStringFilterChars(name, hostname_validchars);
+    hostname = name;
+    if (strlen(name) > 0 && name[0] == '-')
+        hostname = name + 1;
+
+    if (sethostname(hostname, strlen(hostname)) < 0) {
+        virReportSystemError(errno, "%s", _("Failed to set hostname"));
+        goto cleanup;
+    }
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(name);
+    return ret;
+}
 
 /**
  * lxcContainerChild:
@@ -2268,6 +2299,10 @@ static int lxcContainerChild(void *data)
                                               argv->veths) < 0) {
         goto cleanup;
     }
+
+    if (lxcContainerSetHostname(vmDef) < 0)
+        goto cleanup;
+
 
     /* drop a set of root capabilities */
     if (lxcContainerDropCapabilities(vmDef, !!hasReboot) < 0)
