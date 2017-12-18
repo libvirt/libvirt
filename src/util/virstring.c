@@ -1294,6 +1294,30 @@ virStringStripControlChars(char *str)
 }
 
 /**
+ * virStringFilterChars:
+ * @str: the string to strip
+ * @valid: the valid characters for the string
+ *
+ * Modify the string in-place to remove the characters that aren't
+ * in the list of valid ones.
+ */
+void
+virStringFilterChars(char *str, const char *valid)
+{
+    size_t len, i, j;
+
+    if (!str)
+        return;
+
+    len = strlen(str);
+    for (i = 0, j = 0; i < len; i++) {
+        if (strchr(valid, str[i]))
+            str[j++] = str[i];
+    }
+    str[j] = '\0';
+}
+
+/**
  * virStringToUpper:
  * @str: string to capitalize
  * @dst: where to store the new capitalized string

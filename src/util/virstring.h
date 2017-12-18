@@ -293,6 +293,7 @@ bool virStringHasChars(const char *str,
                        const char *chars);
 bool virStringHasControlChars(const char *str);
 void virStringStripControlChars(char *str);
+void virStringFilterChars(char *str, const char *valid);
 
 bool virStringIsPrintable(const char *str);
 bool virStringBufferIsPrintable(const uint8_t *buf, size_t buflen);

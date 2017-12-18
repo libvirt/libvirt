@@ -767,6 +767,36 @@ static int testStripControlChars(const void *args)
     return ret;
 }
 
+struct testFilterData {
+    const char *string;
+    const char *valid;
+    const char *result;
+};
+
+static int testFilterChars(const void *args)
+{
+    const struct testFilterData *data = args;
+    int ret = -1;
+    char *res = NULL;
+
+    if (VIR_STRDUP(res, data->string) < 0)
+        goto cleanup;
+
+    virStringFilterChars(res, data->valid);
+
+    if (STRNEQ_NULLABLE(res, data->result)) {
+        fprintf(stderr, "Returned '%s', expected '%s'\n",
+                NULLSTR(res), NULLSTR(data->result));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(res);
+    return ret;
+}
+
 static int
 mymain(void)
 {
@@ -1085,6 +1115,22 @@ mymain(void)
     TEST_STRIP_CONTROL_CHARS("\x01H\x02" "E\x03L\x04L\x05O", "HELLO");
     TEST_STRIP_CONTROL_CHARS("\x01\x02\x03\x04HELL\x05O", "HELLO");
     TEST_STRIP_CONTROL_CHARS("\nhello \x01\x07hello\t", "\nhello hello\t");
+
+#define TEST_FILTER_CHARS(str, filter, res) \
+    do { \
+        struct testFilterData filterData = { \
+            .string = str,  \
+            .valid = filter, \
+            .result = res,  \
+        }; \
+        if (virTestRun("Filter chars from " #str, \
+                       testFilterChars, &filterData) < 0) \
+            ret = -1; \
+    } while (0)
+
+    TEST_FILTER_CHARS(NULL, NULL, NULL);
+    TEST_FILTER_CHARS("hello 123 hello", "helo", "hellohello");
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
