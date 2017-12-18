@@ -4440,14 +4440,8 @@ testStoragePoolCreateXML(virConnectPtr conn,
     if (!(newDef = virStoragePoolDefParseString(xml)))
         goto cleanup;
 
-    obj = virStoragePoolObjFindByUUID(privconn->pools, newDef->uuid);
-    if (!obj)
-        obj = virStoragePoolObjFindByName(privconn->pools, newDef->name);
-    if (obj) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("storage pool already exists"));
+    if (virStoragePoolObjIsDuplicate(privconn->pools, newDef, true) < 0)
         goto cleanup;
-    }
 
     if (!(obj = virStoragePoolObjAssignDef(privconn->pools, newDef)))
         goto cleanup;
@@ -4519,6 +4513,9 @@ testStoragePoolDefineXML(virConnectPtr conn,
     newDef->capacity = defaultPoolCap;
     newDef->allocation = defaultPoolAlloc;
     newDef->available = defaultPoolCap - defaultPoolAlloc;
+
+    if (virStoragePoolObjIsDuplicate(privconn->pools, newDef, false) < 0)
+        goto cleanup;
 
     if (!(obj = virStoragePoolObjAssignDef(privconn->pools, newDef)))
         goto cleanup;
