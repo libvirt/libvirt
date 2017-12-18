@@ -107,6 +107,7 @@ struct _virNetSocket {
 
     const char *saslEncoded;
     size_t saslEncodedLength;
+    size_t saslEncodedRawLength;
     size_t saslEncodedOffset;
 #endif
 #if WITH_SSH2
@@ -1927,6 +1928,7 @@ static ssize_t virNetSocketWriteSASL(virNetSocketPtr sock, const char *buf, size
                                     &sock->saslEncodedLength) < 0)
             return -1;
 
+        sock->saslEncodedRawLength = tosend;
         sock->saslEncodedOffset = 0;
     }
 
@@ -1943,11 +1945,20 @@ static ssize_t virNetSocketWriteSASL(virNetSocketPtr sock, const char *buf, size
 
     /* Sent all encoded, so update raw buffer to indicate completion */
     if (sock->saslEncodedOffset == sock->saslEncodedLength) {
+        ssize_t done = sock->saslEncodedRawLength;
         sock->saslEncoded = NULL;
-        sock->saslEncodedOffset = sock->saslEncodedLength = 0;
+        sock->saslEncodedOffset = sock->saslEncodedLength = sock->saslEncodedRawLength = 0;
 
-        /* Mark as complete, so caller detects completion */
-        return tosend;
+        /* Mark as complete, so caller detects completion.
+         *
+         * Note that 'done' is possibly less than our current
+         * 'tosend' value, since if virNetSocketWriteWire
+         * only partially sent the data, we might have been
+         * called a 2nd time to write remaining cached
+         * encoded data. This means that the caller might
+         * also have further raw data pending that's included
+         * in 'tosend' */
+        return done;
     } else {
         /* Still have stuff pending in saslEncoded buffer.
          * Pretend to caller that we didn't send any yet.
