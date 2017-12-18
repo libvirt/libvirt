@@ -1133,7 +1133,7 @@ virStoragePoolObjGetNames(virStoragePoolObjListPtr pools,
 int
 virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
                              virStoragePoolDefPtr def,
-                             unsigned int check_active)
+                             bool check_active)
 {
     int ret = -1;
     virStoragePoolObjPtr obj = NULL;
