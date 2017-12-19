@@ -81,6 +81,7 @@
   /usr/share/proll/** r,
   /usr/share/vgabios/** r,
   /usr/share/seabios/** r,
+  /usr/share/misc/sgabios.bin r,
   /usr/share/ovmf/** r,
   /usr/share/OVMF/** r,
   /usr/share/AAVMF/** r,
