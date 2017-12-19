@@ -141,7 +141,6 @@
   /usr/bin/qemu-mipsel rmix,
   /usr/bin/qemu-mipsn32 rmix,
   /usr/bin/qemu-mipsn32el rmix,
-  /usr/bin/qemu-nbd rmix,
   /usr/bin/qemu-or32 rmix,
   /usr/bin/qemu-ppc rmix,
   /usr/bin/qemu-ppc64 rmix,
