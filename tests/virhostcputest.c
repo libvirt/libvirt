@@ -247,6 +247,7 @@ mymain(void)
         {"subcores2", VIR_ARCH_PPC64},
         /* subcores, invalid configuration */
         {"subcores3", VIR_ARCH_PPC64},
+        {"with-frequency", VIR_ARCH_S390X},
     };
 
     if (virInitialize() < 0)
