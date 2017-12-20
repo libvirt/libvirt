@@ -259,7 +259,10 @@ int qemuMonitorJSONIOProcess(qemuMonitorPtr mon,
         }
     }
 
+#if DEBUG_IO
     VIR_DEBUG("Total used %d bytes out of %zd available in buffer", used, len);
+#endif
+
     return used;
 }
 
