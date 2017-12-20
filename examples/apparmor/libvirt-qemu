@@ -88,8 +88,11 @@
   /usr/share/qemu-efi/** r,
   /usr/share/slof/** r,
 
-  # access PKI infrastructure
-  /etc/pki/libvirt-vnc/** r,
+  # pki for libvirt-vnc and libvirt-spice (LP: #901272, #1690140)
+  /etc/pki/CA/ r,
+  /etc/pki/CA/* r,
+  /etc/pki/libvirt{,-spice,-vnc}/ r,
+  /etc/pki/libvirt{,-spice,-vnc}/** r,
 
   # the various binaries
   /usr/bin/kvm rmix,
@@ -155,12 +158,6 @@
   # for Debian/Ubuntu qemu-block-extra / RPMs qemu-block-* (LP: #1554761)
   /usr/{lib,lib64}/qemu/*.so mr,
   /usr/lib/@{multiarch}/qemu/*.so mr,
-
-  # for use by libvirt-vnc (LP: #901272)
-  /etc/pki/CA/ r,
-  /etc/pki/CA/* r,
-  /etc/pki/libvirt/ r,
-  /etc/pki/libvirt/** r,
 
   # for save and resume
   /{usr/,}bin/dash rmix,
