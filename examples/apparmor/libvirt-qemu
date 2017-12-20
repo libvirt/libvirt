@@ -152,8 +152,9 @@
   /usr/bin/qemu-sparc64 rmix,
   /usr/bin/qemu-unicore32 rmix,
   /usr/bin/qemu-x86_64 rmix,
-  /usr/{lib,lib64}/qemu/block-curl.so mr,
-  /usr/{lib,lib64}/qemu/block-rbd.so mr,
+  # for Debian/Ubuntu qemu-block-extra / RPMs qemu-block-* (LP: #1554761)
+  /usr/{lib,lib64}/qemu/*.so mr,
+  /usr/lib/@{multiarch}/qemu/*.so mr,
 
   # for use by libvirt-vnc (LP: #901272)
   /etc/pki/CA/ r,
