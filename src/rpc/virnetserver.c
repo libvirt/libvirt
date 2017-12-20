@@ -774,10 +774,8 @@ void virNetServerDispose(void *obj)
         virObjectUnref(srv->programs[i]);
     VIR_FREE(srv->programs);
 
-    for (i = 0; i < srv->nclients; i++) {
-        virNetServerClientClose(srv->clients[i]);
+    for (i = 0; i < srv->nclients; i++)
         virObjectUnref(srv->clients[i]);
-    }
     VIR_FREE(srv->clients);
 
     VIR_FREE(srv->mdnsGroupName);
@@ -795,6 +793,9 @@ void virNetServerClose(virNetServerPtr srv)
 
     for (i = 0; i < srv->nservices; i++)
         virNetServerServiceClose(srv->services[i]);
+
+    for (i = 0; i < srv->nclients; i++)
+        virNetServerClientClose(srv->clients[i]);
 
     virObjectUnlock(srv);
 }
