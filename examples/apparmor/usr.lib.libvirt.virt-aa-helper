@@ -22,6 +22,7 @@ profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
   # for hostdev
   /sys/devices/ r,
   /sys/devices/** r,
+  /sys/bus/usb/devices/ r,
   deny /dev/sd* r,
   deny /dev/vd* r,
   deny /dev/dm-* r,
