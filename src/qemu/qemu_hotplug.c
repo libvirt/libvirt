@@ -1565,6 +1565,7 @@ qemuDomainAddChardevTLSObjects(virConnectPtr conn,
 static int
 qemuDomainDelChardevTLSObjects(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
+                               virDomainChrSourceDefPtr dev,
                                const char *inAlias)
 {
     int ret = -1;
@@ -1572,6 +1573,12 @@ qemuDomainDelChardevTLSObjects(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *tlsAlias = NULL;
     char *secAlias = NULL;
+
+    if (dev->type != VIR_DOMAIN_CHR_TYPE_TCP ||
+        dev->data.tcp.haveTLS != VIR_TRISTATE_BOOL_YES) {
+        ret = 0;
+        goto cleanup;
+    }
 
     if (!(tlsAlias = qemuAliasTLSObjFromSrcAlias(inAlias)))
         goto cleanup;
@@ -4178,10 +4185,8 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    if (chr->source->type == VIR_DOMAIN_CHR_TYPE_TCP &&
-        chr->source->data.tcp.haveTLS == VIR_TRISTATE_BOOL_YES &&
-        rc == 0 &&
-        qemuDomainDelChardevTLSObjects(driver, vm, charAlias) < 0)
+    if (rc == 0 &&
+        qemuDomainDelChardevTLSObjects(driver, vm, chr->source, charAlias) < 0)
         goto cleanup;
 
     virDomainAuditChardev(vm, chr, NULL, "detach", rc == 0);
@@ -4243,7 +4248,8 @@ qemuDomainRemoveRNGDevice(virQEMUDriverPtr driver,
 
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
         rc == 0 &&
-        qemuDomainDelChardevTLSObjects(driver, vm, charAlias) < 0)
+        qemuDomainDelChardevTLSObjects(driver, vm, rng->source.chardev,
+                                       charAlias) < 0)
         goto cleanup;
 
     virDomainAuditRNG(vm, rng, NULL, "detach", rc == 0);
