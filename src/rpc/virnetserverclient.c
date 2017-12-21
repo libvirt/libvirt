@@ -354,6 +354,23 @@ static void virNetServerClientSockTimerFunc(int timer,
 }
 
 
+/**
+ * virNetServerClientAuthMethodImpliesAuthenticated:
+ * @auth: authentication method to check
+ *
+ * Check if the passed authentication method implies that a client is
+ * automatically authenticated.
+ *
+ * Returns true if @auth implies that a client is automatically
+ * authenticated, otherwise false.
+ */
+static bool
+virNetServerClientAuthMethodImpliesAuthenticated(int auth)
+{
+    return auth == VIR_NET_SERVER_SERVICE_AUTH_NONE;
+}
+
+
 static virNetServerClientPtr
 virNetServerClientNewInternal(unsigned long long id,
                               virNetSocketPtr sock,
@@ -1521,7 +1538,7 @@ int virNetServerClientSendMessage(virNetServerClientPtr client,
 bool
 virNetServerClientNeedAuthLocked(virNetServerClientPtr client)
 {
-    return !(client->auth == VIR_NET_SERVER_SERVICE_AUTH_NONE);
+    return !virNetServerClientAuthMethodImpliesAuthenticated(client->auth);
 }
 
 
