@@ -3279,7 +3279,7 @@ remoteDispatchAuthList(virNetServerPtr server,
     if (VIR_ALLOC_N(ret->types.types_val, ret->types.types_len) < 0)
         goto cleanup;
 
-    switch (auth) {
+    switch ((virNetServerServiceAuthMethods) auth) {
     case VIR_NET_SERVER_SERVICE_AUTH_NONE:
         ret->types.types_val[0] = REMOTE_AUTH_NONE;
         break;
@@ -3289,8 +3289,6 @@ remoteDispatchAuthList(virNetServerPtr server,
     case VIR_NET_SERVER_SERVICE_AUTH_SASL:
         ret->types.types_val[0] = REMOTE_AUTH_SASL;
         break;
-    default:
-        ret->types.types_val[0] = REMOTE_AUTH_NONE;
     }
 
     rv = 0;

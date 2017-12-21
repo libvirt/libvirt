@@ -27,11 +27,11 @@
 # include "virnetserverprogram.h"
 # include "virobject.h"
 
-enum {
+typedef enum {
     VIR_NET_SERVER_SERVICE_AUTH_NONE = 0,
     VIR_NET_SERVER_SERVICE_AUTH_SASL,
     VIR_NET_SERVER_SERVICE_AUTH_POLKIT,
-};
+} virNetServerServiceAuthMethods;
 
 typedef int (*virNetServerServiceDispatchFunc)(virNetServerServicePtr svc,
                                                virNetSocketPtr sock,
