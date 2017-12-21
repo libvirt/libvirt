@@ -116,9 +116,8 @@ virNetServerNewPostExecRestart;
 virNetServerNextClientID;
 virNetServerPreExecRestart;
 virNetServerProcessClients;
+virNetServerSetClientAuthenticated;
 virNetServerStart;
-virNetServerTrackCompletedAuth;
-virNetServerTrackPendingAuth;
 virNetServerUpdateServices;
 
 
@@ -152,7 +151,7 @@ virNetServerClientRemoteAddrStringSASL;
 virNetServerClientRemoteAddrStringURI;
 virNetServerClientRemoveFilter;
 virNetServerClientSendMessage;
-virNetServerClientSetAuth;
+virNetServerClientSetAuthLocked;
 virNetServerClientSetCloseHook;
 virNetServerClientSetDispatcher;
 virNetServerClientSetReadonly;

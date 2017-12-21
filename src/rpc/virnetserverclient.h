@@ -79,7 +79,7 @@ void virNetServerClientRemoveFilter(virNetServerClientPtr client,
                                     int filterID);
 
 int virNetServerClientGetAuth(virNetServerClientPtr client);
-void virNetServerClientSetAuth(virNetServerClientPtr client, int auth);
+void virNetServerClientSetAuthLocked(virNetServerClientPtr client, int auth);
 bool virNetServerClientGetReadonly(virNetServerClientPtr client);
 void virNetServerClientSetReadonly(virNetServerClientPtr client, bool readonly);
 unsigned long long virNetServerClientGetID(virNetServerClientPtr client);

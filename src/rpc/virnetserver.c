@@ -737,6 +737,29 @@ int virNetServerSetTLSContext(virNetServerPtr srv,
 #endif
 
 
+/**
+ * virNetServerSetClientAuthenticated:
+ * @srv: server must be unlocked
+ * @client: client must be unlocked
+ *
+ * Mark @client as authenticated and tracks on @srv that the
+ * authentication of this @client has been completed. Also it checks
+ * the limits of @srv.
+ */
+void
+virNetServerSetClientAuthenticated(virNetServerPtr srv,
+                                   virNetServerClientPtr client)
+{
+    virObjectLock(srv);
+    virObjectLock(client);
+    virNetServerClientSetAuthLocked(client, VIR_NET_SERVER_SERVICE_AUTH_NONE);
+    virNetServerTrackCompletedAuthLocked(srv);
+    virNetServerCheckLimits(srv);
+    virObjectUnlock(client);
+    virObjectUnlock(srv);
+}
+
+
 static void
 virNetServerUpdateServicesLocked(virNetServerPtr srv,
                                  bool enabled)
@@ -814,24 +837,6 @@ virNetServerTrackCompletedAuthLocked(virNetServerPtr srv)
     return --srv->nclients_unauth;
 }
 
-size_t virNetServerTrackPendingAuth(virNetServerPtr srv)
-{
-    size_t ret;
-    virObjectLock(srv);
-    ret = virNetServerTrackPendingAuthLocked(srv);
-    virObjectUnlock(srv);
-    return ret;
-}
-
-size_t virNetServerTrackCompletedAuth(virNetServerPtr srv)
-{
-    size_t ret;
-    virObjectLock(srv);
-    ret = virNetServerTrackCompletedAuthLocked(srv);
-    virNetServerCheckLimits(srv);
-    virObjectUnlock(srv);
-    return ret;
-}
 
 bool
 virNetServerHasClients(virNetServerPtr srv)
