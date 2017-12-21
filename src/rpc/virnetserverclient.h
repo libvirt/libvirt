@@ -147,6 +147,7 @@ int virNetServerClientSendMessage(virNetServerClientPtr client,
                                   virNetMessagePtr msg);
 
 bool virNetServerClientNeedAuth(virNetServerClientPtr client);
+bool virNetServerClientNeedAuthLocked(virNetServerClientPtr client);
 
 int virNetServerClientGetTransport(virNetServerClientPtr client);
 int virNetServerClientGetInfo(virNetServerClientPtr client,

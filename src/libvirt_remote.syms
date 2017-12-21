@@ -143,6 +143,7 @@ virNetServerClientIsLocal;
 virNetServerClientIsSecure;
 virNetServerClientLocalAddrStringSASL;
 virNetServerClientNeedAuth;
+virNetServerClientNeedAuthLocked;
 virNetServerClientNew;
 virNetServerClientNewPostExecRestart;
 virNetServerClientPreExecRestart;
