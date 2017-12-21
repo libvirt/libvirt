@@ -805,9 +805,6 @@ void virNetServerDispose(void *obj)
 
     VIR_FREE(srv->name);
 
-    for (i = 0; i < srv->nservices; i++)
-        virNetServerServiceToggle(srv->services[i], false);
-
     virThreadPoolFree(srv->workers);
 
     for (i = 0; i < srv->nservices; i++)
