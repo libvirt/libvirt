@@ -147,7 +147,7 @@ const char *virNetServerClientRemoteAddrStringURI(virNetServerClientPtr client);
 int virNetServerClientSendMessage(virNetServerClientPtr client,
                                   virNetMessagePtr msg);
 
-bool virNetServerClientNeedAuth(virNetServerClientPtr client);
+bool virNetServerClientIsAuthenticated(virNetServerClientPtr client);
 bool virNetServerClientIsAuthPendingLocked(virNetServerClientPtr client);
 void virNetServerClientSetAuthPendingLocked(virNetServerClientPtr client, bool auth_pending);
 

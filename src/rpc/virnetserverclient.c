@@ -1566,13 +1566,13 @@ int virNetServerClientSendMessage(virNetServerClientPtr client,
 
 
 bool
-virNetServerClientNeedAuth(virNetServerClientPtr client)
+virNetServerClientIsAuthenticated(virNetServerClientPtr client)
 {
-    bool need;
+    bool authenticated;
     virObjectLock(client);
-    need = !virNetServerClientAuthMethodImpliesAuthenticated(client->auth);
+    authenticated = virNetServerClientAuthMethodImpliesAuthenticated(client->auth);
     virObjectUnlock(client);
-    return need;
+    return authenticated;
 }
 
 
