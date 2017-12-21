@@ -341,6 +341,8 @@ mymain(void)
     EXEC_RESTART_TEST("client-ids", 1);
     EXEC_RESTART_TEST("client-timestamp", 1);
     EXEC_RESTART_TEST_FAIL("anon-clients", 2);
+    EXEC_RESTART_TEST("client-auth-pending", 1);
+    EXEC_RESTART_TEST_FAIL("client-auth-pending-failure", 1);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
