@@ -42,6 +42,7 @@
         {
           "id": 1,
           "auth": 1,
+          "auth_pending": true,
           "readonly": true,
           "nrequests_max": 15,
           "sock": {
@@ -54,6 +55,7 @@
         {
           "id": 2,
           "auth": 2,
+          "auth_pending": true,
           "readonly": true,
           "nrequests_max": 66,
           "sock": {

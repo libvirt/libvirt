@@ -286,7 +286,7 @@ int virNetServerAddClient(virNetServerPtr srv,
     srv->clients[srv->nclients-1] = virObjectRef(client);
 
     virObjectLock(client);
-    if (virNetServerClientNeedAuthLocked(client))
+    if (virNetServerClientIsAuthPendingLocked(client))
         virNetServerTrackPendingAuthLocked(srv);
     virObjectUnlock(client);
 
@@ -738,6 +738,25 @@ int virNetServerSetTLSContext(virNetServerPtr srv,
 
 
 /**
+ * virNetServerSetClientAuthCompletedLocked:
+ * @srv: server must be locked by the caller
+ * @client: client must be locked by the caller
+ *
+ * If the client authentication was pending, clear that pending and
+ * update the server tracking.
+ */
+static void
+virNetServerSetClientAuthCompletedLocked(virNetServerPtr srv,
+                                         virNetServerClientPtr client)
+{
+    if (virNetServerClientIsAuthPendingLocked(client)) {
+        virNetServerClientSetAuthPendingLocked(client, false);
+        virNetServerTrackCompletedAuthLocked(srv);
+    }
+}
+
+
+/**
  * virNetServerSetClientAuthenticated:
  * @srv: server must be unlocked
  * @client: client must be unlocked
@@ -753,7 +772,7 @@ virNetServerSetClientAuthenticated(virNetServerPtr srv,
     virObjectLock(srv);
     virObjectLock(client);
     virNetServerClientSetAuthLocked(client, VIR_NET_SERVER_SERVICE_AUTH_NONE);
-    virNetServerTrackCompletedAuthLocked(srv);
+    virNetServerSetClientAuthCompletedLocked(srv, client);
     virNetServerCheckLimits(srv);
     virObjectUnlock(client);
     virObjectUnlock(srv);
@@ -872,8 +891,8 @@ virNetServerProcessClients(virNetServerPtr srv)
         if (virNetServerClientIsClosedLocked(client)) {
             VIR_DELETE_ELEMENT(srv->clients, i, srv->nclients);
 
-            if (virNetServerClientNeedAuthLocked(client))
-                virNetServerTrackCompletedAuthLocked(srv);
+            /* Update server authentication tracking */
+            virNetServerSetClientAuthCompletedLocked(srv, client);
             virObjectUnlock(client);
 
             virNetServerCheckLimits(srv);

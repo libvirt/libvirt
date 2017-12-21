@@ -41,6 +41,7 @@
         {
           "id": 1,
           "auth": 1,
+          "auth_pending": true,
           "readonly": true,
           "nrequests_max": 15,
           "conn_time": 1234567890,
@@ -54,6 +55,7 @@
         {
           "id": 2,
           "auth": 2,
+          "auth_pending": true,
           "readonly": true,
           "nrequests_max": 66,
           "conn_time": 1234567890,
