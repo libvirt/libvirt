@@ -148,7 +148,6 @@ int virNetServerClientSendMessage(virNetServerClientPtr client,
                                   virNetMessagePtr msg);
 
 bool virNetServerClientNeedAuth(virNetServerClientPtr client);
-bool virNetServerClientNeedAuthLocked(virNetServerClientPtr client);
 bool virNetServerClientIsAuthPendingLocked(virNetServerClientPtr client);
 void virNetServerClientSetAuthPendingLocked(virNetServerClientPtr client, bool auth_pending);
 
