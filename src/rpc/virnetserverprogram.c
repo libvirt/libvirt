@@ -400,8 +400,8 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
     /* If client is marked as needing auth, don't allow any RPC ops
      * which are except for authentication ones
      */
-    if (virNetServerClientNeedAuth(client) &&
-        dispatcher->needAuth) {
+    if (dispatcher->needAuth &&
+        virNetServerClientNeedAuth(client)) {
         /* Explicitly *NOT* calling  remoteDispatchAuthError() because
            we want back-compatibility with libvirt clients which don't
            support the VIR_ERR_AUTH_FAILED error code */
