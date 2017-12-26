@@ -271,7 +271,7 @@ virDomainCapsCPUModelsGet(virDomainCapsCPUModelsPtr cpuModels,
         return NULL;
 
     for (i = 0; i < cpuModels->nmodels; i++) {
-        if (STREQ(cpuModels->models[i].name, name))
+        if (STRCASEEQ(cpuModels->models[i].name, name))
             return cpuModels->models + i;
     }
 
