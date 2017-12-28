@@ -2738,6 +2738,40 @@ vshReadlineCommandFindOpt(const vshCmd *partial,
 }
 
 
+static int
+vshCompleterFilter(char ***list,
+                   const char *text)
+{
+    char **newList = NULL;
+    size_t newList_len = 0;
+    size_t list_len;
+    size_t i;
+
+    if (!list || !*list)
+        return -1;
+
+    list_len = virStringListLength((const char **) *list);
+
+    if (VIR_ALLOC_N(newList, list_len + 1) < 0)
+        return -1;
+
+    for (i = 0; i < list_len; i++) {
+        if (!STRPREFIX((*list)[i], text)) {
+            VIR_FREE((*list)[i]);
+            continue;
+        }
+
+        VIR_STEAL_PTR(newList[newList_len], (*list)[i]);
+        newList_len++;
+    }
+
+    ignore_value(VIR_REALLOC_N_QUIET(newList, newList_len + 1));
+    VIR_FREE(*list);
+    *list = newList;
+    return 0;
+}
+
+
 static char *
 vshReadlineParse(const char *text, int state)
 {
@@ -2793,7 +2827,14 @@ vshReadlineParse(const char *text, int state)
                 char **completer_list = opt->completer(autoCompleteOpaque,
                                                        partial,
                                                        opt->completer_flags);
-                if (virStringListMerge(&list, &completer_list) < 0) {
+
+                /* For string list returned by completer we have to do
+                 * filtering based on @text because completer returns all
+                 * possible strings. */
+
+                if (completer_list &&
+                    (vshCompleterFilter(&completer_list, text) < 0 ||
+                     virStringListMerge(&list, &completer_list) < 0)) {
                     virStringListFree(completer_list);
                     goto cleanup;
                 }
