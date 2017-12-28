@@ -75,7 +75,7 @@ qemuSetupImagePathCgroup(virDomainObjPtr vm,
 
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
                              virCgroupGetDevicePermsString(perms),
-                             ret == 0);
+                             ret);
 
     return ret;
 }
@@ -129,7 +129,7 @@ qemuTeardownImageCgroup(virDomainObjPtr vm,
     ret = virCgroupDenyDevicePath(priv->cgroup, src->path, perms, true);
 
     virDomainAuditCgroupPath(vm, priv->cgroup, "deny", src->path,
-                             virCgroupGetDevicePermsString(perms), ret == 0);
+                             virCgroupGetDevicePermsString(perms), ret);
 
     return ret;
 }
@@ -187,7 +187,7 @@ qemuSetupChrSourceCgroup(virDomainObjPtr vm,
     ret = virCgroupAllowDevicePath(priv->cgroup, source->data.file.path,
                                    VIR_CGROUP_DEVICE_RW, false);
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
-                             source->data.file.path, "rw", ret == 0);
+                             source->data.file.path, "rw", ret);
 
     return ret;
 }
@@ -211,7 +211,7 @@ qemuTeardownChrSourceCgroup(virDomainObjPtr vm,
     ret = virCgroupDenyDevicePath(priv->cgroup, source->data.file.path,
                                   VIR_CGROUP_DEVICE_RW, false);
     virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
-                             source->data.file.path, "rw", ret == 0);
+                             source->data.file.path, "rw", ret);
 
     return ret;
 }
@@ -261,7 +261,7 @@ qemuSetupInputCgroup(virDomainObjPtr vm,
         VIR_DEBUG("Process path '%s' for input device", dev->source.evdev);
         ret = virCgroupAllowDevicePath(priv->cgroup, dev->source.evdev,
                                        VIR_CGROUP_DEVICE_RW, false);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", dev->source.evdev, "rw", ret == 0);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", dev->source.evdev, "rw", ret);
         break;
     }
 
@@ -284,7 +284,7 @@ qemuTeardownInputCgroup(virDomainObjPtr vm,
         VIR_DEBUG("Process path '%s' for input device", dev->source.evdev);
         ret = virCgroupDenyDevicePath(priv->cgroup, dev->source.evdev,
                                       VIR_CGROUP_DEVICE_RWM, false);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "deny", dev->source.evdev, "rwm", ret == 0);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "deny", dev->source.evdev, "rwm", ret);
         break;
     }
 
@@ -313,7 +313,7 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
         rv = virCgroupAllowDevicePath(priv->cgroup, path[i], perms[i], false);
         virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path[i],
                                  virCgroupGetDevicePermsString(perms[i]),
-                                 ret == 0);
+                                 rv);
         if (rv < 0)
             goto cleanup;
     }
@@ -357,7 +357,7 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
         rv = virCgroupDenyDevicePath(priv->cgroup, path[i],
                                      VIR_CGROUP_DEVICE_RWM, false);
         virDomainAuditCgroupPath(vm, priv->cgroup,
-                                 "deny", path[i], "rwm", rv == 0);
+                                 "deny", path[i], "rwm", rv);
         if (rv < 0)
             goto cleanup;
     }
@@ -388,7 +388,7 @@ qemuSetupMemoryDevicesCgroup(virDomainObjPtr vm,
     rv = virCgroupAllowDevicePath(priv->cgroup, mem->nvdimmPath,
                                   VIR_CGROUP_DEVICE_RW, false);
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
-                             mem->nvdimmPath, "rw", rv == 0);
+                             mem->nvdimmPath, "rw", rv);
 
     return rv;
 }
@@ -410,7 +410,7 @@ qemuTeardownMemoryDevicesCgroup(virDomainObjPtr vm,
     rv = virCgroupDenyDevicePath(priv->cgroup, mem->nvdimmPath,
                                  VIR_CGROUP_DEVICE_RWM, false);
     virDomainAuditCgroupPath(vm, priv->cgroup,
-                             "deny", mem->nvdimmPath, "rwm", rv == 0);
+                             "deny", mem->nvdimmPath, "rwm", rv);
     return rv;
 }
 
@@ -434,7 +434,7 @@ qemuSetupGraphicsCgroup(virDomainObjPtr vm,
     ret = virCgroupAllowDevicePath(priv->cgroup, rendernode,
                                    VIR_CGROUP_DEVICE_RW, false);
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow", rendernode,
-                             "rw", ret == 0);
+                             "rw", ret);
     return ret;
 }
 
@@ -573,7 +573,7 @@ qemuSetupRNGCgroup(virDomainObjPtr vm,
                                       VIR_CGROUP_DEVICE_RW, false);
         virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
                                  rng->source.file,
-                                 "rw", rv == 0);
+                                 "rw", rv);
         if (rv < 0 &&
             !virLastErrorIsSystemErrno(ENOENT))
             return -1;
@@ -600,7 +600,7 @@ qemuTeardownRNGCgroup(virDomainObjPtr vm,
                                      VIR_CGROUP_DEVICE_RW, false);
         virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
                                  rng->source.file,
-                                 "rw", rv == 0);
+                                 "rw", rv);
         if (rv < 0 &&
             !virLastErrorIsSystemErrno(ENOENT))
             return -1;
@@ -693,7 +693,7 @@ qemuSetupDevicesCgroup(virDomainObjPtr vm)
 
         rv = virCgroupAllowDevicePath(priv->cgroup, deviceACL[i],
                                       VIR_CGROUP_DEVICE_RW, false);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", deviceACL[i], "rw", rv == 0);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", deviceACL[i], "rw", rv);
         if (rv < 0 &&
             !virLastErrorIsSystemErrno(ENOENT))
             goto cleanup;
