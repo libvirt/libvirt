@@ -799,8 +799,7 @@ vshCommandFree(vshCmd *cmd)
 
         c = c->next;
 
-        if (tmp->opts)
-            vshCommandOptFree(tmp->opts);
+        vshCommandOptFree(tmp->opts);
         VIR_FREE(tmp);
     }
 }
@@ -1581,8 +1580,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
         vshCommandFree(ctl->cmd);
         ctl->cmd = NULL;
     }
-    if (first)
-        vshCommandOptFree(first);
+    vshCommandOptFree(first);
     VIR_FREE(tkdata);
     return false;
 }
