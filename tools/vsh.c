@@ -2772,6 +2772,60 @@ vshCompleterFilter(char ***list,
 }
 
 
+static int
+vshReadlineOptionsPrune(char ***list,
+                        vshCmd *last)
+{
+    char **newList = NULL;
+    size_t newList_len = 0;
+    size_t list_len;
+    size_t i;
+
+    if (!list || !*list)
+        return -1;
+
+    if (!last->opts)
+        return 0;
+
+    list_len = virStringListLength((const char **) *list);
+
+    if (VIR_ALLOC_N(newList, list_len + 1) < 0)
+        return -1;
+
+    for (i = 0; i < list_len; i++) {
+        const char *list_opt = STRSKIP((*list)[i], "--");
+        bool exist = false;
+        vshCmdOpt *opt =  last->opts;
+
+        /* Should never happen (TM) */
+        if (!list_opt)
+            return -1;
+
+        while (opt) {
+            if (STREQ(opt->def->name, list_opt)) {
+                exist = true;
+                break;
+            }
+
+            opt = opt->next;
+        }
+
+        if (exist) {
+            VIR_FREE((*list)[i]);
+            continue;
+        }
+
+        VIR_STEAL_PTR(newList[newList_len], (*list)[i]);
+        newList_len++;
+    }
+
+    ignore_value(VIR_REALLOC_N_QUIET(newList, newList_len + 1));
+    VIR_FREE(*list);
+    *list = newList;
+    return 0;
+}
+
+
 static char *
 vshReadlineParse(const char *text, int state)
 {
@@ -2820,8 +2874,12 @@ vshReadlineParse(const char *text, int state)
         if (!cmd) {
             list = vshReadlineCommandGenerator(text);
         } else {
-            if (!opt || (opt->type != VSH_OT_DATA && opt->type != VSH_OT_STRING))
+            if (!opt || (opt->type != VSH_OT_DATA && opt->type != VSH_OT_STRING)) {
                 list = vshReadlineOptionsGenerator(text, cmd);
+
+                if (vshReadlineOptionsPrune(&list, partial) < 0)
+                    goto cleanup;
+            }
 
             if (opt && opt->completer) {
                 char **completer_list = opt->completer(autoCompleteOpaque,
