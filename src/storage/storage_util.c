@@ -1957,6 +1957,8 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
     target->timestamps->ctime = get_stat_ctime(sb);
     target->timestamps->mtime = get_stat_mtime(sb);
 
+    target->type = VIR_STORAGE_TYPE_FILE;
+
     VIR_FREE(target->perms->label);
 
 #if WITH_SELINUX
