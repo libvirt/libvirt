@@ -798,6 +798,9 @@ virNodeDeviceObjListGetNamesCallback(void *payload,
     if (data->error)
         return 0;
 
+    if (data->nnames >= data->maxnames)
+        return 0;
+
     virObjectLock(obj);
     def = obj->def;
 
