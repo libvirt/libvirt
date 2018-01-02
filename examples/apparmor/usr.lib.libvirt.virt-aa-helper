@@ -51,7 +51,7 @@ profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
   /var/lib/libvirt/images/** r,
   /{media,mnt,opt,srv}/** r,
   # For virt-sandbox
-  /run/libvirt/**/[sv]d[a-z] r
+  /{,var/}run/libvirt/**/[sv]d[a-z] r,
 
   /**.img r,
   /**.raw r,
