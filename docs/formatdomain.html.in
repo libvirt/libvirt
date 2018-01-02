@@ -6603,6 +6603,7 @@ qemu-kvm -net nic,model=? /dev/null
 
 <pre>
 ...
+&lt;devices&gt;
   &lt;!-- KVM virtio console --&gt;
   &lt;console type='pty'&gt;
     &lt;source path='/dev/pts/5'/&gt;
@@ -6694,7 +6695,7 @@ qemu-kvm -net nic,model=? /dev/null
 
 <pre>
 ...
-&lt;/devices&gt;
+&lt;devices&gt;
   &lt;console type='pty'&gt;
     &lt;target type='serial'/&gt;
   &lt;/console&gt;
@@ -6719,21 +6720,21 @@ qemu-kvm -net nic,model=? /dev/null
 
 <pre>
 ...
-&lt;/devices&gt;
+&lt;devices&gt;
   &lt;serial type='pty'/&gt;
 &lt;/devices&gt;
 ...</pre>
 
 <pre>
 ...
-&lt;/devices&gt;
+&lt;devices&gt;
   &lt;console type='pty'/&gt;
 &lt;/devices&gt;
 ...</pre>
 
 <pre>
 ...
-&lt;/devices&gt;
+&lt;devices&gt;
   &lt;serial type='pty'/&gt;
   &lt;console type='pty'/&gt;
 &lt;/devices&gt;
