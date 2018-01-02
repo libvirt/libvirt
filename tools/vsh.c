@@ -1392,10 +1392,8 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
     vshCmd *clast = NULL;
     vshCmdOpt *first = NULL;
 
-    if (ctl->cmd) {
-        vshCommandFree(ctl->cmd);
-        ctl->cmd = NULL;
-    }
+    vshCommandFree(ctl->cmd);
+    ctl->cmd = NULL;
 
     while (1) {
         vshCmdOpt *last = NULL;
@@ -1576,10 +1574,8 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
     return true;
 
  syntaxError:
-    if (ctl->cmd) {
-        vshCommandFree(ctl->cmd);
-        ctl->cmd = NULL;
-    }
+    vshCommandFree(ctl->cmd);
+    ctl->cmd = NULL;
     vshCommandOptFree(first);
     VIR_FREE(tkdata);
     return false;
