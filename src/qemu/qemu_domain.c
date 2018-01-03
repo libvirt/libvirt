@@ -9505,6 +9505,44 @@ qemuDomainSetupAllRNGs(virQEMUDriverConfigPtr cfg,
 }
 
 
+static int
+qemuDomainSetupLoader(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+                      virDomainObjPtr vm,
+                      const struct qemuDomainCreateDeviceData *data)
+{
+    virDomainLoaderDefPtr loader = vm->def->os.loader;
+    int ret = -1;
+
+    VIR_DEBUG("Setting up loader");
+
+    if (loader) {
+        switch ((virDomainLoader) loader->type) {
+        case VIR_DOMAIN_LOADER_TYPE_ROM:
+            if (qemuDomainCreateDevice(loader->path, data, false) < 0)
+                goto cleanup;
+            break;
+
+        case VIR_DOMAIN_LOADER_TYPE_PFLASH:
+            if (qemuDomainCreateDevice(loader->path, data, false) < 0)
+                goto cleanup;
+
+            if (loader->nvram &&
+                qemuDomainCreateDevice(loader->nvram, data, false) < 0)
+                goto cleanup;
+            break;
+
+        case VIR_DOMAIN_LOADER_TYPE_LAST:
+            break;
+        }
+    }
+
+    VIR_DEBUG("Setup loader");
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
 int
 qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
                          virSecurityManagerPtr mgr,
@@ -9571,6 +9609,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (qemuDomainSetupAllRNGs(cfg, vm, &data) < 0)
+        goto cleanup;
+
+    if (qemuDomainSetupLoader(cfg, vm, &data) < 0)
         goto cleanup;
 
     /* Save some mount points because we want to share them with the host */
