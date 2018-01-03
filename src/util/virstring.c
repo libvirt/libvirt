@@ -280,7 +280,7 @@ virStringListCopy(char ***dst,
 
 /**
  * virStringListFree:
- * @str_array: a NULL-terminated array of strings to free
+ * @strings: a NULL-terminated array of strings to free
  *
  * Frees a NULL-terminated array of strings, and the array itself.
  * If called on a NULL value, virStringListFree() simply returns.
@@ -1041,7 +1041,7 @@ int virStringSortRevCompare(const void *a, const void *b)
  * @matches: pointer to an array to be filled with NULL terminated list of matches
  *
  * Performs a POSIX extended regex search against a string and return all matching substrings.
- * The @result value should be freed with virStringListFree() when no longer
+ * The @matches value should be freed with virStringListFree() when no longer
  * required.
  *
  * @code
@@ -1319,7 +1319,7 @@ virStringFilterChars(char *str, const char *valid)
 
 /**
  * virStringToUpper:
- * @str: string to capitalize
+ * @src string to capitalize
  * @dst: where to store the new capitalized string
  *
  * Capitalize the string with replacement of all '-' characters for '_'
