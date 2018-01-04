@@ -2608,6 +2608,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                           int *nusbcontroller)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int address_type = def->info.type;
     const virDomainPCIControllerOpts *pciopts;
     const char *modelName = NULL;
 
@@ -2617,23 +2618,25 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         switch ((virDomainControllerModelSCSI) def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
-            if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+            switch ((virDomainDeviceAddressType) address_type) {
+            case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
                 virBufferAddLit(&buf, "virtio-scsi-ccw");
-                if (def->iothread)
-                    virBufferAsprintf(&buf, ",iothread=iothread%u",
-                                      def->iothread);
-            } else if (def->info.type ==
-                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
+                break;
+            case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
                 virBufferAddLit(&buf, "virtio-scsi-s390");
-            } else if (def->info.type ==
-                       VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO) {
+                break;
+            case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
                 virBufferAddLit(&buf, "virtio-scsi-device");
-            } else {
+                break;
+            default:
                 virBufferAddLit(&buf, "virtio-scsi-pci");
-                if (def->iothread)
-                    virBufferAsprintf(&buf, ",iothread=iothread%u",
-                                      def->iothread);
             }
+
+            if (def->iothread) {
+                virBufferAsprintf(&buf, ",iothread=iothread%u",
+                                  def->iothread);
+            }
+
             if (qemuBuildVirtioOptionsStr(&buf, def->virtio, qemuCaps) < 0)
                 goto error;
             break;
@@ -2661,18 +2664,20 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
-        if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        switch ((virDomainDeviceAddressType) address_type) {
+        case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
             virBufferAddLit(&buf, "virtio-serial-pci");
-        } else if (def->info.type ==
-                   VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+            break;
+        case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
             virBufferAddLit(&buf, "virtio-serial-ccw");
-        } else if (def->info.type ==
-                   VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
+            break;
+        case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
             virBufferAddLit(&buf, "virtio-serial-s390");
-        } else if (def->info.type ==
-                   VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO) {
+            break;
+        case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
             virBufferAddLit(&buf, "virtio-serial-device");
-        } else {
+            break;
+        default:
             virBufferAddLit(&buf, "virtio-serial");
         }
         virBufferAsprintf(&buf, ",id=%s", def->info.alias);
