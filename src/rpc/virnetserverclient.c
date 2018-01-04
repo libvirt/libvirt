@@ -1090,7 +1090,7 @@ virNetServerClientClose(virNetServerClientPtr client)
 bool
 virNetServerClientIsClosedLocked(virNetServerClientPtr client)
 {
-    return client->sock == NULL ? true : false;
+    return client->sock == NULL;
 }
 
 
