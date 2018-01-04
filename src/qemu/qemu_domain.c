@@ -8837,13 +8837,23 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
 
     if (isLink) {
         VIR_DEBUG("Creating symlink %s -> %s", data->file, data->target);
+
+        /* First, unlink the symlink target. Symlinks change and
+         * therefore we have no guarantees that pre-existing
+         * symlink is still valid. */
+        if (unlink(data->file) < 0 &&
+            errno != ENOENT) {
+            virReportSystemError(errno,
+                                 _("Unable to remove symlink %s"),
+                                 data->file);
+            goto cleanup;
+        }
+
         if (symlink(data->target, data->file) < 0) {
-            if (errno != EEXIST) {
-                virReportSystemError(errno,
-                                     _("Unable to create symlink %s"),
-                                     data->target);
-                goto cleanup;
-            }
+            virReportSystemError(errno,
+                                 _("Unable to create symlink %s (pointing to %s)"),
+                                 data->file, data->target);
+            goto cleanup;
         } else {
             delDevice = true;
         }
