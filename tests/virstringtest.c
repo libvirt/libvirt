@@ -1119,9 +1119,9 @@ mymain(void)
 #define TEST_FILTER_CHARS(str, filter, res) \
     do { \
         struct testFilterData filterData = { \
-            .string = str,  \
+            .string = str, \
             .valid = filter, \
-            .result = res,  \
+            .result = res, \
         }; \
         if (virTestRun("Filter chars from " #str, \
                        testFilterChars, &filterData) < 0) \
