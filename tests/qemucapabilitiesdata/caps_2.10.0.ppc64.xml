@@ -183,6 +183,7 @@
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
   <flag name='isa-serial'/>
+  <flag name='machine.pseries.max-cpu-compat'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>383421</microcodeVersion>

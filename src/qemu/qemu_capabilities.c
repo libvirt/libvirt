@@ -456,6 +456,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               /* 280 */
               "pl011",
+              "machine.pseries.max-cpu-compat",
     );
 
 
@@ -4858,6 +4859,12 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     /* no way to query for -numa dist */
     if (qemuCaps->version >= 2010000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NUMA_DIST);
+
+    /* no way to query max-cpu-compat */
+    if (qemuCaps->version >= 2010000 &&
+        ARCH_IS_PPC64(qemuCaps->arch)) {
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT);
+    }
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         goto cleanup;
