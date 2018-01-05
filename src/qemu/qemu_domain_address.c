@@ -40,66 +40,34 @@ VIR_LOG_INIT("qemu.qemu_domain_address");
 #define VIO_ADDR_NVRAM 0x3000ul
 
 
+/**
+ * @def: Domain definition
+ * @qemuCaps: qemu capabilities
+ * @model: model to either return or adjust
+ *
+ * If the @model is already defined, return it immediately; otherwise,
+ * based on the @qemuCaps set the @model value to the default value.
+ *
+ * Returns @model on success, -1 on failure with error set.
+ */
 int
 qemuDomainSetSCSIControllerModel(const virDomainDef *def,
                                  virQEMUCapsPtr qemuCaps,
                                  int *model)
 {
-    if (*model > 0) {
-        switch (*model) {
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("This QEMU doesn't support "
-                                 "the LSI 53C895A SCSI controller"));
-                return -1;
-            }
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("This QEMU doesn't support "
-                                 "virtio scsi controller"));
-                return -1;
-            }
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
-            /*TODO: need checking work here if necessary */
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_MPTSAS1068)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("This QEMU doesn't support "
-                                 "the LSI SAS1068 (MPT Fusion) controller"));
-                return -1;
-            }
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_MEGASAS)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("This QEMU doesn't support "
-                                 "the LSI SAS1078 (MegaRAID) controller"));
-                return -1;
-            }
-            break;
-        default:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported controller model: %s"),
-                           virDomainControllerModelSCSITypeToString(*model));
-            return -1;
-        }
+    if (*model > 0)
+        return 0;
+
+    if (qemuDomainIsPSeries(def)) {
+        *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
+    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
+        *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
+    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI)) {
+        *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
     } else {
-        if (qemuDomainIsPSeries(def)) {
-            *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
-        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
-            *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
-        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI)) {
-            *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unable to determine model for scsi controller"));
-            return -1;
-        }
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to determine model for scsi controller"));
+        return -1;
     }
 
     return 0;
