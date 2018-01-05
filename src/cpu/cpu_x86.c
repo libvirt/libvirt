@@ -1774,12 +1774,15 @@ x86DecodeUseCandidate(virCPUx86ModelPtr current,
         }
     }
 
-    if (preferred &&
-        STREQ(cpuCandidate->model, preferred))
+    if (preferred && STREQ(cpuCandidate->model, preferred)) {
+        VIR_DEBUG("%s is the preferred model", cpuCandidate->model);
         return 2;
+    }
 
-    if (!cpuCurrent)
+    if (!cpuCurrent) {
+        VIR_DEBUG("%s is better than nothing", cpuCandidate->model);
         return 1;
+    }
 
     /* Ideally we want to select a model with family/model equal to
      * family/model of the real CPU. Once we found such model, we only
@@ -1787,20 +1790,30 @@ x86DecodeUseCandidate(virCPUx86ModelPtr current,
      */
     if (signature &&
         current->signature == signature &&
-        candidate->signature != signature)
+        candidate->signature != signature) {
+        VIR_DEBUG("%s differs in signature from matching %s",
+                  cpuCandidate->model, cpuCurrent->model);
         return 0;
+    }
 
-    if (cpuCurrent->nfeatures > cpuCandidate->nfeatures)
+    if (cpuCurrent->nfeatures > cpuCandidate->nfeatures) {
+        VIR_DEBUG("%s results in shorter feature list than %s",
+                  cpuCandidate->model, cpuCurrent->model);
         return 1;
+    }
 
     /* Prefer a candidate with matching signature even though it would
      * result in longer list of features.
      */
     if (signature &&
         candidate->signature == signature &&
-        current->signature != signature)
+        current->signature != signature) {
+        VIR_DEBUG("%s provides matching signature", cpuCandidate->model);
         return 1;
+    }
 
+    VIR_DEBUG("%s does not result in shorter feature list than %s",
+              cpuCandidate->model, cpuCurrent->model);
     return 0;
 }
 
