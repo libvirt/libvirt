@@ -7799,6 +7799,9 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_INPUT:
         ret = qemuDomainDetachInputDevice(vm, dev->data.input);
         break;
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        ret = qemuDomainDetachRedirdevDevice(driver, vm, dev->data.redirdev);
+        break;
 
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_SOUND:
@@ -7808,7 +7811,6 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
-    case VIR_DOMAIN_DEVICE_REDIRDEV:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
