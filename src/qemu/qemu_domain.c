@@ -3953,6 +3953,68 @@ qemuDomainDeviceDefValidateControllerAttributes(const virDomainControllerDef *co
 }
 
 
+/**
+ * @qemuCaps: QEMU capabilities
+ * @model: SCSI model to check
+ *
+ * Using the @qemuCaps, let's ensure the provided @model can be supported
+ *
+ * Returns true if acceptible, false otherwise with error message set.
+ */
+static bool
+qemuDomainCheckSCSIControllerModel(virQEMUCapsPtr qemuCaps,
+                                   int model)
+{
+    switch ((virDomainControllerModelSCSI) model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support "
+                             "the LSI 53C895A SCSI controller"));
+            return false;
+        }
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support "
+                             "virtio scsi controller"));
+            return false;
+        }
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
+        /*TODO: need checking work here if necessary */
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_MPTSAS1068)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support "
+                             "the LSI SAS1068 (MPT Fusion) controller"));
+            return false;
+        }
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_MEGASAS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support "
+                             "the LSI SAS1078 (MegaRAID) controller"));
+            return false;
+        }
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported controller model: %s"),
+                       virDomainControllerModelSCSITypeToString(model));
+        return false;
+    }
+
+    return true;
+}
+
+
 static int
 qemuDomainDeviceDefValidateControllerIDE(const virDomainControllerDef *controller,
                                          const virDomainDef *def)
@@ -3988,6 +4050,10 @@ qemuDomainDeviceDefValidateController(const virDomainControllerDef *controller,
 
     if (!qemuDomainCheckCCWS390AddressSupport(def, controller->info, qemuCaps,
                                               "controller"))
+        return -1;
+
+    if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
+        !qemuDomainCheckSCSIControllerModel(qemuCaps, controller->model))
         return -1;
 
     if (qemuDomainDeviceDefValidateControllerAttributes(controller) < 0)
