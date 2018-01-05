@@ -42,6 +42,11 @@
           Xen: Add support for multiple IP addresses on interface devices
         </summary>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for hot unplugging redirdev device
+        </summary>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
