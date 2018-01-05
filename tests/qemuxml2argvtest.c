@@ -1816,6 +1816,11 @@ mymain(void)
     DO_TEST("pseries-cpu-compat", QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("pseries-machine-max-cpu-compat",
+            QEMU_CAPS_KVM,
+            QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT,
+            QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-cpu-le", QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_NODEFCONFIG);
