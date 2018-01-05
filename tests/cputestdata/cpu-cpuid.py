@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+import os
 import sys
 import json
 import xmltodict
@@ -173,16 +174,6 @@ cpuidMap = [
 ]
 
 
-def reverseCpuidMap():
-    features = {}
-
-    for feature in cpuidMap:
-        for name in feature["names"]:
-            features[name] = feature
-
-    return features
-
-
 def cpuidIsSet(cpuid, feature):
     in_eax = feature["in_eax"]
     in_ecx = feature["in_ecx"]
@@ -292,6 +283,37 @@ def parseCpuid(path):
     return cpuid
 
 
+def parseFeature(data):
+    cpuid = {}
+    for reg in ["in_eax", "in_ecx", "eax", "ebx", "ecx", "edx"]:
+        if reg.startswith("in_"):
+            attr = "@%s_in" % reg[3:]
+        else:
+            attr = "@%s" % reg
+
+        if attr in data:
+            cpuid[reg] = int(data[attr], 0)
+        else:
+            cpuid[reg] = 0
+
+    return cpuid
+
+
+def parseMap():
+    path = os.path.dirname(sys.argv[0])
+    path = os.path.join(path, "..", "..", "src", "cpu", "cpu_map.xml")
+    with open(path, "r") as f:
+        data = xmltodict.parse(f)
+
+    cpuMap = {}
+    for arch in data["cpus"]["arch"]:
+        if arch["@name"] == "x86":
+            for feature in arch["feature"]:
+                cpuMap[feature["@name"]] = parseFeature(feature["cpuid"])
+
+    return cpuMap
+
+
 def formatCpuid(cpuid, path, comment):
     print path
     with open(path, "w") as f:
@@ -330,7 +352,7 @@ def convert(path):
             f.write("\n")
 
 
-def diff(features, path):
+def diff(cpuMap, path):
     base = path.replace(".json", "")
     jsonFile = path
     cpuidFile = base + ".xml"
@@ -338,11 +360,11 @@ def diff(features, path):
     disabledFile = base + "-disabled.xml"
 
     cpuid = parseCpuid(cpuidFile)
-    qemu = parseQemu(jsonFile, features)
+    qemu = parseQemu(jsonFile, cpuMap)
 
     enabled = {}
     disabled = {}
-    for feature in cpuidMap:
+    for feature in cpuMap.values():
         if cpuidIsSet(qemu, feature):
             cpuidAdd(enabled, feature)
         elif cpuidIsSet(cpuid, feature):
@@ -363,9 +385,9 @@ if action == "convert":
     for path in args:
         convert(path)
 elif action == "diff":
-    features = reverseCpuidMap()
+    cpuMap = parseMap()
     for path in args:
-        diff(features, path)
+        diff(cpuMap, path)
 else:
     print "Unknown action: " + action
     sys.exit(1)
