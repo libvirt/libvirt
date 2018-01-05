@@ -1227,6 +1227,7 @@ x86ModelParse(xmlXPathContextPtr ctxt,
         VIR_FREE(name);
 
         model->vendor = ancestor->vendor;
+        model->signature = ancestor->signature;
         if (x86DataCopy(&model->data, &ancestor->data) < 0)
             goto error;
     }
