@@ -22,6 +22,7 @@
 
 #include <config.h>
 
+#include "dirname.h"
 #include "virnetdev.h"
 #include "virnetlink.h"
 #include "virmacaddr.h"
@@ -1147,6 +1148,45 @@ virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
     return 0;
 }
 
+/**
+ * Determine if the device path specified in devpath is a PCI Device
+ * by resolving the 'subsystem'-link in devpath and looking for
+ * 'pci' in the last component. For more information see the rules
+ * for accessing sysfs in the kernel docs
+ *
+ * https://www.kernel.org/doc/html/latest/admin-guide/sysfs-rules.html
+ *
+ * Returns true if devpath's susbsystem is pci, false otherwise.
+ */
+static bool
+virNetDevIsPCIDevice(const char *devpath)
+{
+    char *subsys_link = NULL;
+    char *abs_path = NULL;
+    char *subsys = NULL;
+    bool ret = false;
+
+    if (virAsprintf(&subsys_link, "%s/subsystem", devpath) < 0)
+        return false;
+
+    if (!virFileExists(subsys_link))
+        goto cleanup;
+
+    if (virFileResolveLink(subsys_link, &abs_path) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to resolve device subsystem symlink %s"),
+                       subsys_link);
+        goto cleanup;
+    }
+
+    subsys = last_component(abs_path);
+    ret = STRPREFIX(subsys, "pci");
+
+ cleanup:
+    VIR_FREE(subsys_link);
+    VIR_FREE(abs_path);
+    return ret;
+}
 
 static virPCIDevicePtr
 virNetDevGetPCIDevice(const char *devName)
@@ -1156,6 +1196,9 @@ virNetDevGetPCIDevice(const char *devName)
     virPCIDevicePtr vfPCIDevice = NULL;
 
     if (virNetDevSysfsFile(&vfSysfsDevicePath, devName, "device") < 0)
+        goto cleanup;
+
+    if (!virNetDevIsPCIDevice(vfSysfsDevicePath))
         goto cleanup;
 
     vfPCIAddr = virPCIGetDeviceAddressFromSysfsLink(vfSysfsDevicePath);
