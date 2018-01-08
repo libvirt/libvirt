@@ -1,5 +1,5 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>EPYC</model>
+  <model fallback='forbid'>EPYC-IBPB</model>
   <vendor>AMD</vendor>
   <feature policy='require' name='ht'/>
   <feature policy='require' name='osxsave'/>
@@ -13,6 +13,5 @@
   <feature policy='require' name='perfctr_core'/>
   <feature policy='require' name='perfctr_nb'/>
   <feature policy='require' name='invtsc'/>
-  <feature policy='require' name='ibpb'/>
   <feature policy='disable' name='rdtscp'/>
 </cpu>

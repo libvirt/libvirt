@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>EPYC</model>
+  <model>EPYC-IBPB</model>
   <vendor>AMD</vendor>
   <feature name='ht'/>
   <feature name='osxsave'/>
@@ -14,5 +14,4 @@
   <feature name='perfctr_core'/>
   <feature name='perfctr_nb'/>
   <feature name='invtsc'/>
-  <feature name='ibpb'/>
 </cpu>
