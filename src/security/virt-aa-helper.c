@@ -1353,8 +1353,6 @@ main(int argc, char **argv)
                                   LOCALSTATEDIR, ctl->def->name);
                 virBufferAsprintf(&buf, "  \"%s/lib/libvirt/qemu/domain-%d-%.*s/*\" rw,\n",
                                   LOCALSTATEDIR, ctl->def->id, 20, ctl->def->name);
-                virBufferAsprintf(&buf, "  \"%s/lib/libvirt/qemu/channel/target/domain-%d-%.*s/*\" rw,\n",
-                                  LOCALSTATEDIR, ctl->def->id, 20, ctl->def->name);
                 virBufferAsprintf(&buf, "  \"%s/run/libvirt/**/%s.pid\" rwk,\n",
                                   LOCALSTATEDIR, ctl->def->name);
                 virBufferAsprintf(&buf, "  \"/run/libvirt/**/%s.pid\" rwk,\n",
