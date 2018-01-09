@@ -953,6 +953,13 @@ AppArmorSetSavedStateLabel(virSecurityManagerPtr mgr,
     return reload_profile(mgr, def, savefile, true);
 }
 
+static int
+AppArmorSetPathLabel(virSecurityManagerPtr mgr,
+                           virDomainDefPtr def,
+                           const char *path)
+{
+    return reload_profile(mgr, def, path, true);
+}
 
 static int
 AppArmorRestoreSavedStateLabel(virSecurityManagerPtr mgr,
@@ -1044,6 +1051,8 @@ virSecurityDriver virAppArmorSecurityDriver = {
 
     .domainSetSavedStateLabel           = AppArmorSetSavedStateLabel,
     .domainRestoreSavedStateLabel       = AppArmorRestoreSavedStateLabel,
+
+    .domainSetPathLabel                 = AppArmorSetPathLabel,
 
     .domainSetSecurityImageFDLabel      = AppArmorSetFDLabel,
     .domainSetSecurityTapFDLabel        = AppArmorSetFDLabel,
