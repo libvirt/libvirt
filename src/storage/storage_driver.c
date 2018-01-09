@@ -1670,15 +1670,21 @@ storageVolDeleteInternal(virStorageVolPtr vol,
     if (backend->deleteVol(vol->conn, obj, voldef, flags) < 0)
         goto cleanup;
 
+    /* The disk backend updated the pool data including removing the
+     * voldef from the pool (for both the deleteVol and the createVol
+     * failure path. */
+    if (def->type == VIR_STORAGE_POOL_DISK) {
+        ret = 0;
+        goto cleanup;
+    }
+
     /* Update pool metadata - don't update meta data from error paths
      * in this module since the allocation/available weren't adjusted yet.
      * Ignore the disk backend since it updates the pool values.
      */
     if (updateMeta) {
-        if (def->type != VIR_STORAGE_POOL_DISK) {
-            def->allocation -= voldef->target.allocation;
-            def->available += voldef->target.allocation;
-        }
+        def->allocation -= voldef->target.allocation;
+        def->available += voldef->target.allocation;
     }
 
     virStoragePoolObjRemoveVol(obj, voldef);
