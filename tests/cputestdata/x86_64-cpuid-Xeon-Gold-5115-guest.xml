@@ -1,5 +1,5 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>Skylake-Server</model>
+  <model fallback='forbid'>Skylake-Server-IBRS</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='ds'/>
   <feature policy='require' name='acpi'/>
@@ -22,7 +22,6 @@
   <feature policy='require' name='cmt'/>
   <feature policy='require' name='clflushopt'/>
   <feature policy='require' name='pku'/>
-  <feature policy='require' name='spec-ctrl'/>
   <feature policy='require' name='xsaves'/>
   <feature policy='require' name='mbm_total'/>
   <feature policy='require' name='mbm_local'/>

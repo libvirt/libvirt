@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Skylake-Server</model>
+  <model>Skylake-Server-IBRS</model>
   <vendor>Intel</vendor>
   <feature name='ds'/>
   <feature name='acpi'/>
@@ -23,7 +23,6 @@
   <feature name='cmt'/>
   <feature name='clflushopt'/>
   <feature name='pku'/>
-  <feature name='spec-ctrl'/>
   <feature name='xsaves'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>

@@ -1,9 +1,8 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>Skylake-Server</model>
+  <model fallback='forbid'>Skylake-Server-IBRS</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='ss'/>
   <feature policy='require' name='hypervisor'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='clflushopt'/>
-  <feature policy='require' name='spec-ctrl'/>
 </cpu>
