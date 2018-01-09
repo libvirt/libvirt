@@ -692,7 +692,7 @@ qemuDomainWriteMasterKeyFile(virQEMUDriverPtr driver,
     }
 
     if (qemuSecurityDomainSetPathLabel(driver->securityManager,
-                                       vm->def, path) < 0)
+                                       vm->def, path, false) < 0)
         goto cleanup;
 
     ret = 0;

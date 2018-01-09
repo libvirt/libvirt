@@ -179,10 +179,10 @@ int virSecurityManagerRestoreInputLabel(virSecurityManagerPtr mgr,
                                         virDomainDefPtr vm,
                                         virDomainInputDefPtr input);
 
-
 int virSecurityManagerDomainSetPathLabel(virSecurityManagerPtr mgr,
                                          virDomainDefPtr vm,
-                                         const char *path);
+                                         const char *path,
+                                         bool allowSubtree);
 
 int virSecurityManagerSetChardevLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,

@@ -139,7 +139,8 @@ typedef int (*virSecurityDomainRestoreInputLabel) (virSecurityManagerPtr mgr,
                                                    virDomainInputDefPtr input);
 typedef int (*virSecurityDomainSetPathLabel) (virSecurityManagerPtr mgr,
                                               virDomainDefPtr def,
-                                              const char *path);
+                                              const char *path,
+                                              bool allowSubtree);
 typedef int (*virSecurityDomainSetChardevLabel) (virSecurityManagerPtr mgr,
                                                  virDomainDefPtr def,
                                                  virDomainChrSourceDefPtr dev_source,

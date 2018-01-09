@@ -956,9 +956,22 @@ AppArmorSetSavedStateLabel(virSecurityManagerPtr mgr,
 static int
 AppArmorSetPathLabel(virSecurityManagerPtr mgr,
                            virDomainDefPtr def,
-                           const char *path)
+                           const char *path,
+                           bool allowSubtree)
 {
-    return reload_profile(mgr, def, path, true);
+    int rc = -1;
+    char *full_path = NULL;
+
+    if (allowSubtree) {
+        if (virAsprintf(&full_path, "%s/{,**}", path) < 0)
+            return -1;
+        rc = reload_profile(mgr, def, full_path, true);
+        VIR_FREE(full_path);
+    } else {
+        rc = reload_profile(mgr, def, path, true);
+    }
+
+    return rc;
 }
 
 static int

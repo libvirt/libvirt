@@ -2081,7 +2081,8 @@ virSecurityDACGetBaseLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityDACDomainSetPathLabel(virSecurityManagerPtr mgr,
                                  virDomainDefPtr def,
-                                 const char *path)
+                                 const char *path,
+                                 bool allowSubtree ATTRIBUTE_UNUSED)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr seclabel;
