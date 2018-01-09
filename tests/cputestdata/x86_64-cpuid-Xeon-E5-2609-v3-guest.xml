@@ -1,5 +1,5 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>Haswell-noTSX</model>
+  <model fallback='forbid'>Haswell-noTSX-IBRS</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='vme'/>
   <feature policy='require' name='ds'/>
@@ -24,7 +24,6 @@
   <feature policy='require' name='arat'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='cmt'/>
-  <feature policy='require' name='spec-ctrl'/>
   <feature policy='require' name='xsaveopt'/>
   <feature policy='require' name='pdpe1gb'/>
   <feature policy='require' name='abm'/>
