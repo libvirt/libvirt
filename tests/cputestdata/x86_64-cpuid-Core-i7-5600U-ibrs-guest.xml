@@ -1,5 +1,5 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>Broadwell</model>
+  <model fallback='forbid'>Broadwell-IBRS</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='vme'/>
   <feature policy='require' name='ds'/>
@@ -22,7 +22,6 @@
   <feature policy='require' name='rdrand'/>
   <feature policy='require' name='arat'/>
   <feature policy='require' name='tsc_adjust'/>
-  <feature policy='require' name='spec-ctrl'/>
   <feature policy='require' name='xsaveopt'/>
   <feature policy='require' name='pdpe1gb'/>
   <feature policy='require' name='abm'/>

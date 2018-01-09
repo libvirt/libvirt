@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Broadwell</model>
+  <model>Broadwell-IBRS</model>
   <vendor>Intel</vendor>
   <feature name='vme'/>
   <feature name='ds'/>
@@ -23,7 +23,6 @@
   <feature name='rdrand'/>
   <feature name='arat'/>
   <feature name='tsc_adjust'/>
-  <feature name='spec-ctrl'/>
   <feature name='xsaveopt'/>
   <feature name='pdpe1gb'/>
   <feature name='abm'/>
