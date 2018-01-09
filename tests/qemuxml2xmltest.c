@@ -1117,6 +1117,14 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCIE_ROOT_PORT);
+    DO_TEST("aarch64-traditional-pci",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_OBJECT_GPEX,
+            QEMU_CAPS_PCI_MULTIFUNCTION,
+            QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PCI_SERIAL);
     DO_TEST("aarch64-video-default",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_OBJECT_GPEX,
