@@ -61,6 +61,7 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *tmp, *devpath, *partname;
+    bool addVol = false;
 
     /* Prepended path will be same for all partitions, so we can
      * strip the path to form a reasonable pool-unique name
@@ -74,18 +75,16 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
         /* This is typically a reload/restart/refresh path where
          * we're discovering the existing partitions for the pool
          */
+        addVol = true;
         if (VIR_ALLOC(vol) < 0)
             return -1;
-        if (VIR_STRDUP(vol->name, partname) < 0 ||
-            virStoragePoolObjAddVol(pool, vol) < 0) {
-            virStorageVolDefFree(vol);
-            return -1;
-        }
+        if (VIR_STRDUP(vol->name, partname) < 0)
+            goto error;
     }
 
     if (vol->target.path == NULL) {
         if (VIR_STRDUP(devpath, groups[0]) < 0)
-            return -1;
+            goto error;
 
         /* Now figure out the stable path
          *
@@ -96,7 +95,7 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
         vol->target.path = virStorageBackendStablePath(pool, devpath, true);
         VIR_FREE(devpath);
         if (vol->target.path == NULL)
-            return -1;
+            goto error;
     }
 
     /* Enforce provided vol->name is the same as what parted created.
@@ -129,37 +128,37 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
                 (tmp = strrchr(vol->target.path, 'p')))
                 memmove(tmp, tmp + 1, strlen(tmp));
         }
-        return -1;
+        goto error;
     }
 
     if (vol->key == NULL) {
         /* XXX base off a unique key of the underlying disk */
         if (VIR_STRDUP(vol->key, vol->target.path) < 0)
-            return -1;
+            goto error;
     }
 
     if (vol->source.extents == NULL) {
         if (VIR_ALLOC(vol->source.extents) < 0)
-            return -1;
+            goto error;
         vol->source.nextent = 1;
 
         if (virStrToLong_ull(groups[3], NULL, 10,
                              &vol->source.extents[0].start) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("cannot parse device start location"));
-            return -1;
+            goto error;
         }
 
         if (virStrToLong_ull(groups[4], NULL, 10,
                              &vol->source.extents[0].end) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("cannot parse device end location"));
-            return -1;
+            goto error;
         }
 
         if (VIR_STRDUP(vol->source.extents[0].path,
                        def->source.devices[0].path) < 0)
-            return -1;
+            goto error;
     }
 
     /* set partition type */
@@ -190,15 +189,21 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
                                            VIR_STORAGE_VOL_OPEN_DEFAULT |
                                            VIR_STORAGE_VOL_OPEN_NOERROR,
                                            0) == -1)
-            return -1;
+            goto error;
         vol->target.allocation = 0;
         vol->target.capacity =
             (vol->source.extents[0].end - vol->source.extents[0].start);
     } else {
         if (virStorageBackendUpdateVolInfo(vol, false,
                                            VIR_STORAGE_VOL_OPEN_DEFAULT, 0) < 0)
-            return -1;
+            goto error;
     }
+
+    /* Now that we've updated @vol enough, let's add it to the pool
+     * if it's not already there so that the subsequent pool search
+     * pool def adjustments will work properly */
+    if (addVol && virStoragePoolObjAddVol(pool, vol) < 0)
+        goto error;
 
     /* Find the extended partition and increase the allocation value */
     if (vol->source.partType == VIR_STORAGE_VOL_DISK_TYPE_LOGICAL) {
@@ -217,6 +222,11 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
         def->capacity = vol->source.extents[0].end;
 
     return 0;
+
+ error:
+    if (addVol)
+        virStorageVolDefFree(vol);
+    return -1;
 }
 
 static int
