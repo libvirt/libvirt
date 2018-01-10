@@ -3887,6 +3887,11 @@ qemuProcessUpdateCPU(virQEMUDriverPtr driver,
     virDomainCapsCPUModelsPtr models = NULL;
     int ret = -1;
 
+    /* The host CPU model comes from host caps rather than QEMU caps so
+     * fallback must be allowed no matter what the user specified in the XML.
+     */
+    vm->def->cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
+
     if (qemuProcessFetchGuestCPU(driver, vm, asyncJob, &cpu, &disabled) < 0)
         goto cleanup;
 
