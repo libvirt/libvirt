@@ -1,10 +1,12 @@
 # -*- rpm-spec -*-
 
 # This spec file assumes you are building on a Fedora or RHEL version
-# that's still supported by the vendor: that means Fedora 23 or newer,
-# or RHEL 6 or newer. It may need some tweaks for other distros.
-# If neither fedora nor rhel was defined, try to guess them from dist
-%if (0%{?fedora} && 0%{?fedora} >= 23) || (0%{?rhel} && 0%{?rhel} >= 6)
+# that's still supported by the vendor. It may work on other distros
+# or versions, but no effort will be made to ensure that going forward.
+%define min_rhel 6
+%define min_fedora 26
+
+%if (0%{?fedora} && 0%{?fedora} >= %{min_fedora}) || (0%{?rhel} && 0%{?rhel} >= %{min_rhel})
     %define supported_platform 1
 %else
     %define supported_platform 0
@@ -1141,7 +1143,7 @@ rm -rf .git
 
 %build
 %if ! %{supported_platform}
-echo "This RPM requires either Fedora >= 20 or RHEL >= 6"
+echo "This RPM requires either Fedora >= %{min_fedora} or RHEL >= %{min_rhel}"
 exit 1
 %endif
 
