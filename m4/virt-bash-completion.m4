@@ -30,14 +30,10 @@ AC_DEFUN([LIBVIRT_CHECK_BASH_COMPLETION], [
   AC_REQUIRE([LIBVIRT_CHECK_READLINE])
 
   if test "x$with_readline" != "xyes" ; then
-    if test "x$with_bash_completion" != "xyes" ; then
-      with_bash_completion=no
-    else
+    if test "x$with_bash_completion" = "xyes" ; then
       AC_MSG_ERROR([readline is required for bash completion support])
-    fi
-  else
-    if test "x$with_bash_completion" = "xcheck" ; then
-      with_bash_completion=yes
+    else
+      with_bash_completion=no
     fi
   fi
 
