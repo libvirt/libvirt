@@ -53,8 +53,7 @@ static virClassPtr virNodeDeviceObjClass;
 static virClassPtr virNodeDeviceObjListClass;
 static void virNodeDeviceObjDispose(void *opaque);
 static void virNodeDeviceObjListDispose(void *opaque);
-static bool virNodeDeviceObjHasCapStr(const virNodeDeviceObj *obj,
-                                      const char *cap);
+static bool virNodeDeviceObjHasCap(const virNodeDeviceObj *obj, int type);
 
 static int
 virNodeDeviceObjOnceInit(void)
@@ -683,8 +682,8 @@ virNodeDeviceObjListGetParentHost(virNodeDeviceObjListPtr devs,
 
 
 static bool
-virNodeDeviceCapMatch(virNodeDeviceObjPtr obj,
-                      int type)
+virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
+                       int type)
 {
     virNodeDevCapsDefPtr cap = NULL;
 
@@ -850,7 +849,7 @@ virNodeDeviceObjListGetNames(virNodeDeviceObjListPtr devs,
 
 
 #define MATCH(FLAG) ((flags & (VIR_CONNECT_LIST_NODE_DEVICES_CAP_ ## FLAG)) && \
-                     virNodeDeviceCapMatch(obj, VIR_NODE_DEV_CAP_ ## FLAG))
+                     virNodeDeviceObjHasCap(obj, VIR_NODE_DEV_CAP_ ## FLAG))
 static bool
 virNodeDeviceMatch(virNodeDeviceObjPtr obj,
                    unsigned int flags)
