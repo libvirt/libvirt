@@ -1646,8 +1646,10 @@ qemuMigrationWaitForCompletion(virQEMUDriverPtr driver,
     qemuDomainJobInfoUpdateTime(jobInfo);
     qemuDomainJobInfoUpdateDowntime(jobInfo);
     VIR_FREE(priv->job.completed);
-    if (VIR_ALLOC(priv->job.completed) == 0)
+    if (VIR_ALLOC(priv->job.completed) == 0) {
         *priv->job.completed = *jobInfo;
+        priv->job.completed->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
+    }
 
     if (asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT &&
         jobInfo->status == QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED)
@@ -5479,8 +5481,9 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     }
 
     if (dom) {
-        priv->job.completed = jobInfo;
-        jobInfo = NULL;
+        VIR_STEAL_PTR(priv->job.completed, jobInfo);
+        priv->job.completed->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
+
         if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
                                     QEMU_MIGRATION_COOKIE_STATS) < 0)
             VIR_WARN("Unable to encode migration cookie");
