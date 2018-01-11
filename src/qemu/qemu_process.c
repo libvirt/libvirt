@@ -3494,6 +3494,32 @@ qemuProcessBuildDestroyMemoryPaths(virQEMUDriverPtr driver,
 }
 
 
+int
+qemuProcessDestroyMemoryBackingPath(virQEMUDriverPtr driver,
+                                    virDomainObjPtr vm,
+                                    virDomainMemoryDefPtr mem)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    char *path = NULL;
+    int ret = -1;
+
+    if (qemuGetMemoryBackingPath(vm->def, cfg, mem->info.alias, &path) < 0)
+        goto cleanup;
+
+    if (unlink(path) < 0 &&
+        errno != ENOENT) {
+        virReportSystemError(errno, _("Unable to remove %s"), path);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(path);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
 static int
 qemuProcessVNCAllocatePorts(virQEMUDriverPtr driver,
                             virDomainGraphicsDefPtr graphics,

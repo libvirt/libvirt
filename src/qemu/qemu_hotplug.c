@@ -3900,6 +3900,9 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
     if (qemuDomainNamespaceTeardownMemory(vm, mem) <  0)
         VIR_WARN("Unable to remove memory device from /dev");
 
+    if (qemuProcessDestroyMemoryBackingPath(driver, vm, mem) < 0)
+        VIR_WARN("Unable to destroy memory backing path");
+
     virDomainMemoryDefFree(mem);
 
     /* fix the balloon size */
