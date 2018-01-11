@@ -17,7 +17,8 @@
       The top-level tag of volume encryption specification
       is <code>encryption</code>, with a mandatory
       attribute <code>format</code>.  Currently defined values
-      of <code>format</code> are <code>default</code> and <code>qcow</code>.
+      of <code>format</code> are <code>default</code>, <code>qcow</code>,
+      and <code>luks</code>.
       Each value of <code>format</code> implies some expectations about the
       content of the <code>encryption</code> tag.  Other format values may be
       defined in the future.
