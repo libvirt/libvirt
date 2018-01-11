@@ -585,7 +585,7 @@ mymain(void)
     DO_TEST_PARSE("number without garbage", "[ 234545 ]", "[234545]");
     DO_TEST_PARSE_FAIL("number with garbage", "[ 2345b45 ]");
 
-    DO_TEST_PARSE("float without garbage", "[ 0.0314159e+100 ]", "[0.0314159e+100]");
+    DO_TEST_PARSE("float without garbage", "[ 1.024e19 ]", "[1.024e19]");
     DO_TEST_PARSE_FAIL("float with garbage", "[ 0.0314159ee+100 ]");
 
     DO_TEST_PARSE("string", "[ \"The meaning of life\" ]",
