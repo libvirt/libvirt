@@ -62,6 +62,9 @@ virDomainPCIControllerModelToConnectType(virDomainControllerModelPCI model)
     case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
         return VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE;
 
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
+        return VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE;
+
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
         return VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT | VIR_PCI_CONNECT_AGGREGATE_SLOT;
 
@@ -160,6 +163,8 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
             connectStr = "pci-switch-downstream-port";
         } else if (devFlags & VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE) {
             connectStr = "dmi-to-pci-bridge";
+        } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE) {
+            connectStr = "pcie-to-pci-bridge";
         } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS) {
             connectStr = "pci-expander-bus";
         } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_EXPANDER_BUS) {
@@ -316,14 +321,24 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->minSlot = 0;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
+        /* Same as pci-bridge: 32 hotpluggable traditional PCI slots (0-31),
+         * the first of which is not usable because of the SHPC */
+        bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+                      VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
+                      VIR_PCI_CONNECT_TYPE_PCI_BRIDGE);
+        bus->minSlot = 1;
+        bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
+        break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
         /* provides one slot which is pcie, can be used by endpoint
-         * devices and pcie-switch-upstream-ports, and is hotpluggable
-         */
-        bus->flags = VIR_PCI_CONNECT_TYPE_PCIE_DEVICE
-           | VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT
-           | VIR_PCI_CONNECT_HOTPLUGGABLE;
+         * devices, pcie-switch-upstream-ports or pcie-to-pci-bridges,
+         * and is hotpluggable */
+        bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+                      VIR_PCI_CONNECT_TYPE_PCIE_DEVICE |
+                      VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT |
+                      VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE);
         bus->minSlot = 0;
         bus->maxSlot = 0;
         break;

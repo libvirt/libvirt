@@ -335,6 +335,7 @@ VIR_ENUM_IMPL(virDomainControllerModelPCI, VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST,
               "pcie-root",
               "pci-bridge",
               "dmi-to-pci-bridge",
+              "pcie-to-pci-bridge",
               "pcie-root-port",
               "pcie-switch-upstream-port",
               "pcie-switch-downstream-port",
@@ -353,6 +354,7 @@ VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               "pxb-pcie",
               "pcie-root-port",
               "spapr-pci-host-bridge",
+              "pcie-pci-bridge",
 );
 
 VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
@@ -10188,6 +10190,7 @@ virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
         case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:

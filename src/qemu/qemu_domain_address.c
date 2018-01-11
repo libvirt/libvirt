@@ -2171,6 +2171,9 @@ qemuDomainPCIControllerSetDefaultModelName(virDomainControllerDefPtr cont,
     case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
         *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_I82801B11_BRIDGE;
         break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
+        *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_PCI_BRIDGE;
+        break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
         /* Use generic PCIe Root Ports if available, falling back to
          * ioh3420 otherwise */
@@ -2582,6 +2585,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                 }
                 break;
             case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
             case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:

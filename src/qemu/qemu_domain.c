@@ -4400,6 +4400,8 @@ virDomainControllerPCIModelNameToQEMUCaps(int modelName)
         return QEMU_CAPS_DEVICE_PCIE_ROOT_PORT;
     case VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE:
         return QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE;
+    case VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_PCI_BRIDGE:
+        return QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE;
     case VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE:
         return 0;
     case VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_LAST:
@@ -4457,6 +4459,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
         /* modelName should have been set automatically */
         if (pciopts->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE) {
             virReportControllerMissingOption(cont, model, modelName, "modelName");
@@ -4561,6 +4564,13 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
         }
         break;
 
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
+        if (pciopts->modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_PCI_BRIDGE) {
+            virReportControllerInvalidValue(cont, model, modelName, "modelName");
+            return -1;
+        }
+        break;
+
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
     default:
@@ -4577,6 +4587,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
         if (cont->idx == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Index for '%s' controllers must be > 0"),
@@ -4638,6 +4649,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
         if (pciopts->targetIndex != -1) {
             virReportControllerInvalidOption(cont, model, modelName, "targetIndex");
             return -1;
@@ -4671,6 +4683,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
         if (pciopts->pcihole64 ||
             pciopts->pcihole64size != 0) {
             virReportControllerInvalidOption(cont, model, modelName, "pcihole64");
@@ -4702,6 +4715,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
         if (pciopts->busNr != -1) {
             virReportControllerInvalidOption(cont, model, modelName, "busNr");
             return -1;
@@ -4746,6 +4760,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
         if (pciopts->numaNode != -1) {
             virReportControllerInvalidOption(cont, model, modelName, "numaNode");
             return -1;
@@ -4776,6 +4791,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
         if (pciopts->chassisNr != -1) {
             virReportControllerInvalidOption(cont, model, modelName, "chassisNr");
             return -1;
@@ -4810,6 +4826,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
         if (pciopts->chassis != -1) {
             virReportControllerInvalidOption(cont, model, modelName, "chassis");
             return -1;

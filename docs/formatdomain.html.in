@@ -3956,6 +3956,10 @@
         <code>pci-expander-bus</code>, <code>pcie-expander-bus</code>
         (<span class="since">since 1.3.4</span>)
       </li>
+      <li>
+        <code>pcie-to-pci-bridge</code>
+        (<span class="since">since 4.3.0</span>)
+      </li>
     </ul>
     <p>
       The root controllers (<code>pci-root</code>

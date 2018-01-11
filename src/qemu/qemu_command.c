@@ -2795,6 +2795,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
             virBufferAsprintf(&buf, "%s,id=%s", modelName, def->info.alias);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:

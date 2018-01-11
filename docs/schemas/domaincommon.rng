@@ -2102,6 +2102,8 @@
                     <value>pci-bridge</value>
                     <!-- implementations of 'dmi-to-pci-bridge' -->
                     <value>i82801b11-bridge</value>
+                    <!-- implementations of 'pcie-to-pci-bridge' -->
+                    <value>pcie-pci-bridge</value>
                     <!-- implementations of 'pcie-root-port' -->
                     <value>ioh3420</value>
                     <value>pcie-root-port</value>
@@ -2172,6 +2174,7 @@
                   <choice>
                     <value>pci-bridge</value>
                     <value>dmi-to-pci-bridge</value>
+                    <value>pcie-to-pci-bridge</value>
                     <value>pcie-root-port</value>
                     <value>pcie-switch-upstream-port</value>
                     <value>pcie-switch-downstream-port</value>
