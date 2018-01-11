@@ -53,6 +53,8 @@ static virClassPtr virNodeDeviceObjClass;
 static virClassPtr virNodeDeviceObjListClass;
 static void virNodeDeviceObjDispose(void *opaque);
 static void virNodeDeviceObjListDispose(void *opaque);
+static bool virNodeDeviceObjHasCapStr(const virNodeDeviceObj *obj,
+                                      const char *cap);
 
 static int
 virNodeDeviceObjOnceInit(void)
@@ -121,8 +123,8 @@ virNodeDeviceObjGetDef(virNodeDeviceObjPtr obj)
 
 
 static bool
-virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
-                       const char *cap)
+virNodeDeviceObjHasCapStr(const virNodeDeviceObj *obj,
+                          const char *cap)
 {
     virNodeDevCapsDefPtr caps = obj->def->caps;
     const char *fc_host_cap =
@@ -375,7 +377,7 @@ virNodeDeviceObjListFindByCapCallback(const void *payload,
     int want = 0;
 
     virObjectLock(obj);
-    if (virNodeDeviceObjHasCap(obj, matchstr))
+    if (virNodeDeviceObjHasCapStr(obj, matchstr))
         want = 1;
     virObjectUnlock(obj);
     return want;
@@ -750,7 +752,7 @@ virNodeDeviceObjListNumOfDevicesCallback(void *payload,
     virObjectLock(obj);
     def = obj->def;
     if ((!filter || filter(data->conn, def)) &&
-        (!data->matchstr || virNodeDeviceObjHasCap(obj, data->matchstr)))
+        (!data->matchstr || virNodeDeviceObjHasCapStr(obj, data->matchstr)))
         data->count++;
 
     virObjectUnlock(obj);
@@ -805,7 +807,7 @@ virNodeDeviceObjListGetNamesCallback(void *payload,
     def = obj->def;
 
     if ((!filter || filter(data->conn, def)) &&
-        (!data->matchstr || virNodeDeviceObjHasCap(obj, data->matchstr))) {
+        (!data->matchstr || virNodeDeviceObjHasCapStr(obj, data->matchstr))) {
         if (VIR_STRDUP(data->names[data->nnames], def->name) < 0) {
             data->error = true;
             goto cleanup;
