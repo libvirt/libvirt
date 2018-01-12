@@ -19,11 +19,13 @@ addons:
   apt:
     # Please keep this list sorted alphabetically
     packages:
+      - augeas-tools
       - autoconf
       - automake
       - autopoint
       - ccache
       - dnsmasq-base
+      - dwarves
       - ebtables
       - gcc
       - gettext
@@ -34,6 +36,7 @@ addons:
       - libaudit-dev
       - libavahi-client-dev
       - libblkid-dev
+      - libc-dev-bin
       - libc6-dev
       - libcap-ng-dev
       - libcurl4-gnutls-dev
@@ -52,8 +55,9 @@ addons:
       - librbd-dev
       - libreadline-dev
       - libsasl2-dev
+      - libselinux1-dev
       - libssh2-1-dev
-      - libssl-dev
+      - libssh-dev
       - libtool
       - libudev-dev
       - libxen-dev
@@ -66,8 +70,11 @@ addons:
       - open-iscsi
       - parted
       - patch
+      - perl
       - pkg-config
       - policykit-1
+      - qemu-utils
+      - radvd
       - scrub
       - sheepdog
       - systemtap-sdt-dev
