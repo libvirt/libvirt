@@ -597,8 +597,6 @@ virSysinfoReadS390(void)
         goto no_memory;
     }
 
-    ret->nprocessor = 0;
-    ret->processor = NULL;
     if (virSysinfoParseS390Processor(outbuf, ret) < 0)
         goto no_memory;
 
