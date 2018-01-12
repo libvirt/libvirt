@@ -44,15 +44,19 @@
 #include "virstring.h"
 
 #define VIRSH_COMMON_OPT_POOL_FULL \
-    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"))
+    VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"), \
+                          VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)
 
 #define VIRSH_COMMON_OPT_POOL_NAME \
-    VIRSH_COMMON_OPT_POOL(N_("pool name"))
+    VIRSH_COMMON_OPT_POOL(N_("pool name"), \
+                          VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE)
 
 #define VIRSH_COMMON_OPT_POOL_OPTIONAL \
     {.name = "pool", \
      .type = VSH_OT_STRING, \
-     .help = N_("pool name or uuid") \
+     .help = N_("pool name or uuid"), \
+     .completer = virshStoragePoolNameCompleter, \
+     .completer_flags = VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE, \
     }
 
 #define VIRSH_COMMON_OPT_VOLUME_VOL \

@@ -64,11 +64,13 @@
 /*
  * Common command options
  */
-# define VIRSH_COMMON_OPT_POOL(_helpstr) \
+# define VIRSH_COMMON_OPT_POOL(_helpstr, cflags) \
     {.name = "pool", \
      .type = VSH_OT_DATA, \
      .flags = VSH_OFLAG_REQ, \
-     .help = _helpstr \
+     .help = _helpstr, \
+     .completer = virshStoragePoolNameCompleter, \
+     .completer_flags = cflags, \
     }
 
 # define VIRSH_COMMON_OPT_DOMAIN(_helpstr, cflags) \

@@ -147,3 +147,51 @@ virshDomainInterfaceCompleter(vshControl *ctl,
     virStringListFree(ret);
     return NULL;
 }
+
+
+char **
+virshStoragePoolNameCompleter(vshControl *ctl,
+                              const vshCmd *cmd ATTRIBUTE_UNUSED,
+                              unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virStoragePoolPtr *pools = NULL;
+    int npools = 0;
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE |
+                  VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE |
+                  VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT,
+                  NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if ((npools = virConnectListAllStoragePools(priv->conn, &pools, flags)) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(ret, npools + 1) < 0)
+        goto error;
+
+    for (i = 0; i < npools; i++) {
+        const char *name = virStoragePoolGetName(pools[i]);
+
+        if (VIR_STRDUP(ret[i], name) < 0)
+            goto error;
+
+        virStoragePoolFree(pools[i]);
+    }
+    VIR_FREE(pools);
+
+    return ret;
+
+ error:
+    for (; i < npools; i++)
+        virStoragePoolFree(pools[i]);
+    VIR_FREE(pools);
+    for (i = 0; i < npools; i++)
+        VIR_FREE(ret[i]);
+    VIR_FREE(ret);
+    return NULL;
+}
