@@ -37,6 +37,16 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          virsh: Enhance bash completion
+        </summary>
+        <description>
+          Implement more bash completions so that basic libvirt
+          objects can be auto-completed (e.g. networks,
+          interfaces, NWFilters, and so on).
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
