@@ -478,3 +478,54 @@ virshSecretUUIDCompleter(vshControl *ctl,
     VIR_FREE(ret);
     return NULL;
 }
+
+
+char **
+virshSnapshotNameCompleter(vshControl *ctl,
+                           const vshCmd *cmd,
+                           unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virDomainPtr dom = NULL;
+    virDomainSnapshotPtr *snapshots = NULL;
+    int nsnapshots = 0;
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return NULL;
+
+    if ((nsnapshots = virDomainListAllSnapshots(dom, &snapshots, flags)) < 0)
+        goto error;
+
+    if (VIR_ALLOC_N(ret, nsnapshots + 1) < 0)
+        goto error;
+
+    for (i = 0; i < nsnapshots; i++) {
+        const char *name = virDomainSnapshotGetName(snapshots[i]);
+
+        if (VIR_STRDUP(ret[i], name) < 0)
+            goto error;
+
+        virshDomainSnapshotFree(snapshots[i]);
+    }
+    VIR_FREE(snapshots);
+    virshDomainFree(dom);
+
+    return ret;
+
+ error:
+    for (; i < nsnapshots; i++)
+        virshDomainSnapshotFree(snapshots[i]);
+    VIR_FREE(snapshots);
+    for (i = 0; i < nsnapshots; i++)
+        VIR_FREE(ret[i]);
+    VIR_FREE(ret);
+    virshDomainFree(dom);
+    return NULL;
+}

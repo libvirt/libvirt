@@ -511,7 +511,8 @@ static const vshCmdOptDef opts_snapshot_edit[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("snapshot name")
+     .help = N_("snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     VIRSH_COMMON_OPT_CURRENT(N_("also set edited snapshot as current")),
     {.name = "rename",
@@ -631,7 +632,8 @@ static const vshCmdOptDef opts_snapshot_current[] = {
     },
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("name of existing snapshot to make current")
+     .help = N_("name of existing snapshot to make current"),
+     .completer = virshSnapshotNameCompleter,
     },
     {.name = NULL}
 };
@@ -854,7 +856,8 @@ static const vshCmdOptDef opts_snapshot_info[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("snapshot name")
+     .help = N_("snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     VIRSH_COMMON_OPT_CURRENT(N_("info on current snapshot")),
     {.name = NULL}
@@ -1661,7 +1664,8 @@ static const vshCmdOptDef opts_snapshot_dumpxml[] = {
     {.name = "snapshotname",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("snapshot name")
+     .help = N_("snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     {.name = "security-info",
      .type = VSH_OT_BOOL,
@@ -1723,7 +1727,8 @@ static const vshCmdOptDef opts_snapshot_parent[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("find parent of snapshot name")
+     .help = N_("find parent of snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     VIRSH_COMMON_OPT_CURRENT(N_("find parent of current snapshot")),
     {.name = NULL}
@@ -1782,7 +1787,8 @@ static const vshCmdOptDef opts_snapshot_revert[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("snapshot name")
+     .help = N_("snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     VIRSH_COMMON_OPT_CURRENT(N_("revert to current snapshot")),
     {.name = "running",
@@ -1866,7 +1872,8 @@ static const vshCmdOptDef opts_snapshot_delete[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "snapshotname",
      .type = VSH_OT_STRING,
-     .help = N_("snapshot name")
+     .help = N_("snapshot name"),
+     .completer = virshSnapshotNameCompleter,
     },
     VIRSH_COMMON_OPT_CURRENT(N_("delete current snapshot")),
     {.name = "children",
