@@ -109,7 +109,8 @@ static const vshCmdOptDef opts_node_device_destroy[] = {
     {.name = "device",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("device name or wwn pair in 'wwnn,wwpn' format")
+     .help = N_("device name or wwn pair in 'wwnn,wwpn' format"),
+     .completer = virshNodeDeviceNameCompleter,
     },
     {.name = NULL}
 };
@@ -534,6 +535,7 @@ static const vshCmdOptDef opts_node_device_dumpxml[] = {
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
      .help = N_("device name or wwn pair in 'wwnn,wwpn' format"),
+     .completer = virshNodeDeviceNameCompleter,
     },
     {.name = NULL}
 };
@@ -604,7 +606,8 @@ static const vshCmdOptDef opts_node_device_detach[] = {
     {.name = "device",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("device key")
+     .help = N_("device key"),
+     .completer = virshNodeDeviceNameCompleter,
     },
     {.name = "driver",
      .type = VSH_OT_STRING,
@@ -670,7 +673,8 @@ static const vshCmdOptDef opts_node_device_reattach[] = {
     {.name = "device",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("device key")
+     .help = N_("device key"),
+     .completer = virshNodeDeviceNameCompleter,
     },
     {.name = NULL}
 };
@@ -720,7 +724,8 @@ static const vshCmdOptDef opts_node_device_reset[] = {
     {.name = "device",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("device key")
+     .help = N_("device key"),
+     .completer = virshNodeDeviceNameCompleter,
     },
     {.name = NULL}
 };
@@ -866,7 +871,8 @@ static const vshCmdInfo info_node_device_event[] = {
 static const vshCmdOptDef opts_node_device_event[] = {
     {.name = "device",
      .type = VSH_OT_STRING,
-     .help = N_("filter by node device name")
+     .help = N_("filter by node device name"),
+     .completer = virshNodeDeviceNameCompleter,
     },
     {.name = "event",
      .type = VSH_OT_STRING,

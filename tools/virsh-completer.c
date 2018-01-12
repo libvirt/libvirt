@@ -342,3 +342,48 @@ virshNetworkNameCompleter(vshControl *ctl,
     VIR_FREE(ret);
     return NULL;
 }
+
+
+char **
+virshNodeDeviceNameCompleter(vshControl *ctl,
+                             const vshCmd *cmd ATTRIBUTE_UNUSED,
+                             unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virNodeDevicePtr *devs = NULL;
+    int ndevs = 0;
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if ((ndevs = virConnectListAllNodeDevices(priv->conn, &devs, flags)) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(ret, ndevs + 1) < 0)
+        goto error;
+
+    for (i = 0; i < ndevs; i++) {
+        const char *name = virNodeDeviceGetName(devs[i]);
+
+        if (VIR_STRDUP(ret[i], name) < 0)
+            goto error;
+
+        virNodeDeviceFree(devs[i]);
+    }
+    VIR_FREE(devs);
+
+    return ret;
+
+ error:
+    for (; i < ndevs; i++)
+        virNodeDeviceFree(devs[i]);
+    VIR_FREE(devs);
+    for (i = 0; i < ndevs; i++)
+        VIR_FREE(ret[i]);
+    VIR_FREE(ret);
+    return NULL;
+}

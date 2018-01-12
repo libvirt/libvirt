@@ -54,4 +54,8 @@ char ** virshNetworkNameCompleter(vshControl *ctl,
                                   const vshCmd *cmd,
                                   unsigned int flags);
 
+char ** virshNodeDeviceNameCompleter(vshControl *ctl,
+                                     const vshCmd *cmd,
+                                     unsigned int flags);
+
 #endif
