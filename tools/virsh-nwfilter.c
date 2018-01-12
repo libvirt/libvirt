@@ -136,7 +136,8 @@ static const vshCmdOptDef opts_nwfilter_undefine[] = {
     {.name = "nwfilter",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("network filter name or uuid")
+     .help = N_("network filter name or uuid"),
+     .completer = virshNWFilterNameCompleter,
     },
     {.name = NULL}
 };
@@ -179,7 +180,8 @@ static const vshCmdOptDef opts_nwfilter_dumpxml[] = {
     {.name = "nwfilter",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("network filter name or uuid")
+     .help = N_("network filter name or uuid"),
+     .completer = virshNWFilterNameCompleter,
     },
     {.name = NULL}
 };
@@ -396,7 +398,8 @@ static const vshCmdOptDef opts_nwfilter_edit[] = {
     {.name = "nwfilter",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("network filter name or uuid")
+     .help = N_("network filter name or uuid"),
+     .completer = virshNWFilterNameCompleter,
     },
     {.name = NULL}
 };

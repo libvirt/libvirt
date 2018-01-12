@@ -387,3 +387,48 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
     VIR_FREE(ret);
     return NULL;
 }
+
+
+char **
+virshNWFilterNameCompleter(vshControl *ctl,
+                           const vshCmd *cmd ATTRIBUTE_UNUSED,
+                           unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virNWFilterPtr *nwfilters = NULL;
+    int nnwfilters = 0;
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if ((nnwfilters = virConnectListAllNWFilters(priv->conn, &nwfilters, flags)) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(ret, nnwfilters + 1) < 0)
+        goto error;
+
+    for (i = 0; i < nnwfilters; i++) {
+        const char *name = virNWFilterGetName(nwfilters[i]);
+
+        if (VIR_STRDUP(ret[i], name) < 0)
+            goto error;
+
+        virNWFilterFree(nwfilters[i]);
+    }
+    VIR_FREE(nwfilters);
+
+    return ret;
+
+ error:
+    for (; i < nnwfilters; i++)
+        virNWFilterFree(nwfilters[i]);
+    VIR_FREE(nwfilters);
+    for (i = 0; i < nnwfilters; i++)
+        VIR_FREE(ret[i]);
+    VIR_FREE(ret);
+    return NULL;
+}
