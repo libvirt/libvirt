@@ -50,4 +50,8 @@ char ** virshInterfaceNameCompleter(vshControl *ctl,
                                     const vshCmd *cmd,
                                     unsigned int flags);
 
+char ** virshNetworkNameCompleter(vshControl *ctl,
+                                  const vshCmd *cmd,
+                                  unsigned int flags);
+
 #endif

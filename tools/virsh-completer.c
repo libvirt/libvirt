@@ -294,3 +294,51 @@ virshInterfaceNameCompleter(vshControl *ctl,
     VIR_FREE(ret);
     return NULL;
 }
+
+
+char **
+virshNetworkNameCompleter(vshControl *ctl,
+                          const vshCmd *cmd ATTRIBUTE_UNUSED,
+                          unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virNetworkPtr *nets = NULL;
+    int nnets = 0;
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(VIR_CONNECT_LIST_NETWORKS_INACTIVE |
+                  VIR_CONNECT_LIST_NETWORKS_ACTIVE |
+                  VIR_CONNECT_LIST_NETWORKS_PERSISTENT,
+                  NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if ((nnets = virConnectListAllNetworks(priv->conn, &nets, flags)) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(ret, nnets + 1) < 0)
+        goto error;
+
+    for (i = 0; i < nnets; i++) {
+        const char *name = virNetworkGetName(nets[i]);
+
+        if (VIR_STRDUP(ret[i], name) < 0)
+            goto error;
+
+        virNetworkFree(nets[i]);
+    }
+    VIR_FREE(nets);
+
+    return ret;
+
+ error:
+    for (; i < nnets; i++)
+        virNetworkFree(nets[i]);
+    VIR_FREE(nets);
+    for (i = 0; i < nnets; i++)
+        VIR_FREE(ret[i]);
+    VIR_FREE(ret);
+    return NULL;
+}
