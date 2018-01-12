@@ -30,7 +30,6 @@
 #include "node_device_conf.h"
 #include "node_device_event.h"
 #include "node_device_driver.h"
-#include "node_device_linux_sysfs.h"
 #include "node_device_udev.h"
 #include "virerror.h"
 #include "driver.h"
@@ -558,7 +557,7 @@ udevProcessPCI(struct udev_device *device,
                             &pci_dev->numa_node, 10) < 0)
         goto cleanup;
 
-    if (nodeDeviceSysfsGetPCIRelatedDevCaps(def->sysfs_path, pci_dev) < 0)
+    if (virNodeDeviceGetPCIDynamicCaps(def->sysfs_path, pci_dev) < 0)
         goto cleanup;
 
     if (!(pciDev = virPCIDeviceNew(pci_dev->domain,
@@ -802,7 +801,7 @@ udevProcessSCSITarget(struct udev_device *device,
     if (VIR_STRDUP(scsi_target->name, sysname) < 0)
         return -1;
 
-    nodeDeviceSysfsGetSCSITargetCaps(def->sysfs_path, &def->caps->data.scsi_target);
+    virNodeDeviceGetSCSITargetCaps(def->sysfs_path, &def->caps->data.scsi_target);
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
         return -1;

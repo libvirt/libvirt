@@ -393,4 +393,11 @@ virNodeDeviceDeleteVport(virConnectPtr conn,
 int
 virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host);
 
+int
+virNodeDeviceGetSCSITargetCaps(const char *sysfsPath,
+                               virNodeDevCapSCSITargetPtr scsi_target);
+
+int
+virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath,
+                               virNodeDevCapPCIDevPtr pci_dev);
 #endif /* __VIR_NODE_DEVICE_CONF_H__ */

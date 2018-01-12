@@ -38,7 +38,6 @@
 #include "node_device_event.h"
 #include "node_device_driver.h"
 #include "node_device_hal.h"
-#include "node_device_linux_sysfs.h"
 #include "virvhba.h"
 #include "viraccessapicheck.h"
 #include "virnetdev.h"
@@ -59,7 +58,7 @@ nodeDeviceUpdateCaps(virNodeDeviceDefPtr def)
             virNodeDeviceGetSCSIHostCaps(&cap->data.scsi_host);
             break;
         case VIR_NODE_DEV_CAP_SCSI_TARGET:
-            nodeDeviceSysfsGetSCSITargetCaps(def->sysfs_path,
+            virNodeDeviceGetSCSITargetCaps(def->sysfs_path,
                                              &cap->data.scsi_target);
             break;
         case VIR_NODE_DEV_CAP_NET:
@@ -70,8 +69,8 @@ nodeDeviceUpdateCaps(virNodeDeviceDefPtr def)
                 return -1;
             break;
         case VIR_NODE_DEV_CAP_PCI_DEV:
-           if (nodeDeviceSysfsGetPCIRelatedDevCaps(def->sysfs_path,
-                                                   &cap->data.pci_dev) < 0)
+            if (virNodeDeviceGetPCIDynamicCaps(def->sysfs_path,
+                                               &cap->data.pci_dev) < 0)
               return -1;
            break;
 

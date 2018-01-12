@@ -31,7 +31,6 @@
 #include "node_device_conf.h"
 #include "node_device_driver.h"
 #include "node_device_hal.h"
-#include "node_device_linux_sysfs.h"
 #include "virerror.h"
 #include "driver.h"
 #include "datatypes.h"

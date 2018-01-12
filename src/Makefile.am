@@ -1168,9 +1168,7 @@ ACCESS_DRIVER_POLKIT_POLICY = \
 
 NODE_DEVICE_DRIVER_SOURCES = \
 		node_device/node_device_driver.c \
-		node_device/node_device_driver.h \
-		node_device/node_device_linux_sysfs.c \
-		node_device/node_device_linux_sysfs.h
+		node_device/node_device_driver.h
 
 NODE_DEVICE_DRIVER_HAL_SOURCES = \
 		node_device/node_device_hal.c \

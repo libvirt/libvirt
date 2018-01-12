@@ -707,7 +707,9 @@ virNodeDeviceDefParseNode;
 virNodeDeviceDefParseString;
 virNodeDeviceDeleteVport;
 virNodeDeviceGetParentName;
+virNodeDeviceGetPCIDynamicCaps;
 virNodeDeviceGetSCSIHostCaps;
+virNodeDeviceGetSCSITargetCaps;
 virNodeDeviceGetWWNs;
 
 
