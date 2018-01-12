@@ -137,6 +137,7 @@ mymain(void)
     int ret = EXIT_SUCCESS;
 
     TEST("s390", virSysinfoReadS390);
+    TEST("s390-freq", virSysinfoReadS390);
     TEST("ppc", virSysinfoReadPPC);
     TEST_FULL("x86", virSysinfoReadX86, "/sysinfodata/dmidecode.sh");
     TEST("arm", virSysinfoReadARM);
