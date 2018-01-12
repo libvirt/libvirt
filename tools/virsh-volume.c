@@ -63,7 +63,8 @@
     {.name = "vol", \
      .type = VSH_OT_DATA, \
      .flags = VSH_OFLAG_REQ, \
-     .help = N_("vol name, key or path") \
+     .help = N_("vol name, key or path"), \
+     .completer = virshStorageVolNameCompleter, \
     }
 
 virStorageVolPtr

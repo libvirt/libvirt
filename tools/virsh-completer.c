@@ -24,6 +24,7 @@
 
 #include "virsh-completer.h"
 #include "virsh.h"
+#include "virsh-pool.h"
 #include "virsh-util.h"
 #include "internal.h"
 #include "viralloc.h"
@@ -193,5 +194,56 @@ virshStoragePoolNameCompleter(vshControl *ctl,
     for (i = 0; i < npools; i++)
         VIR_FREE(ret[i]);
     VIR_FREE(ret);
+    return NULL;
+}
+
+
+char **
+virshStorageVolNameCompleter(vshControl *ctl,
+                             const vshCmd *cmd,
+                             unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virStoragePoolPtr pool = NULL;
+    virStorageVolPtr *vols = NULL;
+    int nvols = 0;
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
+        return false;
+
+    if ((nvols = virStoragePoolListAllVolumes(pool, &vols, flags)) < 0)
+        goto error;
+
+    if (VIR_ALLOC_N(ret, nvols + 1) < 0)
+        goto error;
+
+    for (i = 0; i < nvols; i++) {
+        const char *name = virStorageVolGetName(vols[i]);
+
+        if (VIR_STRDUP(ret[i], name) < 0)
+            goto error;
+
+        virStorageVolFree(vols[i]);
+    }
+    VIR_FREE(vols);
+    virStoragePoolFree(pool);
+
+    return ret;
+
+ error:
+    for (; i < nvols; i++)
+        virStorageVolFree(vols[i]);
+    VIR_FREE(vols);
+    for (i = 0; i < nvols; i++)
+        VIR_FREE(ret[i]);
+    VIR_FREE(ret);
+    virStoragePoolFree(pool);
     return NULL;
 }
