@@ -23,11 +23,13 @@
  *
  */
 
-#define VIRSH_COMMON_OPT_INTERFACE \
+#define VIRSH_COMMON_OPT_INTERFACE(cflags) \
     {.name = "interface", \
      .type = VSH_OT_DATA, \
      .flags = VSH_OFLAG_REQ, \
-     .help = N_("interface name or MAC address") \
+     .help = N_("interface name or MAC address"), \
+     .completer = virshInterfaceNameCompleter, \
+     .completer_flags = cflags, \
     }
 
 #include <config.h>
@@ -107,7 +109,7 @@ static const vshCmdInfo info_interface_edit[] = {
 };
 
 static const vshCmdOptDef opts_interface_edit[] = {
-    VIRSH_COMMON_OPT_INTERFACE,
+    VIRSH_COMMON_OPT_INTERFACE(0),
     {.name = NULL}
 };
 
@@ -467,7 +469,7 @@ static const vshCmdInfo info_interface_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_interface_dumpxml[] = {
-    VIRSH_COMMON_OPT_INTERFACE,
+    VIRSH_COMMON_OPT_INTERFACE(0),
     {.name = "inactive",
      .type = VSH_OT_BOOL,
      .help = N_("show inactive defined XML")
@@ -564,7 +566,7 @@ static const vshCmdInfo info_interface_undefine[] = {
 };
 
 static const vshCmdOptDef opts_interface_undefine[] = {
-    VIRSH_COMMON_OPT_INTERFACE,
+    VIRSH_COMMON_OPT_INTERFACE(0),
     {.name = NULL}
 };
 
@@ -603,7 +605,7 @@ static const vshCmdInfo info_interface_start[] = {
 };
 
 static const vshCmdOptDef opts_interface_start[] = {
-    VIRSH_COMMON_OPT_INTERFACE,
+    VIRSH_COMMON_OPT_INTERFACE(VIR_CONNECT_LIST_INTERFACES_INACTIVE),
     {.name = NULL}
 };
 
@@ -642,7 +644,7 @@ static const vshCmdInfo info_interface_destroy[] = {
 };
 
 static const vshCmdOptDef opts_interface_destroy[] = {
-    VIRSH_COMMON_OPT_INTERFACE,
+    VIRSH_COMMON_OPT_INTERFACE(VIR_CONNECT_LIST_INTERFACES_ACTIVE),
     {.name = NULL}
 };
 

@@ -247,3 +247,50 @@ virshStorageVolNameCompleter(vshControl *ctl,
     virStoragePoolFree(pool);
     return NULL;
 }
+
+
+char **
+virshInterfaceNameCompleter(vshControl *ctl,
+                            const vshCmd *cmd ATTRIBUTE_UNUSED,
+                            unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virInterfacePtr *ifaces = NULL;
+    int nifaces = 0;
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(VIR_CONNECT_LIST_INTERFACES_ACTIVE |
+                  VIR_CONNECT_LIST_INTERFACES_INACTIVE,
+                  NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if ((nifaces = virConnectListAllInterfaces(priv->conn, &ifaces, flags)) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(ret, nifaces + 1) < 0)
+        goto error;
+
+    for (i = 0; i < nifaces; i++) {
+        const char *name = virInterfaceGetName(ifaces[i]);
+
+        if (VIR_STRDUP(ret[i], name) < 0)
+            goto error;
+
+        virInterfaceFree(ifaces[i]);
+    }
+    VIR_FREE(ifaces);
+
+    return ret;
+
+ error:
+    for (; i < nifaces; i++)
+        virInterfaceFree(ifaces[i]);
+    VIR_FREE(ifaces);
+    for (i = 0; i < nifaces; i++)
+        VIR_FREE(ret[i]);
+    VIR_FREE(ret);
+    return NULL;
+}

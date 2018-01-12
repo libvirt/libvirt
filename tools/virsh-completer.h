@@ -46,4 +46,8 @@ char ** virshStorageVolNameCompleter(vshControl *ctl,
                                      const vshCmd *cmd,
                                      unsigned int flags);
 
+char ** virshInterfaceNameCompleter(vshControl *ctl,
+                                    const vshCmd *cmd,
+                                    unsigned int flags);
+
 #endif
