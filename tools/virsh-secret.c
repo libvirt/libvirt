@@ -132,7 +132,8 @@ static const vshCmdOptDef opts_secret_dumpxml[] = {
     {.name = "secret",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("secret UUID")
+     .help = N_("secret UUID"),
+     .completer = virshSecretUUIDCompleter,
     },
     {.name = NULL}
 };
@@ -177,7 +178,8 @@ static const vshCmdOptDef opts_secret_set_value[] = {
     {.name = "secret",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("secret UUID")
+     .help = N_("secret UUID"),
+     .completer = virshSecretUUIDCompleter,
     },
     {.name = "base64",
      .type = VSH_OT_DATA,
@@ -245,7 +247,8 @@ static const vshCmdOptDef opts_secret_get_value[] = {
     {.name = "secret",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("secret UUID")
+     .help = N_("secret UUID"),
+     .completer = virshSecretUUIDCompleter,
     },
     {.name = NULL}
 };
@@ -297,7 +300,8 @@ static const vshCmdOptDef opts_secret_undefine[] = {
     {.name = "secret",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
-     .help = N_("secret UUID")
+     .help = N_("secret UUID"),
+     .completer = virshSecretUUIDCompleter,
     },
     {.name = NULL}
 };
@@ -667,7 +671,8 @@ static const vshCmdInfo info_secret_event[] = {
 static const vshCmdOptDef opts_secret_event[] = {
     {.name = "secret",
      .type = VSH_OT_STRING,
-     .help = N_("filter by secret name or uuid")
+     .help = N_("filter by secret name or uuid"),
+     .completer = virshSecretUUIDCompleter,
     },
     {.name = "event",
      .type = VSH_OT_STRING,

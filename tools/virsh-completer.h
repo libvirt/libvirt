@@ -62,4 +62,8 @@ char ** virshNWFilterNameCompleter(vshControl *ctl,
                                    const vshCmd *cmd,
                                    unsigned int flags);
 
+char ** virshSecretUUIDCompleter(vshControl *ctl,
+                                 const vshCmd *cmd,
+                                 unsigned int flags);
+
 #endif

@@ -432,3 +432,49 @@ virshNWFilterNameCompleter(vshControl *ctl,
     VIR_FREE(ret);
     return NULL;
 }
+
+
+char **
+virshSecretUUIDCompleter(vshControl *ctl,
+                         const vshCmd *cmd ATTRIBUTE_UNUSED,
+                         unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virSecretPtr *secrets = NULL;
+    int nsecrets = 0;
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if ((nsecrets = virConnectListAllSecrets(priv->conn, &secrets, flags)) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(ret, nsecrets + 1) < 0)
+        goto error;
+
+    for (i = 0; i < nsecrets; i++) {
+        char uuid[VIR_UUID_STRING_BUFLEN];
+
+        if (virSecretGetUUIDString(secrets[i], uuid) < 0 ||
+            VIR_STRDUP(ret[i], uuid) < 0)
+            goto error;
+
+        virSecretFree(secrets[i]);
+    }
+    VIR_FREE(secrets);
+
+    return ret;
+
+ error:
+    for (; i < nsecrets; i++)
+        virSecretFree(secrets[i]);
+    VIR_FREE(secrets);
+    for (i = 0; i < nsecrets; i++)
+        VIR_FREE(ret[i]);
+    VIR_FREE(ret);
+    return NULL;
+}
