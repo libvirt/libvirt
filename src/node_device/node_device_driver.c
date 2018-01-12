@@ -56,7 +56,7 @@ nodeDeviceUpdateCaps(virNodeDeviceDefPtr def)
     while (cap) {
         switch (cap->data.type) {
         case VIR_NODE_DEV_CAP_SCSI_HOST:
-            nodeDeviceSysfsGetSCSIHostCaps(&cap->data.scsi_host);
+            virNodeDeviceGetSCSIHostCaps(&cap->data.scsi_host);
             break;
         case VIR_NODE_DEV_CAP_SCSI_TARGET:
             nodeDeviceSysfsGetSCSITargetCaps(def->sysfs_path,

@@ -237,7 +237,7 @@ gather_scsi_host_cap(LibHalContext *ctx, const char *udi,
 
     (void)get_int_prop(ctx, udi, "scsi_host.host", (int *)&d->scsi_host.host);
 
-    retval = nodeDeviceSysfsGetSCSIHostCaps(&d->scsi_host);
+    retval = virNodeDeviceGetSCSIHostCaps(&d->scsi_host);
 
     if (retval == -1)
         goto out;

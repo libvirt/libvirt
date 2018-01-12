@@ -781,7 +781,7 @@ udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    nodeDeviceSysfsGetSCSIHostCaps(&def->caps->data.scsi_host);
+    virNodeDeviceGetSCSIHostCaps(&def->caps->data.scsi_host);
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
         return -1;

@@ -2431,6 +2431,8 @@ virNodeDeviceDeleteVport(virConnectPtr conn,
 }
 
 
+#ifdef __linux__
+
 int
 virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host)
 {
@@ -2511,3 +2513,13 @@ virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host)
     VIR_FREE(tmp);
     return ret;
 }
+
+#else
+
+int
+virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host ATTRIBUTE_UNUSED)
+{
+    return -1;
+}
+
+#endif /* __linux__ */

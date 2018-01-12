@@ -45,12 +45,6 @@
 
 VIR_LOG_INIT("node_device.node_device_linux_sysfs");
 
-int
-nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host)
-{
-    return virNodeDeviceGetSCSIHostCaps(scsi_host);
-}
-
 
 int
 nodeDeviceSysfsGetSCSITargetCaps(const char *sysfsPath,
@@ -195,12 +189,6 @@ nodeDeviceSysfsGetPCIRelatedDevCaps(const char *sysfsPath,
 
 
 #else
-
-int
-nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host ATTRIBUTE_UNUSED)
-{
-    return -1;
-}
 
 int nodeDeviceSysfsGetSCSITargetCaps(const char *sysfsPath ATTRIBUTE_UNUSED,
                                      virNodeDevCapSCSITargetPtr scsi_target ATTRIBUTE_UNUSED)
