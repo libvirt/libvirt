@@ -3457,11 +3457,12 @@ const vshCmdInfo info_complete[] = {
     {.name = NULL}
 };
 
+
+#ifdef WITH_READLINE
 bool
 cmdComplete(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
-#ifdef WITH_READLINE
     const vshClientHooks *hooks = ctl->hooks;
     int stdin_fileno = STDIN_FILENO;
     const char *arg = "";
@@ -3510,6 +3511,17 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     virBufferFreeAndReset(&buf);
     virStringListFree(matches);
-#endif /* WITH_READLINE */
     return ret;
 }
+
+
+#else /* !WITH_READLINE */
+
+
+bool
+cmdComplete(vshControl *ctl ATTRIBUTE_UNUSED,
+            const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    return false;
+}
+#endif /* !WITH_READLINE */
