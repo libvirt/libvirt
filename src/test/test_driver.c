@@ -2618,6 +2618,90 @@ testDomainGetVcpuPinInfo(virDomainPtr dom,
     return ret;
 }
 
+static int
+testDomainRenameCallback(virDomainObjPtr privdom,
+                         const char *new_name,
+                         unsigned int flags,
+                         void *opaque)
+{
+    testDriverPtr driver = opaque;
+    virObjectEventPtr event_new = NULL;
+    virObjectEventPtr event_old = NULL;
+    int ret = -1;
+    char *new_dom_name = NULL;
+    char *old_dom_name = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (VIR_STRDUP(new_dom_name, new_name) < 0)
+        goto cleanup;
+
+    event_old = virDomainEventLifecycleNewFromObj(privdom,
+                                                  VIR_DOMAIN_EVENT_UNDEFINED,
+                                                  VIR_DOMAIN_EVENT_UNDEFINED_RENAMED);
+
+    /* Switch name in domain definition. */
+    old_dom_name = privdom->def->name;
+    privdom->def->name = new_dom_name;
+    new_dom_name = NULL;
+
+    event_new = virDomainEventLifecycleNewFromObj(privdom,
+                                                  VIR_DOMAIN_EVENT_DEFINED,
+                                                  VIR_DOMAIN_EVENT_DEFINED_RENAMED);
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(old_dom_name);
+    VIR_FREE(new_dom_name);
+    testObjectEventQueue(driver, event_old);
+    testObjectEventQueue(driver, event_new);
+    return ret;
+}
+
+static int
+testDomainRename(virDomainPtr dom,
+                 const char *new_name,
+                 unsigned int flags)
+{
+    testDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr privdom = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, ret);
+
+    if (!(privdom = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainObjIsActive(privdom)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot rename active domain"));
+        goto cleanup;
+    }
+
+    if (!privdom->persistent) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot rename a transient domain"));
+        goto cleanup;
+    }
+
+    if (virDomainObjGetState(privdom, NULL) != VIR_DOMAIN_SHUTOFF) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain has to be shutoff before renaming"));
+        goto cleanup;
+    }
+
+    if (virDomainObjListRename(driver->domains, privdom, new_name, flags,
+                               testDomainRenameCallback, driver) < 0)
+        goto cleanup;
+
+    /* Success, domain has been renamed. */
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&privdom);
+    return ret;
+}
+
 static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
     testDriverPtr privconn = domain->conn->privateData;
@@ -6822,6 +6906,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .connectDomainEventDeregisterAny = testConnectDomainEventDeregisterAny, /* 0.8.0 */
     .connectIsAlive = testConnectIsAlive, /* 0.9.8 */
     .nodeGetCPUMap = testNodeGetCPUMap, /* 1.0.0 */
+    .domainRename = testDomainRename, /* 4.1.0 */
     .domainScreenshot = testDomainScreenshot, /* 1.0.5 */
     .domainGetMetadata = testDomainGetMetadata, /* 1.1.3 */
     .domainSetMetadata = testDomainSetMetadata, /* 1.1.3 */
