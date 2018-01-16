@@ -329,12 +329,13 @@ guest_count()
 # check_guests_shutdown URI GUESTS
 # check if shutdown is complete on guests in "GUESTS" and returns only
 # guests that are still shutting down
+# Result is returned in "guests_shutting_down"
 check_guests_shutdown()
 {
     uri=$1
     guests=$2
 
-    guests_up=
+    guests_shutting_down=
     for guest in $guests; do
         if ! guest_is_on "$uri" "$guest" >/dev/null 2>&1; then
             eval_gettext "Failed to determine state of guest: \$guest. Not tracking it anymore."
@@ -342,10 +343,9 @@ check_guests_shutdown()
             continue
         fi
         if "$guest_running"; then
-            guests_up="$guests_up $guest"
+            guests_shutting_down="$guests_shutting_down $guest"
         fi
     done
-    echo "$guests_up"
 }
 
 # print_guests_shutdown URI BEFORE AFTER
@@ -392,8 +392,11 @@ shutdown_guests_parallel()
             guest=$1
             shift
             guests=$*
-            shutdown_guest_async "$uri" "$guest"
-            on_shutdown="$on_shutdown $guest"
+            if [ -z "$(echo $on_shutdown | grep $guest)" ] &&
+               [ -n "$(guest_name "$uri" "$guest")" ]; then
+                shutdown_guest_async "$uri" "$guest"
+                on_shutdown="$on_shutdown $guest"
+            fi
         done
         sleep 1
 
@@ -420,7 +423,8 @@ shutdown_guests_parallel()
         fi
 
         on_shutdown_prev=$on_shutdown
-        on_shutdown=$(check_guests_shutdown "$uri" "$on_shutdown")
+        check_guests_shutdown "$uri" "$on_shutdown"
+        on_shutdown="$guests_shutting_down"
         print_guests_shutdown "$uri" "$on_shutdown_prev" "$on_shutdown"
     done
 }
