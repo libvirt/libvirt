@@ -382,6 +382,12 @@ nodeDeviceNumOfCaps(virNodeDevicePtr device)
                 VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)
                 ncaps++;
         }
+        if (caps->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
+            if (caps->data.pci_dev.flags &
+                VIR_NODE_DEV_CAP_FLAG_PCI_MDEV)
+                ncaps++;
+        }
+
     }
 
     ret = ncaps;
@@ -429,6 +435,15 @@ nodeDeviceListCaps(virNodeDevicePtr device,
                 VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS) {
                 if (VIR_STRDUP(names[ncaps++],
                                virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_VPORTS)) < 0)
+                    goto cleanup;
+            }
+        }
+        if (caps->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
+            if (ncaps < maxnames &&
+                caps->data.pci_dev.flags &
+                VIR_NODE_DEV_CAP_FLAG_PCI_MDEV) {
+                if (VIR_STRDUP(names[ncaps++],
+                               virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_MDEV_TYPES)) < 0)
                     goto cleanup;
             }
         }
