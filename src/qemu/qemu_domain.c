@@ -2660,12 +2660,13 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
             addPCIeRoot = true;
             addImplicitSATA = true;
 
-            /* Prefer adding USB3 controller if supported
-             * (nec-usb-xhci). Failing that, add a USB2 controller set
-             * if the ich9-usb-ehci1 device is supported. Otherwise
-             * don't add anything.
+            /* Prefer adding a USB3 controller if supported, fall back
+             * to USB2 if there is no USB3 available, and if that's
+             * unavailable don't add anything.
              */
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
+                usbModel = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
+            else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
                 usbModel = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
             else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_USB_EHCI1))
                 usbModel = VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1;
