@@ -10212,7 +10212,7 @@ qemuDomainNamespaceUnlinkPaths(virDomainObjPtr vm,
             goto cleanup;
     }
 
-
+    ret = 0;
  cleanup:
     virStringListFreeCount(devMountsPath, ndevMountsPath);
     virObjectUnref(cfg);
