@@ -26,6 +26,11 @@
       <entry name='asset'>CZC1065993</entry>
       <entry name='location'>Upside down</entry>
     </baseBoard>
+    <oemStrings>
+      <entry>Hello</entry>
+      <entry>World</entry>
+      <entry>This is, more tricky value=escaped</entry>
+    </oemStrings>
   </sysinfo>
   <os>
     <type arch='i686' machine='pc'>hvm</type>

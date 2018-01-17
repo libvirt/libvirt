@@ -6142,6 +6142,26 @@ qemuBuildSmbiosBaseBoardStr(virSysinfoBaseBoardDefPtr def)
 }
 
 
+static char *
+qemuBuildSmbiosOEMStringsStr(virSysinfoOEMStringsDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    if (!def)
+        return NULL;
+
+    virBufferAddLit(&buf, "type=11");
+
+    for (i = 0; i < def->nvalues; i++) {
+        virBufferAddLit(&buf, ",value=");
+        virQEMUBuildBufferEscapeComma(&buf, def->values[i]);
+    }
+
+    return virBufferContentAndReset(&buf);
+}
+
+
 static int
 qemuBuildSmbiosCommandLine(virCommandPtr cmd,
                            virQEMUDriverPtr driver,
@@ -6207,6 +6227,14 @@ qemuBuildSmbiosCommandLine(virCommandPtr cmd,
         for (i = 0; i < source->nbaseBoard; i++) {
             if (!(smbioscmd =
                   qemuBuildSmbiosBaseBoardStr(source->baseBoard + i)))
+                return -1;
+
+            virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
+            VIR_FREE(smbioscmd);
+        }
+
+        if (source->oemStrings) {
+            if (!(smbioscmd = qemuBuildSmbiosOEMStringsStr(source->oemStrings)))
                 return -1;
 
             virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
