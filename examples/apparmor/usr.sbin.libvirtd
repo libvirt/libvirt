@@ -63,6 +63,7 @@
 
   signal (send) peer=/usr/sbin/dnsmasq,
   signal (read, send) peer=libvirt-*,
+  signal (send) set=("kill") peer=unconfined,
 
   # Very lenient profile for libvirtd since we want to first focus on confining
   # the guests. Guests will have a very restricted profile.
