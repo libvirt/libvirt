@@ -40,7 +40,16 @@
     </interface>
     <interface type='vhostuser'>
       <mac address='52:54:00:ee:96:6d'/>
-      <source type='unix' path='/tmp/vhost2.sock' mode='client'/>
+      <source type='unix' path='/tmp/vhost2.sock' mode='client'>
+        <reconnect enabled='yes' timeout='10'/>
+      </source>
+      <model type='virtio'/>
+    </interface>
+    <interface type='vhostuser'>
+      <mac address='52:54:00:ee:96:6e'/>
+      <source type='unix' path='/tmp/vhost3.sock' mode='client'>
+        <reconnect enabled='no'/>
+      </source>
       <model type='virtio'/>
       <driver queues='4'/>
     </interface>

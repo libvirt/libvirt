@@ -32,7 +32,11 @@ addr=0x4 \
 -netdev socket,listen=:2015,id=hostnet2 \
 -device rtl8139,netdev=hostnet2,id=net2,mac=52:54:00:95:db:c0,bus=pci.0,\
 addr=0x5 \
--chardev socket,id=charnet3,path=/tmp/vhost2.sock \
--netdev vhost-user,chardev=charnet3,queues=4,id=hostnet3 \
--device virtio-net-pci,mq=on,vectors=10,netdev=hostnet3,id=net3,\
-mac=52:54:00:ee:96:6d,bus=pci.0,addr=0x6
+-chardev socket,id=charnet3,path=/tmp/vhost2.sock,reconnect=10 \
+-netdev vhost-user,chardev=charnet3,id=hostnet3 \
+-device virtio-net-pci,netdev=hostnet3,id=net3,mac=52:54:00:ee:96:6d,bus=pci.0,\
+addr=0x6 \
+-chardev socket,id=charnet4,path=/tmp/vhost3.sock,reconnect=0 \
+-netdev vhost-user,chardev=charnet4,queues=4,id=hostnet4 \
+-device virtio-net-pci,mq=on,vectors=10,netdev=hostnet4,id=net4,\
+mac=52:54:00:ee:96:6e,bus=pci.0,addr=0x7

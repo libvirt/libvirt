@@ -10712,6 +10712,58 @@ virDomainNetAppendIPAddress(virDomainNetDefPtr def,
     return -1;
 }
 
+
+static int
+virDomainChrSourceReconnectDefParseXML(virDomainChrSourceReconnectDefPtr def,
+                                       xmlNodePtr node,
+                                       xmlXPathContextPtr ctxt)
+{
+    int ret = -1;
+    int tmpVal;
+    char *tmp = NULL;
+    xmlNodePtr saveNode = ctxt->node;
+    xmlNodePtr cur;
+
+    ctxt->node = node;
+
+    if ((cur = virXPathNode("./reconnect", ctxt))) {
+        if ((tmp = virXMLPropString(cur, "enabled"))) {
+            if ((tmpVal = virTristateBoolTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("invalid reconnect enabled value: '%s'"),
+                               tmp);
+                goto cleanup;
+            }
+            def->enabled = tmpVal;
+            VIR_FREE(tmp);
+        }
+
+        if (def->enabled == VIR_TRISTATE_BOOL_YES) {
+            if ((tmp = virXMLPropString(cur, "timeout"))) {
+                if (virStrToLong_ui(tmp, NULL, 10, &def->timeout) < 0) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("invalid reconnect timeout value: '%s'"),
+                                   tmp);
+                    goto cleanup;
+                }
+                VIR_FREE(tmp);
+            } else {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("missing timeout for chardev with "
+                                 "reconnect enabled"));
+                goto cleanup;
+            }
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    ctxt->node = saveNode;
+    VIR_FREE(tmp);
+    return ret;
+}
+
+
 /* Parse the XML definition for a network interface
  * @param node XML nodeset to parse for net definition
  * @return 0 on success, -1 on failure
@@ -10766,6 +10818,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     virNWFilterHashTablePtr filterparams = NULL;
     virDomainActualNetDefPtr actual = NULL;
     xmlNodePtr oldnode = ctxt->node;
+    virDomainChrSourceReconnectDef reconnect = {0};
     int rv, val;
 
     if (VIR_ALLOC(def) < 0)
@@ -10847,11 +10900,14 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
                 }
             } else if (!vhostuser_path && !vhostuser_mode && !vhostuser_type
-                       && def->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
-                       virXMLNodeNameEqual(cur, "source")) {
+                       && def->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER
+                       && virXMLNodeNameEqual(cur, "source")) {
                 vhostuser_type = virXMLPropString(cur, "type");
                 vhostuser_path = virXMLPropString(cur, "path");
                 vhostuser_mode = virXMLPropString(cur, "mode");
+                if (virDomainChrSourceReconnectDefParseXML(&reconnect, cur, ctxt) < 0)
+                    goto error;
+
             } else if (!def->virtPortProfile
                        && virXMLNodeNameEqual(cur, "virtualport")) {
                 if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
@@ -11073,8 +11129,15 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
 
         if (STREQ(vhostuser_mode, "server")) {
             def->data.vhostuser->data.nix.listen = true;
+            if (reconnect.enabled == VIR_TRISTATE_BOOL_YES) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("'reconnect' attribute  unsupported "
+                                 "'server' mode for <interface type='vhostuser'>"));
+                goto error;
+           }
         } else if (STREQ(vhostuser_mode, "client")) {
             def->data.vhostuser->data.nix.listen = false;
+            def->data.vhostuser->data.nix.reconnect = reconnect;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Wrong <source> 'mode' attribute "
@@ -11779,57 +11842,6 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
 
     return ret;
 }
-
-static int
-virDomainChrSourceReconnectDefParseXML(virDomainChrSourceReconnectDefPtr def,
-                                       xmlNodePtr node,
-                                       xmlXPathContextPtr ctxt)
-{
-    int ret = -1;
-    int tmpVal;
-    char *tmp = NULL;
-    xmlNodePtr saveNode = ctxt->node;
-    xmlNodePtr cur;
-
-    ctxt->node = node;
-
-    if ((cur = virXPathNode("./reconnect", ctxt))) {
-        if ((tmp = virXMLPropString(cur, "enabled"))) {
-            if ((tmpVal = virTristateBoolTypeFromString(tmp)) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("invalid reconnect enabled value: '%s'"),
-                               tmp);
-                goto cleanup;
-            }
-            def->enabled = tmpVal;
-            VIR_FREE(tmp);
-        }
-
-        if (def->enabled == VIR_TRISTATE_BOOL_YES) {
-            if ((tmp = virXMLPropString(cur, "timeout"))) {
-                if (virStrToLong_ui(tmp, NULL, 10, &def->timeout) < 0) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("invalid reconnect timeout value: '%s'"),
-                                   tmp);
-                    goto cleanup;
-                }
-                VIR_FREE(tmp);
-            } else {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("missing timeout for chardev with "
-                                 "reconnect enabled"));
-                goto cleanup;
-            }
-        }
-    }
-
-    ret = 0;
- cleanup:
-    ctxt->node = saveNode;
-    VIR_FREE(tmp);
-    return ret;
-}
-
 
 typedef enum {
     VIR_DOMAIN_CHR_SOURCE_MODE_CONNECT,
@@ -23899,6 +23911,23 @@ virDomainVirtioNetDriverFormat(char **outstr,
 }
 
 
+static void
+virDomainChrSourceReconnectDefFormat(virBufferPtr buf,
+                                     virDomainChrSourceReconnectDefPtr def)
+{
+    if (def->enabled == VIR_TRISTATE_BOOL_ABSENT)
+        return;
+
+    virBufferAsprintf(buf, "<reconnect enabled='%s'",
+                      virTristateBoolTypeToString(def->enabled));
+
+    if (def->enabled == VIR_TRISTATE_BOOL_YES)
+        virBufferAsprintf(buf, " timeout='%u'", def->timeout);
+
+    virBufferAddLit(buf, "/>\n");
+}
+
+
 int
 virDomainNetDefFormat(virBufferPtr buf,
                       virDomainNetDefPtr def,
@@ -23992,6 +24021,15 @@ virDomainNetDefFormat(virBufferPtr buf,
                                   def->data.vhostuser->data.nix.listen ?
                                   "server"  : "client");
                 sourceLines++;
+                if (def->data.vhostuser->data.nix.reconnect.enabled) {
+                    virBufferAddLit(buf, ">\n");
+                    sourceLines++;
+                    virBufferAdjustIndent(buf, 2);
+                    virDomainChrSourceReconnectDefFormat(buf,
+                                                         &def->data.vhostuser->data.nix.reconnect);
+                    virBufferAdjustIndent(buf, -2);
+                }
+
             }
             break;
 
@@ -24223,24 +24261,6 @@ virDomainChrAttrsDefFormat(virBufferPtr buf,
     }
     return 0;
 }
-
-
-static void
-virDomainChrSourceReconnectDefFormat(virBufferPtr buf,
-                                     virDomainChrSourceReconnectDefPtr def)
-{
-    if (def->enabled == VIR_TRISTATE_BOOL_ABSENT)
-        return;
-
-    virBufferAsprintf(buf, "<reconnect enabled='%s'",
-                      virTristateBoolTypeToString(def->enabled));
-
-    if (def->enabled == VIR_TRISTATE_BOOL_YES)
-        virBufferAsprintf(buf, " timeout='%u'", def->timeout);
-
-    virBufferAddLit(buf, "/>\n");
-}
-
 
 static int
 virDomainChrSourceDefFormat(virBufferPtr buf,

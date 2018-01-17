@@ -2431,6 +2431,18 @@
       </attribute>
     </optional>
   </define>
+  <define name="reconnect">
+    <element name="reconnect">
+      <attribute name="enabled">
+        <ref name="virYesNo"/>
+      </attribute>
+      <optional>
+        <attribute name="timeout">
+          <ref name="unsignedInt"/>
+        </attribute>
+      </optional>
+    </element>
+  </define>
 
   <!--
       An interface description can either be of type bridge in which case
@@ -2492,6 +2504,9 @@
                   <value>client</value>
                 </choice>
               </attribute>
+              <optional>
+                 <ref name="reconnect"/>
+              </optional>
               <empty/>
             </element>
             <ref name="interface-options"/>
@@ -3760,16 +3775,7 @@
           </attribute>
         </optional>
         <optional>
-          <element name="reconnect">
-            <attribute name="enabled">
-              <ref name="virYesNo"/>
-            </attribute>
-            <optional>
-              <attribute name="timeout">
-                <ref name="unsignedInt"/>
-              </attribute>
-            </optional>
-          </element>
+          <ref name="reconnect"/>
         </optional>
         <zeroOrMore>
           <ref name='devSeclabel'/>
