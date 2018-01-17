@@ -87,6 +87,7 @@
 %define with_libssh2       0%{!?_without_libssh2:0}
 %define with_wireshark     0%{!?_without_wireshark:0}
 %define with_libssh        0%{!?_without_libssh:0}
+%define with_bash_completion  0%{!?_without_bash_completion:0}
 %define with_pm_utils      1
 
 # Finally set the OS / architecture specific special cases
@@ -188,6 +189,11 @@
 # Enable libssh transport for new enough distros
 %if 0%{?fedora}
     %define with_libssh 0%{!?_without_libssh:1}
+%endif
+
+# Enable bash-completion for new enough distros
+%if 0%{?fedora} || 0%{?rhel} >= 7
+    %define with_bash_completion  0%{!?_without_bash_completion:1}
 %endif
 
 
@@ -306,7 +312,9 @@ BuildRequires: xen-devel
 BuildRequires: libxml2-devel
 BuildRequires: libxslt
 BuildRequires: readline-devel
+%if %{with_bash_completion}
 BuildRequires: bash-completion >= 2.0
+%endif
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: libtasn1-devel
@@ -2048,7 +2056,9 @@ exit 0
 %{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
 %{_datadir}/systemtap/tapset/libvirt_functions.stp
 
+%if %{with_bash_completion}
 %{_datadir}/bash-completion/completions/vsh
+%endif
 
 
 %if %{with_systemd}
