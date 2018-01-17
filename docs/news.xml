@@ -35,8 +35,48 @@
 <libvirt>
   <release version="v4.0.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          tools: Provide bash completion support
+        </summary>
+        <description>
+          Both <code>virsh</code> and <code>virt-admin</code> now implement
+          basic bash completion support.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Refresh capabilities on host microcode update
+        </summary>
+        <description>
+          A microcode update can cause the CPUID bits to change; therefore,
+          the capabilities cache should be rebuilt when such an update is
+          detected on the host.
+        </description>
+      </change>
+      <change>
+        <summary>
+          lxc: Set hostname based on container name
+        </summary>
+      </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          CPU frequency reporting improvements
+        </summary>
+        <description>
+          The CPU frequency will now be reported by <code>virsh nodeinfo</code>
+          and other tools for s390 hosts; at the same time; CPU frequency has
+          been disabled on aarch64 hosts because there's no way to detect it
+          reliably.
+        </description>
+      </change>
+      <change>
+        <summary>
+          libxl: Mark domain0 as persistent
+        </summary>
+      </change>
       <change>
         <summary>
           Xen: Add support for multiple IP addresses on interface devices
@@ -49,6 +89,16 @@
       </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: Enforce vCPU hotplug granularity constraints
+        </summary>
+        <description>
+          QEMU 2.7 and newer don't allow guests to start unless the initial
+          vCPUs count is a multiple of the vCPU hotplug granularity, so
+          validate it and report an error if needed.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.10.0" date="2017-12-04">
