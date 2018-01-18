@@ -150,7 +150,7 @@ gather_pci_cap(LibHalContext *ctx, const char *udi,
             ignore_value(virStrToLong_ui(p+1, &p, 16, &d->pci_dev.function));
         }
 
-        if (nodeDeviceSysfsGetPCIRelatedDevCaps(sysfs_path, &d->pci_dev) < 0) {
+        if (virNodeDeviceGetPCIDynamicCaps(sysfs_path, &d->pci_dev) < 0) {
             VIR_FREE(sysfs_path);
             return -1;
         }

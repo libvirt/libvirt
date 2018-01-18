@@ -400,4 +400,7 @@ virNodeDeviceGetSCSITargetCaps(const char *sysfsPath,
 int
 virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath,
                                virNodeDevCapPCIDevPtr pci_dev);
+
+int
+virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def);
 #endif /* __VIR_NODE_DEVICE_CONF_H__ */

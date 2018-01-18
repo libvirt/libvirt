@@ -711,6 +711,7 @@ virNodeDeviceGetPCIDynamicCaps;
 virNodeDeviceGetSCSIHostCaps;
 virNodeDeviceGetSCSITargetCaps;
 virNodeDeviceGetWWNs;
+virNodeDeviceUpdateCaps;
 
 
 # conf/node_device_event.h
