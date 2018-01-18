@@ -200,7 +200,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # but using 1024 bytes sized buffers (mostly for virStrerror)
     # stops us from going down further
     gl_WARN_ADD([-Wframe-larger-than=4096], [STRICT_FRAME_LIMIT_CFLAGS])
-    gl_WARN_ADD([-Wframe-larger-than=25600], [RELAXED_FRAME_LIMIT_CFLAGS])
+    gl_WARN_ADD([-Wframe-larger-than=32768], [RELAXED_FRAME_LIMIT_CFLAGS])
 
     # Extra special flags
     dnl -fstack-protector stuff passes gl_WARN_ADD with gcc
