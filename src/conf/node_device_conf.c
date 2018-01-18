@@ -2515,6 +2515,9 @@ virNodeDeviceCapsListExport(virNodeDeviceDefPtr def,
             tmp[ncaps] = cap; \
     } while (0)
 
+    if (virNodeDeviceUpdateCaps(def) < 0)
+        goto cleanup;
+
     if (want_list && VIR_ALLOC_N(tmp, VIR_NODE_DEV_CAP_LAST - 1) < 0)
         goto cleanup;
 
