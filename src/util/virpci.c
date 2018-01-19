@@ -3027,6 +3027,64 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
     return ret;
 }
 
+
+ssize_t
+virPCIGetMdevTypes(const char *sysfspath,
+                   virMediatedDeviceTypePtr **types)
+{
+    ssize_t ret = -1;
+    int dirret = -1;
+    DIR *dir = NULL;
+    struct dirent *entry;
+    char *types_path = NULL;
+    char *tmppath = NULL;
+    virMediatedDeviceTypePtr mdev_type = NULL;
+    virMediatedDeviceTypePtr *mdev_types = NULL;
+    size_t ntypes = 0;
+    size_t i;
+
+    if (virAsprintf(&types_path, "%s/mdev_supported_types", sysfspath) < 0)
+        return -1;
+
+    if ((dirret = virDirOpenIfExists(&dir, types_path)) < 0)
+        goto cleanup;
+
+    if (dirret == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    while ((dirret = virDirRead(dir, &entry, types_path)) > 0) {
+        /* append the type id to the path and read the attributes from there */
+        if (virAsprintf(&tmppath, "%s/%s", types_path, entry->d_name) < 0)
+            goto cleanup;
+
+        if (virMediatedDeviceTypeReadAttrs(tmppath, &mdev_type) < 0)
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(mdev_types, ntypes, mdev_type) < 0)
+            goto cleanup;
+
+        VIR_FREE(tmppath);
+    }
+
+    if (dirret < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(*types, mdev_types);
+    ret = ntypes;
+    ntypes = 0;
+ cleanup:
+    virMediatedDeviceTypeFree(mdev_type);
+    for (i = 0; i < ntypes; i++)
+        virMediatedDeviceTypeFree(mdev_types[i]);
+    VIR_FREE(mdev_types);
+    VIR_FREE(types_path);
+    VIR_FREE(tmppath);
+    VIR_DIR_CLOSE(dir);
+    return ret;
+}
+
 #else
 static const char *unsupported = N_("not supported on non-linux platforms");
 

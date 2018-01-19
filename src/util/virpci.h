@@ -25,6 +25,7 @@
 # define __VIR_PCI_H__
 
 # include "internal.h"
+# include "virmdev.h"
 # include "virobject.h"
 # include "virutil.h"
 
@@ -248,5 +249,8 @@ int virPCIDeviceGetLinkCapSta(virPCIDevicePtr dev,
 int virPCIGetHeaderType(virPCIDevicePtr dev, int *hdrType);
 
 void virPCIEDeviceInfoFree(virPCIEDeviceInfoPtr dev);
+
+ssize_t virPCIGetMdevTypes(const char *sysfspath,
+                           virMediatedDeviceType ***types);
 
 #endif /* __VIR_PCI_H__ */
