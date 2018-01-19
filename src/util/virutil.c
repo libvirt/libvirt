@@ -68,6 +68,10 @@
 # include <shlobj.h>
 #endif
 
+#ifdef HAVE_SYS_UN_H
+# include <sys/un.h>
+#endif
+
 #include "c-ctype.h"
 #include "mgetgroups.h"
 #include "virerror.h"
@@ -1977,6 +1981,47 @@ virGetListenFDs(void)
 }
 
 #endif /* WIN32 */
+
+#ifdef HAVE_SYS_UN_H
+char *virGetUNIXSocketPath(int fd)
+{
+    struct sockaddr_storage ss = { 0 };
+    struct sockaddr_un *un = (struct sockaddr_un *)&ss;
+    socklen_t len = sizeof(ss);
+    char *path;
+
+    if (getsockname(fd, (struct sockaddr *)&ss, &len) < 0) {
+        virReportSystemError(errno, _("Unable to get address of FD %d"), fd);
+        return NULL;
+    }
+
+    if (ss.ss_family != AF_UNIX) {
+        virReportSystemError(EINVAL, _("FD %d is not a UNIX socket, has af=%d"),
+                             fd, ss.ss_family);
+        return NULL;
+    }
+
+    if (un->sun_path[0] == '\0')
+        un->sun_path[0] = '@';
+
+    if (VIR_ALLOC_N(path, sizeof(un->sun_path) + 1) < 0)
+        return NULL;
+
+    memcpy(path, un->sun_path, sizeof(un->sun_path));
+    path[sizeof(un->sun_path)] = '\0';
+    return path;
+}
+
+#else /* HAVE_SYS_UN_H */
+
+char *virGetUNIXSocketPath(int fd)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("UNIX sockets not supported on this platform");
+    return NULL;
+}
+
+#endif /* HAVE_SYS_UN_H */
 
 #ifndef WIN32
 long virGetSystemPageSize(void)

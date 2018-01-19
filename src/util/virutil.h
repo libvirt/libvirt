@@ -207,6 +207,7 @@ verify((int)VIR_TRISTATE_BOOL_NO == (int)VIR_TRISTATE_SWITCH_OFF);
 verify((int)VIR_TRISTATE_BOOL_ABSENT == (int)VIR_TRISTATE_SWITCH_ABSENT);
 
 unsigned int virGetListenFDs(void);
+char *virGetUNIXSocketPath(int fd);
 
 long virGetSystemPageSize(void) ATTRIBUTE_NOINLINE;
 long virGetSystemPageSizeKB(void) ATTRIBUTE_NOINLINE;
