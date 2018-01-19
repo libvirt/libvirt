@@ -306,8 +306,6 @@ nodeDeviceNumOfCaps(virNodeDevicePtr device)
 {
     virNodeDeviceObjPtr obj;
     virNodeDeviceDefPtr def;
-    virNodeDevCapsDefPtr caps;
-    int ncaps = 0;
     int ret = -1;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
@@ -317,27 +315,7 @@ nodeDeviceNumOfCaps(virNodeDevicePtr device)
     if (virNodeDeviceNumOfCapsEnsureACL(device->conn, def) < 0)
         goto cleanup;
 
-    for (caps = def->caps; caps; caps = caps->next) {
-        ++ncaps;
-
-        if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
-            if (caps->data.scsi_host.flags &
-                VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST)
-                ncaps++;
-
-            if (caps->data.scsi_host.flags &
-                VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)
-                ncaps++;
-        }
-        if (caps->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
-            if (caps->data.pci_dev.flags &
-                VIR_NODE_DEV_CAP_FLAG_PCI_MDEV)
-                ncaps++;
-        }
-
-    }
-
-    ret = ncaps;
+    ret = virNodeDeviceCapsListExport(def, NULL);
 
  cleanup:
     virNodeDeviceObjEndAPI(&obj);
@@ -353,9 +331,10 @@ nodeDeviceListCaps(virNodeDevicePtr device,
 {
     virNodeDeviceObjPtr obj;
     virNodeDeviceDefPtr def;
-    virNodeDevCapsDefPtr caps;
+    virNodeDevCapType *list = NULL;
     int ncaps = 0;
     int ret = -1;
+    size_t i = 0;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
         return -1;
@@ -364,46 +343,28 @@ nodeDeviceListCaps(virNodeDevicePtr device,
     if (virNodeDeviceListCapsEnsureACL(device->conn, def) < 0)
         goto cleanup;
 
-    for (caps = def->caps; caps && ncaps < maxnames; caps = caps->next) {
-        if (VIR_STRDUP(names[ncaps++], virNodeDevCapTypeToString(caps->data.type)) < 0)
+    if ((ncaps = virNodeDeviceCapsListExport(def, &list)) < 0)
+        goto cleanup;
+
+    if (ncaps > maxnames)
+        ncaps = maxnames;
+
+    for (i = 0; i < ncaps; i++) {
+        if (VIR_STRDUP(names[i], virNodeDevCapTypeToString(list[i])) < 0)
             goto cleanup;
-
-        if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
-            if (ncaps < maxnames &&
-                caps->data.scsi_host.flags &
-                VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
-                if (VIR_STRDUP(names[ncaps++],
-                               virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_FC_HOST)) < 0)
-                    goto cleanup;
-            }
-
-            if (ncaps < maxnames &&
-                caps->data.scsi_host.flags &
-                VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS) {
-                if (VIR_STRDUP(names[ncaps++],
-                               virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_VPORTS)) < 0)
-                    goto cleanup;
-            }
-        }
-        if (caps->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
-            if (ncaps < maxnames &&
-                caps->data.pci_dev.flags &
-                VIR_NODE_DEV_CAP_FLAG_PCI_MDEV) {
-                if (VIR_STRDUP(names[ncaps++],
-                               virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_MDEV_TYPES)) < 0)
-                    goto cleanup;
-            }
-        }
     }
+
     ret = ncaps;
 
  cleanup:
     virNodeDeviceObjEndAPI(&obj);
-    if (ret == -1) {
-        --ncaps;
-        while (--ncaps >= 0)
-            VIR_FREE(names[ncaps]);
+    if (ret < 0) {
+        size_t j;
+        for (j = 0; j < i; j++)
+            VIR_FREE(names[j]);
     }
+
+    VIR_FREE(list);
     return ret;
 }
 

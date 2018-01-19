@@ -2487,6 +2487,79 @@ virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def)
 }
 
 
+/**
+ * virNodeDeviceCapsListExport:
+ * @def: node device definition
+ * @list: pointer to an array to store all supported capabilities by a device
+ *
+ * Takes the definition, scans through all the capabilities that the device
+ * supports (including the nested caps) and populates a newly allocated list
+ * with them. Caller is responsible for freeing the list.
+ * If NULL is passed to @list, only the number of caps will be returned.
+ *
+ * Returns the number of capabilities the device supports, -1 on error.
+ */
+int
+virNodeDeviceCapsListExport(virNodeDeviceDefPtr def,
+                            virNodeDevCapType **list)
+{
+    virNodeDevCapsDefPtr caps = NULL;
+    virNodeDevCapType *tmp = NULL;
+    bool want_list = !!list;
+    int ncaps = 0;
+    int ret = -1;
+
+#define MAYBE_ADD_CAP(cap) \
+    do { \
+        if (want_list) \
+            tmp[ncaps] = cap; \
+    } while (0)
+
+    if (want_list && VIR_ALLOC_N(tmp, VIR_NODE_DEV_CAP_LAST - 1) < 0)
+        goto cleanup;
+
+    for (caps = def->caps; caps; caps = caps->next) {
+        unsigned int flags;
+
+        MAYBE_ADD_CAP(caps->data.type);
+        ncaps++;
+
+        /* check nested caps for a given type as well */
+        if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
+            flags = caps->data.scsi_host.flags;
+
+            if (flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
+                MAYBE_ADD_CAP(VIR_NODE_DEV_CAP_FC_HOST);
+                ncaps++;
+            }
+
+            if (flags  & VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS) {
+                MAYBE_ADD_CAP(VIR_NODE_DEV_CAP_VPORTS);
+                ncaps++;
+            }
+        }
+
+        if (caps->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
+            flags = caps->data.pci_dev.flags;
+
+            if (flags & VIR_NODE_DEV_CAP_FLAG_PCI_MDEV) {
+                MAYBE_ADD_CAP(VIR_NODE_DEV_CAP_MDEV_TYPES);
+                ncaps++;
+            }
+        }
+    }
+
+#undef MAYBE_ADD_CAP
+
+    if (want_list)
+        VIR_STEAL_PTR(*list, tmp);
+    ret = ncaps;
+ cleanup:
+    VIR_FREE(tmp);
+    return ret;
+}
+
+
 #ifdef __linux__
 
 int

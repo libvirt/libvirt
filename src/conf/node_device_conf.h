@@ -403,4 +403,9 @@ virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath,
 
 int
 virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def);
+
+int
+virNodeDeviceCapsListExport(virNodeDeviceDefPtr def,
+                            virNodeDevCapType **list);
+
 #endif /* __VIR_NODE_DEVICE_CONF_H__ */

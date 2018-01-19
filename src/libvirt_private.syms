@@ -699,6 +699,7 @@ virNodeDevCapMdevTypeFree;
 virNodeDevCapsDefFree;
 virNodeDevCapTypeFromString;
 virNodeDevCapTypeToString;
+virNodeDeviceCapsListExport;
 virNodeDeviceCreateVport;
 virNodeDeviceDefFormat;
 virNodeDeviceDefFree;
