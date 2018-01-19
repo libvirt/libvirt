@@ -41,11 +41,20 @@ typedef int (*virNetServerClientFilterFunc)(virNetServerClientPtr client,
                                             virNetMessagePtr msg,
                                             void *opaque);
 
+/*
+ * @data: value allocated by virNetServerClintPrivNew(PostExecRestart) callback
+ */
 typedef virJSONValuePtr (*virNetServerClientPrivPreExecRestart)(virNetServerClientPtr client,
                                                                 void *data);
+/*
+ * @opaque: value of @privOpaque from virNetServerClientNewPostExecRestart
+ */
 typedef void *(*virNetServerClientPrivNewPostExecRestart)(virNetServerClientPtr client,
                                                           virJSONValuePtr object,
                                                           void *opaque);
+/*
+ * @opaque: value of @privOpaque from virNetServerClientNew
+ */
 typedef void *(*virNetServerClientPrivNew)(virNetServerClientPtr client,
                                            void *opaque);
 
