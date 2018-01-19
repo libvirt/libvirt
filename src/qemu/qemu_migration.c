@@ -5481,8 +5481,10 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     }
 
     if (dom) {
-        VIR_STEAL_PTR(priv->job.completed, jobInfo);
-        priv->job.completed->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
+        if (jobInfo) {
+            VIR_STEAL_PTR(priv->job.completed, jobInfo);
+            priv->job.completed->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
+        }
 
         if (qemuMigrationBakeCookie(mig, driver, vm, cookieout, cookieoutlen,
                                     QEMU_MIGRATION_COOKIE_STATS) < 0)
