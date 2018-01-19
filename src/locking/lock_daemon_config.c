@@ -72,6 +72,7 @@ virLockDaemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
         return NULL;
 
     data->max_clients = 1024;
+    data->admin_max_clients = 5000;
 
     return data;
 }
@@ -99,6 +100,8 @@ virLockDaemonConfigLoadOptions(virLockDaemonConfigPtr data,
     if (virConfGetValueString(conf, "log_outputs", &data->log_outputs) < 0)
         return -1;
     if (virConfGetValueUInt(conf, "max_clients", &data->max_clients) < 0)
+        return -1;
+    if (virConfGetValueUInt(conf, "admin_max_clients", &data->admin_max_clients) < 0)
         return -1;
 
     return 0;

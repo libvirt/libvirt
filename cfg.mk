@@ -775,7 +775,6 @@ sc_prohibit_cross_inclusion:
 	  case $$dir in \
 	    util/) safe="util";; \
 	    access/ | conf/) safe="($$dir|conf|util)";; \
-	    locking/) safe="($$dir|util|conf|rpc)";; \
 	    cpu/| network/| node_device/| rpc/| security/| storage/) \
 	      safe="($$dir|util|conf|storage)";; \
 	    xenapi/ | xenconfig/ ) safe="($$dir|util|conf|xen|cpu)";; \

@@ -40,6 +40,7 @@
 
 #define LIBVIRTD_ADMIN_SOCK_NAME "libvirt-admin-sock"
 #define VIRTLOGD_ADMIN_SOCK_NAME "virtlogd-admin-sock"
+#define VIRTLOCKD_ADMIN_SOCK_NAME "virtlockd-admin-sock"
 
 
 VIR_LOG_INIT("libvirt-admin");
@@ -134,6 +135,8 @@ getSocketPath(virURIPtr uri)
             sockbase = LIBVIRTD_ADMIN_SOCK_NAME;
         } else if (STREQ_NULLABLE(uri->scheme, "virtlogd")) {
             sockbase = VIRTLOGD_ADMIN_SOCK_NAME;
+        } else if (STREQ_NULLABLE(uri->scheme, "virtlockd")) {
+            sockbase = VIRTLOCKD_ADMIN_SOCK_NAME;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported URI scheme '%s'"),

@@ -3,6 +3,8 @@ module Test_virtlockd =
 log_filters=\"3:remote 4:event\"
 log_outputs=\"3:syslog:libvirtd\"
 log_buffer_size = 64
+max_clients = 10
+admin_max_clients = 10
 "
 
    test Virtlockd.lns get conf =
@@ -10,3 +12,5 @@ log_buffer_size = 64
         { "log_filters" = "3:remote 4:event" }
         { "log_outputs" = "3:syslog:libvirtd" }
         { "log_buffer_size" = "64" }
+        { "max_clients" = "10" }
+        { "admin_max_clients" = "10" }

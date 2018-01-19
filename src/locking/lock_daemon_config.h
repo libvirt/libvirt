@@ -34,6 +34,7 @@ struct _virLockDaemonConfig {
     char *log_filters;
     char *log_outputs;
     unsigned int max_clients;
+    unsigned int admin_max_clients;
 };
 
 

@@ -2644,6 +2644,7 @@ virtlockd_LDFLAGS = \
 		$(PIE_LDFLAGS) \
 		$(NULL)
 virtlockd_LDADD = \
+		libvirt_driver_admin.la \
 		libvirt-net-rpc-server.la \
 		libvirt-net-rpc.la \
 		libvirt_util.la \

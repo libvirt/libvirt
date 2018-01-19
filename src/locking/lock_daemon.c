@@ -32,6 +32,7 @@
 
 #include "lock_daemon.h"
 #include "lock_daemon_config.h"
+#include "admin/admin_server_dispatch.h"
 #include "virutil.h"
 #include "virfile.h"
 #include "virpidfile.h"
@@ -148,7 +149,7 @@ static virLockDaemonPtr
 virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
 {
     virLockDaemonPtr lockd;
-    virNetServerPtr srv;
+    virNetServerPtr srv = NULL;
 
     if (VIR_ALLOC(lockd) < 0)
         return NULL;
@@ -160,6 +161,9 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
         return NULL;
     }
 
+    if (!(lockd->dmn = virNetDaemonNew()))
+        goto error;
+
     if (!(srv = virNetServerNew("virtlockd", 1,
                                 1, 1, 0, config->max_clients,
                                 config->max_clients, -1, 0,
@@ -170,9 +174,23 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
                                 (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
 
-    if (!(lockd->dmn = virNetDaemonNew()) ||
-        virNetDaemonAddServer(lockd->dmn, srv) < 0)
+    if (virNetDaemonAddServer(lockd->dmn, srv) < 0)
         goto error;
+    virObjectUnref(srv);
+    srv = NULL;
+
+    if (!(srv = virNetServerNew("admin", 1,
+                                1, 1, 0, config->admin_max_clients,
+                                config->admin_max_clients, -1, 0,
+                                NULL,
+                                remoteAdmClientNew,
+                                remoteAdmClientPreExecRestart,
+                                remoteAdmClientFree,
+                                lockd->dmn)))
+        goto error;
+
+    if (virNetDaemonAddServer(lockd->dmn, srv) < 0)
+         goto error;
     virObjectUnref(srv);
     srv = NULL;
 
@@ -206,6 +224,14 @@ virLockDaemonNewServerPostExecRestart(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
                                               virLockDaemonClientPreExecRestart,
                                               virLockDaemonClientFree,
                                               opaque);
+    } else if (STREQ(name, "admin")) {
+        return virNetServerNewPostExecRestart(object,
+                                              name,
+                                              remoteAdmClientNew,
+                                              remoteAdmClientNewPostExecRestart,
+                                              remoteAdmClientPreExecRestart,
+                                              remoteAdmClientFree,
+                                              dmn);
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unexpected server name '%s' during restart"),
@@ -420,10 +446,12 @@ virLockDaemonForkIntoBackground(const char *argv0)
 
 static int
 virLockDaemonUnixSocketPaths(bool privileged,
-                             char **sockfile)
+                             char **sockfile,
+                             char **adminSockfile)
 {
     if (privileged) {
-        if (VIR_STRDUP(*sockfile, LOCALSTATEDIR "/run/libvirt/virtlockd-sock") < 0)
+        if (VIR_STRDUP(*sockfile, LOCALSTATEDIR "/run/libvirt/virtlockd-sock") < 0 ||
+            VIR_STRDUP(*adminSockfile, LOCALSTATEDIR "/run/libvirt/virtlockd-admin-sock") < 0)
             goto error;
     } else {
         char *rundir = NULL;
@@ -440,7 +468,8 @@ virLockDaemonUnixSocketPaths(bool privileged,
         }
         umask(old_umask);
 
-        if (virAsprintf(sockfile, "%s/virtlockd-sock", rundir) < 0) {
+        if (virAsprintf(sockfile, "%s/virtlockd-sock", rundir) < 0 ||
+            virAsprintf(adminSockfile, "%s/virtlockd-admin-sock", rundir) < 0) {
             VIR_FREE(rundir);
             goto error;
         }
@@ -557,29 +586,50 @@ virLockDaemonSetupSignals(virNetDaemonPtr dmn)
 
 
 static int
-virLockDaemonSetupNetworkingSystemD(virNetServerPtr srv)
+virLockDaemonSetupNetworkingSystemD(virNetServerPtr lockSrv, virNetServerPtr adminSrv)
 {
-    virNetServerServicePtr svc;
     unsigned int nfds;
+    size_t i;
 
     if ((nfds = virGetListenFDs()) == 0)
         return 0;
-    if (nfds > 1)
+    if (nfds > 2)
         VIR_DEBUG("Too many (%d) file descriptors from systemd", nfds);
-    nfds = 1;
 
-    /* Systemd passes FDs, starting immediately after stderr,
-     * so the first FD we'll get is '3'. */
-    if (!(svc = virNetServerServiceNewFD(3, 0,
+    for (i = 0; i < nfds && i < 2; i++) {
+        virNetServerServicePtr svc;
+        char *path = virGetUNIXSocketPath(3 + i);
+        virNetServerPtr srv;
+
+        if (!path)
+            return -1;
+
+        if (strstr(path, "virtlockd-admin-sock")) {
+            srv = adminSrv;
+        } else if (strstr(path, "virtlockd-sock")) {
+            srv = lockSrv;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown UNIX socket %s passed in"),
+                           path);
+            VIR_FREE(path);
+            return -1;
+        }
+        VIR_FREE(path);
+
+        /* Systemd passes FDs, starting immediately after stderr,
+         * so the first FD we'll get is '3'. */
+        if (!(svc = virNetServerServiceNewFD(3 + i, 0,
 #if WITH_GNUTLS
-                                         NULL,
+                                             NULL,
 #endif
-                                         false, 0, 1)))
-        return -1;
+                                             false, 0, 1)))
+            return -1;
 
-    if (virNetServerAddService(srv, svc, NULL) < 0) {
-        virObjectUnref(svc);
-        return -1;
+        if (virNetServerAddService(srv, svc, NULL) < 0) {
+            virObjectUnref(svc);
+            return -1;
+        }
     }
     return 1;
 }
@@ -1112,8 +1162,10 @@ virLockDaemonUsage(const char *argv0, bool privileged)
 }
 
 int main(int argc, char **argv) {
-    virNetServerPtr srv = NULL;
+    virNetServerPtr lockSrv = NULL;
+    virNetServerPtr adminSrv = NULL;
     virNetServerProgramPtr lockProgram = NULL;
+    virNetServerProgramPtr adminProgram = NULL;
     char *remote_config_file = NULL;
     int statuswrite = -1;
     int ret = 1;
@@ -1123,6 +1175,7 @@ int main(int argc, char **argv) {
     char *pid_file = NULL;
     int pid_file_fd = -1;
     char *sock_file = NULL;
+    char *admin_sock_file = NULL;
     int timeout = -1;        /* -t: Shutdown timeout */
     char *state_file = NULL;
     bool implicit_conf = false;
@@ -1250,12 +1303,13 @@ int main(int argc, char **argv) {
     VIR_DEBUG("Decided on pid file path '%s'", NULLSTR(pid_file));
 
     if (virLockDaemonUnixSocketPaths(privileged,
-                                     &sock_file) < 0) {
+                                     &sock_file,
+                                     &admin_sock_file) < 0) {
         VIR_ERROR(_("Can't determine socket paths"));
         exit(EXIT_FAILURE);
     }
-    VIR_DEBUG("Decided on socket paths '%s'",
-              sock_file);
+    VIR_DEBUG("Decided on socket paths '%s' and '%s'",
+              sock_file, admin_sock_file);
 
     if (virLockDaemonExecRestartStatePath(privileged,
                                           &state_file) < 0) {
@@ -1330,22 +1384,30 @@ int main(int argc, char **argv) {
             goto cleanup;
         }
 
-        srv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
-        if ((rv = virLockDaemonSetupNetworkingSystemD(srv)) < 0) {
+        lockSrv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
+        adminSrv = virNetDaemonGetServer(lockDaemon->dmn, "admin");
+        if ((rv = virLockDaemonSetupNetworkingSystemD(lockSrv, adminSrv)) < 0) {
             ret = VIR_LOCK_DAEMON_ERR_NETWORK;
             goto cleanup;
         }
 
         /* Only do this, if systemd did not pass a FD */
-        if (rv == 0 &&
-            virLockDaemonSetupNetworkingNative(srv, sock_file) < 0) {
-            ret = VIR_LOCK_DAEMON_ERR_NETWORK;
-            goto cleanup;
+        if (rv == 0) {
+            if (virLockDaemonSetupNetworkingNative(lockSrv, sock_file) < 0 ||
+                virLockDaemonSetupNetworkingNative(adminSrv, admin_sock_file) < 0) {
+                ret = VIR_LOCK_DAEMON_ERR_NETWORK;
+                goto cleanup;
+            }
         }
-        virObjectUnref(srv);
+        virObjectUnref(lockSrv);
+        virObjectUnref(adminSrv);
     }
 
-    srv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
+    lockSrv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
+    /* If exec-restarting from old virtlockd, we won't have an
+     * admin server present */
+    if (virNetDaemonHasServer(lockDaemon->dmn, "admin"))
+        adminSrv = virNetDaemonGetServer(lockDaemon->dmn, "admin");
 
     if (timeout != -1) {
         VIR_DEBUG("Registering shutdown timeout %d", timeout);
@@ -1366,9 +1428,23 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    if (virNetServerAddProgram(srv, lockProgram) < 0) {
+    if (virNetServerAddProgram(lockSrv, lockProgram) < 0) {
         ret = VIR_LOCK_DAEMON_ERR_INIT;
         goto cleanup;
+    }
+
+    if (adminSrv != NULL) {
+        if (!(adminProgram = virNetServerProgramNew(ADMIN_PROGRAM,
+                                                    ADMIN_PROTOCOL_VERSION,
+                                                    adminProcs,
+                                                    adminNProcs))) {
+            ret = VIR_LOCK_DAEMON_ERR_INIT;
+            goto cleanup;
+        }
+        if (virNetServerAddProgram(adminSrv, adminProgram) < 0) {
+            ret = VIR_LOCK_DAEMON_ERR_INIT;
+            goto cleanup;
+        }
     }
 
     /* Disable error func, now logging is setup */
@@ -1401,8 +1477,10 @@ int main(int argc, char **argv) {
         ret = 0;
 
  cleanup:
-    virObjectUnref(srv);
     virObjectUnref(lockProgram);
+    virObjectUnref(adminProgram);
+    virObjectUnref(lockSrv);
+    virObjectUnref(adminSrv);
     virLockDaemonFree(lockDaemon);
     if (statuswrite != -1) {
         if (ret != 0) {
@@ -1418,6 +1496,7 @@ int main(int argc, char **argv) {
         virPidFileReleasePath(pid_file, pid_file_fd);
     VIR_FREE(pid_file);
     VIR_FREE(sock_file);
+    VIR_FREE(admin_sock_file);
     VIR_FREE(state_file);
     VIR_FREE(run_dir);
     return ret;
