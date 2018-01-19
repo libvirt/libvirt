@@ -1,6 +1,3 @@
-daemon/admin.c
-daemon/admin_dispatch.h
-daemon/admin_server.c
 daemon/libvirtd-config.c
 daemon/libvirtd.c
 daemon/qemu_dispatch.h
@@ -12,6 +9,9 @@ gnulib/lib/getopt.c
 gnulib/lib/regcomp.c
 src/access/viraccessdriverpolkit.c
 src/access/viraccessmanager.c
+src/admin/admin_server.c
+src/admin/admin_server_dispatch.c
+src/admin/admin_server_dispatch_stubs.h
 src/bhyve/bhyve_capabilities.c
 src/bhyve/bhyve_command.c
 src/bhyve/bhyve_device.c

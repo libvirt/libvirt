@@ -37,7 +37,6 @@ DAEMON_GENERATED = \
 		remote_dispatch.h \
 		lxc_dispatch.h \
 		qemu_dispatch.h \
-		admin_dispatch.h \
 		$(NULL)
 
 DAEMON_SOURCES = \
@@ -61,7 +60,6 @@ EXTRA_DIST = \
 	remote_dispatch.h \
 	lxc_dispatch.h \
 	qemu_dispatch.h \
-	admin_dispatch.h \
 	libvirtd.conf \
 	libvirtd.init.in \
 	libvirtd.upstart \
@@ -111,12 +109,6 @@ qemu_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
 	  --mode=server qemu QEMU $(QEMU_PROTOCOL) \
 	  > $(srcdir)/qemu_dispatch.h
 
-admin_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
-		$(ADMIN_PROTOCOL)
-	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
-	  --mode=server admin ADMIN $(ADMIN_PROTOCOL) \
-	  > $(srcdir)/admin_dispatch.h
-
 if WITH_LIBVIRTD
 
 # Build a convenience library, for reuse in tests/libvirtdconftest
@@ -135,27 +127,6 @@ libvirtd_conf_la_LDFLAGS = \
 	$(NO_INDIRECT_LDFLAGS) \
 	$(NULL)
 libvirtd_conf_la_LIBADD = $(LIBXML_LIBS)
-
-noinst_LTLIBRARIES += libvirtd_admin.la
-libvirtd_admin_la_SOURCES = \
-		admin.c admin.h admin_server.c admin_server.h
-
-libvirtd_admin_la_CFLAGS = \
-		$(AM_CFLAGS) \
-		$(XDR_CFLAGS) \
-		$(PIE_CFLAGS) \
-		$(WARN_CFLAGS) \
-		$(LIBXML_CFLAGS) \
-		$(COVERAGE_CFLAGS) \
-		$(NULL)
-libvirtd_admin_la_LDFLAGS = \
-		$(PIE_LDFLAGS) \
-		$(RELRO_LDFLAGS) \
-		$(COVERAGE_LDFLAGS) \
-		$(NO_INDIRECT_LDFLAGS) \
-		$(NULL)
-libvirtd_admin_la_LIBADD = \
-		../src/libvirt-admin.la
 
 man8_MANS = libvirtd.8
 
@@ -202,7 +173,7 @@ endif WITH_DTRACE_PROBES
 
 libvirtd_LDADD += \
 	libvirtd_conf.la \
-	libvirtd_admin.la \
+	../src/libvirt_driver_admin.la \
 	../src/libvirt-lxc.la \
 	../src/libvirt-qemu.la \
 	../src/libvirt_driver_remote.la \
@@ -269,8 +240,6 @@ endif ! WITH_POLKIT
 
 remote.c: $(DAEMON_GENERATED)
 remote.h: $(DAEMON_GENERATED)
-admin.c: $(DAEMON_GENERATED)
-admin.h: $(DAEMON_GENERATED)
 
 LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
 		  libvirtd.libxl.logrotate libvirtd.uml.logrotate \

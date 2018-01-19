@@ -1,5 +1,5 @@
 /*
- * admin.h: handlers for admin RPC method calls
+ * admin_server_dispatch.h: handlers for admin RPC method calls
  *
  * Copyright (C) 2014-2016 Red Hat, Inc.
  *
@@ -20,11 +20,12 @@
  * Author: Martin Kletzander <mkletzan@redhat.com>
  */
 
-#ifndef __LIBVIRTD_ADMIN_H__
-# define __LIBVIRTD_ADMIN_H__
+#ifndef __ADMIN_SERVER_DISPATCH_H__
+# define __ADMIN_SERVER_DISPATCH_H__
 
 # include "rpc/virnetserverprogram.h"
 # include "rpc/virnetserverclient.h"
+# include "admin/admin_protocol.h"
 
 
 extern virNetServerProgramProc adminProcs[];
@@ -33,4 +34,4 @@ extern size_t adminNProcs;
 void remoteAdmClientFreeFunc(void *data);
 void *remoteAdmClientInitHook(virNetServerClientPtr client, void *opaque);
 
-#endif /* __ADMIN_REMOTE_H__ */
+#endif /* __ADMIN_SERVER_DISPATCH_H__ */

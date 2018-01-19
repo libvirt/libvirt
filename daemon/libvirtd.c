@@ -43,7 +43,7 @@
 #include "libvirtd.h"
 #include "libvirtd-config.h"
 
-#include "admin.h"
+#include "admin/admin_server_dispatch.h"
 #include "viruuid.h"
 #include "remote_driver.h"
 #include "viralloc.h"

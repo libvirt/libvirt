@@ -1,5 +1,5 @@
 /*
- * admin.c: handlers for admin RPC method calls
+ * admin_server_dispatch.c: handlers for admin RPC method calls
  *
  * Copyright (C) 2014-2016 Red Hat, Inc.
  *
@@ -23,18 +23,16 @@
 #include <config.h>
 
 #include "internal.h"
-#include "libvirtd.h"
 #include "libvirt_internal.h"
 
-#include "admin_protocol.h"
-#include "admin.h"
+#include "admin_server_dispatch.h"
 #include "admin_server.h"
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
-#include "virnetdaemon.h"
-#include "virnetserver.h"
+#include "rpc/virnetdaemon.h"
+#include "rpc/virnetserver.h"
 #include "virstring.h"
 #include "virthreadjob.h"
 #include "virtypedparam.h"
@@ -43,6 +41,15 @@
 
 VIR_LOG_INIT("daemon.admin");
 
+typedef struct daemonAdmClientPrivate daemonAdmClientPrivate;
+typedef daemonAdmClientPrivate *daemonAdmClientPrivatePtr;
+/* Separate private data for admin connection */
+struct daemonAdmClientPrivate {
+    /* Just a placeholder, not that there is anything to be locked */
+    virMutex lock;
+
+    virNetDaemonPtr dmn;
+};
 
 void
 remoteAdmClientFreeFunc(void *data)
@@ -487,4 +494,4 @@ adminDispatchConnectGetLoggingFilters(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     return 0;
 }
-#include "admin_dispatch.h"
+#include "admin_server_dispatch_stubs.h"

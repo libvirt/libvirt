@@ -21,8 +21,8 @@
  *          Martin Kletzander <mkletzan@redhat.com>
  */
 
-#ifndef __LIBVIRTD_ADMIN_SERVER_H__
-# define __LIBVIRTD_ADMIN_SERVER_H__
+#ifndef __ADMIN_SERVER_H__
+# define __ADMIN_SERVER_H__
 
 # include "rpc/virnetdaemon.h"
 # include "rpc/virnetserver.h"
@@ -72,4 +72,4 @@ int adminServerSetClientLimits(virNetServerPtr srv,
                                int nparams,
                                unsigned int flags);
 
-#endif /* __LIBVIRTD_ADMIN_SERVER_H__ */
+#endif /* __ADMIN_SERVER_H__ */

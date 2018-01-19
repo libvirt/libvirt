@@ -30,7 +30,6 @@
 # include <rpc/types.h>
 # include <rpc/xdr.h>
 # include "remote_protocol.h"
-# include "admin_protocol.h"
 # include "lxc_protocol.h"
 # include "qemu_protocol.h"
 # include "virthread.h"
@@ -44,8 +43,6 @@ typedef struct daemonClientStream daemonClientStream;
 typedef daemonClientStream *daemonClientStreamPtr;
 typedef struct daemonClientPrivate daemonClientPrivate;
 typedef daemonClientPrivate *daemonClientPrivatePtr;
-typedef struct daemonAdmClientPrivate daemonAdmClientPrivate;
-typedef daemonAdmClientPrivate *daemonAdmClientPrivatePtr;
 typedef struct daemonClientEventCallback daemonClientEventCallback;
 typedef daemonClientEventCallback *daemonClientEventCallbackPtr;
 
@@ -81,13 +78,6 @@ struct daemonClientPrivate {
     daemonClientStreamPtr streams;
 };
 
-/* Separate private data for admin connection */
-struct daemonAdmClientPrivate {
-    /* Just a placeholder, not that there is anything to be locked */
-    virMutex lock;
-
-    virNetDaemonPtr dmn;
-};
 
 # if WITH_SASL
 extern virNetSASLContextPtr saslCtxt;

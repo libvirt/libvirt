@@ -546,13 +546,21 @@ ADMIN_PROTOCOL = $(srcdir)/admin/admin_protocol.x
 ADMIN_PROTOCOL_GENERATED = \
 		admin/admin_protocol.c \
 		admin/admin_protocol.h \
-		admin/admin_client.h
+		admin/admin_client.h \
+		admin/admin_server_dispatch_stubs.h \
+		$(NULL)
 
 admin/admin_client.h: $(srcdir)/rpc/gendispatch.pl \
 		$(ADMIN_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
 	  admin ADMIN $(ADMIN_PROTOCOL) \
 	  > $(srcdir)/admin/admin_client.h
+
+admin/admin_server_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
+		$(ADMIN_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=server \
+	  admin ADMIN $(ADMIN_PROTOCOL) \
+	  > $(srcdir)/admin/admin_server_dispatch_stubs.h
 
 EXTRA_DIST += $(ADMIN_PROTOCOL) $(ADMIN_PROTOCOL_GENERATED)
 BUILT_SOURCES += $(ADMIN_PROTOCOL_GENERATED)
@@ -2311,6 +2319,27 @@ libvirt_admin.syms: libvirt_admin_public.syms $(ADMIN_SYM_FILES) \
 	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp && \
 	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt_admin.syms
+
+
+admin/admin_server_dispatch.c: admin/admin_server_dispatch_stubs.h
+
+noinst_LTLIBRARIES += libvirt_driver_admin.la
+libvirt_driver_admin_la_SOURCES = \
+		admin/admin_protocol.c \
+		admin/admin_protocol.h \
+		admin/admin_server.c \
+		admin/admin_server.h \
+		admin/admin_server_dispatch.c \
+		admin/admin_server_dispatch.h \
+		admin/admin_server_dispatch_stubs.h \
+		$(NULL)
+libvirt_driver_admin_la_CFLAGS = \
+		$(AM_CFLAGS) \
+		-I$(top_srcdir)/src/util \
+		-I$(top_srcdir)/src/admin \
+		$(NULL)
+libvirt_driver_admin_la_LIBADD = ../gnulib/lib/libgnu.la
+libvirt_driver_admin_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 
 # admin/admin_remote.c is being included in libvirt-admin.c, so we
 # need to include it in the dist

@@ -123,6 +123,7 @@
 /src/access/viraccessapicheckqemu.h
 /src/admin/admin_client.h
 /src/admin/admin_protocol.[ch]
+/src/admin/admin_server_dispatch_stubs.h
 /src/esx/*.generated.*
 /src/hyperv/*.generated.*
 /src/libvirt*.def
