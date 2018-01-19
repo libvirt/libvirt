@@ -78,7 +78,6 @@ struct _qemuMonitor {
      * < 0: an error occurred during the registration of @fd */
     int watch;
     int hasSendFD;
-    int willhangup;
 
     virDomainObjPtr vm;
 
@@ -716,10 +715,8 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque)
         if (events & VIR_EVENT_HANDLE_HANGUP) {
             hangup = true;
             if (!error) {
-                if (!mon->willhangup) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("End of file from qemu monitor"));
-                }
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("End of file from qemu monitor"));
                 eof = true;
                 events &= ~VIR_EVENT_HANDLE_HANGUP;
             }
@@ -758,7 +755,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque)
         if (mon->lastError.code != VIR_ERR_OK) {
             /* Already have an error, so clear any new error */
             virResetLastError();
-        } else if (!mon->willhangup) {
+        } else {
             virErrorPtr err = virGetLastError();
             if (!err)
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1352,7 +1349,6 @@ qemuMonitorEmitShutdown(qemuMonitorPtr mon, virTristateBool guest)
 {
     int ret = -1;
     VIR_DEBUG("mon=%p guest=%u", mon, guest);
-    mon->willhangup = 1;
 
     QEMU_MONITOR_CALLBACK(mon, ret, domainShutdown, mon->vm, guest);
     return ret;
