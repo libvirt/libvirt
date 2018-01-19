@@ -30,6 +30,9 @@
 # include "virobject.h"
 # include "virjson.h"
 
+typedef struct _virNetServer virNetServer;
+typedef virNetServer *virNetServerPtr;
+
 typedef struct _virNetServerClient virNetServerClient;
 typedef virNetServerClient *virNetServerClientPtr;
 
@@ -71,12 +74,12 @@ virNetServerClientPtr virNetServerClientNew(unsigned long long id,
                                             virFreeCallback privFree,
                                             void *privOpaque);
 
-virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr object,
+virNetServerClientPtr virNetServerClientNewPostExecRestart(virNetServerPtr srv,
+                                                           virJSONValuePtr object,
                                                            virNetServerClientPrivNewPostExecRestart privNew,
                                                            virNetServerClientPrivPreExecRestart privPreExecRestart,
                                                            virFreeCallback privFree,
-                                                           void *privOpaque,
-                                                           void *opaque);
+                                                           void *privOpaque);
 
 virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client);
 

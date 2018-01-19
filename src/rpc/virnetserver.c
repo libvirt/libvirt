@@ -540,12 +540,12 @@ virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
             goto error;
         }
 
-        if (!(client = virNetServerClientNewPostExecRestart(child,
+        if (!(client = virNetServerClientNewPostExecRestart(srv,
+                                                            child,
                                                             clientPrivNewPostExecRestart,
                                                             clientPrivPreExecRestart,
                                                             clientPrivFree,
-                                                            clientPrivOpaque,
-                                                            srv)))
+                                                            clientPrivOpaque)))
             goto error;
 
         if (virNetServerAddClient(srv, client) < 0) {

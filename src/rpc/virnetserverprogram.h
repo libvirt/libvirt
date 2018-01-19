@@ -31,9 +31,6 @@
 typedef struct _virNetDaemon virNetDaemon;
 typedef virNetDaemon *virNetDaemonPtr;
 
-typedef struct _virNetServer virNetServer;
-typedef virNetServer *virNetServerPtr;
-
 typedef struct _virNetServerService virNetServerService;
 typedef virNetServerService *virNetServerServicePtr;
 

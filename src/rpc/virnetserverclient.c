@@ -479,12 +479,12 @@ virNetServerClientPtr virNetServerClientNew(unsigned long long id,
 }
 
 
-virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr object,
+virNetServerClientPtr virNetServerClientNewPostExecRestart(virNetServerPtr srv,
+                                                           virJSONValuePtr object,
                                                            virNetServerClientPrivNewPostExecRestart privNew,
                                                            virNetServerClientPrivPreExecRestart privPreExecRestart,
                                                            virFreeCallback privFree,
-                                                           void *privOpaque,
-                                                           void *opaque)
+                                                           void *privOpaque)
 {
     virJSONValuePtr child;
     virNetServerClientPtr client = NULL;
@@ -540,12 +540,12 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
 
     if (!virJSONValueObjectHasKey(object, "id")) {
         /* no ID found in, a new one must be generated */
-        id = virNetServerNextClientID((virNetServerPtr) opaque);
+        id = virNetServerNextClientID(srv);
     } else {
         if (virJSONValueObjectGetNumberUlong(object, "id", &id) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed id field in JSON state document"));
-        return NULL;
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Malformed id field in JSON state document"));
+            return NULL;
         }
     }
 
