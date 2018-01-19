@@ -73,6 +73,7 @@ virLogDaemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
         return NULL;
 
     data->max_clients = 1024;
+    data->admin_max_clients = 5000;
     data->max_size = 1024 * 1024 * 2;
     data->max_backups = 3;
 
@@ -102,6 +103,8 @@ virLogDaemonConfigLoadOptions(virLogDaemonConfigPtr data,
     if (virConfGetValueString(conf, "log_outputs", &data->log_outputs) < 0)
         return -1;
     if (virConfGetValueUInt(conf, "max_clients", &data->max_clients) < 0)
+        return -1;
+    if (virConfGetValueUInt(conf, "admin_max_clients", &data->admin_max_clients) < 0)
         return -1;
     if (virConfGetValueSizeT(conf, "max_size", &data->max_size) < 0)
         return -1;

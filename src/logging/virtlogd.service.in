@@ -1,6 +1,7 @@
 [Unit]
 Description=Virtual machine log manager
 Requires=virtlogd.socket
+Requires=virtlogd-admin.socket
 Before=libvirtd.service
 Documentation=man:virtlogd(8)
 Documentation=https://libvirt.org
