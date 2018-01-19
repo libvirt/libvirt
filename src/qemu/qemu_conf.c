@@ -912,6 +912,10 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueString(conf, "memory_backing_dir", &cfg->memoryBackingDir) < 0)
         goto cleanup;
 
+    if (virConfGetValueUInt(conf, "rx_queue_size", &cfg->rx_queue_size) < 0 ||
+        virConfGetValueUInt(conf, "tx_queue_size", &cfg->tx_queue_size) < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:

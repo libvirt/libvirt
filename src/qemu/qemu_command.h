@@ -90,7 +90,8 @@ char *qemuBuildNicStr(virDomainNetDefPtr net,
                       int vlan);
 
 /* Current, best practice */
-char *qemuBuildNicDevStr(virDomainDefPtr def,
+char *qemuBuildNicDevStr(virQEMUDriverConfigPtr cfg,
+                         virDomainDefPtr def,
                          virDomainNetDefPtr net,
                          int vlan,
                          unsigned int bootindex,

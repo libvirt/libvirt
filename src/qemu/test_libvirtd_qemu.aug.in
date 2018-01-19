@@ -100,3 +100,5 @@ module Test_libvirtd_qemu =
     { "1" = "mount" }
 }
 { "memory_backing_dir" = "/var/lib/libvirt/qemu/ram" }
+{ "rx_queue_size" = "1024" }
+{ "tx_queue_size" = "1024" }
