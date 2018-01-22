@@ -195,6 +195,19 @@ virNetDaemonGetServer(virNetDaemonPtr dmn,
     return srv;
 }
 
+bool
+virNetDaemonHasServer(virNetDaemonPtr dmn,
+                      const char *serverName)
+{
+    void *ent;
+
+    virObjectLock(dmn);
+    ent = virHashLookup(dmn->servers, serverName);
+    virObjectUnlock(dmn);
+
+    return ent != NULL;
+}
+
 
 struct collectData {
     virNetServerPtr **servers;

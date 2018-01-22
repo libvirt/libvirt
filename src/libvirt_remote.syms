@@ -69,6 +69,7 @@ virNetDaemonClose;
 virNetDaemonGetServer;
 virNetDaemonGetServers;
 virNetDaemonHasClients;
+virNetDaemonHasServer;
 virNetDaemonIsPrivileged;
 virNetDaemonNew;
 virNetDaemonNewPostExecRestart;

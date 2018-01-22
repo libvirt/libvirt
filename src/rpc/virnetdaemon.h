@@ -83,5 +83,7 @@ bool virNetDaemonHasClients(virNetDaemonPtr dmn);
 virNetServerPtr virNetDaemonGetServer(virNetDaemonPtr dmn,
                                       const char *serverName);
 ssize_t virNetDaemonGetServers(virNetDaemonPtr dmn, virNetServerPtr **servers);
+bool virNetDaemonHasServer(virNetDaemonPtr dmn,
+                           const char *serverName);
 
 #endif /* __VIR_NET_DAEMON_H__ */
