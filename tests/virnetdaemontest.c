@@ -194,12 +194,32 @@ struct testExecRestartData {
     bool pass;
 };
 
+static virNetServerPtr
+testNewServerPostExecRestart(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
+                             const char *name,
+                             virJSONValuePtr object,
+                             void *opaque)
+{
+    struct testExecRestartData *data = opaque;
+    size_t i;
+    for (i = 0; i < data->nservers; i++) {
+        if (STREQ(data->serverNames[i], name)) {
+            return virNetServerNewPostExecRestart(object,
+                                                  name,
+                                                  NULL, NULL, NULL,
+                                                  NULL, NULL);
+        }
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR, "Unexpected server name '%s'", name);
+    return NULL;
+}
+
 static int testExecRestart(const void *opaque)
 {
     size_t i;
     int ret = -1;
     virNetDaemonPtr dmn = NULL;
-    virNetServerPtr srv = NULL;
     const struct testExecRestartData *data = opaque;
     char *infile = NULL, *outfile = NULL;
     char *injsonstr = NULL, *outjsonstr = NULL;
@@ -241,15 +261,20 @@ static int testExecRestart(const void *opaque)
     if (!(injson = virJSONValueFromString(injsonstr)))
         goto cleanup;
 
-    if (!(dmn = virNetDaemonNewPostExecRestart(injson)))
+    if (!(dmn = virNetDaemonNewPostExecRestart(injson,
+                                               data->nservers,
+                                               data->serverNames,
+                                               testNewServerPostExecRestart,
+                                               (void *)data)))
         goto cleanup;
 
     for (i = 0; i < data->nservers; i++) {
-        if (!(srv = virNetDaemonAddServerPostExec(dmn, data->serverNames[i],
-                                                  NULL, NULL, NULL,
-                                                  NULL, NULL)))
+        if (!virNetDaemonHasServer(dmn, data->serverNames[i])) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "Server %s was not created",
+                           data->serverNames[i]);
             goto cleanup;
-        srv = NULL;
+        }
     }
 
     if (!(outjson = virNetDaemonPreExecRestart(dmn)))

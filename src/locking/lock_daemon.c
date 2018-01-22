@@ -192,15 +192,38 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
 }
 
 
+static virNetServerPtr
+virLockDaemonNewServerPostExecRestart(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
+                                      const char *name,
+                                      virJSONValuePtr object,
+                                      void *opaque)
+{
+    if (STREQ(name, "virtlockd")) {
+        return virNetServerNewPostExecRestart(object,
+                                              name,
+                                              virLockDaemonClientNew,
+                                              virLockDaemonClientNewPostExecRestart,
+                                              virLockDaemonClientPreExecRestart,
+                                              virLockDaemonClientFree,
+                                              opaque);
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected server name '%s' during restart"),
+                       name);
+        return NULL;
+    }
+}
+
+
 static virLockDaemonPtr
 virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
 {
     virLockDaemonPtr lockd;
     virJSONValuePtr child;
     virJSONValuePtr lockspaces;
-    virNetServerPtr srv;
     size_t i;
     ssize_t n;
+    const char *serverNames[] = { "virtlockd" };
 
     if (VIR_ALLOC(lockd) < 0)
         return NULL;
@@ -267,18 +290,12 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
         }
     }
 
-    if (!(lockd->dmn = virNetDaemonNewPostExecRestart(child)))
+    if (!(lockd->dmn = virNetDaemonNewPostExecRestart(child,
+                                                      ARRAY_CARDINALITY(serverNames),
+                                                      serverNames,
+                                                      virLockDaemonNewServerPostExecRestart,
+                                                      (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
-
-    if (!(srv = virNetDaemonAddServerPostExec(lockd->dmn,
-                                              "virtlockd",
-                                              virLockDaemonClientNew,
-                                              virLockDaemonClientNewPostExecRestart,
-                                              virLockDaemonClientPreExecRestart,
-                                              virLockDaemonClientFree,
-                                              (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
-        goto error;
-    virObjectUnref(srv);
 
     return lockd;
 

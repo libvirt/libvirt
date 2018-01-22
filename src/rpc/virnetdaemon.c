@@ -262,85 +262,38 @@ virNetDaemonGetServers(virNetDaemonPtr dmn,
 }
 
 
-virNetServerPtr
-virNetDaemonAddServerPostExec(virNetDaemonPtr dmn,
-                              const char *serverName,
-                              virNetServerClientPrivNew clientPrivNew,
-                              virNetServerClientPrivNewPostExecRestart clientPrivNewPostExecRestart,
-                              virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
-                              virFreeCallback clientPrivFree,
-                              void *clientPrivOpaque)
+struct virNetDaemonServerData {
+    virNetDaemonPtr dmn;
+    virNetDaemonNewServerPostExecRestart cb;
+    void *opaque;
+};
+
+static int
+virNetDaemonServerIterator(const char *key,
+                           virJSONValuePtr value,
+                           void *opaque)
 {
-    virJSONValuePtr object = NULL;
-    virNetServerPtr srv = NULL;
+    struct virNetDaemonServerData *data = opaque;
+    virNetServerPtr srv;
 
-    virObjectLock(dmn);
-
-    if (!dmn->srvObject) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot add more servers post-exec than "
-                         "there were pre-exec"));
-        goto error;
-    }
-
-    if (virJSONValueIsArray(dmn->srvObject)) {
-        object = virJSONValueArraySteal(dmn->srvObject, 0);
-        if (virJSONValueArraySize(dmn->srvObject) == 0) {
-            virJSONValueFree(dmn->srvObject);
-            dmn->srvObject = NULL;
-        }
-    } else if (virJSONValueObjectGetByType(dmn->srvObject,
-                                           "min_workers",
-                                           VIR_JSON_TYPE_NUMBER)) {
-        object = dmn->srvObject;
-        dmn->srvObject = NULL;
-    } else {
-        int ret = virJSONValueObjectRemoveKey(dmn->srvObject,
-                                              serverName,
-                                              &object);
-        if (ret != 1) {
-            if (ret == 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Server '%s' not found in JSON"), serverName);
-            }
-            goto error;
-        }
-
-        if (virJSONValueObjectKeysNumber(dmn->srvObject) == 0) {
-            virJSONValueFree(dmn->srvObject);
-            dmn->srvObject = NULL;
-        }
-    }
-
-    srv = virNetServerNewPostExecRestart(object,
-                                         serverName,
-                                         clientPrivNew,
-                                         clientPrivNewPostExecRestart,
-                                         clientPrivPreExecRestart,
-                                         clientPrivFree,
-                                         clientPrivOpaque);
-
+    VIR_DEBUG("Creating server '%s'", key);
+    srv = data->cb(data->dmn, key, value, data->opaque);
     if (!srv)
-        goto error;
+        return -1;
 
-    if (virHashAddEntry(dmn->servers, serverName, srv) < 0)
-        goto error;
-    virObjectRef(srv);
+    if (virHashAddEntry(data->dmn->servers, key, srv) < 0)
+        return -1;
 
-    virJSONValueFree(object);
-    virObjectUnlock(dmn);
-    return srv;
-
- error:
-    virObjectUnlock(dmn);
-    virObjectUnref(srv);
-    virJSONValueFree(object);
-    return NULL;
+    return 0;
 }
 
 
 virNetDaemonPtr
-virNetDaemonNewPostExecRestart(virJSONValuePtr object)
+virNetDaemonNewPostExecRestart(virJSONValuePtr object,
+                               size_t nDefServerNames,
+                               const char **defServerNames,
+                               virNetDaemonNewServerPostExecRestart cb,
+                               void *opaque)
 {
     virNetDaemonPtr dmn = NULL;
     virJSONValuePtr servers = virJSONValueObjectGet(object, "servers");
@@ -355,10 +308,64 @@ virNetDaemonNewPostExecRestart(virJSONValuePtr object)
         goto error;
     }
 
-    if (!(dmn->srvObject = virJSONValueCopy(new_version ? servers : object)))
-        goto error;
+    if (!new_version) {
+        virNetServerPtr srv;
+
+        if (nDefServerNames < 1) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No default server names provided"));
+            goto error;
+        }
+
+        VIR_DEBUG("No 'servers' data, creating default '%s' name", defServerNames[0]);
+
+        srv = cb(dmn, defServerNames[0], object, opaque);
+
+        if (virHashAddEntry(dmn->servers, defServerNames[0], srv) < 0)
+            goto error;
+    } else if (virJSONValueIsArray(servers)) {
+        size_t i;
+        ssize_t n = virJSONValueArraySize(servers);
+        if (n < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Server count %zd should be positive"), n);
+            goto error;
+        }
+        if (n > nDefServerNames) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Server count %zd greater than default name count %zu"),
+                           n, nDefServerNames);
+            goto error;
+        }
+
+        for (i = 0; i < n; i++) {
+            virNetServerPtr srv;
+            virJSONValuePtr value = virJSONValueArrayGet(servers, i);
+
+            VIR_DEBUG("Creating server '%s'", defServerNames[i]);
+            srv = cb(dmn, defServerNames[i], value, opaque);
+            if (!srv)
+                goto error;
+
+            if (virHashAddEntry(dmn->servers, defServerNames[i], srv) < 0) {
+                virObjectUnref(srv);
+                goto error;
+            }
+        }
+    } else {
+        struct virNetDaemonServerData data = {
+            dmn,
+            cb,
+            opaque,
+        };
+        if (virJSONValueObjectForeachKeyValue(servers,
+                                              virNetDaemonServerIterator,
+                                              &data) < 0)
+            goto error;
+    }
 
     return dmn;
+
  error:
     virObjectUnref(dmn);
     return NULL;

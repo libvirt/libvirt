@@ -61,7 +61,6 @@ virNetClientStreamSetError;
 
 # rpc/virnetdaemon.h
 virNetDaemonAddServer;
-virNetDaemonAddServerPostExec;
 virNetDaemonAddShutdownInhibition;
 virNetDaemonAddSignalHandler;
 virNetDaemonAutoShutdown;

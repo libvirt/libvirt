@@ -188,13 +188,36 @@ virLogDaemonGetHandler(virLogDaemonPtr dmn)
 }
 
 
+static virNetServerPtr
+virLogDaemonNewServerPostExecRestart(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
+                                     const char *name,
+                                     virJSONValuePtr object,
+                                     void *opaque)
+{
+    if (STREQ(name, "virtlogd")) {
+        return virNetServerNewPostExecRestart(object,
+                                              name,
+                                              virLogDaemonClientNew,
+                                              virLogDaemonClientNewPostExecRestart,
+                                              virLogDaemonClientPreExecRestart,
+                                              virLogDaemonClientFree,
+                                              opaque);
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected server name '%s' during restart"),
+                       name);
+        return NULL;
+    }
+}
+
+
 static virLogDaemonPtr
 virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged,
                                virLogDaemonConfigPtr config)
 {
     virLogDaemonPtr logd;
-    virNetServerPtr srv;
     virJSONValuePtr child;
+    const char *serverNames[] = { "virtlogd" };
 
     if (VIR_ALLOC(logd) < 0)
         return NULL;
@@ -212,18 +235,12 @@ virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged,
         goto error;
     }
 
-    if (!(logd->dmn = virNetDaemonNewPostExecRestart(child)))
+    if (!(logd->dmn = virNetDaemonNewPostExecRestart(child,
+                                                     ARRAY_CARDINALITY(serverNames),
+                                                     serverNames,
+                                                     virLogDaemonNewServerPostExecRestart,
+                                                     (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
         goto error;
-
-    if (!(srv = virNetDaemonAddServerPostExec(logd->dmn,
-                                              "virtlogd",
-                                              virLogDaemonClientNew,
-                                              virLogDaemonClientNewPostExecRestart,
-                                              virLogDaemonClientPreExecRestart,
-                                              virLogDaemonClientFree,
-                                              (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
-        goto error;
-    virObjectUnref(srv);
 
     if (!(child = virJSONValueObjectGet(object, "handler"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
