@@ -37,6 +37,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 uid_t runUid,
                                 gid_t runGid,
                                 unsigned int microcodeVersion,
+                                const char *kernelVersion,
                                 bool qmpOnly);
 
 int virQEMUCapsLoadCache(virArch hostArch,
