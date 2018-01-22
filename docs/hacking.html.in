@@ -108,11 +108,18 @@
           of the bug number is useful; but also summarize the issue
           rather than making all readers follow the link.  You can use
           'git shortlog -30' to get an idea of typical summary lines.
-          Libvirt does not currently attach any meaning to
-          Signed-off-by: lines, so it is up to you if you want to
-          include or omit them in the commit message.
         </p>
       </li>
+
+      <li><p>Contributors to libvirt projects <strong>must</strong>
+          assert that they are in compliance with the
+          <a href="https://developercertificate.org/">Developer
+          Certificate of Origin 1.1</a>. This is achieved by adding
+          a "Signed-off-by" line containing the contributor's name
+          and e-mail to every commit message. The presence
+          of this line attests that the contributor has read the
+          above lined DCO and agrees with its statements.
+      </p></li>
 
       <li><p>Split large changes into a series of smaller patches,
         self-contained if possible, with an explanation of each patch
