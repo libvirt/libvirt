@@ -5431,7 +5431,7 @@ virQEMUCapsCacheNew(const char *libDir,
     char *capsCacheDir = NULL;
     virFileCachePtr cache = NULL;
     virQEMUCapsCachePrivPtr priv = NULL;
-    struct utsname uts = { 0 };
+    struct utsname uts;
 
     if (virAsprintf(&capsCacheDir, "%s/capabilities", cacheDir) < 0)
         goto error;
