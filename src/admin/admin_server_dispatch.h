@@ -31,7 +31,7 @@
 extern virNetServerProgramProc adminProcs[];
 extern size_t adminNProcs;
 
-void remoteAdmClientFreeFunc(void *data);
-void *remoteAdmClientInitHook(virNetServerClientPtr client, void *opaque);
+void remoteAdmClientFree(void *data);
+void *remoteAdmClientNew(virNetServerClientPtr client, void *opaque);
 
 #endif /* __ADMIN_SERVER_DISPATCH_H__ */

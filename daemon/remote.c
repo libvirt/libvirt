@@ -1734,7 +1734,7 @@ remoteClientFreePrivateCallbacks(struct daemonClientPrivate *priv)
  * We keep the libvirt connection open until any async
  * jobs have finished, then clean it up elsewhere
  */
-void remoteClientFreeFunc(void *data)
+void remoteClientFree(void *data)
 {
     struct daemonClientPrivate *priv = data;
 
@@ -1757,8 +1757,8 @@ static void remoteClientCloseFunc(virNetServerClientPtr client)
 }
 
 
-void *remoteClientInitHook(virNetServerClientPtr client,
-                           void *opaque ATTRIBUTE_UNUSED)
+void *remoteClientNew(virNetServerClientPtr client,
+                      void *opaque ATTRIBUTE_UNUSED)
 {
     struct daemonClientPrivate *priv;
 

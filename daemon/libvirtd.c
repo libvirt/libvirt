@@ -1311,9 +1311,9 @@ int main(int argc, char **argv) {
                                 config->keepalive_interval,
                                 config->keepalive_count,
                                 config->mdns_adv ? config->mdns_name : NULL,
-                                remoteClientInitHook,
+                                remoteClientNew,
                                 NULL,
-                                remoteClientFreeFunc,
+                                remoteClientFree,
                                 NULL))) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;
@@ -1385,9 +1385,9 @@ int main(int argc, char **argv) {
                                    config->admin_keepalive_interval,
                                    config->admin_keepalive_count,
                                    NULL,
-                                   remoteAdmClientInitHook,
+                                   remoteAdmClientNew,
                                    NULL,
-                                   remoteAdmClientFreeFunc,
+                                   remoteAdmClientFree,
                                    dmn))) {
         ret = VIR_DAEMON_ERR_INIT;
         goto cleanup;

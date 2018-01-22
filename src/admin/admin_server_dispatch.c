@@ -52,7 +52,7 @@ struct daemonAdmClientPrivate {
 };
 
 void
-remoteAdmClientFreeFunc(void *data)
+remoteAdmClientFree(void *data)
 {
     struct daemonAdmClientPrivate *priv = data;
 
@@ -62,8 +62,8 @@ remoteAdmClientFreeFunc(void *data)
 }
 
 void *
-remoteAdmClientInitHook(virNetServerClientPtr client ATTRIBUTE_UNUSED,
-                        void *opaque)
+remoteAdmClientNew(virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                   void *opaque)
 {
     struct daemonAdmClientPrivate *priv;
 
