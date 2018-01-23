@@ -2758,6 +2758,34 @@ virNodeDeviceGetPCIIOMMUGroupCaps(virNodeDevCapPCIDevPtr pci_dev)
 }
 
 
+static int
+virNodeDeviceGetPCIMdevTypesCaps(const char *sysfspath,
+                                 virNodeDevCapPCIDevPtr pci_dev)
+{
+    virMediatedDeviceTypePtr *types = NULL;
+    int rc = 0;
+    size_t i;
+
+    /* this could be a refresh, so clear out the old data */
+    for (i = 0; i < pci_dev->nmdev_types; i++)
+       virMediatedDeviceTypeFree(pci_dev->mdev_types[i]);
+    VIR_FREE(pci_dev->mdev_types);
+    pci_dev->nmdev_types = 0;
+    pci_dev->flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
+
+    rc = virPCIGetMdevTypes(sysfspath, &types);
+
+    if (rc <= 0)
+        return rc;
+
+    VIR_STEAL_PTR(pci_dev->mdev_types, types);
+    pci_dev->nmdev_types = rc;
+    pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
+
+    return 0;
+}
+
+
 /* virNodeDeviceGetPCIDynamicCaps() get info that is stored in sysfs
  * about devices related to this device, i.e. things that can change
  * without this device itself changing. These must be refreshed
@@ -2768,9 +2796,9 @@ int
 virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath,
                                virNodeDevCapPCIDevPtr pci_dev)
 {
-    if (virNodeDeviceGetPCISRIOVCaps(sysfsPath, pci_dev) < 0)
-        return -1;
-    if (virNodeDeviceGetPCIIOMMUGroupCaps(pci_dev) < 0)
+    if (virNodeDeviceGetPCISRIOVCaps(sysfsPath, pci_dev) < 0 ||
+        virNodeDeviceGetPCIIOMMUGroupCaps(pci_dev) < 0 ||
+        virNodeDeviceGetPCIMdevTypesCaps(sysfsPath, pci_dev) < 0)
         return -1;
     return 0;
 }
