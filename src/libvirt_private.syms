@@ -2182,6 +2182,7 @@ virMediatedDeviceModelTypeToString;
 virMediatedDeviceNew;
 virMediatedDeviceSetUsedBy;
 virMediatedDeviceTypeFree;
+virMediatedDeviceTypeReadAttrs;
 
 
 

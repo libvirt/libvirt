@@ -129,4 +129,9 @@ virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
 
 void
 virMediatedDeviceTypeFree(virMediatedDeviceTypePtr type);
+
+int
+virMediatedDeviceTypeReadAttrs(const char *sysfspath,
+                               virMediatedDeviceTypePtr *type);
+
 #endif /* __VIR_MDEV_H__ */

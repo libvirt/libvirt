@@ -496,3 +496,37 @@ virMediatedDeviceTypeFree(virMediatedDeviceTypePtr type)
     VIR_FREE(type->device_api);
     VIR_FREE(type);
 }
+
+
+int
+virMediatedDeviceTypeReadAttrs(const char *sysfspath,
+                               virMediatedDeviceTypePtr *type)
+{
+    int ret = -1;
+    virMediatedDeviceTypePtr tmp = NULL;
+
+#define MDEV_GET_SYSFS_ATTR(attr, dst, cb) \
+    do { \
+        if (cb(dst, "%s/%s", sysfspath, attr) < 0) \
+            goto cleanup; \
+    } while (0)
+
+    if (VIR_ALLOC(tmp) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(tmp->id, last_component(sysfspath)) < 0)
+        goto cleanup;
+
+    MDEV_GET_SYSFS_ATTR("name", &tmp->name, virFileReadValueString);
+    MDEV_GET_SYSFS_ATTR("device_api", &tmp->device_api, virFileReadValueString);
+    MDEV_GET_SYSFS_ATTR("available_instances", &tmp->available_instances,
+                        virFileReadValueUint);
+
+#undef MDEV_GET_SYSFS_ATTR
+
+    VIR_STEAL_PTR(*type, tmp);
+    ret = 0;
+ cleanup:
+    virMediatedDeviceTypeFree(tmp);
+    return ret;
+}
