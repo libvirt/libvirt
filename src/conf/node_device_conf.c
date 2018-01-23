@@ -92,19 +92,6 @@ virNodeDevCapsDefParseString(const char *xpath,
 
 
 void
-virNodeDevCapMdevTypeFree(virNodeDevCapMdevTypePtr type)
-{
-    if (!type)
-        return;
-
-    VIR_FREE(type->id);
-    VIR_FREE(type->name);
-    VIR_FREE(type->device_api);
-    VIR_FREE(type);
-}
-
-
-void
 virNodeDeviceDefFree(virNodeDeviceDefPtr def)
 {
     virNodeDevCapsDefPtr caps;
@@ -285,7 +272,7 @@ virNodeDeviceCapPCIDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "<capability type='mdev_types'>\n");
         virBufferAdjustIndent(buf, 2);
         for (i = 0; i < data->pci_dev.nmdev_types; i++) {
-            virNodeDevCapMdevTypePtr type = data->pci_dev.mdev_types[i];
+            virMediatedDeviceTypePtr type = data->pci_dev.mdev_types[i];
             virBufferEscapeString(buf, "<type id='%s'>\n", type->id);
             virBufferAdjustIndent(buf, 2);
             if (type->name)
@@ -1546,7 +1533,7 @@ virNodeDevPCICapMdevTypesParseXML(xmlXPathContextPtr ctxt,
     xmlNodePtr orignode = NULL;
     xmlNodePtr *nodes = NULL;
     int nmdev_types = -1;
-    virNodeDevCapMdevTypePtr type = NULL;
+    virMediatedDeviceTypePtr type = NULL;
     size_t i;
 
     if ((nmdev_types = virXPathNodeSet("./type", ctxt, &nodes)) < 0)
@@ -1593,7 +1580,7 @@ virNodeDevPCICapMdevTypesParseXML(xmlXPathContextPtr ctxt,
     ret = 0;
  cleanup:
     VIR_FREE(nodes);
-    virNodeDevCapMdevTypeFree(type);
+    virMediatedDeviceTypeFree(type);
     ctxt->node = orignode;
     return ret;
 }
@@ -2176,7 +2163,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
         VIR_FREE(data->pci_dev.iommuGroupDevices);
         virPCIEDeviceInfoFree(data->pci_dev.pci_express);
         for (i = 0; i < data->pci_dev.nmdev_types; i++)
-            virNodeDevCapMdevTypeFree(data->pci_dev.mdev_types[i]);
+            virMediatedDeviceTypeFree(data->pci_dev.mdev_types[i]);
         VIR_FREE(data->pci_dev.mdev_types);
         break;
     case VIR_NODE_DEV_CAP_USB_DEV:
