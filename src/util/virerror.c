@@ -1453,6 +1453,12 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("libssh transport error: %s");
             break;
+        case VIR_ERR_DEVICE_MISSING:
+            if (info == NULL)
+                errmsg = _("device not found");
+            else
+                errmsg = _("device not found: %s");
+            break;
     }
     return errmsg;
 }
