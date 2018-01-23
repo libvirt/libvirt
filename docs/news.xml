@@ -56,6 +56,11 @@
           interfaces, NWFilters, and so on).
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Use VIR_ERR_DEVICE_MISSING for various hotplug/detach messages
+        </summary>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
