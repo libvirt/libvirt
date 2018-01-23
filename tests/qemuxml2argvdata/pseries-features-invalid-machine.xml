@@ -7,7 +7,7 @@
     <type arch='x86_64' machine='pc'>hvm</type>
   </os>
   <features>
-    <!-- HPT resizing can't be enabled for non-pSeries guests -->
+    <!-- pSeries features can't be enabled for non-pSeries guests -->
     <hpt resizing='enabled'/>
   </features>
   <devices>

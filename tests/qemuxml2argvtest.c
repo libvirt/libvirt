@@ -1895,17 +1895,12 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_VFIO_PCI);
 
-    DO_TEST("pseries-hpt-resizing",
-            QEMU_CAPS_NODEFCONFIG,
+    DO_TEST("pseries-features-hpt",
             QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
-    DO_TEST_FAILURE("pseries-hpt-resizing",
-                    QEMU_CAPS_NODEFCONFIG,
+    DO_TEST_FAILURE("pseries-features-hpt",
                     QEMU_CAPS_MACHINE_OPT);
-    DO_TEST_PARSE_ERROR("pseries-hpt-resizing-invalid-machine",
-                        QEMU_CAPS_NODEFCONFIG,
-                        QEMU_CAPS_MACHINE_OPT,
-                        QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
+    DO_TEST_PARSE_ERROR("pseries-features-invalid-machine", NONE);
 
     DO_TEST("pseries-serial-native",
             QEMU_CAPS_NODEFCONFIG,
