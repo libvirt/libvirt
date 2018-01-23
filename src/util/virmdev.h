@@ -22,7 +22,6 @@
 # include "internal.h"
 # include "virobject.h"
 # include "virutil.h"
-# include "virpci.h"
 
 typedef enum {
     VIR_MDEV_MODEL_TYPE_VFIO_PCI = 0,
@@ -35,8 +34,6 @@ VIR_ENUM_DECL(virMediatedDeviceModel)
 
 typedef struct _virMediatedDevice virMediatedDevice;
 typedef virMediatedDevice *virMediatedDevicePtr;
-typedef struct _virMediatedDeviceAddress virMediatedDeviceAddress;
-typedef virMediatedDeviceAddress *virMediatedDeviceAddressPtr;
 typedef struct _virMediatedDeviceList virMediatedDeviceList;
 typedef virMediatedDeviceList *virMediatedDeviceListPtr;
 
