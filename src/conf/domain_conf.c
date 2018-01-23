@@ -16320,7 +16320,7 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
 
     if (matchidx < 0) {
         if (MACAddrSpecified && PCIAddrSpecified) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
+            virReportError(VIR_ERR_DEVICE_MISSING,
                            _("no device matching MAC address %s found on "
                              "%.4x:%.2x:%.2x.%.1x"),
                            virMacAddrFormat(&net->mac, mac),
@@ -16329,18 +16329,18 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
                            net->info.addr.pci.slot,
                            net->info.addr.pci.function);
         } else if (PCIAddrSpecified) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
+            virReportError(VIR_ERR_DEVICE_MISSING,
                            _("no device found on %.4x:%.2x:%.2x.%.1x"),
                            net->info.addr.pci.domain,
                            net->info.addr.pci.bus,
                            net->info.addr.pci.slot,
                            net->info.addr.pci.function);
         } else if (MACAddrSpecified) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
+            virReportError(VIR_ERR_DEVICE_MISSING,
                            _("no device matching MAC address %s found"),
                            virMacAddrFormat(&net->mac, mac));
         } else {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                            _("no matching device found"));
         }
     }
