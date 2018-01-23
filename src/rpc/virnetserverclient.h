@@ -72,14 +72,17 @@ virNetServerClientPtr virNetServerClientNew(unsigned long long id,
                                             virNetServerClientPrivNew privNew,
                                             virNetServerClientPrivPreExecRestart privPreExecRestart,
                                             virFreeCallback privFree,
-                                            void *privOpaque);
+                                            void *privOpaque)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(7) ATTRIBUTE_NONNULL(9);
 
 virNetServerClientPtr virNetServerClientNewPostExecRestart(virNetServerPtr srv,
                                                            virJSONValuePtr object,
                                                            virNetServerClientPrivNewPostExecRestart privNew,
                                                            virNetServerClientPrivPreExecRestart privPreExecRestart,
                                                            virFreeCallback privFree,
-                                                           void *privOpaque);
+                                                           void *privOpaque)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 
 virJSONValuePtr virNetServerClientPreExecRestart(virNetServerClientPtr client);
 
