@@ -483,3 +483,16 @@ virMediatedDeviceListMarkDevices(virMediatedDeviceListPtr dst,
     }
     goto cleanup;
 }
+
+
+void
+virMediatedDeviceTypeFree(virMediatedDeviceTypePtr type)
+{
+    if (!type)
+        return;
+
+    VIR_FREE(type->id);
+    VIR_FREE(type->name);
+    VIR_FREE(type->device_api);
+    VIR_FREE(type);
+}
