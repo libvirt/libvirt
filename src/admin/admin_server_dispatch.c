@@ -86,6 +86,27 @@ remoteAdmClientNew(virNetServerClientPtr client ATTRIBUTE_UNUSED,
     return priv;
 }
 
+void *remoteAdmClientNewPostExecRestart(virNetServerClientPtr client,
+                                        virJSONValuePtr object ATTRIBUTE_UNUSED,
+                                        void *opaque)
+{
+    return remoteAdmClientNew(client, opaque);
+}
+
+virJSONValuePtr remoteAdmClientPreExecRestart(virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                              void *data ATTRIBUTE_UNUSED)
+{
+    virJSONValuePtr object = virJSONValueNewObject();
+
+    if (!object)
+        return NULL;
+
+    /* No content to add at this time - just need empty object */
+
+    return object;
+}
+
+
 /* Helpers */
 
 static virNetServerPtr

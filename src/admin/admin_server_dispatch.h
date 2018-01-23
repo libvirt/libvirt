@@ -33,5 +33,10 @@ extern size_t adminNProcs;
 
 void remoteAdmClientFree(void *data);
 void *remoteAdmClientNew(virNetServerClientPtr client, void *opaque);
+void *remoteAdmClientNewPostExecRestart(virNetServerClientPtr client,
+                                        virJSONValuePtr object,
+                                        void *opaque);
+virJSONValuePtr remoteAdmClientPreExecRestart(virNetServerClientPtr client,
+                                              void *data);
 
 #endif /* __ADMIN_SERVER_DISPATCH_H__ */
