@@ -8154,7 +8154,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     case VIR_DOMAIN_DEVICE_DISK:
         disk = dev->data.disk;
         if (!(det_disk = virDomainDiskRemoveByName(vmdef, disk->dst))) {
-            virReportError(VIR_ERR_INVALID_ARG,
+            virReportError(VIR_ERR_DEVICE_MISSING,
                            _("no target device %s"), disk->dst);
             return -1;
         }
@@ -8173,7 +8173,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     case VIR_DOMAIN_DEVICE_HOSTDEV: {
         hostdev = dev->data.hostdev;
         if ((idx = virDomainHostdevFind(vmdef, hostdev, &det_hostdev)) < 0) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
+            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                            _("device not present in domain configuration"));
             return -1;
         }
@@ -8185,7 +8185,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     case VIR_DOMAIN_DEVICE_LEASE:
         lease = dev->data.lease;
         if (!(det_lease = virDomainLeaseRemove(vmdef, lease))) {
-            virReportError(VIR_ERR_INVALID_ARG,
+            virReportError(VIR_ERR_DEVICE_MISSING,
                            _("Lease %s in lockspace %s does not exist"),
                            lease->key, NULLSTR(lease->lockspace));
             return -1;
@@ -8197,7 +8197,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         cont = dev->data.controller;
         if ((idx = virDomainControllerFind(vmdef, cont->type,
                                            cont->idx)) < 0) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
+            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                            _("device not present in domain configuration"));
             return -1;
         }
@@ -8219,7 +8219,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         fs = dev->data.fs;
         idx = virDomainFSIndexByName(vmdef, fs->dst);
         if (idx < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                            _("no matching filesystem device was found"));
             return -1;
         }
@@ -8230,7 +8230,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 
     case VIR_DOMAIN_DEVICE_RNG:
         if ((idx = virDomainRNGFind(vmdef, dev->data.rng)) < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                            _("no matching RNG device was found"));
             return -1;
         }
@@ -8241,7 +8241,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     case VIR_DOMAIN_DEVICE_MEMORY:
         if ((idx = virDomainMemoryFindInactiveByDef(vmdef,
                                                     dev->data.memory)) < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                            _("matching memory device was not found"));
             return -1;
         }
@@ -8253,7 +8253,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         if ((idx = virDomainRedirdevDefFind(vmdef,
                                             dev->data.redirdev)) < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                            _("no matching redirdev was not found"));
             return -1;
         }
@@ -8263,7 +8263,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 
     case VIR_DOMAIN_DEVICE_SHMEM:
         if ((idx = virDomainShmemDefFind(vmdef, dev->data.shmem)) < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                            _("matching shmem device was not found"));
             return -1;
         }
@@ -8274,7 +8274,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 
     case VIR_DOMAIN_DEVICE_WATCHDOG:
         if (!vmdef->watchdog) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                            _("domain has no watchdog"));
             return -1;
         }
@@ -8284,7 +8284,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 
     case VIR_DOMAIN_DEVICE_INPUT:
         if ((idx = virDomainInputDefFind(vmdef, dev->data.input)) < 0) {
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
                            _("matching input device not found"));
             return -1;
         }
