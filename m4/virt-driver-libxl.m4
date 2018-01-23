@@ -75,9 +75,9 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
     dnl (since Xen 4.7) if not then assume it is in libxenctrl
     dnl (as it was for 4.6 and earler)
     AC_CHECK_LIB([xentoollog], [xtl_createlogger_stdiostream], [
-      LIBXL_LIBS="$LIBXL_LIBS -lxentoollog"
+      LIBXL_LIBS="$LIBXL_LIBS -lxenstore -lxentoollog"
     ],[
-      LIBXL_LIBS="$LIBXL_LIBS -lxenctrl"
+      LIBXL_LIBS="$LIBXL_LIBS -lxenstore -lxenctrl"
     ])
 
     dnl Check if libxl_domain_config_from_json is available for domXML to
