@@ -200,6 +200,8 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
     }
 
     while ((rv = virDirRead(dirp, &ent, SYSFS_RESCTRL_PATH "/info")) > 0) {
+        VIR_DEBUG("Parsing info type '%s'", ent->d_name);
+
         if (ent->d_type != DT_DIR)
             continue;
 
@@ -207,16 +209,14 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
             continue;
 
         if (virStrToLong_uip(ent->d_name + 1, &endptr, 10, &level) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot parse resctrl cache info level"));
-            goto cleanup;
+            VIR_DEBUG("Cannot parse resctrl cache info level '%s'", ent->d_name + 1);
+            continue;
         }
 
         type = virResctrlTypeFromString(endptr);
         if (type < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot parse resctrl cache info type"));
-            goto cleanup;
+            VIR_DEBUG("Cannot parse resctrl cache info type '%s'", endptr);
+            continue;
         }
 
         if (VIR_ALLOC(i_type) < 0)
@@ -259,10 +259,19 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
                          level - resctrl->nlevels + 1) < 0)
             goto cleanup;
 
-        if (!resctrl->levels[level] &&
-            (VIR_ALLOC(resctrl->levels[level]) < 0 ||
-             VIR_ALLOC_N(resctrl->levels[level]->types, VIR_CACHE_TYPE_LAST) < 0))
-            goto cleanup;
+        if (!resctrl->levels[level]) {
+            virResctrlInfoPerTypePtr *types = NULL;
+
+            if (VIR_ALLOC_N(types, VIR_CACHE_TYPE_LAST) < 0)
+                goto cleanup;
+
+            if (VIR_ALLOC(resctrl->levels[level]) < 0) {
+                VIR_FREE(types);
+                goto cleanup;
+            }
+            resctrl->levels[level]->types = types;
+        }
+
         i_level = resctrl->levels[level];
 
         if (i_level->types[type]) {
