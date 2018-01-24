@@ -424,9 +424,14 @@ install-bash-completion:
 	$(MKDIR_P) "$(DESTDIR)$(BASH_COMPLETIONS_DIR)"
 	$(INSTALL_SCRIPT) $(srcdir)/bash-completion/vsh \
 		"$(DESTDIR)$(BASH_COMPLETIONS_DIR)/vsh"
+	( cd $(DESTDIR)$(BASH_COMPLETIONS_DIR) && \
+		$(LN_S) vsh virsh && \
+		$(LN_S) vsh virt-admin )
 
 uninstall-bash-completion:
-	rm -f $(DESTDIR)$(BASH_COMPLETIONS_DIR)/vsh
+	rm -f $(DESTDIR)$(BASH_COMPLETIONS_DIR)/vsh \
+		$(DESTDIR)$(BASH_COMPLETIONS_DIR)/virsh \
+		$(DESTDIR)$(BASH_COMPLETIONS_DIR)/virt-admin
 	rmdir $(DESTDIR)$(BASH_COMPLETIONS_DIR) ||:
 else ! WITH_BASH_COMPLETION
 install-bash-completion:

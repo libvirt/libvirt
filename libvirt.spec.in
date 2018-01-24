@@ -1017,6 +1017,9 @@ Requires: gnutls-utils
 # Needed for probing the power management features of the host.
 Requires: pm-utils
 %endif
+%if %{with_bash_completion}
+Requires: %{name}-bash-completion = %{version}-%{release}
+%endif
 
 %description client
 The client binaries needed to access the virtualization
@@ -1041,9 +1044,21 @@ Summary: Set of tools to control libvirt daemon
 Group: Development/Libraries
 Requires: %{name}-libs = %{version}-%{release}
 Requires: readline
+%if %{with_bash_completion}
+Requires: %{name}-bash-completion = %{version}-%{release}
+%endif
 
 %description admin
 The client side utilities to control the libvirt daemon.
+
+%if %{with_bash_completion}
+%package bash-completion
+Summary: Bash completion script
+Group: Development/Libraries
+
+%description bash-completion
+Bash completion script stub.
+%endif
 
 %if %{with_wireshark}
 %package wireshark
@@ -2059,7 +2074,7 @@ exit 0
 %{_datadir}/systemtap/tapset/libvirt_functions.stp
 
 %if %{with_bash_completion}
-%{_datadir}/bash-completion/completions/vsh
+%{_datadir}/bash-completion/completions/virsh
 %endif
 
 
@@ -2111,7 +2126,14 @@ exit 0
 %files admin
 %{_mandir}/man1/virt-admin.1*
 %{_bindir}/virt-admin
+%if %{with_bash_completion}
+%{_datadir}/bash-completion/completions/virt-admin
+%endif
 
+%if %{with_bash_completion}
+%files bash-completion
+%{_datadir}/bash-completion/completions/vsh
+%endif
 
 %if %{with_wireshark}
 %files wireshark
