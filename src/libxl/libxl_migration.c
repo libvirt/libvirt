@@ -1238,6 +1238,12 @@ libxlDomainMigrationPerform(libxlDriverPrivatePtr driver,
     ret = libxlDoMigrateSend(driver, vm, flags, sockfd);
     virObjectLock(vm);
 
+    if (ret < 0)
+        virDomainLockProcessResume(driver->lockManager,
+                                   "xen:///system",
+                                   vm,
+                                   priv->lockState);
+
  cleanup:
     VIR_FORCE_CLOSE(sockfd);
     virURIFree(uri);
@@ -1349,10 +1355,16 @@ libxlDomainMigrationConfirm(libxlDriverPrivatePtr driver,
                             int cancelled)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    libxlDomainObjPrivatePtr priv = vm->privateData;
     virObjectEventPtr event = NULL;
     int ret = -1;
 
     if (cancelled) {
+        /* Resume lock process that was paused in MigrationPerform */
+        virDomainLockProcessResume(driver->lockManager,
+                                   "xen:///system",
+                                   vm,
+                                   priv->lockState);
         if (libxl_domain_resume(cfg->ctx, vm->def->id, 1, 0) == 0) {
             ret = 0;
         } else {
