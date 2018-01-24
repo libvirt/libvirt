@@ -328,6 +328,7 @@ virUSBDeviceNew(unsigned int bus,
                 const char *vroot)
 {
     virUSBDevicePtr dev;
+    int rc;
 
     if (VIR_ALLOC(dev) < 0)
         return NULL;
@@ -343,9 +344,16 @@ virUSBDeviceNew(unsigned int bus,
         virUSBDeviceFree(dev);
         return NULL;
     }
-    if (virAsprintf(&dev->path, "%s" USB_DEVFS "%03d/%03d",
-                    vroot ? vroot : "",
-                    dev->bus, dev->dev) < 0) {
+
+    if (vroot) {
+        rc = virAsprintf(&dev->path, "%s/%03d/%03d",
+                         vroot, dev->bus, dev->dev);
+    } else {
+        rc = virAsprintf(&dev->path, USB_DEVFS "%03d/%03d",
+                         dev->bus, dev->dev);
+    }
+
+    if (rc < 0) {
         virUSBDeviceFree(dev);
         return NULL;
     }
