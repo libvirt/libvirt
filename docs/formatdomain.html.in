@@ -2878,6 +2878,7 @@
             attribute matching the key that was specified in the
             secret object.
           </dd>
+          <dt><code>encryption</code></dt>
           <dd><span class="since">Since libvirt 3.9.0</span>, the
             <code>encryption</code> can be a sub-element of the
             <code>source</code> element for encrypted storage sources.
