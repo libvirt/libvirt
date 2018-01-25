@@ -5631,7 +5631,7 @@ networkBandwidthGenericChecks(virDomainNetDefPtr iface,
 }
 
 
-bool
+static bool
 networkBandwidthChangeAllowed(virDomainNetDefPtr iface,
                               virNetDevBandwidthPtr newBandwidth)
 {
@@ -5662,7 +5662,7 @@ networkBandwidthChangeAllowed(virDomainNetDefPtr iface,
 }
 
 
-int
+static int
 networkBandwidthUpdate(virDomainNetDefPtr iface,
                        virNetDevBandwidthPtr newBandwidth)
 {
@@ -5814,7 +5814,9 @@ networkRegister(void)
     virDomainNetSetDeviceImpl(
         networkAllocateActualDevice,
         networkNotifyActualDevice,
-        networkReleaseActualDevice);
+        networkReleaseActualDevice,
+        networkBandwidthChangeAllowed,
+        networkBandwidthUpdate);
 
     return 0;
 }

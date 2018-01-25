@@ -106,7 +106,6 @@
 #include "virperf.h"
 #include "virnuma.h"
 #include "dirname.h"
-#include "network/bridge_driver.h"
 #include "netdev_bandwidth_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -11309,12 +11308,12 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                    sizeof(*newBandwidth->out));
         }
 
-        if (!networkBandwidthChangeAllowed(net, newBandwidth))
+        if (!virDomainNetBandwidthChangeAllowed(net, newBandwidth))
             goto endjob;
 
         if (virNetDevBandwidthSet(net->ifname, newBandwidth, false,
                                   !virDomainNetTypeSharesHostView(net)) < 0 ||
-            networkBandwidthUpdate(net, newBandwidth) < 0) {
+            virDomainNetBandwidthUpdate(net, newBandwidth) < 0) {
             ignore_value(virNetDevBandwidthSet(net->ifname,
                                                net->bandwidth,
                                                false,

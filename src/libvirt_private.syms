@@ -435,6 +435,8 @@ virDomainMemorySourceTypeFromString;
 virDomainMemorySourceTypeToString;
 virDomainNetAllocateActualDevice;
 virDomainNetAppendIPAddress;
+virDomainNetBandwidthChangeAllowed;
+virDomainNetBandwidthUpdate;
 virDomainNetDefClear;
 virDomainNetDefFormat;
 virDomainNetDefFree;
