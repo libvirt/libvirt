@@ -178,6 +178,7 @@ UTIL_SOURCES = \
 		util/virsocketaddr.h util/virsocketaddr.c \
 		util/virstorageencryption.c util/virstorageencryption.h \
 		util/virstoragefile.c util/virstoragefile.h \
+		util/virstoragefilebackend.c util/virstoragefilebackend.h \
 		util/virstring.h util/virstring.c \
 		util/virsysinfo.c util/virsysinfo.h util/virsysinfopriv.h \
 		util/virsystemd.c util/virsystemd.h util/virsystemdpriv.h \
@@ -1064,8 +1065,6 @@ STORAGE_DRIVER_BACKEND_SOURCES = \
 
 STORAGE_DRIVER_SOURCES = \
 		storage/storage_driver.h storage/storage_driver.c \
-		storage/storage_source.h storage/storage_source.c \
-		storage/storage_source_backend.h storage/storage_source_backend.c \
 		$(STORAGE_DRIVER_BACKEND_SOURCES) \
 		storage/storage_util.h storage/storage_util.c
 

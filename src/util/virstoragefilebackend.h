@@ -1,5 +1,5 @@
 /*
- * storage_source_backend.h: internal storage source backend contract
+ * virstoragefilebackend.h: internal storage source backend contract
  *
  * Copyright (C) 2007-2018 Red Hat, Inc.
  *
@@ -18,8 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __VIR_STORAGE_SOURCE_BACKEND_H__
-# define __VIR_STORAGE_SOURCE_BACKEND_H__
+#ifndef __VIR_STORAGE_FILE_BACKEND_H__
+# define __VIR_STORAGE_FILE_BACKEND_H__
 
 # include <sys/stat.h>
 
@@ -101,4 +101,4 @@ struct _virStorageFileBackend {
 
 int virStorageFileBackendRegister(virStorageFileBackendPtr backend);
 
-#endif /* __VIR_STORAGE_SOURCE_BACKEND_H__ */
+#endif /* __VIR_STORAGE_FILE_BACKEND_H__ */

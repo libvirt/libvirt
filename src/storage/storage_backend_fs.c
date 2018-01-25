@@ -37,10 +37,9 @@
 
 #include "virerror.h"
 #include "storage_backend_fs.h"
-#include "storage_source_backend.h"
 #include "storage_util.h"
 #include "storage_conf.h"
-#include "virstoragefile.h"
+#include "virstoragefilebackend.h"
 #include "vircommand.h"
 #include "viralloc.h"
 #include "virxml.h"

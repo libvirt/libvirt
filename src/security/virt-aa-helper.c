@@ -57,8 +57,6 @@
 #include "virgettext.h"
 #include "virhostdev.h"
 
-#include "storage/storage_source.h"
-
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
 static char *progname;

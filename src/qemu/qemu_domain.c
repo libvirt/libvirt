@@ -56,7 +56,6 @@
 #include "locking/domain_lock.h"
 
 #include "storage/storage_driver.h"
-#include "storage/storage_source.h"
 
 #ifdef MAJOR_IN_MKDEV
 # include <sys/mkdev.h>

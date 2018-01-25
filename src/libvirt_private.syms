@@ -2720,24 +2720,39 @@ virStorageAuthDefCopy;
 virStorageAuthDefFormat;
 virStorageAuthDefFree;
 virStorageAuthDefParse;
+virStorageFileAccess;
 virStorageFileCanonicalizePath;
 virStorageFileChainGetBroken;
 virStorageFileChainLookup;
+virStorageFileChown;
+virStorageFileCreate;
+virStorageFileDeinit;
 virStorageFileFeatureTypeFromString;
 virStorageFileFeatureTypeToString;
 virStorageFileFormatTypeFromString;
 virStorageFileFormatTypeToString;
+virStorageFileGetBackingStoreStr;
 virStorageFileGetLVMKey;
+virStorageFileGetMetadata;
 virStorageFileGetMetadataFromBuf;
 virStorageFileGetMetadataFromFD;
 virStorageFileGetMetadataInternal;
 virStorageFileGetRelativeBackingPath;
 virStorageFileGetSCSIKey;
+virStorageFileGetUniqueIdentifier;
+virStorageFileInit;
+virStorageFileInitAs;
 virStorageFileIsClusterFS;
 virStorageFileParseBackingStoreStr;
 virStorageFileParseChainIndex;
 virStorageFileProbeFormat;
+virStorageFileRead;
+virStorageFileReportBrokenChain;
 virStorageFileResize;
+virStorageFileStat;
+virStorageFileSupportsAccess;
+virStorageFileSupportsSecurityDriver;
+virStorageFileUnlink;
 virStorageIsFile;
 virStorageIsRelative;
 virStorageNetHostDefClear;
@@ -2774,6 +2789,10 @@ virStorageSourceUpdateCapacity;
 virStorageSourceUpdatePhysicalSize;
 virStorageTypeFromString;
 virStorageTypeToString;
+
+
+# util/virstoragefilebackend.h
+virStorageFileBackendRegister;
 
 
 # util/virstring.h

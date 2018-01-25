@@ -448,5 +448,37 @@ int
 virStorageSourcePrivateDataFormatRelPath(virStorageSourcePtr src,
                                          virBufferPtr buf);
 
+int virStorageFileInit(virStorageSourcePtr src);
+int virStorageFileInitAs(virStorageSourcePtr src,
+                         uid_t uid, gid_t gid);
+void virStorageFileDeinit(virStorageSourcePtr src);
+
+int virStorageFileCreate(virStorageSourcePtr src);
+int virStorageFileUnlink(virStorageSourcePtr src);
+int virStorageFileStat(virStorageSourcePtr src,
+                       struct stat *stat);
+ssize_t virStorageFileRead(virStorageSourcePtr src,
+                           size_t offset,
+                           size_t len,
+                           char **buf);
+const char *virStorageFileGetUniqueIdentifier(virStorageSourcePtr src);
+int virStorageFileAccess(virStorageSourcePtr src, int mode);
+int virStorageFileChown(const virStorageSource *src, uid_t uid, gid_t gid);
+
+bool virStorageFileSupportsSecurityDriver(const virStorageSource *src);
+bool virStorageFileSupportsAccess(const virStorageSource *src);
+
+int virStorageFileGetMetadata(virStorageSourcePtr src,
+                              uid_t uid, gid_t gid,
+                              bool allow_probe,
+                              bool report_broken)
+    ATTRIBUTE_NONNULL(1);
+
+char *virStorageFileGetBackingStoreStr(virStorageSourcePtr src)
+    ATTRIBUTE_NONNULL(1);
+
+void virStorageFileReportBrokenChain(int errcode,
+                                     virStorageSourcePtr src,
+                                     virStorageSourcePtr parent);
 
 #endif /* __VIR_STORAGE_FILE_H__ */
