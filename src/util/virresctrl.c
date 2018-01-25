@@ -295,6 +295,7 @@ virResctrlAllocNew(void)
 
 
 /* Common functions */
+#ifdef __linux__
 static int
 virResctrlLockInternal(int op)
 {
@@ -321,6 +322,20 @@ virResctrlLockWrite(void)
     return virResctrlLockInternal(LOCK_EX);
 }
 
+#else
+
+static inline int
+virResctrlLockWrite(void)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("resctrlfs not supported on this platform"));
+    return -1;
+}
+
+#endif
+
+
+
 
 static int
 virResctrlUnlock(int fd)
@@ -328,6 +343,7 @@ virResctrlUnlock(int fd)
     if (fd == -1)
         return 0;
 
+#ifdef __linux__
     /* The lock gets unlocked by closing the fd, which we need to do anyway in
      * order to clean up properly */
     if (VIR_CLOSE(fd) < 0) {
@@ -338,6 +354,7 @@ virResctrlUnlock(int fd)
             virReportSystemError(errno, "%s", _("Cannot unlock resctrlfs"));
         return -1;
     }
+#endif /* ! __linux__ */
 
     return 0;
 }
@@ -368,6 +385,8 @@ virResctrlInfoIsEmpty(virResctrlInfoPtr resctrl)
     return true;
 }
 
+
+#ifdef __linux__
 
 int
 virResctrlGetInfo(virResctrlInfoPtr resctrl)
@@ -494,6 +513,18 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
     VIR_FREE(i_type);
     return ret;
 }
+
+#else /* ! __linux__ */
+
+int
+virResctrlGetInfo(virResctrlInfoPtr resctrl ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Cache tune not supported on this platform"));
+    return -1;
+}
+
+#endif /* ! __linux__ */
 
 
 int
@@ -632,6 +663,8 @@ virResctrlAllocGetType(virResctrlAllocPtr resctrl,
 }
 
 
+#ifdef __linux__
+
 static int
 virResctrlAllocUpdateMask(virResctrlAllocPtr resctrl,
                           unsigned int level,
@@ -658,6 +691,8 @@ virResctrlAllocUpdateMask(virResctrlAllocPtr resctrl,
 
     return virBitmapCopy(a_type->masks[cache], mask);
 }
+
+#endif
 
 
 static int
@@ -877,6 +912,8 @@ virResctrlAllocFormat(virResctrlAllocPtr resctrl)
     return virBufferContentAndReset(&buf);
 }
 
+
+#ifdef __linux__
 
 static int
 virResctrlAllocParseProcessCache(virResctrlInfoPtr resctrl,
@@ -1180,7 +1217,17 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
     goto cleanup;
 }
 
+#else /* ! __linux__ */
 
+virResctrlAllocPtr
+virResctrlAllocGetUnused(virResctrlInfoPtr resctrl ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Cache tune not supported on this platform"));
+    return NULL;
+}
+
+#endif /* ! __linux__ */
 
 static int
 virResctrlAllocSetMask(virResctrlAllocPerTypePtr a_type,
