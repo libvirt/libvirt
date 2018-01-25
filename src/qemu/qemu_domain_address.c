@@ -25,7 +25,6 @@
 
 #include "qemu_domain_address.h"
 #include "qemu_domain.h"
-#include "network/bridge_driver.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
@@ -1064,7 +1063,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
          * to is of type hostdev. All other kinds of network interfaces don't
          * require us to isolate the guest device, so we can skip them */
         if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK ||
-            networkGetActualType(iface) != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+            virDomainNetResolveActualType(iface) != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
             goto skip;
         }
 

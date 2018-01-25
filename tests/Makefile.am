@@ -280,7 +280,7 @@ test_libraries += virmocklibxl.la
 endif WITH_LIBXL
 
 if WITH_QEMU
-test_programs += qemuxml2argvtest qemuxml2xmltest \
+test_programs += qemuxml2xmltest \
 	qemuargv2xmltest qemuhelptest domainsnapshotxml2xmltest \
 	qemumonitortest qemumonitorjsontest qemuhotplugtest \
 	qemuagenttest qemucapabilitiestest qemucaps2xmltest \
@@ -288,6 +288,11 @@ test_programs += qemuxml2argvtest qemuxml2xmltest \
 	qemucommandutiltest \
 	qemublocktest \
 	$(NULL)
+if WITH_NETWORK
+# Dep on the network driver callback for resolving NIC
+# actual type. XXX remove this dep.
+test_programs += qemuxml2xmltest
+endif WITH_NETWORK
 test_helpers += qemucapsprobe
 test_libraries += libqemumonitortestutils.la \
 		libqemutestdriver.la \
@@ -582,7 +587,9 @@ qemucpumock_la_LIBADD = $(MOCKLIBS_LIBS)
 qemuxml2argvtest_SOURCES = \
 	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemuxml2argvtest_LDADD = libqemutestdriver.la $(LDADDS) $(LIBXML_LIBS)
+qemuxml2argvtest_LDADD = libqemutestdriver.la \
+	../src/libvirt_driver_network_impl.la \
+	$(LDADDS) $(LIBXML_LIBS)
 
 qemuxml2argvmock_la_SOURCES = \
 	qemuxml2argvmock.c

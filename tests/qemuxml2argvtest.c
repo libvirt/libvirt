@@ -25,6 +25,7 @@
 # include "cpu/cpu_map.h"
 # include "virstring.h"
 # include "storage/storage_driver.h"
+# include "network/bridge_driver.h"
 # include "virmock.h"
 
 # define __QEMU_CAPSPRIV_H_ALLOW__
@@ -578,6 +579,9 @@ mymain(void)
     }
 
     if (qemuTestDriverInit(&driver) < 0)
+        return EXIT_FAILURE;
+
+    if (networkRegister() < 0)
         return EXIT_FAILURE;
 
     driver.privileged = true;

@@ -37,10 +37,6 @@ networkRegister(void);
 # if WITH_NETWORK
 
 int
-networkGetActualType(virDomainNetDefPtr iface)
-    ATTRIBUTE_NONNULL(1);
-
-int
 networkDnsmasqConfContents(virNetworkObjPtr obj,
                            const char *pidfile,
                            char **configstr,
@@ -49,7 +45,6 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
 
 # else
 /* Define no-op replacements that don't drag in any link dependencies.  */
-#  define networkGetActualType(iface) (iface->type)
 #  define networkDnsmasqConfContents(network, pidfile, configstr, \
                     dctx, caps) 0
 

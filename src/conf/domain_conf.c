@@ -28823,6 +28823,7 @@ static virDomainNetNotifyActualDeviceImpl netNotify;
 static virDomainNetReleaseActualDeviceImpl netRelease;
 static virDomainNetBandwidthChangeAllowedImpl netBandwidthChangeAllowed;
 static virDomainNetBandwidthUpdateImpl netBandwidthUpdate;
+static virDomainNetResolveActualTypeImpl netResolveActualType;
 
 
 void
@@ -28830,13 +28831,15 @@ virDomainNetSetDeviceImpl(virDomainNetAllocateActualDeviceImpl allocate,
                           virDomainNetNotifyActualDeviceImpl notify,
                           virDomainNetReleaseActualDeviceImpl release,
                           virDomainNetBandwidthChangeAllowedImpl bandwidthChangeAllowed,
-                          virDomainNetBandwidthUpdateImpl bandwidthUpdate)
+                          virDomainNetBandwidthUpdateImpl bandwidthUpdate,
+                          virDomainNetResolveActualTypeImpl resolveActualType)
 {
     netAllocate = allocate;
     netNotify = notify;
     netRelease = release;
     netBandwidthChangeAllowed = bandwidthChangeAllowed;
     netBandwidthUpdate = bandwidthUpdate;
+    netResolveActualType = resolveActualType;
 }
 
 int
@@ -28903,4 +28906,16 @@ virDomainNetBandwidthUpdate(virDomainNetDefPtr iface,
     }
 
     return netBandwidthUpdate(iface, newBandwidth);
+}
+
+int
+virDomainNetResolveActualType(virDomainNetDefPtr iface)
+{
+    if (!netResolveActualType) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("Network device resolve type not available"));
+        return -1;
+    }
+
+    return netResolveActualType(iface);
 }
