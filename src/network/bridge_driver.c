@@ -4374,7 +4374,7 @@ networkLogAllocation(virNetworkDefPtr netdef,
  *
  * Returns 0 on success, -1 on failure.
  */
-int
+static int
 networkAllocateActualDevice(virDomainDefPtr dom,
                             virDomainNetDefPtr iface)
 {
@@ -4796,7 +4796,7 @@ networkAllocateActualDevice(virDomainDefPtr dom,
  *
  * No return value (but does log any failures)
  */
-void
+static void
 networkNotifyActualDevice(virDomainDefPtr dom,
                           virDomainNetDefPtr iface)
 {
@@ -5013,7 +5013,7 @@ networkNotifyActualDevice(virDomainDefPtr dom,
  *
  * Returns 0 on success, -1 on failure.
  */
-int
+static int
 networkReleaseActualDevice(virDomainDefPtr dom,
                            virDomainNetDefPtr iface)
 {
@@ -5810,5 +5810,11 @@ networkRegister(void)
         return -1;
     if (virRegisterStateDriver(&networkStateDriver) < 0)
         return -1;
+
+    virDomainNetSetDeviceImpl(
+        networkAllocateActualDevice,
+        networkNotifyActualDevice,
+        networkReleaseActualDevice);
+
     return 0;
 }

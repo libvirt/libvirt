@@ -3456,4 +3456,38 @@ bool
 virDomainDefLifecycleActionAllowed(virDomainLifecycle type,
                                    virDomainLifecycleAction action);
 
+typedef int
+(*virDomainNetAllocateActualDeviceImpl)(virDomainDefPtr dom,
+                                        virDomainNetDefPtr iface);
+
+typedef void
+(*virDomainNetNotifyActualDeviceImpl)(virDomainDefPtr dom,
+                                      virDomainNetDefPtr iface);
+
+typedef int
+(*virDomainNetReleaseActualDeviceImpl)(virDomainDefPtr dom,
+                                       virDomainNetDefPtr iface);
+
+void
+virDomainNetSetDeviceImpl(virDomainNetAllocateActualDeviceImpl allocate,
+                          virDomainNetNotifyActualDeviceImpl notify,
+                          virDomainNetReleaseActualDeviceImpl release);
+
+int
+virDomainNetAllocateActualDevice(virDomainDefPtr dom,
+                                 virDomainNetDefPtr iface)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+void
+virDomainNetNotifyActualDevice(virDomainDefPtr dom,
+                               virDomainNetDefPtr iface)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int
+virDomainNetReleaseActualDevice(virDomainDefPtr dom,
+                                virDomainNetDefPtr iface)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+
+
 #endif /* __DOMAIN_CONF_H */

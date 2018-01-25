@@ -28817,3 +28817,57 @@ virDomainNetTypeSharesHostView(const virDomainNetDef *net)
     }
     return false;
 }
+
+static virDomainNetAllocateActualDeviceImpl netAllocate;
+static virDomainNetNotifyActualDeviceImpl netNotify;
+static virDomainNetReleaseActualDeviceImpl netRelease;
+
+void
+virDomainNetSetDeviceImpl(virDomainNetAllocateActualDeviceImpl allocate,
+                          virDomainNetNotifyActualDeviceImpl notify,
+                          virDomainNetReleaseActualDeviceImpl release)
+{
+    netAllocate = allocate;
+    netNotify = notify;
+    netRelease = release;
+}
+
+int
+virDomainNetAllocateActualDevice(virDomainDefPtr dom,
+                                 virDomainNetDefPtr iface)
+{
+    if (!netAllocate) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("Network device allocation not available"));
+        return -1;
+    }
+
+    return netAllocate(dom, iface);
+}
+
+void
+virDomainNetNotifyActualDevice(virDomainDefPtr dom,
+                               virDomainNetDefPtr iface)
+{
+    if (!netNotify) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("Network device notification not available"));
+        return;
+    }
+
+    netNotify(dom, iface);
+}
+
+
+int
+virDomainNetReleaseActualDevice(virDomainDefPtr dom,
+                                virDomainNetDefPtr iface)
+{
+    if (!netRelease) {
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("Network device release not available"));
+        return -1;
+    }
+
+    return netRelease(dom, iface);
+}

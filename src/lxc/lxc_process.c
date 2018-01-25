@@ -40,7 +40,6 @@
 #include "virnetdevopenvswitch.h"
 #include "virtime.h"
 #include "domain_nwfilter.h"
-#include "network/bridge_driver.h"
 #include "viralloc.h"
 #include "domain_audit.h"
 #include "virerror.h"
@@ -219,7 +218,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
                                 iface->ifname));
             ignore_value(virNetDevVethDelete(iface->ifname));
         }
-        networkReleaseActualDevice(vm->def, iface);
+        virDomainNetReleaseActualDevice(vm->def, iface);
     }
 
     virDomainConfVMNWFilterTeardown(vm);
@@ -553,7 +552,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
         if (virLXCProcessValidateInterface(net) < 0)
             return -1;
 
-        if (networkAllocateActualDevice(def, net) < 0)
+        if (virDomainNetAllocateActualDevice(def, net) < 0)
             goto cleanup;
 
         if (VIR_EXPAND_N(*veths, *nveths, 1) < 0)
@@ -635,7 +634,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
                 ignore_value(virNetDevOpenvswitchRemovePort(
                                 virDomainNetGetActualBridgeName(iface),
                                 iface->ifname));
-            networkReleaseActualDevice(def, iface);
+            virDomainNetReleaseActualDevice(def, iface);
         }
     }
     return ret;

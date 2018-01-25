@@ -38,7 +38,6 @@
 #include "virtime.h"
 #include "locking/domain_lock.h"
 #include "xen_common.h"
-#include "network/bridge_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -796,7 +795,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
 
             /* cleanup actual device */
             virDomainNetRemoveHostdev(vm->def, net);
-            networkReleaseActualDevice(vm->def, net);
+            virDomainNetReleaseActualDevice(vm->def, net);
         }
     }
 
@@ -955,7 +954,7 @@ libxlNetworkPrepareDevices(virDomainDefPtr def)
          * network's pool of devices, or resolve bridge device name
          * to the one defined in the network definition.
          */
-        if (networkAllocateActualDevice(def, net) < 0)
+        if (virDomainNetAllocateActualDevice(def, net) < 0)
             return -1;
 
         actualType = virDomainNetGetActualType(net);
