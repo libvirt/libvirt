@@ -3194,6 +3194,8 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
     }
 
     if ((def = vshCmddefSearch(name))) {
+        if (def->flags & VSH_CMD_FLAG_ALIAS)
+            def = vshCmddefSearch(def->alias);
         return vshCmddefHelp(ctl, def);
     } else if ((grp = vshCmdGrpSearch(name))) {
         return vshCmdGrpHelp(ctl, grp);
