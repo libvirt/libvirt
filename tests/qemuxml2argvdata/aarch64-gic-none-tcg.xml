@@ -5,13 +5,13 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='aarch64' machine='virt'>hvm</type>
-    <boot dev='hd'/>
   </os>
   <cpu mode='custom'>
     <model>cortex-a57</model>
   </cpu>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='usb' index='0' model='none'/>
     <memballoon model='none'/>
   </devices>
 </domain>
