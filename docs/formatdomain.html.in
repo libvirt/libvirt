@@ -1521,6 +1521,21 @@
 
         <span class="since">Since 0.8.5</span> the <code>policy</code>
         attribute can be omitted and will default to <code>require</code>.
+
+        <p> Individual CPU feature names are specified as part of the
+        <code>name</code> attribute. For example, to explicitly specify
+        the 'pcid' feature with Intel IvyBridge CPU model:
+        </p>
+
+<pre>
+...
+&lt;cpu match='exact'&gt;
+  &lt;model fallback='forbid'&gt;IvyBridge&lt;/model&gt;
+  &lt;vendor&gt;Intel&lt;/vendor&gt;
+  &lt;feature policy='require' name='pcid'/&gt;
+&lt;/cpu&gt;
+...</pre>
+
       </dd>
 
       <dt><code>cache</code></dt>
