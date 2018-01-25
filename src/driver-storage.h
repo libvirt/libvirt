@@ -64,6 +64,10 @@ typedef virStoragePoolPtr
 (*virDrvStoragePoolLookupByVolume)(virStorageVolPtr vol);
 
 typedef virStoragePoolPtr
+(*virDrvStoragePoolLookupByTargetPath)(virConnectPtr conn,
+                                       const char *path);
+
+typedef virStoragePoolPtr
 (*virDrvStoragePoolCreateXML)(virConnectPtr conn,
                               const char *xmlDesc,
                               unsigned int flags);
@@ -236,6 +240,7 @@ struct _virStorageDriver {
     virDrvStoragePoolLookupByName storagePoolLookupByName;
     virDrvStoragePoolLookupByUUID storagePoolLookupByUUID;
     virDrvStoragePoolLookupByVolume storagePoolLookupByVolume;
+    virDrvStoragePoolLookupByTargetPath storagePoolLookupByTargetPath;
     virDrvStoragePoolCreateXML storagePoolCreateXML;
     virDrvStoragePoolDefineXML storagePoolDefineXML;
     virDrvStoragePoolBuild storagePoolBuild;

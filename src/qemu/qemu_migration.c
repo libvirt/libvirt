@@ -329,7 +329,7 @@ qemuMigrationPrecreateDisk(virConnectPtr conn,
         *volName = '\0';
         volName++;
 
-        if (!(pool = storagePoolLookupByTargetPath(conn, basePath)))
+        if (!(pool = virStoragePoolLookupByTargetPath(conn, basePath)))
             goto cleanup;
         format = virStorageFileFormatTypeToString(disk->src->format);
         if (disk->src->format == VIR_STORAGE_FILE_QCOW2)

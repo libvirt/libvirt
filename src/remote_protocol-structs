@@ -1330,6 +1330,12 @@ struct remote_storage_pool_lookup_by_volume_args {
 struct remote_storage_pool_lookup_by_volume_ret {
         remote_nonnull_storage_pool pool;
 };
+struct remote_storage_pool_lookup_by_target_path_args {
+        remote_nonnull_string      path;
+};
+struct remote_storage_pool_lookup_by_target_path_ret {
+        remote_nonnull_storage_pool pool;
+};
 struct remote_storage_pool_create_xml_args {
         remote_nonnull_string      xml;
         u_int                      flags;
@@ -3262,4 +3268,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_MANAGED_SAVE_GET_XML_DESC = 388,
         REMOTE_PROC_DOMAIN_MANAGED_SAVE_DEFINE_XML = 389,
         REMOTE_PROC_DOMAIN_SET_LIFECYCLE_ACTION = 390,
+        REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_TARGET_PATH = 391,
 };

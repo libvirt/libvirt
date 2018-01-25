@@ -264,6 +264,8 @@ virStoragePoolPtr       virStoragePoolLookupByUUID      (virConnectPtr conn,
 virStoragePoolPtr       virStoragePoolLookupByUUIDString(virConnectPtr conn,
                                                          const char *uuid);
 virStoragePoolPtr       virStoragePoolLookupByVolume    (virStorageVolPtr vol);
+virStoragePoolPtr       virStoragePoolLookupByTargetPath(virConnectPtr conn,
+                                                         const char *path);
 
 /*
  * Creating/destroying pools

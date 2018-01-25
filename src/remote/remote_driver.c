@@ -8556,6 +8556,7 @@ static virStorageDriver storage_driver = {
     .storagePoolLookupByName = remoteStoragePoolLookupByName, /* 0.4.1 */
     .storagePoolLookupByUUID = remoteStoragePoolLookupByUUID, /* 0.4.1 */
     .storagePoolLookupByVolume = remoteStoragePoolLookupByVolume, /* 0.4.1 */
+    .storagePoolLookupByTargetPath = remoteStoragePoolLookupByTargetPath, /* 4.1.0 */
     .storagePoolCreateXML = remoteStoragePoolCreateXML, /* 0.4.1 */
     .storagePoolDefineXML = remoteStoragePoolDefineXML, /* 0.4.1 */
     .storagePoolBuild = remoteStoragePoolBuild, /* 0.4.1 */

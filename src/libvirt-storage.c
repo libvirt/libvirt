@@ -498,6 +498,46 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
 
 
 /**
+ * virStoragePoolLookupByTargetPath:
+ * @conn: pointer to hypervisor connection
+ * @path: path at which the pool is exposed
+ *
+ * Fetch a storage pool which maps to a particular target directory.
+ * If more than one pool maps to the path, it is undefined which
+ * will be returned first.
+ *
+ * virStoragePoolFree should be used to free the resources after the
+ * storage pool object is no longer needed.
+ *
+ * Returns a virStoragePoolPtr object, or NULL if no matching pool is found
+ */
+virStoragePoolPtr
+virStoragePoolLookupByTargetPath(virConnectPtr conn,
+                                 const char *path)
+{
+    VIR_DEBUG("conn=%p, path=%s", conn, NULLSTR(path));
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgGoto(path, error);
+
+    if (conn->storageDriver && conn->storageDriver->storagePoolLookupByTargetPath) {
+        virStoragePoolPtr ret;
+        ret = conn->storageDriver->storagePoolLookupByTargetPath(conn, path);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+/**
  * virStoragePoolCreateXML:
  * @conn: pointer to hypervisor connection
  * @xmlDesc: XML description for new pool

@@ -1694,6 +1694,9 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
                                            storagePoolLookupByTargetPathCallback,
                                            cleanpath))) {
         def = virStoragePoolObjGetDef(obj);
+        if (virStoragePoolLookupByTargetPathEnsureACL(conn, def) < 0)
+            goto cleanup;
+
         pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
         virStoragePoolObjEndAPI(&obj);
     }
@@ -1710,6 +1713,7 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
         }
     }
 
+ cleanup:
     VIR_FREE(cleanpath);
     return pool;
 }
@@ -2808,6 +2812,7 @@ static virStorageDriver storageDriver = {
     .storagePoolLookupByName = storagePoolLookupByName, /* 0.4.0 */
     .storagePoolLookupByUUID = storagePoolLookupByUUID, /* 0.4.0 */
     .storagePoolLookupByVolume = storagePoolLookupByVolume, /* 0.4.0 */
+    .storagePoolLookupByTargetPath = storagePoolLookupByTargetPath, /* 4.1.0 */
     .storagePoolCreateXML = storagePoolCreateXML, /* 0.4.0 */
     .storagePoolDefineXML = storagePoolDefineXML, /* 0.4.0 */
     .storagePoolBuild = storagePoolBuild, /* 0.4.0 */

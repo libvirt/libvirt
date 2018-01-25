@@ -1761,6 +1761,14 @@ struct remote_storage_pool_lookup_by_volume_ret {
     remote_nonnull_storage_pool pool;
 };
 
+struct remote_storage_pool_lookup_by_target_path_args {
+    remote_nonnull_string path;
+};
+
+struct remote_storage_pool_lookup_by_target_path_ret {
+    remote_nonnull_storage_pool pool;
+};
+
 struct remote_storage_pool_create_xml_args {
     remote_nonnull_string xml;
     unsigned int flags;
@@ -6120,5 +6128,12 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_SET_LIFECYCLE_ACTION = 390
+    REMOTE_PROC_DOMAIN_SET_LIFECYCLE_ACTION = 390,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: storage_pool:getattr
+     */
+    REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_TARGET_PATH = 391
 };
