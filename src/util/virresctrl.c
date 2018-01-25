@@ -1041,6 +1041,55 @@ virResctrlAllocParse(virResctrlInfoPtr resctrl,
 }
 
 
+static int
+virResctrlAllocGetGroup(virResctrlInfoPtr resctrl,
+                        const char *groupname,
+                        virResctrlAllocPtr *alloc)
+{
+    char *schemata = NULL;
+    int rv = virFileReadValueString(&schemata,
+                                     SYSFS_RESCTRL_PATH
+                                     "/%s/schemata",
+                                     groupname);
+
+    *alloc = NULL;
+
+    if (rv < 0)
+        return rv;
+
+    *alloc = virResctrlAllocNew();
+    if (!*alloc)
+        goto error;
+
+    if (virResctrlAllocParse(resctrl, *alloc, schemata) < 0)
+        goto error;
+
+    VIR_FREE(schemata);
+    return 0;
+
+ error:
+    VIR_FREE(schemata);
+    virObjectUnref(*alloc);
+    *alloc = NULL;
+    return -1;
+}
+
+
+static virResctrlAllocPtr
+virResctrlAllocGetDefault(virResctrlInfoPtr resctrl)
+{
+    virResctrlAllocPtr ret = NULL;
+    int rv = virResctrlAllocGetGroup(resctrl, ".", &ret);
+
+    if (rv == -2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not read schemata file for the default group"));
+    }
+
+    return ret;
+}
+
+
 static void
 virResctrlAllocSubtractPerType(virResctrlAllocPerTypePtr dst,
                                virResctrlAllocPerTypePtr src)
@@ -1141,7 +1190,6 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
     virResctrlAllocPtr alloc = NULL;
     struct dirent *ent = NULL;
     DIR *dirp = NULL;
-    char *schemata = NULL;
     int rv = -1;
 
     if (virResctrlInfoIsEmpty(resctrl)) {
@@ -1154,22 +1202,12 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
     if (!ret)
         return NULL;
 
-    if (virFileReadValueString(&schemata,
-                               SYSFS_RESCTRL_PATH
-                               "/schemata") < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not read schemata file for the default group"));
-        goto error;
-    }
-
-    alloc = virResctrlAllocNew();
+    alloc = virResctrlAllocGetDefault(resctrl);
     if (!alloc)
         goto error;
 
-    if (virResctrlAllocParse(resctrl, alloc, schemata) < 0)
-        goto error;
-
     virResctrlAllocSubtract(ret, alloc);
+    virObjectUnref(alloc);
 
     if (virDirOpen(&dirp, SYSFS_RESCTRL_PATH) < 0)
         goto error;
@@ -1178,11 +1216,7 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
         if (STREQ(ent->d_name, "info"))
             continue;
 
-        VIR_FREE(schemata);
-        rv = virFileReadValueString(&schemata,
-                                    SYSFS_RESCTRL_PATH
-                                    "/%s/schemata",
-                                    ent->d_name);
+        rv = virResctrlAllocGetGroup(resctrl, ent->d_name, &alloc);
         if (rv == -2)
             continue;
 
@@ -1193,15 +1227,9 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
             goto error;
         }
 
-        virObjectUnref(alloc);
-        alloc = virResctrlAllocNew();
-        if (!alloc)
-            goto error;
-
-        if (virResctrlAllocParse(resctrl, alloc, schemata) < 0)
-            goto error;
-
         virResctrlAllocSubtract(ret, alloc);
+        virObjectUnref(alloc);
+        alloc = NULL;
     }
     if (rv < 0)
         goto error;
@@ -1209,7 +1237,6 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
  cleanup:
     virObjectUnref(alloc);
     VIR_DIR_CLOSE(dirp);
-    VIR_FREE(schemata);
     return ret;
 
  error:
