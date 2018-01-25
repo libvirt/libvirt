@@ -37,7 +37,6 @@
 #include "virnetdev.h"
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
-#include "storage/storage_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_BHYVE
 
@@ -199,7 +198,7 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
             goto error;
         }
 
-        if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+        if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
             goto error;
 
         disk_source = virDomainDiskGetSource(disk);
@@ -295,7 +294,7 @@ bhyveBuildVirtIODiskArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
 {
     const char *disk_source;
 
-    if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+    if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
         return -1;
 
     if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
@@ -676,7 +675,7 @@ static bool
 virBhyveUsableDisk(virConnectPtr conn, virDomainDiskDefPtr disk)
 {
 
-    if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+    if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
         return false;
 
     if ((disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) &&

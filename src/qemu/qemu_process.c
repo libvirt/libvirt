@@ -72,7 +72,6 @@
 #include "virstring.h"
 #include "virhostdev.h"
 #include "secret_util.h"
-#include "storage/storage_driver.h"
 #include "configmake.h"
 #include "nwfilter_conf.h"
 #include "netdev_bandwidth_conf.h"
@@ -5605,7 +5604,7 @@ qemuProcessPrepareDomainStorage(virConnectPtr conn,
         size_t idx = i - 1;
         virDomainDiskDefPtr disk = vm->def->disks[idx];
 
-        if (virStorageTranslateDiskSourcePool(conn, disk) < 0) {
+        if (virDomainDiskTranslateSourcePool(conn, disk) < 0) {
             if (qemuDomainCheckDiskStartupPolicy(driver, vm, idx, cold_boot) < 0)
                 return -1;
 
@@ -7365,7 +7364,7 @@ qemuProcessReconnect(void *opaque)
         virDomainDiskDefPtr disk = obj->def->disks[i];
         virDomainDeviceDef dev;
 
-        if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+        if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
             goto error;
 
         /* backing chains need to be refreshed only if they could change */

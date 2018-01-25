@@ -29,9 +29,6 @@
 # include "domain_conf.h"
 # include "virstorageobj.h"
 
-int virStorageTranslateDiskSourcePool(virConnectPtr conn,
-                                      virDomainDiskDefPtr def);
-
 virStoragePoolObjPtr virStoragePoolObjFindPoolByUUID(const unsigned char *uuid)
     ATTRIBUTE_NONNULL(1);
 

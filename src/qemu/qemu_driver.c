@@ -99,7 +99,6 @@
 #include "virstring.h"
 #include "viraccessapicheck.h"
 #include "viraccessapicheckqemu.h"
-#include "storage/storage_driver.h"
 #include "virhostdev.h"
 #include "domain_capabilities.h"
 #include "vircgroup.h"
@@ -7882,7 +7881,7 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
     virDomainDiskDefPtr orig_disk = NULL;
     int ret = -1;
 
-    if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+    if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
         goto cleanup;
 
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
@@ -8009,7 +8008,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                            _("target %s already exists"), disk->dst);
             return -1;
         }
-        if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+        if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
             return -1;
         if (qemuCheckDiskConfig(disk, NULL) < 0)
             return -1;
@@ -14244,7 +14243,7 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
         return -1;
 
     if (!active) {
-        if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+        if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
             return -1;
 
         if (qemuDomainSnapshotPrepareDiskExternalInactive(snapdisk, disk) < 0)
@@ -14296,7 +14295,7 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
     if (active)
         return 0;
 
-    if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+    if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
         return -1;
 
     actualType = virStorageSourceGetActualType(disk->src);

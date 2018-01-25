@@ -56,7 +56,6 @@
 #include "virstoragefile.h"
 #include "virstring.h"
 #include "virtime.h"
-#include "storage/storage_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -714,7 +713,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
+    if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
         goto cleanup;
 
     if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
