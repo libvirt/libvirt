@@ -125,6 +125,7 @@ libvirtd_conf_la_LDFLAGS = \
 	$(PIE_LDFLAGS) \
 	$(COVERAGE_LDFLAGS) \
 	$(NO_INDIRECT_LDFLAGS) \
+	$(NO_UNDEFINED_LDFLAGS) \
 	$(NULL)
 libvirtd_conf_la_LIBADD = $(LIBXML_LIBS)
 
@@ -158,6 +159,7 @@ libvirtd_LDFLAGS = \
 	$(PIE_LDFLAGS) \
 	$(COVERAGE_LDFLAGS) \
 	$(NO_INDIRECT_LDFLAGS) \
+	$(NO_UNDEFINED_LDFLAGS) \
 	$(NULL)
 
 libvirtd_LDADD = \
