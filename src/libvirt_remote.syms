@@ -5,6 +5,9 @@
 # Keep this file sorted by header name, then by symbols with each header.
 #
 
+# Generated files
+xdr_*;
+
 # rpc/virnetclient.h
 virNetClientAddProgram;
 virNetClientAddStream;
@@ -80,6 +83,7 @@ virNetDaemonUpdateServices;
 
 
 # rpc/virnetmessage.h
+virNetMessageAddFD;
 virNetMessageClear;
 virNetMessageClearPayload;
 virNetMessageDecodeHeader;
@@ -96,7 +100,6 @@ virNetMessageNew;
 virNetMessageQueuePush;
 virNetMessageQueueServe;
 virNetMessageSaveError;
-xdr_virNetMessageError;
 
 
 # rpc/virnetserver.h
@@ -104,12 +107,14 @@ virNetServerAddClient;
 virNetServerAddProgram;
 virNetServerAddService;
 virNetServerClose;
+virNetServerGetClient;
 virNetServerGetClients;
 virNetServerGetCurrentClients;
 virNetServerGetCurrentUnauthClients;
 virNetServerGetMaxClients;
 virNetServerGetMaxUnauthClients;
 virNetServerGetName;
+virNetServerGetThreadPoolParameters;
 virNetServerHasClients;
 virNetServerNew;
 virNetServerNewPostExecRestart;
@@ -117,6 +122,8 @@ virNetServerNextClientID;
 virNetServerPreExecRestart;
 virNetServerProcessClients;
 virNetServerSetClientAuthenticated;
+virNetServerSetClientLimits;
+virNetServerSetThreadPoolParameters;
 virNetServerStart;
 virNetServerUpdateServices;
 
@@ -128,11 +135,13 @@ virNetServerClientCloseLocked;
 virNetServerClientDelayedClose;
 virNetServerClientGetAuth;
 virNetServerClientGetFD;
+virNetServerClientGetID;
 virNetServerClientGetIdentity;
 virNetServerClientGetInfo;
 virNetServerClientGetPrivateData;
 virNetServerClientGetReadonly;
 virNetServerClientGetSELinuxContext;
+virNetServerClientGetTimestamp;
 virNetServerClientGetTransport;
 virNetServerClientGetUNIXIdentity;
 virNetServerClientImmediateClose;

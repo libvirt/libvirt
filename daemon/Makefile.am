@@ -176,7 +176,6 @@ libvirtd_LDADD += \
 	../src/libvirt_driver_admin.la \
 	../src/libvirt-lxc.la \
 	../src/libvirt-qemu.la \
-	../src/libvirt_driver_remote.la \
 	$(NULL)
 
 libvirtd_LDADD += ../src/libvirt.la

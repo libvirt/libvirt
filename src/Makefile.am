@@ -1316,16 +1316,11 @@ if WITH_REMOTE
 noinst_LTLIBRARIES += libvirt_driver_remote.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_remote.la
 libvirt_driver_remote_la_CFLAGS = \
-		$(GNUTLS_CFLAGS) \
 		$(XDR_CFLAGS) \
 		-I$(srcdir)/conf \
 		-I$(srcdir)/rpc \
 		$(AM_CFLAGS)
 libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_remote_la_LIBADD = $(GNUTLS_LIBS) \
-                libvirt-net-rpc-client.la \
-                libvirt-net-rpc-server.la \
-                libvirt-net-rpc.la
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
 BUILT_SOURCES += $(REMOTE_DRIVER_GENERATED)
@@ -2602,8 +2597,6 @@ lockd_la_CFLAGS = -I$(srcdir)/conf \
 		$(AM_CFLAGS)
 lockd_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 lockd_la_LIBADD = ../gnulib/lib/libgnu.la \
-	libvirt-net-rpc.la \
-	libvirt-net-rpc-client.la \
 	$(NULL)
 augeas_DATA += locking/libvirt_lockd.aug
 if WITH_DTRACE_PROBES
@@ -2918,6 +2911,11 @@ noinst_LTLIBRARIES += \
 	libvirt-net-rpc.la \
 	libvirt-net-rpc-server.la \
 	libvirt-net-rpc-client.la
+
+libvirt_la_BUILT_LIBADD += \
+       libvirt-net-rpc.la \
+       libvirt-net-rpc-server.la \
+       libvirt-net-rpc-client.la
 
 EXTRA_DIST += \
 	dtrace2systemtap.pl \
