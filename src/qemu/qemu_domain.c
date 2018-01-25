@@ -55,8 +55,6 @@
 #include "logging/log_manager.h"
 #include "locking/domain_lock.h"
 
-#include "storage/storage_driver.h"
-
 #ifdef MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
 #elif MAJOR_IN_SYSMACROS

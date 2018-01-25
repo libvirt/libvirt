@@ -51,7 +51,6 @@
 #include "snapshot_conf.h"
 #include "storage_conf.h"
 #include "secret_conf.h"
-#include "network/bridge_driver.h"
 #include "virnetdevtap.h"
 #include "virnetdevopenvswitch.h"
 #include "device_conf.h"

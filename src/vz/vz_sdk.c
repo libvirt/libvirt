@@ -33,7 +33,6 @@
 #include "virhostcpu.h"
 #include "virsocketaddr.h"
 
-#include "storage/storage_driver.h"
 #include "vz_sdk.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
