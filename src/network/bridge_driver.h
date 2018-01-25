@@ -37,11 +37,6 @@ networkRegister(void);
 # if WITH_NETWORK
 
 int
-networkGetNetworkAddress(const char *netname,
-                         char **netaddr)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-int
 networkGetActualType(virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1);
 
@@ -55,7 +50,6 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
 # else
 /* Define no-op replacements that don't drag in any link dependencies.  */
 #  define networkGetActualType(iface) (iface->type)
-#  define networkGetNetworkAddress(netname, netaddr) (-2)
 #  define networkDnsmasqConfContents(network, pidfile, configstr, \
                     dctx, caps) 0
 
