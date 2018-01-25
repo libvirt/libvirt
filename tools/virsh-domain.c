@@ -1037,7 +1037,7 @@ static const vshCmdInfo info_autostart[] = {
 };
 
 static const vshCmdOptDef opts_autostart[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_PERSISTENT),
     {.name = "disable",
      .type = VSH_OT_BOOL,
      .help = N_("disable autostarting")
