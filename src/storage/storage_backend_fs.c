@@ -37,6 +37,7 @@
 
 #include "virerror.h"
 #include "storage_backend_fs.h"
+#include "storage_source_backend.h"
 #include "storage_util.h"
 #include "storage_conf.h"
 #include "virstoragefile.h"
@@ -911,13 +912,13 @@ virStorageBackendFsRegister(void)
         return -1;
 #endif /* WITH_STORAGE_FS */
 
-    if (virStorageBackendFileRegister(&virStorageFileBackendFile) < 0)
+    if (virStorageFileBackendRegister(&virStorageFileBackendFile) < 0)
         return -1;
 
-    if (virStorageBackendFileRegister(&virStorageFileBackendBlock) < 0)
+    if (virStorageFileBackendRegister(&virStorageFileBackendBlock) < 0)
         return -1;
 
-    if (virStorageBackendFileRegister(&virStorageFileBackendDir) < 0)
+    if (virStorageFileBackendRegister(&virStorageFileBackendDir) < 0)
         return -1;
 
     return 0;

@@ -78,8 +78,6 @@ VIR_LOG_INIT("storage.storage_backend");
 
 static virStorageBackendPtr virStorageBackends[VIR_STORAGE_BACKENDS_MAX];
 static size_t virStorageBackendsCount;
-static virStorageFileBackendPtr virStorageFileBackends[VIR_STORAGE_BACKENDS_MAX];
-static size_t virStorageFileBackendsCount;
 
 #define STORAGE_BACKEND_MODULE_DIR LIBDIR "/libvirt/storage-backend"
 
@@ -179,27 +177,6 @@ virStorageBackendRegister(virStorageBackendPtr backend)
 }
 
 
-int
-virStorageBackendFileRegister(virStorageFileBackendPtr backend)
-{
-    VIR_DEBUG("Registering storage file backend '%s' protocol '%s'",
-              virStorageTypeToString(backend->type),
-              virStorageNetProtocolTypeToString(backend->protocol));
-
-    if (virStorageFileBackendsCount >= VIR_STORAGE_BACKENDS_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Too many drivers, cannot register storage file "
-                         "backend '%s'"),
-                       virStorageTypeToString(backend->type));
-        return -1;
-    }
-
-    virStorageFileBackends[virStorageFileBackendsCount] = backend;
-    virStorageFileBackendsCount++;
-    return 0;
-}
-
-
 virStorageBackendPtr
 virStorageBackendForType(int type)
 {
@@ -212,47 +189,4 @@ virStorageBackendForType(int type)
                    _("missing backend for pool type %d (%s)"),
                    type, NULLSTR(virStoragePoolTypeToString(type)));
     return NULL;
-}
-
-
-virStorageFileBackendPtr
-virStorageFileBackendForTypeInternal(int type,
-                                     int protocol,
-                                     bool report)
-{
-    size_t i;
-
-    for (i = 0; i < virStorageFileBackendsCount; i++) {
-        if (virStorageFileBackends[i]->type == type) {
-            if (type == VIR_STORAGE_TYPE_NETWORK &&
-                virStorageFileBackends[i]->protocol != protocol)
-                continue;
-
-            return virStorageFileBackends[i];
-        }
-    }
-
-    if (!report)
-        return NULL;
-
-    if (type == VIR_STORAGE_TYPE_NETWORK) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing storage backend for network files "
-                         "using %s protocol"),
-                       virStorageNetProtocolTypeToString(protocol));
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing storage backend for '%s' storage"),
-                       virStorageTypeToString(type));
-    }
-
-    return NULL;
-}
-
-
-virStorageFileBackendPtr
-virStorageFileBackendForType(int type,
-                             int protocol)
-{
-    return virStorageFileBackendForTypeInternal(type, protocol, true);
 }

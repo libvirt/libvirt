@@ -26,7 +26,7 @@
 
 #include "virerror.h"
 #include "storage_source.h"
-#include "storage_backend.h"
+#include "storage_source_backend.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virstring.h"
