@@ -110,6 +110,11 @@ typedef enum {
     QEMU_DOMAIN_JOB_STATUS_CANCELED,
 } qemuDomainJobStatus;
 
+typedef enum {
+    QEMU_DOMAIN_JOB_STATS_TYPE_NONE = 0,
+    QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION,
+} qemuDomainJobStatsType;
+
 
 typedef struct _qemuDomainMirrorStats qemuDomainMirrorStats;
 typedef qemuDomainMirrorStats *qemuDomainMirrorStatsPtr;
@@ -138,7 +143,10 @@ struct _qemuDomainJobInfo {
                             destination. */
     bool timeDeltaSet;
     /* Raw values from QEMU */
-    qemuMonitorMigrationStats stats;
+    qemuDomainJobStatsType statsType;
+    union {
+        qemuMonitorMigrationStats mig;
+    } stats;
     qemuDomainMirrorStats mirrorStats;
 };
 

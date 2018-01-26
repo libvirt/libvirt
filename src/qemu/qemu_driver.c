@@ -3386,6 +3386,8 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         goto endjob;
     }
 
+    priv->job.current->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION;
+
     /* Pause */
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         was_running = true;
@@ -3937,6 +3939,9 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
         goto endjob;
     }
 
+    priv = vm->privateData;
+    priv->job.current->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION;
+
     /* Migrate will always stop the VM, so the resume condition is
        independent of whether the stop command is issued.  */
     resume = virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING;
@@ -3972,7 +3977,6 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
     } else if (((resume && paused) || (flags & VIR_DUMP_RESET)) &&
                virDomainObjIsActive(vm)) {
         if ((ret == 0) && (flags & VIR_DUMP_RESET)) {
-            priv =  vm->privateData;
             qemuDomainObjEnterMonitor(driver, vm);
             ret = qemuMonitorSystemReset(priv->mon);
             if (qemuDomainObjExitMonitor(driver, vm) < 0)
@@ -13220,8 +13224,15 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
     }
     *jobInfo = *priv->job.current;
 
-    if (qemuDomainGetJobInfoMigrationStats(driver, vm, jobInfo) < 0)
-        goto cleanup;
+    switch (jobInfo->statsType) {
+    case QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION:
+        if (qemuDomainGetJobInfoMigrationStats(driver, vm, jobInfo) < 0)
+            goto cleanup;
+        break;
+
+    case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
+        break;
+    }
 
     ret = 0;
 

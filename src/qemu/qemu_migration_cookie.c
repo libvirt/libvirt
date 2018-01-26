@@ -611,7 +611,7 @@ static void
 qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
                                        qemuDomainJobInfoPtr jobInfo)
 {
-    qemuMonitorMigrationStats *stats = &jobInfo->stats;
+    qemuMonitorMigrationStats *stats = &jobInfo->stats.mig;
 
     virBufferAddLit(buf, "<statistics>\n");
     virBufferAdjustIndent(buf, 2);
@@ -993,7 +993,7 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
     if (VIR_ALLOC(jobInfo) < 0)
         goto cleanup;
 
-    stats = &jobInfo->stats;
+    stats = &jobInfo->stats.mig;
     jobInfo->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
 
     virXPathULongLong("string(./started[1])", ctxt, &jobInfo->started);

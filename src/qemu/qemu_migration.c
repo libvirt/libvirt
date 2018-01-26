@@ -1368,7 +1368,7 @@ qemuMigrationWaitForSpice(virDomainObjPtr vm)
 static void
 qemuMigrationUpdateJobType(qemuDomainJobInfoPtr jobInfo)
 {
-    switch ((qemuMonitorMigrationStatus) jobInfo->stats.status) {
+    switch ((qemuMonitorMigrationStatus) jobInfo->stats.mig.status) {
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
         jobInfo->status = QEMU_DOMAIN_JOB_STATUS_POSTCOPY;
         break;
@@ -1425,7 +1425,7 @@ qemuMigrationFetchStats(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
         return -1;
 
-    jobInfo->stats = stats;
+    jobInfo->stats.mig = stats;
 
     return 0;
 }
@@ -1461,7 +1461,7 @@ qemuMigrationCheckJobStatus(virQEMUDriverPtr driver,
     int ret = -1;
 
     if (!events ||
-        jobInfo->stats.status == QEMU_MONITOR_MIGRATION_STATUS_ERROR) {
+        jobInfo->stats.mig.status == QEMU_MONITOR_MIGRATION_STATUS_ERROR) {
         if (qemuMigrationFetchStats(driver, vm, asyncJob, jobInfo, &error) < 0)
             return -1;
     }
@@ -3254,8 +3254,8 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
         qemuDomainJobInfoUpdateTime(jobInfo);
         jobInfo->timeDeltaSet = mig->jobInfo->timeDeltaSet;
         jobInfo->timeDelta = mig->jobInfo->timeDelta;
-        jobInfo->stats.downtime_set = mig->jobInfo->stats.downtime_set;
-        jobInfo->stats.downtime = mig->jobInfo->stats.downtime;
+        jobInfo->stats.mig.downtime_set = mig->jobInfo->stats.mig.downtime_set;
+        jobInfo->stats.mig.downtime = mig->jobInfo->stats.mig.downtime;
     }
 
     if (flags & VIR_MIGRATE_OFFLINE)
@@ -5756,6 +5756,7 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
                       qemuDomainAsyncJob job)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainJobOperation op;
     unsigned long long mask;
 
@@ -5771,6 +5772,8 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
 
     if (qemuDomainObjBeginAsyncJob(driver, vm, job, op) < 0)
         return -1;
+
+    priv->job.current->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION;
 
     qemuDomainObjSetAsyncJobMask(vm, mask);
     return 0;

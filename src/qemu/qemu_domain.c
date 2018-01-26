@@ -408,8 +408,8 @@ qemuDomainJobInfoUpdateDowntime(qemuDomainJobInfoPtr jobInfo)
         return 0;
     }
 
-    jobInfo->stats.downtime = now - jobInfo->stopped;
-    jobInfo->stats.downtime_set = true;
+    jobInfo->stats.mig.downtime = now - jobInfo->stopped;
+    jobInfo->stats.mig.downtime_set = true;
     return 0;
 }
 
@@ -447,17 +447,23 @@ qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
     info->type = qemuDomainJobStatusToType(jobInfo->status);
     info->timeElapsed = jobInfo->timeElapsed;
 
-    info->memTotal = jobInfo->stats.ram_total;
-    info->memRemaining = jobInfo->stats.ram_remaining;
-    info->memProcessed = jobInfo->stats.ram_transferred;
+    switch (jobInfo->statsType) {
+    case QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION:
+        info->memTotal = jobInfo->stats.mig.ram_total;
+        info->memRemaining = jobInfo->stats.mig.ram_remaining;
+        info->memProcessed = jobInfo->stats.mig.ram_transferred;
+        info->fileTotal = jobInfo->stats.mig.disk_total +
+                          jobInfo->mirrorStats.total;
+        info->fileRemaining = jobInfo->stats.mig.disk_remaining +
+                              (jobInfo->mirrorStats.total -
+                               jobInfo->mirrorStats.transferred);
+        info->fileProcessed = jobInfo->stats.mig.disk_transferred +
+                              jobInfo->mirrorStats.transferred;
+        break;
 
-    info->fileTotal = jobInfo->stats.disk_total +
-                      jobInfo->mirrorStats.total;
-    info->fileRemaining = jobInfo->stats.disk_remaining +
-                          (jobInfo->mirrorStats.total -
-                           jobInfo->mirrorStats.transferred);
-    info->fileProcessed = jobInfo->stats.disk_transferred +
-                          jobInfo->mirrorStats.transferred;
+    case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
+        break;
+    }
 
     info->dataTotal = info->memTotal + info->fileTotal;
     info->dataRemaining = info->memRemaining + info->fileRemaining;
@@ -466,13 +472,14 @@ qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
     return 0;
 }
 
-int
-qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
-                          int *type,
-                          virTypedParameterPtr *params,
-                          int *nparams)
+
+static int
+qemuDomainMigrationJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
+                                   int *type,
+                                   virTypedParameterPtr *params,
+                                   int *nparams)
 {
-    qemuMonitorMigrationStats *stats = &jobInfo->stats;
+    qemuMonitorMigrationStats *stats = &jobInfo->stats.mig;
     qemuDomainMirrorStatsPtr mirrorStats = &jobInfo->mirrorStats;
     virTypedParameterPtr par = NULL;
     int maxpar = 0;
@@ -630,6 +637,24 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
 
  error:
     virTypedParamsFree(par, npar);
+    return -1;
+}
+
+
+int
+qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
+                          int *type,
+                          virTypedParameterPtr *params,
+                          int *nparams)
+{
+    switch (jobInfo->statsType) {
+    case QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION:
+        return qemuDomainMigrationJobInfoToParams(jobInfo, type, params, nparams);
+
+    case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
+        break;
+    }
+
     return -1;
 }
 
