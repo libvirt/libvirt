@@ -34,6 +34,9 @@
 struct _virNetworkDriverState {
     virMutex lock;
 
+    /* Read-only */
+    bool privileged;
+
     /* Immutable pointer, self-locking APIs */
     virNetworkObjListPtr networks;
 

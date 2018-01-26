@@ -671,6 +671,8 @@ networkStateInitialize(bool privileged,
         goto error;
     }
 
+    network_driver->privileged = privileged;
+
     /* configuration/state paths are one of
      * ~/.config/libvirt/... (session/unprivileged)
      * /etc/libvirt/... && /var/(run|lib)/libvirt/... (system/privileged).
@@ -865,6 +867,81 @@ networkStateCleanup(void)
     VIR_FREE(network_driver);
 
     return 0;
+}
+
+
+static virDrvOpenStatus
+networkConnectOpen(virConnectPtr conn,
+                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                   virConfPtr conf ATTRIBUTE_UNUSED,
+                   unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    /* Verify uri was specified */
+    if (conn->uri == NULL) {
+        /* Only hypervisor drivers are permitted to auto-open on NULL uri */
+        return VIR_DRV_OPEN_DECLINED;
+    } else {
+        if (STRNEQ_NULLABLE(conn->uri->scheme, "network"))
+            return VIR_DRV_OPEN_DECLINED;
+
+        /* Leave for remote driver */
+        if (conn->uri->server != NULL)
+            return VIR_DRV_OPEN_DECLINED;
+
+        if (network_driver == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("network state driver is not active"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if (network_driver->privileged) {
+            if (STRNEQ(conn->uri->path, "/system")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected network URI path '%s', try network:///system"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        } else {
+            if (STRNEQ(conn->uri->path, "/session")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected network URI path '%s', try network:///session"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        }
+    }
+
+    if (virConnectOpenEnsureACL(conn) < 0)
+        return VIR_DRV_OPEN_ERROR;
+
+    return VIR_DRV_OPEN_SUCCESS;
+}
+
+static int networkConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+static int networkConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Trivially secure, since always inside the daemon */
+    return 1;
+}
+
+
+static int networkConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not encrypted, but remote driver takes care of that */
+    return 0;
+}
+
+
+static int networkConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
 }
 
 
@@ -5699,6 +5776,23 @@ static virNetworkDriver networkDriver = {
     .networkGetDHCPLeases = networkGetDHCPLeases, /* 1.2.6 */
 };
 
+
+static virHypervisorDriver networkHypervisorDriver = {
+    .name = "network",
+    .connectOpen = networkConnectOpen, /* 4.1.0 */
+    .connectClose = networkConnectClose, /* 4.1.0 */
+    .connectIsEncrypted = networkConnectIsEncrypted, /* 4.1.0 */
+    .connectIsSecure = networkConnectIsSecure, /* 4.1.0 */
+    .connectIsAlive = networkConnectIsAlive, /* 4.1.0 */
+};
+
+
+static virConnectDriver networkConnectDriver = {
+    .hypervisorDriver = &networkHypervisorDriver,
+    .networkDriver = &networkDriver,
+};
+
+
 static virStateDriver networkStateDriver = {
     .name = "bridge",
     .stateInitialize  = networkStateInitialize,
@@ -5710,6 +5804,8 @@ static virStateDriver networkStateDriver = {
 int
 networkRegister(void)
 {
+    if (virRegisterConnectDriver(&networkConnectDriver, false) < 0)
+        return -1;
     if (virSetSharedNetworkDriver(&networkDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&networkStateDriver) < 0)
