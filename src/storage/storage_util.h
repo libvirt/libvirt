@@ -29,8 +29,7 @@
 /* File creation/cloning functions used for cloning between backends */
 
 int
-virStorageBackendCreateVolUsingQemuImg(virConnectPtr conn,
-                                       virStoragePoolObjPtr pool,
+virStorageBackendCreateVolUsingQemuImg(virStoragePoolObjPtr pool,
                                        virStorageVolDefPtr vol,
                                        virStorageVolDefPtr inputvol,
                                        unsigned int flags);
@@ -166,8 +165,7 @@ char *virStorageBackendStablePath(virStoragePoolObjPtr pool,
                                   bool loop);
 
 virCommandPtr
-virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
-                                         virStoragePoolObjPtr pool,
+virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
                                          virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol,
                                          unsigned int flags,

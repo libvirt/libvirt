@@ -47,15 +47,11 @@ testCompareXMLToArgvFiles(bool shouldFail,
     int ret = -1;
 
     virCommandPtr cmd = NULL;
-    virConnectPtr conn;
 
     virStorageVolDefPtr vol = NULL, inputvol = NULL;
     virStoragePoolDefPtr def = NULL;
     virStoragePoolDefPtr inputpool = NULL;
     virStoragePoolObjPtr obj = NULL;
-
-    if (!(conn = virGetConnect()))
-        goto cleanup;
 
     if (!(def = virStoragePoolDefParseFile(poolxml)))
         goto cleanup;
@@ -84,7 +80,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
     testSetVolumeType(vol, def);
     testSetVolumeType(inputvol, inputpool);
 
-    cmd = virStorageBackendCreateQemuImgCmdFromVol(conn, obj, vol,
+    cmd = virStorageBackendCreateQemuImgCmdFromVol(obj, vol,
                                                    inputvol, flags,
                                                    create_tool, imgformat,
                                                    NULL);
@@ -111,7 +107,6 @@ testCompareXMLToArgvFiles(bool shouldFail,
     virCommandFree(cmd);
     VIR_FREE(actualCmdline);
     virStoragePoolObjEndAPI(&obj);
-    virObjectUnref(conn);
     return ret;
 }
 

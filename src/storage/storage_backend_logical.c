@@ -997,7 +997,7 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
         return -1;
 
     if (vol->target.encryption &&
-        virStorageBackendCreateVolUsingQemuImg(conn, pool, vol, NULL, 0) < 0)
+        virStorageBackendCreateVolUsingQemuImg(pool, vol, NULL, 0) < 0)
         goto error;
 
     if ((fd = virStorageBackendVolOpen(vol->target.path, &sb,

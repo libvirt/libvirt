@@ -273,13 +273,13 @@ virStorageBackendISCSICheckPool(virStoragePoolObjPtr pool,
 
 static int
 virStorageBackendISCSISetAuth(const char *portal,
-                              virConnectPtr conn,
                               virStoragePoolSourcePtr source)
 {
     unsigned char *secret_value = NULL;
     size_t secret_size;
     virStorageAuthDefPtr authdef = source->auth;
     int ret = -1;
+    virConnectPtr conn = NULL;
 
     if (!authdef || authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE)
         return 0;
@@ -292,12 +292,9 @@ virStorageBackendISCSISetAuth(const char *portal,
         return -1;
     }
 
-    if (!conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("iscsi 'chap' authentication not supported "
-                         "for autostarted pools"));
+    conn = virGetConnectSecret();
+    if (!conn)
         return -1;
-    }
 
     if (virSecretGetSecretString(conn, &authdef->seclookupdef,
                                  VIR_SECRET_USAGE_TYPE_ISCSI,
@@ -322,11 +319,12 @@ virStorageBackendISCSISetAuth(const char *portal,
 
  cleanup:
     VIR_DISPOSE_N(secret_value, secret_size);
+    virObjectUnref(conn);
     return ret;
 }
 
 static int
-virStorageBackendISCSIStartPool(virConnectPtr conn,
+virStorageBackendISCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
@@ -362,7 +360,7 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
         if (virISCSINodeNew(portal, def->source.devices[0].path) < 0)
             goto cleanup;
 
-        if (virStorageBackendISCSISetAuth(portal, conn, &def->source) < 0)
+        if (virStorageBackendISCSISetAuth(portal, &def->source) < 0)
             goto cleanup;
 
         if (virISCSIConnectionLogin(portal,
