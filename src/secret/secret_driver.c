@@ -57,6 +57,7 @@ typedef struct _virSecretDriverState virSecretDriverState;
 typedef virSecretDriverState *virSecretDriverStatePtr;
 struct _virSecretDriverState {
     virMutex lock;
+    bool privileged; /* readonly */
     virSecretObjListPtr secrets;
     char *configDir;
 
@@ -464,6 +465,7 @@ secretStateInitialize(bool privileged,
     secretDriverLock();
 
     driver->secretEventState = virObjectEventStateNew();
+    driver->privileged = privileged;
 
     if (privileged) {
         if (VIR_STRDUP(base, SYSCONFDIR "/libvirt") < 0)
@@ -511,6 +513,81 @@ secretStateReload(void)
 
     secretDriverUnlock();
     return 0;
+}
+
+
+static virDrvOpenStatus
+secretConnectOpen(virConnectPtr conn,
+                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                  virConfPtr conf ATTRIBUTE_UNUSED,
+                  unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    /* Verify uri was specified */
+    if (conn->uri == NULL) {
+        /* Only hypervisor drivers are permitted to auto-open on NULL uri */
+        return VIR_DRV_OPEN_DECLINED;
+    } else {
+        if (STRNEQ_NULLABLE(conn->uri->scheme, "secret"))
+            return VIR_DRV_OPEN_DECLINED;
+
+        /* Leave for remote driver */
+        if (conn->uri->server != NULL)
+            return VIR_DRV_OPEN_DECLINED;
+
+        if (driver == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("secret state driver is not active"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if (driver->privileged) {
+            if (STRNEQ(conn->uri->path, "/system")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected secret URI path '%s', try secret:///system"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        } else {
+            if (STRNEQ(conn->uri->path, "/session")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected secret URI path '%s', try secret:///session"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        }
+    }
+
+    if (virConnectOpenEnsureACL(conn) < 0)
+        return VIR_DRV_OPEN_ERROR;
+
+    return VIR_DRV_OPEN_SUCCESS;
+}
+
+static int secretConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+static int secretConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Trivially secure, since always inside the daemon */
+    return 1;
+}
+
+
+static int secretConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not encrypted, but remote driver takes care of that */
+    return 0;
+}
+
+
+static int secretConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
 }
 
 
@@ -573,6 +650,23 @@ static virSecretDriver secretDriver = {
     .connectSecretEventDeregisterAny = secretConnectSecretEventDeregisterAny, /* 3.0.0 */
 };
 
+
+static virHypervisorDriver secretHypervisorDriver = {
+    .name = "secret",
+    .connectOpen = secretConnectOpen, /* 4.1.0 */
+    .connectClose = secretConnectClose, /* 4.1.0 */
+    .connectIsEncrypted = secretConnectIsEncrypted, /* 4.1.0 */
+    .connectIsSecure = secretConnectIsSecure, /* 4.1.0 */
+    .connectIsAlive = secretConnectIsAlive, /* 4.1.0 */
+};
+
+
+static virConnectDriver secretConnectDriver = {
+    .hypervisorDriver = &secretHypervisorDriver,
+    .secretDriver = &secretDriver,
+};
+
+
 static virStateDriver stateDriver = {
     .name = "secret",
     .stateInitialize = secretStateInitialize,
@@ -584,6 +678,8 @@ static virStateDriver stateDriver = {
 int
 secretRegister(void)
 {
+    if (virRegisterConnectDriver(&secretConnectDriver, false) < 0)
+        return -1;
     if (virSetSharedSecretDriver(&secretDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&stateDriver) < 0)
