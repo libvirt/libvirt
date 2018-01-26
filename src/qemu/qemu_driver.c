@@ -4309,6 +4309,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
         qemuDomainRemoveInactiveJob(driver, vm);
 
  cleanup:
+    qemuMonitorEventPanicInfoFree(info);
     virObjectUnref(cfg);
 }
 
