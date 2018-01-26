@@ -4241,51 +4241,6 @@ networkGetDHCPLeases(virNetworkPtr net,
 }
 
 
-static virNetworkDriver networkDriver = {
-    .name = "bridge",
-    .connectNumOfNetworks = networkConnectNumOfNetworks, /* 0.2.0 */
-    .connectListNetworks = networkConnectListNetworks, /* 0.2.0 */
-    .connectNumOfDefinedNetworks = networkConnectNumOfDefinedNetworks, /* 0.2.0 */
-    .connectListDefinedNetworks = networkConnectListDefinedNetworks, /* 0.2.0 */
-    .connectListAllNetworks = networkConnectListAllNetworks, /* 0.10.2 */
-    .connectNetworkEventRegisterAny = networkConnectNetworkEventRegisterAny, /* 1.2.1 */
-    .connectNetworkEventDeregisterAny = networkConnectNetworkEventDeregisterAny, /* 1.2.1 */
-    .networkLookupByUUID = networkLookupByUUID, /* 0.2.0 */
-    .networkLookupByName = networkLookupByName, /* 0.2.0 */
-    .networkCreateXML = networkCreateXML, /* 0.2.0 */
-    .networkDefineXML = networkDefineXML, /* 0.2.0 */
-    .networkUndefine = networkUndefine, /* 0.2.0 */
-    .networkUpdate = networkUpdate, /* 0.10.2 */
-    .networkCreate = networkCreate, /* 0.2.0 */
-    .networkDestroy = networkDestroy, /* 0.2.0 */
-    .networkGetXMLDesc = networkGetXMLDesc, /* 0.2.0 */
-    .networkGetBridgeName = networkGetBridgeName, /* 0.2.0 */
-    .networkGetAutostart = networkGetAutostart, /* 0.2.1 */
-    .networkSetAutostart = networkSetAutostart, /* 0.2.1 */
-    .networkIsActive = networkIsActive, /* 0.7.3 */
-    .networkIsPersistent = networkIsPersistent, /* 0.7.3 */
-    .networkGetDHCPLeases = networkGetDHCPLeases, /* 1.2.6 */
-};
-
-static virStateDriver networkStateDriver = {
-    .name = "bridge",
-    .stateInitialize  = networkStateInitialize,
-    .stateAutoStart  = networkStateAutoStart,
-    .stateCleanup = networkStateCleanup,
-    .stateReload = networkStateReload,
-};
-
-int
-networkRegister(void)
-{
-    if (virSetSharedNetworkDriver(&networkDriver) < 0)
-        return -1;
-    if (virRegisterStateDriver(&networkStateDriver) < 0)
-        return -1;
-    return 0;
-}
-
-
 /* A unified function to log network connections and disconnections */
 
 static void
@@ -5715,4 +5670,49 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
  cleanup:
     virNetworkObjEndAPI(&obj);
     return ret;
+}
+
+
+static virNetworkDriver networkDriver = {
+    .name = "bridge",
+    .connectNumOfNetworks = networkConnectNumOfNetworks, /* 0.2.0 */
+    .connectListNetworks = networkConnectListNetworks, /* 0.2.0 */
+    .connectNumOfDefinedNetworks = networkConnectNumOfDefinedNetworks, /* 0.2.0 */
+    .connectListDefinedNetworks = networkConnectListDefinedNetworks, /* 0.2.0 */
+    .connectListAllNetworks = networkConnectListAllNetworks, /* 0.10.2 */
+    .connectNetworkEventRegisterAny = networkConnectNetworkEventRegisterAny, /* 1.2.1 */
+    .connectNetworkEventDeregisterAny = networkConnectNetworkEventDeregisterAny, /* 1.2.1 */
+    .networkLookupByUUID = networkLookupByUUID, /* 0.2.0 */
+    .networkLookupByName = networkLookupByName, /* 0.2.0 */
+    .networkCreateXML = networkCreateXML, /* 0.2.0 */
+    .networkDefineXML = networkDefineXML, /* 0.2.0 */
+    .networkUndefine = networkUndefine, /* 0.2.0 */
+    .networkUpdate = networkUpdate, /* 0.10.2 */
+    .networkCreate = networkCreate, /* 0.2.0 */
+    .networkDestroy = networkDestroy, /* 0.2.0 */
+    .networkGetXMLDesc = networkGetXMLDesc, /* 0.2.0 */
+    .networkGetBridgeName = networkGetBridgeName, /* 0.2.0 */
+    .networkGetAutostart = networkGetAutostart, /* 0.2.1 */
+    .networkSetAutostart = networkSetAutostart, /* 0.2.1 */
+    .networkIsActive = networkIsActive, /* 0.7.3 */
+    .networkIsPersistent = networkIsPersistent, /* 0.7.3 */
+    .networkGetDHCPLeases = networkGetDHCPLeases, /* 1.2.6 */
+};
+
+static virStateDriver networkStateDriver = {
+    .name = "bridge",
+    .stateInitialize  = networkStateInitialize,
+    .stateAutoStart  = networkStateAutoStart,
+    .stateCleanup = networkStateCleanup,
+    .stateReload = networkStateReload,
+};
+
+int
+networkRegister(void)
+{
+    if (virSetSharedNetworkDriver(&networkDriver) < 0)
+        return -1;
+    if (virRegisterStateDriver(&networkStateDriver) < 0)
+        return -1;
+    return 0;
 }
