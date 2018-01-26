@@ -61,6 +61,17 @@
           qemu: Use VIR_ERR_DEVICE_MISSING for various hotplug/detach messages
         </summary>
       </change>
+      <change>
+        <summary>
+          qemu: Allow showing the dump progress for memory only dump
+        </summary>
+        <description>
+          Alter the QEMU dump-guest-memory command processing to check
+          for and allow asynchronous completion which then allows for
+          the virsh dump --memory-only --verbose command to display percent
+          completion data.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
