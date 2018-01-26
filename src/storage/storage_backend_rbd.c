@@ -420,8 +420,7 @@ volStorageBackendRBDRefreshVolInfo(virStorageVolDefPtr vol,
 }
 
 static int
-virStorageBackendRBDRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                virStoragePoolObjPtr pool)
+virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
 {
     size_t max_size = 1024;
     int ret = -1;
@@ -602,8 +601,7 @@ virStorageBackendRBDCleanupSnapshots(rados_ioctx_t ioctx,
 }
 
 static int
-virStorageBackendRBDDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virStoragePoolObjPtr pool,
+virStorageBackendRBDDeleteVol(virStoragePoolObjPtr pool,
                               virStorageVolDefPtr vol,
                               unsigned int flags)
 {
@@ -647,8 +645,7 @@ virStorageBackendRBDDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendRBDCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virStoragePoolObjPtr pool,
+virStorageBackendRBDCreateVol(virStoragePoolObjPtr pool,
                               virStorageVolDefPtr vol)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
@@ -682,8 +679,7 @@ static int virStorageBackendRBDCreateImage(rados_ioctx_t io,
 }
 
 static int
-virStorageBackendRBDBuildVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                             virStoragePoolObjPtr pool,
+virStorageBackendRBDBuildVol(virStoragePoolObjPtr pool,
                              virStorageVolDefPtr vol,
                              unsigned int flags)
 {
@@ -1038,8 +1034,7 @@ virStorageBackendRBDCloneImage(rados_ioctx_t io,
 }
 
 static int
-virStorageBackendRBDBuildVolFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                 virStoragePoolObjPtr pool,
+virStorageBackendRBDBuildVolFrom(virStoragePoolObjPtr pool,
                                  virStorageVolDefPtr newvol,
                                  virStorageVolDefPtr origvol,
                                  unsigned int flags)
@@ -1068,8 +1063,7 @@ virStorageBackendRBDBuildVolFrom(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-virStorageBackendRBDRefreshVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendRBDRefreshVol(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                virStorageVolDefPtr vol)
 {
     virStorageBackendRBDStatePtr ptr = NULL;
@@ -1089,8 +1083,7 @@ virStorageBackendRBDRefreshVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-virStorageBackendRBDResizeVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendRBDResizeVol(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                               virStorageVolDefPtr vol,
                               unsigned long long capacity,
                               unsigned int flags)
@@ -1201,8 +1194,7 @@ virStorageBackendRBDVolWipeDiscard(rbd_image_t image,
 }
 
 static int
-virStorageBackendRBDVolWipe(virConnectPtr conn ATTRIBUTE_UNUSED,
-                            virStoragePoolObjPtr pool,
+virStorageBackendRBDVolWipe(virStoragePoolObjPtr pool,
                             virStorageVolDefPtr vol,
                             unsigned int algorithm,
                             unsigned int flags)

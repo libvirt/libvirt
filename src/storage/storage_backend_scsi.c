@@ -412,8 +412,7 @@ virStorageBackendSCSICheckPool(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                 virStoragePoolObjPtr pool)
+virStorageBackendSCSIRefreshPool(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *name = NULL;
@@ -444,8 +443,7 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendSCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virStoragePoolObjPtr pool)
+virStorageBackendSCSIStartPool(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     const char *configFile = virStoragePoolObjGetConfigFile(pool);
@@ -459,12 +457,12 @@ virStorageBackendSCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendSCSIStopPool(virConnectPtr conn,
-                              virStoragePoolObjPtr pool)
+virStorageBackendSCSIStopPool(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
 
     if (def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
+        virConnectPtr conn;
         int ret;
         conn = virGetConnectNodeDev();
         if (!conn)

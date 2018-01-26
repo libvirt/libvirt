@@ -439,8 +439,7 @@ virStorageBackendDiskReadGeometry(virStoragePoolObjPtr pool)
 }
 
 static int
-virStorageBackendDiskRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                 virStoragePoolObjPtr pool)
+virStorageBackendDiskRefreshPool(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
 
@@ -464,8 +463,7 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendDiskStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virStoragePoolObjPtr pool)
+virStorageBackendDiskStartPool(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     const char *format;
@@ -493,8 +491,7 @@ virStorageBackendDiskStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
  * Write a new partition table header
  */
 static int
-virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virStoragePoolObjPtr pool,
+virStorageBackendDiskBuildPool(virStoragePoolObjPtr pool,
                                unsigned int flags)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
@@ -751,7 +748,6 @@ virStorageBackendDiskPartBoundaries(virStoragePoolObjPtr pool,
 
 
 /* virStorageBackendDiskDeleteVol
- * @conn: Pointer to a libvirt connection
  * @pool: Pointer to the storage pool
  * @vol: Pointer to the volume definition
  * @flags: flags (unused for now)
@@ -776,8 +772,7 @@ virStorageBackendDiskPartBoundaries(virStoragePoolObjPtr pool,
  * Returns 0 on success, -1 on failure with error message set.
  */
 static int
-virStorageBackendDiskDeleteVol(virConnectPtr conn,
-                               virStoragePoolObjPtr pool,
+virStorageBackendDiskDeleteVol(virStoragePoolObjPtr pool,
                                virStorageVolDefPtr vol,
                                unsigned int flags)
 {
@@ -856,7 +851,7 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
      * here is pointless
      */
     virStoragePoolObjClearVols(pool);
-    if (virStorageBackendDiskRefreshPool(conn, pool) < 0)
+    if (virStorageBackendDiskRefreshPool(pool) < 0)
         goto cleanup;
 
     rc = 0;
@@ -868,8 +863,7 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
 
 
 static int
-virStorageBackendDiskCreateVol(virConnectPtr conn,
-                               virStoragePoolObjPtr pool,
+virStorageBackendDiskCreateVol(virStoragePoolObjPtr pool,
                                virStorageVolDefPtr vol)
 {
     int res = -1;
@@ -921,7 +915,7 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
          * since we could be calling this with vol->target.path == NULL
          */
         virErrorPtr save_err = virSaveLastError();
-        ignore_value(virStorageBackendDiskDeleteVol(conn, pool, vol, 0));
+        ignore_value(virStorageBackendDiskDeleteVol(pool, vol, 0));
         virSetError(save_err);
         virFreeError(save_err);
         goto cleanup;
@@ -936,8 +930,7 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
 }
 
 static int
-virStorageBackendDiskBuildVolFrom(virConnectPtr conn,
-                                  virStoragePoolObjPtr pool,
+virStorageBackendDiskBuildVolFrom(virStoragePoolObjPtr pool,
                                   virStorageVolDefPtr vol,
                                   virStorageVolDefPtr inputvol,
                                   unsigned int flags)
@@ -948,19 +941,18 @@ virStorageBackendDiskBuildVolFrom(virConnectPtr conn,
     if (!build_func)
         return -1;
 
-    return build_func(conn, pool, vol, inputvol, flags);
+    return build_func(pool, vol, inputvol, flags);
 }
 
 
 static int
-virStorageBackendDiskVolWipe(virConnectPtr conn,
-                             virStoragePoolObjPtr pool,
+virStorageBackendDiskVolWipe(virStoragePoolObjPtr pool,
                              virStorageVolDefPtr vol,
                              unsigned int algorithm,
                              unsigned int flags)
 {
     if (vol->source.partType != VIR_STORAGE_VOL_DISK_TYPE_EXTENDED)
-        return virStorageBackendVolWipeLocal(conn, pool, vol, algorithm, flags);
+        return virStorageBackendVolWipeLocal(pool, vol, algorithm, flags);
 
     /* Wiping an extended partition is not support */
     virReportError(VIR_ERR_NO_SUPPORT,

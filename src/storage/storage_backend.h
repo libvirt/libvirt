@@ -25,22 +25,16 @@
 # include "virstorageobj.h"
 # include "storage_driver.h"
 
-typedef char * (*virStorageBackendFindPoolSources)(virConnectPtr conn,
-                                                   const char *srcSpec,
+typedef char * (*virStorageBackendFindPoolSources)(const char *srcSpec,
                                                    unsigned int flags);
 typedef int (*virStorageBackendCheckPool)(virStoragePoolObjPtr pool,
                                           bool *active);
-typedef int (*virStorageBackendStartPool)(virConnectPtr conn,
-                                          virStoragePoolObjPtr pool);
-typedef int (*virStorageBackendBuildPool)(virConnectPtr conn,
-                                          virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendStartPool)(virStoragePoolObjPtr pool);
+typedef int (*virStorageBackendBuildPool)(virStoragePoolObjPtr pool,
                                           unsigned int flags);
-typedef int (*virStorageBackendRefreshPool)(virConnectPtr conn,
-                                            virStoragePoolObjPtr pool);
-typedef int (*virStorageBackendStopPool)(virConnectPtr conn,
-                                         virStoragePoolObjPtr pool);
-typedef int (*virStorageBackendDeletePool)(virConnectPtr conn,
-                                           virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendRefreshPool)(virStoragePoolObjPtr pool);
+typedef int (*virStorageBackendStopPool)(virStoragePoolObjPtr pool);
+typedef int (*virStorageBackendDeletePool)(virStoragePoolObjPtr pool,
                                            unsigned int flags);
 
 /* A 'buildVol' backend must remove any volume created on error since
@@ -52,46 +46,37 @@ typedef int (*virStorageBackendDeletePool)(virConnectPtr conn,
  * was not aware of between checking the pool and the create attempt. It
  * also avoids extra round trips to just delete a file.
  */
-typedef int (*virStorageBackendBuildVol)(virConnectPtr conn,
-                                         virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendBuildVol)(virStoragePoolObjPtr pool,
                                          virStorageVolDefPtr vol,
                                          unsigned int flags);
-typedef int (*virStorageBackendCreateVol)(virConnectPtr conn,
-                                          virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendCreateVol)(virStoragePoolObjPtr pool,
                                           virStorageVolDefPtr vol);
-typedef int (*virStorageBackendRefreshVol)(virConnectPtr conn,
-                                           virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendRefreshVol)(virStoragePoolObjPtr pool,
                                            virStorageVolDefPtr vol);
-typedef int (*virStorageBackendDeleteVol)(virConnectPtr conn,
-                                          virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendDeleteVol)(virStoragePoolObjPtr pool,
                                           virStorageVolDefPtr vol,
                                           unsigned int flags);
-typedef int (*virStorageBackendBuildVolFrom)(virConnectPtr conn,
-                                             virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendBuildVolFrom)(virStoragePoolObjPtr pool,
                                              virStorageVolDefPtr origvol,
                                              virStorageVolDefPtr newvol,
                                              unsigned int flags);
-typedef int (*virStorageBackendVolumeResize)(virConnectPtr conn,
-                                             virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendVolumeResize)(virStoragePoolObjPtr pool,
                                              virStorageVolDefPtr vol,
                                              unsigned long long capacity,
                                              unsigned int flags);
-typedef int (*virStorageBackendVolumeDownload)(virConnectPtr conn,
-                                               virStoragePoolObjPtr obj,
+typedef int (*virStorageBackendVolumeDownload)(virStoragePoolObjPtr obj,
                                                virStorageVolDefPtr vol,
                                                virStreamPtr stream,
                                                unsigned long long offset,
                                                unsigned long long length,
                                                unsigned int flags);
-typedef int (*virStorageBackendVolumeUpload)(virConnectPtr conn,
-                                             virStoragePoolObjPtr obj,
+typedef int (*virStorageBackendVolumeUpload)(virStoragePoolObjPtr obj,
                                              virStorageVolDefPtr vol,
                                              virStreamPtr stream,
                                              unsigned long long offset,
                                              unsigned long long len,
                                              unsigned int flags);
-typedef int (*virStorageBackendVolumeWipe)(virConnectPtr conn,
-                                           virStoragePoolObjPtr pool,
+typedef int (*virStorageBackendVolumeWipe)(virStoragePoolObjPtr pool,
                                            virStorageVolDefPtr vol,
                                            unsigned int algorithm,
                                            unsigned int flags);

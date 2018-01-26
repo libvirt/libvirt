@@ -158,8 +158,7 @@ virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
 
 
 static char *
-virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                      const char *srcSpec,
+virStorageBackendISCSIFindPoolSources(const char *srcSpec,
                                       unsigned int flags)
 {
     virStoragePoolSourcePtr source = NULL;
@@ -324,8 +323,7 @@ virStorageBackendISCSISetAuth(const char *portal,
 }
 
 static int
-virStorageBackendISCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                virStoragePoolObjPtr pool)
+virStorageBackendISCSIStartPool(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *portal = NULL;
@@ -377,8 +375,7 @@ virStorageBackendISCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-virStorageBackendISCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  virStoragePoolObjPtr pool)
+virStorageBackendISCSIRefreshPool(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *session = NULL;
@@ -402,8 +399,7 @@ virStorageBackendISCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendISCSIStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virStoragePoolObjPtr pool)
+virStorageBackendISCSIStopPool(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *portal;

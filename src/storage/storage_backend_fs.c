@@ -145,8 +145,7 @@ virStorageBackendFileSystemNetFindNFSPoolSources(virNetfsDiscoverState *state)
 
 
 static char *
-virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                              const char *srcSpec,
+virStorageBackendFileSystemNetFindPoolSources(const char *srcSpec,
                                               unsigned int flags)
 {
     virNetfsDiscoverState state = {
@@ -427,7 +426,6 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
 
 
 /**
- * @conn connection to report errors against
  * @pool storage pool to start
  *
  * Starts a directory or FS based storage pool.  The underlying source
@@ -436,8 +434,7 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
  * Returns 0 on success, -1 on error
  */
 static int
-virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                 virStoragePoolObjPtr pool)
+virStorageBackendFileSystemStart(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
 
@@ -450,7 +447,6 @@ virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 /**
- * @conn connection to report errors against
  * @pool storage pool to unmount
  *
  * Stops a file storage pool.  The underlying source device is unmounted
@@ -462,8 +458,7 @@ virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
  * Returns 0 if successfully unmounted, -1 on error
  */
 static int
-virStorageBackendFileSystemStop(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                virStoragePoolObjPtr pool)
+virStorageBackendFileSystemStop(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virCommandPtr cmd = NULL;
@@ -609,7 +604,6 @@ virStorageBackendMakeFileSystem(virStoragePoolObjPtr pool,
 
 
 /**
- * @conn connection to report errors against
  * @pool storage pool to build
  * @flags controls the pool formatting behaviour
  *
@@ -630,8 +624,7 @@ virStorageBackendMakeFileSystem(virStoragePoolObjPtr pool,
  * Returns 0 on success, -1 on error
  */
 static int
-virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                 virStoragePoolObjPtr pool,
+virStorageBackendFileSystemBuild(virStoragePoolObjPtr pool,
                                  unsigned int flags)
 {
     virCheckFlags(VIR_STORAGE_POOL_BUILD_OVERWRITE |

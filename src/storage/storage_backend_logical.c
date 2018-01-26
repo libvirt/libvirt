@@ -588,8 +588,7 @@ virStorageBackendLogicalGetPoolSources(virStoragePoolSourceListPtr sourceList)
 
 
 static char *
-virStorageBackendLogicalFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                        const char *srcSpec ATTRIBUTE_UNUSED,
+virStorageBackendLogicalFindPoolSources(const char *srcSpec ATTRIBUTE_UNUSED,
                                         unsigned int flags)
 {
     virStoragePoolSourceList sourceList;
@@ -728,8 +727,7 @@ virStorageBackendLogicalCheckPool(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendLogicalStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  virStoragePoolObjPtr pool)
+virStorageBackendLogicalStartPool(virStoragePoolObjPtr pool)
 {
     /* Let's make sure that the pool's name matches the pvs output and
      * that the pool's source devices match the pvs output.
@@ -743,8 +741,7 @@ virStorageBackendLogicalStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  virStoragePoolObjPtr pool,
+virStorageBackendLogicalBuildPool(virStoragePoolObjPtr pool,
                                   unsigned int flags)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
@@ -799,8 +796,7 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendLogicalRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                    virStoragePoolObjPtr pool)
+virStorageBackendLogicalRefreshPool(virStoragePoolObjPtr pool)
 {
     /*
      *  # vgs --separator : --noheadings --units b --unbuffered --nosuffix --options "vg_size,vg_free" VGNAME
@@ -862,8 +858,7 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
  * "Can't deactivate volume group "VolGroup00" with 3 open logical volume(s)"
  */
 static int
-virStorageBackendLogicalStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                 virStoragePoolObjPtr pool)
+virStorageBackendLogicalStopPool(virStoragePoolObjPtr pool)
 {
     if (virStorageBackendLogicalSetActive(pool, 0) < 0)
         return -1;
@@ -872,8 +867,7 @@ virStorageBackendLogicalStopPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-virStorageBackendLogicalDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                   virStoragePoolObjPtr pool,
+virStorageBackendLogicalDeletePool(virStoragePoolObjPtr pool,
                                    unsigned int flags)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
@@ -903,8 +897,7 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendLogicalDeleteVol(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
                                   virStorageVolDefPtr vol,
                                   unsigned int flags)
 {
@@ -977,8 +970,7 @@ virStorageBackendLogicalLVCreate(virStorageVolDefPtr vol,
 
 
 static int
-virStorageBackendLogicalCreateVol(virConnectPtr conn,
-                                  virStoragePoolObjPtr pool,
+virStorageBackendLogicalCreateVol(virStoragePoolObjPtr pool,
                                   virStorageVolDefPtr vol)
 {
     int fd = -1;
@@ -1042,15 +1034,14 @@ virStorageBackendLogicalCreateVol(virConnectPtr conn,
  error:
     err = virSaveLastError();
     VIR_FORCE_CLOSE(fd);
-    virStorageBackendLogicalDeleteVol(conn, pool, vol, 0);
+    virStorageBackendLogicalDeleteVol(pool, vol, 0);
     virSetError(err);
     virFreeError(err);
     return -1;
 }
 
 static int
-virStorageBackendLogicalBuildVolFrom(virConnectPtr conn,
-                                     virStoragePoolObjPtr pool,
+virStorageBackendLogicalBuildVolFrom(virStoragePoolObjPtr pool,
                                      virStorageVolDefPtr vol,
                                      virStorageVolDefPtr inputvol,
                                      unsigned int flags)
@@ -1061,18 +1052,17 @@ virStorageBackendLogicalBuildVolFrom(virConnectPtr conn,
     if (!build_func)
         return -1;
 
-    return build_func(conn, pool, vol, inputvol, flags);
+    return build_func(pool, vol, inputvol, flags);
 }
 
 static int
-virStorageBackendLogicalVolWipe(virConnectPtr conn,
-                                virStoragePoolObjPtr pool,
+virStorageBackendLogicalVolWipe(virStoragePoolObjPtr pool,
                                 virStorageVolDefPtr vol,
                                 unsigned int algorithm,
                                 unsigned int flags)
 {
     if (!vol->target.sparse)
-        return virStorageBackendVolWipeLocal(conn, pool, vol, algorithm, flags);
+        return virStorageBackendVolWipeLocal(pool, vol, algorithm, flags);
 
     /* The wiping algorithms will write something to the logical volume.
      * Writing to a sparse logical volume causes it to be filled resulting

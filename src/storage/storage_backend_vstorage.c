@@ -17,7 +17,6 @@ VIR_LOG_INIT("storage.storage_backend_vstorage");
 
 
 /**
- * @conn connection to report errors against
  * @pool storage pool to build
  * @flags controls the pool formatting behaviour
  *
@@ -26,8 +25,7 @@ VIR_LOG_INIT("storage.storage_backend_vstorage");
  * Returns 0 on success, -1 on error
  */
 static int
-virStorageBackendVzPoolBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
-                             virStoragePoolObjPtr pool,
+virStorageBackendVzPoolBuild(virStoragePoolObjPtr pool,
                              unsigned int flags)
 {
     virCheckFlags(0, -1);
@@ -37,8 +35,7 @@ virStorageBackendVzPoolBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendVzPoolStart(virConnectPtr conn ATTRIBUTE_UNUSED,
-                             virStoragePoolObjPtr pool)
+virStorageBackendVzPoolStart(virStoragePoolObjPtr pool)
 {
     int ret = -1;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
@@ -125,8 +122,7 @@ virStorageBackendVzIsMounted(virStoragePoolObjPtr pool)
 
 
 static int
-virStorageBackendVzPoolStop(virConnectPtr conn ATTRIBUTE_UNUSED,
-                            virStoragePoolObjPtr pool)
+virStorageBackendVzPoolStop(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virCommandPtr cmd = NULL;

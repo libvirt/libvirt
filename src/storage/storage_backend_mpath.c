@@ -256,13 +256,12 @@ virStorageBackendMpathCheckPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendMpathRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  virStoragePoolObjPtr pool)
+virStorageBackendMpathRefreshPool(virStoragePoolObjPtr pool)
 {
     int retval = 0;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
 
-    VIR_DEBUG("conn=%p, pool=%p", conn, pool);
+    VIR_DEBUG("pool=%p", pool);
 
     def->allocation = def->capacity = def->available = 0;
 

@@ -342,8 +342,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
 }
 
 static int
-virStorageBackendGlusterRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                    virStoragePoolObjPtr pool)
+virStorageBackendGlusterRefreshPool(virStoragePoolObjPtr pool)
 {
     int ret = -1;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
@@ -423,8 +422,7 @@ virStorageBackendGlusterRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendGlusterVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  virStoragePoolObjPtr pool,
+virStorageBackendGlusterVolDelete(virStoragePoolObjPtr pool,
                                   virStorageVolDefPtr vol,
                                   unsigned int flags)
 {
@@ -485,8 +483,7 @@ virStorageBackendGlusterVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static char *
-virStorageBackendGlusterFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                        const char *srcSpec,
+virStorageBackendGlusterFindPoolSources(const char *srcSpec,
                                         unsigned int flags)
 {
     virStoragePoolSourceList list = { .type = VIR_STORAGE_POOL_GLUSTER,

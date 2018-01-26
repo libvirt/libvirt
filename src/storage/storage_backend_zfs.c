@@ -228,8 +228,7 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendZFSRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                virStoragePoolObjPtr pool ATTRIBUTE_UNUSED)
+virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virCommandPtr cmd = NULL;
@@ -305,8 +304,7 @@ virStorageBackendZFSRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virStoragePoolObjPtr pool,
+virStorageBackendZFSCreateVol(virStoragePoolObjPtr pool,
                               virStorageVolDefPtr vol)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
@@ -377,8 +375,7 @@ virStorageBackendZFSCreateVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-virStorageBackendZFSDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virStoragePoolObjPtr pool,
+virStorageBackendZFSDeleteVol(virStoragePoolObjPtr pool,
                               virStorageVolDefPtr vol,
                               unsigned int flags)
 {
@@ -403,8 +400,7 @@ virStorageBackendZFSDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-virStorageBackendZFSBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virStoragePoolObjPtr pool,
+virStorageBackendZFSBuildPool(virStoragePoolObjPtr pool,
                               unsigned int flags)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
@@ -437,8 +433,7 @@ virStorageBackendZFSBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-virStorageBackendZFSDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                               virStoragePoolObjPtr pool,
+virStorageBackendZFSDeletePool(virStoragePoolObjPtr pool,
                                unsigned int flags)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
