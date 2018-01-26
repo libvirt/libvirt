@@ -388,6 +388,80 @@ storageStateCleanup(void)
     return 0;
 }
 
+static virDrvOpenStatus
+storageConnectOpen(virConnectPtr conn,
+                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                   virConfPtr conf ATTRIBUTE_UNUSED,
+                   unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    /* Verify uri was specified */
+    if (conn->uri == NULL) {
+        /* Only hypervisor drivers are permitted to auto-open on NULL uri */
+        return VIR_DRV_OPEN_DECLINED;
+    } else {
+        if (STRNEQ_NULLABLE(conn->uri->scheme, "storage"))
+            return VIR_DRV_OPEN_DECLINED;
+
+        /* Leave for remote driver */
+        if (conn->uri->server != NULL)
+            return VIR_DRV_OPEN_DECLINED;
+
+        if (driver == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("storage state driver is not active"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if (driver->privileged) {
+            if (STRNEQ(conn->uri->path, "/system")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected storage URI path '%s', try storage:///system"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        } else {
+            if (STRNEQ(conn->uri->path, "/session")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected storage URI path '%s', try storage:///session"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        }
+    }
+
+    if (virConnectOpenEnsureACL(conn) < 0)
+        return VIR_DRV_OPEN_ERROR;
+
+    return VIR_DRV_OPEN_SUCCESS;
+}
+
+static int storageConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+static int storageConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Trivially secure, since always inside the daemon */
+    return 1;
+}
+
+
+static int storageConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not encrypted, but remote driver takes care of that */
+    return 0;
+}
+
+
+static int storageConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
 
 static virStoragePoolObjPtr
 storagePoolObjFindByUUID(const unsigned char *uuid,
@@ -3031,6 +3105,21 @@ static virStorageDriver storageDriver = {
 };
 
 
+static virHypervisorDriver storageHypervisorDriver = {
+    .name = "storage",
+    .connectOpen = storageConnectOpen, /* 4.1.0 */
+    .connectClose = storageConnectClose, /* 4.1.0 */
+    .connectIsEncrypted = storageConnectIsEncrypted, /* 4.1.0 */
+    .connectIsSecure = storageConnectIsSecure, /* 4.1.0 */
+    .connectIsAlive = storageConnectIsAlive, /* 4.1.0 */
+};
+
+static virConnectDriver storageConnectDriver = {
+    .hypervisorDriver = &storageHypervisorDriver,
+    .storageDriver = &storageDriver,
+};
+
+
 static virStateDriver stateDriver = {
     .name = "storage",
     .stateInitialize = storageStateInitialize,
@@ -3043,6 +3132,8 @@ static virStateDriver stateDriver = {
 static int
 storageRegisterFull(bool allbackends)
 {
+    if (virRegisterConnectDriver(&storageConnectDriver, false) < 0)
+        return -1;
     if (virStorageBackendDriversRegister(allbackends) < 0)
         return -1;
     if (virSetSharedStorageDriver(&storageDriver) < 0)
