@@ -363,6 +363,72 @@ nwfilterStateCleanup(void)
 }
 
 
+static virDrvOpenStatus
+nwfilterConnectOpen(virConnectPtr conn,
+                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                    virConfPtr conf ATTRIBUTE_UNUSED,
+                    unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    /* Verify uri was specified */
+    if (conn->uri == NULL) {
+        /* Only hypervisor drivers are permitted to auto-open on NULL uri */
+        return VIR_DRV_OPEN_DECLINED;
+    } else {
+        if (STRNEQ_NULLABLE(conn->uri->scheme, "nwfilter"))
+            return VIR_DRV_OPEN_DECLINED;
+
+        /* Leave for remote driver */
+        if (conn->uri->server != NULL)
+            return VIR_DRV_OPEN_DECLINED;
+
+        if (driver == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("nwfilter state driver is not active"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if (STRNEQ(conn->uri->path, "/system")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected nwfilter URI path '%s', try nwfilter:///system"),
+                           conn->uri->path);
+            return VIR_DRV_OPEN_ERROR;
+        }
+    }
+
+    if (virConnectOpenEnsureACL(conn) < 0)
+        return VIR_DRV_OPEN_ERROR;
+
+    return VIR_DRV_OPEN_SUCCESS;
+}
+
+static int nwfilterConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+static int nwfilterConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Trivially secure, since always inside the daemon */
+    return 1;
+}
+
+
+static int nwfilterConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not encrypted, but remote driver takes care of that */
+    return 0;
+}
+
+
+static int nwfilterConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
+
 static virNWFilterObjPtr
 nwfilterObjFromNWFilter(const unsigned char *uuid)
 {
@@ -635,6 +701,22 @@ static virNWFilterDriver nwfilterDriver = {
 };
 
 
+static virHypervisorDriver nwfilterHypervisorDriver = {
+    .name = "nwfilter",
+    .connectOpen = nwfilterConnectOpen, /* 4.1.0 */
+    .connectClose = nwfilterConnectClose, /* 4.1.0 */
+    .connectIsEncrypted = nwfilterConnectIsEncrypted, /* 4.1.0 */
+    .connectIsSecure = nwfilterConnectIsSecure, /* 4.1.0 */
+    .connectIsAlive = nwfilterConnectIsAlive, /* 4.1.0 */
+};
+
+
+static virConnectDriver nwfilterConnectDriver = {
+    .hypervisorDriver = &nwfilterHypervisorDriver,
+    .nwfilterDriver = &nwfilterDriver,
+};
+
+
 static virStateDriver stateDriver = {
     .name = "NWFilter",
     .stateInitialize = nwfilterStateInitialize,
@@ -651,6 +733,8 @@ static virDomainConfNWFilterDriver domainNWFilterDriver = {
 
 int nwfilterRegister(void)
 {
+    if (virRegisterConnectDriver(&nwfilterConnectDriver, false) < 0)
+        return -1;
     if (virSetSharedNWFilterDriver(&nwfilterDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&stateDriver) < 0)
