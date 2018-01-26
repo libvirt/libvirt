@@ -255,7 +255,7 @@ then
             echo CA organization: $ORG
             echo Server organization: $S_ORG
         fi
-        S_HOST=`"$CERTOOL" -i --infile "$LIBVIRT/servercert.pem" | grep Subject: | sed 's+.*CN=\([a-zA-Z\. _-]*\)+\1+'`
+        S_HOST=`"$CERTOOL" -i --infile "$LIBVIRT/servercert.pem" | grep Subject: | sed 's+.*CN=\(.[a-zA-Z \._-]*\).*+\1+'`
         if test "$S_HOST" != "`hostname -s`" && test "$S_HOST" != "`hostname`"
         then
             echo The server certificate does not seem to match the host name
