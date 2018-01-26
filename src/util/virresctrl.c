@@ -667,8 +667,6 @@ virResctrlAllocGetType(virResctrlAllocPtr resctrl,
 }
 
 
-#ifdef __linux__
-
 static int
 virResctrlAllocUpdateMask(virResctrlAllocPtr resctrl,
                           unsigned int level,
@@ -695,8 +693,6 @@ virResctrlAllocUpdateMask(virResctrlAllocPtr resctrl,
 
     return virBitmapCopy(a_type->masks[cache], mask);
 }
-
-#endif
 
 
 static int
@@ -917,8 +913,6 @@ virResctrlAllocFormat(virResctrlAllocPtr resctrl)
 }
 
 
-#ifdef __linux__
-
 static int
 virResctrlAllocParseProcessCache(virResctrlInfoPtr resctrl,
                                  virResctrlAllocPtr alloc,
@@ -1089,6 +1083,8 @@ virResctrlAllocGetDefault(virResctrlInfoPtr resctrl)
     return ret;
 }
 
+
+#ifdef __linux__
 
 static void
 virResctrlAllocSubtractPerType(virResctrlAllocPerTypePtr dst,
@@ -1298,23 +1294,8 @@ virResctrlAllocFindUnused(virResctrlAllocPerTypePtr a_type,
     ssize_t last_bits = 0;
     ssize_t last_pos = -1;
 
-    /* If there is no reservation requested we need to set all bits.  That's due
-     * to weird interface of the resctrl sysfs.  It's also the reason why we
-     * cannot reserve the whole cache in one allocation. */
-    if (!size) {
-        a_mask = virBitmapNew(i_type->bits);
-        if (!a_mask)
-            return -1;
-
-        virBitmapSetAll(a_mask);
-
-        if (virResctrlAllocSetMask(a_type, cache, a_mask) < 0) {
-            virBitmapFree(a_mask);
-            return -1;
-        }
-
+    if (!size)
         return 0;
-    }
 
     if (cache >= f_type->nmasks) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1417,6 +1398,44 @@ virResctrlAllocFindUnused(virResctrlAllocPerTypePtr a_type,
 }
 
 
+static int
+virResctrlAllocCopyMasks(virResctrlAllocPtr dst,
+                         virResctrlAllocPtr src)
+{
+    unsigned int level = 0;
+
+    for (level = 0; level < src->nlevels; level++) {
+        virResctrlAllocPerLevelPtr s_level = src->levels[level];
+        unsigned int type = 0;
+
+        if (!s_level)
+            continue;
+
+        for (type = 0; type < VIR_CACHE_TYPE_LAST; type++) {
+            virResctrlAllocPerTypePtr s_type = s_level->types[type];
+            virResctrlAllocPerTypePtr d_type = NULL;
+            unsigned int cache = 0;
+
+            if (!s_type)
+                continue;
+
+            d_type = virResctrlAllocGetType(dst, level, type);
+            if (!d_type)
+                return -1;
+
+            for (cache = 0; cache < s_type->nmasks; cache++) {
+                virBitmapPtr mask = s_type->masks[cache];
+
+                if (mask && virResctrlAllocUpdateMask(dst, level, type, cache, mask) < 0)
+                    return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
 /*
  * This function is called when creating an allocation in the system.  What it
  * does is that it gets all the unused bits using virResctrlAllocGetUnused() and
@@ -1430,9 +1449,17 @@ virResctrlAllocMasksAssign(virResctrlInfoPtr resctrl,
     int ret = -1;
     unsigned int level = 0;
     virResctrlAllocPtr alloc_free = NULL;
+    virResctrlAllocPtr alloc_default = NULL;
 
     alloc_free = virResctrlAllocGetUnused(resctrl);
     if (!alloc_free)
+        return -1;
+
+    alloc_default = virResctrlAllocGetDefault(resctrl);
+    if (!alloc_default)
+        return -1;
+
+    if (virResctrlAllocCopyMasks(alloc, alloc_default) < 0)
         return -1;
 
     for (level = 0; level < alloc->nlevels; level++) {
@@ -1482,6 +1509,7 @@ virResctrlAllocMasksAssign(virResctrlInfoPtr resctrl,
     ret = 0;
  cleanup:
     virObjectUnref(alloc_free);
+    virObjectUnref(alloc_default);
     return ret;
 }
 
