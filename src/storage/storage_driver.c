@@ -2687,92 +2687,6 @@ storageConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
 }
 
 
-
-static virStorageDriver storageDriver = {
-    .name = "storage",
-    .connectNumOfStoragePools = storageConnectNumOfStoragePools, /* 0.4.0 */
-    .connectListStoragePools = storageConnectListStoragePools, /* 0.4.0 */
-    .connectNumOfDefinedStoragePools = storageConnectNumOfDefinedStoragePools, /* 0.4.0 */
-    .connectListDefinedStoragePools = storageConnectListDefinedStoragePools, /* 0.4.0 */
-    .connectListAllStoragePools = storageConnectListAllStoragePools, /* 0.10.2 */
-    .connectStoragePoolEventRegisterAny = storageConnectStoragePoolEventRegisterAny, /* 2.0.0 */
-    .connectStoragePoolEventDeregisterAny = storageConnectStoragePoolEventDeregisterAny, /* 2.0.0 */
-    .connectFindStoragePoolSources = storageConnectFindStoragePoolSources, /* 0.4.0 */
-    .storagePoolLookupByName = storagePoolLookupByName, /* 0.4.0 */
-    .storagePoolLookupByUUID = storagePoolLookupByUUID, /* 0.4.0 */
-    .storagePoolLookupByVolume = storagePoolLookupByVolume, /* 0.4.0 */
-    .storagePoolCreateXML = storagePoolCreateXML, /* 0.4.0 */
-    .storagePoolDefineXML = storagePoolDefineXML, /* 0.4.0 */
-    .storagePoolBuild = storagePoolBuild, /* 0.4.0 */
-    .storagePoolUndefine = storagePoolUndefine, /* 0.4.0 */
-    .storagePoolCreate = storagePoolCreate, /* 0.4.0 */
-    .storagePoolDestroy = storagePoolDestroy, /* 0.4.0 */
-    .storagePoolDelete = storagePoolDelete, /* 0.4.0 */
-    .storagePoolRefresh = storagePoolRefresh, /* 0.4.0 */
-    .storagePoolGetInfo = storagePoolGetInfo, /* 0.4.0 */
-    .storagePoolGetXMLDesc = storagePoolGetXMLDesc, /* 0.4.0 */
-    .storagePoolGetAutostart = storagePoolGetAutostart, /* 0.4.0 */
-    .storagePoolSetAutostart = storagePoolSetAutostart, /* 0.4.0 */
-    .storagePoolNumOfVolumes = storagePoolNumOfVolumes, /* 0.4.0 */
-    .storagePoolListVolumes = storagePoolListVolumes, /* 0.4.0 */
-    .storagePoolListAllVolumes = storagePoolListAllVolumes, /* 0.10.2 */
-
-    .storageVolLookupByName = storageVolLookupByName, /* 0.4.0 */
-    .storageVolLookupByKey = storageVolLookupByKey, /* 0.4.0 */
-    .storageVolLookupByPath = storageVolLookupByPath, /* 0.4.0 */
-    .storageVolCreateXML = storageVolCreateXML, /* 0.4.0 */
-    .storageVolCreateXMLFrom = storageVolCreateXMLFrom, /* 0.6.4 */
-    .storageVolDownload = storageVolDownload, /* 0.9.0 */
-    .storageVolUpload = storageVolUpload, /* 0.9.0 */
-    .storageVolDelete = storageVolDelete, /* 0.4.0 */
-    .storageVolWipe = storageVolWipe, /* 0.8.0 */
-    .storageVolWipePattern = storageVolWipePattern, /* 0.9.10 */
-    .storageVolGetInfo = storageVolGetInfo, /* 0.4.0 */
-    .storageVolGetInfoFlags = storageVolGetInfoFlags, /* 3.0.0 */
-    .storageVolGetXMLDesc = storageVolGetXMLDesc, /* 0.4.0 */
-    .storageVolGetPath = storageVolGetPath, /* 0.4.0 */
-    .storageVolResize = storageVolResize, /* 0.9.10 */
-
-    .storagePoolIsActive = storagePoolIsActive, /* 0.7.3 */
-    .storagePoolIsPersistent = storagePoolIsPersistent, /* 0.7.3 */
-};
-
-
-static virStateDriver stateDriver = {
-    .name = "storage",
-    .stateInitialize = storageStateInitialize,
-    .stateAutoStart = storageStateAutoStart,
-    .stateCleanup = storageStateCleanup,
-    .stateReload = storageStateReload,
-};
-
-static int
-storageRegisterFull(bool allbackends)
-{
-    if (virStorageBackendDriversRegister(allbackends) < 0)
-        return -1;
-    if (virSetSharedStorageDriver(&storageDriver) < 0)
-        return -1;
-    if (virRegisterStateDriver(&stateDriver) < 0)
-        return -1;
-    return 0;
-}
-
-
-int
-storageRegister(void)
-{
-    return storageRegisterFull(false);
-}
-
-
-int
-storageRegisterAll(void)
-{
-    return storageRegisterFull(true);
-}
-
-
 static int
 virStorageAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
                                  virStoragePoolDefPtr pooldef)
@@ -3064,4 +2978,90 @@ virStoragePoolObjBuildTempFilePath(virStoragePoolObjPtr obj,
     ignore_value(virAsprintf(&tmp, "%s/%s.%s.secret.XXXXXX",
                              driver->stateDir, def->name, voldef->name));
     return tmp;
+}
+
+
+static virStorageDriver storageDriver = {
+    .name = "storage",
+    .connectNumOfStoragePools = storageConnectNumOfStoragePools, /* 0.4.0 */
+    .connectListStoragePools = storageConnectListStoragePools, /* 0.4.0 */
+    .connectNumOfDefinedStoragePools = storageConnectNumOfDefinedStoragePools, /* 0.4.0 */
+    .connectListDefinedStoragePools = storageConnectListDefinedStoragePools, /* 0.4.0 */
+    .connectListAllStoragePools = storageConnectListAllStoragePools, /* 0.10.2 */
+    .connectStoragePoolEventRegisterAny = storageConnectStoragePoolEventRegisterAny, /* 2.0.0 */
+    .connectStoragePoolEventDeregisterAny = storageConnectStoragePoolEventDeregisterAny, /* 2.0.0 */
+    .connectFindStoragePoolSources = storageConnectFindStoragePoolSources, /* 0.4.0 */
+    .storagePoolLookupByName = storagePoolLookupByName, /* 0.4.0 */
+    .storagePoolLookupByUUID = storagePoolLookupByUUID, /* 0.4.0 */
+    .storagePoolLookupByVolume = storagePoolLookupByVolume, /* 0.4.0 */
+    .storagePoolCreateXML = storagePoolCreateXML, /* 0.4.0 */
+    .storagePoolDefineXML = storagePoolDefineXML, /* 0.4.0 */
+    .storagePoolBuild = storagePoolBuild, /* 0.4.0 */
+    .storagePoolUndefine = storagePoolUndefine, /* 0.4.0 */
+    .storagePoolCreate = storagePoolCreate, /* 0.4.0 */
+    .storagePoolDestroy = storagePoolDestroy, /* 0.4.0 */
+    .storagePoolDelete = storagePoolDelete, /* 0.4.0 */
+    .storagePoolRefresh = storagePoolRefresh, /* 0.4.0 */
+    .storagePoolGetInfo = storagePoolGetInfo, /* 0.4.0 */
+    .storagePoolGetXMLDesc = storagePoolGetXMLDesc, /* 0.4.0 */
+    .storagePoolGetAutostart = storagePoolGetAutostart, /* 0.4.0 */
+    .storagePoolSetAutostart = storagePoolSetAutostart, /* 0.4.0 */
+    .storagePoolNumOfVolumes = storagePoolNumOfVolumes, /* 0.4.0 */
+    .storagePoolListVolumes = storagePoolListVolumes, /* 0.4.0 */
+    .storagePoolListAllVolumes = storagePoolListAllVolumes, /* 0.10.2 */
+
+    .storageVolLookupByName = storageVolLookupByName, /* 0.4.0 */
+    .storageVolLookupByKey = storageVolLookupByKey, /* 0.4.0 */
+    .storageVolLookupByPath = storageVolLookupByPath, /* 0.4.0 */
+    .storageVolCreateXML = storageVolCreateXML, /* 0.4.0 */
+    .storageVolCreateXMLFrom = storageVolCreateXMLFrom, /* 0.6.4 */
+    .storageVolDownload = storageVolDownload, /* 0.9.0 */
+    .storageVolUpload = storageVolUpload, /* 0.9.0 */
+    .storageVolDelete = storageVolDelete, /* 0.4.0 */
+    .storageVolWipe = storageVolWipe, /* 0.8.0 */
+    .storageVolWipePattern = storageVolWipePattern, /* 0.9.10 */
+    .storageVolGetInfo = storageVolGetInfo, /* 0.4.0 */
+    .storageVolGetInfoFlags = storageVolGetInfoFlags, /* 3.0.0 */
+    .storageVolGetXMLDesc = storageVolGetXMLDesc, /* 0.4.0 */
+    .storageVolGetPath = storageVolGetPath, /* 0.4.0 */
+    .storageVolResize = storageVolResize, /* 0.9.10 */
+
+    .storagePoolIsActive = storagePoolIsActive, /* 0.7.3 */
+    .storagePoolIsPersistent = storagePoolIsPersistent, /* 0.7.3 */
+};
+
+
+static virStateDriver stateDriver = {
+    .name = "storage",
+    .stateInitialize = storageStateInitialize,
+    .stateAutoStart = storageStateAutoStart,
+    .stateCleanup = storageStateCleanup,
+    .stateReload = storageStateReload,
+};
+
+
+static int
+storageRegisterFull(bool allbackends)
+{
+    if (virStorageBackendDriversRegister(allbackends) < 0)
+        return -1;
+    if (virSetSharedStorageDriver(&storageDriver) < 0)
+        return -1;
+    if (virRegisterStateDriver(&stateDriver) < 0)
+        return -1;
+    return 0;
+}
+
+
+int
+storageRegister(void)
+{
+    return storageRegisterFull(false);
+}
+
+
+int
+storageRegisterAll(void)
+{
+    return storageRegisterFull(true);
 }
