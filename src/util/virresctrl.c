@@ -1239,6 +1239,7 @@ virResctrlAllocSetMask(virResctrlAllocPerTypePtr a_type,
                      cache - a_type->nmasks + 1) < 0)
         return -1;
 
+    virBitmapFree(a_type->masks[cache]);
     a_type->masks[cache] = mask;
 
     return 0;
