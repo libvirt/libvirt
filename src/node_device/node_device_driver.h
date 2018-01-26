@@ -51,6 +51,15 @@ extern virNodeDeviceDriverStatePtr driver;
 int
 nodedevRegister(void);
 
+virDrvOpenStatus nodeConnectOpen(virConnectPtr conn,
+                                 virConnectAuthPtr auth,
+                                 virConfPtr conf,
+                                 unsigned int flags);
+int nodeConnectClose(virConnectPtr conn);
+int nodeConnectIsSecure(virConnectPtr conn);
+int nodeConnectIsEncrypted(virConnectPtr conn);
+int nodeConnectIsAlive(virConnectPtr conn);
+
 int
 nodeNumOfDevices(virConnectPtr conn,
                  const char *cap,

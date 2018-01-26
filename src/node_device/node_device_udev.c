@@ -1945,6 +1945,23 @@ static virNodeDeviceDriver udevNodeDeviceDriver = {
     .nodeDeviceDestroy = nodeDeviceDestroy, /* 0.7.3 */
 };
 
+
+static virHypervisorDriver udevHypervisorDriver = {
+    .name = "nodedev",
+    .connectOpen = nodeConnectOpen, /* 4.1.0 */
+    .connectClose = nodeConnectClose, /* 4.1.0 */
+    .connectIsEncrypted = nodeConnectIsEncrypted, /* 4.1.0 */
+    .connectIsSecure = nodeConnectIsSecure, /* 4.1.0 */
+    .connectIsAlive = nodeConnectIsAlive, /* 4.1.0 */
+};
+
+
+static virConnectDriver udevConnectDriver = {
+    .hypervisorDriver = &udevHypervisorDriver,
+    .nodeDeviceDriver = &udevNodeDeviceDriver,
+};
+
+
 static virStateDriver udevStateDriver = {
     .name = "udev",
     .stateInitialize = nodeStateInitialize, /* 0.7.3 */
@@ -1958,6 +1975,8 @@ udevNodeRegister(void)
 {
     VIR_DEBUG("Registering udev node device backend");
 
+    if (virRegisterConnectDriver(&udevConnectDriver, false) < 0)
+        return -1;
     if (virSetSharedNodeDeviceDriver(&udevNodeDeviceDriver) < 0)
         return -1;
 

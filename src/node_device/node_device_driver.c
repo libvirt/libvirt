@@ -46,6 +46,79 @@
 
 virNodeDeviceDriverStatePtr driver;
 
+virDrvOpenStatus
+nodeConnectOpen(virConnectPtr conn,
+                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                virConfPtr conf ATTRIBUTE_UNUSED,
+                unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    /* Verify uri was specified */
+    if (conn->uri == NULL) {
+        /* Only hypervisor drivers are permitted to auto-open on NULL uri */
+        return VIR_DRV_OPEN_DECLINED;
+    } else {
+        if (STRNEQ_NULLABLE(conn->uri->scheme, "nodedev"))
+            return VIR_DRV_OPEN_DECLINED;
+
+        /* Leave for remote driver */
+        if (conn->uri->server != NULL)
+            return VIR_DRV_OPEN_DECLINED;
+
+        if (driver == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("nodedev state driver is not active"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if (driver->privileged) {
+            if (STRNEQ(conn->uri->path, "/system")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected nodedev URI path '%s', try nodedev:///system"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        } else {
+            if (STRNEQ(conn->uri->path, "/session")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected nodedev URI path '%s', try nodedev:///session"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        }
+    }
+
+    if (virConnectOpenEnsureACL(conn) < 0)
+        return VIR_DRV_OPEN_ERROR;
+
+    return VIR_DRV_OPEN_SUCCESS;
+}
+
+int nodeConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+int nodeConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Trivially secure, since always inside the daemon */
+    return 1;
+}
+
+
+int nodeConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not encrypted, but remote driver takes care of that */
+    return 0;
+}
+
+
+int nodeConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
 
 #if defined (__linux__) && ( defined (WITH_HAL) || defined(WITH_UDEV))
 /* NB: It was previously believed that changes in driver name were
@@ -568,7 +641,6 @@ nodeConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
  cleanup:
     return ret;
 }
-
 
 int
 nodedevRegister(void)

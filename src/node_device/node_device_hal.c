@@ -772,6 +772,22 @@ static virNodeDeviceDriver halNodeDeviceDriver = {
 };
 
 
+static virHypervisorDriver halHypervisorDriver = {
+    .name = "nodedev",
+    .connectOpen = nodeConnectOpen, /* 4.1.0 */
+    .connectClose = nodeConnectClose, /* 4.1.0 */
+    .connectIsEncrypted = nodeConnectIsEncrypted, /* 4.1.0 */
+    .connectIsSecure = nodeConnectIsSecure, /* 4.1.0 */
+    .connectIsAlive = nodeConnectIsAlive, /* 4.1.0 */
+};
+
+
+static virConnectDriver halConnectDriver = {
+    .hypervisorDriver = &halHypervisorDriver,
+    .nodeDeviceDriver = &halNodeDeviceDriver,
+};
+
+
 static virStateDriver halStateDriver = {
     .name = "HAL",
     .stateInitialize = nodeStateInitialize, /* 0.5.0 */
@@ -782,6 +798,8 @@ static virStateDriver halStateDriver = {
 int
 halNodeRegister(void)
 {
+    if (virRegisterConnectDriver(&halConnectDriver, false) < 0)
+        return -1;
     if (virSetSharedNodeDeviceDriver(&halNodeDeviceDriver) < 0)
         return -1;
     return virRegisterStateDriver(&halStateDriver);
