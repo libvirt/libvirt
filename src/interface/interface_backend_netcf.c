@@ -46,6 +46,7 @@ typedef struct
 {
     virObjectLockable parent;
     struct netcf *netcf;
+    bool privileged;
 } virNetcfDriverState, *virNetcfDriverStatePtr;
 
 static virClassPtr virNetcfDriverStateClass;
@@ -78,7 +79,7 @@ virNetcfDriverStateDispose(void *obj)
 
 
 static int
-netcfStateInitialize(bool privileged ATTRIBUTE_UNUSED,
+netcfStateInitialize(bool privileged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                      void *opaque ATTRIBUTE_UNUSED)
 {
@@ -87,6 +88,8 @@ netcfStateInitialize(bool privileged ATTRIBUTE_UNUSED,
 
     if (!(driver = virObjectLockableNew(virNetcfDriverStateClass)))
         return -1;
+
+    driver->privileged = privileged;
 
     /* open netcf */
     if (ncf_init(&driver->netcf, NULL) != 0) {
@@ -145,6 +148,81 @@ netcfStateReload(void)
     virObjectUnlock(driver);
 
     return ret;
+}
+
+
+static virDrvOpenStatus
+netcfConnectOpen(virConnectPtr conn,
+                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                 virConfPtr conf ATTRIBUTE_UNUSED,
+                 unsigned int flags)
+{
+    virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
+
+    /* Verify uri was specified */
+    if (conn->uri == NULL) {
+        /* Only hypervisor drivers are permitted to auto-open on NULL uri */
+        return VIR_DRV_OPEN_DECLINED;
+    } else {
+        if (STRNEQ_NULLABLE(conn->uri->scheme, "interface"))
+            return VIR_DRV_OPEN_DECLINED;
+
+        /* Leave for remote driver */
+        if (conn->uri->server != NULL)
+            return VIR_DRV_OPEN_DECLINED;
+
+        if (driver == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("interface state driver is not active"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if (driver->privileged) {
+            if (STRNEQ(conn->uri->path, "/system")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected interface URI path '%s', try interface:///system"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        } else {
+            if (STRNEQ(conn->uri->path, "/session")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected interface URI path '%s', try interface:///session"),
+                               conn->uri->path);
+                return VIR_DRV_OPEN_ERROR;
+            }
+        }
+    }
+
+    if (virConnectOpenEnsureACL(conn) < 0)
+        return VIR_DRV_OPEN_ERROR;
+
+    return VIR_DRV_OPEN_SUCCESS;
+}
+
+static int netcfConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+static int netcfConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Trivially secure, since always inside the daemon */
+    return 1;
+}
+
+
+static int netcfConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not encrypted, but remote driver takes care of that */
+    return 0;
+}
+
+
+static int netcfConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
 }
 
 
@@ -1134,6 +1212,23 @@ static virInterfaceDriver interfaceDriver = {
 #endif /* HAVE_NETCF_TRANSACTIONS */
 };
 
+
+static virHypervisorDriver interfaceHypervisorDriver = {
+    .name = "interface",
+    .connectOpen = netcfConnectOpen, /* 4.1.0 */
+    .connectClose = netcfConnectClose, /* 4.1.0 */
+    .connectIsEncrypted = netcfConnectIsEncrypted, /* 4.1.0 */
+    .connectIsSecure = netcfConnectIsSecure, /* 4.1.0 */
+    .connectIsAlive = netcfConnectIsAlive, /* 4.1.0 */
+};
+
+
+static virConnectDriver interfaceConnectDriver = {
+    .hypervisorDriver = &interfaceHypervisorDriver,
+    .interfaceDriver = &interfaceDriver,
+};
+
+
 static virStateDriver interfaceStateDriver = {
     .name = INTERFACE_DRIVER_NAME,
     .stateInitialize = netcfStateInitialize,
@@ -1143,6 +1238,8 @@ static virStateDriver interfaceStateDriver = {
 
 int netcfIfaceRegister(void)
 {
+    if (virRegisterConnectDriver(&interfaceConnectDriver, false) < 0)
+        return -1;
     if (virSetSharedInterfaceDriver(&interfaceDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&interfaceStateDriver) < 0)
