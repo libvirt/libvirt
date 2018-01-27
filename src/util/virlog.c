@@ -64,6 +64,7 @@
 VIR_LOG_INIT("util.log");
 
 static regex_t *virLogRegex;
+static char *virLogHostname;
 
 
 #define VIR_LOG_DATE_REGEX "[0-9]{4}-[0-9]{2}-[0-9]{2}"
@@ -271,6 +272,12 @@ virLogOnceInit(void)
             VIR_FREE(virLogRegex);
     }
 
+    /* We get and remember the hostname early, because at later time
+     * it might not be possible to load NSS modules via getaddrinfo()
+     * (e.g. at container startup the host filesystem will not be
+     * accessible anymore. */
+    virLogHostname = virGetHostnameQuiet();
+
     virLogUnlock();
     return 0;
 }
@@ -466,17 +473,14 @@ static int
 virLogHostnameString(char **rawmsg,
                      char **msg)
 {
-    char *hostname = virGetHostnameQuiet();
     char *hoststr;
 
-    if (!hostname)
+    if (!virLogHostname)
         return -1;
 
-    if (virAsprintfQuiet(&hoststr, "hostname: %s", hostname) < 0) {
-        VIR_FREE(hostname);
+    if (virAsprintfQuiet(&hoststr, "hostname: %s", virLogHostname) < 0) {
         return -1;
     }
-    VIR_FREE(hostname);
 
     if (virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, hoststr) < 0) {
         VIR_FREE(hoststr);
