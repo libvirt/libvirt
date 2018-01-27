@@ -1472,7 +1472,7 @@ virResctrlAllocCreate(virResctrlInfoPtr resctrl,
     if (!alloc)
         return 0;
 
-    if (!resctrl) {
+    if (virResctrlInfoIsEmpty(resctrl)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Resource control is not supported on this host"));
         return -1;
