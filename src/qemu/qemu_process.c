@@ -5936,7 +5936,7 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessSetupEmulator(vm) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Setting up resctrlfs");
+    VIR_DEBUG("Setting up resctrl");
     if (qemuProcessResctrlCreate(driver, vm) < 0)
         goto cleanup;
 

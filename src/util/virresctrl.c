@@ -76,7 +76,7 @@ struct _virResctrlInfoPerType {
     unsigned int max_cache_id;
 
     /* In order to be self-sufficient we need size information per cache.
-     * Funnily enough, one of the outcomes of the resctrlfs design is that it
+     * Funnily enough, one of the outcomes of the resctrl design is that it
      * does not account for different sizes per cache on the same level.  So
      * for the sake of easiness, let's copy that, for now. */
     unsigned long long size;
@@ -302,12 +302,12 @@ virResctrlLockInternal(int op)
     int fd = open(SYSFS_RESCTRL_PATH, O_DIRECTORY | O_CLOEXEC);
 
     if (fd < 0) {
-        virReportSystemError(errno, "%s", _("Cannot open resctrlfs"));
+        virReportSystemError(errno, "%s", _("Cannot open resctrl"));
         return -1;
     }
 
     if (flock(fd, op) < 0) {
-        virReportSystemError(errno, "%s", _("Cannot lock resctrlfs"));
+        virReportSystemError(errno, "%s", _("Cannot lock resctrl"));
         VIR_FORCE_CLOSE(fd);
         return -1;
     }
@@ -328,7 +328,7 @@ static inline int
 virResctrlLockWrite(void)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("resctrlfs not supported on this platform"));
+                         _("resctrl not supported on this platform"));
     return -1;
 }
 
@@ -347,11 +347,11 @@ virResctrlUnlock(int fd)
     /* The lock gets unlocked by closing the fd, which we need to do anyway in
      * order to clean up properly */
     if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, "%s", _("Cannot close resctrlfs"));
+        virReportSystemError(errno, "%s", _("Cannot close resctrl"));
 
         /* Trying to save the already broken */
         if (flock(fd, LOCK_UN) < 0)
-            virReportSystemError(errno, "%s", _("Cannot unlock resctrlfs"));
+            virReportSystemError(errno, "%s", _("Cannot unlock resctrl"));
         return -1;
     }
 #endif /* ! __linux__ */
@@ -486,7 +486,7 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
 
         if (i_level->types[type]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Duplicate cache type in resctrlfs for level %u"),
+                           _("Duplicate cache type in resctrl for level %u"),
                            level);
             goto cleanup;
         }
