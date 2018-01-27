@@ -113,6 +113,7 @@ typedef enum {
 typedef enum {
     QEMU_DOMAIN_JOB_STATS_TYPE_NONE = 0,
     QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION,
+    QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP,
 } qemuDomainJobStatsType;
 
 

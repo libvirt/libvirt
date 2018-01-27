@@ -461,6 +461,12 @@ qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
                               jobInfo->mirrorStats.transferred;
         break;
 
+    case QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP:
+        info->memTotal = jobInfo->stats.mig.ram_total;
+        info->memRemaining = jobInfo->stats.mig.ram_remaining;
+        info->memProcessed = jobInfo->stats.mig.ram_transferred;
+        break;
+
     case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
         break;
     }
@@ -585,6 +591,11 @@ qemuDomainMigrationJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                                 stats->ram_page_size) < 0)
         goto error;
 
+    /* The remaining stats are disk, mirror, or migration specific
+     * so if this is a SAVEDUMP, we can just skip them */
+    if (jobInfo->statsType == QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP)
+        goto done;
+
     if (virTypedParamsAddULLong(&par, &npar, &maxpar,
                                 VIR_DOMAIN_JOB_DISK_TOTAL,
                                 stats->disk_total +
@@ -630,6 +641,7 @@ qemuDomainMigrationJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                              stats->cpu_throttle_percentage) < 0)
         goto error;
 
+ done:
     *type = qemuDomainJobStatusToType(jobInfo->status);
     *params = par;
     *nparams = npar;
@@ -649,6 +661,7 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
 {
     switch (jobInfo->statsType) {
     case QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION:
+    case QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP:
         return qemuDomainMigrationJobInfoToParams(jobInfo, type, params, nparams);
 
     case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
