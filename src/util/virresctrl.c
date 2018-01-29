@@ -392,7 +392,6 @@ int
 virResctrlGetInfo(virResctrlInfoPtr resctrl)
 {
     DIR *dirp = NULL;
-    char *info_path = NULL;
     char *endptr = NULL;
     char *tmp_str = NULL;
     int ret = -1;
@@ -507,7 +506,6 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
     ret = 0;
  cleanup:
     VIR_DIR_CLOSE(dirp);
-    VIR_FREE(info_path);
     if (i_type)
         VIR_FREE(i_type->cbm_mask);
     VIR_FREE(i_type);
