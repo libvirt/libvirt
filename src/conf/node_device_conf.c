@@ -2806,6 +2806,12 @@ virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath,
 #else
 
 int
+virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host ATTRIBUTE_UNUSED)
+{
+    return -1;
+}
+
+int
 virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath ATTRIBUTE_UNUSED,
                                virNodeDevCapPCIDevPtr pci_dev ATTRIBUTE_UNUSED)
 {

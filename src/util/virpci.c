@@ -3158,6 +3158,15 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path ATTRIBUTE_UNUSED,
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
+
+
+ssize_t
+virPCIGetMdevTypes(const char *sysfspath ATTRIBUTE_UNUSED,
+                   virMediatedDeviceTypePtr **types ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return -1;
+}
 #endif /* __linux__ */
 
 int
