@@ -410,10 +410,6 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
 
     while ((rv = virDirRead(dirp, &ent, SYSFS_RESCTRL_PATH "/info")) > 0) {
         VIR_DEBUG("Parsing info type '%s'", ent->d_name);
-
-        if (ent->d_type != DT_DIR)
-            continue;
-
         if (ent->d_name[0] != 'L')
             continue;
 
@@ -436,19 +432,29 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
         rv = virFileReadValueUint(&i_type->control.max_allocation,
                                   SYSFS_RESCTRL_PATH "/info/%s/num_closids",
                                   ent->d_name);
-        if (rv == -2)
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Cannot get num_closids from resctrl cache info"));
-        if (rv < 0)
+        if (rv == -2) {
+            /* The file doesn't exist, so it's unusable for us,
+             *  but we can scan further */
+            VIR_WARN("The path '" SYSFS_RESCTRL_PATH "/info/%s/num_closids' "
+                     "does not exist",
+                     ent->d_name);
+        } else if (rv < 0) {
+            /* Other failures are fatal, so just quit */
             goto cleanup;
+        }
 
         rv = virFileReadValueString(&i_type->cbm_mask,
                                     SYSFS_RESCTRL_PATH
                                     "/info/%s/cbm_mask",
                                     ent->d_name);
-        if (rv == -2)
+        if (rv == -2) {
+            /* If the previous file exists, so should this one.  Hence -2 is
+             * fatal in this case as well (errors out in next condition) - the
+             * kernel interface might've changed too much or something else is
+             * wrong. */
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot get cbm_mask from resctrl cache info"));
+        }
         if (rv < 0)
             goto cleanup;
 
@@ -1169,9 +1175,6 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
         goto error;
 
     while ((rv = virDirRead(dirp, &ent, SYSFS_RESCTRL_PATH)) > 0) {
-        if (ent->d_type != DT_DIR)
-            continue;
-
         if (STREQ(ent->d_name, "info"))
             continue;
 
