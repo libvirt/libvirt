@@ -2723,7 +2723,8 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
     *devstr = NULL;
 
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-        if ((qemuDomainSetSCSIControllerModel(domainDef, qemuCaps, &model)) < 0)
+        model = qemuDomainGetSCSIControllerModel(domainDef, def, qemuCaps);
+        if (model < 0)
             return -1;
 
         if (!qemuBuildCheckSCSIControllerModel(qemuCaps, model))

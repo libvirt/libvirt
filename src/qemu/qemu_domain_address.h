@@ -28,9 +28,9 @@
 # include "qemu_conf.h"
 # include "qemu_capabilities.h"
 
-int qemuDomainSetSCSIControllerModel(const virDomainDef *def,
-                                     virQEMUCapsPtr qemuCaps,
-                                     int *model);
+int qemuDomainGetSCSIControllerModel(const virDomainDef *def,
+                                     const virDomainControllerDef *cont,
+                                     virQEMUCapsPtr qemuCaps);
 
 int qemuDomainFindSCSIControllerModel(const virDomainDef *def,
                                       virDomainDeviceInfoPtr info,

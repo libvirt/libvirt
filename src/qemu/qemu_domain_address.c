@@ -42,35 +42,33 @@ VIR_LOG_INIT("qemu.qemu_domain_address");
 
 /**
  * @def: Domain definition
+ * @cont: Domain controller def
  * @qemuCaps: qemu capabilities
- * @model: model to either return or adjust
  *
- * If the @model is already defined, return it immediately; otherwise,
- * based on the @qemuCaps set the @model value to the default value.
+ * If the controller model is already defined, return it immediately;
+ * otherwise, based on the @qemuCaps return a default model value.
  *
- * Returns @model on success, -1 on failure with error set.
+ * Returns model on success, -1 on failure with error set.
  */
 int
-qemuDomainSetSCSIControllerModel(const virDomainDef *def,
-                                 virQEMUCapsPtr qemuCaps,
-                                 int *model)
+qemuDomainGetSCSIControllerModel(const virDomainDef *def,
+                                 const virDomainControllerDef *cont,
+                                 virQEMUCapsPtr qemuCaps)
 {
-    if (*model > 0)
-        return 0;
+    if (cont->model > 0)
+        return cont->model;
 
-    if (qemuDomainIsPSeries(def)) {
-        *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
-    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
-        *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
-    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI)) {
-        *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to determine model for scsi controller"));
-        return -1;
-    }
+    if (qemuDomainIsPSeries(def))
+        return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
+    else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI))
+        return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
+    else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI))
+        return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
 
-    return 0;
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Unable to determine model for SCSI controller idx=%d"),
+                   cont->idx);
+    return -1;
 }
 
 
@@ -90,7 +88,6 @@ qemuDomainFindSCSIControllerModel(const virDomainDef *def,
                                   virQEMUCapsPtr qemuCaps)
 {
     virDomainControllerDefPtr cont;
-    int model;
 
     if (!(cont = virDomainDeviceFindSCSIController(def, info))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -99,9 +96,7 @@ qemuDomainFindSCSIControllerModel(const virDomainDef *def,
         return -1;
     }
 
-    model = cont->model;
-    ignore_value(qemuDomainSetSCSIControllerModel(def, qemuCaps, &model));
-    return model;
+    return qemuDomainGetSCSIControllerModel(def, cont, qemuCaps);
 }
 
 
@@ -227,9 +222,9 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
 
-        model = cont->model;
         if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-            if (qemuDomainSetSCSIControllerModel(def, qemuCaps, &model) < 0)
+            model = qemuDomainGetSCSIControllerModel(def, cont, qemuCaps);
+            if (model < 0)
                 goto cleanup;
         }
 
