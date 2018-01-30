@@ -4924,6 +4924,8 @@ virDomainDefPostParseCommon(virDomainDefPtr def,
                             struct virDomainDefPostParseDeviceIteratorData *data,
                             virHashTablePtr bootHash)
 {
+    size_t i;
+
     /* verify init path for container based domains */
     if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -4989,6 +4991,21 @@ virDomainDefPostParseCommon(virDomainDefPtr def,
          * done the per-device post-parse */
         if (virDomainDefPostParseDeviceIterator(def, &device, NULL, data) < 0)
             return -1;
+    }
+
+    /* Implicit SCSI controllers without a defined model might have
+     * been added in AddImplicitDevices, after we've done the per-device
+     * post-parse. */
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->model == -1 &&
+            def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+            virDomainDeviceDef device = {
+                .type = VIR_DOMAIN_DEVICE_CONTROLLER,
+                .data.controller = def->controllers[i],
+            };
+            if (virDomainDefPostParseDeviceIterator(def, &device, NULL, data) < 0)
+                return -1;
+        }
     }
 
     /* clean up possibly duplicated metadata entries */

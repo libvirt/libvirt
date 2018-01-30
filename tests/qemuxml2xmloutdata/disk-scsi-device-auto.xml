@@ -31,7 +31,7 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
-    <controller type='scsi' index='0'>
+    <controller type='scsi' index='0' model='lsilogic'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </controller>
     <input type='mouse' bus='ps2'/>
