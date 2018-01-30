@@ -986,10 +986,6 @@ qemuConnectCgroup(virDomainObjPtr vm)
     if (!virCgroupAvailable())
         goto done;
 
-    priv->machineName = qemuDomainGetMachineName(vm);
-    if (!priv->machineName)
-            goto cleanup;
-
     virCgroupFree(&priv->cgroup);
 
     if (virCgroupNewDetectMachine(vm->def->name,

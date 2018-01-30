@@ -7198,6 +7198,10 @@ qemuProcessReconnect(void *opaque)
     if (qemuHostdevUpdateActiveDomainDevices(driver, obj->def) < 0)
         goto error;
 
+    priv->machineName = qemuDomainGetMachineName(obj);
+    if (!priv->machineName)
+        goto error;
+
     if (qemuConnectCgroup(obj) < 0)
         goto error;
 
