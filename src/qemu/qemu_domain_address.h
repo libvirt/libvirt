@@ -32,6 +32,10 @@ int qemuDomainSetSCSIControllerModel(const virDomainDef *def,
                                      virQEMUCapsPtr qemuCaps,
                                      int *model);
 
+int qemuDomainFindSCSIControllerModel(const virDomainDef *def,
+                                      virDomainDeviceInfoPtr info,
+                                      virQEMUCapsPtr qemuCaps);
+
 int qemuDomainAssignAddresses(virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
                               virQEMUDriverPtr driver,

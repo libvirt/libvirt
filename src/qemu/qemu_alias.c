@@ -190,14 +190,10 @@ qemuAssignDeviceDiskAlias(virDomainDefPtr def,
 
     if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
         if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
-            virDomainControllerDefPtr cont;
-
-            cont = virDomainDeviceFindSCSIController(def, &disk->info);
-            if (cont)
-                controllerModel = cont->model;
-
-            if ((qemuDomainSetSCSIControllerModel(def, qemuCaps,
-                                                  &controllerModel)) < 0)
+            controllerModel = qemuDomainFindSCSIControllerModel(def,
+                                                                &disk->info,
+                                                                qemuCaps);
+            if (controllerModel < 0)
                 return -1;
         }
 

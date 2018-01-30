@@ -1957,7 +1957,6 @@ qemuBuildDriveDevStr(const virDomainDef *def,
                      virQEMUCapsPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
-    virDomainControllerDefPtr cont;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     const char *contAlias;
     char *drivealias;
@@ -2043,11 +2042,9 @@ qemuBuildDriveDevStr(const virDomainDef *def,
             goto error;
         }
 
-        cont = virDomainDeviceFindSCSIController(def, &disk->info);
-        if (cont)
-            controllerModel = cont->model;
-        if ((qemuDomainSetSCSIControllerModel(def, qemuCaps,
-                                              &controllerModel)) < 0)
+        controllerModel = qemuDomainFindSCSIControllerModel(def, &disk->info,
+                                                            qemuCaps);
+        if (controllerModel < 0)
             goto error;
 
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
@@ -5143,16 +5140,12 @@ qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
                            virQEMUCapsPtr qemuCaps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virDomainControllerDefPtr cont;
     int model = -1;
     char *driveAlias;
     const char *contAlias;
 
-    cont = virDomainDeviceFindSCSIController(def, dev->info);
-    if (cont)
-        model = cont->model;
-
-    if (qemuDomainSetSCSIControllerModel(def, qemuCaps, &model) < 0)
+    model = qemuDomainFindSCSIControllerModel(def, dev->info, qemuCaps);
+    if (model < 0)
         goto error;
 
     if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
