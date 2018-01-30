@@ -77,6 +77,7 @@
 #include "configmake.h"
 #include "nwfilter_conf.h"
 #include "netdev_bandwidth_conf.h"
+#include "virresctrl.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -7331,6 +7332,12 @@ qemuProcessReconnect(void *opaque)
 
     if (qemuConnectAgent(driver, obj) < 0)
         goto error;
+
+    for (i = 0; i < obj->def->ncachetunes; i++) {
+        if (virResctrlAllocDeterminePath(obj->def->cachetunes[i]->alloc,
+                                         priv->machineName) < 0)
+            goto error;
+    }
 
     /* update domain state XML with possibly updated state in virDomainObj */
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, obj, driver->caps) < 0)
