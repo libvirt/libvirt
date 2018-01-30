@@ -19162,7 +19162,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             if ((tmp = virXMLPropString(nodes[i], "policy"))) {
                 if ((def->features[val] = virDomainCapabilitiesPolicyTypeFromString(tmp)) == -1) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown state attribute '%s' of feature '%s'"),
+                                   _("unknown policy attribute '%s' of feature '%s'"),
                                    tmp, virDomainFeatureTypeToString(val));
                     goto error;
                 }
