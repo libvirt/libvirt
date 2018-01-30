@@ -1253,22 +1253,6 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl ATTRIBUTE_UNUSED)
 
 #endif /* ! __linux__ */
 
-static int
-virResctrlAllocSetMask(virResctrlAllocPerTypePtr a_type,
-                       unsigned int cache,
-                       virBitmapPtr mask)
-{
-    if (a_type->nmasks <= cache &&
-        VIR_EXPAND_N(a_type->masks, a_type->nmasks,
-                     cache - a_type->nmasks + 1) < 0)
-        return -1;
-
-    virBitmapFree(a_type->masks[cache]);
-    a_type->masks[cache] = mask;
-
-    return 0;
-}
-
 
 /*
  * Given the information about requested allocation type `a_type`, the host
@@ -1276,16 +1260,19 @@ virResctrlAllocSetMask(virResctrlAllocPerTypePtr a_type,
  * this function tries to find the smallest free space in which the allocation
  * for cache id `cache` would fit.  We're looking for the smallest place in
  * order to minimize fragmentation and maximize the possibility of succeeding.
+ *
+ * Per-cache allocation for the @level, @type and @cache must already be
+ * allocated for @alloc (does not have to exist though).
  */
 static int
-virResctrlAllocFindUnused(virResctrlAllocPerTypePtr a_type,
+virResctrlAllocFindUnused(virResctrlAllocPtr alloc,
                           virResctrlInfoPerTypePtr i_type,
                           virResctrlAllocPerTypePtr f_type,
                           unsigned int level,
                           unsigned int type,
                           unsigned int cache)
 {
-    unsigned long long *size = a_type->sizes[cache];
+    unsigned long long *size = alloc->levels[level]->types[type]->sizes[cache];
     virBitmapPtr a_mask = NULL;
     virBitmapPtr f_mask = NULL;
     unsigned long long need_bits;
@@ -1293,6 +1280,7 @@ virResctrlAllocFindUnused(virResctrlAllocPerTypePtr a_type,
     ssize_t pos = -1;
     ssize_t last_bits = 0;
     ssize_t last_pos = -1;
+    int ret = -1;
 
     if (!size)
         return 0;
@@ -1384,17 +1372,16 @@ virResctrlAllocFindUnused(virResctrlAllocPerTypePtr a_type,
     if (!a_mask)
         return -1;
 
-    for (i = last_pos; i < last_pos + need_bits; i++) {
+    for (i = last_pos; i < last_pos + need_bits; i++)
         ignore_value(virBitmapSetBit(a_mask, i));
-        ignore_value(virBitmapClearBit(f_mask, i));
-    }
 
-    if (virResctrlAllocSetMask(a_type, cache, a_mask) < 0) {
-        virBitmapFree(a_mask);
-        return -1;
-    }
+    if (virResctrlAllocUpdateMask(alloc, level, type, cache, a_mask) < 0)
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virBitmapFree(a_mask);
+    return ret;
 }
 
 
@@ -1500,7 +1487,7 @@ virResctrlAllocMasksAssign(virResctrlInfoPtr resctrl,
                 virResctrlInfoPerLevelPtr i_level = resctrl->levels[level];
                 virResctrlInfoPerTypePtr i_type = i_level->types[type];
 
-                if (virResctrlAllocFindUnused(a_type, i_type, f_type, level, type, cache) < 0)
+                if (virResctrlAllocFindUnused(alloc, i_type, f_type, level, type, cache) < 0)
                     goto cleanup;
             }
         }
