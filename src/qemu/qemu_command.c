@@ -2717,22 +2717,17 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                           int *nusbcontroller)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int model = def->model;
     const char *modelName = NULL;
 
     *devstr = NULL;
 
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-        model = qemuDomainGetSCSIControllerModel(domainDef, def, qemuCaps);
-        if (model < 0)
-            return -1;
-
-        if (!qemuBuildCheckSCSIControllerModel(qemuCaps, model))
+        if (!qemuBuildCheckSCSIControllerModel(qemuCaps, def->model))
             return -1;
     }
 
     if (!(def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
-          model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI)) {
+          def->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI)) {
         if (def->queues) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("'queues' is only supported by virtio-scsi controller"));
@@ -2757,7 +2752,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 
     switch ((virDomainControllerType) def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        switch (model) {
+        switch (def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
             if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
                 virBufferAddLit(&buf, "virtio-scsi-ccw");

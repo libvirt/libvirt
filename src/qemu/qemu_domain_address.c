@@ -225,12 +225,10 @@ qemuDomainAssignSpaprVIOAddress(virDomainDefPtr def,
 
 
 static int
-qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
-                                  virQEMUCapsPtr qemuCaps)
+qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
 {
     size_t i;
     int ret = -1;
-    int model;
 
     /* Default values match QEMU. See spapr_(llan|vscsi|vty).c */
 
@@ -249,13 +247,7 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
 
-        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-            model = qemuDomainGetSCSIControllerModel(def, cont, qemuCaps);
-            if (model < 0)
-                goto cleanup;
-        }
-
-        if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI &&
+        if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI &&
             cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
             cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         }
@@ -2864,7 +2856,7 @@ qemuDomainAssignAddresses(virDomainDefPtr def,
     if (qemuDomainAssignVirtioSerialAddresses(def) < 0)
         return -1;
 
-    if (qemuDomainAssignSpaprVIOAddresses(def, qemuCaps) < 0)
+    if (qemuDomainAssignSpaprVIOAddresses(def) < 0)
         return -1;
 
     if (qemuDomainAssignS390Addresses(def, qemuCaps) < 0)
