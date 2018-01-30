@@ -4251,11 +4251,9 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
 {
     switch ((virDomainControllerType)cont->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        /* set the default SCSI controller model for S390 arches */
-        if (cont->model == -1 &&
-            ARCH_IS_S390(def->os.arch)) {
-            cont->model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
-        }
+        /* Set the default SCSI controller model if not already set */
+        if (qemuDomainSetSCSIControllerModel(def, cont, qemuCaps) < 0)
+            return -1;
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:

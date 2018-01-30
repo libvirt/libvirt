@@ -60,6 +60,8 @@ qemuDomainGetSCSIControllerModel(const virDomainDef *def,
 
     if (qemuDomainIsPSeries(def))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
+    else if (ARCH_IS_S390(def->os.arch))
+        return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
     else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
     else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI))
@@ -69,6 +71,31 @@ qemuDomainGetSCSIControllerModel(const virDomainDef *def,
                    _("Unable to determine model for SCSI controller idx=%d"),
                    cont->idx);
     return -1;
+}
+
+
+/**
+ * @def: Domain definition
+ * @cont: Domain controller def
+ * @qemuCaps: qemu capabilities
+ *
+ * Set the controller model based on the existing value and the
+ * capabilities if possible.
+ *
+ * Returns 0 on success, -1 on failure with error set.
+ */
+int
+qemuDomainSetSCSIControllerModel(const virDomainDef *def,
+                                 virDomainControllerDefPtr cont,
+                                 virQEMUCapsPtr qemuCaps)
+{
+    int model = qemuDomainGetSCSIControllerModel(def, cont, qemuCaps);
+
+    if (model < 0)
+        return -1;
+
+    cont->model = model;
+    return 0;
 }
 
 
