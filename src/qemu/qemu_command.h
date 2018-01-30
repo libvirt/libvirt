@@ -154,8 +154,7 @@ char *qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                                  virQEMUCapsPtr qemuCaps);
 
 char *qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
-                                 virDomainHostdevDefPtr dev,
-                                 virQEMUCapsPtr qemuCaps);
+                                 virDomainHostdevDefPtr dev);
 char *
 qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
                                 virDomainHostdevDefPtr dev,

@@ -2042,8 +2042,7 @@ qemuBuildDriveDevStr(const virDomainDef *def,
             goto error;
         }
 
-        controllerModel = qemuDomainFindSCSIControllerModel(def, &disk->info,
-                                                            qemuCaps);
+        controllerModel = qemuDomainFindSCSIControllerModel(def, &disk->info);
         if (controllerModel < 0)
             goto error;
 
@@ -5132,15 +5131,14 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
 
 char *
 qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
-                           virDomainHostdevDefPtr dev,
-                           virQEMUCapsPtr qemuCaps)
+                           virDomainHostdevDefPtr dev)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int model = -1;
     char *driveAlias;
     const char *contAlias;
 
-    model = qemuDomainFindSCSIControllerModel(def, dev->info, qemuCaps);
+    model = qemuDomainFindSCSIControllerModel(def, dev->info);
     if (model < 0)
         goto error;
 
@@ -5623,8 +5621,7 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                 VIR_FREE(drvstr);
 
                 virCommandAddArg(cmd, "-device");
-                if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev,
-                                                          qemuCaps)))
+                if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev)))
                     return -1;
                 virCommandAddArg(cmd, devstr);
                 VIR_FREE(devstr);

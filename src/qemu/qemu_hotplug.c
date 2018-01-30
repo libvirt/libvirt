@@ -381,7 +381,7 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
     if (qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
 
-    if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
+    if (qemuAssignDeviceDiskAlias(vm->def, disk) < 0)
         goto error;
 
     if (qemuDomainPrepareDiskSource(conn, disk, priv, cfg) < 0)
@@ -2405,7 +2405,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     if (!(drivealias = qemuAliasFromHostdev(hostdev)))
         goto cleanup;
 
-    if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
+    if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev)))
         goto cleanup;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
@@ -4634,7 +4634,7 @@ qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
     }
 
     if (!detach->info.alias) {
-        if (qemuAssignDeviceDiskAlias(vm->def, detach, priv->qemuCaps) < 0)
+        if (qemuAssignDeviceDiskAlias(vm->def, detach) < 0)
             goto cleanup;
     }
 

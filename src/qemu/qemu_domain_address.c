@@ -102,7 +102,6 @@ qemuDomainSetSCSIControllerModel(const virDomainDef *def,
 /**
  * @def: Domain definition
  * @info: Domain device info
- * @qemuCaps: QEMU capabilities
  *
  * Using the device info, find the controller related to the
  * device by index and use that controller to return the model.
@@ -111,8 +110,7 @@ qemuDomainSetSCSIControllerModel(const virDomainDef *def,
  */
 int
 qemuDomainFindSCSIControllerModel(const virDomainDef *def,
-                                  virDomainDeviceInfoPtr info,
-                                  virQEMUCapsPtr qemuCaps)
+                                  virDomainDeviceInfoPtr info)
 {
     virDomainControllerDefPtr cont;
 
@@ -123,7 +121,7 @@ qemuDomainFindSCSIControllerModel(const virDomainDef *def,
         return -1;
     }
 
-    return qemuDomainGetSCSIControllerModel(def, cont, qemuCaps);
+    return cont->model;
 }
 
 
