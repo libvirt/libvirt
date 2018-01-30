@@ -298,7 +298,7 @@ virDomainDeviceAliasIsUserAlias;
 virDomainDeviceDefCopy;
 virDomainDeviceDefFree;
 virDomainDeviceDefParse;
-virDomainDeviceFindControllerModel;
+virDomainDeviceFindSCSIController;
 virDomainDeviceGetInfo;
 virDomainDeviceInfoIterate;
 virDomainDeviceTypeToString;

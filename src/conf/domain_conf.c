@@ -7821,21 +7821,20 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
     return ret;
 }
 
-int
-virDomainDeviceFindControllerModel(const virDomainDef *def,
-                                   virDomainDeviceInfoPtr info,
-                                   int controllerType)
+
+virDomainControllerDefPtr
+virDomainDeviceFindSCSIController(const virDomainDef *def,
+                                  virDomainDeviceInfoPtr info)
 {
-    int model = -1;
     size_t i;
 
     for (i = 0; i < def->ncontrollers; i++) {
-        if (def->controllers[i]->type == controllerType &&
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
             def->controllers[i]->idx == info->addr.drive.controller)
-            model = def->controllers[i]->model;
+            return def->controllers[i];
     }
 
-    return model;
+    return NULL;
 }
 
 virDomainDiskDefPtr
@@ -17804,17 +17803,16 @@ virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDefPtr def)
         hostdev = def->hostdevs[i];
         if (virHostdevIsSCSIDevice(hostdev) &&
             (int)hostdev->info->addr.drive.controller > maxController) {
-            int model = -1;
+            virDomainControllerDefPtr cont;
 
             maxController = hostdev->info->addr.drive.controller;
             /* We may be creating a new controller because this one is full.
              * So let's grab the model from it and update the model we're
              * going to add as long as this one isn't undefined. The premise
              * being keeping the same controller model for all SCSI hostdevs. */
-            model = virDomainDeviceFindControllerModel(def, hostdev->info,
-                                                       VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
-            if (model != -1)
-                newModel = model;
+            cont = virDomainDeviceFindSCSIController(def, hostdev->info);
+            if (cont && cont->model != -1)
+                newModel = cont->model;
         }
     }
 

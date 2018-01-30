@@ -1047,10 +1047,11 @@ static int
 vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
     size_t i;
-    int type, ret = 0, model = -1;
+    int type, ret = 0;
     const char *src = NULL;
     nsresult rc = 0;
     virDomainDiskDefPtr disk = NULL;
+    virDomainControllerDefPtr cont;
     PRUnichar *storageCtlName = NULL;
     char *controllerName = NULL;
     IMedium *medium = NULL;
@@ -1126,9 +1127,8 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         case VIR_DOMAIN_DISK_BUS_SCSI:
             VBOX_UTF8_TO_UTF16(VBOX_CONTROLLER_SCSI_NAME, &storageCtlName);
 
-            model = virDomainDeviceFindControllerModel(def, &disk->info,
-                                                       VIR_DOMAIN_CONTROLLER_TYPE_SCSI);
-            if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068) {
+            cont = virDomainDeviceFindSCSIController(def, &disk->info);
+            if (cont && cont->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068) {
                 VBOX_UTF16_FREE(storageCtlName);
                 VBOX_UTF8_TO_UTF16(VBOX_CONTROLLER_SAS_NAME, &storageCtlName);
             }

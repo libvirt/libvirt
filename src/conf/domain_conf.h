@@ -2759,9 +2759,9 @@ int virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)
     ATTRIBUTE_RETURN_CHECK;
 int virDomainDiskGetFormat(virDomainDiskDefPtr def);
 void virDomainDiskSetFormat(virDomainDiskDefPtr def, int format);
-int virDomainDeviceFindControllerModel(const virDomainDef *def,
-                                       virDomainDeviceInfoPtr info,
-                                       int controllerType);
+virDomainControllerDefPtr
+virDomainDeviceFindSCSIController(const virDomainDef *def,
+                                  virDomainDeviceInfoPtr info);
 virDomainDiskDefPtr virDomainDiskFindByBusAndDst(virDomainDefPtr def,
                                                  int bus,
                                                  char *dst);
