@@ -1501,6 +1501,25 @@ virResctrlAllocMasksAssign(virResctrlInfoPtr resctrl,
 }
 
 
+int
+virResctrlAllocDeterminePath(virResctrlAllocPtr alloc,
+                             const char *machinename)
+{
+    if (!alloc->id) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Resctrl Allocation ID must be set before creation"));
+        return -1;
+    }
+
+    if (!alloc->path &&
+        virAsprintf(&alloc->path, "%s/%s-%s",
+                    SYSFS_RESCTRL_PATH, machinename, alloc->id) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /* This checks if the directory for the alloc exists.  If not it tries to create
  * it and apply appropriate alloc settings. */
 int
@@ -1522,15 +1541,7 @@ virResctrlAllocCreate(virResctrlInfoPtr resctrl,
         return -1;
     }
 
-    if (!alloc->id) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Resctrl Allocation ID must be set before creation"));
-        return -1;
-    }
-
-    if (!alloc->path &&
-        virAsprintf(&alloc->path, "%s/%s-%s",
-                    SYSFS_RESCTRL_PATH, machinename, alloc->id) < 0)
+    if (virResctrlAllocDeterminePath(alloc, machinename) < 0)
         return -1;
 
     if (virFileExists(alloc->path)) {

@@ -103,6 +103,10 @@ char *
 virResctrlAllocFormat(virResctrlAllocPtr alloc);
 
 int
+virResctrlAllocDeterminePath(virResctrlAllocPtr alloc,
+                             const char *machinename);
+
+int
 virResctrlAllocCreate(virResctrlInfoPtr r_info,
                       virResctrlAllocPtr alloc,
                       const char *machinename);
