@@ -587,6 +587,7 @@ qemuDomainFindOrCreateSCSIDiskController(virQEMUDriverPtr driver,
 {
     size_t i;
     virDomainControllerDefPtr cont;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int model = -1;
 
     for (i = 0; i < vm->def->ncontrollers; i++) {
@@ -615,10 +616,13 @@ qemuDomainFindOrCreateSCSIDiskController(virQEMUDriverPtr driver,
         return NULL;
     cont->type = VIR_DOMAIN_CONTROLLER_TYPE_SCSI;
     cont->idx = controller;
-    cont->model = model;
+    if (model == -1)
+        cont->model = qemuDomainGetSCSIControllerModel(vm->def, cont, priv->qemuCaps);
+    else
+        cont->model = model;
 
     VIR_INFO("No SCSI controller present, hotplugging one model=%s",
-             virDomainControllerModelSCSITypeToString(model));
+             virDomainControllerModelSCSITypeToString(cont->model));
     if (qemuDomainAttachControllerDevice(driver, vm, cont) < 0) {
         VIR_FREE(cont);
         return NULL;
