@@ -2335,6 +2335,7 @@ libvirt_driver_admin_la_SOURCES = \
 		$(NULL)
 libvirt_driver_admin_la_CFLAGS = \
 		$(AM_CFLAGS) \
+		$(XDR_CFLAGS) \
 		-I$(top_srcdir)/src/util \
 		-I$(top_srcdir)/src/admin \
 		$(NULL)
