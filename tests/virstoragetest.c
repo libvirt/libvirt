@@ -1572,7 +1572,7 @@ mymain(void)
                                        "\"transport\":\"tcp\","
                                        "\"portal\":\"test.org:1234\","
                                        "\"target\":\"iqn.2016-12.com.virttest:emulated-iscsi-noauth.target\","
-                                       "\"lun\":6"
+                                       "\"lun\":\"6\""
                                       "}"
                             "}",
                        "<source protocol='iscsi' name='iqn.2016-12.com.virttest:emulated-iscsi-noauth.target/6'>\n"
