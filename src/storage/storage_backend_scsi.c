@@ -36,6 +36,7 @@
 #include "virstring.h"
 #include "storage_util.h"
 #include "node_device_conf.h"
+#include "driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -245,20 +246,20 @@ checkName(const char *name)
  * sysfs tree to get the parent 'scsi_host#' to ensure it matches.
  */
 static bool
-checkParent(virConnectPtr conn,
-            const char *name,
+checkParent(const char *name,
             const char *parent_name)
 {
     unsigned int host_num;
     char *scsi_host_name = NULL;
     char *vhba_parent = NULL;
     bool retval = false;
+    virConnectPtr conn = NULL;
 
-    VIR_DEBUG("conn=%p, name=%s, parent_name=%s", conn, name, parent_name);
+    VIR_DEBUG("name=%s, parent_name=%s", name, parent_name);
 
-    /* autostarted pool - assume we're OK */
+    conn = virGetConnectNodeDev();
     if (!conn)
-        return true;
+        goto cleanup;
 
     if (virSCSIHostGetNumber(parent_name, &host_num) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -291,6 +292,7 @@ checkParent(virConnectPtr conn,
     retval = true;
 
  cleanup:
+    virObjectUnref(conn);
     VIR_FREE(vhba_parent);
     VIR_FREE(scsi_host_name);
     return retval;
@@ -298,8 +300,7 @@ checkParent(virConnectPtr conn,
 
 
 static int
-createVport(virConnectPtr conn,
-            virStoragePoolDefPtr def,
+createVport(virStoragePoolDefPtr def,
             const char *configFile,
             virStorageAdapterFCHostPtr fchost)
 {
@@ -308,8 +309,8 @@ createVport(virConnectPtr conn,
     virThread thread;
     int ret = -1;
 
-    VIR_DEBUG("conn=%p, configFile='%s' parent='%s', wwnn='%s' wwpn='%s'",
-              conn, NULLSTR(configFile), NULLSTR(fchost->parent),
+    VIR_DEBUG("configFile='%s' parent='%s', wwnn='%s' wwpn='%s'",
+              NULLSTR(configFile), NULLSTR(fchost->parent),
               fchost->wwnn, fchost->wwpn);
 
     /* If we find an existing HBA/vHBA within the fc_host sysfs
@@ -322,7 +323,7 @@ createVport(virConnectPtr conn,
 
         /* If a parent was provided, let's make sure the 'name' we've
          * retrieved has the same parent. If not this will cause failure. */
-        if (!fchost->parent || checkParent(conn, name, fchost->parent))
+        if (!fchost->parent || checkParent(name, fchost->parent))
             ret = 0;
 
         goto cleanup;
@@ -443,14 +444,14 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-virStorageBackendSCSIStartPool(virConnectPtr conn,
+virStorageBackendSCSIStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     const char *configFile = virStoragePoolObjGetConfigFile(pool);
 
     if (def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST)
-        return createVport(conn, def, configFile,
+        return createVport(def, configFile,
                            &def->source.adapter.data.fchost);
 
     return 0;
@@ -463,9 +464,17 @@ virStorageBackendSCSIStopPool(virConnectPtr conn,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
 
-    if (def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST)
-        return virNodeDeviceDeleteVport(conn,
-                                        &def->source.adapter.data.fchost);
+    if (def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
+        int ret;
+        conn = virGetConnectNodeDev();
+        if (!conn)
+            return -1;
+
+        ret = virNodeDeviceDeleteVport(conn,
+                                       &def->source.adapter.data.fchost);
+        virObjectUnref(conn);
+        return ret;
+    }
 
     return 0;
 }
