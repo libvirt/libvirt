@@ -2014,10 +2014,10 @@ char *virGetUNIXSocketPath(int fd)
 
 #else /* HAVE_SYS_UN_H */
 
-char *virGetUNIXSocketPath(int fd)
+char *virGetUNIXSocketPath(int fd ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
-                         _("UNIX sockets not supported on this platform");
+                         _("UNIX sockets not supported on this platform"));
     return NULL;
 }
 
