@@ -167,3 +167,33 @@ virDriverLoadModule(const char *name,
 
 
 /* XXX unload modules, but we can't until we can unregister libvirt drivers */
+
+virConnectPtr virGetConnectInterface(void)
+{
+    return virConnectOpen(geteuid() == 0 ? "interface:///system" : "interface:///session");
+}
+
+virConnectPtr virGetConnectNetwork(void)
+{
+    return virConnectOpen(geteuid() == 0 ? "network:///system" : "network:///session");
+}
+
+virConnectPtr virGetConnectNWFilter(void)
+{
+    return virConnectOpen(geteuid() == 0 ? "nwfilter:///system" : "nwfilter:///session");
+}
+
+virConnectPtr virGetConnectNodeDev(void)
+{
+    return virConnectOpen(geteuid() == 0 ? "nodedev:///system" : "nodedev:///session");
+}
+
+virConnectPtr virGetConnectSecret(void)
+{
+    return virConnectOpen(geteuid() == 0 ? "secret:///system" : "secret:///session");
+}
+
+virConnectPtr virGetConnectStorage(void)
+{
+    return virConnectOpen(geteuid() == 0 ? "storage:///system" : "storage:///session");
+}

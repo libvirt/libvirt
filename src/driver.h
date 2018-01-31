@@ -105,4 +105,11 @@ int virDriverLoadModuleFull(const char *name,
                             const char *regfunc,
                             void **handle);
 
+virConnectPtr virGetConnectInterface(void);
+virConnectPtr virGetConnectNetwork(void);
+virConnectPtr virGetConnectNWFilter(void);
+virConnectPtr virGetConnectNodeDev(void);
+virConnectPtr virGetConnectSecret(void);
+virConnectPtr virGetConnectStorage(void);
+
 #endif /* __VIR_DRIVER_H__ */

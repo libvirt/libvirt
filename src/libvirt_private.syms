@@ -1183,6 +1183,15 @@ virStorageVolClass;
 virStreamClass;
 
 
+# driver.h
+virGetConnectInterface;
+virGetConnectNetwork;
+virGetConnectNodeDev;
+virGetConnectNWFilter;
+virGetConnectSecret;
+virGetConnectStorage;
+
+
 # libvirt_internal.h
 virConnectSupportsFeature;
 virDomainMigrateBegin3;
