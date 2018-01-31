@@ -1985,30 +1985,33 @@ virGetListenFDs(void)
 #ifdef HAVE_SYS_UN_H
 char *virGetUNIXSocketPath(int fd)
 {
-    struct sockaddr_storage ss = { 0 };
-    struct sockaddr_un *un = (struct sockaddr_un *)&ss;
-    socklen_t len = sizeof(ss);
+    union {
+        struct sockaddr sa;
+        struct sockaddr_storage ss;
+        struct sockaddr_un un;
+    } addr = { .ss = { 0 } };
+    socklen_t len = sizeof(addr.ss);
     char *path;
 
-    if (getsockname(fd, (struct sockaddr *)&ss, &len) < 0) {
+    if (getsockname(fd, &addr.sa, &len) < 0) {
         virReportSystemError(errno, _("Unable to get address of FD %d"), fd);
         return NULL;
     }
 
-    if (ss.ss_family != AF_UNIX) {
+    if (addr.ss.ss_family != AF_UNIX) {
         virReportSystemError(EINVAL, _("FD %d is not a UNIX socket, has af=%d"),
-                             fd, ss.ss_family);
+                             fd, addr.ss.ss_family);
         return NULL;
     }
 
-    if (un->sun_path[0] == '\0')
-        un->sun_path[0] = '@';
+    if (addr.un.sun_path[0] == '\0')
+        addr.un.sun_path[0] = '@';
 
-    if (VIR_ALLOC_N(path, sizeof(un->sun_path) + 1) < 0)
+    if (VIR_ALLOC_N(path, sizeof(addr.un.sun_path) + 1) < 0)
         return NULL;
 
-    memcpy(path, un->sun_path, sizeof(un->sun_path));
-    path[sizeof(un->sun_path)] = '\0';
+    memcpy(path, addr.un.sun_path, sizeof(addr.un.sun_path));
+    path[sizeof(addr.un.sun_path)] = '\0';
     return path;
 }
 
