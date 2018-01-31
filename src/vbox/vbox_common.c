@@ -3630,7 +3630,6 @@ vboxDumpDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 static void
 vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
-    /* shared folders */
     vboxArray sharedFolders = VBOX_ARRAY_INITIALIZER;
     size_t i = 0;
 
