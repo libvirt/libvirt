@@ -3627,19 +3627,23 @@ vboxDumpDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
     return ret;
 }
 
-static void
+static int
 vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
     vboxArray sharedFolders = VBOX_ARRAY_INITIALIZER;
     size_t i = 0;
+    int ret = -1;
 
     def->nfss = 0;
 
     gVBoxAPI.UArray.vboxArrayGet(&sharedFolders, machine,
                                  gVBoxAPI.UArray.handleMachineGetSharedFolders(machine));
 
-    if (sharedFolders.count <= 0)
+    if (sharedFolders.count <= 0) {
+        if (sharedFolders.count == 0)
+            ret = 0;
         goto cleanup;
+    }
 
     if (VIR_ALLOC_N(def->fss, sharedFolders.count) < 0)
         goto cleanup;
@@ -3683,8 +3687,11 @@ vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine
         ++def->nfss;
     }
 
+    ret = 0;
+
  cleanup:
     gVBoxAPI.UArray.vboxArrayRelease(&sharedFolders);
+    return ret;
 }
 
 static void
@@ -4179,7 +4186,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (vboxDumpDisks(def, data, machine) < 0)
         goto cleanup;
 
-    vboxDumpSharedFolders(def, data, machine);
+    if (vboxDumpSharedFolders(def, data, machine) < 0)
+        goto cleanup;
     vboxDumpNetwork(def, data, machine, networkAdapterCount);
     vboxDumpAudio(def, data, machine);
 
