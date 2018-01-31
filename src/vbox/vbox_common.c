@@ -3640,10 +3640,10 @@ vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine
                                  gVBoxAPI.UArray.handleMachineGetSharedFolders(machine));
 
     if (sharedFolders.count <= 0)
-        goto sharedFoldersCleanup;
+        goto cleanup;
 
     if (VIR_ALLOC_N(def->fss, sharedFolders.count) < 0)
-        goto sharedFoldersCleanup;
+        goto cleanup;
 
     for (i = 0; i < sharedFolders.count; i++) {
         ISharedFolder *sharedFolder = sharedFolders.items[i];
@@ -3654,7 +3654,7 @@ vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine
         PRBool writable = PR_FALSE;
 
         if (VIR_ALLOC(def->fss[i]) < 0)
-            goto sharedFoldersCleanup;
+            goto cleanup;
 
         def->fss[i]->type = VIR_DOMAIN_FS_TYPE_MOUNT;
 
@@ -3663,7 +3663,7 @@ vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine
         if (VIR_STRDUP(def->fss[i]->src->path, hostPath) < 0) {
             VBOX_UTF8_FREE(hostPath);
             VBOX_UTF16_FREE(hostPathUtf16);
-            goto sharedFoldersCleanup;
+            goto cleanup;
         }
         VBOX_UTF8_FREE(hostPath);
         VBOX_UTF16_FREE(hostPathUtf16);
@@ -3673,7 +3673,7 @@ vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine
         if (VIR_STRDUP(def->fss[i]->dst, name) < 0) {
             VBOX_UTF8_FREE(name);
             VBOX_UTF16_FREE(nameUtf16);
-            goto sharedFoldersCleanup;
+            goto cleanup;
         }
         VBOX_UTF8_FREE(name);
         VBOX_UTF16_FREE(nameUtf16);
@@ -3684,7 +3684,7 @@ vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine
         ++def->nfss;
     }
 
- sharedFoldersCleanup:
+ cleanup:
     gVBoxAPI.UArray.vboxArrayRelease(&sharedFolders);
 }
 
