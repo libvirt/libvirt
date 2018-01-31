@@ -425,6 +425,7 @@ install-bash-completion:
 	$(INSTALL_SCRIPT) $(srcdir)/bash-completion/vsh \
 		"$(DESTDIR)$(BASH_COMPLETIONS_DIR)/vsh"
 	( cd $(DESTDIR)$(BASH_COMPLETIONS_DIR) && \
+		rm -f virsh virt-admin && \
 		$(LN_S) vsh virsh && \
 		$(LN_S) vsh virt-admin )
 
