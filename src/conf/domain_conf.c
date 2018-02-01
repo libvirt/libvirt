@@ -21324,14 +21324,39 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
     size_t i;
 
     for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
-        if (src->features[i] != dst->features[i]) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("State of feature '%s' differs: "
-                             "source: '%s', destination: '%s'"),
-                           virDomainFeatureTypeToString(i),
-                           virTristateSwitchTypeToString(src->features[i]),
-                           virTristateSwitchTypeToString(dst->features[i]));
-            return false;
+        const char *featureName = virDomainFeatureTypeToString(i);
+
+        switch ((virDomainFeature) i) {
+        case VIR_DOMAIN_FEATURE_ACPI:
+        case VIR_DOMAIN_FEATURE_APIC:
+        case VIR_DOMAIN_FEATURE_PAE:
+        case VIR_DOMAIN_FEATURE_HAP:
+        case VIR_DOMAIN_FEATURE_VIRIDIAN:
+        case VIR_DOMAIN_FEATURE_PRIVNET:
+        case VIR_DOMAIN_FEATURE_HYPERV:
+        case VIR_DOMAIN_FEATURE_KVM:
+        case VIR_DOMAIN_FEATURE_PVSPINLOCK:
+        case VIR_DOMAIN_FEATURE_CAPABILITIES:
+        case VIR_DOMAIN_FEATURE_PMU:
+        case VIR_DOMAIN_FEATURE_VMPORT:
+        case VIR_DOMAIN_FEATURE_GIC:
+        case VIR_DOMAIN_FEATURE_SMM:
+        case VIR_DOMAIN_FEATURE_IOAPIC:
+        case VIR_DOMAIN_FEATURE_HPT:
+        case VIR_DOMAIN_FEATURE_VMCOREINFO:
+            if (src->features[i] != dst->features[i]) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("State of feature '%s' differs: "
+                                 "source: '%s', destination: '%s'"),
+                               featureName,
+                               virTristateSwitchTypeToString(src->features[i]),
+                               virTristateSwitchTypeToString(dst->features[i]));
+                return false;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_LAST:
+            break;
         }
     }
 
