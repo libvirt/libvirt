@@ -2927,13 +2927,14 @@ static void
 qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def,
                                    virQEMUCapsPtr qemuCaps)
 {
-    virGICVersion version;
-
-    /* The virt machine type always uses GIC: if the relevant element
+    /* The virt machine type always uses GIC: if the relevant information
      * was not included in the domain XML, we need to choose a suitable
      * GIC version ourselves */
-    if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ABSENT &&
-        qemuDomainIsVirt(def)) {
+    if ((def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ABSENT &&
+         qemuDomainIsVirt(def)) ||
+        (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON &&
+         def->gic_version == VIR_GIC_VERSION_NONE)) {
+        virGICVersion version;
 
         VIR_DEBUG("Looking for usable GIC version in domain capabilities");
         for (version = VIR_GIC_VERSION_LAST - 1;
@@ -2947,9 +2948,6 @@ qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def,
              * For that reason, we skip this step entirely for TCG guests,
              * and rely on the code below to pick the default version, GICv2,
              * which supports all the features we need.
-             *
-             * We'll want to revisit this once MSI support for GICv3 has been
-             * implemented in QEMU.
              *
              * See https://bugzilla.redhat.com/show_bug.cgi?id=1414081 */
             if (version == VIR_GIC_VERSION_3 &&
@@ -2967,16 +2965,16 @@ qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def,
             }
         }
 
+        /* Use the default GIC version (GICv2) as a last-ditch attempt
+         * if no match could be found above */
+        if (def->gic_version == VIR_GIC_VERSION_NONE) {
+            VIR_DEBUG("Using GIC version 2 (default)");
+            def->gic_version = VIR_GIC_VERSION_2;
+        }
+
         /* Even if we haven't found a usable GIC version in the domain
          * capabilities, we still want to enable this */
         def->features[VIR_DOMAIN_FEATURE_GIC] = VIR_TRISTATE_SWITCH_ON;
-    }
-
-    /* Use the default GIC version (GICv2) if no version was specified */
-    if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON &&
-        def->gic_version == VIR_GIC_VERSION_NONE) {
-        VIR_DEBUG("Using GIC version 2 (default)");
-        def->gic_version = VIR_GIC_VERSION_2;
     }
 }
 
