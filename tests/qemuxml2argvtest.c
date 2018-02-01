@@ -2606,13 +2606,13 @@ mymain(void)
     DO_TEST_GIC("aarch64-gic-default", GIC_NONE,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_GIC("aarch64-gic-default", GIC_V2,
+    DO_TEST_GIC("aarch64-gic-default-v2", GIC_V2,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_GIC("aarch64-gic-default", GIC_V3,
+    DO_TEST_GIC("aarch64-gic-default-v3", GIC_V3,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_GIC("aarch64-gic-default", GIC_BOTH,
+    DO_TEST_GIC("aarch64-gic-default-both", GIC_BOTH,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-v2", GIC_NONE,
