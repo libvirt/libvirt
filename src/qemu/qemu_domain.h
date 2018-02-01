@@ -114,6 +114,7 @@ typedef enum {
     QEMU_DOMAIN_JOB_STATS_TYPE_NONE = 0,
     QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION,
     QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP,
+    QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP,
 } qemuDomainJobStatsType;
 
 
@@ -147,6 +148,7 @@ struct _qemuDomainJobInfo {
     qemuDomainJobStatsType statsType;
     union {
         qemuMonitorMigrationStats mig;
+        qemuMonitorDumpStats dump;
     } stats;
     qemuDomainMirrorStats mirrorStats;
 };

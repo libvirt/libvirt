@@ -13232,6 +13232,7 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
             goto cleanup;
         break;
 
+    case QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP:
     case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
         break;
     }

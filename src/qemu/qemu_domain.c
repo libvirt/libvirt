@@ -467,6 +467,7 @@ qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
         info->memProcessed = jobInfo->stats.mig.ram_transferred;
         break;
 
+    case QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP:
     case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
         break;
     }
@@ -664,6 +665,7 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
     case QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP:
         return qemuDomainMigrationJobInfoToParams(jobInfo, type, params, nparams);
 
+    case QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP:
     case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
         break;
     }

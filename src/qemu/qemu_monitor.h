@@ -247,6 +247,25 @@ typedef int (*qemuMonitorDomainBlockThresholdCallback)(qemuMonitorPtr mon,
                                                        void *opaque);
 
 
+typedef enum {
+    QEMU_MONITOR_DUMP_STATUS_NONE,
+    QEMU_MONITOR_DUMP_STATUS_ACTIVE,
+    QEMU_MONITOR_DUMP_STATUS_COMPLETED,
+    QEMU_MONITOR_DUMP_STATUS_FAILED,
+
+    QEMU_MONITOR_DUMP_STATUS_LAST,
+} qemuMonitorDumpStatus;
+
+VIR_ENUM_DECL(qemuMonitorDumpStatus)
+
+typedef struct _qemuMonitorDumpStats qemuMonitorDumpStats;
+typedef qemuMonitorDumpStats *qemuMonitorDumpStatsPtr;
+struct _qemuMonitorDumpStats {
+    int status; /* qemuMonitorDumpStatus */
+    unsigned long long completed; /* bytes written */
+    unsigned long long total; /* total bytes to be written */
+};
+
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 typedef qemuMonitorCallbacks *qemuMonitorCallbacksPtr;
 struct _qemuMonitorCallbacks {
