@@ -73,7 +73,11 @@ virNetServerClientPtr virNetServerClientNew(unsigned long long id,
                                             virNetServerClientPrivPreExecRestart privPreExecRestart,
                                             virFreeCallback privFree,
                                             void *privOpaque)
+# ifdef WITH_GNUTLS
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(7) ATTRIBUTE_NONNULL(9);
+# else
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6) ATTRIBUTE_NONNULL(8);
+# endif
 
 virNetServerClientPtr virNetServerClientNewPostExecRestart(virNetServerPtr srv,
                                                            virJSONValuePtr object,
