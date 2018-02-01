@@ -79,17 +79,17 @@ virResctrlAllocPtr
 virResctrlAllocNew(void);
 
 bool
-virResctrlAllocIsEmpty(virResctrlAllocPtr resctrl);
+virResctrlAllocIsEmpty(virResctrlAllocPtr alloc);
 
 int
-virResctrlAllocSetSize(virResctrlAllocPtr resctrl,
+virResctrlAllocSetSize(virResctrlAllocPtr alloc,
                        unsigned int level,
                        virCacheType type,
                        unsigned int cache,
                        unsigned long long size);
 
 int
-virResctrlAllocForeachSize(virResctrlAllocPtr resctrl,
+virResctrlAllocForeachSize(virResctrlAllocPtr alloc,
                            virResctrlAllocForeachSizeCallback cb,
                            void *opaque);
 
