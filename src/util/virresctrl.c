@@ -1444,10 +1444,10 @@ virResctrlAllocMasksAssign(virResctrlInfoPtr resctrl,
 
     alloc_default = virResctrlAllocGetDefault(resctrl);
     if (!alloc_default)
-        return -1;
+        goto cleanup;
 
     if (virResctrlAllocCopyMasks(alloc, alloc_default) < 0)
-        return -1;
+        goto cleanup;
 
     for (level = 0; level < alloc->nlevels; level++) {
         virResctrlAllocPerLevelPtr a_level = alloc->levels[level];
