@@ -18453,7 +18453,9 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
 
     /* We need to limit the bitmap to number of vCPUs.  If there's nothing left,
      * then we can just clean up and return 0 immediately */
-    virBitmapShrink(vcpus, def->maxvcpus);
+    if (virBitmapShrink(vcpus, def->maxvcpus) < 0)
+        goto cleanup;
+
     if (virBitmapIsAllClear(vcpus)) {
         ret = 0;
         goto cleanup;

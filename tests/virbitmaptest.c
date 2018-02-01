@@ -656,6 +656,14 @@ test12(const void *opaque ATTRIBUTE_UNUSED)
 
     TEST_MAP(1024, "34,1023");
 
+    if (virBitmapShrink(map, 35) < 0)
+        goto cleanup;
+    TEST_MAP(35, "34");
+
+    if (virBitmapShrink(map, 34) < 0)
+        goto cleanup;
+    TEST_MAP(34, "");
+
     ret = 0;
 
  cleanup:

@@ -941,7 +941,8 @@ virResctrlAllocParseProcessCache(virResctrlInfoPtr resctrl,
     if (!mask)
         return -1;
 
-    virBitmapShrink(mask, resctrl->levels[level]->types[type]->bits);
+    if (virBitmapShrink(mask, resctrl->levels[level]->types[type]->bits) < 0)
+        goto cleanup;
 
     if (virResctrlAllocUpdateMask(alloc, level, type, cache_id, mask) < 0)
         goto cleanup;

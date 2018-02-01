@@ -153,6 +153,6 @@ void virBitmapIntersect(virBitmapPtr a, virBitmapPtr b)
 void virBitmapSubtract(virBitmapPtr a, virBitmapPtr b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-void virBitmapShrink(virBitmapPtr map, size_t b);
+int virBitmapShrink(virBitmapPtr map, size_t b);
 
 #endif
