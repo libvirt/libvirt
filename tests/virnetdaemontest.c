@@ -27,6 +27,60 @@
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 #if defined(HAVE_SOCKETPAIR) && defined(WITH_YAJL)
+struct testClientPriv {
+    int magic;
+};
+
+
+static void *
+testClientNew(virNetServerClientPtr client ATTRIBUTE_UNUSED,
+              void *opaque ATTRIBUTE_UNUSED)
+{
+    struct testClientPriv *priv;
+
+    if (VIR_ALLOC(priv) < 0)
+        return NULL;
+
+    priv->magic = 1729;
+
+    return priv;
+}
+
+
+static virJSONValuePtr
+testClientPreExec(virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                  void *data)
+{
+    struct testClientPriv *priv = data;
+
+    return virJSONValueNewNumberInt(priv->magic);
+}
+
+
+static void *
+testClientNewPostExec(virNetServerClientPtr client,
+                      virJSONValuePtr object,
+                      void *opaque)
+{
+    int magic;
+
+    if (virJSONValueGetNumberInt(object, &magic) < 0)
+        return NULL;
+
+    if (magic != 1729)
+        return NULL;
+
+    return testClientNew(client, opaque);
+}
+
+
+static void
+testClientFree(void *opaque)
+{
+    VIR_FREE(opaque);
+}
+
+
 static virNetServerPtr
 testCreateServer(const char *server_name, const char *host, int family)
 {
@@ -53,9 +107,9 @@ testCreateServer(const char *server_name, const char *host, int family)
                                 10, 50, 5, 100, 10,
                                 120, 5,
                                 mdns_group,
-                                NULL,
-                                NULL,
-                                NULL,
+                                testClientNew,
+                                testClientPreExec,
+                                testClientFree,
                                 NULL)))
         goto error;
 
@@ -101,7 +155,10 @@ testCreateServer(const char *server_name, const char *host, int family)
 # ifdef WITH_GNUTLS
                                        NULL,
 # endif
-                                       NULL, NULL, NULL, NULL)))
+                                       testClientNew,
+                                       testClientPreExec,
+                                       testClientFree,
+                                       NULL)))
         goto error;
 
     if (!(cln2 = virNetServerClientNew(virNetServerNextClientID(srv),
@@ -112,7 +169,10 @@ testCreateServer(const char *server_name, const char *host, int family)
 # ifdef WITH_GNUTLS
                                        NULL,
 # endif
-                                       NULL, NULL, NULL, NULL)))
+                                       testClientNew,
+                                       testClientPreExec,
+                                       testClientFree,
+                                       NULL)))
         goto error;
 
     if (virNetServerAddClient(srv, cln1) < 0)
@@ -206,8 +266,11 @@ testNewServerPostExecRestart(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
         if (STREQ(data->serverNames[i], name)) {
             return virNetServerNewPostExecRestart(object,
                                                   name,
-                                                  NULL, NULL, NULL,
-                                                  NULL, NULL);
+                                                  testClientNew,
+                                                  testClientNewPostExec,
+                                                  testClientPreExec,
+                                                  testClientFree,
+                                                  NULL);
         }
     }
 

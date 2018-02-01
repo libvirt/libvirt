@@ -27,6 +27,26 @@
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 #ifdef HAVE_SOCKETPAIR
+
+static void *
+testClientNew(virNetServerClientPtr client ATTRIBUTE_UNUSED,
+              void *opaque ATTRIBUTE_UNUSED)
+{
+    char *dummy;
+
+    if (VIR_ALLOC(dummy) < 0)
+        return NULL;
+
+    return dummy;
+}
+
+
+static void
+testClientFree(void *opaque)
+{
+    VIR_FREE(opaque);
+}
+
 static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
 {
     int sv[2];
@@ -56,7 +76,10 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
 # ifdef WITH_GNUTLS
                                          NULL,
 # endif
-                                         NULL, NULL, NULL, NULL))) {
+                                         testClientNew,
+                                         NULL,
+                                         testClientFree,
+                                         NULL))) {
         virDispatchError(NULL);
         goto cleanup;
     }

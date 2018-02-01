@@ -36,7 +36,8 @@
                         "errfd": -1,
                         "pid": -1,
                         "isClient": true
-                    }
+                    },
+		    "privateData": 1729
                 },
             ]
         }
