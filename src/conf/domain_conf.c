@@ -26862,8 +26862,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
             case VIR_DOMAIN_FEATURE_CAPABILITIES:
                 if (def->features[i] == VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT &&
-                        !virDomainDefHasCapabilitiesFeatures(def))
+                    !virDomainDefHasCapabilitiesFeatures(def)) {
                     break;
+                }
 
                 virBufferAsprintf(buf, "<capabilities policy='%s'>\n",
                                   virDomainCapabilitiesPolicyTypeToString(def->features[i]));
