@@ -5373,6 +5373,15 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
             goto endjob;
     }
 
+    /* Now that the state data was transferred we can refresh the actual state
+     * of the devices */
+    if (qemuProcessRefreshState(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN) < 0) {
+        /* Similarly to the case above v2 protocol will not be able to recover
+         * from this. Let's ignore this and perhaps stuff will not break. */
+        if (v3proto)
+            goto endjob;
+    }
+
     if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY)
         inPostCopy = true;
 

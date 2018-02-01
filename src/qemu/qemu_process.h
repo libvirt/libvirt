@@ -129,6 +129,10 @@ int qemuProcessFinishStartup(virConnectPtr conn,
                              bool startCPUs,
                              virDomainPausedReason pausedReason);
 
+int qemuProcessRefreshState(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            qemuDomainAsyncJob asyncJob);
+
 typedef enum {
     VIR_QEMU_PROCESS_STOP_MIGRATED      = 1 << 0,
     VIR_QEMU_PROCESS_STOP_NO_RELABEL    = 1 << 1,

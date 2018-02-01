@@ -6084,7 +6084,7 @@ qemuProcessLaunch(virConnectPtr conn,
  * function is called after a deferred migration finishes so that we can update
  * state influenced by the migration stream.
  */
-static int
+int
 qemuProcessRefreshState(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         qemuDomainAsyncJob asyncJob)
@@ -6124,9 +6124,6 @@ qemuProcessFinishStartup(virConnectPtr conn,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
-
-    if (qemuProcessRefreshState(driver, vm, asyncJob) < 0)
-        goto cleanup;
 
     if (startCPUs) {
         VIR_DEBUG("Starting domain CPUs");
@@ -6231,10 +6228,16 @@ qemuProcessStart(virConnectPtr conn,
                                  VIR_DOMAIN_PAUSED_USER) < 0)
         goto stop;
 
-    /* Keep watching qemu log for errors during incoming migration, otherwise
-     * unset reporting errors from qemu log. */
-    if (!incoming)
+    if (!incoming) {
+        /* Keep watching qemu log for errors during incoming migration, otherwise
+         * unset reporting errors from qemu log. */
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
+
+        /* Refresh state of devices from qemu. During migration this needs to
+         * happen after the state information is fully transferred. */
+        if (qemuProcessRefreshState(driver, vm, asyncJob) < 0)
+            goto stop;
+    }
 
     ret = 0;
 
