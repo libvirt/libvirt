@@ -21336,7 +21336,6 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
         case VIR_DOMAIN_FEATURE_HYPERV:
         case VIR_DOMAIN_FEATURE_KVM:
         case VIR_DOMAIN_FEATURE_PVSPINLOCK:
-        case VIR_DOMAIN_FEATURE_CAPABILITIES:
         case VIR_DOMAIN_FEATURE_PMU:
         case VIR_DOMAIN_FEATURE_VMPORT:
         case VIR_DOMAIN_FEATURE_GIC:
@@ -21351,6 +21350,20 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
                                featureName,
                                virTristateSwitchTypeToString(src->features[i]),
                                virTristateSwitchTypeToString(dst->features[i]));
+                return false;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_CAPABILITIES:
+            if (src->features[i] != dst->features[i]) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("State of feature '%s' differs: "
+                                 "source: '%s=%s', destination: '%s=%s'"),
+                               featureName,
+                               "policy",
+                               virDomainCapabilitiesPolicyTypeToString(src->features[i]),
+                               "policy",
+                               virDomainCapabilitiesPolicyTypeToString(dst->features[i]));
                 return false;
             }
             break;
