@@ -299,9 +299,8 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon,
         goto cleanup;
 
     processEvent->eventType = QEMU_PROCESS_EVENT_MONITOR_EOF;
-    processEvent->vm = vm;
+    processEvent->vm = virObjectRef(vm);
 
-    virObjectRef(vm);
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
         ignore_value(virObjectUnref(vm));
         VIR_FREE(processEvent);
@@ -911,11 +910,10 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         if (VIR_ALLOC(processEvent) == 0) {
             processEvent->eventType = QEMU_PROCESS_EVENT_WATCHDOG;
             processEvent->action = VIR_DOMAIN_WATCHDOG_ACTION_DUMP;
-            processEvent->vm = vm;
             /* Hold an extra reference because we can't allow 'vm' to be
              * deleted before handling watchdog event is finished.
              */
-            virObjectRef(vm);
+            processEvent->vm = virObjectRef(vm);
             if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
                 if (!virObjectUnref(vm))
                     vm = NULL;
@@ -1035,11 +1033,10 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         if (VIR_STRDUP(data, diskAlias) < 0)
             goto error;
         processEvent->data = data;
-        processEvent->vm = vm;
+        processEvent->vm = virObjectRef(vm);
         processEvent->action = type;
         processEvent->status = status;
 
-        virObjectRef(vm);
         if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
             ignore_value(virObjectUnref(vm));
             goto error;
@@ -1349,12 +1346,12 @@ qemuProcessHandleGuestPanic(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
     processEvent->eventType = QEMU_PROCESS_EVENT_GUESTPANIC;
     processEvent->action = vm->def->onCrash;
-    processEvent->vm = vm;
     processEvent->data = info;
     /* Hold an extra reference because we can't allow 'vm' to be
      * deleted before handling guest panic event is finished.
      */
-    virObjectRef(vm);
+    processEvent->vm = virObjectRef(vm);
+
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
         if (!virObjectUnref(vm))
             vm = NULL;
@@ -1395,9 +1392,8 @@ qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (VIR_STRDUP(data, devAlias) < 0)
         goto error;
     processEvent->data = data;
-    processEvent->vm = vm;
+    processEvent->vm = virObjectRef(vm);
 
-    virObjectRef(vm);
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
         ignore_value(virObjectUnref(vm));
         goto error;
@@ -1544,9 +1540,8 @@ qemuProcessHandleNicRxFilterChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     if (VIR_STRDUP(data, devAlias) < 0)
         goto error;
     processEvent->data = data;
-    processEvent->vm = vm;
+    processEvent->vm = virObjectRef(vm);
 
-    virObjectRef(vm);
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
         ignore_value(virObjectUnref(vm));
         goto error;
@@ -1587,9 +1582,8 @@ qemuProcessHandleSerialChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         goto error;
     processEvent->data = data;
     processEvent->action = connected;
-    processEvent->vm = vm;
+    processEvent->vm = virObjectRef(vm);
 
-    virObjectRef(vm);
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
         ignore_value(virObjectUnref(vm));
         goto error;
