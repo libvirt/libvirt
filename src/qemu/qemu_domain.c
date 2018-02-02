@@ -11384,3 +11384,28 @@ qemuDomainPrepareDiskSource(virConnectPtr conn,
 
     return 0;
 }
+
+
+void
+qemuProcessEventFree(struct qemuProcessEvent *event)
+{
+    if (!event)
+        return;
+
+    switch (event->eventType) {
+    case QEMU_PROCESS_EVENT_GUESTPANIC:
+        qemuMonitorEventPanicInfoFree(event->data);
+        break;
+    case QEMU_PROCESS_EVENT_WATCHDOG:
+    case QEMU_PROCESS_EVENT_DEVICE_DELETED:
+    case QEMU_PROCESS_EVENT_NIC_RX_FILTER_CHANGED:
+    case QEMU_PROCESS_EVENT_SERIAL_CHANGED:
+    case QEMU_PROCESS_EVENT_BLOCK_JOB:
+    case QEMU_PROCESS_EVENT_MONITOR_EOF:
+        VIR_FREE(event->data);
+        break;
+    case QEMU_PROCESS_EVENT_LAST:
+        break;
+    }
+    VIR_FREE(event);
+}

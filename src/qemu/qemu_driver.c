@@ -4183,8 +4183,8 @@ processWatchdogEvent(virQEMUDriverPtr driver,
     qemuDomainObjEndAsyncJob(driver, vm);
 
  cleanup:
-    VIR_FREE(dumpfile);
     virObjectUnref(cfg);
+    VIR_FREE(dumpfile);
 }
 
 static int
@@ -4309,7 +4309,6 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
         qemuDomainRemoveInactiveJob(driver, vm);
 
  cleanup:
-    qemuMonitorEventPanicInfoFree(info);
     virObjectUnref(cfg);
 }
 
@@ -4317,7 +4316,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
 static void
 processDeviceDeletedEvent(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
-                          char *devAlias)
+                          const char *devAlias)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainDeviceDef dev;
@@ -4351,7 +4350,6 @@ processDeviceDeletedEvent(virQEMUDriverPtr driver,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    VIR_FREE(devAlias);
     virObjectUnref(cfg);
 }
 
@@ -4547,7 +4545,7 @@ syncNicRxFilterMulticast(char *ifname,
 static void
 processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               char *devAlias)
+                               const char *devAlias)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -4648,7 +4646,6 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
  cleanup:
     virNetDevRxFilterFree(hostFilter);
     virNetDevRxFilterFree(guestFilter);
-    VIR_FREE(devAlias);
     virObjectUnref(cfg);
 }
 
@@ -4656,7 +4653,7 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
 static void
 processSerialChangedEvent(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
-                          char *devAlias,
+                          const char *devAlias,
                           bool connected)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -4735,23 +4732,21 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    VIR_FREE(devAlias);
     virObjectUnref(cfg);
-
 }
 
 
 static void
 processBlockJobEvent(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
-                     char *diskAlias,
+                     const char *diskAlias,
                      int type,
                      int status)
 {
     virDomainDiskDefPtr disk;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
+        return;
 
     if (!virDomainObjIsActive(vm)) {
         VIR_DEBUG("Domain is not running");
@@ -4763,8 +4758,6 @@ processBlockJobEvent(virQEMUDriverPtr driver,
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
- cleanup:
-    VIR_FREE(diskAlias);
 }
 
 
@@ -4856,7 +4849,7 @@ static void qemuProcessEventHandler(void *data, void *opaque)
     }
 
     virDomainObjEndAPI(&vm);
-    VIR_FREE(processEvent);
+    qemuProcessEventFree(processEvent);
 }
 
 

@@ -445,6 +445,8 @@ struct qemuProcessEvent {
     void *data;
 };
 
+void qemuProcessEventFree(struct qemuProcessEvent *event);
+
 typedef struct _qemuDomainLogContext qemuDomainLogContext;
 typedef qemuDomainLogContext *qemuDomainLogContextPtr;
 
