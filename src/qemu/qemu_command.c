@@ -7175,13 +7175,6 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
 
         if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON) {
             if (def->gic_version != VIR_GIC_VERSION_NONE) {
-                if (!qemuDomainIsVirt(def)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("gic-version option is available "
-                                     "only for ARM virt machine"));
-                    goto cleanup;
-                }
-
                 /* The default GIC version (GICv2) should not be specified on
                  * the QEMU commandline for backwards compatibility reasons */
                 if (def->gic_version != VIR_GIC_VERSION_2) {

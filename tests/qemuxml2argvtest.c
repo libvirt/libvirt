@@ -2660,12 +2660,12 @@ mymain(void)
     DO_TEST_PARSE_ERROR("aarch64-gic-invalid",
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_FAILURE("aarch64-gic-not-virt",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
-            QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_FAILURE("aarch64-gic-not-arm",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
-            QEMU_CAPS_MACH_VIRT_GIC_VERSION);
+    DO_TEST_PARSE_ERROR("aarch64-gic-not-virt",
+                        QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+                        QEMU_CAPS_MACH_VIRT_GIC_VERSION);
+    DO_TEST_PARSE_ERROR("aarch64-gic-not-arm",
+                        QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+                        QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST("aarch64-kvm-32-on-64",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_PL011,
