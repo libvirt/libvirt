@@ -2500,9 +2500,15 @@ qemuProcessResctrlCreate(virQEMUDriverPtr driver,
 {
     int ret = -1;
     size_t i = 0;
-    virCapsPtr caps = virQEMUDriverGetCapabilities(driver, false);
+    virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
+    if (!vm->def->ncachetunes)
+        return 0;
+
+    /* Force capability refresh since resctrl info can change
+     * XXX: move cache info into virresctrl so caps are not needed */
+    caps = virQEMUDriverGetCapabilities(driver, true);
     if (!caps)
         return -1;
 
