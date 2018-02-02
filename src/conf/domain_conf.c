@@ -21328,7 +21328,6 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
 
         switch ((virDomainFeature) i) {
         case VIR_DOMAIN_FEATURE_ACPI:
-        case VIR_DOMAIN_FEATURE_APIC:
         case VIR_DOMAIN_FEATURE_PAE:
         case VIR_DOMAIN_FEATURE_HAP:
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
@@ -21338,10 +21337,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
         case VIR_DOMAIN_FEATURE_PVSPINLOCK:
         case VIR_DOMAIN_FEATURE_PMU:
         case VIR_DOMAIN_FEATURE_VMPORT:
-        case VIR_DOMAIN_FEATURE_GIC:
         case VIR_DOMAIN_FEATURE_SMM:
-        case VIR_DOMAIN_FEATURE_IOAPIC:
-        case VIR_DOMAIN_FEATURE_HPT:
         case VIR_DOMAIN_FEATURE_VMCOREINFO:
             if (src->features[i] != dst->features[i]) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -21368,28 +21364,69 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
             }
             break;
 
+        case VIR_DOMAIN_FEATURE_GIC:
+            if (src->features[i] != dst->features[i] ||
+                src->gic_version != dst->gic_version) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("State of feature '%s' differs: "
+                                 "source: '%s,%s=%s', destination: '%s,%s=%s'"),
+                               featureName,
+                               virTristateSwitchTypeToString(src->features[i]),
+                               "version", virGICVersionTypeToString(src->gic_version),
+                               virTristateSwitchTypeToString(dst->features[i]),
+                               "version", virGICVersionTypeToString(dst->gic_version));
+                return false;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_HPT:
+            if (src->features[i] != dst->features[i] ||
+                src->hpt_resizing != dst->hpt_resizing) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("State of feature '%s' differs: "
+                                 "source: '%s,%s=%s', destination: '%s,%s=%s'"),
+                               featureName,
+                               virTristateSwitchTypeToString(src->features[i]),
+                               "resizing", virDomainHPTResizingTypeToString(src->hpt_resizing),
+                               virTristateSwitchTypeToString(dst->features[i]),
+                               "resizing", virDomainHPTResizingTypeToString(dst->hpt_resizing));
+                return false;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_APIC:
+            if (src->features[i] != dst->features[i] ||
+                src->apic_eoi != dst->apic_eoi) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("State of feature '%s' differs: "
+                                 "source: '%s,%s=%s', destination: '%s,%s=%s'"),
+                               featureName,
+                               virTristateSwitchTypeToString(src->features[i]),
+                               "eoi", virTristateSwitchTypeToString(src->apic_eoi),
+                               virTristateSwitchTypeToString(dst->features[i]),
+                               "eoi", virTristateSwitchTypeToString(dst->apic_eoi));
+                return false;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_IOAPIC:
+            if (src->features[i] != dst->features[i] ||
+                src->ioapic != dst->ioapic) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("State of feature '%s' differs: "
+                                 "source: '%s,%s=%s', destination: '%s,%s=%s'"),
+                               featureName,
+                               virTristateSwitchTypeToString(src->features[i]),
+                               "driver", virDomainIOAPICTypeToString(src->ioapic),
+                               virTristateSwitchTypeToString(dst->features[i]),
+                               "driver", virDomainIOAPICTypeToString(dst->ioapic));
+                return false;
+            }
+            break;
+
         case VIR_DOMAIN_FEATURE_LAST:
             break;
         }
-    }
-
-    /* APIC EOI */
-    if (src->apic_eoi != dst->apic_eoi) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("State of APIC EOI differs: "
-                         "source: '%s', destination: '%s'"),
-                       virTristateSwitchTypeToString(src->apic_eoi),
-                       virTristateSwitchTypeToString(dst->apic_eoi));
-        return false;
-    }
-
-    /* GIC version */
-    if (src->gic_version != dst->gic_version) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Source GIC version '%s' does not match destination '%s'"),
-                       virGICVersionTypeToString(src->gic_version),
-                       virGICVersionTypeToString(dst->gic_version));
-        return false;
     }
 
     /* hyperv */
@@ -21467,28 +21504,6 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
             case VIR_DOMAIN_KVM_LAST:
                 break;
             }
-        }
-    }
-
-    /* ioapic */
-    if (src->ioapic != dst->ioapic) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("State of ioapic differs: "
-                         "source: '%s', destination: '%s'"),
-                       virDomainIOAPICTypeToString(src->ioapic),
-                       virDomainIOAPICTypeToString(dst->ioapic));
-        return false;
-    }
-
-    /* HPT resizing */
-    if (src->features[VIR_DOMAIN_FEATURE_HPT] == VIR_TRISTATE_SWITCH_ON) {
-        if (src->hpt_resizing != dst->hpt_resizing) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("HPT resizing configuration differs: "
-                             "source: '%s', destination: '%s'"),
-                           virDomainHPTResizingTypeToString(src->hpt_resizing),
-                           virDomainHPTResizingTypeToString(dst->hpt_resizing));
-            return false;
         }
     }
 
