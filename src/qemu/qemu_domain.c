@@ -3315,21 +3315,56 @@ qemuDomainDefGetVcpuHotplugGranularity(const virDomainDef *def)
 static int
 qemuDomainDefValidateFeatures(const virDomainDef *def)
 {
-    if (def->features[VIR_DOMAIN_FEATURE_IOAPIC] == VIR_TRISTATE_SWITCH_ON &&
-        !ARCH_IS_X86(def->os.arch)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("I/O APIC tuning is not supported "
-                         "for '%s' architecture"),
-                       virArchToString(def->os.arch));
-        return -1;
-    }
+    size_t i;
 
-    if (def->features[VIR_DOMAIN_FEATURE_HPT] == VIR_TRISTATE_SWITCH_ON &&
-        !qemuDomainIsPSeries(def)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s",
-                       _("HPT tuning is only supported for pSeries guests"));
-        return -1;
+    for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
+        const char *featureName = virDomainFeatureTypeToString(i);
+
+        switch ((virDomainFeature) i) {
+        case VIR_DOMAIN_FEATURE_IOAPIC:
+            if (def->features[i] == VIR_TRISTATE_SWITCH_ON &&
+                !ARCH_IS_X86(def->os.arch)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("The '%s' feature is not supported for "
+                                 "architecture '%s' or machine type '%s'"),
+                               featureName,
+                               virArchToString(def->os.arch),
+                               def->os.machine);
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_HPT:
+            if (def->features[i] == VIR_TRISTATE_SWITCH_ON &&
+                !qemuDomainIsPSeries(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("The '%s' feature is not supported for "
+                                 "architecture '%s' or machine type '%s'"),
+                               featureName,
+                               virArchToString(def->os.arch),
+                               def->os.machine);
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_FEATURE_ACPI:
+        case VIR_DOMAIN_FEATURE_APIC:
+        case VIR_DOMAIN_FEATURE_PAE:
+        case VIR_DOMAIN_FEATURE_HAP:
+        case VIR_DOMAIN_FEATURE_VIRIDIAN:
+        case VIR_DOMAIN_FEATURE_PRIVNET:
+        case VIR_DOMAIN_FEATURE_HYPERV:
+        case VIR_DOMAIN_FEATURE_KVM:
+        case VIR_DOMAIN_FEATURE_PVSPINLOCK:
+        case VIR_DOMAIN_FEATURE_CAPABILITIES:
+        case VIR_DOMAIN_FEATURE_PMU:
+        case VIR_DOMAIN_FEATURE_VMPORT:
+        case VIR_DOMAIN_FEATURE_GIC:
+        case VIR_DOMAIN_FEATURE_SMM:
+        case VIR_DOMAIN_FEATURE_VMCOREINFO:
+        case VIR_DOMAIN_FEATURE_LAST:
+            break;
+        }
     }
 
     return 0;

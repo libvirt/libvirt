@@ -346,6 +346,8 @@ virDomainDiskSetFormat;
 virDomainDiskSetSource;
 virDomainDiskSetType;
 virDomainDiskTranslateSourcePool;
+virDomainFeatureTypeFromString;
+virDomainFeatureTypeToString;
 virDomainFSDefFree;
 virDomainFSDefNew;
 virDomainFSDriverTypeToString;
