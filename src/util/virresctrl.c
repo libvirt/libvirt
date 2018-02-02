@@ -941,6 +941,17 @@ virResctrlAllocParseProcessCache(virResctrlInfoPtr resctrl,
     if (!mask)
         return -1;
 
+    if (!resctrl ||
+        level >= resctrl->nlevels ||
+        !resctrl->levels[level] ||
+        !resctrl->levels[level]->types[type]) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Missing or inconsistent resctrl info for "
+                         "level '%ud' type '%s'"),
+                       level, virCacheTypeToString(type));
+        goto cleanup;
+    }
+
     if (virBitmapShrink(mask, resctrl->levels[level]->types[type]->bits) < 0)
         goto cleanup;
 
