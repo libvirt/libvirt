@@ -146,6 +146,14 @@ virBitmapFree(virBitmapPtr bitmap)
 }
 
 
+/**
+ * virBitmapCopy:
+ * @dst: destination bitmap
+ * @src: source bitmap
+ *
+ * Copies contents of @src to @dst. @dst must have the same size as @src.
+ * Returns -1 if the size is not the same or 0 on success.
+ */
 int
 virBitmapCopy(virBitmapPtr dst,
               virBitmapPtr src)
@@ -882,6 +890,12 @@ virBitmapEqual(virBitmapPtr b1,
 }
 
 
+/**
+ * virBitmapSize:
+ * @bitmap: virBitmap to inspect
+ *
+ * Returns number of bits @bitmap can store.
+ */
 size_t
 virBitmapSize(virBitmapPtr bitmap)
 {
@@ -1116,7 +1130,12 @@ virBitmapNextClearBit(virBitmapPtr bitmap,
 }
 
 
-/* Return the number of bits currently set in the map.  */
+/**
+ * virBitmapCountBits:
+ * @bitmap: bitmap to inspect
+ *
+ * Return the number of bits currently set in @bitmap.
+ */
 size_t
 virBitmapCountBits(virBitmapPtr bitmap)
 {
@@ -1192,6 +1211,14 @@ virBitmapDataFormat(const void *data,
 }
 
 
+/**
+ * virBitmapOverlaps:
+ * @b1: virBitmap to inspect
+ * @b2: virBitmap to inspect
+ *
+ * Returns true if at least one bit with the same index is set both in @b1 and
+ * @b2.
+ */
 bool
 virBitmapOverlaps(virBitmapPtr b1,
                   virBitmapPtr b2)
