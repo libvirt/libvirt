@@ -1317,5 +1317,6 @@ virBitmapShrink(virBitmapPtr map,
         return -1;
 
     map->map_len = nl;
+    map->map_alloc = nl;
     return 0;
 }
