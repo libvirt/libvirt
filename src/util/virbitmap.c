@@ -45,6 +45,10 @@ struct _virBitmap {
     size_t nbits;
     size_t map_len;
     size_t map_alloc;
+
+    /* Note that code below depends on the fact that unused bits of the bitmap
+     * are not set. Any function decreasing the size of the map needs clear
+     * bits which don't belong to the bitmap any more. */
     unsigned long *map;
 };
 
