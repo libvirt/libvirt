@@ -1292,15 +1292,16 @@ virBitmapSubtract(virBitmapPtr a,
  * Reduces the bitmap to size @b.  Nothing will change if the size is already
  * smaller than or equal to @b.
  */
-int
+void
 virBitmapShrink(virBitmapPtr map,
                 size_t b)
 {
+    size_t toremove;
     size_t nl = 0;
     size_t nb = 0;
 
     if (!map)
-        return 0;
+        return;
 
     if (map->nbits >= b)
         map->nbits = b;
@@ -1309,14 +1310,13 @@ virBitmapShrink(virBitmapPtr map,
     nb = map->nbits % VIR_BITMAP_BITS_PER_UNIT;
     map->map[nl] &= ((1UL << nb) - 1);
 
-    nl++;
-    if (nl == map->map_len)
-        return 0;
+    toremove = map->map_alloc - (nl + 1);
 
-    if (VIR_REALLOC_N(map->map, nl) < 0)
-        return -1;
+    if (toremove == 0)
+        return;
 
-    map->map_len = nl;
-    map->map_alloc = nl;
-    return 0;
+    VIR_SHRINK_N(map->map, map->map_alloc, toremove);
+
+    /* length needs to be fixed as well */
+    map->map_len = map->map_alloc;
 }
