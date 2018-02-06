@@ -2806,6 +2806,7 @@ EXTRA_DIST += \
         locking/test_virtlockd.aug.in \
         logging/virtlogd.service.in \
         logging/virtlogd.socket.in \
+        logging/virtlogd-admin.socket.in \
         logging/virtlogd.aug \
         logging/virtlogd.conf \
         logging/test_virtlogd.aug.in \
@@ -2820,12 +2821,13 @@ if LIBVIRT_INIT_SCRIPT_SYSTEMD
 SYSTEMD_UNIT_DIR = $(prefix)/lib/systemd/system
 
 BUILT_SOURCES += virtlockd.service virtlockd.socket \
-		 virtlogd.service virtlogd.socket
+		 virtlogd.service virtlogd.socket virtlogd-admin.socket
 DISTCLEANFILES += virtlockd.service virtlockd.socket \
-		  virtlogd.service virtlogd.socket
+		  virtlogd.service virtlogd.socket virtlogd-admin.socket
 
 install-systemd: virtlockd.service virtlockd.socket \
-                 virtlogd.service virtlogd.socket install-sysconfig
+                 virtlogd.service virtlogd.socket virtlogd-admin.socket \
+		 install-sysconfig
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 	$(INSTALL_DATA) virtlockd.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
@@ -2835,12 +2837,15 @@ install-systemd: virtlockd.service virtlockd.socket \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
 	$(INSTALL_DATA) virtlogd.socket \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
+	$(INSTALL_DATA) virtlogd-admin.socket \
+	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
 
 uninstall-systemd: uninstall-sysconfig
 	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlockd.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlockd.socket
 	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlogd.service \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlogd.socket
+	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlogd.socket \
+	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlogd-admin.socket
 	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR) || :
 else ! LIBVIRT_INIT_SCRIPT_SYSTEMD
 install-systemd:
@@ -2870,6 +2875,13 @@ virtlogd.service: logging/virtlogd.service.in $(top_builddir)/config.status
 	    mv $@-t $@
 
 virtlogd.socket: logging/virtlogd.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
+	    mv $@-t $@
+
+virtlogd-admin.socket: logging/virtlogd-admin.socket.in \
+                       $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
 	    < $< > $@-t && \

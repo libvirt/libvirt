@@ -1520,13 +1520,16 @@ exit 0
 
 %if %{with_systemd}
     %if %{with_systemd_macros}
-        %systemd_post virtlockd.socket virtlogd.socket libvirtd.service
+        %systemd_post virtlockd.socket \
+            virtlogd.socket virtlogd-admin.socket \
+            libvirtd.service
     %else
 if [ $1 -eq 1 ] ; then
     # Initial installation
     /bin/systemctl enable \
         virtlockd.socket \
         virtlogd.socket \
+        virtlogd-admin.socket \
         libvirtd.service >/dev/null 2>&1 || :
 fi
     %endif
@@ -1553,19 +1556,23 @@ touch %{_localstatedir}/lib/rpm-state/libvirt/restart || :
 %preun daemon
 %if %{with_systemd}
     %if %{with_systemd_macros}
-        %systemd_preun libvirtd.service virtlogd.socket virtlogd.service virtlockd.socket virtlockd.service
+        %systemd_preun libvirtd.service \
+            virtlogd.socket virtlogd-admin.socket virtlogd.service \
+            virtlockd.socket virtlockd.service
     %else
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
     /bin/systemctl --no-reload disable \
         libvirtd.service \
         virtlogd.socket \
+        virtlogd-admin.socket \
         virtlogd.service \
         virtlockd.socket \
         virtlockd.service > /dev/null 2>&1 || :
     /bin/systemctl stop \
         libvirtd.service \
         virtlogd.socket \
+        virtlogd-admin.socket \
         virtlogd.service \
         virtlockd.socket \
         virtlockd.service > /dev/null 2>&1 || :
@@ -1613,9 +1620,9 @@ fi
 if [ $1 -ge 1 ] ; then
 %if %{with_systemd}
         /bin/systemctl is-enabled libvirtd.service 1>/dev/null 2>&1 &&
-            /bin/systemctl enable virtlogd.socket || :
+            /bin/systemctl enable virtlogd.socket virtlogd-admin.socket || :
         /bin/systemctl is-active libvirtd.service 1>/dev/null 2>&1 &&
-            /bin/systemctl start virtlogd.socket || :
+            /bin/systemctl start virtlogd.socket virtlogd-admin.socket || :
 %else
         /sbin/chkconfig libvirtd 1>/dev/null 2>&1 &&
             /sbin/chkconfig virtlogd on || :
@@ -1820,6 +1827,7 @@ exit 0
 %{_unitdir}/virt-guest-shutdown.target
 %{_unitdir}/virtlogd.service
 %{_unitdir}/virtlogd.socket
+%{_unitdir}/virtlogd-admin.socket
 %{_unitdir}/virtlockd.service
 %{_unitdir}/virtlockd.socket
 %else
