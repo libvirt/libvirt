@@ -8726,6 +8726,11 @@ qemuDomainRefreshVcpuHalted(virQEMUDriverPtr driver,
     if (vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
         return 0;
 
+    /* The halted state is interresting only on s390(x). On other platforms
+     * the data would be stale at the time when it would be used. */
+    if (!ARCH_IS_S390(vm->def->os.arch))
+        return 0;
+
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
