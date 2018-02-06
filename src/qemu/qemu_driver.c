@@ -1490,8 +1490,7 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm,
                          unsigned long long *cpuwait,
                          int maxinfo,
                          unsigned char *cpumaps,
-                         int maplen,
-                         bool *cpuhalted)
+                         int maplen)
 {
     size_t ncpuinfo = 0;
     size_t i;
@@ -1510,9 +1509,6 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm,
 
     if (cpumaps)
         memset(cpumaps, 0, sizeof(*cpumaps) * maxinfo);
-
-    if (cpuhalted)
-        memset(cpuhalted, 0, sizeof(*cpuhalted) * maxinfo);
 
     for (i = 0; i < virDomainDefGetVcpusMax(vm->def) && ncpuinfo < maxinfo; i++) {
         virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, i);
@@ -1550,9 +1546,6 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm,
             if (qemuGetSchedInfo(&(cpuwait[ncpuinfo]), vm->pid, vcpupid) < 0)
                 return -1;
         }
-
-        if (cpuhalted)
-            cpuhalted[ncpuinfo] = qemuDomainGetVcpuHalted(vm, ncpuinfo);
 
         ncpuinfo++;
     }
@@ -5461,8 +5454,7 @@ qemuDomainGetVcpus(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = qemuDomainHelperGetVcpus(vm, info, NULL, maxinfo, cpumaps, maplen,
-                                   NULL);
+    ret = qemuDomainHelperGetVcpus(vm, info, NULL, maxinfo, cpumaps, maplen);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -19700,7 +19692,7 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
 
     if (qemuDomainHelperGetVcpus(dom, cpuinfo, cpuwait,
                                  virDomainDefGetVcpus(dom->def),
-                                 NULL, 0, NULL) < 0) {
+                                 NULL, 0) < 0) {
         virResetLastError();
         ret = 0; /* it's ok to be silent and go ahead */
         goto cleanup;
