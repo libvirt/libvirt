@@ -3968,7 +3968,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    qemuDomainObjPrivatePtr priv;
+    qemuDomainObjPrivatePtr priv = NULL;
     bool resume = false, paused = false;
     int ret = -1;
     virObjectEventPtr event = NULL;
