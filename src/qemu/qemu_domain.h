@@ -399,7 +399,7 @@ struct _qemuDomainVcpuPrivate {
     int enable_id; /* order in which the vcpus were enabled in qemu */
     int qemu_id; /* ID reported by qemu as 'CPU' in query-cpus */
     char *alias;
-    bool halted;
+    virTristateBool halted;
 
     /* information for hotpluggable cpus */
     char *type;

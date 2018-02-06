@@ -8737,7 +8737,8 @@ qemuDomainRefreshVcpuHalted(virQEMUDriverPtr driver,
     for (i = 0; i < maxvcpus; i++) {
         vcpu = virDomainDefGetVcpu(vm->def, i);
         vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
-        vcpupriv->halted = virBitmapIsBitSet(haltedmap, vcpupriv->qemu_id);
+        vcpupriv->halted = virTristateBoolFromBool(virBitmapIsBitSet(haltedmap,
+                                                                     vcpupriv->qemu_id));
     }
 
     ret = 0;

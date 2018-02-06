@@ -19659,7 +19659,6 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
     char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
     virVcpuInfoPtr cpuinfo = NULL;
     unsigned long long *cpuwait = NULL;
-    bool vcpuhalted = false;
 
     if (virTypedParamsAddUInt(&record->params,
                               &record->nparams,
@@ -19679,15 +19678,11 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
         VIR_ALLOC_N(cpuwait, virDomainDefGetVcpus(dom->def)) < 0)
         goto cleanup;
 
-    if (HAVE_JOB(privflags) && virDomainObjIsActive(dom)) {
-        if (qemuDomainRefreshVcpuHalted(driver, dom,
-                                        QEMU_ASYNC_JOB_NONE) < 0) {
+    if (HAVE_JOB(privflags) && virDomainObjIsActive(dom) &&
+        qemuDomainRefreshVcpuHalted(driver, dom, QEMU_ASYNC_JOB_NONE) < 0) {
             /* it's ok to be silent and go ahead, because halted vcpu info
              * wasn't here from the beginning */
             virResetLastError();
-        } else {
-            vcpuhalted = true;
-        }
     }
 
     if (qemuDomainHelperGetVcpus(dom, cpuinfo, cpuwait,
@@ -19735,14 +19730,14 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
 
         vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
 
-        if (vcpuhalted) {
+        if (vcpupriv->halted != VIR_TRISTATE_BOOL_ABSENT) {
             snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
                      "vcpu.%u.halted", cpuinfo[i].number);
             if (virTypedParamsAddBoolean(&record->params,
                                          &record->nparams,
                                          maxparams,
                                          param_name,
-                                         vcpupriv->halted) < 0)
+                                         vcpupriv->halted == VIR_TRISTATE_BOOL_YES) < 0)
                 goto cleanup;
         }
     }
