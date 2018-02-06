@@ -1074,6 +1074,7 @@ virDomainNumaCheckABIStability(virDomainNumaPtr src,
                                virDomainNumaPtr tgt)
 {
     size_t i;
+    size_t j;
 
     if (virDomainNumaGetNodeCount(src) != virDomainNumaGetNodeCount(tgt)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -1101,6 +1102,17 @@ virDomainNumaCheckABIStability(virDomainNumaPtr src,
                            _("Processor mask of target NUMA node %zu doesn't "
                              "match source"), i);
             return false;
+        }
+
+        for (j = 0; j < virDomainNumaGetNodeCount(src); j++) {
+            if (virDomainNumaGetNodeDistance(src, i, j) !=
+                virDomainNumaGetNodeDistance(tgt, i, j)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Target NUMA distance from %zu to %zu "
+                                 "doesn't match source"), i, j);
+
+                return false;
+            }
         }
     }
 
