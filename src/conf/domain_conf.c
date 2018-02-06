@@ -5573,7 +5573,7 @@ virDomainDeviceDefValidateAliasesIterator(virDomainDefPtr def,
     struct virDomainDefValidateAliasesData *data = opaque;
     const char *alias = info->alias;
 
-    if (!alias)
+    if (!alias || !virDomainDeviceAliasIsUserAlias(alias))
         return 0;
 
     /* Some crazy backcompat for consoles. */
