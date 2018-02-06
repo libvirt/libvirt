@@ -3873,9 +3873,9 @@ qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net)
                 }
                 hasIPv4 = true;
 
-                if (ip->prefix > 27) {
+                if (ip->prefix < 4 || ip->prefix > 27) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("prefix too long"));
+                                   _("invalid prefix, must be in range of 4-27"));
                     return -1;
                 }
             }
