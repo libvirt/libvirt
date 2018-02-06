@@ -29,6 +29,7 @@
 # include <libxl.h>
 # include <xenstore.h>
 # include <xenctrl.h>
+# include <sys/socket.h>
 
 VIR_MOCK_IMPL_RET_VOID(xs_daemon_open,
                        struct xs_handle *)
@@ -67,6 +68,12 @@ VIR_MOCK_STUB_RET_ARGS(xc_sharing_used_frames,
 
 VIR_MOCK_STUB_VOID_ARGS(xs_daemon_close,
                         struct xs_handle *, handle)
+
+VIR_MOCK_STUB_RET_ARGS(bind,
+                       int, 0,
+                       int, sockfd,
+                       const struct sockaddr *, addr,
+                       socklen_t, addrlen)
 
 VIR_MOCK_IMPL_RET_ARGS(__xstat, int,
                        int, ver,

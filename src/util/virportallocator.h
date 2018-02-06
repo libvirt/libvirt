@@ -28,15 +28,10 @@
 typedef struct _virPortAllocatorRange virPortAllocatorRange;
 typedef virPortAllocatorRange *virPortAllocatorRangePtr;
 
-typedef enum {
-    VIR_PORT_ALLOCATOR_SKIP_BIND_CHECK = (1 << 0),
-} virPortAllocatorFlags;
-
 virPortAllocatorRangePtr
 virPortAllocatorRangeNew(const char *name,
                          unsigned short start,
-                         unsigned short end,
-                         unsigned int flags);
+                         unsigned short end);
 
 void virPortAllocatorRangeFree(virPortAllocatorRangePtr range);
 

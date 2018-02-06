@@ -658,15 +658,14 @@ libxlStateInitialize(bool privileged,
     if (!(libxl_driver->reservedGraphicsPorts =
           virPortAllocatorRangeNew(_("VNC"),
                                    LIBXL_VNC_PORT_MIN,
-                                   LIBXL_VNC_PORT_MAX,
-                                   0)))
+                                   LIBXL_VNC_PORT_MAX)))
         goto error;
 
     /* Allocate bitmap for migration port reservation */
     if (!(libxl_driver->migrationPorts =
           virPortAllocatorRangeNew(_("migration"),
                                    LIBXL_MIGRATION_PORT_MIN,
-                                   LIBXL_MIGRATION_PORT_MAX, 0)))
+                                   LIBXL_MIGRATION_PORT_MAX)))
         goto error;
 
     if (!(libxl_driver->domains = virDomainObjListNew()))

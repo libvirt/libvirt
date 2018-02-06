@@ -42,7 +42,7 @@ VIR_LOG_INIT("tests.portallocatortest");
 
 static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
 {
-    virPortAllocatorRangePtr ports = virPortAllocatorRangeNew("test", 5900, 5909, 0);
+    virPortAllocatorRangePtr ports = virPortAllocatorRangeNew("test", 5900, 5909);
     int ret = -1;
     unsigned short p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0, p7 = 0;
 
@@ -114,7 +114,7 @@ static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
 
 static int testAllocReuse(const void *args ATTRIBUTE_UNUSED)
 {
-    virPortAllocatorRangePtr ports = virPortAllocatorRangeNew("test", 5900, 5910, 0);
+    virPortAllocatorRangePtr ports = virPortAllocatorRangeNew("test", 5900, 5910);
     int ret = -1;
     unsigned short p1 = 0, p2 = 0, p3 = 0, p4 = 0;
 

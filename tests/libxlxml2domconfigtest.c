@@ -74,8 +74,7 @@ testCompareXMLToDomConfig(const char *xmlfile,
     if (libxl_ctx_alloc(&ctx, LIBXL_VERSION, 0, log) < 0)
         goto cleanup;
 
-    if (!(gports = virPortAllocatorRangeNew("vnc", 5900, 6000,
-                                            VIR_PORT_ALLOCATOR_SKIP_BIND_CHECK)))
+    if (!(gports = virPortAllocatorRangeNew("vnc", 5900, 6000)))
         goto cleanup;
 
     if (!(xmlopt = libxlCreateXMLConf()))

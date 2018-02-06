@@ -53,3 +53,10 @@ int virNetDevSetOnline(const char *ifname ATTRIBUTE_UNUSED,
 {
     return 0;
 }
+
+int bind(int sockfd ATTRIBUTE_UNUSED,
+         const struct sockaddr *addr ATTRIBUTE_UNUSED,
+         socklen_t addrlen ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
