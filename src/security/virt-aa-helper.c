@@ -654,6 +654,11 @@ caps_mockup(vahControl * ctl, const char *xmlStr)
     return rc;
 }
 
+virDomainDefParserConfig virAAHelperDomainDefParserConfig = {
+    .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG |
+                VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN |
+                VIR_DOMAIN_DEF_FEATURE_INDIVIDUAL_VCPUS,
+};
 
 static int
 get_definition(vahControl * ctl, const char *xmlStr)
@@ -673,7 +678,8 @@ get_definition(vahControl * ctl, const char *xmlStr)
         goto exit;
     }
 
-    if (!(ctl->xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL, NULL, NULL))) {
+    if (!(ctl->xmlopt = virDomainXMLOptionNew(&virAAHelperDomainDefParserConfig,
+                                              NULL, NULL, NULL, NULL))) {
         vah_error(ctl, 0, _("Failed to create XML config object"));
         goto exit;
     }

@@ -2532,6 +2532,8 @@ typedef bool (*virDomainObjListACLFilter)(virConnectPtr conn,
                                           virDomainDefPtr def);
 
 
+/* NB: Any new flag to this list be considered to be set in
+ * virt-aa-helper code if the flag prevents parsing. */
 typedef enum {
     VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI = (1 << 0),
     VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG = (1 << 1),
