@@ -900,6 +900,7 @@ VIR_ENUM_IMPL(virDomainLoader,
 
 VIR_ENUM_IMPL(virDomainIOAPIC,
               VIR_DOMAIN_IOAPIC_LAST,
+              "none",
               "qemu",
               "kvm")
 
@@ -5913,8 +5914,7 @@ virDomainDefValidateInternal(const virDomainDef *def)
 
     if (def->iommu &&
         def->iommu->intremap == VIR_TRISTATE_SWITCH_ON &&
-        (def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_TRISTATE_SWITCH_ON ||
-         def->ioapic != VIR_DOMAIN_IOAPIC_QEMU)) {
+        def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_DOMAIN_IOAPIC_QEMU) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("IOMMU interrupt remapping requires split I/O APIC "
                          "(ioapic driver='qemu')"));
@@ -19224,14 +19224,13 @@ virDomainDefParseXML(xmlDocPtr xml,
             tmp = virXMLPropString(nodes[i], "driver");
             if (tmp) {
                 int value = virDomainIOAPICTypeFromString(tmp);
-                if (value < 0) {
+                if (value < 0 || value == VIR_DOMAIN_IOAPIC_NONE) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("Unknown driver mode: %s"),
                                    tmp);
                     goto error;
                 }
-                def->ioapic = value;
-                def->features[val] = VIR_TRISTATE_SWITCH_ON;
+                def->features[val] = value;
                 VIR_FREE(tmp);
             }
             break;
@@ -21410,16 +21409,13 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
             break;
 
         case VIR_DOMAIN_FEATURE_IOAPIC:
-            if (src->features[i] != dst->features[i] ||
-                src->ioapic != dst->ioapic) {
+            if (src->features[i] != dst->features[i]) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("State of feature '%s' differs: "
-                                 "source: '%s,%s=%s', destination: '%s,%s=%s'"),
+                                 "source: '%s=%s', destination: '%s=%s'"),
                                featureName,
-                               virTristateSwitchTypeToString(src->features[i]),
-                               "driver", virDomainIOAPICTypeToString(src->ioapic),
-                               virTristateSwitchTypeToString(dst->features[i]),
-                               "driver", virDomainIOAPICTypeToString(dst->ioapic));
+                               "driver", virDomainIOAPICTypeToString(src->features[i]),
+                               "driver", virDomainIOAPICTypeToString(dst->features[i]));
                 return false;
             }
             break;
@@ -26945,10 +26941,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 break;
 
             case VIR_DOMAIN_FEATURE_IOAPIC:
-                if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
-                    virBufferAsprintf(buf, "<ioapic driver='%s'/>\n",
-                                      virDomainIOAPICTypeToString(def->ioapic));
-                }
+                if (def->features[i] == VIR_DOMAIN_IOAPIC_NONE)
+                    break;
+
+                virBufferAsprintf(buf, "<ioapic driver='%s'/>\n",
+                                  virDomainIOAPICTypeToString(def->features[i]));
                 break;
 
             case VIR_DOMAIN_FEATURE_HPT:

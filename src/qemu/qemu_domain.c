@@ -3320,7 +3320,7 @@ qemuDomainDefValidateFeatures(const virDomainDef *def)
 
         switch ((virDomainFeature) i) {
         case VIR_DOMAIN_FEATURE_IOAPIC:
-            if (def->features[i] == VIR_TRISTATE_SWITCH_ON &&
+            if (def->features[i] != VIR_DOMAIN_IOAPIC_NONE &&
                 !ARCH_IS_X86(def->os.arch)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("The '%s' feature is not supported for "
