@@ -7249,7 +7249,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
             }
         }
 
-        if (def->features[VIR_DOMAIN_FEATURE_HPT] == VIR_TRISTATE_SWITCH_ON) {
+        if (def->features[VIR_DOMAIN_FEATURE_HPT] != VIR_DOMAIN_HPT_RESIZING_NONE) {
             const char *str;
 
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT)) {
@@ -7259,7 +7259,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                 goto cleanup;
             }
 
-            str = virDomainHPTResizingTypeToString(def->hpt_resizing);
+            str = virDomainHPTResizingTypeToString(def->features[VIR_DOMAIN_FEATURE_HPT]);
             if (!str) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Invalid setting for HPT resizing"));
