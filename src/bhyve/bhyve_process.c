@@ -425,9 +425,7 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
              if (vm->def->ngraphics == 1 &&
                  vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
                  int vnc_port = vm->def->graphics[0]->data.vnc.port;
-                 if (virPortAllocatorSetUsed(data->driver->remotePorts,
-                                             vnc_port,
-                                             true) < 0) {
+                 if (virPortAllocatorSetUsed(vnc_port, true) < 0) {
                      VIR_WARN("Failed to mark VNC port '%d' as used by '%s'",
                               vnc_port, vm->def->name);
                  }

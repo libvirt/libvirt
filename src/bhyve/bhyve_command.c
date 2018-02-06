@@ -409,9 +409,7 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
                     return -1;
                 graphics->data.vnc.port = port;
             } else {
-                if (virPortAllocatorSetUsed(driver->remotePorts,
-                                            graphics->data.vnc.port,
-                                            true) < 0)
+                if (virPortAllocatorSetUsed(graphics->data.vnc.port, true) < 0)
                     VIR_WARN("Failed to mark VNC port '%d' as used by '%s'",
                              graphics->data.vnc.port, def->name);
             }

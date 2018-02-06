@@ -97,7 +97,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         if (vmdef->graphics[0]->data.vnc.autoport)
             virPortAllocatorRelease(gports, vmdef->graphics[0]->data.vnc.port);
         else
-            virPortAllocatorSetUsed(gports, vmdef->graphics[0]->data.vnc.port, false);
+            virPortAllocatorSetUsed(vmdef->graphics[0]->data.vnc.port, false);
     }
 
     VIR_FREE(actualargv);
