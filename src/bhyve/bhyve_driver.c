@@ -1220,7 +1220,7 @@ bhyveStateCleanup(void)
     virObjectUnref(bhyve_driver->closeCallbacks);
     virObjectUnref(bhyve_driver->domainEventState);
     virObjectUnref(bhyve_driver->config);
-    virObjectUnref(bhyve_driver->remotePorts);
+    virPortAllocatorRangeFree(bhyve_driver->remotePorts);
 
     virMutexDestroy(&bhyve_driver->lock);
     VIR_FREE(bhyve_driver);
@@ -1267,7 +1267,8 @@ bhyveStateInitialize(bool privileged,
     if (!(bhyve_driver->domainEventState = virObjectEventStateNew()))
         goto cleanup;
 
-    if (!(bhyve_driver->remotePorts = virPortAllocatorNew(_("display"), 5900, 65535, 0)))
+    if (!(bhyve_driver->remotePorts = virPortAllocatorRangeNew(_("display"),
+                                                               5900, 65535, 0)))
         goto cleanup;
 
     bhyve_driver->hostsysinfo = virSysinfoRead();

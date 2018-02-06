@@ -725,24 +725,24 @@ qemuStateInitialize(bool privileged,
      * do this before the config is loaded properly, since the port
      * numbers are configurable now */
     if ((qemu_driver->remotePorts =
-         virPortAllocatorNew(_("display"),
-                             cfg->remotePortMin,
-                             cfg->remotePortMax,
-                             0)) == NULL)
+         virPortAllocatorRangeNew(_("display"),
+                                  cfg->remotePortMin,
+                                  cfg->remotePortMax,
+                                  0)) == NULL)
         goto error;
 
     if ((qemu_driver->webSocketPorts =
-         virPortAllocatorNew(_("webSocket"),
-                             cfg->webSocketPortMin,
-                             cfg->webSocketPortMax,
-                             0)) == NULL)
+         virPortAllocatorRangeNew(_("webSocket"),
+                                  cfg->webSocketPortMin,
+                                  cfg->webSocketPortMax,
+                                  0)) == NULL)
         goto error;
 
     if ((qemu_driver->migrationPorts =
-         virPortAllocatorNew(_("migration"),
-                             cfg->migrationPortMin,
-                             cfg->migrationPortMax,
-                             0)) == NULL)
+         virPortAllocatorRangeNew(_("migration"),
+                                  cfg->migrationPortMin,
+                                  cfg->migrationPortMax,
+                                  0)) == NULL)
         goto error;
 
     if (qemuSecurityInit(qemu_driver) < 0)
@@ -1085,9 +1085,9 @@ qemuStateCleanup(void)
     virObjectUnref(qemu_driver->qemuCapsCache);
 
     virObjectUnref(qemu_driver->domains);
-    virObjectUnref(qemu_driver->remotePorts);
-    virObjectUnref(qemu_driver->webSocketPorts);
-    virObjectUnref(qemu_driver->migrationPorts);
+    virPortAllocatorRangeFree(qemu_driver->remotePorts);
+    virPortAllocatorRangeFree(qemu_driver->webSocketPorts);
+    virPortAllocatorRangeFree(qemu_driver->migrationPorts);
     virObjectUnref(qemu_driver->migrationErrors);
 
     virObjectUnref(qemu_driver->xmlopt);

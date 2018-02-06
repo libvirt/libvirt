@@ -25,25 +25,28 @@
 # include "internal.h"
 # include "virobject.h"
 
-typedef struct _virPortAllocator virPortAllocator;
-typedef virPortAllocator *virPortAllocatorPtr;
+typedef struct _virPortAllocatorRange virPortAllocatorRange;
+typedef virPortAllocatorRange *virPortAllocatorRangePtr;
 
 typedef enum {
     VIR_PORT_ALLOCATOR_SKIP_BIND_CHECK = (1 << 0),
 } virPortAllocatorFlags;
 
-virPortAllocatorPtr virPortAllocatorNew(const char *name,
-                                        unsigned short start,
-                                        unsigned short end,
-                                        unsigned int flags);
+virPortAllocatorRangePtr
+virPortAllocatorRangeNew(const char *name,
+                         unsigned short start,
+                         unsigned short end,
+                         unsigned int flags);
 
-int virPortAllocatorAcquire(virPortAllocatorPtr pa,
+void virPortAllocatorRangeFree(virPortAllocatorRangePtr range);
+
+int virPortAllocatorAcquire(virPortAllocatorRangePtr range,
                             unsigned short *port);
 
-int virPortAllocatorRelease(virPortAllocatorPtr pa,
+int virPortAllocatorRelease(virPortAllocatorRangePtr range,
                             unsigned short port);
 
-int virPortAllocatorSetUsed(virPortAllocatorPtr pa,
+int virPortAllocatorSetUsed(virPortAllocatorRangePtr range,
                             unsigned short port,
                             bool value);
 

@@ -476,8 +476,8 @@ libxlStateCleanup(void)
     virObjectUnref(libxl_driver->config);
     virObjectUnref(libxl_driver->xmlopt);
     virObjectUnref(libxl_driver->domains);
-    virObjectUnref(libxl_driver->reservedGraphicsPorts);
-    virObjectUnref(libxl_driver->migrationPorts);
+    virPortAllocatorRangeFree(libxl_driver->reservedGraphicsPorts);
+    virPortAllocatorRangeFree(libxl_driver->migrationPorts);
     virLockManagerPluginUnref(libxl_driver->lockManager);
 
     virObjectUnref(libxl_driver->domainEventState);
@@ -656,17 +656,17 @@ libxlStateInitialize(bool privileged,
 
     /* Allocate bitmap for vnc port reservation */
     if (!(libxl_driver->reservedGraphicsPorts =
-          virPortAllocatorNew(_("VNC"),
-                              LIBXL_VNC_PORT_MIN,
-                              LIBXL_VNC_PORT_MAX,
-                              0)))
+          virPortAllocatorRangeNew(_("VNC"),
+                                   LIBXL_VNC_PORT_MIN,
+                                   LIBXL_VNC_PORT_MAX,
+                                   0)))
         goto error;
 
     /* Allocate bitmap for migration port reservation */
     if (!(libxl_driver->migrationPorts =
-          virPortAllocatorNew(_("migration"),
-                              LIBXL_MIGRATION_PORT_MIN,
-                              LIBXL_MIGRATION_PORT_MAX, 0)))
+          virPortAllocatorRangeNew(_("migration"),
+                                   LIBXL_MIGRATION_PORT_MIN,
+                                   LIBXL_MIGRATION_PORT_MAX, 0)))
         goto error;
 
     if (!(libxl_driver->domains = virDomainObjListNew()))

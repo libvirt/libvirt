@@ -42,63 +42,71 @@ VIR_LOG_INIT("tests.portallocatortest");
 
 static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
 {
-    virPortAllocatorPtr alloc = virPortAllocatorNew("test", 5900, 5909, 0);
+    virPortAllocatorRangePtr ports = virPortAllocatorRangeNew("test", 5900, 5909, 0);
     int ret = -1;
-    unsigned short p1, p2, p3, p4, p5, p6, p7;
+    unsigned short p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0, p7 = 0;
 
-    if (!alloc)
+    if (!ports)
         return -1;
 
-    if (virPortAllocatorAcquire(alloc, &p1) < 0)
+    if (virPortAllocatorAcquire(ports, &p1) < 0)
         goto cleanup;
     if (p1 != 5901) {
         VIR_TEST_DEBUG("Expected 5901, got %d", p1);
         goto cleanup;
     }
 
-    if (virPortAllocatorAcquire(alloc, &p2) < 0)
+    if (virPortAllocatorAcquire(ports, &p2) < 0)
         goto cleanup;
     if (p2 != 5902) {
         VIR_TEST_DEBUG("Expected 5902, got %d", p2);
         goto cleanup;
     }
 
-    if (virPortAllocatorAcquire(alloc, &p3) < 0)
+    if (virPortAllocatorAcquire(ports, &p3) < 0)
         goto cleanup;
     if (p3 != 5903) {
         VIR_TEST_DEBUG("Expected 5903, got %d", p3);
         goto cleanup;
     }
 
-    if (virPortAllocatorAcquire(alloc, &p4) < 0)
+    if (virPortAllocatorAcquire(ports, &p4) < 0)
         goto cleanup;
     if (p4 != 5907) {
         VIR_TEST_DEBUG("Expected 5907, got %d", p4);
         goto cleanup;
     }
 
-    if (virPortAllocatorAcquire(alloc, &p5) < 0)
+    if (virPortAllocatorAcquire(ports, &p5) < 0)
         goto cleanup;
     if (p5 != 5908) {
         VIR_TEST_DEBUG("Expected 5908, got %d", p5);
         goto cleanup;
     }
 
-    if (virPortAllocatorAcquire(alloc, &p6) < 0)
+    if (virPortAllocatorAcquire(ports, &p6) < 0)
         goto cleanup;
     if (p6 != 5909) {
         VIR_TEST_DEBUG("Expected 5909, got %d", p6);
         goto cleanup;
     }
 
-    if (virPortAllocatorAcquire(alloc, &p7) == 0) {
+    if (virPortAllocatorAcquire(ports, &p7) == 0) {
         VIR_TEST_DEBUG("Expected error, got %d", p7);
         goto cleanup;
     }
 
     ret = 0;
  cleanup:
-    virObjectUnref(alloc);
+    virPortAllocatorRelease(ports, p1);
+    virPortAllocatorRelease(ports, p2);
+    virPortAllocatorRelease(ports, p3);
+    virPortAllocatorRelease(ports, p4);
+    virPortAllocatorRelease(ports, p5);
+    virPortAllocatorRelease(ports, p6);
+    virPortAllocatorRelease(ports, p7);
+
+    virPortAllocatorRangeFree(ports);
     return ret;
 }
 
@@ -106,28 +114,28 @@ static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
 
 static int testAllocReuse(const void *args ATTRIBUTE_UNUSED)
 {
-    virPortAllocatorPtr alloc = virPortAllocatorNew("test", 5900, 5910, 0);
+    virPortAllocatorRangePtr ports = virPortAllocatorRangeNew("test", 5900, 5910, 0);
     int ret = -1;
-    unsigned short p1, p2, p3, p4;
+    unsigned short p1 = 0, p2 = 0, p3 = 0, p4 = 0;
 
-    if (!alloc)
+    if (!ports)
         return -1;
 
-    if (virPortAllocatorAcquire(alloc, &p1) < 0)
+    if (virPortAllocatorAcquire(ports, &p1) < 0)
         goto cleanup;
     if (p1 != 5901) {
         VIR_TEST_DEBUG("Expected 5901, got %d", p1);
         goto cleanup;
     }
 
-    if (virPortAllocatorAcquire(alloc, &p2) < 0)
+    if (virPortAllocatorAcquire(ports, &p2) < 0)
         goto cleanup;
     if (p2 != 5902) {
         VIR_TEST_DEBUG("Expected 5902, got %d", p2);
         goto cleanup;
     }
 
-    if (virPortAllocatorAcquire(alloc, &p3) < 0)
+    if (virPortAllocatorAcquire(ports, &p3) < 0)
         goto cleanup;
     if (p3 != 5903) {
         VIR_TEST_DEBUG("Expected 5903, got %d", p3);
@@ -135,10 +143,10 @@ static int testAllocReuse(const void *args ATTRIBUTE_UNUSED)
     }
 
 
-    if (virPortAllocatorRelease(alloc, p2) < 0)
+    if (virPortAllocatorRelease(ports, p2) < 0)
         goto cleanup;
 
-    if (virPortAllocatorAcquire(alloc, &p4) < 0)
+    if (virPortAllocatorAcquire(ports, &p4) < 0)
         goto cleanup;
     if (p4 != 5902) {
         VIR_TEST_DEBUG("Expected 5902, got %d", p4);
@@ -147,7 +155,11 @@ static int testAllocReuse(const void *args ATTRIBUTE_UNUSED)
 
     ret = 0;
  cleanup:
-    virObjectUnref(alloc);
+    virPortAllocatorRelease(ports, p1);
+    virPortAllocatorRelease(ports, p3);
+    virPortAllocatorRelease(ports, p4);
+
+    virPortAllocatorRangeFree(ports);
     return ret;
 }
 

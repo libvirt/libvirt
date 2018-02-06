@@ -59,7 +59,7 @@ struct _bhyveConn {
 
     virCloseCallbacksPtr closeCallbacks;
 
-    virPortAllocatorPtr remotePorts;
+    virPortAllocatorRangePtr remotePorts;
 
     unsigned bhyvecaps;
     unsigned grubcaps;

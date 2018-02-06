@@ -1316,7 +1316,7 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
 }
 
 int
-libxlMakeVfb(virPortAllocatorPtr graphicsports,
+libxlMakeVfb(virPortAllocatorRangePtr graphicsports,
              virDomainGraphicsDefPtr l_vfb,
              libxl_device_vfb *x_vfb)
 {
@@ -1377,7 +1377,7 @@ libxlMakeVfb(virPortAllocatorPtr graphicsports,
 }
 
 static int
-libxlMakeVfbList(virPortAllocatorPtr graphicsports,
+libxlMakeVfbList(virPortAllocatorRangePtr graphicsports,
                  virDomainDefPtr def,
                  libxl_domain_config *d_config)
 {
@@ -1426,7 +1426,7 @@ libxlMakeVfbList(virPortAllocatorPtr graphicsports,
  * populate libxl_domain_config->vfbs.
  */
 static int
-libxlMakeBuildInfoVfb(virPortAllocatorPtr graphicsports,
+libxlMakeBuildInfoVfb(virPortAllocatorRangePtr graphicsports,
                       virDomainDefPtr def,
                       libxl_domain_config *d_config)
 {
@@ -2313,7 +2313,7 @@ libxlDriverNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
 }
 
 int
-libxlBuildDomainConfig(virPortAllocatorPtr graphicsports,
+libxlBuildDomainConfig(virPortAllocatorRangePtr graphicsports,
                        virDomainDefPtr def,
                        const char *channelDir LIBXL_ATTR_UNUSED,
                        libxl_ctx *ctx,

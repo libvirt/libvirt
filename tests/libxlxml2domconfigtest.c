@@ -58,7 +58,7 @@ testCompareXMLToDomConfig(const char *xmlfile,
     libxl_domain_config expectconfig;
     xentoollog_logger *log = NULL;
     libxl_ctx *ctx = NULL;
-    virPortAllocatorPtr gports = NULL;
+    virPortAllocatorRangePtr gports = NULL;
     virDomainXMLOptionPtr xmlopt = NULL;
     virDomainDefPtr vmdef = NULL;
     char *actualjson = NULL;
@@ -74,8 +74,8 @@ testCompareXMLToDomConfig(const char *xmlfile,
     if (libxl_ctx_alloc(&ctx, LIBXL_VERSION, 0, log) < 0)
         goto cleanup;
 
-    if (!(gports = virPortAllocatorNew("vnc", 5900, 6000,
-                                       VIR_PORT_ALLOCATOR_SKIP_BIND_CHECK)))
+    if (!(gports = virPortAllocatorRangeNew("vnc", 5900, 6000,
+                                            VIR_PORT_ALLOCATOR_SKIP_BIND_CHECK)))
         goto cleanup;
 
     if (!(xmlopt = libxlCreateXMLConf()))
@@ -112,11 +112,20 @@ testCompareXMLToDomConfig(const char *xmlfile,
     ret = 0;
 
  cleanup:
+    if (vmdef &&
+        vmdef->ngraphics == 1 &&
+        vmdef->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+        if (vmdef->graphics[0]->data.vnc.autoport)
+            virPortAllocatorRelease(gports, vmdef->graphics[0]->data.vnc.port);
+        else
+            virPortAllocatorSetUsed(gports, vmdef->graphics[0]->data.vnc.port, false);
+    }
+
     VIR_FREE(expectjson);
     VIR_FREE(actualjson);
     VIR_FREE(tempjson);
     virDomainDefFree(vmdef);
-    virObjectUnref(gports);
+    virPortAllocatorRangeFree(gports);
     virObjectUnref(xmlopt);
     libxl_ctx_free(ctx);
     libxl_domain_config_dispose(&actualconfig);
