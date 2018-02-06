@@ -213,7 +213,7 @@ virPortAllocatorGet(void)
 }
 
 int
-virPortAllocatorAcquire(virPortAllocatorRangePtr range,
+virPortAllocatorAcquire(const virPortAllocatorRange *range,
                         unsigned short *port)
 {
     int ret = -1;
