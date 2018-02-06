@@ -278,14 +278,14 @@ virNetlinkSendRequest(struct nl_msg *nl_msg, uint32_t src_pid,
 
 /**
  * virNetlinkCommand:
- * @nlmsg: pointer to netlink message
- * @respbuf: pointer to pointer where response buffer will be allocated
+ * @nl_msg:     pointer to netlink message
+ * @resp:       pointer to pointer where response buffer will be allocated
  * @respbuflen: pointer to integer holding the size of the response buffer
- *      on return of the function.
- * @src_pid: the pid of the process to send a message
- * @dst_pid: the pid of the process to talk to, i.e., pid = 0 for kernel
- * @protocol: netlink protocol
- * @groups: the group identifier
+ *              on return of the function.
+ * @src_pid:    the pid of the process to send a message
+ * @dst_pid:    the pid of the process to talk to, i.e., pid = 0 for kernel
+ * @protocol:   netlink protocol
+ * @groups:     the group identifier
  *
  * Send the given message to the netlink layer and receive response.
  * Returns 0 on success, -1 on error. In case of error, no response
@@ -387,9 +387,9 @@ virNetlinkDumpCommand(struct nl_msg *nl_msg,
  *
  * @ifname:  The name of the interface; only use if ifindex <= 0
  * @ifindex: The interface index; may be <= 0 if ifname is given
- * @data:    Gets a pointer to the raw data from netlink.
+ * @nlData:  Gets a pointer to the raw data from netlink.
              MUST BE FREED BY CALLER!
- * @nlattr:  Pointer to a pointer of netlink attributes that will contain
+ * @tb:      Pointer to a pointer of netlink attributes that will contain
  *           the results
  * @src_pid: pid used for nl_pid of the local end of the netlink message
  *           (0 == "use getpid()")
@@ -505,7 +505,7 @@ virNetlinkDumpLink(const char *ifname, int ifindex,
 /**
  * virNetlinkDelLink:
  *
- * @ifname: Name of the link
+ * @ifname:   Name of the link
  * @fallback: pointer to an alternate function that will
  *            be called to perform the delete if RTM_DELLINK fails
  *            with EOPNOTSUPP (any other error will simply be treated
@@ -648,7 +648,7 @@ virNetlinkEventServerUnlock(virNetlinkEventSrvPrivatePtr driver)
 /**
  * virNetlinkEventRemoveClientPrimitive:
  *
- * @i: index of the client to remove from the table
+ * @i:        index of the client to remove from the table
  * @protocol: netlink protocol
  *
  * This static function does the low level removal of a client from
@@ -837,7 +837,8 @@ int virNetlinkEventServiceLocalPid(unsigned int protocol)
  * This registers a netlink socket with the event interface.
  *
  * @protocol: netlink protocol
- * @groups: broadcast groups to join in
+ * @groups:   broadcast groups to join in
+ *
  * Returns -1 if the monitor cannot be registered, 0 upon success
  */
 int
@@ -925,9 +926,9 @@ virNetlinkEventServiceStart(unsigned int protocol, unsigned int groups)
  *
  * @handleCB: callback to invoke when an event occurs
  * @removeCB: callback to invoke when removing a client
- * @opaque: user data to pass to callback
- * @macaddr: macaddr to store with the data. Used to identify callers.
- *           May be null.
+ * @opaque:   user data to pass to callback
+ * @macaddr:  macaddr to store with the data. Used to identify callers.
+ *            May be null.
  * @protocol: netlink protocol
  *
  * register a callback for handling of netlink messages. The
@@ -1003,8 +1004,8 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
 /**
  * virNetlinkEventRemoveClient:
  *
- * @watch: watch whose handle to remove
- * @macaddr: macaddr whose handle to remove
+ * @watch:    watch whose handle to remove
+ * @macaddr:  macaddr whose handle to remove
  * @protocol: netlink protocol
  *
  * Unregister a callback from a netlink monitor.
