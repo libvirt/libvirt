@@ -287,8 +287,7 @@ virPortAllocatorRelease(unsigned short port)
 }
 
 int
-virPortAllocatorSetUsed(unsigned short port,
-                        bool value)
+virPortAllocatorSetUsed(unsigned short port)
 {
     int ret = -1;
     virPortAllocatorPtr pa = virPortAllocatorGet();
@@ -298,20 +297,11 @@ virPortAllocatorSetUsed(unsigned short port,
 
     virObjectLock(pa);
 
-    if (value) {
-        if (virBitmapIsBitSet(pa->bitmap, port) ||
-            virBitmapSetBit(pa->bitmap, port) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to reserve port %d"), port);
-            goto cleanup;
-        }
-    } else {
-        if (virBitmapClearBit(pa->bitmap, port) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to release port %d"),
-                           port);
-            goto cleanup;
-        }
+    if (virBitmapIsBitSet(pa->bitmap, port) ||
+        virBitmapSetBit(pa->bitmap, port) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to reserve port %d"), port);
+        goto cleanup;
     }
 
     ret = 0;
