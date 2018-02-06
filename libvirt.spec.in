@@ -1520,7 +1520,7 @@ exit 0
 
 %if %{with_systemd}
     %if %{with_systemd_macros}
-        %systemd_post virtlockd.socket \
+        %systemd_post virtlockd.socket virtlockd-admin.socket \
             virtlogd.socket virtlogd-admin.socket \
             libvirtd.service
     %else
@@ -1528,6 +1528,7 @@ if [ $1 -eq 1 ] ; then
     # Initial installation
     /bin/systemctl enable \
         virtlockd.socket \
+        virtlockd-admin.socket \
         virtlogd.socket \
         virtlogd-admin.socket \
         libvirtd.service >/dev/null 2>&1 || :
@@ -1558,7 +1559,7 @@ touch %{_localstatedir}/lib/rpm-state/libvirt/restart || :
     %if %{with_systemd_macros}
         %systemd_preun libvirtd.service \
             virtlogd.socket virtlogd-admin.socket virtlogd.service \
-            virtlockd.socket virtlockd.service
+            virtlockd.socket virtlockd-admin.socket virtlockd.service
     %else
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
@@ -1568,6 +1569,7 @@ if [ $1 -eq 0 ] ; then
         virtlogd-admin.socket \
         virtlogd.service \
         virtlockd.socket \
+        virtlockd-admin.socket \
         virtlockd.service > /dev/null 2>&1 || :
     /bin/systemctl stop \
         libvirtd.service \
@@ -1575,6 +1577,7 @@ if [ $1 -eq 0 ] ; then
         virtlogd-admin.socket \
         virtlogd.service \
         virtlockd.socket \
+        virtlockd-admin.socket \
         virtlockd.service > /dev/null 2>&1 || :
 fi
     %endif
@@ -1830,6 +1833,7 @@ exit 0
 %{_unitdir}/virtlogd-admin.socket
 %{_unitdir}/virtlockd.service
 %{_unitdir}/virtlockd.socket
+%{_unitdir}/virtlockd-admin.socket
 %else
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %{_sysconfdir}/rc.d/init.d/virtlogd
