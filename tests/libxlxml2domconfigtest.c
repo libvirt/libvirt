@@ -116,7 +116,7 @@ testCompareXMLToDomConfig(const char *xmlfile,
         vmdef->ngraphics == 1 &&
         vmdef->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         if (vmdef->graphics[0]->data.vnc.autoport)
-            virPortAllocatorRelease(gports, vmdef->graphics[0]->data.vnc.port);
+            virPortAllocatorRelease(vmdef->graphics[0]->data.vnc.port);
         else
             virPortAllocatorSetUsed(vmdef->graphics[0]->data.vnc.port, false);
     }

@@ -6568,7 +6568,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         }
     }
 
-    virPortAllocatorRelease(driver->migrationPorts, priv->nbdPort);
+    virPortAllocatorRelease(priv->nbdPort);
     priv->nbdPort = 0;
 
     if (priv->agent) {
@@ -6729,15 +6729,13 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
             if (graphics->data.vnc.autoport) {
-                virPortAllocatorRelease(driver->remotePorts,
-                                        graphics->data.vnc.port);
+                virPortAllocatorRelease(graphics->data.vnc.port);
             } else if (graphics->data.vnc.portReserved) {
                 virPortAllocatorSetUsed(graphics->data.spice.port, false);
                 graphics->data.vnc.portReserved = false;
             }
             if (graphics->data.vnc.websocketGenerated) {
-                virPortAllocatorRelease(driver->webSocketPorts,
-                                        graphics->data.vnc.websocket);
+                virPortAllocatorRelease(graphics->data.vnc.websocket);
                 graphics->data.vnc.websocketGenerated = false;
                 graphics->data.vnc.websocket = -1;
             } else if (graphics->data.vnc.websocket) {
@@ -6746,10 +6744,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         }
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
             if (graphics->data.spice.autoport) {
-                virPortAllocatorRelease(driver->remotePorts,
-                                        graphics->data.spice.port);
-                virPortAllocatorRelease(driver->remotePorts,
-                                        graphics->data.spice.tlsPort);
+                virPortAllocatorRelease(graphics->data.spice.port);
+                virPortAllocatorRelease(graphics->data.spice.tlsPort);
             } else {
                 if (graphics->data.spice.portReserved) {
                     virPortAllocatorSetUsed(graphics->data.spice.port, false);

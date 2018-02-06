@@ -777,8 +777,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
         vm->def->graphics[0]->data.vnc.autoport) {
         vnc_port = vm->def->graphics[0]->data.vnc.port;
         if (vnc_port >= LIBXL_VNC_PORT_MIN) {
-            if (virPortAllocatorRelease(driver->reservedGraphicsPorts,
-                                        vnc_port) < 0)
+            if (virPortAllocatorRelease(vnc_port) < 0)
                 VIR_DEBUG("Could not mark port %d as unused", vnc_port);
         }
     }
