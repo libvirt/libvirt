@@ -478,9 +478,8 @@ virLogHostnameString(char **rawmsg,
     if (!virLogHostname)
         return -1;
 
-    if (virAsprintfQuiet(&hoststr, "hostname: %s", virLogHostname) < 0) {
+    if (virAsprintfQuiet(&hoststr, "hostname: %s", virLogHostname) < 0)
         return -1;
-    }
 
     if (virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, hoststr) < 0) {
         VIR_FREE(hoststr);
