@@ -51,6 +51,7 @@
 #if HAVE_SYS_ACL_H
 # include <sys/acl.h>
 #endif
+#include <sys/file.h>
 
 #ifdef __linux__
 # if HAVE_LINUX_MAGIC_H
@@ -362,6 +363,7 @@ virFileWrapperFdFree(virFileWrapperFdPtr wfd)
 
 
 #ifndef WIN32
+
 /**
  * virFileLock:
  * @fd: file descriptor to acquire the lock on
@@ -430,7 +432,32 @@ int virFileUnlock(int fd, off_t start, off_t len)
 
     return 0;
 }
+
+
+/**
+ * virFileFlock:
+ * @fd: file descriptor to call flock on
+ * @lock: true for lock, false for unlock
+ * @shared: true if shared, false for exclusive, ignored if `@lock == false`
+ *
+ * This is just a simple wrapper around flock(2) that errors out on unsupported
+ * platforms.
+ *
+ * The lock will be released when @fd is closed or this function is called with
+ * `@lock == false`.
+ *
+ * Returns 0 on success, -1 otherwise (with errno set)
+ */
+int virFileFlock(int fd, bool lock, bool shared)
+{
+    if (lock)
+        return flock(fd, shared ? LOCK_SH : LOCK_EX);
+
+    return flock(fd, LOCK_UN);
+}
+
 #else
+
 int virFileLock(int fd ATTRIBUTE_UNUSED,
                 bool shared ATTRIBUTE_UNUSED,
                 off_t start ATTRIBUTE_UNUSED,
@@ -439,13 +466,26 @@ int virFileLock(int fd ATTRIBUTE_UNUSED,
 {
     return -ENOSYS;
 }
+
+
 int virFileUnlock(int fd ATTRIBUTE_UNUSED,
                   off_t start ATTRIBUTE_UNUSED,
                   off_t len ATTRIBUTE_UNUSED)
 {
     return -ENOSYS;
 }
+
+
+int virFileFlock(int fd ATTRIBUTE_UNUSED,
+                 bool lock ATTRIBUTE_UNUSED,
+                 bool shared ATTRIBUTE_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
 #endif
+
 
 int
 virFileRewrite(const char *path,
