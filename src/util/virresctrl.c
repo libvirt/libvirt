@@ -24,8 +24,6 @@
 #include <fcntl.h>
 
 #include "virresctrlpriv.h"
-#include "c-ctype.h"
-#include "count-one-bits.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virlog.h"
@@ -97,7 +95,6 @@ static virClassPtr virResctrlAllocClass;
 /* virResctrlInfo */
 struct _virResctrlInfoPerType {
     /* Kernel-provided information */
-    char *cbm_mask;
     unsigned int min_cbm_bits;
 
     /* Our computed information from the above */
@@ -142,11 +139,8 @@ virResctrlInfoDispose(void *obj)
             continue;
 
         if (level->types) {
-            for (j = 0; j < VIR_CACHE_TYPE_LAST; j++) {
-                if (level->types[j])
-                    VIR_FREE(level->types[j]->cbm_mask);
+            for (j = 0; j < VIR_CACHE_TYPE_LAST; j++)
                 VIR_FREE(level->types[j]);
-            }
         }
         VIR_FREE(level->types);
         VIR_FREE(level);
@@ -334,6 +328,7 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
     int type = 0;
     struct dirent *ent = NULL;
     unsigned int level = 0;
+    virBitmapPtr tmp_map = NULL;
     virResctrlInfoPerLevelPtr i_level = NULL;
     virResctrlInfoPerTypePtr i_type = NULL;
 
@@ -378,7 +373,7 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
             goto cleanup;
         }
 
-        rv = virFileReadValueString(&i_type->cbm_mask,
+        rv = virFileReadValueString(&tmp_str,
                                     SYSFS_RESCTRL_PATH
                                     "/info/%s/cbm_mask",
                                     ent->d_name);
@@ -393,7 +388,19 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
         if (rv < 0)
             goto cleanup;
 
-        virStringTrimOptionalNewline(i_type->cbm_mask);
+        virStringTrimOptionalNewline(tmp_str);
+
+        tmp_map = virBitmapNewString(tmp_str);
+        VIR_FREE(tmp_str);
+        if (!tmp_map) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot parse cbm_mask from resctrl cache info"));
+            goto cleanup;
+        }
+
+        i_type->bits = virBitmapCountBits(tmp_map);
+        virBitmapFree(tmp_map);
+        tmp_map = NULL;
 
         rv = virFileReadValueUint(&i_type->min_cbm_bits,
                                   SYSFS_RESCTRL_PATH "/info/%s/min_cbm_bits",
@@ -431,24 +438,12 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
             goto cleanup;
         }
 
-        for (tmp_str = i_type->cbm_mask; *tmp_str != '\0'; tmp_str++) {
-            if (!c_isxdigit(*tmp_str)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Cannot parse cbm_mask from resctrl cache info"));
-                goto cleanup;
-            }
-
-            i_type->bits += count_one_bits(virHexToBin(*tmp_str));
-        }
-
         VIR_STEAL_PTR(i_level->types[type], i_type);
     }
 
     ret = 0;
  cleanup:
     VIR_DIR_CLOSE(dirp);
-    if (i_type)
-        VIR_FREE(i_type->cbm_mask);
     VIR_FREE(i_type);
     return ret;
 }
