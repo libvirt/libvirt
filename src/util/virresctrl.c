@@ -941,7 +941,7 @@ virResctrlAllocParseProcessCache(virResctrlInfoPtr resctrl,
         !resctrl->levels[level]->types[type]) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing or inconsistent resctrl info for "
-                         "level '%ud' type '%s'"),
+                         "level '%u' type '%s'"),
                        level, virCacheTypeToString(type));
         goto cleanup;
     }
