@@ -1604,7 +1604,7 @@ virCapabilitiesInitResctrl(virCapsPtr caps)
     if (!caps->host.resctrl)
         return -1;
 
-    return virResctrlGetInfo(caps->host.resctrl);
+    return 0;
 }
 
 

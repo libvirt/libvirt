@@ -314,7 +314,7 @@ virResctrlUnlock(int fd)
 
 
 /* virResctrlInfo-related definitions */
-int
+static int
 virResctrlGetInfo(virResctrlInfoPtr resctrl)
 {
     DIR *dirp = NULL;
@@ -448,10 +448,21 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
 virResctrlInfoPtr
 virResctrlInfoNew(void)
 {
+    virResctrlInfoPtr ret = NULL;
+
     if (virResctrlInitialize() < 0)
         return NULL;
 
-    return virObjectNew(virResctrlInfoClass);
+    ret = virObjectNew(virResctrlInfoClass);
+    if (!ret)
+        return NULL;
+
+    if (virResctrlGetInfo(ret) < 0) {
+        virObjectUnref(ret);
+        return NULL;
+    }
+
+    return ret;
 }
 
 

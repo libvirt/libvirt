@@ -56,9 +56,6 @@ virResctrlInfoPtr
 virResctrlInfoNew(void);
 
 int
-virResctrlGetInfo(virResctrlInfoPtr resctrl);
-
-int
 virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
                        unsigned int level,
                        unsigned long long size,
