@@ -34,6 +34,7 @@ typedef enum {
 } virCacheType;
 
 VIR_ENUM_DECL(virCache);
+VIR_ENUM_DECL(virCacheKernel);
 
 
 typedef struct _virResctrlInfoPerCache virResctrlInfoPerCache;

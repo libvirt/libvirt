@@ -48,15 +48,24 @@ VIR_LOG_INIT("util.virresctrl")
 #define SYSFS_RESCTRL_PATH "/sys/fs/resctrl"
 
 
-/* Our naming for cache types and scopes */
+/* Following are three different enum implementations for the same enum.  Each
+ * one of them helps translating to/from strings for different interfaces.  The
+ * delimiter must be VIR_CACHE_TYPE_LAST for all of them in order to stay
+ * consistent in between all of them. */
+
+/* Cache name mapping for Linux kernel naming. */
+VIR_ENUM_IMPL(virCacheKernel, VIR_CACHE_TYPE_LAST,
+              "Unified",
+              "Instruction",
+              "Data")
+
+/* Cache name mapping for our XML naming. */
 VIR_ENUM_IMPL(virCache, VIR_CACHE_TYPE_LAST,
               "both",
               "code",
               "data")
-/*
- * This is the same enum, but for the resctrl naming
- * of the type (L<level><type>)
- */
+
+/* Cache name mapping for resctrl interface naming. */
 VIR_ENUM_DECL(virResctrl)
 VIR_ENUM_IMPL(virResctrl, VIR_CACHE_TYPE_LAST,
               "",

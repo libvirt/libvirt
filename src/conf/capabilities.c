@@ -1544,12 +1544,6 @@ virCapabilitiesInitPages(virCapsPtr caps)
     return ret;
 }
 
-/* Cache name mapping for Linux kernel naming */
-VIR_ENUM_DECL(virCacheKernel);
-VIR_ENUM_IMPL(virCacheKernel, VIR_CACHE_TYPE_LAST,
-              "Unified",
-              "Instruction",
-              "Data")
 
 bool
 virCapsHostCacheBankEquals(virCapsHostCacheBankPtr a,
