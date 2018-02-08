@@ -289,9 +289,8 @@ virResctrlAllocNew(void)
 
 
 /* Common functions */
-#ifdef __linux__
 static int
-virResctrlLockInternal(int op)
+virResctrlLockWrite(void)
 {
     int fd = open(SYSFS_RESCTRL_PATH, O_DIRECTORY | O_CLOEXEC);
 
@@ -300,7 +299,7 @@ virResctrlLockInternal(int op)
         return -1;
     }
 
-    if (flock(fd, op) < 0) {
+    if (virFileFlock(fd, true, true) < 0) {
         virReportSystemError(errno, "%s", _("Cannot lock resctrl"));
         VIR_FORCE_CLOSE(fd);
         return -1;
@@ -310,45 +309,23 @@ virResctrlLockInternal(int op)
 }
 
 
-static inline int
-virResctrlLockWrite(void)
-{
-    return virResctrlLockInternal(LOCK_EX);
-}
-
-#else
-
-static inline int
-virResctrlLockWrite(void)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("resctrl not supported on this platform"));
-    return -1;
-}
-
-#endif
-
-
-
-
 static int
 virResctrlUnlock(int fd)
 {
     if (fd == -1)
         return 0;
 
-#ifdef __linux__
     /* The lock gets unlocked by closing the fd, which we need to do anyway in
      * order to clean up properly */
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno, "%s", _("Cannot close resctrl"));
 
         /* Trying to save the already broken */
-        if (flock(fd, LOCK_UN) < 0)
+        if (virFileFlock(fd, false, false) < 0)
             virReportSystemError(errno, "%s", _("Cannot unlock resctrl"));
+
         return -1;
     }
-#endif /* ! __linux__ */
 
     return 0;
 }
