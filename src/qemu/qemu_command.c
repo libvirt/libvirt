@@ -2211,6 +2211,58 @@ qemuBuildDriveDevStr(const virDomainDef *def,
 
 
 static int
+qemuBulildFloppyCommandLineOptions(virCommandPtr cmd,
+                                   const virDomainDef *def,
+                                   virDomainDiskDefPtr disk,
+                                   unsigned int bootindex)
+
+{
+    virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
+    char *fdc_opts_str = NULL;
+    char *optstr;
+
+    if (virAsprintf(&optstr, "drive%c=drive-%s",
+                    disk->info.addr.drive.unit ? 'B' : 'A',
+                    disk->info.alias) < 0)
+        return -1;
+
+    if (!qemuDomainNeedsFDC(def)) {
+        virCommandAddArg(cmd, "-global");
+        virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
+    } else {
+        virBufferAsprintf(&fdc_opts, "%s,", optstr);
+    }
+    VIR_FREE(optstr);
+
+    if (bootindex) {
+        if (virAsprintf(&optstr, "bootindex%c=%u",
+                        disk->info.addr.drive.unit
+                        ? 'B' : 'A',
+                        bootindex) < 0)
+            return -1;
+
+        if (!qemuDomainNeedsFDC(def)) {
+            virCommandAddArg(cmd, "-global");
+            virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
+        } else {
+            virBufferAsprintf(&fdc_opts, "%s,", optstr);
+        }
+        VIR_FREE(optstr);
+    }
+
+    /* Newer Q35 machine types require an explicit FDC controller */
+    virBufferTrim(&fdc_opts, ",", -1);
+    if ((fdc_opts_str = virBufferContentAndReset(&fdc_opts))) {
+        virCommandAddArg(cmd, "-device");
+        virCommandAddArgFormat(cmd, "isa-fdc,%s", fdc_opts_str);
+        VIR_FREE(fdc_opts_str);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
                               const virDomainDef *def,
                               virQEMUCapsPtr qemuCaps)
@@ -2219,8 +2271,6 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
     unsigned int bootCD = 0;
     unsigned int bootFloppy = 0;
     unsigned int bootDisk = 0;
-    virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
-    char *fdc_opts_str = NULL;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_BOOT) ||
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX)) {
@@ -2299,34 +2349,9 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
 
         if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
             if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
-                if (virAsprintf(&optstr, "drive%c=drive-%s",
-                                disk->info.addr.drive.unit ? 'B' : 'A',
-                                disk->info.alias) < 0)
+                if (qemuBulildFloppyCommandLineOptions(cmd, def, disk,
+                                                       bootindex) < 0)
                     return -1;
-
-                if (!qemuDomainNeedsFDC(def)) {
-                    virCommandAddArg(cmd, "-global");
-                    virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
-                } else {
-                    virBufferAsprintf(&fdc_opts, "%s,", optstr);
-                }
-                VIR_FREE(optstr);
-
-                if (bootindex) {
-                    if (virAsprintf(&optstr, "bootindex%c=%u",
-                                    disk->info.addr.drive.unit
-                                    ? 'B' : 'A',
-                                    bootindex) < 0)
-                        return -1;
-
-                    if (!qemuDomainNeedsFDC(def)) {
-                        virCommandAddArg(cmd, "-global");
-                        virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
-                    } else {
-                        virBufferAsprintf(&fdc_opts, "%s,", optstr);
-                    }
-                    VIR_FREE(optstr);
-                }
             } else {
                 virCommandAddArg(cmd, "-device");
 
@@ -2338,14 +2363,6 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
             }
         }
     }
-    /* Newer Q35 machine types require an explicit FDC controller */
-    virBufferTrim(&fdc_opts, ",", -1);
-    if ((fdc_opts_str = virBufferContentAndReset(&fdc_opts))) {
-        virCommandAddArg(cmd, "-device");
-        virCommandAddArgFormat(cmd, "isa-fdc,%s", fdc_opts_str);
-        VIR_FREE(fdc_opts_str);
-    }
-
     return 0;
 }
 
