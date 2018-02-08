@@ -37,21 +37,22 @@
 VIR_LOG_INIT("util.virresctrl")
 
 
-/* Common definitions */
-#define SYSFS_RESCTRL_PATH "/sys/fs/resctrl"
-
 /* Resctrl is short for Resource Control.  It might be implemented for various
  * resources, but at the time of this writing this is only supported for cache
  * allocation technology (aka CAT).  Hence the reson for leaving 'Cache' out of
  * all the structure and function names for now (can be added later if needed.
  */
 
+
+/* Common definitions */
+#define SYSFS_RESCTRL_PATH "/sys/fs/resctrl"
+
+
 /* Our naming for cache types and scopes */
 VIR_ENUM_IMPL(virCache, VIR_CACHE_TYPE_LAST,
               "both",
               "code",
               "data")
-
 /*
  * This is the same enum, but for the resctrl naming
  * of the type (L<level><type>)
@@ -63,9 +64,28 @@ VIR_ENUM_IMPL(virResctrl, VIR_CACHE_TYPE_LAST,
               "DATA")
 
 
-/* Info-related definitions and InfoClass-related functions */
+/* All private typedefs so that they exist for all later definitions.  This way
+ * structs can be included in one or another without reorganizing the code every
+ * time. */
 typedef struct _virResctrlInfoPerType virResctrlInfoPerType;
 typedef virResctrlInfoPerType *virResctrlInfoPerTypePtr;
+
+typedef struct _virResctrlInfoPerLevel virResctrlInfoPerLevel;
+typedef virResctrlInfoPerLevel *virResctrlInfoPerLevelPtr;
+
+typedef struct _virResctrlAllocPerType virResctrlAllocPerType;
+typedef virResctrlAllocPerType *virResctrlAllocPerTypePtr;
+
+typedef struct _virResctrlAllocPerLevel virResctrlAllocPerLevel;
+typedef virResctrlAllocPerLevel *virResctrlAllocPerLevelPtr;
+
+
+/* Class definitions and initializations */
+static virClassPtr virResctrlInfoClass;
+static virClassPtr virResctrlAllocClass;
+
+
+/* virResctrlInfo */
 struct _virResctrlInfoPerType {
     /* Kernel-provided information */
     char *cbm_mask;
@@ -86,8 +106,6 @@ struct _virResctrlInfoPerType {
     virResctrlInfoPerCache control;
 };
 
-typedef struct _virResctrlInfoPerLevel virResctrlInfoPerLevel;
-typedef virResctrlInfoPerLevel *virResctrlInfoPerLevelPtr;
 struct _virResctrlInfoPerLevel {
     virResctrlInfoPerTypePtr *types;
 };
@@ -99,7 +117,6 @@ struct _virResctrlInfo {
     size_t nlevels;
 };
 
-static virClassPtr virResctrlInfoClass;
 
 static void
 virResctrlInfoDispose(void *obj)
@@ -130,30 +147,7 @@ virResctrlInfoDispose(void *obj)
 }
 
 
-static int
-virResctrlInfoOnceInit(void)
-{
-    if (!VIR_CLASS_NEW(virResctrlInfo, virClassForObject()))
-        return -1;
-
-    return 0;
-}
-
-
-VIR_ONCE_GLOBAL_INIT(virResctrlInfo)
-
-
-virResctrlInfoPtr
-virResctrlInfoNew(void)
-{
-    if (virResctrlInfoInitialize() < 0)
-        return NULL;
-
-    return virObjectNew(virResctrlInfoClass);
-}
-
-
-/* Alloc-related definitions and AllocClass-related functions */
+/* virResctrlAlloc */
 
 /*
  * virResctrlAlloc represents one allocation (in XML under cputune/cachetune and
@@ -186,8 +180,6 @@ virResctrlInfoNew(void)
  * virBitmaps named `masks` indexed the same way as `sizes`.  The upper bounds
  * of the sparse arrays are stored in nmasks or nsizes, respectively.
  */
-typedef struct _virResctrlAllocPerType virResctrlAllocPerType;
-typedef virResctrlAllocPerType *virResctrlAllocPerTypePtr;
 struct _virResctrlAllocPerType {
     /* There could be bool saying whether this is set or not, but since everything
      * in virResctrlAlloc (and most of libvirt) goes with pointer arrays we would
@@ -201,8 +193,6 @@ struct _virResctrlAllocPerType {
     size_t nmasks;
 };
 
-typedef struct _virResctrlAllocPerLevel virResctrlAllocPerLevel;
-typedef virResctrlAllocPerLevel *virResctrlAllocPerLevelPtr;
 struct _virResctrlAllocPerLevel {
     virResctrlAllocPerTypePtr *types; /* Indexed with enum virCacheType */
     /* There is no `ntypes` member variable as it is always allocated for
@@ -222,7 +212,6 @@ struct _virResctrlAlloc {
     char *path;
 };
 
-static virClassPtr virResctrlAllocClass;
 
 static void
 virResctrlAllocDispose(void *obj)
@@ -265,27 +254,20 @@ virResctrlAllocDispose(void *obj)
 }
 
 
+/* Global initialization for classes */
 static int
-virResctrlAllocOnceInit(void)
+virResctrlOnceInit(void)
 {
+    if (!VIR_CLASS_NEW(virResctrlInfo, virClassForObject()))
+        return -1;
+
     if (!VIR_CLASS_NEW(virResctrlAlloc, virClassForObject()))
         return -1;
 
     return 0;
 }
 
-
-VIR_ONCE_GLOBAL_INIT(virResctrlAlloc)
-
-
-virResctrlAllocPtr
-virResctrlAllocNew(void)
-{
-    if (virResctrlAllocInitialize() < 0)
-        return NULL;
-
-    return virObjectNew(virResctrlAllocClass);
-}
+VIR_ONCE_GLOBAL_INIT(virResctrl)
 
 
 /* Common functions */
@@ -331,32 +313,7 @@ virResctrlUnlock(int fd)
 }
 
 
-/* Info-related functions */
-static bool
-virResctrlInfoIsEmpty(virResctrlInfoPtr resctrl)
-{
-    size_t i = 0;
-    size_t j = 0;
-
-    if (!resctrl)
-        return true;
-
-    for (i = 0; i < resctrl->nlevels; i++) {
-        virResctrlInfoPerLevelPtr i_level = resctrl->levels[i];
-
-        if (!i_level)
-            continue;
-
-        for (j = 0; j < VIR_CACHE_TYPE_LAST; j++) {
-            if (i_level->types[j])
-                return false;
-        }
-    }
-
-    return true;
-}
-
-
+/* virResctrlInfo-related definitions */
 int
 virResctrlGetInfo(virResctrlInfoPtr resctrl)
 {
@@ -488,6 +445,41 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
 }
 
 
+virResctrlInfoPtr
+virResctrlInfoNew(void)
+{
+    if (virResctrlInitialize() < 0)
+        return NULL;
+
+    return virObjectNew(virResctrlInfoClass);
+}
+
+
+static bool
+virResctrlInfoIsEmpty(virResctrlInfoPtr resctrl)
+{
+    size_t i = 0;
+    size_t j = 0;
+
+    if (!resctrl)
+        return true;
+
+    for (i = 0; i < resctrl->nlevels; i++) {
+        virResctrlInfoPerLevelPtr i_level = resctrl->levels[i];
+
+        if (!i_level)
+            continue;
+
+        for (j = 0; j < VIR_CACHE_TYPE_LAST; j++) {
+            if (i_level->types[j])
+                return false;
+        }
+    }
+
+    return true;
+}
+
+
 int
 virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
                        unsigned int level,
@@ -552,7 +544,17 @@ virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
 }
 
 
-/* Alloc-related functions */
+/* virResctrlAlloc-related definitions */
+virResctrlAllocPtr
+virResctrlAllocNew(void)
+{
+    if (virResctrlInitialize() < 0)
+        return NULL;
+
+    return virObjectNew(virResctrlAllocClass);
+}
+
+
 bool
 virResctrlAllocIsEmpty(virResctrlAllocPtr alloc)
 {
