@@ -7,6 +7,12 @@
 
 # Generated files
 xdr_*;
+# Hack only required for Win32 to make tests link properly,
+# as the wildcard above doesn't work there. Fortunately
+# Win32 builds don't require the other xdr_* syms exported.
+# since there's no libvirtd built.
+xdr_virNetMessageError;
+
 
 # rpc/virnetclient.h
 virNetClientAddProgram;
