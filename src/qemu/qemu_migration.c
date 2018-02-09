@@ -273,7 +273,7 @@ qemuMigrationRestoreDomainState(virConnectPtr conn, virDomainObjPtr vm)
         VIR_DEBUG("Restoring pre-migration state due to migration error");
 
         /* we got here through some sort of failure; start the domain again */
-        if (qemuProcessStartCPUs(driver, vm, conn,
+        if (qemuProcessStartCPUs(driver, vm,
                                  VIR_DOMAIN_RUNNING_MIGRATION_CANCELED,
                                  QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
             /* Hm, we already know we are in error here.  We don't want to
@@ -2853,7 +2853,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                  QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto stopjob;
 
-    if (qemuProcessFinishStartup(dconn, driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
+    if (qemuProcessFinishStartup(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
                                  false, VIR_DOMAIN_PAUSED_MIGRATION) < 0)
         goto stopjob;
 
@@ -5389,7 +5389,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
          * >= 0.10.6 to work properly.  This isn't strictly necessary on
          * older qemu's, but it also doesn't hurt anything there
          */
-        if (qemuProcessStartCPUs(driver, vm, dconn,
+        if (qemuProcessStartCPUs(driver, vm,
                                  inPostCopy ? VIR_DOMAIN_RUNNING_POSTCOPY
                                             : VIR_DOMAIN_RUNNING_MIGRATED,
                                  QEMU_ASYNC_JOB_MIGRATION_IN) < 0) {

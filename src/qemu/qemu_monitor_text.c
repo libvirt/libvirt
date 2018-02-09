@@ -293,9 +293,8 @@ qemuMonitorSendDiskPassphrase(qemuMonitorPtr mon,
                               qemuMonitorMessagePtr msg,
                               const char *data,
                               size_t len ATTRIBUTE_UNUSED,
-                              void *opaque)
+                              void *opaque ATTRIBUTE_UNUSED)
 {
-    virConnectPtr conn = opaque;
     char *path;
     char *passphrase = NULL;
     size_t passphrase_len = 0;
@@ -326,7 +325,6 @@ qemuMonitorSendDiskPassphrase(qemuMonitorPtr mon,
 
     /* Fetch the disk password if possible */
     res = qemuMonitorGetDiskSecret(mon,
-                                   conn,
                                    path,
                                    &passphrase,
                                    &passphrase_len);
@@ -358,14 +356,13 @@ qemuMonitorSendDiskPassphrase(qemuMonitorPtr mon,
 }
 
 int
-qemuMonitorTextStartCPUs(qemuMonitorPtr mon,
-                         virConnectPtr conn)
+qemuMonitorTextStartCPUs(qemuMonitorPtr mon)
 {
     char *reply;
 
     if (qemuMonitorTextCommandWithHandler(mon, "cont",
                                           qemuMonitorSendDiskPassphrase,
-                                          conn,
+                                          NULL,
                                           -1, &reply) < 0)
         return -1;
 

@@ -1319,7 +1319,6 @@ qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
 
 int
 qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
-                         virConnectPtr conn,
                          const char *path,
                          char **secret,
                          size_t *secretLen)
@@ -1328,7 +1327,7 @@ qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
     *secret = NULL;
     *secretLen = 0;
 
-    QEMU_MONITOR_CALLBACK(mon, ret, diskSecretLookup, conn, mon->vm,
+    QEMU_MONITOR_CALLBACK(mon, ret, diskSecretLookup, mon->vm,
                           path, secret, secretLen);
     return ret;
 }
@@ -1700,15 +1699,14 @@ qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 
 
 int
-qemuMonitorStartCPUs(qemuMonitorPtr mon,
-                     virConnectPtr conn)
+qemuMonitorStartCPUs(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR(mon);
 
     if (mon->json)
-        return qemuMonitorJSONStartCPUs(mon, conn);
+        return qemuMonitorJSONStartCPUs(mon);
     else
-        return qemuMonitorTextStartCPUs(mon, conn);
+        return qemuMonitorTextStartCPUs(mon);
 }
 
 

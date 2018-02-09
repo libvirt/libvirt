@@ -109,13 +109,7 @@ typedef void (*qemuMonitorEofNotifyCallback)(qemuMonitorPtr mon,
 typedef void (*qemuMonitorErrorNotifyCallback)(qemuMonitorPtr mon,
                                                virDomainObjPtr vm,
                                                void *opaque);
-/* XXX we'd really like to avoid virConnectPtr here
- * It is required so the callback can find the active
- * secret driver. Need to change this to work like the
- * security drivers do, to avoid this
- */
 typedef int (*qemuMonitorDiskSecretLookupCallback)(qemuMonitorPtr mon,
-                                                   virConnectPtr conn,
                                                    virDomainObjPtr vm,
                                                    const char *path,
                                                    char **secret,
@@ -363,9 +357,7 @@ int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
 # define qemuMonitorHMPCommand(mon, cmd, reply) \
     qemuMonitorHMPCommandWithFd(mon, cmd, -1, reply)
 
-/* XXX same comment about virConnectPtr as above */
 int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
-                             virConnectPtr conn,
                              const char *path,
                              char **secret,
                              size_t *secretLen);
@@ -440,8 +432,7 @@ int qemuMonitorEmitDumpCompleted(qemuMonitorPtr mon,
                                  qemuMonitorDumpStatsPtr stats,
                                  const char *error);
 
-int qemuMonitorStartCPUs(qemuMonitorPtr mon,
-                         virConnectPtr conn);
+int qemuMonitorStartCPUs(qemuMonitorPtr mon);
 int qemuMonitorStopCPUs(qemuMonitorPtr mon);
 
 typedef enum {

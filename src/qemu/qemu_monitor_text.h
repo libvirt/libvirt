@@ -39,8 +39,7 @@ int qemuMonitorTextCommandWithFd(qemuMonitorPtr mon,
                                  int scm_fd,
                                  char **reply);
 
-int qemuMonitorTextStartCPUs(qemuMonitorPtr mon,
-                             virConnectPtr conn);
+int qemuMonitorTextStartCPUs(qemuMonitorPtr mon);
 int qemuMonitorTextStopCPUs(qemuMonitorPtr mon);
 int qemuMonitorTextGetStatus(qemuMonitorPtr mon,
                              bool *running,

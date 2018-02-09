@@ -1238,7 +1238,7 @@ testQemuMonitorJSONCPU(const void *data)
         goto cleanup;
     }
 
-    if (qemuMonitorJSONStartCPUs(qemuMonitorTestGetMonitor(test), NULL) < 0)
+    if (qemuMonitorJSONStartCPUs(qemuMonitorTestGetMonitor(test)) < 0)
         goto cleanup;
 
     if (qemuMonitorGetStatus(qemuMonitorTestGetMonitor(test),

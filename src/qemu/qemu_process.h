@@ -30,7 +30,6 @@ int qemuProcessPrepareMonitorChr(virDomainChrSourceDefPtr monConfig,
 
 int qemuProcessStartCPUs(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
-                         virConnectPtr conn,
                          virDomainRunningReason reason,
                          qemuDomainAsyncJob asyncJob);
 int qemuProcessStopCPUs(virQEMUDriverPtr driver,
@@ -126,8 +125,7 @@ int qemuProcessLaunch(virConnectPtr conn,
                       virNetDevVPortProfileOp vmop,
                       unsigned int flags);
 
-int qemuProcessFinishStartup(virConnectPtr conn,
-                             virQEMUDriverPtr driver,
+int qemuProcessFinishStartup(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              qemuDomainAsyncJob asyncJob,
                              bool startCPUs,

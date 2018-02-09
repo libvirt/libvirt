@@ -1954,7 +1954,7 @@ static int qemuDomainResume(virDomainPtr dom)
     } else if ((state == VIR_DOMAIN_CRASHED &&
                 reason == VIR_DOMAIN_CRASHED_PANICKED) ||
                state == VIR_DOMAIN_PAUSED) {
-        if (qemuProcessStartCPUs(driver, vm, dom->conn,
+        if (qemuProcessStartCPUs(driver, vm,
                                  VIR_DOMAIN_RUNNING_UNPAUSED,
                                  QEMU_ASYNC_JOB_NONE) < 0) {
             if (virGetLastError() == NULL)
@@ -3346,7 +3346,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
  * this returns (whether returning success or failure).
  */
 static int
-qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
+qemuDomainSaveInternal(virQEMUDriverPtr driver,
                        virDomainObjPtr vm, const char *path,
                        int compressed, const char *compressedpath,
                        const char *xmlin, unsigned int flags)
@@ -3447,7 +3447,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     if (ret < 0) {
         if (was_running && virDomainObjIsActive(vm)) {
             virErrorPtr save_err = virSaveLastError();
-            if (qemuProcessStartCPUs(driver, vm, dom->conn,
+            if (qemuProcessStartCPUs(driver, vm,
                                      VIR_DOMAIN_RUNNING_SAVE_CANCELED,
                                      QEMU_ASYNC_JOB_SAVE) < 0) {
                 VIR_WARN("Unable to resume guest CPUs after save failure");
@@ -3582,7 +3582,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
         goto cleanup;
     }
 
-    ret = qemuDomainSaveInternal(driver, dom, vm, path, compressed,
+    ret = qemuDomainSaveInternal(driver, vm, path, compressed,
                                  compressedpath, dxml, flags);
 
  cleanup:
@@ -3656,7 +3656,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
 
     VIR_INFO("Saving state of domain '%s' to '%s'", vm->def->name, name);
 
-    ret = qemuDomainSaveInternal(driver, dom, vm, name, compressed,
+    ret = qemuDomainSaveInternal(driver, vm, name, compressed,
                                  compressedpath, NULL, flags);
     if (ret == 0)
         vm->hasManagedSave = true;
@@ -4029,7 +4029,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
         }
 
         if (resume && virDomainObjIsActive(vm)) {
-            if (qemuProcessStartCPUs(driver, vm, dom->conn,
+            if (qemuProcessStartCPUs(driver, vm,
                                      VIR_DOMAIN_RUNNING_UNPAUSED,
                                      QEMU_ASYNC_JOB_DUMP) < 0) {
                 event = virDomainEventLifecycleNewFromObj(vm,
@@ -4216,7 +4216,7 @@ processWatchdogEvent(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_FAILED,
                            "%s", _("Dump failed"));
 
-        ret = qemuProcessStartCPUs(driver, vm, NULL,
+        ret = qemuProcessStartCPUs(driver, vm,
                                    VIR_DOMAIN_RUNNING_UNPAUSED,
                                    QEMU_ASYNC_JOB_DUMP);
 
@@ -6677,7 +6677,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
 
     /* If it was running before, resume it now unless caller requested pause. */
     if (header->was_running && !start_paused) {
-        if (qemuProcessStartCPUs(driver, vm, conn,
+        if (qemuProcessStartCPUs(driver, vm,
                                  VIR_DOMAIN_RUNNING_RESTORED,
                                  asyncJob) < 0) {
             if (virGetLastError() == NULL)
@@ -14005,8 +14005,7 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
 
 /* The domain is expected to be locked and active. */
 static int
-qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
-                                       virQEMUDriverPtr driver,
+qemuDomainSnapshotCreateActiveInternal(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
                                        virDomainSnapshotObjPtr snap,
                                        unsigned int flags)
@@ -14062,7 +14061,7 @@ qemuDomainSnapshotCreateActiveInternal(virConnectPtr conn,
 
  cleanup:
     if (resume && virDomainObjIsActive(vm) &&
-        qemuProcessStartCPUs(driver, vm, conn,
+        qemuProcessStartCPUs(driver, vm,
                              VIR_DOMAIN_RUNNING_UNPAUSED,
                              QEMU_ASYNC_JOB_SNAPSHOT) < 0) {
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -14878,8 +14877,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
-                                       virQEMUDriverPtr driver,
+qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
                                        virDomainSnapshotObjPtr snap,
                                        unsigned int flags)
@@ -15026,7 +15024,7 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
 
  cleanup:
     if (resume && virDomainObjIsActive(vm) &&
-        qemuProcessStartCPUs(driver, vm, conn,
+        qemuProcessStartCPUs(driver, vm,
                              VIR_DOMAIN_RUNNING_UNPAUSED,
                              QEMU_ASYNC_JOB_SNAPSHOT) < 0) {
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -15279,12 +15277,12 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY ||
             snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             /* external checkpoint or disk snapshot */
-            if (qemuDomainSnapshotCreateActiveExternal(domain->conn, driver,
+            if (qemuDomainSnapshotCreateActiveExternal(driver,
                                                        vm, snap, flags) < 0)
                 goto endjob;
         } else {
             /* internal checkpoint */
-            if (qemuDomainSnapshotCreateActiveInternal(domain->conn, driver,
+            if (qemuDomainSnapshotCreateActiveInternal(driver,
                                                        vm, snap, flags) < 0)
                 goto endjob;
         }
@@ -16003,7 +16001,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                _("guest unexpectedly quit"));
                 goto endjob;
             }
-            rc = qemuProcessStartCPUs(driver, vm, snapshot->domain->conn,
+            rc = qemuProcessStartCPUs(driver, vm,
                                       VIR_DOMAIN_RUNNING_FROM_SNAPSHOT,
                                       QEMU_ASYNC_JOB_START);
             if (rc < 0)

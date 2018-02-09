@@ -1274,8 +1274,7 @@ qemuMonitorJSONSetCapabilities(qemuMonitorPtr mon)
 
 
 int
-qemuMonitorJSONStartCPUs(qemuMonitorPtr mon,
-                         virConnectPtr conn ATTRIBUTE_UNUSED)
+qemuMonitorJSONStartCPUs(qemuMonitorPtr mon)
 {
     int ret;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("cont", NULL);
