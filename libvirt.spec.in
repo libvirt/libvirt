@@ -163,7 +163,7 @@
 %endif
 
 # fuse is used to provide virtualized /proc for LXC
-%if 0%{?fedora} || 0%{?rhel} >= 7
+%if %{with_lxc}
     %define with_fuse      0%{!?_without_fuse:1}
 %endif
 
