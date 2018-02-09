@@ -4446,7 +4446,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
                            _("PCI controller model name '%s' is not valid "
                              "for a pci-root"),
                            modelName);
-            return 0;
+            return -1;
         }
 
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE)) {
