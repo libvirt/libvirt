@@ -5159,11 +5159,16 @@ qemuDomainDetachWatchdog(virQEMUDriverPtr driver,
     virDomainWatchdogDefPtr watchdog = vm->def->watchdog;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
+    if (!watchdog) {
+        virReportError(VIR_ERR_DEVICE_MISSING, "%s",
+                       _("watchdog device not present in domain configuration"));
+        return -1;
+    }
+
     /* While domains can have up to one watchdog, the one supplied by the user
      * doesn't necessarily match the one domain has. Refuse to detach in such
      * case. */
-    if (!(watchdog &&
-          watchdog->model == dev->model &&
+    if (!(watchdog->model == dev->model &&
           watchdog->action == dev->action &&
           virDomainDeviceInfoAddressIsEqual(&dev->info, &watchdog->info))) {
         virReportError(VIR_ERR_DEVICE_MISSING,
