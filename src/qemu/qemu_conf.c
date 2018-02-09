@@ -1631,8 +1631,7 @@ int qemuDriverAllocateID(virQEMUDriverPtr driver)
 
 
 int
-qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                    virDomainSnapshotDiskDefPtr def)
+qemuTranslateSnapshotDiskSourcePool(virDomainSnapshotDiskDefPtr def)
 {
     if (def->src->type != VIR_STORAGE_TYPE_VOLUME)
         return 0;

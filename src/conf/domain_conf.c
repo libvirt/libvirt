@@ -29171,9 +29171,9 @@ virDomainDiskTranslateSourcePoolAuth(virDomainDiskDefPtr def,
 
 
 int
-virDomainDiskTranslateSourcePool(virConnectPtr conn,
-                                 virDomainDiskDefPtr def)
+virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
 {
+    virConnectPtr conn = NULL;
     virStoragePoolDefPtr pooldef = NULL;
     virStoragePoolPtr pool = NULL;
     virStorageVolPtr vol = NULL;
@@ -29187,8 +29187,11 @@ virDomainDiskTranslateSourcePool(virConnectPtr conn,
     if (!def->src->srcpool)
         return 0;
 
-    if (!(pool = virStoragePoolLookupByName(conn, def->src->srcpool->pool)))
+    if (!(conn = virGetConnectStorage()))
         return -1;
+
+    if (!(pool = virStoragePoolLookupByName(conn, def->src->srcpool->pool)))
+        goto cleanup;
 
     if (virStoragePoolIsActive(pool) != 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -29333,6 +29336,7 @@ virDomainDiskTranslateSourcePool(virConnectPtr conn,
 
     ret = 0;
  cleanup:
+    virObjectUnref(conn);
     virObjectUnref(pool);
     virObjectUnref(vol);
     VIR_FREE(poolxml);

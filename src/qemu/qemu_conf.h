@@ -349,8 +349,7 @@ int qemuSetUnprivSGIO(virDomainDeviceDefPtr dev);
 int qemuDriverAllocateID(virQEMUDriverPtr driver);
 virDomainXMLOptionPtr virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver);
 
-int qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn,
-                                        virDomainSnapshotDiskDefPtr def);
+int qemuTranslateSnapshotDiskSourcePool(virDomainSnapshotDiskDefPtr def);
 
 char * qemuGetBaseHugepagePath(virHugeTLBFSPtr hugepage);
 char * qemuGetDomainHugepagePath(const virDomainDef *def,

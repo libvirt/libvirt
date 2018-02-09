@@ -5603,7 +5603,7 @@ qemuProcessPrepareDomainStorage(virConnectPtr conn,
         size_t idx = i - 1;
         virDomainDiskDefPtr disk = vm->def->disks[idx];
 
-        if (virDomainDiskTranslateSourcePool(conn, disk) < 0) {
+        if (virDomainDiskTranslateSourcePool(disk) < 0) {
             if (qemuDomainCheckDiskStartupPolicy(driver, vm, idx, cold_boot) < 0)
                 return -1;
 
@@ -7362,7 +7362,7 @@ qemuProcessReconnect(void *opaque)
         virDomainDiskDefPtr disk = obj->def->disks[i];
         virDomainDeviceDef dev;
 
-        if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
+        if (virDomainDiskTranslateSourcePool(disk) < 0)
             goto error;
 
         /* backing chains need to be refreshed only if they could change */

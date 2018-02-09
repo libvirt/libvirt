@@ -7871,8 +7871,7 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
 }
 
 static int
-qemuDomainChangeDiskLive(virConnectPtr conn,
-                         virDomainObjPtr vm,
+qemuDomainChangeDiskLive(virDomainObjPtr vm,
                          virDomainDeviceDefPtr dev,
                          virQEMUDriverPtr driver,
                          bool force)
@@ -7881,7 +7880,7 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
     virDomainDiskDefPtr orig_disk = NULL;
     int ret = -1;
 
-    if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
+    if (virDomainDiskTranslateSourcePool(disk) < 0)
         goto cleanup;
 
     if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
@@ -7932,8 +7931,7 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
 }
 
 static int
-qemuDomainUpdateDeviceLive(virConnectPtr conn,
-                           virDomainObjPtr vm,
+qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
                            virDomainDeviceDefPtr dev,
                            virDomainPtr dom,
                            bool force)
@@ -7944,7 +7942,7 @@ qemuDomainUpdateDeviceLive(virConnectPtr conn,
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
-        ret = qemuDomainChangeDiskLive(conn, vm, dev, driver, force);
+        ret = qemuDomainChangeDiskLive(vm, dev, driver, force);
         break;
     case VIR_DOMAIN_DEVICE_GRAPHICS:
         ret = qemuDomainChangeGraphics(driver, vm, dev->data.graphics);
@@ -7986,7 +7984,6 @@ qemuDomainUpdateDeviceLive(virConnectPtr conn,
 static int
 qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev,
-                             virConnectPtr conn,
                              virCapsPtr caps,
                              unsigned int parse_flags,
                              virDomainXMLOptionPtr xmlopt)
@@ -8008,7 +8005,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                            _("target %s already exists"), disk->dst);
             return -1;
         }
-        if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
+        if (virDomainDiskTranslateSourcePool(disk) < 0)
             return -1;
         if (qemuCheckDiskConfig(disk, NULL) < 0)
             return -1;
@@ -8494,7 +8491,7 @@ qemuDomainAttachDeviceLiveAndConfig(virConnectPtr conn,
 
         if (virDomainDefCompatibleDevice(vmdef, dev) < 0)
             goto cleanup;
-        if ((ret = qemuDomainAttachDeviceConfig(vmdef, dev, conn, caps,
+        if ((ret = qemuDomainAttachDeviceConfig(vmdef, dev, caps,
                                                 parse_flags,
                                                 driver->xmlopt)) < 0)
             goto cleanup;
@@ -8654,7 +8651,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
             goto endjob;
 
-        if ((ret = qemuDomainUpdateDeviceLive(dom->conn, vm, dev_copy, dom, force)) < 0)
+        if ((ret = qemuDomainUpdateDeviceLive(vm, dev_copy, dom, force)) < 0)
             goto endjob;
         /*
          * update domain status forcibly because the domain status may be
@@ -14229,8 +14226,7 @@ qemuDomainSnapshotPrepareDiskExternalActive(virDomainSnapshotDiskDefPtr snapdisk
 
 
 static int
-qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
-                                      virDomainDiskDefPtr disk,
+qemuDomainSnapshotPrepareDiskExternal(virDomainDiskDefPtr disk,
                                       virDomainSnapshotDiskDefPtr snapdisk,
                                       bool active,
                                       bool reuse)
@@ -14238,11 +14234,11 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
     int ret = -1;
     struct stat st;
 
-    if (qemuTranslateSnapshotDiskSourcePool(conn, snapdisk) < 0)
+    if (qemuTranslateSnapshotDiskSourcePool(snapdisk) < 0)
         return -1;
 
     if (!active) {
-        if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
+        if (virDomainDiskTranslateSourcePool(disk) < 0)
             return -1;
 
         if (qemuDomainSnapshotPrepareDiskExternalInactive(snapdisk, disk) < 0)
@@ -14284,8 +14280,7 @@ qemuDomainSnapshotPrepareDiskExternal(virConnectPtr conn,
 
 
 static int
-qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
-                                      virDomainDiskDefPtr disk,
+qemuDomainSnapshotPrepareDiskInternal(virDomainDiskDefPtr disk,
                                       bool active)
 {
     int actualType;
@@ -14294,7 +14289,7 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
     if (active)
         return 0;
 
-    if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
+    if (virDomainDiskTranslateSourcePool(disk) < 0)
         return -1;
 
     actualType = virStorageSourceGetActualType(disk->src);
@@ -14343,8 +14338,7 @@ qemuDomainSnapshotPrepareDiskInternal(virConnectPtr conn,
 
 
 static int
-qemuDomainSnapshotPrepare(virConnectPtr conn,
-                          virDomainObjPtr vm,
+qemuDomainSnapshotPrepare(virDomainObjPtr vm,
                           virDomainSnapshotDefPtr def,
                           unsigned int *flags)
 {
@@ -14385,7 +14379,7 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
                 goto cleanup;
             }
 
-            if (qemuDomainSnapshotPrepareDiskInternal(conn, dom_disk,
+            if (qemuDomainSnapshotPrepareDiskInternal(dom_disk,
                                                       active) < 0)
                 goto cleanup;
 
@@ -14414,7 +14408,7 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
                 goto cleanup;
             }
 
-            if (qemuDomainSnapshotPrepareDiskExternal(conn, dom_disk, disk,
+            if (qemuDomainSnapshotPrepareDiskExternal(dom_disk, disk,
                                                       active, reuse) < 0)
                 goto cleanup;
 
@@ -15062,7 +15056,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                             const char *xmlDesc,
                             unsigned int flags)
 {
-    virConnectPtr conn = domain->conn;
     virQEMUDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
     char *xml = NULL;
@@ -15241,7 +15234,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         }
         if (virDomainSnapshotAlignDisks(def, align_location,
                                         align_match) < 0 ||
-            qemuDomainSnapshotPrepare(conn, vm, def, &flags) < 0)
+            qemuDomainSnapshotPrepare(vm, def, &flags) < 0)
             goto endjob;
     }
 

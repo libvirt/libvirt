@@ -429,6 +429,9 @@ testCompareXMLToArgv(const void *data)
     conn->secretDriver = &fakeSecretDriver;
     conn->storageDriver = &fakeStorageDriver;
 
+    virSetConnectSecret(conn);
+    virSetConnectStorage(conn);
+
     if (virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_MONITOR_JSON))
         flags |= FLAG_JSON;
 
@@ -536,6 +539,8 @@ testCompareXMLToArgv(const void *data)
     virDomainChrSourceDefClear(&monitor_chr);
     virCommandFree(cmd);
     virObjectUnref(vm);
+    virSetConnectSecret(NULL);
+    virSetConnectStorage(NULL);
     virObjectUnref(conn);
     VIR_FREE(migrateURI);
     VIR_FREE(xml);

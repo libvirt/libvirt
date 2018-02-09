@@ -713,7 +713,7 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
+    if (virDomainDiskTranslateSourcePool(disk) < 0)
         goto cleanup;
 
     if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
