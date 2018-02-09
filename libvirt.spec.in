@@ -73,7 +73,7 @@
 %define with_numactl          0%{!?_without_numactl:1}
 
 # F25+ has zfs-fuse
-%if 0%{?fedora} >= 25
+%if 0%{?fedora}
     %define with_storage_zfs      0%{!?_without_storage_zfs:1}
 %else
     %define with_storage_zfs      0
@@ -233,14 +233,10 @@
     %define enable_werror --disable-werror
 %endif
 
-%if 0%{?fedora} >= 25
+%if 0%{?fedora}
     %define tls_priority "@LIBVIRT,SYSTEM"
 %else
-    %if 0%{?fedora}
-        %define tls_priority "@SYSTEM"
-    %else
-        %define tls_priority "NORMAL"
-    %endif
+    %define tls_priority "NORMAL"
 %endif
 
 
@@ -451,11 +447,7 @@ BuildRequires: numad
 %endif
 
 %if %{with_wireshark}
-    %if 0%{fedora} >= 24
 BuildRequires: wireshark-devel >= 2.1.0
-    %else
-BuildRequires: wireshark-devel >= 1.12.1
-    %endif
 %endif
 
 %if %{with_libssh}
@@ -794,7 +786,7 @@ Requires: gzip
 Requires: bzip2
 Requires: lzop
 Requires: xz
-    %if 0%{?fedora} >= 24
+    %if 0%{?fedora}
 Requires: systemd-container
     %endif
 
@@ -812,7 +804,7 @@ Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 # There really is a hard cross-driver dependency here
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
-    %if 0%{?fedora} >= 24
+    %if 0%{?fedora}
 Requires: systemd-container
     %endif
 
@@ -1421,13 +1413,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-backend/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-backend/*.a
 %if %{with_wireshark}
-    %if 0%{fedora} >= 24
 rm -f $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/libvirt.la
-    %else
-rm -f $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.la
-mv $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.so \
-      $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/libvirt.so
-    %endif
 %endif
 
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
