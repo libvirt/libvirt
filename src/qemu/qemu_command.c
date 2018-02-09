@@ -2722,6 +2722,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                               def->info.alias);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
             virBufferAsprintf(&buf, "%s,bus_nr=%d,id=%s",
                               modelName, pciopts->busNr,
                               def->info.alias);
@@ -2730,28 +2731,14 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                                  pciopts->numaNode);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-            virBufferAsprintf(&buf, "%s,id=%s", modelName, def->info.alias);
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
-            virBufferAsprintf(&buf, "%s,port=0x%x,chassis=%d,id=%s",
-                              modelName, pciopts->port,
-                              pciopts->chassis, def->info.alias);
-            break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
             virBufferAsprintf(&buf, "%s,id=%s", modelName, def->info.alias);
             break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
             virBufferAsprintf(&buf, "%s,port=0x%x,chassis=%d,id=%s",
                               modelName, pciopts->port,
                               pciopts->chassis, def->info.alias);
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
-            virBufferAsprintf(&buf, "%s,bus_nr=%d,id=%s",
-                              modelName, pciopts->busNr,
-                              def->info.alias);
-            if (pciopts->numaNode != -1)
-               virBufferAsprintf(&buf, ",numa_node=%d",
-                                 pciopts->numaNode);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
             /* Skip the implicit one */
