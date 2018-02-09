@@ -92,8 +92,7 @@ int qemuProcessStart(virConnectPtr conn,
                      virNetDevVPortProfileOp vmop,
                      unsigned int flags);
 
-virCommandPtr qemuProcessCreatePretendCmd(virConnectPtr conn,
-                                          virQEMUDriverPtr driver,
+virCommandPtr qemuProcessCreatePretendCmd(virQEMUDriverPtr driver,
                                           virDomainObjPtr vm,
                                           const char *migrateURI,
                                           bool enableFips,
@@ -107,8 +106,7 @@ int qemuProcessInit(virQEMUDriverPtr driver,
                     bool migration,
                     unsigned int flags);
 
-int qemuProcessPrepareDomain(virConnectPtr conn,
-                             virQEMUDriverPtr driver,
+int qemuProcessPrepareDomain(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              unsigned int flags);
 

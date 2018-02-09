@@ -4327,10 +4327,10 @@ qemuProcessGraphicsAllocatePorts(virQEMUDriverPtr driver,
 }
 
 static int
-qemuProcessGetNetworkAddress(virConnectPtr conn,
-                             const char *netname,
+qemuProcessGetNetworkAddress(const char *netname,
                              char **netaddr)
 {
+    virConnectPtr conn = NULL;
     int ret = -1;
     virNetworkPtr net;
     virNetworkDefPtr netdef = NULL;
@@ -4341,6 +4341,10 @@ qemuProcessGetNetworkAddress(virConnectPtr conn,
     char *xml = NULL;
 
     *netaddr = NULL;
+
+    if (!(conn = virGetConnectNetwork()))
+        return -1;
+
     net = virNetworkLookupByName(conn, netname);
     if (!net)
         goto cleanup;
@@ -4407,14 +4411,14 @@ qemuProcessGetNetworkAddress(virConnectPtr conn,
  cleanup:
     virNetworkDefFree(netdef);
     virObjectUnref(net);
+    virObjectUnref(conn);
     VIR_FREE(xml);
     return ret;
 }
 
 
 static int
-qemuProcessGraphicsSetupNetworkAddress(virConnectPtr conn,
-                                       virDomainGraphicsListenDefPtr glisten,
+qemuProcessGraphicsSetupNetworkAddress(virDomainGraphicsListenDefPtr glisten,
                                        const char *listenAddr)
 {
     int rc;
@@ -4426,7 +4430,7 @@ qemuProcessGraphicsSetupNetworkAddress(virConnectPtr conn,
         return 0;
     }
 
-    rc = qemuProcessGetNetworkAddress(conn, glisten->network, &glisten->address);
+    rc = qemuProcessGetNetworkAddress(glisten->network, &glisten->address);
     if (rc <= -2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("network-based listen isn't possible, "
@@ -4441,8 +4445,7 @@ qemuProcessGraphicsSetupNetworkAddress(virConnectPtr conn,
 
 
 static int
-qemuProcessGraphicsSetupListen(virConnectPtr conn,
-                               virQEMUDriverPtr driver,
+qemuProcessGraphicsSetupListen(virQEMUDriverPtr driver,
                                virDomainGraphicsDefPtr graphics,
                                virDomainObjPtr vm)
 {
@@ -4500,8 +4503,7 @@ qemuProcessGraphicsSetupListen(virConnectPtr conn,
             if (glisten->address || !listenAddr)
                 continue;
 
-            if (qemuProcessGraphicsSetupNetworkAddress(conn,
-                                                       glisten,
+            if (qemuProcessGraphicsSetupNetworkAddress(glisten,
                                                        listenAddr) < 0)
                 goto cleanup;
             break;
@@ -4530,8 +4532,7 @@ qemuProcessGraphicsSetupListen(virConnectPtr conn,
 
 
 static int
-qemuProcessSetupGraphics(virConnectPtr conn,
-                         virQEMUDriverPtr driver,
+qemuProcessSetupGraphics(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          unsigned int flags)
 {
@@ -4543,7 +4544,7 @@ qemuProcessSetupGraphics(virConnectPtr conn,
     for (i = 0; i < vm->def->ngraphics; i++) {
         graphics = vm->def->graphics[i];
 
-        if (qemuProcessGraphicsSetupListen(conn, driver, graphics, vm) < 0)
+        if (qemuProcessGraphicsSetupListen(driver, graphics, vm) < 0)
             goto cleanup;
     }
 
@@ -5625,7 +5626,6 @@ qemuProcessPrepareAllowReboot(virDomainObjPtr vm)
 
 /**
  * qemuProcessPrepareDomain:
- * @conn: connection object (for looking up storage volumes)
  * @driver: qemu driver
  * @vm: domain object
  * @flags: qemuProcessStartFlags
@@ -5640,8 +5640,7 @@ qemuProcessPrepareAllowReboot(virDomainObjPtr vm)
  * TODO: move all XML modification from qemuBuildCommandLine into this function
  */
 int
-qemuProcessPrepareDomain(virConnectPtr conn,
-                         virQEMUDriverPtr driver,
+qemuProcessPrepareDomain(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          unsigned int flags)
 {
@@ -5698,7 +5697,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting graphics devices");
-    if (qemuProcessSetupGraphics(conn, driver, vm, flags) < 0)
+    if (qemuProcessSetupGraphics(driver, vm, flags) < 0)
         goto cleanup;
 
     VIR_DEBUG("Create domain masterKey");
@@ -6329,7 +6328,7 @@ qemuProcessStart(virConnectPtr conn,
             goto stop;
     }
 
-    if (qemuProcessPrepareDomain(conn, driver, vm, flags) < 0)
+    if (qemuProcessPrepareDomain(driver, vm, flags) < 0)
         goto stop;
 
     if (qemuProcessPrepareHost(driver, vm, flags) < 0)
@@ -6386,8 +6385,7 @@ qemuProcessStart(virConnectPtr conn,
 
 
 virCommandPtr
-qemuProcessCreatePretendCmd(virConnectPtr conn,
-                            virQEMUDriverPtr driver,
+qemuProcessCreatePretendCmd(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             const char *migrateURI,
                             bool enableFips,
@@ -6407,7 +6405,7 @@ qemuProcessCreatePretendCmd(virConnectPtr conn,
                         !!migrateURI, flags) < 0)
         goto cleanup;
 
-    if (qemuProcessPrepareDomain(conn, driver, vm, flags) < 0)
+    if (qemuProcessPrepareDomain(driver, vm, flags) < 0)
         goto cleanup;
 
     VIR_DEBUG("Building emulator command line");

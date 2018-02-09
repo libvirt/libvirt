@@ -2752,7 +2752,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                                   dataFD[0])))
         goto stopjob;
 
-    if (qemuProcessPrepareDomain(dconn, driver, vm, startFlags) < 0)
+    if (qemuProcessPrepareDomain(driver, vm, startFlags) < 0)
         goto stopjob;
 
     if (qemuProcessPrepareHost(driver, vm, startFlags) < 0)
