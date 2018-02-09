@@ -380,8 +380,6 @@ virResctrlInfoIsEmpty(virResctrlInfoPtr resctrl)
 }
 
 
-#ifdef __linux__
-
 int
 virResctrlGetInfo(virResctrlInfoPtr resctrl)
 {
@@ -511,18 +509,6 @@ virResctrlGetInfo(virResctrlInfoPtr resctrl)
     VIR_FREE(i_type);
     return ret;
 }
-
-#else /* ! __linux__ */
-
-int
-virResctrlGetInfo(virResctrlInfoPtr resctrl ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Cache tune not supported on this platform"));
-    return -1;
-}
-
-#endif /* ! __linux__ */
 
 
 int
@@ -1089,8 +1075,6 @@ virResctrlAllocGetDefault(virResctrlInfoPtr resctrl)
 }
 
 
-#ifdef __linux__
-
 static void
 virResctrlAllocSubtractPerType(virResctrlAllocPerTypePtr dst,
                                virResctrlAllocPerTypePtr src)
@@ -1245,18 +1229,6 @@ virResctrlAllocGetUnused(virResctrlInfoPtr resctrl)
     ret = NULL;
     goto cleanup;
 }
-
-#else /* ! __linux__ */
-
-virResctrlAllocPtr
-virResctrlAllocGetUnused(virResctrlInfoPtr resctrl ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Cache tune not supported on this platform"));
-    return NULL;
-}
-
-#endif /* ! __linux__ */
 
 
 /*
