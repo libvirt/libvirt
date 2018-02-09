@@ -28926,7 +28926,6 @@ static virDomainNetNotifyActualDeviceImpl netNotify;
 static virDomainNetReleaseActualDeviceImpl netRelease;
 static virDomainNetBandwidthChangeAllowedImpl netBandwidthChangeAllowed;
 static virDomainNetBandwidthUpdateImpl netBandwidthUpdate;
-static virDomainNetResolveActualTypeImpl netResolveActualType;
 
 
 void
@@ -28934,15 +28933,13 @@ virDomainNetSetDeviceImpl(virDomainNetAllocateActualDeviceImpl allocate,
                           virDomainNetNotifyActualDeviceImpl notify,
                           virDomainNetReleaseActualDeviceImpl release,
                           virDomainNetBandwidthChangeAllowedImpl bandwidthChangeAllowed,
-                          virDomainNetBandwidthUpdateImpl bandwidthUpdate,
-                          virDomainNetResolveActualTypeImpl resolveActualType)
+                          virDomainNetBandwidthUpdateImpl bandwidthUpdate)
 {
     netAllocate = allocate;
     netNotify = notify;
     netRelease = release;
     netBandwidthChangeAllowed = bandwidthChangeAllowed;
     netBandwidthUpdate = bandwidthUpdate;
-    netResolveActualType = resolveActualType;
 }
 
 int
@@ -29011,16 +29008,83 @@ virDomainNetBandwidthUpdate(virDomainNetDefPtr iface,
     return netBandwidthUpdate(iface, newBandwidth);
 }
 
+/* virDomainNetResolveActualType:
+ * @iface: the original NetDef from the domain
+ *
+ * Looks up the network reference by iface, and returns the actual
+ * type of the connection without allocating any resources.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
 int
 virDomainNetResolveActualType(virDomainNetDefPtr iface)
 {
-    if (!netResolveActualType) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("Network device resolve type not available"));
+    virConnectPtr conn = NULL;
+    virNetworkPtr net = NULL;
+    char *xml = NULL;
+    virNetworkDefPtr def = NULL;
+    int ret = -1;
+
+    if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+        return iface->type;
+
+    if (iface->data.network.actual)
+        return iface->data.network.actual->type;
+
+    if (!(conn = virGetConnectNetwork()))
         return -1;
+
+    if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
+        goto cleanup;
+
+    if (!(xml = virNetworkGetXMLDesc(net, 0)))
+        goto cleanup;
+
+    if (!(def = virNetworkDefParseString(xml)))
+        goto cleanup;
+
+    if ((def->forward.type == VIR_NETWORK_FORWARD_NONE) ||
+        (def->forward.type == VIR_NETWORK_FORWARD_NAT) ||
+        (def->forward.type == VIR_NETWORK_FORWARD_ROUTE) ||
+        (def->forward.type == VIR_NETWORK_FORWARD_OPEN)) {
+        /* for these forward types, the actual net type really *is*
+         * NETWORK; we just keep the info from the portgroup in
+         * iface->data.network.actual
+         */
+        ret = VIR_DOMAIN_NET_TYPE_NETWORK;
+
+    } else if ((def->forward.type == VIR_NETWORK_FORWARD_BRIDGE) &&
+               def->bridge) {
+
+        /* <forward type='bridge'/> <bridge name='xxx'/>
+         * is VIR_DOMAIN_NET_TYPE_BRIDGE
+         */
+
+        ret = VIR_DOMAIN_NET_TYPE_BRIDGE;
+
+    } else if (def->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
+
+        ret = VIR_DOMAIN_NET_TYPE_HOSTDEV;
+
+    } else if ((def->forward.type == VIR_NETWORK_FORWARD_BRIDGE) ||
+               (def->forward.type == VIR_NETWORK_FORWARD_PRIVATE) ||
+               (def->forward.type == VIR_NETWORK_FORWARD_VEPA) ||
+               (def->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
+
+        /* <forward type='bridge|private|vepa|passthrough'> are all
+         * VIR_DOMAIN_NET_TYPE_DIRECT.
+         */
+
+        ret = VIR_DOMAIN_NET_TYPE_DIRECT;
+
     }
 
-    return netResolveActualType(iface);
+ cleanup:
+    virNetworkDefFree(def);
+    VIR_FREE(xml);
+    virObjectUnref(conn);
+    virObjectUnref(net);
+    return ret;
 }
 
 

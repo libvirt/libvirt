@@ -5146,79 +5146,6 @@ networkReleaseActualDevice(virDomainDefPtr dom,
 }
 
 
-
-/* networkResolveActualType:
- * @iface: the original NetDef from the domain
- *
- * Looks up the network reference by iface, and returns the actual
- * type of the connection without allocating any resources.
- *
- * Returns 0 on success, -1 on failure.
- */
-static int
-networkResolveActualType(virDomainNetDefPtr iface)
-{
-    virNetworkDriverStatePtr driver = networkGetDriver();
-    virNetworkObjPtr obj = NULL;
-    virNetworkDefPtr netdef = NULL;
-    int ret = -1;
-
-    if (!driver || iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
-        return iface->type;
-
-    if (iface->data.network.actual)
-        return iface->data.network.actual->type;
-
-    obj = virNetworkObjFindByName(driver->networks, iface->data.network.name);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_NETWORK,
-                       _("no network with matching name '%s'"),
-                       iface->data.network.name);
-        return -1;
-    }
-    netdef = virNetworkObjGetDef(obj);
-
-    if ((netdef->forward.type == VIR_NETWORK_FORWARD_NONE) ||
-        (netdef->forward.type == VIR_NETWORK_FORWARD_NAT) ||
-        (netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE) ||
-        (netdef->forward.type == VIR_NETWORK_FORWARD_OPEN)) {
-        /* for these forward types, the actual net type really *is*
-         * NETWORK; we just keep the info from the portgroup in
-         * iface->data.network.actual
-         */
-        ret = VIR_DOMAIN_NET_TYPE_NETWORK;
-
-    } else if ((netdef->forward.type == VIR_NETWORK_FORWARD_BRIDGE) &&
-               netdef->bridge) {
-
-        /* <forward type='bridge'/> <bridge name='xxx'/>
-         * is VIR_DOMAIN_NET_TYPE_BRIDGE
-         */
-
-        ret = VIR_DOMAIN_NET_TYPE_BRIDGE;
-
-    } else if (netdef->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
-
-        ret = VIR_DOMAIN_NET_TYPE_HOSTDEV;
-
-    } else if ((netdef->forward.type == VIR_NETWORK_FORWARD_BRIDGE) ||
-               (netdef->forward.type == VIR_NETWORK_FORWARD_PRIVATE) ||
-               (netdef->forward.type == VIR_NETWORK_FORWARD_VEPA) ||
-               (netdef->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH)) {
-
-        /* <forward type='bridge|private|vepa|passthrough'> are all
-         * VIR_DOMAIN_NET_TYPE_DIRECT.
-         */
-
-        ret = VIR_DOMAIN_NET_TYPE_DIRECT;
-
-    }
-
-    virNetworkObjEndAPI(&obj);
-    return ret;
-}
-
-
 /**
  * networkCheckBandwidth:
  * @net: network QoS
@@ -5717,8 +5644,7 @@ networkRegister(void)
         networkNotifyActualDevice,
         networkReleaseActualDevice,
         networkBandwidthChangeAllowed,
-        networkBandwidthUpdate,
-        networkResolveActualType);
+        networkBandwidthUpdate);
 
     return 0;
 }

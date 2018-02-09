@@ -280,7 +280,7 @@ test_libraries += virmocklibxl.la
 endif WITH_LIBXL
 
 if WITH_QEMU
-test_programs += qemuxml2xmltest \
+test_programs += qemuxml2argvtest qemuxml2xmltest \
 	qemuargv2xmltest qemuhelptest domainsnapshotxml2xmltest \
 	qemumonitortest qemumonitorjsontest qemuhotplugtest \
 	qemuagenttest qemucapabilitiestest qemucaps2xmltest \
@@ -288,11 +288,6 @@ test_programs += qemuxml2xmltest \
 	qemucommandutiltest \
 	qemublocktest \
 	$(NULL)
-if WITH_NETWORK
-# Dep on the network driver callback for resolving NIC
-# actual type. XXX remove this dep.
-test_programs += qemuxml2argvtest
-endif WITH_NETWORK
 test_helpers += qemucapsprobe
 test_libraries += libqemumonitortestutils.la \
 		libqemutestdriver.la \

@@ -3474,17 +3474,13 @@ typedef int
 (*virDomainNetBandwidthUpdateImpl)(virDomainNetDefPtr iface,
                                    virNetDevBandwidthPtr newBandwidth);
 
-typedef int
-(*virDomainNetResolveActualTypeImpl)(virDomainNetDefPtr iface);
-
 
 void
 virDomainNetSetDeviceImpl(virDomainNetAllocateActualDeviceImpl allocate,
                           virDomainNetNotifyActualDeviceImpl notify,
                           virDomainNetReleaseActualDeviceImpl release,
                           virDomainNetBandwidthChangeAllowedImpl bandwidthChangeAllowed,
-                          virDomainNetBandwidthUpdateImpl bandwidthUpdate,
-                          virDomainNetResolveActualTypeImpl resolveActualType);
+                          virDomainNetBandwidthUpdateImpl bandwidthUpdate);
 
 int
 virDomainNetAllocateActualDevice(virDomainDefPtr dom,
@@ -3511,11 +3507,6 @@ virDomainNetBandwidthUpdate(virDomainNetDefPtr iface,
                             virNetDevBandwidthPtr newBandwidth)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-/* XXX this is a nasty hack and should be removed. It should
- * be by via public API by fetching XML and parsing it. Not
- * easy right now as code paths in QEMU reying on this don't
- * have a virConnectPtr handy.
- */
 int
 virDomainNetResolveActualType(virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1);
