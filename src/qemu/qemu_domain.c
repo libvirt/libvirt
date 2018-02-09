@@ -4458,10 +4458,10 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
 
         if (pciopts->numaNode != -1 &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("the spapr-pci-host-bridge controller doesn't "
-                                 "support numa_node in this QEMU binary"));
-                return -1;
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the spapr-pci-host-bridge controller doesn't "
+                             "support numa_node in this QEMU binary"));
+            return -1;
         }
 
         break;
