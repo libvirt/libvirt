@@ -181,12 +181,6 @@ static virNWFilterCallbackDriver qemuCallbackDriver = {
 };
 
 
-struct qemuAutostartData {
-    virQEMUDriverPtr driver;
-    virConnectPtr conn;
-};
-
-
 /**
  * qemuDomObjFromDomain:
  * @domain: Domain pointer that has to be looked up
@@ -254,9 +248,9 @@ static int
 qemuAutostartDomain(virDomainObjPtr vm,
                     void *opaque)
 {
-    struct qemuAutostartData *data = opaque;
+    virQEMUDriverPtr driver = opaque;
     int flags = 0;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(data->driver);
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
 
     if (cfg->autoStartBypassCache)
@@ -267,7 +261,7 @@ qemuAutostartDomain(virDomainObjPtr vm,
     virResetLastError();
     if (vm->autostart &&
         !virDomainObjIsActive(vm)) {
-        if (qemuProcessBeginJob(data->driver, vm,
+        if (qemuProcessBeginJob(driver, vm,
                                 VIR_DOMAIN_JOB_OPERATION_START) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to start job on VM '%s': %s"),
@@ -275,14 +269,14 @@ qemuAutostartDomain(virDomainObjPtr vm,
             goto cleanup;
         }
 
-        if (qemuDomainObjStart(data->conn, data->driver, vm, flags,
+        if (qemuDomainObjStart(NULL, driver, vm, flags,
                                QEMU_ASYNC_JOB_START) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to autostart VM '%s': %s"),
                            vm->def->name, virGetLastErrorMessage());
         }
 
-        qemuProcessEndJob(data->driver, vm);
+        qemuProcessEndJob(driver, vm);
     }
 
     ret = 0;
@@ -296,20 +290,7 @@ qemuAutostartDomain(virDomainObjPtr vm,
 static void
 qemuAutostartDomains(virQEMUDriverPtr driver)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    /* XXX: Figure out a better way todo this. The domain
-     * startup code needs a connection handle in order
-     * to lookup the bridge associated with a virtual
-     * network
-     */
-    virConnectPtr conn = virConnectOpen(cfg->uri);
-    /* Ignoring NULL conn which is mostly harmless here */
-    struct qemuAutostartData data = { driver, conn };
-
-    virDomainObjListForEach(driver->domains, qemuAutostartDomain, &data);
-
-    virObjectUnref(conn);
-    virObjectUnref(cfg);
+    virDomainObjListForEach(driver->domains, qemuAutostartDomain, driver);
 }
 
 
@@ -623,7 +604,6 @@ qemuStateInitialize(bool privileged,
                     void *opaque)
 {
     char *driverConf = NULL;
-    virConnectPtr conn = NULL;
     virQEMUDriverConfigPtr cfg;
     uid_t run_uid = -1;
     gid_t run_gid = -1;
@@ -933,8 +913,6 @@ qemuStateInitialize(bool privileged,
                             qemuDomainNetsRestart,
                             NULL);
 
-    conn = virConnectOpen(cfg->uri);
-
     /* Then inactive persistent configs */
     if (virDomainObjListLoadAllConfigs(qemu_driver->domains,
                                        cfg->configDir,
@@ -952,19 +930,16 @@ qemuStateInitialize(bool privileged,
                             qemuDomainManagedSaveLoad,
                             qemu_driver);
 
-    qemuProcessReconnectAll(conn, qemu_driver);
+    qemuProcessReconnectAll(qemu_driver);
 
     qemu_driver->workerPool = virThreadPoolNew(0, 1, 0, qemuProcessEventHandler, qemu_driver);
     if (!qemu_driver->workerPool)
         goto error;
 
-    virObjectUnref(conn);
-
     virNWFilterRegisterCallbackDriver(&qemuCallbackDriver);
     return 0;
 
  error:
-    virObjectUnref(conn);
     VIR_FREE(driverConf);
     VIR_FREE(hugepagePath);
     VIR_FREE(memoryBackingPath);

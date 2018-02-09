@@ -47,7 +47,7 @@ int qemuProcessDestroyMemoryBackingPath(virQEMUDriverPtr driver,
                                         virDomainMemoryDefPtr mem);
 
 void qemuProcessAutostartAll(virQEMUDriverPtr driver);
-void qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver);
+void qemuProcessReconnectAll(virQEMUDriverPtr driver);
 
 typedef struct _qemuProcessIncomingDef qemuProcessIncomingDef;
 typedef qemuProcessIncomingDef *qemuProcessIncomingDefPtr;

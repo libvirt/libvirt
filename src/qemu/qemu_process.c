@@ -2749,7 +2749,6 @@ qemuProcessUpdateVideoRamSize(virQEMUDriverPtr driver,
 
 
 struct qemuProcessHookData {
-    virConnectPtr conn;
     virDomainObjPtr vm;
     virQEMUDriverPtr driver;
     virQEMUDriverConfigPtr cfg;
@@ -5937,7 +5936,12 @@ qemuProcessLaunch(virConnectPtr conn,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    hookData.conn = conn;
+    if ((flags & VIR_QEMU_PROCESS_START_AUTODESTROY) && !conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Domain autodestroy requires a connection handle"));
+        return -1;
+    }
+
     hookData.vm = vm;
     hookData.driver = driver;
     /* We don't increase cfg's reference counter here. */
@@ -7246,17 +7250,12 @@ qemuProcessRefreshCPU(virQEMUDriverPtr driver,
 
 
 struct qemuProcessReconnectData {
-    virConnectPtr conn;
     virQEMUDriverPtr driver;
     virDomainObjPtr obj;
 };
 /*
  * Open an existing VM's monitor, re-detect VCPU threads
  * and re-reserve the security labels in use
- *
- * We own the virConnectPtr we are passed here - whoever started
- * this thread function has increased the reference counter to it
- * so that we now have to close it.
  *
  * This function also inherits a locked and ref'd domain object.
  *
@@ -7279,7 +7278,6 @@ qemuProcessReconnect(void *opaque)
     virQEMUDriverPtr driver = data->driver;
     virDomainObjPtr obj = data->obj;
     qemuDomainObjPrivatePtr priv;
-    virConnectPtr conn = data->conn;
     struct qemuDomainJobObj oldjob;
     int state;
     int reason;
@@ -7501,7 +7499,6 @@ qemuProcessReconnect(void *opaque)
             qemuDomainRemoveInactiveJob(driver, obj);
     }
     virDomainObjEndAPI(&obj);
-    virObjectUnref(conn);
     virObjectUnref(cfg);
     virObjectUnref(caps);
     virNWFilterUnlockFilterUpdates();
@@ -7557,12 +7554,6 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
     virObjectLock(obj);
     virObjectRef(obj);
 
-    /* Since we close the connection later on, we have to make sure that the
-     * threads we start see a valid connection throughout their lifetime. We
-     * simply increase the reference counter here.
-     */
-    virObjectRef(data->conn);
-
     if (virThreadCreate(&thread, false, qemuProcessReconnect, data) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not create thread. QEMU initialization "
@@ -7578,7 +7569,6 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
 
         virDomainObjEndAPI(&obj);
         virNWFilterUnlockFilterUpdates();
-        virObjectUnref(data->conn);
         VIR_FREE(data);
         return -1;
     }
@@ -7593,8 +7583,8 @@ qemuProcessReconnectHelper(virDomainObjPtr obj,
  * about.
  */
 void
-qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver)
+qemuProcessReconnectAll(virQEMUDriverPtr driver)
 {
-    struct qemuProcessReconnectData data = {.conn = conn, .driver = driver};
+    struct qemuProcessReconnectData data = {.driver = driver};
     virDomainObjListForEach(driver->domains, qemuProcessReconnectHelper, &data);
 }
