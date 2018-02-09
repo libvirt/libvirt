@@ -7635,7 +7635,6 @@ qemuDomainUndefine(virDomainPtr dom)
 static int
 qemuDomainAttachDeviceLive(virDomainObjPtr vm,
                            virDomainDeviceDefPtr dev,
-                           virConnectPtr conn,
                            virQEMUDriverPtr driver)
 {
     int ret = -1;
@@ -7644,7 +7643,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
-        ret = qemuDomainAttachDeviceDiskLive(conn, driver, vm, dev);
+        ret = qemuDomainAttachDeviceDiskLive(driver, vm, dev);
         if (!ret) {
             alias = dev->data.disk->info.alias;
             dev->data.disk = NULL;
@@ -7677,7 +7676,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         qemuDomainObjCheckHostdevTaint(driver, vm, dev->data.hostdev, NULL);
-        ret = qemuDomainAttachHostDevice(conn, driver, vm,
+        ret = qemuDomainAttachHostDevice(driver, vm,
                                          dev->data.hostdev);
         if (!ret) {
             alias = dev->data.hostdev->info->alias;
@@ -7686,7 +7685,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_DEVICE_REDIRDEV:
-        ret = qemuDomainAttachRedirdevDevice(conn, driver, vm,
+        ret = qemuDomainAttachRedirdevDevice(driver, vm,
                                              dev->data.redirdev);
         if (!ret) {
             alias = dev->data.redirdev->info.alias;
@@ -7695,7 +7694,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_DEVICE_CHR:
-        ret = qemuDomainAttachChrDevice(conn, driver, vm,
+        ret = qemuDomainAttachChrDevice(driver, vm,
                                         dev->data.chr);
         if (!ret) {
             alias = dev->data.chr->info.alias;
@@ -7704,7 +7703,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_DEVICE_RNG:
-        ret = qemuDomainAttachRNGDevice(conn, driver, vm,
+        ret = qemuDomainAttachRNGDevice(driver, vm,
                                         dev->data.rng);
         if (!ret) {
             alias = dev->data.rng->info.alias;
@@ -8441,8 +8440,7 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
 }
 
 static int
-qemuDomainAttachDeviceLiveAndConfig(virConnectPtr conn,
-                                    virDomainObjPtr vm,
+qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
                                     virQEMUDriverPtr driver,
                                     const char *xml,
                                     unsigned int flags)
@@ -8501,7 +8499,7 @@ qemuDomainAttachDeviceLiveAndConfig(virConnectPtr conn,
         if (virDomainDefCompatibleDevice(vm->def, dev_copy) < 0)
             goto cleanup;
 
-        if ((ret = qemuDomainAttachDeviceLive(vm, dev_copy, conn, driver)) < 0)
+        if ((ret = qemuDomainAttachDeviceLive(vm, dev_copy, driver)) < 0)
             goto cleanup;
         /*
          * update domain status forcibly because the domain status may be
@@ -8557,7 +8555,7 @@ qemuDomainAttachDeviceFlags(virDomainPtr dom,
     if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
         goto endjob;
 
-    if (qemuDomainAttachDeviceLiveAndConfig(dom->conn, vm, driver, xml, flags) < 0)
+    if (qemuDomainAttachDeviceLiveAndConfig(vm, driver, xml, flags) < 0)
         goto endjob;
 
     ret = 0;

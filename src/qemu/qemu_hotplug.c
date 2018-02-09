@@ -354,8 +354,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
  * Attaches disk to a VM. This function aggregates common code for all bus types.
  * In cases when the VM crashed while adding the disk, -2 is returned. */
 static int
-qemuDomainAttachDiskGeneric(virConnectPtr conn,
-                            virQEMUDriverPtr driver,
+qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             virDomainDiskDefPtr disk)
 {
@@ -382,7 +381,7 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
     if (qemuAssignDeviceDiskAlias(vm->def, disk) < 0)
         goto error;
 
-    if (qemuDomainPrepareDiskSource(conn, disk, priv, cfg) < 0)
+    if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
         goto error;
 
     srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
@@ -487,8 +486,7 @@ qemuDomainAttachDiskGeneric(virConnectPtr conn,
 
 
 static int
-qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
-                                 virQEMUDriverPtr driver,
+qemuDomainAttachVirtioDiskDevice(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainDiskDefPtr disk)
 {
@@ -499,7 +497,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, disk->dst) < 0)
         return -1;
 
-    if ((rv = qemuDomainAttachDiskGeneric(conn, driver, vm, disk)) < 0) {
+    if ((rv = qemuDomainAttachDiskGeneric(driver, vm, disk)) < 0) {
         if (rv == -1 && releaseaddr)
             qemuDomainReleaseDeviceAddress(vm, &disk->info, disk->dst);
 
@@ -639,8 +637,7 @@ qemuDomainFindOrCreateSCSIDiskController(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainAttachSCSIDisk(virConnectPtr conn,
-                         virQEMUDriverPtr driver,
+qemuDomainAttachSCSIDisk(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virDomainDiskDefPtr disk)
 {
@@ -666,7 +663,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
             return -1;
     }
 
-    if (qemuDomainAttachDiskGeneric(conn, driver, vm, disk) < 0)
+    if (qemuDomainAttachDiskGeneric(driver, vm, disk) < 0)
         return -1;
 
     return 0;
@@ -674,8 +671,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
 
 
 static int
-qemuDomainAttachUSBMassStorageDevice(virConnectPtr conn,
-                                     virQEMUDriverPtr driver,
+qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainDiskDefPtr disk)
 {
@@ -686,7 +682,7 @@ qemuDomainAttachUSBMassStorageDevice(virConnectPtr conn,
             return -1;
     }
 
-    if (qemuDomainAttachDiskGeneric(conn, driver, vm, disk) < 0) {
+    if (qemuDomainAttachDiskGeneric(driver, vm, disk) < 0) {
         virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
         return -1;
     }
@@ -696,8 +692,7 @@ qemuDomainAttachUSBMassStorageDevice(virConnectPtr conn,
 
 
 int
-qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
-                               virQEMUDriverPtr driver,
+qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainDeviceDefPtr dev)
 {
@@ -761,15 +756,15 @@ qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
                                _("disk device='lun' is not supported for usb bus"));
                 break;
             }
-            ret = qemuDomainAttachUSBMassStorageDevice(conn, driver, vm, disk);
+            ret = qemuDomainAttachUSBMassStorageDevice(driver, vm, disk);
             break;
 
         case VIR_DOMAIN_DISK_BUS_VIRTIO:
-            ret = qemuDomainAttachVirtioDiskDevice(conn, driver, vm, disk);
+            ret = qemuDomainAttachVirtioDiskDevice(driver, vm, disk);
             break;
 
         case VIR_DOMAIN_DISK_BUS_SCSI:
-            ret = qemuDomainAttachSCSIDisk(conn, driver, vm, disk);
+            ret = qemuDomainAttachSCSIDisk(driver, vm, disk);
             break;
 
         case VIR_DOMAIN_DISK_BUS_IDE:
@@ -954,11 +949,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
          * as a hostdev (the hostdev code will reach over into the
          * netdev-specific code as appropriate), then also added to
          * the nets list (see cleanup:) if successful.
-         *
-         * qemuDomainAttachHostDevice uses a connection to resolve
-         * a SCSI hostdev secret, which is not this case, so pass NULL.
          */
-        ret = qemuDomainAttachHostDevice(NULL, driver, vm,
+        ret = qemuDomainAttachHostDevice(driver, vm,
                                          virDomainNetGetActualHostdev(net));
         goto cleanup;
         break;
@@ -1519,8 +1511,7 @@ qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
 
 
 static int
-qemuDomainAddChardevTLSObjects(virConnectPtr conn,
-                               virQEMUDriverPtr driver,
+qemuDomainAddChardevTLSObjects(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainChrSourceDefPtr dev,
                                char *devAlias,
@@ -1545,7 +1536,7 @@ qemuDomainAddChardevTLSObjects(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (qemuDomainSecretChardevPrepare(conn, cfg, priv, devAlias, dev) < 0)
+    if (qemuDomainSecretChardevPrepare(cfg, priv, devAlias, dev) < 0)
         goto cleanup;
 
     if ((chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev)))
@@ -1623,8 +1614,7 @@ qemuDomainDelChardevTLSObjects(virQEMUDriverPtr driver,
 }
 
 
-int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
-                                   virQEMUDriverPtr driver,
+int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainRedirdevDefPtr redirdev)
 {
@@ -1655,7 +1645,7 @@ int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
     if (VIR_REALLOC_N(def->redirdevs, def->nredirdevs+1) < 0)
         goto cleanup;
 
-    if (qemuDomainAddChardevTLSObjects(conn, driver, vm, redirdev->source,
+    if (qemuDomainAddChardevTLSObjects(driver, vm, redirdev->source,
                                        redirdev->info.alias, charAlias,
                                        &tlsAlias, &secAlias) < 0)
         goto audit;
@@ -1861,8 +1851,7 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObjPtr vm,
     return 0;
 }
 
-int qemuDomainAttachChrDevice(virConnectPtr conn,
-                              virQEMUDriverPtr driver,
+int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainChrDefPtr chr)
 {
@@ -1914,7 +1903,7 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
     if (qemuDomainChrPreInsert(vmdef, chr) < 0)
         goto cleanup;
 
-    if (qemuDomainAddChardevTLSObjects(conn, driver, vm, dev,
+    if (qemuDomainAddChardevTLSObjects(driver, vm, dev,
                                        chr->info.alias, charAlias,
                                        &tlsAlias, &secAlias) < 0)
         goto audit;
@@ -1969,8 +1958,7 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
 
 
 int
-qemuDomainAttachRNGDevice(virConnectPtr conn,
-                          virQEMUDriverPtr driver,
+qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainRNGDefPtr rng)
 {
@@ -2024,7 +2012,7 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
         goto cleanup;
 
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD) {
-        if (qemuDomainAddChardevTLSObjects(conn, driver, vm,
+        if (qemuDomainAddChardevTLSObjects(driver, vm,
                                            rng->source.chardev,
                                            rng->info.alias, charAlias,
                                            &tlsAlias, &secAlias) < 0)
@@ -2325,8 +2313,7 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
-                               virQEMUDriverPtr driver,
+qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev)
 {
@@ -2383,7 +2370,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
         goto cleanup;
 
-    if (qemuDomainSecretHostdevPrepare(conn, priv, hostdev) < 0)
+    if (qemuDomainSecretHostdevPrepare(priv, hostdev) < 0)
         goto cleanup;
 
     if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
@@ -2585,8 +2572,7 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
 
 
 int
-qemuDomainAttachHostDevice(virConnectPtr conn,
-                           virQEMUDriverPtr driver,
+qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virDomainHostdevDefPtr hostdev)
 {
@@ -2611,7 +2597,7 @@ qemuDomainAttachHostDevice(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-        if (qemuDomainAttachHostSCSIDevice(conn, driver, vm,
+        if (qemuDomainAttachHostSCSIDevice(driver, vm,
                                            hostdev) < 0)
             goto error;
         break;

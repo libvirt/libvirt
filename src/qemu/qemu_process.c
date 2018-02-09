@@ -368,11 +368,11 @@ qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
 }
 
 static int
-qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
-                                   virDomainDiskDefPtr disk,
+qemuProcessGetVolumeQcowPassphrase(virDomainDiskDefPtr disk,
                                    char **secretRet,
                                    size_t *secretLen)
 {
+    virConnectPtr conn = NULL;
     char *passphrase;
     unsigned char *data;
     size_t size;
@@ -387,19 +387,8 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
     }
     enc = disk->src->encryption;
 
-    if (!conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot find secrets without a connection"));
+    if (!(conn = virGetConnectSecret()))
         goto cleanup;
-    }
-
-    if (conn->secretDriver == NULL ||
-        conn->secretDriver->secretLookupByUUID == NULL ||
-        conn->secretDriver->secretGetValue == NULL) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("secret storage not supported"));
-        goto cleanup;
-    }
 
     if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_QCOW ||
         enc->nsecrets != 1 ||
@@ -442,6 +431,7 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
     ret = 0;
 
  cleanup:
+    virObjectUnref(conn);
     return ret;
 }
 
@@ -453,7 +443,6 @@ qemuProcessFindVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                     size_t *secretLen,
                                     void *opaque ATTRIBUTE_UNUSED)
 {
-    virConnectPtr conn = NULL;
     virDomainDiskDefPtr disk;
     int ret = -1;
 
@@ -465,11 +454,9 @@ qemuProcessFindVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    conn = virGetConnectSecret();
-    ret = qemuProcessGetVolumeQcowPassphrase(conn, disk, secretRet, secretLen);
+    ret = qemuProcessGetVolumeQcowPassphrase(disk, secretRet, secretLen);
 
  cleanup:
-    virObjectUnref(conn);
     virObjectUnlock(vm);
     return ret;
 }
@@ -2567,8 +2554,7 @@ qemuProcessResctrlCreate(virQEMUDriverPtr driver,
 
 
 static int
-qemuProcessInitPasswords(virConnectPtr conn,
-                         virQEMUDriverPtr driver,
+qemuProcessInitPasswords(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          int asyncJob)
 {
@@ -2613,8 +2599,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
             continue;
 
         VIR_FREE(secret);
-        if (qemuProcessGetVolumeQcowPassphrase(conn,
-                                               vm->def->disks[i],
+        if (qemuProcessGetVolumeQcowPassphrase(vm->def->disks[i],
                                                &secret, &secretLen) < 0)
             goto cleanup;
 
@@ -5589,8 +5574,7 @@ qemuProcessPrepareDomainNUMAPlacement(virDomainObjPtr vm,
 
 
 static int
-qemuProcessPrepareDomainStorage(virConnectPtr conn,
-                                virQEMUDriverPtr driver,
+qemuProcessPrepareDomainStorage(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
                                 qemuDomainObjPrivatePtr priv,
                                 virQEMUDriverConfigPtr cfg,
@@ -5611,7 +5595,7 @@ qemuProcessPrepareDomainStorage(virConnectPtr conn,
             continue;
         }
 
-        if (qemuDomainPrepareDiskSource(conn, disk, priv, cfg) < 0)
+        if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
             return -1;
     }
 
@@ -5722,14 +5706,14 @@ qemuProcessPrepareDomain(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting up storage");
-    if (qemuProcessPrepareDomainStorage(conn, driver, vm, priv, cfg, flags) < 0)
+    if (qemuProcessPrepareDomainStorage(driver, vm, priv, cfg, flags) < 0)
         goto cleanup;
 
     VIR_DEBUG("Prepare chardev source backends for TLS");
     qemuDomainPrepareChardevSource(vm->def, cfg);
 
     VIR_DEBUG("Add secrets to hostdevs and chardevs");
-    if (qemuDomainSecretPrepare(conn, driver, vm) < 0)
+    if (qemuDomainSecretPrepare(driver, vm) < 0)
         goto cleanup;
 
     for (i = 0; i < vm->def->nchannels; i++) {
@@ -6180,7 +6164,7 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting any required VM passwords");
-    if (qemuProcessInitPasswords(conn, driver, vm, asyncJob) < 0)
+    if (qemuProcessInitPasswords(driver, vm, asyncJob) < 0)
         goto cleanup;
 
     /* set default link states */

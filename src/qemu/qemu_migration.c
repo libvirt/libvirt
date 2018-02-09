@@ -128,7 +128,6 @@ qemuMigrationCheckTLSCreds(virQEMUDriverPtr driver,
 
 
 /* qemuMigrationCheckSetupTLS
- * @conn: Connection pointer
  * @driver: pointer to qemu driver
  * @vm: domain object
  * @cfg: configuration pointer
@@ -144,8 +143,7 @@ qemuMigrationCheckTLSCreds(virQEMUDriverPtr driver,
  * Returns 0 on success, -1 on error/failure
  */
 static int
-qemuMigrationCheckSetupTLS(virConnectPtr conn,
-                           virQEMUDriverPtr driver,
+qemuMigrationCheckSetupTLS(virQEMUDriverPtr driver,
                            virQEMUDriverConfigPtr cfg,
                            virDomainObjPtr vm,
                            qemuDomainAsyncJob asyncJob)
@@ -171,7 +169,7 @@ qemuMigrationCheckSetupTLS(virConnectPtr conn,
     /* If there's a secret, then grab/store it now using the connection */
     if (cfg->migrateTLSx509secretUUID &&
         !(priv->migSecinfo =
-          qemuDomainSecretInfoTLSNew(conn, priv, QEMU_MIGRATION_TLS_ALIAS_BASE,
+          qemuDomainSecretInfoTLSNew(priv, QEMU_MIGRATION_TLS_ALIAS_BASE,
                                      cfg->migrateTLSx509secretUUID)))
         return -1;
 
@@ -2180,7 +2178,7 @@ qemuMigrationBegin(virConnectPtr conn,
 
     if (flags & VIR_MIGRATE_TLS) {
         cfg = virQEMUDriverGetConfig(driver);
-        if (qemuMigrationCheckSetupTLS(conn, driver, cfg, vm, asyncJob) < 0)
+        if (qemuMigrationCheckSetupTLS(driver, cfg, vm, asyncJob) < 0)
             goto endjob;
     }
 
@@ -2788,7 +2786,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
      * set the migration TLS parameters */
     if (flags & VIR_MIGRATE_TLS) {
         cfg = virQEMUDriverGetConfig(driver);
-        if (qemuMigrationCheckSetupTLS(dconn, driver, cfg, vm,
+        if (qemuMigrationCheckSetupTLS(driver, cfg, vm,
                                        QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
             goto stopjob;
 

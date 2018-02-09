@@ -1151,7 +1151,6 @@ qemuDomainChrSourcePrivateDispose(void *obj)
 
 
 /* qemuDomainSecretPlainSetup:
- * @conn: Pointer to connection
  * @secinfo: Pointer to secret info
  * @usageType: The virSecretUsageType
  * @username: username to use for authentication (may be NULL)
@@ -1162,24 +1161,33 @@ qemuDomainChrSourcePrivateDispose(void *obj)
  * Returns 0 on success, -1 on failure with error message
  */
 static int
-qemuDomainSecretPlainSetup(virConnectPtr conn,
-                           qemuDomainSecretInfoPtr secinfo,
+qemuDomainSecretPlainSetup(qemuDomainSecretInfoPtr secinfo,
                            virSecretUsageType usageType,
                            const char *username,
                            virSecretLookupTypeDefPtr seclookupdef)
 {
-    secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN;
-    if (VIR_STRDUP(secinfo->s.plain.username, username) < 0)
+    virConnectPtr conn;
+    int ret = -1;
+
+    conn = virGetConnectSecret();
+    if (!conn)
         return -1;
 
-    return virSecretGetSecretString(conn, seclookupdef, usageType,
-                                    &secinfo->s.plain.secret,
-                                    &secinfo->s.plain.secretlen);
+    secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN;
+    if (VIR_STRDUP(secinfo->s.plain.username, username) < 0)
+        goto cleanup;
+
+    ret = virSecretGetSecretString(conn, seclookupdef, usageType,
+                                   &secinfo->s.plain.secret,
+                                   &secinfo->s.plain.secretlen);
+
+ cleanup:
+    virObjectUnref(conn);
+    return ret;
 }
 
 
 /* qemuDomainSecretAESSetup:
- * @conn: Pointer to connection
  * @priv: pointer to domain private object
  * @secinfo: Pointer to secret info
  * @srcalias: Alias of the disk/hostdev used to generate the secret alias
@@ -1193,8 +1201,7 @@ qemuDomainSecretPlainSetup(virConnectPtr conn,
  * Returns 0 on success, -1 on failure with error message
  */
 static int
-qemuDomainSecretAESSetup(virConnectPtr conn,
-                         qemuDomainObjPrivatePtr priv,
+qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
                          qemuDomainSecretInfoPtr secinfo,
                          const char *srcalias,
                          virSecretUsageType usageType,
@@ -1202,6 +1209,7 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
                          virSecretLookupTypeDefPtr seclookupdef,
                          bool isLuks)
 {
+    virConnectPtr conn;
     int ret = -1;
     uint8_t *raw_iv = NULL;
     size_t ivlen = QEMU_DOMAIN_AES_IV_LEN;
@@ -1210,16 +1218,20 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
     uint8_t *ciphertext = NULL;
     size_t ciphertextlen = 0;
 
-    secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
-    if (VIR_STRDUP(secinfo->s.aes.username, username) < 0)
+    conn = virGetConnectSecret();
+    if (!conn)
         return -1;
 
+    secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
+    if (VIR_STRDUP(secinfo->s.aes.username, username) < 0)
+        goto cleanup;
+
     if (!(secinfo->s.aes.alias = qemuDomainGetSecretAESAlias(srcalias, isLuks)))
-        return -1;
+        goto cleanup;
 
     /* Create a random initialization vector */
     if (!(raw_iv = virCryptoGenerateRandom(ivlen)))
-        return -1;
+        goto cleanup;
 
     /* Encode the IV and save that since qemu will need it */
     if (!(secinfo->s.aes.iv = virStringEncodeBase64(raw_iv, ivlen)))
@@ -1250,13 +1262,12 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
     VIR_DISPOSE_N(raw_iv, ivlen);
     VIR_DISPOSE_N(secret, secretlen);
     VIR_DISPOSE_N(ciphertext, ciphertextlen);
-
+    virObjectUnref(conn);
     return ret;
 }
 
 
 /* qemuDomainSecretSetup:
- * @conn: Pointer to connection
  * @priv: pointer to domain private object
  * @secinfo: Pointer to secret info
  * @srcalias: Alias of the disk/hostdev used to generate the secret alias
@@ -1273,8 +1284,7 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
  * Returns 0 on success, -1 on failure
  */
 static int
-qemuDomainSecretSetup(virConnectPtr conn,
-                      qemuDomainObjPrivatePtr priv,
+qemuDomainSecretSetup(qemuDomainObjPrivatePtr priv,
                       qemuDomainSecretInfoPtr secinfo,
                       const char *srcalias,
                       virSecretUsageType usageType,
@@ -1291,12 +1301,12 @@ qemuDomainSecretSetup(virConnectPtr conn,
          (usageType == VIR_SECRET_USAGE_TYPE_ISCSI && iscsiHasPS) ||
          usageType == VIR_SECRET_USAGE_TYPE_VOLUME ||
          usageType == VIR_SECRET_USAGE_TYPE_TLS)) {
-        if (qemuDomainSecretAESSetup(conn, priv, secinfo, srcalias,
+        if (qemuDomainSecretAESSetup(priv, secinfo, srcalias,
                                      usageType, username,
                                      seclookupdef, isLuks) < 0)
             return -1;
     } else {
-        if (qemuDomainSecretPlainSetup(conn, secinfo, usageType,
+        if (qemuDomainSecretPlainSetup(secinfo, usageType,
                                        username, seclookupdef) < 0)
             return -1;
     }
@@ -1305,7 +1315,6 @@ qemuDomainSecretSetup(virConnectPtr conn,
 
 
 /* qemuDomainSecretInfoNew:
- * @conn: Pointer to connection
  * @priv: pointer to domain private object
  * @srcAlias: Alias base to use for TLS object
  * @usageType: Secret usage type
@@ -1319,8 +1328,7 @@ qemuDomainSecretSetup(virConnectPtr conn,
  * to eventually free @secinfo.
  */
 static qemuDomainSecretInfoPtr
-qemuDomainSecretInfoNew(virConnectPtr conn,
-                        qemuDomainObjPrivatePtr priv,
+qemuDomainSecretInfoNew(qemuDomainObjPrivatePtr priv,
                         const char *srcAlias,
                         virSecretUsageType usageType,
                         const char *username,
@@ -1332,7 +1340,7 @@ qemuDomainSecretInfoNew(virConnectPtr conn,
     if (VIR_ALLOC(secinfo) < 0)
         return NULL;
 
-    if (qemuDomainSecretSetup(conn, priv, secinfo, srcAlias, usageType,
+    if (qemuDomainSecretSetup(priv, secinfo, srcAlias, usageType,
                               username, lookupDef, isLuks) < 0)
         goto error;
 
@@ -1352,7 +1360,6 @@ qemuDomainSecretInfoNew(virConnectPtr conn,
 
 /**
  * qemuDomainSecretInfoTLSNew:
- * @conn: Pointer to connection
  * @priv: pointer to domain private object
  * @srcAlias: Alias base to use for TLS object
  * @secretUUID: Provide a secretUUID value to look up/create the secretInfo
@@ -1363,8 +1370,7 @@ qemuDomainSecretInfoNew(virConnectPtr conn,
  * Returns qemuDomainSecretInfoPtr or NULL on error.
  */
 qemuDomainSecretInfoPtr
-qemuDomainSecretInfoTLSNew(virConnectPtr conn,
-                           qemuDomainObjPrivatePtr priv,
+qemuDomainSecretInfoTLSNew(qemuDomainObjPrivatePtr priv,
                            const char *srcAlias,
                            const char *secretUUID)
 {
@@ -1378,7 +1384,7 @@ qemuDomainSecretInfoTLSNew(virConnectPtr conn,
     }
     seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
 
-    return qemuDomainSecretInfoNew(conn, priv, srcAlias,
+    return qemuDomainSecretInfoNew(priv, srcAlias,
                                    VIR_SECRET_USAGE_TYPE_TLS, NULL,
                                    &seclookupdef, false);
 }
@@ -1440,7 +1446,6 @@ qemuDomainDiskHasEncryptionSecret(virStorageSourcePtr src)
 
 /**
  * qemuDomainSecretStorageSourcePrepare:
- * @conn: connection object - for secret lookup
  * @priv: domain private object
  * @src: storage source struct to setup
  * @authalias: prefix of the alias for secret holding authentication data
@@ -1454,8 +1459,7 @@ qemuDomainDiskHasEncryptionSecret(virStorageSourcePtr src)
  * Returns 0 on success; -1 on error while reporting an libvirt error.
  */
 static int
-qemuDomainSecretStorageSourcePrepare(virConnectPtr conn,
-                                     qemuDomainObjPrivatePtr priv,
+qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
                                      virStorageSourcePtr src,
                                      const char *authalias,
                                      const char *encalias)
@@ -1479,7 +1483,7 @@ qemuDomainSecretStorageSourcePrepare(virConnectPtr conn,
             usageType = VIR_SECRET_USAGE_TYPE_CEPH;
 
         if (!(srcPriv->secinfo =
-              qemuDomainSecretInfoNew(conn, priv, authalias,
+              qemuDomainSecretInfoNew(priv, authalias,
                                       usageType, src->auth->username,
                                       &src->auth->seclookupdef, false)))
               return -1;
@@ -1487,7 +1491,7 @@ qemuDomainSecretStorageSourcePrepare(virConnectPtr conn,
 
     if (hasEnc) {
         if (!(srcPriv->encinfo =
-              qemuDomainSecretInfoNew(conn, priv, encalias,
+              qemuDomainSecretInfoNew(priv, encalias,
                                       VIR_SECRET_USAGE_TYPE_VOLUME, NULL,
                                       &src->encryption->secrets[0]->seclookupdef,
                                       true)))
@@ -1499,7 +1503,6 @@ qemuDomainSecretStorageSourcePrepare(virConnectPtr conn,
 
 
 /* qemuDomainSecretDiskPrepare:
- * @conn: Pointer to connection
  * @priv: pointer to domain private object
  * @disk: Pointer to a disk definition
  *
@@ -1509,11 +1512,10 @@ qemuDomainSecretStorageSourcePrepare(virConnectPtr conn,
  */
 
 static int
-qemuDomainSecretDiskPrepare(virConnectPtr conn,
-                            qemuDomainObjPrivatePtr priv,
+qemuDomainSecretDiskPrepare(qemuDomainObjPrivatePtr priv,
                             virDomainDiskDefPtr disk)
 {
-    return qemuDomainSecretStorageSourcePrepare(conn, priv, disk->src,
+    return qemuDomainSecretStorageSourcePrepare(priv, disk->src,
                                                 disk->info.alias,
                                                 disk->info.alias);
 }
@@ -1543,7 +1545,6 @@ qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr hostdev)
 
 
 /* qemuDomainSecretHostdevPrepare:
- * @conn: Pointer to connection
  * @priv: pointer to domain private object
  * @hostdev: Pointer to a hostdev definition
  *
@@ -1552,8 +1553,7 @@ qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr hostdev)
  * Returns 0 on success, -1 on failure
  */
 int
-qemuDomainSecretHostdevPrepare(virConnectPtr conn,
-                               qemuDomainObjPrivatePtr priv,
+qemuDomainSecretHostdevPrepare(qemuDomainObjPrivatePtr priv,
                                virDomainHostdevDefPtr hostdev)
 {
     if (virHostdevIsSCSIDevice(hostdev)) {
@@ -1571,7 +1571,7 @@ qemuDomainSecretHostdevPrepare(virConnectPtr conn,
             srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
 
             if (!(srcPriv->secinfo =
-                  qemuDomainSecretInfoNew(conn, priv, hostdev->info->alias,
+                  qemuDomainSecretInfoNew(priv, hostdev->info->alias,
                                           VIR_SECRET_USAGE_TYPE_ISCSI,
                                           src->auth->username,
                                           &src->auth->seclookupdef,
@@ -1603,7 +1603,6 @@ qemuDomainSecretChardevDestroy(virDomainChrSourceDefPtr dev)
 
 
 /* qemuDomainSecretChardevPrepare:
- * @conn: Pointer to connection
  * @cfg: Pointer to driver config object
  * @priv: pointer to domain private object
  * @chrAlias: Alias of the chr device
@@ -1615,8 +1614,7 @@ qemuDomainSecretChardevDestroy(virDomainChrSourceDefPtr dev)
  * Returns 0 on success, -1 on failure
  */
 int
-qemuDomainSecretChardevPrepare(virConnectPtr conn,
-                               virQEMUDriverConfigPtr cfg,
+qemuDomainSecretChardevPrepare(virQEMUDriverConfigPtr cfg,
                                qemuDomainObjPrivatePtr priv,
                                const char *chrAlias,
                                virDomainChrSourceDefPtr dev)
@@ -1635,7 +1633,7 @@ qemuDomainSecretChardevPrepare(virConnectPtr conn,
             return -1;
 
         chrSourcePriv->secinfo =
-            qemuDomainSecretInfoTLSNew(conn, priv, charAlias,
+            qemuDomainSecretInfoTLSNew(priv, charAlias,
                                        cfg->chardevTLSx509secretUUID);
         VIR_FREE(charAlias);
 
@@ -1693,7 +1691,6 @@ qemuDomainSecretDestroy(virDomainObjPtr vm)
 
 
 /* qemuDomainSecretPrepare:
- * @conn: Pointer to connection
  * @driver: Pointer to driver object
  * @vm: Domain object
  *
@@ -1706,8 +1703,7 @@ qemuDomainSecretDestroy(virDomainObjPtr vm)
  * Returns 0 on success, -1 on failure with error message set
  */
 int
-qemuDomainSecretPrepare(virConnectPtr conn,
-                        virQEMUDriverPtr driver,
+qemuDomainSecretPrepare(virQEMUDriverPtr driver,
                         virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -1718,34 +1714,34 @@ qemuDomainSecretPrepare(virConnectPtr conn,
     /* disk secrets are prepared when preparing disks */
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
-        if (qemuDomainSecretHostdevPrepare(conn, priv,
+        if (qemuDomainSecretHostdevPrepare(priv,
                                            vm->def->hostdevs[i]) < 0)
             goto cleanup;
     }
 
     for (i = 0; i < vm->def->nserials; i++) {
-        if (qemuDomainSecretChardevPrepare(conn, cfg, priv,
+        if (qemuDomainSecretChardevPrepare(cfg, priv,
                                            vm->def->serials[i]->info.alias,
                                            vm->def->serials[i]->source) < 0)
             goto cleanup;
     }
 
     for (i = 0; i < vm->def->nparallels; i++) {
-        if (qemuDomainSecretChardevPrepare(conn, cfg, priv,
+        if (qemuDomainSecretChardevPrepare(cfg, priv,
                                            vm->def->parallels[i]->info.alias,
                                            vm->def->parallels[i]->source) < 0)
             goto cleanup;
     }
 
     for (i = 0; i < vm->def->nchannels; i++) {
-        if (qemuDomainSecretChardevPrepare(conn, cfg, priv,
+        if (qemuDomainSecretChardevPrepare(cfg, priv,
                                            vm->def->channels[i]->info.alias,
                                            vm->def->channels[i]->source) < 0)
             goto cleanup;
     }
 
     for (i = 0; i < vm->def->nconsoles; i++) {
-        if (qemuDomainSecretChardevPrepare(conn, cfg, priv,
+        if (qemuDomainSecretChardevPrepare(cfg, priv,
                                            vm->def->consoles[i]->info.alias,
                                            vm->def->consoles[i]->source) < 0)
             goto cleanup;
@@ -1754,21 +1750,21 @@ qemuDomainSecretPrepare(virConnectPtr conn,
     for (i = 0; i < vm->def->nsmartcards; i++)
         if (vm->def->smartcards[i]->type ==
             VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH &&
-            qemuDomainSecretChardevPrepare(conn, cfg, priv,
+            qemuDomainSecretChardevPrepare(cfg, priv,
                                            vm->def->smartcards[i]->info.alias,
                                            vm->def->smartcards[i]->data.passthru) < 0)
             goto cleanup;
 
     for (i = 0; i < vm->def->nrngs; i++) {
         if (vm->def->rngs[i]->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
-            qemuDomainSecretChardevPrepare(conn, cfg, priv,
+            qemuDomainSecretChardevPrepare(cfg, priv,
                                            vm->def->rngs[i]->info.alias,
                                            vm->def->rngs[i]->source.chardev) < 0)
             goto cleanup;
     }
 
     for (i = 0; i < vm->def->nredirdevs; i++) {
-        if (qemuDomainSecretChardevPrepare(conn, cfg, priv,
+        if (qemuDomainSecretChardevPrepare(cfg, priv,
                                            vm->def->redirdevs[i]->info.alias,
                                            vm->def->redirdevs[i]->source) < 0)
             goto cleanup;
@@ -11504,15 +11500,14 @@ qemuDomainCheckMigrationCapabilities(virQEMUDriverPtr driver,
 
 
 int
-qemuDomainPrepareDiskSource(virConnectPtr conn,
-                            virDomainDiskDefPtr disk,
+qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
                             qemuDomainObjPrivatePtr priv,
                             virQEMUDriverConfigPtr cfg)
 {
     if (qemuDomainPrepareDiskSourceTLS(disk->src, cfg) < 0)
         return -1;
 
-    if (qemuDomainSecretDiskPrepare(conn, priv, disk) < 0)
+    if (qemuDomainSecretDiskPrepare(priv, disk) < 0)
         return -1;
 
     if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
