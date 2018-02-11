@@ -2190,8 +2190,7 @@ qemuAgentGetInterfaces(qemuAgentPtr mon,
         iface->naddrs = addrs_count;
     }
 
-    *ifaces = ifaces_ret;
-    ifaces_ret = NULL;
+    VIR_STEAL_PTR(*ifaces, ifaces_ret);
     ret = ifaces_count;
 
  cleanup:
