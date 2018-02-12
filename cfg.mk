@@ -1183,7 +1183,7 @@ _src2=src/(util/vircommand|libvirt|lxc/lxc_controller|locking/lock_daemon|loggin
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
   (^($(_src2)|tests/testutils|daemon/libvirtd)\.c$$)
 
-exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/virutil\.c$$
+exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/vir(util|log)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_internal_functions = \
   ^src/(util/(viralloc|virutil|virfile)\.[hc]|esx/esx_vi\.c)$$
