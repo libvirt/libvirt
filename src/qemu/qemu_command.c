@@ -2743,9 +2743,10 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             virBufferAsprintf(&buf, "%s,bus_nr=%d,id=%s",
                               modelName, pciopts->busNr,
                               def->info.alias);
-            if (pciopts->numaNode != -1)
-               virBufferAsprintf(&buf, ",numa_node=%d",
-                                 pciopts->numaNode);
+            if (pciopts->numaNode != -1) {
+                virBufferAsprintf(&buf, ",numa_node=%d",
+                                  pciopts->numaNode);
+            }
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
