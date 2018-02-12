@@ -206,9 +206,6 @@ struct _virQEMUDriverConfig {
 
     bool vxhsTLS;
     char *vxhsTLSx509certdir;
-
-    unsigned int rx_queue_size;
-    unsigned int tx_queue_size;
 };
 
 /* Main driver state */

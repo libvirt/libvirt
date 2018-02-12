@@ -5456,12 +5456,7 @@ qemu-kvm -net nic,model=? /dev/null
         some restrictions on actual value. For instance, latest
         QEMU (as of 2016-09-01) requires value to be a power of two
         from [256, 1024] range.
-        <span class="since">Since 2.3.0 (QEMU and KVM only)</span>
-        Additionally, <span class="since">since 4.1.0</span> the
-        value can be set in the <code>qemu.conf</code> file in order
-        to override the hypervisor default value. Note that XML has
-        higher precedence because it's more specific.
-        <br/><br/>
+        <span class="since">Since 2.3.0 (QEMU and KVM only)</span><br/><br/>
 
         <b>In general you should leave this option alone, unless you
         are very certain you know what you are doing.</b>
@@ -5477,12 +5472,7 @@ qemu-kvm -net nic,model=? /dev/null
         range. In addition to that, this may work only for a subset of
         interface types, e.g. aforementioned QEMU enables this option
         only for <code>vhostuser</code> type.
-        <span class="since">Since 3.7.0 (QEMU and KVM only)</span>
-        Additionally, <span class="since">since 4.1.0</span> the
-        value can be set in the <code>qemu.conf</code> file in order
-        to override the hypervisor default value. Note that XML has
-        higher precedence because it's more specific.
-        <br/><br/>
+        <span class="since">Since 3.7.0 (QEMU and KVM only)</span><br/><br/>
 
         <b>In general you should leave this option alone, unless you
         are very certain you know what you are doing.</b>
