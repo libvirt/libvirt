@@ -472,11 +472,6 @@ qemuBlockStorageSourceGetURI(virStorageSourcePtr src)
  * Formats @hosts into a json object conforming to the 'SocketAddress' type
  * in qemu.
  *
- * This function can be used when only 1 src->nhosts is expected in order
- * to build a command without the array indices after "server.". That is
- * to see "server.type", "server.host", and "server.port" instead of
- * "server.#.type", "server.#.host", and "server.#.port".
- *
  * Returns a virJSONValuePtr for a single server.
  */
 static virJSONValuePtr
