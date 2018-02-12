@@ -83,6 +83,37 @@ VIR_ENUM_IMPL(qemuMigrationCompressMethod, QEMU_MIGRATION_COMPRESS_LAST,
 
 #define QEMU_MIGRATION_TLS_ALIAS_BASE "libvirt_migrate"
 
+static int
+qemuMigrationJobStart(virQEMUDriverPtr driver,
+                      virDomainObjPtr vm,
+                      qemuDomainAsyncJob job)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+static void
+qemuMigrationJobSetPhase(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         qemuMigrationJobPhase phase)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+static void
+qemuMigrationJobStartPhase(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           qemuMigrationJobPhase phase)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+static void
+qemuMigrationJobContinue(virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1);
+
+static bool
+qemuMigrationJobIsActive(virDomainObjPtr vm,
+                         qemuDomainAsyncJob job)
+    ATTRIBUTE_NONNULL(1);
+
+static void
+qemuMigrationJobFinish(virQEMUDriverPtr driver,
+                       virDomainObjPtr obj)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 /* qemuMigrationCheckTLSCreds
  * @driver: pointer to qemu driver
@@ -5745,7 +5776,7 @@ qemuMigrationCancel(virQEMUDriverPtr driver,
 }
 
 
-int
+static int
 qemuMigrationJobStart(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
                       qemuDomainAsyncJob job)
@@ -5773,7 +5804,7 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
     return 0;
 }
 
-void
+static void
 qemuMigrationJobSetPhase(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          qemuMigrationJobPhase phase)
@@ -5790,7 +5821,7 @@ qemuMigrationJobSetPhase(virQEMUDriverPtr driver,
     qemuDomainObjSetJobPhase(driver, vm, phase);
 }
 
-void
+static void
 qemuMigrationJobStartPhase(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            qemuMigrationJobPhase phase)
@@ -5798,13 +5829,13 @@ qemuMigrationJobStartPhase(virQEMUDriverPtr driver,
     qemuMigrationJobSetPhase(driver, vm, phase);
 }
 
-void
+static void
 qemuMigrationJobContinue(virDomainObjPtr vm)
 {
     qemuDomainObjReleaseAsyncJob(vm);
 }
 
-bool
+static bool
 qemuMigrationJobIsActive(virDomainObjPtr vm,
                          qemuDomainAsyncJob job)
 {
@@ -5824,7 +5855,7 @@ qemuMigrationJobIsActive(virDomainObjPtr vm,
     return true;
 }
 
-void
+static void
 qemuMigrationJobFinish(virQEMUDriverPtr driver, virDomainObjPtr vm)
 {
     qemuDomainObjEndAsyncJob(driver, vm);

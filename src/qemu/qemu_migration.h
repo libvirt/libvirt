@@ -134,38 +134,6 @@ qemuMigrationParams(virTypedParameterPtr params,
                     unsigned long flags);
 
 int
-qemuMigrationJobStart(virQEMUDriverPtr driver,
-                      virDomainObjPtr vm,
-                      qemuDomainAsyncJob job)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
-
-void
-qemuMigrationJobSetPhase(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm,
-                         qemuMigrationJobPhase phase)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-void
-qemuMigrationJobStartPhase(virQEMUDriverPtr driver,
-                           virDomainObjPtr vm,
-                           qemuMigrationJobPhase phase)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-void
-qemuMigrationJobContinue(virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1);
-
-bool
-qemuMigrationJobIsActive(virDomainObjPtr vm,
-                         qemuDomainAsyncJob job)
-    ATTRIBUTE_NONNULL(1);
-
-void
-qemuMigrationJobFinish(virQEMUDriverPtr driver,
-                       virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-int
 qemuMigrationSetOffline(virQEMUDriverPtr driver,
                         virDomainObjPtr vm);
 
