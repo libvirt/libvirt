@@ -2732,6 +2732,13 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             def->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST)
             modelName = virDomainControllerPCIModelNameTypeToString(pciopts->modelName);
 
+        /* Skip the implicit PHB for pSeries guests */
+        if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
+            pciopts->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE &&
+            pciopts->targetIndex == 0) {
+            goto done;
+        }
+
         switch ((virDomainControllerModelPCI) def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
             virBufferAsprintf(&buf, "%s,chassis_nr=%d,id=%s",
@@ -2759,10 +2766,6 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                               pciopts->chassis, def->info.alias);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-            /* Skip the implicit one */
-            if (pciopts->targetIndex == 0)
-                goto done;
-
             virBufferAsprintf(&buf, "%s,index=%d,id=%s",
                               modelName, pciopts->targetIndex,
                               def->info.alias);
