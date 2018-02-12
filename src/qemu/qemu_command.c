@@ -2625,8 +2625,6 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int address_type = def->info.type;
-    const virDomainPCIControllerOpts *pciopts;
-    const char *modelName = NULL;
 
     *devstr = NULL;
 
@@ -2726,17 +2724,22 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 
         break;
 
-    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
-        pciopts = &def->opts.pciopts;
-        if (def->model != VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT &&
-            def->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST)
-            modelName = virDomainControllerPCIModelNameTypeToString(pciopts->modelName);
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI: {
+        const virDomainPCIControllerOpts *pciopts = &def->opts.pciopts;
+        const char *modelName = virDomainControllerPCIModelNameTypeToString(pciopts->modelName);
 
         /* Skip the implicit PHB for pSeries guests */
         if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
             pciopts->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE &&
             pciopts->targetIndex == 0) {
             goto done;
+        }
+
+        if (!modelName) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown virDomainControllerPCIModelName value: %d"),
+                           pciopts->modelName);
+            return -1;
         }
 
         switch ((virDomainControllerModelPCI) def->model) {
@@ -2780,6 +2783,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             goto error;
         }
         break;
+    }
 
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
