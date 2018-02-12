@@ -25,6 +25,20 @@
 # include "qemu_conf.h"
 # include "qemu_domain.h"
 
+/*
+ * General function naming conventions:
+ *
+ *  - qemuMigrationSrcXXX - only runs on source host
+ *  - qemuMigrationDstXXX - only runs on dest host
+ *  - qemuMigrationAnyXXX - runs on source or dest host
+ *
+ * Exceptions:
+ *
+ *  - qemuMigrationParamsXXX - runs on source or dest host
+ *  - qemuMigrationOptionXXX - runs on source or dest host
+ *  - qemuMigrationJobXXX - runs on source or dest host
+ */
+
 typedef struct _qemuMigrationCompression qemuMigrationCompression;
 typedef qemuMigrationCompression *qemuMigrationCompressionPtr;
 
@@ -112,15 +126,15 @@ struct _qemuMigrationCompression {
 };
 
 qemuMigrationCompressionPtr
-qemuMigrationCompressionParse(virTypedParameterPtr params,
-                              int nparams,
-                              unsigned long flags);
+qemuMigrationAnyCompressionParse(virTypedParameterPtr params,
+                                 int nparams,
+                                 unsigned long flags);
 int
-qemuMigrationCompressionDump(qemuMigrationCompressionPtr compression,
-                             virTypedParameterPtr *params,
-                             int *nparams,
-                             int *maxparams,
-                             unsigned long *flags);
+qemuMigrationAnyCompressionDump(qemuMigrationCompressionPtr compression,
+                                virTypedParameterPtr *params,
+                                int *nparams,
+                                int *maxparams,
+                                unsigned long *flags);
 
 void
 qemuMigrationParamsClear(qemuMonitorMigrationParamsPtr migParams);
@@ -134,166 +148,166 @@ qemuMigrationParams(virTypedParameterPtr params,
                     unsigned long flags);
 
 int
-qemuMigrationSetOffline(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm);
+qemuMigrationSrcSetOffline(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm);
 
 char *
-qemuMigrationBegin(virConnectPtr conn,
-                   virDomainObjPtr vm,
-                   const char *xmlin,
-                   const char *dname,
-                   char **cookieout,
-                   int *cookieoutlen,
-                   size_t nmigrate_disks,
-                   const char **migrate_disks,
-                   unsigned long flags);
+qemuMigrationSrcBegin(virConnectPtr conn,
+                      virDomainObjPtr vm,
+                      const char *xmlin,
+                      const char *dname,
+                      char **cookieout,
+                      int *cookieoutlen,
+                      size_t nmigrate_disks,
+                      const char **migrate_disks,
+                      unsigned long flags);
 
 virDomainDefPtr
-qemuMigrationPrepareDef(virQEMUDriverPtr driver,
-                        const char *dom_xml,
+qemuMigrationAnyPrepareDef(virQEMUDriverPtr driver,
+                           const char *dom_xml,
+                           const char *dname,
+                           char **origname);
+
+int
+qemuMigrationDstPrepareTunnel(virQEMUDriverPtr driver,
+                              const char *cookiein,
+                              int cookieinlen,
+                              char **cookieout,
+                              int *cookieoutlen,
+                              virStreamPtr st,
+                              virDomainDefPtr *def,
+                              const char *origname,
+                              unsigned long flags);
+
+int
+qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
+                              const char *cookiein,
+                              int cookieinlen,
+                              char **cookieout,
+                              int *cookieoutlen,
+                              const char *uri_in,
+                              char **uri_out,
+                              virDomainDefPtr *def,
+                              const char *origname,
+                              const char *listenAddress,
+                              size_t nmigrate_disks,
+                              const char **migrate_disks,
+                              int nbdPort,
+                              qemuMigrationCompressionPtr compression,
+                              unsigned long flags);
+
+int
+qemuMigrationSrcPerform(virQEMUDriverPtr driver,
+                        virConnectPtr conn,
+                        virDomainObjPtr vm,
+                        const char *xmlin,
+                        const char *persist_xml,
+                        const char *dconnuri,
+                        const char *uri,
+                        const char *graphicsuri,
+                        const char *listenAddress,
+                        size_t nmigrate_disks,
+                        const char **migrate_disks,
+                        int nbdPort,
+                        qemuMigrationCompressionPtr compression,
+                        qemuMonitorMigrationParamsPtr migParams,
+                        const char *cookiein,
+                        int cookieinlen,
+                        char **cookieout,
+                        int *cookieoutlen,
+                        unsigned long flags,
                         const char *dname,
-                        char **origname);
-
-int
-qemuMigrationPrepareTunnel(virQEMUDriverPtr driver,
-                           const char *cookiein,
-                           int cookieinlen,
-                           char **cookieout,
-                           int *cookieoutlen,
-                           virStreamPtr st,
-                           virDomainDefPtr *def,
-                           const char *origname,
-                           unsigned long flags);
-
-int
-qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
-                           const char *cookiein,
-                           int cookieinlen,
-                           char **cookieout,
-                           int *cookieoutlen,
-                           const char *uri_in,
-                           char **uri_out,
-                           virDomainDefPtr *def,
-                           const char *origname,
-                           const char *listenAddress,
-                           size_t nmigrate_disks,
-                           const char **migrate_disks,
-                           int nbdPort,
-                           qemuMigrationCompressionPtr compression,
-                           unsigned long flags);
-
-int
-qemuMigrationPerform(virQEMUDriverPtr driver,
-                     virConnectPtr conn,
-                     virDomainObjPtr vm,
-                     const char *xmlin,
-                     const char *persist_xml,
-                     const char *dconnuri,
-                     const char *uri,
-                     const char *graphicsuri,
-                     const char *listenAddress,
-                     size_t nmigrate_disks,
-                     const char **migrate_disks,
-                     int nbdPort,
-                     qemuMigrationCompressionPtr compression,
-                     qemuMonitorMigrationParamsPtr migParams,
-                     const char *cookiein,
-                     int cookieinlen,
-                     char **cookieout,
-                     int *cookieoutlen,
-                     unsigned long flags,
-                     const char *dname,
-                     unsigned long resource,
-                     bool v3proto);
+                        unsigned long resource,
+                        bool v3proto);
 
 virDomainPtr
-qemuMigrationFinish(virQEMUDriverPtr driver,
-                    virConnectPtr dconn,
-                    virDomainObjPtr vm,
-                    const char *cookiein,
-                    int cookieinlen,
-                    char **cookieout,
-                    int *cookieoutlen,
-                    unsigned long flags,
-                    int retcode,
-                    bool v3proto);
+qemuMigrationDstFinish(virQEMUDriverPtr driver,
+                       virConnectPtr dconn,
+                       virDomainObjPtr vm,
+                       const char *cookiein,
+                       int cookieinlen,
+                       char **cookieout,
+                       int *cookieoutlen,
+                       unsigned long flags,
+                       int retcode,
+                       bool v3proto);
 
 int
-qemuMigrationConfirm(virQEMUDriverPtr driver,
-                     virDomainObjPtr vm,
-                     const char *cookiein,
-                     int cookieinlen,
-                     unsigned int flags,
-                     int cancelled);
+qemuMigrationSrcConfirm(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm,
+                        const char *cookiein,
+                        int cookieinlen,
+                        unsigned int flags,
+                        int cancelled);
 
 bool
-qemuMigrationIsAllowed(virQEMUDriverPtr driver,
-                       virDomainObjPtr vm,
-                       bool remote,
-                       unsigned int flags);
+qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          bool remote,
+                          unsigned int flags);
 
 int
-qemuMigrationToFile(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm,
-                    int fd,
-                    const char *compressor,
-                    qemuDomainAsyncJob asyncJob)
+qemuMigrationSrcToFile(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       int fd,
+                       const char *compressor,
+                       qemuDomainAsyncJob asyncJob)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int
-qemuMigrationCancel(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm);
+qemuMigrationSrcCancel(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm);
 
 int
-qemuMigrationFetchStats(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm,
-                        qemuDomainAsyncJob asyncJob,
-                        qemuDomainJobInfoPtr jobInfo,
-                        char **error);
+qemuMigrationAnyFetchStats(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           qemuDomainAsyncJob asyncJob,
+                           qemuDomainJobInfoPtr jobInfo,
+                           char **error);
 
 int
-qemuMigrationErrorInit(virQEMUDriverPtr driver);
+qemuMigrationDstErrorInit(virQEMUDriverPtr driver);
 
 void
-qemuMigrationErrorSave(virQEMUDriverPtr driver,
-                       const char *name,
-                       virErrorPtr err);
+qemuMigrationDstErrorSave(virQEMUDriverPtr driver,
+                          const char *name,
+                          virErrorPtr err);
 
 void
-qemuMigrationErrorReport(virQEMUDriverPtr driver,
-                         const char *name);
+qemuMigrationDstErrorReport(virQEMUDriverPtr driver,
+                            const char *name);
 
 int
-qemuMigrationCheckIncoming(virQEMUCapsPtr qemuCaps,
-                           const char *migrateFrom);
+qemuMigrationDstCheckProtocol(virQEMUCapsPtr qemuCaps,
+                              const char *migrateFrom);
 
 char *
-qemuMigrationIncomingURI(const char *migrateFrom,
-                         int migrateFd);
+qemuMigrationDstGetURI(const char *migrateFrom,
+                       int migrateFd);
 
 int
-qemuMigrationRunIncoming(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm,
-                         const char *uri,
-                         qemuDomainAsyncJob asyncJob);
+qemuMigrationDstRun(virQEMUDriverPtr driver,
+                    virDomainObjPtr vm,
+                    const char *uri,
+                    qemuDomainAsyncJob asyncJob);
 
 void
-qemuMigrationPostcopyFailed(virQEMUDriverPtr driver,
+qemuMigrationAnyPostcopyFailed(virQEMUDriverPtr driver,
                             virDomainObjPtr vm);
 
 void
-qemuMigrationReset(virQEMUDriverPtr driver,
-                   virDomainObjPtr vm,
-                   qemuDomainAsyncJob job);
+qemuMigrationParamsReset(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         qemuDomainAsyncJob job);
 
 int
-qemuMigrationFetchMirrorStats(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              qemuDomainAsyncJob asyncJob,
-                              qemuDomainJobInfoPtr jobInfo);
+qemuMigrationSrcFetchMirrorStats(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 qemuDomainAsyncJob asyncJob,
+                                 qemuDomainJobInfoPtr jobInfo);
 
 bool
-qemuMigrationCapsGet(virDomainObjPtr vm,
-                     qemuMonitorMigrationCaps cap);
+qemuMigrationAnyCapsGet(virDomainObjPtr vm,
+                        qemuMonitorMigrationCaps cap);
 
 #endif /* __QEMU_MIGRATION_H__ */

@@ -447,8 +447,8 @@ testCompareXMLToArgv(const void *data)
         goto cleanup;
 
     if (info->migrateFrom &&
-        !(migrateURI = qemuMigrationIncomingURI(info->migrateFrom,
-                                                info->migrateFd)))
+        !(migrateURI = qemuMigrationDstGetURI(info->migrateFrom,
+                                              info->migrateFd)))
         goto cleanup;
 
     if (!(vm = virDomainObjNew(driver.xmlopt)))

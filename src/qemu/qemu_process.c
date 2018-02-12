@@ -3069,7 +3069,7 @@ qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
          * confirm success or failure yet; killing it seems safest unless
          * we already started guest CPUs or we were in post-copy mode */
         if (postcopy) {
-            qemuMigrationPostcopyFailed(driver, vm);
+            qemuMigrationAnyPostcopyFailed(driver, vm);
         } else if (state != VIR_DOMAIN_RUNNING) {
             VIR_DEBUG("Killing migrated domain %s", vm->def->name);
             return -1;
@@ -3077,7 +3077,7 @@ qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
         break;
     }
 
-    qemuMigrationReset(driver, vm, QEMU_ASYNC_JOB_NONE);
+    qemuMigrationParamsReset(driver, vm, QEMU_ASYNC_JOB_NONE);
     return 0;
 }
 
@@ -3115,11 +3115,11 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
          * post-copy mode
          */
         if (postcopy) {
-            qemuMigrationPostcopyFailed(driver, vm);
+            qemuMigrationAnyPostcopyFailed(driver, vm);
         } else {
             VIR_DEBUG("Cancelling unfinished migration of domain %s",
                       vm->def->name);
-            if (qemuMigrationCancel(driver, vm) < 0) {
+            if (qemuMigrationSrcCancel(driver, vm) < 0) {
                 VIR_WARN("Could not cancel ongoing migration of domain %s",
                          vm->def->name);
             }
@@ -3133,7 +3133,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
          * post-copy mode we can use PAUSED_POSTCOPY_FAILED state for this
          */
         if (postcopy)
-            qemuMigrationPostcopyFailed(driver, vm);
+            qemuMigrationAnyPostcopyFailed(driver, vm);
         break;
 
     case QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED:
@@ -3142,7 +3142,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
          * as broken in that case
          */
         if (postcopy) {
-            qemuMigrationPostcopyFailed(driver, vm);
+            qemuMigrationAnyPostcopyFailed(driver, vm);
         } else {
             VIR_DEBUG("Resuming domain %s after failed migration",
                       vm->def->name);
@@ -3171,7 +3171,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
         }
     }
 
-    qemuMigrationReset(driver, vm, QEMU_ASYNC_JOB_NONE);
+    qemuMigrationParamsReset(driver, vm, QEMU_ASYNC_JOB_NONE);
     return 0;
 }
 
@@ -4142,7 +4142,7 @@ qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
 {
     qemuProcessIncomingDefPtr inc = NULL;
 
-    if (qemuMigrationCheckIncoming(qemuCaps, migrateFrom) < 0)
+    if (qemuMigrationDstCheckProtocol(qemuCaps, migrateFrom) < 0)
         return NULL;
 
     if (VIR_ALLOC(inc) < 0)
@@ -4151,7 +4151,7 @@ qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
     if (VIR_STRDUP(inc->address, listenAddress) < 0)
         goto error;
 
-    inc->launchURI = qemuMigrationIncomingURI(migrateFrom, fd);
+    inc->launchURI = qemuMigrationDstGetURI(migrateFrom, fd);
     if (!inc->launchURI)
         goto error;
 
@@ -6348,7 +6348,7 @@ qemuProcessStart(virConnectPtr conn,
 
     if (incoming &&
         incoming->deferredURI &&
-        qemuMigrationRunIncoming(driver, vm, incoming->deferredURI, asyncJob) < 0)
+        qemuMigrationDstRun(driver, vm, incoming->deferredURI, asyncJob) < 0)
         goto stop;
 
     if (qemuProcessFinishStartup(driver, vm, asyncJob,

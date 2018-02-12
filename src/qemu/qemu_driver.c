@@ -754,7 +754,7 @@ qemuStateInitialize(bool privileged,
     if (!(qemu_driver->sharedDevices = virHashCreate(30, qemuSharedDeviceEntryFree)))
         goto error;
 
-    if (qemuMigrationErrorInit(qemu_driver) < 0)
+    if (qemuMigrationDstErrorInit(qemu_driver) < 0)
         goto error;
 
     if (privileged) {
@@ -3282,7 +3282,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
         goto cleanup;
 
     /* Perform the migration */
-    if (qemuMigrationToFile(driver, vm, fd, compressedpath, asyncJob) < 0)
+    if (qemuMigrationSrcToFile(driver, vm, fd, compressedpath, asyncJob) < 0)
         goto cleanup;
 
     /* Touch up file header to mark image complete. */
@@ -3338,7 +3338,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!qemuMigrationIsAllowed(driver, vm, false, 0))
+    if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
         goto cleanup;
 
     if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_SAVE,
@@ -3893,11 +3893,11 @@ doCoreDump(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (!qemuMigrationIsAllowed(driver, vm, false, 0))
+        if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
             goto cleanup;
 
-        ret = qemuMigrationToFile(driver, vm, fd, compressedpath,
-                                  QEMU_ASYNC_JOB_DUMP);
+        ret = qemuMigrationSrcToFile(driver, vm, fd, compressedpath,
+                                     QEMU_ASYNC_JOB_DUMP);
     }
 
     if (ret < 0)
@@ -4815,8 +4815,8 @@ processMonitorEOFEvent(virQEMUDriverPtr driver,
 
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN) {
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
-        qemuMigrationErrorSave(driver, vm->def->name,
-                               qemuMonitorLastError(priv->mon));
+        qemuMigrationDstErrorSave(driver, vm->def->name,
+                                  qemuMonitorLastError(priv->mon));
     }
 
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
@@ -12109,15 +12109,15 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
+    if (!(def = qemuMigrationAnyPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepareTunnelEnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationPrepareTunnel(driver,
-                                     NULL, 0, NULL, NULL, /* No cookies in v2 */
-                                     st, &def, origname, flags);
+    ret = qemuMigrationDstPrepareTunnel(driver,
+                                        NULL, 0, NULL, NULL, /* No cookies in v2 */
+                                        st, &def, origname, flags);
 
  cleanup:
     VIR_FREE(origname);
@@ -12158,7 +12158,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(compression = qemuMigrationCompressionParse(NULL, 0, flags)))
+    if (!(compression = qemuMigrationAnyCompressionParse(NULL, 0, flags)))
         goto cleanup;
 
     if (virLockManagerPluginUsesState(driver->lockManager)) {
@@ -12168,7 +12168,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
+    if (!(def = qemuMigrationAnyPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepare2EnsureACL(dconn, def) < 0)
@@ -12178,11 +12178,11 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
      * length was not sufficiently large, causing failures
      * migrating between old & new libvirtd
      */
-    ret = qemuMigrationPrepareDirect(driver,
-                                     NULL, 0, NULL, NULL, /* No cookies */
-                                     uri_in, uri_out,
-                                     &def, origname, NULL, 0, NULL, 0,
-                                     compression, flags);
+    ret = qemuMigrationDstPrepareDirect(driver,
+                                        NULL, 0, NULL, NULL, /* No cookies */
+                                        uri_in, uri_out,
+                                        &def, origname, NULL, 0, NULL, 0,
+                                        compression, flags);
 
  cleanup:
     VIR_FREE(compression);
@@ -12218,7 +12218,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!(compression = qemuMigrationCompressionParse(NULL, 0, flags)))
+    if (!(compression = qemuMigrationAnyCompressionParse(NULL, 0, flags)))
         goto cleanup;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -12240,11 +12240,11 @@ qemuDomainMigratePerform(virDomainPtr dom,
      *
      * Consume any cookie we were able to decode though
      */
-    ret = qemuMigrationPerform(driver, dom->conn, vm, NULL,
-                               NULL, dconnuri, uri, NULL, NULL, 0, NULL, 0,
-                               compression, &migParams, cookie, cookielen,
-                               NULL, NULL, /* No output cookies in v2 */
-                               flags, dname, resource, false);
+    ret = qemuMigrationSrcPerform(driver, dom->conn, vm, NULL,
+                                  NULL, dconnuri, uri, NULL, NULL, 0, NULL, 0,
+                                  compression, &migParams, cookie, cookielen,
+                                  NULL, NULL, /* No output cookies in v2 */
+                                  flags, dname, resource, false);
 
  cleanup:
     qemuMigrationParamsClear(&migParams);
@@ -12273,7 +12273,7 @@ qemuDomainMigrateFinish2(virConnectPtr dconn,
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching name '%s'"), dname);
-        qemuMigrationErrorReport(driver, dname);
+        qemuMigrationDstErrorReport(driver, dname);
         goto cleanup;
     }
 
@@ -12286,9 +12286,9 @@ qemuDomainMigrateFinish2(virConnectPtr dconn,
      * length was not sufficiently large, causing failures
      * migrating between old & new libvirtd
      */
-    dom = qemuMigrationFinish(driver, dconn, vm,
-                              NULL, 0, NULL, NULL, /* No cookies */
-                              flags, retcode, false);
+    dom = qemuMigrationDstFinish(driver, dconn, vm,
+                                 NULL, 0, NULL, NULL, /* No cookies */
+                                 flags, retcode, false);
 
  cleanup:
     return dom;
@@ -12320,8 +12320,8 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
         return NULL;
     }
 
-    return qemuMigrationBegin(domain->conn, vm, xmlin, dname,
-                              cookieout, cookieoutlen, 0, NULL, flags);
+    return qemuMigrationSrcBegin(domain->conn, vm, xmlin, dname,
+                                 cookieout, cookieoutlen, 0, NULL, flags);
 }
 
 static char *
@@ -12366,9 +12366,9 @@ qemuDomainMigrateBegin3Params(virDomainPtr domain,
         goto cleanup;
     }
 
-    ret = qemuMigrationBegin(domain->conn, vm, xmlin, dname,
-                             cookieout, cookieoutlen,
-                             nmigrate_disks, migrate_disks, flags);
+    ret = qemuMigrationSrcBegin(domain->conn, vm, xmlin, dname,
+                                cookieout, cookieoutlen,
+                                nmigrate_disks, migrate_disks, flags);
 
  cleanup:
     VIR_FREE(migrate_disks);
@@ -12407,21 +12407,21 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(compression = qemuMigrationCompressionParse(NULL, 0, flags)))
+    if (!(compression = qemuMigrationAnyCompressionParse(NULL, 0, flags)))
         goto cleanup;
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
+    if (!(def = qemuMigrationAnyPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepare3EnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationPrepareDirect(driver,
-                                     cookiein, cookieinlen,
-                                     cookieout, cookieoutlen,
-                                     uri_in, uri_out,
-                                     &def, origname, NULL, 0, NULL, 0,
-                                     compression, flags);
+    ret = qemuMigrationDstPrepareDirect(driver,
+                                        cookiein, cookieinlen,
+                                        cookieout, cookieoutlen,
+                                        uri_in, uri_out,
+                                        &def, origname, NULL, 0, NULL, 0,
+                                        compression, flags);
 
  cleanup:
     VIR_FREE(compression);
@@ -12483,7 +12483,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
     if (nmigrate_disks < 0)
         goto cleanup;
 
-    if (!(compression = qemuMigrationCompressionParse(params, nparams, flags)))
+    if (!(compression = qemuMigrationAnyCompressionParse(params, nparams, flags)))
         goto cleanup;
 
     if (flags & VIR_MIGRATE_TUNNELLED) {
@@ -12496,19 +12496,19 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
+    if (!(def = qemuMigrationAnyPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepare3ParamsEnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationPrepareDirect(driver,
-                                     cookiein, cookieinlen,
-                                     cookieout, cookieoutlen,
-                                     uri_in, uri_out,
-                                     &def, origname, listenAddress,
-                                     nmigrate_disks, migrate_disks, nbdPort,
-                                     compression, flags);
+    ret = qemuMigrationDstPrepareDirect(driver,
+                                        cookiein, cookieinlen,
+                                        cookieout, cookieoutlen,
+                                        uri_in, uri_out,
+                                        &def, origname, listenAddress,
+                                        nmigrate_disks, migrate_disks, nbdPort,
+                                        compression, flags);
 
  cleanup:
     VIR_FREE(compression);
@@ -12545,16 +12545,16 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
+    if (!(def = qemuMigrationAnyPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepareTunnel3EnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationPrepareTunnel(driver,
-                                     cookiein, cookieinlen,
-                                     cookieout, cookieoutlen,
-                                     st, &def, origname, flags);
+    ret = qemuMigrationDstPrepareTunnel(driver,
+                                        cookiein, cookieinlen,
+                                        cookieout, cookieoutlen,
+                                        st, &def, origname, flags);
 
  cleanup:
     VIR_FREE(origname);
@@ -12598,16 +12598,16 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
         goto cleanup;
     }
 
-    if (!(def = qemuMigrationPrepareDef(driver, dom_xml, dname, &origname)))
+    if (!(def = qemuMigrationAnyPrepareDef(driver, dom_xml, dname, &origname)))
         goto cleanup;
 
     if (virDomainMigratePrepareTunnel3ParamsEnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationPrepareTunnel(driver,
-                                     cookiein, cookieinlen,
-                                     cookieout, cookieoutlen,
-                                     st, &def, origname, flags);
+    ret = qemuMigrationDstPrepareTunnel(driver,
+                                        cookiein, cookieinlen,
+                                        cookieout, cookieoutlen,
+                                        st, &def, origname, flags);
 
  cleanup:
     VIR_FREE(origname);
@@ -12637,7 +12637,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
-    if (!(compression = qemuMigrationCompressionParse(NULL, 0, flags)))
+    if (!(compression = qemuMigrationAnyCompressionParse(NULL, 0, flags)))
         return -1;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -12648,12 +12648,12 @@ qemuDomainMigratePerform3(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = qemuMigrationPerform(driver, dom->conn, vm, xmlin, NULL,
-                               dconnuri, uri, NULL, NULL, 0, NULL, 0,
-                               compression, &migParams,
-                               cookiein, cookieinlen,
-                               cookieout, cookieoutlen,
-                               flags, dname, resource, true);
+    ret = qemuMigrationSrcPerform(driver, dom->conn, vm, xmlin, NULL,
+                                  dconnuri, uri, NULL, NULL, 0, NULL, 0,
+                                  compression, &migParams,
+                                  cookiein, cookieinlen,
+                                  cookieout, cookieoutlen,
+                                  flags, dname, resource, true);
 
  cleanup:
     qemuMigrationParamsClear(&migParams);
@@ -12728,7 +12728,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     if (!(migParams = qemuMigrationParams(params, nparams, flags)))
         goto cleanup;
 
-    if (!(compression = qemuMigrationCompressionParse(params, nparams, flags)))
+    if (!(compression = qemuMigrationAnyCompressionParse(params, nparams, flags)))
         goto cleanup;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -12739,12 +12739,12 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = qemuMigrationPerform(driver, dom->conn, vm, dom_xml, persist_xml,
-                               dconnuri, uri, graphicsuri, listenAddress,
-                               nmigrate_disks, migrate_disks, nbdPort,
-                               compression, migParams,
-                               cookiein, cookieinlen, cookieout, cookieoutlen,
-                               flags, dname, bandwidth, true);
+    ret = qemuMigrationSrcPerform(driver, dom->conn, vm, dom_xml, persist_xml,
+                                  dconnuri, uri, graphicsuri, listenAddress,
+                                  nmigrate_disks, migrate_disks, nbdPort,
+                                  compression, migParams,
+                                  cookiein, cookieinlen, cookieout, cookieoutlen,
+                                  flags, dname, bandwidth, true);
  cleanup:
     VIR_FREE(compression);
     qemuMigrationParamsFree(&migParams);
@@ -12779,7 +12779,7 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching name '%s'"), dname);
-        qemuMigrationErrorReport(driver, dname);
+        qemuMigrationDstErrorReport(driver, dname);
         return NULL;
     }
 
@@ -12788,10 +12788,10 @@ qemuDomainMigrateFinish3(virConnectPtr dconn,
         return NULL;
     }
 
-    return qemuMigrationFinish(driver, dconn, vm,
-                               cookiein, cookieinlen,
-                               cookieout, cookieoutlen,
-                               flags, cancelled, true);
+    return qemuMigrationDstFinish(driver, dconn, vm,
+                                  cookiein, cookieinlen,
+                                  cookieout, cookieoutlen,
+                                  flags, cancelled, true);
 }
 
 static virDomainPtr
@@ -12827,7 +12827,7 @@ qemuDomainMigrateFinish3Params(virConnectPtr dconn,
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching name '%s'"), dname);
-        qemuMigrationErrorReport(driver, dname);
+        qemuMigrationDstErrorReport(driver, dname);
         return NULL;
     }
 
@@ -12836,10 +12836,10 @@ qemuDomainMigrateFinish3Params(virConnectPtr dconn,
         return NULL;
     }
 
-    return qemuMigrationFinish(driver, dconn, vm,
-                               cookiein, cookieinlen,
-                               cookieout, cookieoutlen,
-                               flags, cancelled, true);
+    return qemuMigrationDstFinish(driver, dconn, vm,
+                                  cookiein, cookieinlen,
+                                  cookieout, cookieoutlen,
+                                  flags, cancelled, true);
 }
 
 
@@ -12862,8 +12862,8 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
         return -1;
     }
 
-    return qemuMigrationConfirm(domain->conn->privateData, vm, cookiein, cookieinlen,
-                                flags, cancelled);
+    return qemuMigrationSrcConfirm(domain->conn->privateData, vm, cookiein, cookieinlen,
+                                   flags, cancelled);
 }
 
 static int
@@ -12890,8 +12890,8 @@ qemuDomainMigrateConfirm3Params(virDomainPtr domain,
         return -1;
     }
 
-    return qemuMigrationConfirm(domain->conn->privateData, vm, cookiein, cookieinlen,
-                                flags, cancelled);
+    return qemuMigrationSrcConfirm(domain->conn->privateData, vm, cookiein, cookieinlen,
+                                   flags, cancelled);
 }
 
 
@@ -13180,14 +13180,14 @@ qemuDomainGetJobInfoMigrationStats(virQEMUDriverPtr driver,
         jobInfo->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
         if (events &&
             jobInfo->status != QEMU_DOMAIN_JOB_STATUS_ACTIVE &&
-            qemuMigrationFetchStats(driver, vm, QEMU_ASYNC_JOB_NONE,
-                                    jobInfo, NULL) < 0)
+            qemuMigrationAnyFetchStats(driver, vm, QEMU_ASYNC_JOB_NONE,
+                                       jobInfo, NULL) < 0)
             return -1;
 
         if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE &&
             jobInfo->statsType == QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION &&
-            qemuMigrationFetchMirrorStats(driver, vm, QEMU_ASYNC_JOB_NONE,
-                                          jobInfo) < 0)
+            qemuMigrationSrcFetchMirrorStats(driver, vm, QEMU_ASYNC_JOB_NONE,
+                                             jobInfo) < 0)
             return -1;
 
         if (qemuDomainJobInfoUpdateTime(jobInfo) < 0)
@@ -13582,7 +13582,7 @@ qemuDomainMigrateGetCompressionCache(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (!qemuMigrationCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_XBZRLE)) {
+    if (!qemuMigrationAnyCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_XBZRLE)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("Compressed migration is not supported by "
                          "QEMU binary"));
@@ -13633,7 +13633,7 @@ qemuDomainMigrateSetCompressionCache(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (!qemuMigrationCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_XBZRLE)) {
+    if (!qemuMigrationAnyCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_XBZRLE)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("Compressed migration is not supported by "
                          "QEMU binary"));
@@ -13985,7 +13985,7 @@ qemuDomainSnapshotCreateActiveInternal(virQEMUDriverPtr driver,
     bool resume = false;
     int ret = -1;
 
-    if (!qemuMigrationIsAllowed(driver, vm, false, 0))
+    if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
         goto cleanup;
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
@@ -14918,7 +14918,7 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     /* do the memory snapshot if necessary */
     if (memory) {
         /* check if migration is possible */
-        if (!qemuMigrationIsAllowed(driver, vm, false, 0))
+        if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
             goto cleanup;
 
         /* allow the migration job to be cancelled or the domain to be paused */
