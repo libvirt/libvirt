@@ -12115,7 +12115,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
     if (virDomainMigratePrepareTunnelEnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationPrepareTunnel(driver, dconn,
+    ret = qemuMigrationPrepareTunnel(driver,
                                      NULL, 0, NULL, NULL, /* No cookies in v2 */
                                      st, &def, origname, flags);
 
@@ -12178,7 +12178,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
      * length was not sufficiently large, causing failures
      * migrating between old & new libvirtd
      */
-    ret = qemuMigrationPrepareDirect(driver, dconn,
+    ret = qemuMigrationPrepareDirect(driver,
                                      NULL, 0, NULL, NULL, /* No cookies */
                                      uri_in, uri_out,
                                      &def, origname, NULL, 0, NULL, 0,
@@ -12416,7 +12416,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
     if (virDomainMigratePrepare3EnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationPrepareDirect(driver, dconn,
+    ret = qemuMigrationPrepareDirect(driver,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      uri_in, uri_out,
@@ -12502,7 +12502,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
     if (virDomainMigratePrepare3ParamsEnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationPrepareDirect(driver, dconn,
+    ret = qemuMigrationPrepareDirect(driver,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      uri_in, uri_out,
@@ -12551,7 +12551,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
     if (virDomainMigratePrepareTunnel3EnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationPrepareTunnel(driver, dconn,
+    ret = qemuMigrationPrepareTunnel(driver,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      st, &def, origname, flags);
@@ -12604,7 +12604,7 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     if (virDomainMigratePrepareTunnel3ParamsEnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationPrepareTunnel(driver, dconn,
+    ret = qemuMigrationPrepareTunnel(driver,
                                      cookiein, cookieinlen,
                                      cookieout, cookieoutlen,
                                      st, &def, origname, flags);
@@ -12862,7 +12862,7 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
         return -1;
     }
 
-    return qemuMigrationConfirm(domain->conn, vm, cookiein, cookieinlen,
+    return qemuMigrationConfirm(domain->conn->privateData, vm, cookiein, cookieinlen,
                                 flags, cancelled);
 }
 
@@ -12890,7 +12890,7 @@ qemuDomainMigrateConfirm3Params(virDomainPtr domain,
         return -1;
     }
 
-    return qemuMigrationConfirm(domain->conn, vm, cookiein, cookieinlen,
+    return qemuMigrationConfirm(domain->conn->privateData, vm, cookiein, cookieinlen,
                                 flags, cancelled);
 }
 

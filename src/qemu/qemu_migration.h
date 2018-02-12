@@ -188,7 +188,6 @@ qemuMigrationPrepareDef(virQEMUDriverPtr driver,
 
 int
 qemuMigrationPrepareTunnel(virQEMUDriverPtr driver,
-                           virConnectPtr dconn,
                            const char *cookiein,
                            int cookieinlen,
                            char **cookieout,
@@ -200,7 +199,6 @@ qemuMigrationPrepareTunnel(virQEMUDriverPtr driver,
 
 int
 qemuMigrationPrepareDirect(virQEMUDriverPtr driver,
-                           virConnectPtr dconn,
                            const char *cookiein,
                            int cookieinlen,
                            char **cookieout,
@@ -253,7 +251,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                     bool v3proto);
 
 int
-qemuMigrationConfirm(virConnectPtr conn,
+qemuMigrationConfirm(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      const char *cookiein,
                      int cookieinlen,
