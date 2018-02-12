@@ -291,7 +291,7 @@ test_programs += qemuxml2xmltest \
 if WITH_NETWORK
 # Dep on the network driver callback for resolving NIC
 # actual type. XXX remove this dep.
-test_programs += qemuxml2xmltest
+test_programs += qemuxml2argvtest
 endif WITH_NETWORK
 test_helpers += qemucapsprobe
 test_libraries += libqemumonitortestutils.la \
