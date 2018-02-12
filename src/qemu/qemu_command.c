@@ -2801,10 +2801,10 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
     if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info, qemuCaps) < 0)
         goto error;
 
+ done:
     if (virBufferCheckError(&buf) < 0)
         goto error;
 
- done:
     *devstr = virBufferContentAndReset(&buf);
     return 0;
 
