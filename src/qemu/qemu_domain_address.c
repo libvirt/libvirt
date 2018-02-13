@@ -543,6 +543,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST:
                 return 0;
             }
+            break;
 
         case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
             return pciFlags;
@@ -567,6 +568,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
                 return 0;
             }
+            break;
 
         case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
             return virtioFlags;
@@ -619,6 +621,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_SOUND_MODEL_LAST:
             return 0;
         }
+        break;
 
     case VIR_DOMAIN_DEVICE_DISK:
         switch ((virDomainDiskBus) dev->data.disk->bus) {
@@ -636,6 +639,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_DISK_BUS_LAST:
             return 0;
         }
+        break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV: {
         virDomainHostdevDefPtr hostdev = dev->data.hostdev;
@@ -748,6 +752,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_MEMBALLOON_MODEL_LAST:
             return 0;
         }
+        break;
 
     case VIR_DOMAIN_DEVICE_RNG:
         switch ((virDomainRNGModel) dev->data.rng->model) {
@@ -757,6 +762,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_RNG_MODEL_LAST:
             return 0;
         }
+        break;
 
     case VIR_DOMAIN_DEVICE_WATCHDOG:
         /* only one model connects using PCI */
@@ -769,6 +775,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_WATCHDOG_MODEL_LAST:
             return 0;
         }
+        break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:
         switch ((virDomainVideoType) dev->data.video->type) {
@@ -789,6 +796,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_VIDEO_TYPE_LAST:
             return 0;
         }
+        break;
 
     case VIR_DOMAIN_DEVICE_SHMEM:
         return pciFlags;
@@ -805,6 +813,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_INPUT_BUS_LAST:
             return 0;
         }
+        break;
 
     case VIR_DOMAIN_DEVICE_CHR:
         switch ((virDomainChrSerialTargetType) dev->data.chr->targetType) {
@@ -820,6 +829,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
             return 0;
         }
+        break;
 
         /* These devices don't ever connect with PCI */
     case VIR_DOMAIN_DEVICE_NVRAM:
