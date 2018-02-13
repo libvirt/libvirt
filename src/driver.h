@@ -112,4 +112,11 @@ virConnectPtr virGetConnectNodeDev(void);
 virConnectPtr virGetConnectSecret(void);
 virConnectPtr virGetConnectStorage(void);
 
+int virSetConnectInterface(virConnectPtr conn);
+int virSetConnectNetwork(virConnectPtr conn);
+int virSetConnectNWFilter(virConnectPtr conn);
+int virSetConnectNodeDev(virConnectPtr conn);
+int virSetConnectSecret(virConnectPtr conn);
+int virSetConnectStorage(virConnectPtr conn);
+
 #endif /* __VIR_DRIVER_H__ */

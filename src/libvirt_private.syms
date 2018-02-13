@@ -1204,6 +1204,12 @@ virGetConnectNodeDev;
 virGetConnectNWFilter;
 virGetConnectSecret;
 virGetConnectStorage;
+virSetConnectInterface;
+virSetConnectNetwork;
+virSetConnectNodeDev;
+virSetConnectNWFilter;
+virSetConnectSecret;
+virSetConnectStorage;
 
 
 # libvirt_internal.h
