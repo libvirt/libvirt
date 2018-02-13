@@ -177,6 +177,8 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # with gl_MANYWARN_COMPLEMENT
     # So we have -W enabled, and then have to explicitly turn off...
     wantwarn="$wantwarn -Wno-sign-compare"
+    # We do "bad" function casts all the time for event callbacks
+    wantwarn="$wantwarn -Wno-cast-function-type"
 
     # GNULIB expects this to be part of -Wc++-compat, but we turn
     # that one off, so we need to manually enable this again
