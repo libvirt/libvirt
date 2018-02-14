@@ -12151,6 +12151,26 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+
+static void
+virshDiskDropBackingStore(xmlNodePtr disk_node)
+{
+    xmlNodePtr tmp;
+
+    for (tmp = disk_node->children; tmp; tmp = tmp->next) {
+        if (tmp->type != XML_ELEMENT_NODE)
+            continue;
+
+        if (virXMLNodeNameEqual(tmp, "backingStore")) {
+            xmlUnlinkNode(tmp);
+            xmlFreeNode(tmp);
+
+            return;
+        }
+    }
+}
+
+
 typedef enum {
     VIRSH_FIND_DISK_NORMAL,
     VIRSH_FIND_DISK_CHANGEABLE,
@@ -12228,6 +12248,8 @@ virshFindDisk(const char *doc,
 
                 if (STREQ_NULLABLE(tmp, path)) {
                     ret = xmlCopyNode(obj->nodesetval->nodeTab[i], 1);
+                    /* drop backing store since they are not needed here */
+                    virshDiskDropBackingStore(ret);
                     VIR_FREE(tmp);
                     goto cleanup;
                 }
@@ -12266,7 +12288,6 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
 {
     xmlNodePtr tmp = NULL;
     xmlNodePtr source = NULL;
-    xmlNodePtr backingStore = NULL;
     xmlNodePtr target_node = NULL;
     xmlNodePtr text_node = NULL;
     char *device_type = NULL;
@@ -12307,20 +12328,11 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
         if (virXMLNodeNameEqual(tmp, "target"))
             target_node = tmp;
 
-        if (virXMLNodeNameEqual(tmp, "backingStore"))
-            backingStore = tmp;
-
         /*
          * We've found all we needed.
          */
-        if (source && target_node && backingStore)
+        if (source && target_node)
             break;
-    }
-
-    /* drop the <backingStore> subtree since it would become invalid */
-    if (backingStore) {
-        xmlUnlinkNode(backingStore);
-        xmlFreeNode(backingStore);
     }
 
     if (type == VIRSH_UPDATE_DISK_XML_EJECT) {
