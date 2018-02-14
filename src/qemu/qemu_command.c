@@ -5817,6 +5817,51 @@ qemuBuildSmbiosOEMStringsStr(virSysinfoOEMStringsDefPtr def)
 }
 
 
+static char *
+qemuBuildSmbiosChassisStr(virSysinfoChassisDefPtr def)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (!def)
+        return NULL;
+
+    virBufferAddLit(&buf, "type=3");
+
+    /* 3:Manufacturer */
+    virBufferAddLit(&buf, ",manufacturer=");
+    virQEMUBuildBufferEscapeComma(&buf, def->manufacturer);
+    /* 3:Version */
+    if (def->version) {
+        virBufferAddLit(&buf, ",version=");
+        virQEMUBuildBufferEscapeComma(&buf, def->version);
+    }
+    /* 3:Serial Number */
+    if (def->serial) {
+        virBufferAddLit(&buf, ",serial=");
+        virQEMUBuildBufferEscapeComma(&buf, def->serial);
+    }
+    /* 3:Asset Tag */
+    if (def->asset) {
+        virBufferAddLit(&buf, ",asset=");
+        virQEMUBuildBufferEscapeComma(&buf, def->asset);
+    }
+    /* 3:Sku */
+    if (def->sku) {
+        virBufferAddLit(&buf, ",sku=");
+        virQEMUBuildBufferEscapeComma(&buf, def->sku);
+    }
+
+    if (virBufferCheckError(&buf) < 0)
+        goto error;
+
+    return virBufferContentAndReset(&buf);
+
+ error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+
 static int
 qemuBuildSmbiosCommandLine(virCommandPtr cmd,
                            virQEMUDriverPtr driver,
@@ -5884,6 +5929,12 @@ qemuBuildSmbiosCommandLine(virCommandPtr cmd,
                   qemuBuildSmbiosBaseBoardStr(source->baseBoard + i)))
                 return -1;
 
+            virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
+            VIR_FREE(smbioscmd);
+        }
+
+        smbioscmd = qemuBuildSmbiosChassisStr(source->chassis);
+        if (smbioscmd != NULL) {
             virCommandAddArgList(cmd, "-smbios", smbioscmd, NULL);
             VIR_FREE(smbioscmd);
         }
