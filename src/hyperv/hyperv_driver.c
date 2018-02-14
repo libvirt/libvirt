@@ -1656,13 +1656,27 @@ hypervDebugHandler(const char *message, debug_level_e level,
     switch (level) {
       case DEBUG_LEVEL_ERROR:
       case DEBUG_LEVEL_CRITICAL:
-        VIR_ERROR(_("openwsman error: %s"), message);
+      case DEBUG_LEVEL_ALWAYS:
+        VIR_ERROR(_("openwsman: %s"), message);
         break;
 
       case DEBUG_LEVEL_WARNING:
-        VIR_WARN("openwsman warning: %s", message);
+        VIR_WARN("openwsman: %s", message);
         break;
 
+      case DEBUG_LEVEL_MESSAGE:
+        VIR_INFO("openwsman: %s", message);
+        break;
+
+      case DEBUG_LEVEL_INFO:
+        VIR_INFO("openwsman: %s", message);
+        break;
+
+      case DEBUG_LEVEL_DEBUG:
+        VIR_DEBUG("openwsman: %s", message);
+        break;
+
+      case DEBUG_LEVEL_NONE:
       default:
         /* Ignore the rest */
         break;
