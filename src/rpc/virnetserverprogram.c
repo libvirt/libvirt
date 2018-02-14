@@ -324,6 +324,10 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
         ret = 0;
         break;
 
+    case VIR_NET_REPLY:
+    case VIR_NET_REPLY_WITH_FDS:
+    case VIR_NET_MESSAGE:
+    case VIR_NET_STREAM_HOLE:
     default:
         virReportError(VIR_ERR_RPC,
                        _("Unexpected message type %u"),

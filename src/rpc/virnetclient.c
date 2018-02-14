@@ -1287,6 +1287,8 @@ virNetClientCallDispatch(virNetClientPtr client)
     case VIR_NET_STREAM_HOLE: /* Sparse stream protocol*/
         return virNetClientCallDispatchStream(client);
 
+    case VIR_NET_CALL:
+    case VIR_NET_CALL_WITH_FDS:
     default:
         virReportError(VIR_ERR_RPC,
                        _("got unexpected RPC call prog %d vers %d proc %d type %d"),

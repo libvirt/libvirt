@@ -384,6 +384,7 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
         virNetClientProgramDispatchError(prog, msg);
         goto error;
 
+    case VIR_NET_CONTINUE:
     default:
         virReportError(VIR_ERR_RPC,
                        _("Unexpected message status %d"), msg->header.status);
