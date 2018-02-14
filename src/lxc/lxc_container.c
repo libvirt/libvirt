@@ -2035,7 +2035,7 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
             break;
 
         case VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT:
-            switch ((virDomainCapsFeature) i) {
+            switch (i) {
             case VIR_DOMAIN_CAPS_FEATURE_SYS_BOOT: /* No use of reboot */
                 toDrop = !keepReboot && (state != VIR_TRISTATE_SWITCH_ON);
                 break;
@@ -2066,10 +2066,10 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
             }
             break;
 
+        case VIR_DOMAIN_CAPABILITIES_POLICY_LAST:
         default:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported capabilities policy: %s"),
-                           virDomainCapabilitiesPolicyTypeToString(policy));
+            virReportEnumRangeError(virDomainCapabilitiesPolicy, policy);
+            return -1;
         }
     }
 

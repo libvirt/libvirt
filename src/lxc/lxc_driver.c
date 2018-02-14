@@ -3968,9 +3968,20 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
         if (!(veth = virLXCProcessSetupInterfaceDirect(conn, vm->def, net)))
             goto cleanup;
     }   break;
-    default:
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_UDP:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Network device type is not supported"));
+        goto cleanup;
+    case VIR_DOMAIN_NET_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainNetType, actualType);
         goto cleanup;
     }
     /* Set bandwidth or warn if requested and not supported. */
@@ -4011,6 +4022,15 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
             ignore_value(virNetDevMacVLanDelete(veth));
             break;
 
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+        case VIR_DOMAIN_NET_TYPE_UDP:
+        case VIR_DOMAIN_NET_TYPE_LAST:
         default:
             /* no-op */
             break;
@@ -4446,12 +4466,22 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
          * the host side. Further the container can change
          * the mac address of NIC name, so we can't easily
          * find out which guest NIC it maps to
+         */
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        */
-
-    default:
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_UDP:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Only bridged veth devices can be detached"));
+        goto cleanup;
+    case VIR_DOMAIN_NET_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainNetType, actualType);
         goto cleanup;
     }
 
