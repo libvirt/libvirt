@@ -47,8 +47,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dontwarn="$dontwarn -Wlong-long"
     # We allow manual list of all enum cases without default:
     dontwarn="$dontwarn -Wswitch-default"
-    # We allow optional default: instead of listing all enum values
-    dontwarn="$dontwarn -Wswitch-enum"
     # Not a problem since we don't use -fstrict-overflow
     dontwarn="$dontwarn -Wstrict-overflow"
     # Not a problem since we don't use -funsafe-loop-optimizations
@@ -183,6 +181,11 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # GNULIB expects this to be part of -Wc++-compat, but we turn
     # that one off, so we need to manually enable this again
     wantwarn="$wantwarn -Wjump-misses-init"
+
+    # GNULIB explicitly filters it out, preferring -Wswitch
+    # but that doesn't report missing enums if a default:
+    # is present.
+    wantwarn="$wantwarn -Wswitch-enum"
 
     # GNULIB turns on -Wformat=2 which implies -Wformat-nonliteral,
     # so we need to manually re-exclude it.  Also, older gcc 4.2
