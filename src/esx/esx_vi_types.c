@@ -544,7 +544,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
 
 #define ESX_VI__TEMPLATE__DISPATCH(_actual_type, _actual_type_name, __type, \
                                    _dispatch,  _error_return) \
-    switch (_actual_type) { \
+    switch ((int)_actual_type) { \
       _dispatch \
  \
       case esxVI_Type_##__type: \
@@ -690,7 +690,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
           return -1; \
       } \
  \
-      switch (type) { \
+      switch ((int)type) { \
         _dispatch \
  \
         case esxVI_Type_##__type: \
@@ -967,7 +967,7 @@ esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src)
         goto failure;
     }
 
-    switch (src->type) {
+    switch ((int)src->type) {
       case esxVI_Type_Boolean:
         (*dest)->boolean = src->boolean;
         break;
@@ -1071,7 +1071,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
             (*anyType)->_name = number; \
         } while (0)
 
-    switch ((*anyType)->type) {
+    switch ((int)(*anyType)->type) {
       case esxVI_Type_Boolean:
         if (STREQ((*anyType)->value, "true")) {
             (*anyType)->boolean = esxVI_Boolean_True;
@@ -1876,6 +1876,7 @@ esxVI_VirtualMachinePowerState_ConvertToLibvirt
       case esxVI_VirtualMachinePowerState_Suspended:
         return VIR_DOMAIN_PAUSED;
 
+      case esxVI_VirtualMachinePowerState_Undefined:
       default:
         return VIR_DOMAIN_NOSTATE;
     }

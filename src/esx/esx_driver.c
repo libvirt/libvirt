@@ -3603,10 +3603,9 @@ esxDomainGetSchedulerParametersFlags(virDomainPtr domain,
                 params[i].value.i = -3;
                 break;
 
+              case esxVI_SharesLevel_Undefined:
               default:
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Shares level has unknown value %d"),
-                               (int)sharesInfo->level);
+                virReportEnumRangeError(esxVI_SharesLevel, sharesInfo->level);
                 esxVI_SharesInfo_Free(&sharesInfo);
                 goto cleanup;
             }

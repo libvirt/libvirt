@@ -483,7 +483,7 @@ esxVI_SharedCURL_Lock(CURL *handle ATTRIBUTE_UNUSED, curl_lock_data data,
     size_t i;
     esxVI_SharedCURL *shared = userptr;
 
-    switch (data) {
+    switch ((int)data) {
       case CURL_LOCK_DATA_SHARE:
         i = 0;
         break;
@@ -511,7 +511,7 @@ esxVI_SharedCURL_Unlock(CURL *handle ATTRIBUTE_UNUSED, curl_lock_data data,
     size_t i;
     esxVI_SharedCURL *shared = userptr;
 
-    switch (data) {
+    switch ((int)data) {
       case CURL_LOCK_DATA_SHARE:
         i = 0;
         break;
@@ -1563,9 +1563,9 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
 
                 break;
 
+              case esxVI_Occurrence_Undefined:
               default:
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Invalid argument (occurrence)"));
+                virReportEnumRangeError(esxVI_Occurrence, occurrence);
                 goto cleanup;
             }
         }
@@ -2280,9 +2280,10 @@ esxVI_LookupObjectContentByType(esxVI_Context *ctx,
                            type, root->type);
             break;
 
+          case esxVI_Occurrence_None:
+          case esxVI_Occurrence_Undefined:
           default:
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Invalid occurrence value"));
+            virReportEnumRangeError(esxVI_Occurrence, occurrence);
             break;
         }
 
