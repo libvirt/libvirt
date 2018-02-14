@@ -679,6 +679,8 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
         detail = VIR_DOMAIN_EVENT_SHUTDOWN_HOST;
         break;
 
+    case VIR_TRISTATE_BOOL_ABSENT:
+    case VIR_TRISTATE_BOOL_LAST:
     default:
         detail = VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED;
         break;

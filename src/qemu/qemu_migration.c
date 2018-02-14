@@ -1468,11 +1468,20 @@ qemuMigrationJobName(virDomainObjPtr vm)
 
     switch (priv->job.asyncJob) {
     case QEMU_ASYNC_JOB_MIGRATION_OUT:
-        return _("migration job");
+        return _("migration out job");
     case QEMU_ASYNC_JOB_SAVE:
         return _("domain save job");
     case QEMU_ASYNC_JOB_DUMP:
         return _("domain core dump job");
+    case QEMU_ASYNC_JOB_NONE:
+        return _("undefined");
+    case QEMU_ASYNC_JOB_MIGRATION_IN:
+        return _("migration in job");
+    case QEMU_ASYNC_JOB_SNAPSHOT:
+        return _("snapshot job");
+    case QEMU_ASYNC_JOB_START:
+        return _("start job");
+    case QEMU_ASYNC_JOB_LAST:
     default:
         return _("job");
     }

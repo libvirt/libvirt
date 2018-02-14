@@ -2804,6 +2804,27 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
         addPCIRoot = true;
         break;
 
+    case VIR_ARCH_ARMV6L:
+    case VIR_ARCH_ARMV7B:
+    case VIR_ARCH_CRIS:
+    case VIR_ARCH_ITANIUM:
+    case VIR_ARCH_LM32:
+    case VIR_ARCH_M68K:
+    case VIR_ARCH_MICROBLAZE:
+    case VIR_ARCH_MICROBLAZEEL:
+    case VIR_ARCH_MIPS:
+    case VIR_ARCH_MIPSEL:
+    case VIR_ARCH_MIPS64:
+    case VIR_ARCH_MIPS64EL:
+    case VIR_ARCH_OR32:
+    case VIR_ARCH_PARISC:
+    case VIR_ARCH_PARISC64:
+    case VIR_ARCH_PPCLE:
+    case VIR_ARCH_UNICORE32:
+    case VIR_ARCH_XTENSA:
+    case VIR_ARCH_XTENSAEB:
+    case VIR_ARCH_NONE:
+    case VIR_ARCH_LAST:
     default:
         break;
     }

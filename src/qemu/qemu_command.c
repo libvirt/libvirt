@@ -2632,7 +2632,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         switch ((virDomainControllerModelSCSI) def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
-            switch ((virDomainDeviceAddressType) address_type) {
+            switch (address_type) {
             case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
                 virBufferAddLit(&buf, "virtio-scsi-ccw");
                 break;
@@ -2684,7 +2684,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
-        switch ((virDomainDeviceAddressType) address_type) {
+        switch (address_type) {
         case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
             virBufferAddLit(&buf, "virtio-serial-pci");
             break;
@@ -3407,12 +3407,17 @@ qemuBuildNicDevStr(virDomainDefPtr def,
                 case VIR_DOMAIN_NET_VIRTIO_TX_MODE_TIMER:
                     virBufferAddLit(&buf, "timer");
                     break;
+
+                case VIR_DOMAIN_NET_VIRTIO_TX_MODE_DEFAULT:
+                    break;
+
+                case VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST:
                 default:
                     /* this should never happen, if it does, we need
                      * to add another case to this switch.
                      */
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("unrecognized virtio-net-pci 'tx' option"));
+                    virReportEnumRangeError(virDomainNetVirtioTxModeType,
+                                            net->driver.virtio.txmode);
                     goto error;
             }
         } else {
@@ -6598,7 +6603,7 @@ qemuBuildGlobalControllerCommandLine(virCommandPtr cmd,
             bool cap = false;
             bool machine = false;
 
-            switch ((virDomainControllerModelPCI) cont->model) {
+            switch (cont->model) {
             case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
                 hoststr = "i440FX-pcihost";
                 cap = virQEMUCapsGet(qemuCaps, QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
@@ -6941,7 +6946,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
     if (cpu_flags && !cpu) {
         const char *default_model;
 
-        switch (def->os.arch) {
+        switch ((int)def->os.arch) {
         case VIR_ARCH_I686:
             default_model = "qemu32";
             break;
@@ -6987,7 +6992,7 @@ qemuBuildObsoleteAccelArg(virCommandPtr cmd,
     bool disableKVM = false;
     bool enableKVM = false;
 
-    switch (def->virtType) {
+    switch ((int)def->virtType) {
     case VIR_DOMAIN_VIRT_QEMU:
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
             disableKVM = true;
@@ -7955,8 +7960,13 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT:
             virBufferAddLit(&opt, "agent-mouse=on,");
             break;
-        default:
+        case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_DEFAULT:
             break;
+        case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_LAST:
+        default:
+            virReportEnumRangeError(virDomainGraphicsSpiceMouseMode,
+                                    graphics->data.spice.mousemode);
+            goto error;
         }
     }
 

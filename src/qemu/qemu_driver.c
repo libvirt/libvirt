@@ -3016,13 +3016,8 @@ qemuCompressGetCommand(virQEMUSaveFormat compression)
     ret = virCommandNew(prog);
     virCommandAddArg(ret, "-dc");
 
-    switch (compression) {
-    case QEMU_SAVE_FORMAT_LZOP:
+    if (compression == QEMU_SAVE_FORMAT_LZOP)
         virCommandAddArg(ret, "--ignore-warn");
-        break;
-    default:
-        break;
-    }
 
     return ret;
 }
@@ -17792,10 +17787,17 @@ qemuDomainOpenGraphics(virDomainPtr dom,
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         protocol = "spice";
         break;
-    default:
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Can only open VNC or SPICE graphics backends, not %s"),
                        virDomainGraphicsTypeToString(vm->def->graphics[idx]->type));
+        goto endjob;
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainGraphicsType,
+                                vm->def->graphics[idx]->type);
         goto endjob;
     }
 
@@ -17856,10 +17858,17 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         protocol = "spice";
         break;
-    default:
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Can only open VNC or SPICE graphics backends, not %s"),
                        virDomainGraphicsTypeToString(vm->def->graphics[idx]->type));
+        goto cleanup;
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainGraphicsType,
+                                vm->def->graphics[idx]->type);
         goto cleanup;
     }
 

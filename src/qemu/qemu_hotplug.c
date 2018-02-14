@@ -2978,10 +2978,23 @@ qemuDomainChangeNetFilter(virDomainObjPtr vm,
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
         break;
-    default:
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_UDP:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("filters not supported on interfaces of type %s"),
                        virDomainNetTypeToString(virDomainNetGetActualType(newdev)));
+        return -1;
+    case VIR_DOMAIN_NET_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainNetType,
+                                virDomainNetGetActualType(newdev));
         return -1;
     }
 
@@ -3277,12 +3290,16 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
             /* all handled in common code directly below this switch */
             break;
 
-        default:
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("unable to change config on '%s' network type"),
                            virDomainNetTypeToString(newdev->type));
-            break;
-
+            goto cleanup;
+        case VIR_DOMAIN_NET_TYPE_LAST:
+        default:
+            virReportEnumRangeError(virDomainNetType, newdev->type);
+            goto cleanup;
         }
     } else {
         /* interface type has changed. There are a few special cases
@@ -3661,9 +3678,15 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
         }
         break;
 
-    default:
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to change config on '%s' graphics type"), type);
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainGraphicsType, dev->type);
         break;
     }
 
