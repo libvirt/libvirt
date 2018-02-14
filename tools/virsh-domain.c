@@ -12432,6 +12432,10 @@ static const vshCmdOptDef opts_detach_disk[] = {
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
     VIRSH_COMMON_OPT_DOMAIN_LIVE,
     VIRSH_COMMON_OPT_DOMAIN_CURRENT,
+    {.name = "print-xml",
+     .type = VSH_OT_BOOL,
+     .help = N_("print XML document rather than attach the interface")
+    },
     {.name = NULL}
 };
 
@@ -12484,6 +12488,12 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
 
     if (!(disk_xml = virXMLNodeToString(NULL, disk_node))) {
         vshSaveLibvirtError();
+        goto cleanup;
+    }
+
+    if (vshCommandOptBool(cmd, "print-xml")) {
+        vshPrint(ctl, "%s", disk_xml);
+        functionReturn = true;
         goto cleanup;
     }
 

@@ -3113,6 +3113,7 @@ I<--persistent>.
 
 =item B<detach-disk> I<domain> I<target>
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
+[I<--print-xml>]
 
 Detach a disk device from a domain. The I<target> is the device as seen
 from the domain.
@@ -3129,6 +3130,9 @@ an offline domain, and like I<--live> I<--config> for a running domain.
 
 Note that older versions of virsh used I<--config> as an alias for
 I<--persistent>.
+
+If B<--print-xml> is specified, then the XML which would be used to detach the
+disk is printed instead.
 
 =item B<detach-interface> I<domain> I<type> [I<--mac mac>]
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
