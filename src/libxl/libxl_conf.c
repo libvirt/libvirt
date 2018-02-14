@@ -1894,7 +1894,7 @@ libxlMakeUSBController(virDomainControllerDefPtr controller,
     if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_USB)
         return -1;
 
-    if (controller->model == -1) {
+    if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT) {
         usbctrl->version = 2;
         usbctrl->type = LIBXL_USBCTRL_TYPE_QUSB;
     } else {

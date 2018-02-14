@@ -39,6 +39,7 @@ virDomainPCIControllerModelToConnectType(virDomainControllerModelPCI model)
      * the equivalent VIR_PCI_CONNECT_TYPE_*.
      */
     switch (model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
@@ -344,6 +345,7 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
 
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("PCI controller model was not set correctly"));
@@ -1708,12 +1710,8 @@ virDomainUSBAddressSetFree(virDomainUSBAddressSetPtr addrs)
 static size_t
 virDomainUSBAddressControllerModelToPorts(virDomainControllerDefPtr cont)
 {
-    int model = cont->model;
-
-    if (model == -1)
-        model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
-
-    switch ((virDomainControllerModelUSB) model) {
+    switch ((virDomainControllerModelUSB) cont->model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT:
     case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI:
     case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX4_UHCI:
     case VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI:

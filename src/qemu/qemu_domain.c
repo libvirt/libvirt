@@ -4139,10 +4139,15 @@ qemuDomainCheckSCSIControllerModel(virQEMUCapsPtr qemuCaps,
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
-    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported controller model: %s"),
                        virDomainControllerModelSCSITypeToString(model));
+        return false;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected SCSI controller model %d"),
+                       model);
         return false;
     }
 
@@ -4230,6 +4235,7 @@ qemuDomainDeviceDefValidateControllerSCSI(const virDomainControllerDef *controll
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
             break;
     }
@@ -4277,6 +4283,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
         break;
     }
@@ -4509,6 +4516,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
         break;
     }
 
@@ -4861,7 +4869,7 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
-        if (cont->model == -1 && qemuCaps) {
+        if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT && qemuCaps) {
             /* Pick a suitable default model for the USB controller if none
              * has been selected by the user and we have the qemuCaps for
              * figuring out which contollers are supported.
@@ -5879,7 +5887,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
          */
         if (ARCH_IS_X86(def->os.arch) && qemuDomainIsI440FX(def) &&
             usb && usb->idx == 0 &&
-            (usb->model == -1 ||
+            (usb->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT ||
              usb->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI)) {
             VIR_DEBUG("Removing default USB controller from domain '%s'"
                       " for migration compatibility", def->name);

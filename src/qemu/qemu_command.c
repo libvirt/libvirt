@@ -2555,7 +2555,7 @@ qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
 
     model = def->model;
 
-    if (model == -1) {
+    if (model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s", _("no model provided for USB controller"));
         return -1;
@@ -2669,10 +2669,16 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported controller model: %s"),
                            virDomainControllerModelSCSITypeToString(def->model));
+            goto error;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unexpected SCSI controller model %d"),
+                           def->model);
+            goto error;
         }
         virBufferAsprintf(&buf, ",id=%s", def->info.alias);
         break;
@@ -2777,9 +2783,14 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                 virBufferAsprintf(&buf, ",numa_node=%d", pciopts->numaNode);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Unsupported PCI Express root controller"));
+            goto error;
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("wrong function called"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unexpected PCI controller model %d"),
+                           def->model);
             goto error;
         }
         break;
@@ -2912,7 +2923,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
             }
 
             if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-                cont->model == -1 &&
+                cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT &&
                 !qemuDomainIsQ35(def) &&
                 !qemuDomainIsVirt(def)) {
 

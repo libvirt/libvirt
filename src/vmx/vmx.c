@@ -1169,7 +1169,7 @@ virVMXHandleLegacySCSIDiskDriverName(virDomainDefPtr def,
         return -1;
     }
 
-    if (controller->model == -1) {
+    if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT) {
         controller->model = model;
     } else if (controller->model != model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

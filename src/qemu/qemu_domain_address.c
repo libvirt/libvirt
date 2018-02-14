@@ -513,6 +513,15 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
 
         case VIR_DOMAIN_CONTROLLER_TYPE_USB:
             switch ((virDomainControllerModelUSB) cont->model) {
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT:
+                /* qemuDomainControllerDefPostParse should have
+                 * changed 'model' to an explicit USB model in
+                 * most cases. Since we're still on the default
+                 * though, we must be going to use "-usb", which
+                 * is assumed to be a PCI default
+                 */
+                return pciFlags;
+
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI:
                 return pcieFlags;
@@ -540,6 +549,9 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
 
         case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
             switch ((virDomainControllerModelSCSI) cont->model) {
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+                return 0;
+
             case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
                 return virtioFlags;
 
@@ -1275,7 +1287,8 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
              addr->function == 1) ||
             (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB && cont->idx == 0 &&
              (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI ||
-              cont->model == -1) && addr->function == 2)) {
+              cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT) &&
+             addr->function == 2)) {
             /* Note the check for nbuses > 0 - if there are no PCI
              * buses, we skip this check. This is a quirk required for
              * some machinetypes such as s390, which pretend to have a
@@ -1435,7 +1448,7 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
         } else if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                    cont->idx == 0 &&
                    (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI ||
-                    cont->model == -1)) {
+                    cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT)) {
             if (virDeviceInfoPCIAddressPresent(&cont->info)) {
                 if (cont->info.addr.pci.domain != 0 ||
                     cont->info.addr.pci.bus != 0 ||
@@ -2165,6 +2178,7 @@ qemuDomainPCIControllerSetDefaultModelName(virDomainControllerDefPtr cont,
             *modelName = VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
         break;
     }
@@ -2552,6 +2566,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
             case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
             case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
                 break;
             }

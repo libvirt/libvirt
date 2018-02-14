@@ -4999,7 +4999,7 @@ virDomainDefPostParseCommon(virDomainDefPtr def,
      * been added in AddImplicitDevices, after we've done the per-device
      * post-parse. */
     for (i = 0; i < def->ncontrollers; i++) {
-        if (def->controllers[i]->model == -1 &&
+        if (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT &&
             def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
             virDomainDeviceDef device = {
                 .type = VIR_DOMAIN_DEVICE_CONTROLLER,
@@ -10197,6 +10197,7 @@ virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
             /* Other controller models don't require extra checks */
             break;

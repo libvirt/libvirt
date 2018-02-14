@@ -410,11 +410,16 @@ vboxSetStorageController(virDomainControllerDefPtr controller,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("The vbox driver does not support %s SCSI "
                              "controller model"),
                            virDomainControllerModelSCSITypeToString(controller->model));
+            goto cleanup;
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unexpected SCSI controller model %d"),
+                           controller->model);
             goto cleanup;
         }
     /* libvirt ide model => vbox ide model */
@@ -433,10 +438,10 @@ vboxSetStorageController(virDomainControllerDefPtr controller,
 
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_IDE_LAST:
+        case VIR_DOMAIN_CONTROLLER_MODEL_IDE_DEFAULT:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("The vbox driver does not support %s IDE "
-                             "controller model"),
-                             virDomainControllerModelIDETypeToString(controller->model));
+                           _("Unexpected IDE controller model %d"),
+                           controller->model);
             goto cleanup;
         }
     }

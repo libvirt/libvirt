@@ -612,7 +612,7 @@ qemuDomainFindOrCreateSCSIDiskController(virQEMUDriverPtr driver,
         return NULL;
     cont->type = VIR_DOMAIN_CONTROLLER_TYPE_SCSI;
     cont->idx = controller;
-    if (model == -1)
+    if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT)
         cont->model = qemuDomainGetSCSIControllerModel(vm->def, cont, priv->qemuCaps);
     else
         cont->model = model;
