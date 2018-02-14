@@ -104,7 +104,9 @@ testCompareXMLToDomConfig(const char *xmlfile,
         goto cleanup;
     }
 
-    virTestLoadFile(jsonfile, &tempjson);
+    if (virTestLoadFile(jsonfile, &tempjson) < 0)
+        goto cleanup;
+
     if (libxl_domain_config_from_json(cfg->ctx, &expectconfig, tempjson) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Failed to create libxl_domain_config from JSON doc");
