@@ -82,6 +82,7 @@ virSecurityDriverPtr virSecurityDriverLookup(const char *name,
             }
             break;
 
+        case SECURITY_DRIVER_ERROR:
         default:
             return NULL;
         }
