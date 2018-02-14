@@ -3405,6 +3405,14 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
             goto error;
 
         virStorageSourceNetworkAssignDefaultPorts(ret);
+
+        /* Some of the legacy parsers parse authentication data since they are
+         * also used in other places. For backing store detection the
+         * authentication data would be invalid anyways, so we clear it */
+        if (ret->auth) {
+            virStorageAuthDefFree(ret->auth);
+            ret->auth = NULL;
+        }
     }
 
     return ret;

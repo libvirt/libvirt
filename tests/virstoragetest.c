@@ -308,8 +308,7 @@ static const char testStorageChainFormat[] =
     "type:%d\n"
     "format:%d\n"
     "protocol:%s\n"
-    "hostname:%s\n"
-    "secret:%s\n";
+    "hostname:%s\n";
 
 static int
 testStorageChain(const void *args)
@@ -374,8 +373,7 @@ testStorageChain(const void *args)
                         data->files[i]->type,
                         data->files[i]->format,
                         virStorageNetProtocolTypeToString(data->files[i]->protocol),
-                        NULLSTR(data->files[i]->hostname),
-                        NULLSTR(data->files[i]->secret)) < 0 ||
+                        NULLSTR(data->files[i]->hostname)) < 0 ||
             virAsprintf(&actual,
                         testStorageChainFormat, i,
                         NULLSTR(elt->path),
@@ -386,8 +384,7 @@ testStorageChain(const void *args)
                         elt->type,
                         elt->format,
                         virStorageNetProtocolTypeToString(elt->protocol),
-                        NULLSTR(elt->nhosts ? elt->hosts[0].name : NULL),
-                        NULLSTR(elt->auth ? elt->auth->username : NULL)) < 0) {
+                        NULLSTR(elt->nhosts ? elt->hosts[0].name : NULL)) < 0) {
             VIR_FREE(expect);
             VIR_FREE(actual);
             goto cleanup;
@@ -1361,9 +1358,6 @@ mymain(void)
     TEST_BACKING_PARSE("rbd:testshare:id=asdf:mon_host=example.com",
                        "<source protocol='rbd' name='testshare'>\n"
                        "  <host name='example.com'/>\n"
-                       "  <auth username='asdf'>\n"
-                       "    <secret type='ceph'/>\n"
-                       "  </auth>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("nbd:example.org:6000:exportname=blah",
                        "<source protocol='nbd' name='blah'>\n"
@@ -1538,9 +1532,6 @@ mymain(void)
                             "}",
                        "<source protocol='rbd' name='testshare'>\n"
                        "  <host name='example.com'/>\n"
-                       "  <auth username='asdf'>\n"
-                       "    <secret type='ceph'/>\n"
-                       "  </auth>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"rbd\","
                                        "\"image\":\"test\","
