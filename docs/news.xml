@@ -72,6 +72,11 @@
           completion data.
         </description>
       </change>
+      <change>
+        <summary>
+          conf: add support for setting Chassis SMBIOS data fields
+        </summary>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
