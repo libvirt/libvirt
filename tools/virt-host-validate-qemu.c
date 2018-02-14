@@ -33,13 +33,14 @@ int virHostValidateQEMU(void)
     int ret = 0;
     bool hasHwVirt = false;
     bool hasVirtFlag = false;
+    virArch arch = virArchFromHost();
     const char *kvmhint = _("Check that CPU and firmware supports virtualization "
                             "and kvm module is loaded");
 
     if (!(flags = virHostValidateGetCPUFlags()))
         return -1;
 
-    switch (virArchFromHost()) {
+    switch ((int)arch) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
         hasVirtFlag = true;
