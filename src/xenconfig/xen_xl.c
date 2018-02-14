@@ -1641,8 +1641,13 @@ xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
                     if (xenConfigSetInt(conf, "spicevdagent", 1) < 0)
                         return -1;
                     break;
-                default:
+                case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_DEFAULT:
                     break;
+                case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_LAST:
+                default:
+                    virReportEnumRangeError(virDomainGraphicsSpiceMouseMode,
+                                            graphics->data.spice.mousemode);
+                    return -1;
                 }
             }
 

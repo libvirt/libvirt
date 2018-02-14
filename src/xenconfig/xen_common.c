@@ -1258,10 +1258,22 @@ xenFormatNet(virConnectPtr conn,
     }
     break;
 
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_USER:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Unsupported net type '%s'"),
+                       virDomainNetTypeToString(net->type));
+        goto cleanup;
+
+    case VIR_DOMAIN_NET_TYPE_LAST:
     default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported network type %d"),
-                       net->type);
+        virReportEnumRangeError(virDomainNetType, net->type);
         goto cleanup;
     }
 

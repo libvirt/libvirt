@@ -3283,11 +3283,19 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
             break;
 
-          default:
+          case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+          case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+          case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+          case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported graphics type '%s'"),
                            virDomainGraphicsTypeToString(def->graphics[i]->type));
             goto cleanup;
+
+          case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+          default:
+              virReportEnumRangeError(virDomainGraphicsType, def->graphics[i]->type);
+              goto cleanup;
         }
     }
 
@@ -3782,10 +3790,24 @@ virVMXFormatEthernet(virDomainNetDefPtr def, int controller,
                           controller);
         break;
 
-      default:
+      case VIR_DOMAIN_NET_TYPE_ETHERNET:
+      case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+      case VIR_DOMAIN_NET_TYPE_SERVER:
+      case VIR_DOMAIN_NET_TYPE_CLIENT:
+      case VIR_DOMAIN_NET_TYPE_MCAST:
+      case VIR_DOMAIN_NET_TYPE_NETWORK:
+      case VIR_DOMAIN_NET_TYPE_INTERNAL:
+      case VIR_DOMAIN_NET_TYPE_DIRECT:
+      case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+      case VIR_DOMAIN_NET_TYPE_UDP:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, _("Unsupported net type '%s'"),
                        virDomainNetTypeToString(def->type));
         return -1;
+
+      case VIR_DOMAIN_NET_TYPE_LAST:
+      default:
+          virReportEnumRangeError(virDomainNetType, def->type);
+          return -1;
     }
 
     /* def:mac -> vmx:addressType, vmx:(generated)Address, vmx:checkMACAddress */
