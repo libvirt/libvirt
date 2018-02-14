@@ -11567,8 +11567,20 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             def->filterparams = filterparams;
             filterparams = NULL;
             break;
-        default:
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+        case VIR_DOMAIN_NET_TYPE_UDP:
             break;
+        case VIR_DOMAIN_NET_TYPE_LAST:
+        default:
+            virReportEnumRangeError(virDomainNetType, def->type);
+            goto error;
         }
     }
 
@@ -14703,6 +14715,12 @@ virDomainVideoDefaultRAM(const virDomainDef *def,
         /* QEMU use 64M as the minimal video memory for qxl device */
         return 64 * 1024;
 
+    case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
+    case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+    case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
+    case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+    case VIR_DOMAIN_VIDEO_TYPE_GOP:
+    case VIR_DOMAIN_VIDEO_TYPE_LAST:
     default:
         return 0;
     }
@@ -14737,6 +14755,16 @@ virDomainVideoDefaultType(const virDomainDef *def)
             return VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
     case VIR_DOMAIN_VIRT_BHYVE:
         return VIR_DOMAIN_VIDEO_TYPE_GOP;
+    case VIR_DOMAIN_VIRT_QEMU:
+    case VIR_DOMAIN_VIRT_KQEMU:
+    case VIR_DOMAIN_VIRT_KVM:
+    case VIR_DOMAIN_VIRT_LXC:
+    case VIR_DOMAIN_VIRT_UML:
+    case VIR_DOMAIN_VIRT_OPENVZ:
+    case VIR_DOMAIN_VIRT_HYPERV:
+    case VIR_DOMAIN_VIRT_PHYP:
+    case VIR_DOMAIN_VIRT_NONE:
+    case VIR_DOMAIN_VIRT_LAST:
     default:
         return VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
     }
@@ -27878,7 +27906,7 @@ virDomainObjGetState(virDomainObjPtr dom, int *reason)
 void
 virDomainObjSetState(virDomainObjPtr dom, virDomainState state, int reason)
 {
-    int last = -1;
+    int last;
 
     switch (state) {
     case VIR_DOMAIN_NOSTATE:
@@ -27905,11 +27933,8 @@ virDomainObjSetState(virDomainObjPtr dom, virDomainState state, int reason)
     case VIR_DOMAIN_PMSUSPENDED:
         last = VIR_DOMAIN_PMSUSPENDED_LAST;
         break;
+    case VIR_DOMAIN_LAST:
     default:
-        last = -1;
-    }
-
-    if (last < 0) {
         VIR_ERROR(_("invalid domain state: %d"), state);
         return;
     }
@@ -28073,6 +28098,15 @@ virDomainNetGetActualVirtPortProfile(virDomainNetDefPtr iface)
         default:
             return NULL;
         }
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_LAST:
     default:
         return NULL;
     }

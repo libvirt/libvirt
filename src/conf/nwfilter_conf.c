@@ -2153,8 +2153,34 @@ virNWFilterRuleValidate(virNWFilterRuleDefPtr rule)
             }
         }
         break;
-    default:
+    case VIR_NWFILTER_RULE_PROTOCOL_NONE:
+    case VIR_NWFILTER_RULE_PROTOCOL_MAC:
+    case VIR_NWFILTER_RULE_PROTOCOL_VLAN:
+    case VIR_NWFILTER_RULE_PROTOCOL_STP:
+    case VIR_NWFILTER_RULE_PROTOCOL_ARP:
+    case VIR_NWFILTER_RULE_PROTOCOL_RARP:
+    case VIR_NWFILTER_RULE_PROTOCOL_TCP:
+    case VIR_NWFILTER_RULE_PROTOCOL_ICMP:
+    case VIR_NWFILTER_RULE_PROTOCOL_IGMP:
+    case VIR_NWFILTER_RULE_PROTOCOL_UDP:
+    case VIR_NWFILTER_RULE_PROTOCOL_UDPLITE:
+    case VIR_NWFILTER_RULE_PROTOCOL_ESP:
+    case VIR_NWFILTER_RULE_PROTOCOL_AH:
+    case VIR_NWFILTER_RULE_PROTOCOL_SCTP:
+    case VIR_NWFILTER_RULE_PROTOCOL_ALL:
+    case VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6:
+    case VIR_NWFILTER_RULE_PROTOCOL_ICMPV6:
+    case VIR_NWFILTER_RULE_PROTOCOL_UDPoIPV6:
+    case VIR_NWFILTER_RULE_PROTOCOL_UDPLITEoIPV6:
+    case VIR_NWFILTER_RULE_PROTOCOL_ESPoIPV6:
+    case VIR_NWFILTER_RULE_PROTOCOL_AHoIPV6:
+    case VIR_NWFILTER_RULE_PROTOCOL_SCTPoIPV6:
+    case VIR_NWFILTER_RULE_PROTOCOL_ALLoIPV6:
         break;
+    case VIR_NWFILTER_RULE_PROTOCOL_LAST:
+    default:
+        virReportEnumRangeError(virNWFilterRuleProtocolType, rule->prtclType);
+        return -1;
     }
 
     return ret;
@@ -3064,7 +3090,10 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                        virBufferAddLit(buf, "false");
                break;
 
+               case DATATYPE_IPSETNAME:
+               case DATATYPE_IPSETFLAGS:
                case DATATYPE_STRING:
+               case DATATYPE_LAST:
                default:
                    virBufferAsprintf(buf,
                                      "UNSUPPORTED DATATYPE 0x%02x\n",
