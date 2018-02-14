@@ -1071,6 +1071,9 @@ virNetDevVPortProfileOp8021Qbg(const char *ifname,
     case VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE:
         op = PORT_REQUEST_PREASSOCIATE;
         break;
+    case VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE_RR:
+        op = PORT_REQUEST_PREASSOCIATE_RR;
+        break;
     case VIR_NETDEV_VPORT_PROFILE_LINK_OP_ASSOCIATE:
         op = PORT_REQUEST_ASSOCIATE;
         break;
@@ -1191,10 +1194,15 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
                                            false);
         break;
 
-    default:
+    case VIR_NETDEV_VPORT_PROFILE_LINK_OP_PREASSOCIATE:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("operation type %d not supported"), virtPortOp);
         rc = -1;
+        break;
+    default:
+        virReportEnumRangeError(virNetDevVPortProfileType, virtPortOp);
+        rc = -1;
+        break;
     }
 
  cleanup:

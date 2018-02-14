@@ -1206,20 +1206,30 @@ virLogGetOutputs(void)
                                   virLogDestinationTypeToString(dest),
                                   virLogOutputs[i]->name);
                 break;
-            default:
+            case VIR_LOG_TO_STDERR:
+            case VIR_LOG_TO_JOURNALD:
                 virBufferAsprintf(&outputbuf, "%d:%s",
                                   virLogOutputs[i]->priority,
                                   virLogDestinationTypeToString(dest));
+                break;
+            case VIR_LOG_TO_OUTPUT_LAST:
+            default:
+                virReportEnumRangeError(virLogDestination, dest);
+                goto error;
         }
     }
-    virLogUnlock();
 
     if (virBufferError(&outputbuf)) {
-        virBufferFreeAndReset(&outputbuf);
-        return NULL;
+        goto error;
     }
 
+    virLogUnlock();
     return virBufferContentAndReset(&outputbuf);
+
+ error:
+    virLogUnlock();
+    virBufferFreeAndReset(&outputbuf);
+    return NULL;
 }
 
 

@@ -30,7 +30,7 @@
 
 # define LIBVIRT_IFLA_VF_PORT_PROFILE_MAX 40
 
-enum virNetDevVPortProfile {
+typedef enum virNetDevVPortProfile {
     VIR_NETDEV_VPORT_PROFILE_NONE,
     VIR_NETDEV_VPORT_PROFILE_8021QBG,
     VIR_NETDEV_VPORT_PROFILE_8021QBH,
@@ -38,7 +38,7 @@ enum virNetDevVPortProfile {
     VIR_NETDEV_VPORT_PROFILE_MIDONET,
 
     VIR_NETDEV_VPORT_PROFILE_LAST,
-};
+} virNetDevVPortProfileType;
 VIR_ENUM_DECL(virNetDevVPort)
 
 typedef enum {
