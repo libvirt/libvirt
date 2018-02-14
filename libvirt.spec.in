@@ -1182,8 +1182,10 @@ exit 1
 
 %if %{with_lxc}
     %define arg_lxc --with-lxc
+    %define arg_login_shell --with-login-shell
 %else
     %define arg_lxc --without-lxc
+    %define arg_login_shell --without-login-shell
 %endif
 
 %if %{with_vbox}
@@ -1393,7 +1395,8 @@ rm -f po/stamp-po
            %{?arg_loader_nvram} \
            %{?enable_werror} \
            --enable-expensive-tests \
-           %{arg_init_script}
+           %{arg_init_script} \
+           %{?arg_login_shell}
 make %{?_smp_mflags} V=1
 gzip -9 ChangeLog
 
