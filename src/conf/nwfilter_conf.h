@@ -86,7 +86,7 @@ typedef enum {
   (((data)->flags) & NWFILTER_ENTRY_ITEM_FLAG_IS_NEG)
 
 /* datatypes appearing in rule attributes */
-enum attrDatatype {
+typedef enum attrDatatype {
     DATATYPE_UINT16           = (1 << 0),
     DATATYPE_UINT8            = (1 << 1),
     DATATYPE_UINT16_HEX       = (1 << 2),
@@ -106,7 +106,7 @@ enum attrDatatype {
     DATATYPE_IPSETFLAGS       = (1 << 16),
 
     DATATYPE_LAST             = (1 << 17),
-};
+} virNWFilterAttrDataType;
 
 # define NWFILTER_MAC_BGA "01:80:c2:00:00:00"
 

@@ -430,7 +430,7 @@ learnIPAddressThread(void *arg)
         }
         virBufferAddLit(&buf, "src port 67 and dst port 68");
         break;
-    default:
+    case DETECT_STATIC:
         if (techdriver->applyBasicRules(req->ifname,
                                         &req->macaddr) < 0) {
             req->status = EINVAL;
@@ -438,6 +438,10 @@ learnIPAddressThread(void *arg)
         }
         virBufferAsprintf(&buf, "ether host %s or ether dst ff:ff:ff:ff:ff:ff",
                           macaddr);
+        break;
+    default:
+        req->status = EINVAL;
+        goto done;
     }
 
     if (virBufferError(&buf)) {

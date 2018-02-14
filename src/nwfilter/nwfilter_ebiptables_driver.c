@@ -320,11 +320,16 @@ _printDataType(virNWFilterVarCombIterPtr vars,
         VIR_FREE(flags);
     break;
 
-    default:
+    case DATATYPE_STRING:
+    case DATATYPE_STRINGCOPY:
+    case DATATYPE_BOOLEAN:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unhandled datatype %x"), item->datatype);
+                       _("Cannot print data type %x"), item->datatype);
         return -1;
-    break;
+    case DATATYPE_LAST:
+    default:
+        virReportEnumRangeError(virNWFilterAttrDataType, item->datatype);
+        return -1;
     }
 
     return 0;
@@ -1183,7 +1188,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
 
     PRINT_IPT_ROOT_CHAIN(chain, chainPrefix, ifname);
 
-    switch (rule->prtclType) {
+    switch ((int)rule->prtclType) {
     case VIR_NWFILTER_RULE_PROTOCOL_TCP:
     case VIR_NWFILTER_RULE_PROTOCOL_TCPoIPV6:
         fwrule = virFirewallAddRule(fw, layer,
@@ -1873,7 +1878,7 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
 #define INST_ITEM_MASK(S, I, MASK, C) \
     INST_ITEM_2PARMS(S, I, MASK, C, "/")
 
-    switch (rule->prtclType) {
+    switch ((int)rule->prtclType) {
     case VIR_NWFILTER_RULE_PROTOCOL_MAC:
         fwrule = virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
                                     "-t", "nat",
@@ -2677,7 +2682,7 @@ ebtablesCreateTmpSubChainFW(virFirewallPtr fw,
     fwrule = virFirewallAddRule(fw, VIR_FIREWALL_LAYER_ETHERNET,
                                 "-t", "nat", "-A", rootchain, NULL);
 
-    switch (protoidx) {
+    switch ((int)protoidx) {
     case L2_PROTO_MAC_IDX:
         break;
     case L2_PROTO_STP_IDX:
