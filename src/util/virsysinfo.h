@@ -98,6 +98,16 @@ struct _virSysinfoBaseBoardDef {
     /* XXX board type */
 };
 
+typedef struct _virSysinfoChassisDef virSysinfoChassisDef;
+typedef virSysinfoChassisDef *virSysinfoChassisDefPtr;
+struct _virSysinfoChassisDef {
+    char *manufacturer;
+    char *version;
+    char *serial;
+    char *asset;
+    char *sku;
+};
+
 typedef struct _virSysinfoOEMStringsDef virSysinfoOEMStringsDef;
 typedef virSysinfoOEMStringsDef *virSysinfoOEMStringsDefPtr;
 struct _virSysinfoOEMStringsDef {
@@ -116,6 +126,8 @@ struct _virSysinfoDef {
     size_t nbaseBoard;
     virSysinfoBaseBoardDefPtr baseBoard;
 
+    virSysinfoChassisDefPtr chassis;
+
     size_t nprocessor;
     virSysinfoProcessorDefPtr processor;
 
@@ -130,6 +142,7 @@ virSysinfoDefPtr virSysinfoRead(void);
 void virSysinfoBIOSDefFree(virSysinfoBIOSDefPtr def);
 void virSysinfoSystemDefFree(virSysinfoSystemDefPtr def);
 void virSysinfoBaseBoardDefClear(virSysinfoBaseBoardDefPtr def);
+void virSysinfoChassisDefFree(virSysinfoChassisDefPtr def);
 void virSysinfoOEMStringsDefFree(virSysinfoOEMStringsDefPtr def);
 void virSysinfoDefFree(virSysinfoDefPtr def);
 

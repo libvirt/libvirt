@@ -26,6 +26,13 @@
       <entry name='asset'>CZC1065993</entry>
       <entry name='location'>Upside down</entry>
     </baseBoard>
+    <chassis>
+      <entry name='manufacturer'>Dell Inc.</entry>
+      <entry name='version'>2.12</entry>
+      <entry name='serial'>65X0XF2</entry>
+      <entry name='asset'>40000101</entry>
+      <entry name='sku'>Type3Sku1</entry>
+    </chassis>
     <oemStrings>
       <entry>Hello</entry>
       <entry>World</entry>

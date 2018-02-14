@@ -108,6 +108,21 @@ void virSysinfoBaseBoardDefClear(virSysinfoBaseBoardDefPtr def)
     VIR_FREE(def->location);
 }
 
+
+void virSysinfoChassisDefFree(virSysinfoChassisDefPtr def)
+{
+    if (def == NULL)
+        return;
+
+    VIR_FREE(def->manufacturer);
+    VIR_FREE(def->version);
+    VIR_FREE(def->serial);
+    VIR_FREE(def->asset);
+    VIR_FREE(def->sku);
+    VIR_FREE(def);
+}
+
+
 void virSysinfoOEMStringsDefFree(virSysinfoOEMStringsDefPtr def)
 {
     size_t i;
@@ -142,6 +157,8 @@ void virSysinfoDefFree(virSysinfoDefPtr def)
     for (i = 0; i < def->nbaseBoard; i++)
         virSysinfoBaseBoardDefClear(def->baseBoard + i);
     VIR_FREE(def->baseBoard);
+
+    virSysinfoChassisDefFree(def->chassis);
 
     for (i = 0; i < def->nprocessor; i++) {
         VIR_FREE(def->processor[i].processor_socket_destination);
@@ -825,6 +842,68 @@ virSysinfoParseX86BaseBoard(const char *base,
     return ret;
 }
 
+
+static int
+virSysinfoParseX86Chassis(const char *base,
+                          virSysinfoChassisDefPtr *chassisdef)
+{
+    int ret = -1;
+    const char *cur, *eol = NULL;
+    virSysinfoChassisDefPtr def;
+
+    if ((cur = strstr(base, "Chassis Information")) == NULL)
+        return 0;
+
+    if (VIR_ALLOC(def) < 0)
+        return ret;
+
+    base = cur;
+    if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
+        cur += 14;
+        eol = strchr(cur, '\n');
+        if (eol && VIR_STRNDUP(def->manufacturer, cur, eol - cur) < 0)
+            goto cleanup;
+    }
+    if ((cur = strstr(base, "Version: ")) != NULL) {
+        cur += 9;
+        eol = strchr(cur, '\n');
+        if (eol && VIR_STRNDUP(def->version, cur, eol - cur) < 0)
+            goto cleanup;
+    }
+    if ((cur = strstr(base, "Serial Number: ")) != NULL) {
+        cur += 15;
+        eol = strchr(cur, '\n');
+        if (eol && VIR_STRNDUP(def->serial, cur, eol - cur) < 0)
+            goto cleanup;
+    }
+    if ((cur = strstr(base, "Asset Tag: ")) != NULL) {
+        cur += 11;
+        eol = strchr(cur, '\n');
+        if (eol && VIR_STRNDUP(def->sku, cur, eol - cur) < 0)
+            goto cleanup;
+    }
+    if ((cur = strstr(base, "SKU Number: ")) != NULL) {
+        cur += 12;
+        eol = strchr(cur, '\n');
+        if (eol && VIR_STRNDUP(def->sku, cur, eol - cur) < 0)
+            goto cleanup;
+    }
+
+    if (!def->manufacturer && !def->version &&
+        !def->serial && !def->asset && !def->sku) {
+        virSysinfoChassisDefFree(def);
+        def = NULL;
+    }
+
+    *chassisdef = def;
+    def = NULL;
+    ret = 0;
+ cleanup:
+    virSysinfoChassisDefFree(def);
+    return ret;
+}
+
+
 static int
 virSysinfoParseX86Processor(const char *base, virSysinfoDefPtr ret)
 {
@@ -1047,7 +1126,7 @@ virSysinfoReadX86(void)
         return NULL;
     }
 
-    cmd = virCommandNewArgList(path, "-q", "-t", "0,1,2,4,17", NULL);
+    cmd = virCommandNewArgList(path, "-q", "-t", "0,1,2,3,4,17", NULL);
     VIR_FREE(path);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
@@ -1065,6 +1144,9 @@ virSysinfoReadX86(void)
         goto error;
 
     if (virSysinfoParseX86BaseBoard(outbuf, &ret->baseBoard, &ret->nbaseBoard) < 0)
+        goto error;
+
+    if (virSysinfoParseX86Chassis(outbuf, &ret->chassis) < 0)
         goto error;
 
     ret->nprocessor = 0;
@@ -1201,6 +1283,31 @@ virSysinfoBaseBoardFormat(virBufferPtr buf,
         virBufferAddLit(buf, "</baseBoard>\n");
     }
 }
+
+
+static void
+virSysinfoChassisFormat(virBufferPtr buf,
+                        virSysinfoChassisDefPtr def)
+{
+    if (!def)
+        return;
+
+    virBufferAddLit(buf, "<chassis>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferEscapeString(buf, "<entry name='manufacturer'>%s</entry>\n",
+                          def->manufacturer);
+    virBufferEscapeString(buf, "<entry name='version'>%s</entry>\n",
+                          def->version);
+    virBufferEscapeString(buf, "<entry name='serial'>%s</entry>\n",
+                          def->serial);
+    virBufferEscapeString(buf, "<entry name='asset'>%s</entry>\n",
+                          def->asset);
+    virBufferEscapeString(buf, "<entry name='sku'>%s</entry>\n",
+                          def->sku);
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</chassis>\n");
+}
+
 
 static void
 virSysinfoProcessorFormat(virBufferPtr buf, virSysinfoDefPtr def)
@@ -1354,6 +1461,7 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
     virSysinfoBIOSFormat(&childrenBuf, def->bios);
     virSysinfoSystemFormat(&childrenBuf, def->system);
     virSysinfoBaseBoardFormat(&childrenBuf, def->baseBoard, def->nbaseBoard);
+    virSysinfoChassisFormat(&childrenBuf, def->chassis);
     virSysinfoProcessorFormat(&childrenBuf, def);
     virSysinfoMemoryFormat(&childrenBuf, def);
     virSysinfoOEMStringsFormat(&childrenBuf, def->oemStrings);
@@ -1466,6 +1574,34 @@ virSysinfoBaseBoardIsEqual(virSysinfoBaseBoardDefPtr src,
     return identical;
 }
 
+
+static bool
+virSysinfoChassisIsEqual(virSysinfoChassisDefPtr src,
+                           virSysinfoChassisDefPtr dst)
+{
+    bool identical = false;
+
+    if (!src && !dst)
+        return true;
+
+    if ((src && !dst) || (!src && dst)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target chassis does not match source"));
+        goto cleanup;
+    }
+
+    CHECK_FIELD(manufacturer, "chassis vendor");
+    CHECK_FIELD(version, "chassis version");
+    CHECK_FIELD(serial, "chassis serial");
+    CHECK_FIELD(asset, "chassis asset");
+    CHECK_FIELD(sku, "chassis sku");
+
+    identical = true;
+ cleanup:
+    return identical;
+}
+
+
 #undef CHECK_FIELD
 
 bool virSysinfoIsEqual(virSysinfoDefPtr src,
@@ -1508,6 +1644,9 @@ bool virSysinfoIsEqual(virSysinfoDefPtr src,
         if (!virSysinfoBaseBoardIsEqual(src->baseBoard + i,
                                         dst->baseBoard + i))
             goto cleanup;
+
+    if (!virSysinfoChassisIsEqual(src->chassis, dst->chassis))
+        goto cleanup;
 
     identical = true;
 

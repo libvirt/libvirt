@@ -4896,6 +4896,18 @@
           </element>
         </zeroOrMore>
         <optional>
+          <element name="chassis">
+            <oneOrMore>
+              <element name="entry">
+                <attribute name="name">
+                  <ref name="sysinfo-chassis-name"/>
+                </attribute>
+                <ref name="sysinfo-value"/>
+              </element>
+            </oneOrMore>
+          </element>
+        </optional>
+        <optional>
           <element name="oemStrings">
             <oneOrMore>
               <element name="entry">
@@ -4937,6 +4949,16 @@
       <value>serial</value>
       <value>asset</value>
       <value>location</value>
+    </choice>
+  </define>
+
+  <define name="sysinfo-chassis-name">
+    <choice>
+      <value>manufacturer</value>
+      <value>version</value>
+      <value>serial</value>
+      <value>asset</value>
+      <value>sku</value>
     </choice>
   </define>
 

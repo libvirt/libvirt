@@ -14543,6 +14543,50 @@ virSysinfoOEMStringsParseXML(xmlXPathContextPtr ctxt,
     return ret;
 }
 
+
+static int
+virSysinfoChassisParseXML(xmlNodePtr node,
+                         xmlXPathContextPtr ctxt,
+                         virSysinfoChassisDefPtr *chassisdef)
+{
+    int ret = -1;
+    virSysinfoChassisDefPtr def;
+
+    if (!xmlStrEqual(node->name, BAD_CAST "chassis")) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("XML does not contain expected 'chassis' element"));
+        return ret;
+    }
+
+    if (VIR_ALLOC(def) < 0)
+        goto cleanup;
+
+    def->manufacturer =
+        virXPathString("string(entry[@name='manufacturer'])", ctxt);
+    def->version =
+        virXPathString("string(entry[@name='version'])", ctxt);
+    def->serial =
+        virXPathString("string(entry[@name='serial'])", ctxt);
+    def->asset =
+        virXPathString("string(entry[@name='asset'])", ctxt);
+    def->sku =
+        virXPathString("string(entry[@name='sku'])", ctxt);
+
+    if (!def->manufacturer && !def->version &&
+        !def->serial && !def->asset && !def->sku) {
+        virSysinfoChassisDefFree(def);
+        def = NULL;
+    }
+
+    *chassisdef = def;
+    def = NULL;
+    ret = 0;
+ cleanup:
+    virSysinfoChassisDefFree(def);
+    return ret;
+}
+
+
 static virSysinfoDefPtr
 virSysinfoParseXML(xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
@@ -14600,6 +14644,17 @@ virSysinfoParseXML(xmlNodePtr node,
     /* Extract system base board metadata */
     if (virSysinfoBaseBoardParseXML(ctxt, &def->baseBoard, &def->nbaseBoard) < 0)
         goto error;
+
+    /* Extract chassis related metadata */
+    if ((tmpnode = virXPathNode("./chassis[1]", ctxt)) != NULL) {
+        oldnode = ctxt->node;
+        ctxt->node = tmpnode;
+        if (virSysinfoChassisParseXML(tmpnode, ctxt, &def->chassis) < 0) {
+            ctxt->node = oldnode;
+            goto error;
+        }
+        ctxt->node = oldnode;
+    }
 
     /* Extract system related metadata */
     if ((tmpnode = virXPathNode("./oemStrings[1]", ctxt)) != NULL) {

@@ -411,6 +411,13 @@
     &lt;entry name='version'&gt;0B98401 Pro&lt;/entry&gt;
     &lt;entry name='serial'&gt;W1KS427111E&lt;/entry&gt;
   &lt;/baseBoard&gt;
+  &lt;chassis&gt;
+    &lt;entry name='manufacturer'&gt;Dell Inc.&lt;/entry&gt;
+    &lt;entry name='version'&gt;2.12&lt;/entry&gt;
+    &lt;entry name='serial'&gt;65X0XF2&lt;/entry&gt;
+    &lt;entry name='asset'&gt;40000101&lt;/entry&gt;
+    &lt;entry name='sku'&gt;Type3Sku1&lt;/entry&gt;
+  &lt;/chassis&gt;
   &lt;oemStrings&gt;
     &lt;entry&gt;myappname:some arbitrary data&lt;/entry&gt;
     &lt;entry&gt;otherappname:more arbitrary data&lt;/entry&gt;
@@ -501,6 +508,23 @@
             blocks will be ignored without error.  Other than <code>uuid</code>
             validation and <code>date</code> format checking, all values are
             passed as strings to the hypervisor driver.
+          </dd>
+          <dt><code>chassis</code></dt>
+          <dd>
+            <span class="since">Since 4.1.0,</span> this is block 3 of
+            SMBIOS, with entry names drawn from:
+            <dl>
+                <dt><code>manufacturer</code></dt>
+                <dd>Manufacturer of Chassis</dd>
+                <dt><code>version</code></dt>
+                <dd>Version of the Chassis</dd>
+                <dt><code>serial</code></dt>
+                <dd>Serial number</dd>
+                <dt><code>asset</code></dt>
+                <dd>Asset tag</dd>
+                <dt><code>sku</code></dt>
+                <dd>SKU number</dd>
+            </dl>
           </dd>
           <dt><code>oemStrings</code></dt>
           <dd>
