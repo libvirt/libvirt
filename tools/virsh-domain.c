@@ -1874,7 +1874,7 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
 /*
  * "blockcommit" command
  */
-static const vshCmdInfo info_block_commit[] = {
+static const vshCmdInfo info_blockcommit[] = {
     {.name = "help",
      .data = N_("Start a block commit operation.")
     },
@@ -1884,7 +1884,7 @@ static const vshCmdInfo info_block_commit[] = {
     {.name = NULL}
 };
 
-static const vshCmdOptDef opts_block_commit[] = {
+static const vshCmdOptDef opts_blockcommit[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "path",
      .type = VSH_OT_DATA,
@@ -1952,7 +1952,7 @@ static const vshCmdOptDef opts_block_commit[] = {
 };
 
 static bool
-cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
+cmdBlockcommit(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     bool ret = false;
@@ -2099,7 +2099,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
 /*
  * "blockcopy" command
  */
-static const vshCmdInfo info_block_copy[] = {
+static const vshCmdInfo info_blockcopy[] = {
     {.name = "help",
      .data = N_("Start a block copy operation.")
     },
@@ -2109,7 +2109,7 @@ static const vshCmdInfo info_block_copy[] = {
     {.name = NULL}
 };
 
-static const vshCmdOptDef opts_block_copy[] = {
+static const vshCmdOptDef opts_blockcopy[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "path",
      .type = VSH_OT_DATA,
@@ -2192,7 +2192,7 @@ static const vshCmdOptDef opts_block_copy[] = {
 };
 
 static bool
-cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
+cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     const char *dest = NULL;
@@ -2415,7 +2415,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
 /*
  * "blockjob" command
  */
-static const vshCmdInfo info_block_job[] = {
+static const vshCmdInfo info_blockjob[] = {
     {.name = "help",
      .data = N_("Manage active block operations")
     },
@@ -2425,7 +2425,7 @@ static const vshCmdInfo info_block_job[] = {
     {.name = NULL}
 };
 
-static const vshCmdOptDef opts_block_job[] = {
+static const vshCmdOptDef opts_blockjob[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "path",
      .type = VSH_OT_DATA,
@@ -2609,7 +2609,7 @@ virshBlockJobAbort(virDomainPtr dom,
 
 
 static bool
-cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
+cmdBlockjob(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
     bool raw = vshCommandOptBool(cmd, "raw");
@@ -2658,7 +2658,7 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
 /*
  * "blockpull" command
  */
-static const vshCmdInfo info_block_pull[] = {
+static const vshCmdInfo info_blockpull[] = {
     {.name = "help",
      .data = N_("Populate a disk from its backing image.")
     },
@@ -2668,7 +2668,7 @@ static const vshCmdInfo info_block_pull[] = {
     {.name = NULL}
 };
 
-static const vshCmdOptDef opts_block_pull[] = {
+static const vshCmdOptDef opts_blockpull[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "path",
      .type = VSH_OT_DATA,
@@ -2711,7 +2711,7 @@ static const vshCmdOptDef opts_block_pull[] = {
 };
 
 static bool
-cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
+cmdBlockpull(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     bool ret = false;
@@ -2804,7 +2804,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
 /*
  * "blockresize" command
  */
-static const vshCmdInfo info_block_resize[] = {
+static const vshCmdInfo info_blockresize[] = {
     {.name = "help",
      .data = N_("Resize block device of domain.")
     },
@@ -2814,7 +2814,7 @@ static const vshCmdInfo info_block_resize[] = {
     {.name = NULL}
 };
 
-static const vshCmdOptDef opts_block_resize[] = {
+static const vshCmdOptDef opts_blockresize[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "path",
      .type = VSH_OT_DATA,
@@ -2830,7 +2830,7 @@ static const vshCmdOptDef opts_block_resize[] = {
 };
 
 static bool
-cmdBlockResize(vshControl *ctl, const vshCmd *cmd)
+cmdBlockresize(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     const char *path = NULL;
@@ -13910,33 +13910,33 @@ const vshCmdDef domManagementCmds[] = {
      .flags = 0
     },
     {.name = "blockcommit",
-     .handler = cmdBlockCommit,
-     .opts = opts_block_commit,
-     .info = info_block_commit,
+     .handler = cmdBlockcommit,
+     .opts = opts_blockcommit,
+     .info = info_blockcommit,
      .flags = 0
     },
     {.name = "blockcopy",
-     .handler = cmdBlockCopy,
-     .opts = opts_block_copy,
-     .info = info_block_copy,
+     .handler = cmdBlockcopy,
+     .opts = opts_blockcopy,
+     .info = info_blockcopy,
      .flags = 0
     },
     {.name = "blockjob",
-     .handler = cmdBlockJob,
-     .opts = opts_block_job,
-     .info = info_block_job,
+     .handler = cmdBlockjob,
+     .opts = opts_blockjob,
+     .info = info_blockjob,
      .flags = 0
     },
     {.name = "blockpull",
-     .handler = cmdBlockPull,
-     .opts = opts_block_pull,
-     .info = info_block_pull,
+     .handler = cmdBlockpull,
+     .opts = opts_blockpull,
+     .info = info_blockpull,
      .flags = 0
     },
     {.name = "blockresize",
-     .handler = cmdBlockResize,
-     .opts = opts_block_resize,
-     .info = info_block_resize,
+     .handler = cmdBlockresize,
+     .opts = opts_blockresize,
+     .info = info_blockresize,
      .flags = 0
     },
     {.name = "change-media",
