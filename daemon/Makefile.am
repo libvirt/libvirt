@@ -92,19 +92,19 @@ QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
 ADMIN_PROTOCOL = $(top_srcdir)/src/admin/admin_protocol.x
 
 remote_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL)
+		$(REMOTE_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
 	  --mode=server remote REMOTE $(REMOTE_PROTOCOL) \
 	  > $(srcdir)/remote_dispatch.h
 
 lxc_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
-		$(LXC_PROTOCOL)
+		$(LXC_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
 	  --mode=server lxc LXC $(LXC_PROTOCOL) \
 	  > $(srcdir)/lxc_dispatch.h
 
 qemu_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
-		$(QEMU_PROTOCOL)
+		$(QEMU_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
 	  --mode=server qemu QEMU $(QEMU_PROTOCOL) \
 	  > $(srcdir)/qemu_dispatch.h
