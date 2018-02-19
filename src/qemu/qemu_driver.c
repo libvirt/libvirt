@@ -17182,6 +17182,14 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         goto cleanup;
     }
 
+    if (bandwidth > LLONG_MAX) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("bandwidth must be less than "
+                         "'%llu' bytes/s (%llu MiB/s)"),
+                       LLONG_MAX, LLONG_MAX >> 20);
+        goto cleanup;
+    }
+
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
