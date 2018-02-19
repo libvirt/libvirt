@@ -459,6 +459,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DISK_WRITE_CACHE, /* qemu block frontends support write-cache param */
     QEMU_CAPS_NBD_TLS, /* NBD server supports TLS transport */
     QEMU_CAPS_DEVICE_TPM_CRB, /* -device tpm-crb */
+    QEMU_CAPS_PR_MANAGER_HELPER, /* -object pr-manager-helper */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

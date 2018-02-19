@@ -475,6 +475,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "disk-write-cache",
               "nbd-tls",
               "tpm-crb",
+              "pr-manager-helper",
     );
 
 
