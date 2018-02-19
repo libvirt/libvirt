@@ -103,7 +103,7 @@
           <xsl:comment>
           <![CDATA[
       function init() {
-      window.addEventListener('scroll', function(e){
+          window.addEventListener('scroll', function(e){
               var distanceY = window.pageYOffset || document.documentElement.scrollTop,
               shrinkOn = 94
               home = document.getElementById("home");
@@ -125,7 +125,7 @@
                       search.className = ""
                   }
               }
-      });
+          });
       }
       window.onload = init();
            ]]>
