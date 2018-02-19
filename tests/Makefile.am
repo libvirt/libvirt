@@ -583,7 +583,6 @@ qemuxml2argvtest_SOURCES = \
 	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
 qemuxml2argvtest_LDADD = libqemutestdriver.la \
-	../src/libvirt_driver_network_impl.la \
 	$(LDADDS) $(LIBXML_LIBS)
 
 qemuxml2argvmock_la_SOURCES = \
