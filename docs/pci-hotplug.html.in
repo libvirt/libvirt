@@ -72,6 +72,7 @@
     </p>
 
 <pre>
+&lt;controller type='pci' model='pcie-root'/&gt;
 &lt;controller type='pci' model='pcie-root-port'/&gt;
 &lt;controller type='pci' model='pcie-root-port'/&gt;
 &lt;controller type='pci' model='pcie-root-port'/&gt;</pre>
@@ -80,7 +81,10 @@
       if you expect to hotplug up to three PCI Express devices,
       either emulated or assigned from the host. That's all the
       information you need to provide: libvirt will fill in the
-      remaining details automatically.
+      remaining details automatically. Note that you need to add
+      the <code>pcie-root</code> controller along with the
+      <code>pcie-root-port</code> controllers or you will get an
+      error.
     </p>
     <p>
       Note that if you're adding PCI controllers to a guest and at
