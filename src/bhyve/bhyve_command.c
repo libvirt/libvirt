@@ -198,7 +198,7 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
             goto error;
         }
 
-        if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
+        if (virDomainDiskTranslateSourcePool(disk) < 0)
             goto error;
 
         disk_source = virDomainDiskGetSource(disk);
@@ -289,12 +289,11 @@ bhyveBuildUSBControllerArgStr(const virDomainDef *def,
 static int
 bhyveBuildVirtIODiskArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
                      virDomainDiskDefPtr disk,
-                     virConnectPtr conn,
                      virCommandPtr cmd)
 {
     const char *disk_source;
 
-    if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
+    if (virDomainDiskTranslateSourcePool(disk) < 0)
         return -1;
 
     if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
@@ -562,7 +561,7 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
             /* Handled by bhyveBuildAHCIControllerArgStr() */
             break;
         case VIR_DOMAIN_DISK_BUS_VIRTIO:
-            if (bhyveBuildVirtIODiskArgStr(def, disk, conn, cmd) < 0)
+            if (bhyveBuildVirtIODiskArgStr(def, disk, cmd) < 0)
                 goto error;
             break;
         default:
@@ -672,10 +671,10 @@ virBhyveProcessBuildCustomLoaderCmd(virDomainDefPtr def)
 }
 
 static bool
-virBhyveUsableDisk(virConnectPtr conn, virDomainDiskDefPtr disk)
+virBhyveUsableDisk(virDomainDiskDefPtr disk)
 {
 
-    if (virDomainDiskTranslateSourcePool(conn, disk) < 0)
+    if (virDomainDiskTranslateSourcePool(disk) < 0)
         return false;
 
     if ((disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) &&
@@ -729,7 +728,7 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
      * across. */
     cd = hdd = userdef = NULL;
     for (i = 0; i < def->ndisks; i++) {
-        if (!virBhyveUsableDisk(conn, def->disks[i]))
+        if (!virBhyveUsableDisk(def->disks[i]))
             continue;
 
         diskdef = def->disks[i];
@@ -815,7 +814,7 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
 }
 
 static virDomainDiskDefPtr
-virBhyveGetBootDisk(virConnectPtr conn, virDomainDefPtr def)
+virBhyveGetBootDisk(virDomainDefPtr def)
 {
     size_t i;
     virDomainDiskDefPtr match = NULL;
@@ -851,7 +850,7 @@ virBhyveGetBootDisk(virConnectPtr conn, virDomainDefPtr def)
         /* If boot_dev is set, we return the first device of
          * the request type */
         for (i = 0; i < def->ndisks; i++) {
-            if (!virBhyveUsableDisk(conn, def->disks[i]))
+            if (!virBhyveUsableDisk(def->disks[i]))
                 continue;
 
             if (def->disks[i]->device == boot_dev) {
@@ -875,7 +874,7 @@ virBhyveGetBootDisk(virConnectPtr conn, virDomainDefPtr def)
         int first_usable_disk_index = -1;
 
         for (i = 0; i < def->ndisks; i++) {
-            if (!virBhyveUsableDisk(conn, def->disks[i]))
+            if (!virBhyveUsableDisk(def->disks[i]))
                 continue;
             else
                 first_usable_disk_index = i;
@@ -907,7 +906,7 @@ virBhyveProcessBuildLoadCmd(virConnectPtr conn, virDomainDefPtr def,
     virDomainDiskDefPtr disk = NULL;
 
     if (def->os.bootloader == NULL) {
-        disk = virBhyveGetBootDisk(conn, def);
+        disk = virBhyveGetBootDisk(def);
 
         if (disk == NULL)
             return NULL;
