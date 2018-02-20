@@ -2796,16 +2796,20 @@ MANINFILES = \
 CLEANFILES += test_virtlockd.aug test_virtlogd.aug $(man8_MANS)
 MAINTAINERCLEANFILES += $(MANINFILES)
 
+SYSTEMD_UNIT_FILES_IN = \
+	locking/virtlockd.service.in \
+	locking/virtlockd.socket.in \
+	locking/virtlockd-admin.socket.in \
+	logging/virtlogd.service.in \
+	logging/virtlogd.socket.in \
+	logging/virtlogd-admin.socket.in \
+	$(NULL)
+
 EXTRA_DIST += \
-        locking/virtlockd.service.in \
-        locking/virtlockd.socket.in \
-        locking/virtlockd-admin.socket.in \
+        $(SYSTEMD_UNIT_FILES_IN) \
         locking/virtlockd.aug \
         locking/virtlockd.conf \
         locking/test_virtlockd.aug.in \
-        logging/virtlogd.service.in \
-        logging/virtlogd.socket.in \
-        logging/virtlogd-admin.socket.in \
         logging/virtlogd.aug \
         logging/virtlogd.conf \
         logging/test_virtlogd.aug.in \
@@ -2818,36 +2822,20 @@ if WITH_LIBVIRTD
 if LIBVIRT_INIT_SCRIPT_SYSTEMD
 
 SYSTEMD_UNIT_DIR = $(prefix)/lib/systemd/system
+SYSTEMD_UNIT_FILES = $(notdir $(SYSTEMD_UNIT_FILES_IN:%.in=%))
 
-BUILT_SOURCES += virtlockd.service virtlockd.socket virtlockd-admin.socket \
-		 virtlogd.service virtlogd.socket virtlogd-admin.socket
-DISTCLEANFILES += virtlockd.service virtlockd.socket virtlockd-admin.socket \
-		  virtlogd.service virtlogd.socket virtlogd-admin.socket
+BUILT_SOURCES += $(SYSTEMD_UNIT_FILES)
+DISTCLEANFILES += $(SYSTEMD_UNIT_FILES)
 
-install-systemd: virtlockd.service virtlockd.socket virtlockd-admin.socket \
-                 virtlogd.service virtlogd.socket virtlogd-admin.socket \
-		 install-sysconfig
+install-systemd: $(SYSTEMD_UNIT_FILES) install-sysconfig
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-	$(INSTALL_DATA) virtlockd.service \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
-	$(INSTALL_DATA) virtlockd.socket \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
-	$(INSTALL_DATA) virtlockd-admin.socket \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
-	$(INSTALL_DATA) virtlogd.service \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
-	$(INSTALL_DATA) virtlogd.socket \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
-	$(INSTALL_DATA) virtlogd-admin.socket \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/
+	for f in $(SYSTEMD_UNIT_FILES); \
+	do \
+	  $(INSTALL_DATA) $$f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/ ; \
+	done
 
 uninstall-systemd: uninstall-sysconfig
-	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlockd.service \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlockd.socket \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlockd-admin.socket
-	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlogd.service \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlogd.socket \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virtlogd-admin.socket
+	rm -f $(SYSTEMD_UNIT_FILES:%=$(DESTDIR)$(SYSTEMD_UNIT_DIR)/%)
 	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR) || :
 else ! LIBVIRT_INIT_SCRIPT_SYSTEMD
 install-systemd:
