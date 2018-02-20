@@ -4412,3 +4412,40 @@ qemuMonitorSetWatchdogAction(qemuMonitorPtr mon,
 
     return qemuMonitorJSONSetWatchdogAction(mon, action);
 }
+
+
+/**
+ * qemuMonitorBlockdevAdd:
+ * @mon: monitor object
+ * @props: JSON object describing the blockdev to add
+ *
+ * Adds a new block device (BDS) to qemu. Note that @props is always consumed
+ * by this function and should not be accessed after calling this function.
+ */
+int
+qemuMonitorBlockdevAdd(qemuMonitorPtr mon,
+                       virJSONValuePtr props)
+{
+    VIR_DEBUG("props=%p (node-name=%s)", props,
+              NULLSTR(virJSONValueObjectGetString(props, "node-name")));
+
+    QEMU_CHECK_MONITOR_JSON_GOTO(mon, error);
+
+    return qemuMonitorJSONBlockdevAdd(mon, props);
+
+ error:
+    virJSONValueFree(props);
+    return -1;
+}
+
+
+int
+qemuMonitorBlockdevDel(qemuMonitorPtr mon,
+                       const char *nodename)
+{
+    VIR_DEBUG("nodename=%s", nodename);
+
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONBlockdevDel(mon, nodename);
+}
