@@ -1891,7 +1891,7 @@ virStorageAuthDefParse(xmlDocPtr xml, xmlNodePtr root)
 }
 
 
-int
+void
 virStorageAuthDefFormat(virBufferPtr buf,
                         virStorageAuthDefPtr authdef)
 {
@@ -1908,8 +1908,6 @@ virStorageAuthDefFormat(virBufferPtr buf,
                                 &authdef->seclookupdef);
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</auth>\n");
-
-    return 0;
 }
 
 

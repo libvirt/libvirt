@@ -367,7 +367,7 @@ int virStorageFileGetSCSIKey(const char *path,
 void virStorageAuthDefFree(virStorageAuthDefPtr def);
 virStorageAuthDefPtr virStorageAuthDefCopy(const virStorageAuthDef *src);
 virStorageAuthDefPtr virStorageAuthDefParse(xmlDocPtr xml, xmlNodePtr root);
-int virStorageAuthDefFormat(virBufferPtr buf, virStorageAuthDefPtr authdef);
+void virStorageAuthDefFormat(virBufferPtr buf, virStorageAuthDefPtr authdef);
 
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,

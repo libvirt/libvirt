@@ -22902,10 +22902,8 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
          * kept in the storage pool and would be overwritten anyway.
          * So avoid formatting it for volumes. */
         if (src->auth && src->authInherited &&
-            src->type != VIR_STORAGE_TYPE_VOLUME) {
-            if (virStorageAuthDefFormat(&childBuf, src->auth) < 0)
-                goto error;
-        }
+            src->type != VIR_STORAGE_TYPE_VOLUME)
+            virStorageAuthDefFormat(&childBuf, src->auth);
 
         /* If we found encryption as a child of <source>, then format it
          * as we found it. */
@@ -23101,10 +23099,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     /* Format as child of <disk> if defined there; otherwise,
      * if defined as child of <source>, then format later */
-    if (def->src->auth && !def->src->authInherited) {
-        if (virStorageAuthDefFormat(buf, def->src->auth) < 0)
-            return -1;
-    }
+    if (def->src->auth && !def->src->authInherited)
+        virStorageAuthDefFormat(buf, def->src->auth);
 
     if (virDomainDiskSourceFormat(buf, def->src, def->startupPolicy,
                                   flags, xmlopt) < 0)
@@ -23737,10 +23733,8 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
 
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
         scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
-        iscsisrc->src->auth) {
-        if (virStorageAuthDefFormat(buf, iscsisrc->src->auth) < 0)
-            return -1;
-    }
+        iscsisrc->src->auth)
+        virStorageAuthDefFormat(buf, iscsisrc->src->auth);
 
     virBufferAdjustIndent(buf, -2);
     if (!closedSource)

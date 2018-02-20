@@ -953,10 +953,8 @@ virStoragePoolSourceFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "<format type='%s'/>\n", format);
     }
 
-    if (src->auth) {
-        if (virStorageAuthDefFormat(buf, src->auth) < 0)
-            return -1;
-    }
+    if (src->auth)
+        virStorageAuthDefFormat(buf, src->auth);
 
     virBufferEscapeString(buf, "<vendor name='%s'/>\n", src->vendor);
     virBufferEscapeString(buf, "<product name='%s'/>\n", src->product);
