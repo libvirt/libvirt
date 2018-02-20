@@ -2683,23 +2683,32 @@ EXTRA_DIST += $(LOCK_DAEMON_SOURCES) \
 	      $(LOG_DAEMON_SOURCES)
 endif ! WITH_LIBVIRTD
 
-EXTRA_DIST += \
+SYSCONF_FILES = \
 	locking/virtlockd.sysconf \
+	logging/virtlogd.sysconf \
+	$(NULL)
+
+EXTRA_DIST += \
 	locking/lockd.conf \
 	locking/libvirt_lockd.aug \
 	locking/test_libvirt_lockd.aug.in \
-	logging/virtlogd.sysconf
+	$(SYSCONF_FILES) \
+	$(NULL)
 
 install-sysconfig:
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysconfig
-	$(INSTALL_DATA) $(srcdir)/locking/virtlockd.sysconf \
-	  $(DESTDIR)$(sysconfdir)/sysconfig/virtlockd
-	$(INSTALL_DATA) $(srcdir)/logging/virtlogd.sysconf \
-	  $(DESTDIR)$(sysconfdir)/sysconfig/virtlogd
+	for f in $(SYSCONF_FILES:%.sysconf=%) ; \
+	do \
+	  tgt=`basename $$f`; \
+	  $(INSTALL_SCRIPT) $$f.sysconf $(DESTDIR)$(sysconfdir)/sysconfig/$$tgt; \
+	done
 
 uninstall-sysconfig:
-	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/virtlogd
-	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/virtlockd
+	for f in $(SYSCONF_FILES:%.sysconf=%) ; \
+	do \
+	  tgt=`basename $$f`; \
+	  rm -f $(DESTDIR)$(sysconfdir)/sysconfig/$$tgt; \
+	done
 	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
 
 SYSVINIT_FILES_IN = \
