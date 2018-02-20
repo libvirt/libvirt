@@ -982,10 +982,6 @@ bool qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
                                     const char *devicename);
 
 int
-qemuDomainCheckMigrationCapabilities(virQEMUDriverPtr driver,
-                                     virDomainObjPtr vm,
-                                     qemuDomainAsyncJob asyncJob);
-int
 qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
                                  virStorageSourcePtr src,
                                  virQEMUDriverConfigPtr cfg,

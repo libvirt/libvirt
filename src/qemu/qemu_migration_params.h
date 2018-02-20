@@ -79,4 +79,9 @@ qemuMigrationParamsReset(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          int asyncJob);
 
+int
+qemuMigrationCapsCheck(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       int asyncJob);
+
 #endif /* __QEMU_MIGRATION_PARAMS_H__ */

@@ -452,3 +452,75 @@ qemuMigrationParamsReset(virQEMUDriverPtr driver,
         virFreeError(err);
     }
 }
+
+
+int
+qemuMigrationCapsCheck(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       int asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char **caps = NULL;
+    char **capStr;
+    int ret = -1;
+    int rc;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    rc = qemuMonitorGetMigrationCapabilities(priv->mon, &caps);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
+    if (!caps) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    priv->migrationCaps = virBitmapNew(QEMU_MONITOR_MIGRATION_CAPS_LAST);
+    if (!priv->migrationCaps)
+        goto cleanup;
+
+    for (capStr = caps; *capStr; capStr++) {
+        int cap = qemuMonitorMigrationCapsTypeFromString(*capStr);
+
+        if (cap < 0) {
+            VIR_DEBUG("Unknown migration capability: '%s'", *capStr);
+        } else {
+            ignore_value(virBitmapSetBit(priv->migrationCaps, cap));
+            VIR_DEBUG("Found migration capability: '%s'", *capStr);
+        }
+    }
+
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT)) {
+        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+            goto cleanup;
+
+        rc = qemuMonitorSetMigrationCapability(priv->mon,
+                                               QEMU_MONITOR_MIGRATION_CAPS_EVENTS,
+                                               true);
+
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            goto cleanup;
+
+        if (rc < 0) {
+            virResetLastError();
+            VIR_DEBUG("Cannot enable migration events; clearing capability");
+            virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
+        }
+    }
+
+    /* Migration events capability must always be enabled, clearing it from
+     * migration capabilities bitmap makes sure it won't be touched anywhere
+     * else.
+     */
+    ignore_value(virBitmapClearBit(priv->migrationCaps,
+                                   QEMU_MONITOR_MIGRATION_CAPS_EVENTS));
+
+    ret = 0;
+
+ cleanup:
+    virStringListFree(caps);
+    return ret;
+}

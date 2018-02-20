@@ -1840,7 +1840,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
     if (qemuProcessInitMonitor(driver, vm, asyncJob) < 0)
         return -1;
 
-    if (qemuDomainCheckMigrationCapabilities(driver, vm, asyncJob) < 0)
+    if (qemuMigrationCapsCheck(driver, vm, asyncJob) < 0)
         return -1;
 
     return 0;
