@@ -4268,9 +4268,9 @@ qemuDomainDeviceDefValidateControllerSCSI(const virDomainControllerDef *controll
 
 
 static int
-qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controller,
-                                         const virDomainDef *def,
-                                         virQEMUCapsPtr qemuCaps)
+qemuDomainDeviceDefValidateControllerPCIOld(const virDomainControllerDef *controller,
+                                            const virDomainDef *def,
+                                            virQEMUCapsPtr qemuCaps)
 {
     virDomainControllerModelPCI model = controller->model;
     const virDomainPCIControllerOpts *pciopts;
@@ -4544,6 +4544,29 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *controlle
     }
 
     return 0;
+}
+
+
+static int
+qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
+                                         const virDomainDef *def,
+                                         virQEMUCapsPtr qemuCaps)
+
+{
+    const virDomainPCIControllerOpts *pciopts = &cont->opts.pciopts;
+    const char *model = virDomainControllerModelPCITypeToString(cont->model);
+    const char *modelName = virDomainControllerPCIModelNameTypeToString(pciopts->modelName);
+
+    if (!model) {
+        virReportEnumRangeError(virDomainControllerModelPCI, cont->model);
+        return -1;
+    }
+    if (!modelName) {
+        virReportEnumRangeError(virDomainControllerPCIModelName, pciopts->modelName);
+        return -1;
+    }
+
+    return qemuDomainDeviceDefValidateControllerPCIOld(cont, def, qemuCaps);
 }
 
 
