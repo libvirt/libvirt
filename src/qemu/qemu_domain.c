@@ -4285,31 +4285,6 @@ qemuDomainDeviceDefValidateControllerPCIOld(const virDomainControllerDef *contro
         controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT)
         return 0;
 
-    /* First pass - just check the controller index for the model's
-     * that we care to check... */
-    switch (model) {
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-    case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
-        if (controller->idx == 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("index for pci controllers of model '%s' must be > 0"),
-                           virDomainControllerModelPCITypeToString(model));
-            return -1;
-        }
-        break;
-
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
-        break;
-    }
-
     pciopts = &controller->opts.pciopts;
 
     /* Second pass - now the model specific checks */
@@ -4608,6 +4583,49 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
         if (pciopts->modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE) {
             virReportControllerInvalidValue(cont, model, modelName, "modelName");
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+    default:
+        virReportEnumRangeError(virDomainControllerModelPCI, cont->model);
+        return -1;
+    }
+
+    /* index */
+    switch ((virDomainControllerModelPCI) cont->model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+    case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+        if (cont->idx == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Index for '%s' controllers must be > 0"),
+                           model);
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+        /* pSeries guests can have multiple PHBs, so it's expected that
+         * the index will not be zero for some of them */
+        if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
+            pciopts->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE) {
+            break;
+        }
+
+        /* For all other pci-root and pcie-root controllers, though,
+         * the index must be zero*/
+        if (cont->idx != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Index for '%s' controllers must be 0"),
+                           model);
             return -1;
         }
         break;
