@@ -35,7 +35,7 @@
       <address type='pci' bus='0x00' slot='4'/>
     </controller>
     <controller type='pci' index='2' model='pcie-root-port'>
-      <target busNr='220'>
+      <target>
         <node>1</node>
       </target>
       <address type='pci' bus='0x01'/>
