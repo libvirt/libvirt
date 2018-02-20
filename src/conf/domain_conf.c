@@ -22911,10 +22911,10 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
          * as we found it. */
         if (src->encryption && src->encryptionInherited &&
             virStorageEncryptionFormat(&childBuf, src->encryption) < 0)
-            return -1;
+            goto error;
 
         if (virDomainDiskSourceFormatPrivateData(&childBuf, src, flags, xmlopt) < 0)
-            return -1;
+            goto error;
 
         if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
             goto error;
