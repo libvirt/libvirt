@@ -18,14 +18,6 @@
 
 CLEANFILES =
 
-PODFILES = \
-	libvirtd.pod \
-	$(NULL)
-
-MANINFILES = \
-	libvirtd.8.in \
-	$(NULL)
-
 DISTCLEANFILES =
 EXTRA_DIST = \
 	libvirtd.conf \
@@ -45,15 +37,11 @@ EXTRA_DIST = \
 	libvirtd.libxl.logrotate.in \
 	libvirtd.uml.logrotate.in \
 	test_libvirtd.aug.in \
-	$(PODFILES) \
-	$(MANINFILES) \
 	$(NULL)
 
 BUILT_SOURCES =
 
 if WITH_LIBVIRTD
-
-man8_MANS = libvirtd.8
 
 confdir = $(sysconfdir)/libvirt/
 conf_DATA = libvirtd.conf
@@ -300,25 +288,6 @@ install-data-local: install-data-sasl
 uninstall-local:: uninstall-data-sasl
 endif ! WITH_LIBVIRTD
 
-POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
-
-%.8.in: %.pod
-	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
-	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
-	sed \
-		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
-		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
-		< $@-t1 > $@-t2 && \
-	rm -f $@-t1 && \
-	mv $@-t2 $@
-
-%.8: %.8.in $(top_srcdir)/configure.ac
-	$(AM_V_GEN)sed \
-		-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-		-e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-		< $< > $@-t && \
-	mv $@-t $@
-
 # This is needed for clients too, so can't wrap in
 # the WITH_LIBVIRTD conditional
 if WITH_SASL
@@ -336,6 +305,5 @@ uninstall-data-sasl:
 endif ! WITH_SASL
 
 
-CLEANFILES += $(BUILT_SOURCES) $(man8_MANS)
+CLEANFILES += $(BUILT_SOURCES)
 CLEANFILES += *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
-MAINTAINERCLEANFILES = $(MANINFILES)

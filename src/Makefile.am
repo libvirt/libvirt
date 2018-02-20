@@ -2865,6 +2865,16 @@ virtlogd.8.in: logging/virtlogd.pod
 	rm -f $@-t1 && \
 	mv $@-t2 $@
 
+libvirtd.8.in: remote/libvirtd.pod
+	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
+	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
+	sed \
+		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
+		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
+		< $@-t1 > $@-t2 && \
+	rm -f $@-t1 && \
+	mv $@-t2 $@
+
 %.8: %.8.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)sed \
 		-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
@@ -2873,7 +2883,7 @@ virtlogd.8.in: logging/virtlogd.pod
 	mv $@-t $@
 
 if WITH_LIBVIRTD
-man8_MANS = virtlockd.8 virtlogd.8
+man8_MANS = virtlockd.8 virtlogd.8 libvirtd.8
 
 conf_DATA += locking/virtlockd.conf logging/virtlogd.conf
 
@@ -2884,11 +2894,13 @@ endif WITH_LIBVIRTD
 PODFILES = \
 	locking/virtlockd.pod \
 	logging/virtlogd.pod \
+	remote/libvirtd.pod \
 	$(NULL)
 
 MANINFILES = \
 	virtlockd.8.in \
 	virtlogd.8.in \
+	libvirtd.8.in \
 	$(NULL)
 
 CLEANFILES += test_virtlockd.aug test_virtlogd.aug $(man8_MANS)
