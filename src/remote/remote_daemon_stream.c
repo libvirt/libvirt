@@ -1,7 +1,7 @@
 /*
- * stream.c: APIs for managing client streams
+ * remote_daemon_stream.c: APIs for managing client streams
  *
- * Copyright (C) 2009-2014 Red Hat, Inc.
+ * Copyright (C) 2009-2018 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,8 @@
 
 #include <config.h>
 
-#include "stream.h"
-#include "remote.h"
+#include "remote_daemon_stream.h"
+#include "remote_daemon_dispatch.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virnetserverclient.h"

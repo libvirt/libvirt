@@ -1,7 +1,7 @@
 /*
- * libvirtd-config.h: daemon start of day, guest process & i/o management
+ * remote_daemon_config.h: libvirtd config file handling
  *
- * Copyright (C) 2006-2012, 2015 Red Hat, Inc.
+ * Copyright (C) 2006-2018 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -21,8 +21,8 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __LIBVIRTD_CONFIG_H__
-# define __LIBVIRTD_CONFIG_H__
+#ifndef __REMOTE_DAEMON_CONFIG_H__
+# define __REMOTE_DAEMON_CONFIG_H__
 
 # include "internal.h"
 
@@ -106,4 +106,4 @@ int daemonConfigLoadData(struct daemonConfig *data,
                          const char *filename,
                          const char *filedata);
 
-#endif /* __LIBVIRTD_CONFIG_H__ */
+#endif /* __REMOTE_DAEMON_CONFIG_H__ */

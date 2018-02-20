@@ -1,7 +1,7 @@
 /*
- * remote.c: handlers for RPC method calls
+ * remote_daemon_dispatch.c: handlers for RPC method calls
  *
- * Copyright (C) 2007-2015 Red Hat, Inc.
+ * Copyright (C) 2007-2018 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,13 +24,13 @@
 
 #include "virerror.h"
 
-#include "remote.h"
-#include "libvirtd.h"
+#include "remote_daemon_dispatch.h"
+#include "remote_daemon.h"
 #include "libvirt_internal.h"
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "stream.h"
+#include "remote_daemon_stream.h"
 #include "viruuid.h"
 #include "vircommand.h"
 #include "intprops.h"
@@ -108,9 +108,9 @@ remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
                                 remote_domain_disk_error **ret_errors_val,
                                 u_int *ret_errors_len);
 
-#include "remote_dispatch.h"
-#include "qemu_dispatch.h"
-#include "lxc_dispatch.h"
+#include "remote_daemon_dispatch_stubs.h"
+#include "remote_daemon_dispatch_qemu_stubs.h"
+#include "remote_daemon_dispatch_lxc_stubs.h"
 
 
 /* Prototypes */

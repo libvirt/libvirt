@@ -1,9 +1,3 @@
-daemon/libvirtd-config.c
-daemon/libvirtd.c
-daemon/qemu_dispatch.h
-daemon/remote.c
-daemon/remote_dispatch.h
-daemon/stream.c
 gnulib/lib/gai_strerror.c
 gnulib/lib/getopt.c
 gnulib/lib/regcomp.c
@@ -148,6 +142,12 @@ src/qemu/qemu_monitor_text.c
 src/qemu/qemu_parse_command.c
 src/qemu/qemu_process.c
 src/remote/remote_client_bodies.h
+src/remote/remote_daemon.c
+src/remote/remote_daemon_config.c
+src/remote/remote_daemon_dispatch.c
+src/remote/remote_daemon_dispatch_stubs.h
+src/remote/remote_daemon_dispatch_qemu_stubs.h
+src/remote/remote_daemon_stream.c
 src/remote/remote_driver.c
 src/rpc/virkeepalive.c
 src/rpc/virnetclient.c

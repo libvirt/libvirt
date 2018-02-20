@@ -1,7 +1,7 @@
 /*
- * stream.h: APIs for managing client streams
+ * remote_daemon_stream.h: APIs for managing client streams
  *
- * Copyright (C) 2009 Red Hat, Inc.
+ * Copyright (C) 2009-2018 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,10 +21,10 @@
  */
 
 
-#ifndef __LIBVIRTD_STREAM_H__
-# define __LIBVIRTD_STREAM_H__
+#ifndef __REMOTE_DAEMON_STREAM_H__
+# define __REMOTE_DAEMON_STREAM_H__
 
-# include "libvirtd.h"
+# include "remote_daemon.h"
 
 daemonClientStream *
 daemonCreateClientStream(virNetServerClientPtr client,
@@ -47,4 +47,4 @@ daemonRemoveClientStream(virNetServerClientPtr client,
 void
 daemonRemoveAllClientStreams(daemonClientStream *stream);
 
-#endif /* __LIBVIRTD_STREAM_H__ */
+#endif /* __REMOTE_DAEMON_STREAM_H__ */

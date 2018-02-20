@@ -1,7 +1,7 @@
 /*
- * libvirtd.c: daemon start of day, guest process & i/o management
+ * remote_daemon.c: daemon start of day, guest process & i/o management
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2018 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -40,8 +40,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
-#include "libvirtd.h"
-#include "libvirtd-config.h"
+#include "remote_daemon.h"
+#include "remote_daemon_config.h"
 
 #include "admin/admin_server_dispatch.h"
 #include "viruuid.h"
@@ -50,7 +50,7 @@
 #include "virconf.h"
 #include "virnetlink.h"
 #include "virnetdaemon.h"
-#include "remote.h"
+#include "remote_daemon_dispatch.h"
 #include "virhook.h"
 #include "viraudit.h"
 #include "virstring.h"
@@ -1466,9 +1466,7 @@ int main(int argc, char **argv) {
      */
     if (statuswrite != -1) {
         char status = 0;
-        while (write(statuswrite, &status, 1) == -1 &&
-               errno == EINTR)
-            ;
+        ignore_value(safewrite(statuswrite, &status, 1));
         VIR_FORCE_CLOSE(statuswrite);
     }
 
@@ -1534,9 +1532,7 @@ int main(int argc, char **argv) {
         if (ret != 0) {
             /* Tell parent of daemon what failed */
             char status = ret;
-            while (write(statuswrite, &status, 1) == -1 &&
-                   errno == EINTR)
-                ;
+            ignore_value(safewrite(statuswrite, &status, 1));
         }
         VIR_FORCE_CLOSE(statuswrite);
     }

@@ -16,36 +16,7 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-INCLUDES = \
-	-I$(top_builddir)/gnulib/lib -I$(top_srcdir)/gnulib/lib \
-	-I$(top_srcdir) \
-	-I$(top_builddir)/include -I$(top_srcdir)/include \
-	-I$(top_builddir)/src -I$(top_srcdir)/src \
-	-I$(top_srcdir)/src/util \
-	-I$(top_srcdir)/src/conf \
-	-I$(top_srcdir)/src/rpc \
-	-I$(top_srcdir)/src/remote \
-	-I$(top_srcdir)/src/admin \
-	-I$(top_srcdir)/src/access \
-	$(GETTEXT_CPPFLAGS)
-
 CLEANFILES =
-
-WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
-
-DAEMON_GENERATED = \
-		remote_dispatch.h \
-		lxc_dispatch.h \
-		qemu_dispatch.h \
-		$(NULL)
-
-DAEMON_SOURCES = \
-		libvirtd.c libvirtd.h \
-		remote.c remote.h \
-		stream.c stream.h \
-		$(DAEMON_GENERATED)
-
-LIBVIRTD_CONF_SOURCES = libvirtd-config.c libvirtd-config.h
 
 PODFILES = \
 	libvirtd.pod \
@@ -57,9 +28,6 @@ MANINFILES = \
 
 DISTCLEANFILES =
 EXTRA_DIST = \
-	remote_dispatch.h \
-	lxc_dispatch.h \
-	qemu_dispatch.h \
 	libvirtd.conf \
 	libvirtd.init.in \
 	libvirtd.upstart \
@@ -79,58 +47,13 @@ EXTRA_DIST = \
 	test_libvirtd.aug.in \
 	$(PODFILES) \
 	$(MANINFILES) \
-	$(DAEMON_SOURCES) \
-	$(LIBVIRTD_CONF_SOURCES) \
 	$(NULL)
 
 BUILT_SOURCES =
 
-REMOTE_PROTOCOL = $(top_srcdir)/src/remote/remote_protocol.x
-LXC_PROTOCOL = $(top_srcdir)/src/remote/lxc_protocol.x
-QEMU_PROTOCOL = $(top_srcdir)/src/remote/qemu_protocol.x
-ADMIN_PROTOCOL = $(top_srcdir)/src/admin/admin_protocol.x
-
-remote_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
-	  --mode=server remote REMOTE $(REMOTE_PROTOCOL) \
-	  > $(srcdir)/remote_dispatch.h
-
-lxc_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
-		$(LXC_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
-	  --mode=server lxc LXC $(LXC_PROTOCOL) \
-	  > $(srcdir)/lxc_dispatch.h
-
-qemu_dispatch.h: $(top_srcdir)/src/rpc/gendispatch.pl \
-		$(QEMU_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
-	  --mode=server qemu QEMU $(QEMU_PROTOCOL) \
-	  > $(srcdir)/qemu_dispatch.h
-
 if WITH_LIBVIRTD
 
-# Build a convenience library, for reuse in tests/libvirtdconftest
-noinst_LTLIBRARIES = libvirtd_conf.la
-libvirtd_conf_la_SOURCES = $(LIBVIRTD_CONF_SOURCES)
-libvirtd_conf_la_CFLAGS = \
-	$(LIBXML_CFLAGS) \
-	$(XDR_CFLAGS) \
-	$(WARN_CFLAGS) $(PIE_CFLAGS) \
-	$(COVERAGE_CFLAGS) \
-	$(NULL)
-libvirtd_conf_la_LDFLAGS = \
-	$(RELRO_LDFLAGS) \
-	$(PIE_LDFLAGS) \
-	$(COVERAGE_LDFLAGS) \
-	$(NO_INDIRECT_LDFLAGS) \
-	$(NO_UNDEFINED_LDFLAGS) \
-	$(NULL)
-libvirtd_conf_la_LIBADD = $(LIBXML_LIBS)
-
 man8_MANS = libvirtd.8
-
-sbin_PROGRAMS = libvirtd
 
 confdir = $(sysconfdir)/libvirt/
 conf_DATA = libvirtd.conf
@@ -142,44 +65,6 @@ augeastestsdir = $(datadir)/augeas/lenses/tests
 augeastests_DATA = test_libvirtd.aug
 
 CLEANFILES += test_libvirtd.aug
-
-libvirtd_SOURCES = $(DAEMON_SOURCES)
-
-#-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
-libvirtd_CFLAGS = \
-	$(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
-	$(XDR_CFLAGS) $(DBUS_CFLAGS) $(LIBNL_CFLAGS) \
-	$(WARN_CFLAGS) $(PIE_CFLAGS) \
-	$(COVERAGE_CFLAGS) \
-	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\""
-
-libvirtd_LDFLAGS = \
-	$(RELRO_LDFLAGS) \
-	$(PIE_LDFLAGS) \
-	$(COVERAGE_LDFLAGS) \
-	$(NO_INDIRECT_LDFLAGS) \
-	$(NO_UNDEFINED_LDFLAGS) \
-	$(NULL)
-
-libvirtd_LDADD = \
-	$(LIBXML_LIBS) \
-	$(GNUTLS_LIBS) \
-	$(SASL_LIBS) \
-	$(DBUS_LIBS) \
-	$(LIBNL_LIBS)
-
-if WITH_DTRACE_PROBES
-libvirtd_LDADD += ../src/libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-libvirtd_LDADD += \
-	libvirtd_conf.la \
-	../src/libvirt_driver_admin.la \
-	../src/libvirt-lxc.la \
-	../src/libvirt-qemu.la \
-	$(NULL)
-
-libvirtd_LDADD += ../src/libvirt.la
 
 if WITH_POLKIT
 if WITH_POLKIT0
@@ -237,9 +122,6 @@ else ! WITH_POLKIT
 install-data-polkit::
 uninstall-data-polkit::
 endif ! WITH_POLKIT
-
-remote.c: $(DAEMON_GENERATED)
-remote.h: $(DAEMON_GENERATED)
 
 LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
 		  libvirtd.libxl.logrotate libvirtd.uml.logrotate \
@@ -413,11 +295,6 @@ check-augeas: test_libvirtd.aug
 	  '$(AUGPARSE)' -I $(srcdir) test_libvirtd.aug; \
 	fi
 
-
-# This must be added last, since functions it provides/replaces
-# are used by nearly every other library.
-libvirtd_LDADD += ../gnulib/lib/libgnu.la $(LIBSOCKET)
-
 else ! WITH_LIBVIRTD
 install-data-local: install-data-sasl
 uninstall-local:: uninstall-data-sasl
@@ -461,4 +338,4 @@ endif ! WITH_SASL
 
 CLEANFILES += $(BUILT_SOURCES) $(man8_MANS)
 CLEANFILES += *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
-MAINTAINERCLEANFILES = $(MANINFILES) $(DAEMON_GENERATED)
+MAINTAINERCLEANFILES = $(MANINFILES)

@@ -1,7 +1,7 @@
 /*
- * libvirtd-config.c: daemon start of day, guest process & i/o management
+ * remote_daemon_config.c: libvirtd config file handling
  *
- * Copyright (C) 2006-2012, 2014, 2015 Red Hat, Inc.
+ * Copyright (C) 2006-2018 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -23,15 +23,15 @@
 
 #include <config.h>
 
-#include "libvirtd-config.h"
+#include "remote_daemon_config.h"
 #include "virconf.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "rpc/virnetserver.h"
 #include "configmake.h"
-#include "remote/remote_protocol.h"
-#include "remote/remote_driver.h"
+#include "remote_protocol.h"
+#include "remote_driver.h"
 #include "util/virnetdevopenvswitch.h"
 #include "virstring.h"
 #include "virutil.h"

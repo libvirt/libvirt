@@ -1,7 +1,7 @@
 /*
- * remote.h: handlers for RPC method calls
+ * remote_daemon_dispatch.h: handlers for RPC method calls
  *
- * Copyright (C) 2007, 2008, 2009 Red Hat, Inc.
+ * Copyright (C) 2007-2018 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,8 +21,8 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __LIBVIRTD_REMOTE_H__
-# define __LIBVIRTD_REMOTE_H__
+#ifndef __REMOTE_DAEMON_DISPATCH_H__
+# define __REMOTE_DAEMON_DISPATCH_H__
 
 # include "remote_protocol.h"
 # include "rpc/virnetserverprogram.h"
@@ -42,4 +42,4 @@ void remoteClientFree(void *data);
 void *remoteClientNew(virNetServerClientPtr client,
                       void *opaque);
 
-#endif /* __LIBVIRTD_REMOTE_H__ */
+#endif /* __REMOTE_DAEMON_DISPATCH_H__ */

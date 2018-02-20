@@ -1,7 +1,7 @@
 /*
- * libvirtd.h: daemon data structure definitions
+ * remote_daemon.h: daemon data structure definitions
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2018 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -22,8 +22,8 @@
  */
 
 
-#ifndef LIBVIRTD_H__
-# define LIBVIRTD_H__
+#ifndef __REMOTE_DAEMON_H__
+# define __REMOTE_DAEMON_H__
 
 # define VIR_ENUM_SENTINELS
 
@@ -85,4 +85,4 @@ extern virNetSASLContextPtr saslCtxt;
 extern virNetServerProgramPtr remoteProgram;
 extern virNetServerProgramPtr qemuProgram;
 
-#endif
+#endif /* __REMOTE_DAEMON_H__ */

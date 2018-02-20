@@ -85,6 +85,7 @@ lib_LTLIBRARIES = libvirt.la libvirt-qemu.la libvirt-lxc.la
 
 moddir = $(libdir)/libvirt/connection-driver
 mod_LTLIBRARIES =
+sbin_PROGRAMS =
 
 confdir = $(sysconfdir)/libvirt
 conf_DATA = libvirt.conf libvirt-admin.conf
@@ -537,12 +538,45 @@ remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 	  qemu QEMU $(QEMU_PROTOCOL) \
 	  > $(srcdir)/remote/qemu_client_bodies.h
 
+remote/remote_daemon_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
+		$(REMOTE_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
+	  --mode=server remote REMOTE $(REMOTE_PROTOCOL) \
+	  > $(srcdir)/remote/remote_daemon_dispatch_stubs.h
+
+remote/remote_daemon_dispatch_lxc_stubs.h: $(srcdir)/rpc/gendispatch.pl \
+		$(LXC_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
+	  --mode=server lxc LXC $(LXC_PROTOCOL) \
+	  > $(srcdir)/remote/remote_daemon_dispatch_lxc_stubs.h
+
+remote/remote_daemon_dispatch_qemu_stubs.h: $(srcdir)/rpc/gendispatch.pl \
+		$(QEMU_PROTOCOL) Makefile.am
+	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
+	  --mode=server qemu QEMU $(QEMU_PROTOCOL) \
+	  > $(srcdir)/remote/remote_daemon_dispatch_qemu_stubs.h
+
 REMOTE_DRIVER_SOURCES = \
 		remote/remote_driver.c remote/remote_driver.h \
 		$(REMOTE_DRIVER_GENERATED)
 
+LIBVIRTD_GENERATED = \
+		remote/remote_daemon_dispatch_stubs.h \
+		remote/remote_daemon_dispatch_lxc_stubs.h \
+		remote/remote_daemon_dispatch_qemu_stubs.h \
+		$(NULL)
+
+LIBVIRTD_SOURCES = \
+		remote/remote_daemon.c remote/remote_daemon.h \
+		remote/remote_daemon_config.c remote/remote_daemon_config.h \
+		remote/remote_daemon_dispatch.c remote/remote_daemon_dispatch.h \
+		remote/remote_daemon_stream.c remote/remote_daemon_stream.h \
+		$(LIBVIRTD_GENERATED)
+
 EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
-		$(REMOTE_DRIVER_GENERATED)
+		$(REMOTE_DRIVER_GENERATED) \
+		$(LIBVIRTD_SOURCES) \
+		$(NULL)
 
 ADMIN_PROTOCOL = $(srcdir)/admin/admin_protocol.x
 
@@ -1328,6 +1362,55 @@ libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 BUILT_SOURCES += $(REMOTE_DRIVER_GENERATED)
 
 endif WITH_REMOTE
+
+
+if WITH_LIBVIRTD
+
+sbin_PROGRAMS += libvirtd
+
+BUILT_SOURCES += $(LIBVIRTD_GENERATED)
+
+libvirtd_SOURCES = $(LIBVIRTD_SOURCES)
+
+libvirtd_CFLAGS = \
+	$(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
+	$(XDR_CFLAGS) $(DBUS_CFLAGS) $(LIBNL_CFLAGS) \
+	$(WARN_CFLAGS) $(PIE_CFLAGS) \
+	$(COVERAGE_CFLAGS) \
+	-I$(srcdir)/access \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/rpc \
+	$(NULL)
+
+libvirtd_LDFLAGS = \
+	$(RELRO_LDFLAGS) \
+	$(PIE_LDFLAGS) \
+	$(COVERAGE_LDFLAGS) \
+	$(NO_INDIRECT_LDFLAGS) \
+	$(NO_UNDEFINED_LDFLAGS) \
+	$(NULL)
+
+libvirtd_LDADD = \
+	$(LIBXML_LIBS) \
+	$(GNUTLS_LIBS) \
+	$(SASL_LIBS) \
+	$(DBUS_LIBS) \
+	$(LIBNL_LIBS) \
+	$(NULL)
+
+if WITH_DTRACE_PROBES
+libvirtd_LDADD += ../src/libvirt_probes.lo
+endif WITH_DTRACE_PROBES
+
+libvirtd_LDADD += \
+	libvirt_driver_admin.la \
+	libvirt-lxc.la \
+	libvirt-qemu.la \
+	libvirt.la \
+	../gnulib/lib/libgnu.la $(LIBSOCKET) \
+	$(NULL)
+
+endif WITH_LIBVIRTD
 
 %protocol.c: %protocol.x %protocol.h $(srcdir)/rpc/genprotocol.pl
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -c \
@@ -2620,7 +2703,7 @@ locking/%-lockd.conf: $(srcdir)/locking/lockd.conf
 	cp $< $@
 
 
-sbin_PROGRAMS = virtlockd virtlogd
+sbin_PROGRAMS += virtlockd virtlogd
 
 virtlockd_SOURCES = \
 		$(LOCK_DAEMON_SOURCES) \
@@ -3370,4 +3453,8 @@ endif WITH_NETWORK
 
 CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
 DISTCLEANFILES += $(GENERATED_SYM_FILES)
-MAINTAINERCLEANFILES += $(REMOTE_DRIVER_GENERATED) $(VIR_NET_RPC_GENERATED)
+MAINTAINERCLEANFILES += \
+	$(REMOTE_DRIVER_GENERATED) \
+	$(LIBVIRTD_GENERATED) \
+	$(VIR_NET_RPC_GENERATED) \
+	$(NULL)

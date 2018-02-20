@@ -32,8 +32,7 @@ gnulib_dir = $(srcdir)/.gnulib
 # List of additional files that we want to pick up in our POTFILES.in
 # This is all gnulib files, as well as generated files for RPC code.
 generated_files = \
-  $(srcdir)/daemon/{lxc,qemu,remote}_dispatch.h \
-  $(srcdir)/src/*/{admin_server,log_daemon,lock_daemon}_dispatch_stubs.h \
+  $(srcdir)/src/*/{remote_daemon,admin_server,log_daemon,lock_daemon}_dispatch_*stubs.h \
   $(srcdir)/src/lxc/{lxc_monitor,lxc_controller}_dispatch.h \
   $(srcdir)/src/remote/*_client_bodies.h \
   $(srcdir)/src/*/*_protocol.[ch] \
@@ -1116,15 +1115,15 @@ test-wrap-argv:
 
 # sc_po_check can fail if generated files are not built first
 sc_po_check: \
-		$(srcdir)/daemon/remote_dispatch.h \
-		$(srcdir)/daemon/qemu_dispatch.h \
+		$(srcdir)/src/remote/remote_daemon_dispatch_stubs.h \
+		$(srcdir)/src/remote/remote_daemon_dispatch_qemu_stubs.h \
 		$(srcdir)/src/remote/remote_client_bodies.h \
 		$(srcdir)/src/admin/admin_server_dispatch_stubs.h \
 		$(srcdir)/src/admin/admin_client.h
-$(srcdir)/daemon/remote_dispatch.h: $(srcdir)/src/remote/remote_protocol.x
-	$(MAKE) -C daemon remote_dispatch.h
-$(srcdir)/daemon/qemu_dispatch.h: $(srcdir)/src/remote/qemu_protocol.x
-	$(MAKE) -C daemon qemu_dispatch.h
+$(srcdir)/src/remote/remote_daemon_dispatch_stubs.h: $(srcdir)/src/remote/remote_protocol.x
+	$(MAKE) -C src remote/remote_daemon_dispatch_stubs.h
+$(srcdir)/src/remote/remote_daemon_dispatch_qemu_stubs.h: $(srcdir)/src/remote/qemu_protocol.x
+	$(MAKE) -C src remote/remote_daemon_dispatch_qemu_stubs.h
 $(srcdir)/src/remote/remote_client_bodies.h: $(srcdir)/src/remote/remote_protocol.x
 	$(MAKE) -C src remote/remote_client_bodies.h
 $(srcdir)/src/admin/admin_server_dispatch_stubs.h: $(srcdir)/src/admin/admin_protocol.x
@@ -1138,7 +1137,7 @@ exclude_file_name_regexp--sc_avoid_strcase = ^tools/vsh\.h$$
 _src1=libvirt-stream|qemu/qemu_monitor|util/vir(command|file|fdstream)|xen/xend_internal|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon
 _test1=shunloadtest|virnettlscontexttest|virnettlssessiontest|vircgroupmock|commandhelper
 exclude_file_name_regexp--sc_avoid_write = \
-  ^(src/($(_src1))|daemon/libvirtd|tools/virsh-console|tests/($(_test1)))\.c$$
+  ^(src/($(_src1))|tools/virsh-console|tests/($(_test1)))\.c$$
 
 exclude_file_name_regexp--sc_bindtextdomain = .*
 
@@ -1159,7 +1158,7 @@ exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
 exclude_file_name_regexp--sc_po_check = ^(docs/|src/rpc/gendispatch\.pl$$)
 
 exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
-  ^(cfg\.mk|include/libvirt/virterror\.h|daemon/dispatch\.c|src/util/virerror\.c|docs/internals/oomtesting\.html\.in)$$
+  ^(cfg\.mk|include/libvirt/virterror\.h|src/remote/remote_daemon_dispatch\.c|src/util/virerror\.c|docs/internals/oomtesting\.html\.in)$$
 
 exclude_file_name_regexp--sc_prohibit_PATH_MAX = \
 	^cfg\.mk$$
@@ -1179,9 +1178,9 @@ exclude_file_name_regexp--sc_prohibit_close = \
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
   (^tests/(qemuhelp|virhostcpu|virpcitest)data/|docs/js/.*\.js|docs/fonts/.*\.woff|\.diff|tests/virconfdata/no-newline\.conf$$)
 
-_src2=src/(util/vircommand|libvirt|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon)
+_src2=src/(util/vircommand|libvirt|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon|remote/remote_daemon)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
-  (^($(_src2)|tests/testutils|daemon/libvirtd)\.c$$)
+  (^($(_src2)|tests/testutils)\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/vir(util|log)\.c$$
 
