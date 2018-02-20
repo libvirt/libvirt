@@ -2702,24 +2702,30 @@ uninstall-sysconfig:
 	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/virtlockd
 	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
 
-EXTRA_DIST += locking/virtlockd.init.in logging/virtlogd.init.in
+SYSVINIT_FILES_IN = \
+	locking/virtlockd.init.in \
+	logging/virtlogd.init.in \
+	$(NULL)
+
+SYSVINIT_FILES = $(notdir $(SYSVINIT_FILES_IN:%.in=%))
+
+EXTRA_DIST += $(SYSVINIT_FILES_IN)
 
 if WITH_LIBVIRTD
 if LIBVIRT_INIT_SCRIPT_RED_HAT
-install-init:: virtlockd.init virtlogd.init install-sysconfig
+install-init:: $(SYSVINIT_FILES) install-sysconfig
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/rc.d/init.d
-	$(INSTALL_SCRIPT) virtlockd.init \
-	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/virtlockd
-	$(INSTALL_SCRIPT) virtlogd.init \
-	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/virtlogd
+	for f in $(SYSVINIT_FILES:%.init=%) ; \
+	do \
+	  $(INSTALL_SCRIPT) $$f.init $(DESTDIR)$(sysconfdir)/rc.d/init.d/$$f; \
+	done
 
 uninstall-init:: uninstall-sysconfig
-	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/virtlockd
-	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/virtlogd
+	rm -f $(SYSVINIT_FILES:%.init=$(DESTDIR)$(sysconfdir)/rc.d/init.d/%)
 	rmdir $(DESTDIR)$(sysconfdir)/rc.d/init.d || :
 
-BUILT_SOURCES += virtlockd.init virtlogd.init
-DISTCLEANFILES += virtlockd.init virtlogd.init
+BUILT_SOURCES += $(SYSVINIT_FILES)
+DISTCLEANFILES += $(SYSVINIT_FILES)
 else ! LIBVIRT_INIT_SCRIPT_RED_HAT
 install-init::
 uninstall-init::
