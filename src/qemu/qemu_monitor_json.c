@@ -464,40 +464,68 @@ qemuMonitorJSONHasError(virJSONValuePtr reply,
 }
 
 
-/* Top-level commands and nested transaction list elements share a
- * common structure for everything except the dictionary names.  */
-static virJSONValuePtr ATTRIBUTE_SENTINEL
-qemuMonitorJSONMakeCommandRaw(bool wrap, const char *cmdname, ...)
+/**
+ * qemuMonitorJSONMakeCommandInternal:
+ * @cmdname: QMP command name
+ * @arguments: a JSON object containing command arguments or NULL
+ * @transaction: format the command as arguments for the 'transaction' command
+ *
+ * Create a JSON object used on the QMP monitor to call a command. If
+ * @transaction is true, the returned object is formatted to be used as a member
+ * of the 'transaction' command.
+ *
+ * Note that @arguments is always consumed and should not be referenced after
+ * the call to this function.
+ */
+static virJSONValuePtr
+qemuMonitorJSONMakeCommandInternal(const char *cmdname,
+                                   virJSONValuePtr arguments,
+                                   bool transaction)
 {
-    virJSONValuePtr obj;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr ret = NULL;
+
+    if (!transaction) {
+        if (virJSONValueObjectCreate(&cmd,
+                                     "s:execute", cmdname,
+                                     "A:arguments", &arguments, NULL) < 0)
+            goto cleanup;
+    } else {
+        if (virJSONValueObjectCreate(&cmd,
+                                     "s:type", cmdname,
+                                     "A:data", &arguments, NULL) < 0)
+            goto cleanup;
+    }
+
+    VIR_STEAL_PTR(ret, cmd);
+
+ cleanup:
+    virJSONValueFree(arguments);
+    virJSONValueFree(cmd);
+    return ret;
+}
+
+
+static virJSONValuePtr ATTRIBUTE_SENTINEL
+qemuMonitorJSONMakeCommandRaw(bool transaction,
+                              const char *cmdname,
+                              ...)
+{
+    virJSONValuePtr obj = NULL;
     virJSONValuePtr jargs = NULL;
     va_list args;
 
     va_start(args, cmdname);
 
-    if (!(obj = virJSONValueNewObject()))
-        goto error;
-
-    if (virJSONValueObjectAppendString(obj, wrap ? "type" : "execute",
-                                       cmdname) < 0)
-        goto error;
-
     if (virJSONValueObjectCreateVArgs(&jargs, args) < 0)
-        goto error;
+        goto cleanup;
 
-    if (jargs &&
-        virJSONValueObjectAppend(obj, wrap ? "data" : "arguments", jargs) < 0)
-        goto error;
+    obj = qemuMonitorJSONMakeCommandInternal(cmdname, jargs, transaction);
 
+ cleanup:
     va_end(args);
 
     return obj;
-
- error:
-    virJSONValueFree(obj);
-    virJSONValueFree(jargs);
-    va_end(args);
-    return NULL;
 }
 
 #define qemuMonitorJSONMakeCommand(cmdname, ...) \
