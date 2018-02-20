@@ -164,7 +164,16 @@ void virReportSystemErrorFull(int domcode,
 # define virReportRestrictedError(...) \
     virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_OPERATION_DENIED, \
                          __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
-
+/* The sizeof(...) comparison here is a hack to catch typos
+ * in the name of the enum by triggering a compile error, as well
+ * as detecting if you passed a typename that refers to a function
+ * or struct type, instead of an enum. It should get optimized away
+ * since sizeof() is known at compile time  */
+# define virReportEnumRangeError(typname, value) \
+    virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INTERNAL_ERROR, \
+                         __FILE__, __FUNCTION__, __LINE__, \
+                         "Unexpected enum value %d for %s", \
+                         value, sizeof((typename)1) != 0 ? #typname : #typname);
 
 void virReportOOMErrorFull(int domcode,
                            const char *filename,
