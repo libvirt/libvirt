@@ -21,14 +21,9 @@ CLEANFILES =
 DISTCLEANFILES =
 EXTRA_DIST = \
 	libvirtd.conf \
-	libvirtd.init.in \
-	libvirtd.upstart \
 	libvirtd.policy.in \
 	libvirt.rules \
 	libvirtd.sasl \
-	libvirtd.service.in \
-	virt-guest-shutdown.target \
-	libvirtd.sysconf \
 	libvirtd.sysctl \
 	libvirtd.aug \
 	libvirtd.logrotate.in \
@@ -73,17 +68,13 @@ libvirtd.policy: libvirtd.policy.in $(top_builddir)/config.status
 	mv $@-t $@
 BUILT_SOURCES += libvirtd.policy
 
-install-data-local: install-init-redhat install-init-systemd \
-		install-init-upstart \
-		install-data-sasl install-data-polkit \
+install-data-local: install-data-sasl install-data-polkit \
 		install-logrotate install-sysctl
 	$(MKDIR_P) $(DESTDIR)$(localstatedir)/log/libvirt \
 		   $(DESTDIR)$(localstatedir)/run/libvirt \
 		   $(DESTDIR)$(localstatedir)/lib/libvirt
 
-uninstall-local:: uninstall-init-redhat uninstall-init-systemd \
-		uninstall-init-upstart \
-		uninstall-data-sasl uninstall-data-polkit \
+uninstall-local:: uninstall-data-sasl uninstall-data-polkit \
 		uninstall-logrotate uninstall-sysctl
 	rmdir $(DESTDIR)$(localstatedir)/log/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/run/libvirt || :
@@ -174,14 +165,6 @@ uninstall-logrotate:
 	rmdir $(DESTDIR)$(localstatedir)/log/libvirt/uml || :
 	rmdir $(DESTDIR)$(sysconfdir)/logrotate.d || :
 
-install-sysconfig:
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysconfig
-	$(INSTALL_DATA) $(srcdir)/libvirtd.sysconf \
-	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
-uninstall-sysconfig:
-	rm -f $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
-	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
-
 if WITH_SYSCTL
 # Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
 # /usr/lib/sysctl.d/ even when libdir is /usr/lib64
@@ -197,79 +180,6 @@ else ! WITH_SYSCTL
 install-sysctl:
 uninstall-sysctl:
 endif ! WITH_SYSCTL
-
-if LIBVIRT_INIT_SCRIPT_RED_HAT
-
-BUILT_SOURCES += libvirtd.init
-
-install-init-redhat: install-sysconfig libvirtd.init
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/rc.d/init.d
-	$(INSTALL_SCRIPT) libvirtd.init \
-	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
-
-uninstall-init-redhat: uninstall-sysconfig
-	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
-	rmdir $(DESTDIR)$(sysconfdir)/rc.d/init.d || :
-else ! LIBVIRT_INIT_SCRIPT_RED_HAT
-install-init-redhat:
-uninstall-init-redhat:
-endif ! LIBVIRT_INIT_SCRIPT_RED_HAT
-
-
-if LIBVIRT_INIT_SCRIPT_UPSTART
-
-install-init-upstart: install-sysconfig
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/event.d
-	$(INSTALL_SCRIPT) libvirtd.upstart \
-	  $(DESTDIR)$(sysconfdir)/event.d/libvirtd
-
-uninstall-init-upstart: uninstall-sysconfig
-	rm -f $(DESTDIR)$(sysconfdir)/event.d/libvirtd
-	rmdir $(DESTDIR)$(sysconfdir)/event.d || :
-else ! LIBVIRT_INIT_SCRIPT_UPSTART
-install-init-upstart:
-uninstall-init-upstart:
-endif ! LIBVIRT_INIT_SCRIPT_UPSTART
-
-
-if LIBVIRT_INIT_SCRIPT_SYSTEMD
-
-SYSTEMD_UNIT_DIR = $(prefix)/lib/systemd/system
-BUILT_SOURCES += libvirtd.service
-
-install-init-systemd: install-sysconfig libvirtd.service
-	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
-	$(INSTALL_DATA) libvirtd.service \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
-	$(INSTALL_DATA) $(srcdir)/virt-guest-shutdown.target \
-	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virt-guest-shutdown.target
-
-uninstall-init-systemd: uninstall-sysconfig
-	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virt-guest-shutdown.target
-	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
-	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR) || :
-else ! LIBVIRT_INIT_SCRIPT_SYSTEMD
-install-init-systemd:
-uninstall-init-systemd:
-endif ! LIBVIRT_INIT_SCRIPT_SYSTEMD
-
-libvirtd.init: libvirtd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    chmod a+x $@-t && \
-	    mv $@-t $@
-
-libvirtd.service: libvirtd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
 
 check-local: check-augeas
 

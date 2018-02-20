@@ -2769,6 +2769,7 @@ endif ! WITH_LIBVIRTD
 SYSCONF_FILES = \
 	locking/virtlockd.sysconf \
 	logging/virtlogd.sysconf \
+	remote/libvirtd.sysconf \
 	$(NULL)
 
 EXTRA_DIST += \
@@ -2797,6 +2798,7 @@ uninstall-sysconfig:
 SYSVINIT_FILES_IN = \
 	locking/virtlockd.init.in \
 	logging/virtlogd.init.in \
+	remote/libvirtd.init.in \
 	$(NULL)
 
 SYSVINIT_FILES = $(notdir $(SYSVINIT_FILES_IN:%.in=%))
@@ -2826,6 +2828,15 @@ else ! WITH_LIBVIRTD
 install-init::
 uninstall-init::
 endif ! WITH_LIBVIRTD
+
+libvirtd.init: remote/libvirtd.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    < $< > $@-t && \
+	    chmod a+x $@-t && \
+	    mv $@-t $@
 
 virtlockd.init: locking/virtlockd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
@@ -2913,6 +2924,8 @@ SYSTEMD_UNIT_FILES_IN = \
 	logging/virtlogd.service.in \
 	logging/virtlogd.socket.in \
 	logging/virtlogd-admin.socket.in \
+	remote/libvirtd.service.in \
+	remote/virt-guest-shutdown.target.in \
 	$(NULL)
 
 EXTRA_DIST += \
@@ -2956,6 +2969,18 @@ install-systemd:
 uninstall-systemd:
 endif ! WITH_LIBVIRTD
 
+libvirtd.service: remote/libvirtd.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    < $< > $@-t && \
+	    mv $@-t $@
+
+virt-guest-shutdown.target: remote/virt-guest-shutdown.target.in \
+			$(top_builddir)/config.status
+	$(AM_V_GEN)cp $< $@
+
 virtlockd.service: locking/virtlockd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
 	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
@@ -2994,6 +3019,39 @@ virtlogd-admin.socket: logging/virtlogd-admin.socket.in \
 	    < $< > $@-t && \
 	    mv $@-t $@
 
+
+UPSTART_FILES = \
+	remote/libvirtd.upstart \
+	$(NULL)
+
+EXTRA_DIST += $(UPSTART_FILES)
+
+if WITH_LIBVIRTD
+if LIBVIRT_INIT_SCRIPT_UPSTART
+
+install-upstart: install-sysconfig
+	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/event.d
+	for f in $(UPSTART_FILES:%.upstart=%); \
+	do \
+	  tgt=`basename $$f` ; \
+	  $(INSTALL_SCRIPT) $$f.upstart $(DESTDIR)$(sysconfdir)/event.d/$$tgt ; \
+	done
+
+uninstall-upstart: uninstall-sysconfig
+	for f in $(UPSTART_FILES:%.upstart=%); \
+	do \
+	  tgt=`basename $$f` ; \
+	  rm -f $(DESTDIR)$(sysconfdir)/event.d/$$tgt ; \
+	done
+	rmdir $(DESTDIR)$(sysconfdir)/event.d || :
+else ! LIBVIRT_INIT_SCRIPT_UPSTART
+install-upstart:
+uninstall-upstart:
+endif ! LIBVIRT_INIT_SCRIPT_UPSTART
+else ! WITH_LIBVIRTD
+install-upstart:
+uninstall-upstart:
+endif ! WITH_LIBVIRTD
 
 if WITH_SANLOCK
 lockdriver_LTLIBRARIES += sanlock.la
@@ -3363,7 +3421,7 @@ libvirt_nss_la_LIBADD = \
 endif WITH_NSS
 
 
-install-data-local: install-init install-systemd
+install-data-local: install-init install-systemd install-upstart
 if WITH_LIBVIRTD
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files"
@@ -3418,7 +3476,7 @@ if WITH_NETWORK
 	  $(LN_S) ../default.xml default.xml )
 endif WITH_NETWORK
 
-uninstall-local:: uninstall-init uninstall-systemd
+uninstall-local:: uninstall-init uninstall-systemd uninstall-upstart
 if WITH_LIBVIRTD
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd" ||:
