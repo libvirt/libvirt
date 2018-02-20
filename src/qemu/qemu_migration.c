@@ -1335,7 +1335,7 @@ qemuMigrationOptionSet(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
 
-    if (!qemuMigrationAnyCapsGet(vm, capability)) {
+    if (!qemuMigrationCapsGet(vm, capability)) {
         if (!state) {
             /* Unsupported but we want it off anyway */
             return 0;
@@ -3869,7 +3869,7 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
         goto error;
 
-    if (qemuMigrationAnyCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER) &&
+    if (qemuMigrationCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER) &&
         qemuMigrationOptionSet(driver, vm,
                                QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER,
                                true, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
@@ -6095,7 +6095,7 @@ qemuMigrationParamsReset(virQEMUDriverPtr driver,
         goto cleanup;
 
     for (cap = 0; cap < QEMU_MONITOR_MIGRATION_CAPS_LAST; cap++) {
-        if (qemuMigrationAnyCapsGet(vm, cap) &&
+        if (qemuMigrationCapsGet(vm, cap) &&
             qemuMigrationOptionSet(driver, vm, cap, false, job) < 0)
             goto cleanup;
     }
@@ -6160,8 +6160,8 @@ qemuMigrationSrcFetchMirrorStats(virQEMUDriverPtr driver,
 
 
 bool
-qemuMigrationAnyCapsGet(virDomainObjPtr vm,
-                        qemuMonitorMigrationCaps cap)
+qemuMigrationCapsGet(virDomainObjPtr vm,
+                     qemuMonitorMigrationCaps cap)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool enabled = false;
