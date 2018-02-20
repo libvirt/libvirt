@@ -15,7 +15,7 @@
     <pae/>
     <hap state='off'/>
   </features>
-  <clock offset='variable' adjustment='0' basis='utc'>
+  <clock offset='variable' adjustment='3600' basis='localtime'>
     <timer name='tsc' present='yes' mode='native'/>
   </clock>
   <on_poweroff>destroy</on_poweroff>

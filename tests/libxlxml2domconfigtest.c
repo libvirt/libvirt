@@ -188,6 +188,7 @@ mymain(void)
 
     DO_TEST("basic-pv");
     DO_TEST("basic-hvm");
+    DO_TEST("variable-clock-hvm");
     DO_TEST("moredevs-hvm");
     DO_TEST("vnuma-hvm");
     DO_TEST("multiple-ip");
