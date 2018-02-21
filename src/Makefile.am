@@ -98,6 +98,7 @@ include xen/Makefile.inc.am
 include xenapi/Makefile.inc.am
 include vz/Makefile.inc.am
 include lxc/Makefile.inc.am
+include interface/Makefile.inc.am
 
 
 THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
@@ -788,7 +789,6 @@ check-drivername:
 EXTRA_DIST += check-drivername.pl
 
 DRIVER_SOURCE_FILES += \
-	$(INTERFACE_DRIVER_SOURCES) \
 	$(NETWORK_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
@@ -800,7 +800,6 @@ DRIVER_SOURCE_FILES += \
 	$(NULL)
 
 STATEFUL_DRIVER_SOURCE_FILES += \
-	$(INTERFACE_DRIVER_SOURCES) \
 	$(NETWORK_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_SOURCES) \
 	$(NWFILTER_DRIVER_SOURCES) \
@@ -844,23 +843,6 @@ NETWORK_DRIVER_SOURCES = \
 		network/bridge_driver_platform.c \
 		$(NULL)
 EXTRA_DIST += network/bridge_driver_linux.c network/bridge_driver_nop.c
-
-INTERFACE_DRIVER_SOURCES =
-
-if WITH_INTERFACE
-INTERFACE_DRIVER_SOURCES += \
-		interface/interface_driver.h \
-		interface/interface_driver.c
-
-if WITH_NETCF
-INTERFACE_DRIVER_SOURCES += \
-		interface/interface_backend_netcf.c
-endif WITH_NETCF
-if WITH_UDEV
-INTERFACE_DRIVER_SOURCES += \
-		interface/interface_backend_udev.c
-endif WITH_UDEV
-endif WITH_INTERFACE
 
 SECRET_UTIL_SOURCES = \
 		secret/secret_util.h secret/secret_util.c
@@ -1215,26 +1197,6 @@ endif WITH_NETWORK
 EXTRA_DIST += network/default.xml
 
 
-if WITH_INTERFACE
-mod_LTLIBRARIES += libvirt_driver_interface.la
-libvirt_driver_interface_la_CFLAGS = \
-		-I$(srcdir)/access \
-		-I$(srcdir)/conf \
-		$(AM_CFLAGS) $(LIBNL_CFLAGS)
-libvirt_driver_interface_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-libvirt_driver_interface_la_LIBADD = libvirt.la
-if WITH_NETCF
-libvirt_driver_interface_la_CFLAGS += $(NETCF_CFLAGS)
-libvirt_driver_interface_la_LIBADD += $(NETCF_LIBS)
-endif WITH_NETCF
-if WITH_UDEV
-libvirt_driver_interface_la_CFLAGS += $(UDEV_CFLAGS)
-libvirt_driver_interface_la_LIBADD += $(UDEV_LIBS)
-endif WITH_UDEV
-libvirt_driver_interface_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_interface_la_SOURCES = $(INTERFACE_DRIVER_SOURCES)
-endif WITH_INTERFACE
-
 if WITH_SECRETS
 mod_LTLIBRARIES += libvirt_driver_secret.la
 libvirt_driver_secret_la_CFLAGS = \
@@ -1577,7 +1539,6 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 EXTRA_DIST += \
 		$(REMOTE_DRIVER_SOURCES) \
 		$(NETWORK_DRIVER_SOURCES) \
-		$(INTERFACE_DRIVER_SOURCES) \
 		$(STORAGE_DRIVER_SOURCES) \
 		$(STORAGE_DRIVER_FS_SOURCES) \
 		$(STORAGE_DRIVER_LVM_SOURCES) \
