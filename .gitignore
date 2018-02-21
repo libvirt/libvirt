@@ -61,7 +61,6 @@
 /conftest.*
 /daemon/libvirtd*.logrotate
 /daemon/libvirtd.policy
-/daemon/test_libvirtd.aug
 /docs/aclperms.htmlinc
 /docs/apibuild.py.stamp
 /docs/devhelp/libvirt.devhelp

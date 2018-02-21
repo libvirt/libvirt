@@ -20,34 +20,20 @@ CLEANFILES =
 
 DISTCLEANFILES =
 EXTRA_DIST = \
-	libvirtd.conf \
 	libvirtd.policy.in \
 	libvirt.rules \
 	libvirtd.sasl \
 	libvirtd.sysctl \
-	libvirtd.aug \
 	libvirtd.logrotate.in \
 	libvirtd.qemu.logrotate.in \
 	libvirtd.lxc.logrotate.in \
 	libvirtd.libxl.logrotate.in \
 	libvirtd.uml.logrotate.in \
-	test_libvirtd.aug.in \
 	$(NULL)
 
 BUILT_SOURCES =
 
 if WITH_LIBVIRTD
-
-confdir = $(sysconfdir)/libvirt/
-conf_DATA = libvirtd.conf
-
-augeasdir = $(datadir)/augeas/lenses
-augeas_DATA = libvirtd.aug
-
-augeastestsdir = $(datadir)/augeas/lenses/tests
-augeastests_DATA = test_libvirtd.aug
-
-CLEANFILES += test_libvirtd.aug
 
 if WITH_POLKIT
 if WITH_POLKIT0
@@ -180,18 +166,6 @@ else ! WITH_SYSCTL
 install-sysctl:
 uninstall-sysctl:
 endif ! WITH_SYSCTL
-
-check-local: check-augeas
-
-AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
-
-test_libvirtd.aug: test_libvirtd.aug.in $(srcdir)/libvirtd.conf
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/libvirtd.conf $< $@
-
-check-augeas: test_libvirtd.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	  '$(AUGPARSE)' -I $(srcdir) test_libvirtd.aug; \
-	fi
 
 else ! WITH_LIBVIRTD
 install-data-local: install-data-sasl

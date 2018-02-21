@@ -1370,6 +1370,14 @@ sbin_PROGRAMS += libvirtd
 
 BUILT_SOURCES += $(LIBVIRTD_GENERATED)
 
+augeas_DATA += remote/libvirtd.aug
+
+augeastest_DATA += test_libvirtd.aug
+
+conf_DATA += remote/libvirtd.conf
+
+CLEANFILES += tets_libvirtd.aug
+
 libvirtd_SOURCES = $(LIBVIRTD_SOURCES)
 
 libvirtd_CFLAGS = \
@@ -1411,6 +1419,11 @@ libvirtd_LDADD += \
 	$(NULL)
 
 endif WITH_LIBVIRTD
+EXTRA_DIST += \
+	remote/test_libvirtd.aug.in \
+	remote/libvirtd.aug \
+	remote/libvirtd.conf \
+	$(NULL)
 
 %protocol.c: %protocol.x %protocol.h $(srcdir)/rpc/genprotocol.pl
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -c \
@@ -2149,11 +2162,12 @@ check-local: check-augeas
 	check-augeas-lockd \
 	check-augeas-libxl \
 	check-augeas-bhyve \
+	check-augeas-libvirtd \
 	$(NULL)
 
 check-augeas: check-augeas-qemu check-augeas-lxc check-augeas-sanlock \
 	check-augeas-lockd check-augeas-virtlockd check-augeas-libxl \
-	check-augeas-bhyve check-augeas-virtlogd
+	check-augeas-bhyve check-augeas-virtlogd check-augeas-libvirtd
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
@@ -2258,6 +2272,18 @@ check-augeas-virtlogd: test_virtlogd.aug
 	    '$(AUGPARSE)' -I $(srcdir)/logging test_virtlogd.aug; \
 	fi
 
+if WITH_LIBVIRTD
+test_libvirtd.aug: remote/test_libvirtd.aug.in \
+		remote/libvirtd.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) remote/libvirtd.conf $< $@
+
+check-augeas-libvirtd: test_libvirtd.aug
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
+	    '$(AUGPARSE)' -I $(srcdir)/remote test_libvirtd.aug; \
+	fi
+else ! WITH_LIBVIRTD
+check-augeas-libvirtd:
+endif ! WITH_LIBVIRTD
 #
 # Build our version script.  This is composed of three parts:
 #
