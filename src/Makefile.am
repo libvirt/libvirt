@@ -81,6 +81,15 @@ tapset_DATA =
 endif WITH_DTRACE_PROBES
 libexec_PROGRAMS =
 RPC_PROBE_FILES =
+LOGROTATE_FILES_IN =
+PODFILES =
+MANINFILES =
+SYSTEMD_UNIT_FILES_IN =
+SYSVINIT_FILES_IN =
+UPSTART_FILES =
+SYSCONF_FILES =
+sbin_PROGRAMS =
+man8_MANS =
 
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
@@ -104,6 +113,7 @@ include nwfilter/Makefile.inc.am
 include node_device/Makefile.inc.am
 include secret/Makefile.inc.am
 include storage/Makefile.inc.am
+include remote/Makefile.inc.am
 
 
 THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
@@ -123,7 +133,6 @@ endif WITH_SECDRIVER_APPARMOR
 lib_LTLIBRARIES = libvirt.la libvirt-qemu.la libvirt-lxc.la
 
 moddir = $(libdir)/libvirt/connection-driver
-sbin_PROGRAMS =
 
 confdir = $(sysconfdir)/libvirt
 conf_DATA += libvirt.conf libvirt-admin.conf
@@ -538,81 +547,6 @@ CONF_SOURCES = \
 		$(CHRDEV_CONF_SOURCES) \
 		$(DEVICE_CONF_SOURCES)
 
-# The remote RPC driver, covering domains, storage, networks, etc
-REMOTE_DRIVER_GENERATED = \
-		remote/remote_protocol.c \
-		remote/remote_protocol.h \
-		remote/remote_client_bodies.h \
-		remote/lxc_protocol.c \
-		remote/lxc_protocol.h \
-		remote/lxc_client_bodies.h \
-		remote/qemu_protocol.c \
-		remote/qemu_protocol.h \
-		remote/qemu_client_bodies.h \
-		$(NULL)
-
-REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
-LXC_PROTOCOL = $(srcdir)/remote/lxc_protocol.x
-QEMU_PROTOCOL = $(srcdir)/remote/qemu_protocol.x
-REMOTE_DRIVER_PROTOCOL = $(REMOTE_PROTOCOL) $(QEMU_PROTOCOL) $(LXC_PROTOCOL)
-
-remote/remote_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  remote REMOTE $(REMOTE_PROTOCOL) \
-	  > $(srcdir)/remote/remote_client_bodies.h
-
-remote/lxc_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
-		$(LXC_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  lxc LXC $(LXC_PROTOCOL) \
-	  > $(srcdir)/remote/lxc_client_bodies.h
-
-remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
-		$(QEMU_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  qemu QEMU $(QEMU_PROTOCOL) \
-	  > $(srcdir)/remote/qemu_client_bodies.h
-
-remote/remote_daemon_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
-	  --mode=server remote REMOTE $(REMOTE_PROTOCOL) \
-	  > $(srcdir)/remote/remote_daemon_dispatch_stubs.h
-
-remote/remote_daemon_dispatch_lxc_stubs.h: $(srcdir)/rpc/gendispatch.pl \
-		$(LXC_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
-	  --mode=server lxc LXC $(LXC_PROTOCOL) \
-	  > $(srcdir)/remote/remote_daemon_dispatch_lxc_stubs.h
-
-remote/remote_daemon_dispatch_qemu_stubs.h: $(srcdir)/rpc/gendispatch.pl \
-		$(QEMU_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
-	  --mode=server qemu QEMU $(QEMU_PROTOCOL) \
-	  > $(srcdir)/remote/remote_daemon_dispatch_qemu_stubs.h
-
-REMOTE_DRIVER_SOURCES = \
-		remote/remote_driver.c remote/remote_driver.h \
-		$(REMOTE_DRIVER_GENERATED)
-
-LIBVIRTD_GENERATED = \
-		remote/remote_daemon_dispatch_stubs.h \
-		remote/remote_daemon_dispatch_lxc_stubs.h \
-		remote/remote_daemon_dispatch_qemu_stubs.h \
-		$(NULL)
-
-LIBVIRTD_SOURCES = \
-		remote/remote_daemon.c remote/remote_daemon.h \
-		remote/remote_daemon_config.c remote/remote_daemon_config.h \
-		remote/remote_daemon_dispatch.c remote/remote_daemon_dispatch.h \
-		remote/remote_daemon_stream.c remote/remote_daemon_stream.h \
-		$(LIBVIRTD_GENERATED)
-
-EXTRA_DIST +=  $(REMOTE_DRIVER_PROTOCOL) \
-		$(REMOTE_DRIVER_GENERATED) \
-		$(LIBVIRTD_SOURCES) \
-		$(NULL)
 
 ADMIN_PROTOCOL = $(srcdir)/admin/admin_protocol.x
 
@@ -790,10 +724,6 @@ check-drivername:
 
 EXTRA_DIST += check-drivername.pl
 
-DRIVER_SOURCE_FILES += \
-	$(REMOTE_DRIVER_SOURCES) \
-	$(NULL)
-
 check-driverimpls:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-driverimpls.pl \
 		$(filter /%,$(DRIVER_SOURCE_FILES)) \
@@ -958,105 +888,7 @@ GENERATED_SYM_FILES += \
 	libvirt_admin.syms libvirt_admin.def \
 	$(NULL)
 
-if WITH_REMOTE
-noinst_LTLIBRARIES += libvirt_driver_remote.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_remote.la
-libvirt_driver_remote_la_CFLAGS = \
-		$(XDR_CFLAGS) \
-		-I$(srcdir)/conf \
-		-I$(srcdir)/rpc \
-		$(AM_CFLAGS)
-libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
-BUILT_SOURCES += $(REMOTE_DRIVER_GENERATED)
-
-endif WITH_REMOTE
-
-
-if WITH_LIBVIRTD
-
-sbin_PROGRAMS += libvirtd
-
-BUILT_SOURCES += $(LIBVIRTD_GENERATED)
-
-augeas_DATA += remote/libvirtd.aug
-
-augeastest_DATA += test_libvirtd.aug
-
-conf_DATA += remote/libvirtd.conf
-
-CLEANFILES += test_libvirtd.aug
-
-if WITH_POLKIT
-if WITH_POLKIT0
-policydir = $(datadir)/PolicyKit/policy
-policyauth = auth_admin_keep_session
-else ! WITH_POLKIT0
-policydir = $(datadir)/polkit-1/actions
-policyauth = auth_admin_keep
-endif ! WITH_POLKIT0
-endif WITH_POLKIT
-
-BUILT_SOURCES += libvirtd.policy
-CLEANFILES += libvirtd.policy
-
-libvirtd.policy: remote/libvirtd.policy.in $(top_builddir)/config.status
-	$(AM_V_GEN) sed \
-	    -e 's|[@]authaction[@]|$(policyauth)|g' \
-	    < $< > $@-t && \
-	mv $@-t $@
-
-libvirtd_SOURCES = $(LIBVIRTD_SOURCES)
-
-libvirtd_CFLAGS = \
-	$(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
-	$(XDR_CFLAGS) $(DBUS_CFLAGS) $(LIBNL_CFLAGS) \
-	$(WARN_CFLAGS) $(PIE_CFLAGS) \
-	$(COVERAGE_CFLAGS) \
-	-I$(srcdir)/access \
-	-I$(srcdir)/conf \
-	-I$(srcdir)/rpc \
-	$(NULL)
-
-libvirtd_LDFLAGS = \
-	$(RELRO_LDFLAGS) \
-	$(PIE_LDFLAGS) \
-	$(COVERAGE_LDFLAGS) \
-	$(NO_INDIRECT_LDFLAGS) \
-	$(NO_UNDEFINED_LDFLAGS) \
-	$(NULL)
-
-libvirtd_LDADD = \
-	libvirt-lxc.la \
-	libvirt-qemu.la \
-	libvirt.la \
-	$(LIBXML_LIBS) \
-	$(GNUTLS_LIBS) \
-	$(SASL_LIBS) \
-	$(DBUS_LIBS) \
-	$(LIBNL_LIBS) \
-	$(NULL)
-
-if WITH_DTRACE_PROBES
-libvirtd_LDADD += ../src/libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-libvirtd_LDADD += \
-	libvirt_driver_admin.la \
-	../gnulib/lib/libgnu.la $(LIBSOCKET) \
-	$(NULL)
-
-endif WITH_LIBVIRTD
-EXTRA_DIST += \
-	remote/test_libvirtd.aug.in \
-	remote/libvirtd.aug \
-	remote/libvirtd.conf \
-	remote/libvirtd.policy.in \
-	remote/libvirtd.rules \
-	remote/libvirtd.sasl \
-	remote/libvirtd.sysctl \
-	$(NULL)
 
 %protocol.c: %protocol.x %protocol.h $(srcdir)/rpc/genprotocol.pl
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -c \
@@ -1181,7 +1013,6 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 
 # Add all conditional sources just in case...
 EXTRA_DIST += \
-		$(REMOTE_DRIVER_SOURCES) \
 		$(SECURITY_DRIVER_SELINUX_SOURCES) \
 		$(SECURITY_DRIVER_APPARMOR_SOURCES) \
 		$(ACCESS_DRIVER_POLKIT_POLICY)
@@ -1191,13 +1022,12 @@ check-local: check-augeas
 .PHONY: check-augeas \
 	check-augeas-sanlock \
 	check-augeas-lockd \
-	check-augeas-libvirtd \
 	$(NULL)
 
 check-augeas: $(AUGEAS_DIRS:%=check-augeas-%) \
 	check-augeas-sanlock \
 	check-augeas-lockd check-augeas-virtlockd \
-	check-augeas-virtlogd check-augeas-libvirtd
+	check-augeas-virtlogd
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
@@ -1252,18 +1082,6 @@ check-augeas-virtlogd: test_virtlogd.aug
 	    '$(AUGPARSE)' -I $(srcdir)/logging test_virtlogd.aug; \
 	fi
 
-if WITH_LIBVIRTD
-test_libvirtd.aug: remote/test_libvirtd.aug.in \
-		remote/libvirtd.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/remote/libvirtd.conf $< $@
-
-check-augeas-libvirtd: test_libvirtd.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/remote test_libvirtd.aug; \
-	fi
-else ! WITH_LIBVIRTD
-check-augeas-libvirtd:
-endif ! WITH_LIBVIRTD
 #
 # Build our version script.  This is composed of three parts:
 #
@@ -1290,12 +1108,6 @@ USED_SYM_FILES += $(srcdir)/libvirt_linux.syms
 else ! WITH_LINUX
 SYM_FILES += $(srcdir)/libvirt_linux.syms
 endif ! WITH_LINUX
-
-if WITH_REMOTE
-USED_SYM_FILES += $(srcdir)/libvirt_remote.syms
-else ! WITH_REMOTE
-SYM_FILES += $(srcdir)/libvirt_remote.syms
-endif ! WITH_REMOTE
 
 if WITH_VMX
 USED_SYM_FILES += $(srcdir)/libvirt_vmx.syms
@@ -1739,10 +1551,9 @@ EXTRA_DIST += $(LOCK_DAEMON_SOURCES) \
 	      $(LOG_DAEMON_SOURCES)
 endif ! WITH_LIBVIRTD
 
-SYSCONF_FILES = \
+SYSCONF_FILES += \
 	locking/virtlockd.sysconf \
 	logging/virtlogd.sysconf \
-	remote/libvirtd.sysconf \
 	$(NULL)
 
 EXTRA_DIST += \
@@ -1769,29 +1580,18 @@ uninstall-sysconfig:
 	done
 	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
 
-SYSVINIT_FILES_IN = \
+SYSVINIT_FILES_IN += \
 	locking/virtlockd.init.in \
 	logging/virtlogd.init.in \
-	remote/libvirtd.init.in \
 	$(NULL)
 
 SYSVINIT_FILES = $(notdir $(SYSVINIT_FILES_IN:%.in=%))
 
 EXTRA_DIST += $(SYSVINIT_FILES_IN)
 
-LOGROTATE_FILES_IN = \
-	remote/libvirtd.qemu.logrotate.in \
-	remote/libvirtd.lxc.logrotate.in \
-	remote/libvirtd.libxl.logrotate.in \
-	remote/libvirtd.uml.logrotate.in \
-	remote/libvirtd.logrotate.in \
-	$(NULL)
+LOGROTATE_FILES := $(LOGROTATE_FILES_IN:remote/%.in=%)
 
 EXTRA_DIST += $(LOGROTATE_FILES_IN)
-
-if WITH_LIBVIRTD
-
-LOGROTATE_FILES := $(LOGROTATE_FILES_IN:remote/%.in=%)
 
 BUILT_SOURCES += $(LOGROTATE_FILES)
 CLEANFILES += $(LOGROTATE_FILES)
@@ -1802,6 +1602,7 @@ CLEANFILES += $(LOGROTATE_FILES)
 	    < $< > $@-t && \
 	mv $@-t $@
 
+if WITH_LIBVIRTD
 install-logrotate: $(LOGROTATE_FILES)
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/logrotate.d/
 	for f in $(LOGROTATE_FILES) ; \
@@ -1814,45 +1615,10 @@ install-logrotate: $(LOGROTATE_FILES)
 uninstall-logrotate:
 	rm -f $(LOGROTATE_FILES:%.logrotate=$(DESTDIR)$(sysconfdir)/logrotate.d/%)
 	rmdir $(DESTDIR)$(sysconfdir)/logrotate.d || :
-
-if WITH_SYSCTL
-# Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
-# /usr/lib/sysctl.d/ even when libdir is /usr/lib64
-install-sysctl:
-	$(MKDIR_P) $(DESTDIR)$(prefix)/lib/sysctl.d
-	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.sysctl \
-	  $(DESTDIR)$(prefix)/lib/sysctl.d/60-libvirtd.conf
-
-uninstall-sysctl:
-	rm -f $(DESTDIR)$(prefix)/lib/sysctl.d/60-libvirtd.conf
-	rmdir $(DESTDIR)$(prefix)/lib/sysctl.d || :
-else ! WITH_SYSCTL
-install-sysctl:
-uninstall-sysctl:
-endif ! WITH_SYSCTL
-
-if WITH_POLKIT
-install-polkit::
-	$(MKDIR_P) $(DESTDIR)$(policydir)
-	$(INSTALL_DATA) libvirtd.policy $(DESTDIR)$(policydir)/org.libvirt.unix.policy
-if ! WITH_POLKIT0
-	$(MKDIR_P) $(DESTDIR)$(datadir)/polkit-1/rules.d
-	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.rules \
-		$(DESTDIR)$(datadir)/polkit-1/rules.d/50-libvirt.rules
-endif ! WITH_POLKIT0
-
-uninstall-polkit::
-	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
-	rmdir $(DESTDIR)$(policydir) || :
-if ! WITH_POLKIT0
-	rm -f $(DESTDIR)$(datadir)/polkit-1/rules.d/50-libvirt.rules
-	rmdir $(DESTDIR)$(datadir)/polkit-1/rules.d || :
-endif ! WITH_POLKIT0
-
-else ! WITH_POLKIT
-install-polkit::
-uninstall-polkit::
-endif ! WITH_POLKIT
+else ! WITH_LIBVIRTD
+install-logrotate:
+uninstall-logrotate:
+endif ! WITH_LIBVIRTD
 
 if LIBVIRT_INIT_SCRIPT_RED_HAT
 install-init:: $(SYSVINIT_FILES) install-sysconfig
@@ -1872,42 +1638,7 @@ else ! LIBVIRT_INIT_SCRIPT_RED_HAT
 install-init::
 uninstall-init::
 endif ! LIBVIRT_INIT_SCRIPT_RED_HAT
-else ! WITH_LIBVIRTD
-install-polkit::
-uninstall-polkit::
-install-sysctl::
-uninstall-sysctl::
-install-init::
-uninstall-init::
-install-logrotate::
-uninstall-logrotate::
-endif ! WITH_LIBVIRTD
 
-# This is needed for clients too, so can't wrap in
-# the WITH_LIBVIRTD conditional
-if WITH_SASL
-install-sasl:
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sasl2/
-	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.sasl \
-		$(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
-
-uninstall-sasl:
-	rm -f $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
-	rmdir $(DESTDIR)$(sysconfdir)/sasl2/ || :
-else ! WITH_SASL
-install-sasl:
-uninstall-sasl:
-endif ! WITH_SASL
-
-
-libvirtd.init: remote/libvirtd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    chmod a+x $@-t && \
-	    mv $@-t $@
 
 virtlockd.init: locking/virtlockd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
@@ -1947,16 +1678,6 @@ virtlogd.8.in: logging/virtlogd.pod
 	rm -f $@-t1 && \
 	mv $@-t2 $@
 
-libvirtd.8.in: remote/libvirtd.pod
-	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
-	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
-	sed \
-		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
-		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
-		< $@-t1 > $@-t2 && \
-	rm -f $@-t1 && \
-	mv $@-t2 $@
-
 %.8: %.8.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)sed \
 		-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
@@ -1965,7 +1686,7 @@ libvirtd.8.in: remote/libvirtd.pod
 	mv $@-t $@
 
 if WITH_LIBVIRTD
-man8_MANS = virtlockd.8 virtlogd.8 libvirtd.8
+man8_MANS += virtlockd.8 virtlogd.8
 
 conf_DATA += locking/virtlockd.conf logging/virtlogd.conf
 
@@ -1973,30 +1694,26 @@ augeas_DATA += locking/virtlockd.aug logging/virtlogd.aug
 augeastest_DATA += test_virtlockd.aug test_virtlogd.aug
 endif WITH_LIBVIRTD
 
-PODFILES = \
+PODFILES += \
 	locking/virtlockd.pod \
 	logging/virtlogd.pod \
-	remote/libvirtd.pod \
 	$(NULL)
 
-MANINFILES = \
+MANINFILES += \
 	virtlockd.8.in \
 	virtlogd.8.in \
-	libvirtd.8.in \
 	$(NULL)
 
 CLEANFILES += test_virtlockd.aug test_virtlogd.aug $(man8_MANS)
 MAINTAINERCLEANFILES += $(MANINFILES)
 
-SYSTEMD_UNIT_FILES_IN = \
+SYSTEMD_UNIT_FILES_IN += \
 	locking/virtlockd.service.in \
 	locking/virtlockd.socket.in \
 	locking/virtlockd-admin.socket.in \
 	logging/virtlogd.service.in \
 	logging/virtlogd.socket.in \
 	logging/virtlogd-admin.socket.in \
-	remote/libvirtd.service.in \
-	remote/virt-guest-shutdown.target.in \
 	$(NULL)
 
 EXTRA_DIST += \
@@ -2040,18 +1757,6 @@ install-systemd:
 uninstall-systemd:
 endif ! WITH_LIBVIRTD
 
-libvirtd.service: remote/libvirtd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
-virt-guest-shutdown.target: remote/virt-guest-shutdown.target.in \
-			$(top_builddir)/config.status
-	$(AM_V_GEN)cp $< $@
-
 virtlockd.service: locking/virtlockd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
 	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
@@ -2090,10 +1795,6 @@ virtlogd-admin.socket: logging/virtlogd-admin.socket.in \
 	    < $< > $@-t && \
 	    mv $@-t $@
 
-
-UPSTART_FILES = \
-	remote/libvirtd.upstart \
-	$(NULL)
 
 EXTRA_DIST += $(UPSTART_FILES)
 
@@ -2408,7 +2109,6 @@ install-data-local: install-init install-systemd install-upstart \
 		install-sysctl install-polkit install-sasl \
 		install-logrotate $(INSTALL_DATA_DIRS:%=install-data-%)
 if WITH_LIBVIRTD
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lockd"
@@ -2425,7 +2125,6 @@ uninstall-local:: uninstall-init uninstall-systemd uninstall-upstart \
 		uninstall-sysctl uninstall-polkit uninstall-sasl \
 		uninstall-logrotate $(INSTALL_DATA_DIRS:%=uninstall-data-%)
 if WITH_LIBVIRTD
-	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lockd" ||:
@@ -2442,7 +2141,5 @@ endif WITH_SANLOCK
 CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
 DISTCLEANFILES += $(GENERATED_SYM_FILES)
 MAINTAINERCLEANFILES += \
-	$(REMOTE_DRIVER_GENERATED) \
-	$(LIBVIRTD_GENERATED) \
 	$(VIR_NET_RPC_GENERATED) \
 	$(NULL)
