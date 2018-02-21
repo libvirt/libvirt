@@ -102,6 +102,7 @@ include interface/Makefile.inc.am
 include network/Makefile.inc.am
 include nwfilter/Makefile.inc.am
 include node_device/Makefile.inc.am
+include secret/Makefile.inc.am
 
 
 THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
@@ -790,12 +791,10 @@ EXTRA_DIST += check-drivername.pl
 
 DRIVER_SOURCE_FILES += \
 	$(REMOTE_DRIVER_SOURCES) \
-	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
 	$(NULL)
 
 STATEFUL_DRIVER_SOURCE_FILES += \
-	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
 	$(NULL)
 
@@ -829,12 +828,6 @@ SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
 		$(DATATYPES_SOURCES) \
 		security/virt-aa-helper.c
 
-
-SECRET_UTIL_SOURCES = \
-		secret/secret_util.h secret/secret_util.c
-
-SECRET_DRIVER_SOURCES = \
-		secret/secret_driver.h secret/secret_driver.c
 
 # Storage backend specific impls
 STORAGE_DRIVER_BACKEND_SOURCES = \
@@ -988,12 +981,6 @@ libvirt_cpu_la_CFLAGS = \
 		-I$(srcdir)/conf $(AM_CFLAGS)
 libvirt_cpu_la_SOURCES = $(CPU_SOURCES)
 
-noinst_LTLIBRARIES += libvirt_secret.la
-libvirt_la_BUILT_LIBADD += libvirt_secret.la
-libvirt_secret_la_CFLAGS = $(AM_CFLAGS)
-libvirt_secret_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_secret_la_SOURCES = $(SECRET_UTIL_SOURCES)
-
 if WITH_VMX
 noinst_LTLIBRARIES += libvirt_vmx.la
 libvirt_la_BUILT_LIBADD += libvirt_vmx.la
@@ -1132,18 +1119,6 @@ EXTRA_DIST += \
 	       $< $(srcdir)/$(subst $(srcdir)/,,$@)
 
 
-
-
-if WITH_SECRETS
-mod_LTLIBRARIES += libvirt_driver_secret.la
-libvirt_driver_secret_la_CFLAGS = \
-		-I$(srcdir)/access \
-		-I$(srcdir)/conf \
-		$(AM_CFLAGS)
-libvirt_driver_secret_la_LIBADD = libvirt.la ../gnulib/lib/libgnu.la
-libvirt_driver_secret_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-libvirt_driver_secret_la_SOURCES = $(SECRET_DRIVER_SOURCES)
-endif WITH_SECRETS
 
 # Needed to keep automake quiet about conditionals
 libvirt_driver_storage_impl_la_SOURCES =
@@ -1440,8 +1415,6 @@ EXTRA_DIST += \
 		$(STORAGE_DRIVER_VSTORAGE_SOURCES) \
 		$(SECURITY_DRIVER_SELINUX_SOURCES) \
 		$(SECURITY_DRIVER_APPARMOR_SOURCES) \
-		$(SECRET_DRIVER_SOURCES) \
-		$(SECRET_UTIL_SOURCES) \
 		$(ACCESS_DRIVER_POLKIT_POLICY)
 
 check-local: check-augeas
