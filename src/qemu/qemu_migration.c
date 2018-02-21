@@ -2471,9 +2471,9 @@ qemuMigrationParamsSetEmptyTLS(virQEMUDriverPtr driver,
 
 
 qemuMonitorMigrationParamsPtr
-qemuMigrationParams(virTypedParameterPtr params,
-                    int nparams,
-                    unsigned long flags)
+qemuMigrationParamsFromFlags(virTypedParameterPtr params,
+                             int nparams,
+                             unsigned long flags)
 {
     qemuMonitorMigrationParamsPtr migParams;
 
