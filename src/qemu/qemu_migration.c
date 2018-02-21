@@ -369,7 +369,8 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
                                const char *listenAddr,
                                size_t nmigrate_disks,
                                const char **migrate_disks,
-                               int nbdPort)
+                               int nbdPort,
+                               const char *tls_alias)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -411,7 +412,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
             else if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
                 goto exit_monitor;
 
-            if (qemuMonitorNBDServerStart(priv->mon, listenAddr, port, NULL) < 0)
+            if (qemuMonitorNBDServerStart(priv->mon, listenAddr, port, tls_alias) < 0)
                 goto exit_monitor;
         }
 
@@ -2401,9 +2402,21 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     if (mig->nbd &&
         flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
+        const char *nbdTLSAlias = NULL;
+
+        if (flags & VIR_MIGRATE_TLS) {
+            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_TLS)) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("QEMU NBD server does not support TLS transport"));
+                goto stopjob;
+            }
+
+            nbdTLSAlias = tlsAlias;
+        }
+
         if (qemuMigrationDstStartNBDServer(driver, vm, incoming->address,
                                            nmigrate_disks, migrate_disks,
-                                           nbdPort) < 0) {
+                                           nbdPort, nbdTLSAlias) < 0) {
             goto stopjob;
         }
         cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
