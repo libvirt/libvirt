@@ -91,7 +91,9 @@ SYSCONF_FILES =
 sbin_PROGRAMS =
 man8_MANS =
 DRIVER_SOURCES =
+man7_MANS =
 
+include util/Makefile.inc.am
 include conf/Makefile.inc.am
 include cpu/Makefile.inc.am
 include security/Makefile.inc.am
@@ -150,185 +152,6 @@ augeasdir = $(datadir)/augeas/lenses
 
 augeastestdir = $(datadir)/augeas/lenses/tests
 
-# These files are not related to driver APIs. Simply generic
-# helper APIs for various purposes
-UTIL_SOURCES = \
-		util/viralloc.c util/viralloc.h \
-		util/virarch.h util/virarch.c \
-		util/viratomic.h util/viratomic.c \
-		util/viraudit.c util/viraudit.h \
-		util/virauth.c util/virauth.h \
-		util/virauthconfig.c util/virauthconfig.h \
-		util/virbitmap.c util/virbitmap.h \
-		util/virbuffer.c util/virbuffer.h \
-		util/virperf.c util/virperf.h \
-		util/vircgroup.c util/vircgroup.h util/vircgrouppriv.h \
-		util/virclosecallbacks.c util/virclosecallbacks.h \
-		util/vircommand.c util/vircommand.h util/vircommandpriv.h \
-		util/virconf.c util/virconf.h \
-		util/vircrypto.c util/vircrypto.h \
-		util/virdbus.c util/virdbus.h util/virdbuspriv.h \
-		util/virdnsmasq.c util/virdnsmasq.h \
-		util/virebtables.c util/virebtables.h \
-		util/virendian.h \
-		util/virerror.c util/virerror.h \
-		util/virevent.c util/virevent.h \
-		util/vireventpoll.c util/vireventpoll.h \
-		util/virfcp.c util/virfcp.h \
-		util/virfdstream.c util/virfdstream.h \
-		util/virfile.c util/virfile.h \
-		util/virfirewall.c util/virfirewall.h \
-		util/virfirewallpriv.h \
-		util/virfirmware.c util/virfirmware.h \
-		util/virgettext.c util/virgettext.h \
-		util/virgic.c util/virgic.h \
-		util/virhash.c util/virhash.h \
-		util/virhashcode.c util/virhashcode.h \
-		util/virhook.c util/virhook.h \
-		util/virhostcpu.c util/virhostcpu.h util/virhostcpupriv.h \
-		util/virhostdev.c util/virhostdev.h \
-		util/virhostmem.c util/virhostmem.h \
-		util/viridentity.c util/viridentity.h \
-		util/virinitctl.c util/virinitctl.h \
-		util/viriptables.c util/viriptables.h \
-		util/viriscsi.c util/viriscsi.h \
-		util/virjson.c util/virjson.h \
-		util/virkeycode.c util/virkeycode.h \
-		util/virkeyfile.c util/virkeyfile.h \
-		util/virlease.c util/virlease.h \
-		util/virlockspace.c util/virlockspace.h \
-		util/virlog.c util/virlog.h \
-		util/virmacaddr.h util/virmacaddr.c \
-		util/virmacmap.h util/virmacmap.c \
-		util/virnetdev.h util/virnetdev.c \
-		util/virnetdevbandwidth.h util/virnetdevbandwidth.c \
-		util/virnetdevbridge.h util/virnetdevbridge.c \
-		util/virnetdevip.h util/virnetdevip.c \
-		util/virnetdevmacvlan.c util/virnetdevmacvlan.h \
-		util/virnetdevmidonet.h util/virnetdevmidonet.c \
-		util/virnetdevopenvswitch.h util/virnetdevopenvswitch.c \
-		util/virnetdevtap.h util/virnetdevtap.c \
-		util/virnetdevveth.h util/virnetdevveth.c \
-		util/virnetdevvlan.h util/virnetdevvlan.c \
-		util/virnetdevvportprofile.h util/virnetdevvportprofile.c \
-		util/virnetlink.c util/virnetlink.h \
-		util/virnodesuspend.c util/virnodesuspend.h \
-		util/virkmod.c util/virkmod.h \
-		util/virnuma.c util/virnuma.h \
-		util/virobject.c util/virobject.h \
-		util/virpci.c util/virpci.h \
-		util/virpidfile.c util/virpidfile.h \
-		util/virpolkit.c util/virpolkit.h \
-		util/virportallocator.c util/virportallocator.h \
-		util/virprobe.h \
-		util/virprocess.c util/virprocess.h \
-		util/virqemu.c util/virqemu.h \
-		util/virrandom.h util/virrandom.c \
-		util/virresctrl.h util/virresctrl.c util/virresctrlpriv.h \
-		util/virrotatingfile.h util/virrotatingfile.c \
-		util/virscsi.c util/virscsi.h \
-		util/virscsihost.c util/virscsihost.h \
-		util/virscsivhost.c util/virscsivhost.h \
-		util/virseclabel.c util/virseclabel.h \
-		util/virsecret.c util/virsecret.h \
-		util/virsexpr.c util/virsexpr.h \
-		util/virsocketaddr.h util/virsocketaddr.c \
-		util/virstorageencryption.c util/virstorageencryption.h \
-		util/virstoragefile.c util/virstoragefile.h \
-		util/virstoragefilebackend.c util/virstoragefilebackend.h \
-		util/virstring.h util/virstring.c \
-		util/virsysinfo.c util/virsysinfo.h util/virsysinfopriv.h \
-		util/virsystemd.c util/virsystemd.h util/virsystemdpriv.h \
-		util/virthread.c util/virthread.h \
-		util/virthreadjob.c util/virthreadjob.h \
-		util/virthreadpool.c util/virthreadpool.h \
-		util/virtime.h util/virtime.c \
-		util/virtpm.h util/virtpm.c \
-		util/virtypedparam.c util/virtypedparam.h \
-		util/virusb.c util/virusb.h \
-		util/viruri.h util/viruri.c \
-		util/virutil.c util/virutil.h \
-		util/viruuid.c util/viruuid.h \
-		util/virvhba.c util/virvhba.h \
-		util/virxdrdefs.h \
-		util/virxml.c util/virxml.h \
-		util/virmdev.c util/virmdev.h \
-		util/virfilecache.c util/virfilecache.h \
-		$(NULL)
-
-EXTRA_DIST += \
-	$(srcdir)/keycodemapdb/data/keymaps.csv \
-	$(srcdir)/keycodemapdb/tools/keymap-gen \
-	$(NULL)
-
-util/virkeycodetable_%.h: $(srcdir)/keycodemapdb/data/keymaps.csv \
-			$(srcdir)/keycodemapdb/tools/keymap-gen Makefile.am
-	$(AM_V_GEN)export NAME=`echo $@ | sed -e 's,util/virkeycodetable_,,' \
-					      -e 's,\.h,,'` && \
-		$(MKDIR_P) util/ && \
-		$(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-			--lang stdc --varname virKeyCodeTable_$$NAME code-table \
-			$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > $@-tmp && \
-		mv $@-tmp $@ || rm -f $@-tmp
-
-util/virkeynametable_%.h: $(srcdir)/keycodemapdb/data/keymaps.csv \
-			$(srcdir)/keycodemapdb/tools/keymap-gen Makefile.am
-	$(AM_V_GEN)export NAME=`echo $@ | sed -e 's,util/virkeynametable_,,' \
-					      -e 's,\.h,,'` && \
-		$(MKDIR_P) util/ && \
-		$(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-			--lang stdc --varname virKeyNameTable_$$NAME name-table \
-			$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > $@-tmp && \
-		mv $@-tmp $@ || rm -f $@-tmp
-
-util/virkeycode-%.pod: $(srcdir)/keycodemapdb/data/keymaps.csv \
-			$(srcdir)/keycodemapdb/tools/keymap-gen Makefile.am
-	$(AM_V_GEN)export NAME=`echo $@ | sed -e 's,util/virkeycode-,,' \
-					      -e 's,\.pod,,'` && \
-		$(MKDIR_P) util/ && \
-		$(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-		--lang pod --varname "Key code values for $$NAME" code-docs \
-		$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > \
-			$@-tmp && mv $@-tmp $@ || rm $@-tmp
-
-util/virkeyname-%.pod: $(srcdir)/keycodemapdb/data/keymaps.csv \
-			$(srcdir)/keycodemapdb/tools/keymap-gen Makefile.am
-	$(AM_V_GEN)export NAME=`echo $@ | sed -e 's,util/virkeyname-,,' \
-					      -e 's,\.pod,,'` && \
-		$(MKDIR_P) util/ && \
-		$(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-		--lang pod --varname "Key name values for $$NAME" name-docs \
-		$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > \
-			$@-tmp && mv $@-tmp $@ || rm $@-tmp
-
-util/virkey%.7: util/virkey%.pod
-	$(AM_V_GEN)$(POD2MAN) --section=7 $< $@-t1 && \
-	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
-	sed \
-		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
-		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
-		< $@-t1 > $@-t2 && \
-	rm -f $@-t1 && \
-	mv $@-t2 $@
-
-KEYCODES = linux osx atset1 atset2 atset3 xtkbd usb win32 rfb
-KEYNAMES = linux osx win32
-
-KEYTABLES = \
-	$(KEYCODES:%=util/virkeycodetable_%.h) \
-	$(KEYNAMES:%=util/virkeynametable_%.h) \
-	$(NULL)
-
-KEYPODS = $(KEYCODES:%=util/virkeycode-%.pod) \
-	  $(KEYNAMES:%=util/virkeyname-%.pod)
-KEYMANS = $(KEYPODS:%.pod=%.7)
-
-man7_MANS = $(KEYMANS)
-
-UTIL_SOURCES += $(KEYTABLES)
-BUILT_SOURCES += $(KEYTABLES)
-MAINTAINERCLEANFILES += $(KEYTABLES)
-CLEANFILES += $(KEYMANS) $(KEYPODS)
 
 # Internal generic driver infrastructure
 DATATYPES_SOURCES = datatypes.h datatypes.c
@@ -538,12 +361,6 @@ check-local: check-protocol check-symfile check-symsorting \
 
 
 
-
-UTIL_IO_HELPER_SOURCES = \
-		util/iohelper.c
-
-
-
 VMX_SOURCES = \
 		vmx/vmx.c vmx/vmx.h
 
@@ -557,21 +374,6 @@ EXTRA_DIST +=	$(pkgdata_DATA)
 # Build up list of libvirt.la source files based on configure conditions
 #
 # First deal with sources usable in non-daemon context
-
-noinst_LTLIBRARIES += libvirt_util.la
-libvirt_la_LIBADD = $(libvirt_la_BUILT_LIBADD)
-libvirt_la_BUILT_LIBADD += libvirt_util.la
-libvirt_util_la_SOURCES = \
-		$(UTIL_SOURCES)
-libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
-		$(AM_CFLAGS) $(AUDIT_CFLAGS) $(DEVMAPPER_CFLAGS) \
-		$(DBUS_CFLAGS) $(LDEXP_LIBM) $(NUMACTL_CFLAGS) \
-		$(POLKIT_CFLAGS) $(GNUTLS_CFLAGS) $(ACL_CFLAGS)
-libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
-		$(THREAD_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
-		$(LIB_CLOCK_GETTIME) $(DBUS_LIBS) $(WIN32_EXTRA_LIBS) $(LIBXML_LIBS) \
-		$(SECDRIVER_LIBS) $(NUMACTL_LIBS) $(ACL_LIBS) \
-		$(POLKIT_LIBS) $(GNUTLS_LIBS)
 
 
 if WITH_VMX
