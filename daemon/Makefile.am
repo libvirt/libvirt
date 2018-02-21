@@ -77,7 +77,6 @@ EXTRA_DIST = \
 	libvirtd.libxl.logrotate.in \
 	libvirtd.uml.logrotate.in \
 	test_libvirtd.aug.in \
-	THREADS.txt \
 	$(PODFILES) \
 	$(MANINFILES) \
 	$(DAEMON_SOURCES) \
