@@ -99,6 +99,7 @@ include access/Makefile.inc.am
 include logging/Makefile.inc.am
 include locking/Makefile.inc.am
 include admin/Makefile.inc.am
+include rpc/Makefile.inc.am
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
 include test/Makefile.inc.am
@@ -1123,113 +1124,8 @@ uninstall-upstart:
 endif ! WITH_LIBVIRTD
 
 
-noinst_LTLIBRARIES += \
-	libvirt-net-rpc.la \
-	libvirt-net-rpc-server.la \
-	libvirt-net-rpc-client.la
+EXTRA_DIST += dtrace2systemtap.pl
 
-libvirt_la_BUILT_LIBADD += \
-       libvirt-net-rpc.la \
-       libvirt-net-rpc-server.la \
-       libvirt-net-rpc-client.la
-
-EXTRA_DIST += \
-	dtrace2systemtap.pl \
-	rpc/gendispatch.pl \
-	rpc/genprotocol.pl \
-	rpc/gensystemtap.pl \
-	rpc/virnetprotocol.x \
-	rpc/virkeepaliveprotocol.x
-
-VIR_NET_RPC_GENERATED = \
-	rpc/virnetprotocol.h \
-	rpc/virnetprotocol.c \
-	rpc/virkeepaliveprotocol.h \
-	rpc/virkeepaliveprotocol.c
-
-BUILT_SOURCES += $(VIR_NET_RPC_GENERATED)
-
-libvirt_net_rpc_la_SOURCES = \
-	rpc/virnetmessage.h rpc/virnetmessage.c \
-	rpc/virnetsocket.h rpc/virnetsocket.c \
-	rpc/virkeepalive.h rpc/virkeepalive.c \
-	$(VIR_NET_RPC_GENERATED)
-if WITH_SSH2
-libvirt_net_rpc_la_SOURCES += \
-	rpc/virnetsshsession.h rpc/virnetsshsession.c
-else ! WITH_SSH2
-EXTRA_DIST += \
-	rpc/virnetsshsession.h rpc/virnetsshsession.c
-endif ! WITH_SSH2
-if WITH_GNUTLS
-libvirt_net_rpc_la_SOURCES += \
-	rpc/virnettlscontext.h rpc/virnettlscontext.c
-else ! WITH_GNUTLS
-EXTRA_DIST += \
-	rpc/virnettlscontext.h rpc/virnettlscontext.c
-endif ! WITH_GNUTLS
-if WITH_SASL
-libvirt_net_rpc_la_SOURCES += \
-	rpc/virnetsaslcontext.h rpc/virnetsaslcontext.c
-else ! WITH_SASL
-EXTRA_DIST += \
-	rpc/virnetsaslcontext.h rpc/virnetsaslcontext.c
-endif ! WITH_SASL
-if WITH_LIBSSH
-libvirt_net_rpc_la_SOURCES += \
-	rpc/virnetlibsshsession.h rpc/virnetlibsshsession.c
-else ! WITH_LIBSSH
-EXTRA_DIST += \
-	rpc/virnetlibsshsession.h rpc/virnetlibsshsession.c
-endif ! WITH_LIBSSH
-libvirt_net_rpc_la_CFLAGS = \
-			$(GNUTLS_CFLAGS) \
-			$(SASL_CFLAGS) \
-			$(SSH2_CFLAGS) \
-			$(LIBSSH_CFLAGS) \
-			$(XDR_CFLAGS) \
-			$(AM_CFLAGS)
-libvirt_net_rpc_la_LDFLAGS = \
-			$(GNUTLS_LIBS) \
-			$(SASL_LIBS) \
-			$(SSH2_LIBS)\
-			$(LIBSSH_LIBS) \
-			$(SECDRIVER_LIBS) \
-			$(AM_LDFLAGS) \
-			$(NULL)
-libvirt_net_rpc_la_LIBADD = \
-			$(CYGWIN_EXTRA_LIBADD)
-
-libvirt_net_rpc_server_la_SOURCES = \
-	rpc/virnetserverprogram.h rpc/virnetserverprogram.c \
-	rpc/virnetserverservice.h rpc/virnetserverservice.c \
-	rpc/virnetserverclient.h rpc/virnetserverclient.c \
-	rpc/virnetservermdns.h rpc/virnetservermdns.c \
-	rpc/virnetdaemon.h rpc/virnetdaemon.c \
-	rpc/virnetserver.h rpc/virnetserver.c
-libvirt_net_rpc_server_la_CFLAGS = \
-			$(AVAHI_CFLAGS) \
-			$(DBUS_CFLAGS) \
-			$(XDR_CFLAGS) \
-			$(AM_CFLAGS)
-libvirt_net_rpc_server_la_LDFLAGS = \
-			$(AM_LDFLAGS) \
-			$(AVAHI_LIBS) \
-			$(DBUS_LIBS) \
-			$(NULL)
-libvirt_net_rpc_server_la_LIBADD = \
-			$(CYGWIN_EXTRA_LIBADD)
-
-libvirt_net_rpc_client_la_SOURCES = \
-	rpc/virnetclientprogram.h rpc/virnetclientprogram.c \
-	rpc/virnetclientstream.h rpc/virnetclientstream.c \
-	rpc/virnetclient.h rpc/virnetclient.c
-libvirt_net_rpc_client_la_CFLAGS = \
-			$(AM_CFLAGS) \
-			$(XDR_CFLAGS)
-libvirt_net_rpc_client_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_net_rpc_client_la_LIBADD = \
-			$(CYGWIN_EXTRA_LIBADD)
 
 if WITH_LIBVIRTD
 libexec_PROGRAMS += libvirt_iohelper
@@ -1343,6 +1239,3 @@ uninstall-local:: uninstall-init uninstall-systemd uninstall-upstart \
 
 CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
 DISTCLEANFILES += $(GENERATED_SYM_FILES)
-MAINTAINERCLEANFILES += \
-	$(VIR_NET_RPC_GENERATED) \
-	$(NULL)
