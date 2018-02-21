@@ -1,0 +1,67 @@
+XEN_DRIVER_SOURCES = \
+	xen/block_stats.c \
+	xen/block_stats.h \
+	xen/xen_hypervisor.c \
+	xen/xen_hypervisor.h \
+	xen/xen_driver.c \
+	xen/xen_driver.h \
+	xen/xend_internal.c \
+	xen/xend_internal.h \
+	xen/xm_internal.c \
+	xen/xm_internal.h \
+	xen/xs_internal.c \
+	xen/xs_internal.h \
+	$(NULL)
+
+XEN_DRIVER_INOTIFY_SOURCES = \
+	xen/xen_inotify.c \
+	xen/xen_inotify.h \
+	$(NULL)
+
+if WITH_XEN_INOTIFY
+XEN_DRIVER_SOURCES += $(XEN_DRIVER_INOTIFY_SOURCES)
+endif WITH_XEN_INOTIFY
+
+DRIVER_SOURCE_FILES += $(XEN_DRIVER_SOURCES)
+STATEFUL_DRIVER_SOURCE_FILES += $(XEN_DRIVER_SOURCES)
+EXTRA_DIST += $(XEN_DRIVER_SOURCES) $(XEN_DRIVER_INOTIFY_SOURCES)
+
+if WITH_XEN
+noinst_LTLIBRARIES += libvirt_driver_xen_impl.la
+libvirt_driver_xen_la_SOURCES =
+libvirt_driver_xen_la_LIBADD = \
+	libvirt_driver_xen_impl.la \
+	libvirt.la \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
+mod_LTLIBRARIES += libvirt_driver_xen.la
+libvirt_driver_xen_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
+
+libvirt_driver_xen_impl_la_CFLAGS = \
+	$(XEN_CFLAGS) \
+	-I$(srcdir)/access \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/xenconfig \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_xen_impl_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_xen_impl_la_LIBADD = \
+	$(XEN_LIBS) \
+	libvirt_xenconfig.la \
+	$(NULL)
+libvirt_driver_xen_impl_la_SOURCES = $(XEN_DRIVER_SOURCES)
+
+INSTALL_DATA_DIRS += xen
+
+install-data-xen:
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/xen"
+
+uninstall-data-xen:
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/xen" ||:
+
+endif WITH_XEN
+
+.PHONY: \
+	install-data-xen \
+	uninstall-data-xen \
+	$(NULL)

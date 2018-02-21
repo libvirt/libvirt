@@ -92,6 +92,7 @@ include qemu/Makefile.inc.am
 include bhyve/Makefile.inc.am
 include xenconfig/Makefile.inc.am
 include libxl/Makefile.inc.am
+include xen/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -789,7 +790,6 @@ DRIVER_SOURCE_FILES += \
 	$(REMOTE_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
-	$(XEN_DRIVER_SOURCES) \
 	$(XENAPI_DRIVER_SOURCES) \
 	$(NULL)
 
@@ -801,7 +801,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 	$(NWFILTER_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
-	$(XEN_DRIVER_SOURCES) \
 	$(VZ_DRIVER_SOURCES) \
 	$(NULL)
 
@@ -830,17 +829,6 @@ check-local: check-protocol check-symfile check-symsorting \
 	check-aclperms check-admin-symfile check-admin-symsorting
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
-# Now the Hypervisor specific drivers
-XEN_DRIVER_SOURCES = \
-		xen/block_stats.c xen/block_stats.h \
-		xen/xen_hypervisor.c xen/xen_hypervisor.h \
-		xen/xen_driver.c xen/xen_driver.h \
-		xen/xend_internal.c xen/xend_internal.h \
-		xen/xm_internal.c xen/xm_internal.h \
-		xen/xs_internal.c xen/xs_internal.h
-if WITH_XEN_INOTIFY
-XEN_DRIVER_SOURCES += xen/xen_inotify.c xen/xen_inotify.h
-endif WITH_XEN_INOTIFY
 
 LXC_MONITOR_PROTOCOL_GENERATED = \
 	lxc/lxc_monitor_protocol.h \
@@ -1278,24 +1266,6 @@ EXTRA_DIST += \
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -h \
 	       $< $(srcdir)/$(subst $(srcdir)/,,$@)
 
-if WITH_XEN
-noinst_LTLIBRARIES += libvirt_driver_xen_impl.la
-libvirt_driver_xen_la_SOURCES =
-libvirt_driver_xen_la_LIBADD = libvirt_driver_xen_impl.la
-mod_LTLIBRARIES += libvirt_driver_xen.la
-libvirt_driver_xen_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
-libvirt_driver_xen_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
-libvirt_driver_xen_impl_la_CFLAGS = \
-		$(XEN_CFLAGS) \
-		-I$(srcdir)/access \
-		-I$(srcdir)/conf \
-		-I$(srcdir)/xenconfig \
-		$(AM_CFLAGS)
-libvirt_driver_xen_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_xen_impl_la_LIBADD = $(XEN_LIBS) libvirt_xenconfig.la
-libvirt_driver_xen_impl_la_SOURCES = $(XEN_DRIVER_SOURCES)
-endif WITH_XEN
 
 if WITH_XENAPI
 noinst_LTLIBRARIES += libvirt_driver_xenapi.la
@@ -1752,7 +1722,6 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 # Add all conditional sources just in case...
 EXTRA_DIST += \
 		$(REMOTE_DRIVER_SOURCES) \
-		$(XEN_DRIVER_SOURCES) \
 		$(LXC_DRIVER_SOURCES) \
 		$(XENAPI_DRIVER_SOURCES) \
 		$(VZ_DRIVER_SOURCES) \
@@ -3122,9 +3091,6 @@ if WITH_LXC
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lxc"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/lxc"
 endif WITH_LXC
-if WITH_XEN
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/xen"
-endif WITH_XEN
 if WITH_NETWORK
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/network"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/dnsmasq"
@@ -3166,9 +3132,6 @@ if WITH_LXC
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lxc" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/lxc" ||:
 endif WITH_LXC
-if WITH_XEN
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/xen" ||:
-endif WITH_XEN
 if WITH_NETWORK
 	rm -f $(DESTDIR)$(confdir)/qemu/networks/autostart/default.xml
 	rm -f $(DESTDIR)$(confdir)/qemu/networks/default.xml
