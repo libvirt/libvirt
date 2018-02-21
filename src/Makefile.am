@@ -79,6 +79,7 @@ include test/Makefile.inc.am
 include esx/Makefile.inc.am
 include hyperv/Makefile.inc.am
 include vmware/Makefile.inc.am
+include vbox/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -781,8 +782,6 @@ DRIVER_SOURCE_FILES += \
 	$(REMOTE_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
-	$(VBOX_DRIVER_SOURCES) \
-	vbox/vbox_tmpl.c \
 	$(XEN_DRIVER_SOURCES) \
 	$(XENAPI_DRIVER_SOURCES) \
 	$(NULL)
@@ -913,30 +912,6 @@ OPENVZ_DRIVER_SOURCES = \
 		openvz/openvz_conf.c openvz/openvz_conf.h \
 		openvz/openvz_driver.c openvz/openvz_driver.h \
 		openvz/openvz_util.c openvz/openvz_util.h
-
-VBOX_DRIVER_SOURCES = \
-	vbox/vbox_glue.c vbox/vbox_glue.h \
-	vbox/vbox_driver.c vbox/vbox_driver.h \
-	vbox/vbox_snapshot_conf.c vbox/vbox_snapshot_conf.h \
-	vbox/vbox_V4_0.c vbox/vbox_CAPI_v4_0.h \
-	vbox/vbox_V4_1.c vbox/vbox_CAPI_v4_1.h \
-	vbox/vbox_V4_2.c vbox/vbox_CAPI_v4_2.h \
-	vbox/vbox_V4_2_20.c vbox/vbox_CAPI_v4_2_20.h \
-	vbox/vbox_V4_3.c vbox/vbox_CAPI_v4_3.h \
-	vbox/vbox_V4_3_4.c vbox/vbox_CAPI_v4_3_4.h \
-	vbox/vbox_V5_0.c vbox/vbox_CAPI_v5_0.h \
-	vbox/vbox_V5_1.c vbox/vbox_CAPI_v5_1.h \
-	vbox/vbox_V5_2.c vbox/vbox_CAPI_v5_2.h \
-	vbox/vbox_common.c vbox/vbox_common.h \
-	vbox/vbox_uniformed_api.h \
-	vbox/vbox_get_driver.h \
-	vbox/vbox_network.c \
-	vbox/vbox_storage.c
-
-VBOX_DRIVER_EXTRA_DIST = \
-		vbox/vbox_tmpl.c vbox/README \
-		vbox/vbox_MSCOMGlue.c vbox/vbox_MSCOMGlue.h \
-		vbox/vbox_XPCOMCGlue.c vbox/vbox_XPCOMCGlue.h
 
 QEMU_DRIVER_SOURCES = \
 		qemu/qemu_agent.c qemu/qemu_agent.h \
@@ -1415,27 +1390,6 @@ libvirt_driver_openvz_la_CFLAGS = \
 		-I$(srcdir)/conf $(AM_CFLAGS)
 libvirt_driver_openvz_la_SOURCES = $(OPENVZ_DRIVER_SOURCES)
 endif WITH_OPENVZ
-
-if WITH_VBOX
-noinst_LTLIBRARIES += \
-		libvirt_driver_vbox_impl.la
-libvirt_driver_vbox_la_SOURCES =
-libvirt_driver_vbox_la_LIBADD = libvirt_driver_vbox_impl.la
-mod_LTLIBRARIES += \
-		libvirt_driver_vbox.la
-libvirt_driver_vbox_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
-libvirt_driver_vbox_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
-libvirt_driver_vbox_impl_la_CFLAGS = \
-		-I$(srcdir)/conf \
-		$(AM_CFLAGS) \
-		-DVBOX_DRIVER
-libvirt_driver_vbox_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_vbox_impl_la_LIBADD =  $(DLOPEN_LIBS) \
-		$(WIN32_EXTRA_LIBS) \
-		$(LIBXML_LIBS)
-libvirt_driver_vbox_impl_la_SOURCES = $(VBOX_DRIVER_SOURCES)
-endif WITH_VBOX
 
 if WITH_XENAPI
 noinst_LTLIBRARIES += libvirt_driver_xenapi.la
@@ -1983,7 +1937,6 @@ EXTRA_DIST += \
 		$(QEMU_DRIVER_SOURCES) \
 		$(LXC_DRIVER_SOURCES) \
 		$(OPENVZ_DRIVER_SOURCES) \
-		$(VBOX_DRIVER_SOURCES) \
 		$(XENAPI_DRIVER_SOURCES) \
 		$(LIBXL_DRIVER_SOURCES) \
 		$(VZ_DRIVER_SOURCES) \
@@ -2010,7 +1963,6 @@ EXTRA_DIST += \
 		$(SECURITY_DRIVER_APPARMOR_SOURCES) \
 		$(SECRET_DRIVER_SOURCES) \
 		$(SECRET_UTIL_SOURCES) \
-		$(VBOX_DRIVER_EXTRA_DIST) \
 		$(XENCONFIG_SOURCES) \
 		$(XENCONFIG_LIBXL_SOURCES) \
 		$(ACCESS_DRIVER_POLKIT_POLICY)
