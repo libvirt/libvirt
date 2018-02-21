@@ -62,6 +62,18 @@ format:
    Bitmap sizes: 257x92, 800x286 px
 
 
+ - logo-sticker-square.svg
+
+   A logo formatted into a square shape with outline, suitable for printing
+   as a sticker. See https://github.com/terinjokes/StickerConstructorSpec
+
+
+ - logo-sticker-hexagon.svg
+
+   A logo formatted into a hexagon shape with outline, suitable for printing
+   as a sticker. See https://github.com/terinjokes/StickerConstructorSpec
+
+
 PNG file creation
 =================
 
