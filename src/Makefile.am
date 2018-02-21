@@ -97,6 +97,7 @@ include cpu/Makefile.inc.am
 include security/Makefile.inc.am
 include access/Makefile.inc.am
 include logging/Makefile.inc.am
+include locking/Makefile.inc.am
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
 include test/Makefile.inc.am
@@ -353,56 +354,7 @@ DRIVER_SOURCES += \
 		libvirt-secret.c \
 		libvirt-storage.c \
 		libvirt-stream.c \
-		locking/lock_manager.c locking/lock_manager.h \
-		locking/lock_driver.h \
-		locking/lock_driver_nop.h locking/lock_driver_nop.c \
-		locking/domain_lock.h locking/domain_lock.c \
 		$(NULL)
-
-LOCK_DRIVER_SANLOCK_SOURCES = \
-		locking/lock_driver_sanlock.c
-
-LOCK_DRIVER_SANLOCK_HELPER_SOURCES = \
-		locking/sanlock_helper.c
-
-LOCK_PROTOCOL_GENERATED = \
-		locking/lock_protocol.h \
-		locking/lock_protocol.c \
-		$(NULL)
-
-LOCK_PROTOCOL = $(srcdir)/locking/lock_protocol.x
-EXTRA_DIST += $(LOCK_PROTOCOL) \
-	$(LOCK_PROTOCOL_GENERATED)
-BUILT_SOURCES += $(LOCK_PROTOCOL_GENERATED)
-MAINTAINERCLEANFILES += $(LOCK_PROTOCOL_GENERATED)
-
-LOCK_DAEMON_GENERATED = \
-		locking/lock_daemon_dispatch_stubs.h
-		$(NULL)
-
-BUILT_SOURCES += $(LOCK_DAEMON_GENERATED)
-EXTRA_DIST += $(LOCK_DAEMON_GENERATED)
-MAINTAINERCLEANFILES += $(LOCK_DAEMON_GENERATED)
-
-LOCK_DRIVER_LOCKD_SOURCES = \
-		locking/lock_driver_lockd.c \
-		locking/lock_driver_lockd.h \
-		$(NULL)
-
-LOCK_DAEMON_SOURCES = \
-		locking/lock_daemon.h \
-		locking/lock_daemon.c \
-		locking/lock_daemon_config.h \
-		locking/lock_daemon_config.c \
-		locking/lock_daemon_dispatch.c \
-		locking/lock_daemon_dispatch.h \
-		$(NULL)
-
-locking/lock_daemon_dispatch_stubs.h: $(LOCK_PROTOCOL) \
-		$(srcdir)/rpc/gendispatch.pl Makefile.am
-	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
-	    virLockSpaceProtocol VIR_LOCK_SPACE_PROTOCOL \
-	    $(LOCK_PROTOCOL) > $(srcdir)/locking/lock_daemon_dispatch_stubs.h
 
 
 
@@ -690,57 +642,11 @@ GENERATED_SYM_FILES += \
 
 check-local: check-augeas
 
-.PHONY: check-augeas \
-	check-augeas-sanlock \
-	check-augeas-lockd \
-	$(NULL)
-
-check-augeas: $(AUGEAS_DIRS:%=check-augeas-%) \
-	check-augeas-sanlock \
-	check-augeas-lockd check-augeas-virtlockd
+check-augeas: $(AUGEAS_DIRS:%=check-augeas-%)
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
 
-
-if WITH_SANLOCK
-test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in \
-		locking/qemu-sanlock.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-sanlock.conf $< $@
-
-check-augeas-sanlock: test_libvirt_sanlock.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/locking test_libvirt_sanlock.aug; \
-	fi
-else ! WITH_SANLOCK
-check-augeas-sanlock:
-endif ! WITH_SANLOCK
-
-if WITH_QEMU
-test_libvirt_lockd.aug: locking/test_libvirt_lockd.aug.in \
-		locking/qemu-lockd.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-lockd.conf $< $@
-else ! WITH_QEMU
-test_libvirt_lockd.aug:
-endif ! WITH_QEMU
-
-test_virtlockd.aug: locking/test_virtlockd.aug.in \
-		locking/virtlockd.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/locking/virtlockd.conf $< $@
-
-if WITH_QEMU
-check-augeas-lockd: test_libvirt_lockd.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/locking test_libvirt_lockd.aug; \
-	fi
-else ! WITH_QEMU
-check-augeas-lockd:
-endif ! WITH_QEMU
-
-check-augeas-virtlockd: test_virtlockd.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/locking test_virtlockd.aug; \
-	fi
 
 #
 # Build our version script.  This is composed of three parts:
@@ -981,7 +887,6 @@ RPC_PROBE_FILES += $(srcdir)/rpc/virnetprotocol.x \
 		  $(srcdir)/remote/remote_protocol.x \
 		  $(srcdir)/remote/lxc_protocol.x \
 		  $(srcdir)/remote/qemu_protocol.x \
-		  $(srcdir)/locking/lock_protocol.x \
 		  $(srcdir)/admin/admin_protocol.x
 
 libvirt_functions.stp: $(RPC_PROBE_FILES) $(srcdir)/rpc/gensystemtap.pl
@@ -1111,89 +1016,7 @@ libvirt_setuid_rpc_client_la_CFLAGS = \
 		$(NULL)
 endif WITH_SETUID_RPC_CLIENT
 
-lockdriverdir = $(libdir)/libvirt/lock-driver
-lockdriver_LTLIBRARIES =
-
-if WITH_LIBVIRTD
-lockdriver_LTLIBRARIES += lockd.la
-lockd_la_SOURCES = \
-		$(LOCK_DRIVER_LOCKD_SOURCES) \
-		$(LOCK_PROTOCOL_GENERATED) \
-		$(NULL)
-lockd_la_CFLAGS = -I$(srcdir)/conf \
-		$(XDR_CFLAGS) \
-		$(AM_CFLAGS)
-lockd_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-lockd_la_LIBADD = libvirt.la ../gnulib/lib/libgnu.la
-augeas_DATA += locking/libvirt_lockd.aug
-if WITH_DTRACE_PROBES
-lockd_la_LIBADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-if WITH_QEMU
-augeastest_DATA += test_libvirt_lockd.aug
-CLEANFILES += test_libvirt_lockd.aug
-nodist_conf_DATA += locking/qemu-lockd.conf
-BUILT_SOURCES += locking/qemu-lockd.conf
-DISTCLEANFILES += locking/qemu-lockd.conf
-endif WITH_QEMU
-
-if WITH_LIBXL
-nodist_conf_DATA += locking/libxl-lockd.conf
-BUILT_SOURCES += locking/libxl-lockd.conf
-DISTCLEANFILES += locking/libxl-lockd.conf
-endif WITH_LIBXL
-
-locking/%-lockd.conf: $(srcdir)/locking/lockd.conf
-	$(AM_V_GEN)$(MKDIR_P) locking ; \
-	cp $< $@
-
-
-sbin_PROGRAMS += virtlockd
-
-virtlockd_SOURCES = \
-		$(LOCK_DAEMON_SOURCES) \
-		$(LOCK_PROTOCOL_GENERATED) \
-		$(LOCK_DAEMON_GENERATED) \
-		$(NULL)
-virtlockd_CFLAGS = \
-		$(AM_CFLAGS) \
-		$(PIE_CFLAGS) \
-		$(XDR_CFLAGS) \
-		$(NULL)
-virtlockd_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(PIE_LDFLAGS) \
-		$(NO_UNDEFINED_LDFLAGS) \
-		$(NULL)
-virtlockd_LDADD = \
-		libvirt_driver_admin.la \
-		libvirt-net-rpc-server.la \
-		libvirt-net-rpc.la \
-		libvirt_util.la \
-		../gnulib/lib/libgnu.la \
-		$(CYGWIN_EXTRA_LIBADD) \
-		$(NULL)
-if WITH_DTRACE_PROBES
-virtlockd_LDADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-
-
-else ! WITH_LIBVIRTD
-EXTRA_DIST += $(LOCK_DAEMON_SOURCES) \
-              $(LOCK_DRIVER_LOCKD_SOURCES)
-endif ! WITH_LIBVIRTD
-
-SYSCONF_FILES += \
-	locking/virtlockd.sysconf \
-	$(NULL)
-
-EXTRA_DIST += \
-	locking/lockd.conf \
-	locking/libvirt_lockd.aug \
-	locking/test_libvirt_lockd.aug.in \
-	$(SYSCONF_FILES) \
-	$(NULL)
+EXTRA_DIST += $(SYSCONF_FILES)
 
 install-sysconfig:
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysconfig
@@ -1271,26 +1094,6 @@ uninstall-init::
 endif ! LIBVIRT_INIT_SCRIPT_RED_HAT
 
 
-virtlockd.init: locking/virtlockd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    chmod a+x $@-t && \
-	    mv $@-t $@
-
-virtlockd.8.in: locking/virtlockd.pod
-	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
-	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
-	sed \
-		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
-		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
-		< $@-t1 > $@-t2 && \
-	rm -f $@-t1 && \
-	mv $@-t2 $@
-
-
 %.8: %.8.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)sed \
 		-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
@@ -1298,37 +1101,11 @@ virtlockd.8.in: locking/virtlockd.pod
 		< $< > $@-t && \
 	mv $@-t $@
 
-if WITH_LIBVIRTD
-man8_MANS += virtlockd.8
-
-conf_DATA += locking/virtlockd.conf
-
-augeas_DATA += locking/virtlockd.aug
-augeastest_DATA += test_virtlockd.aug
-endif WITH_LIBVIRTD
-
-PODFILES += \
-	locking/virtlockd.pod \
-	$(NULL)
-
-MANINFILES += \
-	virtlockd.8.in \
-	$(NULL)
-
-CLEANFILES += test_virtlockd.aug $(man8_MANS)
+CLEANFILES += $(man8_MANS)
 MAINTAINERCLEANFILES += $(MANINFILES)
-
-SYSTEMD_UNIT_FILES_IN += \
-	locking/virtlockd.service.in \
-	locking/virtlockd.socket.in \
-	locking/virtlockd-admin.socket.in \
-	$(NULL)
 
 EXTRA_DIST += \
         $(SYSTEMD_UNIT_FILES_IN) \
-        locking/virtlockd.aug \
-        locking/virtlockd.conf \
-        locking/test_virtlockd.aug.in \
         $(PODFILES) \
         $(MANINFILES) \
         $(NULL)
@@ -1362,26 +1139,6 @@ install-systemd:
 uninstall-systemd:
 endif ! WITH_LIBVIRTD
 
-virtlockd.service: locking/virtlockd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
-virtlockd.socket: locking/virtlockd.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
-virtlockd-admin.socket: locking/virtlockd-admin.socket.in \
-                        $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
-
 
 EXTRA_DIST += $(UPSTART_FILES)
 
@@ -1413,38 +1170,6 @@ install-upstart:
 uninstall-upstart:
 endif ! WITH_LIBVIRTD
 
-if WITH_SANLOCK
-lockdriver_LTLIBRARIES += sanlock.la
-sanlock_la_SOURCES = $(LOCK_DRIVER_SANLOCK_SOURCES)
-sanlock_la_CFLAGS = -I$(srcdir)/conf $(AM_CFLAGS)
-sanlock_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-sanlock_la_LIBADD = -lsanlock_client libvirt.la ../gnulib/lib/libgnu.la
-
-augeas_DATA += locking/libvirt_sanlock.aug
-augeastest_DATA += test_libvirt_sanlock.aug
-CLEANFILES += test_libvirt_sanlock.aug
-
-locking/%-sanlock.conf: $(srcdir)/locking/sanlock.conf
-	$(AM_V_GEN)$(MKDIR_P) locking ; \
-	cp $< $@
-
-if WITH_QEMU
-nodist_conf_DATA += locking/qemu-sanlock.conf
-BUILT_SOURCES += locking/qemu-sanlock.conf
-DISTCLEANFILES += locking/qemu-sanlock.conf
-endif WITH_QEMU
-
-if WITH_LIBXL
-nodist_conf_DATA += locking/libxl-sanlock.conf
-BUILT_SOURCES += locking/libxl-sanlock.conf
-DISTCLEANFILES += locking/libxl-sanlock.conf
-endif WITH_LIBXL
-else ! WITH_SANLOCK
-EXTRA_DIST += $(LOCK_DRIVER_SANLOCK_SOURCES)
-endif ! WITH_SANLOCK
-EXTRA_DIST += locking/sanlock.conf \
-	locking/libvirt_sanlock.aug \
-	locking/test_libvirt_sanlock.aug.in
 
 noinst_LTLIBRARIES += \
 	libvirt-net-rpc.la \
@@ -1577,23 +1302,6 @@ libvirt_iohelper_CFLAGS = \
 endif WITH_LIBVIRTD
 
 
-if WITH_SANLOCK
-libexec_PROGRAMS += libvirt_sanlock_helper
-
-libvirt_sanlock_helper_SOURCES = $(LOCK_DRIVER_SANLOCK_HELPER_SOURCES)
-libvirt_sanlock_helper_CFLAGS = \
-		-I$(srcdir)/conf \
-		$(AM_CFLAGS) \
-		$(PIE_CFLAGS) \
-		$(NULL)
-libvirt_sanlock_helper_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(PIE_LDFLAGS) \
-		$(NULL)
-libvirt_sanlock_helper_LDADD = libvirt.la
-endif WITH_SANLOCK
-
-
 
 if WITH_NSS
 noinst_LTLIBRARIES += libvirt-nss.la
@@ -1667,34 +1375,18 @@ endif WITH_NSS
 install-data-local: install-init install-systemd install-upstart \
 		install-sysctl install-polkit install-sasl \
 		install-logrotate $(INSTALL_DATA_DIRS:%=install-data-%)
-if WITH_LIBVIRTD
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lockd"
-endif WITH_LIBVIRTD
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/images"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/filesystems"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/boot"
-if WITH_SANLOCK
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock"
-endif WITH_SANLOCK
 
 uninstall-local:: uninstall-init uninstall-systemd uninstall-upstart \
 		uninstall-sysctl uninstall-polkit uninstall-sasl \
 		uninstall-logrotate $(INSTALL_DATA_DIRS:%=uninstall-data-%)
-if WITH_LIBVIRTD
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lockd" ||:
-endif WITH_LIBVIRTD
 	rmdir "$(DESTDIR)$(localstatedir)/cache/libvirt" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/images" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/filesystems" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/boot" ||:
-if WITH_SANLOCK
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock" ||:
-endif WITH_SANLOCK
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt" ||:
 
 CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
