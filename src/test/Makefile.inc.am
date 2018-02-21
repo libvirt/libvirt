@@ -1,0 +1,26 @@
+TEST_DRIVER_SOURCES = \
+	test/test_driver.c \
+	test/test_driver.h \
+	$(NULL)
+TEST_DRIVER_ASSETS = test/test-screenshot.png
+
+DRIVER_SOURCE_FILES += $(TEST_DRIVER_SOURCES)
+
+EXTRA_DIST += \
+	$(TEST_DRIVER_SOURCES) \
+	$(TEST_DRIVER_ASSETS) \
+	$(NULL)
+
+if WITH_TEST
+
+driver_test_asset_DATA = $(TEST_DRIVER_ASSETS)
+driver_test_assetdir = $(pkgdatadir)
+
+noinst_LTLIBRARIES += libvirt_driver_test.la
+libvirt_la_BUILT_LIBADD += libvirt_driver_test.la
+libvirt_driver_test_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_test_la_SOURCES = $(TEST_DRIVER_SOURCES)
+endif WITH_TEST

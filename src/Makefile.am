@@ -72,6 +72,7 @@ libvirt_la_BUILT_LIBADD =
 
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
+include test/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -776,7 +777,6 @@ DRIVER_SOURCE_FILES += \
 	$(REMOTE_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
-	$(TEST_DRIVER_SOURCES) \
 	$(VBOX_DRIVER_SOURCES) \
 	vbox/vbox_tmpl.c \
 	$(VMWARE_DRIVER_SOURCES) \
@@ -823,11 +823,6 @@ check-local: check-protocol check-symfile check-symsorting \
 	check-drivername check-driverimpls check-aclrules \
 	check-aclperms check-admin-symfile check-admin-symsorting
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
-
-# Mock driver, covering domains, storage, networks, etc
-TEST_DRIVER_SOURCES = \
-		test/test_driver.c test/test_driver.h
-TEST_DRIVER_ASSETS = test/test-screenshot.png
 
 # Now the Hypervisor specific drivers
 XEN_DRIVER_SOURCES = \
@@ -1337,18 +1332,6 @@ GENERATED_SYM_FILES = \
 	libvirt.syms libvirt.def libvirt_qemu.def libvirt_lxc.def \
 	libvirt_admin.syms libvirt_admin.def \
 	$(NULL)
-
-if WITH_TEST
-
-driver_test_asset_DATA = $(TEST_DRIVER_ASSETS)
-driver_test_assetdir = $(pkgdatadir)
-
-noinst_LTLIBRARIES += libvirt_driver_test.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_test.la
-libvirt_driver_test_la_CFLAGS = \
-		-I$(srcdir)/conf $(AM_CFLAGS)
-libvirt_driver_test_la_SOURCES = $(TEST_DRIVER_SOURCES)
-endif WITH_TEST
 
 if WITH_REMOTE
 noinst_LTLIBRARIES += libvirt_driver_remote.la
@@ -2107,8 +2090,6 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 
 # Add all conditional sources just in case...
 EXTRA_DIST += \
-		$(TEST_DRIVER_SOURCES) \
-		$(TEST_DRIVER_ASSETS) \
 		$(REMOTE_DRIVER_SOURCES) \
 		$(XEN_DRIVER_SOURCES) \
 		$(QEMU_DRIVER_SOURCES) \
