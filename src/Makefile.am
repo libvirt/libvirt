@@ -78,6 +78,7 @@ include phyp/Makefile.inc.am
 include test/Makefile.inc.am
 include esx/Makefile.inc.am
 include hyperv/Makefile.inc.am
+include vmware/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -782,7 +783,6 @@ DRIVER_SOURCE_FILES += \
 	$(STORAGE_DRIVER_SOURCES) \
 	$(VBOX_DRIVER_SOURCES) \
 	vbox/vbox_tmpl.c \
-	$(VMWARE_DRIVER_SOURCES) \
 	$(XEN_DRIVER_SOURCES) \
 	$(XENAPI_DRIVER_SOURCES) \
 	$(NULL)
@@ -913,10 +913,6 @@ OPENVZ_DRIVER_SOURCES = \
 		openvz/openvz_conf.c openvz/openvz_conf.h \
 		openvz/openvz_driver.c openvz/openvz_driver.h \
 		openvz/openvz_util.c openvz/openvz_util.h
-
-VMWARE_DRIVER_SOURCES = \
-		vmware/vmware_driver.c vmware/vmware_driver.h \
-		vmware/vmware_conf.c vmware/vmware_conf.h
 
 VBOX_DRIVER_SOURCES = \
 	vbox/vbox_glue.c vbox/vbox_glue.h \
@@ -1419,14 +1415,6 @@ libvirt_driver_openvz_la_CFLAGS = \
 		-I$(srcdir)/conf $(AM_CFLAGS)
 libvirt_driver_openvz_la_SOURCES = $(OPENVZ_DRIVER_SOURCES)
 endif WITH_OPENVZ
-
-if WITH_VMWARE
-noinst_LTLIBRARIES += libvirt_driver_vmware.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_vmware.la
-libvirt_driver_vmware_la_CFLAGS = \
-		-I$(srcdir)/conf -I$(srcdir)/vmx $(AM_CFLAGS)
-libvirt_driver_vmware_la_SOURCES = $(VMWARE_DRIVER_SOURCES)
-endif WITH_VMWARE
 
 if WITH_VBOX
 noinst_LTLIBRARIES += \
@@ -2023,7 +2011,6 @@ EXTRA_DIST += \
 		$(SECRET_DRIVER_SOURCES) \
 		$(SECRET_UTIL_SOURCES) \
 		$(VBOX_DRIVER_EXTRA_DIST) \
-		$(VMWARE_DRIVER_SOURCES) \
 		$(XENCONFIG_SOURCES) \
 		$(XENCONFIG_LIBXL_SOURCES) \
 		$(ACCESS_DRIVER_POLKIT_POLICY)
@@ -2203,12 +2190,6 @@ USED_SYM_FILES += $(srcdir)/libvirt_vmx.syms
 else ! WITH_VMX
 SYM_FILES += $(srcdir)/libvirt_vmx.syms
 endif ! WITH_VMX
-
-if WITH_VMWARE
-USED_SYM_FILES += $(srcdir)/libvirt_vmware.syms
-else ! WITH_VMWARE
-SYM_FILES += $(srcdir)/libvirt_vmware.syms
-endif ! WITH_VMWARE
 
 if WITH_XENCONFIG
 USED_SYM_FILES += $(srcdir)/libvirt_xenconfig.syms
