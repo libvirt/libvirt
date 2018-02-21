@@ -1,0 +1,48 @@
+UML_DRIVER_SOURCES = \
+	uml/uml_conf.c \
+	uml/uml_conf.h \
+	uml/uml_driver.c \
+	uml/uml_driver.h \
+	$(NULL)
+
+DRIVER_SOURCE_FILES += $(UML_DRIVER_SOURCES)
+STATEFUL_DRIVER_SOURCE_FILES += $(UML_DRIVER_SOURCES)
+EXTRA_DIST += $(UML_DRIVER_SOURCES)
+
+if WITH_UML
+noinst_LTLIBRARIES += libvirt_driver_uml_impl.la
+libvirt_driver_uml_la_SOURCES =
+libvirt_driver_uml_la_LIBADD = \
+	libvirt_driver_uml_impl.la \
+	libvirt.la \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
+mod_LTLIBRARIES += libvirt_driver_uml.la
+libvirt_driver_uml_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
+
+libvirt_driver_uml_impl_la_CFLAGS = \
+	-I$(srcdir)/access \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_uml_impl_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_uml_impl_la_SOURCES = $(UML_DRIVER_SOURCES)
+
+INSTALL_DATA_DIRS += uml
+
+install-data-uml:
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/uml"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/uml"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/uml"
+
+uninstall-data-uml:
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/uml" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/uml" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/uml" ||:
+
+endif WITH_UML
+
+.PHONY: \
+	install-data-uml \
+	uninstall-data-uml \
+	$(NULL)

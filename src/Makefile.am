@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2016 Red Hat, Inc.
+## Copyright (C) 2005-2018 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -63,6 +63,17 @@ CLEANFILES =
 DISTCLEANFILES =
 MAINTAINERCLEANFILES =
 nodist_conf_DATA =
+DRIVER_SOURCE_FILES =
+STATEFUL_DRIVER_SOURCE_FILES =
+noinst_LTLIBRARIES =
+mod_LTLIBRARIES =
+INSTALL_DATA_DIRS =
+
+include uml/Makefile.inc.am
+
+install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
+uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
+
 
 THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
 
@@ -84,7 +95,6 @@ endif WITH_NETWORK
 lib_LTLIBRARIES = libvirt.la libvirt-qemu.la libvirt-lxc.la
 
 moddir = $(libdir)/libvirt/connection-driver
-mod_LTLIBRARIES =
 sbin_PROGRAMS =
 
 confdir = $(sysconfdir)/libvirt
@@ -747,7 +757,7 @@ check-drivername:
 
 EXTRA_DIST += check-drivername.pl
 
-DRIVER_SOURCE_FILES = \
+DRIVER_SOURCE_FILES += \
 	$(ESX_DRIVER_SOURCES) \
 	$(HYPERV_DRIVER_SORUCES) \
 	$(INTERFACE_DRIVER_SOURCES) \
@@ -766,7 +776,6 @@ DRIVER_SOURCE_FILES = \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
 	$(TEST_DRIVER_SOURCES) \
-	$(UML_DRIVER_SOURCES) \
 	$(VBOX_DRIVER_SOURCES) \
 	vbox/vbox_tmpl.c \
 	$(VMWARE_DRIVER_SOURCES) \
@@ -774,7 +783,7 @@ DRIVER_SOURCE_FILES = \
 	$(XENAPI_DRIVER_SOURCES) \
 	$(NULL)
 
-STATEFUL_DRIVER_SOURCE_FILES = \
+STATEFUL_DRIVER_SOURCE_FILES += \
 	$(BHYVE_DRIVER_SOURCES) \
 	$(INTERFACE_DRIVER_SOURCES) \
 	$(LIBXL_DRIVER_SOURCES) \
@@ -785,7 +794,6 @@ STATEFUL_DRIVER_SOURCE_FILES = \
 	$(QEMU_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
-	$(UML_DRIVER_SOURCES) \
 	$(XEN_DRIVER_SOURCES) \
 	$(VZ_DRIVER_SOURCES) \
 	$(NULL)
@@ -979,10 +987,6 @@ LIBXL_DRIVER_SOURCES = \
 		libxl/libxl_driver.c libxl/libxl_driver.h \
 		libxl/libxl_logger.c libxl/libxl_logger.h \
 		libxl/libxl_migration.c libxl/libxl_migration.h
-
-UML_DRIVER_SOURCES = \
-		uml/uml_conf.c uml/uml_conf.h \
-		uml/uml_driver.c uml/uml_driver.h
 
 ESX_DRIVER_SOURCES = \
 		esx/esx_private.h \
@@ -1255,7 +1259,7 @@ EXTRA_DIST +=	$(pkgdata_DATA)
 #
 # First deal with sources usable in non-daemon context
 
-noinst_LTLIBRARIES = libvirt_util.la
+noinst_LTLIBRARIES += libvirt_util.la
 libvirt_la_LIBADD = $(libvirt_la_BUILT_LIBADD)
 libvirt_la_BUILT_LIBADD = libvirt_util.la
 libvirt_util_la_SOURCES = \
@@ -1636,22 +1640,6 @@ CLEANFILES += test_libvirtd_lxc.aug
 endif WITH_LXC
 EXTRA_DIST += lxc/lxc.conf lxc/libvirtd_lxc.aug lxc/test_libvirtd_lxc.aug.in
 
-if WITH_UML
-noinst_LTLIBRARIES += libvirt_driver_uml_impl.la
-libvirt_driver_uml_la_SOURCES =
-libvirt_driver_uml_la_LIBADD = libvirt_driver_uml_impl.la
-mod_LTLIBRARIES += libvirt_driver_uml.la
-libvirt_driver_uml_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
-libvirt_driver_uml_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
-libvirt_driver_uml_impl_la_CFLAGS = \
-		-I$(srcdir)/access \
-		-I$(srcdir)/conf \
-		$(AM_CFLAGS)
-libvirt_driver_uml_impl_la_LDFLAGS = $(AM_LDFLAGS)
-# libvirt_driver_uml_impl_la_LIBADD =
-libvirt_driver_uml_impl_la_SOURCES = $(UML_DRIVER_SOURCES)
-endif WITH_UML
 
 
 BUILT_SOURCES += $(ESX_DRIVER_GENERATED)
@@ -2136,7 +2124,6 @@ EXTRA_DIST += \
 		$(XEN_DRIVER_SOURCES) \
 		$(QEMU_DRIVER_SOURCES) \
 		$(LXC_DRIVER_SOURCES) \
-		$(UML_DRIVER_SOURCES) \
 		$(OPENVZ_DRIVER_SOURCES) \
 		$(PHYP_DRIVER_SOURCES) \
 		$(VBOX_DRIVER_SOURCES) \
@@ -3571,7 +3558,7 @@ endif WITH_NSS
 
 install-data-local: install-init install-systemd install-upstart \
 		install-sysctl install-polkit install-sasl \
-		install-logrotate
+		install-logrotate install-data-extra
 if WITH_LIBVIRTD
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"
@@ -3601,11 +3588,6 @@ if WITH_LIBXL
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/libxl"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/libxl"
 endif WITH_LIBXL
-if WITH_UML
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/uml"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/uml"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/uml"
-endif WITH_UML
 if WITH_XEN
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/xen"
 endif WITH_XEN
@@ -3631,7 +3613,7 @@ endif WITH_NETWORK
 
 uninstall-local:: uninstall-init uninstall-systemd uninstall-upstart \
 		uninstall-sysctl uninstall-polkit uninstall-sasl \
-		uninstall-logrotate
+		uninstall-logrotate uninstall-data-extra
 if WITH_LIBVIRTD
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files" ||:
@@ -3661,11 +3643,6 @@ if WITH_LIBXL
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/libxl" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/libxl" ||:
 endif WITH_LIBXL
-if WITH_UML
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/uml" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/uml" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/uml" ||:
-endif WITH_UML
 if WITH_XEN
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/xen" ||:
 endif WITH_XEN
