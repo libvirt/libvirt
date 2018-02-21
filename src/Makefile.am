@@ -91,6 +91,7 @@ include openvz/Makefile.inc.am
 include qemu/Makefile.inc.am
 include bhyve/Makefile.inc.am
 include xenconfig/Makefile.inc.am
+include libxl/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -778,7 +779,6 @@ EXTRA_DIST += check-drivername.pl
 
 DRIVER_SOURCE_FILES += \
 	$(INTERFACE_DRIVER_SOURCES) \
-	$(LIBXL_DRIVER_SOURCES) \
 	$(LXC_DRIVER_SOURCES) \
 	$(NETWORK_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_SOURCES) \
@@ -795,7 +795,6 @@ DRIVER_SOURCE_FILES += \
 
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(INTERFACE_DRIVER_SOURCES) \
-	$(LIBXL_DRIVER_SOURCES) \
 	$(LXC_DRIVER_SOURCES) \
 	$(NETWORK_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_SOURCES) \
@@ -917,14 +916,6 @@ XENAPI_DRIVER_SOURCES = \
 		xenapi/xenapi_driver.c xenapi/xenapi_driver.h \
 		xenapi/xenapi_driver_private.h \
 		xenapi/xenapi_utils.c xenapi/xenapi_utils.h
-
-LIBXL_DRIVER_SOURCES = \
-		libxl/libxl_conf.c libxl/libxl_conf.h \
-		libxl/libxl_capabilities.c libxl/libxl_capabilities.h \
-		libxl/libxl_domain.c libxl/libxl_domain.h \
-		libxl/libxl_driver.c libxl/libxl_driver.h \
-		libxl/libxl_logger.c libxl/libxl_logger.h \
-		libxl/libxl_migration.c libxl/libxl_migration.h
 
 VZ_DRIVER_SOURCES = \
 		vz/vz_driver.h \
@@ -1103,11 +1094,6 @@ CPU_SOURCES = \
 VMX_SOURCES = \
 		vmx/vmx.c vmx/vmx.h
 
-if WITH_LIBXL
-XENCONFIG_LIBXL_SOURCES = \
-		$(XENCONFIG_SOURCES) \
-		xenconfig/xen_xl.c xenconfig/xen_xl.h
-endif WITH_LIBXL
 
 pkgdata_DATA =	cpu/cpu_map.xml
 
@@ -1162,14 +1148,6 @@ libvirt_vmx_la_CFLAGS = \
 		-I$(srcdir)/conf $(AM_CFLAGS)
 libvirt_vmx_la_SOURCES = $(VMX_SOURCES)
 endif WITH_VMX
-
-if WITH_LIBXL
-noinst_LTLIBRARIES += libvirt_xenconfig_libxl.la
-libvirt_xenconfig_libxl_la_LIBADD = $(LIBXL_LIBS)
-libvirt_xenconfig_libxl_la_CFLAGS = \
-		-I$(srcdir)/conf -I$(srcdir)/libxl $(AM_CFLAGS)
-libvirt_xenconfig_libxl_la_SOURCES = $(XENCONFIG_LIBXL_SOURCES)
-endif WITH_LIBXL
 
 
 noinst_LTLIBRARIES += libvirt_driver.la
@@ -1329,36 +1307,6 @@ libvirt_driver_xenapi_la_LIBADD = $(XENAPI_LIBS) $(CURL_LIBS)
 libvirt_driver_xenapi_la_SOURCES = $(XENAPI_DRIVER_SOURCES)
 endif WITH_XENAPI
 
-if WITH_LIBXL
-noinst_LTLIBRARIES += libvirt_driver_libxl_impl.la
-libvirt_driver_libxl_la_SOURCES =
-libvirt_driver_libxl_la_LIBADD = libvirt_driver_libxl_impl.la
-mod_LTLIBRARIES += libvirt_driver_libxl.la
-libvirt_driver_libxl_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
-libvirt_driver_libxl_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
-libvirt_driver_libxl_impl_la_CFLAGS = \
-		$(LIBXL_CFLAGS) \
-		$(LIBXML_CFLAGS) \
-		-I$(srcdir)/access \
-		-I$(srcdir)/conf \
-		-I$(srcdir)/secret \
-		-I$(srcdir)/xenconfig \
-		$(AM_CFLAGS)
-libvirt_driver_libxl_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_libxl_impl_la_LIBADD = $(LIBXL_LIBS) \
-				      $(LIBXML_LIBS) \
-				      libvirt_xenconfig_libxl.la
-libvirt_driver_libxl_impl_la_SOURCES = $(LIBXL_DRIVER_SOURCES)
-
-conf_DATA += libxl/libxl.conf
-augeas_DATA += libxl/libvirtd_libxl.aug
-augeastest_DATA += test_libvirtd_libxl.aug
-CLEANFILES += test_libvirtd_libxl.aug
-
-endif WITH_LIBXL
-EXTRA_DIST += libxl/libxl.conf libxl/libvirtd_libxl.aug \
-		libxl/test_libvirtd_libxl.aug.in
 
 
 
@@ -1807,7 +1755,6 @@ EXTRA_DIST += \
 		$(XEN_DRIVER_SOURCES) \
 		$(LXC_DRIVER_SOURCES) \
 		$(XENAPI_DRIVER_SOURCES) \
-		$(LIBXL_DRIVER_SOURCES) \
 		$(VZ_DRIVER_SOURCES) \
 		$(NETWORK_DRIVER_SOURCES) \
 		$(INTERFACE_DRIVER_SOURCES) \
@@ -1831,7 +1778,6 @@ EXTRA_DIST += \
 		$(SECURITY_DRIVER_APPARMOR_SOURCES) \
 		$(SECRET_DRIVER_SOURCES) \
 		$(SECRET_UTIL_SOURCES) \
-		$(XENCONFIG_LIBXL_SOURCES) \
 		$(ACCESS_DRIVER_POLKIT_POLICY)
 
 check-local: check-augeas
@@ -1840,13 +1786,12 @@ check-local: check-augeas
 	check-augeas-lxc \
 	check-augeas-sanlock \
 	check-augeas-lockd \
-	check-augeas-libxl \
 	check-augeas-libvirtd \
 	$(NULL)
 
 check-augeas: $(AUGEAS_DIRS:%=check-augeas-%) \
 	check-augeas-lxc check-augeas-sanlock \
-	check-augeas-lockd check-augeas-virtlockd check-augeas-libxl \
+	check-augeas-lockd check-augeas-virtlockd \
 	check-augeas-virtlogd check-augeas-libvirtd
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
@@ -1903,19 +1848,6 @@ check-augeas-virtlockd: test_virtlockd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
 	    '$(AUGPARSE)' -I $(srcdir)/locking test_virtlockd.aug; \
 	fi
-
-if WITH_LIBXL
-test_libvirtd_libxl.aug: libxl/test_libvirtd_libxl.aug.in \
-		$(srcdir)/libxl/libxl.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/libxl/libxl.conf $< $@
-
-check-augeas-libxl: test_libvirtd_libxl.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/libxl test_libvirtd_libxl.aug; \
-	fi
-else ! WITH_LIBXL
-check-augeas-libxl:
-endif ! WITH_LIBXL
 
 
 test_virtlogd.aug: logging/test_virtlogd.aug.in \
@@ -3190,11 +3122,6 @@ if WITH_LXC
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lxc"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/lxc"
 endif WITH_LXC
-if WITH_LIBXL
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/libxl"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/libxl"
-endif WITH_LIBXL
 if WITH_XEN
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/xen"
 endif WITH_XEN
@@ -3239,11 +3166,6 @@ if WITH_LXC
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lxc" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/lxc" ||:
 endif WITH_LXC
-if WITH_LIBXL
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/libxl" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/libxl" ||:
-endif WITH_LIBXL
 if WITH_XEN
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/xen" ||:
 endif WITH_XEN
