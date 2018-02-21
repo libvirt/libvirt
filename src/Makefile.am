@@ -93,6 +93,7 @@ include bhyve/Makefile.inc.am
 include xenconfig/Makefile.inc.am
 include libxl/Makefile.inc.am
 include xen/Makefile.inc.am
+include xenapi/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -790,7 +791,6 @@ DRIVER_SOURCE_FILES += \
 	$(REMOTE_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
-	$(XENAPI_DRIVER_SOURCES) \
 	$(NULL)
 
 STATEFUL_DRIVER_SOURCE_FILES += \
@@ -899,11 +899,6 @@ LXC_CONTROLLER_SOURCES = \
 SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
 		$(DATATYPES_SOURCES) \
 		security/virt-aa-helper.c
-
-XENAPI_DRIVER_SOURCES = \
-		xenapi/xenapi_driver.c xenapi/xenapi_driver.h \
-		xenapi/xenapi_driver_private.h \
-		xenapi/xenapi_utils.c xenapi/xenapi_utils.h
 
 VZ_DRIVER_SOURCES = \
 		vz/vz_driver.h \
@@ -1266,16 +1261,6 @@ EXTRA_DIST += \
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -h \
 	       $< $(srcdir)/$(subst $(srcdir)/,,$@)
 
-
-if WITH_XENAPI
-noinst_LTLIBRARIES += libvirt_driver_xenapi.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_xenapi.la
-libvirt_driver_xenapi_la_CFLAGS = $(XENAPI_CFLAGS) $(CURL_CFLAGS) \
-		-I$(srcdir)/conf -I$(srcdir)/xenconfig $(AM_CFLAGS)
-libvirt_driver_xenapi_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_xenapi_la_LIBADD = $(XENAPI_LIBS) $(CURL_LIBS)
-libvirt_driver_xenapi_la_SOURCES = $(XENAPI_DRIVER_SOURCES)
-endif WITH_XENAPI
 
 
 
@@ -1723,7 +1708,6 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 EXTRA_DIST += \
 		$(REMOTE_DRIVER_SOURCES) \
 		$(LXC_DRIVER_SOURCES) \
-		$(XENAPI_DRIVER_SOURCES) \
 		$(VZ_DRIVER_SOURCES) \
 		$(NETWORK_DRIVER_SOURCES) \
 		$(INTERFACE_DRIVER_SOURCES) \
