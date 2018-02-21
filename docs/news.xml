@@ -77,6 +77,11 @@
           conf: add support for setting Chassis SMBIOS data fields
         </summary>
       </change>
+      <change>
+        <summary>
+          libxl: add support for setting clock offset and adjustment
+        </summary>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
