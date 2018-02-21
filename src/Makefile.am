@@ -69,10 +69,14 @@ noinst_LTLIBRARIES =
 mod_LTLIBRARIES =
 INSTALL_DATA_DIRS =
 libvirt_la_BUILT_LIBADD =
+SYM_FILES =
+USED_SYM_FILES =
+GENERATED_SYM_FILES =
 
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
 include test/Makefile.inc.am
+include esx/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -761,7 +765,6 @@ check-drivername:
 EXTRA_DIST += check-drivername.pl
 
 DRIVER_SOURCE_FILES += \
-	$(ESX_DRIVER_SOURCES) \
 	$(HYPERV_DRIVER_SORUCES) \
 	$(INTERFACE_DRIVER_SOURCES) \
 	$(LIBXL_DRIVER_SOURCES) \
@@ -980,39 +983,6 @@ LIBXL_DRIVER_SOURCES = \
 		libxl/libxl_driver.c libxl/libxl_driver.h \
 		libxl/libxl_logger.c libxl/libxl_logger.h \
 		libxl/libxl_migration.c libxl/libxl_migration.h
-
-ESX_DRIVER_SOURCES = \
-		esx/esx_private.h \
-		esx/esx_driver.c esx/esx_driver.h \
-		esx/esx_interface_driver.c esx/esx_interface_driver.h \
-		esx/esx_network_driver.c esx/esx_network_driver.h \
-		esx/esx_storage_driver.c esx/esx_storage_driver.h \
-		esx/esx_storage_backend_vmfs.c esx/esx_storage_backend_vmfs.h \
-		esx/esx_storage_backend_iscsi.c esx/esx_storage_backend_iscsi.h \
-		esx/esx_stream.c esx/esx_stream.h \
-		esx/esx_util.c esx/esx_util.h \
-		esx/esx_vi.c esx/esx_vi.h \
-		esx/esx_vi_methods.c esx/esx_vi_methods.h \
-		esx/esx_vi_types.c esx/esx_vi_types.h
-
-ESX_DRIVER_GENERATED = \
-		esx/esx_vi_methods.generated.c \
-		esx/esx_vi_methods.generated.h \
-		esx/esx_vi_methods.generated.macro \
-		esx/esx_vi_types.generated.c \
-		esx/esx_vi_types.generated.h \
-		esx/esx_vi_types.generated.typedef \
-		esx/esx_vi_types.generated.typeenum \
-		esx/esx_vi_types.generated.typetostring \
-		esx/esx_vi_types.generated.typefromstring \
-		esx/esx_vi.generated.c \
-		esx/esx_vi.generated.h
-
-ESX_DRIVER_EXTRA_DIST = \
-		esx/README \
-		esx/esx_vi_generator.input \
-		esx/esx_vi_generator.py \
-		$(ESX_DRIVER_GENERATED)
 
 HYPERV_DRIVER_SOURCES = \
 		hyperv/hyperv_private.h \
@@ -1325,9 +1295,9 @@ libvirt_driver_la_LIBADD = \
 
 # All .syms files should be placed in exactly one of these three lists,
 # depending on whether they are stored in git and/or used in the build.
-SYM_FILES = $(USED_SYM_FILES)
-USED_SYM_FILES = $(srcdir)/libvirt_private.syms
-GENERATED_SYM_FILES = \
+SYM_FILES += $(USED_SYM_FILES)
+USED_SYM_FILES += $(srcdir)/libvirt_private.syms
+GENERATED_SYM_FILES += \
 	$(ACCESS_DRIVER_SYM_FILES) \
 	libvirt.syms libvirt.def libvirt_qemu.def libvirt_lxc.def \
 	libvirt_admin.syms libvirt_admin.def \
@@ -1613,33 +1583,6 @@ endif WITH_LXC
 EXTRA_DIST += lxc/lxc.conf lxc/libvirtd_lxc.aug lxc/test_libvirtd_lxc.aug.in
 
 
-
-BUILT_SOURCES += $(ESX_DRIVER_GENERATED)
-
-ESX_GENERATED_STAMP = .esx_vi_generator.stamp
-
-EXTRA_DIST += $(ESX_GENERATED_STAMP)
-
-$(ESX_DRIVER_GENERATED): $(ESX_GENERATED_STAMP)
-
-$(ESX_GENERATED_STAMP): $(srcdir)/esx/esx_vi_generator.input \
-                         $(srcdir)/esx/esx_vi_generator.py
-	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/esx/esx_vi_generator.py \
-	  && touch $@
-
-MAINTAINERCLEANFILES += $(ESX_DRIVER_GENERATED) $(ESX_GENERATED_STAMP)
-
-
-if WITH_ESX
-noinst_LTLIBRARIES += libvirt_driver_esx.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_esx.la
-libvirt_driver_esx_la_CFLAGS = $(CURL_CFLAGS) \
-		-I$(srcdir)/conf -I$(srcdir)/vmx $(AM_CFLAGS)
-libvirt_driver_esx_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_esx_la_LIBADD = $(CURL_LIBS)
-libvirt_driver_esx_la_SOURCES = $(ESX_DRIVER_SOURCES)
-libvirt_driver_esx_la_DEPENDENCIES = $(ESX_DRIVER_GENERATED)
-endif WITH_ESX
 
 
 BUILT_SOURCES += $(HYPERV_DRIVER_GENERATED)
@@ -2098,8 +2041,6 @@ EXTRA_DIST += \
 		$(VBOX_DRIVER_SOURCES) \
 		$(XENAPI_DRIVER_SOURCES) \
 		$(LIBXL_DRIVER_SOURCES) \
-		$(ESX_DRIVER_SOURCES) \
-		$(ESX_DRIVER_EXTRA_DIST) \
 		$(HYPERV_DRIVER_SOURCES) \
 		$(HYPERV_DRIVER_EXTRA_DIST) \
 		$(VZ_DRIVER_SOURCES) \
@@ -2289,12 +2230,6 @@ USED_SYM_FILES += $(srcdir)/libvirt_linux.syms
 else ! WITH_LINUX
 SYM_FILES += $(srcdir)/libvirt_linux.syms
 endif ! WITH_LINUX
-
-if WITH_ESX
-USED_SYM_FILES += $(srcdir)/libvirt_esx.syms
-else ! WITH_ESX
-SYM_FILES += $(srcdir)/libvirt_esx.syms
-endif ! WITH_ESX
 
 if WITH_REMOTE
 USED_SYM_FILES += $(srcdir)/libvirt_remote.syms
