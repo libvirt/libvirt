@@ -72,6 +72,13 @@ libvirt_la_BUILT_LIBADD =
 SYM_FILES =
 USED_SYM_FILES =
 GENERATED_SYM_FILES =
+augeas_DATA =
+augeastest_DATA =
+conf_DATA =
+AUGEAS_DIRS =
+if WITH_DTRACE_PROBES
+tapset_DATA =
+endif WITH_DTRACE_PROBES
 
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
@@ -81,6 +88,7 @@ include hyperv/Makefile.inc.am
 include vmware/Makefile.inc.am
 include vbox/Makefile.inc.am
 include openvz/Makefile.inc.am
+include qemu/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -109,13 +117,11 @@ moddir = $(libdir)/libvirt/connection-driver
 sbin_PROGRAMS =
 
 confdir = $(sysconfdir)/libvirt
-conf_DATA = libvirt.conf libvirt-admin.conf
+conf_DATA += libvirt.conf libvirt-admin.conf
 
 augeasdir = $(datadir)/augeas/lenses
-augeas_DATA =
 
 augeastestdir = $(datadir)/augeas/lenses/tests
-augeastest_DATA =
 
 # These files are not related to driver APIs. Simply generic
 # helper APIs for various purposes
@@ -778,7 +784,6 @@ DRIVER_SOURCE_FILES += \
 	$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
 	$(NWFILTER_DRIVER_SOURCES) \
 	$(VZ_DRIVER_SOURCES) \
-	$(QEMU_DRIVER_SOURCES) \
 	$(REMOTE_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
@@ -794,7 +799,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 	$(NETWORK_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_SOURCES) \
 	$(NWFILTER_DRIVER_SOURCES) \
-	$(QEMU_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
 	$(XEN_DRIVER_SOURCES) \
@@ -907,35 +911,6 @@ LXC_CONTROLLER_SOURCES = \
 SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
 		$(DATATYPES_SOURCES) \
 		security/virt-aa-helper.c
-
-QEMU_DRIVER_SOURCES = \
-		qemu/qemu_agent.c qemu/qemu_agent.h \
-		qemu/qemu_alias.c qemu/qemu_alias.h \
-		qemu/qemu_block.c qemu/qemu_block.h \
-		qemu/qemu_blockjob.c qemu/qemu_blockjob.h \
-		qemu/qemu_capabilities.c qemu/qemu_capabilities.h \
-		qemu/qemu_command.c qemu/qemu_command.h \
-		qemu/qemu_parse_command.c qemu/qemu_parse_command.h \
-		qemu/qemu_domain.c qemu/qemu_domain.h \
-		qemu/qemu_domain_address.c qemu/qemu_domain_address.h \
-		qemu/qemu_cgroup.c qemu/qemu_cgroup.h \
-		qemu/qemu_hostdev.c qemu/qemu_hostdev.h \
-		qemu/qemu_hotplug.c qemu/qemu_hotplug.h \
-		qemu/qemu_hotplugpriv.h \
-		qemu/qemu_conf.c qemu/qemu_conf.h \
-		qemu/qemu_process.c qemu/qemu_process.h \
-		qemu/qemu_processpriv.h \
-		qemu/qemu_migration.c qemu/qemu_migration.h \
-		qemu/qemu_migration_cookie.c qemu/qemu_migration_cookie.h \
-		qemu/qemu_monitor.c qemu/qemu_monitor.h \
-		qemu/qemu_monitor_text.c \
-		qemu/qemu_monitor_text.h \
-		qemu/qemu_monitor_json.c \
-		qemu/qemu_monitor_json.h \
-		qemu/qemu_driver.c qemu/qemu_driver.h \
-		qemu/qemu_interface.c qemu/qemu_interface.h \
-		qemu/qemu_capspriv.h \
-		qemu/qemu_security.c qemu/qemu_security.h
 
 XENAPI_DRIVER_SOURCES = \
 		xenapi/xenapi_driver.c xenapi/xenapi_driver.h \
@@ -1419,41 +1394,6 @@ endif WITH_LIBXL
 EXTRA_DIST += libxl/libxl.conf libxl/libvirtd_libxl.aug \
 		libxl/test_libvirtd_libxl.aug.in
 
-if WITH_QEMU
-noinst_LTLIBRARIES += libvirt_driver_qemu_impl.la
-libvirt_driver_qemu_la_SOURCES =
-libvirt_driver_qemu_la_LIBADD = libvirt_driver_qemu_impl.la
-mod_LTLIBRARIES += libvirt_driver_qemu.la
-libvirt_driver_qemu_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
-libvirt_driver_qemu_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
-libvirt_driver_qemu_impl_la_CFLAGS = \
-		$(GNUTLS_CFLAGS) \
-		$(LIBNL_CFLAGS) \
-		$(SELINUX_CFLAGS) \
-		$(XDR_CFLAGS) \
-		-I$(srcdir)/access \
-		-I$(srcdir)/conf \
-		-I$(srcdir)/secret \
-		$(AM_CFLAGS)
-libvirt_driver_qemu_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_qemu_impl_la_LIBADD = $(CAPNG_LIBS) \
-                                $(GNUTLS_LIBS) \
-				$(LIBNL_LIBS) \
-				$(SELINUX_LIBS) \
-				$(LIBXML_LIBS) \
-				$(NULL)
-libvirt_driver_qemu_impl_la_SOURCES = $(QEMU_DRIVER_SOURCES)
-
-conf_DATA += qemu/qemu.conf
-
-augeas_DATA += qemu/libvirtd_qemu.aug
-augeastest_DATA += test_libvirtd_qemu.aug
-CLEANFILES += test_libvirtd_qemu.aug
-
-endif WITH_QEMU
-EXTRA_DIST += qemu/qemu.conf qemu/libvirtd_qemu.aug \
-		qemu/test_libvirtd_qemu.aug.in qemu/THREADS.txt
 
 
 if WITH_LXC
@@ -1921,7 +1861,6 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 EXTRA_DIST += \
 		$(REMOTE_DRIVER_SOURCES) \
 		$(XEN_DRIVER_SOURCES) \
-		$(QEMU_DRIVER_SOURCES) \
 		$(LXC_DRIVER_SOURCES) \
 		$(XENAPI_DRIVER_SOURCES) \
 		$(LIBXL_DRIVER_SOURCES) \
@@ -1956,7 +1895,6 @@ EXTRA_DIST += \
 check-local: check-augeas
 
 .PHONY: check-augeas \
-	check-augeas-qemu \
 	check-augeas-lxc \
 	check-augeas-sanlock \
 	check-augeas-lockd \
@@ -1965,25 +1903,13 @@ check-local: check-augeas
 	check-augeas-libvirtd \
 	$(NULL)
 
-check-augeas: check-augeas-qemu check-augeas-lxc check-augeas-sanlock \
+check-augeas: $(AUGEAS_DIRS:%=check-augeas-%) \
+	check-augeas-lxc check-augeas-sanlock \
 	check-augeas-lockd check-augeas-virtlockd check-augeas-libxl \
 	check-augeas-bhyve check-augeas-virtlogd check-augeas-libvirtd
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
-
-if WITH_QEMU
-test_libvirtd_qemu.aug: qemu/test_libvirtd_qemu.aug.in \
-		$(srcdir)/qemu/qemu.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/qemu/qemu.conf $< $@
-
-check-augeas-qemu: test_libvirtd_qemu.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/qemu test_libvirtd_qemu.aug; \
-	fi
-else ! WITH_QEMU
-check-augeas-qemu:
-endif ! WITH_QEMU
 
 if WITH_LXC
 test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in \
@@ -2309,14 +2235,9 @@ DTRACE2SYSTEMTAP_FLAGS = --with-modules
 
 BUILT_SOURCES += libvirt_probes.h libvirt_probes.stp libvirt_functions.stp
 
-if WITH_QEMU
-libvirt_driver_qemu_la_LIBADD += libvirt_qemu_probes.lo
-nodist_libvirt_driver_qemu_la_SOURCES = libvirt_qemu_probes.h
-BUILT_SOURCES += libvirt_qemu_probes.h
-endif WITH_QEMU
 
 tapsetdir = $(datadir)/systemtap/tapset
-tapset_DATA = libvirt_probes.stp libvirt_qemu_probes.stp libvirt_functions.stp
+tapset_DATA += libvirt_probes.stp libvirt_functions.stp
 
 %_probes.h: %_probes.d
 	$(AM_V_GEN)$(DTRACE) -o $@ -h -s $<
@@ -2353,13 +2274,10 @@ libvirt_functions.stp: $(RPC_PROBE_FILES) $(srcdir)/rpc/gensystemtap.pl
 	  $(DTRACE2SYSTEMTAP_FLAGS) $(bindir) $(sbindir) $(libdir) $< > $@
 
 CLEANFILES += libvirt_probes.h libvirt_probes.o libvirt_probes.lo \
-              libvirt_qemu_probes.h libvirt_qemu_probes.o \
-              libvirt_qemu_probes.lo\
-              libvirt_functions.stp libvirt_probes.stp \
-              libvirt_qemu_probes.stp
+              libvirt_functions.stp libvirt_probes.stp
 endif WITH_DTRACE_PROBES
 
-EXTRA_DIST += libvirt_probes.d libvirt_qemu_probes.d
+EXTRA_DIST += libvirt_probes.d
 
 libvirt_qemu_la_SOURCES = libvirt-qemu.c
 libvirt_qemu_la_LDFLAGS = \
@@ -3344,12 +3262,6 @@ endif WITH_LIBVIRTD
 if WITH_SANLOCK
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock"
 endif WITH_SANLOCK
-if WITH_QEMU
-	$(MKDIR_P) -m 0751 "$(DESTDIR)$(localstatedir)/lib/libvirt/qemu"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/qemu"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt/qemu"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/qemu"
-endif WITH_QEMU
 if WITH_LXC
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lxc"
@@ -3399,12 +3311,6 @@ endif WITH_LIBVIRTD
 if WITH_SANLOCK
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock" ||:
 endif WITH_SANLOCK
-if WITH_QEMU
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/qemu" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/qemu" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/cache/libvirt/qemu" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/qemu" ||:
-endif WITH_QEMU
 if WITH_LXC
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lxc" ||:
