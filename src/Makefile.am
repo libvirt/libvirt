@@ -100,6 +100,7 @@ include vz/Makefile.inc.am
 include lxc/Makefile.inc.am
 include interface/Makefile.inc.am
 include network/Makefile.inc.am
+include nwfilter/Makefile.inc.am
 
 
 THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
@@ -790,7 +791,6 @@ DRIVER_SOURCE_FILES += \
 	$(NODE_DEVICE_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
 	$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
-	$(NWFILTER_DRIVER_SOURCES) \
 	$(REMOTE_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
@@ -798,7 +798,6 @@ DRIVER_SOURCE_FILES += \
 
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(NODE_DEVICE_DRIVER_SOURCES) \
-	$(NWFILTER_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
 	$(NULL)
@@ -890,19 +889,6 @@ STORAGE_HELPER_DISK_SOURCES = \
 
 UTIL_IO_HELPER_SOURCES = \
 		util/iohelper.c
-
-# Network filters
-NWFILTER_DRIVER_SOURCES = \
-		nwfilter/nwfilter_driver.h nwfilter/nwfilter_driver.c \
-		nwfilter/nwfilter_tech_driver.h \
-		nwfilter/nwfilter_gentech_driver.c \
-		nwfilter/nwfilter_gentech_driver.h \
-		nwfilter/nwfilter_dhcpsnoop.c \
-		nwfilter/nwfilter_dhcpsnoop.h \
-		nwfilter/nwfilter_ebiptables_driver.c \
-		nwfilter/nwfilter_ebiptables_driver.h \
-		nwfilter/nwfilter_learnipaddr.c \
-		nwfilter/nwfilter_learnipaddr.h
 
 
 # Security framework and drivers for various models
@@ -1369,29 +1355,6 @@ libvirt_driver_nodedev_la_LIBADD += ../gnulib/lib/libgnu.la
 endif WITH_NODE_DEVICES
 
 
-if WITH_NWFILTER
-noinst_LTLIBRARIES += libvirt_driver_nwfilter_impl.la
-libvirt_driver_nwfilter_la_SOURCES =
-libvirt_driver_nwfilter_la_LIBADD = libvirt_driver_nwfilter_impl.la
-mod_LTLIBRARIES += libvirt_driver_nwfilter.la
-libvirt_driver_nwfilter_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-libvirt_driver_nwfilter_impl_la_CFLAGS = \
-		$(LIBPCAP_CFLAGS) \
-		$(LIBNL_CFLAGS) \
-		$(DBUS_CFLAGS) \
-		-I$(srcdir)/access \
-		-I$(srcdir)/conf \
-		$(AM_CFLAGS)
-libvirt_driver_nwfilter_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_nwfilter_impl_la_LIBADD = \
-		libvirt.la \
-		$(LIBPCAP_LIBS) \
-		$(LIBNL_LIBS) \
-		$(DBUS_LIBS)
-libvirt_driver_nwfilter_impl_la_LIBADD += ../gnulib/lib/libgnu.la
-libvirt_driver_nwfilter_impl_la_SOURCES = $(NWFILTER_DRIVER_SOURCES)
-endif WITH_NWFILTER
-
 
 libvirt_security_manager_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
 noinst_LTLIBRARIES += libvirt_security_manager.la
@@ -1519,7 +1482,6 @@ EXTRA_DIST += \
 		$(NODE_DEVICE_DRIVER_SOURCES) \
 		$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
 		$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
-		$(NWFILTER_DRIVER_SOURCES) \
 		$(SECURITY_DRIVER_SELINUX_SOURCES) \
 		$(SECURITY_DRIVER_APPARMOR_SOURCES) \
 		$(SECRET_DRIVER_SOURCES) \
