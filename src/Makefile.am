@@ -98,6 +98,7 @@ include security/Makefile.inc.am
 include access/Makefile.inc.am
 include logging/Makefile.inc.am
 include locking/Makefile.inc.am
+include admin/Makefile.inc.am
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
 include test/Makefile.inc.am
@@ -358,30 +359,6 @@ DRIVER_SOURCES += \
 
 
 
-ADMIN_PROTOCOL = $(srcdir)/admin/admin_protocol.x
-
-ADMIN_PROTOCOL_GENERATED = \
-		admin/admin_protocol.c \
-		admin/admin_protocol.h \
-		admin/admin_client.h \
-		admin/admin_server_dispatch_stubs.h \
-		$(NULL)
-
-admin/admin_client.h: $(srcdir)/rpc/gendispatch.pl \
-		$(ADMIN_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  admin ADMIN $(ADMIN_PROTOCOL) \
-	  > $(srcdir)/admin/admin_client.h
-
-admin/admin_server_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
-		$(ADMIN_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=server \
-	  admin ADMIN $(ADMIN_PROTOCOL) \
-	  > $(srcdir)/admin/admin_server_dispatch_stubs.h
-
-EXTRA_DIST += $(ADMIN_PROTOCOL) $(ADMIN_PROTOCOL_GENERATED)
-BUILT_SOURCES += $(ADMIN_PROTOCOL_GENERATED)
-MAINTAINERCLEANFILES += $(ADMIN_PROTOCOL_GENERATED)
 
 # Ensure that we don't change the struct or member names or member ordering
 # in remote_protocol.x  The embedded perl below needs a few comments, and
@@ -757,31 +734,6 @@ libvirt_admin.syms: libvirt_admin_public.syms $(ADMIN_SYM_FILES) \
 	chmod a-w $@-tmp && \
 	mv $@-tmp libvirt_admin.syms
 
-
-admin/admin_server_dispatch.c: admin/admin_server_dispatch_stubs.h
-
-noinst_LTLIBRARIES += libvirt_driver_admin.la
-libvirt_driver_admin_la_SOURCES = \
-		admin/admin_protocol.c \
-		admin/admin_protocol.h \
-		admin/admin_server.c \
-		admin/admin_server.h \
-		admin/admin_server_dispatch.c \
-		admin/admin_server_dispatch.h \
-		admin/admin_server_dispatch_stubs.h \
-		$(NULL)
-libvirt_driver_admin_la_CFLAGS = \
-		$(AM_CFLAGS) \
-		$(XDR_CFLAGS) \
-		-I$(top_srcdir)/src/util \
-		-I$(top_srcdir)/src/admin \
-		$(NULL)
-libvirt_driver_admin_la_LIBADD = ../gnulib/lib/libgnu.la
-libvirt_driver_admin_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
-
-# admin/admin_remote.c is being included in libvirt-admin.c, so we
-# need to include it in the dist
-EXTRA_DIST += admin/admin_remote.c
 
 lib_LTLIBRARIES += libvirt-admin.la
 libvirt_admin_la_SOURCES = \
