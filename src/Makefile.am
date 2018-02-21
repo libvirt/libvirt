@@ -68,8 +68,10 @@ STATEFUL_DRIVER_SOURCE_FILES =
 noinst_LTLIBRARIES =
 mod_LTLIBRARIES =
 INSTALL_DATA_DIRS =
+libvirt_la_BUILT_LIBADD =
 
 include uml/Makefile.inc.am
+include phyp/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -770,7 +772,6 @@ DRIVER_SOURCE_FILES += \
 	$(NWFILTER_DRIVER_SOURCES) \
 	$(OPENVZ_DRIVER_SOURCES) \
 	$(VZ_DRIVER_SOURCES) \
-	$(PHYP_DRIVER_SOURCES) \
 	$(QEMU_DRIVER_SOURCES) \
 	$(REMOTE_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
@@ -909,9 +910,6 @@ LXC_CONTROLLER_SOURCES = \
 SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
 		$(DATATYPES_SOURCES) \
 		security/virt-aa-helper.c
-
-PHYP_DRIVER_SOURCES = \
-		phyp/phyp_driver.c phyp/phyp_driver.h
 
 OPENVZ_DRIVER_SOURCES = \
 		openvz/openvz_conf.c openvz/openvz_conf.h \
@@ -1261,7 +1259,7 @@ EXTRA_DIST +=	$(pkgdata_DATA)
 
 noinst_LTLIBRARIES += libvirt_util.la
 libvirt_la_LIBADD = $(libvirt_la_BUILT_LIBADD)
-libvirt_la_BUILT_LIBADD = libvirt_util.la
+libvirt_la_BUILT_LIBADD += libvirt_util.la
 libvirt_util_la_SOURCES = \
 		$(UTIL_SOURCES)
 libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
@@ -1478,15 +1476,6 @@ libvirt_driver_xen_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_xen_impl_la_LIBADD = $(XEN_LIBS) libvirt_xenconfig.la
 libvirt_driver_xen_impl_la_SOURCES = $(XEN_DRIVER_SOURCES)
 endif WITH_XEN
-
-if WITH_PHYP
-noinst_LTLIBRARIES += libvirt_driver_phyp.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_phyp.la
-libvirt_driver_phyp_la_LIBADD = $(SSH2_LIBS)
-libvirt_driver_phyp_la_CFLAGS = $(SSH2_CFLAGS) \
-		-I$(srcdir)/conf $(AM_CFLAGS)
-libvirt_driver_phyp_la_SOURCES = $(PHYP_DRIVER_SOURCES)
-endif WITH_PHYP
 
 if WITH_OPENVZ
 noinst_LTLIBRARIES += libvirt_driver_openvz.la
@@ -2125,7 +2114,6 @@ EXTRA_DIST += \
 		$(QEMU_DRIVER_SOURCES) \
 		$(LXC_DRIVER_SOURCES) \
 		$(OPENVZ_DRIVER_SOURCES) \
-		$(PHYP_DRIVER_SOURCES) \
 		$(VBOX_DRIVER_SOURCES) \
 		$(XENAPI_DRIVER_SOURCES) \
 		$(LIBXL_DRIVER_SOURCES) \
