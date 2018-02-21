@@ -1,0 +1,106 @@
+NETWORK_DRIVER_SOURCES = \
+	network/bridge_driver.h \
+	network/bridge_driver.c \
+	network/bridge_driver_platform.h \
+	network/bridge_driver_platform.c \
+	$(NULL)
+
+NETWORK_DRIVER_PLATFORM_INC = \
+	network/bridge_driver_linux.c \
+	network/bridge_driver_nop.c \
+	$(NULL)
+
+NETWORK_LEASES_HELPER_SOURCES = \
+	network/leaseshelper.c \
+	$(NULL)
+
+DRIVER_SOURCE_FILES += $(NETWORK_DRIVER_SOURCES)
+STATEFUL_DRIVER_SOURCE_FILES += $(NETWORK_DRIVER_SOURCES)
+EXTRA_DIST += \
+	$(NETWORK_DRIVER_SOURCES) \
+	$(NETWORK_DRIVER_PLATFORM_INC) \
+	$(NETWORK_LEASES_HELPER_SOURCES) \
+	$(NULL)
+
+
+if WITH_NETWORK
+
+noinst_LTLIBRARIES += libvirt_driver_network_impl.la
+libvirt_driver_network_la_SOURCES =
+libvirt_driver_network_la_LIBADD = \
+	libvirt_driver_network_impl.la \
+	libvirt.la \
+	../gnulib/lib/libgnu.la \
+	$(LIBNL_LIBS) \
+	$(DBUS_LIBS) \
+	$(NULL)
+mod_LTLIBRARIES += libvirt_driver_network.la
+libvirt_driver_network_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
+
+libvirt_driver_network_impl_la_CFLAGS = \
+	$(LIBNL_CFLAGS) \
+	$(DBUS_CFLAGS) \
+	-I$(srcdir)/access \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_network_impl_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
+libvirt_driver_network_impl_la_LIBADD  = $(DBUS_LIBS)
+
+libexec_PROGRAMS += libvirt_leaseshelper
+libvirt_leaseshelper_SOURCES = $(NETWORK_LEASES_HELPER_SOURCES)
+libvirt_leaseshelper_LDFLAGS = \
+	$(AM_LDFLAGS) \
+	$(PIE_LDFLAGS) \
+	$(NULL)
+libvirt_leaseshelper_LDADD = \
+	libvirt_util.la \
+	../gnulib/lib/libgnu.la
+if WITH_DTRACE_PROBES
+libvirt_leaseshelper_LDADD += libvirt_probes.lo
+endif WITH_DTRACE_PROBES
+
+libvirt_leaseshelper_CFLAGS = \
+	$(AM_CFLAGS) \
+	$(PIE_CFLAGS) \
+	$(NULL)
+
+INSTALL_DATA_DIRS += network
+
+UUID=$(shell uuidgen 2>/dev/null)
+
+install-data-network:
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/network"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/dnsmasq"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/network"
+	$(MKDIR_P) "$(DESTDIR)$(confdir)/qemu/networks/autostart"
+	$(INSTALL_DATA) $(srcdir)/network/default.xml \
+	  $(DESTDIR)$(confdir)/qemu/networks/default.xml
+	test -z "$(UUID)" || \
+	  { sed -e "s,</name>,</name>;  <uuid>$(UUID)</uuid>," \
+	      $(DESTDIR)$(confdir)/qemu/networks/default.xml | \
+	      tr ";" "\n" > \
+	      $(DESTDIR)$(confdir)/qemu/networks/default.xml.t && \
+	    cp $(DESTDIR)$(confdir)/qemu/networks/default.xml.t \
+	      $(DESTDIR)$(confdir)/qemu/networks/default.xml && \
+	    rm $(DESTDIR)$(confdir)/qemu/networks/default.xml.t; }
+	( cd $(DESTDIR)$(confdir)/qemu/networks/autostart && \
+	  rm -f default.xml && \
+	  $(LN_S) ../default.xml default.xml )
+
+uninstall-data-network:
+	rm -f $(DESTDIR)$(confdir)/qemu/networks/autostart/default.xml
+	rm -f $(DESTDIR)$(confdir)/qemu/networks/default.xml
+	rmdir "$(DESTDIR)$(confdir)/qemu/networks/autostart" || :
+	rmdir "$(DESTDIR)$(confdir)/qemu/networks" || :
+	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/network" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/network" ||:
+
+endif WITH_NETWORK
+
+EXTRA_DIST += network/default.xml
+
+.PHONY: \
+	install-data-network \
+	uninstall-data-network \
+	$(NULL)

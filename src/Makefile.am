@@ -99,6 +99,7 @@ include xenapi/Makefile.inc.am
 include vz/Makefile.inc.am
 include lxc/Makefile.inc.am
 include interface/Makefile.inc.am
+include network/Makefile.inc.am
 
 
 THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
@@ -114,9 +115,6 @@ SECDRIVER_CFLAGS += $(APPARMOR_CFLAGS)
 SECDRIVER_LIBS += $(APPARMOR_LIBS)
 endif WITH_SECDRIVER_APPARMOR
 
-if WITH_NETWORK
-UUID=$(shell uuidgen 2>/dev/null)
-endif WITH_NETWORK
 
 lib_LTLIBRARIES = libvirt.la libvirt-qemu.la libvirt-lxc.la
 
@@ -789,7 +787,6 @@ check-drivername:
 EXTRA_DIST += check-drivername.pl
 
 DRIVER_SOURCE_FILES += \
-	$(NETWORK_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
 	$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
@@ -800,7 +797,6 @@ DRIVER_SOURCE_FILES += \
 	$(NULL)
 
 STATEFUL_DRIVER_SOURCE_FILES += \
-	$(NETWORK_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_SOURCES) \
 	$(NWFILTER_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
@@ -837,12 +833,6 @@ SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
 		$(DATATYPES_SOURCES) \
 		security/virt-aa-helper.c
 
-NETWORK_DRIVER_SOURCES = \
-		network/bridge_driver.h network/bridge_driver.c \
-		network/bridge_driver_platform.h \
-		network/bridge_driver_platform.c \
-		$(NULL)
-EXTRA_DIST += network/bridge_driver_linux.c network/bridge_driver_nop.c
 
 SECRET_UTIL_SOURCES = \
 		secret/secret_util.h secret/secret_util.c
@@ -900,9 +890,6 @@ STORAGE_HELPER_DISK_SOURCES = \
 
 UTIL_IO_HELPER_SOURCES = \
 		util/iohelper.c
-
-NETWORK_LEASES_HELPER_SOURCES = \
-               network/leaseshelper.c
 
 # Network filters
 NWFILTER_DRIVER_SOURCES = \
@@ -1174,27 +1161,6 @@ EXTRA_DIST += \
 	       $< $(srcdir)/$(subst $(srcdir)/,,$@)
 
 
-if WITH_NETWORK
-noinst_LTLIBRARIES += libvirt_driver_network_impl.la
-libvirt_driver_network_la_SOURCES =
-libvirt_driver_network_la_LIBADD = libvirt_driver_network_impl.la
-mod_LTLIBRARIES += libvirt_driver_network.la
-libvirt_driver_network_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la \
-	$(LIBNL_LIBS) \
-	$(DBUS_LIBS) \
-	$(NULL)
-libvirt_driver_network_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
-libvirt_driver_network_impl_la_CFLAGS = \
-		$(LIBNL_CFLAGS) \
-		$(DBUS_CFLAGS) \
-		-I$(srcdir)/access \
-		-I$(srcdir)/conf \
-		$(AM_CFLAGS)
-libvirt_driver_network_impl_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
-libvirt_driver_network_impl_la_LIBADD  = $(DBUS_LIBS)
-endif WITH_NETWORK
-EXTRA_DIST += network/default.xml
 
 
 if WITH_SECRETS
@@ -1538,7 +1504,6 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 # Add all conditional sources just in case...
 EXTRA_DIST += \
 		$(REMOTE_DRIVER_SOURCES) \
-		$(NETWORK_DRIVER_SOURCES) \
 		$(STORAGE_DRIVER_SOURCES) \
 		$(STORAGE_DRIVER_FS_SOURCES) \
 		$(STORAGE_DRIVER_LVM_SOURCES) \
@@ -2660,27 +2625,6 @@ libvirt_iohelper_CFLAGS = \
 		$(PIE_CFLAGS) \
 		$(NULL)
 
-if WITH_NETWORK
-libexec_PROGRAMS += libvirt_leaseshelper
-libvirt_leaseshelper_SOURCES = $(NETWORK_LEASES_HELPER_SOURCES)
-libvirt_leaseshelper_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(PIE_LDFLAGS) \
-		$(NULL)
-libvirt_leaseshelper_LDADD = \
-               libvirt_util.la \
-               ../gnulib/lib/libgnu.la
-if WITH_DTRACE_PROBES
-libvirt_leaseshelper_LDADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-libvirt_leaseshelper_CFLAGS = \
-	       $(AM_CFLAGS) \
-               $(PIE_CFLAGS) \
-               $(NULL)
-else ! WITH_NETWORK
-EXTRA_DIST += $(NETWORK_LEASES_HELPER_SOURCES)
-endif ! WITH_NETWORK
 
 endif WITH_LIBVIRTD
 
@@ -2842,25 +2786,6 @@ endif WITH_LIBVIRTD
 if WITH_SANLOCK
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock"
 endif WITH_SANLOCK
-if WITH_NETWORK
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/network"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/dnsmasq"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/network"
-	$(MKDIR_P) "$(DESTDIR)$(confdir)/qemu/networks/autostart"
-	$(INSTALL_DATA) $(srcdir)/network/default.xml \
-	  $(DESTDIR)$(confdir)/qemu/networks/default.xml
-	test -z "$(UUID)" || \
-	  { sed -e "s,</name>,</name>;  <uuid>$(UUID)</uuid>," \
-	      $(DESTDIR)$(confdir)/qemu/networks/default.xml | \
-	      tr ";" "\n" > \
-	      $(DESTDIR)$(confdir)/qemu/networks/default.xml.t && \
-	    cp $(DESTDIR)$(confdir)/qemu/networks/default.xml.t \
-	      $(DESTDIR)$(confdir)/qemu/networks/default.xml && \
-	    rm $(DESTDIR)$(confdir)/qemu/networks/default.xml.t; }
-	( cd $(DESTDIR)$(confdir)/qemu/networks/autostart && \
-	  rm -f default.xml && \
-	  $(LN_S) ../default.xml default.xml )
-endif WITH_NETWORK
 
 uninstall-local:: uninstall-init uninstall-systemd uninstall-upstart \
 		uninstall-sysctl uninstall-polkit uninstall-sasl \
@@ -2878,14 +2803,6 @@ endif WITH_LIBVIRTD
 if WITH_SANLOCK
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock" ||:
 endif WITH_SANLOCK
-if WITH_NETWORK
-	rm -f $(DESTDIR)$(confdir)/qemu/networks/autostart/default.xml
-	rm -f $(DESTDIR)$(confdir)/qemu/networks/default.xml
-	rmdir "$(DESTDIR)$(confdir)/qemu/networks/autostart" || :
-	rmdir "$(DESTDIR)$(confdir)/qemu/networks" || :
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/network" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/network" ||:
-endif WITH_NETWORK
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt" ||:
 
 CLEANFILES += *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda *.i *.s
