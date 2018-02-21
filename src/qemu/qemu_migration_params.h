@@ -28,6 +28,25 @@
 # include "qemu_conf.h"
 
 
+typedef struct _qemuMigrationCompression qemuMigrationCompression;
+typedef qemuMigrationCompression *qemuMigrationCompressionPtr;
+struct _qemuMigrationCompression {
+    unsigned long long methods;
+
+    bool level_set;
+    int level;
+
+    bool threads_set;
+    int threads;
+
+    bool dthreads_set;
+    int dthreads;
+
+    bool xbzrle_cache_set;
+    unsigned long long xbzrle_cache;
+};
+
+
 qemuMonitorMigrationParamsPtr
 qemuMigrationParamsNew(void);
 
