@@ -92,6 +92,7 @@ sbin_PROGRAMS =
 man8_MANS =
 
 include conf/Makefile.inc.am
+include cpu/Makefile.inc.am
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
 include test/Makefile.inc.am
@@ -699,14 +700,6 @@ ACCESS_DRIVER_POLKIT_POLICY = \
 		$(srcdir)/access/org.libvirt.api.policy
 
 
-CPU_SOURCES = \
-		cpu/cpu.h cpu/cpu.c \
-		cpu/cpu_x86.h cpu/cpu_x86.c cpu/cpu_x86_data.h \
-		cpu/cpu_s390.h cpu/cpu_s390.c \
-		cpu/cpu_arm.h cpu/cpu_arm.c \
-		cpu/cpu_ppc64.h cpu/cpu_ppc64.c \
-		cpu/cpu_ppc64_data.h \
-		cpu/cpu_map.h cpu/cpu_map.c
 
 VMX_SOURCES = \
 		vmx/vmx.c vmx/vmx.h
@@ -737,12 +730,6 @@ libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
 		$(SECDRIVER_LIBS) $(NUMACTL_LIBS) $(ACL_LIBS) \
 		$(POLKIT_LIBS) $(GNUTLS_LIBS)
 
-
-noinst_LTLIBRARIES += libvirt_cpu.la
-libvirt_la_BUILT_LIBADD += libvirt_cpu.la
-libvirt_cpu_la_CFLAGS = \
-		-I$(srcdir)/conf $(AM_CFLAGS)
-libvirt_cpu_la_SOURCES = $(CPU_SOURCES)
 
 if WITH_VMX
 noinst_LTLIBRARIES += libvirt_vmx.la
