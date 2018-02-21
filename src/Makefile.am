@@ -93,6 +93,7 @@ man8_MANS =
 
 include conf/Makefile.inc.am
 include cpu/Makefile.inc.am
+include security/Makefile.inc.am
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
 include test/Makefile.inc.am
@@ -643,29 +644,11 @@ check-local: check-protocol check-symfile check-symsorting \
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 
-SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
-		$(DATATYPES_SOURCES) \
-		security/virt-aa-helper.c
-
 
 
 UTIL_IO_HELPER_SOURCES = \
 		util/iohelper.c
 
-
-# Security framework and drivers for various models
-SECURITY_DRIVER_SOURCES = \
-		security/security_driver.h security/security_driver.c \
-		security/security_nop.h security/security_nop.c \
-		security/security_stack.h security/security_stack.c \
-		security/security_dac.h security/security_dac.c \
-		security/security_manager.h security/security_manager.c
-
-SECURITY_DRIVER_SELINUX_SOURCES = \
-		security/security_selinux.h security/security_selinux.c
-
-SECURITY_DRIVER_APPARMOR_SOURCES = \
-		security/security_apparmor.h security/security_apparmor.c
 
 ACCESS_DRIVER_GENERATED = \
 		access/viraccessapicheck.h \
@@ -775,22 +758,6 @@ GENERATED_SYM_FILES += \
 
 
 
-libvirt_security_manager_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
-noinst_LTLIBRARIES += libvirt_security_manager.la
-libvirt_la_BUILT_LIBADD += libvirt_security_manager.la
-libvirt_security_manager_la_CFLAGS = \
-		-I$(srcdir)/conf $(AM_CFLAGS)
-libvirt_security_manager_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_security_manager_la_LIBADD = $(SECDRIVER_LIBS)
-if WITH_SECDRIVER_SELINUX
-libvirt_security_manager_la_SOURCES += $(SECURITY_DRIVER_SELINUX_SOURCES)
-libvirt_security_manager_la_CFLAGS += $(SELINUX_CFLAGS)
-endif WITH_SECDRIVER_SELINUX
-if WITH_SECDRIVER_APPARMOR
-libvirt_security_manager_la_SOURCES += $(SECURITY_DRIVER_APPARMOR_SOURCES)
-libvirt_security_manager_la_CFLAGS += $(APPARMOR_CFLAGS)
-endif WITH_SECDRIVER_APPARMOR
-
 libvirt_driver_access_la_SOURCES = \
 	$(ACCESS_DRIVER_SOURCES) $(ACCESS_DRIVER_GENERATED)
 noinst_LTLIBRARIES += libvirt_driver_access.la
@@ -885,8 +852,6 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 
 # Add all conditional sources just in case...
 EXTRA_DIST += \
-		$(SECURITY_DRIVER_SELINUX_SOURCES) \
-		$(SECURITY_DRIVER_APPARMOR_SOURCES) \
 		$(ACCESS_DRIVER_POLKIT_POLICY)
 
 check-local: check-augeas
@@ -1879,34 +1844,6 @@ libvirt_sanlock_helper_LDADD = libvirt.la
 endif WITH_SANLOCK
 
 
-if WITH_SECDRIVER_APPARMOR
-if WITH_LIBVIRTD
-libexec_PROGRAMS += virt-aa-helper
-
-virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
-
-virt_aa_helper_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(PIE_LDFLAGS) \
-		$(NULL)
-virt_aa_helper_LDADD = \
-		libvirt.la \
-		libvirt_conf.la \
-		libvirt_util.la \
-		libvirt_driver_storage_impl.la \
-		../gnulib/lib/libgnu.la
-if WITH_DTRACE_PROBES
-virt_aa_helper_LDADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-virt_aa_helper_CFLAGS = \
-		-I$(srcdir)/conf \
-		-I$(srcdir)/security \
-		$(AM_CFLAGS) \
-		$(PIE_CFLAGS) \
-		$(NULL)
-endif WITH_LIBVIRTD
-endif WITH_SECDRIVER_APPARMOR
-EXTRA_DIST += $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
 if WITH_NSS
 noinst_LTLIBRARIES += libvirt-nss.la

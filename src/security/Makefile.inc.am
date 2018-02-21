@@ -1,0 +1,80 @@
+SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
+	$(DATATYPES_SOURCES) \
+	security/virt-aa-helper.c \
+	$(NULL)
+
+SECURITY_DRIVER_SOURCES = \
+	security/security_driver.h \
+	security/security_driver.c \
+	security/security_nop.h \
+	security/security_nop.c \
+	security/security_stack.h \
+	security/security_stack.c \
+	security/security_dac.h \
+	security/security_dac.c \
+	security/security_manager.h \
+	security/security_manager.c \
+	$(NULL)
+
+SECURITY_DRIVER_SELINUX_SOURCES = \
+	security/security_selinux.h \
+	security/security_selinux.c \
+	$(NULL)
+
+SECURITY_DRIVER_APPARMOR_SOURCES = \
+	security/security_apparmor.h \
+	security/security_apparmor.c \
+	$(NULL)
+
+EXTRA_DIST += \
+	$(SECURITY_DRIVER_SELINUX_SOURCES) \
+	$(SECURITY_DRIVER_APPARMOR_SOURCES) \
+	$(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES) \
+	$(NULL)
+
+libvirt_security_manager_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
+noinst_LTLIBRARIES += libvirt_security_manager.la
+libvirt_la_BUILT_LIBADD += libvirt_security_manager.la
+libvirt_security_manager_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_security_manager_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_security_manager_la_LIBADD =
+
+if WITH_SECDRIVER_SELINUX
+libvirt_security_manager_la_SOURCES += $(SECURITY_DRIVER_SELINUX_SOURCES)
+libvirt_security_manager_la_CFLAGS += $(SELINUX_CFLAGS)
+endif WITH_SECDRIVER_SELINUX
+
+if WITH_SECDRIVER_APPARMOR
+libvirt_security_manager_la_SOURCES += $(SECURITY_DRIVER_APPARMOR_SOURCES)
+libvirt_security_manager_la_CFLAGS += $(APPARMOR_CFLAGS)
+
+if WITH_LIBVIRTD
+libexec_PROGRAMS += virt-aa-helper
+
+virt_aa_helper_SOURCES = $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
+
+virt_aa_helper_LDFLAGS = \
+	$(AM_LDFLAGS) \
+	$(PIE_LDFLAGS) \
+	$(NULL)
+virt_aa_helper_LDADD = \
+	libvirt.la \
+	libvirt_conf.la \
+	libvirt_util.la \
+	libvirt_driver_storage_impl.la \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
+if WITH_DTRACE_PROBES
+virt_aa_helper_LDADD += libvirt_probes.lo
+endif WITH_DTRACE_PROBES
+virt_aa_helper_CFLAGS = \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/security \
+	$(AM_CFLAGS) \
+	$(PIE_CFLAGS) \
+	$(NULL)
+endif WITH_LIBVIRTD
+endif WITH_SECDRIVER_APPARMOR
