@@ -94,6 +94,7 @@ include xenconfig/Makefile.inc.am
 include libxl/Makefile.inc.am
 include xen/Makefile.inc.am
 include xenapi/Makefile.inc.am
+include vz/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -787,7 +788,6 @@ DRIVER_SOURCE_FILES += \
 	$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
 	$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
 	$(NWFILTER_DRIVER_SOURCES) \
-	$(VZ_DRIVER_SOURCES) \
 	$(REMOTE_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
@@ -801,7 +801,6 @@ STATEFUL_DRIVER_SOURCE_FILES += \
 	$(NWFILTER_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
-	$(VZ_DRIVER_SOURCES) \
 	$(NULL)
 
 
@@ -899,14 +898,6 @@ LXC_CONTROLLER_SOURCES = \
 SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
 		$(DATATYPES_SOURCES) \
 		security/virt-aa-helper.c
-
-VZ_DRIVER_SOURCES = \
-		vz/vz_driver.h \
-		vz/vz_driver.c \
-		vz/vz_utils.c \
-		vz/vz_utils.h \
-		vz/vz_sdk.h \
-		vz/vz_sdk.c
 
 NETWORK_DRIVER_SOURCES = \
 		network/bridge_driver.h network/bridge_driver.c \
@@ -1304,25 +1295,6 @@ EXTRA_DIST += lxc/lxc.conf lxc/libvirtd_lxc.aug lxc/test_libvirtd_lxc.aug.in
 
 
 
-
-
-if WITH_VZ
-noinst_LTLIBRARIES += libvirt_driver_vz_impl.la
-libvirt_driver_vz_la_SOURCES =
-libvirt_driver_vz_la_LIBADD = libvirt_driver_vz_impl.la
-mod_LTLIBRARIES += libvirt_driver_vz.la
-libvirt_driver_vz_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
-libvirt_driver_vz_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-libvirt_driver_vz_impl_la_CFLAGS = \
-		-I$(srcdir)/conf \
-		-I$(srcdir)/access \
-		$(AM_CFLAGS) \
-		$(PARALLELS_SDK_CFLAGS) $(LIBNL_CFLAGS)
-libvirt_driver_vz_impl_la_SOURCES = $(VZ_DRIVER_SOURCES)
-libvirt_driver_vz_impl_la_LIBADD =  $(PARALLELS_SDK_LIBS) $(LIBNL_LIBS)
-endif WITH_VZ
-
-
 if WITH_NETWORK
 noinst_LTLIBRARIES += libvirt_driver_network_impl.la
 libvirt_driver_network_la_SOURCES =
@@ -1708,7 +1680,6 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 EXTRA_DIST += \
 		$(REMOTE_DRIVER_SOURCES) \
 		$(LXC_DRIVER_SOURCES) \
-		$(VZ_DRIVER_SOURCES) \
 		$(NETWORK_DRIVER_SOURCES) \
 		$(INTERFACE_DRIVER_SOURCES) \
 		$(STORAGE_DRIVER_SOURCES) \
