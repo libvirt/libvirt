@@ -107,6 +107,7 @@ include phyp/Makefile.inc.am
 include test/Makefile.inc.am
 include esx/Makefile.inc.am
 include hyperv/Makefile.inc.am
+include vmx/Makefile.inc.am
 include vmware/Makefile.inc.am
 include vbox/Makefile.inc.am
 include openvz/Makefile.inc.am
@@ -361,9 +362,6 @@ check-local: check-protocol check-symfile check-symsorting \
 
 
 
-VMX_SOURCES = \
-		vmx/vmx.c vmx/vmx.h
-
 
 pkgdata_DATA =	cpu/cpu_map.xml
 
@@ -374,15 +372,6 @@ EXTRA_DIST +=	$(pkgdata_DATA)
 # Build up list of libvirt.la source files based on configure conditions
 #
 # First deal with sources usable in non-daemon context
-
-
-if WITH_VMX
-noinst_LTLIBRARIES += libvirt_vmx.la
-libvirt_la_BUILT_LIBADD += libvirt_vmx.la
-libvirt_vmx_la_CFLAGS = \
-		-I$(srcdir)/conf $(AM_CFLAGS)
-libvirt_vmx_la_SOURCES = $(VMX_SOURCES)
-endif WITH_VMX
 
 
 noinst_LTLIBRARIES += libvirt_driver.la
@@ -454,12 +443,6 @@ USED_SYM_FILES += $(srcdir)/libvirt_linux.syms
 else ! WITH_LINUX
 SYM_FILES += $(srcdir)/libvirt_linux.syms
 endif ! WITH_LINUX
-
-if WITH_VMX
-USED_SYM_FILES += $(srcdir)/libvirt_vmx.syms
-else ! WITH_VMX
-SYM_FILES += $(srcdir)/libvirt_vmx.syms
-endif ! WITH_VMX
 
 if WITH_SASL
 USED_SYM_FILES += $(srcdir)/libvirt_sasl.syms
