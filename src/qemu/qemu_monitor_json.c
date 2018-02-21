@@ -6396,7 +6396,8 @@ qemuMonitorJSONBuildUnixSocketAddress(const char *path)
 int
 qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
                               const char *host,
-                              unsigned int port)
+                              unsigned int port,
+                              const char *tls_alias)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
@@ -6412,6 +6413,7 @@ qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
 
     if (!(cmd = qemuMonitorJSONMakeCommand("nbd-server-start",
                                            "a:addr", &addr,
+                                           "S:tls-creds", tls_alias,
                                            NULL)))
         goto cleanup;
 

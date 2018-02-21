@@ -1052,7 +1052,8 @@ char *qemuMonitorGetTargetArch(qemuMonitorPtr mon);
 
 int qemuMonitorNBDServerStart(qemuMonitorPtr mon,
                               const char *host,
-                              unsigned int port);
+                              unsigned int port,
+                              const char *tls_alias);
 int qemuMonitorNBDServerAdd(qemuMonitorPtr mon,
                             const char *deviceID,
                             bool writable);

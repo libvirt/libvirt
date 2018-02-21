@@ -1350,7 +1350,7 @@ GEN_TEST_FUNC(qemuMonitorJSONBlockCommit, "vdb", "/foo/bar1", "/foo/bar2", NULL,
 GEN_TEST_FUNC(qemuMonitorJSONDrivePivot, "vdb")
 GEN_TEST_FUNC(qemuMonitorJSONScreendump, "/foo/bar")
 GEN_TEST_FUNC(qemuMonitorJSONOpenGraphics, "spice", "spicefd", false)
-GEN_TEST_FUNC(qemuMonitorJSONNBDServerStart, "localhost", 12345)
+GEN_TEST_FUNC(qemuMonitorJSONNBDServerStart, "localhost", 12345, "test-alias")
 GEN_TEST_FUNC(qemuMonitorJSONNBDServerAdd, "vda", true)
 GEN_TEST_FUNC(qemuMonitorJSONDetachCharDev, "serial1")
 

@@ -411,7 +411,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
             else if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
                 goto exit_monitor;
 
-            if (qemuMonitorNBDServerStart(priv->mon, listenAddr, port) < 0)
+            if (qemuMonitorNBDServerStart(priv->mon, listenAddr, port, NULL) < 0)
                 goto exit_monitor;
         }
 
