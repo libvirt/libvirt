@@ -12759,7 +12759,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                                   flags, dname, bandwidth, true);
  cleanup:
     VIR_FREE(compression);
-    qemuMigrationParamsFree(&migParams);
+    qemuMigrationParamsFree(migParams);
     VIR_FREE(migrate_disks);
     return ret;
 }

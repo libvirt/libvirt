@@ -50,13 +50,13 @@ qemuMigrationParamsClear(qemuMonitorMigrationParamsPtr migParams)
 
 
 void
-qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr *migParams)
+qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr migParams)
 {
-    if (!*migParams)
+    if (!migParams)
         return;
 
-    qemuMigrationParamsClear(*migParams);
-    VIR_FREE(*migParams);
+    qemuMigrationParamsClear(migParams);
+    VIR_FREE(migParams);
 }
 
 
@@ -101,7 +101,7 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
     return migParams;
 
  error:
-    qemuMigrationParamsFree(&migParams);
+    qemuMigrationParamsFree(migParams);
     return NULL;
 }
 

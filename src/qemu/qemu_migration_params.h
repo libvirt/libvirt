@@ -37,7 +37,7 @@ void
 qemuMigrationParamsClear(qemuMonitorMigrationParamsPtr migParams);
 
 void
-qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr *migParams);
+qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr migParams);
 
 int
 qemuMigrationParamsSet(virQEMUDriverPtr driver,
