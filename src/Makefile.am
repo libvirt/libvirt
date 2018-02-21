@@ -89,6 +89,7 @@ include vmware/Makefile.inc.am
 include vbox/Makefile.inc.am
 include openvz/Makefile.inc.am
 include qemu/Makefile.inc.am
+include bhyve/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -792,7 +793,6 @@ DRIVER_SOURCE_FILES += \
 	$(NULL)
 
 STATEFUL_DRIVER_SOURCE_FILES += \
-	$(BHYVE_DRIVER_SOURCES) \
 	$(INTERFACE_DRIVER_SOURCES) \
 	$(LIBXL_DRIVER_SOURCES) \
 	$(LXC_DRIVER_SOURCES) \
@@ -932,28 +932,6 @@ VZ_DRIVER_SOURCES = \
 		vz/vz_utils.h \
 		vz/vz_sdk.h \
 		vz/vz_sdk.c
-
-BHYVE_DRIVER_SOURCES = \
-		bhyve/bhyve_capabilities.c \
-		bhyve/bhyve_capabilities.h \
-		bhyve/bhyve_command.c \
-		bhyve/bhyve_command.h \
-		bhyve/bhyve_conf.c \
-		bhyve/bhyve_conf.h \
-		bhyve/bhyve_parse_command.c \
-		bhyve/bhyve_parse_command.h \
-		bhyve/bhyve_device.c \
-		bhyve/bhyve_device.h \
-		bhyve/bhyve_domain.c \
-		bhyve/bhyve_domain.h \
-		bhyve/bhyve_driver.h \
-		bhyve/bhyve_driver.c \
-		bhyve/bhyve_monitor.c \
-		bhyve/bhyve_monitor.h \
-		bhyve/bhyve_process.c \
-		bhyve/bhyve_process.h \
-		bhyve/bhyve_utils.h \
-		$(NULL)
 
 NETWORK_DRIVER_SOURCES = \
 		network/bridge_driver.h network/bridge_driver.c \
@@ -1453,28 +1431,6 @@ libvirt_driver_vz_impl_la_SOURCES = $(VZ_DRIVER_SOURCES)
 libvirt_driver_vz_impl_la_LIBADD =  $(PARALLELS_SDK_LIBS) $(LIBNL_LIBS)
 endif WITH_VZ
 
-if WITH_BHYVE
-noinst_LTLIBRARIES += libvirt_driver_bhyve_impl.la
-libvirt_driver_bhyve_la_SOURCES =
-libvirt_driver_bhyve_la_LIBADD = libvirt_driver_bhyve_impl.la
-mod_LTLIBRARIES += libvirt_driver_bhyve.la
-libvirt_driver_bhyve_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
-libvirt_driver_bhyve_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
-libvirt_driver_bhyve_impl_la_CFLAGS = \
-	-I$(srcdir)/access \
-	-I$(srcdir)/conf \
-	$(AM_CFLAGS)
-libvirt_driver_bhyve_impl_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_bhyve_impl_la_SOURCES = $(BHYVE_DRIVER_SOURCES)
-
-conf_DATA += bhyve/bhyve.conf
-augeas_DATA += bhyve/libvirtd_bhyve.aug
-augeastest_DATA += test_libvirtd_bhyve.aug
-endif WITH_BHYVE
-EXTRA_DIST += bhyve/bhyve.conf \
-	bhyve/libvirtd_bhyve.aug \
-	bhyve/test_libvirtd_bhyve.aug.in
 
 if WITH_NETWORK
 noinst_LTLIBRARIES += libvirt_driver_network_impl.la
@@ -1865,7 +1821,6 @@ EXTRA_DIST += \
 		$(XENAPI_DRIVER_SOURCES) \
 		$(LIBXL_DRIVER_SOURCES) \
 		$(VZ_DRIVER_SOURCES) \
-		$(BHYVE_DRIVER_SOURCES) \
 		$(NETWORK_DRIVER_SOURCES) \
 		$(INTERFACE_DRIVER_SOURCES) \
 		$(STORAGE_DRIVER_SOURCES) \
@@ -1899,14 +1854,13 @@ check-local: check-augeas
 	check-augeas-sanlock \
 	check-augeas-lockd \
 	check-augeas-libxl \
-	check-augeas-bhyve \
 	check-augeas-libvirtd \
 	$(NULL)
 
 check-augeas: $(AUGEAS_DIRS:%=check-augeas-%) \
 	check-augeas-lxc check-augeas-sanlock \
 	check-augeas-lockd check-augeas-virtlockd check-augeas-libxl \
-	check-augeas-bhyve check-augeas-virtlogd check-augeas-libvirtd
+	check-augeas-virtlogd check-augeas-libvirtd
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
@@ -1976,18 +1930,6 @@ else ! WITH_LIBXL
 check-augeas-libxl:
 endif ! WITH_LIBXL
 
-if WITH_BHYVE
-test_libvirtd_bhyve.aug: bhyve/test_libvirtd_bhyve.aug.in \
-		$(srcdir)/bhyve/bhyve.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/bhyve/bhyve.conf $< $@
-
-check-augeas-bhyve: test_libvirtd_bhyve.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/bhyve test_libvirtd_bhyve.aug; \
-	fi
-else ! WITH_BHYVE
-check-augeas-bhyve:
-endif ! WITH_BHYVE
 
 test_virtlogd.aug: logging/test_virtlogd.aug.in \
 		logging/virtlogd.conf $(AUG_GENTEST)

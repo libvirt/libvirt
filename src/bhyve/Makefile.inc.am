@@ -1,0 +1,73 @@
+BHYVE_DRIVER_SOURCES = \
+	bhyve/bhyve_capabilities.c \
+	bhyve/bhyve_capabilities.h \
+	bhyve/bhyve_command.c \
+	bhyve/bhyve_command.h \
+	bhyve/bhyve_conf.c \
+	bhyve/bhyve_conf.h \
+	bhyve/bhyve_parse_command.c \
+	bhyve/bhyve_parse_command.h \
+	bhyve/bhyve_device.c \
+	bhyve/bhyve_device.h \
+	bhyve/bhyve_domain.c \
+	bhyve/bhyve_domain.h \
+	bhyve/bhyve_driver.h \
+	bhyve/bhyve_driver.c \
+	bhyve/bhyve_monitor.c \
+	bhyve/bhyve_monitor.h \
+	bhyve/bhyve_process.c \
+	bhyve/bhyve_process.h \
+	bhyve/bhyve_utils.h \
+	$(NULL)
+
+DRIVER_SOURCE_FILES += $(BHYVE_DRIVER_SOURCES)
+STATEFUL_DRIVER_SOURCE_FILES += $(BHYVE_DRIVER_SOURCES)
+
+EXTRA_DIST += $(BHYVE_DRIVER_SOURCES)
+
+
+if WITH_BHYVE
+noinst_LTLIBRARIES += libvirt_driver_bhyve_impl.la
+libvirt_driver_bhyve_la_SOURCES =
+libvirt_driver_bhyve_la_LIBADD = \
+	libvirt_driver_bhyve_impl.la \
+	libvirt.la \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
+mod_LTLIBRARIES += libvirt_driver_bhyve.la
+libvirt_driver_bhyve_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
+
+libvirt_driver_bhyve_impl_la_CFLAGS = \
+	-I$(srcdir)/access \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_bhyve_impl_la_LDFLAGS = $(AM_LDFLAGS)
+libvirt_driver_bhyve_impl_la_SOURCES = $(BHYVE_DRIVER_SOURCES)
+
+conf_DATA += bhyve/bhyve.conf
+augeas_DATA += bhyve/libvirtd_bhyve.aug
+augeastest_DATA += test_libvirtd_bhyve.aug
+
+AUGEAS_DIRS += bhyve
+
+test_libvirtd_bhyve.aug: bhyve/test_libvirtd_bhyve.aug.in \
+		$(srcdir)/bhyve/bhyve.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/bhyve/bhyve.conf $< $@
+
+check-augeas-bhyve: test_libvirtd_bhyve.aug
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
+	    '$(AUGPARSE)' -I $(srcdir)/bhyve test_libvirtd_bhyve.aug; \
+	fi
+
+endif WITH_BHYVE
+
+EXTRA_DIST += \
+	bhyve/bhyve.conf \
+	bhyve/libvirtd_bhyve.aug \
+	bhyve/test_libvirtd_bhyve.aug.in \
+	$(NULL)
+
+.PHONY: \
+	check-augeas-bhyve \
+	$(NULL)
