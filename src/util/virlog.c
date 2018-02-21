@@ -1219,9 +1219,8 @@ virLogGetOutputs(void)
         }
     }
 
-    if (virBufferError(&outputbuf)) {
+    if (virBufferError(&outputbuf))
         goto error;
-    }
 
     virLogUnlock();
     return virBufferContentAndReset(&outputbuf);
