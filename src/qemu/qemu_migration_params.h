@@ -37,9 +37,6 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              unsigned long flags);
 
 void
-qemuMigrationParamsClear(qemuMonitorMigrationParamsPtr migParams);
-
-void
 qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr migParams);
 
 int

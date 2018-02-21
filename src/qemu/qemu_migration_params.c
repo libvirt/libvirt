@@ -51,23 +51,13 @@ qemuMigrationParamsNew(void)
 
 
 void
-qemuMigrationParamsClear(qemuMonitorMigrationParamsPtr migParams)
+qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr migParams)
 {
     if (!migParams)
         return;
 
     VIR_FREE(migParams->tlsCreds);
     VIR_FREE(migParams->tlsHostname);
-}
-
-
-void
-qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr migParams)
-{
-    if (!migParams)
-        return;
-
-    qemuMigrationParamsClear(migParams);
     VIR_FREE(migParams);
 }
 
