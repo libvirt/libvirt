@@ -4723,6 +4723,50 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
         return -1;
     }
 
+    /* numaNode */
+    switch ((virDomainControllerModelPCI) cont->model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+        /* numaNode can be used for these controllers, but it's not set
+         * automatically so it can be missing */
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+        /* Only PHBs support numaNode */
+        if (pciopts->numaNode != -1 &&
+            pciopts->modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE) {
+            virReportControllerInvalidOption(cont, model, modelName, "numaNode");
+            return -1;
+        }
+
+        /* However, the default PHB doesn't support numaNode */
+        if (pciopts->numaNode != -1 &&
+            pciopts->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE &&
+            pciopts->targetIndex == 0) {
+            virReportControllerInvalidOption(cont, model, modelName, "numaNode");
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+    case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+        if (pciopts->numaNode != -1) {
+            virReportControllerInvalidOption(cont, model, modelName, "numaNode");
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+    default:
+        virReportEnumRangeError(virDomainControllerModelPCI, cont->model);
+        return -1;
+    }
+
     return qemuDomainDeviceDefValidateControllerPCIOld(cont, def, qemuCaps);
 }
 
