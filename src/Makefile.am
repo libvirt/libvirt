@@ -90,11 +90,13 @@ UPSTART_FILES =
 SYSCONF_FILES =
 sbin_PROGRAMS =
 man8_MANS =
+DRIVER_SOURCES =
 
 include conf/Makefile.inc.am
 include cpu/Makefile.inc.am
 include security/Makefile.inc.am
 include access/Makefile.inc.am
+include logging/Makefile.inc.am
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
 include test/Makefile.inc.am
@@ -327,7 +329,7 @@ CLEANFILES += $(KEYMANS) $(KEYPODS)
 
 # Internal generic driver infrastructure
 DATATYPES_SOURCES = datatypes.h datatypes.c
-DRIVER_SOURCES = \
+DRIVER_SOURCES += \
 		driver.c driver.h \
 		driver-hypervisor.h \
 		driver-interface.h \
@@ -355,7 +357,6 @@ DRIVER_SOURCES = \
 		locking/lock_driver.h \
 		locking/lock_driver_nop.h locking/lock_driver_nop.c \
 		locking/domain_lock.h locking/domain_lock.c \
-		logging/log_manager.c logging/log_manager.h \
 		$(NULL)
 
 LOCK_DRIVER_SANLOCK_SOURCES = \
@@ -402,45 +403,6 @@ locking/lock_daemon_dispatch_stubs.h: $(LOCK_PROTOCOL) \
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
 	    virLockSpaceProtocol VIR_LOCK_SPACE_PROTOCOL \
 	    $(LOCK_PROTOCOL) > $(srcdir)/locking/lock_daemon_dispatch_stubs.h
-
-
-LOG_PROTOCOL_GENERATED = \
-		logging/log_protocol.h \
-		logging/log_protocol.c \
-		$(NULL)
-
-DRIVER_SOURCES += $(LOG_PROTOCOL_GENERATED)
-
-LOG_PROTOCOL = $(srcdir)/logging/log_protocol.x
-EXTRA_DIST += $(LOG_PROTOCOL) \
-	$(LOG_PROTOCOL_GENERATED)
-BUILT_SOURCES += $(LOG_PROTOCOL_GENERATED)
-MAINTAINERCLEANFILES += $(LOG_PROTOCOL_GENERATED)
-
-LOG_DAEMON_GENERATED = \
-		logging/log_daemon_dispatch_stubs.h
-		$(NULL)
-
-BUILT_SOURCES += $(LOG_DAEMON_GENERATED)
-EXTRA_DIST += $(LOG_DAEMON_GENERATED)
-MAINTAINERCLEANFILES += $(LOG_DAEMON_GENERATED)
-
-LOG_DAEMON_SOURCES = \
-		logging/log_daemon.h \
-		logging/log_daemon.c \
-		logging/log_daemon_config.h \
-		logging/log_daemon_config.c \
-		logging/log_daemon_dispatch.c \
-		logging/log_daemon_dispatch.h \
-		logging/log_handler.c \
-		logging/log_handler.h \
-		$(NULL)
-
-logging/log_daemon_dispatch_stubs.h: $(LOG_PROTOCOL) \
-		$(srcdir)/rpc/gendispatch.pl Makefile.am
-	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
-	    virLogManagerProtocol VIR_LOG_MANAGER_PROTOCOL \
-	    $(LOG_PROTOCOL) > $(srcdir)/logging/log_daemon_dispatch_stubs.h
 
 
 
@@ -735,8 +697,7 @@ check-local: check-augeas
 
 check-augeas: $(AUGEAS_DIRS:%=check-augeas-%) \
 	check-augeas-sanlock \
-	check-augeas-lockd check-augeas-virtlockd \
-	check-augeas-virtlogd
+	check-augeas-lockd check-augeas-virtlockd
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
@@ -779,16 +740,6 @@ endif ! WITH_QEMU
 check-augeas-virtlockd: test_virtlockd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
 	    '$(AUGPARSE)' -I $(srcdir)/locking test_virtlockd.aug; \
-	fi
-
-
-test_virtlogd.aug: logging/test_virtlogd.aug.in \
-		logging/virtlogd.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/logging/virtlogd.conf $< $@
-
-check-augeas-virtlogd: test_virtlogd.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/logging test_virtlogd.aug; \
 	fi
 
 #
@@ -1197,7 +1148,7 @@ locking/%-lockd.conf: $(srcdir)/locking/lockd.conf
 	cp $< $@
 
 
-sbin_PROGRAMS += virtlockd virtlogd
+sbin_PROGRAMS += virtlockd
 
 virtlockd_SOURCES = \
 		$(LOCK_DAEMON_SOURCES) \
@@ -1227,42 +1178,14 @@ virtlockd_LDADD += libvirt_probes.lo
 endif WITH_DTRACE_PROBES
 
 
-virtlogd_SOURCES = \
-		$(LOG_DAEMON_SOURCES) \
-		$(LOG_PROTOCOL_GENERATED) \
-		$(LOG_DAEMON_GENERATED) \
-		$(NULL)
-virtlogd_CFLAGS = \
-		$(AM_CFLAGS) \
-		$(PIE_CFLAGS) \
-		$(XDR_CFLAGS) \
-		$(NULL)
-virtlogd_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(PIE_LDFLAGS) \
-		$(NO_UNDEFINED_LDFLAGS) \
-		$(NULL)
-virtlogd_LDADD = \
-		libvirt_driver_admin.la \
-		libvirt-net-rpc-server.la \
-		libvirt-net-rpc.la \
-		libvirt_util.la \
-		../gnulib/lib/libgnu.la \
-		$(CYGWIN_EXTRA_LIBADD) \
-		$(NULL)
-if WITH_DTRACE_PROBES
-virtlogd_LDADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
 
 else ! WITH_LIBVIRTD
 EXTRA_DIST += $(LOCK_DAEMON_SOURCES) \
-              $(LOCK_DRIVER_LOCKD_SOURCES) \
-	      $(LOG_DAEMON_SOURCES)
+              $(LOCK_DRIVER_LOCKD_SOURCES)
 endif ! WITH_LIBVIRTD
 
 SYSCONF_FILES += \
 	locking/virtlockd.sysconf \
-	logging/virtlogd.sysconf \
 	$(NULL)
 
 EXTRA_DIST += \
@@ -1291,7 +1214,6 @@ uninstall-sysconfig:
 
 SYSVINIT_FILES_IN += \
 	locking/virtlockd.init.in \
-	logging/virtlogd.init.in \
 	$(NULL)
 
 SYSVINIT_FILES = $(notdir $(SYSVINIT_FILES_IN:%.in=%))
@@ -1358,15 +1280,6 @@ virtlockd.init: locking/virtlockd.init.in $(top_builddir)/config.status
 	    chmod a+x $@-t && \
 	    mv $@-t $@
 
-virtlogd.init: logging/virtlogd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    chmod a+x $@-t && \
-	    mv $@-t $@
-
 virtlockd.8.in: locking/virtlockd.pod
 	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
 	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
@@ -1377,15 +1290,6 @@ virtlockd.8.in: locking/virtlockd.pod
 	rm -f $@-t1 && \
 	mv $@-t2 $@
 
-virtlogd.8.in: logging/virtlogd.pod
-	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
-	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
-	sed \
-		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
-		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
-		< $@-t1 > $@-t2 && \
-	rm -f $@-t1 && \
-	mv $@-t2 $@
 
 %.8: %.8.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)sed \
@@ -1395,34 +1299,29 @@ virtlogd.8.in: logging/virtlogd.pod
 	mv $@-t $@
 
 if WITH_LIBVIRTD
-man8_MANS += virtlockd.8 virtlogd.8
+man8_MANS += virtlockd.8
 
-conf_DATA += locking/virtlockd.conf logging/virtlogd.conf
+conf_DATA += locking/virtlockd.conf
 
-augeas_DATA += locking/virtlockd.aug logging/virtlogd.aug
-augeastest_DATA += test_virtlockd.aug test_virtlogd.aug
+augeas_DATA += locking/virtlockd.aug
+augeastest_DATA += test_virtlockd.aug
 endif WITH_LIBVIRTD
 
 PODFILES += \
 	locking/virtlockd.pod \
-	logging/virtlogd.pod \
 	$(NULL)
 
 MANINFILES += \
 	virtlockd.8.in \
-	virtlogd.8.in \
 	$(NULL)
 
-CLEANFILES += test_virtlockd.aug test_virtlogd.aug $(man8_MANS)
+CLEANFILES += test_virtlockd.aug $(man8_MANS)
 MAINTAINERCLEANFILES += $(MANINFILES)
 
 SYSTEMD_UNIT_FILES_IN += \
 	locking/virtlockd.service.in \
 	locking/virtlockd.socket.in \
 	locking/virtlockd-admin.socket.in \
-	logging/virtlogd.service.in \
-	logging/virtlogd.socket.in \
-	logging/virtlogd-admin.socket.in \
 	$(NULL)
 
 EXTRA_DIST += \
@@ -1430,9 +1329,6 @@ EXTRA_DIST += \
         locking/virtlockd.aug \
         locking/virtlockd.conf \
         locking/test_virtlockd.aug.in \
-        logging/virtlogd.aug \
-        logging/virtlogd.conf \
-        logging/test_virtlogd.aug.in \
         $(PODFILES) \
         $(MANINFILES) \
         $(NULL)
@@ -1485,24 +1381,6 @@ virtlockd-admin.socket: locking/virtlockd-admin.socket.in \
 	    < $< > $@-t && \
 	    mv $@-t $@
 
-virtlogd.service: logging/virtlogd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
-virtlogd.socket: logging/virtlogd.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
-virtlogd-admin.socket: logging/virtlogd-admin.socket.in \
-                       $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
 
 
 EXTRA_DIST += $(UPSTART_FILES)

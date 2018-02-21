@@ -1,0 +1,155 @@
+LOG_PROTOCOL_GENERATED = \
+	logging/log_protocol.h \
+	logging/log_protocol.c \
+	$(NULL)
+
+LOG_DAEMON_GENERATED = \
+	logging/log_daemon_dispatch_stubs.h
+	$(NULL)
+
+DRIVER_SOURCES += \
+	$(LOG_PROTOCOL_GENERATED) \
+	logging/log_manager.c \
+	logging/log_manager.h \
+	$(NULL)
+
+LOG_DAEMON_SOURCES = \
+	logging/log_daemon.h \
+	logging/log_daemon.c \
+	logging/log_daemon_config.h \
+	logging/log_daemon_config.c \
+	logging/log_daemon_dispatch.c \
+	logging/log_daemon_dispatch.h \
+	logging/log_handler.c \
+	logging/log_handler.h \
+	$(NULL)
+
+LOG_PROTOCOL = $(srcdir)/logging/log_protocol.x
+
+SYSVINIT_FILES_IN += logging/virtlogd.init.in
+
+EXTRA_DIST += \
+	$(LOG_PROTOCOL) \
+	$(LOG_PROTOCOL_GENERATED) \
+	$(LOG_DAEMON_GENERATED) \
+	$(LOG_DAEMON_SOURCES) \
+        logging/virtlogd.aug \
+        logging/virtlogd.conf \
+        logging/test_virtlogd.aug.in \
+	$(NULL)
+BUILT_SOURCES += \
+	$(LOG_PROTOCOL_GENERATED) \
+	$(LOG_DAEMON_GENERATED) \
+	$(NULL)
+MAINTAINERCLEANFILES += \
+	$(LOG_PROTOCOL_GENERATED) \
+	$(LOG_DAEMON_GENERATED) \
+	$(NULL)
+
+CLEANFILES += test_virtlogd.aug
+
+PODFILES += logging/virtlogd.pod
+MANINFILES += virtlogd.8.in
+SYSCONF_FILES += logging/virtlogd.sysconf
+
+SYSTEMD_UNIT_FILES_IN += \
+	logging/virtlogd.service.in \
+	logging/virtlogd.socket.in \
+	logging/virtlogd-admin.socket.in \
+	$(NULL)
+
+if WITH_LIBVIRTD
+sbin_PROGRAMS += virtlogd
+
+man8_MANS += virtlogd.8
+
+virtlogd_SOURCES = \
+		$(LOG_DAEMON_SOURCES) \
+		$(LOG_PROTOCOL_GENERATED) \
+		$(LOG_DAEMON_GENERATED) \
+		$(NULL)
+virtlogd_CFLAGS = \
+		$(AM_CFLAGS) \
+		$(PIE_CFLAGS) \
+		$(XDR_CFLAGS) \
+		$(NULL)
+virtlogd_LDFLAGS = \
+		$(AM_LDFLAGS) \
+		$(PIE_LDFLAGS) \
+		$(NO_UNDEFINED_LDFLAGS) \
+		$(NULL)
+virtlogd_LDADD = \
+		libvirt_driver_admin.la \
+		libvirt-net-rpc-server.la \
+		libvirt-net-rpc.la \
+		libvirt_util.la \
+		../gnulib/lib/libgnu.la \
+		$(CYGWIN_EXTRA_LIBADD) \
+		$(NULL)
+if WITH_DTRACE_PROBES
+virtlogd_LDADD += libvirt_probes.lo
+endif WITH_DTRACE_PROBES
+
+conf_DATA += logging/virtlogd.conf
+
+augeas_DATA += logging/virtlogd.aug
+augeastest_DATA += test_virtlogd.aug
+
+test_virtlogd.aug: logging/test_virtlogd.aug.in \
+		logging/virtlogd.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/logging/virtlogd.conf $< $@
+
+AUGEAS_DIRS += logging
+
+check-augeas-logging: test_virtlogd.aug
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
+	    '$(AUGPARSE)' -I $(srcdir)/logging test_virtlogd.aug; \
+	fi
+
+endif WITH_LIBVIRTD
+
+.PHONY: check-augeas-logging
+
+logging/log_daemon_dispatch_stubs.h: $(LOG_PROTOCOL) \
+		$(srcdir)/rpc/gendispatch.pl Makefile.am
+	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
+	    virLogManagerProtocol VIR_LOG_MANAGER_PROTOCOL \
+	    $(LOG_PROTOCOL) > $(srcdir)/logging/log_daemon_dispatch_stubs.h
+
+virtlogd.init: logging/virtlogd.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	    < $< > $@-t && \
+	    chmod a+x $@-t && \
+	    mv $@-t $@
+
+virtlogd.8.in: logging/virtlogd.pod
+	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
+	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
+	sed \
+		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
+		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
+		< $@-t1 > $@-t2 && \
+	rm -f $@-t1 && \
+	mv $@-t2 $@
+
+virtlogd.service: logging/virtlogd.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    < $< > $@-t && \
+	    mv $@-t $@
+
+virtlogd.socket: logging/virtlogd.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
+	    mv $@-t $@
+
+virtlogd-admin.socket: logging/virtlogd-admin.socket.in \
+                       $(top_builddir)/config.status
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
+	    mv $@-t $@
