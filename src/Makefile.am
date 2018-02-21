@@ -1378,6 +1378,24 @@ conf_DATA += remote/libvirtd.conf
 
 CLEANFILES += tets_libvirtd.aug
 
+if WITH_POLKIT
+if WITH_POLKIT0
+policydir = $(datadir)/PolicyKit/policy
+policyauth = auth_admin_keep_session
+else ! WITH_POLKIT0
+policydir = $(datadir)/polkit-1/actions
+policyauth = auth_admin_keep
+endif ! WITH_POLKIT0
+endif WITH_POLKIT
+
+BUILT_SOURCES += libvirtd.policy
+
+libvirtd.policy: remote/libvirtd.policy.in $(top_builddir)/config.status
+	$(AM_V_GEN) sed \
+	    -e 's|[@]authaction[@]|$(policyauth)|g' \
+	    < $< > $@-t && \
+	mv $@-t $@
+
 libvirtd_SOURCES = $(LIBVIRTD_SOURCES)
 
 libvirtd_CFLAGS = \
@@ -1423,6 +1441,10 @@ EXTRA_DIST += \
 	remote/test_libvirtd.aug.in \
 	remote/libvirtd.aug \
 	remote/libvirtd.conf \
+	remote/libvirtd.policy.in \
+	remote/libvirtd.rules \
+	remote/libvirtd.sasl \
+	remote/libvirtd.sysctl \
 	$(NULL)
 
 %protocol.c: %protocol.x %protocol.h $(srcdir)/rpc/genprotocol.pl
@@ -2832,6 +2854,46 @@ SYSVINIT_FILES = $(notdir $(SYSVINIT_FILES_IN:%.in=%))
 EXTRA_DIST += $(SYSVINIT_FILES_IN)
 
 if WITH_LIBVIRTD
+
+if WITH_SYSCTL
+# Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
+# /usr/lib/sysctl.d/ even when libdir is /usr/lib64
+install-sysctl:
+	$(MKDIR_P) $(DESTDIR)$(prefix)/lib/sysctl.d
+	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.sysctl \
+	  $(DESTDIR)$(prefix)/lib/sysctl.d/60-libvirtd.conf
+
+uninstall-sysctl:
+	rm -f $(DESTDIR)$(prefix)/lib/sysctl.d/60-libvirtd.conf
+	rmdir $(DESTDIR)$(prefix)/lib/sysctl.d || :
+else ! WITH_SYSCTL
+install-sysctl:
+uninstall-sysctl:
+endif ! WITH_SYSCTL
+
+if WITH_POLKIT
+install-polkit::
+	$(MKDIR_P) $(DESTDIR)$(policydir)
+	$(INSTALL_DATA) libvirtd.policy $(DESTDIR)$(policydir)/org.libvirt.unix.policy
+if ! WITH_POLKIT0
+	$(MKDIR_P) $(DESTDIR)$(datadir)/polkit-1/rules.d
+	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.rules \
+		$(DESTDIR)$(datadir)/polkit-1/rules.d/50-libvirt.rules
+endif ! WITH_POLKIT0
+
+uninstall-polkit::
+	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
+	rmdir $(DESTDIR)$(policydir) || :
+if ! WITH_POLKIT0
+	rm -f $(DESTDIR)$(datadir)/polkit-1/rules.d/50-libvirt.rules
+	rmdir $(DESTDIR)$(datadir)/polkit-1/rules.d || :
+endif ! WITH_POLKIT0
+
+else ! WITH_POLKIT
+install-polkit::
+uninstall-polkit::
+endif ! WITH_POLKIT
+
 if LIBVIRT_INIT_SCRIPT_RED_HAT
 install-init:: $(SYSVINIT_FILES) install-sysconfig
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/rc.d/init.d
@@ -2851,9 +2913,30 @@ install-init::
 uninstall-init::
 endif ! LIBVIRT_INIT_SCRIPT_RED_HAT
 else ! WITH_LIBVIRTD
+install-polkit::
+uninstall-polkit::
+install-sysctl::
+uninstall-sysctl::
 install-init::
 uninstall-init::
 endif ! WITH_LIBVIRTD
+
+# This is needed for clients too, so can't wrap in
+# the WITH_LIBVIRTD conditional
+if WITH_SASL
+install-sasl:
+	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sasl2/
+	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.sasl \
+		$(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
+
+uninstall-sasl:
+	rm -f $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
+	rmdir $(DESTDIR)$(sysconfdir)/sasl2/ || :
+else ! WITH_SASL
+install-sasl:
+uninstall-sasl:
+endif ! WITH_SASL
+
 
 libvirtd.init: remote/libvirtd.init.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
@@ -3447,7 +3530,8 @@ libvirt_nss_la_LIBADD = \
 endif WITH_NSS
 
 
-install-data-local: install-init install-systemd install-upstart
+install-data-local: install-init install-systemd install-upstart \
+		install-sysctl install-polkit install-sasl
 if WITH_LIBVIRTD
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files"
@@ -3502,7 +3586,8 @@ if WITH_NETWORK
 	  $(LN_S) ../default.xml default.xml )
 endif WITH_NETWORK
 
-uninstall-local:: uninstall-init uninstall-systemd uninstall-upstart
+uninstall-local:: uninstall-init uninstall-systemd uninstall-upstart \
+		uninstall-sysctl uninstall-polkit uninstall-sasl
 if WITH_LIBVIRTD
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd" ||:

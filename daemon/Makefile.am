@@ -20,10 +20,6 @@ CLEANFILES =
 
 DISTCLEANFILES =
 EXTRA_DIST = \
-	libvirtd.policy.in \
-	libvirt.rules \
-	libvirtd.sasl \
-	libvirtd.sysctl \
 	libvirtd.logrotate.in \
 	libvirtd.qemu.logrotate.in \
 	libvirtd.lxc.logrotate.in \
@@ -35,58 +31,17 @@ BUILT_SOURCES =
 
 if WITH_LIBVIRTD
 
-if WITH_POLKIT
-if WITH_POLKIT0
-policydir = $(datadir)/PolicyKit/policy
-policyauth = auth_admin_keep_session
-else ! WITH_POLKIT0
-policydir = $(datadir)/polkit-1/actions
-policyauth = auth_admin_keep
-rulesdir = $(datadir)/polkit-1/rules.d
-rulesfile = libvirt.rules
-endif ! WITH_POLKIT0
-endif WITH_POLKIT
 
-libvirtd.policy: libvirtd.policy.in $(top_builddir)/config.status
-	$(AM_V_GEN) sed \
-	    -e 's|[@]authaction[@]|$(policyauth)|g' \
-	    < $< > $@-t && \
-	mv $@-t $@
-BUILT_SOURCES += libvirtd.policy
 
-install-data-local: install-data-sasl install-data-polkit \
-		install-logrotate install-sysctl
+install-data-local: install-logrotate
 	$(MKDIR_P) $(DESTDIR)$(localstatedir)/log/libvirt \
 		   $(DESTDIR)$(localstatedir)/run/libvirt \
 		   $(DESTDIR)$(localstatedir)/lib/libvirt
 
-uninstall-local:: uninstall-data-sasl uninstall-data-polkit \
-		uninstall-logrotate uninstall-sysctl
+uninstall-local:: uninstall-logrotate
 	rmdir $(DESTDIR)$(localstatedir)/log/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/run/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/lib/libvirt || :
-
-if WITH_POLKIT
-install-data-polkit::
-	$(MKDIR_P) $(DESTDIR)$(policydir)
-	$(INSTALL_DATA) libvirtd.policy $(DESTDIR)$(policydir)/org.libvirt.unix.policy
-if ! WITH_POLKIT0
-	$(MKDIR_P) $(DESTDIR)$(rulesdir)
-	$(INSTALL_DATA) $(srcdir)/$(rulesfile) $(DESTDIR)$(rulesdir)/50-libvirt.rules
-endif ! WITH_POLKIT0
-
-uninstall-data-polkit::
-	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
-	rmdir $(DESTDIR)$(policydir) || :
-if ! WITH_POLKIT0
-	rm -f $(DESTDIR)$(rulesdir)/50-libvirt.rules
-	rmdir $(DESTDIR)$(rulesdir) || :
-endif ! WITH_POLKIT0
-
-else ! WITH_POLKIT
-install-data-polkit::
-uninstall-data-polkit::
-endif ! WITH_POLKIT
 
 LOGROTATE_CONFS = libvirtd.qemu.logrotate libvirtd.lxc.logrotate \
 		  libvirtd.libxl.logrotate libvirtd.uml.logrotate \
@@ -151,42 +106,10 @@ uninstall-logrotate:
 	rmdir $(DESTDIR)$(localstatedir)/log/libvirt/uml || :
 	rmdir $(DESTDIR)$(sysconfdir)/logrotate.d || :
 
-if WITH_SYSCTL
-# Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
-# /usr/lib/sysctl.d/ even when libdir is /usr/lib64
-install-sysctl:
-	$(MKDIR_P) $(DESTDIR)$(prefix)/lib/sysctl.d
-	$(INSTALL_DATA) $(srcdir)/libvirtd.sysctl \
-	  $(DESTDIR)$(prefix)/lib/sysctl.d/60-libvirtd.conf
-
-uninstall-sysctl:
-	rm -f $(DESTDIR)$(prefix)/lib/sysctl.d/60-libvirtd.conf
-	rmdir $(DESTDIR)$(prefix)/lib/sysctl.d || :
-else ! WITH_SYSCTL
-install-sysctl:
-uninstall-sysctl:
-endif ! WITH_SYSCTL
-
 else ! WITH_LIBVIRTD
-install-data-local: install-data-sasl
-uninstall-local:: uninstall-data-sasl
+install-data-local:
+uninstall-local::
 endif ! WITH_LIBVIRTD
-
-# This is needed for clients too, so can't wrap in
-# the WITH_LIBVIRTD conditional
-if WITH_SASL
-install-data-sasl:
-	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sasl2/
-	$(INSTALL_DATA) $(srcdir)/libvirtd.sasl \
-		$(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
-
-uninstall-data-sasl:
-	rm -f $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
-	rmdir $(DESTDIR)$(sysconfdir)/sasl2/ || :
-else ! WITH_SASL
-install-data-sasl:
-uninstall-data-sasl:
-endif ! WITH_SASL
 
 
 CLEANFILES += $(BUILT_SOURCES)

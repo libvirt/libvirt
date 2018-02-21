@@ -60,7 +60,6 @@
 /configure.lineno
 /conftest.*
 /daemon/libvirtd*.logrotate
-/daemon/libvirtd.policy
 /docs/aclperms.htmlinc
 /docs/apibuild.py.stamp
 /docs/devhelp/libvirt.devhelp
@@ -136,6 +135,7 @@
 /src/libvirt_*probes.h
 /src/libvirt_lxc
 /src/libvirtd
+/src/libvirtd.policy
 /src/locking/libxl-lockd.conf
 /src/locking/libxl-sanlock.conf
 /src/locking/lock_daemon_dispatch_stubs.h
