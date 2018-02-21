@@ -674,8 +674,10 @@ mymain(void)
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_NEC_USB_XHCI);
     DO_TEST("ppc64-usb-controller",
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_PCI_OHCI);
     DO_TEST("ppc64-usb-controller-legacy",
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_PIIX3_USB_UHCI);
     DO_TEST("usb-port-missing", NONE);
     DO_TEST("usb-redir", NONE);
@@ -717,9 +719,12 @@ mymain(void)
     DO_TEST("virtio-rng-random", NONE);
     DO_TEST("virtio-rng-egd", NONE);
 
-    DO_TEST("pseries-nvram", NONE);
-    DO_TEST("pseries-panic-missing", NONE);
-    DO_TEST("pseries-panic-no-address", NONE);
+    DO_TEST("pseries-nvram",
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+    DO_TEST("pseries-panic-missing",
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+    DO_TEST("pseries-panic-no-address",
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
 
     DO_TEST("pseries-phb-simple",
             QEMU_CAPS_NODEFCONFIG,
@@ -764,29 +769,37 @@ mymain(void)
             QEMU_CAPS_DEVICE_VFIO_PCI);
 
     DO_TEST("pseries-features-hpt",
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
 
     DO_TEST("pseries-serial-native",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-serial+console-native",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-serial-compat",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-serial-pci",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_SERIAL);
     DO_TEST("pseries-serial-usb",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_QEMU_XHCI,
             QEMU_CAPS_DEVICE_USB_SERIAL);
     DO_TEST("pseries-console-native",
             QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-console-virtio",
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_NODEFCONFIG);
 
     DO_TEST("mach-virt-serial-native",
@@ -1182,7 +1195,8 @@ mymain(void)
 
     DO_TEST("panic", NONE);
     DO_TEST("panic-isa", NONE);
-    DO_TEST("panic-pseries", NONE);
+    DO_TEST("panic-pseries",
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("panic-double", NONE);
     DO_TEST("panic-no-address", NONE);
 
@@ -1338,9 +1352,12 @@ mymain(void)
     DO_TEST("smartcard-passthrough-spicevmc", NONE);
     DO_TEST("smartcard-controller", NONE);
 
-    DO_TEST("pseries-cpu-compat-power9", NONE);
-    DO_TEST("pseries-cpu-compat", NONE);
-    DO_TEST("pseries-cpu-exact", NONE);
+    DO_TEST("pseries-cpu-compat-power9",
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+    DO_TEST("pseries-cpu-compat",
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+    DO_TEST("pseries-cpu-exact",
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
 
     DO_TEST("user-aliases", NONE);
 
