@@ -916,7 +916,6 @@ AC_CONFIG_FILES([\
         libvirt.spec mingw-libvirt.spec \
         po/Makefile.in \
         include/libvirt/libvirt-common.h \
-        daemon/Makefile \
         examples/Makefile \
         tests/Makefile \
         tools/Makefile])

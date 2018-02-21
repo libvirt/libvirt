@@ -2853,7 +2853,40 @@ SYSVINIT_FILES = $(notdir $(SYSVINIT_FILES_IN:%.in=%))
 
 EXTRA_DIST += $(SYSVINIT_FILES_IN)
 
+LOGROTATE_FILES_IN = \
+	remote/libvirtd.qemu.logrotate.in \
+	remote/libvirtd.lxc.logrotate.in \
+	remote/libvirtd.libxl.logrotate.in \
+	remote/libvirtd.uml.logrotate.in \
+	remote/libvirtd.logrotate.in \
+	$(NULL)
+
+EXTRA_DIST += $(LOGROTATE_FILES_IN)
+
 if WITH_LIBVIRTD
+
+LOGROTATE_FILES := $(LOGROTATE_FILES_IN:remote/%.in=%)
+
+BUILT_SOURCES += $(LOGROTATE_FILES)
+
+%.logrotate: remote/%.logrotate.in
+	$(AM_V_GEN)sed \
+	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    < $< > $@-t && \
+	mv $@-t $@
+
+install-logrotate: $(LOGROTATE_FILES)
+	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/logrotate.d/
+	for f in $(LOGROTATE_FILES) ; \
+	do \
+	  tgt=`echo $$f | sed -e 's/.logrotate//'`; \
+	  $(INSTALL_DATA) $$f \
+		$(DESTDIR)$(sysconfdir)/logrotate.d/$$tgt; \
+	done
+
+uninstall-logrotate:
+	rm -f $(LOGROTATE_FILES:%.logrotate=$(DESTDIR)$(sysconfdir)/logrotate.d/%)
+	rmdir $(DESTDIR)$(sysconfdir)/logrotate.d || :
 
 if WITH_SYSCTL
 # Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
@@ -2919,6 +2952,8 @@ install-sysctl::
 uninstall-sysctl::
 install-init::
 uninstall-init::
+install-logrotate::
+uninstall-logrotate::
 endif ! WITH_LIBVIRTD
 
 # This is needed for clients too, so can't wrap in
@@ -3531,8 +3566,10 @@ endif WITH_NSS
 
 
 install-data-local: install-init install-systemd install-upstart \
-		install-sysctl install-polkit install-sasl
+		install-sysctl install-polkit install-sasl \
+		install-logrotate
 if WITH_LIBVIRTD
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lockd"
@@ -3553,6 +3590,7 @@ endif WITH_QEMU
 if WITH_LXC
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lxc"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/lxc"
 endif WITH_LXC
 if WITH_LIBXL
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl"
@@ -3562,6 +3600,7 @@ endif WITH_LIBXL
 if WITH_UML
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/uml"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/uml"
+	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/uml"
 endif WITH_UML
 if WITH_XEN
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/xen"
@@ -3587,8 +3626,10 @@ if WITH_NETWORK
 endif WITH_NETWORK
 
 uninstall-local:: uninstall-init uninstall-systemd uninstall-upstart \
-		uninstall-sysctl uninstall-polkit uninstall-sasl
+		uninstall-sysctl uninstall-polkit uninstall-sasl \
+		uninstall-logrotate
 if WITH_LIBVIRTD
+	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lockd" ||:
@@ -3609,6 +3650,7 @@ endif WITH_QEMU
 if WITH_LXC
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lxc" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/lxc" ||:
 endif WITH_LXC
 if WITH_LIBXL
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl" ||:
@@ -3618,6 +3660,7 @@ endif WITH_LIBXL
 if WITH_UML
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/uml" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/uml" ||:
+	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/uml" ||:
 endif WITH_UML
 if WITH_XEN
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/xen" ||:
