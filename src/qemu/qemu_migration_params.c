@@ -38,10 +38,10 @@ VIR_LOG_INIT("qemu.qemu_migration_params");
 #define QEMU_MIGRATION_TLS_ALIAS_BASE "libvirt_migrate"
 
 
-qemuMonitorMigrationParamsPtr
+qemuMigrationParamsPtr
 qemuMigrationParamsNew(void)
 {
-    qemuMonitorMigrationParamsPtr params;
+    qemuMigrationParamsPtr params;
 
     if (VIR_ALLOC(params) < 0)
         return NULL;
@@ -51,23 +51,23 @@ qemuMigrationParamsNew(void)
 
 
 void
-qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr migParams)
+qemuMigrationParamsFree(qemuMigrationParamsPtr migParams)
 {
     if (!migParams)
         return;
 
-    VIR_FREE(migParams->tlsCreds);
-    VIR_FREE(migParams->tlsHostname);
+    VIR_FREE(migParams->params.tlsCreds);
+    VIR_FREE(migParams->params.tlsHostname);
     VIR_FREE(migParams);
 }
 
 
-qemuMonitorMigrationParamsPtr
+qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
                              unsigned long flags)
 {
-    qemuMonitorMigrationParamsPtr migParams;
+    qemuMigrationParamsPtr migParams;
 
     if (!(migParams = qemuMigrationParamsNew()))
         return NULL;
@@ -80,11 +80,11 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
         int rc; \
         if ((rc = virTypedParamsGetInt(params, nparams, \
                                        VIR_MIGRATE_PARAM_ ## PARAM, \
-                                       &migParams->VAR)) < 0) \
+                                       &migParams->params.VAR)) < 0) \
             goto error; \
  \
         if (rc == 1) \
-            migParams->VAR ## _set = true; \
+            migParams->params.VAR ## _set = true; \
     } while (0)
 
     GET(AUTO_CONVERGE_INITIAL, cpuThrottleInitial);
@@ -92,8 +92,8 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
 
 #undef GET
 
-    if ((migParams->cpuThrottleInitial_set ||
-         migParams->cpuThrottleIncrement_set) &&
+    if ((migParams->params.cpuThrottleInitial_set ||
+         migParams->params.cpuThrottleIncrement_set) &&
         !(flags & VIR_MIGRATE_AUTO_CONVERGE)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Turn auto convergence on to tune it"));
@@ -112,7 +112,7 @@ int
 qemuMigrationParamsSet(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
                        int asyncJob,
-                       qemuMonitorMigrationParamsPtr migParams)
+                       qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -120,7 +120,7 @@ qemuMigrationParamsSet(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    if (qemuMonitorSetMigrationParams(priv->mon, migParams) < 0)
+    if (qemuMonitorSetMigrationParams(priv->mon, &migParams->params) < 0)
         goto cleanup;
 
     ret = 0;
@@ -153,7 +153,7 @@ qemuMigrationParamsCheckTLSCreds(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuMonitorMigrationParamsPtr migParams = NULL;
+    qemuMigrationParamsPtr migParams = NULL;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
@@ -161,11 +161,11 @@ qemuMigrationParamsCheckTLSCreds(virQEMUDriverPtr driver,
     if (!(migParams = qemuMigrationParamsNew()))
         goto cleanup;
 
-    if (qemuMonitorGetMigrationParams(priv->mon, migParams) < 0)
+    if (qemuMonitorGetMigrationParams(priv->mon, &migParams->params) < 0)
         goto cleanup;
 
     /* NB: Could steal NULL pointer too! Let caller decide what to do. */
-    VIR_STEAL_PTR(priv->migTLSAlias, migParams->tlsCreds);
+    VIR_STEAL_PTR(priv->migTLSAlias, migParams->params.tlsCreds);
 
     ret = 0;
 
@@ -251,7 +251,7 @@ qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
                                  int asyncJob,
                                  char **tlsAlias,
                                  char **secAlias,
-                                 qemuMonitorMigrationParamsPtr migParams)
+                                 qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virJSONValuePtr tlsProps = NULL;
@@ -274,7 +274,7 @@ qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
                                 *tlsAlias, &tlsProps) < 0)
         goto error;
 
-    if (VIR_STRDUP(migParams->tlsCreds, *tlsAlias) < 0)
+    if (VIR_STRDUP(migParams->params.tlsCreds, *tlsAlias) < 0)
         goto error;
 
     return 0;
@@ -302,7 +302,7 @@ int
 qemuMigrationParamsSetEmptyTLS(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                int asyncJob,
-                               qemuMonitorMigrationParamsPtr migParams)
+                               qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -312,8 +312,8 @@ qemuMigrationParamsSetEmptyTLS(virQEMUDriverPtr driver,
     if (!priv->migTLSAlias)
         return 0;
 
-    if (VIR_STRDUP(migParams->tlsCreds, "") < 0 ||
-        VIR_STRDUP(migParams->tlsHostname, "") < 0)
+    if (VIR_STRDUP(migParams->params.tlsCreds, "") < 0 ||
+        VIR_STRDUP(migParams->params.tlsHostname, "") < 0)
         return -1;
 
     return 0;
@@ -325,7 +325,7 @@ qemuMigrationParamsSetCompression(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   int asyncJob,
                                   qemuMigrationCompressionPtr compression,
-                                  qemuMonitorMigrationParamsPtr migParams)
+                                  qemuMigrationParamsPtr migParams)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -347,14 +347,14 @@ qemuMigrationParamsSetCompression(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    migParams->compressLevel_set = compression->level_set;
-    migParams->compressLevel = compression->level;
+    migParams->params.compressLevel_set = compression->level_set;
+    migParams->params.compressLevel = compression->level;
 
-    migParams->compressThreads_set = compression->threads_set;
-    migParams->compressThreads = compression->threads;
+    migParams->params.compressThreads_set = compression->threads_set;
+    migParams->params.compressThreads = compression->threads;
 
-    migParams->decompressThreads_set = compression->dthreads_set;
-    migParams->decompressThreads = compression->dthreads;
+    migParams->params.decompressThreads_set = compression->dthreads_set;
+    migParams->params.decompressThreads = compression->dthreads;
 
     if (compression->xbzrle_cache_set &&
         qemuMonitorSetMigrationCacheSize(priv->mon,
@@ -389,7 +389,7 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *tlsAlias = NULL;
     char *secAlias = NULL;
-    qemuMonitorMigrationParamsPtr migParams = NULL;
+    qemuMigrationParamsPtr migParams = NULL;
     int ret = -1;
 
     if (qemuMigrationParamsCheckTLSCreds(driver, vm, asyncJob) < 0)
@@ -412,8 +412,8 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
     qemuDomainSecretInfoFree(&priv->migSecinfo);
 
-    if (VIR_STRDUP(migParams->tlsCreds, "") < 0 ||
-        VIR_STRDUP(migParams->tlsHostname, "") < 0 ||
+    if (VIR_STRDUP(migParams->params.tlsCreds, "") < 0 ||
+        VIR_STRDUP(migParams->params.tlsHostname, "") < 0 ||
         qemuMigrationParamsSet(driver, vm, asyncJob, migParams) < 0)
         goto cleanup;
 

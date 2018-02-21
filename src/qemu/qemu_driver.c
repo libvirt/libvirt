@@ -12219,7 +12219,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
     int ret = -1;
     const char *dconnuri = NULL;
     qemuMigrationCompressionPtr compression = NULL;
-    qemuMonitorMigrationParamsPtr migParams = NULL;
+    qemuMigrationParamsPtr migParams = NULL;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
@@ -12647,7 +12647,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     qemuMigrationCompressionPtr compression = NULL;
-    qemuMonitorMigrationParamsPtr migParams = NULL;
+    qemuMigrationParamsPtr migParams = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
@@ -12703,7 +12703,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     unsigned long long bandwidth = 0;
     int nbdPort = 0;
     qemuMigrationCompressionPtr compression = NULL;
-    qemuMonitorMigrationParamsPtr migParams = NULL;
+    qemuMigrationParamsPtr migParams = NULL;
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);

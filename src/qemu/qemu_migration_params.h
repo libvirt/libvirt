@@ -47,22 +47,29 @@ struct _qemuMigrationCompression {
 };
 
 
-qemuMonitorMigrationParamsPtr
+typedef struct _qemuMigrationParams qemuMigrationParams;
+typedef qemuMigrationParams *qemuMigrationParamsPtr;
+struct _qemuMigrationParams {
+    qemuMonitorMigrationParams params;
+};
+
+
+qemuMigrationParamsPtr
 qemuMigrationParamsNew(void);
 
-qemuMonitorMigrationParamsPtr
+qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
                              unsigned long flags);
 
 void
-qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr migParams);
+qemuMigrationParamsFree(qemuMigrationParamsPtr migParams);
 
 int
 qemuMigrationParamsSet(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
                        int asyncJob,
-                       qemuMonitorMigrationParamsPtr migParams);
+                       qemuMigrationParamsPtr migParams);
 
 int
 qemuMigrationParamsCheckSetupTLS(virQEMUDriverPtr driver,
@@ -78,20 +85,20 @@ qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
                                  int asyncJob,
                                  char **tlsAlias,
                                  char **secAlias,
-                                 qemuMonitorMigrationParamsPtr migParams);
+                                 qemuMigrationParamsPtr migParams);
 
 int
 qemuMigrationParamsSetEmptyTLS(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                int asyncJob,
-                               qemuMonitorMigrationParamsPtr migParams);
+                               qemuMigrationParamsPtr migParams);
 
 int
 qemuMigrationParamsSetCompression(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   int asyncJob,
                                   qemuMigrationCompressionPtr compression,
-                                  qemuMonitorMigrationParamsPtr migParams);
+                                  qemuMigrationParamsPtr migParams);
 
 void
 qemuMigrationParamsReset(virQEMUDriverPtr driver,
