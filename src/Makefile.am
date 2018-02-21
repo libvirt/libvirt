@@ -90,6 +90,7 @@ include vbox/Makefile.inc.am
 include openvz/Makefile.inc.am
 include qemu/Makefile.inc.am
 include bhyve/Makefile.inc.am
+include xenconfig/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -1102,11 +1103,6 @@ CPU_SOURCES = \
 VMX_SOURCES = \
 		vmx/vmx.c vmx/vmx.h
 
-XENCONFIG_SOURCES = \
-		xenconfig/xenxs_private.h \
-		xenconfig/xen_common.c xenconfig/xen_common.h \
-		xenconfig/xen_sxpr.c xenconfig/xen_sxpr.h \
-		xenconfig/xen_xm.c xenconfig/xen_xm.h
 if WITH_LIBXL
 XENCONFIG_LIBXL_SOURCES = \
 		$(XENCONFIG_SOURCES) \
@@ -1167,13 +1163,6 @@ libvirt_vmx_la_CFLAGS = \
 libvirt_vmx_la_SOURCES = $(VMX_SOURCES)
 endif WITH_VMX
 
-if WITH_XENCONFIG
-noinst_LTLIBRARIES += libvirt_xenconfig.la
-libvirt_la_BUILT_LIBADD += libvirt_xenconfig.la
-libvirt_xenconfig_la_CFLAGS = \
-		-I$(srcdir)/conf $(AM_CFLAGS)
-libvirt_xenconfig_la_SOURCES = $(XENCONFIG_SOURCES)
-
 if WITH_LIBXL
 noinst_LTLIBRARIES += libvirt_xenconfig_libxl.la
 libvirt_xenconfig_libxl_la_LIBADD = $(LIBXL_LIBS)
@@ -1181,7 +1170,6 @@ libvirt_xenconfig_libxl_la_CFLAGS = \
 		-I$(srcdir)/conf -I$(srcdir)/libxl $(AM_CFLAGS)
 libvirt_xenconfig_libxl_la_SOURCES = $(XENCONFIG_LIBXL_SOURCES)
 endif WITH_LIBXL
-endif WITH_XENCONFIG
 
 
 noinst_LTLIBRARIES += libvirt_driver.la
@@ -1843,7 +1831,6 @@ EXTRA_DIST += \
 		$(SECURITY_DRIVER_APPARMOR_SOURCES) \
 		$(SECRET_DRIVER_SOURCES) \
 		$(SECRET_UTIL_SOURCES) \
-		$(XENCONFIG_SOURCES) \
 		$(XENCONFIG_LIBXL_SOURCES) \
 		$(ACCESS_DRIVER_POLKIT_POLICY)
 
@@ -1990,12 +1977,6 @@ USED_SYM_FILES += $(srcdir)/libvirt_vmx.syms
 else ! WITH_VMX
 SYM_FILES += $(srcdir)/libvirt_vmx.syms
 endif ! WITH_VMX
-
-if WITH_XENCONFIG
-USED_SYM_FILES += $(srcdir)/libvirt_xenconfig.syms
-else ! WITH_XENCONFIG
-SYM_FILES += $(srcdir)/libvirt_xenconfig.syms
-endif ! WITH_XENCONFIG
 
 if WITH_SASL
 USED_SYM_FILES += $(srcdir)/libvirt_sasl.syms
