@@ -29,6 +29,9 @@
 
 
 qemuMonitorMigrationParamsPtr
+qemuMigrationParamsNew(void);
+
+qemuMonitorMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
                              unsigned long flags);

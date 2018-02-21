@@ -38,6 +38,18 @@ VIR_LOG_INIT("qemu.qemu_migration_params");
 #define QEMU_MIGRATION_TLS_ALIAS_BASE "libvirt_migrate"
 
 
+qemuMonitorMigrationParamsPtr
+qemuMigrationParamsNew(void)
+{
+    qemuMonitorMigrationParamsPtr params;
+
+    if (VIR_ALLOC(params) < 0)
+        return NULL;
+
+    return params;
+}
+
+
 void
 qemuMigrationParamsClear(qemuMonitorMigrationParamsPtr migParams)
 {
@@ -67,7 +79,7 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
 {
     qemuMonitorMigrationParamsPtr migParams;
 
-    if (VIR_ALLOC(migParams) < 0)
+    if (!(migParams = qemuMigrationParamsNew()))
         return NULL;
 
     if (!params)
@@ -151,16 +163,19 @@ qemuMigrationParamsCheckTLSCreds(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuMonitorMigrationParams migParams = { 0 };
+    qemuMonitorMigrationParamsPtr migParams = NULL;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    if (qemuMonitorGetMigrationParams(priv->mon, &migParams) < 0)
+    if (!(migParams = qemuMigrationParamsNew()))
+        goto cleanup;
+
+    if (qemuMonitorGetMigrationParams(priv->mon, migParams) < 0)
         goto cleanup;
 
     /* NB: Could steal NULL pointer too! Let caller decide what to do. */
-    VIR_STEAL_PTR(priv->migTLSAlias, migParams.tlsCreds);
+    VIR_STEAL_PTR(priv->migTLSAlias, migParams->tlsCreds);
 
     ret = 0;
 
@@ -168,7 +183,7 @@ qemuMigrationParamsCheckTLSCreds(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
 
-    qemuMigrationParamsClear(&migParams);
+    qemuMigrationParamsFree(migParams);
 
     return ret;
 }
@@ -384,7 +399,7 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *tlsAlias = NULL;
     char *secAlias = NULL;
-    qemuMonitorMigrationParams migParams = { 0 };
+    qemuMonitorMigrationParamsPtr migParams = NULL;
     int ret = -1;
 
     if (qemuMigrationParamsCheckTLSCreds(driver, vm, asyncJob) < 0)
@@ -395,6 +410,9 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
     if (!priv->migTLSAlias || !*priv->migTLSAlias)
         return 0;
 
+    if (!(migParams = qemuMigrationParamsNew()))
+        goto cleanup;
+
     /* NB: If either or both fail to allocate memory we can still proceed
      *     since the next time we migrate another deletion attempt will be
      *     made after successfully generating the aliases. */
@@ -404,9 +422,9 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
     qemuDomainSecretInfoFree(&priv->migSecinfo);
 
-    if (VIR_STRDUP(migParams.tlsCreds, "") < 0 ||
-        VIR_STRDUP(migParams.tlsHostname, "") < 0 ||
-        qemuMigrationParamsSet(driver, vm, asyncJob, &migParams) < 0)
+    if (VIR_STRDUP(migParams->tlsCreds, "") < 0 ||
+        VIR_STRDUP(migParams->tlsHostname, "") < 0 ||
+        qemuMigrationParamsSet(driver, vm, asyncJob, migParams) < 0)
         goto cleanup;
 
     ret = 0;
@@ -414,7 +432,7 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
  cleanup:
     VIR_FREE(tlsAlias);
     VIR_FREE(secAlias);
-    qemuMigrationParamsClear(&migParams);
+    qemuMigrationParamsFree(migParams);
 
     return ret;
 }
