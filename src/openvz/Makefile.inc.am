@@ -1,0 +1,28 @@
+OPENVZ_DRIVER_SOURCES = \
+	openvz/openvz_conf.c \
+	openvz/openvz_conf.h \
+	openvz/openvz_driver.c \
+	openvz/openvz_driver.h \
+	openvz/openvz_util.c \
+	openvz/openvz_util.h \
+	$(NULL)
+
+DRIVER_SOURCE_FILES += $(OPENVZ_DRIVER_SOURCES)
+
+EXTRA_DIST += $(OPENVZ_DRIVER_SOURCES)
+
+if WITH_OPENVZ
+noinst_LTLIBRARIES += libvirt_driver_openvz.la
+libvirt_la_BUILT_LIBADD += libvirt_driver_openvz.la
+libvirt_driver_openvz_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS) \
+	$(NULL)
+libvirt_driver_openvz_la_SOURCES = $(OPENVZ_DRIVER_SOURCES)
+endif WITH_OPENVZ
+
+if WITH_OPENVZ
+USED_SYM_FILES += $(srcdir)/libvirt_openvz.syms
+else ! WITH_OPENVZ
+SYM_FILES += $(srcdir)/libvirt_openvz.syms
+endif ! WITH_OPENVZ

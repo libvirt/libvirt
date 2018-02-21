@@ -80,6 +80,7 @@ include esx/Makefile.inc.am
 include hyperv/Makefile.inc.am
 include vmware/Makefile.inc.am
 include vbox/Makefile.inc.am
+include openvz/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -776,7 +777,6 @@ DRIVER_SOURCE_FILES += \
 	$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
 	$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
 	$(NWFILTER_DRIVER_SOURCES) \
-	$(OPENVZ_DRIVER_SOURCES) \
 	$(VZ_DRIVER_SOURCES) \
 	$(QEMU_DRIVER_SOURCES) \
 	$(REMOTE_DRIVER_SOURCES) \
@@ -907,11 +907,6 @@ LXC_CONTROLLER_SOURCES = \
 SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
 		$(DATATYPES_SOURCES) \
 		security/virt-aa-helper.c
-
-OPENVZ_DRIVER_SOURCES = \
-		openvz/openvz_conf.c openvz/openvz_conf.h \
-		openvz/openvz_driver.c openvz/openvz_driver.h \
-		openvz/openvz_util.c openvz/openvz_util.h
 
 QEMU_DRIVER_SOURCES = \
 		qemu/qemu_agent.c qemu/qemu_agent.h \
@@ -1382,14 +1377,6 @@ libvirt_driver_xen_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_xen_impl_la_LIBADD = $(XEN_LIBS) libvirt_xenconfig.la
 libvirt_driver_xen_impl_la_SOURCES = $(XEN_DRIVER_SOURCES)
 endif WITH_XEN
-
-if WITH_OPENVZ
-noinst_LTLIBRARIES += libvirt_driver_openvz.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_openvz.la
-libvirt_driver_openvz_la_CFLAGS = \
-		-I$(srcdir)/conf $(AM_CFLAGS)
-libvirt_driver_openvz_la_SOURCES = $(OPENVZ_DRIVER_SOURCES)
-endif WITH_OPENVZ
 
 if WITH_XENAPI
 noinst_LTLIBRARIES += libvirt_driver_xenapi.la
@@ -1936,7 +1923,6 @@ EXTRA_DIST += \
 		$(XEN_DRIVER_SOURCES) \
 		$(QEMU_DRIVER_SOURCES) \
 		$(LXC_DRIVER_SOURCES) \
-		$(OPENVZ_DRIVER_SOURCES) \
 		$(XENAPI_DRIVER_SOURCES) \
 		$(LIBXL_DRIVER_SOURCES) \
 		$(VZ_DRIVER_SOURCES) \
@@ -2130,12 +2116,6 @@ USED_SYM_FILES += $(srcdir)/libvirt_remote.syms
 else ! WITH_REMOTE
 SYM_FILES += $(srcdir)/libvirt_remote.syms
 endif ! WITH_REMOTE
-
-if WITH_OPENVZ
-USED_SYM_FILES += $(srcdir)/libvirt_openvz.syms
-else ! WITH_OPENVZ
-SYM_FILES += $(srcdir)/libvirt_openvz.syms
-endif ! WITH_OPENVZ
 
 if WITH_VMX
 USED_SYM_FILES += $(srcdir)/libvirt_vmx.syms
