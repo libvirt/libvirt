@@ -79,6 +79,8 @@ AUGEAS_DIRS =
 if WITH_DTRACE_PROBES
 tapset_DATA =
 endif WITH_DTRACE_PROBES
+libexec_PROGRAMS =
+RPC_PROBE_FILES =
 
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
@@ -95,6 +97,7 @@ include libxl/Makefile.inc.am
 include xen/Makefile.inc.am
 include xenapi/Makefile.inc.am
 include vz/Makefile.inc.am
+include lxc/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -782,7 +785,6 @@ EXTRA_DIST += check-drivername.pl
 
 DRIVER_SOURCE_FILES += \
 	$(INTERFACE_DRIVER_SOURCES) \
-	$(LXC_DRIVER_SOURCES) \
 	$(NETWORK_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
@@ -795,7 +797,6 @@ DRIVER_SOURCE_FILES += \
 
 STATEFUL_DRIVER_SOURCE_FILES += \
 	$(INTERFACE_DRIVER_SOURCES) \
-	$(LXC_DRIVER_SOURCES) \
 	$(NETWORK_DRIVER_SOURCES) \
 	$(NODE_DEVICE_DRIVER_SOURCES) \
 	$(NWFILTER_DRIVER_SOURCES) \
@@ -828,72 +829,6 @@ check-local: check-protocol check-symfile check-symsorting \
 	check-aclperms check-admin-symfile check-admin-symsorting
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
-
-LXC_MONITOR_PROTOCOL_GENERATED = \
-	lxc/lxc_monitor_protocol.h \
-	lxc/lxc_monitor_protocol.c \
-	$(NULL)
-
-LXC_MONITOR_GENERATED = \
-	lxc/lxc_monitor_dispatch.h \
-	$(NULL)
-
-LXC_CONTROLLER_GENERATED = \
-	lxc/lxc_controller_dispatch.h \
-	$(NULL)
-
-LXC_GENERATED = \
-	$(LXC_MONITOR_PROTOCOL_GENERATED) \
-	$(LXC_MONITOR_GENERATED) \
-	$(LXC_CONTROLLER_GENERATED) \
-	$(NULL)
-
-LXC_MONITOR_PROTOCOL = $(srcdir)/lxc/lxc_monitor_protocol.x
-
-lxc/lxc_monitor_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
-		$(LXC_MONITOR_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
-	  virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > \
-	  $(srcdir)/lxc/lxc_monitor_dispatch.h
-
-lxc/lxc_controller_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
-		$(REMOTE_PROTOCOL) Makefile.am
-	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=server \
-	  virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > \
-	  $(srcdir)/lxc/lxc_controller_dispatch.h
-
-EXTRA_DIST += \
-	$(LXC_MONITOR_PROTOCOL) \
-	$(LXC_GENERATED) \
-	$(NULL)
-
-BUILT_SOURCES += $(LXC_GENERATED)
-
-CLEANFILES += $(LXC_GENERATED)
-
-LXC_DRIVER_SOURCES = \
-		$(LXC_MONITOR_PROTOCOL_GENERATED) \
-		$(LXC_MONITOR_GENERATED) \
-		lxc/lxc_conf.c lxc/lxc_conf.h \
-		lxc/lxc_container.c lxc/lxc_container.h \
-		lxc/lxc_cgroup.c lxc/lxc_cgroup.h \
-		lxc/lxc_domain.c lxc/lxc_domain.h \
-		lxc/lxc_hostdev.c lxc/lxc_hostdev.h \
-		lxc/lxc_monitor.c lxc/lxc_monitor.h \
-		lxc/lxc_process.c lxc/lxc_process.h \
-		lxc/lxc_fuse.c lxc/lxc_fuse.h \
-		lxc/lxc_native.c lxc/lxc_native.h \
-		lxc/lxc_driver.c lxc/lxc_driver.h
-
-LXC_CONTROLLER_SOURCES = \
-		$(LXC_MONITOR_PROTOCOL_GENERATED) \
-		$(LXC_CONTROLLER_GENERATED) \
-		lxc/lxc_conf.c lxc/lxc_conf.h \
-		lxc/lxc_container.c lxc/lxc_container.h \
-		lxc/lxc_cgroup.c lxc/lxc_cgroup.h \
-		lxc/lxc_domain.c lxc/lxc_domain.h \
-		lxc/lxc_fuse.c lxc/lxc_fuse.h \
-		lxc/lxc_controller.c
 
 SECURITY_DRIVER_APPARMOR_HELPER_SOURCES = \
 		$(DATATYPES_SOURCES) \
@@ -1251,48 +1186,6 @@ EXTRA_DIST += \
 %protocol.h: %protocol.x $(srcdir)/rpc/genprotocol.pl
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -h \
 	       $< $(srcdir)/$(subst $(srcdir)/,,$@)
-
-
-
-
-
-if WITH_LXC
-noinst_LTLIBRARIES += libvirt_driver_lxc_impl.la
-libvirt_driver_lxc_la_SOURCES =
-libvirt_driver_lxc_la_LIBADD = libvirt_driver_lxc_impl.la
-mod_LTLIBRARIES += libvirt_driver_lxc.la
-libvirt_driver_lxc_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
-libvirt_driver_lxc_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-
-libvirt_driver_lxc_impl_la_CFLAGS = \
-		$(LIBNL_CFLAGS) \
-		$(FUSE_CFLAGS) \
-		$(XDR_CFLAGS) \
-		-I$(srcdir)/access \
-		-I$(srcdir)/conf \
-		$(AM_CFLAGS)
-libvirt_driver_lxc_impl_la_LIBADD = \
-               $(CAPNG_LIBS) \
-               $(LIBNL_LIBS) \
-               $(LIBXML_LIBS) \
-               $(FUSE_LIBS)
-
-if WITH_BLKID
-libvirt_driver_lxc_impl_la_CFLAGS += $(BLKID_CFLAGS)
-libvirt_driver_lxc_impl_la_LIBADD += $(BLKID_LIBS)
-endif WITH_BLKID
-libvirt_driver_lxc_impl_la_LIBADD += $(SECDRIVER_LIBS)
-libvirt_driver_lxc_impl_la_SOURCES = $(LXC_DRIVER_SOURCES)
-
-conf_DATA += lxc/lxc.conf
-
-augeas_DATA += lxc/libvirtd_lxc.aug
-augeastest_DATA += test_libvirtd_lxc.aug
-CLEANFILES += test_libvirtd_lxc.aug
-
-endif WITH_LXC
-EXTRA_DIST += lxc/lxc.conf lxc/libvirtd_lxc.aug lxc/test_libvirtd_lxc.aug.in
-
 
 
 if WITH_NETWORK
@@ -1679,7 +1572,6 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 # Add all conditional sources just in case...
 EXTRA_DIST += \
 		$(REMOTE_DRIVER_SOURCES) \
-		$(LXC_DRIVER_SOURCES) \
 		$(NETWORK_DRIVER_SOURCES) \
 		$(INTERFACE_DRIVER_SOURCES) \
 		$(STORAGE_DRIVER_SOURCES) \
@@ -1707,32 +1599,19 @@ EXTRA_DIST += \
 check-local: check-augeas
 
 .PHONY: check-augeas \
-	check-augeas-lxc \
 	check-augeas-sanlock \
 	check-augeas-lockd \
 	check-augeas-libvirtd \
 	$(NULL)
 
 check-augeas: $(AUGEAS_DIRS:%=check-augeas-%) \
-	check-augeas-lxc check-augeas-sanlock \
+	check-augeas-sanlock \
 	check-augeas-lockd check-augeas-virtlockd \
 	check-augeas-virtlogd check-augeas-libvirtd
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
 
-if WITH_LXC
-test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in \
-		$(srcdir)/lxc/lxc.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/lxc/lxc.conf $< $@
-
-check-augeas-lxc: test_libvirtd_lxc.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/lxc test_libvirtd_lxc.aug; \
-	fi
-else ! WITH_LXC
-check-augeas-lxc:
-endif ! WITH_LXC
 
 if WITH_SANLOCK
 test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in \
@@ -2035,12 +1914,11 @@ tapset_DATA += libvirt_probes.stp libvirt_functions.stp
 	> $@
 
 # Keep this list synced with PROTOCOL_STRUCTS
-RPC_PROBE_FILES = $(srcdir)/rpc/virnetprotocol.x \
+RPC_PROBE_FILES += $(srcdir)/rpc/virnetprotocol.x \
 		  $(srcdir)/rpc/virkeepaliveprotocol.x \
 		  $(srcdir)/remote/remote_protocol.x \
 		  $(srcdir)/remote/lxc_protocol.x \
 		  $(srcdir)/remote/qemu_protocol.x \
-		  $(srcdir)/lxc/lxc_monitor_protocol.x \
 		  $(srcdir)/locking/lock_protocol.x \
 		  $(srcdir)/admin/admin_protocol.x
 
@@ -2798,8 +2676,6 @@ libvirt_net_rpc_client_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_net_rpc_client_la_LIBADD = \
 			$(CYGWIN_EXTRA_LIBADD)
 
-libexec_PROGRAMS =
-
 if WITH_LIBVIRTD
 libexec_PROGRAMS += libvirt_iohelper
 libvirt_iohelper_SOURCES = $(UTIL_IO_HELPER_SOURCES)
@@ -2886,46 +2762,6 @@ libvirt_sanlock_helper_LDFLAGS = \
 libvirt_sanlock_helper_LDADD = libvirt.la
 endif WITH_SANLOCK
 
-if WITH_LXC
-if WITH_LIBVIRTD
-libexec_PROGRAMS += libvirt_lxc
-
-libvirt_lxc_SOURCES = \
-		$(LXC_CONTROLLER_SOURCES) \
-		$(DATATYPES_SOURCES)
-libvirt_lxc_LDFLAGS = \
-		$(AM_LDFLAGS) \
-		$(PIE_LDFLAGS) \
-		$(CAPNG_LIBS) \
-		$(LIBXML_LIBS) \
-		$(NULL)
-libvirt_lxc_LDADD = \
-		$(FUSE_LIBS) \
-		libvirt.la \
-		../gnulib/lib/libgnu.la
-if WITH_DTRACE_PROBES
-libvirt_lxc_LDADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-libvirt_lxc_LDADD += $(SECDRIVER_LIBS)
-libvirt_lxc_CFLAGS = \
-		-I$(srcdir)/conf \
-		$(AM_CFLAGS) \
-		$(PIE_CFLAGS) \
-		$(CAPNG_CFLAGS) \
-		$(LIBXML_CFLAGS) \
-		$(LIBNL_CFLAGS) \
-		$(FUSE_CFLAGS) \
-		$(DBUS_CFLAGS) \
-		$(XDR_CFLAGS) \
-		$(NULL)
-if WITH_BLKID
-libvirt_lxc_CFLAGS += $(BLKID_CFLAGS)
-libvirt_lxc_LDADD += $(BLKID_LIBS)
-endif WITH_BLKID
-libvirt_lxc_CFLAGS += $(SECDRIVER_CFLAGS)
-endif WITH_LIBVIRTD
-endif WITH_LXC
-EXTRA_DIST += $(LXC_CONTROLLER_SOURCES)
 
 if WITH_SECDRIVER_APPARMOR
 if WITH_LIBVIRTD
@@ -3041,11 +2877,6 @@ endif WITH_LIBVIRTD
 if WITH_SANLOCK
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock"
 endif WITH_SANLOCK
-if WITH_LXC
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lxc"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/lxc"
-endif WITH_LXC
 if WITH_NETWORK
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/network"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/dnsmasq"
@@ -3082,11 +2913,6 @@ endif WITH_LIBVIRTD
 if WITH_SANLOCK
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/sanlock" ||:
 endif WITH_SANLOCK
-if WITH_LXC
-	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lxc" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/lxc" ||:
-endif WITH_LXC
 if WITH_NETWORK
 	rm -f $(DESTDIR)$(confdir)/qemu/networks/autostart/default.xml
 	rm -f $(DESTDIR)$(confdir)/qemu/networks/default.xml
