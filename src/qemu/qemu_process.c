@@ -45,6 +45,7 @@
 #include "qemu_hostdev.h"
 #include "qemu_hotplug.h"
 #include "qemu_migration.h"
+#include "qemu_migration_params.h"
 #include "qemu_interface.h"
 #include "qemu_security.h"
 

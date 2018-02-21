@@ -57,6 +57,7 @@
 #include "qemu_monitor.h"
 #include "qemu_process.h"
 #include "qemu_migration.h"
+#include "qemu_migration_params.h"
 #include "qemu_blockjob.h"
 #include "qemu_security.h"
 
