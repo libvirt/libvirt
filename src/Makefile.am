@@ -77,6 +77,7 @@ include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
 include test/Makefile.inc.am
 include esx/Makefile.inc.am
+include hyperv/Makefile.inc.am
 
 install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
 uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
@@ -765,7 +766,6 @@ check-drivername:
 EXTRA_DIST += check-drivername.pl
 
 DRIVER_SOURCE_FILES += \
-	$(HYPERV_DRIVER_SORUCES) \
 	$(INTERFACE_DRIVER_SOURCES) \
 	$(LIBXL_DRIVER_SOURCES) \
 	$(LXC_DRIVER_SOURCES) \
@@ -983,24 +983,6 @@ LIBXL_DRIVER_SOURCES = \
 		libxl/libxl_driver.c libxl/libxl_driver.h \
 		libxl/libxl_logger.c libxl/libxl_logger.h \
 		libxl/libxl_migration.c libxl/libxl_migration.h
-
-HYPERV_DRIVER_SOURCES = \
-		hyperv/hyperv_private.h \
-		hyperv/hyperv_driver.c hyperv/hyperv_driver.h \
-		hyperv/hyperv_util.c hyperv/hyperv_util.h \
-		hyperv/hyperv_wmi.c hyperv/hyperv_wmi.h \
-		hyperv/hyperv_wmi_classes.c hyperv/hyperv_wmi_classes.h \
-		hyperv/openwsman.h
-
-HYPERV_DRIVER_GENERATED = \
-		hyperv/hyperv_wmi_classes.generated.c \
-		hyperv/hyperv_wmi_classes.generated.h \
-		hyperv/hyperv_wmi_classes.generated.typedef
-
-HYPERV_DRIVER_EXTRA_DIST = \
-		hyperv/hyperv_wmi_generator.input \
-		hyperv/hyperv_wmi_generator.py \
-		$(HYPERV_DRIVER_GENERATED)
 
 VZ_DRIVER_SOURCES = \
 		vz/vz_driver.h \
@@ -1585,31 +1567,6 @@ EXTRA_DIST += lxc/lxc.conf lxc/libvirtd_lxc.aug lxc/test_libvirtd_lxc.aug.in
 
 
 
-BUILT_SOURCES += $(HYPERV_DRIVER_GENERATED)
-
-HYPERV_GENERATED_STAMP = .hyperv_wmi_generator.stamp
-
-EXTRA_DIST += $(HYPERV_GENERATED_STAMP)
-
-$(HYPERV_DRIVER_GENERATED): $(HYPERV_GENERATED_STAMP)
-
-$(HYPERV_GENERATED_STAMP): $(srcdir)/hyperv/hyperv_wmi_generator.input \
-                            $(srcdir)/hyperv/hyperv_wmi_generator.py
-	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) \
-	  $(srcdir)/hyperv/hyperv_wmi_generator.py \
-	  && touch $@
-
-MAINTAINERCLEANFILES += $(HYPERV_DRIVER_GENERATED) $(HYPERV_GENERATED_STAMP)
-
-if WITH_HYPERV
-noinst_LTLIBRARIES += libvirt_driver_hyperv.la
-libvirt_la_BUILT_LIBADD += libvirt_driver_hyperv.la
-libvirt_driver_hyperv_la_CFLAGS = $(OPENWSMAN_CFLAGS) \
-		-I$(srcdir)/conf $(AM_CFLAGS)
-libvirt_driver_hyperv_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_hyperv_la_LIBADD = $(OPENWSMAN_LIBS)
-libvirt_driver_hyperv_la_SOURCES = $(HYPERV_DRIVER_SOURCES)
-endif WITH_HYPERV
 
 if WITH_VZ
 noinst_LTLIBRARIES += libvirt_driver_vz_impl.la
@@ -2041,8 +1998,6 @@ EXTRA_DIST += \
 		$(VBOX_DRIVER_SOURCES) \
 		$(XENAPI_DRIVER_SOURCES) \
 		$(LIBXL_DRIVER_SOURCES) \
-		$(HYPERV_DRIVER_SOURCES) \
-		$(HYPERV_DRIVER_EXTRA_DIST) \
 		$(VZ_DRIVER_SOURCES) \
 		$(BHYVE_DRIVER_SOURCES) \
 		$(NETWORK_DRIVER_SOURCES) \
