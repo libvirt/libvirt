@@ -101,6 +101,7 @@ include lxc/Makefile.inc.am
 include interface/Makefile.inc.am
 include network/Makefile.inc.am
 include nwfilter/Makefile.inc.am
+include node_device/Makefile.inc.am
 
 
 THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
@@ -788,16 +789,12 @@ check-drivername:
 EXTRA_DIST += check-drivername.pl
 
 DRIVER_SOURCE_FILES += \
-	$(NODE_DEVICE_DRIVER_SOURCES) \
-	$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
-	$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
 	$(REMOTE_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
 	$(NULL)
 
 STATEFUL_DRIVER_SOURCE_FILES += \
-	$(NODE_DEVICE_DRIVER_SOURCES) \
 	$(SECRET_DRIVER_SOURCES) \
 	$(STORAGE_DRIVER_SOURCES) \
 	$(NULL)
@@ -937,18 +934,6 @@ ACCESS_DRIVER_POLKIT_SOURCES = \
 ACCESS_DRIVER_POLKIT_POLICY = \
 		$(srcdir)/access/org.libvirt.api.policy
 
-
-NODE_DEVICE_DRIVER_SOURCES = \
-		node_device/node_device_driver.c \
-		node_device/node_device_driver.h
-
-NODE_DEVICE_DRIVER_HAL_SOURCES = \
-		node_device/node_device_hal.c \
-		node_device/node_device_hal.h
-
-NODE_DEVICE_DRIVER_UDEV_SOURCES = \
-		node_device/node_device_udev.c \
-		node_device/node_device_udev.h
 
 CPU_SOURCES = \
 		cpu/cpu.h cpu/cpu.c \
@@ -1328,32 +1313,6 @@ libvirt_storage_backend_vstorage_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_backend_vstorage_la_LIBADD = libvirt.la ../gnulib/lib/libgnu.la
 endif WITH_STORAGE_VSTORAGE
 
-if WITH_NODE_DEVICES
-# Needed to keep automake quiet about conditionals
-mod_LTLIBRARIES += libvirt_driver_nodedev.la
-libvirt_driver_nodedev_la_SOURCES = $(NODE_DEVICE_DRIVER_SOURCES)
-
-libvirt_driver_nodedev_la_CFLAGS = \
-		-I$(srcdir)/access \
-		-I$(srcdir)/conf \
-		$(AM_CFLAGS) $(LIBNL_CFLAGS)
-libvirt_driver_nodedev_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-libvirt_driver_nodedev_la_LIBADD = libvirt.la
-
-if WITH_HAL
-libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_HAL_SOURCES)
-libvirt_driver_nodedev_la_CFLAGS += $(HAL_CFLAGS)
-libvirt_driver_nodedev_la_LIBADD += $(HAL_LIBS)
-endif WITH_HAL
-if WITH_UDEV
-libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_UDEV_SOURCES)
-libvirt_driver_nodedev_la_CFLAGS += $(UDEV_CFLAGS) $(PCIACCESS_CFLAGS)
-libvirt_driver_nodedev_la_LIBADD += $(UDEV_LIBS) $(PCIACCESS_LIBS)
-endif WITH_UDEV
-
-libvirt_driver_nodedev_la_LIBADD += ../gnulib/lib/libgnu.la
-endif WITH_NODE_DEVICES
-
 
 
 libvirt_security_manager_la_SOURCES = $(SECURITY_DRIVER_SOURCES)
@@ -1479,9 +1438,6 @@ EXTRA_DIST += \
 		$(STORAGE_DRIVER_GLUSTER_SOURCES) \
 		$(STORAGE_DRIVER_ZFS_SOURCES) \
 		$(STORAGE_DRIVER_VSTORAGE_SOURCES) \
-		$(NODE_DEVICE_DRIVER_SOURCES) \
-		$(NODE_DEVICE_DRIVER_HAL_SOURCES) \
-		$(NODE_DEVICE_DRIVER_UDEV_SOURCES) \
 		$(SECURITY_DRIVER_SELINUX_SOURCES) \
 		$(SECURITY_DRIVER_APPARMOR_SOURCES) \
 		$(SECRET_DRIVER_SOURCES) \
