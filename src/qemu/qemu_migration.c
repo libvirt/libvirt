@@ -463,20 +463,19 @@ qemuMigrationDstStopNBDServer(virQEMUDriverPtr driver,
 
 
 /**
- * qemuMigrationSrcDriveMirrorReady:
+ * qemuMigrationSrcNBDStorageCopyReady:
  * @vm: domain
  *
- * Check the status of all drive-mirrors started by
- * qemuMigrationSrcDriveMirror. Any pending block job events
- * for the mirrored disks will be processed.
+ * Check the status of all drives copied via qemuMigrationSrcNBDStorageCopy.
+ * Any pending block job events for the mirrored disks will be processed.
  *
  * Returns 1 if all mirrors are "ready",
  *         0 if some mirrors are still performing initial sync,
  *        -1 on error.
  */
 static int
-qemuMigrationSrcDriveMirrorReady(virDomainObjPtr vm,
-                                 qemuDomainAsyncJob asyncJob)
+qemuMigrationSrcNBDStorageCopyReady(virDomainObjPtr vm,
+                                    qemuDomainAsyncJob asyncJob)
 {
     size_t i;
     size_t notReady = 0;
@@ -530,9 +529,9 @@ qemuMigrationSrcDriveMirrorReady(virDomainObjPtr vm,
  *         -2 all mirrors are gone but some of them failed.
  */
 static int
-qemuMigrationDriveMirrorCancelled(virDomainObjPtr vm,
-                                  qemuDomainAsyncJob asyncJob,
-                                  bool check)
+qemuMigrationSrcNBDCopyCancelled(virDomainObjPtr vm,
+                                 qemuDomainAsyncJob asyncJob,
+                                 bool check)
 {
     size_t i;
     size_t active = 0;
@@ -617,11 +616,11 @@ qemuMigrationDriveMirrorCancelled(virDomainObjPtr vm,
  *         -1 on error or when job failed and failNoJob is true.
  */
 static int
-qemuMigrationSrcCancelOneDriveMirror(virQEMUDriverPtr driver,
-                                     virDomainObjPtr vm,
-                                     virDomainDiskDefPtr disk,
-                                     bool failNoJob,
-                                     qemuDomainAsyncJob asyncJob)
+qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 virDomainDiskDefPtr disk,
+                                 bool failNoJob,
+                                 qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *diskAlias = NULL;
@@ -672,23 +671,22 @@ qemuMigrationSrcCancelOneDriveMirror(virQEMUDriverPtr driver,
 
 
 /**
- * qemuMigrationSrcCancelDriveMirror:
+ * qemuMigrationSrcNBDCopyCancel:
  * @driver: qemu driver
  * @vm: domain
  * @check: if true report an error when some of the mirrors fails
  *
- * Cancel all drive-mirrors started by qemuMigrationDriveMirror.
- * Any pending block job events for the affected disks will be
- * processed.
+ * Cancel all drive-mirrors started by qemuMigrationSrcNBDStorageCopy.
+ * Any pending block job events for the affected disks will be processed.
  *
  * Returns 0 on success, -1 otherwise.
  */
 static int
-qemuMigrationSrcCancelDriveMirror(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  bool check,
-                                  qemuDomainAsyncJob asyncJob,
-                                  virConnectPtr dconn)
+qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              bool check,
+                              qemuDomainAsyncJob asyncJob,
+                              virConnectPtr dconn)
 {
     virErrorPtr err = NULL;
     int ret = -1;
@@ -705,8 +703,8 @@ qemuMigrationSrcCancelDriveMirror(virQEMUDriverPtr driver,
         if (!diskPriv->migrating)
             continue;
 
-        rv = qemuMigrationSrcCancelOneDriveMirror(driver, vm, disk,
-                                                  check, asyncJob);
+        rv = qemuMigrationSrcNBDCopyCancelOne(driver, vm, disk,
+                                              check, asyncJob);
         if (rv != 0) {
             if (rv < 0) {
                 if (!err)
@@ -718,8 +716,7 @@ qemuMigrationSrcCancelDriveMirror(virQEMUDriverPtr driver,
         }
     }
 
-    while ((rv = qemuMigrationDriveMirrorCancelled(vm, asyncJob,
-                                                   check)) != 1) {
+    while ((rv = qemuMigrationSrcNBDCopyCancelled(vm, asyncJob, check)) != 1) {
         if (check && !failed &&
             dconn && virConnectIsAlive(dconn) <= 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -752,7 +749,7 @@ qemuMigrationSrcCancelDriveMirror(virQEMUDriverPtr driver,
 
 
 /**
- * qemuMigrationDriveMirror:
+ * qemuMigrationSrcNBDStorageCopy:
  * @driver: qemu driver
  * @vm: domain
  * @mig: migration cookie
@@ -760,27 +757,26 @@ qemuMigrationSrcCancelDriveMirror(virQEMUDriverPtr driver,
  * @speed: bandwidth limit in MiB/s
  * @migrate_flags: migrate monitor command flags
  *
- * Run drive-mirror to feed NBD server running on dst and wait
- * till the process switches into another phase where writes go
- * simultaneously to both source and destination. On success,
- * update @migrate_flags so we don't tell 'migrate' command
+ * Migrate non-shared storage using the NBD protocol to the server running
+ * inside the qemu process on dst and wait until the copy converges.
+ * On success update @migrate_flags so we don't tell 'migrate' command
  * to do the very same operation. On failure, the caller is
- * expected to call qemuMigrationSrcCancelDriveMirror to stop all
- * running mirrors.
+ * expected to call qemuMigrationSrcNBDCopyCancel to stop all
+ * running copy operations.
  *
  * Returns 0 on success (@migrate_flags updated),
  *        -1 otherwise.
  */
 static int
-qemuMigrationSrcDriveMirror(virQEMUDriverPtr driver,
-                            virDomainObjPtr vm,
-                            qemuMigrationCookiePtr mig,
-                            const char *host,
-                            unsigned long speed,
-                            unsigned int *migrate_flags,
-                            size_t nmigrate_disks,
-                            const char **migrate_disks,
-                            virConnectPtr dconn)
+qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               qemuMigrationCookiePtr mig,
+                               const char *host,
+                               unsigned long speed,
+                               unsigned int *migrate_flags,
+                               size_t nmigrate_disks,
+                               const char **migrate_disks,
+                               virConnectPtr dconn)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -857,8 +853,7 @@ qemuMigrationSrcDriveMirror(virQEMUDriverPtr driver,
         }
     }
 
-    while ((rv = qemuMigrationSrcDriveMirrorReady(vm,
-                                                  QEMU_ASYNC_JOB_MIGRATION_OUT)) != 1) {
+    while ((rv = qemuMigrationSrcNBDStorageCopyReady(vm, QEMU_ASYNC_JOB_MIGRATION_OUT)) != 1) {
         if (rv < 0)
             goto cleanup;
 
@@ -1364,7 +1359,7 @@ qemuMigrationAnyCompleted(virQEMUDriverPtr driver,
 
     /* This flag should only be set when run on src host */
     if (flags & QEMU_MIGRATION_COMPLETED_CHECK_STORAGE &&
-        qemuMigrationSrcDriveMirrorReady(vm, asyncJob) < 0)
+        qemuMigrationSrcNBDStorageCopyReady(vm, asyncJob) < 0)
         goto error;
 
     if (flags & QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR &&
@@ -2852,8 +2847,8 @@ qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
         int reason;
 
         /* cancel any outstanding NBD jobs */
-        qemuMigrationSrcCancelDriveMirror(driver, vm, false,
-                                          QEMU_ASYNC_JOB_MIGRATION_OUT, NULL);
+        qemuMigrationSrcNBDCopyCancel(driver, vm, false,
+                                      QEMU_ASYNC_JOB_MIGRATION_OUT, NULL);
 
         virSetError(orig_err);
         virFreeError(orig_err);
@@ -3357,13 +3352,13 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
             }
 
             /* This will update migrate_flags on success */
-            if (qemuMigrationSrcDriveMirror(driver, vm, mig,
-                                            spec->dest.host.name,
-                                            migrate_speed,
-                                            &migrate_flags,
-                                            nmigrate_disks,
-                                            migrate_disks,
-                                            dconn) < 0) {
+            if (qemuMigrationSrcNBDStorageCopy(driver, vm, mig,
+                                               spec->dest.host.name,
+                                               migrate_speed,
+                                               &migrate_flags,
+                                               nmigrate_disks,
+                                               migrate_disks,
+                                               dconn) < 0) {
                 goto error;
             }
         } else {
@@ -3492,9 +3487,9 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     }
 
     if (mig->nbd &&
-        qemuMigrationSrcCancelDriveMirror(driver, vm, true,
-                                          QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                          dconn) < 0)
+        qemuMigrationSrcNBDCopyCancel(driver, vm, true,
+                                      QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                      dconn) < 0)
         goto error;
 
     /* When migration was paused before serializing device state we need to
@@ -3579,9 +3574,9 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
 
         /* cancel any outstanding NBD jobs */
         if (mig && mig->nbd)
-            qemuMigrationSrcCancelDriveMirror(driver, vm, false,
-                                              QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                              dconn);
+            qemuMigrationSrcNBDCopyCancel(driver, vm, false,
+                                          QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                          dconn);
 
         if (priv->job.current->status != QEMU_DOMAIN_JOB_STATUS_CANCELED)
             priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
@@ -5270,8 +5265,8 @@ qemuMigrationSrcCancel(virQEMUDriverPtr driver,
         }
     }
 
-    if (qemuMigrationSrcCancelDriveMirror(driver, vm, false,
-                                          QEMU_ASYNC_JOB_NONE, NULL) < 0)
+    if (qemuMigrationSrcNBDCopyCancel(driver, vm, false,
+                                      QEMU_ASYNC_JOB_NONE, NULL) < 0)
         goto endsyncjob;
 
     ret = 0;
