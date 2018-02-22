@@ -27400,7 +27400,8 @@ virDomainDeviceInfoCheckBootIndex(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 int
 virDomainDefCompatibleDevice(virDomainDefPtr def,
-                             virDomainDeviceDefPtr dev)
+                             virDomainDeviceDefPtr dev,
+                             virDomainDeviceDefPtr oldDev ATTRIBUTE_UNUSED)
 {
     virDomainDeviceInfoPtr info = virDomainDeviceGetInfo(dev);
 
