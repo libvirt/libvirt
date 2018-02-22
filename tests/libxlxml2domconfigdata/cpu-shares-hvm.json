@@ -16,12 +16,10 @@
         "target_memkb": 1048576,
         "video_memkb": 8192,
         "shadow_memkb": 12288,
-        "rtc_timeoffset": 3600,
-        "localtime": "True",
         "device_model_version": "qemu_xen",
         "device_model": "/bin/true",
         "sched_params": {
-
+            "weight": 1500
         },
         "type.hvm": {
             "pae": "True",

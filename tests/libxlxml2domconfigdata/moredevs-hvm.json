@@ -21,7 +21,7 @@
         "device_model_version": "qemu_xen",
         "device_model": "/bin/true",
         "sched_params": {
-            "weight": 1000
+
         },
         "type.hvm": {
             "pae": "True",

@@ -15,7 +15,7 @@
         "max_memkb": 524288,
         "target_memkb": 524288,
         "sched_params": {
-            "weight": 1000
+
         },
         "type.pv": {
             "bootloader": "pygrub"

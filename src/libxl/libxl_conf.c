@@ -366,7 +366,9 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         }
     }
 
-    b_info->sched_params.weight = 1000;
+    if (def->cputune.sharesSpecified)
+        b_info->sched_params.weight = def->cputune.shares;
+
     /* Xen requires the memory sizes to be rounded to 1MiB increments */
     virDomainDefSetMemoryTotal(def,
                                VIR_ROUND_UP(virDomainDefGetMemoryInitial(def), 1024));
