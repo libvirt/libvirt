@@ -1376,7 +1376,7 @@ augeastest_DATA += test_libvirtd.aug
 
 conf_DATA += remote/libvirtd.conf
 
-CLEANFILES += tets_libvirtd.aug
+CLEANFILES += test_libvirtd.aug
 
 if WITH_POLKIT
 if WITH_POLKIT0
@@ -1389,6 +1389,7 @@ endif ! WITH_POLKIT0
 endif WITH_POLKIT
 
 BUILT_SOURCES += libvirtd.policy
+CLEANFILES += libvirtd.policy
 
 libvirtd.policy: remote/libvirtd.policy.in $(top_builddir)/config.status
 	$(AM_V_GEN) sed \
@@ -2868,6 +2869,7 @@ if WITH_LIBVIRTD
 LOGROTATE_FILES := $(LOGROTATE_FILES_IN:remote/%.in=%)
 
 BUILT_SOURCES += $(LOGROTATE_FILES)
+CLEANFILES += $(LOGROTATE_FILES)
 
 %.logrotate: remote/%.logrotate.in
 	$(AM_V_GEN)sed \
