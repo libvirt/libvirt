@@ -3061,12 +3061,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     if ((changeidx = virDomainNetFindIdx(vm->def, newdev)) < 0)
         goto cleanup;
     devslot = &vm->def->nets[changeidx];
-
-    if (!(olddev = *devslot)) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("cannot find existing network device to modify"));
-        goto cleanup;
-    }
+    olddev = *devslot;
 
     oldType = virDomainNetGetActualType(olddev);
     if (oldType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
