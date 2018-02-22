@@ -419,9 +419,15 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
 
         virBufferAsprintf(&opt, ":%d", graphics->data.vnc.port);
         break;
-    default:
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Unsupported listen type"));
+        goto error;
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainGraphicsListenType, glisten->type);
+        goto error;
     }
 
     if (video->driver)
