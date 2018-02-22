@@ -2297,7 +2297,7 @@ check-augeas-virtlogd: test_virtlogd.aug
 if WITH_LIBVIRTD
 test_libvirtd.aug: remote/test_libvirtd.aug.in \
 		remote/libvirtd.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) remote/libvirtd.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/remote/libvirtd.conf $< $@
 
 check-augeas-libvirtd: test_libvirtd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
