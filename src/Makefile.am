@@ -2833,7 +2833,7 @@ install-sysconfig:
 	for f in $(SYSCONF_FILES:%.sysconf=%) ; \
 	do \
 	  tgt=`basename $$f`; \
-	  $(INSTALL_SCRIPT) $$f.sysconf $(DESTDIR)$(sysconfdir)/sysconfig/$$tgt; \
+	  $(INSTALL_SCRIPT) $(srcdir)/$$f.sysconf $(DESTDIR)$(sysconfdir)/sysconfig/$$tgt; \
 	done
 
 uninstall-sysconfig:
