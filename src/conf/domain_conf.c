@@ -27381,18 +27381,30 @@ virDomainDeviceIsUSB(virDomainDeviceDefPtr dev)
     return false;
 }
 
+
+typedef struct _virDomainCompatibleDeviceData virDomainCompatibleDeviceData;
+typedef virDomainCompatibleDeviceData *virDomainCompatibleDeviceDataPtr;
+struct _virDomainCompatibleDeviceData {
+    virDomainDeviceInfoPtr newInfo;
+    virDomainDeviceInfoPtr oldInfo;
+};
+
 static int
 virDomainDeviceInfoCheckBootIndex(virDomainDefPtr def ATTRIBUTE_UNUSED,
                                   virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
                                   virDomainDeviceInfoPtr info,
                                   void *opaque)
 {
-    virDomainDeviceInfoPtr newinfo = opaque;
+    virDomainCompatibleDeviceDataPtr data = opaque;
 
-    if (info->bootIndex == newinfo->bootIndex) {
+    /* Ignore the device we're about to update */
+    if (data->oldInfo == info)
+        return 0;
+
+    if (info->bootIndex == data->newInfo->bootIndex) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("boot order %u is already used by another device"),
-                       newinfo->bootIndex);
+                       data->newInfo->bootIndex);
         return -1;
     }
     return 0;
@@ -27401,9 +27413,12 @@ virDomainDeviceInfoCheckBootIndex(virDomainDefPtr def ATTRIBUTE_UNUSED,
 int
 virDomainDefCompatibleDevice(virDomainDefPtr def,
                              virDomainDeviceDefPtr dev,
-                             virDomainDeviceDefPtr oldDev ATTRIBUTE_UNUSED)
+                             virDomainDeviceDefPtr oldDev)
 {
-    virDomainDeviceInfoPtr info = virDomainDeviceGetInfo(dev);
+    virDomainCompatibleDeviceData data = {
+        .newInfo = virDomainDeviceGetInfo(dev),
+        .oldInfo = virDomainDeviceGetInfo(oldDev),
+    };
 
     if (!virDomainDefHasUSB(def) &&
         def->os.type != VIR_DOMAIN_OSTYPE_EXE &&
@@ -27414,7 +27429,7 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
         return -1;
     }
 
-    if (info && info->bootIndex > 0) {
+    if (data.newInfo && data.newInfo->bootIndex > 0) {
         if (def->os.nBootDevs > 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("per-device boot elements cannot be used"
@@ -27423,7 +27438,7 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
         }
         if (virDomainDeviceInfoIterate(def,
                                        virDomainDeviceInfoCheckBootIndex,
-                                       info) < 0)
+                                       &data) < 0)
             return -1;
     }
 
