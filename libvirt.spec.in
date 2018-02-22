@@ -167,7 +167,7 @@
 %endif
 
 # fuse is used to provide virtualized /proc for LXC
-%if %{with_lxc}
+%if %{with_lxc} && 0%{?rhel} != 6
     %define with_fuse      0%{!?_without_fuse:1}
 %endif
 
