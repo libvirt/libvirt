@@ -367,6 +367,10 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
     }
 
     b_info->sched_params.weight = 1000;
+    /* Xen requires the memory sizes to be rounded to 1MiB increments */
+    virDomainDefSetMemoryTotal(def,
+                               VIR_ROUND_UP(virDomainDefGetMemoryInitial(def), 1024));
+    def->mem.cur_balloon = VIR_ROUND_UP(def->mem.cur_balloon, 1024);
     b_info->max_memkb = virDomainDefGetMemoryInitial(def);
     b_info->target_memkb = def->mem.cur_balloon;
     if (hvm) {
