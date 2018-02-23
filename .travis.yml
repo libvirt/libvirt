@@ -6,8 +6,12 @@ matrix:
   include:
     - compiler: gcc
       dist: trusty
+      env:
+        - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=upstart"
     - compiler: clang
       dist: trusty
+      env:
+        - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=systemd"
     - compiler: clang
       os: osx
       script:
@@ -99,7 +103,7 @@ before_script:
   - ./autogen.sh --prefix=$(pwd)/install-root
 
 script:
-  - make -j3 && make -j3 syntax-check && make -j3 distcheck
+  - make -j3 && make -j3 syntax-check && make -j3 distcheck DISTCHECK_CONFIGURE_FLAGS=$DISTCHECK_CONFIGURE_FLAGS
 
 after_failure:
   - echo '============================================================================'
