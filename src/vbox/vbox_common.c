@@ -3726,6 +3726,7 @@ vboxDumpNetwork(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRUi
     /* Now get the details about the network cards here */
     for (i = 0; netAdpIncCnt < def->nnets && i < networkAdapterCount; i++) {
         INetworkAdapter *adapter = NULL;
+        virDomainNetDefPtr net = def->nets[netAdpIncCnt];
 
         gVBoxAPI.UIMachine.GetNetworkAdapter(machine, i, &adapter);
         if (adapter) {
@@ -3742,18 +3743,18 @@ vboxDumpNetwork(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRUi
                 gVBoxAPI.UINetworkAdapter.GetAttachmentType(adapter, &attachmentType);
                 if (attachmentType == NetworkAttachmentType_NAT) {
 
-                    def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_USER;
+                    net->type = VIR_DOMAIN_NET_TYPE_USER;
 
                 } else if (attachmentType == NetworkAttachmentType_Bridged) {
                     PRUnichar *hostIntUtf16 = NULL;
                     char *hostInt = NULL;
 
-                    def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+                    net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
 
                     gVBoxAPI.UINetworkAdapter.GetBridgedInterface(adapter, &hostIntUtf16);
 
                     VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
-                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->data.bridge.brname, hostInt));
+                    ignore_value(VIR_STRDUP(net->data.bridge.brname, hostInt));
 
                     VBOX_UTF8_FREE(hostInt);
                     VBOX_UTF16_FREE(hostIntUtf16);
@@ -3762,12 +3763,12 @@ vboxDumpNetwork(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRUi
                     PRUnichar *intNetUtf16 = NULL;
                     char *intNet = NULL;
 
-                    def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_INTERNAL;
+                    net->type = VIR_DOMAIN_NET_TYPE_INTERNAL;
 
                     gVBoxAPI.UINetworkAdapter.GetInternalNetwork(adapter, &intNetUtf16);
 
                     VBOX_UTF16_TO_UTF8(intNetUtf16, &intNet);
-                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->data.internal.name, intNet));
+                    ignore_value(VIR_STRDUP(net->data.internal.name, intNet));
 
                     VBOX_UTF8_FREE(intNet);
                     VBOX_UTF16_FREE(intNetUtf16);
@@ -3776,12 +3777,12 @@ vboxDumpNetwork(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRUi
                     PRUnichar *hostIntUtf16 = NULL;
                     char *hostInt = NULL;
 
-                    def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_NETWORK;
+                    net->type = VIR_DOMAIN_NET_TYPE_NETWORK;
 
                     gVBoxAPI.UINetworkAdapter.GetHostOnlyInterface(adapter, &hostIntUtf16);
 
                     VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
-                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->data.network.name, hostInt));
+                    ignore_value(VIR_STRDUP(net->data.network.name, hostInt));
 
                     VBOX_UTF8_FREE(hostInt);
                     VBOX_UTF16_FREE(hostIntUtf16);
@@ -3790,24 +3791,24 @@ vboxDumpNetwork(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRUi
                     /* default to user type i.e. NAT in VirtualBox if this
                      * dump is ever used to create a machine.
                      */
-                    def->nets[netAdpIncCnt]->type = VIR_DOMAIN_NET_TYPE_USER;
+                    net->type = VIR_DOMAIN_NET_TYPE_USER;
                 }
 
                 gVBoxAPI.UINetworkAdapter.GetAdapterType(adapter, &adapterType);
                 if (adapterType == NetworkAdapterType_Am79C970A) {
-                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "Am79C970A"));
+                    ignore_value(VIR_STRDUP(net->model, "Am79C970A"));
                 } else if (adapterType == NetworkAdapterType_Am79C973) {
-                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "Am79C973"));
+                    ignore_value(VIR_STRDUP(net->model, "Am79C973"));
                 } else if (adapterType == NetworkAdapterType_I82540EM) {
-                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "82540EM"));
+                    ignore_value(VIR_STRDUP(net->model, "82540EM"));
                 } else if (adapterType == NetworkAdapterType_I82545EM) {
-                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "82545EM"));
+                    ignore_value(VIR_STRDUP(net->model, "82545EM"));
                 } else if (adapterType == NetworkAdapterType_I82543GC) {
-                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "82543GC"));
+                    ignore_value(VIR_STRDUP(net->model, "82543GC"));
                 } else if (gVBoxAPI.APIVersion >= 3000051 &&
                            adapterType == NetworkAdapterType_Virtio) {
                     /* Only vbox 3.1 and later support NetworkAdapterType_Virto */
-                    ignore_value(VIR_STRDUP(def->nets[netAdpIncCnt]->model, "virtio"));
+                    ignore_value(VIR_STRDUP(net->model, "virtio"));
                 }
 
                 gVBoxAPI.UINetworkAdapter.GetMACAddress(adapter, &MACAddressUtf16);
@@ -3819,8 +3820,7 @@ vboxDumpNetwork(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRUi
                          MACAddress[8], MACAddress[9], MACAddress[10], MACAddress[11]);
 
                 /* XXX some real error handling here some day ... */
-                ignore_value(virMacAddrParse(macaddr,
-                                             &def->nets[netAdpIncCnt]->mac));
+                ignore_value(virMacAddrParse(macaddr, &net->mac));
 
                 netAdpIncCnt++;
 
