@@ -3701,7 +3701,6 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
     PRUint32 adapterType = NetworkAdapterType_Null;
     PRUnichar *MACAddressUtf16 = NULL;
     char *MACAddress = NULL;
-    char macaddr[VIR_MAC_STRING_BUFLEN] = {0};
     virDomainNetDefPtr net = NULL;
 
     if (VIR_ALLOC(net) < 0)
@@ -3780,18 +3779,19 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
 
     gVBoxAPI.UINetworkAdapter.GetMACAddress(adapter, &MACAddressUtf16);
     VBOX_UTF16_TO_UTF8(MACAddressUtf16, &MACAddress);
-    snprintf(macaddr, VIR_MAC_STRING_BUFLEN,
-             "%c%c:%c%c:%c%c:%c%c:%c%c:%c%c",
-             MACAddress[0], MACAddress[1], MACAddress[2], MACAddress[3],
-             MACAddress[4], MACAddress[5], MACAddress[6], MACAddress[7],
-             MACAddress[8], MACAddress[9], MACAddress[10], MACAddress[11]);
-
-    /* XXX some real error handling here some day ... */
-    ignore_value(virMacAddrParse(macaddr, &net->mac));
-
     VBOX_UTF16_FREE(MACAddressUtf16);
+
+    if (virMacAddrParseHex(MACAddress, &net->mac) < 0) {
+        VBOX_UTF8_FREE(MACAddress);
+        goto error;
+    }
+
     VBOX_UTF8_FREE(MACAddress);
     return net;
+
+ error:
+    virDomainNetDefFree(net);
+    return NULL;
 }
 
 static int
