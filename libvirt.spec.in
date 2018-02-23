@@ -1825,7 +1825,6 @@ exit 0
 %{_sysconfdir}/rc.d/init.d/virtlogd
 %{_sysconfdir}/rc.d/init.d/virtlockd
 %endif
-%doc daemon/libvirtd.upstart
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/sysconfig/virtlogd
 %config(noreplace) %{_sysconfdir}/sysconfig/virtlockd
