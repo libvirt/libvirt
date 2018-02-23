@@ -109,4 +109,8 @@ virNodeDeviceObjListExport(virConnectPtr conn,
                            virNodeDeviceObjListFilter filter,
                            unsigned int flags);
 
+void
+virNodeDeviceObjSetSkipUpdateCaps(virNodeDeviceObjPtr obj,
+                                  bool skipUpdateCaps);
+
 #endif /* __VIRNODEDEVICEOBJ_H__ */

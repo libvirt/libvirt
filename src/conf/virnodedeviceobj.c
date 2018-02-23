@@ -37,6 +37,8 @@ struct _virNodeDeviceObj {
     virObjectLockable parent;
 
     virNodeDeviceDefPtr def;            /* device definition */
+    bool skipUpdateCaps;                /* whether to skip checking host caps,
+                                           used by testdriver */
 };
 
 struct _virNodeDeviceObjList {
@@ -806,7 +808,8 @@ virNodeDeviceMatch(virNodeDeviceObjPtr obj,
                    unsigned int flags)
 {
     /* Refresh the capabilities first, e.g. due to a driver change */
-    if (virNodeDeviceUpdateCaps(obj->def) < 0)
+    if (!obj->skipUpdateCaps &&
+        virNodeDeviceUpdateCaps(obj->def) < 0)
         return false;
 
     /* filter by cap type */
@@ -914,4 +917,12 @@ virNodeDeviceObjListExport(virConnectPtr conn,
  cleanup:
     virObjectListFree(data.devices);
     return -1;
+}
+
+
+void
+virNodeDeviceObjSetSkipUpdateCaps(virNodeDeviceObjPtr obj,
+                                  bool skipUpdateCaps)
+{
+    obj->skipUpdateCaps = skipUpdateCaps;
 }
