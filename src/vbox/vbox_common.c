@@ -3822,20 +3822,19 @@ vboxDumpNetworks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRU
     for (i = 0; netAdpIncCnt < def->nnets && i < networkAdapterCount; i++) {
         INetworkAdapter *adapter = NULL;
         virDomainNetDefPtr net = def->nets[netAdpIncCnt];
+        PRBool enabled = PR_FALSE;
 
         gVBoxAPI.UIMachine.GetNetworkAdapter(machine, i, &adapter);
-        if (adapter) {
-            PRBool enabled = PR_FALSE;
-
+        if (adapter)
             gVBoxAPI.UINetworkAdapter.GetEnabled(adapter, &enabled);
-            if (enabled) {
-                vboxDumpNetwork(net, data, adapter);
 
-                netAdpIncCnt++;
-            }
+        if (enabled) {
+            vboxDumpNetwork(net, data, adapter);
 
-            VBOX_RELEASE(adapter);
+            netAdpIncCnt++;
         }
+
+        VBOX_RELEASE(adapter);
     }
 }
 
