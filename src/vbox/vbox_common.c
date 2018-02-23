@@ -3794,35 +3794,12 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
     return net;
 }
 
-static void
+static int
 vboxDumpNetworks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRUint32 networkAdapterCount)
 {
-    PRUint32 netAdpIncCnt = 0;
     size_t i = 0;
 
-    def->nnets = 0;
-    /* Get which network cards are enabled */
     for (i = 0; i < networkAdapterCount; i++) {
-        INetworkAdapter *adapter = NULL;
-
-        gVBoxAPI.UIMachine.GetNetworkAdapter(machine, i, &adapter);
-        if (adapter) {
-            PRBool enabled = PR_FALSE;
-
-            gVBoxAPI.UINetworkAdapter.GetEnabled(adapter, &enabled);
-            if (enabled)
-                def->nnets++;
-
-            VBOX_RELEASE(adapter);
-        }
-    }
-
-    /* Allocate memory for the networkcards which are enabled */
-    if (def->nnets > 0)
-        ignore_value(VIR_ALLOC_N(def->nets, def->nnets));
-
-    /* Now get the details about the network cards here */
-    for (i = 0; netAdpIncCnt < def->nnets && i < networkAdapterCount; i++) {
         INetworkAdapter *adapter = NULL;
         virDomainNetDefPtr net = NULL;
         PRBool enabled = PR_FALSE;
@@ -3833,11 +3810,16 @@ vboxDumpNetworks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRU
 
         if (enabled) {
             net = vboxDumpNetwork(data, adapter);
-            def->nets[netAdpIncCnt++] = net;
+            if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0) {
+                VBOX_RELEASE(adapter);
+                return -1;
+            }
         }
 
         VBOX_RELEASE(adapter);
     }
+
+    return 0;
 }
 
 static void
@@ -4195,7 +4177,8 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 
     if (vboxDumpSharedFolders(def, data, machine) < 0)
         goto cleanup;
-    vboxDumpNetworks(def, data, machine, networkAdapterCount);
+    if (vboxDumpNetworks(def, data, machine, networkAdapterCount) < 0)
+        goto cleanup;
     vboxDumpAudio(def, data, machine);
 
     if (vboxDumpSerial(def, data, machine, serialPortCount) < 0)
