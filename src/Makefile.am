@@ -91,6 +91,7 @@ SYSCONF_FILES =
 sbin_PROGRAMS =
 man8_MANS =
 
+include conf/Makefile.inc.am
 include uml/Makefile.inc.am
 include phyp/Makefile.inc.am
 include test/Makefile.inc.am
@@ -439,114 +440,6 @@ logging/log_daemon_dispatch_stubs.h: $(LOG_PROTOCOL) \
 	    $(LOG_PROTOCOL) > $(srcdir)/logging/log_daemon_dispatch_stubs.h
 
 
-NETDEV_CONF_SOURCES = \
-		conf/netdev_bandwidth_conf.h conf/netdev_bandwidth_conf.c \
-		conf/netdev_vport_profile_conf.h conf/netdev_vport_profile_conf.c \
-		conf/netdev_vlan_conf.h conf/netdev_vlan_conf.c
-
-# XML configuration format handling sources
-# Domain driver generic impl APIs
-DOMAIN_CONF_SOURCES = \
-		conf/capabilities.c conf/capabilities.h \
-		conf/domain_addr.c conf/domain_addr.h \
-		conf/domain_capabilities.c conf/domain_capabilities.h \
-		conf/domain_conf.c conf/domain_conf.h \
-		conf/domain_audit.c conf/domain_audit.h \
-		conf/domain_nwfilter.c conf/domain_nwfilter.h \
-		conf/virsavecookie.c conf/virsavecookie.h \
-		conf/snapshot_conf.c conf/snapshot_conf.h \
-		conf/numa_conf.c conf/numa_conf.h \
-		conf/virdomainobjlist.c conf/virdomainobjlist.h
-
-OBJECT_EVENT_SOURCES = \
-		conf/object_event.c conf/object_event.h \
-		conf/object_event_private.h
-
-DOMAIN_EVENT_SOURCES = \
-		conf/domain_event.c conf/domain_event.h
-
-NETWORK_EVENT_SOURCES = \
-		conf/network_event.c conf/network_event.h
-
-STORAGE_EVENT_SOURCES = \
-                conf/storage_event.c conf/storage_event.h
-
-NODE_DEVICE_EVENT_SOURCES = \
-                conf/node_device_event.c conf/node_device_event.h
-
-SECRET_EVENT_SOURCES = \
-                conf/secret_event.c conf/secret_event.h
-
-# Network driver generic impl APIs
-NETWORK_CONF_SOURCES = \
-		conf/network_conf.c conf/network_conf.h \
-		conf/virnetworkobj.c conf/virnetworkobj.h \
-		conf/networkcommon_conf.c conf/networkcommon_conf.h
-
-# Network filter driver generic impl APIs
-NWFILTER_PARAM_CONF_SOURCES = \
-		conf/nwfilter_params.c conf/nwfilter_params.h \
-		conf/nwfilter_ipaddrmap.c \
-		conf/nwfilter_ipaddrmap.h \
-		conf/nwfilter_conf.h \
-		conf/virnwfilterobj.h
-
-NWFILTER_CONF_SOURCES = \
-		$(NWFILTER_PARAM_CONF_SOURCES) \
-		conf/nwfilter_conf.c conf/nwfilter_conf.h \
-		conf/virnwfilterobj.c conf/virnwfilterobj.h
-
-# Storage driver generic impl APIs
-STORAGE_CONF_SOURCES = \
-		conf/storage_adapter_conf.h conf/storage_adapter_conf.c \
-		conf/storage_conf.h conf/storage_conf.c \
-		conf/virstorageobj.h conf/virstorageobj.c
-
-# Interface driver generic impl APIs
-INTERFACE_CONF_SOURCES = \
-		conf/interface_conf.c conf/interface_conf.h \
-		conf/virinterfaceobj.c conf/virinterfaceobj.h
-
-# Secret driver generic impl APIs
-SECRET_CONF_SOURCES = \
-		conf/secret_conf.h conf/secret_conf.c \
-		conf/virsecretobj.h conf/virsecretobj.c
-
-# Network driver generic impl APIs
-NODE_DEVICE_CONF_SOURCES = \
-		conf/node_device_conf.c conf/node_device_conf.h \
-		conf/virnodedeviceobj.c conf/virnodedeviceobj.h
-
-CPU_CONF_SOURCES = \
-		conf/cpu_conf.c conf/cpu_conf.h
-
-# Safe character device handling helper APIs
-CHRDEV_CONF_SOURCES = \
-		conf/virchrdev.c conf/virchrdev.h
-
-# Device Helper APIs
-DEVICE_CONF_SOURCES = \
-		conf/device_conf.c conf/device_conf.h
-
-CONF_SOURCES = \
-		$(NETDEV_CONF_SOURCES) \
-		$(DOMAIN_CONF_SOURCES) \
-		$(OBJECT_EVENT_SOURCES) \
-		$(DOMAIN_EVENT_SOURCES) \
-		$(NETWORK_EVENT_SOURCES) \
-		$(STORAGE_EVENT_SOURCES) \
-		$(NODE_DEVICE_EVENT_SOURCES) \
-		$(SECRET_EVENT_SOURCES) \
-		$(NETWORK_CONF_SOURCES) \
-		$(NWFILTER_CONF_SOURCES) \
-		$(NODE_DEVICE_CONF_SOURCES) \
-		$(STORAGE_CONF_SOURCES) \
-		$(INTERFACE_CONF_SOURCES) \
-		$(SECRET_CONF_SOURCES) \
-		$(CPU_CONF_SOURCES) \
-		$(CHRDEV_CONF_SOURCES) \
-		$(DEVICE_CONF_SOURCES)
-
 
 ADMIN_PROTOCOL = $(srcdir)/admin/admin_protocol.x
 
@@ -844,14 +737,6 @@ libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
 		$(SECDRIVER_LIBS) $(NUMACTL_LIBS) $(ACL_LIBS) \
 		$(POLKIT_LIBS) $(GNUTLS_LIBS)
 
-
-noinst_LTLIBRARIES += libvirt_conf.la
-libvirt_la_BUILT_LIBADD += libvirt_conf.la
-libvirt_conf_la_SOURCES = $(CONF_SOURCES)
-libvirt_conf_la_CFLAGS = \
-		-I$(srcdir)/conf $(AM_CFLAGS)
-libvirt_conf_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_conf_la_LIBADD = $(LIBXML_LIBS)
 
 noinst_LTLIBRARIES += libvirt_cpu.la
 libvirt_la_BUILT_LIBADD += libvirt_cpu.la
