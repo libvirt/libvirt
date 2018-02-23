@@ -67,4 +67,38 @@ qemuBlockStorageSourceGetURI(virStorageSourcePtr src);
 virJSONValuePtr
 qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src);
 
+
+typedef struct qemuBlockStorageSourceAttachData qemuBlockStorageSourceAttachData;
+typedef qemuBlockStorageSourceAttachData *qemuBlockStorageSourceAttachDataPtr;
+struct qemuBlockStorageSourceAttachData {
+    virJSONValuePtr storageProps;
+    const char *storageNodeName;
+    bool storageAttached;
+
+    virJSONValuePtr formatProps;
+    const char *formatNodeName;
+    bool formatAttached;
+};
+
+
+void
+qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data);
+
+qemuBlockStorageSourceAttachDataPtr
+qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src);
+
+int
+qemuBlockStorageSourceAttachApply(qemuMonitorPtr mon,
+                                  qemuBlockStorageSourceAttachDataPtr data);
+
+void
+qemuBlockStorageSourceAttachRollback(qemuMonitorPtr mon,
+                                     qemuBlockStorageSourceAttachDataPtr data);
+
+int
+qemuBlockStorageSourceDetachOneBlockdev(virQEMUDriverPtr driver,
+                                        virDomainObjPtr vm,
+                                        qemuDomainAsyncJob asyncJob,
+                                        virStorageSourcePtr src);
+
 #endif /* __QEMU_BLOCK_H__ */

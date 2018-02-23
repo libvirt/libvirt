@@ -1467,3 +1467,158 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src)
     virJSONValueFree(props);
     return ret;
 }
+
+
+void
+qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
+{
+    if (!data)
+        return;
+
+    virJSONValueFree(data->storageProps);
+    virJSONValueFree(data->formatProps);
+    VIR_FREE(data);
+}
+
+
+/**
+ * qemuBlockStorageSourceAttachPrepareBlockdev:
+ * @src: storage source to prepare data from
+ *
+ * Creates a qemuBlockStorageSourceAttachData structure containing data to attach
+ * @src to a VM using the blockdev-add approach. Note that this function only
+ * creates the data for the storage source itself, any other related
+ * authentication/encryption/... objects need to be prepared separately.
+ *
+ * The changes are then applied using qemuBlockStorageSourceAttachApply.
+ *
+ * Returns the filled data structure on success or NULL on error and a libvirt
+ * error is reported
+ */
+qemuBlockStorageSourceAttachDataPtr
+qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src)
+{
+    qemuBlockStorageSourceAttachDataPtr data;
+    qemuBlockStorageSourceAttachDataPtr ret = NULL;
+
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    if (!(data->formatProps = qemuBlockStorageSourceGetBlockdevProps(src)) ||
+        !(data->storageProps = qemuBlockStorageSourceGetBackendProps(src, false)))
+        goto cleanup;
+
+    data->storageNodeName = src->nodestorage;
+    data->formatNodeName = src->nodeformat;
+
+    VIR_STEAL_PTR(ret, data);
+
+ cleanup:
+    qemuBlockStorageSourceAttachDataFree(data);
+    return ret;
+}
+
+
+/**
+ * qemuBlockStorageSourceAttachApply:
+ * @mon: monitor object
+ * @data: structure holding data of block device to apply
+ *
+ * Attaches a virStorageSource definition converted to
+ * qemuBlockStorageSourceAttachData to a running VM. This function expects being
+ * called after the monitor was entered.
+ *
+ * Returns 0 on success and -1 on error with a libvirt error reported. If an
+ * error occured, changes which were already applied need to be rolled back by
+ * calling qemuBlockStorageSourceAttachRollback.
+ */
+int
+qemuBlockStorageSourceAttachApply(qemuMonitorPtr mon,
+                                  qemuBlockStorageSourceAttachDataPtr data)
+{
+    int rv;
+
+    if (data->storageProps) {
+        rv = qemuMonitorBlockdevAdd(mon, data->storageProps);
+        data->storageProps = NULL;
+
+        if (rv < 0)
+            return -1;
+
+        data->storageAttached = true;
+    }
+
+    if (data->formatProps) {
+        rv = qemuMonitorBlockdevAdd(mon, data->formatProps);
+        data->formatProps = NULL;
+
+        if (rv < 0)
+            return -1;
+
+        data->formatAttached = true;
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuBlockStorageSourceAttachRollback:
+ * @mon: monitor object
+ * @data: structure holding data of block device to roll back
+ *
+ * Attempts a best effort rollback of changes which were made to a running VM by
+ * qemuBlockStorageSourceAttachApply. Preserves any existing errors.
+ *
+ * This function expects being called after the monitor was entered.
+ */
+void
+qemuBlockStorageSourceAttachRollback(qemuMonitorPtr mon,
+                                     qemuBlockStorageSourceAttachDataPtr data)
+{
+    virErrorPtr orig_err;
+
+    virErrorPreserveLast(&orig_err);
+
+    if (data->formatAttached)
+        ignore_value(qemuMonitorBlockdevDel(mon, data->formatNodeName));
+
+    if (data->storageAttached)
+        ignore_value(qemuMonitorBlockdevDel(mon, data->storageNodeName));
+
+    virErrorRestore(&orig_err);
+}
+
+
+/**
+ * qemuBlockStorageSourceDetachOneBlockdev:
+ * @driver: qemu driver object
+ * @vm: domain object
+ * @asyncJob: currently running async job
+ * @src: storage source to detach
+ *
+ * Detaches one virStorageSource using blockdev-del. Note that this does not
+ * detach any authentication/encryption objects. This function enters the
+ * monitor internally.
+ */
+int
+qemuBlockStorageSourceDetachOneBlockdev(virQEMUDriverPtr driver,
+                                        virDomainObjPtr vm,
+                                        qemuDomainAsyncJob asyncJob,
+                                        virStorageSourcePtr src)
+{
+    int ret;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm), src->nodeformat);
+
+    if (ret == 0)
+        ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm), src->nodestorage);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -1;
+
+    return ret;
+}
