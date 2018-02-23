@@ -3799,7 +3799,7 @@ vboxDumpNetworks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRU
 {
     PRUint32 netAdpIncCnt = 0;
     size_t i = 0;
-    /* dump network cards if present */
+
     def->nnets = 0;
     /* Get which network cards are enabled */
     for (i = 0; i < networkAdapterCount; i++) {
