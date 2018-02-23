@@ -3694,14 +3694,18 @@ vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine
     return ret;
 }
 
-static void
-vboxDumpNetwork(virDomainNetDefPtr net, vboxDriverPtr data, INetworkAdapter *adapter)
+static virDomainNetDefPtr
+vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
 {
     PRUint32 attachmentType = NetworkAttachmentType_Null;
     PRUint32 adapterType = NetworkAdapterType_Null;
     PRUnichar *MACAddressUtf16 = NULL;
     char *MACAddress = NULL;
     char macaddr[VIR_MAC_STRING_BUFLEN] = {0};
+    virDomainNetDefPtr net = NULL;
+
+    if (VIR_ALLOC(net) < 0)
+        return NULL;
 
     gVBoxAPI.UINetworkAdapter.GetAttachmentType(adapter, &attachmentType);
     if (attachmentType == NetworkAttachmentType_NAT) {
@@ -3787,6 +3791,7 @@ vboxDumpNetwork(virDomainNetDefPtr net, vboxDriverPtr data, INetworkAdapter *ada
 
     VBOX_UTF16_FREE(MACAddressUtf16);
     VBOX_UTF8_FREE(MACAddress);
+    return net;
 }
 
 static void
@@ -3813,15 +3818,13 @@ vboxDumpNetworks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRU
     }
 
     /* Allocate memory for the networkcards which are enabled */
-    if ((def->nnets > 0) && (VIR_ALLOC_N(def->nets, def->nnets) >= 0)) {
-        for (i = 0; i < def->nnets; i++)
-            ignore_value(VIR_ALLOC(def->nets[i]));
-    }
+    if (def->nnets > 0)
+        ignore_value(VIR_ALLOC_N(def->nets, def->nnets));
 
     /* Now get the details about the network cards here */
     for (i = 0; netAdpIncCnt < def->nnets && i < networkAdapterCount; i++) {
         INetworkAdapter *adapter = NULL;
-        virDomainNetDefPtr net = def->nets[netAdpIncCnt];
+        virDomainNetDefPtr net = NULL;
         PRBool enabled = PR_FALSE;
 
         gVBoxAPI.UIMachine.GetNetworkAdapter(machine, i, &adapter);
@@ -3829,9 +3832,8 @@ vboxDumpNetworks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRU
             gVBoxAPI.UINetworkAdapter.GetEnabled(adapter, &enabled);
 
         if (enabled) {
-            vboxDumpNetwork(net, data, adapter);
-
-            netAdpIncCnt++;
+            net = vboxDumpNetwork(data, adapter);
+            def->nets[netAdpIncCnt++] = net;
         }
 
         VBOX_RELEASE(adapter);
