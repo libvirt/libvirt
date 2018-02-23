@@ -748,6 +748,48 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuMigrationSrcNBDStorageCopyDriveMirror(virQEMUDriverPtr driver,
+                                          virDomainObjPtr vm,
+                                          const char *diskAlias,
+                                          const char *host,
+                                          int port,
+                                          unsigned long long mirror_speed,
+                                          unsigned int mirror_flags)
+{
+    char *nbd_dest = NULL;
+    int mon_ret;
+    int ret = -1;
+
+    if (strchr(host, ':')) {
+        if (virAsprintf(&nbd_dest, "nbd:[%s]:%d:exportname=%s",
+                        host, port, diskAlias) < 0)
+            goto cleanup;
+    } else {
+        if (virAsprintf(&nbd_dest, "nbd:%s:%d:exportname=%s",
+                        host, port, diskAlias) < 0)
+            goto cleanup;
+    }
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        goto cleanup;
+
+    mon_ret = qemuMonitorDriveMirror(qemuDomainGetMonitor(vm),
+                                     diskAlias, nbd_dest, "raw",
+                                     mirror_speed, 0, 0, mirror_flags);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || mon_ret < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(nbd_dest);
+    return ret;
+}
+
+
 /**
  * qemuMigrationSrcNBDStorageCopy:
  * @driver: qemu driver
@@ -783,8 +825,6 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
     int port;
     size_t i;
     char *diskAlias = NULL;
-    char *nbd_dest = NULL;
-    char *hoststr = NULL;
     unsigned long long mirror_speed = speed;
     unsigned int mirror_flags = VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
     int rv;
@@ -804,47 +844,31 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
     port = mig->nbd->port;
     mig->nbd->port = 0;
 
-    /* escape literal IPv6 address */
-    if (strchr(host, ':')) {
-        if (virAsprintf(&hoststr, "[%s]", host) < 0)
-            goto cleanup;
-    } else if (VIR_STRDUP(hoststr, host) < 0) {
-        goto cleanup;
-    }
-
     if (*migrate_flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC)
         mirror_flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        int mon_ret;
 
         /* check whether disk should be migrated */
         if (!qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks))
             continue;
 
-        if (!(diskAlias = qemuAliasFromDisk(disk)) ||
-            (virAsprintf(&nbd_dest, "nbd:%s:%d:exportname=%s",
-                         hoststr, port, diskAlias) < 0))
+        if (!(diskAlias = qemuAliasFromDisk(disk)))
             goto cleanup;
 
         qemuBlockJobSyncBegin(disk);
 
-        if (qemuDomainObjEnterMonitorAsync(driver, vm,
-                                           QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
-            goto cleanup;
-
-        /* Force "raw" format for NBD export */
-        mon_ret = qemuMonitorDriveMirror(priv->mon, diskAlias, nbd_dest,
-                                         "raw", mirror_speed, 0, 0, mirror_flags);
-        VIR_FREE(diskAlias);
-        VIR_FREE(nbd_dest);
-
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || mon_ret < 0) {
+        if (qemuMigrationSrcNBDStorageCopyDriveMirror(driver, vm, diskAlias,
+                                                      host, port,
+                                                      mirror_speed,
+                                                      mirror_flags) < 0) {
             qemuBlockJobSyncEnd(vm, QEMU_ASYNC_JOB_MIGRATION_OUT, disk);
             goto cleanup;
         }
+
+        VIR_FREE(diskAlias);
         diskPriv->migrating = true;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
@@ -886,8 +910,6 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
  cleanup:
     virObjectUnref(cfg);
     VIR_FREE(diskAlias);
-    VIR_FREE(nbd_dest);
-    VIR_FREE(hoststr);
     return ret;
 }
 
