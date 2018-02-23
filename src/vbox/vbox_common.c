@@ -3699,6 +3699,7 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
 {
     PRUint32 attachmentType = NetworkAttachmentType_Null;
     PRUint32 adapterType = NetworkAdapterType_Null;
+    const char *model = NULL;
     PRUnichar *utf16 = NULL;
     char *utf8 = NULL;
     virDomainNetDefPtr net = NULL;
@@ -3751,21 +3752,30 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
     }
 
     gVBoxAPI.UINetworkAdapter.GetAdapterType(adapter, &adapterType);
-    if (adapterType == NetworkAdapterType_Am79C970A) {
-        ignore_value(VIR_STRDUP(net->model, "Am79C970A"));
-    } else if (adapterType == NetworkAdapterType_Am79C973) {
-        ignore_value(VIR_STRDUP(net->model, "Am79C973"));
-    } else if (adapterType == NetworkAdapterType_I82540EM) {
-        ignore_value(VIR_STRDUP(net->model, "82540EM"));
-    } else if (adapterType == NetworkAdapterType_I82545EM) {
-        ignore_value(VIR_STRDUP(net->model, "82545EM"));
-    } else if (adapterType == NetworkAdapterType_I82543GC) {
-        ignore_value(VIR_STRDUP(net->model, "82543GC"));
-    } else if (gVBoxAPI.APIVersion >= 3000051 &&
-               adapterType == NetworkAdapterType_Virtio) {
+    switch (adapterType) {
+    case NetworkAdapterType_Am79C970A:
+        model = "Am79C970A";
+        break;
+    case NetworkAdapterType_Am79C973:
+        model = "Am79C973";
+        break;
+    case NetworkAdapterType_I82540EM:
+        model = "82540EM";
+        break;
+    case NetworkAdapterType_I82545EM:
+        model = "82545EM";
+        break;
+    case NetworkAdapterType_I82543GC:
+        model = "82543GC";
+        break;
+    case NetworkAdapterType_Virtio:
         /* Only vbox 3.1 and later support NetworkAdapterType_Virto */
-        ignore_value(VIR_STRDUP(net->model, "virtio"));
+        if (gVBoxAPI.APIVersion >= 3000051)
+            model = "virtio";
+        break;
     }
+    if (VIR_STRDUP(net->model, model) < 0)
+        goto error;
 
     gVBoxAPI.UINetworkAdapter.GetMACAddress(adapter, &utf16);
     VBOX_UTF16_TO_UTF8(utf16, &utf8);
