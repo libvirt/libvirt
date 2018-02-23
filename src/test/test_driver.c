@@ -5367,6 +5367,18 @@ testNodeListDevices(virConnectPtr conn,
                                         cap, names, maxnames);
 }
 
+static int
+testConnectListAllNodeDevices(virConnectPtr conn,
+                              virNodeDevicePtr **devices,
+                              unsigned int flags)
+{
+    testDriverPtr driver = conn->privateData;
+
+    virCheckFlags(VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP, -1);
+
+    return virNodeDeviceObjListExport(conn, driver->devs, devices,
+                                      NULL, flags);
+}
 
 static virNodeDevicePtr
 testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
@@ -7002,6 +7014,7 @@ static virStorageDriver testStorageDriver = {
 };
 
 static virNodeDeviceDriver testNodeDeviceDriver = {
+    .connectListAllNodeDevices = testConnectListAllNodeDevices, /* 4.1.0 */
     .connectNodeDeviceEventRegisterAny = testConnectNodeDeviceEventRegisterAny, /* 2.2.0 */
     .connectNodeDeviceEventDeregisterAny = testConnectNodeDeviceEventDeregisterAny, /* 2.2.0 */
     .nodeNumOfDevices = testNodeNumOfDevices, /* 0.7.2 */
