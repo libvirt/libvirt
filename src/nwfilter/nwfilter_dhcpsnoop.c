@@ -147,6 +147,7 @@ struct _virNWFilterSnoopReq {
     virNWFilterSnoopIPLeasePtr           start;
     virNWFilterSnoopIPLeasePtr           end;
     char                                *threadkey;
+    virErrorPtr                          threadError;
 
     virNWFilterSnoopThreadStatus         threadStatus;
     virCond                              threadStatusCond;
@@ -639,6 +640,7 @@ virNWFilterSnoopReqFree(virNWFilterSnoopReqPtr req)
 
     virMutexDestroy(&req->lock);
     virCondDestroy(&req->threadStatusCond);
+    virFreeError(req->threadError);
 
     VIR_FREE(req);
 }
@@ -1404,10 +1406,12 @@ virNWFilterDHCPSnoopThread(void *req0)
 
     /* let creator know how well we initialized */
     if (error || !threadkey || tmp < 0 || !worker ||
-        ifindex != req->ifindex)
+        ifindex != req->ifindex) {
+        virErrorPreserveLast(&req->threadError);
         req->threadStatus = THREAD_STATUS_FAIL;
-    else
+    } else {
         req->threadStatus = THREAD_STATUS_OK;
+    }
 
     virCondSignal(&req->threadStatusCond);
 
@@ -1713,9 +1717,16 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
     }
 
     /* sync with thread */
-    if (virCondWait(&req->threadStatusCond, &req->lock) < 0 ||
-        req->threadStatus != THREAD_STATUS_OK)
+    if (virCondWait(&req->threadStatusCond, &req->lock) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("unable to wait on dhcp snoop thread"));
         goto exit_snoop_cancel;
+    }
+
+    if (req->threadStatus != THREAD_STATUS_OK) {
+        virErrorRestore(&req->threadError);
+        goto exit_snoop_cancel;
+    }
 
     virNWFilterSnoopReqUnlock(req);
 
