@@ -3181,7 +3181,8 @@ install-upstart: install-sysconfig
 	for f in $(UPSTART_FILES:%.upstart=%); \
 	do \
 	  tgt=`basename $$f` ; \
-	  $(INSTALL_SCRIPT) $$f.upstart $(DESTDIR)$(sysconfdir)/event.d/$$tgt ; \
+	  $(INSTALL_SCRIPT) $(srcdir)/$$f.upstart \
+	      $(DESTDIR)$(sysconfdir)/event.d/$$tgt ; \
 	done
 
 uninstall-upstart: uninstall-sysconfig
