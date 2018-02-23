@@ -3699,7 +3699,7 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
 {
     PRUint32 attachmentType = NetworkAttachmentType_Null;
     PRUint32 adapterType = NetworkAdapterType_Null;
-    PRUnichar *MACAddressUtf16 = NULL;
+    PRUnichar *utf16 = NULL;
     char *MACAddress = NULL;
     virDomainNetDefPtr net = NULL;
 
@@ -3712,46 +3712,43 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
         net->type = VIR_DOMAIN_NET_TYPE_USER;
 
     } else if (attachmentType == NetworkAttachmentType_Bridged) {
-        PRUnichar *hostIntUtf16 = NULL;
         char *hostInt = NULL;
 
         net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
 
-        gVBoxAPI.UINetworkAdapter.GetBridgedInterface(adapter, &hostIntUtf16);
+        gVBoxAPI.UINetworkAdapter.GetBridgedInterface(adapter, &utf16);
 
-        VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
+        VBOX_UTF16_TO_UTF8(utf16, &hostInt);
         ignore_value(VIR_STRDUP(net->data.bridge.brname, hostInt));
 
         VBOX_UTF8_FREE(hostInt);
-        VBOX_UTF16_FREE(hostIntUtf16);
+        VBOX_UTF16_FREE(utf16);
 
     } else if (attachmentType == NetworkAttachmentType_Internal) {
-        PRUnichar *intNetUtf16 = NULL;
         char *intNet = NULL;
 
         net->type = VIR_DOMAIN_NET_TYPE_INTERNAL;
 
-        gVBoxAPI.UINetworkAdapter.GetInternalNetwork(adapter, &intNetUtf16);
+        gVBoxAPI.UINetworkAdapter.GetInternalNetwork(adapter, &utf16);
 
-        VBOX_UTF16_TO_UTF8(intNetUtf16, &intNet);
+        VBOX_UTF16_TO_UTF8(utf16, &intNet);
         ignore_value(VIR_STRDUP(net->data.internal.name, intNet));
 
         VBOX_UTF8_FREE(intNet);
-        VBOX_UTF16_FREE(intNetUtf16);
+        VBOX_UTF16_FREE(utf16);
 
     } else if (attachmentType == NetworkAttachmentType_HostOnly) {
-        PRUnichar *hostIntUtf16 = NULL;
         char *hostInt = NULL;
 
         net->type = VIR_DOMAIN_NET_TYPE_NETWORK;
 
-        gVBoxAPI.UINetworkAdapter.GetHostOnlyInterface(adapter, &hostIntUtf16);
+        gVBoxAPI.UINetworkAdapter.GetHostOnlyInterface(adapter, &utf16);
 
-        VBOX_UTF16_TO_UTF8(hostIntUtf16, &hostInt);
+        VBOX_UTF16_TO_UTF8(utf16, &hostInt);
         ignore_value(VIR_STRDUP(net->data.network.name, hostInt));
 
         VBOX_UTF8_FREE(hostInt);
-        VBOX_UTF16_FREE(hostIntUtf16);
+        VBOX_UTF16_FREE(utf16);
 
     } else {
         /* default to user type i.e. NAT in VirtualBox if this
@@ -3777,9 +3774,9 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
         ignore_value(VIR_STRDUP(net->model, "virtio"));
     }
 
-    gVBoxAPI.UINetworkAdapter.GetMACAddress(adapter, &MACAddressUtf16);
-    VBOX_UTF16_TO_UTF8(MACAddressUtf16, &MACAddress);
-    VBOX_UTF16_FREE(MACAddressUtf16);
+    gVBoxAPI.UINetworkAdapter.GetMACAddress(adapter, &utf16);
+    VBOX_UTF16_TO_UTF8(utf16, &MACAddress);
+    VBOX_UTF16_FREE(utf16);
 
     if (virMacAddrParseHex(MACAddress, &net->mac) < 0) {
         VBOX_UTF8_FREE(MACAddress);
