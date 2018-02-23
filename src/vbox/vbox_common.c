@@ -3695,7 +3695,7 @@ vboxDumpSharedFolders(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine
 }
 
 static void
-vboxDumpNetwork(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRUint32 networkAdapterCount)
+vboxDumpNetworks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRUint32 networkAdapterCount)
 {
     PRUint32 netAdpIncCnt = 0;
     size_t i = 0;
@@ -4188,7 +4188,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 
     if (vboxDumpSharedFolders(def, data, machine) < 0)
         goto cleanup;
-    vboxDumpNetwork(def, data, machine, networkAdapterCount);
+    vboxDumpNetworks(def, data, machine, networkAdapterCount);
     vboxDumpAudio(def, data, machine);
 
     if (vboxDumpSerial(def, data, machine, serialPortCount) < 0)
