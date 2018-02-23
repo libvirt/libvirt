@@ -3707,11 +3707,13 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
         return NULL;
 
     gVBoxAPI.UINetworkAdapter.GetAttachmentType(adapter, &attachmentType);
-    if (attachmentType == NetworkAttachmentType_NAT) {
 
+    switch (attachmentType) {
+    case NetworkAttachmentType_NAT:
         net->type = VIR_DOMAIN_NET_TYPE_USER;
+        break;
 
-    } else if (attachmentType == NetworkAttachmentType_Bridged) {
+    case NetworkAttachmentType_Bridged:
         net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
 
         gVBoxAPI.UINetworkAdapter.GetBridgedInterface(adapter, &utf16);
@@ -3721,8 +3723,9 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
 
         VBOX_UTF8_FREE(utf8);
         VBOX_UTF16_FREE(utf16);
+        break;
 
-    } else if (attachmentType == NetworkAttachmentType_Internal) {
+    case NetworkAttachmentType_Internal:
         net->type = VIR_DOMAIN_NET_TYPE_INTERNAL;
 
         gVBoxAPI.UINetworkAdapter.GetInternalNetwork(adapter, &utf16);
@@ -3732,8 +3735,9 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
 
         VBOX_UTF8_FREE(utf8);
         VBOX_UTF16_FREE(utf16);
+        break;
 
-    } else if (attachmentType == NetworkAttachmentType_HostOnly) {
+    case NetworkAttachmentType_HostOnly:
         net->type = VIR_DOMAIN_NET_TYPE_NETWORK;
 
         gVBoxAPI.UINetworkAdapter.GetHostOnlyInterface(adapter, &utf16);
@@ -3743,8 +3747,9 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
 
         VBOX_UTF8_FREE(utf8);
         VBOX_UTF16_FREE(utf16);
+        break;
 
-    } else {
+    default:
         /* default to user type i.e. NAT in VirtualBox if this
          * dump is ever used to create a machine.
          */
