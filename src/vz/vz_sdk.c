@@ -1103,7 +1103,7 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
         pret = PrlVmDevNet_GetAdapterType(netAdapter, &type);
         prlsdkCheckRetGoto(pret, cleanup);
 
-        switch (type) {
+        switch ((int)type) {
         case PNT_RTL:
             if (VIR_STRDUP(net->model, "rtl8139") < 0)
                 goto cleanup;
@@ -1695,10 +1695,10 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
         return -1;
     }
 
-    switch (sdkType) {
+    switch ((int)sdkType) {
     case PDE_OPTICAL_DISK:
     case PDE_HARD_DISK:
-        switch (sdkType) {
+        switch ((int)sdkType) {
         case PDE_OPTICAL_DISK:
             device = VIR_DOMAIN_DISK_DEVICE_CDROM;
             break;
@@ -1810,7 +1810,7 @@ prlsdkConvertBootOrderVm(PRL_HANDLE sdkdom, virDomainDefPtr def)
             continue;
         }
 
-        switch (sdkType) {
+        switch ((int)sdkType) {
         case PDE_OPTICAL_DISK:
             type = VIR_DOMAIN_BOOT_CDROM;
             break;
@@ -2106,7 +2106,7 @@ prlsdkNewStateToEvent(VIRTUAL_MACHINE_STATE domainState,
     /* We skip all intermediate states here, because
      * libvirt doesn't have correspoding event types for
      * them */
-    switch (domainState) {
+    switch ((int)domainState) {
     case VMS_STOPPED:
     case VMS_MOUNTED:
         *lvEventType = VIR_DOMAIN_EVENT_STOPPED;
@@ -2318,7 +2318,7 @@ prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
         goto cleanup;
     }
 
-    switch (prlEventType) {
+    switch ((int)prlEventType) {
     case PET_DSP_EVT_VM_STATE_CHANGED:
         prlsdkHandleVmStateEvent(driver, prlEvent, uuid);
         break;
@@ -3891,7 +3891,7 @@ prlsdkSetBootOrderVm(PRL_HANDLE sdkdom, virDomainDefPtr def)
     for (i = 0; i < def->os.nBootDevs; ++i) {
         virType = def->os.bootDevs[i];
 
-        switch (virType) {
+        switch ((int)virType) {
         case VIR_DOMAIN_BOOT_CDROM:
             sdkType = PDE_OPTICAL_DISK;
             break;
@@ -3981,7 +3981,7 @@ prlsdkDoApplyConfig(vzDriverPtr driver,
     prlsdkCheckRetGoto(pret, error);
     VIR_FREE(mask);
 
-    switch (def->os.arch) {
+    switch ((int)def->os.arch) {
     case VIR_ARCH_X86_64:
         pret = PrlVmCfg_SetCpuMode(sdkdom, PCM_CPU_MODE_64);
         break;
