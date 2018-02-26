@@ -170,6 +170,7 @@ qemuMigrationAnyPrepareDef(virQEMUDriverPtr driver,
 
 int
 qemuMigrationDstPrepareTunnel(virQEMUDriverPtr driver,
+                              virConnectPtr dconn,
                               const char *cookiein,
                               int cookieinlen,
                               char **cookieout,
@@ -181,6 +182,7 @@ qemuMigrationDstPrepareTunnel(virQEMUDriverPtr driver,
 
 int
 qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
+                              virConnectPtr dconn,
                               const char *cookiein,
                               int cookieinlen,
                               char **cookieout,

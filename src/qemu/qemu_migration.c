@@ -2600,6 +2600,7 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
 
 static int
 qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
+                           virConnectPtr dconn,
                            const char *cookiein,
                            int cookieinlen,
                            char **cookieout,
@@ -2809,7 +2810,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     if (qemuProcessPrepareHost(driver, vm, startFlags) < 0)
         goto stopjob;
 
-    rv = qemuProcessLaunch(NULL, driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
+    rv = qemuProcessLaunch(dconn, driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
                            incoming, NULL,
                            VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START,
                            startFlags);
@@ -2993,6 +2994,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
  */
 int
 qemuMigrationDstPrepareTunnel(virQEMUDriverPtr driver,
+                              virConnectPtr dconn,
                               const char *cookiein,
                               int cookieinlen,
                               char **cookieout,
@@ -3005,10 +3007,10 @@ qemuMigrationDstPrepareTunnel(virQEMUDriverPtr driver,
     qemuMigrationCompressionPtr compression = NULL;
     int ret;
 
-    VIR_DEBUG("driver=%p, cookiein=%s, cookieinlen=%d, "
+    VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, st=%p, def=%p, "
               "origname=%s, flags=0x%lx",
-              driver, NULLSTR(cookiein), cookieinlen,
+              driver, dconn, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, st, *def, origname, flags);
 
     if (st == NULL) {
@@ -3020,7 +3022,7 @@ qemuMigrationDstPrepareTunnel(virQEMUDriverPtr driver,
     if (!(compression = qemuMigrationAnyCompressionParse(NULL, 0, flags)))
         return -1;
 
-    ret = qemuMigrationDstPrepareAny(driver, cookiein, cookieinlen,
+    ret = qemuMigrationDstPrepareAny(driver, dconn, cookiein, cookieinlen,
                                      cookieout, cookieoutlen, def, origname,
                                      st, NULL, 0, false, NULL, 0, NULL, 0,
                                      compression, flags);
@@ -3054,6 +3056,7 @@ qemuMigrationAnyParseURI(const char *uri, bool *wellFormed)
 
 int
 qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
+                              virConnectPtr dconn,
                               const char *cookiein,
                               int cookieinlen,
                               char **cookieout,
@@ -3077,11 +3080,11 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *migrateHost = cfg->migrateHost;
 
-    VIR_DEBUG("driver=%p, cookiein=%s, cookieinlen=%d, "
+    VIR_DEBUG("driver=%p, dconn=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, uri_in=%s, uri_out=%p, "
               "def=%p, origname=%s, listenAddress=%s, "
               "nmigrate_disks=%zu, migrate_disks=%p, nbdPort=%d, flags=0x%lx",
-              driver, NULLSTR(cookiein), cookieinlen,
+              driver, dconn, NULLSTR(cookiein), cookieinlen,
               cookieout, cookieoutlen, NULLSTR(uri_in), uri_out,
               *def, origname, NULLSTR(listenAddress),
               nmigrate_disks, migrate_disks, nbdPort, flags);
@@ -3185,7 +3188,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
     if (*uri_out)
         VIR_DEBUG("Generated uri_out=%s", *uri_out);
 
-    ret = qemuMigrationDstPrepareAny(driver, cookiein, cookieinlen,
+    ret = qemuMigrationDstPrepareAny(driver, dconn, cookiein, cookieinlen,
                                      cookieout, cookieoutlen, def, origname,
                                      NULL, uri ? uri->scheme : "tcp",
                                      port, autoPort, listenAddress,

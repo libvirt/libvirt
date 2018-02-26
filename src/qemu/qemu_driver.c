@@ -12138,7 +12138,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
     if (virDomainMigratePrepareTunnelEnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationDstPrepareTunnel(driver,
+    ret = qemuMigrationDstPrepareTunnel(driver, dconn,
                                         NULL, 0, NULL, NULL, /* No cookies in v2 */
                                         st, &def, origname, flags);
 
@@ -12201,7 +12201,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
      * length was not sufficiently large, causing failures
      * migrating between old & new libvirtd
      */
-    ret = qemuMigrationDstPrepareDirect(driver,
+    ret = qemuMigrationDstPrepareDirect(driver, dconn,
                                         NULL, 0, NULL, NULL, /* No cookies */
                                         uri_in, uri_out,
                                         &def, origname, NULL, 0, NULL, 0,
@@ -12439,7 +12439,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
     if (virDomainMigratePrepare3EnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationDstPrepareDirect(driver,
+    ret = qemuMigrationDstPrepareDirect(driver, dconn,
                                         cookiein, cookieinlen,
                                         cookieout, cookieoutlen,
                                         uri_in, uri_out,
@@ -12525,7 +12525,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
     if (virDomainMigratePrepare3ParamsEnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationDstPrepareDirect(driver,
+    ret = qemuMigrationDstPrepareDirect(driver, dconn,
                                         cookiein, cookieinlen,
                                         cookieout, cookieoutlen,
                                         uri_in, uri_out,
@@ -12574,7 +12574,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
     if (virDomainMigratePrepareTunnel3EnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationDstPrepareTunnel(driver,
+    ret = qemuMigrationDstPrepareTunnel(driver, dconn,
                                         cookiein, cookieinlen,
                                         cookieout, cookieoutlen,
                                         st, &def, origname, flags);
@@ -12627,7 +12627,7 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     if (virDomainMigratePrepareTunnel3ParamsEnsureACL(dconn, def) < 0)
         goto cleanup;
 
-    ret = qemuMigrationDstPrepareTunnel(driver,
+    ret = qemuMigrationDstPrepareTunnel(driver, dconn,
                                         cookiein, cookieinlen,
                                         cookieout, cookieoutlen,
                                         st, &def, origname, flags);
