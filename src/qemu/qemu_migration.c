@@ -1215,25 +1215,26 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
         virDomainDiskDefPtr disk = def->disks[i];
         const char *src = virDomainDiskGetSource(disk);
 
-        /* Our code elsewhere guarantees shared disks are either readonly (in
-         * which case cache mode doesn't matter) or used with cache=none or used with cache=directsync */
+        /* Disks without any source (i.e. floppies and CD-ROMs)
+         * OR readonly are safe. */
         if (virStorageSourceIsEmpty(disk->src) ||
-            disk->src->readonly ||
-            disk->src->shared ||
-            disk->cachemode == VIR_DOMAIN_DISK_CACHE_DISABLE ||
-            disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC)
+            disk->src->readonly)
             continue;
 
-        /* disks which are migrated by qemu are safe too */
+        /* Disks which are migrated by qemu are safe too. */
         if (storagemigration &&
             qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks))
             continue;
 
+        /* However, disks on local FS (e.g. ext4) are not safe. */
         if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE) {
-            if ((rc = virFileIsSharedFS(src)) < 0)
+            if ((rc = virFileIsSharedFS(src)) < 0) {
                 return false;
-            else if (rc == 0)
-                continue;
+            } else if (rc == 0) {
+                virReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
+                               _("Migration without shared storage is unsafe"));
+                return false;
+            }
             if ((rc = virStorageFileIsClusterFS(src)) < 0)
                 return false;
             else if (rc == 1)
@@ -1242,6 +1243,13 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
                    disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
             continue;
         }
+
+        /* Our code elsewhere guarantees shared disks are either readonly (in
+         * which case cache mode doesn't matter) or used with cache=none or used with cache=directsync */
+        if (disk->src->shared ||
+            disk->cachemode == VIR_DOMAIN_DISK_CACHE_DISABLE ||
+            disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC)
+            continue;
 
         virReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
                        _("Migration may lead to data corruption if disks"
