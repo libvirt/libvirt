@@ -99,9 +99,6 @@ include xenapi/Makefile.inc.am
 include vz/Makefile.inc.am
 include lxc/Makefile.inc.am
 
-install-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
-uninstall-data-extra: $(INSTALL_DATA_DIRS:%=install-data-%)
-
 
 THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
 
@@ -2863,7 +2860,7 @@ endif WITH_NSS
 
 install-data-local: install-init install-systemd install-upstart \
 		install-sysctl install-polkit install-sasl \
-		install-logrotate install-data-extra
+		install-logrotate $(INSTALL_DATA_DIRS:%=install-data-%)
 if WITH_LIBVIRTD
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd"
@@ -2899,7 +2896,7 @@ endif WITH_NETWORK
 
 uninstall-local:: uninstall-init uninstall-systemd uninstall-upstart \
 		uninstall-sysctl uninstall-polkit uninstall-sasl \
-		uninstall-logrotate uninstall-data-extra
+		uninstall-logrotate $(INSTALL_DATA_DIRS:%=uninstall-data-%)
 if WITH_LIBVIRTD
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lockd/files" ||:
