@@ -842,8 +842,8 @@ storagebackendsheepdogtest_SOURCES = \
 	storagebackendsheepdogtest.c \
 	testutils.c testutils.h
 storagebackendsheepdogtest_LDADD = \
-	../src/libvirt_driver_storage_impl.la \
 	../src/libvirt_storage_backend_sheepdog_priv.la \
+	../src/libvirt_driver_storage_impl.la \
 	$(LDADDS)
 else ! WITH_STORAGE_SHEEPDOG
 EXTRA_DIST += storagebackendsheepdogtest.c

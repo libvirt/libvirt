@@ -1359,8 +1359,7 @@ libvirt_storage_backend_sheepdog_la_CFLAGS = \
 	$(AM_CFLAGS)
 
 libvirt_storage_backend_sheepdog_priv_la_SOURCES = \
-	$(STORAGE_DRIVER_SHEEPDOG_SOURCES) \
-	$(STORAGE_DRIVER_BACKEND_SOURCES)
+	$(STORAGE_DRIVER_SHEEPDOG_SOURCES)
 libvirt_storage_backend_sheepdog_priv_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS)
