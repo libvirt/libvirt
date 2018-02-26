@@ -4008,7 +4008,8 @@ remoteDispatchObjectEventSend(virNetServerClientPtr client,
         goto cleanup;
 
     VIR_DEBUG("Queue event %d %zu", procnr, msg->bufferLength);
-    virNetServerClientSendMessage(client, msg);
+    if (virNetServerClientSendMessage(client, msg) < 0)
+        goto cleanup;
 
     xdr_free(proc, data);
     return;
