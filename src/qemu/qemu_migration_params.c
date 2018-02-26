@@ -39,6 +39,7 @@ VIR_LOG_INIT("qemu.qemu_migration_params");
 #define QEMU_MIGRATION_TLS_ALIAS_BASE "libvirt_migrate"
 
 struct _qemuMigrationParams {
+    virBitmapPtr caps;
     qemuMonitorMigrationParams params;
 };
 
@@ -51,7 +52,15 @@ qemuMigrationParamsNew(void)
     if (VIR_ALLOC(params) < 0)
         return NULL;
 
+    params->caps = virBitmapNew(QEMU_MONITOR_MIGRATION_CAPS_LAST);
+    if (!params->caps)
+        goto error;
+
     return params;
+
+ error:
+    qemuMigrationParamsFree(params);
+    return NULL;
 }
 
 
@@ -61,6 +70,7 @@ qemuMigrationParamsFree(qemuMigrationParamsPtr migParams)
     if (!migParams)
         return;
 
+    virBitmapFree(migParams->caps);
     VIR_FREE(migParams->params.tlsCreds);
     VIR_FREE(migParams->params.tlsHostname);
     VIR_FREE(migParams);
@@ -136,6 +146,10 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
+    if (qemuMonitorSetMigrationCapabilities(priv->mon, priv->migrationCaps,
+                                            migParams->caps) < 0)
+        goto cleanup;
+
     if (qemuMonitorSetMigrationParams(priv->mon, &migParams->params) < 0)
         goto cleanup;
 
@@ -146,6 +160,50 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
         ret = -1;
 
     return ret;
+}
+
+
+int
+qemuMigrationParamsSetCapability(virDomainObjPtr vm,
+                                 qemuMonitorMigrationCaps capability,
+                                 bool state,
+                                 qemuMigrationParamsPtr migParams)
+{
+    if (!qemuMigrationCapsGet(vm, capability)) {
+        if (!state) {
+            /* Unsupported but we want it off anyway */
+            return 0;
+        }
+
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Migration option '%s' is not supported by QEMU binary"),
+                       qemuMonitorMigrationCapsTypeToString(capability));
+        return -1;
+    }
+
+    if (state)
+        ignore_value(virBitmapSetBit(migParams->caps, capability));
+    else
+        ignore_value(virBitmapClearBit(migParams->caps, capability));
+
+    return 0;
+}
+
+
+int
+qemuMigrationParamsSetPostCopy(virDomainObjPtr vm,
+                               bool state,
+                               qemuMigrationParamsPtr migParams)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
+                                         state, migParams) < 0)
+        return -1;
+
+    priv->job.postcopyEnabled = state;
+    return 0;
 }
 
 
@@ -272,18 +330,18 @@ qemuMigrationParamsSetCompression(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (qemuMigrationOptionSet(driver, vm,
-                               QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
-                               compression->methods &
-                               (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE),
-                               asyncJob) < 0)
+    if (qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
+                                         compression->methods &
+                                         (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE),
+                                         migParams) < 0)
         return -1;
 
-    if (qemuMigrationOptionSet(driver, vm,
-                               QEMU_MONITOR_MIGRATION_CAPS_COMPRESS,
-                               compression->methods &
-                               (1ULL << QEMU_MIGRATION_COMPRESS_MT),
-                               asyncJob) < 0)
+    if (qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_COMPRESS,
+                                         compression->methods &
+                                         (1ULL << QEMU_MIGRATION_COMPRESS_MT),
+                                         migParams) < 0)
         return -1;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -369,6 +427,11 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
     if (!(origParams = qemuMigrationParamsNew()))
         goto cleanup;
 
+    /*
+     * We want to disable all migration capabilities after migration, no need
+     * to ask QEMU for their current settings.
+     */
+
     if (qemuMonitorGetMigrationParams(priv->mon, &origParams->params) < 0)
         goto cleanup;
 
@@ -398,25 +461,17 @@ qemuMigrationParamsReset(virQEMUDriverPtr driver,
                          int asyncJob,
                          qemuMigrationParamsPtr origParams)
 {
-    qemuMonitorMigrationCaps cap;
     virErrorPtr err = virSaveLastError();
 
     VIR_DEBUG("Resetting migration parameters %p", origParams);
 
-    if (!virDomainObjIsActive(vm))
+    if (!virDomainObjIsActive(vm) || !origParams)
         goto cleanup;
 
-    if (origParams) {
-        if (qemuMigrationParamsApply(driver, vm, asyncJob, origParams) < 0)
-            goto cleanup;
-        qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams);
-    }
+    if (qemuMigrationParamsApply(driver, vm, asyncJob, origParams) < 0)
+        goto cleanup;
 
-    for (cap = 0; cap < QEMU_MONITOR_MIGRATION_CAPS_LAST; cap++) {
-        if (qemuMigrationCapsGet(vm, cap) &&
-            qemuMigrationOptionSet(driver, vm, cap, false, asyncJob) < 0)
-            goto cleanup;
-    }
+    qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams);
 
  cleanup:
     if (err) {

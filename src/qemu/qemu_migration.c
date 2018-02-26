@@ -1174,66 +1174,6 @@ qemuMigrationAnyPostcopyFailed(virQEMUDriverPtr driver,
 }
 
 
-int
-qemuMigrationOptionSet(virQEMUDriverPtr driver,
-                       virDomainObjPtr vm,
-                       qemuMonitorMigrationCaps capability,
-                       bool state,
-                       qemuDomainAsyncJob job)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret;
-
-    if (!qemuMigrationCapsGet(vm, capability)) {
-        if (!state) {
-            /* Unsupported but we want it off anyway */
-            return 0;
-        }
-
-        if (job == QEMU_ASYNC_JOB_MIGRATION_IN) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                           _("Migration option '%s' is not supported by "
-                             "target QEMU binary"),
-                           qemuMonitorMigrationCapsTypeToString(capability));
-        } else {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                           _("Migration option '%s' is not supported by "
-                             "source QEMU binary"),
-                           qemuMonitorMigrationCapsTypeToString(capability));
-        }
-        return -1;
-    }
-
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
-        return -1;
-
-    ret = qemuMonitorSetMigrationCapability(priv->mon, capability, state);
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-
-    return ret;
-}
-
-
-static int
-qemuMigrationOptionSetPostCopy(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               bool state,
-                               qemuDomainAsyncJob job)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-
-    if (qemuMigrationOptionSet(driver, vm,
-                               QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
-                               state, job) < 0)
-        return -1;
-
-    priv->job.postcopyEnabled = state;
-    return 0;
-}
-
-
 static int
 qemuMigrationSrcWaitForSpice(virDomainObjPtr vm)
 {
@@ -2465,15 +2405,14 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         goto stopjob;
     }
 
-    if (qemuMigrationOptionSet(driver, vm,
-                               QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
-                               flags & VIR_MIGRATE_RDMA_PIN_ALL,
-                               QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+    if (qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
+                                         flags & VIR_MIGRATE_RDMA_PIN_ALL,
+                                         migParams) < 0)
         goto stopjob;
 
-    if (qemuMigrationOptionSetPostCopy(driver, vm,
-                                       flags & VIR_MIGRATE_POSTCOPY,
-                                       QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+    if (qemuMigrationParamsSetPostCopy(vm, flags & VIR_MIGRATE_POSTCOPY,
+                                       migParams) < 0)
         goto stopjob;
 
     if (qemuMigrationParamsApply(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
@@ -3448,27 +3387,26 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                                           compression, migParams) < 0)
         goto error;
 
-    if (qemuMigrationOptionSet(driver, vm,
-                               QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
-                               flags & VIR_MIGRATE_AUTO_CONVERGE,
-                               QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+    if (qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
+                                         flags & VIR_MIGRATE_AUTO_CONVERGE,
+                                         migParams) < 0)
         goto error;
 
-    if (qemuMigrationOptionSet(driver, vm,
-                               QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
-                               flags & VIR_MIGRATE_RDMA_PIN_ALL,
-                               QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+    if (qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
+                                         flags & VIR_MIGRATE_RDMA_PIN_ALL,
+                                         migParams) < 0)
         goto error;
 
-    if (qemuMigrationOptionSetPostCopy(driver, vm,
-                                       flags & VIR_MIGRATE_POSTCOPY,
-                                       QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+    if (qemuMigrationParamsSetPostCopy(vm, flags & VIR_MIGRATE_POSTCOPY,
+                                       migParams) < 0)
         goto error;
 
     if (qemuMigrationCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER) &&
-        qemuMigrationOptionSet(driver, vm,
-                               QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER,
-                               true, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER,
+                                         true, migParams) < 0)
         goto error;
 
     if (qemuMigrationParamsApply(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
