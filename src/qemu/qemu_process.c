@@ -5909,11 +5909,11 @@ qemuProcessLaunch(virConnectPtr conn,
     int *nicindexes = NULL;
     size_t i;
 
-    VIR_DEBUG("vm=%p name=%s id=%d asyncJob=%d "
+    VIR_DEBUG("conn=%p driver=%p vm=%p name=%s if=%d asyncJob=%d "
               "incoming.launchURI=%s incoming.deferredURI=%s "
               "incoming.fd=%d incoming.path=%s "
               "snapshot=%p vmop=%d flags=0x%x",
-              vm, vm->def->name, vm->def->id, asyncJob,
+              conn, driver, vm, vm->def->name, vm->def->id, asyncJob,
               NULLSTR(incoming ? incoming->launchURI : NULL),
               NULLSTR(incoming ? incoming->deferredURI : NULL),
               incoming ? incoming->fd : -1,
