@@ -2253,7 +2253,8 @@ virLXCControllerEventSend(virLXCControllerPtr ctrl,
         goto error;
 
     VIR_DEBUG("Queue event %d %zu", procnr, msg->bufferLength);
-    virNetServerClientSendMessage(ctrl->client, msg);
+    if (virNetServerClientSendMessage(ctrl->client, msg) < 0)
+        goto error;
 
     xdr_free(proc, data);
     return;
