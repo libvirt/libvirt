@@ -1834,6 +1834,7 @@ qemuMigrationSrcCleanup(virDomainObjPtr vm,
         VIR_WARN("Migration of domain %s finished but we don't know if the"
                  " domain was successfully started on destination or not",
                  vm->def->name);
+        qemuMigrationParamsReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT);
         /* clear the job and let higher levels decide what to do */
         qemuDomainObjDiscardAsyncJob(driver, vm);
         break;
