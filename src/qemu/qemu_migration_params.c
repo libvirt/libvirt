@@ -133,52 +133,6 @@ qemuMigrationParamsSet(virQEMUDriverPtr driver,
 }
 
 
-/* qemuMigrationParamsCheckTLSCreds
- * @driver: pointer to qemu driver
- * @vm: domain object
- * @asyncJob: migration job to join
- *
- * Query the migration parameters looking for the 'tls-creds' parameter.
- * If found, then we can support setting or clearing the parameters and thus
- * can support TLS for migration.
- *
- * Returns 0 if we were able to successfully fetch the params and
- * additionally if the tls-creds parameter exists, saves it in the
- * private domain structure. Returns -1 on failure.
- */
-static int
-qemuMigrationParamsCheckTLSCreds(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
-                                 int asyncJob)
-{
-    int ret = -1;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuMigrationParamsPtr migParams = NULL;
-
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        return -1;
-
-    if (!(migParams = qemuMigrationParamsNew()))
-        goto cleanup;
-
-    if (qemuMonitorGetMigrationParams(priv->mon, &migParams->params) < 0)
-        goto cleanup;
-
-    /* NB: Could steal NULL pointer too! Let caller decide what to do. */
-    VIR_STEAL_PTR(priv->migTLSAlias, migParams->params.tlsCreds);
-
-    ret = 0;
-
- cleanup:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-
-    qemuMigrationParamsFree(migParams);
-
-    return ret;
-}
-
-
 /* qemuMigrationParamsAddTLSObjects
  * @driver: pointer to qemu driver
  * @vm: domain object
@@ -213,10 +167,7 @@ qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (qemuMigrationParamsCheckTLSCreds(driver, vm, asyncJob) < 0)
-        goto error;
-
-    if (!priv->migTLSAlias) {
+    if ((!priv->job.migParams->params.tlsCreds)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("TLS migration is not supported with this "
                          "QEMU binary"));
@@ -260,9 +211,7 @@ qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
 
 
 /* qemuMigrationParamsSetEmptyTLS
- * @driver: pointer to qemu driver
  * @vm: domain object
- * @asyncJob: migration job to join
  * @migParams: Pointer to a migration parameters block
  *
  * If we support setting the tls-creds, then set both tls-creds and
@@ -272,17 +221,12 @@ qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
  * Returns 0 on success, -1 on failure
  */
 int
-qemuMigrationParamsSetEmptyTLS(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               int asyncJob,
+qemuMigrationParamsSetEmptyTLS(virDomainObjPtr vm,
                                qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (qemuMigrationParamsCheckTLSCreds(driver, vm, asyncJob) < 0)
-        return -1;
-
-    if (!priv->migTLSAlias)
+    if (!priv->job.migParams->params.tlsCreds)
         return 0;
 
     if (VIR_STRDUP(migParams->params.tlsCreds, "") < 0 ||

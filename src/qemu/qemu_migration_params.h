@@ -82,9 +82,7 @@ qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
                                  qemuMigrationParamsPtr migParams);
 
 int
-qemuMigrationParamsSetEmptyTLS(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm,
-                               int asyncJob,
+qemuMigrationParamsSetEmptyTLS(virDomainObjPtr vm,
                                qemuMigrationParamsPtr migParams);
 
 int

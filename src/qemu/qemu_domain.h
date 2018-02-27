@@ -330,10 +330,6 @@ struct _qemuDomainObjPrivate {
     /* private XML). */
     qemuDomainSecretInfoPtr migSecinfo;
 
-    /* Used when fetching/storing the current 'tls-creds' migration setting */
-    /* (not to be saved in our private XML). */
-    char *migTLSAlias;
-
     /* CPU def used to start the domain when it differs from the one actually
      * provided by QEMU. */
     virCPUDefPtr origCPU;

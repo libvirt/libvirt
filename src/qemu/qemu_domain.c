@@ -1905,8 +1905,6 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
     virDomainUSBAddressSetFree(priv->usbaddrs);
     priv->usbaddrs = NULL;
 
-    /* clean up migration data */
-    VIR_FREE(priv->migTLSAlias);
     virCPUDefFree(priv->origCPU);
     priv->origCPU = NULL;
 
