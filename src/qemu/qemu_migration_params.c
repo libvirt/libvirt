@@ -179,56 +179,6 @@ qemuMigrationParamsCheckTLSCreds(virQEMUDriverPtr driver,
 }
 
 
-/* qemuMigrationParamsCheckSetupTLS
- * @driver: pointer to qemu driver
- * @vm: domain object
- * @cfg: configuration pointer
- * @asyncJob: migration job to join
- *
- * Check if TLS is possible and set up the environment. Assumes the caller
- * desires to use TLS (e.g. caller found VIR_MIGRATE_TLS flag).
- *
- * Ensure the qemu.conf has been properly configured to add an entry for
- * "migrate_tls_x509_cert_dir". Also check if the "tls-creds" parameter
- * was present from a query of migration parameters
- *
- * Returns 0 on success, -1 on error/failure
- */
-int
-qemuMigrationParamsCheckSetupTLS(virQEMUDriverPtr driver,
-                                 virQEMUDriverConfigPtr cfg,
-                                 virDomainObjPtr vm,
-                                 int asyncJob)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-
-    if (!cfg->migrateTLSx509certdir) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("host migration TLS directory not configured"));
-        return -1;
-    }
-
-    if (qemuMigrationParamsCheckTLSCreds(driver, vm, asyncJob) < 0)
-        return -1;
-
-    if (!priv->migTLSAlias) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("TLS migration is not supported with this "
-                         "QEMU binary"));
-        return -1;
-    }
-
-    /* If there's a secret, then grab/store it now using the connection */
-    if (cfg->migrateTLSx509secretUUID &&
-        !(priv->migSecinfo =
-          qemuDomainSecretInfoTLSNew(priv, QEMU_MIGRATION_TLS_ALIAS_BASE,
-                                     cfg->migrateTLSx509secretUUID)))
-        return -1;
-
-    return 0;
-}
-
-
 /* qemuMigrationParamsAddTLSObjects
  * @driver: pointer to qemu driver
  * @vm: domain object
@@ -256,6 +206,29 @@ qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virJSONValuePtr tlsProps = NULL;
     virJSONValuePtr secProps = NULL;
+
+    if (!cfg->migrateTLSx509certdir) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("host migration TLS directory not configured"));
+        goto error;
+    }
+
+    if (qemuMigrationParamsCheckTLSCreds(driver, vm, asyncJob) < 0)
+        goto error;
+
+    if (!priv->migTLSAlias) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("TLS migration is not supported with this "
+                         "QEMU binary"));
+        goto error;
+    }
+
+    /* If there's a secret, then grab/store it now using the connection */
+    if (cfg->migrateTLSx509secretUUID &&
+        !(priv->migSecinfo =
+          qemuDomainSecretInfoTLSNew(priv, QEMU_MIGRATION_TLS_ALIAS_BASE,
+                                     cfg->migrateTLSx509secretUUID)))
+        goto error;
 
     if (qemuDomainGetTLSObjects(priv->qemuCaps, priv->migSecinfo,
                                 cfg->migrateTLSx509certdir, tlsListen,

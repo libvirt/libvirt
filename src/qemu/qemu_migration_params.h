@@ -72,12 +72,6 @@ qemuMigrationParamsSet(virQEMUDriverPtr driver,
                        qemuMigrationParamsPtr migParams);
 
 int
-qemuMigrationParamsCheckSetupTLS(virQEMUDriverPtr driver,
-                                 virQEMUDriverConfigPtr cfg,
-                                 virDomainObjPtr vm,
-                                 int asyncJob);
-
-int
 qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virQEMUDriverConfigPtr cfg,

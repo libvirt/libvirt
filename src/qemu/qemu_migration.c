@@ -2042,7 +2042,6 @@ qemuMigrationSrcBegin(virConnectPtr conn,
                       unsigned long flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    virQEMUDriverConfigPtr cfg = NULL;
     char *xml = NULL;
     qemuDomainAsyncJob asyncJob;
 
@@ -2076,12 +2075,6 @@ qemuMigrationSrcBegin(virConnectPtr conn,
                                            nmigrate_disks, migrate_disks, flags)))
         goto endjob;
 
-    if (flags & VIR_MIGRATE_TLS) {
-        cfg = virQEMUDriverGetConfig(driver);
-        if (qemuMigrationParamsCheckSetupTLS(driver, cfg, vm, asyncJob) < 0)
-            goto endjob;
-    }
-
     if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
         /* We keep the job active across API calls until the confirm() call.
          * This prevents any other APIs being invoked while migration is taking
@@ -2098,7 +2091,6 @@ qemuMigrationSrcBegin(virConnectPtr conn,
     }
 
  cleanup:
-    virObjectUnref(cfg);
     virDomainObjEndAPI(&vm);
     return xml;
 
@@ -2460,10 +2452,6 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
      * set the migration TLS parameters */
     if (flags & VIR_MIGRATE_TLS) {
         cfg = virQEMUDriverGetConfig(driver);
-        if (qemuMigrationParamsCheckSetupTLS(driver, cfg, vm,
-                                             QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
-            goto stopjob;
-
         if (qemuMigrationParamsAddTLSObjects(driver, vm, cfg, true,
                                              QEMU_ASYNC_JOB_MIGRATION_IN,
                                              &tlsAlias, &secAlias, migParams) < 0)
@@ -3421,9 +3409,6 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
 
     if (flags & VIR_MIGRATE_TLS) {
         cfg = virQEMUDriverGetConfig(driver);
-
-        /* Begin/CheckSetupTLS already set up migTLSAlias, the following
-         * assumes that and adds the TLS objects to the domain. */
         if (qemuMigrationParamsAddTLSObjects(driver, vm, cfg, false,
                                              QEMU_ASYNC_JOB_MIGRATION_OUT,
                                              &tlsAlias, &secAlias, migParams) < 0)
