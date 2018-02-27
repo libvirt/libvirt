@@ -108,7 +108,8 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
 void
 qemuMigrationParamsReset(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
-                         int asyncJob);
+                         int asyncJob,
+                         qemuMigrationParamsPtr origParams);
 
 int
 qemuMigrationCapsCheck(virQEMUDriverPtr driver,

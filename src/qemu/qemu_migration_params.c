@@ -378,30 +378,19 @@ qemuMigrationParamsSetCompression(virQEMUDriverPtr driver,
  *
  * Deconstruct all the setup possibly done for TLS - delete the TLS and
  * security objects, free the secinfo, and reset the migration params to "".
- *
- * Returns 0 on success, -1 on failure
  */
-static int
+static void
 qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
-                            int asyncJob)
+                            int asyncJob,
+                            qemuMigrationParamsPtr origParams)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     char *tlsAlias = NULL;
     char *secAlias = NULL;
-    qemuMigrationParamsPtr migParams = NULL;
-    int ret = -1;
 
-    if (qemuMigrationParamsCheckTLSCreds(driver, vm, asyncJob) < 0)
-        return -1;
-
-    /* If the tls-creds doesn't exist or if they're set to "" then there's
-     * nothing to do since we never set anything up */
-    if (!priv->migTLSAlias || !*priv->migTLSAlias)
-        return 0;
-
-    if (!(migParams = qemuMigrationParamsNew()))
-        goto cleanup;
+    /* If QEMU does not support TLS migration we didn't set the aliases. */
+    if (!origParams->params.tlsCreds)
+        return;
 
     /* NB: If either or both fail to allocate memory we can still proceed
      *     since the next time we migrate another deletion attempt will be
@@ -410,21 +399,10 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
     secAlias = qemuDomainGetSecretAESAlias(QEMU_MIGRATION_TLS_ALIAS_BASE, false);
 
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
-    qemuDomainSecretInfoFree(&priv->migSecinfo);
+    qemuDomainSecretInfoFree(&QEMU_DOMAIN_PRIVATE(vm)->migSecinfo);
 
-    if (VIR_STRDUP(migParams->params.tlsCreds, "") < 0 ||
-        VIR_STRDUP(migParams->params.tlsHostname, "") < 0 ||
-        qemuMigrationParamsSet(driver, vm, asyncJob, migParams) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
     VIR_FREE(tlsAlias);
     VIR_FREE(secAlias);
-    qemuMigrationParamsFree(migParams);
-
-    return ret;
 }
 
 
@@ -475,16 +453,22 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
 void
 qemuMigrationParamsReset(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
-                         int asyncJob)
+                         int asyncJob,
+                         qemuMigrationParamsPtr origParams)
 {
     qemuMonitorMigrationCaps cap;
     virErrorPtr err = virSaveLastError();
 
+    VIR_DEBUG("Resetting migration parameters %p", origParams);
+
     if (!virDomainObjIsActive(vm))
         goto cleanup;
 
-    if (qemuMigrationParamsResetTLS(driver, vm, asyncJob) < 0)
-        goto cleanup;
+    if (origParams) {
+        if (qemuMigrationParamsSet(driver, vm, asyncJob, origParams) < 0)
+            goto cleanup;
+        qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams);
+    }
 
     for (cap = 0; cap < QEMU_MONITOR_MIGRATION_CAPS_LAST; cap++) {
         if (qemuMigrationCapsGet(vm, cap) &&
