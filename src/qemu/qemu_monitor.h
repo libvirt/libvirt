@@ -73,6 +73,7 @@ struct _qemuMonitorMessage {
 typedef enum {
     QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_NONE = 0,
     QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_HYPERV,
+    QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_S390,
 
     QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_LAST
 } qemuMonitorEventPanicInfoType;
@@ -88,12 +89,23 @@ struct _qemuMonitorEventPanicInfoHyperv {
     unsigned long long arg5;
 };
 
+typedef struct _qemuMonitorEventPanicInfoS390 qemuMonitorEventPanicInfoS390;
+typedef qemuMonitorEventPanicInfoS390 *qemuMonitorEventPanicInfoS390Ptr;
+struct _qemuMonitorEventPanicInfoS390 {
+    /* S390 specific guest panic information */
+    int core;
+    unsigned long long psw_mask;
+    unsigned long long psw_addr;
+    char *reason;
+};
+
 typedef struct _qemuMonitorEventPanicInfo qemuMonitorEventPanicInfo;
 typedef qemuMonitorEventPanicInfo *qemuMonitorEventPanicInfoPtr;
 struct _qemuMonitorEventPanicInfo {
     qemuMonitorEventPanicInfoType type;
     union {
         qemuMonitorEventPanicInfoHyperv hyperv;
+        qemuMonitorEventPanicInfoS390 s390;
     } data;
 };
 

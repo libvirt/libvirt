@@ -576,6 +576,40 @@ qemuMonitorJSONGuestPanicExtractInfoHyperv(virJSONValuePtr data)
     return NULL;
 }
 
+static qemuMonitorEventPanicInfoPtr
+qemuMonitorJSONGuestPanicExtractInfoS390(virJSONValuePtr data)
+{
+    qemuMonitorEventPanicInfoPtr ret;
+    int core;
+    unsigned long long psw_mask, psw_addr;
+    const char *reason = NULL;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    ret->type = QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_S390;
+
+    if (virJSONValueObjectGetNumberInt(data, "core", &core) < 0 ||
+        virJSONValueObjectGetNumberUlong(data, "psw-mask", &psw_mask) < 0 ||
+        virJSONValueObjectGetNumberUlong(data, "psw-addr", &psw_addr) < 0 ||
+        !(reason = virJSONValueObjectGetString(data, "reason"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("malformed s390 panic data"));
+        goto error;
+    }
+
+    ret->data.s390.core = core;
+    ret->data.s390.psw_mask = psw_mask;
+    ret->data.s390.psw_addr = psw_addr;
+
+    if (VIR_STRDUP(ret->data.s390.reason, reason) < 0)
+        goto error;
+
+    return ret;
+
+ error:
+    qemuMonitorEventPanicInfoFree(ret);
+    return NULL;
+}
 
 static qemuMonitorEventPanicInfoPtr
 qemuMonitorJSONGuestPanicExtractInfo(virJSONValuePtr data)
@@ -584,6 +618,8 @@ qemuMonitorJSONGuestPanicExtractInfo(virJSONValuePtr data)
 
     if (STREQ_NULLABLE(type, "hyper-v"))
         return qemuMonitorJSONGuestPanicExtractInfoHyperv(data);
+    else if (STREQ_NULLABLE(type, "s390"))
+        return qemuMonitorJSONGuestPanicExtractInfoS390(data);
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("unknown panic info type '%s'"), NULLSTR(type));
