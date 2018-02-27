@@ -336,6 +336,8 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     job->dumpCompleted = false;
     VIR_FREE(job->error);
     VIR_FREE(job->current);
+    qemuMigrationParamsFree(job->migParams);
+    job->migParams = NULL;
 }
 
 void
@@ -350,6 +352,7 @@ qemuDomainObjRestoreJob(virDomainObjPtr obj,
     job->asyncJob = priv->job.asyncJob;
     job->asyncOwner = priv->job.asyncOwner;
     job->phase = priv->job.phase;
+    VIR_STEAL_PTR(job->migParams, priv->job.migParams);
 
     qemuDomainObjResetJob(priv);
     qemuDomainObjResetAsyncJob(priv);

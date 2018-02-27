@@ -34,6 +34,7 @@
 # include "qemu_agent.h"
 # include "qemu_conf.h"
 # include "qemu_capabilities.h"
+# include "qemu_migration_params.h"
 # include "virmdev.h"
 # include "virchrdev.h"
 # include "virobject.h"
@@ -177,6 +178,8 @@ struct qemuDomainJobObj {
     bool postcopyEnabled;               /* post-copy migration was enabled */
     char *error;                        /* job event completion error */
     bool dumpCompleted;                 /* dump completed */
+
+    qemuMigrationParamsPtr migParams;
 };
 
 typedef void (*qemuDomainCleanupCallback)(virQEMUDriverPtr driver,

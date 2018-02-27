@@ -2448,6 +2448,9 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         dataFD[1] = -1; /* 'st' owns the FD now & will close it */
     }
 
+    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+        goto stopjob;
+
     if (qemuMigrationParamsSetCompression(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
                                           compression, migParams) < 0)
         goto stopjob;
@@ -4597,6 +4600,9 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
 
     qemuMigrationSrcStoreDomainState(vm);
 
+    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        goto endjob;
+
     if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
         ret = qemuMigrationSrcPerformPeer2Peer(driver, conn, vm, xmlin, persist_xml,
                                                dconnuri, uri, graphicsuri, listenAddress,
@@ -4699,6 +4705,9 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
     qemuMigrationJobStartPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3);
     virCloseCallbacksUnset(driver->closeCallbacks, vm,
                            qemuMigrationSrcCleanup);
+
+    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        goto endjob;
 
     ret = qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri, cookiein, cookieinlen,
                                         cookieout, cookieoutlen,

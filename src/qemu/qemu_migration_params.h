@@ -100,6 +100,11 @@ qemuMigrationParamsSetCompression(virQEMUDriverPtr driver,
                                   qemuMigrationCompressionPtr compression,
                                   qemuMigrationParamsPtr migParams);
 
+int
+qemuMigrationParamsCheck(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         int asyncJob);
+
 void
 qemuMigrationParamsReset(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,

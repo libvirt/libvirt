@@ -428,6 +428,44 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuMigrationParamsCheck:
+ *
+ * Check supported migration parameters and keep their original values in
+ * qemuDomainJobObj so that we can properly reset them at the end of migration.
+ */
+int
+qemuMigrationParamsCheck(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         int asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuMigrationParamsPtr origParams = NULL;
+    int ret = -1;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    if (!(origParams = qemuMigrationParamsNew()))
+        goto cleanup;
+
+    if (qemuMonitorGetMigrationParams(priv->mon, &origParams->params) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+    if (ret == 0)
+        VIR_STEAL_PTR(priv->job.migParams, origParams);
+    qemuMigrationParamsFree(origParams);
+
+    return ret;
+}
+
+
 /*
  * qemuMigrationParamsReset:
  *
