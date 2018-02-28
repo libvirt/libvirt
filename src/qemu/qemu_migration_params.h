@@ -82,8 +82,8 @@ qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
                                  qemuMigrationParamsPtr migParams);
 
 int
-qemuMigrationParamsSetEmptyTLS(virDomainObjPtr vm,
-                               qemuMigrationParamsPtr migParams);
+qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
+                              qemuMigrationParamsPtr migParams);
 
 int
 qemuMigrationParamsSetCompression(virQEMUDriverPtr driver,

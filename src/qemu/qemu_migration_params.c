@@ -210,7 +210,7 @@ qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
 }
 
 
-/* qemuMigrationParamsSetEmptyTLS
+/* qemuMigrationParamsDisableTLS
  * @vm: domain object
  * @migParams: Pointer to a migration parameters block
  *
@@ -221,8 +221,8 @@ qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
  * Returns 0 on success, -1 on failure
  */
 int
-qemuMigrationParamsSetEmptyTLS(virDomainObjPtr vm,
-                               qemuMigrationParamsPtr migParams)
+qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
+                              qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
