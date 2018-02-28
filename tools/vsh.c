@@ -817,18 +817,17 @@ vshCommandOpt(const vshCmd *cmd, const char *name, vshCmdOpt **opt,
     /* See if option is valid and/or required.  */
     *opt = NULL;
 
-    if (!cmd->skipChecks) {
-        while (valid && valid->name) {
-            if (STREQ(name, valid->name))
-                break;
-            valid++;
-        }
+    while (valid && valid->name) {
+        if (STREQ(name, valid->name))
+            break;
+        valid++;
+    }
 
+    if (!cmd->skipChecks)
         assert(valid && (!needData || valid->type != VSH_OT_BOOL));
 
-        if (valid->flags & VSH_OFLAG_REQ)
-            ret = -1;
-    }
+    if (valid && valid->flags & VSH_OFLAG_REQ)
+        ret = -1;
 
     /* See if option is present on command line.  */
     while (candidate) {
@@ -1065,7 +1064,8 @@ vshCommandOptStringReq(vshControl *ctl,
         error = N_("Option argument is empty");
 
     if (error) {
-        vshError(ctl, _("Failed to get option '%s': %s"), name, _(error));
+        if (!cmd->skipChecks)
+            vshError(ctl, _("Failed to get option '%s': %s"), name, _(error));
         return -1;
     }
 
