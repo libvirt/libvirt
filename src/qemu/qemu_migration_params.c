@@ -136,7 +136,6 @@ qemuMigrationParamsSet(virQEMUDriverPtr driver,
 /* qemuMigrationParamsEnableTLS
  * @driver: pointer to qemu driver
  * @vm: domain object
- * @cfg: configuration pointer
  * @tlsListen: server or client
  * @asyncJob: Migration job to join
  * @tlsAlias: alias to be generated for TLS object
@@ -153,7 +152,6 @@ qemuMigrationParamsSet(virQEMUDriverPtr driver,
 int
 qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
-                             virQEMUDriverConfigPtr cfg,
                              bool tlsListen,
                              int asyncJob,
                              char **tlsAlias,
@@ -164,6 +162,8 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virJSONValuePtr tlsProps = NULL;
     virJSONValuePtr secProps = NULL;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int ret = -1;
 
     if (!cfg->migrateTLSx509certdir) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -206,12 +206,16 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
         VIR_STRDUP(migParams->params.tlsHostname, hostname ? hostname : "") < 0)
         goto error;
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(cfg);
+    return ret;
 
  error:
     virJSONValueFree(tlsProps);
     virJSONValueFree(secProps);
-    return -1;
+    goto cleanup;
 }
 
 

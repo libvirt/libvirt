@@ -74,7 +74,6 @@ qemuMigrationParamsSet(virQEMUDriverPtr driver,
 int
 qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
-                             virQEMUDriverConfigPtr cfg,
                              bool tlsListen,
                              int asyncJob,
                              char **tlsAlias,
