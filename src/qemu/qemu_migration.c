@@ -2452,9 +2452,9 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
      * set the migration TLS parameters */
     if (flags & VIR_MIGRATE_TLS) {
         cfg = virQEMUDriverGetConfig(driver);
-        if (qemuMigrationParamsAddTLSObjects(driver, vm, cfg, true,
-                                             QEMU_ASYNC_JOB_MIGRATION_IN,
-                                             &tlsAlias, &secAlias, migParams) < 0)
+        if (qemuMigrationParamsEnableTLS(driver, vm, cfg, true,
+                                         QEMU_ASYNC_JOB_MIGRATION_IN,
+                                         &tlsAlias, &secAlias, migParams) < 0)
             goto stopjob;
 
         /* Force reset of 'tls-hostname', it's a source only parameter */
@@ -3407,9 +3407,9 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
 
     if (flags & VIR_MIGRATE_TLS) {
         cfg = virQEMUDriverGetConfig(driver);
-        if (qemuMigrationParamsAddTLSObjects(driver, vm, cfg, false,
-                                             QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                             &tlsAlias, &secAlias, migParams) < 0)
+        if (qemuMigrationParamsEnableTLS(driver, vm, cfg, false,
+                                         QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                         &tlsAlias, &secAlias, migParams) < 0)
             goto error;
 
         /* We need to add tls-hostname whenever QEMU itself does not

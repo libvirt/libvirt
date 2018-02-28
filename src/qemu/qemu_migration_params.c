@@ -133,7 +133,7 @@ qemuMigrationParamsSet(virQEMUDriverPtr driver,
 }
 
 
-/* qemuMigrationParamsAddTLSObjects
+/* qemuMigrationParamsEnableTLS
  * @driver: pointer to qemu driver
  * @vm: domain object
  * @cfg: configuration pointer
@@ -148,14 +148,14 @@ qemuMigrationParamsSet(virQEMUDriverPtr driver,
  * Returns 0 on success, -1 on failure
  */
 int
-qemuMigrationParamsAddTLSObjects(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
-                                 virQEMUDriverConfigPtr cfg,
-                                 bool tlsListen,
-                                 int asyncJob,
-                                 char **tlsAlias,
-                                 char **secAlias,
-                                 qemuMigrationParamsPtr migParams)
+qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             virQEMUDriverConfigPtr cfg,
+                             bool tlsListen,
+                             int asyncJob,
+                             char **tlsAlias,
+                             char **secAlias,
+                             qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virJSONValuePtr tlsProps = NULL;
