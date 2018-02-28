@@ -370,6 +370,7 @@ struct _qemuDomainDiskPrivate {
     bool blockJobSync; /* the block job needs synchronized termination */
 
     bool migrating; /* the disk is being migrated */
+    virStorageSourcePtr migrSource; /* disk source object used for NBD migration */
 
     /* information about the device */
     bool tray; /* device has tray */

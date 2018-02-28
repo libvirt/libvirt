@@ -1015,6 +1015,7 @@ qemuDomainDiskPrivateDispose(void *obj)
     qemuDomainDiskPrivatePtr priv = obj;
 
     VIR_FREE(priv->blockJobError);
+    virStorageSourceFree(priv->migrSource);
 }
 
 static virClassPtr qemuDomainStorageSourcePrivateClass;
@@ -2067,20 +2068,82 @@ qemuDomainObjPrivateXMLFormatPR(virBufferPtr buf,
 }
 
 
-static void
+static int
+qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
+                                                virStorageSourcePtr src)
+{
+    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer privateDataBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+
+    virBufferSetChildIndent(&childBuf, buf);
+    virBufferSetChildIndent(&privateDataBuf, &childBuf);
+
+    virBufferAsprintf(&attrBuf, " type='%s' format='%s'",
+                      virStorageTypeToString(src->type),
+                      virStorageFileFormatTypeToString(src->format));
+
+    if (virDomainStorageSourceFormat(&attrBuf, &childBuf, src,
+                                     VIR_DOMAIN_DEF_FORMAT_STATUS, false) < 0)
+        goto cleanup;
+
+    if (qemuStorageSourcePrivateDataFormat(src, &privateDataBuf) < 0)
+        goto cleanup;
+
+    if (virXMLFormatElement(&childBuf, "privateData", NULL, &privateDataBuf) < 0)
+        goto cleanup;
+
+    if (virXMLFormatElement(buf, "migrationSource", &attrBuf, &childBuf) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&attrBuf);
+    virBufferFreeAndReset(&childBuf);
+    virBufferFreeAndReset(&privateDataBuf);
+
+    return ret;
+}
+
+
+static int
 qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
                                           virDomainObjPtr vm)
 {
+    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
     virDomainDiskDefPtr disk;
     qemuDomainDiskPrivatePtr diskPriv;
+    int ret = -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         disk = vm->def->disks[i];
         diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        virBufferAsprintf(buf, "<disk dev='%s' migrating='%s'/>\n",
+
+        virBufferSetChildIndent(&childBuf, buf);
+
+        virBufferAsprintf(&attrBuf, " dev='%s' migrating='%s'",
                           disk->dst, diskPriv->migrating ? "yes" : "no");
+
+        if (diskPriv->migrSource &&
+            qemuDomainObjPrivateXMLFormatNBDMigrationSource(&childBuf,
+                                                            diskPriv->migrSource) < 0)
+            goto cleanup;
+
+        if (virXMLFormatElement(buf, "disk", &attrBuf, &childBuf) < 0)
+            goto cleanup;
     }
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&attrBuf);
+    virBufferFreeAndReset(&childBuf);
+
+    return ret;
 }
 
 
@@ -2092,6 +2155,7 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
     virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
     qemuDomainJob job = priv->job.active;
+    int ret = -1;
 
     if (!qemuDomainTrackJob(job))
         job = QEMU_JOB_NONE;
@@ -2115,13 +2179,23 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
     if (priv->job.asyncJob != QEMU_ASYNC_JOB_NONE)
         virBufferAsprintf(&attrBuf, " flags='0x%lx'", priv->job.apiFlags);
 
-    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
-        qemuDomainObjPrivateXMLFormatNBDMigration(&childBuf, vm);
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT &&
+        qemuDomainObjPrivateXMLFormatNBDMigration(&childBuf, vm) < 0)
+        goto cleanup;
 
     if (priv->job.migParams)
         qemuMigrationParamsFormat(&childBuf, priv->job.migParams);
 
-    return virXMLFormatElement(buf, "job", &attrBuf, &childBuf);
+    if (virXMLFormatElement(buf, "job", &attrBuf, &childBuf) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&attrBuf);
+    virBufferFreeAndReset(&childBuf);
+
+    return ret;
 }
 
 
@@ -2368,11 +2442,78 @@ qemuDomainObjPrivateXMLParsePR(xmlXPathContextPtr ctxt,
 
 
 static int
+qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
+                                         xmlXPathContextPtr ctxt,
+                                         virDomainDiskDefPtr disk)
+{
+    xmlNodePtr savedNode = ctxt->node;
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    virStorageSourcePtr migrSource = NULL;
+    char *format = NULL;
+    char *type = NULL;
+    int ret = -1;
+
+    ctxt->node = node;
+
+    if (!(ctxt->node = virXPathNode("./migrationSource", ctxt))) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(migrSource) < 0)
+        goto cleanup;
+
+    if (!(type = virXMLPropString(ctxt->node, "type"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing storage source type"));
+        goto cleanup;
+    }
+
+    if (!(format = virXMLPropString(ctxt->node, "format"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       ("missing storage source format"));
+        goto cleanup;
+    }
+
+    if ((migrSource->type = virStorageTypeFromString(type)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown storage source type '%s'"), type);
+        goto cleanup;
+    }
+
+    if ((migrSource->format = virStorageFileFormatTypeFromString(format)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown storage source format '%s'"), format);
+        goto cleanup;
+    }
+
+    if (virDomainStorageSourceParse(ctxt->node, ctxt, migrSource,
+                                    VIR_DOMAIN_DEF_PARSE_STATUS) < 0)
+        goto cleanup;
+
+    if ((ctxt->node = virXPathNode("./privateData", ctxt)) &&
+        qemuStorageSourcePrivateDataParse(ctxt, migrSource) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(diskPriv->migrSource, migrSource);
+    ret = 0;
+
+ cleanup:
+    virStorageSourceFree(migrSource);
+    VIR_FREE(format);
+    VIR_FREE(type);
+    ctxt->node = savedNode;
+    return ret;
+}
+
+
+static int
 qemuDomainObjPrivateXMLParseJobNBD(virDomainObjPtr vm,
                                    qemuDomainObjPrivatePtr priv,
                                    xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *nodes = NULL;
+    char *dst = NULL;
     size_t i;
     int n;
     int ret = -1;
@@ -2387,11 +2528,17 @@ qemuDomainObjPrivateXMLParseJobNBD(virDomainObjPtr vm,
             n = 0;
         }
         for (i = 0; i < n; i++) {
-            char *dst = virXMLPropString(nodes[i], "dev");
             virDomainDiskDefPtr disk;
 
-            if (dst && (disk = virDomainDiskByName(vm->def, dst, false)))
+            if ((dst = virXMLPropString(nodes[i], "dev")) &&
+                (disk = virDomainDiskByName(vm->def, dst, false))) {
                 QEMU_DOMAIN_DISK_PRIVATE(disk)->migrating = true;
+
+                if (qemuDomainObjPrivateXMLParseJobNBDSource(nodes[i], ctxt,
+                                                             disk) < 0)
+                    goto cleanup;
+            }
+
             VIR_FREE(dst);
         }
     }
@@ -2400,6 +2547,7 @@ qemuDomainObjPrivateXMLParseJobNBD(virDomainObjPtr vm,
 
  cleanup:
     VIR_FREE(nodes);
+    VIR_FREE(dst);
     return ret;
 }
 
