@@ -39,6 +39,7 @@
 #include "qemu_hotplug.h"
 #include "qemu_blockjob.h"
 #include "qemu_security.h"
+#include "qemu_block.h"
 
 #include "domain_audit.h"
 #include "virlog.h"
@@ -737,6 +738,19 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+        if (!diskPriv->migrSource)
+            continue;
+
+        qemuBlockStorageSourceDetachOneBlockdev(driver, vm, asyncJob,
+                                                diskPriv->migrSource);
+        virStorageSourceFree(diskPriv->migrSource);
+        diskPriv->migrSource = NULL;
+    }
+
     ret = failed ? -1 : 0;
 
  cleanup:
@@ -744,6 +758,85 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
         virSetError(err);
         virFreeError(err);
     }
+    return ret;
+}
+
+
+static int
+qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm,
+                                       virDomainDiskDefPtr disk,
+                                       const char *diskAlias,
+                                       const char *host,
+                                       int port,
+                                       unsigned long long mirror_speed,
+                                       unsigned int mirror_flags,
+                                       const char *tlsAlias)
+{
+    qemuBlockStorageSourceAttachDataPtr data = NULL;
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    virStorageSourcePtr copysrc = NULL;
+    int mon_ret = 0;
+    int ret = -1;
+
+    VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", diskAlias, host);
+
+    if (VIR_ALLOC(copysrc) < 0)
+        goto cleanup;
+
+    copysrc->type = VIR_STORAGE_TYPE_NETWORK;
+    copysrc->protocol = VIR_STORAGE_NET_PROTOCOL_NBD;
+    copysrc->format = VIR_STORAGE_FILE_RAW;
+
+    if (VIR_ALLOC(copysrc->backingStore) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(copysrc->path, diskAlias) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(copysrc->hosts, 1) < 0)
+        goto cleanup;
+
+    copysrc->nhosts = 1;
+    copysrc->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+    copysrc->hosts->port = port;
+    if (VIR_STRDUP(copysrc->hosts->name, host) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(copysrc->tlsAlias, tlsAlias) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&copysrc->nodestorage, "migration-%s-storage", disk->dst) < 0 ||
+        virAsprintf(&copysrc->nodeformat, "migration-%s-format", disk->dst) < 0)
+        goto cleanup;
+
+    if (!(data = qemuBlockStorageSourceAttachPrepareBlockdev(copysrc)))
+        goto cleanup;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm,
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        goto cleanup;
+
+    mon_ret = qemuBlockStorageSourceAttachApply(qemuDomainGetMonitor(vm), data);
+
+    if (mon_ret == 0)
+        mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), NULL,
+                                            diskAlias, copysrc->nodeformat,
+                                            mirror_speed, 0, 0, mirror_flags);
+
+    if (mon_ret != 0)
+        qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), data);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || mon_ret < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(diskPriv->migrSource, copysrc);
+
+    ret = 0;
+
+ cleanup:
+    qemuBlockStorageSourceAttachDataFree(data);
+    virStorageSourceFree(copysrc);
     return ret;
 }
 
@@ -818,7 +911,9 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
                                unsigned int *migrate_flags,
                                size_t nmigrate_disks,
                                const char **migrate_disks,
-                               virConnectPtr dconn)
+                               virConnectPtr dconn,
+                               const char *tlsAlias,
+                               unsigned int flags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -850,6 +945,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        int rc;
 
         /* check whether disk should be migrated */
         if (!qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks))
@@ -860,10 +956,21 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
 
         qemuBlockJobSyncBegin(disk);
 
-        if (qemuMigrationSrcNBDStorageCopyDriveMirror(driver, vm, diskAlias,
-                                                      host, port,
-                                                      mirror_speed,
-                                                      mirror_flags) < 0) {
+        if (flags & VIR_MIGRATE_TLS) {
+            rc = qemuMigrationSrcNBDStorageCopyBlockdev(driver, vm,
+                                                        disk, diskAlias,
+                                                        host, port,
+                                                        mirror_speed,
+                                                        mirror_flags,
+                                                        tlsAlias);
+        } else {
+            rc = qemuMigrationSrcNBDStorageCopyDriveMirror(driver, vm, diskAlias,
+                                                           host, port,
+                                                           mirror_speed,
+                                                           mirror_flags);
+        }
+
+        if (rc < 0) {
             qemuBlockJobSyncEnd(vm, QEMU_ASYNC_JOB_MIGRATION_OUT, disk);
             goto cleanup;
         }
@@ -3367,7 +3474,8 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
              * non-shared storage migration with TLS. As we need to honour the
              * VIR_MIGRATE_TLS flag, we need to reject such migration until
              * we implement TLS for NBD. */
-            if (flags & VIR_MIGRATE_TLS) {
+            if (flags & VIR_MIGRATE_TLS &&
+                !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_DEL)) {
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                                _("NBD migration with TLS is not supported"));
                 goto error;
@@ -3380,7 +3488,7 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                                                &migrate_flags,
                                                nmigrate_disks,
                                                migrate_disks,
-                                               dconn) < 0) {
+                                               dconn, tlsAlias, flags) < 0) {
                 goto error;
             }
         } else {
