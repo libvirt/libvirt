@@ -108,11 +108,22 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
 }
 
 
+/**
+ * qemuMigrationParamsApply
+ * @driver: qemu driver
+ * @vm: domain object
+ * @asyncJob: migration job
+ * @migParams: migration parameters to send to QEMU
+ *
+ * Send all parameters stored in @migParams to QEMU.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
 int
-qemuMigrationParamsSet(virQEMUDriverPtr driver,
-                       virDomainObjPtr vm,
-                       int asyncJob,
-                       qemuMigrationParamsPtr migParams)
+qemuMigrationParamsApply(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         int asyncJob,
+                         qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -391,7 +402,7 @@ qemuMigrationParamsReset(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (origParams) {
-        if (qemuMigrationParamsSet(driver, vm, asyncJob, origParams) < 0)
+        if (qemuMigrationParamsApply(driver, vm, asyncJob, origParams) < 0)
             goto cleanup;
         qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams);
     }

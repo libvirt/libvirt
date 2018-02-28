@@ -66,10 +66,10 @@ void
 qemuMigrationParamsFree(qemuMigrationParamsPtr migParams);
 
 int
-qemuMigrationParamsSet(virQEMUDriverPtr driver,
-                       virDomainObjPtr vm,
-                       int asyncJob,
-                       qemuMigrationParamsPtr migParams);
+qemuMigrationParamsApply(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         int asyncJob,
+                         qemuMigrationParamsPtr migParams);
 
 int
 qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
