@@ -900,6 +900,7 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
             goto error;
         }
         optr->net[i].vporttype = virNetDevVPortTypeFromString(vporttype);
+        VIR_FREE(vporttype);
     }
 
     VIR_FREE(interfaces);
