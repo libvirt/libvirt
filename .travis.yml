@@ -28,6 +28,7 @@ addons:
       - autoconf
       - automake
       - autopoint
+      - bash-completion
       - ccache
       - dnsmasq-base
       - dwarves
@@ -41,9 +42,9 @@ addons:
       - libaudit-dev
       - libavahi-client-dev
       - libblkid-dev
-      - libc-dev-bin
       - libc6-dev
       - libcap-ng-dev
+      - libc-dev-bin
       - libcurl4-gnutls-dev
       - libdbus-1-dev
       - libdevmapper-dev
@@ -59,10 +60,12 @@ addons:
       - libpciaccess-dev
       - librbd-dev
       - libreadline-dev
+      - libsanlock-dev
       - libsasl2-dev
       - libselinux1-dev
       - libssh2-1-dev
       - libssh-dev
+      - libtirpc-dev
       - libtool
       - libudev-dev
       - libxen-dev
@@ -76,7 +79,7 @@ addons:
       - parted
       - patch
       - perl
-      - pkg-config
+      - pkgconf
       - policykit-1
       - qemu-utils
       - radvd
