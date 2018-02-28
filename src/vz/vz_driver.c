@@ -2732,7 +2732,7 @@ vzDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED, -1);
 
-    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+    if (!(dom = vzDomObjFromDomainRef(snapshot->domain)))
         return -1;
 
     if (virDomainRevertToSnapshotEnsureACL(snapshot->domain->conn, dom->def) < 0)
