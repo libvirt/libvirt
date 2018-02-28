@@ -2454,13 +2454,9 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         cfg = virQEMUDriverGetConfig(driver);
         if (qemuMigrationParamsEnableTLS(driver, vm, cfg, true,
                                          QEMU_ASYNC_JOB_MIGRATION_IN,
-                                         &tlsAlias, &secAlias, migParams) < 0)
+                                         &tlsAlias, &secAlias, NULL,
+                                         migParams) < 0)
             goto stopjob;
-
-        /* Force reset of 'tls-hostname', it's a source only parameter */
-        if (VIR_STRDUP(migParams->params.tlsHostname, "") < 0)
-            goto stopjob;
-
     } else {
         if (qemuMigrationParamsDisableTLS(vm, migParams) < 0)
             goto stopjob;
@@ -3406,23 +3402,20 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
         VIR_WARN("unable to provide data for graphics client relocation");
 
     if (flags & VIR_MIGRATE_TLS) {
-        cfg = virQEMUDriverGetConfig(driver);
-        if (qemuMigrationParamsEnableTLS(driver, vm, cfg, false,
-                                         QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                         &tlsAlias, &secAlias, migParams) < 0)
-            goto error;
+        const char *hostname = NULL;
 
         /* We need to add tls-hostname whenever QEMU itself does not
          * connect directly to the destination. */
         if (spec->destType == MIGRATION_DEST_CONNECT_HOST ||
-            spec->destType == MIGRATION_DEST_FD) {
-            if (VIR_STRDUP(migParams->params.tlsHostname, spec->dest.host.name) < 0)
-                goto error;
-        } else {
-            /* Be sure there's nothing from a previous migration */
-            if (VIR_STRDUP(migParams->params.tlsHostname, "") < 0)
-                goto error;
-        }
+            spec->destType == MIGRATION_DEST_FD)
+            hostname = spec->dest.host.name;
+
+        cfg = virQEMUDriverGetConfig(driver);
+        if (qemuMigrationParamsEnableTLS(driver, vm, cfg, false,
+                                         QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                         &tlsAlias, &secAlias, hostname,
+                                         migParams) < 0)
+            goto error;
     } else {
         if (qemuMigrationParamsDisableTLS(vm, migParams) < 0)
             goto error;

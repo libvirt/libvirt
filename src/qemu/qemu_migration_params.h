@@ -79,6 +79,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                              int asyncJob,
                              char **tlsAlias,
                              char **secAlias,
+                             const char *hostname,
                              qemuMigrationParamsPtr migParams);
 
 int

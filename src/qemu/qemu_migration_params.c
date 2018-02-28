@@ -141,9 +141,12 @@ qemuMigrationParamsSet(virQEMUDriverPtr driver,
  * @asyncJob: Migration job to join
  * @tlsAlias: alias to be generated for TLS object
  * @secAlias: alias to be generated for a secinfo object
+ * @hostname: hostname of the migration destination
  * @migParams: migration parameters to set
  *
- * Create the TLS objects for the migration and set the migParams value
+ * Create the TLS objects for the migration and set the migParams value.
+ * If QEMU itself does not connect to the destination @hostname must be
+ * provided for certificate verification.
  *
  * Returns 0 on success, -1 on failure
  */
@@ -155,6 +158,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                              int asyncJob,
                              char **tlsAlias,
                              char **secAlias,
+                             const char *hostname,
                              qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -198,7 +202,8 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                                 *tlsAlias, &tlsProps) < 0)
         goto error;
 
-    if (VIR_STRDUP(migParams->params.tlsCreds, *tlsAlias) < 0)
+    if (VIR_STRDUP(migParams->params.tlsCreds, *tlsAlias) < 0 ||
+        VIR_STRDUP(migParams->params.tlsHostname, hostname ? hostname : "") < 0)
         goto error;
 
     return 0;
