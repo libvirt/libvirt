@@ -143,6 +143,9 @@ virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
     if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
         return NULL;
 
+    if (cmd->skipChecks && !n)
+        return NULL;
+
     vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
 
