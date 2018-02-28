@@ -664,8 +664,16 @@ struct_prefix = ($(libs_prefix)|$(other_prefix))
 # remote/{,.libs/}libvirt_driver_remote_la-remote_protocol.o.  We want
 # the newest of the two, in case configure options changed and a stale
 # file is left around from an earlier build.
+# The pdwtags output is completely different when building with clang
+# which causes the comparison against expected output to fail, so skip
+# if using clang as CC.
 PDWTAGS = \
-	$(AM_V_GEN)if (pdwtags --help) > /dev/null 2>&1; then \
+	$(AM_V_GEN)$CC -v 2>&1 | grep -q clang; \
+	if test $$? == 1; then \
+	   echo 'WARNING: skipping pdwtags test with Clang' >&2; \
+	   exit 0; \
+	fi; \
+	if (pdwtags --help) > /dev/null 2>&1; then \
 	  o=`ls -t $(<:.lo=.$(OBJEXT)) \
 	     $(subst /,/.libs/,$(<:.lo=.$(OBJEXT))) \
 	    2>/dev/null | sed -n 1p`; \
