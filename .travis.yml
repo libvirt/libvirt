@@ -10,6 +10,11 @@ matrix:
       dist: trusty
     - compiler: clang
       os: osx
+      script:
+        # We can't run make distcheck/syntax-check because they
+        # fail on macOS, but doing 'install' and 'dist' gives us
+        # some useful coverage
+        - make -j3 && make -j3 install && make -j3 dist
 
 addons:
   apt:
@@ -88,15 +93,13 @@ env:
     - VIR_TEST_DEBUG=1
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew upgrade && brew install rpcgen yajl; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew upgrade && brew install rpcgen yajl xz; fi
 
 before_script:
-  - ./autogen.sh
+  - ./autogen.sh --prefix=$(pwd)/install-root
 
 script:
-  # Many unit tests still fail on macOS, and there are a bunch of issues with
-  # syntax-check as well, so skip those steps on that platform for now
-  - make -j3 && if [ "$TRAVIS_OS_NAME" != "osx" ]; then make -j3 syntax-check && make -j3 distcheck; fi
+  - make -j3 && make -j3 syntax-check && make -j3 distcheck
 
 after_failure:
   - echo '============================================================================'
