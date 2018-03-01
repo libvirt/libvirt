@@ -2327,6 +2327,68 @@ qemuDomainObjPrivateXMLParseAllowReboot(xmlXPathContextPtr ctxt,
 
 
 static int
+qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
+                                qemuDomainObjPrivatePtr priv,
+                                xmlXPathContextPtr ctxt)
+{
+    xmlNodePtr *nodes = NULL;
+    char *tmp = NULL;
+    size_t i;
+    int n;
+    int ret = -1;
+
+    if ((tmp = virXPathString("string(./job[1]/@async)", ctxt))) {
+        int async;
+
+        if ((async = qemuDomainAsyncJobTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown async job type %s"), tmp);
+            goto cleanup;
+        }
+        VIR_FREE(tmp);
+        priv->job.asyncJob = async;
+
+        if ((tmp = virXPathString("string(./job[1]/@phase)", ctxt))) {
+            priv->job.phase = qemuDomainAsyncJobPhaseFromString(async, tmp);
+            if (priv->job.phase < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unknown job phase %s"), tmp);
+                goto cleanup;
+            }
+            VIR_FREE(tmp);
+        }
+    }
+
+    if ((n = virXPathNodeSet("./job[1]/disk[@migrating='yes']", ctxt, &nodes)) < 0)
+        goto cleanup;
+
+    if (n > 0) {
+        if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
+            VIR_WARN("Found disks marked for migration but we were not "
+                     "migrating");
+            n = 0;
+        }
+        for (i = 0; i < n; i++) {
+            char *dst = virXMLPropString(nodes[i], "dev");
+            virDomainDiskDefPtr disk;
+
+            if (dst && (disk = virDomainDiskByName(vm->def, dst, false)))
+                QEMU_DOMAIN_DISK_PRIVATE(disk)->migrating = true;
+            VIR_FREE(dst);
+        }
+    }
+    VIR_FREE(nodes);
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(tmp);
+    VIR_FREE(nodes);
+    return ret;
+}
+
+
+static int
 qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                              virDomainObjPtr vm,
                              virDomainDefParserConfigPtr config)
@@ -2453,52 +2515,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         priv->job.active = type;
     }
 
-    if ((tmp = virXPathString("string(./job[1]/@async)", ctxt))) {
-        int async;
-
-        if ((async = qemuDomainAsyncJobTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown async job type %s"), tmp);
-            VIR_FREE(tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
-        priv->job.asyncJob = async;
-
-        if ((tmp = virXPathString("string(./job[1]/@phase)", ctxt))) {
-            priv->job.phase = qemuDomainAsyncJobPhaseFromString(async, tmp);
-            if (priv->job.phase < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unknown job phase %s"), tmp);
-                VIR_FREE(tmp);
-                goto error;
-            }
-            VIR_FREE(tmp);
-        }
-    }
-
-    if ((n = virXPathNodeSet("./job[1]/disk[@migrating='yes']",
-                             ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to parse list of disks marked for migration"));
+    if (qemuDomainObjPrivateXMLParseJob(vm, priv, ctxt) < 0)
         goto error;
-    }
-    if (n > 0) {
-        if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
-            VIR_WARN("Found disks marked for migration but we were not "
-                     "migrating");
-            n = 0;
-        }
-        for (i = 0; i < n; i++) {
-            char *dst = virXMLPropString(nodes[i], "dev");
-            virDomainDiskDefPtr disk;
-
-            if (dst && (disk = virDomainDiskByName(vm->def, dst, false)))
-                QEMU_DOMAIN_DISK_PRIVATE(disk)->migrating = true;
-            VIR_FREE(dst);
-        }
-    }
-    VIR_FREE(nodes);
 
     priv->fakeReboot = virXPathBoolean("boolean(./fakereboot)", ctxt) == 1;
 
