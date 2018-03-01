@@ -2067,36 +2067,38 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
     if (!qemuDomainTrackJob(job))
         job = QEMU_JOB_NONE;
 
-    if (job || priv->job.asyncJob) {
-        virBufferAsprintf(buf, "<job type='%s' async='%s'",
-                          qemuDomainJobTypeToString(job),
-                          qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
-        if (priv->job.phase) {
-            virBufferAsprintf(buf, " phase='%s'",
-                              qemuDomainAsyncJobPhaseToString(
-                                    priv->job.asyncJob, priv->job.phase));
+    if (job == QEMU_JOB_NONE &&
+        priv->job.asyncJob == QEMU_ASYNC_JOB_NONE)
+        return;
+
+    virBufferAsprintf(buf, "<job type='%s' async='%s'",
+                      qemuDomainJobTypeToString(job),
+                      qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
+    if (priv->job.phase) {
+        virBufferAsprintf(buf, " phase='%s'",
+                          qemuDomainAsyncJobPhaseToString(priv->job.asyncJob,
+                                                          priv->job.phase));
+    }
+    if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
+        virBufferAddLit(buf, "/>\n");
+    } else {
+        size_t i;
+        virDomainDiskDefPtr disk;
+        qemuDomainDiskPrivatePtr diskPriv;
+
+        virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
+
+        for (i = 0; i < vm->def->ndisks; i++) {
+            disk = vm->def->disks[i];
+            diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+            virBufferAsprintf(buf, "<disk dev='%s' migrating='%s'/>\n",
+                              disk->dst,
+                              diskPriv->migrating ? "yes" : "no");
         }
-        if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
-            virBufferAddLit(buf, "/>\n");
-        } else {
-            size_t i;
-            virDomainDiskDefPtr disk;
-            qemuDomainDiskPrivatePtr diskPriv;
 
-            virBufferAddLit(buf, ">\n");
-            virBufferAdjustIndent(buf, 2);
-
-            for (i = 0; i < vm->def->ndisks; i++) {
-                disk = vm->def->disks[i];
-                diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-                virBufferAsprintf(buf, "<disk dev='%s' migrating='%s'/>\n",
-                                  disk->dst,
-                                  diskPriv->migrating ? "yes" : "no");
-            }
-
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</job>\n");
-        }
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</job>\n");
     }
 }
 
