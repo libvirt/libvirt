@@ -2062,15 +2062,14 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
                                  virDomainObjPtr vm,
                                  qemuDomainObjPrivatePtr priv)
 {
-    qemuDomainJob job;
+    qemuDomainJob job = priv->job.active;
 
-    job = priv->job.active;
     if (!qemuDomainTrackJob(job))
-        priv->job.active = QEMU_JOB_NONE;
+        job = QEMU_JOB_NONE;
 
-    if (priv->job.active || priv->job.asyncJob) {
+    if (job || priv->job.asyncJob) {
         virBufferAsprintf(buf, "<job type='%s' async='%s'",
-                          qemuDomainJobTypeToString(priv->job.active),
+                          qemuDomainJobTypeToString(job),
                           qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
         if (priv->job.phase) {
             virBufferAsprintf(buf, " phase='%s'",
@@ -2099,7 +2098,6 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
             virBufferAddLit(buf, "</job>\n");
         }
     }
-    priv->job.active = job;
 }
 
 
