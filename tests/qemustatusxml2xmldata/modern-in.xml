@@ -309,6 +309,10 @@
           <format type='qcow2'/>
           <source file='/var/lib/libvirt/images/base.qcow2'>
             <privateData>
+              <nodenames>
+                <nodename type='storage' name='test-storage'/>
+                <nodename type='format' name='test-format'/>
+              </nodenames>
               <relPath>base.qcow2</relPath>
             </privateData>
           </source>

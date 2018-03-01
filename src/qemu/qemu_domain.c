@@ -1937,6 +1937,9 @@ static int
 qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
                                   virStorageSourcePtr src)
 {
+    src->nodestorage = virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt);
+    src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
+
     if (virStorageSourcePrivateDataParseRelPath(ctxt, src) < 0)
         return -1;
 
@@ -1948,6 +1951,15 @@ static int
 qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
                                    virBufferPtr buf)
 {
+    if (src->nodestorage || src->nodeformat) {
+        virBufferAddLit(buf, "<nodenames>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferEscapeString(buf, "<nodename type='storage' name='%s'/>\n", src->nodestorage);
+        virBufferEscapeString(buf, "<nodename type='format' name='%s'/>\n", src->nodeformat);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</nodenames>\n");
+    }
+
     if (virStorageSourcePrivateDataFormatRelPath(src, buf) < 0)
         return -1;
 
