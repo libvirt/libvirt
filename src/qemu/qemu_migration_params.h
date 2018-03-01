@@ -94,9 +94,7 @@ qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
                               qemuMigrationParamsPtr migParams);
 
 int
-qemuMigrationParamsSetCompression(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  int asyncJob,
+qemuMigrationParamsSetCompression(virDomainObjPtr vm,
                                   qemuMigrationCompressionPtr compression,
                                   qemuMigrationParamsPtr migParams);
 

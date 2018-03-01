@@ -141,6 +141,7 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
                          qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool xbzrleCacheSize_old = false;
     int ret = -1;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -150,6 +151,20 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
                                             migParams->caps) < 0)
         goto cleanup;
 
+    /* If QEMU is too old to support xbzrle-cache-size migration parameter,
+     * we need to set it via migrate-set-cache-size and tell
+     * qemuMonitorSetMigrationParams to ignore this parameter.
+     */
+    if (migParams->params.xbzrleCacheSize_set &&
+        (!priv->job.migParams ||
+         !priv->job.migParams->params.xbzrleCacheSize_set)) {
+        if (qemuMonitorSetMigrationCacheSize(priv->mon,
+                                             migParams->params.xbzrleCacheSize) < 0)
+            goto cleanup;
+        xbzrleCacheSize_old = true;
+        migParams->params.xbzrleCacheSize_set = false;
+    }
+
     if (qemuMonitorSetMigrationParams(priv->mon, &migParams->params) < 0)
         goto cleanup;
 
@@ -158,6 +173,9 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
  cleanup:
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
+
+    if (xbzrleCacheSize_old)
+        migParams->params.xbzrleCacheSize_set = true;
 
     return ret;
 }
@@ -321,15 +339,10 @@ qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
 
 
 int
-qemuMigrationParamsSetCompression(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  int asyncJob,
+qemuMigrationParamsSetCompression(virDomainObjPtr vm,
                                   qemuMigrationCompressionPtr compression,
                                   qemuMigrationParamsPtr migParams)
 {
-    int ret = -1;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-
     if (qemuMigrationParamsSetCapability(vm,
                                          QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
                                          compression->methods &
@@ -344,9 +357,6 @@ qemuMigrationParamsSetCompression(virQEMUDriverPtr driver,
                                          migParams) < 0)
         return -1;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        return -1;
-
     migParams->params.compressLevel_set = compression->level_set;
     migParams->params.compressLevel = compression->level;
 
@@ -356,18 +366,10 @@ qemuMigrationParamsSetCompression(virQEMUDriverPtr driver,
     migParams->params.decompressThreads_set = compression->dthreads_set;
     migParams->params.decompressThreads = compression->dthreads;
 
-    if (compression->xbzrle_cache_set &&
-        qemuMonitorSetMigrationCacheSize(priv->mon,
-                                         compression->xbzrle_cache) < 0)
-        goto cleanup;
+    migParams->params.xbzrleCacheSize_set = compression->xbzrle_cache_set;
+    migParams->params.xbzrleCacheSize = compression->xbzrle_cache;
 
-    ret = 0;
-
- cleanup:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-
-    return ret;
+    return 0;
 }
 
 
