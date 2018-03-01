@@ -148,6 +148,9 @@ int qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
 int qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
                                           qemuMonitorMigrationCaps capability,
                                           bool state);
+int qemuMonitorJSONSetMigrationCapabilities(qemuMonitorPtr mon,
+                                            virBitmapPtr caps,
+                                            virBitmapPtr states);
 
 int qemuMonitorJSONGetGICCapabilities(qemuMonitorPtr mon,
                                       virGICCapability **capabilities);

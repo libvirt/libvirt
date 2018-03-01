@@ -763,6 +763,9 @@ int qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
 int qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
                                       qemuMonitorMigrationCaps capability,
                                       bool state);
+int qemuMonitorSetMigrationCapabilities(qemuMonitorPtr mon,
+                                        virBitmapPtr caps,
+                                        virBitmapPtr states);
 
 int qemuMonitorGetGICCapabilities(qemuMonitorPtr mon,
                                   virGICCapability **capabilities);

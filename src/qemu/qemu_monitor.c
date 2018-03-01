@@ -3960,6 +3960,25 @@ qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorSetMigrationCapabilities(qemuMonitorPtr mon,
+                                    virBitmapPtr caps,
+                                    virBitmapPtr states)
+{
+    char *capsStr = virBitmapFormat(caps);
+    char *statesStr = virBitmapFormat(states);
+
+    VIR_DEBUG("caps=%s, states=%s", NULLSTR(capsStr), NULLSTR(statesStr));
+
+    VIR_FREE(capsStr);
+    VIR_FREE(statesStr);
+
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONSetMigrationCapabilities(mon, caps, states);
+}
+
+
 /**
  * qemuMonitorGetGICCapabilities:
  * @mon: QEMU monitor
