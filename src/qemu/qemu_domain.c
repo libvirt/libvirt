@@ -1951,6 +1951,28 @@ qemuDomainObjPrivateFree(void *data)
 }
 
 
+static int
+qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
+                                  virStorageSourcePtr src)
+{
+    if (virStorageSourcePrivateDataParseRelPath(ctxt, src) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
+                                   virBufferPtr buf)
+{
+    if (virStorageSourcePrivateDataFormatRelPath(src, buf) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static void
 qemuDomainObjPrivateXMLFormatVcpus(virBufferPtr buf,
                                    virDomainDefPtr def)
@@ -2538,8 +2560,8 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .chrSourceNew = qemuDomainChrSourcePrivateNew,
     .parse = qemuDomainObjPrivateXMLParse,
     .format = qemuDomainObjPrivateXMLFormat,
-    .storageParse = virStorageSourcePrivateDataParseRelPath,
-    .storageFormat = virStorageSourcePrivateDataFormatRelPath,
+    .storageParse = qemuStorageSourcePrivateDataParse,
+    .storageFormat = qemuStorageSourcePrivateDataFormat,
 };
 
 
