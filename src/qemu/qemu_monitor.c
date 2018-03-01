@@ -3947,20 +3947,6 @@ qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorSetMigrationCapability(qemuMonitorPtr mon,
-                                  qemuMonitorMigrationCaps capability,
-                                  bool state)
-{
-    VIR_DEBUG("capability=%s, state=%d",
-              qemuMonitorMigrationCapsTypeToString(capability), state);
-
-    QEMU_CHECK_MONITOR_JSON(mon);
-
-    return qemuMonitorJSONSetMigrationCapability(mon, capability, state);
-}
-
-
-int
 qemuMonitorSetMigrationCapabilities(qemuMonitorPtr mon,
                                     virBitmapPtr caps,
                                     virBitmapPtr states)

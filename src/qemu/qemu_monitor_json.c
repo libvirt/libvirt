@@ -6199,59 +6199,6 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationCaps capability,
-                                      bool state)
-{
-    int ret = -1;
-
-    virJSONValuePtr cmd = NULL;
-    virJSONValuePtr reply = NULL;
-    virJSONValuePtr cap = NULL;
-    virJSONValuePtr caps;
-
-    if (!(caps = virJSONValueNewArray()))
-        goto cleanup;
-
-    if (!(cap = virJSONValueNewObject()))
-        goto cleanup;
-
-    if (virJSONValueObjectAppendString(
-                cap, "capability",
-                qemuMonitorMigrationCapsTypeToString(capability)) < 0)
-        goto cleanup;
-
-    if (virJSONValueObjectAppendBoolean(cap, "state", state) < 0)
-        goto cleanup;
-
-    if (virJSONValueArrayAppend(caps, cap) < 0)
-        goto cleanup;
-
-    cap = NULL;
-
-    cmd = qemuMonitorJSONMakeCommand("migrate-set-capabilities",
-                                     "a:capabilities", &caps,
-                                     NULL);
-    if (!cmd)
-        goto cleanup;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virJSONValueFree(caps);
-    virJSONValueFree(cap);
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
-}
-
-
-int
 qemuMonitorJSONSetMigrationCapabilities(qemuMonitorPtr mon,
                                         virBitmapPtr caps,
                                         virBitmapPtr states)
