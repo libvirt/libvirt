@@ -192,6 +192,9 @@ mymain(void)
     /*
      * Run "tests/qemucapsprobe /path/to/qemu/binary >foo.replies"
      * to generate updated or new *.replies data files.
+     *
+     * If you manually edit replies files you can run
+     * "tests/qemucapsfixreplies foo.replies" to fix the replies ids.
      */
 
     qemuTestDriverFree(&driver);
