@@ -487,6 +487,7 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
                        int asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virBitmapPtr migEvent = NULL;
     char **caps = NULL;
     char **capStr;
     int ret = -1;
@@ -521,12 +522,16 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT)) {
+        migEvent = virBitmapNew(QEMU_MONITOR_MIGRATION_CAPS_LAST);
+        if (!migEvent)
+            goto cleanup;
+
+        ignore_value(virBitmapSetBit(migEvent, QEMU_MONITOR_MIGRATION_CAPS_EVENTS));
+
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             goto cleanup;
 
-        rc = qemuMonitorSetMigrationCapability(priv->mon,
-                                               QEMU_MONITOR_MIGRATION_CAPS_EVENTS,
-                                               true);
+        rc = qemuMonitorSetMigrationCapabilities(priv->mon, migEvent, migEvent);
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;

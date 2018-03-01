@@ -2229,13 +2229,14 @@ testQemuMonitorJSONqemuMonitorJSONGetTargetArch(const void *data)
 }
 
 static int
-testQemuMonitorJSONqemuMonitorJSONGetMigrationCapability(const void *data)
+testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     const char *cap;
     char **caps = NULL;
+    virBitmapPtr bitmap = NULL;
     const char *reply =
         "{"
         "    \"return\": ["
@@ -2266,15 +2267,20 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapability(const void *data)
         goto cleanup;
     }
 
-    if (qemuMonitorJSONSetMigrationCapability(qemuMonitorTestGetMonitor(test),
-                                              QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
-                                              true) < 0)
+    bitmap = virBitmapNew(QEMU_MONITOR_MIGRATION_CAPS_LAST);
+    if (!bitmap)
+        goto cleanup;
+
+    ignore_value(virBitmapSetBit(bitmap, QEMU_MONITOR_MIGRATION_CAPS_XBZRLE));
+    if (qemuMonitorJSONSetMigrationCapabilities(qemuMonitorTestGetMonitor(test),
+                                                bitmap, bitmap) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
     qemuMonitorTestFree(test);
     virStringListFree(caps);
+    virBitmapFree(bitmap);
     return ret;
 }
 
@@ -2999,7 +3005,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetChardevInfo);
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
     DO_TEST(qemuMonitorJSONGetTargetArch);
-    DO_TEST(qemuMonitorJSONGetMigrationCapability);
+    DO_TEST(qemuMonitorJSONGetMigrationCapabilities);
     DO_TEST(qemuMonitorJSONQueryCPUs);
     DO_TEST(qemuMonitorJSONGetVirtType);
     DO_TEST(qemuMonitorJSONSendKey);
