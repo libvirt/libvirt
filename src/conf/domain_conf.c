@@ -27417,8 +27417,11 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
 {
     virDomainCompatibleDeviceData data = {
         .newInfo = virDomainDeviceGetInfo(dev),
-        .oldInfo = virDomainDeviceGetInfo(oldDev),
+        .oldInfo = NULL,
     };
+
+    if (oldDev)
+        data.oldInfo = virDomainDeviceGetInfo(oldDev);
 
     if (!virDomainDefHasUSB(def) &&
         def->os.type != VIR_DOMAIN_OSTYPE_EXE &&
