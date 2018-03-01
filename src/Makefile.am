@@ -668,8 +668,7 @@ struct_prefix = ($(libs_prefix)|$(other_prefix))
 # which causes the comparison against expected output to fail, so skip
 # if using clang as CC.
 PDWTAGS = \
-	$(AM_V_GEN)$CC -v 2>&1 | grep -q clang; \
-	if test $$? == 1; then \
+	$(AM_V_GEN)if $(CC) -v 2>&1 | grep -q clang; then \
 	   echo 'WARNING: skipping pdwtags test with Clang' >&2; \
 	   exit 0; \
 	fi; \
