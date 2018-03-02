@@ -1241,8 +1241,7 @@ virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void)
 int
 testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
                            const char *infile, const char *outfile, bool live,
-                           testCompareDomXML2XMLPreFormatCallback cb,
-                           const void *opaque, unsigned int parseFlags,
+                           unsigned int parseFlags,
                            testCompareDomXML2XMLResult expectResult)
 {
     char *actual = NULL;
@@ -1270,11 +1269,6 @@ testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
     if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", infile);
         result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_STABILITY;
-        goto out;
-    }
-
-    if (cb && cb(def, opaque) < 0) {
-        result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_CB;
         goto out;
     }
 

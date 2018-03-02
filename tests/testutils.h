@@ -153,20 +153,15 @@ typedef enum {
     TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS,
     TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE,
     TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_STABILITY,
-    TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_CB,
     TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_FORMAT,
     TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_COMPARE,
 } testCompareDomXML2XMLResult;
 
-typedef int (*testCompareDomXML2XMLPreFormatCallback)(virDomainDefPtr def,
-                                                      const void *opaque);
 int testCompareDomXML2XMLFiles(virCapsPtr caps,
                                virDomainXMLOptionPtr xmlopt,
                                const char *inxml,
                                const char *outfile,
                                bool live,
-                               testCompareDomXML2XMLPreFormatCallback cb,
-                               const void *opaque,
                                unsigned int parseFlags,
                                testCompareDomXML2XMLResult expectResult);
 

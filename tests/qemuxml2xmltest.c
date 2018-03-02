@@ -47,8 +47,7 @@ testXML2XMLActive(const void *opaque)
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                       info->inName, info->outActiveName, true,
-                                      NULL,
-                                      opaque, 0,
+                                      0,
                                       TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
 }
 
@@ -60,7 +59,7 @@ testXML2XMLInactive(const void *opaque)
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, info->inName,
                                       info->outInactiveName, false,
-                                      NULL, opaque, 0,
+                                      0,
                                       TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
 }
 

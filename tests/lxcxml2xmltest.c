@@ -46,7 +46,7 @@ testCompareXMLToXMLHelper(const void *data)
     ret = testCompareDomXML2XMLFiles(caps, xmlopt, xml_in,
                                      info->different ? xml_out : xml_in,
                                      !info->inactive_only,
-                                     NULL, NULL, info->parse_flags,
+                                     info->parse_flags,
                                      TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
  cleanup:
     VIR_FREE(xml_in);
