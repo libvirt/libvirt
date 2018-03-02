@@ -184,7 +184,7 @@ testProcessStatusXML(virDomainObjPtr vm)
 
 
 static int
-testCompareStatusXMLToXMLFiles(const void *opaque)
+testCompareStatusXMLToXMLOldFiles(const void *opaque)
 {
     const struct testInfo *data = opaque;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -277,6 +277,44 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
 }
 
 
+static int
+testCompareStatusXMLToXMLFiles(const void *opaque)
+{
+    const struct testInfo *data = opaque;
+    virDomainObjPtr obj = NULL;
+    char *actual = NULL;
+    int ret = -1;
+
+    if (!(obj = virDomainObjParseFile(data->inName, driver.caps, driver.xmlopt,
+                                      VIR_DOMAIN_DEF_PARSE_STATUS |
+                                      VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
+                                      VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |
+                                      VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS |
+                                      VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
+                                      VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL)))
+        goto cleanup;
+
+    if (!(actual = virDomainObjFormat(driver.xmlopt, obj, NULL,
+                                      VIR_DOMAIN_DEF_FORMAT_SECURE |
+                                      VIR_DOMAIN_DEF_FORMAT_STATUS |
+                                      VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET |
+                                      VIR_DOMAIN_DEF_FORMAT_PCI_ORIG_STATES |
+                                      VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST)))
+
+        goto cleanup;
+
+    if (virTestCompareToFile(actual, data->outActiveName) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(obj);
+    VIR_FREE(actual);
+    return ret;
+}
+
+
 static void
 testInfoClear(struct testInfo *info)
 {
@@ -292,10 +330,8 @@ testInfoClear(struct testInfo *info)
 
 
 static int
-testInfoSet(struct testInfo *info,
-            const char *name,
-            int when,
-            int gic)
+testInfoSetCommon(struct testInfo *info,
+                  int gic)
 {
     if (!(info->qemuCaps = virQEMUCapsNew()))
         goto error;
@@ -305,6 +341,23 @@ testInfoSet(struct testInfo *info,
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
         goto error;
+
+    return 0;
+
+ error:
+    testInfoClear(info);
+    return -1;
+}
+
+
+static int
+testInfoSet(struct testInfo *info,
+            const char *name,
+            int when,
+            int gic)
+{
+    if (testInfoSetCommon(info, gic) < 0)
+        return -1;
 
     if (virAsprintf(&info->inName, "%s/qemuxml2argvdata/%s.xml",
                     abs_srcdir, name) < 0)
@@ -348,6 +401,29 @@ testInfoSet(struct testInfo *info,
     testInfoClear(info);
     return -1;
 }
+
+
+static const char *statusPath = abs_srcdir "/qemustatusxml2xmldata/";
+
+static int
+testInfoSetStatus(struct testInfo *info,
+                  const char *name,
+                  int gic)
+{
+    if (testInfoSetCommon(info, gic) < 0)
+        return -1;
+
+    if (virAsprintf(&info->inName, "%s%s-in.xml", statusPath, name) < 0 ||
+        virAsprintf(&info->outActiveName, "%s%s-out.xml", statusPath, name) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    testInfoClear(info);
+    return -1;
+}
+
 
 # define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
 
@@ -397,8 +473,8 @@ mymain(void)
                             testXML2XMLActive, &info) < 0) \
                 ret = -1; \
  \
-            if (virTestRun("QEMU XML-2-XML-status " name, \
-                            testCompareStatusXMLToXMLFiles, &info) < 0) \
+            if (virTestRun("QEMU XML-2-XML-status (old)" name, \
+                            testCompareStatusXMLToXMLOldFiles, &info) < 0) \
                 ret = -1; \
         } \
         testInfoClear(&info); \
@@ -1363,6 +1439,24 @@ mymain(void)
     driver.config->allowDiskFormatProbing = true;
     DO_TEST("disk-many-format-probing", NONE);
     driver.config->allowDiskFormatProbing = false;
+
+# define DO_TEST_STATUS(name) \
+    do { \
+        if (testInfoSetStatus(&info, name, GIC_NONE) < 0) { \
+            VIR_TEST_DEBUG("Failed to generate status test data for '%s'", name); \
+            return -1; \
+        } \
+\
+        if (virTestRun("QEMU status XML-2-XML " name, \
+                       testCompareStatusXMLToXMLFiles, &info) < 0) \
+            ret = -1; \
+\
+        testInfoClear(&info); \
+    } while (0)
+
+
+    DO_TEST_STATUS("blockjob-mirror");
+    DO_TEST_STATUS("vcpus-multi");
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);

@@ -1,0 +1,343 @@
+<domstatus state='running' reason='booted' pid='3803518'>
+  <taint flag='high-privileges'/>
+  <monitor path='/var/lib/libvirt/qemu/test.monitor' json='1' type='unix'/>
+  <vcpus>
+    <vcpu id='0' pid='3803519'/>
+    <vcpu id='1' pid='3803520'/>
+    <vcpu id='2' pid='3803521'/>
+    <vcpu id='3' pid='3803522'/>
+    <vcpu id='4' pid='3803523'/>
+    <vcpu id='5' pid='3803524'/>
+    <vcpu id='6' pid='3803525'/>
+    <vcpu id='7' pid='3803526'/>
+    <vcpu id='8' pid='3803527'/>
+    <vcpu id='9' pid='3803528'/>
+    <vcpu id='10' pid='3803529'/>
+    <vcpu id='11' pid='3803530'/>
+    <vcpu id='12' pid='3803531'/>
+    <vcpu id='13' pid='3803532'/>
+    <vcpu id='14' pid='3803533'/>
+    <vcpu id='15' pid='3803534'/>
+    <vcpu id='16' pid='3803535'/>
+    <vcpu id='17' pid='3803536'/>
+    <vcpu id='18' pid='3803537'/>
+    <vcpu id='19' pid='3803538'/>
+    <vcpu id='20' pid='3803539'/>
+    <vcpu id='21' pid='3803540'/>
+    <vcpu id='22' pid='3803541'/>
+    <vcpu id='23' pid='3803542'/>
+    <vcpu id='24' pid='3803543'/>
+    <vcpu id='25' pid='3803544'/>
+    <vcpu id='26' pid='3803545'/>
+    <vcpu id='27' pid='3803546'/>
+    <vcpu id='28' pid='3803547'/>
+    <vcpu id='29' pid='3803548'/>
+    <vcpu id='30' pid='3803549'/>
+    <vcpu id='31' pid='3803550'/>
+    <vcpu id='32' pid='3803551'/>
+    <vcpu id='33' pid='3803552'/>
+    <vcpu id='34' pid='3803553'/>
+    <vcpu id='35' pid='3803554'/>
+    <vcpu id='36' pid='3803555'/>
+    <vcpu id='37' pid='3803556'/>
+    <vcpu id='38' pid='3803557'/>
+    <vcpu id='39' pid='3803558'/>
+    <vcpu id='40' pid='3803559'/>
+    <vcpu id='41' pid='3803560'/>
+    <vcpu id='42' pid='3803561'/>
+    <vcpu id='43' pid='3803562'/>
+    <vcpu id='44' pid='3803563'/>
+    <vcpu id='45' pid='3803564'/>
+    <vcpu id='46' pid='3803565'/>
+    <vcpu id='47' pid='3803566'/>
+    <vcpu id='48' pid='3803567'/>
+    <vcpu id='49' pid='3803568'/>
+    <vcpu id='50' pid='3803569'/>
+    <vcpu id='51' pid='3803570'/>
+    <vcpu id='52' pid='3803571'/>
+    <vcpu id='53' pid='3803572'/>
+    <vcpu id='54' pid='3803573'/>
+    <vcpu id='55' pid='3803574'/>
+    <vcpu id='56' pid='3803575'/>
+    <vcpu id='57' pid='3803576'/>
+    <vcpu id='58' pid='3803577'/>
+    <vcpu id='59' pid='3803578'/>
+    <vcpu id='60' pid='3803579'/>
+    <vcpu id='61' pid='3803580'/>
+    <vcpu id='62' pid='3803581'/>
+    <vcpu id='63' pid='3803582'/>
+    <vcpu id='64' pid='3803583'/>
+    <vcpu id='65' pid='3803584'/>
+    <vcpu id='66' pid='3803585'/>
+    <vcpu id='67' pid='3803586'/>
+    <vcpu id='68' pid='3803587'/>
+    <vcpu id='69' pid='3803588'/>
+    <vcpu id='70' pid='3803589'/>
+    <vcpu id='71' pid='3803590'/>
+    <vcpu id='72' pid='3803591'/>
+    <vcpu id='73' pid='3803592'/>
+    <vcpu id='74' pid='3803593'/>
+    <vcpu id='75' pid='3803594'/>
+    <vcpu id='76' pid='3803595'/>
+    <vcpu id='77' pid='3803596'/>
+    <vcpu id='78' pid='3803597'/>
+    <vcpu id='79' pid='3803598'/>
+    <vcpu id='80' pid='3803599'/>
+    <vcpu id='81' pid='3803600'/>
+    <vcpu id='82' pid='3803601'/>
+    <vcpu id='83' pid='3803602'/>
+    <vcpu id='84' pid='3803603'/>
+    <vcpu id='85' pid='3803604'/>
+    <vcpu id='86' pid='3803605'/>
+    <vcpu id='87' pid='3803606'/>
+    <vcpu id='88' pid='3803607'/>
+    <vcpu id='89' pid='3803608'/>
+    <vcpu id='90' pid='3803609'/>
+    <vcpu id='91' pid='3803610'/>
+    <vcpu id='92' pid='3803611'/>
+    <vcpu id='93' pid='3803612'/>
+    <vcpu id='94' pid='3803613'/>
+    <vcpu id='95' pid='3803614'/>
+    <vcpu id='96' pid='3803615'/>
+    <vcpu id='97' pid='3803616'/>
+    <vcpu id='98' pid='3803617'/>
+    <vcpu id='99' pid='3803618'/>
+    <vcpu id='100' pid='3803619'/>
+    <vcpu id='101' pid='3803620'/>
+    <vcpu id='102' pid='3803621'/>
+    <vcpu id='103' pid='3803622'/>
+    <vcpu id='104' pid='3803623'/>
+    <vcpu id='105' pid='3803624'/>
+    <vcpu id='106' pid='3803625'/>
+    <vcpu id='107' pid='3803626'/>
+    <vcpu id='108' pid='3803627'/>
+    <vcpu id='109' pid='3803628'/>
+    <vcpu id='110' pid='3803629'/>
+    <vcpu id='111' pid='3803630'/>
+    <vcpu id='112' pid='3803631'/>
+    <vcpu id='113' pid='3803632'/>
+    <vcpu id='114' pid='3803633'/>
+    <vcpu id='115' pid='3803634'/>
+    <vcpu id='116' pid='3803635'/>
+    <vcpu id='117' pid='3803636'/>
+    <vcpu id='118' pid='3803637'/>
+    <vcpu id='119' pid='3803638'/>
+    <vcpu id='120' pid='3803639'/>
+    <vcpu id='121' pid='3803640'/>
+    <vcpu id='122' pid='3803641'/>
+    <vcpu id='123' pid='3803642'/>
+    <vcpu id='124' pid='3803643'/>
+    <vcpu id='125' pid='3803644'/>
+    <vcpu id='126' pid='3803645'/>
+    <vcpu id='127' pid='3803646'/>
+    <vcpu id='128' pid='3803647'/>
+    <vcpu id='129' pid='3803648'/>
+    <vcpu id='130' pid='3803649'/>
+    <vcpu id='131' pid='3803650'/>
+    <vcpu id='132' pid='3803651'/>
+    <vcpu id='133' pid='3803652'/>
+    <vcpu id='134' pid='3803653'/>
+    <vcpu id='135' pid='3803654'/>
+    <vcpu id='136' pid='3803655'/>
+    <vcpu id='137' pid='3803656'/>
+    <vcpu id='138' pid='3803657'/>
+    <vcpu id='139' pid='3803658'/>
+    <vcpu id='140' pid='3803659'/>
+    <vcpu id='141' pid='3803660'/>
+    <vcpu id='142' pid='3803661'/>
+    <vcpu id='143' pid='3803662'/>
+    <vcpu id='144' pid='3803663'/>
+    <vcpu id='145' pid='3803664'/>
+    <vcpu id='146' pid='3803665'/>
+    <vcpu id='147' pid='3803666'/>
+    <vcpu id='148' pid='3803667'/>
+    <vcpu id='149' pid='3803668'/>
+    <vcpu id='150' pid='3803669'/>
+    <vcpu id='151' pid='3803670'/>
+    <vcpu id='152' pid='3803671'/>
+    <vcpu id='153' pid='3803672'/>
+    <vcpu id='154' pid='3803673'/>
+    <vcpu id='155' pid='3803674'/>
+    <vcpu id='156' pid='3803675'/>
+    <vcpu id='157' pid='3803676'/>
+    <vcpu id='158' pid='3803677'/>
+    <vcpu id='159' pid='3803678'/>
+    <vcpu id='160' pid='3803679'/>
+    <vcpu id='161' pid='3803680'/>
+    <vcpu id='162' pid='3803681'/>
+    <vcpu id='163' pid='3803682'/>
+    <vcpu id='164' pid='3803683'/>
+    <vcpu id='165' pid='3803684'/>
+    <vcpu id='166' pid='3803685'/>
+    <vcpu id='167' pid='3803686'/>
+    <vcpu id='168' pid='3803687'/>
+    <vcpu id='169' pid='3803688'/>
+    <vcpu id='170' pid='3803689'/>
+    <vcpu id='171' pid='3803690'/>
+    <vcpu id='172' pid='3803691'/>
+    <vcpu id='173' pid='3803692'/>
+    <vcpu id='174' pid='3803693'/>
+    <vcpu id='175' pid='3803694'/>
+    <vcpu id='176' pid='3803695'/>
+    <vcpu id='177' pid='3803696'/>
+    <vcpu id='178' pid='3803697'/>
+    <vcpu id='179' pid='3803698'/>
+    <vcpu id='180' pid='3803699'/>
+    <vcpu id='181' pid='3803700'/>
+    <vcpu id='182' pid='3803701'/>
+    <vcpu id='183' pid='3803702'/>
+    <vcpu id='184' pid='3803703'/>
+    <vcpu id='185' pid='3803704'/>
+    <vcpu id='186' pid='3803705'/>
+    <vcpu id='187' pid='3803706'/>
+    <vcpu id='188' pid='3803707'/>
+    <vcpu id='189' pid='3803708'/>
+    <vcpu id='190' pid='3803709'/>
+    <vcpu id='191' pid='3803710'/>
+    <vcpu id='192' pid='3803711'/>
+    <vcpu id='193' pid='3803712'/>
+    <vcpu id='194' pid='3803713'/>
+    <vcpu id='195' pid='3803714'/>
+    <vcpu id='196' pid='3803715'/>
+    <vcpu id='197' pid='3803716'/>
+    <vcpu id='198' pid='3803717'/>
+    <vcpu id='199' pid='3803718'/>
+    <vcpu id='200' pid='3803719'/>
+    <vcpu id='201' pid='3803720'/>
+    <vcpu id='202' pid='3803721'/>
+    <vcpu id='203' pid='3803722'/>
+    <vcpu id='204' pid='3803723'/>
+    <vcpu id='205' pid='3803724'/>
+    <vcpu id='206' pid='3803725'/>
+    <vcpu id='207' pid='3803726'/>
+    <vcpu id='208' pid='3803727'/>
+    <vcpu id='209' pid='3803728'/>
+    <vcpu id='210' pid='3803729'/>
+    <vcpu id='211' pid='3803730'/>
+    <vcpu id='212' pid='3803731'/>
+    <vcpu id='213' pid='3803732'/>
+    <vcpu id='214' pid='3803733'/>
+    <vcpu id='215' pid='3803734'/>
+    <vcpu id='216' pid='3803735'/>
+    <vcpu id='217' pid='3803736'/>
+    <vcpu id='218' pid='3803737'/>
+    <vcpu id='219' pid='3803738'/>
+    <vcpu id='220' pid='3803739'/>
+    <vcpu id='221' pid='3803740'/>
+    <vcpu id='222' pid='3803741'/>
+    <vcpu id='223' pid='3803742'/>
+    <vcpu id='224' pid='3803743'/>
+    <vcpu id='225' pid='3803744'/>
+    <vcpu id='226' pid='3803745'/>
+    <vcpu id='227' pid='3803746'/>
+    <vcpu id='228' pid='3803747'/>
+    <vcpu id='229' pid='3803748'/>
+    <vcpu id='230' pid='3803749'/>
+    <vcpu id='231' pid='3803750'/>
+    <vcpu id='232' pid='3803751'/>
+    <vcpu id='233' pid='3803752'/>
+    <vcpu id='234' pid='3803753'/>
+    <vcpu id='235' pid='3803754'/>
+    <vcpu id='236' pid='3803755'/>
+    <vcpu id='237' pid='3803756'/>
+    <vcpu id='238' pid='3803757'/>
+    <vcpu id='239' pid='3803758'/>
+    <vcpu id='240' pid='3803759'/>
+    <vcpu id='241' pid='3803760'/>
+    <vcpu id='242' pid='3803761'/>
+    <vcpu id='243' pid='3803762'/>
+    <vcpu id='244' pid='3803763'/>
+    <vcpu id='245' pid='3803764'/>
+    <vcpu id='246' pid='3803765'/>
+    <vcpu id='247' pid='3803766'/>
+    <vcpu id='248' pid='3803767'/>
+    <vcpu id='249' pid='3803768'/>
+    <vcpu id='250' pid='3803769'/>
+    <vcpu id='251' pid='3803770'/>
+    <vcpu id='252' pid='3803771'/>
+    <vcpu id='253' pid='3803772'/>
+    <vcpu id='254' pid='3803773'/>
+    <vcpu id='255' pid='3803774'/>
+    <vcpu id='256' pid='3803775'/>
+    <vcpu id='257' pid='3803776'/>
+    <vcpu id='258' pid='3803777'/>
+    <vcpu id='259' pid='3803778'/>
+    <vcpu id='260' pid='3803779'/>
+    <vcpu id='261' pid='3803780'/>
+    <vcpu id='262' pid='3803781'/>
+    <vcpu id='263' pid='3803782'/>
+    <vcpu id='264' pid='3803783'/>
+    <vcpu id='265' pid='3803784'/>
+    <vcpu id='266' pid='3803785'/>
+    <vcpu id='267' pid='3803786'/>
+    <vcpu id='268' pid='3803787'/>
+    <vcpu id='269' pid='3803788'/>
+    <vcpu id='270' pid='3803789'/>
+    <vcpu id='271' pid='3803790'/>
+    <vcpu id='272' pid='3803791'/>
+    <vcpu id='273' pid='3803792'/>
+    <vcpu id='274' pid='3803793'/>
+    <vcpu id='275' pid='3803794'/>
+    <vcpu id='276' pid='3803795'/>
+    <vcpu id='277' pid='3803796'/>
+    <vcpu id='278' pid='3803797'/>
+    <vcpu id='279' pid='3803798'/>
+    <vcpu id='280' pid='3803799'/>
+    <vcpu id='281' pid='3803800'/>
+    <vcpu id='282' pid='3803801'/>
+    <vcpu id='283' pid='3803802'/>
+    <vcpu id='284' pid='3803803'/>
+    <vcpu id='285' pid='3803804'/>
+    <vcpu id='286' pid='3803805'/>
+    <vcpu id='287' pid='3803806'/>
+  </vcpus>
+  <qemuCaps>
+    <flag name='vnet-hdr'/>
+    <flag name='qxl.vgamem_mb'/>
+    <flag name='qxl-vga.vgamem_mb'/>
+    <flag name='pc-dimm'/>
+  </qemuCaps>
+  <devices>
+    <device alias='balloon0'/>
+    <device alias='video0'/>
+    <device alias='serial0'/>
+    <device alias='net0'/>
+    <device alias='usb'/>
+  </devices>
+  <numad nodeset='0-2' cpuset='1,3'/>
+  <libDir path='/tmp'/>
+  <channelTargetDir path='/tmp/channel'/>
+  <allowReboot value='yes'/>
+  <blockjobs active='no'/>
+  <domain type='kvm'>
+    <name>QEMUGuest1</name>
+    <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+    <memory unit='KiB'>219100</memory>
+    <currentMemory unit='KiB'>219100</currentMemory>
+    <vcpu placement='static'>288</vcpu>
+    <os>
+      <type arch='x86_64' machine='q35'>hvm</type>
+      <boot dev='hd'/>
+    </os>
+    <features>
+      <ioapic driver='qemu'/>
+    </features>
+    <clock offset='utc'/>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>destroy</on_crash>
+    <devices>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <controller type='pci' index='0' model='pcie-root'/>
+      <controller type='sata' index='0'>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
+      </controller>
+      <input type='mouse' bus='ps2'/>
+      <input type='keyboard' bus='ps2'/>
+      <memballoon model='none'/>
+      <iommu model='intel'>
+        <driver intremap='on' eim='on'/>
+      </iommu>
+    </devices>
+  </domain>
+</domstatus>
