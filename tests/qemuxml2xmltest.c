@@ -1241,6 +1241,7 @@ mymain(void)
     DO_TEST_STATUS("blockjob-mirror");
     DO_TEST_STATUS("vcpus-multi");
     DO_TEST_STATUS("modern");
+    DO_TEST_STATUS("migration-out-nbd");
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
