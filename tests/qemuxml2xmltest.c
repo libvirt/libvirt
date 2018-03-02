@@ -39,29 +39,6 @@ struct testInfo {
     virQEMUCapsPtr qemuCaps;
 };
 
-static int
-qemuXML2XMLActivePreFormatCallback(virDomainDefPtr def,
-                                   const void *opaque)
-{
-    struct testInfo *info = (struct testInfo *) opaque;
-    size_t i;
-
-    /* store vCPU bitmap so that the status XML can be created faithfully */
-    if (!info->activeVcpus)
-        info->activeVcpus = virDomainDefGetOnlineVcpumap(def);
-
-    info->blockjobs = false;
-
-    /* remember whether we have mirror jobs */
-    for (i = 0; i < def->ndisks; i++) {
-        if (def->disks[i]->mirror) {
-            info->blockjobs = true;
-            break;
-        }
-    }
-
-    return 0;
-}
 
 static int
 testXML2XMLActive(const void *opaque)
@@ -70,7 +47,7 @@ testXML2XMLActive(const void *opaque)
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                       info->inName, info->outActiveName, true,
-                                      qemuXML2XMLActivePreFormatCallback,
+                                      NULL,
                                       opaque, 0,
                                       TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
 }
@@ -85,195 +62,6 @@ testXML2XMLInactive(const void *opaque)
                                       info->outInactiveName, false,
                                       NULL, opaque, 0,
                                       TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
-}
-
-
-static const char testStatusXMLPrefixHeader[] =
-"<domstatus state='running' reason='booted' pid='3803518'>\n"
-"  <taint flag='high-privileges'/>\n"
-"  <monitor path='/var/lib/libvirt/qemu/test.monitor' json='1' type='unix'/>\n";
-
-static const char testStatusXMLPrefixBodyStatic[] =
-"<qemuCaps>\n"
-"  <flag name='vnet-hdr'/>\n"
-"  <flag name='qxl.vgamem_mb'/>\n"
-"  <flag name='qxl-vga.vgamem_mb'/>\n"
-"  <flag name='pc-dimm'/>\n"
-"</qemuCaps>\n"
-"<devices>\n"
-"  <device alias='balloon0'/>\n"
-"  <device alias='video0'/>\n"
-"  <device alias='serial0'/>\n"
-"  <device alias='net0'/>\n"
-"  <device alias='usb'/>\n"
-"</devices>\n"
-"<numad nodeset='0-2' cpuset='1,3'/>\n"
-"<libDir path='/tmp'/>\n"
-"<channelTargetDir path='/tmp/channel'/>\n"
-"<allowReboot value='yes'/>\n";
-
-static const char testStatusXMLSuffix[] =
-"</domstatus>\n";
-
-
-static void
-testGetStatuXMLPrefixVcpus(virBufferPtr buf,
-                           const struct testInfo *data)
-{
-    ssize_t vcpuid = -1;
-
-    virBufferAddLit(buf, "<vcpus>\n");
-    virBufferAdjustIndent(buf, 2);
-
-    /* Make sure we can format the fake vcpu list. The test will fail regardles. */
-    if (data->activeVcpus) {
-        while ((vcpuid = virBitmapNextSetBit(data->activeVcpus, vcpuid)) >= 0)
-            virBufferAsprintf(buf, "<vcpu id='%zd' pid='%zd'/>\n",
-                              vcpuid, vcpuid + 3803519);
-    }
-
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</vcpus>\n");
-}
-
-
-static void
-testGetStatusXMLAddBlockjobs(virBufferPtr buf,
-                             const struct testInfo *data)
-{
-    virBufferAsprintf(buf, "<blockjobs active='%s'/>\n",
-                      virTristateBoolTypeToString(virTristateBoolFromBool(data->blockjobs)));
-}
-
-
-static char *
-testGetStatusXMLPrefix(const struct testInfo *data)
-{
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-
-    virBufferAdd(&buf, testStatusXMLPrefixHeader, -1);
-    virBufferAdjustIndent(&buf, 2);
-
-    testGetStatuXMLPrefixVcpus(&buf, data);
-
-    virBufferAddStr(&buf, testStatusXMLPrefixBodyStatic);
-
-    testGetStatusXMLAddBlockjobs(&buf, data);
-
-    virBufferAdjustIndent(&buf, -2);
-
-    return virBufferContentAndReset(&buf);
-}
-
-
-static int
-testProcessStatusXML(virDomainObjPtr vm)
-{
-    size_t i;
-
-    /* fix the private 'blockjob' flag for disks */
-    for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-
-        diskPriv->blockjob = !!disk->mirror;
-    }
-
-    return 0;
-}
-
-
-static int
-testCompareStatusXMLToXMLOldFiles(const void *opaque)
-{
-    const struct testInfo *data = opaque;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    xmlDocPtr xml = NULL;
-    virDomainObjPtr obj = NULL;
-    char *expect = NULL;
-    char *actual = NULL;
-    char *source = NULL;
-    char *header = NULL;
-    char *inFile = NULL, *outActiveFile = NULL;
-    int ret = -1;
-    int keepBlanksDefault = xmlKeepBlanksDefault(0);
-
-    if (virTestLoadFile(data->inName, &inFile) < 0)
-        goto cleanup;
-    if (virTestLoadFile(data->outActiveName, &outActiveFile) < 0)
-        goto cleanup;
-
-    if (!(header = testGetStatusXMLPrefix(data)))
-        goto cleanup;
-
-    /* construct faked source status XML */
-    virBufferAdd(&buf, header, -1);
-    virBufferAdjustIndent(&buf, 2);
-    virBufferAddStr(&buf, inFile);
-    virBufferAdjustIndent(&buf, -2);
-    virBufferAdd(&buf, testStatusXMLSuffix, -1);
-
-    if (!(source = virBufferContentAndReset(&buf))) {
-        VIR_TEST_DEBUG("Failed to create the source XML");
-        goto cleanup;
-    }
-
-    /* construct the expect string */
-    virBufferAdd(&buf, header, -1);
-    virBufferAdjustIndent(&buf, 2);
-    virBufferAddStr(&buf, outActiveFile);
-    virBufferAdjustIndent(&buf, -2);
-    virBufferAdd(&buf, testStatusXMLSuffix, -1);
-
-    if (!(expect = virBufferContentAndReset(&buf))) {
-        VIR_TEST_DEBUG("Failed to create the expect XML");
-        goto cleanup;
-    }
-
-    /* parse the fake source status XML */
-    if (!(xml = virXMLParseString(source, "(domain_status_test_XML)")) ||
-        !(obj = virDomainObjParseNode(xml, xmlDocGetRootElement(xml),
-                                      driver.caps, driver.xmlopt,
-                                      VIR_DOMAIN_DEF_PARSE_STATUS |
-                                      VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
-                                      VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES))) {
-        VIR_TEST_DEBUG("Failed to parse domain status XML:\n%s", source);
-        goto cleanup;
-    }
-
-    /* process the definition if necessary */
-    if (testProcessStatusXML(obj) < 0)
-        goto cleanup;
-
-    /* format it back */
-    if (!(actual = virDomainObjFormat(driver.xmlopt, obj, NULL,
-                                      VIR_DOMAIN_DEF_FORMAT_SECURE))) {
-        VIR_TEST_DEBUG("Failed to format domain status XML");
-        goto cleanup;
-    }
-
-    if (STRNEQ(actual, expect)) {
-        /* For status test we don't want to regenerate output to not
-         * add the status data.*/
-        virTestDifferenceFullNoRegenerate(stderr,
-                                          expect, data->outActiveName,
-                                          actual, data->inName);
-        goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    xmlKeepBlanksDefault(keepBlanksDefault);
-    xmlFreeDoc(xml);
-    virObjectUnref(obj);
-    VIR_FREE(expect);
-    VIR_FREE(actual);
-    VIR_FREE(source);
-    VIR_FREE(inFile);
-    VIR_FREE(header);
-    VIR_FREE(outActiveFile);
-    return ret;
 }
 
 
@@ -471,10 +259,6 @@ mymain(void)
         if (info.outActiveName) { \
             if (virTestRun("QEMU XML-2-XML-active " name, \
                             testXML2XMLActive, &info) < 0) \
-                ret = -1; \
- \
-            if (virTestRun("QEMU XML-2-XML-status (old)" name, \
-                            testCompareStatusXMLToXMLOldFiles, &info) < 0) \
                 ret = -1; \
         } \
         testInfoClear(&info); \
