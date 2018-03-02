@@ -5027,6 +5027,9 @@ virDomainDefPostParseCheckFailure(virDomainDefPtr def,
                                   unsigned int parseFlags,
                                   int ret)
 {
+    if (ret != 0)
+        def->postParseFailed = true;
+
     if (ret <= 0)
         return ret;
 
@@ -5034,7 +5037,6 @@ virDomainDefPostParseCheckFailure(virDomainDefPtr def,
         return -1;
 
     virResetLastError();
-    def->postParseFailed = true;
     return 0;
 }
 
