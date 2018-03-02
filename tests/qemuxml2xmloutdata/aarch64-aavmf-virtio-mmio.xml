@@ -27,6 +27,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
       <source file='/aarch64.raw'/>
       <target dev='vda' bus='virtio'/>
       <address type='virtio-mmio'/>

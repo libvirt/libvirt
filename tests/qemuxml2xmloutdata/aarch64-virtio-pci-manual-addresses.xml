@@ -27,6 +27,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
       <source file='/aarch64.raw'/>
       <target dev='sda' bus='scsi'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>

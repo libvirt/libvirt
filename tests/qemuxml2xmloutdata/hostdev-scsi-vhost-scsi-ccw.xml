@@ -15,6 +15,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-s390x</emulator>
     <disk type='block' device='disk'>
+      <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest2'/>
       <target dev='hda' bus='virtio'/>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0000'/>

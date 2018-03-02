@@ -15,18 +15,21 @@
   <devices>
     <emulator>/usr/bin/qemu-system-i686</emulator>
     <disk type='block' device='disk'>
+      <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
       <serial>  WD-WMAP9A966149</serial>
       <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
     <disk type='block' device='disk'>
+      <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/AllSerialChars'/>
       <target dev='hdb' bus='ide'/>
       <serial>abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_ .+</serial>
       <address type='drive' controller='0' bus='0' target='0' unit='2'/>
     </disk>
     <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
       <source file='/some/file'/>
       <target dev='sda' bus='sd'/>
       <serial>sdserial</serial>

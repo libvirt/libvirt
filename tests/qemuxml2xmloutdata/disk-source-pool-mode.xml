@@ -15,6 +15,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-i686</emulator>
     <disk type='volume' device='cdrom'>
+      <driver name='qemu'/>
       <source pool='pool-iscsi-auth' volume='unit:0:0:1' mode='host'>
         <seclabel model='selinux' relabel='yes'>
           <label>system_u:system_r:public_content_t:s0</label>
@@ -25,6 +26,7 @@
       <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
     <disk type='volume' device='cdrom'>
+      <driver name='qemu'/>
       <source pool='pool-iscsi' volume='unit:0:0:2' mode='direct'>
         <seclabel model='selinux' relabel='yes'>
           <label>system_u:system_r:public_content_t:s0</label>
@@ -35,11 +37,13 @@
       <address type='drive' controller='0' bus='0' target='0' unit='2'/>
     </disk>
     <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
       <source file='/tmp/idedisk.img'/>
       <target dev='hdc' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='3'/>
     </disk>
     <disk type='volume' device='cdrom'>
+      <driver name='qemu'/>
       <auth username='myname'>
         <secret type='iscsi' usage='mycluster_myname'/>
       </auth>

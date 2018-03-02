@@ -19,6 +19,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-i686</emulator>
     <disk type='block' device='cdrom'>
+      <driver name='qemu' type='raw'/>
       <source dev='/dev/cdrom'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>

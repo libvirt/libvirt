@@ -378,9 +378,6 @@ mymain(void)
 
     cfg = virQEMUDriverGetConfig(&driver);
 
-    /* TODO: test with format probing disabled too */
-    driver.config->allowDiskFormatProbing = true;
-
 # define DO_TEST_FULL(name, when, gic, ...) \
     do { \
         if (testInfoSet(&info, name, when, gic) < 0) { \

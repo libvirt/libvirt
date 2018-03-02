@@ -15,15 +15,18 @@
   <devices>
     <emulator>/usr/bin/qemu-system-i686</emulator>
     <disk type='block' device='disk'>
+      <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <backingStore/>
       <mirror type='block' job='copy' ready='yes'>
+        <format type='raw'/>
         <source dev='/dev/HostVG/QEMUGuest1Copy'/>
       </mirror>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='block' device='cdrom'>
+      <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest2'/>
       <backingStore/>
       <target dev='hdc' bus='ide'/>
@@ -31,6 +34,7 @@
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
     </disk>
     <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
       <source file='/tmp/data.img'/>
       <backingStore/>
       <mirror type='file' file='/tmp/copy.img' format='qcow2' job='copy'>
@@ -41,6 +45,7 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </disk>
     <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
       <source file='/tmp/logs.img'/>
       <backingStore/>
       <mirror type='file' file='/tmp/logcopy.img' format='qcow2' job='copy' ready='abort'>
