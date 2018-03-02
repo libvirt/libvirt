@@ -278,7 +278,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
 
 
 static void
-testInfoFree(struct testInfo *info)
+testInfoClear(struct testInfo *info)
 {
     VIR_FREE(info->inName);
     VIR_FREE(info->outActiveName);
@@ -345,7 +345,7 @@ testInfoSet(struct testInfo *info,
     return 0;
 
  error:
-    testInfoFree(info);
+    testInfoClear(info);
     return -1;
 }
 
@@ -404,7 +404,7 @@ mymain(void)
                             testCompareStatusXMLToXMLFiles, &info) < 0) \
                 ret = -1; \
         } \
-        testInfoFree(&info); \
+        testInfoClear(&info); \
     } while (0)
 
 # define NONE QEMU_CAPS_LAST
