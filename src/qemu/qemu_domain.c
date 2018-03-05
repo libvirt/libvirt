@@ -2067,6 +2067,23 @@ qemuDomainObjPrivateXMLFormatPR(virBufferPtr buf,
 }
 
 
+static void
+qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
+                                          virDomainObjPtr vm)
+{
+    size_t i;
+    virDomainDiskDefPtr disk;
+    qemuDomainDiskPrivatePtr diskPriv;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        disk = vm->def->disks[i];
+        diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        virBufferAsprintf(buf, "<disk dev='%s' migrating='%s'/>\n",
+                          disk->dst, diskPriv->migrating ? "yes" : "no");
+    }
+}
+
+
 static int
 qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
                                  virDomainObjPtr vm,
@@ -2098,18 +2115,8 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
     if (priv->job.asyncJob != QEMU_ASYNC_JOB_NONE)
         virBufferAsprintf(&attrBuf, " flags='0x%lx'", priv->job.apiFlags);
 
-    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
-        size_t i;
-        virDomainDiskDefPtr disk;
-        qemuDomainDiskPrivatePtr diskPriv;
-
-        for (i = 0; i < vm->def->ndisks; i++) {
-            disk = vm->def->disks[i];
-            diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-            virBufferAsprintf(&childBuf, "<disk dev='%s' migrating='%s'/>\n",
-                              disk->dst, diskPriv->migrating ? "yes" : "no");
-        }
-    }
+    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
+        qemuDomainObjPrivateXMLFormatNBDMigration(&childBuf, vm);
 
     if (priv->job.migParams)
         qemuMigrationParamsFormat(&childBuf, priv->job.migParams);
