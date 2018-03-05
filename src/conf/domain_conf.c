@@ -22798,6 +22798,74 @@ virDomainDiskSourceFormatPrivateData(virBufferPtr buf,
 }
 
 
+int
+virDomainStorageSourceFormat(virBufferPtr attrBuf,
+                             virBufferPtr childBuf,
+                             virStorageSourcePtr src,
+                             unsigned int flags,
+                             bool skipSeclabels)
+{
+    switch ((virStorageType)src->type) {
+    case VIR_STORAGE_TYPE_FILE:
+        virBufferEscapeString(attrBuf, " file='%s'", src->path);
+        break;
+
+    case VIR_STORAGE_TYPE_BLOCK:
+        virBufferEscapeString(attrBuf, " dev='%s'", src->path);
+        break;
+
+    case VIR_STORAGE_TYPE_DIR:
+        virBufferEscapeString(attrBuf, " dir='%s'", src->path);
+        break;
+
+    case VIR_STORAGE_TYPE_NETWORK:
+        if (virDomainDiskSourceFormatNetwork(attrBuf, childBuf,
+                                             src, flags) < 0)
+            return -1;
+        break;
+
+    case VIR_STORAGE_TYPE_VOLUME:
+        if (src->srcpool) {
+            virBufferEscapeString(attrBuf, " pool='%s'", src->srcpool->pool);
+            virBufferEscapeString(attrBuf, " volume='%s'",
+                                  src->srcpool->volume);
+            if (src->srcpool->mode)
+                virBufferAsprintf(attrBuf, " mode='%s'",
+                                  virStorageSourcePoolModeTypeToString(src->srcpool->mode));
+        }
+
+        break;
+
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected disk type %d"), src->type);
+        return -1;
+    }
+
+    if (!skipSeclabels && src->type != VIR_STORAGE_TYPE_NETWORK)
+        virDomainSourceDefFormatSeclabel(childBuf, src->nseclabels,
+                                         src->seclabels, flags);
+
+    /* Storage Source formatting will not carry through the blunder
+     * that disk source formatting had at one time to format the
+     * <auth> for a volume source type. The <auth> information is
+     * kept in the storage pool and would be overwritten anyway.
+     * So avoid formatting it for volumes. */
+    if (src->auth && src->authInherited &&
+        src->type != VIR_STORAGE_TYPE_VOLUME)
+        virStorageAuthDefFormat(childBuf, src->auth);
+
+    /* If we found encryption as a child of <source>, then format it
+     * as we found it. */
+    if (src->encryption && src->encryptionInherited &&
+        virStorageEncryptionFormat(childBuf, src->encryption) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 virDomainDiskSourceFormatInternal(virBufferPtr buf,
                                   virStorageSourcePtr src,
@@ -22808,84 +22876,30 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
 {
     virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
 
-    switch ((virStorageType)src->type) {
-    case VIR_STORAGE_TYPE_FILE:
-        virBufferEscapeString(&attrBuf, " file='%s'", src->path);
-        break;
+    if (virDomainStorageSourceFormat(&attrBuf, &childBuf, src, flags,
+                                     skipSeclabels) < 0)
+        goto cleanup;
 
-    case VIR_STORAGE_TYPE_BLOCK:
-        virBufferEscapeString(&attrBuf, " dev='%s'", src->path);
-        break;
-
-    case VIR_STORAGE_TYPE_DIR:
-        virBufferEscapeString(&attrBuf, " dir='%s'", src->path);
-        break;
-
-    case VIR_STORAGE_TYPE_NETWORK:
-        if (virDomainDiskSourceFormatNetwork(&attrBuf, &childBuf,
-                                             src, flags) < 0)
-            goto error;
-        break;
-
-    case VIR_STORAGE_TYPE_VOLUME:
-        if (src->srcpool) {
-            virBufferEscapeString(&attrBuf, " pool='%s'", src->srcpool->pool);
-            virBufferEscapeString(&attrBuf, " volume='%s'",
-                                  src->srcpool->volume);
-            if (src->srcpool->mode)
-                virBufferAsprintf(&attrBuf, " mode='%s'",
-                                  virStorageSourcePoolModeTypeToString(src->srcpool->mode));
-        }
-
-        break;
-
-    case VIR_STORAGE_TYPE_NONE:
-    case VIR_STORAGE_TYPE_LAST:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected disk type %d"), src->type);
-        goto error;
-    }
-
-    if (src->type != VIR_STORAGE_TYPE_NETWORK) {
-        if (policy)
-            virBufferEscapeString(&attrBuf, " startupPolicy='%s'",
-                                  virDomainStartupPolicyTypeToString(policy));
-
-        if (!skipSeclabels)
-            virDomainSourceDefFormatSeclabel(&childBuf, src->nseclabels,
-                                             src->seclabels, flags);
-    }
-
-    /* Storage Source formatting will not carry through the blunder
-     * that disk source formatting had at one time to format the
-     * <auth> for a volume source type. The <auth> information is
-     * kept in the storage pool and would be overwritten anyway.
-     * So avoid formatting it for volumes. */
-    if (src->auth && src->authInherited &&
-        src->type != VIR_STORAGE_TYPE_VOLUME)
-        virStorageAuthDefFormat(&childBuf, src->auth);
-
-    /* If we found encryption as a child of <source>, then format it
-     * as we found it. */
-    if (src->encryption && src->encryptionInherited &&
-        virStorageEncryptionFormat(&childBuf, src->encryption) < 0)
-        goto error;
+    if (policy && src->type != VIR_STORAGE_TYPE_NETWORK)
+        virBufferEscapeString(&attrBuf, " startupPolicy='%s'",
+                              virDomainStartupPolicyTypeToString(policy));
 
     if (virDomainDiskSourceFormatPrivateData(&childBuf, src, flags, xmlopt) < 0)
-        goto error;
+        goto cleanup;
 
     if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
-        goto error;
+        goto cleanup;
 
-    return 0;
+    ret = 0;
 
- error:
+ cleanup:
     virBufferFreeAndReset(&attrBuf);
     virBufferFreeAndReset(&childBuf);
-    return -1;
+    return ret;
 }
 
 
