@@ -72,7 +72,7 @@ static int testTLSContextInit(const void *opaque)
                                          data->crt,
                                          KEYFILE,
                                          NULL,
-                                         NULL,
+                                         "NORMAL",
                                          true,
                                          true);
     } else {
@@ -80,7 +80,7 @@ static int testTLSContextInit(const void *opaque)
                                          NULL,
                                          data->crt,
                                          KEYFILE,
-                                         NULL,
+                                         "NORMAL",
                                          true,
                                          true);
     }
