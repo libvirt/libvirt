@@ -1153,6 +1153,9 @@ libvirtd_LDFLAGS = \
 	$(NULL)
 
 libvirtd_LDADD = \
+	libvirt-lxc.la \
+	libvirt-qemu.la \
+	libvirt.la \
 	$(LIBXML_LIBS) \
 	$(GNUTLS_LIBS) \
 	$(SASL_LIBS) \
@@ -1166,9 +1169,6 @@ endif WITH_DTRACE_PROBES
 
 libvirtd_LDADD += \
 	libvirt_driver_admin.la \
-	libvirt-lxc.la \
-	libvirt-qemu.la \
-	libvirt.la \
 	../gnulib/lib/libgnu.la $(LIBSOCKET) \
 	$(NULL)
 
@@ -1222,7 +1222,7 @@ libvirt_driver_interface_la_CFLAGS = \
 		-I$(srcdir)/conf \
 		$(AM_CFLAGS) $(LIBNL_CFLAGS)
 libvirt_driver_interface_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-libvirt_driver_interface_la_LIBADD =
+libvirt_driver_interface_la_LIBADD = libvirt.la
 if WITH_NETCF
 libvirt_driver_interface_la_CFLAGS += $(NETCF_CFLAGS)
 libvirt_driver_interface_la_LIBADD += $(NETCF_LIBS)
@@ -1231,7 +1231,7 @@ if WITH_UDEV
 libvirt_driver_interface_la_CFLAGS += $(UDEV_CFLAGS)
 libvirt_driver_interface_la_LIBADD += $(UDEV_LIBS)
 endif WITH_UDEV
-libvirt_driver_interface_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
+libvirt_driver_interface_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_interface_la_SOURCES = $(INTERFACE_DRIVER_SOURCES)
 endif WITH_INTERFACE
 
@@ -1323,7 +1323,7 @@ endif WITH_STORAGE_SCSI
 if WITH_STORAGE_MPATH
 libvirt_storage_backend_mpath_la_SOURCES = \
 	$(STORAGE_DRIVER_MPATH_SOURCES)
-libvirt_storage_backend_mpath_la_LIBADD = $(DEVMAPPER_LIBS)
+libvirt_storage_backend_mpath_la_LIBADD = libvirt.la $(DEVMAPPER_LIBS)
 libvirt_storage_backend_mpath_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(DEVMAPPER_CFLAGS) \
@@ -1331,7 +1331,7 @@ libvirt_storage_backend_mpath_la_CFLAGS = \
 
 storagebackend_LTLIBRARIES += libvirt_storage_backend_mpath.la
 libvirt_storage_backend_mpath_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-libvirt_storage_backend_mpath_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
+libvirt_storage_backend_mpath_la_LIBADD += ../gnulib/lib/libgnu.la
 endif WITH_STORAGE_MPATH
 
 if WITH_STORAGE_DISK
@@ -1347,7 +1347,7 @@ endif WITH_STORAGE_DISK
 
 if WITH_STORAGE_RBD
 libvirt_storage_backend_rbd_la_SOURCES = $(STORAGE_DRIVER_RBD_SOURCES)
-libvirt_storage_backend_rbd_la_LIBADD = $(LIBRBD_LIBS)
+libvirt_storage_backend_rbd_la_LIBADD = libvirt.la $(LIBRBD_LIBS)
 libvirt_storage_backend_rbd_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/secret \
@@ -1355,7 +1355,7 @@ libvirt_storage_backend_rbd_la_CFLAGS = \
 
 storagebackend_LTLIBRARIES += libvirt_storage_backend_rbd.la
 libvirt_storage_backend_rbd_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-libvirt_storage_backend_rbd_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
+libvirt_storage_backend_rbd_la_LIBADD += ../gnulib/lib/libgnu.la
 endif WITH_STORAGE_RBD
 
 if WITH_STORAGE_SHEEPDOG
@@ -1380,7 +1380,7 @@ endif WITH_STORAGE_SHEEPDOG
 if WITH_STORAGE_GLUSTER
 libvirt_storage_backend_gluster_la_SOURCES = \
 	$(STORAGE_DRIVER_GLUSTER_SOURCES)
-libvirt_storage_backend_gluster_la_LIBADD = $(GLUSTERFS_LIBS)
+libvirt_storage_backend_gluster_la_LIBADD = libvirt.la $(GLUSTERFS_LIBS)
 libvirt_storage_backend_gluster_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(GLUSTERFS_CFLAGS) \
@@ -1388,7 +1388,7 @@ libvirt_storage_backend_gluster_la_CFLAGS = \
 
 storagebackend_LTLIBRARIES += libvirt_storage_backend_gluster.la
 libvirt_storage_backend_gluster_la_LDFLAGS = $(AM_LDFLAGS_MOD)
-libvirt_storage_backend_gluster_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
+libvirt_storage_backend_gluster_la_LIBADD += ../gnulib/lib/libgnu.la
 endif WITH_STORAGE_GLUSTER
 
 if WITH_STORAGE_ZFS
@@ -1424,7 +1424,7 @@ libvirt_driver_nodedev_la_CFLAGS = \
 		-I$(srcdir)/conf \
 		$(AM_CFLAGS) $(LIBNL_CFLAGS)
 libvirt_driver_nodedev_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-libvirt_driver_nodedev_la_LIBADD =
+libvirt_driver_nodedev_la_LIBADD = libvirt.la
 
 if WITH_HAL
 libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_HAL_SOURCES)
@@ -1437,7 +1437,7 @@ libvirt_driver_nodedev_la_CFLAGS += $(UDEV_CFLAGS) $(PCIACCESS_CFLAGS)
 libvirt_driver_nodedev_la_LIBADD += $(UDEV_LIBS) $(PCIACCESS_LIBS)
 endif WITH_UDEV
 
-libvirt_driver_nodedev_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
+libvirt_driver_nodedev_la_LIBADD += ../gnulib/lib/libgnu.la
 endif WITH_NODE_DEVICES
 
 
@@ -1456,10 +1456,11 @@ libvirt_driver_nwfilter_impl_la_CFLAGS = \
 		$(AM_CFLAGS)
 libvirt_driver_nwfilter_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_nwfilter_impl_la_LIBADD = \
+		libvirt.la \
 		$(LIBPCAP_LIBS) \
 		$(LIBNL_LIBS) \
 		$(DBUS_LIBS)
-libvirt_driver_nwfilter_impl_la_LIBADD += libvirt.la ../gnulib/lib/libgnu.la
+libvirt_driver_nwfilter_impl_la_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_driver_nwfilter_impl_la_SOURCES = $(NWFILTER_DRIVER_SOURCES)
 endif WITH_NWFILTER
 

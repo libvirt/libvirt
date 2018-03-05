@@ -121,8 +121,8 @@ libvirt_lxc_LDFLAGS = \
 	$(LIBXML_LIBS) \
 	$(NULL)
 libvirt_lxc_LDADD = \
-	$(FUSE_LIBS) \
 	libvirt.la \
+	$(FUSE_LIBS) \
 	../gnulib/lib/libgnu.la \
 	$(NULL)
 if WITH_DTRACE_PROBES

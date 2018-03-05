@@ -139,9 +139,9 @@ libvirt_shell_la_LDFLAGS = \
 		$(COVERAGE_LDFLAGS) \
 		$(NULL)
 libvirt_shell_la_LIBADD = \
+		../src/libvirt.la \
 		$(LIBXML_LIBS) \
 		$(READLINE_LIBS) \
-		../src/libvirt.la \
 		../gnulib/lib/libgnu.la \
 		$(NULL)
 libvirt_shell_la_SOURCES = vsh.c vsh.h
