@@ -454,6 +454,9 @@ typedef enum {
     QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE, /* -device pcie-pci-bridge */
     QEMU_CAPS_SECCOMP_BLACKLIST, /* -sandbox.elevateprivileges */
 
+    /* 290 */
+    QEMU_CAPS_QUERY_CPUS_FAST, /* query-cpus-fast command */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
