@@ -5401,7 +5401,8 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     then = now + QEMU_JOB_WAIT_TIME;
 
  retry:
-    if (cfg->maxQueuedJobs &&
+    if ((!async && job != QEMU_JOB_DESTROY) &&
+        cfg->maxQueuedJobs &&
         priv->jobs_queued > cfg->maxQueuedJobs) {
         goto error;
     }
