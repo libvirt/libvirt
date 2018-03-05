@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.1.0\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2018-02-27 12:45+0000\n"
+"POT-Creation-Date: 2018-03-05 10:00+0100\n"
 "PO-Revision-Date: 2016-03-31 11:42-0400\n"
 "Last-Translator: yuliya <ypoyarko@redhat.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1862,7 +1862,7 @@ msgstr ""
 msgid "init binary must be specified"
 msgstr "необходимо определить путь init"
 
-#: src/conf/domain_conf.c:4941 src/conf/domain_conf.c:27435
+#: src/conf/domain_conf.c:4941 src/conf/domain_conf.c:27438
 msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr ""
 "элементы <boot> отдельных устройств не могут одновременно использоваться с  "
@@ -5838,101 +5838,101 @@ msgstr ""
 msgid "boot order %u is already used by another device"
 msgstr ""
 
-#: src/conf/domain_conf.c:27427
+#: src/conf/domain_conf.c:27430
 msgid "Device configuration is not compatible: Domain has no USB bus support"
 msgstr "Несовместимая конфигурация устройства: домен не поддерживает шину USB"
 
-#: src/conf/domain_conf.c:27450
+#: src/conf/domain_conf.c:27453
 #, c-format
 msgid ""
 "Attaching memory device with size '%llu' would exceed domain's maxMemory "
 "config"
 msgstr ""
 
-#: src/conf/domain_conf.c:27476 src/conf/network_conf.c:2620
+#: src/conf/domain_conf.c:27479 src/conf/network_conf.c:2620
 #: src/nwfilter/nwfilter_driver.c:244 src/secret/secret_driver.c:482
 #: src/util/virdnsmasq.c:561
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "не удалось создать каталог конфигурации «%s»"
 
-#: src/conf/domain_conf.c:27560
+#: src/conf/domain_conf.c:27563
 #, c-format
 msgid "cannot remove config %s"
 msgstr "не удалось удалить конфигурацию %s"
 
-#: src/conf/domain_conf.c:27845
+#: src/conf/domain_conf.c:27848
 #, c-format
 msgid "unable to visit backing chain file %s"
 msgstr "не удалось получить файл резервной цепочки %s"
 
-#: src/conf/domain_conf.c:27954
+#: src/conf/domain_conf.c:27957
 #, c-format
 msgid "invalid domain state: %d"
 msgstr "Недопустимое состояние домена: %d"
 
-#: src/conf/domain_conf.c:28265
+#: src/conf/domain_conf.c:28268
 #, c-format
 msgid "'%s' is not a known interface"
 msgstr ""
 
-#: src/conf/domain_conf.c:28388
+#: src/conf/domain_conf.c:28391
 #, c-format
 msgid "Copying definition of '%d' type is not implemented yet."
 msgstr "Копирование определения  «%d» не допускается."
 
-#: src/conf/domain_conf.c:28480
+#: src/conf/domain_conf.c:28483
 #, c-format
 msgid "no device found with alias %s"
 msgstr "устройство %s не найдено"
 
-#: src/conf/domain_conf.c:28505 src/conf/domain_conf.c:28560
+#: src/conf/domain_conf.c:28508 src/conf/domain_conf.c:28563
 #, c-format
 msgid "unknown metadata type '%d'"
 msgstr ""
 
-#: src/conf/domain_conf.c:28538
+#: src/conf/domain_conf.c:28541
 msgid "Requested metadata element is not present"
 msgstr "Запрошенный элемент метаданных отсутствует"
 
-#: src/conf/domain_conf.c:28584
+#: src/conf/domain_conf.c:28587
 msgid "(metadata_xml)"
 msgstr ""
 
-#: src/conf/domain_conf.c:28691
+#: src/conf/domain_conf.c:28694
 #, c-format
 msgid "target '%s' duplicated for disk sources '%s' and '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:28749 src/conf/domain_conf.c:28756
+#: src/conf/domain_conf.c:28752 src/conf/domain_conf.c:28759
 msgid "Cannot convert domain name to wide character string"
 msgstr ""
 
-#: src/conf/domain_conf.c:28764 src/conf/domain_conf.c:28774
+#: src/conf/domain_conf.c:28767 src/conf/domain_conf.c:28777
 msgid "Cannot convert wide character string back to multi-byte domain name"
 msgstr ""
 
-#: src/conf/domain_conf.c:28997
+#: src/conf/domain_conf.c:29000
 msgid "Network device allocation not available"
 msgstr ""
 
-#: src/conf/domain_conf.c:29010
+#: src/conf/domain_conf.c:29013
 msgid "Network device notification not available"
 msgstr ""
 
-#: src/conf/domain_conf.c:29024
+#: src/conf/domain_conf.c:29027
 msgid "Network device release not available"
 msgstr ""
 
-#: src/conf/domain_conf.c:29037
+#: src/conf/domain_conf.c:29040
 msgid "Network device bandwidth change query not available"
 msgstr ""
 
-#: src/conf/domain_conf.c:29050
+#: src/conf/domain_conf.c:29053
 msgid "Network device bandwidth update not available"
 msgstr ""
 
-#: src/conf/domain_conf.c:29147 src/storage/storage_backend_fs.c:179
+#: src/conf/domain_conf.c:29150 src/storage/storage_backend_fs.c:179
 #: src/storage/storage_backend_gluster.c:512
 #: src/storage/storage_backend_iscsi.c:61
 #: src/storage/storage_backend_iscsi.c:190
@@ -5941,30 +5941,30 @@ msgstr ""
 msgid "Expected exactly 1 host for the storage pool"
 msgstr "Пулу носителей должен соответствовать один узел"
 
-#: src/conf/domain_conf.c:29169
+#: src/conf/domain_conf.c:29172
 #, fuzzy, c-format
 msgid "unexpected iscsi volume name '%s'"
 msgstr "недопустимое имя тома iscsi «%s»"
 
-#: src/conf/domain_conf.c:29244 src/vz/vz_sdk.c:4140
+#: src/conf/domain_conf.c:29247 src/vz/vz_sdk.c:4140
 #, c-format
 msgid "storage pool '%s' containing volume '%s' is not active"
 msgstr ""
 
-#: src/conf/domain_conf.c:29267
+#: src/conf/domain_conf.c:29270
 msgid "disk source mode is only valid when storage pool is of iscsi type"
 msgstr ""
 
-#: src/conf/domain_conf.c:29293 src/conf/domain_conf.c:29331
+#: src/conf/domain_conf.c:29296 src/conf/domain_conf.c:29334
 msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr "«startupPolicy» используется только для томов типа «file»"
 
-#: src/conf/domain_conf.c:29319
+#: src/conf/domain_conf.c:29322
 #, c-format
 msgid "unexpected storage volume type '%s' for storage pool type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:29377
+#: src/conf/domain_conf.c:29380
 #, c-format
 msgid "using '%s' pools for backing 'volume' disks isn't yet supported"
 msgstr ""
@@ -6980,10 +6980,10 @@ msgstr ""
 #: tools/virsh-domain.c:12809 tools/virsh-domain.c:12822
 #: tools/virsh-domain.c:12835 tools/virsh-domain.c:13158
 #: tools/virsh-domain.c:13165 tools/virsh-network.c:363
-#: tools/virsh-network.c:1136 tools/virsh-nodedev.c:773 tools/virsh-pool.c:1023
-#: tools/virsh-pool.c:1230 tools/virsh-pool.c:1245 tools/virsh-pool.c:1247
-#: tools/virsh-pool.c:1248 tools/virsh-pool.c:1249 tools/virsh-pool.c:1680
-#: tools/virsh-pool.c:1973 tools/virsh-secret.c:571 tools/virsh-volume.c:1001
+#: tools/virsh-network.c:1136 tools/virsh-nodedev.c:773 tools/virsh-pool.c:1026
+#: tools/virsh-pool.c:1233 tools/virsh-pool.c:1248 tools/virsh-pool.c:1250
+#: tools/virsh-pool.c:1251 tools/virsh-pool.c:1252 tools/virsh-pool.c:1683
+#: tools/virsh-pool.c:1976 tools/virsh-secret.c:571 tools/virsh-volume.c:1001
 #: tools/virsh-volume.c:1421 tools/virsh-volume.c:1428
 #: tools/virsh-volume.c:1429 tools/virsh-volume.c:1430 tools/virt-admin.c:70
 msgid "unknown"
@@ -10950,7 +10950,7 @@ msgid "System is not available"
 msgstr "Система недоступна"
 
 #: src/hyperv/hyperv_wmi.c:1239 tools/virsh-domain.c:5434
-#: tools/virsh-domain.c:7884 tools/virsh-pool.c:1552 tools/virsh-snapshot.c:438
+#: tools/virsh-domain.c:7884 tools/virsh-pool.c:1555 tools/virsh-snapshot.c:438
 #: tools/vsh.c:1816 tools/vsh.c:2967 tools/vsh.c:2972
 msgid "Out of memory"
 msgstr "Недостаточно памяти"
@@ -12656,7 +12656,7 @@ msgstr ""
 msgid "Xen only supports 'xenpv' and 'xenfv' machines"
 msgstr ""
 
-#: src/libxl/libxl_migration.c:180 src/qemu/qemu_migration_cookie.c:1356
+#: src/libxl/libxl_migration.c:180 src/qemu/qemu_migration_cookie.c:1357
 msgid "Migration cookie was not NULL terminated"
 msgstr ""
 
@@ -12664,12 +12664,12 @@ msgstr ""
 msgid "(libxl_migration_cookie)"
 msgstr ""
 
-#: src/libxl/libxl_migration.c:197 src/qemu/qemu_migration_cookie.c:1094
+#: src/libxl/libxl_migration.c:197 src/qemu/qemu_migration_cookie.c:1095
 #: src/vz/vz_driver.c:2885
 msgid "missing name element in migration data"
 msgstr "данные миграции должны содержать элемент name"
 
-#: src/libxl/libxl_migration.c:205 src/qemu/qemu_migration_cookie.c:1109
+#: src/libxl/libxl_migration.c:205 src/qemu/qemu_migration_cookie.c:1110
 msgid "missing uuid element in migration data"
 msgstr "данные миграции должны содержать элемент uuid"
 
@@ -15339,71 +15339,71 @@ msgstr ""
 msgid "failed to create udev enumerate thread"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:582
+#: src/nwfilter/nwfilter_dhcpsnoop.c:583
 #, c-format
 msgid "virNWFilterSnoopReqNew called with invalid key \"%s\" (%zu)"
 msgstr "virNWFilterSnoopReqNew вызван с неверным ключом «%s» (%zu)"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:890
+#: src/nwfilter/nwfilter_dhcpsnoop.c:892
 msgid "virNWFilterSnoopListDel failed"
 msgstr "Ошбика virNWFilterSnoopListDel"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1111
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1113
 msgid "pcap_create failed"
 msgstr "ошибка pcap_create"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1119
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1121
 #, c-format
 msgid "setup of pcap handle failed: %s"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1126
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1128
 #, c-format
 msgid "pcap_compile: %s"
 msgstr "pcap_compile: %s"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1132
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1134
 #, c-format
 msgid "pcap_setfilter: %s"
 msgstr "pcap_setfilter: %s"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1138
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1140
 #, c-format
 msgid "pcap_setdirection: %s"
 msgstr "pcap_setdirection: %s"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1173
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1175
 #, c-format
 msgid "Instantiation of rules failed on interface '%s'"
 msgstr "Не удалось создать экземпляр правил для интерфейса  «%s»"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1482
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1486
 #, c-format
 msgid "interface '%s' failing; reopening"
 msgstr "Ошибка интерфейса «%s». Будет открыт снова..."
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1536
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1540
 #, c-format
 msgid "Job submission failed on interface '%s'"
 msgstr "Не удалось отправить задание интерфейсу  «%s»"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1641
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1645
 #: src/nwfilter/nwfilter_learnipaddr.c:709
 msgid ""
 "IP parameter must be provided since snooping the IP address does not work "
 "possibly due to missing tools"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1653
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1657
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr "Ошибка applyDHCPOnlyRules: нет защиты от подмены адреса."
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1660
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1664
 #, c-format
 msgid "virNWFilterDHCPSnoopReq: can't copy variables on if %s"
 msgstr "virNWFilterDHCPSnoopReq: ошибка копирования переменных на %s"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1670
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1674
 #, c-format
 msgid ""
 "virNWFilterDHCPSnoopReq ifname map failed on interface \"%s\" key \"%s\""
@@ -15411,81 +15411,86 @@ msgstr ""
 "virNWFilterDHCPSnoopReq: ошибка соответствия ifname для интерфейса "
 "«%s» (ключ «%s»)"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1679
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1683
 #, c-format
 msgid "virNWFilterDHCPSnoopReq req add failed on interface \"%s\" ifkey \"%s\""
 msgstr ""
 "virNWFilterDHCPSnoopReq: ошибка добавления req для интерфейса «%s» (ifkey "
 "«%s»)"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1691
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1695
 #, c-format
 msgid "virNWFilterDHCPSnoopReq virThreadCreate failed on interface '%s'"
 msgstr "virNWFilterDHCPSnoopReq: ошибка virThreadCreate на интерфейсе «%s»"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1703
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1707
 #, c-format
 msgid "Activation of snoop request failed on interface '%s'"
 msgstr ""
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1710
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1714
 #, c-format
 msgid "Restoring of leases failed on interface '%s'"
 msgstr "Не удалось восстановить аренду интерфейса «%s»"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1789
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1722
+#, fuzzy
+msgid "unable to wait on dhcp snoop thread"
+msgstr "ожидание сокета libssh2 невозможно"
+
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1800
 msgid "lease file write failed"
 msgstr "ошибка записи файла аренды"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1897
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1908
 #, c-format
 msgid "mkdir(\"%s\")"
 msgstr "mkdir(\"%s\")"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1902
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1913
 #, c-format
 msgid "unlink(\"%s\")"
 msgstr "unlink(\"%s\")"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1907
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1918
 #, c-format
 msgid "open(\"%s\")"
 msgstr "open(\"%s\")"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1921 src/qemu/qemu_driver.c:3287
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1932 src/qemu/qemu_driver.c:3287
 #: src/qemu/qemu_driver.c:4098 src/vbox/vbox_common.c:7545
 #, c-format
 msgid "unable to close %s"
 msgstr "не удалось закрыть %s"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1927
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1938
 #, c-format
 msgid "rename(\"%s\", \"%s\")"
 msgstr "rename(\"%s\", \"%s\")"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1957
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1966
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1968
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1977
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad lease file line %d corrupt"
 msgstr "virNWFilterSnoopLeaseFileLoad: строка %d повреждена"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1983
+#: src/nwfilter/nwfilter_dhcpsnoop.c:1994
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad req add failed on interface \"%s\""
 msgstr ""
 "virNWFilterSnoopLeaseFileLoad: ошибка добавления req для интерфейса «%s»"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:1991
+#: src/nwfilter/nwfilter_dhcpsnoop.c:2002
 #, c-format
 msgid "line %d corrupt ipaddr \"%s\""
 msgstr "строка %d, адрес IP поврежден: «%s»"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:2154
+#: src/nwfilter/nwfilter_dhcpsnoop.c:2165
 #, c-format
 msgid "ifkey \"%s\" has no req"
 msgstr "ifkey  «%s» не содержит req"
 
-#: src/nwfilter/nwfilter_dhcpsnoop.c:2235
+#: src/nwfilter/nwfilter_dhcpsnoop.c:2246
 msgid "libvirt was not compiled with libpcap and \""
 msgstr "libvirt не был скомпилирован с помощью libpcap и «"
 
@@ -21524,81 +21529,81 @@ msgstr "отсутствует информация об интерфейсе"
 msgid "missing vporttype attribute in migration data"
 msgstr "данные миграции должны содержать атрибут vporttype"
 
-#: src/qemu/qemu_migration_cookie.c:935
+#: src/qemu/qemu_migration_cookie.c:936
 #, c-format
 msgid "Malformed nbd port '%s'"
 msgstr "Неверный формат порта nbd: «%s»"
 
-#: src/qemu/qemu_migration_cookie.c:954
+#: src/qemu/qemu_migration_cookie.c:955
 #, fuzzy
 msgid "Malformed disk target"
 msgstr "Недопустимое значение offset='%s' в строке «target» секции <lease>"
 
-#: src/qemu/qemu_migration_cookie.c:963
+#: src/qemu/qemu_migration_cookie.c:964
 #, fuzzy, c-format
 msgid "Malformed disk capacity: '%s'"
 msgstr "Неверный формат порта nbd: «%s»"
 
-#: src/qemu/qemu_migration_cookie.c:1099
+#: src/qemu/qemu_migration_cookie.c:1100
 #, c-format
 msgid "Incoming cookie data had unexpected name %s vs %s"
 msgstr "Недопустимое имя входных данных cookie %s (ожидается %s)"
 
-#: src/qemu/qemu_migration_cookie.c:1115
+#: src/qemu/qemu_migration_cookie.c:1116
 #, c-format
 msgid "Incoming cookie data had unexpected UUID %s vs %s"
 msgstr ""
 
-#: src/qemu/qemu_migration_cookie.c:1124
+#: src/qemu/qemu_migration_cookie.c:1125
 msgid "missing hostname element in migration data"
 msgstr "данные миграции должны содержать элемент hostname"
 
-#: src/qemu/qemu_migration_cookie.c:1129 src/qemu/qemu_migration_cookie.c:1146
+#: src/qemu/qemu_migration_cookie.c:1130 src/qemu/qemu_migration_cookie.c:1147
 #, c-format
 msgid "Attempt to migrate guest to the same host %s"
 msgstr "Попытка миграции гостя на тот же хост %s"
 
-#: src/qemu/qemu_migration_cookie.c:1136
+#: src/qemu/qemu_migration_cookie.c:1137
 msgid "missing hostuuid element in migration data"
 msgstr "данные миграции должны содержать элемент hostuuid"
 
-#: src/qemu/qemu_migration_cookie.c:1141
+#: src/qemu/qemu_migration_cookie.c:1142
 msgid "malformed hostuuid element in migration data"
 msgstr "данные миграции содержат неверно сформированный элемент hostuuid"
 
-#: src/qemu/qemu_migration_cookie.c:1162
+#: src/qemu/qemu_migration_cookie.c:1163
 msgid "missing feature name"
 msgstr ""
 
-#: src/qemu/qemu_migration_cookie.c:1168
+#: src/qemu/qemu_migration_cookie.c:1169
 #, c-format
 msgid "Unknown migration cookie feature %s"
 msgstr "Неизвестная функция cookie миграции %s"
 
-#: src/qemu/qemu_migration_cookie.c:1176
+#: src/qemu/qemu_migration_cookie.c:1177
 #, c-format
 msgid "Unsupported migration cookie feature %s"
 msgstr "Неподдерживаемая функция cookie миграции: %s"
 
-#: src/qemu/qemu_migration_cookie.c:1195
+#: src/qemu/qemu_migration_cookie.c:1196
 msgid "Missing lock driver name in migration cookie"
 msgstr "Отсутствует имя драйвера блокирования в cookie-файле миграции"
 
-#: src/qemu/qemu_migration_cookie.c:1207
+#: src/qemu/qemu_migration_cookie.c:1208
 #, c-format
 msgid "Too many domain elements in migration cookie: %d"
 msgstr "cookie миграции содержит слишком много элементов домена (%d)"
 
-#: src/qemu/qemu_migration_cookie.c:1271
+#: src/qemu/qemu_migration_cookie.c:1272
 msgid "(qemu_migration_cookie)"
 msgstr "(cookie_миграции_qemu)"
 
-#: src/qemu/qemu_migration_cookie.c:1384
+#: src/qemu/qemu_migration_cookie.c:1385
 #, c-format
 msgid "Missing %s lock state for migration cookie"
 msgstr "Отсутствует статус блокирования %s  для cookie миграции"
 
-#: src/qemu/qemu_migration_cookie.c:1391
+#: src/qemu/qemu_migration_cookie.c:1392
 #, c-format
 msgid "Source host lock driver %s different from target %s"
 msgstr ""
@@ -37821,7 +37826,7 @@ msgid "no state"
 msgstr "нет статуса"
 
 #: tools/virsh-domain-monitor.c:144 tools/virsh-domain.c:113
-#: tools/virsh-pool.c:1015
+#: tools/virsh-pool.c:1018
 msgid "running"
 msgstr "работает"
 
@@ -38004,13 +38009,13 @@ msgid "Human readable output"
 msgstr ""
 
 #: tools/virsh-domain-monitor.c:427 tools/virsh-domain-monitor.c:435
-#: tools/virsh-pool.c:1693 tools/virsh-pool.c:1698 tools/virsh-volume.c:1064
+#: tools/virsh-pool.c:1696 tools/virsh-pool.c:1701 tools/virsh-volume.c:1064
 #: tools/virsh-volume.c:1068
 msgid "Capacity:"
 msgstr "Размер:"
 
 #: tools/virsh-domain-monitor.c:428 tools/virsh-domain-monitor.c:437
-#: tools/virsh-pool.c:1694 tools/virsh-pool.c:1701 tools/virsh-volume.c:1076
+#: tools/virsh-pool.c:1697 tools/virsh-pool.c:1704 tools/virsh-volume.c:1076
 #: tools/virsh-volume.c:1083
 msgid "Allocation:"
 msgstr "Выделение:"
@@ -38224,12 +38229,12 @@ msgid "Id:"
 msgstr "ID:"
 
 #: tools/virsh-domain-monitor.c:1157 tools/virsh-network.c:352
-#: tools/virsh-pool.c:1664 tools/virsh-snapshot.c:893 tools/virsh-volume.c:1046
+#: tools/virsh-pool.c:1667 tools/virsh-snapshot.c:893 tools/virsh-volume.c:1046
 msgid "Name:"
 msgstr "Имя:"
 
 #: tools/virsh-domain-monitor.c:1160 tools/virsh-network.c:355
-#: tools/virsh-pool.c:1667
+#: tools/virsh-pool.c:1670
 msgid "UUID:"
 msgstr "UUID:"
 
@@ -38238,7 +38243,7 @@ msgid "OS Type:"
 msgstr "Тип ОС:"
 
 #: tools/virsh-domain-monitor.c:1168 tools/virsh-domain.c:6659
-#: tools/virsh-domain.c:6720 tools/virsh-pool.c:1672 tools/virsh-snapshot.c:929
+#: tools/virsh-domain.c:6720 tools/virsh-pool.c:1675 tools/virsh-snapshot.c:929
 msgid "State:"
 msgstr "Статус:"
 
@@ -38263,16 +38268,16 @@ msgid "Used memory:"
 msgstr "Занято памяти:"
 
 #: tools/virsh-domain-monitor.c:1200 tools/virsh-domain-monitor.c:1202
-#: tools/virsh-network.c:363 tools/virsh-network.c:365 tools/virsh-pool.c:1680
-#: tools/virsh-pool.c:1682
+#: tools/virsh-network.c:363 tools/virsh-network.c:365 tools/virsh-pool.c:1683
+#: tools/virsh-pool.c:1685
 msgid "Persistent:"
 msgstr "Постоянство:"
 
 #: tools/virsh-domain-monitor.c:1202 tools/virsh-domain-monitor.c:1215
 #: tools/virsh-network.c:359 tools/virsh-network.c:365
 #: tools/virsh-network.c:370 tools/virsh-network.c:709
-#: tools/virsh-network.c:715 tools/virsh-pool.c:1222 tools/virsh-pool.c:1233
-#: tools/virsh-pool.c:1682 tools/virsh-pool.c:1688 tools/virsh-snapshot.c:911
+#: tools/virsh-network.c:715 tools/virsh-pool.c:1225 tools/virsh-pool.c:1236
+#: tools/virsh-pool.c:1685 tools/virsh-pool.c:1691 tools/virsh-snapshot.c:911
 #: tools/virsh-snapshot.c:996 tools/vsh.c:1804
 msgid "yes"
 msgstr "yes"
@@ -38280,14 +38285,14 @@ msgstr "yes"
 #: tools/virsh-domain-monitor.c:1202 tools/virsh-domain-monitor.c:1215
 #: tools/virsh-network.c:359 tools/virsh-network.c:365
 #: tools/virsh-network.c:370 tools/virsh-network.c:709
-#: tools/virsh-network.c:715 tools/virsh-pool.c:1222 tools/virsh-pool.c:1233
-#: tools/virsh-pool.c:1682 tools/virsh-pool.c:1688 tools/virsh-snapshot.c:911
+#: tools/virsh-network.c:715 tools/virsh-pool.c:1225 tools/virsh-pool.c:1236
+#: tools/virsh-pool.c:1685 tools/virsh-pool.c:1691 tools/virsh-snapshot.c:911
 #: tools/virsh-snapshot.c:996 tools/vsh.c:1804
 msgid "no"
 msgstr "no"
 
 #: tools/virsh-domain-monitor.c:1206 tools/virsh-network.c:368
-#: tools/virsh-network.c:370 tools/virsh-pool.c:1686 tools/virsh-pool.c:1688
+#: tools/virsh-network.c:370 tools/virsh-pool.c:1689 tools/virsh-pool.c:1691
 msgid "Autostart:"
 msgstr "Автозапуск:"
 
@@ -38485,8 +38490,8 @@ msgstr "ID"
 #: tools/virsh-domain-monitor.c:1841 tools/virsh-domain-monitor.c:1846
 #: tools/virsh-domain-monitor.c:2204 tools/virsh-domain.c:13853
 #: tools/virsh-interface.c:369 tools/virsh-network.c:694
-#: tools/virsh-nwfilter.c:367 tools/virsh-pool.c:1350 tools/virsh-pool.c:1371
-#: tools/virsh-pool.c:1436 tools/virsh-snapshot.c:1560
+#: tools/virsh-nwfilter.c:367 tools/virsh-pool.c:1353 tools/virsh-pool.c:1374
+#: tools/virsh-pool.c:1439 tools/virsh-snapshot.c:1560
 #: tools/virsh-snapshot.c:1564 tools/virsh-volume.c:1489
 #: tools/virsh-volume.c:1505 tools/virsh-volume.c:1551
 msgid "Name"
@@ -38494,7 +38499,7 @@ msgstr "Имя"
 
 #: tools/virsh-domain-monitor.c:1841 tools/virsh-domain-monitor.c:1846
 #: tools/virsh-interface.c:369 tools/virsh-network.c:694
-#: tools/virsh-pool.c:1350 tools/virsh-pool.c:1376 tools/virsh-pool.c:1436
+#: tools/virsh-pool.c:1353 tools/virsh-pool.c:1379 tools/virsh-pool.c:1439
 #: tools/virsh-snapshot.c:1560 tools/virsh-snapshot.c:1564
 msgid "State"
 msgstr "Статус"
@@ -38775,7 +38780,7 @@ msgstr "ожидается адрес scsi:00.00.00"
 msgid "expecting an ide:00.00.00 address."
 msgstr "ожидается адрес ide:00.00.00"
 
-#: tools/virsh-domain.c:678 tools/virsh-domain.c:988 tools/virsh-pool.c:389
+#: tools/virsh-domain.c:678 tools/virsh-domain.c:988 tools/virsh-pool.c:392
 #: tools/virsh-volume.c:346 tools/virsh-volume.c:614 tools/vsh.c:3318
 #: tools/vsh.c:3335
 msgid "Failed to allocate XML buffer"
@@ -38881,7 +38886,7 @@ msgstr "автоматический запуск домена"
 msgid "Configure a domain to be automatically started at boot."
 msgstr "Настройка автоматического запуска домена при загрузке."
 
-#: tools/virsh-domain.c:1043 tools/virsh-network.c:101 tools/virsh-pool.c:189
+#: tools/virsh-domain.c:1043 tools/virsh-network.c:101 tools/virsh-pool.c:192
 msgid "disable autostarting"
 msgstr "отключить автозапуск"
 
@@ -41599,7 +41604,7 @@ msgid "pretty-print any JSON output"
 msgstr "форматировать вывод JSON"
 
 #: tools/virsh-domain.c:9610 tools/virsh-domain.c:13361
-#: tools/virsh-network.c:1204 tools/virsh-nodedev.c:883 tools/virsh-pool.c:2085
+#: tools/virsh-network.c:1204 tools/virsh-nodedev.c:883 tools/virsh-pool.c:2088
 #: tools/virsh-secret.c:683
 msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr ""
@@ -41607,7 +41612,7 @@ msgstr ""
 "ожидания"
 
 #: tools/virsh-domain.c:9614 tools/virsh-domain.c:13365
-#: tools/virsh-network.c:1208 tools/virsh-nodedev.c:887 tools/virsh-pool.c:2089
+#: tools/virsh-network.c:1208 tools/virsh-nodedev.c:887 tools/virsh-pool.c:2092
 #: tools/virsh-secret.c:687
 msgid "timeout seconds"
 msgstr "время ожидания в секундах"
@@ -41621,25 +41626,25 @@ msgid "treat event case-insensitively"
 msgstr "обрабатывать значение параметра --event без учета регистра"
 
 #: tools/virsh-domain.c:9626 tools/virsh-domain.c:13373
-#: tools/virsh-network.c:1216 tools/virsh-nodedev.c:895 tools/virsh-pool.c:2097
+#: tools/virsh-network.c:1216 tools/virsh-nodedev.c:895 tools/virsh-pool.c:2100
 #: tools/virsh-secret.c:695
 msgid "show timestamp for each printed event"
 msgstr ""
 
 #: tools/virsh-domain.c:9671 tools/virsh-domain.c:13463
-#: tools/virsh-network.c:1270 tools/virsh-nodedev.c:962 tools/virsh-pool.c:2156
+#: tools/virsh-network.c:1270 tools/virsh-nodedev.c:962 tools/virsh-pool.c:2159
 #: tools/virsh-secret.c:753
 msgid "event loop interrupted\n"
 msgstr "цикл ожидания события прерван\n"
 
 #: tools/virsh-domain.c:9674 tools/virsh-domain.c:13466
-#: tools/virsh-network.c:1273 tools/virsh-nodedev.c:965 tools/virsh-pool.c:2159
+#: tools/virsh-network.c:1273 tools/virsh-nodedev.c:965 tools/virsh-pool.c:2162
 #: tools/virsh-secret.c:756
 msgid "event loop timed out\n"
 msgstr "время ожидания истекло\n"
 
 #: tools/virsh-domain.c:9681 tools/virsh-domain.c:13473
-#: tools/virsh-network.c:1280 tools/virsh-nodedev.c:972 tools/virsh-pool.c:2166
+#: tools/virsh-network.c:1280 tools/virsh-nodedev.c:972 tools/virsh-pool.c:2169
 #: tools/virsh-secret.c:763
 #, fuzzy, c-format
 msgid "events received: %d\n"
@@ -41733,7 +41738,7 @@ msgid "Output the domain information as an XML dump to stdout."
 msgstr "Вывести описание домена в виде XML в stdout."
 
 #: tools/virsh-domain.c:10023 tools/virsh-interface.c:475
-#: tools/virsh-network.c:287 tools/virsh-pool.c:752
+#: tools/virsh-network.c:287 tools/virsh-pool.c:755
 msgid "show inactive defined XML"
 msgstr "просмотр XML неактивных доменов"
 
@@ -42298,17 +42303,17 @@ msgid "Domain %s XML configuration edited.\n"
 msgstr "XML-конфигурация домена %s изменена.\n"
 
 #: tools/virsh-domain.c:12609 tools/virsh-network.c:1127
-#: tools/virsh-pool.c:1962 tools/virsh-secret.c:564
+#: tools/virsh-pool.c:1965 tools/virsh-secret.c:564
 msgid "Defined"
 msgstr ""
 
 #: tools/virsh-domain.c:12610 tools/virsh-network.c:1128
-#: tools/virsh-pool.c:1963 tools/virsh-secret.c:565
+#: tools/virsh-pool.c:1966 tools/virsh-secret.c:565
 msgid "Undefined"
 msgstr ""
 
 #: tools/virsh-domain.c:12611 tools/virsh-network.c:1129
-#: tools/virsh-pool.c:1964
+#: tools/virsh-pool.c:1967
 msgid "Started"
 msgstr ""
 
@@ -42321,7 +42326,7 @@ msgid "Resumed"
 msgstr ""
 
 #: tools/virsh-domain.c:12614 tools/virsh-network.c:1130
-#: tools/virsh-pool.c:1965
+#: tools/virsh-pool.c:1968
 msgid "Stopped"
 msgstr ""
 
@@ -42660,7 +42665,7 @@ msgid "filter by domain name, id, or uuid"
 msgstr "фильтровать по имени домена, идентификатору или UUID"
 
 #: tools/virsh-domain.c:13353 tools/virsh-network.c:1200
-#: tools/virsh-nodedev.c:879 tools/virsh-pool.c:2081 tools/virsh-secret.c:679
+#: tools/virsh-nodedev.c:879 tools/virsh-pool.c:2084 tools/virsh-secret.c:679
 msgid "which event type to wait for"
 msgstr "тип ожидаемых событий"
 
@@ -42669,12 +42674,12 @@ msgid "wait for all events instead of just one type"
 msgstr "ожидать любых событий, не ограничиваясь одним типом"
 
 #: tools/virsh-domain.c:13369 tools/virsh-network.c:1212
-#: tools/virsh-nodedev.c:891 tools/virsh-pool.c:2093 tools/virsh-secret.c:691
+#: tools/virsh-nodedev.c:891 tools/virsh-pool.c:2096 tools/virsh-secret.c:691
 msgid "list valid event types"
 msgstr "показать возможные типы событий"
 
 #: tools/virsh-domain.c:13407 tools/virsh-network.c:1248
-#: tools/virsh-nodedev.c:932 tools/virsh-pool.c:2133 tools/virsh-secret.c:730
+#: tools/virsh-nodedev.c:932 tools/virsh-pool.c:2136 tools/virsh-secret.c:730
 #, fuzzy, c-format
 msgid "unknown event type %s"
 msgstr "неизвестный тип события: %s"
@@ -43365,12 +43370,12 @@ msgid "MAC Address"
 msgstr "MAC-адрес"
 
 #: tools/virsh-interface.c:378 tools/virsh-network.c:713
-#: tools/virsh-pool.c:1303
+#: tools/virsh-pool.c:1306
 msgid "active"
 msgstr "активен"
 
 #: tools/virsh-interface.c:378 tools/virsh-network.c:713
-#: tools/virsh-pool.c:1013 tools/virsh-pool.c:1305
+#: tools/virsh-pool.c:1016 tools/virsh-pool.c:1308
 msgid "inactive"
 msgstr "не активен"
 
@@ -43855,8 +43860,8 @@ msgstr "Возвращает общую информацию о сети"
 msgid "Active:"
 msgstr "Активен:"
 
-#: tools/virsh-network.c:368 tools/virsh-network.c:707 tools/virsh-pool.c:1219
-#: tools/virsh-pool.c:1686
+#: tools/virsh-network.c:368 tools/virsh-network.c:707 tools/virsh-pool.c:1222
+#: tools/virsh-pool.c:1689
 msgid "no autostart"
 msgstr "без автозапуска"
 
@@ -43932,12 +43937,12 @@ msgstr ""
 msgid "Only one argument from --table, --name and --uuid may be specified."
 msgstr "--table, --name и --uuid не могут использоваться вместе"
 
-#: tools/virsh-network.c:695 tools/virsh-pool.c:1351 tools/virsh-pool.c:1381
-#: tools/virsh-pool.c:1436
+#: tools/virsh-network.c:695 tools/virsh-pool.c:1354 tools/virsh-pool.c:1384
+#: tools/virsh-pool.c:1439
 msgid "Autostart"
 msgstr "Автозапуск"
 
-#: tools/virsh-network.c:695 tools/virsh-pool.c:1386 tools/virsh-pool.c:1437
+#: tools/virsh-network.c:695 tools/virsh-pool.c:1389 tools/virsh-pool.c:1440
 msgid "Persistent"
 msgstr ""
 
@@ -44111,7 +44116,7 @@ msgstr "Вывод списка возможных сетевых событий
 msgid "filter by network name or uuid"
 msgstr "фильтровать по названию сети или UUID"
 
-#: tools/virsh-network.c:1244 tools/virsh-nodedev.c:924 tools/virsh-pool.c:2125
+#: tools/virsh-network.c:1244 tools/virsh-nodedev.c:924 tools/virsh-pool.c:2128
 #: tools/virsh-secret.c:723
 msgid "either --list or --event <type> is required"
 msgstr ""
@@ -44321,11 +44326,11 @@ msgstr "Выполнен сброс устройства %s\n"
 msgid "Failed to reset device %s"
 msgstr "Не удалось выполнить сброс устройства %s"
 
-#: tools/virsh-nodedev.c:766 tools/virsh-pool.c:1966
+#: tools/virsh-nodedev.c:766 tools/virsh-pool.c:1969
 msgid "Created"
 msgstr ""
 
-#: tools/virsh-nodedev.c:767 tools/virsh-pool.c:1967
+#: tools/virsh-nodedev.c:767 tools/virsh-pool.c:1970
 msgid "Deleted"
 msgstr ""
 
@@ -44548,468 +44553,468 @@ msgstr "цель для организации хранилища"
 msgid "adapter parent to be used for underlying storage"
 msgstr "цель для организации хранилища"
 
-#: tools/virsh-pool.c:166
+#: tools/virsh-pool.c:169
 #, c-format
 msgid "failed to get pool '%s'"
 msgstr "ошибка при получении данных пула «%s»"
 
-#: tools/virsh-pool.c:176
+#: tools/virsh-pool.c:179
 msgid "autostart a pool"
 msgstr "автозапуск пула"
 
-#: tools/virsh-pool.c:179
+#: tools/virsh-pool.c:182
 msgid "Configure a pool to be automatically started at boot."
 msgstr "Настройка автоматического запуска пула при загрузке."
 
-#: tools/virsh-pool.c:208
+#: tools/virsh-pool.c:211
 #, c-format
 msgid "failed to mark pool %s as autostarted"
 msgstr "не удалось назначить автозапуск для пула %s"
 
-#: tools/virsh-pool.c:210
+#: tools/virsh-pool.c:213
 #, c-format
 msgid "failed to unmark pool %s as autostarted"
 msgstr "не удалось отменить автозапуск для пула %s"
 
-#: tools/virsh-pool.c:216
+#: tools/virsh-pool.c:219
 #, c-format
 msgid "Pool %s marked as autostarted\n"
 msgstr "Добавлена метка автоматического запуска пула %s\n"
 
-#: tools/virsh-pool.c:218
+#: tools/virsh-pool.c:221
 #, c-format
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Удалена метка автоматического запуска пула %s\n"
 
-#: tools/virsh-pool.c:229
+#: tools/virsh-pool.c:232
 msgid "create a pool from an XML file"
 msgstr "создать пул из файла XML"
 
-#: tools/virsh-pool.c:232 tools/virsh-pool.c:410
+#: tools/virsh-pool.c:235 tools/virsh-pool.c:413
 msgid "Create a pool."
 msgstr "Создать пул."
 
-#: tools/virsh-pool.c:238 tools/virsh-pool.c:487
+#: tools/virsh-pool.c:241 tools/virsh-pool.c:490
 msgid "file containing an XML pool description"
 msgstr "файл с XML-описанием пула"
 
-#: tools/virsh-pool.c:283
+#: tools/virsh-pool.c:286
 #, c-format
 msgid "Pool %s created from %s\n"
 msgstr "Пул %s создан из %s\n"
 
-#: tools/virsh-pool.c:287
+#: tools/virsh-pool.c:290
 #, c-format
 msgid "Failed to create pool from %s"
 msgstr "Не удалось создать пул из %s"
 
-#: tools/virsh-pool.c:407
+#: tools/virsh-pool.c:410
 msgid "create a pool from a set of args"
 msgstr "создать пул из набора аргументов"
 
-#: tools/virsh-pool.c:462
+#: tools/virsh-pool.c:465
 #, c-format
 msgid "Pool %s created\n"
 msgstr "Пул %s создан\n"
 
-#: tools/virsh-pool.c:465
+#: tools/virsh-pool.c:468
 #, c-format
 msgid "Failed to create pool %s"
 msgstr "Не удалось создать пул %s"
 
-#: tools/virsh-pool.c:477
+#: tools/virsh-pool.c:480
 msgid ""
 "define an inactive persistent storage pool or modify an existing persistent "
 "one from an XML file"
 msgstr ""
 
-#: tools/virsh-pool.c:481
+#: tools/virsh-pool.c:484
 msgid "Define or modify a persistent storage pool."
 msgstr ""
 
-#: tools/virsh-pool.c:511
+#: tools/virsh-pool.c:514
 #, c-format
 msgid "Pool %s defined from %s\n"
 msgstr "Пул %s определён на основе %s\n"
 
-#: tools/virsh-pool.c:515
+#: tools/virsh-pool.c:518
 #, c-format
 msgid "Failed to define pool from %s"
 msgstr "Не удалось определить пул на основе %s"
 
-#: tools/virsh-pool.c:526
+#: tools/virsh-pool.c:529
 msgid "define a pool from a set of args"
 msgstr "определить пул на основе набора аргументов"
 
-#: tools/virsh-pool.c:529
+#: tools/virsh-pool.c:532
 msgid "Define a pool."
 msgstr "Определить пул."
 
-#: tools/virsh-pool.c:554
+#: tools/virsh-pool.c:557
 #, c-format
 msgid "Pool %s defined\n"
 msgstr "Пул %s определён\n"
 
-#: tools/virsh-pool.c:557
+#: tools/virsh-pool.c:560
 #, c-format
 msgid "Failed to define pool %s"
 msgstr "Не удалось определить пул %s"
 
-#: tools/virsh-pool.c:569
+#: tools/virsh-pool.c:572
 msgid "build a pool"
 msgstr "собрать пул"
 
-#: tools/virsh-pool.c:572
+#: tools/virsh-pool.c:575
 msgid "Build a given pool."
 msgstr "Собрать заданный пул."
 
-#: tools/virsh-pool.c:603
+#: tools/virsh-pool.c:606
 #, c-format
 msgid "Pool %s built\n"
 msgstr "Пул %s собран\n"
 
-#: tools/virsh-pool.c:605
+#: tools/virsh-pool.c:608
 #, c-format
 msgid "Failed to build pool %s"
 msgstr "Не удалось собрать пул %s"
 
-#: tools/virsh-pool.c:619
+#: tools/virsh-pool.c:622
 msgid "destroy (stop) a pool"
 msgstr "разрушить (остановить) пул"
 
-#: tools/virsh-pool.c:622
+#: tools/virsh-pool.c:625
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
 msgstr "Остановить выбранный пул. Необработанные данные не будут задеты."
 
-#: tools/virsh-pool.c:644
+#: tools/virsh-pool.c:647
 #, c-format
 msgid "Pool %s destroyed\n"
 msgstr "Пул %s разрушен\n"
 
-#: tools/virsh-pool.c:646
+#: tools/virsh-pool.c:649
 #, c-format
 msgid "Failed to destroy pool %s"
 msgstr "Не удалось разрушить пул %s"
 
-#: tools/virsh-pool.c:659
+#: tools/virsh-pool.c:662
 msgid "delete a pool"
 msgstr "удалить пул"
 
-#: tools/virsh-pool.c:662
+#: tools/virsh-pool.c:665
 msgid "Delete a given pool."
 msgstr "Удалить заданный пул."
 
-#: tools/virsh-pool.c:684
+#: tools/virsh-pool.c:687
 #, c-format
 msgid "Pool %s deleted\n"
 msgstr "Пул %s удалён\n"
 
-#: tools/virsh-pool.c:686
+#: tools/virsh-pool.c:689
 #, c-format
 msgid "Failed to delete pool %s"
 msgstr "Не удалось удалить пул %s"
 
-#: tools/virsh-pool.c:699
+#: tools/virsh-pool.c:702
 msgid "refresh a pool"
 msgstr "обновить пул"
 
-#: tools/virsh-pool.c:702
+#: tools/virsh-pool.c:705
 msgid "Refresh a given pool."
 msgstr "Обновить заданный пул."
 
-#: tools/virsh-pool.c:724
+#: tools/virsh-pool.c:727
 #, c-format
 msgid "Pool %s refreshed\n"
 msgstr "Пул %s обновлён\n"
 
-#: tools/virsh-pool.c:726
+#: tools/virsh-pool.c:729
 #, c-format
 msgid "Failed to refresh pool %s"
 msgstr "Не удалось обновить пул %s"
 
-#: tools/virsh-pool.c:739
+#: tools/virsh-pool.c:742
 msgid "pool information in XML"
 msgstr "описание пула в XML"
 
-#: tools/virsh-pool.c:742
+#: tools/virsh-pool.c:745
 msgid "Output the pool information as an XML dump to stdout."
 msgstr "Вывести описание пула в виде XML в stdout."
 
-#: tools/virsh-pool.c:864
+#: tools/virsh-pool.c:867
 msgid "Failed to list pools"
 msgstr "Не удалось получить список пулов"
 
-#: tools/virsh-pool.c:874
+#: tools/virsh-pool.c:877
 msgid "Filtering using --type is not supported by this libvirt"
 msgstr "Libvirt не поддерживает фильтрацию с использованием --type"
 
-#: tools/virsh-pool.c:883
+#: tools/virsh-pool.c:886
 msgid "Failed to get the number of active pools "
 msgstr "Не удалось определить число активных пулов"
 
-#: tools/virsh-pool.c:892
+#: tools/virsh-pool.c:895
 msgid "Failed to get the number of inactive pools"
 msgstr "Не удалось определить число неактивных пулов"
 
-#: tools/virsh-pool.c:909
+#: tools/virsh-pool.c:912
 msgid "Failed to list active pools"
 msgstr "Не удалось получить список активных пулов"
 
-#: tools/virsh-pool.c:920
+#: tools/virsh-pool.c:923
 msgid "Failed to list inactive pools"
 msgstr "Не удалось получить список неактивных пулов"
 
-#: tools/virsh-pool.c:953
+#: tools/virsh-pool.c:956
 msgid "Failed to get pool persistence info"
 msgstr "Не удалось получить данные о постоянстве пула"
 
-#: tools/virsh-pool.c:965
+#: tools/virsh-pool.c:968
 msgid "Failed to get pool autostart state"
 msgstr "Не удалось получить статус автоматического запуска пула"
 
-#: tools/virsh-pool.c:1014
+#: tools/virsh-pool.c:1017
 msgid "building"
 msgstr "собирается"
 
-#: tools/virsh-pool.c:1016
+#: tools/virsh-pool.c:1019
 msgid "degraded"
 msgstr "понижен"
 
-#: tools/virsh-pool.c:1017
+#: tools/virsh-pool.c:1020
 msgid "inaccessible"
 msgstr "нет доступа"
 
-#: tools/virsh-pool.c:1032
+#: tools/virsh-pool.c:1035
 msgid "list pools"
 msgstr "список пулов"
 
-#: tools/virsh-pool.c:1035
+#: tools/virsh-pool.c:1038
 msgid "Returns list of pools."
 msgstr "Возвращает список пулов."
 
-#: tools/virsh-pool.c:1043
+#: tools/virsh-pool.c:1046
 msgid "list inactive pools"
 msgstr "список неактивных пулов"
 
-#: tools/virsh-pool.c:1047
+#: tools/virsh-pool.c:1050
 msgid "list inactive & active pools"
 msgstr "список неактивных и активных пулов"
 
-#: tools/virsh-pool.c:1051
+#: tools/virsh-pool.c:1054
 msgid "list transient pools"
 msgstr "список временных доменов"
 
-#: tools/virsh-pool.c:1055
+#: tools/virsh-pool.c:1058
 msgid "list persistent pools"
 msgstr "список постоянных пулов"
 
-#: tools/virsh-pool.c:1059
+#: tools/virsh-pool.c:1062
 msgid "list pools with autostart enabled"
 msgstr "показать пулы с включенными функциями автозапуска"
 
-#: tools/virsh-pool.c:1063
+#: tools/virsh-pool.c:1066
 msgid "list pools with autostart disabled"
 msgstr "показать пулы с отключенными функциями автозапуска"
 
-#: tools/virsh-pool.c:1067
+#: tools/virsh-pool.c:1070
 msgid "only list pool of specified type(s) (if supported)"
 msgstr "показать только пулы заданного типа (если поддерживается)"
 
-#: tools/virsh-pool.c:1071
+#: tools/virsh-pool.c:1074
 msgid "display extended details for pools"
 msgstr "показать подробные данные пулов"
 
-#: tools/virsh-pool.c:1075
+#: tools/virsh-pool.c:1078
 msgid "list UUID of active pools only"
 msgstr ""
 
-#: tools/virsh-pool.c:1079
+#: tools/virsh-pool.c:1082
 msgid "list name of active pools only"
 msgstr ""
 
-#: tools/virsh-pool.c:1156
+#: tools/virsh-pool.c:1159
 #, c-format
 msgid "Invalid pool type '%s'"
 msgstr ""
 
-#: tools/virsh-pool.c:1244
+#: tools/virsh-pool.c:1247
 msgid "Could not retrieve pool information"
 msgstr "Не удалось получить информацию о пуле"
 
-#: tools/virsh-pool.c:1280 tools/virsh-pool.c:1281 tools/virsh-pool.c:1282
+#: tools/virsh-pool.c:1283 tools/virsh-pool.c:1284 tools/virsh-pool.c:1285
 msgid "-"
 msgstr "-"
 
-#: tools/virsh-pool.c:1391 tools/virsh-pool.c:1437 tools/virsh-volume.c:1520
+#: tools/virsh-pool.c:1394 tools/virsh-pool.c:1440 tools/virsh-volume.c:1520
 #: tools/virsh-volume.c:1552
 msgid "Capacity"
 msgstr ""
 
-#: tools/virsh-pool.c:1396 tools/virsh-pool.c:1437 tools/virsh-volume.c:1525
+#: tools/virsh-pool.c:1399 tools/virsh-pool.c:1440 tools/virsh-volume.c:1525
 #: tools/virsh-volume.c:1552
 msgid "Allocation"
 msgstr "Распределение"
 
-#: tools/virsh-pool.c:1401 tools/virsh-pool.c:1438
+#: tools/virsh-pool.c:1404 tools/virsh-pool.c:1441
 msgid "Available"
 msgstr "Доступно"
 
-#: tools/virsh-pool.c:1484
+#: tools/virsh-pool.c:1487
 msgid "find potential storage pool sources"
 msgstr "найти потенциальные источники пулов носителей"
 
-#: tools/virsh-pool.c:1487 tools/virsh-pool.c:1578
+#: tools/virsh-pool.c:1490 tools/virsh-pool.c:1581
 msgid "Returns XML <sources> document."
 msgstr "Возвращает XML-документ <sources>"
 
-#: tools/virsh-pool.c:1496
+#: tools/virsh-pool.c:1499
 msgid "type of storage pool sources to find"
 msgstr "тип искомых источников пулов носителей"
 
-#: tools/virsh-pool.c:1500
+#: tools/virsh-pool.c:1503
 msgid "optional host to query"
 msgstr "запрос на узле (дополнительно)"
 
-#: tools/virsh-pool.c:1504
+#: tools/virsh-pool.c:1507
 msgid "optional port to query"
 msgstr "запрос порта (дополнительно)"
 
-#: tools/virsh-pool.c:1508
+#: tools/virsh-pool.c:1511
 msgid "optional initiator IQN to use for query"
 msgstr ""
 
-#: tools/virsh-pool.c:1532
+#: tools/virsh-pool.c:1535
 msgid "missing argument"
 msgstr "отсутствует аргумент"
 
-#: tools/virsh-pool.c:1561 tools/virsh-pool.c:1616
+#: tools/virsh-pool.c:1564 tools/virsh-pool.c:1619
 #, c-format
 msgid "Failed to find any %s pool sources"
 msgstr "Источники пулов %s не найдены"
 
-#: tools/virsh-pool.c:1575
+#: tools/virsh-pool.c:1578
 msgid "discover potential storage pool sources"
 msgstr "обнаружить потенциальные источники пула носителей"
 
-#: tools/virsh-pool.c:1587
+#: tools/virsh-pool.c:1590
 msgid "type of storage pool sources to discover"
 msgstr "тип источников пулов носителей для обнаружения"
 
-#: tools/virsh-pool.c:1591
+#: tools/virsh-pool.c:1594
 msgid "optional file of source xml to query for pools"
 msgstr "запрос пулов в XML-файле (дополнительно)"
 
-#: tools/virsh-pool.c:1630
+#: tools/virsh-pool.c:1633
 msgid "storage pool information"
 msgstr "информация о пуле носителей"
 
-#: tools/virsh-pool.c:1633
+#: tools/virsh-pool.c:1636
 msgid "Returns basic information about the storage pool."
 msgstr "Возвращает общую информацию о пуле носителей."
 
-#: tools/virsh-pool.c:1643
+#: tools/virsh-pool.c:1646
 msgid "Reture pool info in bytes"
 msgstr ""
 
-#: tools/virsh-pool.c:1695 tools/virsh-pool.c:1704
+#: tools/virsh-pool.c:1698 tools/virsh-pool.c:1707
 msgid "Available:"
 msgstr "Доступно:"
 
-#: tools/virsh-pool.c:1720
+#: tools/virsh-pool.c:1723
 msgid "convert a pool UUID to pool name"
 msgstr "преобразовать UUID пула в имя"
 
-#: tools/virsh-pool.c:1752
+#: tools/virsh-pool.c:1755
 msgid "start a (previously defined) inactive pool"
 msgstr "запустить ранее определённый неактивный пул"
 
-#: tools/virsh-pool.c:1755
+#: tools/virsh-pool.c:1758
 msgid "Start a pool."
 msgstr "Запустить пул."
 
-#: tools/virsh-pool.c:1798
+#: tools/virsh-pool.c:1801
 #, c-format
 msgid "Pool %s started\n"
 msgstr "Пул %s запущен\n"
 
-#: tools/virsh-pool.c:1800
+#: tools/virsh-pool.c:1803
 #, c-format
 msgid "Failed to start pool %s"
 msgstr "Не удалось запустить пул %s"
 
-#: tools/virsh-pool.c:1813
+#: tools/virsh-pool.c:1816
 msgid "undefine an inactive pool"
 msgstr "удалить определение неактивного пула"
 
-#: tools/virsh-pool.c:1816
+#: tools/virsh-pool.c:1819
 msgid "Undefine the configuration for an inactive pool."
 msgstr "Отменить настройки для неактивного пула."
 
-#: tools/virsh-pool.c:1838
+#: tools/virsh-pool.c:1841
 #, c-format
 msgid "Pool %s has been undefined\n"
 msgstr "Определение пула %s удалено\n"
 
-#: tools/virsh-pool.c:1840
+#: tools/virsh-pool.c:1843
 #, c-format
 msgid "Failed to undefine pool %s"
 msgstr "Не удалось удалить определение пула %s"
 
-#: tools/virsh-pool.c:1853
+#: tools/virsh-pool.c:1856
 msgid "convert a pool name to pool UUID"
 msgstr "преобразовать имя пула в UUID"
 
-#: tools/virsh-pool.c:1879
+#: tools/virsh-pool.c:1882
 msgid "failed to get pool UUID"
 msgstr "не удалось получить UUID пула"
 
-#: tools/virsh-pool.c:1890
+#: tools/virsh-pool.c:1893
 msgid "edit XML configuration for a storage pool"
 msgstr "изменить XML-конфигурацию пула носителей"
 
-#: tools/virsh-pool.c:1893
+#: tools/virsh-pool.c:1896
 msgid "Edit the XML configuration for a storage pool."
 msgstr "Изменить XML-конфигурацию пула носителей."
 
-#: tools/virsh-pool.c:1933
+#: tools/virsh-pool.c:1936
 #, c-format
 msgid "Pool %s XML configuration not changed.\n"
 msgstr "XML-конфигурация пула %s не изменилась.\n"
 
-#: tools/virsh-pool.c:1942
+#: tools/virsh-pool.c:1945
 #, c-format
 msgid "Pool %s XML configuration edited.\n"
 msgstr "XML-конфигурация пула %s изменена.\n"
 
-#: tools/virsh-pool.c:2010
+#: tools/virsh-pool.c:2013
 #, c-format
 msgid "%s: event 'lifecycle' for storage pool %s: %s\n"
 msgstr ""
 
-#: tools/virsh-pool.c:2015
+#: tools/virsh-pool.c:2018
 #, c-format
 msgid "event 'lifecycle' for storage pool %s: %s\n"
 msgstr ""
 
-#: tools/virsh-pool.c:2041
+#: tools/virsh-pool.c:2044
 #, c-format
 msgid "%s: event '%s' for storage pool %s\n"
 msgstr ""
 
-#: tools/virsh-pool.c:2046
+#: tools/virsh-pool.c:2049
 #, c-format
 msgid "event '%s' for storage pool %s\n"
 msgstr ""
 
-#: tools/virsh-pool.c:2066
+#: tools/virsh-pool.c:2069
 msgid "Storage Pool Events"
 msgstr ""
 
-#: tools/virsh-pool.c:2069
+#: tools/virsh-pool.c:2072
 msgid "List event types, or wait for storage pool events to occur"
 msgstr ""
 
-#: tools/virsh-pool.c:2077
+#: tools/virsh-pool.c:2080
 msgid "filter by storage pool name or uuid"
 msgstr ""
 
@@ -47038,17 +47043,17 @@ msgstr "[--%s] <строка>"
 msgid "<%s>"
 msgstr "<%s>"
 
-#: tools/vsh.c:872 tools/vsh.c:899 tools/vsh.c:960 tools/vsh.c:1098
+#: tools/vsh.c:871 tools/vsh.c:898 tools/vsh.c:959 tools/vsh.c:1098
 #: tools/vsh.c:1125
 #, c-format
 msgid "Numeric value '%s' for <%s> option is malformed or out of range"
 msgstr ""
 
-#: tools/vsh.c:1063
+#: tools/vsh.c:1062
 msgid "Mandatory option not present"
 msgstr "Отсутствует обязательный параметр"
 
-#: tools/vsh.c:1065
+#: tools/vsh.c:1064
 msgid "Option argument is empty"
 msgstr "Пустой аргумент"
 
