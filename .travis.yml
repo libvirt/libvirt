@@ -97,7 +97,7 @@ env:
     - VIR_TEST_DEBUG=1
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew upgrade && brew install rpcgen yajl xz; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew upgrade && brew install rpcgen yajl xz && brew link --force python@2; fi
 
 before_script:
   - ./autogen.sh --prefix=$(pwd)/install-root
