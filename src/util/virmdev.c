@@ -505,10 +505,13 @@ virMediatedDeviceTypeReadAttrs(const char *sysfspath,
     int ret = -1;
     virMediatedDeviceTypePtr tmp = NULL;
 
-#define MDEV_GET_SYSFS_ATTR(attr, dst, cb) \
+#define MDEV_GET_SYSFS_ATTR(attr, dst, cb, optional) \
     do { \
-        if (cb(dst, "%s/%s", sysfspath, attr) < 0) \
-            goto cleanup; \
+        int rc; \
+        if ((rc = cb(dst, "%s/%s", sysfspath, attr)) < 0) { \
+            if (rc != -2 || !optional) \
+                goto cleanup; \
+        } \
     } while (0)
 
     if (VIR_ALLOC(tmp) < 0)
@@ -517,10 +520,12 @@ virMediatedDeviceTypeReadAttrs(const char *sysfspath,
     if (VIR_STRDUP(tmp->id, last_component(sysfspath)) < 0)
         goto cleanup;
 
-    MDEV_GET_SYSFS_ATTR("name", &tmp->name, virFileReadValueString);
-    MDEV_GET_SYSFS_ATTR("device_api", &tmp->device_api, virFileReadValueString);
+    /* @name sysfs attribute is optional, so getting ENOENT is fine */
+    MDEV_GET_SYSFS_ATTR("name", &tmp->name, virFileReadValueString, true);
+    MDEV_GET_SYSFS_ATTR("device_api", &tmp->device_api,
+                        virFileReadValueString, false);
     MDEV_GET_SYSFS_ATTR("available_instances", &tmp->available_instances,
-                        virFileReadValueUint);
+                        virFileReadValueUint, false);
 
 #undef MDEV_GET_SYSFS_ATTR
 
