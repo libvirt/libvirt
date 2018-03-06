@@ -36,9 +36,12 @@ typedef virNetServer *virNetServerPtr;
 typedef struct _virNetServerClient virNetServerClient;
 typedef virNetServerClient *virNetServerClientPtr;
 
-typedef int (*virNetServerClientDispatchFunc)(virNetServerClientPtr client,
-                                              virNetMessagePtr msg,
-                                              void *opaque);
+/* This function owns the "msg" pointer it is passed and
+ * must arrange for virNetMessageFree to be called on it
+ */
+typedef void (*virNetServerClientDispatchFunc)(virNetServerClientPtr client,
+                                               virNetMessagePtr msg,
+                                               void *opaque);
 
 typedef int (*virNetServerClientFilterFunc)(virNetServerClientPtr client,
                                             virNetMessagePtr msg,

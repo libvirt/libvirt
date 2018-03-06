@@ -1315,11 +1315,11 @@ static void virNetServerClientDispatchRead(virNetServerClientPtr client)
 
         /* Send off to for normal dispatch to workers */
         if (msg) {
-            if (!client->dispatchFunc ||
-                client->dispatchFunc(client, msg, client->dispatchOpaque) < 0) {
+            if (!client->dispatchFunc) {
                 virNetMessageFree(msg);
                 client->wantClose = true;
-                return;
+            } else {
+                client->dispatchFunc(client, msg, client->dispatchOpaque);
             }
         }
 
