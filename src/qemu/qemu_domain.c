@@ -5154,7 +5154,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
         if (dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
-            if ARCH_IS_PPC64(def->os.arch)
+            if (ARCH_IS_PPC64(def->os.arch))
                 dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_VGA;
             else if (qemuDomainIsVirt(def))
                 dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_VIRTIO;

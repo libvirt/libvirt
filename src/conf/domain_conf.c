@@ -14697,7 +14697,7 @@ virDomainVideoDefaultType(const virDomainDef *def)
         if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
             def->os.type == VIR_DOMAIN_OSTYPE_LINUX)
             return VIR_DOMAIN_VIDEO_TYPE_XEN;
-        else if ARCH_IS_PPC64(def->os.arch)
+        else if (ARCH_IS_PPC64(def->os.arch))
             return VIR_DOMAIN_VIDEO_TYPE_VGA;
         else
             return VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
