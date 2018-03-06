@@ -1813,20 +1813,18 @@ static virStorageAuthDefPtr
 virStorageAuthDefParseXML(xmlXPathContextPtr ctxt)
 {
     virStorageAuthDefPtr authdef = NULL;
+    virStorageAuthDefPtr ret = NULL;
     xmlNodePtr secretnode = NULL;
-    char *username = NULL;
     char *authtype = NULL;
 
     if (VIR_ALLOC(authdef) < 0)
         return NULL;
 
-    if (!(username = virXPathString("string(./@username)", ctxt))) {
+    if (!(authdef->username = virXPathString("string(./@username)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing username for auth"));
-        goto error;
+        goto cleanup;
     }
-    authdef->username = username;
-    username = NULL;
 
     authdef->authType = VIR_STORAGE_AUTH_TYPE_NONE;
     authtype = virXPathString("string(./@type)", ctxt);
@@ -1837,15 +1835,14 @@ virStorageAuthDefParseXML(xmlXPathContextPtr ctxt)
         if ((authdef->authType = virStorageAuthTypeFromString(authtype)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown auth type '%s'"), authtype);
-            goto error;
+            goto cleanup;
         }
-        VIR_FREE(authtype);
     }
 
     if (!(secretnode = virXPathNode("./secret ", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Missing <secret> element in auth"));
-        goto error;
+        goto cleanup;
     }
 
     /* Used by the domain disk xml parsing in order to ensure the
@@ -1858,15 +1855,15 @@ virStorageAuthDefParseXML(xmlXPathContextPtr ctxt)
     authdef->secrettype = virXMLPropString(secretnode, "type");
 
     if (virSecretLookupParseSecret(secretnode, &authdef->seclookupdef) < 0)
-        goto error;
+        goto cleanup;
 
-    return authdef;
+    VIR_STEAL_PTR(ret, authdef);
 
- error:
+ cleanup:
     VIR_FREE(authtype);
-    VIR_FREE(username);
     virStorageAuthDefFree(authdef);
-    return NULL;
+
+    return ret;
 }
 
 
