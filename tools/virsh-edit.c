@@ -138,7 +138,6 @@ do {
                 EDIT_RELAX;
                 relax_avail = false;
                 goto redefine;
-                break;
             }
             ATTRIBUTE_FALLTHROUGH;
 #endif
