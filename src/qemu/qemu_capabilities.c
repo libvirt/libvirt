@@ -1978,6 +1978,9 @@ virQEMUCapsProcessStringFlags(virQEMUCapsPtr qemuCaps,
 {
     size_t i, j;
     for (i = 0; i < nflags; i++) {
+        if (virQEMUCapsGet(qemuCaps, flags[i].flag))
+            continue;
+
         for (j = 0; j < nvalues; j++) {
             if (STREQ(values[j], flags[i].value)) {
                 virQEMUCapsSet(qemuCaps, flags[i].flag);
