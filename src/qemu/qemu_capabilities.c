@@ -1698,6 +1698,9 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {
     { "deflate-on-oom", QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE },
+    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
+    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
+    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
@@ -1709,6 +1712,9 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
     { "logical_block_size", QEMU_CAPS_BLOCKIO },
     { "num-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW },
+    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
+    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
+    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioNet[] = {
@@ -1717,6 +1723,9 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioNet[] = {
     { "rx_queue_size", QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE },
     { "tx_queue_size", QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE },
     { "host_mtu", QEMU_CAPS_VIRTIO_NET_HOST_MTU },
+    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
+    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
+    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSpaprPCIHostBridge[] = {
@@ -1725,6 +1734,9 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSpaprPCIHostBridge[] 
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioSCSI[] = {
     { "iothread", QEMU_CAPS_VIRTIO_SCSI_IOTHREAD },
+    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
+    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
+    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsPCIAssign[] = {
@@ -1799,6 +1811,9 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxl[] = {
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioGpu[] = {
     { "virgl", QEMU_CAPS_VIRTIO_GPU_VIRGL },
     { "max_outputs", QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS },
+    { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
+    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
+    { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsICH9[] = {
@@ -1934,40 +1949,6 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE },
 };
 
-struct virQEMUCapsPropTypeObjects {
-    const char *prop;
-    int flag;
-    const char **objects;
-};
-
-static const char *virQEMUCapsVirtioPCIObjects[] = {
-     "virtio-balloon-pci",
-     "virtio-blk-pci",
-     "virtio-scsi-pci",
-     "virtio-serial-pci",
-     "virtio-9p-pci",
-     "virtio-net-pci",
-     "virtio-rng-pci",
-     "virtio-gpu-pci",
-     "virtio-input-host-pci",
-     "virtio-keyboard-pci",
-     "virtio-mouse-pci",
-     "virtio-tablet-pci",
-     NULL
-};
-
-static struct virQEMUCapsPropTypeObjects virQEMUCapsPropObjects[] = {
-    { "disable-legacy",
-      QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
-      virQEMUCapsVirtioPCIObjects },
-    { "iommu_platform",
-      QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM,
-      virQEMUCapsVirtioPCIObjects },
-    { "ats",
-      QEMU_CAPS_VIRTIO_PCI_ATS,
-      virQEMUCapsVirtioPCIObjects },
-};
-
 
 static void
 virQEMUCapsProcessStringFlags(virQEMUCapsPtr qemuCaps,
@@ -1984,31 +1965,6 @@ virQEMUCapsProcessStringFlags(virQEMUCapsPtr qemuCaps,
         for (j = 0; j < nvalues; j++) {
             if (STREQ(values[j], flags[i].value)) {
                 virQEMUCapsSet(qemuCaps, flags[i].flag);
-                break;
-            }
-        }
-    }
-}
-
-
-static void
-virQEMUCapsProcessProps(virQEMUCapsPtr qemuCaps,
-                        size_t nprops,
-                        struct virQEMUCapsPropTypeObjects *props,
-                        const char *object,
-                        size_t nvalues,
-                        char *const*values)
-{
-    size_t i, j;
-
-    for (i = 0; i < nprops; i++) {
-        if (virQEMUCapsGet(qemuCaps, props[i].flag))
-            continue;
-
-        for (j = 0; j < nvalues; j++) {
-            if (STREQ(values[j], props[i].prop)) {
-                if (virStringListHasString(props[i].objects, object))
-                    virQEMUCapsSet(qemuCaps, props[i].flag);
                 break;
             }
         }
@@ -2908,10 +2864,6 @@ virQEMUCapsProbeQMPObjects(virQEMUCapsPtr qemuCaps,
                                       virQEMUCapsObjectProps[i].nprops,
                                       virQEMUCapsObjectProps[i].props,
                                       nvalues, values);
-        virQEMUCapsProcessProps(qemuCaps,
-                                ARRAY_CARDINALITY(virQEMUCapsPropObjects),
-                                virQEMUCapsPropObjects, type,
-                                nvalues, values);
         virStringListFreeCount(values, nvalues);
     }
 
