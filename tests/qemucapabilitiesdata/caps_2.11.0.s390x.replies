@@ -2680,7 +2680,7 @@
   "id": "libvirt-16",
   "error": {
     "class": "DeviceNotFound",
-    "desc": "Device 'virtio-blk-s390' not found"
+    "desc": "Device 'virtio-net-s390' not found"
   }
 }
 
@@ -2688,20 +2688,12 @@
   "id": "libvirt-17",
   "error": {
     "class": "DeviceNotFound",
-    "desc": "Device 'virtio-net-s390' not found"
-  }
-}
-
-{
-  "id": "libvirt-18",
-  "error": {
-    "class": "DeviceNotFound",
     "desc": "Device 'pci-assign' not found"
   }
 }
 
 {
-  "id": "libvirt-19",
+  "id": "libvirt-18",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'kvm-pci-assign' not found"
@@ -2817,7 +2809,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-20"
+  "id": "libvirt-19"
 }
 
 {
@@ -2931,11 +2923,11 @@
       "type": "uint64"
     }
   ],
-  "id": "libvirt-21"
+  "id": "libvirt-20"
 }
 
 {
-  "id": "libvirt-22",
+  "id": "libvirt-21",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'ide-drive' not found"
@@ -2943,7 +2935,7 @@
 }
 
 {
-  "id": "libvirt-23",
+  "id": "libvirt-22",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'PIIX4_PM' not found"
@@ -2951,15 +2943,7 @@
 }
 
 {
-  "id": "libvirt-24",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'usb-redir' not found"
-  }
-}
-
-{
-  "id": "libvirt-25",
+  "id": "libvirt-23",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'usb-host' not found"
@@ -2990,11 +2974,11 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-26"
+  "id": "libvirt-24"
 }
 
 {
-  "id": "libvirt-27",
+  "id": "libvirt-25",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'i440FX-pcihost' not found"
@@ -3002,7 +2986,7 @@
 }
 
 {
-  "id": "libvirt-28",
+  "id": "libvirt-26",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'q35-pcihost' not found"
@@ -3010,42 +2994,10 @@
 }
 
 {
-  "id": "libvirt-29",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'usb-storage' not found"
-  }
-}
-
-{
-  "id": "libvirt-30",
+  "id": "libvirt-27",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'kvm-pit' not found"
-  }
-}
-
-{
-  "id": "libvirt-31",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'VGA' not found"
-  }
-}
-
-{
-  "id": "libvirt-32",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'vmware-svga' not found"
-  }
-}
-
-{
-  "id": "libvirt-33",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'qxl' not found"
   }
 }
 
@@ -3197,7 +3149,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-28"
 }
 
 {
@@ -3244,11 +3196,11 @@
       "type": "size"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-29"
 }
 
 {
-  "id": "libvirt-36",
+  "id": "libvirt-30",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'ICH9-LPC' not found"
@@ -3395,7 +3347,7 @@
       "type": "str"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-31"
 }
 
 {
@@ -3457,7 +3409,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-32"
 }
 
 {
@@ -3501,15 +3453,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-39"
-}
-
-{
-  "id": "libvirt-40",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'nec-usb-xhci' not found"
-  }
+  "id": "libvirt-33"
 }
 
 {
@@ -3562,7 +3506,7 @@
       "cpu-max": 248
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-34"
 }
 
 {
@@ -4096,20 +4040,20 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-35"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-36"
 }
 
 {
   "return": [
     "emulator"
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-37"
 }
 
 {
@@ -5230,7 +5174,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-38"
 }
 
 {
@@ -5288,7 +5232,7 @@
       "capability": "x-multifd"
     }
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-39"
 }
 
 {
@@ -15156,7 +15100,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-47"
+  "id": "libvirt-40"
 }
 
 {
@@ -15195,11 +15139,11 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-41"
 }
 
 {
-  "id": "libvirt-49",
+  "id": "libvirt-42",
   "error": {
     "class": "GenericError",
     "desc": "Property '.migratable' not found"

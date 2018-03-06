@@ -227,7 +227,7 @@
   <flag name='dump-completed'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>321194</microcodeVersion>
+  <microcodeVersion>320947</microcodeVersion>
   <package> (v2.9.0)</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>

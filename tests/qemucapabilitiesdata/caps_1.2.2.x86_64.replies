@@ -1086,7 +1086,7 @@
   "id": "libvirt-12",
   "error": {
     "class": "DeviceNotFound",
-    "desc": "Device 'virtio-blk-ccw' not found"
+    "desc": "Device 'virtio-net-ccw' not found"
   }
 }
 
@@ -1094,7 +1094,7 @@
   "id": "libvirt-13",
   "error": {
     "class": "DeviceNotFound",
-    "desc": "Device 'virtio-net-ccw' not found"
+    "desc": "Device 'virtio-scsi-ccw' not found"
   }
 }
 
@@ -1102,7 +1102,7 @@
   "id": "libvirt-14",
   "error": {
     "class": "DeviceNotFound",
-    "desc": "Device 'virtio-scsi-ccw' not found"
+    "desc": "Device 'virtio-net-s390' not found"
   }
 }
 
@@ -1110,7 +1110,7 @@
   "id": "libvirt-15",
   "error": {
     "class": "DeviceNotFound",
-    "desc": "Device 'virtio-blk-s390' not found"
+    "desc": "Device 'pci-assign' not found"
   }
 }
 
@@ -1118,31 +1118,7 @@
   "id": "libvirt-16",
   "error": {
     "class": "DeviceNotFound",
-    "desc": "Device 'virtio-net-s390' not found"
-  }
-}
-
-{
-  "id": "libvirt-17",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'pci-assign' not found"
-  }
-}
-
-{
-  "id": "libvirt-18",
-  "error": {
-    "class": "DeviceNotFound",
     "desc": "Device 'kvm-pci-assign' not found"
-  }
-}
-
-{
-  "id": "libvirt-19",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'vfio-pci' not found"
   }
 }
 
@@ -1217,7 +1193,7 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-20"
+  "id": "libvirt-17"
 }
 
 {
@@ -1271,7 +1247,7 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-21"
+  "id": "libvirt-18"
 }
 
 {
@@ -1313,15 +1289,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-22"
-}
-
-{
-  "id": "libvirt-23",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'usb-redir' not found"
-  }
+  "id": "libvirt-19"
 }
 
 {
@@ -1367,7 +1335,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-24"
+  "id": "libvirt-20"
 }
 
 {
@@ -1393,17 +1361,17 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-25"
+  "id": "libvirt-21"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-26"
+  "id": "libvirt-22"
 }
 
 {
-  "id": "libvirt-27",
+  "id": "libvirt-23",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'q35-pcihost' not found"
@@ -1457,7 +1425,7 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-28"
+  "id": "libvirt-24"
 }
 
 {
@@ -1471,7 +1439,7 @@
       "type": "hex32"
     }
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-25"
 }
 
 {
@@ -1501,7 +1469,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-26"
 }
 
 {
@@ -1531,7 +1499,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-27"
 }
 
 {
@@ -1597,27 +1565,11 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-28"
 }
 
 {
-  "id": "libvirt-33",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'virtio-gpu-pci' not found"
-  }
-}
-
-{
-  "id": "libvirt-34",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'virtio-gpu-device' not found"
-  }
-}
-
-{
-  "id": "libvirt-35",
+  "id": "libvirt-29",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'ICH9-LPC' not found"
@@ -1659,11 +1611,11 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-30"
 }
 
 {
-  "id": "libvirt-37",
+  "id": "libvirt-31",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-ccw' not found"
@@ -1671,7 +1623,7 @@
 }
 
 {
-  "id": "libvirt-38",
+  "id": "libvirt-32",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-device' not found"
@@ -1705,7 +1657,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-33"
 }
 
 {
@@ -1746,7 +1698,7 @@
       "name": "none"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-34"
 }
 
 {
@@ -1818,11 +1770,11 @@
       "name": "Opteron_G4"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-35"
 }
 
 {
-  "id": "libvirt-42",
+  "id": "libvirt-36",
   "error": {
     "class": "CommandNotFound",
     "desc": "The command query-tpm-models has not been found"
@@ -1830,7 +1782,7 @@
 }
 
 {
-  "id": "libvirt-43",
+  "id": "libvirt-37",
   "error": {
     "class": "CommandNotFound",
     "desc": "The command query-tpm-types has not been found"
@@ -1838,7 +1790,7 @@
 }
 
 {
-  "id": "libvirt-44",
+  "id": "libvirt-38",
   "error": {
     "class": "CommandNotFound",
     "desc": "The command query-command-line-options has not been found"
@@ -1852,7 +1804,7 @@
       "capability": "xbzrle"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-39"
 }
 
 {

@@ -2250,7 +2250,7 @@
   "id": "libvirt-13",
   "error": {
     "class": "DeviceNotFound",
-    "desc": "Device 'virtio-blk-ccw' not found"
+    "desc": "Device 'virtio-net-ccw' not found"
   }
 }
 
@@ -2258,7 +2258,7 @@
   "id": "libvirt-14",
   "error": {
     "class": "DeviceNotFound",
-    "desc": "Device 'virtio-net-ccw' not found"
+    "desc": "Device 'virtio-scsi-ccw' not found"
   }
 }
 
@@ -2266,28 +2266,12 @@
   "id": "libvirt-15",
   "error": {
     "class": "DeviceNotFound",
-    "desc": "Device 'virtio-scsi-ccw' not found"
-  }
-}
-
-{
-  "id": "libvirt-16",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'virtio-blk-s390' not found"
-  }
-}
-
-{
-  "id": "libvirt-17",
-  "error": {
-    "class": "DeviceNotFound",
     "desc": "Device 'virtio-net-s390' not found"
   }
 }
 
 {
-  "id": "libvirt-18",
+  "id": "libvirt-16",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'pci-assign' not found"
@@ -2348,7 +2332,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-19"
+  "id": "libvirt-17"
 }
 
 {
@@ -2450,7 +2434,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-20"
+  "id": "libvirt-18"
 }
 
 {
@@ -2560,7 +2544,7 @@
       "type": "uint64"
     }
   ],
-  "id": "libvirt-21"
+  "id": "libvirt-19"
 }
 
 {
@@ -2632,7 +2616,7 @@
       "type": "uint16"
     }
   ],
-  "id": "libvirt-22"
+  "id": "libvirt-20"
 }
 
 {
@@ -2690,7 +2674,7 @@
       "type": "int32"
     }
   ],
-  "id": "libvirt-23"
+  "id": "libvirt-21"
 }
 
 {
@@ -2739,7 +2723,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-24"
+  "id": "libvirt-22"
 }
 
 {
@@ -2808,7 +2792,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-25"
+  "id": "libvirt-23"
 }
 
 {
@@ -2835,7 +2819,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-26"
+  "id": "libvirt-24"
 }
 
 {
@@ -2873,7 +2857,7 @@
       "type": "child<qemu:memory-region>"
     }
   ],
-  "id": "libvirt-27"
+  "id": "libvirt-25"
 }
 
 {
@@ -2951,7 +2935,7 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-28"
+  "id": "libvirt-26"
 }
 
 {
@@ -3020,7 +3004,7 @@
       "type": "uint16"
     }
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-27"
 }
 
 {
@@ -3034,7 +3018,7 @@
       "type": "LostTickPolicy"
     }
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-28"
 }
 
 {
@@ -3086,7 +3070,7 @@
       "type": "int32"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-29"
 }
 
 {
@@ -3124,7 +3108,7 @@
       "type": "int32"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-30"
 }
 
 {
@@ -3206,7 +3190,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-31"
 }
 
 {
@@ -3325,7 +3309,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-32"
 }
 
 {
@@ -3365,7 +3349,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-33"
 }
 
 {
@@ -3451,7 +3435,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-34"
 }
 
 {
@@ -3564,11 +3548,11 @@
       "type": "guest statistics"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-35"
 }
 
 {
-  "id": "libvirt-38",
+  "id": "libvirt-36",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-ccw' not found"
@@ -3611,7 +3595,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-37"
 }
 
 {
@@ -3686,7 +3670,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-38"
 }
 
 {
@@ -3709,7 +3693,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-39"
 }
 
 {
@@ -3878,7 +3862,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-40"
 }
 
 {
@@ -4084,21 +4068,21 @@
       "static": false
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-41"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-42"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-43"
 }
 
 {
@@ -5221,7 +5205,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-44"
 }
 
 {
@@ -5259,7 +5243,7 @@
       "capability": "x-colo"
     }
   ],
-  "id": "libvirt-47"
+  "id": "libvirt-45"
 }
 
 {
@@ -14029,7 +14013,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-48"
+  "id": "libvirt-46"
 }
 
 {

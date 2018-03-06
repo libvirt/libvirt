@@ -212,7 +212,7 @@
   <flag name='dump-completed'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>239276</microcodeVersion>
+  <microcodeVersion>239029</microcodeVersion>
   <package> (v2.7.0)</package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='Opteron_G5'/>

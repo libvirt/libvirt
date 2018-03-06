@@ -187,7 +187,7 @@
   <flag name='dump-completed'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>383421</microcodeVersion>
+  <microcodeVersion>382824</microcodeVersion>
   <package> (v2.10.0)</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>

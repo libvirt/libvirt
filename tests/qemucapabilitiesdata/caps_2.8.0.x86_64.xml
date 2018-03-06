@@ -214,7 +214,7 @@
   <flag name='dump-completed'/>
   <version>2008000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>255931</microcodeVersion>
+  <microcodeVersion>255684</microcodeVersion>
   <package> (v2.8.0)</package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='host' usable='yes'/>

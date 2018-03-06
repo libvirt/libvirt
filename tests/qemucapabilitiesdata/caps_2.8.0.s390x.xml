@@ -141,7 +141,7 @@
   <flag name='dump-completed'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>242460</microcodeVersion>
+  <microcodeVersion>241633</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='zEC12.2-base' migratability='no'>
