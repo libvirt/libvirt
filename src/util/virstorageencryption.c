@@ -242,15 +242,19 @@ virStorageEncryptionInfoParseIvgen(xmlNodePtr info_node,
 }
 
 
-static virStorageEncryptionPtr
-virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
+virStorageEncryptionPtr
+virStorageEncryptionParseNode(xmlNodePtr node,
+                              xmlXPathContextPtr ctxt)
 {
+    xmlNodePtr saveNode = ctxt->node;
     xmlNodePtr *nodes = NULL;
     virStorageEncryptionPtr encdef = NULL;
     virStorageEncryptionPtr ret = NULL;
     char *format_str = NULL;
     int n;
     size_t i;
+
+    ctxt->node = node;
 
     if (VIR_ALLOC(encdef) < 0)
         goto cleanup;
@@ -311,34 +315,9 @@ virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
     VIR_FREE(format_str);
     VIR_FREE(nodes);
     virStorageEncryptionFree(encdef);
+    ctxt->node = saveNode;
+
     return ret;
-}
-
-virStorageEncryptionPtr
-virStorageEncryptionParseNode(xmlDocPtr xml, xmlNodePtr root)
-{
-    xmlXPathContextPtr ctxt = NULL;
-    virStorageEncryptionPtr enc = NULL;
-
-    if (STRNEQ((const char *) root->name, "encryption")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("unknown root element for volume "
-                               "encryption information"));
-        goto cleanup;
-    }
-
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    ctxt->node = root;
-    enc = virStorageEncryptionParseXML(ctxt);
-
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    return enc;
 }
 
 

@@ -83,8 +83,8 @@ virStorageEncryptionPtr virStorageEncryptionCopy(const virStorageEncryption *src
 
 void virStorageEncryptionFree(virStorageEncryptionPtr enc);
 
-virStorageEncryptionPtr virStorageEncryptionParseNode(xmlDocPtr xml,
-                                                      xmlNodePtr root);
+virStorageEncryptionPtr virStorageEncryptionParseNode(xmlNodePtr node,
+                                                      xmlXPathContextPtr ctxt);
 int virStorageEncryptionFormat(virBufferPtr buf,
                                virStorageEncryptionPtr enc);
 

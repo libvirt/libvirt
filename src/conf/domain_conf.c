@@ -8542,7 +8542,8 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
 
 static int
 virDomainDiskSourceEncryptionParse(xmlNodePtr node,
-                                   virStorageEncryptionPtr *encryptionsrc)
+                                   virStorageEncryptionPtr *encryptionsrc,
+                                   xmlXPathContextPtr ctxt)
 {
     xmlNodePtr child;
     virStorageEncryptionPtr encryption = NULL;
@@ -8551,7 +8552,7 @@ virDomainDiskSourceEncryptionParse(xmlNodePtr node,
         if (child->type == XML_ELEMENT_NODE &&
             virXMLNodeNameEqual(child, "encryption")) {
 
-            if (!(encryption = virStorageEncryptionParseNode(node->doc, child)))
+            if (!(encryption = virStorageEncryptionParseNode(child, ctxt)))
                 return -1;
 
             *encryptionsrc = encryption;
@@ -8637,7 +8638,7 @@ virDomainDiskSourceParse(xmlNodePtr node,
         !(src->auth = virStorageAuthDefParse(tmp, ctxt)))
         goto cleanup;
 
-    if (virDomainDiskSourceEncryptionParse(node, &src->encryption) < 0)
+    if (virDomainDiskSourceEncryptionParse(node, &src->encryption, ctxt) < 0)
         goto cleanup;
 
     if (virDomainDiskSourcePrivateDataParse(ctxt, src, flags, xmlopt) < 0)
@@ -9408,7 +9409,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 goto error;
             }
 
-            if (!(encryption = virStorageEncryptionParseNode(node->doc, cur)))
+            if (!(encryption = virStorageEncryptionParseNode(cur, ctxt)))
                 goto error;
         } else if (!serial &&
                    virXMLNodeNameEqual(cur, "serial")) {

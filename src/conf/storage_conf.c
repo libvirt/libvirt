@@ -1209,8 +1209,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
 
     node = virXPathNode("./target/encryption", ctxt);
     if (node != NULL) {
-        ret->target.encryption = virStorageEncryptionParseNode(ctxt->doc,
-                                                               node);
+        ret->target.encryption = virStorageEncryptionParseNode(node, ctxt);
         if (ret->target.encryption == NULL)
             goto error;
     }
