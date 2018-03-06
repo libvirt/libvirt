@@ -1355,8 +1355,7 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
     if (pcpus > 0 && pcpus < nvcpus)
         nvcpus = pcpus;
 
-    snprintf(str_vcpus, 31, "%d", nvcpus);
-    str_vcpus[31] = '\0';
+    snprintf(str_vcpus, sizeof(str_vcpus), "%d", nvcpus);
 
     openvzSetProgramSentinal(prog, vm->def->name);
     if (virRun(prog, NULL) < 0)
