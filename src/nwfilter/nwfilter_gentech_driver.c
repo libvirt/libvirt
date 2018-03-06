@@ -360,7 +360,6 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
                            inst->nrules,
                            ruleinst) < 0)
         goto cleanup;
-    inst = NULL;
 
     ret = 0;
  cleanup:
