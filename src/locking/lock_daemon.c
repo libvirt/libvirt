@@ -165,7 +165,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
         goto error;
 
     if (!(srv = virNetServerNew("virtlockd", 1,
-                                1, 1, 0, config->max_clients,
+                                0, 0, 0, config->max_clients,
                                 config->max_clients, -1, 0,
                                 NULL,
                                 virLockDaemonClientNew,
@@ -180,7 +180,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
     srv = NULL;
 
     if (!(srv = virNetServerNew("admin", 1,
-                                1, 1, 0, config->admin_max_clients,
+                                0, 0, 0, config->admin_max_clients,
                                 config->admin_max_clients, -1, 0,
                                 NULL,
                                 remoteAdmClientNew,
