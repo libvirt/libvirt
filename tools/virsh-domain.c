@@ -7213,7 +7213,7 @@ cmdGuestvcpus(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "cpulist", &cpulist))
         return false;
 
-    if (cpulist && !(enable | disable)) {
+    if (cpulist && !(enable || disable)) {
         vshError(ctl, _("One of options --enable or --disable is required by "
                         "option --cpulist"));
         return false;
