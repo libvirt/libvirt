@@ -1809,16 +1809,20 @@ virStorageAuthDefCopy(const virStorageAuthDef *src)
 }
 
 
-static virStorageAuthDefPtr
-virStorageAuthDefParseXML(xmlXPathContextPtr ctxt)
+virStorageAuthDefPtr
+virStorageAuthDefParse(xmlNodePtr node,
+                       xmlXPathContextPtr ctxt)
 {
+    xmlNodePtr saveNode = ctxt->node;
     virStorageAuthDefPtr authdef = NULL;
     virStorageAuthDefPtr ret = NULL;
     xmlNodePtr secretnode = NULL;
     char *authtype = NULL;
 
+    ctxt->node = node;
+
     if (VIR_ALLOC(authdef) < 0)
-        return NULL;
+        goto cleanup;
 
     if (!(authdef->username = virXPathString("string(./@username)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -1862,29 +1866,9 @@ virStorageAuthDefParseXML(xmlXPathContextPtr ctxt)
  cleanup:
     VIR_FREE(authtype);
     virStorageAuthDefFree(authdef);
+    ctxt->node = saveNode;
 
     return ret;
-}
-
-
-virStorageAuthDefPtr
-virStorageAuthDefParse(xmlDocPtr xml, xmlNodePtr root)
-{
-    xmlXPathContextPtr ctxt = NULL;
-    virStorageAuthDefPtr authdef = NULL;
-
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
-    ctxt->node = root;
-    authdef = virStorageAuthDefParseXML(ctxt);
-
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    return authdef;
 }
 
 

@@ -527,7 +527,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     }
 
     if ((authnode = virXPathNode("./auth", ctxt))) {
-        if (!(authdef = virStorageAuthDefParse(node->doc, authnode)))
+        if (!(authdef = virStorageAuthDefParse(authnode, ctxt)))
             goto cleanup;
 
         if (authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE) {

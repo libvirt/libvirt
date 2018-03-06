@@ -7218,7 +7218,8 @@ virDomainHostdevSubsysSCSIHostDefParseXML(xmlNodePtr sourcenode,
 
 static int
 virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
-                                           virDomainHostdevSubsysSCSIPtr def)
+                                           virDomainHostdevSubsysSCSIPtr def,
+                                           xmlXPathContextPtr ctxt)
 {
     int ret = -1;
     int auth_secret_usage = -1;
@@ -7259,7 +7260,7 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
             virXMLNodeNameEqual(cur, "auth")) {
-            if (!(authdef = virStorageAuthDefParse(sourcenode->doc, cur)))
+            if (!(authdef = virStorageAuthDefParse(cur, ctxt)))
                 goto cleanup;
             if ((auth_secret_usage =
                  virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
@@ -7288,7 +7289,8 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
 
 static int
 virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr sourcenode,
-                                      virDomainHostdevSubsysSCSIPtr scsisrc)
+                                      virDomainHostdevSubsysSCSIPtr scsisrc,
+                                      xmlXPathContextPtr ctxt)
 {
     char *protocol = NULL;
     int ret = -1;
@@ -7305,7 +7307,7 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr sourcenode,
     }
 
     if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
-        ret = virDomainHostdevSubsysSCSIiSCSIDefParseXML(sourcenode, scsisrc);
+        ret = virDomainHostdevSubsysSCSIiSCSIDefParseXML(sourcenode, scsisrc, ctxt);
     else
         ret = virDomainHostdevSubsysSCSIHostDefParseXML(sourcenode, scsisrc);
 
@@ -7550,7 +7552,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-        if (virDomainHostdevSubsysSCSIDefParseXML(sourcenode, scsisrc) < 0)
+        if (virDomainHostdevSubsysSCSIDefParseXML(sourcenode, scsisrc, ctxt) < 0)
             goto error;
         break;
 
@@ -8540,7 +8542,8 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
 
 static int
 virDomainDiskSourceAuthParse(xmlNodePtr node,
-                             virStorageAuthDefPtr *authdefsrc)
+                             virStorageAuthDefPtr *authdefsrc,
+                             xmlXPathContextPtr ctxt)
 {
     xmlNodePtr child;
     virStorageAuthDefPtr authdef;
@@ -8549,7 +8552,7 @@ virDomainDiskSourceAuthParse(xmlNodePtr node,
         if (child->type == XML_ELEMENT_NODE &&
             virXMLNodeNameEqual(child, "auth")) {
 
-            if (!(authdef = virStorageAuthDefParse(node->doc, child)))
+            if (!(authdef = virStorageAuthDefParse(child, ctxt)))
                 return -1;
 
             *authdefsrc = authdef;
@@ -8653,7 +8656,7 @@ virDomainDiskSourceParse(xmlNodePtr node,
         goto cleanup;
     }
 
-    if (virDomainDiskSourceAuthParse(node, &src->auth) < 0)
+    if (virDomainDiskSourceAuthParse(node, &src->auth, ctxt) < 0)
         goto cleanup;
 
     if (virDomainDiskSourceEncryptionParse(node, &src->encryption) < 0)
@@ -9401,7 +9404,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                 goto error;
             }
 
-            if (!(authdef = virStorageAuthDefParse(node->doc, cur)))
+            if (!(authdef = virStorageAuthDefParse(cur, ctxt)))
                 goto error;
         } else if (virXMLNodeNameEqual(cur, "iotune")) {
             if (virDomainDiskDefIotuneParse(def, ctxt) < 0)
