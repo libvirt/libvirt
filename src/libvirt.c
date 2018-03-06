@@ -121,28 +121,6 @@ static virSecretDriverPtr virSharedSecretDriver;
 static virNWFilterDriverPtr virSharedNWFilterDriver;
 
 
-#if defined(POLKIT_AUTH)
-static int
-virConnectAuthGainPolkit(const char *privilege)
-{
-    virCommandPtr cmd;
-    int ret = -1;
-
-    if (geteuid() == 0)
-        return 0;
-
-    cmd = virCommandNewArgList(POLKIT_AUTH, "--obtain", privilege, NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virCommandFree(cmd);
-    return ret;
-}
-#endif
-
-
 static int
 virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
                               unsigned int ncred,
@@ -160,16 +138,11 @@ virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
             if (STRNEQ(cred[i].challenge, "PolicyKit"))
                 return -1;
 
-#if defined(POLKIT_AUTH)
-            if (virConnectAuthGainPolkit(cred[i].prompt) < 0)
-                return -1;
-#else
             /*
              * Ignore & carry on. Although we can't auth
              * directly, the user may have authenticated
              * themselves already outside context of libvirt
              */
-#endif
             break;
         }
 

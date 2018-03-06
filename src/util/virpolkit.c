@@ -22,11 +22,6 @@
 #include <config.h>
 #include <poll.h>
 
-#if WITH_POLKIT0
-# include <polkit/polkit.h>
-# include <polkit-dbus/polkit-dbus.h>
-#endif
-
 #include "virpolkit.h"
 #include "virerror.h"
 #include "virlog.h"
@@ -211,109 +206,7 @@ virPolkitAgentCreate(void)
 }
 
 
-#elif WITH_POLKIT0
-int virPolkitCheckAuth(const char *actionid,
-                       pid_t pid,
-                       unsigned long long startTime ATTRIBUTE_UNUSED,
-                       uid_t uid,
-                       const char **details,
-                       bool allowInteraction ATTRIBUTE_UNUSED)
-{
-    PolKitCaller *pkcaller = NULL;
-    PolKitAction *pkaction = NULL;
-    PolKitContext *pkcontext = NULL;
-    PolKitError *pkerr = NULL;
-    PolKitResult pkresult;
-    DBusError err;
-    DBusConnection *sysbus;
-    int ret = -1;
-
-    if (details) {
-        virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                       _("Details not supported with polkit v0"));
-        return -1;
-    }
-
-    if (!(sysbus = virDBusGetSystemBus()))
-        goto cleanup;
-
-    VIR_INFO("Checking PID %lld running as %d",
-             (long long) pid, uid);
-    dbus_error_init(&err);
-    if (!(pkcaller = polkit_caller_new_from_pid(sysbus,
-                                                pid, &err))) {
-        VIR_DEBUG("Failed to lookup policy kit caller: %s", err.message);
-        dbus_error_free(&err);
-        goto cleanup;
-    }
-
-    if (!(pkaction = polkit_action_new())) {
-        char ebuf[1024];
-        VIR_DEBUG("Failed to create polkit action %s",
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
-        goto cleanup;
-    }
-    polkit_action_set_action_id(pkaction, actionid);
-
-    if (!(pkcontext = polkit_context_new()) ||
-        !polkit_context_init(pkcontext, &pkerr)) {
-        char ebuf[1024];
-        VIR_DEBUG("Failed to create polkit context %s",
-                  (pkerr ? polkit_error_get_error_message(pkerr)
-                   : virStrerror(errno, ebuf, sizeof(ebuf))));
-        if (pkerr)
-            polkit_error_free(pkerr);
-        dbus_error_free(&err);
-        goto cleanup;
-    }
-
-# if HAVE_POLKIT_CONTEXT_IS_CALLER_AUTHORIZED
-    pkresult = polkit_context_is_caller_authorized(pkcontext,
-                                                   pkaction,
-                                                   pkcaller,
-                                                   0,
-                                                   &pkerr);
-    if (pkerr && polkit_error_is_set(pkerr)) {
-        VIR_DEBUG("Policy kit failed to check authorization %d %s",
-                  polkit_error_get_error_code(pkerr),
-                  polkit_error_get_error_message(pkerr));
-        goto cleanup;
-    }
-# else
-    pkresult = polkit_context_can_caller_do_action(pkcontext,
-                                                   pkaction,
-                                                   pkcaller);
-# endif
-    if (pkresult != POLKIT_RESULT_YES) {
-        VIR_DEBUG("Policy kit denied action %s from pid %lld, uid %d, result: %s",
-                  actionid, (long long) pid, uid,
-                  polkit_result_to_string_representation(pkresult));
-        ret = -2;
-        goto cleanup;
-    }
-
-    VIR_DEBUG("Policy allowed action %s from pid %lld, uid %d",
-              actionid, (long long)pid, (int)uid);
-
-    ret = 0;
-
- cleanup:
-    if (ret < 0) {
-        virResetLastError();
-        virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                       _("authentication failed"));
-    }
-    if (pkcontext)
-        polkit_context_unref(pkcontext);
-    if (pkcaller)
-        polkit_caller_unref(pkcaller);
-    if (pkaction)
-        polkit_action_unref(pkaction);
-    return ret;
-}
-
-
-#else /* ! WITH_POLKIT1 && ! WITH_POLKIT0 */
+#else /* ! WITH_POLKIT1 */
 
 int virPolkitCheckAuth(const char *actionid ATTRIBUTE_UNUSED,
                        pid_t pid ATTRIBUTE_UNUSED,

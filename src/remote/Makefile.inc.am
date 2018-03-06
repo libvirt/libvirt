@@ -120,13 +120,8 @@ conf_DATA += remote/libvirtd.conf
 CLEANFILES += test_libvirtd.aug
 
 if WITH_POLKIT
-if WITH_POLKIT0
-policydir = $(datadir)/PolicyKit/policy
-policyauth = auth_admin_keep_session
-else ! WITH_POLKIT0
 policydir = $(datadir)/polkit-1/actions
 policyauth = auth_admin_keep
-endif ! WITH_POLKIT0
 endif WITH_POLKIT
 
 BUILT_SOURCES += libvirtd.policy
@@ -219,19 +214,15 @@ if WITH_POLKIT
 install-polkit::
 	$(MKDIR_P) $(DESTDIR)$(policydir)
 	$(INSTALL_DATA) libvirtd.policy $(DESTDIR)$(policydir)/org.libvirt.unix.policy
-if ! WITH_POLKIT0
 	$(MKDIR_P) $(DESTDIR)$(datadir)/polkit-1/rules.d
 	$(INSTALL_DATA) $(srcdir)/remote/libvirtd.rules \
 		$(DESTDIR)$(datadir)/polkit-1/rules.d/50-libvirt.rules
-endif ! WITH_POLKIT0
 
 uninstall-polkit::
 	rm -f $(DESTDIR)$(policydir)/org.libvirt.unix.policy
 	rmdir $(DESTDIR)$(policydir) || :
-if ! WITH_POLKIT0
 	rm -f $(DESTDIR)$(datadir)/polkit-1/rules.d/50-libvirt.rules
 	rmdir $(DESTDIR)$(datadir)/polkit-1/rules.d || :
-endif ! WITH_POLKIT0
 
 else ! WITH_POLKIT
 install-polkit::

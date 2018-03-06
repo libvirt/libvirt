@@ -4289,64 +4289,6 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
 #endif /* WITH_SASL */
 
 
-#if WITH_POLKIT0
-/* Perform the PolicyKit0 authentication process */
-static int
-remoteAuthPolkit0(virConnectPtr conn, struct private_data *priv,
-                 virConnectAuthPtr auth)
-{
-    remote_auth_polkit_ret ret;
-    size_t i;
-    int allowcb = 0;
-    virConnectCredential cred = {
-        VIR_CRED_EXTERNAL,
-        conn->flags & VIR_CONNECT_RO ? "org.libvirt.unix.monitor" : "org.libvirt.unix.manage",
-        "PolicyKit",
-        NULL,
-        NULL,
-        0,
-    };
-    VIR_DEBUG("Client initialize PolicyKit-0 authentication");
-
-    /* We only make it here if auth already failed
-     * Ask client to obtain it and check again. */
-    if (auth && auth->cb) {
-        /* Check if the necessary credential type for PolicyKit is supported */
-        for (i = 0; i < auth->ncredtype; i++) {
-            if (auth->credtype[i] == VIR_CRED_EXTERNAL)
-                allowcb = 1;
-        }
-
-        if (allowcb) {
-            VIR_DEBUG("Client run callback for PolicyKit authentication");
-            /* Run the authentication callback */
-            if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
-                virReportError(VIR_ERR_AUTH_FAILED, "%s",
-                               _("Failed to collect auth credentials"));
-                return -1;
-            }
-        } else {
-            VIR_DEBUG("Client auth callback does not support PolicyKit");
-            return -1;
-        }
-    } else {
-        VIR_DEBUG("No auth callback provided");
-        return -1;
-    }
-
-    memset(&ret, 0, sizeof(ret));
-    if (call(conn, priv, 0, REMOTE_PROC_AUTH_POLKIT,
-             (xdrproc_t) xdr_void, (char *)NULL,
-             (xdrproc_t) xdr_remote_auth_polkit_ret, (char *) &ret) != 0) {
-        return -1; /* virError already set by call */
-    }
-
- out:
-    VIR_DEBUG("PolicyKit-0 authentication complete");
-    return 0;
-}
-#endif /* WITH_POLKIT0 */
-
 static int
 remoteAuthPolkit(virConnectPtr conn, struct private_data *priv,
                  virConnectAuthPtr auth ATTRIBUTE_UNUSED)
@@ -4360,11 +4302,6 @@ remoteAuthPolkit(virConnectPtr conn, struct private_data *priv,
              (xdrproc_t) xdr_remote_auth_polkit_ret, (char *) &ret) != 0) {
         return -1; /* virError already set by call */
     }
-
-#if WITH_POLKIT0
-    if (remoteAuthPolkit0(conn, priv, auth) < 0)
-        return -1;
-#endif /* WITH_POLKIT0 */
 
     VIR_DEBUG("PolicyKit authentication complete");
     return 0;
