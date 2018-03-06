@@ -217,9 +217,11 @@ static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
             priority = virNetServerProgramGetPriority(prog, msg->header.proc);
         }
 
+        virObjectRef(client);
         ret = virThreadPoolSendJob(srv->workers, priority, job);
 
         if (ret < 0) {
+            virObjectUnref(client);
             VIR_FREE(job);
             virObjectUnref(prog);
         }
