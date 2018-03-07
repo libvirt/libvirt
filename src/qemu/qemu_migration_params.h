@@ -49,9 +49,6 @@ struct _qemuMigrationCompression {
 
 typedef struct _qemuMigrationParams qemuMigrationParams;
 typedef qemuMigrationParams *qemuMigrationParamsPtr;
-struct _qemuMigrationParams {
-    qemuMonitorMigrationParams params;
-};
 
 
 qemuMigrationParamsPtr

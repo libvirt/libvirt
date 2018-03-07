@@ -30,12 +30,17 @@
 #include "qemu_hotplug.h"
 #include "qemu_migration.h"
 #include "qemu_migration_params.h"
+#include "qemu_monitor.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.qemu_migration_params");
 
 #define QEMU_MIGRATION_TLS_ALIAS_BASE "libvirt_migrate"
+
+struct _qemuMigrationParams {
+    qemuMonitorMigrationParams params;
+};
 
 
 qemuMigrationParamsPtr
