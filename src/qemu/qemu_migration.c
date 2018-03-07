@@ -3335,6 +3335,34 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     if (qemuMigrationSrcGraphicsRelocate(driver, vm, mig, graphicsuri) < 0)
         VIR_WARN("unable to provide data for graphics client relocation");
 
+    if (qemuMigrationParamsSetCompression(vm, compression, migParams) < 0)
+        goto error;
+
+    if (qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
+                                         flags & VIR_MIGRATE_AUTO_CONVERGE,
+                                         migParams) < 0)
+        goto error;
+
+    if (qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
+                                         flags & VIR_MIGRATE_RDMA_PIN_ALL,
+                                         migParams) < 0)
+        goto error;
+
+    if (qemuMigrationParamsSetPostCopy(vm, flags & VIR_MIGRATE_POSTCOPY,
+                                       migParams) < 0)
+        goto error;
+
+    if (qemuMigrationCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER) &&
+        qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER,
+                                         true, migParams) < 0)
+        goto error;
+
+    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        goto error;
+
     if (flags & VIR_MIGRATE_TLS) {
         const char *hostname = NULL;
 
@@ -3353,6 +3381,10 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
         if (qemuMigrationParamsDisableTLS(vm, migParams) < 0)
             goto error;
     }
+
+    if (qemuMigrationParamsApply(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                 migParams) < 0)
+        goto error;
 
     if (migrate_flags & (QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
                          QEMU_MONITOR_MIGRATE_NON_SHARED_INC)) {
@@ -3381,35 +3413,6 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
         if (qemuMigrationSrcSetOffline(driver, vm) < 0)
             goto error;
     }
-
-    if (qemuMigrationParamsSetCompression(vm, compression, migParams) < 0)
-        goto error;
-
-    if (qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
-                                         flags & VIR_MIGRATE_AUTO_CONVERGE,
-                                         migParams) < 0)
-        goto error;
-
-    if (qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
-                                         flags & VIR_MIGRATE_RDMA_PIN_ALL,
-                                         migParams) < 0)
-        goto error;
-
-    if (qemuMigrationParamsSetPostCopy(vm, flags & VIR_MIGRATE_POSTCOPY,
-                                       migParams) < 0)
-        goto error;
-
-    if (qemuMigrationCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER) &&
-        qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER,
-                                         true, migParams) < 0)
-        goto error;
-
-    if (qemuMigrationParamsApply(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                 migParams) < 0)
-        goto error;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
@@ -4508,9 +4511,6 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
 
     qemuMigrationSrcStoreDomainState(vm);
 
-    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
-        goto endjob;
-
     if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
         ret = qemuMigrationSrcPerformPeer2Peer(driver, conn, vm, xmlin, persist_xml,
                                                dconnuri, uri, graphicsuri, listenAddress,
@@ -4615,9 +4615,6 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
     qemuMigrationJobStartPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3);
     virCloseCallbacksUnset(driver->closeCallbacks, vm,
                            qemuMigrationSrcCleanup);
-
-    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
-        goto endjob;
 
     ret = qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri, cookiein, cookieinlen,
                                         cookieout, cookieoutlen,
