@@ -23,7 +23,7 @@
 #include "viraccessmanager.h"
 #include "viraccessdrivernop.h"
 #include "viraccessdriverstack.h"
-#if WITH_POLKIT1
+#if WITH_POLKIT
 # include "viraccessdriverpolkit.h"
 #endif
 #include "viralloc.h"
@@ -112,7 +112,7 @@ static virAccessManagerPtr virAccessManagerNewDriver(virAccessDriverPtr drv)
 
 static virAccessDriverPtr accessDrivers[] = {
     &accessDriverNop,
-#if WITH_POLKIT1
+#if WITH_POLKIT
     &accessDriverPolkit,
 #endif
 };

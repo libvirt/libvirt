@@ -27,8 +27,6 @@ AC_DEFUN([LIBVIRT_CHECK_POLKIT], [
 
   PKCHECK_PATH=
 
-  with_polkit1=no
-
   if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
     dnl Check for new polkit first. We directly talk over DBus
     dnl but we use existence of pkcheck binary as a sign that
@@ -40,10 +38,7 @@ AC_DEFUN([LIBVIRT_CHECK_POLKIT], [
       if test "x$with_dbus" = "xyes" ; then
         AC_DEFINE_UNQUOTED([WITH_POLKIT], 1,
             [use PolicyKit for UNIX socket access checks])
-        AC_DEFINE_UNQUOTED([WITH_POLKIT1], 1,
-            [use PolicyKit for UNIX socket access checks])
         with_polkit="yes"
-        with_polkit1="yes"
       else
         if test "x$with_polkit" = "xcheck" ; then
           with_polkit=no
@@ -56,7 +51,6 @@ AC_DEFUN([LIBVIRT_CHECK_POLKIT], [
   fi
 
   AM_CONDITIONAL([WITH_POLKIT], [test "x$with_polkit" = "xyes"])
-  AM_CONDITIONAL([WITH_POLKIT1], [test "x$with_polkit1" = "xyes"])
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_POLKIT], [

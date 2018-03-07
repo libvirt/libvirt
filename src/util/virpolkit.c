@@ -35,7 +35,7 @@
 
 VIR_LOG_INIT("util.polkit");
 
-#if WITH_POLKIT1
+#if WITH_POLKIT
 
 struct _virPolkitAgent {
     virCommandPtr cmd;
@@ -206,7 +206,7 @@ virPolkitAgentCreate(void)
 }
 
 
-#else /* ! WITH_POLKIT1 */
+#else /* ! WITH_POLKIT */
 
 int virPolkitCheckAuth(const char *actionid ATTRIBUTE_UNUSED,
                        pid_t pid ATTRIBUTE_UNUSED,
@@ -236,4 +236,4 @@ virPolkitAgentCreate(void)
                    _("polkit text authentication agent unavailable"));
     return NULL;
 }
-#endif /* WITH_POLKIT1 */
+#endif /* WITH_POLKIT */

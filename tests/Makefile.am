@@ -251,9 +251,9 @@ test_programs += virdbustest \
                  virsystemdtest \
                  $(NULL)
 test_libraries += virdbusmock.la
-if WITH_POLKIT1
+if WITH_POLKIT
 test_programs += virpolkittest
-endif WITH_POLKIT1
+endif WITH_POLKIT
 endif WITH_DBUS
 
 if WITH_SECDRIVER_SELINUX
