@@ -20348,7 +20348,7 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     }
 
     if (VIR_ALLOC_N(tmpstats, nvms + 1) < 0)
-        return -1;
+        goto cleanup;
 
     if (qemuDomainGetStatsNeedMonitor(stats))
         privflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
