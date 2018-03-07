@@ -22836,19 +22836,11 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
     case VIR_STORAGE_TYPE_FILE:
         virBufferEscapeString(&attrBuf, " file='%s'", src->path);
         virBufferEscapeString(&attrBuf, " startupPolicy='%s'", startupPolicy);
-
-        virDomainDiskSourceDefFormatSeclabel(&childBuf, src->nseclabels,
-                                             src->seclabels, flags,
-                                             skipSeclabels);
         break;
 
     case VIR_STORAGE_TYPE_BLOCK:
         virBufferEscapeString(&attrBuf, " dev='%s'", src->path);
         virBufferEscapeString(&attrBuf, " startupPolicy='%s'", startupPolicy);
-
-        virDomainDiskSourceDefFormatSeclabel(&childBuf, src->nseclabels,
-                                             src->seclabels, flags,
-                                             skipSeclabels);
         break;
 
     case VIR_STORAGE_TYPE_DIR:
@@ -22873,9 +22865,6 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
         }
         virBufferEscapeString(&attrBuf, " startupPolicy='%s'", startupPolicy);
 
-        virDomainDiskSourceDefFormatSeclabel(&childBuf, src->nseclabels,
-                                             src->seclabels, flags,
-                                             skipSeclabels);
         break;
 
     case VIR_STORAGE_TYPE_NONE:
@@ -22883,6 +22872,12 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected disk type %d"), src->type);
         goto error;
+    }
+
+    if (src->type != VIR_STORAGE_TYPE_NETWORK) {
+        virDomainDiskSourceDefFormatSeclabel(&childBuf, src->nseclabels,
+                                             src->seclabels, flags,
+                                             skipSeclabels);
     }
 
     /* Storage Source formatting will not carry through the blunder
