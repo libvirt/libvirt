@@ -72,12 +72,6 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
                          qemuMigrationParamsPtr migParams);
 
 int
-qemuMigrationParamsSetCapability(virDomainObjPtr vm,
-                                 qemuMonitorMigrationCaps capability,
-                                 bool state,
-                                 qemuMigrationParamsPtr migParams);
-
-int
 qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              bool tlsListen,

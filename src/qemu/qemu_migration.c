@@ -2385,18 +2385,6 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         goto stopjob;
     }
 
-    if (qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
-                                         flags & VIR_MIGRATE_RDMA_PIN_ALL,
-                                         migParams) < 0)
-        goto stopjob;
-
-    if (qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
-                                         flags & VIR_MIGRATE_POSTCOPY,
-                                         migParams) < 0)
-        goto stopjob;
-
     if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
                                  migParams) < 0)
         goto stopjob;
@@ -3339,24 +3327,6 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
         VIR_WARN("unable to provide data for graphics client relocation");
 
     if (qemuMigrationParamsSetCompression(vm, compression, migParams) < 0)
-        goto error;
-
-    if (qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
-                                         flags & VIR_MIGRATE_AUTO_CONVERGE,
-                                         migParams) < 0)
-        goto error;
-
-    if (qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
-                                         flags & VIR_MIGRATE_RDMA_PIN_ALL,
-                                         migParams) < 0)
-        goto error;
-
-    if (qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
-                                         flags & VIR_MIGRATE_POSTCOPY,
-                                         migParams) < 0)
         goto error;
 
     if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,

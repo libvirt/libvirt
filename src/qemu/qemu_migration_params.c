@@ -49,11 +49,33 @@ struct _qemuMigrationParamsAlwaysOnItem {
     int party; /* bit-wise OR of qemuMigrationParty */
 };
 
+typedef struct _qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMapItem;
+struct _qemuMigrationParamsFlagMapItem {
+    virDomainMigrateFlags flag;
+    qemuMonitorMigrationCaps cap;
+    int party; /* bit-wise OR of qemuMigrationParty */
+};
+
 /* Migration capabilities which should always be enabled as long as they
  * are supported by QEMU. */
 static const qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOn[] = {
     {QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER,
      QEMU_MIGRATION_SOURCE},
+};
+
+/* Translation from virDomainMigrateFlags to qemuMonitorMigrationCaps. */
+static const qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMap[] = {
+    {VIR_MIGRATE_RDMA_PIN_ALL,
+     QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
+     QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
+
+    {VIR_MIGRATE_AUTO_CONVERGE,
+     QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
+     QEMU_MIGRATION_SOURCE},
+
+    {VIR_MIGRATE_POSTCOPY,
+     QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
+     QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 };
 
 
@@ -97,12 +119,21 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              qemuMigrationParty party)
 {
     qemuMigrationParamsPtr migParams;
+    size_t i;
 
     if (!(migParams = qemuMigrationParamsNew()))
         return NULL;
 
-    if (!params)
-        return migParams;
+    for (i = 0; i < ARRAY_CARDINALITY(qemuMigrationParamsFlagMap); i++) {
+        qemuMonitorMigrationCaps cap = qemuMigrationParamsFlagMap[i].cap;
+
+        if (qemuMigrationParamsFlagMap[i].party & party &&
+            flags & qemuMigrationParamsFlagMap[i].flag) {
+            VIR_DEBUG("Enabling migration capability '%s'",
+                      qemuMonitorMigrationCapsTypeToString(cap));
+            ignore_value(virBitmapSetBit(migParams->caps, cap));
+        }
+    }
 
 #define GET(PARAM, VAR) \
     do { \
@@ -116,9 +147,11 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
             migParams->params.VAR ## _set = true; \
     } while (0)
 
-    if (party == QEMU_MIGRATION_SOURCE) {
-        GET(AUTO_CONVERGE_INITIAL, cpuThrottleInitial);
-        GET(AUTO_CONVERGE_INCREMENT, cpuThrottleIncrement);
+    if (params) {
+        if (party == QEMU_MIGRATION_SOURCE) {
+            GET(AUTO_CONVERGE_INITIAL, cpuThrottleInitial);
+            GET(AUTO_CONVERGE_INCREMENT, cpuThrottleIncrement);
+        }
     }
 
 #undef GET
@@ -197,7 +230,7 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
 }
 
 
-int
+static int
 qemuMigrationParamsSetCapability(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                  qemuMonitorMigrationCaps capability,
                                  bool state,
