@@ -2380,24 +2380,8 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         dataFD[1] = -1; /* 'st' owns the FD now & will close it */
     }
 
-    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
-        goto stopjob;
-
     if (qemuMigrationParamsSetCompression(vm, compression, migParams) < 0)
         goto stopjob;
-
-    /* Migrations using TLS need to add the "tls-creds-x509" object and
-     * set the migration TLS parameters */
-    if (flags & VIR_MIGRATE_TLS) {
-        if (qemuMigrationParamsEnableTLS(driver, vm, true,
-                                         QEMU_ASYNC_JOB_MIGRATION_IN,
-                                         &tlsAlias, &secAlias, NULL,
-                                         migParams) < 0)
-            goto stopjob;
-    } else {
-        if (qemuMigrationParamsDisableTLS(vm, migParams) < 0)
-            goto stopjob;
-    }
 
     if (STREQ_NULLABLE(protocol, "rdma") &&
         virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
@@ -2413,6 +2397,22 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     if (qemuMigrationParamsSetPostCopy(vm, flags & VIR_MIGRATE_POSTCOPY,
                                        migParams) < 0)
         goto stopjob;
+
+    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+        goto stopjob;
+
+    /* Migrations using TLS need to add the "tls-creds-x509" object and
+     * set the migration TLS parameters */
+    if (flags & VIR_MIGRATE_TLS) {
+        if (qemuMigrationParamsEnableTLS(driver, vm, true,
+                                         QEMU_ASYNC_JOB_MIGRATION_IN,
+                                         &tlsAlias, &secAlias, NULL,
+                                         migParams) < 0)
+            goto stopjob;
+    } else {
+        if (qemuMigrationParamsDisableTLS(vm, migParams) < 0)
+            goto stopjob;
+    }
 
     if (qemuMigrationParamsApply(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
                                  migParams) < 0)
