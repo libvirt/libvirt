@@ -22704,33 +22704,16 @@ virDomainDiskBlockIoDefFormat(virBufferPtr buf,
 }
 
 
-/* virDomainSourceDefFormatSeclabel:
- *
- * This function automatically closes the <source> element and formats any
- * possible seclabels.
- */
-static void
-virDomainDiskSourceDefFormatSeclabel(virBufferPtr buf,
-                                     size_t nseclabels,
-                                     virSecurityDeviceLabelDefPtr *seclabels,
-                                     unsigned int flags,
-                                     bool skipSeclables)
-{
-    size_t n;
-
-    if (nseclabels && !skipSeclables) {
-        for (n = 0; n < nseclabels; n++)
-            virSecurityDeviceLabelDefFormat(buf, seclabels[n], flags);
-    }
-}
-
 static void
 virDomainSourceDefFormatSeclabel(virBufferPtr buf,
                                  size_t nseclabels,
                                  virSecurityDeviceLabelDefPtr *seclabels,
                                  unsigned int flags)
 {
-    virDomainDiskSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags, false);
+    size_t n;
+
+    for (n = 0; n < nseclabels; n++)
+        virSecurityDeviceLabelDefFormat(buf, seclabels[n], flags);
 }
 
 
@@ -22875,9 +22858,9 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
     }
 
     if (src->type != VIR_STORAGE_TYPE_NETWORK) {
-        virDomainDiskSourceDefFormatSeclabel(&childBuf, src->nseclabels,
-                                             src->seclabels, flags,
-                                             skipSeclabels);
+        if (!skipSeclabels)
+            virDomainSourceDefFormatSeclabel(&childBuf, src->nseclabels,
+                                             src->seclabels, flags);
     }
 
     /* Storage Source formatting will not carry through the blunder
