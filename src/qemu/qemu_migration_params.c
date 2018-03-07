@@ -182,23 +182,11 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
 
 
 int
-qemuMigrationParamsSetCapability(virDomainObjPtr vm,
+qemuMigrationParamsSetCapability(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                  qemuMonitorMigrationCaps capability,
                                  bool state,
                                  qemuMigrationParamsPtr migParams)
 {
-    if (!qemuMigrationCapsGet(vm, capability)) {
-        if (!state) {
-            /* Unsupported but we want it off anyway */
-            return 0;
-        }
-
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                       _("Migration option '%s' is not supported by QEMU binary"),
-                       qemuMonitorMigrationCapsTypeToString(capability));
-        return -1;
-    }
-
     if (state)
         ignore_value(virBitmapSetBit(migParams->caps, capability));
     else
@@ -413,15 +401,32 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
  *
  * Check supported migration parameters and keep their original values in
  * qemuDomainJobObj so that we can properly reset them at the end of migration.
+ * Reports an error if any of the currently used capabilities in @migParams
+ * are unsupported by QEMU.
  */
 int
 qemuMigrationParamsCheck(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
-                         int asyncJob)
+                         int asyncJob,
+                         qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuMigrationParamsPtr origParams = NULL;
+    qemuMonitorMigrationCaps cap;
     int ret = -1;
+
+    for (cap = 0; cap < QEMU_MONITOR_MIGRATION_CAPS_LAST; cap++) {
+        bool state = false;
+
+        ignore_value(virBitmapGetBit(migParams->caps, cap, &state));
+
+        if (state && !qemuMigrationCapsGet(vm, cap)) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                           _("Migration option '%s' is not supported by QEMU binary"),
+                           qemuMonitorMigrationCapsTypeToString(cap));
+            return -1;
+        }
+    }
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;

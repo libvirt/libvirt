@@ -2398,7 +2398,8 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                                        migParams) < 0)
         goto stopjob;
 
-    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
+                                 migParams) < 0)
         goto stopjob;
 
     /* Migrations using TLS need to add the "tls-creds-x509" object and
@@ -3360,7 +3361,8 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                                          true, migParams) < 0)
         goto error;
 
-    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+    if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                 migParams) < 0)
         goto error;
 
     if (flags & VIR_MIGRATE_TLS) {
