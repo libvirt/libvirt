@@ -22806,29 +22806,22 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
                                   bool skipSeclabels,
                                   virDomainXMLOptionPtr xmlopt)
 {
-    const char *startupPolicy = NULL;
     virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
 
     virBufferSetChildIndent(&childBuf, buf);
 
-    if (policy)
-        startupPolicy = virDomainStartupPolicyTypeToString(policy);
-
     switch ((virStorageType)src->type) {
     case VIR_STORAGE_TYPE_FILE:
         virBufferEscapeString(&attrBuf, " file='%s'", src->path);
-        virBufferEscapeString(&attrBuf, " startupPolicy='%s'", startupPolicy);
         break;
 
     case VIR_STORAGE_TYPE_BLOCK:
         virBufferEscapeString(&attrBuf, " dev='%s'", src->path);
-        virBufferEscapeString(&attrBuf, " startupPolicy='%s'", startupPolicy);
         break;
 
     case VIR_STORAGE_TYPE_DIR:
         virBufferEscapeString(&attrBuf, " dir='%s'", src->path);
-        virBufferEscapeString(&attrBuf, " startupPolicy='%s'", startupPolicy);
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
@@ -22846,7 +22839,6 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
                 virBufferAsprintf(&attrBuf, " mode='%s'",
                                   virStorageSourcePoolModeTypeToString(src->srcpool->mode));
         }
-        virBufferEscapeString(&attrBuf, " startupPolicy='%s'", startupPolicy);
 
         break;
 
@@ -22858,6 +22850,10 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
     }
 
     if (src->type != VIR_STORAGE_TYPE_NETWORK) {
+        if (policy)
+            virBufferEscapeString(&attrBuf, " startupPolicy='%s'",
+                                  virDomainStartupPolicyTypeToString(policy));
+
         if (!skipSeclabels)
             virDomainSourceDefFormatSeclabel(&childBuf, src->nseclabels,
                                              src->seclabels, flags);
