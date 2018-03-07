@@ -43,6 +43,19 @@ struct _qemuMigrationParams {
     qemuMonitorMigrationParams params;
 };
 
+typedef struct _qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOnItem;
+struct _qemuMigrationParamsAlwaysOnItem {
+    qemuMonitorMigrationCaps cap;
+    int party; /* bit-wise OR of qemuMigrationParty */
+};
+
+/* Migration capabilities which should always be enabled as long as they
+ * are supported by QEMU. */
+static const qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOn[] = {
+    {QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER,
+     QEMU_MIGRATION_SOURCE},
+};
+
 
 static qemuMigrationParamsPtr
 qemuMigrationParamsNew(void)
@@ -399,7 +412,14 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuMigrationParamsPtr origParams = NULL;
     qemuMonitorMigrationCaps cap;
+    qemuMigrationParty party;
+    size_t i;
     int ret = -1;
+
+    if (asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
+        party = QEMU_MIGRATION_SOURCE;
+    else
+        party = QEMU_MIGRATION_DESTINATION;
 
     for (cap = 0; cap < QEMU_MONITOR_MIGRATION_CAPS_LAST; cap++) {
         bool state = false;
@@ -411,6 +431,17 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
                            _("Migration option '%s' is not supported by QEMU binary"),
                            qemuMonitorMigrationCapsTypeToString(cap));
             return -1;
+        }
+    }
+
+    for (i = 0; i < ARRAY_CARDINALITY(qemuMigrationParamsAlwaysOn); i++) {
+        cap = qemuMigrationParamsAlwaysOn[i].cap;
+
+        if (qemuMigrationParamsAlwaysOn[i].party & party &&
+            qemuMigrationCapsGet(vm, cap)) {
+            VIR_DEBUG("Enabling migration capability '%s'",
+                      qemuMonitorMigrationCapsTypeToString(cap));
+            ignore_value(virBitmapSetBit(migParams->caps, cap));
         }
     }
 

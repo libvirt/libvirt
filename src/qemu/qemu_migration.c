@@ -3359,12 +3359,6 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                                          migParams) < 0)
         goto error;
 
-    if (qemuMigrationCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER) &&
-        qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER,
-                                         true, migParams) < 0)
-        goto error;
-
     if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                                  migParams) < 0)
         goto error;
