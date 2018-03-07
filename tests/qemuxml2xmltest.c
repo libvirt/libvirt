@@ -1361,6 +1361,12 @@ mymain(void)
 
     DO_TEST("user-aliases", NONE);
 
+    /* Test disks with format probing enabled for legacy reasons.
+     * New tests should not go in this section. */
+    driver.config->allowDiskFormatProbing = true;
+    DO_TEST("disk-many-format-probing", NONE);
+    driver.config->allowDiskFormatProbing = false;
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
