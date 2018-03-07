@@ -156,9 +156,6 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-    /* TODO: test with format probing disabled too */
-    driver.config->allowDiskFormatProbing = true;
-
     if (VIR_ALLOC(testSnapshotXMLVariableLineRegex) < 0)
         goto cleanup;
 

@@ -41,31 +41,37 @@
     <devices>
       <emulator>/usr/bin/qemu-system-i686</emulator>
       <disk type='block' device='disk'>
+        <driver name='qemu' type='raw'/>
         <source dev='/dev/HostVG/QEMUGuest1'/>
         <target dev='hda' bus='ide'/>
         <address type='drive' controller='0' bus='0' target='0' unit='0'/>
       </disk>
       <disk type='block' device='disk'>
+        <driver name='qemu' type='raw'/>
         <source dev='/dev/HostVG/QEMUGuest2'/>
         <target dev='hdb' bus='ide'/>
         <address type='drive' controller='0' bus='1' target='0' unit='0'/>
       </disk>
       <disk type='block' device='disk'>
+        <driver name='qemu' type='raw'/>
         <source dev='/dev/HostVG/QEMUGuest3'/>
         <target dev='hdc' bus='ide'/>
         <address type='drive' controller='0' bus='2' target='0' unit='0'/>
       </disk>
       <disk type='block' device='disk'>
+        <driver name='qemu' type='raw'/>
         <source dev='/dev/HostVG/QEMUGuest4'/>
         <target dev='hdd' bus='ide'/>
         <address type='drive' controller='0' bus='3' target='0' unit='0'/>
       </disk>
       <disk type='block' device='disk'>
+        <driver name='qemu' type='raw'/>
         <source dev='/dev/HostVG/QEMUGuest5'/>
         <target dev='hde' bus='ide'/>
         <address type='drive' controller='0' bus='4' target='0' unit='0'/>
       </disk>
       <disk type='block' device='disk'>
+        <driver name='qemu' type='raw'/>
         <source dev='/dev/HostVG/QEMUGuest6'/>
         <target dev='hdf' bus='ide'/>
         <address type='drive' controller='0' bus='5' target='0' unit='0'/>
