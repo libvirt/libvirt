@@ -192,3 +192,7 @@
   # silence refusals to open lttng files (see LP: #1432644)
   deny /dev/shm/lttng-ust-wait-* r,
   deny /run/shm/lttng-ust-wait-* r,
+
+  # required for sasl GSSAPI plugin
+  /etc/gss/mech.d/ r,
+  /etc/gss/mech.d/* r,
