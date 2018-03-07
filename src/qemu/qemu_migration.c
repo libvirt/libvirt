@@ -2391,8 +2391,10 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                                          migParams) < 0)
         goto stopjob;
 
-    if (qemuMigrationParamsSetPostCopy(vm, flags & VIR_MIGRATE_POSTCOPY,
-                                       migParams) < 0)
+    if (qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
+                                         flags & VIR_MIGRATE_POSTCOPY,
+                                         migParams) < 0)
         goto stopjob;
 
     if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
@@ -2415,6 +2417,8 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     if (qemuMigrationParamsApply(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
                                  migParams) < 0)
         goto stopjob;
+
+    priv->job.postcopyEnabled = flags & VIR_MIGRATE_POSTCOPY;
 
     if (mig->nbd &&
         flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
@@ -3349,8 +3353,10 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                                          migParams) < 0)
         goto error;
 
-    if (qemuMigrationParamsSetPostCopy(vm, flags & VIR_MIGRATE_POSTCOPY,
-                                       migParams) < 0)
+    if (qemuMigrationParamsSetCapability(vm,
+                                         QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
+                                         flags & VIR_MIGRATE_POSTCOPY,
+                                         migParams) < 0)
         goto error;
 
     if (qemuMigrationCapsGet(vm, QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER) &&
@@ -3385,6 +3391,8 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     if (qemuMigrationParamsApply(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                                  migParams) < 0)
         goto error;
+
+    priv->job.postcopyEnabled = flags & VIR_MIGRATE_POSTCOPY;
 
     if (migrate_flags & (QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
                          QEMU_MONITOR_MIGRATE_NON_SHARED_INC)) {

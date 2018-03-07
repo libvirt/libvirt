@@ -199,23 +199,6 @@ qemuMigrationParamsSetCapability(virDomainObjPtr vm ATTRIBUTE_UNUSED,
 }
 
 
-int
-qemuMigrationParamsSetPostCopy(virDomainObjPtr vm,
-                               bool state,
-                               qemuMigrationParamsPtr migParams)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-
-    if (qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
-                                         state, migParams) < 0)
-        return -1;
-
-    priv->job.postcopyEnabled = state;
-    return 0;
-}
-
-
 /* qemuMigrationParamsEnableTLS
  * @driver: pointer to qemu driver
  * @vm: domain object

@@ -78,11 +78,6 @@ qemuMigrationParamsSetCapability(virDomainObjPtr vm,
                                  qemuMigrationParamsPtr migParams);
 
 int
-qemuMigrationParamsSetPostCopy(virDomainObjPtr vm,
-                               bool state,
-                               qemuMigrationParamsPtr migParams);
-
-int
 qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              bool tlsListen,
