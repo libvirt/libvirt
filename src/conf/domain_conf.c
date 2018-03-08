@@ -8214,8 +8214,7 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
 static int
 virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
                                   size_t *nseclabels_rtn,
-                                  virSecurityLabelDefPtr *vmSeclabels,
-                                  int nvmSeclabels, xmlXPathContextPtr ctxt,
+                                  xmlXPathContextPtr ctxt,
                                   unsigned int flags)
 {
     virSecurityDeviceLabelDefPtr *seclabels = NULL;
@@ -8223,7 +8222,6 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
     int n;
     size_t i, j;
     xmlNodePtr *list = NULL;
-    virSecurityLabelDefPtr vmDef = NULL;
     char *model, *relabel, *label, *labelskip;
 
     if ((n = virXPathNodeSet("./seclabel", ctxt, &list)) < 0)
@@ -8243,14 +8241,6 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
         /* get model associated to this override */
         model = virXMLPropString(list[i], "model");
         if (model) {
-            /* find the security label that it's being overridden */
-            for (j = 0; j < nvmSeclabels; j++) {
-                if (STREQ(vmSeclabels[j]->model, model)) {
-                    vmDef = vmSeclabels[j];
-                    break;
-                }
-            }
-
             /* check for duplicate seclabels */
             for (j = 0; j < i; j++) {
                 if (STREQ_NULLABLE(model, seclabels[j]->model)) {
@@ -8260,14 +8250,6 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
                 }
             }
             seclabels[i]->model = model;
-        }
-
-        /* Can't use overrides if top-level doesn't allow relabeling.  */
-        if (vmDef && !vmDef->relabel) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("label overrides require relabeling to be "
-                             "enabled at the domain level"));
-            goto error;
         }
 
         relabel = virXMLPropString(list[i], "relabel");
@@ -8321,6 +8303,37 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDefPtr **seclabels_rtn,
     VIR_FREE(seclabels);
     VIR_FREE(list);
     return -1;
+}
+
+
+static int
+virSecurityDeviceLabelDefValidateXML(virSecurityDeviceLabelDefPtr *seclabels,
+                                     size_t nseclabels,
+                                     virSecurityLabelDefPtr *vmSeclabels,
+                                     size_t nvmSeclabels)
+{
+    virSecurityDeviceLabelDefPtr seclabel;
+    size_t i;
+    size_t j;
+
+    for (i = 0; i < nseclabels; i++) {
+        seclabel = seclabels[i];
+
+        /* find the security label that it's being overridden */
+        for (j = 0; j < nvmSeclabels; j++) {
+            if (STRNEQ_NULLABLE(vmSeclabels[j]->model, seclabel->model))
+                continue;
+
+            if (!vmSeclabels[j]->relabel) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("label overrides require relabeling to be "
+                                 "enabled at the domain level"));
+                return -1;
+            }
+        }
+    }
+
+    return 0;
 }
 
 
@@ -9453,11 +9466,16 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         ctxt->node = sourceNode;
         if (virSecurityDeviceLabelDefParseXML(&def->src->seclabels,
                                               &def->src->nseclabels,
-                                              vmSeclabels,
-                                              nvmSeclabels,
                                               ctxt,
                                               flags) < 0)
             goto error;
+
+        if (virSecurityDeviceLabelDefValidateXML(def->src->seclabels,
+                                                 def->src->nseclabels,
+                                                 vmSeclabels,
+                                                 nvmSeclabels) < 0)
+            goto error;
+
         ctxt->node = saved_node;
     }
 
@@ -12133,10 +12151,12 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
                 ctxt->node = cur;
                 if (virSecurityDeviceLabelDefParseXML(&def->seclabels,
                                                       &def->nseclabels,
-                                                      vmSeclabels,
-                                                      nvmSeclabels,
                                                       ctxt,
-                                                      flags) < 0) {
+                                                      flags) < 0 ||
+                    virSecurityDeviceLabelDefValidateXML(def->seclabels,
+                                                         def->nseclabels,
+                                                         vmSeclabels,
+                                                         nvmSeclabels) < 0) {
                     ctxt->node = saved_node;
                     goto error;
                 }
