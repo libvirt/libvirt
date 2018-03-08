@@ -1281,7 +1281,7 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     xmlFreeDoc(doc);
     testDriverUnlock(privconn);
 
-    return 0;
+    return VIR_DRV_OPEN_SUCCESS;
 
  error:
     xmlXPathFreeContext(ctxt);
