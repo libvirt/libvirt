@@ -46,6 +46,15 @@
           information, log the relevant data to the domain log file.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: use arp table of host to get the IP address of guests
+        </summary>
+        <description>
+          Find IP address of a VM by arp table on hosts.
+          If someone customizing IP address inside VM, it will be helpful.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
