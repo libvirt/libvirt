@@ -1310,7 +1310,7 @@ remoteConnectOpen(virConnectPtr conn,
     int ret, rflags = 0;
     const char *autostart = virGetEnvBlockSUID("LIBVIRT_AUTOSTART");
 
-    if (inside_daemon && (!conn->uri || (conn->uri && !conn->uri->server)))
+    if (inside_daemon && (!conn->uri || !conn->uri->server))
         return VIR_DRV_OPEN_DECLINED;
 
     if (!(priv = remoteAllocPrivateData()))
