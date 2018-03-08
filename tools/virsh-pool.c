@@ -127,7 +127,7 @@
     }, \
     {.name = "adapter-parent", \
      .type = VSH_OT_STRING, \
-     .help = N_("adapter parent to be used for underlying storage") \
+     .help = N_("adapter parent scsi_hostN to be used for underlying vHBA storage") \
     }
 
 virStoragePoolPtr
