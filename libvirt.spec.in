@@ -298,6 +298,7 @@ BuildRequires: gettext-devel
 BuildRequires: libtool
 BuildRequires: /usr/bin/pod2man
 %endif
+BuildRequires: gcc
 BuildRequires: git
 %if 0%{?fedora} >= 27 || 0%{?rhel} > 7
 BuildRequires: perl-interpreter
