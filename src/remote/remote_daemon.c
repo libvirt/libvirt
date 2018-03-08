@@ -709,20 +709,32 @@ static void daemonShutdownHandler(virNetDaemonPtr dmn,
     virNetDaemonQuit(dmn);
 }
 
-static void daemonReloadHandler(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
-                                siginfo_t *sig ATTRIBUTE_UNUSED,
-                                void *opaque ATTRIBUTE_UNUSED)
+static void daemonReloadHandlerThread(void *opague ATTRIBUTE_UNUSED)
 {
-    if (!driversInitialized) {
-        VIR_WARN("Drivers are not initialized, reload ignored");
-        return;
-    }
-
     VIR_INFO("Reloading configuration on SIGHUP");
     virHookCall(VIR_HOOK_DRIVER_DAEMON, "-",
                 VIR_HOOK_DAEMON_OP_RELOAD, SIGHUP, "SIGHUP", NULL, NULL);
     if (virStateReload() < 0)
         VIR_WARN("Error while reloading drivers");
+}
+
+static void daemonReloadHandler(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
+                                siginfo_t *sig ATTRIBUTE_UNUSED,
+                                void *opaque ATTRIBUTE_UNUSED)
+{
+    virThread thr;
+
+    if (!driversInitialized) {
+        VIR_WARN("Drivers are not initialized, reload ignored");
+        return;
+    }
+
+    if (virThreadCreate(&thr, false, daemonReloadHandlerThread, NULL) < 0) {
+        /*
+         * Not much we can do on error here except log it.
+         */
+        VIR_ERROR(_("Failed to create thread to handle daemon restart"));
+    }
 }
 
 static int daemonSetupSignals(virNetDaemonPtr dmn)
