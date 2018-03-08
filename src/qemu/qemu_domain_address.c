@@ -1815,7 +1815,7 @@ qemuDomainValidateDevicePCISlotsChipsets(virDomainDefPtr def,
  *  - Video (slot 2)
  *
  *  - These integrated devices were already added by
- *    qemuValidateDevicePCISlotsChipsets invoked right before this function
+ *    qemuDomainValidateDevicePCISlotsChipsets invoked right before this function
  *
  * Incrementally assign slots from 3 onwards:
  *
