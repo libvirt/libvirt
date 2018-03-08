@@ -309,7 +309,7 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
     }
 
     for (i = 0; i < def->ninputs; i++) {
-        if (def->inputs[i]->bus == VIR_DOMAIN_DISK_BUS_VIRTIO &&
+        if (def->inputs[i]->bus == VIR_DOMAIN_INPUT_BUS_VIRTIO &&
             def->inputs[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             def->inputs[i]->info.type = type;
     }
