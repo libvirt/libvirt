@@ -125,7 +125,7 @@ struct _testDriver {
 typedef struct _testDriver testDriver;
 typedef testDriver *testDriverPtr;
 
-static testDriverPtr defaultConn;
+static testDriverPtr defaultPrivconn;
 static int defaultConnections;
 static virMutex defaultLock = VIR_MUTEX_INITIALIZER;
 
@@ -1305,7 +1305,7 @@ testOpenDefault(virConnectPtr conn)
 
     virMutexLock(&defaultLock);
     if (defaultConnections++) {
-        conn->privateData = defaultConn;
+        conn->privateData = defaultPrivconn;
         virMutexUnlock(&defaultLock);
         return VIR_DRV_OPEN_SUCCESS;
     }
@@ -1345,7 +1345,7 @@ testOpenDefault(virConnectPtr conn)
     if (testOpenParse(privconn, NULL, ctxt) < 0)
         goto error;
 
-    defaultConn = privconn;
+    defaultPrivconn = privconn;
     ret = VIR_DRV_OPEN_SUCCESS;
  cleanup:
     virMutexUnlock(&defaultLock);
@@ -1468,7 +1468,7 @@ static int testConnectClose(virConnectPtr conn)
     testDriverPtr privconn = conn->privateData;
     bool dflt = false;
 
-    if (privconn == defaultConn) {
+    if (privconn == defaultPrivconn) {
         dflt = true;
         virMutexLock(&defaultLock);
         if (--defaultConnections) {
@@ -1482,7 +1482,7 @@ static int testConnectClose(virConnectPtr conn)
     testDriverFree(privconn);
 
     if (dflt) {
-        defaultConn = NULL;
+        defaultPrivconn = NULL;
         virMutexUnlock(&defaultLock);
     }
 
