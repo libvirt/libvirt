@@ -1483,8 +1483,11 @@ testConnectOpen(virConnectPtr conn,
         return ret;
 
     /* Fake authentication. */
-    if (testConnectAuthenticate(conn, auth) < 0)
+    if (testConnectAuthenticate(conn, auth) < 0) {
+        testDriverCloseInternal(conn->privateData);
+        conn->privateData = NULL;
         return VIR_DRV_OPEN_ERROR;
+    }
 
     return VIR_DRV_OPEN_SUCCESS;
 }
