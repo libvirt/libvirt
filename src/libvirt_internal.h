@@ -45,7 +45,7 @@ int virStateStop(void);
  * feature.  Queries for VIR_DRV_FEATURE_PROGRAM* features are answered
  * directly by the RPC layer and not by the real driver.
  */
-enum {
+typedef enum {
     /* Driver supports V1-style virDomainMigrate, ie. domainMigratePrepare/
      * domainMigratePerform/domainMigrateFinish.
      */
@@ -123,7 +123,7 @@ enum {
      * Support for driver close callback rpc
      */
     VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK = 15,
-};
+} virDrvFeature;
 
 
 int virConnectSupportsFeature(virConnectPtr conn, int feature);

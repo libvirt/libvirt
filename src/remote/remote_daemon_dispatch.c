@@ -4645,7 +4645,7 @@ static int remoteDispatchConnectSupportsFeature(virNetServerPtr server ATTRIBUTE
                                                 remote_connect_supports_feature_ret *ret)
 {
     int rv = -1;
-    int supported;
+    int supported = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
@@ -4664,17 +4664,30 @@ static int remoteDispatchConnectSupportsFeature(virNetServerPtr server ATTRIBUTE
         goto cleanup;
     }
 
-    switch (args->feature) {
+    switch ((virDrvFeature) args->feature) {
     case VIR_DRV_FEATURE_FD_PASSING:
     case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
     case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
         supported = 1;
         break;
-
+    case VIR_DRV_FEATURE_MIGRATION_V1:
+    case VIR_DRV_FEATURE_REMOTE:
+    case VIR_DRV_FEATURE_MIGRATION_V2:
+    case VIR_DRV_FEATURE_MIGRATION_P2P:
+    case VIR_DRV_FEATURE_MIGRATION_DIRECT:
+    case VIR_DRV_FEATURE_MIGRATION_V3:
+    case VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION:
+    case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
+    case VIR_DRV_FEATURE_XML_MIGRATABLE:
+    case VIR_DRV_FEATURE_MIGRATION_OFFLINE:
+    case VIR_DRV_FEATURE_MIGRATION_PARAMS:
     default:
         if ((supported = virConnectSupportsFeature(priv->conn, args->feature)) < 0)
             goto cleanup;
         break;
+    case VIR_DRV_FEATURE_PROGRAM_KEEPALIVE:
+        /* should not be possible! */
+        goto cleanup;
     }
 
  done:

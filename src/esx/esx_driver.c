@@ -1122,7 +1122,7 @@ esxConnectSupportsFeature(virConnectPtr conn, int feature)
     esxPrivate *priv = conn->privateData;
     esxVI_Boolean supportsVMotion = esxVI_Boolean_Undefined;
 
-    switch (feature) {
+    switch ((virDrvFeature) feature) {
       case VIR_DRV_FEATURE_MIGRATION_V1:
         supportsVMotion = esxSupportsVMotion(priv);
 
@@ -1133,7 +1133,21 @@ esxConnectSupportsFeature(virConnectPtr conn, int feature)
         return priv->vCenter &&
                supportsVMotion == esxVI_Boolean_True ? 1 : 0;
 
-      default:
+    case VIR_DRV_FEATURE_FD_PASSING:
+    case VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION:
+    case VIR_DRV_FEATURE_MIGRATION_DIRECT:
+    case VIR_DRV_FEATURE_MIGRATION_OFFLINE:
+    case VIR_DRV_FEATURE_MIGRATION_P2P:
+    case VIR_DRV_FEATURE_MIGRATION_PARAMS:
+    case VIR_DRV_FEATURE_MIGRATION_V2:
+    case VIR_DRV_FEATURE_MIGRATION_V3:
+    case VIR_DRV_FEATURE_PROGRAM_KEEPALIVE:
+    case VIR_DRV_FEATURE_REMOTE:
+    case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
+    case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
+    case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
+    case VIR_DRV_FEATURE_XML_MIGRATABLE:
+    default:
         return 0;
     }
 }
