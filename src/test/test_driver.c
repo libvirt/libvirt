@@ -1419,10 +1419,36 @@ testConnectAuthenticate(virConnectPtr conn,
     return ret;
 }
 
-static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
-                                        virConnectAuthPtr auth,
-                                        virConfPtr conf ATTRIBUTE_UNUSED,
-                                        unsigned int flags)
+
+static void
+testDriverCloseInternal(testDriverPtr driver)
+{
+    bool dflt = false;
+
+    if (driver == defaultPrivconn) {
+        dflt = true;
+        virMutexLock(&defaultLock);
+        if (--defaultConnections) {
+            virMutexUnlock(&defaultLock);
+            return;
+        }
+    }
+
+    testDriverLock(driver);
+    testDriverFree(driver);
+
+    if (dflt) {
+        defaultPrivconn = NULL;
+        virMutexUnlock(&defaultLock);
+    }
+}
+
+
+static virDrvOpenStatus
+testConnectOpen(virConnectPtr conn,
+                virConnectAuthPtr auth,
+                virConfPtr conf ATTRIBUTE_UNUSED,
+                unsigned int flags)
 {
     int ret;
 
@@ -1463,32 +1489,15 @@ static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int testConnectClose(virConnectPtr conn)
+
+static int
+testConnectClose(virConnectPtr conn)
 {
-    testDriverPtr privconn = conn->privateData;
-    bool dflt = false;
-
-    if (privconn == defaultPrivconn) {
-        dflt = true;
-        virMutexLock(&defaultLock);
-        if (--defaultConnections) {
-            conn->privateData = NULL;
-            virMutexUnlock(&defaultLock);
-            return 0;
-        }
-    }
-
-    testDriverLock(privconn);
-    testDriverFree(privconn);
-
-    if (dflt) {
-        defaultPrivconn = NULL;
-        virMutexUnlock(&defaultLock);
-    }
-
+    testDriverCloseInternal(conn->privateData);
     conn->privateData = NULL;
     return 0;
 }
+
 
 static int testConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  unsigned long *hvVer)
