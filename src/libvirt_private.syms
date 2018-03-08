@@ -1366,6 +1366,11 @@ virArchGetWordSize;
 virArchToString;
 
 
+# util/virarptable.h
+virArpTableFree;
+virArpTableGet;
+
+
 # util/viraudit.h
 virAuditClose;
 virAuditEncode;

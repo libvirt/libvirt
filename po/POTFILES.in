@@ -192,6 +192,7 @@ src/uml/uml_conf.c
 src/uml/uml_driver.c
 src/util/iohelper.c
 src/util/viralloc.c
+src/util/virarptable.c
 src/util/viraudit.c
 src/util/virauth.c
 src/util/virauthconfig.c

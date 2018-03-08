@@ -5,6 +5,8 @@ UTIL_SOURCES = \
 	util/viralloc.h \
 	util/virarch.c \
 	util/virarch.h \
+	util/virarptable.c \
+	util/virarptable.h \
 	util/viratomic.c \
 	util/viratomic.h \
 	util/viraudit.c \
