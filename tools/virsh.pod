@@ -759,7 +759,7 @@ B<Explanation of fields> (fields appear in the following order):
 
 
 =item B<domifaddr> I<domain> [I<interface>] [I<--full>]
-              [I<--source lease|agent>]
+              [I<--source lease|agent|arp>]
 
 Get a list of interfaces of a running domain along with their IP and MAC
 addresses, or limited output just for one interface if I<interface> is
@@ -774,8 +774,9 @@ only the interface name and MAC address is displayed for the first name and
 MAC address with "-" for the others using the same name and MAC address.
 
 The I<--source> argument specifies what data source to use for the
-addresses, currently one of 'lease' to read DHCP leases, or 'agent' to query
-the guest OS via an agent. If unspecified, 'lease' is the default.
+addresses, currently 'lease' to read DHCP leases, 'agent' to query
+the guest OS via an agent, or 'arp' to get IP from host's arp tables.
+If unspecified, 'lease' is the default.
 
 =item B<domifstat> I<domain> I<interface-device>
 
