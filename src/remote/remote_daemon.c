@@ -72,9 +72,7 @@ VIR_LOG_INIT("daemon.libvirtd");
 virNetSASLContextPtr saslCtxt = NULL;
 #endif
 virNetServerProgramPtr remoteProgram = NULL;
-virNetServerProgramPtr adminProgram = NULL;
 virNetServerProgramPtr qemuProgram = NULL;
-virNetServerProgramPtr lxcProgram = NULL;
 
 volatile bool driversInitialized = false;
 
@@ -1074,6 +1072,8 @@ int main(int argc, char **argv) {
     virNetDaemonPtr dmn = NULL;
     virNetServerPtr srv = NULL;
     virNetServerPtr srvAdm = NULL;
+    virNetServerProgramPtr adminProgram = NULL;
+    virNetServerProgramPtr lxcProgram = NULL;
     char *remote_config_file = NULL;
     int statuswrite = -1;
     int ret = 1;
