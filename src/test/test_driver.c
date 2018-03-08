@@ -1297,6 +1297,7 @@ testOpenFromFile(virConnectPtr conn, const char *file)
 static int
 testOpenDefault(virConnectPtr conn)
 {
+    int ret = VIR_DRV_OPEN_ERROR;
     testDriverPtr privconn = NULL;
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -1345,21 +1346,18 @@ testOpenDefault(virConnectPtr conn)
         goto error;
 
     defaultConn = privconn;
-
+    ret = VIR_DRV_OPEN_SUCCESS;
+ cleanup:
+    virMutexUnlock(&defaultLock);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
-    virMutexUnlock(&defaultLock);
-
-    return VIR_DRV_OPEN_SUCCESS;
+    return ret;
 
  error:
     testDriverFree(privconn);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(doc);
     conn->privateData = NULL;
     defaultConnections--;
-    virMutexUnlock(&defaultLock);
-    return VIR_DRV_OPEN_ERROR;
+    goto cleanup;
 }
 
 static int
