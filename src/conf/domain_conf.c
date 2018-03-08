@@ -8974,6 +8974,8 @@ virDomainDiskSourceDefParseAuthValidate(const virStorageSource *src)
 static int
 virDomainDiskDefParseValidate(const virDomainDiskDef *def)
 {
+    virStorageSourcePtr next;
+
     if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
         if (def->event_idx != VIR_TRISTATE_SWITCH_ABSENT) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -9044,19 +9046,21 @@ virDomainDiskDefParseValidate(const virDomainDiskDef *def)
         }
     }
 
-    if (virDomainDiskSourceDefParseAuthValidate(def->src) < 0)
-        return -1;
-
-    if (def->src->encryption) {
-        virStorageEncryptionPtr encryption = def->src->encryption;
-
-        if (encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
-            encryption->encinfo.cipher_name) {
-
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("supplying <cipher> for domain disk definition "
-                             "is unnecessary"));
+    for (next = def->src; next; next = next->backingStore) {
+        if (virDomainDiskSourceDefParseAuthValidate(next) < 0)
             return -1;
+
+        if (next->encryption) {
+            virStorageEncryptionPtr encryption = next->encryption;
+
+            if (encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
+                encryption->encinfo.cipher_name) {
+
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("supplying <cipher> for domain disk definition "
+                                 "is unnecessary"));
+                return -1;
+            }
         }
     }
 
