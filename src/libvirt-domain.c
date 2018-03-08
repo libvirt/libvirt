@@ -11721,6 +11721,12 @@ virDomainFSInfoFree(virDomainFSInfoPtr info)
  * To match such interface with the one from @dom XML use MAC address or IP
  * range.
  *
+ * If @source is VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP, the host
+ * ARP table will be check to obtain the interface addresses. As
+ * the arp cache refreshes in time, the returned ip address may
+ * be unreachable. Depending on the route table config of the
+ * guest, the returned mac address may be duplicated.
+ *
  * @ifaces->name and @ifaces->hwaddr are never NULL.
  *
  * The caller *must* free @ifaces when no longer needed. Usual use case
