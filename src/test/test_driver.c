@@ -1472,6 +1472,7 @@ static int testConnectClose(virConnectPtr conn)
         dflt = true;
         virMutexLock(&defaultLock);
         if (--defaultConnections) {
+            conn->privateData = NULL;
             virMutexUnlock(&defaultLock);
             return 0;
         }
