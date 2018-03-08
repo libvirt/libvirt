@@ -128,6 +128,18 @@
     {.name = "adapter-parent", \
      .type = VSH_OT_STRING, \
      .help = N_("adapter parent scsi_hostN to be used for underlying vHBA storage") \
+    }, \
+    {.name = "adapter-parent-wwnn", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter parent scsi_hostN wwnn to be used for underlying vHBA storage") \
+    }, \
+    {.name = "adapter-parent-wwpn", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter parent scsi_hostN wwpn to be used for underlying vHBA storage") \
+    }, \
+    {.name = "adapter-parent-fabric-wwn", \
+     .type = VSH_OT_STRING, \
+     .help = N_("adapter parent scsi_hostN fabric_wwn to be used for underlying vHBA storage") \
     }
 
 virStoragePoolPtr
@@ -309,7 +321,9 @@ virshBuildPoolXML(vshControl *ctl,
                *srcDev = NULL, *srcName = NULL, *srcFormat = NULL,
                *target = NULL, *authType = NULL, *authUsername = NULL,
                *secretUsage = NULL, *adapterName = NULL, *adapterParent = NULL,
-               *adapterWwnn = NULL, *adapterWwpn = NULL, *secretUUID = NULL;
+               *adapterWwnn = NULL, *adapterWwpn = NULL, *secretUUID = NULL,
+               *adapterParentWwnn = NULL, *adapterParentWwpn = NULL,
+               *adapterParentFabricWwn = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     VSH_EXCLUSIVE_OPTIONS("secret-usage", "secret-uuid");
@@ -332,7 +346,10 @@ virshBuildPoolXML(vshControl *ctl,
         vshCommandOptStringReq(ctl, cmd, "adapter-name", &adapterName) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-wwnn", &adapterWwnn) < 0 ||
         vshCommandOptStringReq(ctl, cmd, "adapter-wwpn", &adapterWwpn) < 0 ||
-        vshCommandOptStringReq(ctl, cmd, "adapter-parent", &adapterParent) < 0)
+        vshCommandOptStringReq(ctl, cmd, "adapter-parent", &adapterParent) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwnn", &adapterParentWwnn) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "adapter-parent-wwpn", &adapterParentWwpn) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "adapter-parent-fabric-wwn", &adapterParentFabricWwn) < 0)
         goto cleanup;
 
     virBufferAsprintf(&buf, "<pool type='%s'>\n", type);
@@ -353,6 +370,12 @@ virshBuildPoolXML(vshControl *ctl,
             virBufferAddLit(&buf, "<adapter type='fc_host'");
             if (adapterParent)
                 virBufferAsprintf(&buf, " parent='%s'", adapterParent);
+            else if (adapterParentWwnn && adapterParentWwpn)
+                virBufferAsprintf(&buf, " parent_wwnn='%s' parent_wwnn='%s'",
+                                  adapterParentWwnn, adapterParentWwpn);
+            else if (adapterParentFabricWwn)
+                virBufferAsprintf(&buf, " parent_fabric_wwn='%s'",
+                                  adapterParentFabricWwn);
             virBufferAsprintf(&buf, " wwnn='%s' wwpn='%s'/>\n",
                               adapterWwnn, adapterWwpn);
         } else if (adapterName) {

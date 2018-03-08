@@ -3768,10 +3768,17 @@ be provided, but not both.
 [I<--adapter-name name>] defines the scsi_hostN adapter name to be used for
 the scsi_host adapter type pool.
 
-[I<--adapter-wwnn wwnn> I<--adapter-wwpn wwpn> [I<--adapter-parent parent>]]
+[I<--adapter-wwnn wwnn> I<--adapter-wwpn wwpn> [I<--adapter-parent parent> |
+I<--adapter-parent-wwnn parent_wwnn> I<adapter-parent-wwpn parent_wwpn> |
+I<--adapter-parent-fabric-wwn parent_fabric_wwn>]]
 defines the wwnn and wwpn to be used for the fc_host adapter type pool.
-The parent optionally provides the name of the scsi_hostN node device to
-be used for the vHBA.
+Optionally provide the parent scsi_hostN node device to be used for the
+vHBA either by parent name, parent_wwnn and parent_wwpn, or parent_fabric_wwn.
+The parent name could change between reboots if the hardware environment
+changes, so providing the parent_wwnn and parent_wwpn ensure usage of the
+same physical HBA even if the scsi_hostN node device changes. Usage of the
+parent_fabric_wwn allows a bit more flexibility to choose an HBA on the
+same storage fabric in order to define the pool.
 
 [I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]] perform a
 B<pool-build> after creation in order to remove the need for a
