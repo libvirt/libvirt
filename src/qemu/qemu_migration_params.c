@@ -44,7 +44,7 @@ struct _qemuMigrationParams {
 };
 
 
-qemuMigrationParamsPtr
+static qemuMigrationParamsPtr
 qemuMigrationParamsNew(void)
 {
     qemuMigrationParamsPtr params;

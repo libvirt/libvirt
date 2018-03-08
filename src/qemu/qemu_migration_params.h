@@ -57,9 +57,6 @@ typedef enum {
 
 
 qemuMigrationParamsPtr
-qemuMigrationParamsNew(void);
-
-qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
                              unsigned long flags,
