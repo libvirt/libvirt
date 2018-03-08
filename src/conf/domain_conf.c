@@ -8631,6 +8631,10 @@ virDomainDiskSourceParse(xmlNodePtr node,
         !(src->encryption = virStorageEncryptionParseNode(tmp, ctxt)))
         goto cleanup;
 
+    if (virSecurityDeviceLabelDefParseXML(&src->seclabels, &src->nseclabels,
+                                          ctxt, flags) < 0)
+        goto cleanup;
+
     if (virDomainDiskSourcePrivateDataParse(ctxt, src, flags, xmlopt) < 0)
         goto cleanup;
 
@@ -8985,7 +8989,10 @@ virDomainDiskSourceDefParseAuthValidate(const virStorageSource *src)
 
 
 static int
-virDomainDiskDefParseValidate(const virDomainDiskDef *def)
+virDomainDiskDefParseValidate(const virDomainDiskDef *def,
+                              virSecurityLabelDefPtr *vmSeclabels,
+                              size_t nvmSeclabels)
+
 {
     virStorageSourcePtr next;
 
@@ -9075,6 +9082,12 @@ virDomainDiskDefParseValidate(const virDomainDiskDef *def)
                 return -1;
             }
         }
+
+        if (virSecurityDeviceLabelDefValidateXML(next->seclabels,
+                                                 next->nseclabels,
+                                                 vmSeclabels,
+                                                 nvmSeclabels) < 0)
+            return -1;
     }
 
     return 0;
@@ -9222,7 +9235,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                          unsigned int flags)
 {
     virDomainDiskDefPtr def;
-    xmlNodePtr sourceNode = NULL;
     xmlNodePtr cur;
     xmlNodePtr save_ctxt = ctxt->node;
     char *tmp = NULL;
@@ -9281,8 +9293,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             continue;
 
         if (!source && virXMLNodeNameEqual(cur, "source")) {
-            sourceNode = cur;
-
             if (virDomainDiskSourceParse(cur, ctxt, def->src, flags, xmlopt) < 0)
                 goto error;
 
@@ -9460,25 +9470,6 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-    /* If source is present, check for an optional seclabel override.  */
-    if (sourceNode) {
-        xmlNodePtr saved_node = ctxt->node;
-        ctxt->node = sourceNode;
-        if (virSecurityDeviceLabelDefParseXML(&def->src->seclabels,
-                                              &def->src->nseclabels,
-                                              ctxt,
-                                              flags) < 0)
-            goto error;
-
-        if (virSecurityDeviceLabelDefValidateXML(def->src->seclabels,
-                                                 def->src->nseclabels,
-                                                 vmSeclabels,
-                                                 nvmSeclabels) < 0)
-            goto error;
-
-        ctxt->node = saved_node;
-    }
-
     if (!target && !(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
         if (def->src->srcpool) {
             if (virAsprintf(&tmp, "pool = '%s', volume = '%s'",
@@ -9644,7 +9635,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
     }
 
-    if (virDomainDiskDefParseValidate(def) < 0)
+    if (virDomainDiskDefParseValidate(def, vmSeclabels, nvmSeclabels) < 0)
         goto error;
 
  cleanup:
