@@ -6215,6 +6215,7 @@ qemuDispatchConnectDomainMonitorEventRegister(virNetServerPtr server ATTRIBUTE_U
     if (VIR_ALLOC(callback) < 0)
         goto cleanup;
     callback->client = virObjectRef(client);
+    callback->eventID = -1;
     callback->callbackID = -1;
     ref = callback;
     if (VIR_APPEND_ELEMENT(priv->qemuEventCallbacks,
