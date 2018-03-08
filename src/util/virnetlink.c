@@ -590,6 +590,88 @@ virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback)
     goto cleanup;
 }
 
+/**
+ * virNetlinkGetNeighbor:
+ *
+ * @nlData:  Gets a pointer to the raw data from netlink.
+             MUST BE FREED BY CALLER!
+ * @src_pid: pid used for nl_pid of the local end of the netlink message
+ *           (0 == "use getpid()")
+ * @dst_pid: pid of destination nl_pid if the kernel
+ *           is not the target of the netlink message but it is to be
+ *           sent to another process (0 if sending to the kernel)
+ *
+ * Get neighbor table entry from netlink.
+ *
+ * Returns 0 on success, -1 on fatal error.
+ */
+int
+virNetlinkGetNeighbor(void **nlData, uint32_t src_pid, uint32_t dst_pid)
+{
+    int rc = -1;
+    struct nlmsghdr *resp = NULL;
+    struct nlmsgerr *err;
+    struct ndmsg ndinfo = {
+        .ndm_family = AF_UNSPEC,
+    };
+    unsigned int recvbuflen;
+    struct nl_msg *nl_msg;
+
+    nl_msg = nlmsg_alloc_simple(RTM_GETNEIGH, NLM_F_DUMP | NLM_F_REQUEST);
+    if (!nl_msg) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (nlmsg_append(nl_msg, &ndinfo, sizeof(ndinfo), NLMSG_ALIGNTO) < 0)
+        goto buffer_too_small;
+
+
+    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen,
+                          src_pid, dst_pid, NETLINK_ROUTE, 0) < 0)
+        goto cleanup;
+
+    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
+        goto malformed_resp;
+
+    switch (resp->nlmsg_type) {
+    case NLMSG_ERROR:
+        err = (struct nlmsgerr *)NLMSG_DATA(resp);
+        if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
+            goto malformed_resp;
+
+        if (err->error) {
+            virReportSystemError(-err->error,
+                                 "%s", _("error dumping"));
+            goto cleanup;
+        }
+        break;
+
+    case RTM_NEWNEIGH:
+        break;
+
+    default:
+        goto malformed_resp;
+    }
+    rc = recvbuflen;
+
+ cleanup:
+    nlmsg_free(nl_msg);
+    if (rc < 0)
+       VIR_FREE(resp);
+    *nlData = resp;
+    return rc;
+
+ malformed_resp:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("malformed netlink response message"));
+    goto cleanup;
+
+ buffer_too_small:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("allocated netlink buffer is too small"));
+    goto cleanup;
+}
 
 int
 virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen)
