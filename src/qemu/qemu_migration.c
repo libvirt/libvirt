@@ -3992,7 +3992,7 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if (mig && mig->nbd &&
+    if (mig->nbd &&
         qemuMigrationSrcCancelDriveMirror(driver, vm, true,
                                           QEMU_ASYNC_JOB_MIGRATION_OUT,
                                           dconn) < 0)
