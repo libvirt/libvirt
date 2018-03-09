@@ -34,8 +34,6 @@ virDomainObjListPtr virDomainObjListNew(void);
 
 virDomainObjPtr virDomainObjListFindByID(virDomainObjListPtr doms,
                                          int id);
-virDomainObjPtr virDomainObjListFindByIDRef(virDomainObjListPtr doms,
-                                            int id);
 virDomainObjPtr virDomainObjListFindByUUID(virDomainObjListPtr doms,
                                            const unsigned char *uuid);
 virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,

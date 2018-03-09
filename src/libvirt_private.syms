@@ -952,7 +952,6 @@ virDomainObjListCollect;
 virDomainObjListConvert;
 virDomainObjListExport;
 virDomainObjListFindByID;
-virDomainObjListFindByIDRef;
 virDomainObjListFindByName;
 virDomainObjListFindByUUID;
 virDomainObjListForEach;

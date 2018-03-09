@@ -555,7 +555,7 @@ vzDomainLookupByID(virConnectPtr conn, int id)
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
-    dom = virDomainObjListFindByIDRef(privconn->driver->domains, id);
+    dom = virDomainObjListFindByID(privconn->driver->domains, id);
 
     if (dom == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);

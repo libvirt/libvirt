@@ -342,7 +342,7 @@ static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
     virDomainPtr dom = NULL;
 
     openvzDriverLock(driver);
-    vm = virDomainObjListFindByIDRef(driver->domains, id);
+    vm = virDomainObjListFindByID(driver->domains, id);
     openvzDriverUnlock(driver);
 
     if (!vm) {

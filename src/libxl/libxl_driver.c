@@ -1082,7 +1082,7 @@ libxlDomainLookupByID(virConnectPtr conn, int id)
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
-    vm = virDomainObjListFindByIDRef(driver->domains, id);
+    vm = virDomainObjListFindByID(driver->domains, id);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);
         goto cleanup;

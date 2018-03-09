@@ -1379,7 +1379,7 @@ static virDomainPtr umlDomainLookupByID(virConnectPtr conn,
     virDomainPtr dom = NULL;
 
     umlDriverLock(driver);
-    vm = virDomainObjListFindByIDRef(driver->domains, id);
+    vm = virDomainObjListFindByID(driver->domains, id);
     umlDriverUnlock(driver);
 
     if (!vm) {

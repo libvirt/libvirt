@@ -450,7 +450,7 @@ libxlDomainShutdownThread(void *opaque)
 
     cfg = libxlDriverConfigGet(driver);
 
-    vm = virDomainObjListFindByIDRef(driver->domains, ev->domid);
+    vm = virDomainObjListFindByID(driver->domains, ev->domid);
     if (!vm) {
         VIR_INFO("Received event for unknown domain ID %d", ev->domid);
         goto cleanup;

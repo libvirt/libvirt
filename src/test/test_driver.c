@@ -1708,7 +1708,7 @@ static virDomainPtr testDomainLookupByID(virConnectPtr conn,
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
-    if (!(dom = virDomainObjListFindByIDRef(privconn->domains, id))) {
+    if (!(dom = virDomainObjListFindByID(privconn->domains, id))) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }

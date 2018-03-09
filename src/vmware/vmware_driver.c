@@ -825,7 +825,7 @@ vmwareDomainLookupByID(virConnectPtr conn, int id)
     virDomainPtr dom = NULL;
 
     vmwareDriverLock(driver);
-    vm = virDomainObjListFindByIDRef(driver->domains, id);
+    vm = virDomainObjListFindByID(driver->domains, id);
     vmwareDriverUnlock(driver);
 
     if (!vm) {

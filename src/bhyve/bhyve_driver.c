@@ -844,7 +844,7 @@ bhyveDomainLookupByID(virConnectPtr conn,
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
-    vm = virDomainObjListFindByIDRef(privconn->domains, id);
+    vm = virDomainObjListFindByID(privconn->domains, id);
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
