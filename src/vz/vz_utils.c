@@ -63,43 +63,13 @@ static virDomainControllerType vz7ControllerTypes[] = {VIR_DOMAIN_CONTROLLER_TYP
  * @domain: Domain pointer that has to be looked up
  *
  * This function looks up @domain and returns the appropriate virDomainObjPtr
- * that has to be unlocked by virObjectUnlock().
- *
- * Returns the domain object without incremented reference counter which is locked
- * on success, NULL otherwise.
- */
-virDomainObjPtr
-vzDomObjFromDomain(virDomainPtr domain)
-{
-    virDomainObjPtr vm;
-    vzConnPtr privconn = domain->conn->privateData;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    vzDriverPtr driver = privconn->driver;
-
-    vm = virDomainObjListFindByUUID(driver->domains, domain->uuid);
-    if (!vm) {
-        virUUIDFormat(domain->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s' (%s)"),
-                       uuidstr, domain->name);
-        return NULL;
-    }
-
-    return vm;
-}
-
-/**
- * vzDomObjFromDomainRef:
- * @domain: Domain pointer that has to be looked up
- *
- * This function looks up @domain and returns the appropriate virDomainObjPtr
  * that has to be released by calling virDomainObjEndAPI().
  *
  * Returns the domain object with incremented reference counter which is locked
  * on success, NULL otherwise.
  */
 virDomainObjPtr
-vzDomObjFromDomainRef(virDomainPtr domain)
+vzDomObjFromDomain(virDomainPtr domain)
 {
     virDomainObjPtr vm;
     vzConnPtr privconn = domain->conn->privateData;

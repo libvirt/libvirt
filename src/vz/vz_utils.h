@@ -120,7 +120,6 @@ void* vzDomObjAlloc(void *opaque);
 void vzDomObjFree(void *p);
 
 virDomainObjPtr vzDomObjFromDomain(virDomainPtr domain);
-virDomainObjPtr vzDomObjFromDomainRef(virDomainPtr domain);
 
 char * vzGetOutput(const char *binary, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
