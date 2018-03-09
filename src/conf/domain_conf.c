@@ -5679,11 +5679,11 @@ virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
         return -1;
 
     if (persDef &&
-        virDomainDeviceValidateAliasImpl(vm->def, dev) < 0)
+        virDomainDeviceValidateAliasImpl(persDef, dev) < 0)
         return -1;
 
     if (liveDef &&
-        virDomainDeviceValidateAliasImpl(vm->newDef, dev) < 0)
+        virDomainDeviceValidateAliasImpl(liveDef, dev) < 0)
         return -1;
 
     return 0;
