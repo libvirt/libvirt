@@ -342,8 +342,8 @@ virCloseCallbacksRun(virCloseCallbacksPtr closeCallbacks,
         virDomainObjPtr vm;
 
         /* Grab a ref and lock to the vm */
-        if (!(vm = virDomainObjListFindByUUIDRef(domains,
-                                                 list->entries[i].uuid))) {
+        if (!(vm = virDomainObjListFindByUUID(domains,
+                                              list->entries[i].uuid))) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
             virUUIDFormat(list->entries[i].uuid, uuidstr);
             VIR_DEBUG("No domain object with UUID %s", uuidstr);

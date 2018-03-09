@@ -1958,7 +1958,7 @@ prlsdkLoadDomain(vzDriverPtr driver,
             goto error;
 
         virObjectLock(driver);
-        if (!(olddom = virDomainObjListFindByUUIDRef(driver->domains, def->uuid)))
+        if (!(olddom = virDomainObjListFindByUUID(driver->domains, def->uuid)))
             dom = virDomainObjListAdd(driver->domains, def, driver->xmlopt, 0, NULL);
         virObjectUnlock(driver);
 
@@ -2144,7 +2144,7 @@ prlsdkHandleVmStateEvent(vzDriverPtr driver,
     virDomainEventType lvEventType = 0;
     int lvEventTypeDetails = 0;
 
-    dom = virDomainObjListFindByUUIDRef(driver->domains, uuid);
+    dom = virDomainObjListFindByUUID(driver->domains, uuid);
     if (dom == NULL)
         return;
 
@@ -2177,7 +2177,7 @@ prlsdkHandleVmConfigEvent(vzDriverPtr driver,
     virDomainObjPtr dom = NULL;
     bool job = false;
 
-    dom = virDomainObjListFindByUUIDRef(driver->domains, uuid);
+    dom = virDomainObjListFindByUUID(driver->domains, uuid);
     if (dom == NULL)
         return;
 
@@ -2207,7 +2207,7 @@ prlsdkHandleVmAddedEvent(vzDriverPtr driver,
 {
     virDomainObjPtr dom = NULL;
 
-    if (!(dom = virDomainObjListFindByUUIDRef(driver->domains, uuid)) &&
+    if (!(dom = virDomainObjListFindByUUID(driver->domains, uuid)) &&
         !(dom = prlsdkAddDomainByUUID(driver, uuid)))
         goto cleanup;
 
@@ -2225,7 +2225,7 @@ prlsdkHandleVmRemovedEvent(vzDriverPtr driver,
 {
     virDomainObjPtr dom = NULL;
 
-    dom = virDomainObjListFindByUUIDRef(driver->domains, uuid);
+    dom = virDomainObjListFindByUUID(driver->domains, uuid);
     /* domain was removed from the list from the libvirt
      * API function in current connection */
     if (dom == NULL)
@@ -2248,7 +2248,7 @@ prlsdkHandlePerfEvent(vzDriverPtr driver,
     virDomainObjPtr dom = NULL;
     vzDomObjPtr privdom = NULL;
 
-    if (!(dom = virDomainObjListFindByUUIDRef(driver->domains, uuid))) {
+    if (!(dom = virDomainObjListFindByUUID(driver->domains, uuid))) {
         PrlHandle_Free(event);
         return;
     }
@@ -2271,7 +2271,7 @@ prlsdkHandleMigrationProgress(vzDriverPtr driver,
     PRL_HANDLE param = PRL_INVALID_HANDLE;
     PRL_RESULT pret;
 
-    if (!(dom = virDomainObjListFindByUUIDRef(driver->domains, uuid)))
+    if (!(dom = virDomainObjListFindByUUID(driver->domains, uuid)))
         return;
 
     pret = PrlEvent_GetParam(event, 0, &param);

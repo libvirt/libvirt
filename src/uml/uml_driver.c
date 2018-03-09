@@ -171,7 +171,7 @@ umlDomObjFromDomainLocked(struct uml_driver *driver,
     virDomainObjPtr vm;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (!(vm = virDomainObjListFindByUUIDRef(driver->domains, uuid))) {
+    if (!(vm = virDomainObjListFindByUUID(driver->domains, uuid))) {
         virUUIDFormat(uuid, uuidstr);
 
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -773,7 +773,7 @@ static int umlProcessAutoDestroyDom(void *payload,
         return 0;
     }
 
-    if (!(dom = virDomainObjListFindByUUIDRef(data->driver->domains, uuid))) {
+    if (!(dom = virDomainObjListFindByUUID(data->driver->domains, uuid))) {
         VIR_DEBUG("No domain object to kill");
         return 0;
     }

@@ -578,7 +578,7 @@ testDomObjFromDomain(virDomainPtr domain)
     testDriverPtr driver = domain->conn->privateData;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    vm = virDomainObjListFindByUUIDRef(driver->domains, domain->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, domain->uuid);
     if (!vm) {
         virUUIDFormat(domain->uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -1726,7 +1726,7 @@ static virDomainPtr testDomainLookupByUUID(virConnectPtr conn,
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
-    if (!(dom = virDomainObjListFindByUUIDRef(privconn->domains, uuid))) {
+    if (!(dom = virDomainObjListFindByUUID(privconn->domains, uuid))) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }

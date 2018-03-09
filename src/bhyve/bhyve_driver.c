@@ -168,7 +168,7 @@ bhyveDomObjFromDomain(virDomainPtr domain)
     bhyveConnPtr privconn = domain->conn->privateData;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    vm = virDomainObjListFindByUUIDRef(privconn->domains, domain->uuid);
+    vm = virDomainObjListFindByUUID(privconn->domains, domain->uuid);
     if (!vm) {
         virUUIDFormat(domain->uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -791,7 +791,7 @@ bhyveDomainLookupByUUID(virConnectPtr conn,
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
-    vm = virDomainObjListFindByUUIDRef(privconn->domains, uuid);
+    vm = virDomainObjListFindByUUID(privconn->domains, uuid);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];

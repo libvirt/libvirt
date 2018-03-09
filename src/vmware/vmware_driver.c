@@ -67,7 +67,7 @@ vmwareDomObjFromDomainLocked(struct vmware_driver *driver,
     virDomainObjPtr vm;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (!(vm = virDomainObjListFindByUUIDRef(driver->domains, uuid))) {
+    if (!(vm = virDomainObjListFindByUUID(driver->domains, uuid))) {
         virUUIDFormat(uuid, uuidstr);
 
         virReportError(VIR_ERR_NO_DOMAIN,

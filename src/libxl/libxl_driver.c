@@ -313,7 +313,7 @@ libxlDomObjFromDomain(virDomainPtr dom)
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    vm = virDomainObjListFindByUUIDRef(driver->domains, dom->uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, dom->uuid);
     if (!vm) {
         virUUIDFormat(dom->uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -1105,7 +1105,7 @@ libxlDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virDomainObjPtr vm;
     virDomainPtr dom = NULL;
 
-    vm = virDomainObjListFindByUUIDRef(driver->domains, uuid);
+    vm = virDomainObjListFindByUUID(driver->domains, uuid);
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);
         goto cleanup;
