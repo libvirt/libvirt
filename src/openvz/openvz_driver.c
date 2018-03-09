@@ -351,7 +351,8 @@ static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, NULL);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching id '%d'"), id);
         goto cleanup;
     }
 
@@ -425,7 +426,8 @@ static virDomainPtr openvzDomainLookupByName(virConnectPtr conn,
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, NULL);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching name '%s'"), name);
         goto cleanup;
     }
 
@@ -1114,8 +1116,8 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     openvzDriverUnlock(driver);
 
     if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                       _("no domain with matching id"));
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching name '%s'"), dom->name);
         goto cleanup;
     }
 
