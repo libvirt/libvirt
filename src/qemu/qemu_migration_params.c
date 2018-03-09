@@ -112,6 +112,17 @@ qemuMigrationParamsFree(qemuMigrationParamsPtr migParams)
 }
 
 
+#define GET(API, PARAM, VAR) \
+    do { \
+        int rc; \
+        if ((rc = API(params, nparams, VIR_MIGRATE_PARAM_ ## PARAM, \
+                      &migParams->params.VAR)) < 0) \
+            goto error; \
+ \
+        if (rc == 1) \
+            migParams->params.VAR ## _set = true; \
+    } while (0)
+
 qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
@@ -135,26 +146,12 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
         }
     }
 
-#define GET(PARAM, VAR) \
-    do { \
-        int rc; \
-        if ((rc = virTypedParamsGetInt(params, nparams, \
-                                       VIR_MIGRATE_PARAM_ ## PARAM, \
-                                       &migParams->params.VAR)) < 0) \
-            goto error; \
- \
-        if (rc == 1) \
-            migParams->params.VAR ## _set = true; \
-    } while (0)
-
     if (params) {
         if (party == QEMU_MIGRATION_SOURCE) {
-            GET(AUTO_CONVERGE_INITIAL, cpuThrottleInitial);
-            GET(AUTO_CONVERGE_INCREMENT, cpuThrottleIncrement);
+            GET(virTypedParamsGetInt, AUTO_CONVERGE_INITIAL, cpuThrottleInitial);
+            GET(virTypedParamsGetInt, AUTO_CONVERGE_INCREMENT, cpuThrottleIncrement);
         }
     }
-
-#undef GET
 
     if ((migParams->params.cpuThrottleInitial_set ||
          migParams->params.cpuThrottleIncrement_set) &&
@@ -170,6 +167,8 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
     qemuMigrationParamsFree(migParams);
     return NULL;
 }
+
+#undef GET
 
 
 /**
