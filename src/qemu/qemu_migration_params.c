@@ -139,32 +139,85 @@ qemuMigrationParamsFree(qemuMigrationParamsPtr migParams)
 
 
 static int
-qemuMigrationParamsSetCompression(qemuMigrationCompressionPtr compression,
+qemuMigrationParamsSetCompression(virTypedParameterPtr params,
+                                  int nparams,
+                                  unsigned long flags,
                                   qemuMigrationParamsPtr migParams)
 {
-    if (compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE))
+    size_t i;
+    int method;
+    qemuMonitorMigrationCaps cap;
+
+    for (i = 0; i < nparams; i++) {
+        if (STRNEQ(params[i].field, VIR_MIGRATE_PARAM_COMPRESSION))
+            continue;
+
+        method = qemuMigrationCompressMethodTypeFromString(params[i].value.s);
+        if (method < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Unsupported compression method '%s'"),
+                           params[i].value.s);
+            goto error;
+        }
+
+        if (migParams->compMethods & (1ULL << method)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Compression method '%s' is specified twice"),
+                           params[i].value.s);
+            goto error;
+        }
+
+        migParams->compMethods |= 1ULL << method;
+
+        switch ((qemuMigrationCompressMethod) method) {
+        case QEMU_MIGRATION_COMPRESS_XBZRLE:
+            cap = QEMU_MONITOR_MIGRATION_CAPS_XBZRLE;
+            break;
+
+        case QEMU_MIGRATION_COMPRESS_MT:
+            cap = QEMU_MONITOR_MIGRATION_CAPS_COMPRESS;
+            break;
+
+        case QEMU_MIGRATION_COMPRESS_LAST:
+        default:
+            continue;
+        }
+        ignore_value(virBitmapSetBit(migParams->caps, cap));
+    }
+
+    if (params) {
+        GET(virTypedParamsGetInt, COMPRESSION_MT_LEVEL, compressLevel);
+        GET(virTypedParamsGetInt, COMPRESSION_MT_THREADS, compressThreads);
+        GET(virTypedParamsGetInt, COMPRESSION_MT_DTHREADS, decompressThreads);
+        GET(virTypedParamsGetULLong, COMPRESSION_XBZRLE_CACHE, xbzrleCacheSize);
+    }
+
+    if ((migParams->params.compressLevel_set ||
+         migParams->params.compressThreads_set ||
+         migParams->params.decompressThreads_set) &&
+        !(migParams->compMethods & (1ULL << QEMU_MIGRATION_COMPRESS_MT))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Turn multithread compression on to tune it"));
+        goto error;
+    }
+
+    if (migParams->params.xbzrleCacheSize_set &&
+        !(migParams->compMethods & (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Turn xbzrle compression on to tune it"));
+        goto error;
+    }
+
+    if (!migParams->compMethods && (flags & VIR_MIGRATE_COMPRESSED)) {
+        migParams->compMethods = 1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE;
         ignore_value(virBitmapSetBit(migParams->caps,
                                      QEMU_MONITOR_MIGRATION_CAPS_XBZRLE));
-
-    if (compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_MT))
-        ignore_value(virBitmapSetBit(migParams->caps,
-                                     QEMU_MONITOR_MIGRATION_CAPS_COMPRESS));
-
-    migParams->compMethods = compression->methods;
-
-    migParams->params.compressLevel_set = compression->level_set;
-    migParams->params.compressLevel = compression->level;
-
-    migParams->params.compressThreads_set = compression->threads_set;
-    migParams->params.compressThreads = compression->threads;
-
-    migParams->params.decompressThreads_set = compression->dthreads_set;
-    migParams->params.decompressThreads = compression->dthreads;
-
-    migParams->params.xbzrleCacheSize_set = compression->xbzrle_cache_set;
-    migParams->params.xbzrleCacheSize = compression->xbzrle_cache;
+    }
 
     return 0;
+
+ error:
+    return -1;
 }
 
 
@@ -172,8 +225,7 @@ qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
                              unsigned long flags,
-                             qemuMigrationParty party,
-                             qemuMigrationCompressionPtr compression)
+                             qemuMigrationParty party)
 {
     qemuMigrationParamsPtr migParams;
     size_t i;
@@ -207,7 +259,7 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
         goto error;
     }
 
-    if (qemuMigrationParamsSetCompression(compression, migParams) < 0)
+    if (qemuMigrationParamsSetCompression(params, nparams, flags, migParams) < 0)
         goto error;
 
     return migParams;
@@ -219,89 +271,6 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
 
 #undef GET
 
-
-qemuMigrationCompressionPtr
-qemuMigrationAnyCompressionParse(virTypedParameterPtr params,
-                                 int nparams,
-                                 unsigned long flags)
-{
-    size_t i;
-    qemuMigrationCompressionPtr compression = NULL;
-
-    if (VIR_ALLOC(compression) < 0)
-        return NULL;
-
-    for (i = 0; i < nparams; i++) {
-        int method;
-
-        if (STRNEQ(params[i].field, VIR_MIGRATE_PARAM_COMPRESSION))
-            continue;
-
-        method = qemuMigrationCompressMethodTypeFromString(params[i].value.s);
-        if (method < 0) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Unsupported compression method '%s'"),
-                           params[i].value.s);
-            goto error;
-        }
-
-        if (compression->methods & (1ULL << method)) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("Compression method '%s' is specified twice"),
-                           params[i].value.s);
-            goto error;
-        }
-
-        compression->methods |= 1ULL << method;
-    }
-
-#define GET_PARAM(PARAM, TYPE, VALUE) \
-    do { \
-        int rc; \
-        const char *par = VIR_MIGRATE_PARAM_COMPRESSION_ ## PARAM; \
- \
-        if ((rc = virTypedParamsGet ## TYPE(params, nparams, \
-                                            par, &compression->VALUE)) < 0) \
-            goto error; \
- \
-        if (rc == 1) \
-            compression->VALUE ## _set = true; \
-    } while (0)
-
-    if (params) {
-        GET_PARAM(MT_LEVEL, Int, level);
-        GET_PARAM(MT_THREADS, Int, threads);
-        GET_PARAM(MT_DTHREADS, Int, dthreads);
-        GET_PARAM(XBZRLE_CACHE, ULLong, xbzrle_cache);
-    }
-
-#undef GET_PARAM
-
-    if ((compression->level_set ||
-         compression->threads_set ||
-         compression->dthreads_set) &&
-        !(compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_MT))) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Turn multithread compression on to tune it"));
-        goto error;
-    }
-
-    if (compression->xbzrle_cache_set &&
-        !(compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE))) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Turn xbzrle compression on to tune it"));
-        goto error;
-    }
-
-    if (!compression->methods && (flags & VIR_MIGRATE_COMPRESSED))
-        compression->methods = 1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE;
-
-    return compression;
-
- error:
-    VIR_FREE(compression);
-    return NULL;
-}
 
 int
 qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,

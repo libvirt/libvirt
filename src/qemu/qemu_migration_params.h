@@ -28,25 +28,6 @@
 # include "qemu_conf.h"
 
 
-typedef struct _qemuMigrationCompression qemuMigrationCompression;
-typedef qemuMigrationCompression *qemuMigrationCompressionPtr;
-struct _qemuMigrationCompression {
-    unsigned long long methods;
-
-    bool level_set;
-    int level;
-
-    bool threads_set;
-    int threads;
-
-    bool dthreads_set;
-    int dthreads;
-
-    bool xbzrle_cache_set;
-    unsigned long long xbzrle_cache;
-};
-
-
 typedef struct _qemuMigrationParams qemuMigrationParams;
 typedef qemuMigrationParams *qemuMigrationParamsPtr;
 
@@ -60,13 +41,8 @@ qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
                              unsigned long flags,
-                             qemuMigrationParty party,
-                             qemuMigrationCompressionPtr compression);
+                             qemuMigrationParty party);
 
-qemuMigrationCompressionPtr
-qemuMigrationAnyCompressionParse(virTypedParameterPtr params,
-                                 int nparams,
-                                 unsigned long flags);
 int
 qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
                         virTypedParameterPtr *params,
