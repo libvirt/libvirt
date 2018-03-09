@@ -2144,7 +2144,7 @@ prlsdkHandleVmStateEvent(vzDriverPtr driver,
     virDomainEventType lvEventType = 0;
     int lvEventTypeDetails = 0;
 
-    dom = virDomainObjListFindByUUID(driver->domains, uuid);
+    dom = virDomainObjListFindByUUIDRef(driver->domains, uuid);
     if (dom == NULL)
         return;
 
@@ -2166,7 +2166,7 @@ prlsdkHandleVmStateEvent(vzDriverPtr driver,
 
  cleanup:
     PrlHandle_Free(eventParam);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
     return;
 }
 
@@ -2225,7 +2225,7 @@ prlsdkHandleVmRemovedEvent(vzDriverPtr driver,
 {
     virDomainObjPtr dom = NULL;
 
-    dom = virDomainObjListFindByUUID(driver->domains, uuid);
+    dom = virDomainObjListFindByUUIDRef(driver->domains, uuid);
     /* domain was removed from the list from the libvirt
      * API function in current connection */
     if (dom == NULL)
@@ -2235,6 +2235,8 @@ prlsdkHandleVmRemovedEvent(vzDriverPtr driver,
                     VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
     virDomainObjListRemove(driver->domains, dom);
+    virObjectLock(dom);
+    virDomainObjEndAPI(&dom);
     return;
 }
 
@@ -2246,7 +2248,7 @@ prlsdkHandlePerfEvent(vzDriverPtr driver,
     virDomainObjPtr dom = NULL;
     vzDomObjPtr privdom = NULL;
 
-    if (!(dom = virDomainObjListFindByUUID(driver->domains, uuid))) {
+    if (!(dom = virDomainObjListFindByUUIDRef(driver->domains, uuid))) {
         PrlHandle_Free(event);
         return;
     }
@@ -2255,7 +2257,7 @@ prlsdkHandlePerfEvent(vzDriverPtr driver,
     PrlHandle_Free(privdom->stats);
     privdom->stats = event;
 
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 }
 
 static void
@@ -2269,7 +2271,7 @@ prlsdkHandleMigrationProgress(vzDriverPtr driver,
     PRL_HANDLE param = PRL_INVALID_HANDLE;
     PRL_RESULT pret;
 
-    if (!(dom = virDomainObjListFindByUUID(driver->domains, uuid)))
+    if (!(dom = virDomainObjListFindByUUIDRef(driver->domains, uuid)))
         return;
 
     pret = PrlEvent_GetParam(event, 0, &param);
@@ -2283,7 +2285,7 @@ prlsdkHandleMigrationProgress(vzDriverPtr driver,
 
  cleanup:
     PrlHandle_Free(param);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 }
 
 static PRL_RESULT

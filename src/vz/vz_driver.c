@@ -555,7 +555,7 @@ vzDomainLookupByID(virConnectPtr conn, int id)
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
-    dom = virDomainObjListFindByID(privconn->driver->domains, id);
+    dom = virDomainObjListFindByIDRef(privconn->driver->domains, id);
 
     if (dom == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);
@@ -568,7 +568,7 @@ vzDomainLookupByID(virConnectPtr conn, int id)
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid, dom->def->id);
 
  cleanup:
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 
@@ -579,7 +579,7 @@ vzDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
-    dom = virDomainObjListFindByUUID(privconn->driver->domains, uuid);
+    dom = virDomainObjListFindByUUIDRef(privconn->driver->domains, uuid);
 
     if (dom == NULL) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -595,7 +595,7 @@ vzDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid, dom->def->id);
 
  cleanup:
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 
