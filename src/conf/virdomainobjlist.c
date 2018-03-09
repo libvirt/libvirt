@@ -280,11 +280,8 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
     if (oldDef)
         *oldDef = NULL;
 
-    virUUIDFormat(def->uuid, uuidstr);
-
     /* See if a VM with matching UUID already exists */
-    if ((vm = virHashLookup(doms->objs, uuidstr))) {
-        virObjectLock(vm);
+    if ((vm = virDomainObjListFindByUUIDLocked(doms, def->uuid))) {
         /* UUID matches, but if names don't match, refuse it */
         if (STRNEQ(vm->def->name, def->name)) {
             virUUIDFormat(vm->def->uuid, uuidstr);
@@ -314,10 +311,12 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
                               def,
                               !!(flags & VIR_DOMAIN_OBJ_LIST_ADD_LIVE),
                               oldDef);
+        /* XXX: Temporary until this API is fixed to return a locked and
+         *      refcnt'd object */
+        virObjectUnref(vm);
     } else {
         /* UUID does not match, but if a name matches, refuse it */
-        if ((vm = virHashLookup(doms->objsName, def->name))) {
-            virObjectLock(vm);
+        if ((vm = virDomainObjListFindByNameLocked(doms, def->name))) {
             virUUIDFormat(vm->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("domain '%s' already exists with uuid %s"),
@@ -329,18 +328,15 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
             goto cleanup;
         vm->def = def;
 
-        if (virDomainObjListAddObjLocked(doms, vm) < 0) {
-            virDomainObjEndAPI(&vm);
-            return NULL;
-        }
+        if (virDomainObjListAddObjLocked(doms, vm) < 0)
+            goto error;
     }
  cleanup:
     return vm;
 
  error:
-    virObjectUnlock(vm);
-    vm = NULL;
-    goto cleanup;
+    virDomainObjEndAPI(&vm);
+    return NULL;
 }
 
 
