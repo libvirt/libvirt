@@ -27,25 +27,42 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_XEN], [
   old_CFLAGS="$CFLAGS"
   XEN_LIBS=""
   XEN_CFLAGS=""
+  fail=0
 
   dnl search for the Xen store library
+  dnl Either use the provided path, or make use of pkgconfig
+  dnl Xen versions prior 4.9 had no pkgconfig file
   if test "$with_xen" != "no" ; then
+    xen_path_provided="no"
     if test "$with_xen" != "yes" && test "$with_xen" != "check" ; then
       XEN_CFLAGS="-I$with_xen/include"
       XEN_LIBS="-L$with_xen/lib64 -L$with_xen/lib"
+      xen_path_provided="yes"
     fi
-    fail=0
-    CFLAGS="$CFLAGS $XEN_CFLAGS"
-    LIBS="$LIBS $XEN_LIBS"
-    AC_CHECK_LIB([xenstore], [xs_read], [
-           with_xen=yes
-           XEN_LIBS="$XEN_LIBS -lxenstore"
-       ],[
-           if test "$with_xen" = "yes"; then
-             fail=1
-           fi
-           with_xen=no
-       ])
+
+    if test "$xen_path_provided" = "no" ; then
+      PKG_CHECK_MODULES([XEN], [xenstore], [
+          fail=0
+          with_xen=yes
+        ], [
+          fail=1
+        ])
+    fi
+    dnl manual check if either path was provided or pkgconfig does not exist
+    if test "$xen_path_provided" = "yes" || test "$fail" = 1 ; then
+      CFLAGS="$CFLAGS $XEN_CFLAGS"
+      LIBS="$LIBS $XEN_LIBS"
+      AC_CHECK_LIB([xenstore], [xs_read], [
+             fail=0
+             with_xen=yes
+             XEN_LIBS="$XEN_LIBS -lxenstore"
+         ],[
+             if test "$with_xen" = "yes"; then
+               fail=1
+             fi
+             with_xen=no
+         ])
+    fi
   fi
 
   if test "$with_xen" != "no" ; then
