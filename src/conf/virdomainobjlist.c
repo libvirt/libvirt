@@ -133,19 +133,16 @@ virDomainObjListFindByID(virDomainObjListPtr doms,
 }
 
 
-virDomainObjPtr
-virDomainObjListFindByUUID(virDomainObjListPtr doms,
-                           const unsigned char *uuid)
+static virDomainObjPtr
+virDomainObjListFindByUUIDLocked(virDomainObjListPtr doms,
+                                 const unsigned char *uuid)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainObjPtr obj;
 
-    virObjectRWLockRead(doms);
     virUUIDFormat(uuid, uuidstr);
-
     obj = virHashLookup(doms->objs, uuidstr);
     virObjectRef(obj);
-    virObjectRWUnlock(doms);
     if (obj) {
         virObjectLock(obj);
         if (obj->removing) {
@@ -158,15 +155,36 @@ virDomainObjListFindByUUID(virDomainObjListPtr doms,
 }
 
 
-virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
-                                           const char *name)
+/**
+ * @doms: Domain object list
+ * @uuid: UUID to search the doms->objs table
+ *
+ * Lookup the @uuid in the doms->objs hash table and return a
+ * locked and ref counted domain object if found. Caller is
+ * expected to use the virDomainObjEndAPI when done with the object.
+ */
+virDomainObjPtr
+virDomainObjListFindByUUID(virDomainObjListPtr doms,
+                           const unsigned char *uuid)
 {
     virDomainObjPtr obj;
 
     virObjectRWLockRead(doms);
+    obj = virDomainObjListFindByUUIDLocked(doms, uuid);
+    virObjectRWUnlock(doms);
+
+    return obj;
+}
+
+
+static virDomainObjPtr
+virDomainObjListFindByNameLocked(virDomainObjListPtr doms,
+                                 const char *name)
+{
+    virDomainObjPtr obj;
+
     obj = virHashLookup(doms->objsName, name);
     virObjectRef(obj);
-    virObjectRWUnlock(doms);
     if (obj) {
         virObjectLock(obj);
         if (obj->removing) {
@@ -175,6 +193,28 @@ virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
             obj = NULL;
         }
     }
+    return obj;
+}
+
+
+/**
+ * @doms: Domain object list
+ * @name: Name to search the doms->objsName table
+ *
+ * Lookup the @name in the doms->objsName hash table and return a
+ * locked and ref counted domain object if found. Caller is expected
+ * to use the virDomainObjEndAPI when done with the object.
+ */
+virDomainObjPtr
+virDomainObjListFindByName(virDomainObjListPtr doms,
+                           const char *name)
+{
+    virDomainObjPtr obj;
+
+    virObjectRWLockRead(doms);
+    obj = virDomainObjListFindByNameLocked(doms, name);
+    virObjectRWUnlock(doms);
+
     return obj;
 }
 
