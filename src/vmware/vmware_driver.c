@@ -835,7 +835,8 @@ vmwareDomainLookupByID(virConnectPtr conn, int id)
     vmwareDriverUnlock(driver);
 
     if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, NULL);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching id '%d'"), id);
         goto cleanup;
     }
 
@@ -894,7 +895,8 @@ vmwareDomainLookupByName(virConnectPtr conn, const char *name)
     vmwareDriverUnlock(driver);
 
     if (!vm) {
-        virReportError(VIR_ERR_NO_DOMAIN, NULL);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching name '%s'"), name);
         goto cleanup;
     }
 
