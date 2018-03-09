@@ -50,6 +50,11 @@ struct _qemuMigrationCompression {
 typedef struct _qemuMigrationParams qemuMigrationParams;
 typedef qemuMigrationParams *qemuMigrationParamsPtr;
 
+typedef enum {
+    QEMU_MIGRATION_SOURCE = (1 << 0),
+    QEMU_MIGRATION_DESTINATION = (1 << 1),
+} qemuMigrationParty;
+
 
 qemuMigrationParamsPtr
 qemuMigrationParamsNew(void);
@@ -57,7 +62,8 @@ qemuMigrationParamsNew(void);
 qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
-                             unsigned long flags);
+                             unsigned long flags,
+                             qemuMigrationParty party);
 
 void
 qemuMigrationParamsFree(qemuMigrationParamsPtr migParams);

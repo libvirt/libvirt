@@ -80,7 +80,8 @@ qemuMigrationParamsFree(qemuMigrationParamsPtr migParams)
 qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
-                             unsigned long flags)
+                             unsigned long flags,
+                             qemuMigrationParty party)
 {
     qemuMigrationParamsPtr migParams;
 
@@ -102,8 +103,10 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
             migParams->params.VAR ## _set = true; \
     } while (0)
 
-    GET(AUTO_CONVERGE_INITIAL, cpuThrottleInitial);
-    GET(AUTO_CONVERGE_INCREMENT, cpuThrottleIncrement);
+    if (party == QEMU_MIGRATION_SOURCE) {
+        GET(AUTO_CONVERGE_INITIAL, cpuThrottleInitial);
+        GET(AUTO_CONVERGE_INCREMENT, cpuThrottleIncrement);
+    }
 
 #undef GET
 

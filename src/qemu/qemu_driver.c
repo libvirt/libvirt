@@ -12743,7 +12743,8 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     if (nmigrate_disks < 0)
         goto cleanup;
 
-    if (!(migParams = qemuMigrationParamsFromFlags(params, nparams, flags)))
+    if (!(migParams = qemuMigrationParamsFromFlags(params, nparams, flags,
+                                                   QEMU_MIGRATION_SOURCE)))
         goto cleanup;
 
     if (!(compression = qemuMigrationAnyCompressionParse(params, nparams, flags)))
