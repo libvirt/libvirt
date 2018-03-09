@@ -355,26 +355,50 @@ virDomainObjPtr virDomainObjListAdd(virDomainObjListPtr doms,
 }
 
 
-/*
- * The caller must hold a lock on the driver owning 'doms',
- * and must also have locked 'dom', to ensure no one else
- * is either waiting for 'dom' or still using it
+/* The caller must hold lock on 'doms' in addition to 'virDomainObjListRemove'
+ * requirements
+ *
+ * Can be used to remove current element while iterating with
+ * virDomainObjListForEach
  */
-void virDomainObjListRemove(virDomainObjListPtr doms,
-                            virDomainObjPtr dom)
+void
+virDomainObjListRemoveLocked(virDomainObjListPtr doms,
+                             virDomainObjPtr dom)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    dom->removing = true;
     virUUIDFormat(dom->def->uuid, uuidstr);
-    virObjectRef(dom);
-    virObjectUnlock(dom);
 
-    virObjectRWLockWrite(doms);
-    virObjectLock(dom);
     virHashRemoveEntry(doms->objs, uuidstr);
     virHashRemoveEntry(doms->objsName, dom->def->name);
     virObjectUnlock(dom);
+}
+
+
+/**
+ * @doms: Pointer to the domain object list
+ * @dom: Domain pointer from either after Add or FindBy* API where the
+ *       @dom was successfully added to both the doms->objs and ->objsName
+ *       hash tables that now would need to be removed.
+ *
+ * The caller must hold a lock on the driver owning 'doms',
+ * and must also have locked and ref counted 'dom', to ensure
+ * no one else is either waiting for 'dom' or still using it.
+ *
+ * When this function returns, @dom will be removed from the hash
+ * tables, unlocked, and returned with the refcnt that was present
+ * upon entry.
+ */
+void
+virDomainObjListRemove(virDomainObjListPtr doms,
+                       virDomainObjPtr dom)
+{
+    dom->removing = true;
+    virObjectRef(dom);
+    virObjectUnlock(dom);
+    virObjectRWLockWrite(doms);
+    virObjectLock(dom);
+    virDomainObjListRemoveLocked(doms, dom);
     virObjectUnref(dom);
     virObjectRWUnlock(doms);
 }
@@ -444,24 +468,6 @@ virDomainObjListRename(virDomainObjListPtr doms,
     virObjectRWUnlock(doms);
     VIR_FREE(old_name);
     return ret;
-}
-
-/* The caller must hold lock on 'doms' in addition to 'virDomainObjListRemove'
- * requirements
- *
- * Can be used to remove current element while iterating with
- * virDomainObjListForEach
- */
-void virDomainObjListRemoveLocked(virDomainObjListPtr doms,
-                                  virDomainObjPtr dom)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-    virUUIDFormat(dom->def->uuid, uuidstr);
-
-    virHashRemoveEntry(doms->objs, uuidstr);
-    virHashRemoveEntry(doms->objsName, dom->def->name);
-    virObjectUnlock(dom);
 }
 
 
