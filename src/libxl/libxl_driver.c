@@ -1322,8 +1322,7 @@ libxlDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     }
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
@@ -1373,8 +1372,7 @@ libxlDomainReboot(virDomainPtr dom, unsigned int flags)
     }
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
@@ -1459,8 +1457,7 @@ libxlDomainGetOSType(virDomainPtr dom)
         goto cleanup;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return type;
 }
 
@@ -1479,8 +1476,7 @@ libxlDomainGetMaxMemory(virDomainPtr dom)
     ret = virDomainDefGetMemoryTotal(vm->def);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -1658,8 +1654,7 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
@@ -1685,8 +1680,7 @@ libxlDomainGetState(virDomainPtr dom,
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -2110,8 +2104,7 @@ libxlDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
     ret = vm->hasManagedSave;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -2140,8 +2133,7 @@ libxlDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 
  cleanup:
     VIR_FREE(name);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -2352,8 +2344,7 @@ libxlDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
         ret = virDomainDefGetVcpus(def);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -2484,8 +2475,7 @@ libxlDomainGetVcpuPinInfo(virDomainPtr dom, int ncpumaps,
                                            libxl_get_max_cpus(cfg->ctx), NULL);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
@@ -2548,8 +2538,7 @@ libxlDomainGetVcpus(virDomainPtr dom, virVcpuInfoPtr info, int maxinfo,
     ret = maxinfo;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
@@ -2580,8 +2569,7 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
                              virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
@@ -2901,8 +2889,7 @@ libxlDomainUndefineFlags(virDomainPtr dom,
 
  cleanup:
     VIR_FREE(name);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         libxlDomainEventQueue(driver, event);
     virObjectUnref(cfg);
@@ -4261,8 +4248,7 @@ libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
  cleanup:
     virDomainDefFree(vmdef);
     virDomainDeviceDefFree(dev);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
@@ -4394,8 +4380,7 @@ libxlDomainGetAutostart(virDomainPtr dom, int *autostart)
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -4521,8 +4506,7 @@ libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
     ignore_value(VIR_STRDUP(ret, name));
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
@@ -4587,8 +4571,7 @@ libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
@@ -4750,8 +4733,7 @@ libxlDomainOpenConsole(virDomainPtr dom,
     }
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -4886,8 +4868,7 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
     VIR_FREE(nodeset);
     virBitmapFree(nodes);
     libxl_bitmap_dispose(&nodemap);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
@@ -4908,8 +4889,7 @@ libxlDomainIsActive(virDomainPtr dom)
     ret = virDomainObjIsActive(obj);
 
  cleanup:
-    if (obj)
-        virObjectUnlock(obj);
+    virDomainObjEndAPI(&obj);
     return ret;
 }
 
@@ -4928,8 +4908,7 @@ libxlDomainIsPersistent(virDomainPtr dom)
     ret = obj->persistent;
 
  cleanup:
-    if (obj)
-        virObjectUnlock(obj);
+    virDomainObjEndAPI(&obj);
     return ret;
 }
 
@@ -4948,8 +4927,7 @@ libxlDomainIsUpdated(virDomainPtr dom)
     ret = vm->updated;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -5107,8 +5085,7 @@ libxlDomainGetCPUStats(virDomainPtr dom,
                                           start_cpu, ncpus);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -5211,8 +5188,7 @@ libxlDomainGetJobInfo(virDomainPtr dom,
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -5263,8 +5239,7 @@ libxlDomainGetJobStats(virDomainPtr dom,
     ret = 0;
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
