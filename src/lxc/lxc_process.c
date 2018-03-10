@@ -420,8 +420,7 @@ static int virLXCProcessSetupNamespaceName(virConnectPtr conn, int ns_type, cons
 
  cleanup:
     VIR_FREE(path);
-    virObjectUnlock(vm);
-    virObjectUnref(vm);
+    virDomainObjEndAPI(&vm);
     return fd;
 }
 
