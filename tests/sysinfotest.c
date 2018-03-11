@@ -91,7 +91,7 @@ sysinfotest_run(const char *test,
                 const char *cpuinfo,
                 const char *expected)
 {
-    struct testSysinfoData testdata = { NULL };
+    struct testSysinfoData testdata = { 0 };
     int ret = EXIT_FAILURE;
 
     testdata.func = func;

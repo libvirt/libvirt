@@ -1491,7 +1491,7 @@ virDomainVirtioSerialAddrAssign(virDomainDefPtr def,
                                 bool portOnly)
 {
     int ret = -1;
-    virDomainDeviceInfo nfo = { NULL };
+    virDomainDeviceInfo nfo = { 0 };
     virDomainDeviceInfoPtr ptr = allowZero ? &nfo : info;
 
     ptr->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL;
