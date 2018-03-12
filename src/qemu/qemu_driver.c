@@ -12104,6 +12104,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
     virQEMUDriverPtr driver = dconn->privateData;
     virDomainDefPtr def = NULL;
     char *origname = NULL;
+    qemuMigrationCompressionPtr compression = NULL;
     qemuMigrationParamsPtr migParams = NULL;
     int ret = -1;
 
@@ -12114,6 +12115,9 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
                        _("PrepareTunnel called but no TUNNELLED flag set"));
         goto cleanup;
     }
+
+    if (!(compression = qemuMigrationAnyCompressionParse(NULL, 0, flags)))
+        goto cleanup;
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
                                                    QEMU_MIGRATION_DESTINATION)))
@@ -12134,9 +12138,10 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
 
     ret = qemuMigrationDstPrepareTunnel(driver, dconn,
                                         NULL, 0, NULL, NULL, /* No cookies in v2 */
-                                        st, &def, origname, migParams, flags);
+                                        st, &def, origname, compression, migParams, flags);
 
  cleanup:
+    VIR_FREE(compression);
     qemuMigrationParamsFree(migParams);
     VIR_FREE(origname);
     virDomainDefFree(def);
@@ -12575,6 +12580,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
     virQEMUDriverPtr driver = dconn->privateData;
     virDomainDefPtr def = NULL;
     char *origname = NULL;
+    qemuMigrationCompressionPtr compression = NULL;
     qemuMigrationParamsPtr migParams = NULL;
     int ret = -1;
 
@@ -12585,6 +12591,9 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
                        _("PrepareTunnel called but no TUNNELLED flag set"));
         goto cleanup;
     }
+
+    if (!(compression = qemuMigrationAnyCompressionParse(NULL, 0, flags)))
+        goto cleanup;
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
                                                    QEMU_MIGRATION_DESTINATION)))
@@ -12599,9 +12608,10 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
     ret = qemuMigrationDstPrepareTunnel(driver, dconn,
                                         cookiein, cookieinlen,
                                         cookieout, cookieoutlen,
-                                        st, &def, origname, migParams, flags);
+                                        st, &def, origname, compression, migParams, flags);
 
  cleanup:
+    VIR_FREE(compression);
     qemuMigrationParamsFree(migParams);
     VIR_FREE(origname);
     virDomainDefFree(def);
@@ -12624,6 +12634,7 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     const char *dom_xml = NULL;
     const char *dname = NULL;
     char *origname = NULL;
+    qemuMigrationCompressionPtr compression = NULL;
     qemuMigrationParamsPtr migParams = NULL;
     int ret = -1;
 
@@ -12645,6 +12656,9 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
         goto cleanup;
     }
 
+    if (!(compression = qemuMigrationAnyCompressionParse(NULL, 0, flags)))
+        goto cleanup;
+
     if (!(migParams = qemuMigrationParamsFromFlags(params, nparams, flags,
                                                    QEMU_MIGRATION_DESTINATION)))
         goto cleanup;
@@ -12658,9 +12672,10 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     ret = qemuMigrationDstPrepareTunnel(driver, dconn,
                                         cookiein, cookieinlen,
                                         cookieout, cookieoutlen,
-                                        st, &def, origname, migParams, flags);
+                                        st, &def, origname, compression, migParams, flags);
 
  cleanup:
+    VIR_FREE(compression);
     qemuMigrationParamsFree(migParams);
     VIR_FREE(origname);
     virDomainDefFree(def);
