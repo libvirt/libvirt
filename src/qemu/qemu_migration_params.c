@@ -43,6 +43,19 @@ struct _qemuMigrationParams {
     qemuMonitorMigrationParams params;
 };
 
+typedef enum {
+    QEMU_MIGRATION_COMPRESS_XBZRLE = 0,
+    QEMU_MIGRATION_COMPRESS_MT,
+
+    QEMU_MIGRATION_COMPRESS_LAST
+} qemuMigrationCompressMethod;
+VIR_ENUM_DECL(qemuMigrationCompressMethod)
+VIR_ENUM_IMPL(qemuMigrationCompressMethod, QEMU_MIGRATION_COMPRESS_LAST,
+              "xbzrle",
+              "mt",
+);
+
+
 typedef struct _qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOnItem;
 struct _qemuMigrationParamsAlwaysOnItem {
     qemuMonitorMigrationCaps cap;
@@ -199,6 +212,140 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
 }
 
 #undef GET
+
+
+qemuMigrationCompressionPtr
+qemuMigrationAnyCompressionParse(virTypedParameterPtr params,
+                                 int nparams,
+                                 unsigned long flags)
+{
+    size_t i;
+    qemuMigrationCompressionPtr compression = NULL;
+
+    if (VIR_ALLOC(compression) < 0)
+        return NULL;
+
+    for (i = 0; i < nparams; i++) {
+        int method;
+
+        if (STRNEQ(params[i].field, VIR_MIGRATE_PARAM_COMPRESSION))
+            continue;
+
+        method = qemuMigrationCompressMethodTypeFromString(params[i].value.s);
+        if (method < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Unsupported compression method '%s'"),
+                           params[i].value.s);
+            goto error;
+        }
+
+        if (compression->methods & (1ULL << method)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Compression method '%s' is specified twice"),
+                           params[i].value.s);
+            goto error;
+        }
+
+        compression->methods |= 1ULL << method;
+    }
+
+#define GET_PARAM(PARAM, TYPE, VALUE) \
+    do { \
+        int rc; \
+        const char *par = VIR_MIGRATE_PARAM_COMPRESSION_ ## PARAM; \
+ \
+        if ((rc = virTypedParamsGet ## TYPE(params, nparams, \
+                                            par, &compression->VALUE)) < 0) \
+            goto error; \
+ \
+        if (rc == 1) \
+            compression->VALUE ## _set = true; \
+    } while (0)
+
+    if (params) {
+        GET_PARAM(MT_LEVEL, Int, level);
+        GET_PARAM(MT_THREADS, Int, threads);
+        GET_PARAM(MT_DTHREADS, Int, dthreads);
+        GET_PARAM(XBZRLE_CACHE, ULLong, xbzrle_cache);
+    }
+
+#undef GET_PARAM
+
+    if ((compression->level_set ||
+         compression->threads_set ||
+         compression->dthreads_set) &&
+        !(compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_MT))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Turn multithread compression on to tune it"));
+        goto error;
+    }
+
+    if (compression->xbzrle_cache_set &&
+        !(compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Turn xbzrle compression on to tune it"));
+        goto error;
+    }
+
+    if (!compression->methods && (flags & VIR_MIGRATE_COMPRESSED))
+        compression->methods = 1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE;
+
+    return compression;
+
+ error:
+    VIR_FREE(compression);
+    return NULL;
+}
+
+int
+qemuMigrationAnyCompressionDump(qemuMigrationCompressionPtr compression,
+                                virTypedParameterPtr *params,
+                                int *nparams,
+                                int *maxparams,
+                                unsigned long *flags)
+{
+    size_t i;
+
+    if (compression->methods == 1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE &&
+        !compression->xbzrle_cache_set) {
+        *flags |= VIR_MIGRATE_COMPRESSED;
+        return 0;
+    }
+
+    for (i = 0; i < QEMU_MIGRATION_COMPRESS_LAST; ++i) {
+        if ((compression->methods & (1ULL << i)) &&
+            virTypedParamsAddString(params, nparams, maxparams,
+                                    VIR_MIGRATE_PARAM_COMPRESSION,
+                                    qemuMigrationCompressMethodTypeToString(i)) < 0)
+            return -1;
+    }
+
+    if (compression->level_set &&
+        virTypedParamsAddInt(params, nparams, maxparams,
+                             VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL,
+                             compression->level) < 0)
+        return -1;
+
+    if (compression->threads_set &&
+        virTypedParamsAddInt(params, nparams, maxparams,
+                             VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS,
+                             compression->threads) < 0)
+        return -1;
+
+    if (compression->dthreads_set &&
+        virTypedParamsAddInt(params, nparams, maxparams,
+                             VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS,
+                             compression->dthreads) < 0)
+        return -1;
+
+    if (compression->xbzrle_cache_set &&
+        virTypedParamsAddULLong(params, nparams, maxparams,
+                                VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE,
+                                compression->xbzrle_cache) < 0)
+        return -1;
+
+    return 0;
+}
 
 
 /**

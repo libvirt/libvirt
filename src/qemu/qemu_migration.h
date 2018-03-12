@@ -98,25 +98,6 @@ typedef enum {
 } qemuMigrationJobPhase;
 VIR_ENUM_DECL(qemuMigrationJobPhase)
 
-typedef enum {
-    QEMU_MIGRATION_COMPRESS_XBZRLE = 0,
-    QEMU_MIGRATION_COMPRESS_MT,
-
-    QEMU_MIGRATION_COMPRESS_LAST
-} qemuMigrationCompressMethod;
-VIR_ENUM_DECL(qemuMigrationCompressMethod)
-
-qemuMigrationCompressionPtr
-qemuMigrationAnyCompressionParse(virTypedParameterPtr params,
-                                 int nparams,
-                                 unsigned long flags);
-int
-qemuMigrationAnyCompressionDump(qemuMigrationCompressionPtr compression,
-                                virTypedParameterPtr *params,
-                                int *nparams,
-                                int *maxparams,
-                                unsigned long *flags);
-
 int
 qemuMigrationSrcSetOffline(virQEMUDriverPtr driver,
                            virDomainObjPtr vm);

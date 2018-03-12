@@ -62,6 +62,17 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              unsigned long flags,
                              qemuMigrationParty party);
 
+qemuMigrationCompressionPtr
+qemuMigrationAnyCompressionParse(virTypedParameterPtr params,
+                                 int nparams,
+                                 unsigned long flags);
+int
+qemuMigrationAnyCompressionDump(qemuMigrationCompressionPtr compression,
+                                virTypedParameterPtr *params,
+                                int *nparams,
+                                int *maxparams,
+                                unsigned long *flags);
+
 void
 qemuMigrationParamsFree(qemuMigrationParamsPtr migParams);
 
