@@ -2368,15 +2368,49 @@ qemuDomainObjPrivateXMLParsePR(xmlXPathContextPtr ctxt,
 
 
 static int
+qemuDomainObjPrivateXMLParseJobNBD(virDomainObjPtr vm,
+                                   qemuDomainObjPrivatePtr priv,
+                                   xmlXPathContextPtr ctxt)
+{
+    xmlNodePtr *nodes = NULL;
+    size_t i;
+    int n;
+    int ret = -1;
+
+    if ((n = virXPathNodeSet("./disk[@migrating='yes']", ctxt, &nodes)) < 0)
+        goto cleanup;
+
+    if (n > 0) {
+        if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
+            VIR_WARN("Found disks marked for migration but we were not "
+                     "migrating");
+            n = 0;
+        }
+        for (i = 0; i < n; i++) {
+            char *dst = virXMLPropString(nodes[i], "dev");
+            virDomainDiskDefPtr disk;
+
+            if (dst && (disk = virDomainDiskByName(vm->def, dst, false)))
+                QEMU_DOMAIN_DISK_PRIVATE(disk)->migrating = true;
+            VIR_FREE(dst);
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(nodes);
+    return ret;
+}
+
+
+static int
 qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
                                 qemuDomainObjPrivatePtr priv,
                                 xmlXPathContextPtr ctxt)
 {
-    xmlNodePtr *nodes = NULL;
     xmlNodePtr savedNode = ctxt->node;
     char *tmp = NULL;
-    size_t i;
-    int n;
     int ret = -1;
 
     if (!(ctxt->node = virXPathNode("./job[1]", ctxt))) {
@@ -2423,25 +2457,8 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if ((n = virXPathNodeSet("./disk[@migrating='yes']", ctxt, &nodes)) < 0)
+    if (qemuDomainObjPrivateXMLParseJobNBD(vm, priv, ctxt) < 0)
         goto cleanup;
-
-    if (n > 0) {
-        if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
-            VIR_WARN("Found disks marked for migration but we were not "
-                     "migrating");
-            n = 0;
-        }
-        for (i = 0; i < n; i++) {
-            char *dst = virXMLPropString(nodes[i], "dev");
-            virDomainDiskDefPtr disk;
-
-            if (dst && (disk = virDomainDiskByName(vm->def, dst, false)))
-                QEMU_DOMAIN_DISK_PRIVATE(disk)->migrating = true;
-            VIR_FREE(dst);
-        }
-    }
-    VIR_FREE(nodes);
 
     if (qemuMigrationParamsParse(ctxt, &priv->job.migParams) < 0)
         goto cleanup;
@@ -2451,7 +2468,6 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
  cleanup:
     ctxt->node = savedNode;
     VIR_FREE(tmp);
-    VIR_FREE(nodes);
     return ret;
 }
 
