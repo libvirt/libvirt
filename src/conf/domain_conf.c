@@ -8554,23 +8554,25 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
 
 
 static int
-virDomainDiskSourcePrivateDataParse(xmlXPathContextPtr ctxt,
+virDomainDiskSourcePrivateDataParse(xmlNodePtr node,
+                                    xmlXPathContextPtr ctxt,
                                     virStorageSourcePtr src,
                                     unsigned int flags,
                                     virDomainXMLOptionPtr xmlopt)
 {
     xmlNodePtr saveNode = ctxt->node;
-    xmlNodePtr node;
     int ret = -1;
 
     if (!(flags & VIR_DOMAIN_DEF_PARSE_STATUS) ||
         !xmlopt || !xmlopt->privateData.storageParse)
         return 0;
 
-    if (!(node = virXPathNode("./privateData", ctxt)))
-        return 0;
-
     ctxt->node = node;
+
+    if (!(ctxt->node = virXPathNode("./privateData", ctxt))) {
+        ret = 0;
+        goto cleanup;
+    }
 
     if (xmlopt->privateData.storageParse(ctxt, src) < 0)
         goto cleanup;
@@ -8584,12 +8586,11 @@ virDomainDiskSourcePrivateDataParse(xmlXPathContextPtr ctxt,
 }
 
 
-int
-virDomainDiskSourceParse(xmlNodePtr node,
-                         xmlXPathContextPtr ctxt,
-                         virStorageSourcePtr src,
-                         unsigned int flags,
-                         virDomainXMLOptionPtr xmlopt)
+static int
+virDomainStorageSourceParse(xmlNodePtr node,
+                            xmlXPathContextPtr ctxt,
+                            virStorageSourcePtr src,
+                            unsigned int flags)
 {
     int ret = -1;
     xmlNodePtr saveNode = ctxt->node;
@@ -8635,9 +8636,6 @@ virDomainDiskSourceParse(xmlNodePtr node,
                                           ctxt, flags) < 0)
         goto cleanup;
 
-    if (virDomainDiskSourcePrivateDataParse(ctxt, src, flags, xmlopt) < 0)
-        goto cleanup;
-
     /* People sometimes pass a bogus '' source path when they mean to omit the
      * source element completely (e.g. CDROM without media). This is just a
      * little compatibility check to help those broken apps */
@@ -8649,6 +8647,23 @@ virDomainDiskSourceParse(xmlNodePtr node,
  cleanup:
     ctxt->node = saveNode;
     return ret;
+}
+
+
+int
+virDomainDiskSourceParse(xmlNodePtr node,
+                         xmlXPathContextPtr ctxt,
+                         virStorageSourcePtr src,
+                         unsigned int flags,
+                         virDomainXMLOptionPtr xmlopt)
+{
+    if (virDomainStorageSourceParse(node, ctxt, src, flags) < 0)
+        return -1;
+
+    if (virDomainDiskSourcePrivateDataParse(node, ctxt, src, flags, xmlopt) < 0)
+        return -1;
+
+    return 0;
 }
 
 
