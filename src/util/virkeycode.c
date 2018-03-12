@@ -27,7 +27,7 @@
 #include "virkeycodetable_atset3.h"
 #include "virkeycodetable_linux.h"
 #include "virkeycodetable_osx.h"
-#include "virkeycodetable_rfb.h"
+#include "virkeycodetable_qnum.h"
 #include "virkeycodetable_usb.h"
 #include "virkeycodetable_win32.h"
 #include "virkeycodetable_xtkbd.h"
@@ -52,7 +52,7 @@ static const unsigned short *virKeymapValues[VIR_KEYCODE_SET_LAST] = {
     [VIR_KEYCODE_SET_XT_KBD] = virKeyCodeTable_xtkbd,
     [VIR_KEYCODE_SET_USB] = virKeyCodeTable_usb,
     [VIR_KEYCODE_SET_WIN32] = virKeyCodeTable_win32,
-    [VIR_KEYCODE_SET_RFB] = virKeyCodeTable_rfb,
+    [VIR_KEYCODE_SET_QNUM] = virKeyCodeTable_qnum,
 };
 
 #define VIR_KEYMAP_ENTRY_MAX ARRAY_CARDINALITY(virKeyCodeTable_linux)
@@ -64,7 +64,7 @@ verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_osx));
 verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_xtkbd));
 verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_usb));
 verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_win32));
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_rfb));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_qnum));
 verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyNameTable_linux));
 verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyNameTable_osx));
 verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyNameTable_win32));
@@ -79,7 +79,7 @@ VIR_ENUM_IMPL(virKeycodeSet, VIR_KEYCODE_SET_LAST,
     "xt_kbd",
     "usb",
     "win32",
-    "rfb",
+    "qnum",
 );
 
 int virKeycodeValueFromString(virKeycodeSet codeset,

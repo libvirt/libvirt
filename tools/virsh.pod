@@ -2249,14 +2249,14 @@ for keyboard input. No symbolic names are provided
 
 See L<virkeycode-usb(7)>
 
-=item B<rfb>
+=item B<qnum>
 
-The numeric values are those defined by the RFB extension for sending
+The numeric values are those defined by the QNUM extension for sending
 raw keycodes. These are a variant on the XT codeset, but extended
 keycodes have the low bit of the second byte set, instead of the high
 bit of the first byte. No symbolic names are provided.
 
-See L<virkeycode-rfb(7)>
+See L<virkeycode-qnum(7)>
 
 =back
 

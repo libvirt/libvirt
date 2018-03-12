@@ -2580,17 +2580,17 @@ static int qemuDomainSendKey(virDomainPtr domain,
 
     virCheckFlags(0, -1);
 
-    /* translate the keycode to RFB for qemu driver */
-    if (codeset != VIR_KEYCODE_SET_RFB) {
+    /* translate the keycode to QNUM for qemu driver */
+    if (codeset != VIR_KEYCODE_SET_QNUM) {
         size_t i;
         int keycode;
 
         for (i = 0; i < nkeycodes; i++) {
-            keycode = virKeycodeValueTranslate(codeset, VIR_KEYCODE_SET_RFB,
+            keycode = virKeycodeValueTranslate(codeset, VIR_KEYCODE_SET_QNUM,
                                                keycodes[i]);
             if (keycode < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot translate keycode %u of %s codeset to rfb keycode"),
+                               _("cannot translate keycode %u of %s codeset to qnum keycode"),
                                keycodes[i],
                                virKeycodeSetTypeToString(codeset));
                 return -1;

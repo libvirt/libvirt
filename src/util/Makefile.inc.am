@@ -214,7 +214,7 @@ EXTRA_DIST += \
 	$(NULL)
 
 
-KEYCODES = linux osx atset1 atset2 atset3 xtkbd usb win32 rfb
+KEYCODES = linux osx atset1 atset2 atset3 xtkbd usb win32 qnum
 KEYNAMES = linux osx win32
 
 KEYTABLES = \

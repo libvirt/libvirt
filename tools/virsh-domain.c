@@ -8688,6 +8688,11 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptUInt(ctl, cmd, "holdtime", &holdtime) < 0)
         goto cleanup;
 
+    /* The qnum codeset was originally called rfb, so we need to keep
+     * accepting the old name for backwards compatibility reasons */
+    if (STREQ(codeset_option, "rfb"))
+        codeset_option = "qnum";
+
     codeset = virKeycodeSetTypeFromString(codeset_option);
     if (codeset < 0) {
         vshError(ctl, _("unknown codeset: '%s'"), codeset_option);

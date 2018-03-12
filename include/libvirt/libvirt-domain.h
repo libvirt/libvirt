@@ -2733,7 +2733,7 @@ typedef enum {
     VIR_KEYCODE_SET_XT_KBD         = 6,
     VIR_KEYCODE_SET_USB            = 7,
     VIR_KEYCODE_SET_WIN32          = 8,
-    VIR_KEYCODE_SET_RFB            = 9,
+    VIR_KEYCODE_SET_QNUM           = 9,
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_KEYCODE_SET_LAST
@@ -2744,6 +2744,13 @@ typedef enum {
      */
 # endif
 } virKeycodeSet;
+
+/**
+ * VIR_KEYCODE_SET_RFB:
+ *
+ * Compatibility alias for VIR_KEYCODE_SET_QNUM, which replaced it since 4.2.0.
+ */
+# define VIR_KEYCODE_SET_RFB VIR_KEYCODE_SET_QNUM
 
 /**
  * VIR_DOMAIN_SEND_KEY_MAX_KEYS:
