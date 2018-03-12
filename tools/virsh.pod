@@ -4127,15 +4127,23 @@ essentially include everything from the offset to the end of the volume.
 
 If I<--sparse> is specified, this command will preserve volume sparseness.
 
-=item B<vol-wipe> [I<--pool> I<pool-or-uuid>] [I<--algorithm> I<algorithm>]
-I<vol-name-or-key-or-path>
+=item B<vol-wipe> I<vol-name-or-key-or-path> [I<--pool> I<pool-or-uuid>]
+[I<--algorithm> I<algorithm>]
 
 Wipe a volume, ensure data previously on the volume is not accessible to
-future reads. I<--pool> I<pool-or-uuid> is the name or UUID of the storage
-pool the volume is in.
+future reads.
+
 I<vol-name-or-key-or-path> is the name or key or path of the volume to wipe.
 It is possible to choose different wiping algorithms instead of re-writing
-volume with zeroes. This can be done via I<--algorithm> switch.
+volume with zeroes.
+
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the
+volume is in. If the volume name is provided instead of the key or path,
+then providing the pool is necessary to find the volume to be wiped;
+otherwise, the first volume found by the key or path will be used.
+
+Use the I<--algorithm> switch choosing from the list of the following
+algorithms in order to define which algorithm to use for the wipe.
 
 B<Supported algorithms>
   zero       - 1-pass all zeroes
