@@ -137,9 +137,8 @@ qemuMigrationParamsFree(qemuMigrationParamsPtr migParams)
     } while (0)
 
 
-int
-qemuMigrationParamsSetCompression(virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                                  qemuMigrationCompressionPtr compression,
+static int
+qemuMigrationParamsSetCompression(qemuMigrationCompressionPtr compression,
                                   qemuMigrationParamsPtr migParams)
 {
     if (compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE))
@@ -170,7 +169,8 @@ qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
                              unsigned long flags,
-                             qemuMigrationParty party)
+                             qemuMigrationParty party,
+                             qemuMigrationCompressionPtr compression)
 {
     qemuMigrationParamsPtr migParams;
     size_t i;
@@ -203,6 +203,9 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                        _("Turn auto convergence on to tune it"));
         goto error;
     }
+
+    if (qemuMigrationParamsSetCompression(compression, migParams) < 0)
+        goto error;
 
     return migParams;
 

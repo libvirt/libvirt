@@ -60,7 +60,8 @@ qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
                              unsigned long flags,
-                             qemuMigrationParty party);
+                             qemuMigrationParty party,
+                             qemuMigrationCompressionPtr compression);
 
 qemuMigrationCompressionPtr
 qemuMigrationAnyCompressionParse(virTypedParameterPtr params,
@@ -95,11 +96,6 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
 int
 qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
                               qemuMigrationParamsPtr migParams);
-
-int
-qemuMigrationParamsSetCompression(virDomainObjPtr vm,
-                                  qemuMigrationCompressionPtr compression,
-                                  qemuMigrationParamsPtr migParams);
 
 int
 qemuMigrationParamsCheck(virQEMUDriverPtr driver,

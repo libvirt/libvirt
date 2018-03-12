@@ -12120,7 +12120,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
         goto cleanup;
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
-                                                   QEMU_MIGRATION_DESTINATION)))
+                                                   QEMU_MIGRATION_DESTINATION, compression)))
         goto cleanup;
 
     if (virLockManagerPluginUsesState(driver->lockManager)) {
@@ -12138,7 +12138,7 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
 
     ret = qemuMigrationDstPrepareTunnel(driver, dconn,
                                         NULL, 0, NULL, NULL, /* No cookies in v2 */
-                                        st, &def, origname, compression, migParams, flags);
+                                        st, &def, origname, migParams, flags);
 
  cleanup:
     VIR_FREE(compression);
@@ -12186,7 +12186,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
         goto cleanup;
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
-                                                   QEMU_MIGRATION_DESTINATION)))
+                                                   QEMU_MIGRATION_DESTINATION, compression)))
         goto cleanup;
 
     if (virLockManagerPluginUsesState(driver->lockManager)) {
@@ -12210,7 +12210,7 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
                                         NULL, 0, NULL, NULL, /* No cookies */
                                         uri_in, uri_out,
                                         &def, origname, NULL, 0, NULL, 0,
-                                        compression, migParams, flags);
+                                        migParams, flags);
 
  cleanup:
     qemuMigrationParamsFree(migParams);
@@ -12251,7 +12251,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
         goto cleanup;
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
-                                                   QEMU_MIGRATION_SOURCE)))
+                                                   QEMU_MIGRATION_SOURCE, compression)))
         goto cleanup;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -12445,7 +12445,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
         goto cleanup;
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
-                                                   QEMU_MIGRATION_DESTINATION)))
+                                                   QEMU_MIGRATION_DESTINATION, compression)))
         goto cleanup;
 
     if (!(def = qemuMigrationAnyPrepareDef(driver, dom_xml, dname, &origname)))
@@ -12459,7 +12459,7 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                                         cookieout, cookieoutlen,
                                         uri_in, uri_out,
                                         &def, origname, NULL, 0, NULL, 0,
-                                        compression, migParams, flags);
+                                        migParams, flags);
 
  cleanup:
     qemuMigrationParamsFree(migParams);
@@ -12527,7 +12527,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
         goto cleanup;
 
     if (!(migParams = qemuMigrationParamsFromFlags(params, nparams, flags,
-                                                   QEMU_MIGRATION_DESTINATION)))
+                                                   QEMU_MIGRATION_DESTINATION, compression)))
         goto cleanup;
 
     if (flags & VIR_MIGRATE_TUNNELLED) {
@@ -12552,7 +12552,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
                                         uri_in, uri_out,
                                         &def, origname, listenAddress,
                                         nmigrate_disks, migrate_disks, nbdPort,
-                                        compression, migParams, flags);
+                                        migParams, flags);
 
  cleanup:
     qemuMigrationParamsFree(migParams);
@@ -12596,7 +12596,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
         goto cleanup;
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
-                                                   QEMU_MIGRATION_DESTINATION)))
+                                                   QEMU_MIGRATION_DESTINATION, compression)))
         goto cleanup;
 
     if (!(def = qemuMigrationAnyPrepareDef(driver, dom_xml, dname, &origname)))
@@ -12608,7 +12608,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
     ret = qemuMigrationDstPrepareTunnel(driver, dconn,
                                         cookiein, cookieinlen,
                                         cookieout, cookieoutlen,
-                                        st, &def, origname, compression, migParams, flags);
+                                        st, &def, origname, migParams, flags);
 
  cleanup:
     VIR_FREE(compression);
@@ -12660,7 +12660,7 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
         goto cleanup;
 
     if (!(migParams = qemuMigrationParamsFromFlags(params, nparams, flags,
-                                                   QEMU_MIGRATION_DESTINATION)))
+                                                   QEMU_MIGRATION_DESTINATION, compression)))
         goto cleanup;
 
     if (!(def = qemuMigrationAnyPrepareDef(driver, dom_xml, dname, &origname)))
@@ -12672,7 +12672,7 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     ret = qemuMigrationDstPrepareTunnel(driver, dconn,
                                         cookiein, cookieinlen,
                                         cookieout, cookieoutlen,
-                                        st, &def, origname, compression, migParams, flags);
+                                        st, &def, origname, migParams, flags);
 
  cleanup:
     VIR_FREE(compression);
@@ -12708,7 +12708,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
         goto cleanup;
 
     if (!(migParams = qemuMigrationParamsFromFlags(NULL, 0, flags,
-                                                   QEMU_MIGRATION_SOURCE)))
+                                                   QEMU_MIGRATION_SOURCE, compression)))
         goto cleanup;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
@@ -12800,7 +12800,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
         goto cleanup;
 
     if (!(migParams = qemuMigrationParamsFromFlags(params, nparams, flags,
-                                                   QEMU_MIGRATION_SOURCE)))
+                                                   QEMU_MIGRATION_SOURCE, compression)))
         goto cleanup;
 
     if (!(vm = qemuDomObjFromDomain(dom)))

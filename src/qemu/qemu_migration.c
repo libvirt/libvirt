@@ -2158,7 +2158,6 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                            size_t nmigrate_disks,
                            const char **migrate_disks,
                            int nbdPort,
-                           qemuMigrationCompressionPtr compression,
                            qemuMigrationParamsPtr migParams,
                            unsigned long flags)
 {
@@ -2372,9 +2371,6 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         dataFD[1] = -1; /* 'st' owns the FD now & will close it */
     }
 
-    if (qemuMigrationParamsSetCompression(vm, compression, migParams) < 0)
-        goto stopjob;
-
     if (STREQ_NULLABLE(protocol, "rdma") &&
         virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
         goto stopjob;
@@ -2526,7 +2522,6 @@ qemuMigrationDstPrepareTunnel(virQEMUDriverPtr driver,
                               virStreamPtr st,
                               virDomainDefPtr *def,
                               const char *origname,
-                              qemuMigrationCompressionPtr compression,
                               qemuMigrationParamsPtr migParams,
                               unsigned long flags)
 {
@@ -2545,7 +2540,7 @@ qemuMigrationDstPrepareTunnel(virQEMUDriverPtr driver,
     return qemuMigrationDstPrepareAny(driver, dconn, cookiein, cookieinlen,
                                       cookieout, cookieoutlen, def, origname,
                                       st, NULL, 0, false, NULL, 0, NULL, 0,
-                                      compression, migParams, flags);
+                                      migParams, flags);
 }
 
 
@@ -2587,7 +2582,6 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
                               size_t nmigrate_disks,
                               const char **migrate_disks,
                               int nbdPort,
-                              qemuMigrationCompressionPtr compression,
                               qemuMigrationParamsPtr migParams,
                               unsigned long flags)
 {
@@ -2712,7 +2706,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
                                      NULL, uri ? uri->scheme : "tcp",
                                      port, autoPort, listenAddress,
                                      nmigrate_disks, migrate_disks, nbdPort,
-                                     compression, migParams, flags);
+                                     migParams, flags);
  cleanup:
     virURIFree(uri);
     VIR_FREE(hostname);
@@ -3239,7 +3233,6 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                     const char *graphicsuri,
                     size_t nmigrate_disks,
                     const char **migrate_disks,
-                    qemuMigrationCompressionPtr compression,
                     qemuMigrationParamsPtr migParams)
 {
     int ret = -1;
@@ -3313,9 +3306,6 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
 
     if (qemuMigrationSrcGraphicsRelocate(driver, vm, mig, graphicsuri) < 0)
         VIR_WARN("unable to provide data for graphics client relocation");
-
-    if (qemuMigrationParamsSetCompression(vm, compression, migParams) < 0)
-        goto error;
 
     if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                                  migParams) < 0)
@@ -3606,7 +3596,6 @@ qemuMigrationSrcPerformNative(virQEMUDriverPtr driver,
                               const char *graphicsuri,
                               size_t nmigrate_disks,
                               const char **migrate_disks,
-                              qemuMigrationCompressionPtr compression,
                               qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -3658,7 +3647,7 @@ qemuMigrationSrcPerformNative(virQEMUDriverPtr driver,
     ret = qemuMigrationSrcRun(driver, vm, persist_xml, cookiein, cookieinlen, cookieout,
                               cookieoutlen, flags, resource, &spec, dconn,
                               graphicsuri, nmigrate_disks, migrate_disks,
-                              compression, migParams);
+                              migParams);
 
     if (spec.destType == MIGRATION_DEST_FD)
         VIR_FORCE_CLOSE(spec.dest.fd.qemu);
@@ -3685,7 +3674,6 @@ qemuMigrationSrcPerformTunnel(virQEMUDriverPtr driver,
                               const char *graphicsuri,
                               size_t nmigrate_disks,
                               const char **migrate_disks,
-                              qemuMigrationCompressionPtr compression,
                               qemuMigrationParamsPtr migParams)
 {
     int ret = -1;
@@ -3723,7 +3711,7 @@ qemuMigrationSrcPerformTunnel(virQEMUDriverPtr driver,
     ret = qemuMigrationSrcRun(driver, vm, persist_xml, cookiein, cookieinlen,
                               cookieout, cookieoutlen, flags, resource, &spec,
                               dconn, graphicsuri, nmigrate_disks, migrate_disks,
-                              compression, migParams);
+                              migParams);
 
  cleanup:
     VIR_FORCE_CLOSE(spec.dest.fd.qemu);
@@ -3747,7 +3735,6 @@ qemuMigrationSrcPerformPeer2Peer2(virQEMUDriverPtr driver,
                                   unsigned long flags,
                                   const char *dname,
                                   unsigned long resource,
-                                  qemuMigrationCompressionPtr compression,
                                   qemuMigrationParamsPtr migParams)
 {
     virDomainPtr ddomain = NULL;
@@ -3832,13 +3819,13 @@ qemuMigrationSrcPerformPeer2Peer2(virQEMUDriverPtr driver,
         ret = qemuMigrationSrcPerformTunnel(driver, vm, st, NULL,
                                             NULL, 0, NULL, NULL,
                                             flags, resource, dconn,
-                                            NULL, 0, NULL, compression, migParams);
+                                            NULL, 0, NULL, migParams);
     else
         ret = qemuMigrationSrcPerformNative(driver, vm, NULL, uri_out,
                                             cookie, cookielen,
                                             NULL, NULL, /* No out cookie with v2 migration */
                                             flags, resource, dconn, NULL, 0, NULL,
-                                            compression, migParams);
+                                            migParams);
 
     /* Perform failed. Make sure Finish doesn't overwrite the error */
     if (ret < 0)
@@ -4077,14 +4064,14 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
                                             cookiein, cookieinlen,
                                             &cookieout, &cookieoutlen,
                                             flags, bandwidth, dconn, graphicsuri,
-                                            nmigrate_disks, migrate_disks, compression,
+                                            nmigrate_disks, migrate_disks,
                                             migParams);
     } else {
         ret = qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri,
                                             cookiein, cookieinlen,
                                             &cookieout, &cookieoutlen,
                                             flags, bandwidth, dconn, graphicsuri,
-                                            nmigrate_disks, migrate_disks, compression,
+                                            nmigrate_disks, migrate_disks,
                                             migParams);
     }
 
@@ -4393,7 +4380,7 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
     } else {
         ret = qemuMigrationSrcPerformPeer2Peer2(driver, sconn, dconn, vm,
                                                 dconnuri, flags, dname, resource,
-                                                compression, migParams);
+                                                migParams);
     }
 
  cleanup:
@@ -4475,7 +4462,7 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
         ret = qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri, cookiein, cookieinlen,
                                             cookieout, cookieoutlen,
                                             flags, resource, NULL, NULL, 0, NULL,
-                                            compression, migParams);
+                                            migParams);
     }
     if (ret < 0)
         goto endjob;
@@ -4544,7 +4531,6 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
                              const char *graphicsuri,
                              size_t nmigrate_disks,
                              const char **migrate_disks,
-                             qemuMigrationCompressionPtr compression,
                              qemuMigrationParamsPtr migParams,
                              const char *cookiein,
                              int cookieinlen,
@@ -4572,7 +4558,7 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
     ret = qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri, cookiein, cookieinlen,
                                         cookieout, cookieoutlen,
                                         flags, resource, NULL, graphicsuri,
-                                        nmigrate_disks, migrate_disks, compression, migParams);
+                                        nmigrate_disks, migrate_disks, migParams);
 
     if (ret < 0) {
         if (qemuMigrationSrcRestoreDomainState(driver, vm)) {
@@ -4667,7 +4653,7 @@ qemuMigrationSrcPerform(virQEMUDriverPtr driver,
             return qemuMigrationSrcPerformPhase(driver, conn, vm, persist_xml, uri,
                                                 graphicsuri,
                                                 nmigrate_disks, migrate_disks,
-                                                compression, migParams,
+                                                migParams,
                                                 cookiein, cookieinlen,
                                                 cookieout, cookieoutlen,
                                                 flags, resource);
