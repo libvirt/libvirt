@@ -3949,10 +3949,13 @@ before the event.
 =item B<vol-create> I<pool-or-uuid> I<FILE> [I<--prealloc-metadata>]
 
 Create a volume from an XML <file>.
+
 I<pool-or-uuid> is the name or UUID of the storage pool to create the volume in.
+
 I<FILE> is the XML <file> with the volume definition. An easy way to create the
 XML <file> is to use the B<vol-dumpxml> command to obtain the definition of a
 pre-existing volume.
+
 [I<--prealloc-metadata>] preallocate metadata (for qcow2 images which don't
 support full allocation). This option creates a sparse image file with metadata,
 resulting in higher performance compared to images with no preallocation and
@@ -3964,53 +3967,66 @@ B<Example>
  vi newvolume.xml (or make changes with your other text editor)
  virsh vol-create differentstoragepool newvolume.xml
 
-=item B<vol-create-from> I<pool-or-uuid> I<FILE> [I<--inputpool>
-I<pool-or-uuid>] I<vol-name-or-key-or-path> [I<--prealloc-metadata>]
-[I<--reflink>]
+=item B<vol-create-from> I<pool-or-uuid> I<FILE> I<vol-name-or-key-or-path>
+[I<--inputpool> I<pool-or-uuid>]  [I<--prealloc-metadata>] [I<--reflink>]
 
 Create a volume, using another volume as input.
+
 I<pool-or-uuid> is the name or UUID of the storage pool to create the volume in.
+
 I<FILE> is the XML <file> with the volume definition.
+
+I<vol-name-or-key-or-path> is the name or key or path of the source volume.
+
 I<--inputpool> I<pool-or-uuid> is the name or uuid of the storage pool the
 source volume is in.
-I<vol-name-or-key-or-path> is the name or key or path of the source volume.
+
 [I<--prealloc-metadata>] preallocate metadata (for qcow2 images which don't
 support full allocation). This option creates a sparse image file with metadata,
 resulting in higher performance compared to images with no preallocation and
 only slightly higher initial disk space usage.
+
 When I<--reflink> is specified, perform a COW lightweight copy,
 where the data blocks are copied only when modified.
 If this is not possible, the copy fails.
 
 =item B<vol-create-as> I<pool-or-uuid> I<name> I<capacity>
-[I<--allocation> I<size>] [I<--format> I<string>] [I<--backing-vol>
-I<vol-name-or-key-or-path>] [I<--backing-vol-format> I<string>]
-[I<--prealloc-metadata>] [I<--print-xml>]
+[I<--allocation> I<size>] [I<--format> I<string>]
+[I<--backing-vol> I<vol-name-or-key-or-path>]
+[I<--backing-vol-format> I<string>] [I<--prealloc-metadata>] [I<--print-xml>]
 
 Create a volume from a set of arguments unless I<--print-xml> is specified, in
 which case just the XML of the volume object is printed out without any actual
 object creation.
+
 I<pool-or-uuid> is the name or UUID of the storage pool to create the volume
 in.
+
 I<name> is the name of the new volume. For a disk pool, this must match the
 partition name as determined from the pool's source device path and the next
 available partition. For example, a source device path of /dev/sdb and there
 are no partitions on the disk, then the name must be sdb1 with the next
 name being sdb2 and so on.
+
 I<capacity> is the size of the volume to be created, as a scaled integer
 (see B<NOTES> above), defaulting to bytes if there is no suffix.
+
 I<--allocation> I<size> is the initial size to be allocated in the volume,
 also as a scaled integer defaulting to bytes.
+
 I<--format> I<string> is used in file based storage pools to specify the volume
 file format to use; raw, bochs, qcow, qcow2, vmdk, qed. Use extended for disk
 storage pools in order to create an extended partition (other values are
 validity checked but not preserved when libvirtd is restarted or the pool
 is refreshed).
+
 I<--backing-vol> I<vol-name-or-key-or-path> is the source backing
 volume to be used if taking a snapshot of an existing volume.
+
 I<--backing-vol-format> I<string> is the format of the snapshot backing volume;
 raw, bochs, qcow, qcow2, qed, vmdk, host_device. These are, however, meant for
 file based storage pools.
+
 [I<--prealloc-metadata>] preallocate metadata (for qcow2 images which don't
 support full allocation). This option creates a sparse image file with metadata,
 resulting in higher performance compared to images with no preallocation and
