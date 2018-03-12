@@ -549,8 +549,9 @@ daemonStreamHandleWriteData(virNetServerClientPtr client,
     } else if (ret == -2) {
         /* Blocking, so indicate we have more todo later */
         return 1;
-    } else {
+    } else if (ret < 0) {
         virNetMessageError rerr;
+        virErrorPtr err = virSaveLastError();
 
         memset(&rerr, 0, sizeof(rerr));
 
@@ -558,6 +559,11 @@ daemonStreamHandleWriteData(virNetServerClientPtr client,
         stream->closed = true;
         virStreamEventRemoveCallback(stream->st);
         virStreamAbort(stream->st);
+
+        if (err) {
+            virSetError(err);
+            virFreeError(err);
+        }
 
         return virNetServerProgramSendReplyError(stream->prog,
                                                  client,
