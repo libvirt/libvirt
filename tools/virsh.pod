@@ -4179,12 +4179,17 @@ it expects the storage driver to be able to discard all bytes in a
 volume. It is up to the storage driver to handle how the discarding
 occurs. Not all storage drivers or volume types can support 'trim'.
 
-=item B<vol-dumpxml> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
+=item B<vol-dumpxml> I<vol-name-or-key-or-path> [I<--pool> I<pool-or-uuid>]
 
 Output the volume information as an XML dump to stdout.
+
+I<vol-name-or-key-or-path> is the name or key or path of the volume
+to output the XML.
+
 I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
-is in. I<vol-name-or-key-or-path> is the name or key or path of the volume
-to output the XML of.
+is in. If the volume name is provided instead of the key or path, then
+providing the pool is necessary to find the volume to be uploaded into;
+otherwise, the first volume found by the key or path will be used.
 
 =item B<vol-info> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
 [I<--bytes>] [I<--physical>]
