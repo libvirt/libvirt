@@ -3891,7 +3891,6 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
                                   size_t nmigrate_disks,
                                   const char **migrate_disks,
                                   int nbdPort,
-                                  qemuMigrationCompressionPtr compression,
                                   qemuMigrationParamsPtr migParams,
                                   unsigned long long bandwidth,
                                   bool useParams,
@@ -3976,8 +3975,8 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
                                  nbdPort) < 0)
             goto cleanup;
 
-        if (qemuMigrationAnyCompressionDump(compression, &params, &nparams,
-                                            &maxparams, &flags) < 0)
+        if (qemuMigrationParamsDump(migParams, &params, &nparams,
+                                    &maxparams, &flags) < 0)
             goto cleanup;
     }
 
@@ -4250,7 +4249,6 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
                                  size_t nmigrate_disks,
                                  const char **migrate_disks,
                                  int nbdPort,
-                                 qemuMigrationCompressionPtr compression,
                                  qemuMigrationParamsPtr migParams,
                                  unsigned long flags,
                                  const char *dname,
@@ -4375,7 +4373,7 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
         ret = qemuMigrationSrcPerformPeer2Peer3(driver, sconn, dconn, dconnuri, vm, xmlin,
                                                 persist_xml, dname, uri, graphicsuri,
                                                 listenAddress, nmigrate_disks, migrate_disks,
-                                                nbdPort, compression, migParams, resource,
+                                                nbdPort, migParams, resource,
                                                 useParams, flags);
     } else {
         ret = qemuMigrationSrcPerformPeer2Peer2(driver, sconn, dconn, vm,
@@ -4416,7 +4414,6 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
                            size_t nmigrate_disks,
                            const char **migrate_disks,
                            int nbdPort,
-                           qemuMigrationCompressionPtr compression,
                            qemuMigrationParamsPtr migParams,
                            const char *cookiein,
                            int cookieinlen,
@@ -4455,7 +4452,7 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
         ret = qemuMigrationSrcPerformPeer2Peer(driver, conn, vm, xmlin, persist_xml,
                                                dconnuri, uri, graphicsuri, listenAddress,
                                                nmigrate_disks, migrate_disks, nbdPort,
-                                               compression, migParams, flags, dname, resource,
+                                               migParams, flags, dname, resource,
                                                &v3proto);
     } else {
         qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM2);
@@ -4606,7 +4603,6 @@ qemuMigrationSrcPerform(virQEMUDriverPtr driver,
                         size_t nmigrate_disks,
                         const char **migrate_disks,
                         int nbdPort,
-                        qemuMigrationCompressionPtr compression,
                         qemuMigrationParamsPtr migParams,
                         const char *cookiein,
                         int cookieinlen,
@@ -4638,7 +4634,7 @@ qemuMigrationSrcPerform(virQEMUDriverPtr driver,
         return qemuMigrationSrcPerformJob(driver, conn, vm, xmlin, persist_xml, dconnuri, uri,
                                           graphicsuri, listenAddress,
                                           nmigrate_disks, migrate_disks, nbdPort,
-                                          compression, migParams,
+                                          migParams,
                                           cookiein, cookieinlen,
                                           cookieout, cookieoutlen,
                                           flags, dname, resource, v3proto);
@@ -4661,7 +4657,7 @@ qemuMigrationSrcPerform(virQEMUDriverPtr driver,
             return qemuMigrationSrcPerformJob(driver, conn, vm, xmlin, persist_xml, NULL,
                                               uri, graphicsuri, listenAddress,
                                               nmigrate_disks, migrate_disks, nbdPort,
-                                              compression, migParams,
+                                              migParams,
                                               cookiein, cookieinlen,
                                               cookieout, cookieoutlen, flags,
                                               dname, resource, v3proto);

@@ -68,11 +68,11 @@ qemuMigrationAnyCompressionParse(virTypedParameterPtr params,
                                  int nparams,
                                  unsigned long flags);
 int
-qemuMigrationAnyCompressionDump(qemuMigrationCompressionPtr compression,
-                                virTypedParameterPtr *params,
-                                int *nparams,
-                                int *maxparams,
-                                unsigned long *flags);
+qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
+                        virTypedParameterPtr *params,
+                        int *nparams,
+                        int *maxparams,
+                        unsigned long *flags);
 
 void
 qemuMigrationParamsFree(qemuMigrationParamsPtr migParams);

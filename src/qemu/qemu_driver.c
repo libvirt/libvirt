@@ -12275,7 +12275,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
      */
     ret = qemuMigrationSrcPerform(driver, dom->conn, vm, NULL,
                                   NULL, dconnuri, uri, NULL, NULL, 0, NULL, 0,
-                                  compression, migParams, cookie, cookielen,
+                                  migParams, cookie, cookielen,
                                   NULL, NULL, /* No output cookies in v2 */
                                   flags, dname, resource, false);
 
@@ -12721,7 +12721,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
 
     ret = qemuMigrationSrcPerform(driver, dom->conn, vm, xmlin, NULL,
                                   dconnuri, uri, NULL, NULL, 0, NULL, 0,
-                                  compression, migParams,
+                                  migParams,
                                   cookiein, cookieinlen,
                                   cookieout, cookieoutlen,
                                   flags, dname, resource, true);
@@ -12814,7 +12814,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     ret = qemuMigrationSrcPerform(driver, dom->conn, vm, dom_xml, persist_xml,
                                   dconnuri, uri, graphicsuri, listenAddress,
                                   nmigrate_disks, migrate_disks, nbdPort,
-                                  compression, migParams,
+                                  migParams,
                                   cookiein, cookieinlen, cookieout, cookieoutlen,
                                   flags, dname, bandwidth, true);
  cleanup:
