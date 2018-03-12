@@ -5887,6 +5887,7 @@ libxlDomainMigrateBegin3Params(virDomainPtr domain,
 {
     const char *xmlin = NULL;
     virDomainObjPtr vm = NULL;
+    char *xmlout = NULL;
 
 #ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
     virReportUnsupportedError();
@@ -5906,25 +5907,26 @@ libxlDomainMigrateBegin3Params(virDomainPtr domain,
         return NULL;
 
     if (STREQ_NULLABLE(vm->def->name, "Domain-0")) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Domain-0 cannot be migrated"));
-            return NULL;
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Domain-0 cannot be migrated"));
+        goto cleanup;
     }
 
-    if (virDomainMigrateBegin3ParamsEnsureACL(domain->conn, vm->def) < 0) {
-        virObjectUnlock(vm);
-        return NULL;
-    }
+    if (virDomainMigrateBegin3ParamsEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
-        virObjectUnlock(vm);
-        return NULL;
+        goto cleanup;
     }
 
-    return libxlDomainMigrationBegin(domain->conn, vm, xmlin,
-                                     cookieout, cookieoutlen);
+    xmlout = libxlDomainMigrationBegin(domain->conn, vm, xmlin,
+                                       cookieout, cookieoutlen);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return xmlout;
 }
 
 static int

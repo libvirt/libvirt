@@ -443,7 +443,6 @@ libxlDomainMigrationBegin(virConnectPtr conn,
 
  cleanup:
     libxlMigrationCookieFree(mig);
-    virDomainObjEndAPI(&vm);
     virDomainDefFree(tmpdef);
     virObjectUnref(cfg);
     return xml;
