@@ -4074,21 +4074,32 @@ The I<--delete-snapshots> flag specifies that any snapshots associated with
 the storage volume should be deleted as well. Not all storage drivers
 support this option, presently only rbd.
 
-=item B<vol-upload> [I<--pool> I<pool-or-uuid>] [I<--offset> I<bytes>]
-[I<--length> I<bytes>] [I<--sparse>] I<vol-name-or-key-or-path> I<local-file>
+=item B<vol-upload> I<vol-name-or-key-or-path> I<local-file>
+[I<--pool> I<pool-or-uuid>] [I<--offset> I<bytes>]
+[I<--length> I<bytes>] [I<--sparse>]
 
 Upload the contents of I<local-file> to a storage volume.
-I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
-is in.
+
 I<vol-name-or-key-or-path> is the name or key or path of the volume where the
-file will be uploaded.
-If I<--sparse> is specified, this command will preserve volume sparseness.
+I<local-file> will be uploaded.
+
+I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
+is in. If the volume name is provided instead of the key or path, then
+providing the pool is necessary to find the volume to be uploaded into;
+otherwise, the first volume found by the key or path will be used.
+
 I<--offset> is the position in the storage volume at which to start writing
-the data. The value must be 0 or larger. I<--length> is an upper bound
-of the amount of data to be uploaded. A negative value is interpreted
-as an unsigned long long value to essentially include everything from
-the offset to the end of the volume.
-An error will occur if the I<local-file> is greater than the specified length.
+the data. The value must be 0 or larger.
+
+I<--length> is an upper bound of the amount of data to be uploaded.
+A negative value is interpreted as an unsigned long long value to
+essentially include everything from the offset to the end of the volume.
+
+If I<--sparse> is specified, this command will preserve volume sparseness.
+
+An error will occur if the I<local-file> is greater than the specified
+I<length>.
+
 See the description for the libvirt virStorageVolUpload API for details
 regarding possible target volume and pool changes as a result of the
 pool refresh when the upload is attempted.
