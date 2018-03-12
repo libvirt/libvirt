@@ -1392,7 +1392,8 @@ libxlDomainMigrationConfirm(libxlDriverPrivatePtr driver,
 
     if (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE)) {
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+        /* Caller passed a locked vm and expects the same on return */
+        virObjectLock(vm);
     }
 
     ret = 0;
@@ -1400,8 +1401,6 @@ libxlDomainMigrationConfirm(libxlDriverPrivatePtr driver,
  cleanup:
     if (event)
         libxlDomainEventQueue(driver, event);
-    if (vm)
-        virObjectUnlock(vm);
     virObjectUnref(cfg);
     return ret;
 }

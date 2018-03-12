@@ -6172,6 +6172,7 @@ libxlDomainMigrateConfirm3Params(virDomainPtr domain,
 {
     libxlDriverPrivatePtr driver = domain->conn->privateData;
     virDomainObjPtr vm = NULL;
+    int ret = -1;
 
 #ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
     virReportUnsupportedError();
@@ -6185,12 +6186,14 @@ libxlDomainMigrateConfirm3Params(virDomainPtr domain,
     if (!(vm = libxlDomObjFromDomain(domain)))
         return -1;
 
-    if (virDomainMigrateConfirm3ParamsEnsureACL(domain->conn, vm->def) < 0) {
-        virObjectUnlock(vm);
-        return -1;
-    }
+    if (virDomainMigrateConfirm3ParamsEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
 
-    return libxlDomainMigrationConfirm(driver, vm, flags, cancelled);
+    ret = libxlDomainMigrationConfirm(driver, vm, flags, cancelled);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
 }
 
 static int libxlNodeGetSecurityModel(virConnectPtr conn,
