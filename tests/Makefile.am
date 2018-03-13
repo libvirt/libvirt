@@ -128,7 +128,7 @@ EXTRA_DIST = \
 	qemumonitorjsondata \
 	qemuxml2argvdata \
 	qemuxml2xmloutdata \
-	qemustatusxml2xmloutdata \
+	qemustatusxml2xmldata \
 	qemumemlockdata \
 	secretxml2xmlin \
 	securityselinuxhelperdata \
