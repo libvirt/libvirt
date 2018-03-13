@@ -2212,6 +2212,10 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
         ignore_value(qemuMonitorDelObject(priv->mon, objalias));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         mem = NULL;
+
+    if (objAdded && mem)
+        ignore_value(qemuProcessDestroyMemoryBackingPath(driver, vm, mem));
+
     virErrorRestore(&orig_err);
     if (!mem)
         goto audit;
