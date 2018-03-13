@@ -644,7 +644,8 @@ static int
 virSysinfoParseBIOS(const char *base, virSysinfoBIOSDefPtr *bios)
 {
     int ret = -1;
-    const char *cur, *eol = NULL;
+    const char *cur;
+    char *eol = NULL;
     virSysinfoBIOSDefPtr def;
 
     if ((cur = strstr(base, "BIOS Information")) == NULL)
@@ -657,24 +658,28 @@ virSysinfoParseBIOS(const char *base, virSysinfoBIOSDefPtr *bios)
     if ((cur = strstr(base, "Vendor: ")) != NULL) {
         cur += 8;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->vendor, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "Version: ")) != NULL) {
         cur += 9;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->version, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "Release Date: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->date, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "BIOS Revision: ")) != NULL) {
         cur += 15;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->release, cur, eol - cur) < 0)
             goto cleanup;
     }
@@ -697,7 +702,8 @@ static int
 virSysinfoParseX86System(const char *base, virSysinfoSystemDefPtr *sysdef)
 {
     int ret = -1;
-    const char *cur, *eol = NULL;
+    const char *cur;
+    char *eol = NULL;
     virSysinfoSystemDefPtr def;
 
     if ((cur = strstr(base, "System Information")) == NULL)
@@ -710,42 +716,49 @@ virSysinfoParseX86System(const char *base, virSysinfoSystemDefPtr *sysdef)
     if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->manufacturer, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "Product Name: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->product, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "Version: ")) != NULL) {
         cur += 9;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->version, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "Serial Number: ")) != NULL) {
         cur += 15;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->serial, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "UUID: ")) != NULL) {
         cur += 6;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->uuid, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "SKU Number: ")) != NULL) {
         cur += 12;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->sku, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "Family: ")) != NULL) {
         cur += 8;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->family, cur, eol - cur) < 0)
             goto cleanup;
     }
@@ -770,7 +783,8 @@ virSysinfoParseX86BaseBoard(const char *base,
                             size_t *nbaseBoard)
 {
     int ret = -1;
-    const char *cur, *eol = NULL;
+    const char *cur;
+    char *eol = NULL;
     virSysinfoBaseBoardDefPtr boards = NULL;
     size_t nboards = 0;
     char *board_type = NULL;
@@ -787,36 +801,42 @@ virSysinfoParseX86BaseBoard(const char *base,
         if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
             cur += 14;
             eol = strchr(cur, '\n');
+            virSkipSpacesBackwards(cur, &eol);
             if (eol && VIR_STRNDUP(def->manufacturer, cur, eol - cur) < 0)
                 goto cleanup;
         }
         if ((cur = strstr(base, "Product Name: ")) != NULL) {
             cur += 14;
             eol = strchr(cur, '\n');
+            virSkipSpacesBackwards(cur, &eol);
             if (eol && VIR_STRNDUP(def->product, cur, eol - cur) < 0)
                 goto cleanup;
         }
         if ((cur = strstr(base, "Version: ")) != NULL) {
             cur += 9;
             eol = strchr(cur, '\n');
+            virSkipSpacesBackwards(cur, &eol);
             if (eol && VIR_STRNDUP(def->version, cur, eol - cur) < 0)
                 goto cleanup;
         }
         if ((cur = strstr(base, "Serial Number: ")) != NULL) {
             cur += 15;
             eol = strchr(cur, '\n');
+            virSkipSpacesBackwards(cur, &eol);
             if (eol && VIR_STRNDUP(def->serial, cur, eol - cur) < 0)
                 goto cleanup;
         }
         if ((cur = strstr(base, "Asset Tag: ")) != NULL) {
             cur += 11;
             eol = strchr(cur, '\n');
+            virSkipSpacesBackwards(cur, &eol);
             if (eol && VIR_STRNDUP(def->asset, cur, eol - cur) < 0)
                 goto cleanup;
         }
         if ((cur = strstr(base, "Location In Chassis: ")) != NULL) {
             cur += 21;
             eol = strchr(cur, '\n');
+            virSkipSpacesBackwards(cur, &eol);
             if (eol && VIR_STRNDUP(def->location, cur, eol - cur) < 0)
                 goto cleanup;
         }
@@ -848,7 +868,8 @@ virSysinfoParseX86Chassis(const char *base,
                           virSysinfoChassisDefPtr *chassisdef)
 {
     int ret = -1;
-    const char *cur, *eol = NULL;
+    const char *cur;
+    char *eol = NULL;
     virSysinfoChassisDefPtr def;
 
     if ((cur = strstr(base, "Chassis Information")) == NULL)
@@ -861,30 +882,35 @@ virSysinfoParseX86Chassis(const char *base,
     if ((cur = strstr(base, "Manufacturer: ")) != NULL) {
         cur += 14;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->manufacturer, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "Version: ")) != NULL) {
         cur += 9;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->version, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "Serial Number: ")) != NULL) {
         cur += 15;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->serial, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "Asset Tag: ")) != NULL) {
         cur += 11;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->asset, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "SKU Number: ")) != NULL) {
         cur += 12;
         eol = strchr(cur, '\n');
+        virSkipSpacesBackwards(cur, &eol);
         if (eol && VIR_STRNDUP(def->sku, cur, eol - cur) < 0)
             goto cleanup;
     }
