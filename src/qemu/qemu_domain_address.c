@@ -2701,7 +2701,7 @@ qemuDomainUSBAddressAddHubs(virDomainDefPtr def)
                                               &data,
                                               false));
 
-    if (data.count && !virDomainDefHasUSB(def)) {
+    if (data.count > 0 && !virDomainDefHasUSB(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("USB is disabled for this domain, but USB devices "
                          "are present in the domain XML"));
