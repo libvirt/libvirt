@@ -513,6 +513,9 @@ qemuAssignDeviceInputAlias(virDomainDefPtr def,
                            virDomainInputDefPtr input,
                            int idx)
 {
+    if (input->info.alias)
+        return 0;
+
     if (idx == -1) {
         int thisidx;
         size_t i;
