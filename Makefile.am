@@ -69,6 +69,9 @@ EXTRA_DIST += \
 rpm: clean
 	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ta $(distdir).tar.xz)
 
+srpm: clean
+	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ts $(distdir).tar.xz)
+
 check-local: all tests
 
 check-access:
