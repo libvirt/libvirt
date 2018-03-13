@@ -2337,6 +2337,18 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
     int n;
     int ret = -1;
 
+    if ((tmp = virXPathString("string(./job[1]/@type)", ctxt))) {
+        int type;
+
+        if ((type = qemuDomainJobTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown job type %s"), tmp);
+            goto cleanup;
+        }
+        VIR_FREE(tmp);
+        priv->job.active = type;
+    }
+
     if ((tmp = virXPathString("string(./job[1]/@async)", ctxt))) {
         int async;
 
@@ -2501,19 +2513,6 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     VIR_FREE(nodes);
 
     priv->lockState = virXPathString("string(./lockstate)", ctxt);
-
-    if ((tmp = virXPathString("string(./job[1]/@type)", ctxt))) {
-        int type;
-
-        if ((type = qemuDomainJobTypeFromString(tmp)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown job type %s"), tmp);
-            VIR_FREE(tmp);
-            goto error;
-        }
-        VIR_FREE(tmp);
-        priv->job.active = type;
-    }
 
     if (qemuDomainObjPrivateXMLParseJob(vm, priv, ctxt) < 0)
         goto error;
