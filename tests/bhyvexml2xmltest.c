@@ -39,7 +39,7 @@ testCompareXMLToXMLHelper(const void *data)
 
     ret = testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, xml_in,
                                      is_different ? xml_out : xml_in,
-                                     false, NULL, NULL, 0,
+                                     false, 0,
                                      TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
 
     if ((ret != 0) && (info->flags & FLAG_EXPECT_FAILURE)) {
