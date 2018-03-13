@@ -583,6 +583,7 @@ libxlDomainMigrationPrepareTunnel3(virConnectPtr dconn,
                                    NULL)))
         goto error;
 
+    virObjectRef(vm);
     *def = NULL;
     priv = vm->privateData;
 
@@ -635,13 +636,11 @@ libxlDomainMigrationPrepareTunnel3(virConnectPtr dconn,
     /* Remove virDomainObj from domain list */
     if (vm) {
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+        virObjectLock(vm);
     }
 
  done:
-    if (vm)
-        virObjectUnlock(vm);
-
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -683,6 +682,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
                                    NULL)))
         goto error;
 
+    virObjectRef(vm);
     *def = NULL;
     priv = vm->privateData;
 
@@ -810,7 +810,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     /* Remove virDomainObj from domain list */
     if (vm) {
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+        virObjectLock(vm);
     }
 
  done:
@@ -820,8 +820,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
         VIR_FREE(hostname);
     else
         virURIFree(uri);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 }
