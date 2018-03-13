@@ -2332,12 +2332,18 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
                                 xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *nodes = NULL;
+    xmlNodePtr savedNode = ctxt->node;
     char *tmp = NULL;
     size_t i;
     int n;
     int ret = -1;
 
-    if ((tmp = virXPathString("string(./job[1]/@type)", ctxt))) {
+    if (!(ctxt->node = virXPathNode("./job[1]", ctxt))) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if ((tmp = virXPathString("string(@type)", ctxt))) {
         int type;
 
         if ((type = qemuDomainJobTypeFromString(tmp)) < 0) {
@@ -2349,7 +2355,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
         priv->job.active = type;
     }
 
-    if ((tmp = virXPathString("string(./job[1]/@async)", ctxt))) {
+    if ((tmp = virXPathString("string(@async)", ctxt))) {
         int async;
 
         if ((async = qemuDomainAsyncJobTypeFromString(tmp)) < 0) {
@@ -2360,7 +2366,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
         VIR_FREE(tmp);
         priv->job.asyncJob = async;
 
-        if ((tmp = virXPathString("string(./job[1]/@phase)", ctxt))) {
+        if ((tmp = virXPathString("string(@phase)", ctxt))) {
             priv->job.phase = qemuDomainAsyncJobPhaseFromString(async, tmp);
             if (priv->job.phase < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2371,7 +2377,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
         }
     }
 
-    if ((n = virXPathNodeSet("./job[1]/disk[@migrating='yes']", ctxt, &nodes)) < 0)
+    if ((n = virXPathNodeSet("./disk[@migrating='yes']", ctxt, &nodes)) < 0)
         goto cleanup;
 
     if (n > 0) {
@@ -2394,6 +2400,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
     ret = 0;
 
  cleanup:
+    ctxt->node = savedNode;
     VIR_FREE(tmp);
     VIR_FREE(nodes);
     return ret;
