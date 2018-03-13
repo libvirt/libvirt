@@ -137,6 +137,7 @@ virSecurityDACChownListFree(void *opaque)
         VIR_FREE(list->items[i]->path);
         VIR_FREE(list->items[i]);
     }
+    VIR_FREE(list->items);
     VIR_FREE(list);
 }
 
