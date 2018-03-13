@@ -879,7 +879,7 @@ virSysinfoParseX86Chassis(const char *base,
     if ((cur = strstr(base, "Asset Tag: ")) != NULL) {
         cur += 11;
         eol = strchr(cur, '\n');
-        if (eol && VIR_STRNDUP(def->sku, cur, eol - cur) < 0)
+        if (eol && VIR_STRNDUP(def->asset, cur, eol - cur) < 0)
             goto cleanup;
     }
     if ((cur = strstr(base, "SKU Number: ")) != NULL) {
