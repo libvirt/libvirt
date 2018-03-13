@@ -32,6 +32,7 @@
 #include "qemu_parse_command.h"
 #include "qemu_capabilities.h"
 #include "qemu_migration.h"
+#include "qemu_migration_params.h"
 #include "qemu_security.h"
 #include "viralloc.h"
 #include "virlog.h"
@@ -2099,6 +2100,9 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
         }
     }
 
+    if (priv->job.migParams)
+        qemuMigrationParamsFormat(&childBuf, priv->job.migParams);
+
     return virXMLFormatElement(buf, "job", &attrBuf, &childBuf);
 }
 
@@ -2397,6 +2401,9 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
         }
     }
     VIR_FREE(nodes);
+
+    if (qemuMigrationParamsParse(ctxt, &priv->job.migParams) < 0)
+        goto cleanup;
 
     ret = 0;
 

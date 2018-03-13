@@ -1103,6 +1103,151 @@ qemuMigrationParamsReset(virQEMUDriverPtr driver,
 }
 
 
+void
+qemuMigrationParamsFormat(virBufferPtr buf,
+                          qemuMigrationParamsPtr migParams)
+{
+    qemuMigrationParamValuePtr pv;
+    size_t i;
+
+    virBufferAddLit(buf, "<migParams>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < QEMU_MIGRATION_PARAM_LAST; i++) {
+        pv = &migParams->params[i];
+
+        if (!pv->set)
+            continue;
+
+        virBufferAsprintf(buf, "<param name='%s' ",
+                          qemuMigrationParamTypeToString(i));
+
+        switch (qemuMigrationParamTypes[i]) {
+        case QEMU_MIGRATION_PARAM_TYPE_INT:
+            virBufferAsprintf(buf, "value='%d'", pv->value.i);
+            break;
+
+        case QEMU_MIGRATION_PARAM_TYPE_ULL:
+            virBufferAsprintf(buf, "value='%llu'", pv->value.ull);
+            break;
+
+        case QEMU_MIGRATION_PARAM_TYPE_BOOL:
+            virBufferAsprintf(buf, "value='%s'", pv->value.b ? "yes" : "no");
+            break;
+
+        case QEMU_MIGRATION_PARAM_TYPE_STRING:
+            virBufferEscapeString(buf, "value='%s'", pv->value.s);
+            break;
+        }
+
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</migParams>\n");
+}
+
+
+int
+qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
+                         qemuMigrationParamsPtr *migParams)
+{
+    qemuMigrationParamsPtr params = NULL;
+    qemuMigrationParamValuePtr pv;
+    xmlNodePtr *nodes = NULL;
+    char *name = NULL;
+    char *value = NULL;
+    int param;
+    size_t i;
+    int rc;
+    int n;
+    int ret = -1;
+
+    *migParams = NULL;
+
+    if ((rc = virXPathBoolean("boolean(./migParams)", ctxt)) < 0)
+        goto cleanup;
+
+    if (rc == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if ((n = virXPathNodeSet("./migParams[1]/param", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (!(params = qemuMigrationParamsNew()))
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        if (!(name = virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing migration parameter name"));
+            goto cleanup;
+        }
+
+        if ((param = qemuMigrationParamTypeFromString(name)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unknown migration parameter '%s'"), name);
+            goto cleanup;
+        }
+        pv = &params->params[param];
+
+        if (!(value = virXMLPropString(nodes[i], "value"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("missing value for migration parameter '%s'"),
+                           name);
+            goto cleanup;
+        }
+
+        rc = 0;
+        switch (qemuMigrationParamTypes[param]) {
+        case QEMU_MIGRATION_PARAM_TYPE_INT:
+            rc = virStrToLong_i(value, NULL, 10, &pv->value.i);
+            break;
+
+        case QEMU_MIGRATION_PARAM_TYPE_ULL:
+            rc = virStrToLong_ullp(value, NULL, 10, &pv->value.ull);
+            break;
+
+        case QEMU_MIGRATION_PARAM_TYPE_BOOL:
+            if (STREQ(value, "yes"))
+                pv->value.b = true;
+            else if (STREQ(value, "no"))
+                pv->value.b = false;
+            else
+                rc = -1;
+            break;
+
+        case QEMU_MIGRATION_PARAM_TYPE_STRING:
+            VIR_STEAL_PTR(pv->value.s, value);
+            break;
+        }
+
+        if (rc < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid value '%s' for migration parameter '%s'"),
+                           value, name);
+            goto cleanup;
+        }
+
+        pv->set = true;
+        VIR_FREE(name);
+        VIR_FREE(value);
+    }
+
+    VIR_STEAL_PTR(*migParams, params);
+    ret = 0;
+
+ cleanup:
+    qemuMigrationParamsFree(params);
+    VIR_FREE(nodes);
+    VIR_FREE(name);
+    VIR_FREE(value);
+    return ret;
+}
+
+
 int
 qemuMigrationCapsCheck(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
