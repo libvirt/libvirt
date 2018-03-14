@@ -72,6 +72,10 @@ int qemuBuildTLSx509BackendProps(const char *tlspath,
                                  virQEMUCapsPtr qemuCaps,
                                  virJSONValuePtr *propsret);
 
+/* Open a UNIX socket for chardev FD passing */
+int
+qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev);
+
 /* Generate '-device' string for chardev device */
 int
 qemuBuildChrDeviceStr(char **deviceStr,

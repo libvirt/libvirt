@@ -4890,6 +4890,56 @@ qemuBuildChrChardevReconnectStr(virBufferPtr buf,
 }
 
 
+int
+qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev)
+{
+    struct sockaddr_un addr;
+    socklen_t addrlen = sizeof(addr);
+    int fd;
+
+    if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to create UNIX socket"));
+        goto error;
+    }
+
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    if (virStrcpyStatic(addr.sun_path, dev->data.nix.path) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("UNIX socket path '%s' too long"),
+                       dev->data.nix.path);
+        goto error;
+    }
+
+    if (unlink(dev->data.nix.path) < 0 && errno != ENOENT) {
+        virReportSystemError(errno,
+                             _("Unable to unlink %s"),
+                             dev->data.nix.path);
+        goto error;
+    }
+
+    if (bind(fd, (struct sockaddr *)&addr, addrlen) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to bind to UNIX socket path '%s'"),
+                             dev->data.nix.path);
+        goto error;
+    }
+
+    if (listen(fd, 1) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to listen to UNIX socket path '%s'"),
+                             dev->data.nix.path);
+        goto error;
+    }
+
+    return fd;
+
+ error:
+    VIR_FORCE_CLOSE(fd);
+    return -1;
+}
+
 /* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
 static char *
@@ -5026,8 +5076,18 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        virBufferAsprintf(&buf, "socket,id=%s,path=", charAlias);
-        virQEMUBuildBufferEscapeComma(&buf, dev->data.nix.path);
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS)) {
+            int fd = qemuOpenChrChardevUNIXSocket(dev);
+            if (fd < 0)
+                goto cleanup;
+
+            virBufferAsprintf(&buf, "socket,id=%s,fd=%d", charAlias, fd);
+
+            virCommandPassFD(cmd, fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+        } else {
+            virBufferAsprintf(&buf, "socket,id=%s,path=", charAlias);
+            virQEMUBuildBufferEscapeComma(&buf, dev->data.nix.path);
+        }
         if (dev->data.nix.listen)
             virBufferAdd(&buf, nowait ? ",server,nowait" : ",server", -1);
 

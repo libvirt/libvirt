@@ -37,8 +37,10 @@
 #include "virtpm.h"
 #include "virutil.h"
 #include "qemu/qemu_interface.h"
+#include "qemu/qemu_command.h"
 #include <time.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -213,4 +215,21 @@ qemuInterfaceOpenVhostNet(virDomainDefPtr def ATTRIBUTE_UNUSED,
     for (i = 0; i < *vhostfdSize; i++)
         vhostfd[i] = STDERR_FILENO + 42 + i;
     return 0;
+}
+
+
+int
+qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev ATTRIBUTE_UNUSED)
+
+{
+    /* We need to return an FD number for a UNIX listener socket,
+     * which will be given to QEMU via a CLI arg. We need a fixed
+     * number to get stable tests. This is obviously not a real
+     * FD number, so when virCommand closes the FD in the parent
+     * it will get EINVAL, but that's (hopefully) not going to
+     * be a problem....
+     */
+    if (fcntl(1729, F_GETFD) != -1)
+        abort();
+    return 1729;
 }
