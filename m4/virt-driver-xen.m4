@@ -42,7 +42,6 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_XEN], [
 
     if test "$xen_path_provided" = "no" ; then
       PKG_CHECK_MODULES([XEN], [xenstore], [
-          fail=0
           with_xen=yes
         ], [
           fail=1
@@ -52,8 +51,8 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_XEN], [
     if test "$xen_path_provided" = "yes" || test "$fail" = 1 ; then
       CFLAGS="$CFLAGS $XEN_CFLAGS"
       LIBS="$LIBS $XEN_LIBS"
+      fail=0
       AC_CHECK_LIB([xenstore], [xs_read], [
-             fail=0
              with_xen=yes
              XEN_LIBS="$XEN_LIBS -lxenstore"
          ],[
