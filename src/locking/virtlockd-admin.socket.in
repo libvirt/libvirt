@@ -4,7 +4,7 @@ Before=libvirtd.service
 
 [Socket]
 ListenStream=@localstatedir@/run/libvirt/virtlockd-admin-sock
-Server=virtlockd.service
+Service=virtlockd.service
 
 [Install]
 WantedBy=sockets.target
