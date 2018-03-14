@@ -334,6 +334,7 @@ qemuMonitorDispose(void *obj)
 static int
 qemuMonitorOpenUnix(const char *monitor,
                     pid_t cpid,
+                    bool retry,
                     unsigned long long timeout)
 {
     struct sockaddr_un addr;
@@ -355,31 +356,39 @@ qemuMonitorOpenUnix(const char *monitor,
         goto error;
     }
 
-    if (virTimeBackOffStart(&timebackoff, 1, timeout * 1000) < 0)
-        goto error;
-    while (virTimeBackOffWait(&timebackoff)) {
-        ret = connect(monfd, (struct sockaddr *)&addr, sizeof(addr));
+    if (retry) {
+        if (virTimeBackOffStart(&timebackoff, 1, timeout * 1000) < 0)
+            goto error;
+        while (virTimeBackOffWait(&timebackoff)) {
+            ret = connect(monfd, (struct sockaddr *)&addr, sizeof(addr));
 
-        if (ret == 0)
-            break;
+            if (ret == 0)
+                break;
 
-        if ((errno == ENOENT || errno == ECONNREFUSED) &&
-            (!cpid || virProcessKill(cpid, 0) == 0)) {
-            /* ENOENT       : Socket may not have shown up yet
-             * ECONNREFUSED : Leftover socket hasn't been removed yet */
-            continue;
+            if ((errno == ENOENT || errno == ECONNREFUSED) &&
+                (!cpid || virProcessKill(cpid, 0) == 0)) {
+                /* ENOENT       : Socket may not have shown up yet
+                 * ECONNREFUSED : Leftover socket hasn't been removed yet */
+                continue;
+            }
+
+            virReportSystemError(errno, "%s",
+                                 _("failed to connect to monitor socket"));
+            goto error;
         }
 
-        virReportSystemError(errno, "%s",
-                             _("failed to connect to monitor socket"));
-        goto error;
-
-    }
-
-    if (ret != 0) {
-        virReportSystemError(errno, "%s",
-                             _("monitor socket did not show up"));
-        goto error;
+        if (ret != 0) {
+            virReportSystemError(errno, "%s",
+                                 _("monitor socket did not show up"));
+            goto error;
+        }
+    } else {
+        ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
+        if (ret < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("failed to connect to monitor socket"));
+            goto error;
+        }
     }
 
     return monfd;
@@ -893,6 +902,7 @@ qemuMonitorPtr
 qemuMonitorOpen(virDomainObjPtr vm,
                 virDomainChrSourceDefPtr config,
                 bool json,
+                bool retry,
                 unsigned long long timeout,
                 qemuMonitorCallbacksPtr cb,
                 void *opaque)
@@ -907,7 +917,7 @@ qemuMonitorOpen(virDomainObjPtr vm,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         hasSendFD = true;
         if ((fd = qemuMonitorOpenUnix(config->data.nix.path,
-                                      vm->pid, timeout)) < 0)
+                                      vm->pid, retry, timeout)) < 0)
             return NULL;
         break;
 

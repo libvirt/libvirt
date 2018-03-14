@@ -313,6 +313,7 @@ char *qemuMonitorUnescapeArg(const char *in);
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                virDomainChrSourceDefPtr config,
                                bool json,
+                               bool retry,
                                unsigned long long timeout,
                                qemuMonitorCallbacksPtr cb,
                                void *opaque)

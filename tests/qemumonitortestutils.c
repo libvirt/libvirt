@@ -1252,6 +1252,7 @@ qemuMonitorTestNew(bool json,
     if (!(test->mon = qemuMonitorOpen(test->vm,
                                       &src,
                                       json,
+                                      true,
                                       0,
                                       &qemuMonitorTestCallbacks,
                                       driver)))

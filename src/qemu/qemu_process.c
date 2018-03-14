@@ -1679,7 +1679,7 @@ qemuProcessInitMonitor(virQEMUDriverPtr driver,
 
 static int
 qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
-                   qemuDomainLogContextPtr logCtxt)
+                   bool retry, qemuDomainLogContextPtr logCtxt)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuMonitorPtr mon = NULL;
@@ -1710,6 +1710,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
     mon = qemuMonitorOpen(vm,
                           monConfig,
                           priv->monJSON,
+                          retry,
                           timeout,
                           &monitorCallbacks,
                           driver);
@@ -2087,17 +2088,23 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
 {
     int ret = -1;
     virHashTablePtr info = NULL;
-    qemuDomainObjPrivatePtr priv;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool retry = true;
 
-    VIR_DEBUG("Connect monitor to %p '%s'", vm, vm->def->name);
-    if (qemuConnectMonitor(driver, vm, asyncJob, logCtxt) < 0)
+    if (priv->qemuCaps &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS))
+        retry = false;
+
+    VIR_DEBUG("Connect monitor to vm=%p name='%s' retry=%d",
+              vm, vm->def->name, retry);
+
+    if (qemuConnectMonitor(driver, vm, asyncJob, retry, logCtxt) < 0)
         goto cleanup;
 
     /* Try to get the pty path mappings again via the monitor. This is much more
      * reliable if it's available.
      * Note that the monitor itself can be on a pty, so we still need to try the
      * log output method. */
-    priv = vm->privateData;
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
     ret = qemuMonitorGetChardevInfo(priv->mon, &info);
@@ -7416,6 +7423,7 @@ qemuProcessReconnect(void *opaque)
     unsigned int stopFlags = 0;
     bool jobStarted = false;
     virCapsPtr caps = NULL;
+    bool retry = true;
 
     VIR_FREE(data);
 
@@ -7446,10 +7454,15 @@ qemuProcessReconnect(void *opaque)
      * allowReboot in status XML and we need to initialize it. */
     qemuProcessPrepareAllowReboot(obj);
 
-    VIR_DEBUG("Reconnect monitor to %p '%s'", obj, obj->def->name);
+    if (priv->qemuCaps &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS))
+        retry = false;
+
+    VIR_DEBUG("Reconnect monitor to def=%p name='%s' retry=%d",
+              obj, obj->def->name, retry);
 
     /* XXX check PID liveliness & EXE path */
-    if (qemuConnectMonitor(driver, obj, QEMU_ASYNC_JOB_NONE, NULL) < 0)
+    if (qemuConnectMonitor(driver, obj, QEMU_ASYNC_JOB_NONE, retry, NULL) < 0)
         goto error;
 
     if (qemuHostdevUpdateActiveDomainDevices(driver, obj->def) < 0)
