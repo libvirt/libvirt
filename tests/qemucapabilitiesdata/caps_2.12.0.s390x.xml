@@ -131,6 +131,7 @@
   <flag name='screendump_device'/>
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
+  <flag name='chardev-fd-pass'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>371055</microcodeVersion>

@@ -493,6 +493,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               /* 305 */
               "vhost-vsock",
+              "chardev-fd-pass",
     );
 
 
@@ -2570,6 +2571,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "chardev", "reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
     { "sandbox", "enable", QEMU_CAPS_SECCOMP_SANDBOX },
     { "sandbox", "elevateprivileges", QEMU_CAPS_SECCOMP_BLACKLIST },
+    { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS },
 };
 
 static int
