@@ -135,7 +135,6 @@
 /src/libvirt_lxc
 /src/libvirtd
 /src/libvirtd*.logrotate
-/src/libvirtd.policy
 /src/locking/libxl-lockd.conf
 /src/locking/libxl-sanlock.conf
 /src/locking/lock_daemon_dispatch_stubs.h
