@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 # reformat-news.py: Reformat the NEWS file properly
 #
