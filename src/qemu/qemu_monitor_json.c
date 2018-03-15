@@ -2807,11 +2807,10 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
-                                  qemuMonitorMigrationParamsPtr params)
+                                  virJSONValuePtr params)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
-    virJSONValuePtr args = NULL;
     virJSONValuePtr reply = NULL;
 
     if (!(cmd = virJSONValueNewObject()))
@@ -2821,56 +2820,9 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
                                        "migrate-set-parameters") < 0)
         goto cleanup;
 
-    if (!(args = virJSONValueNewObject()))
+    if (virJSONValueObjectAppend(cmd, "arguments", params) < 0)
         goto cleanup;
-
-#define APPEND(VALID, API, VAR, FIELD) \
-    do { \
-        if (VALID && API(args, FIELD, params->VAR) < 0) \
-            goto cleanup; \
-    } while (0)
-
-#define APPEND_INT(VAR, FIELD) \
-    APPEND(params->VAR ## _set, \
-           virJSONValueObjectAppendNumberInt, VAR, FIELD)
-
-#define APPEND_STR(VAR, FIELD) \
-    APPEND(params->VAR, \
-           virJSONValueObjectAppendString, VAR, FIELD)
-
-#define APPEND_ULONG(VAR, FIELD) \
-    APPEND(params->VAR ## _set, \
-           virJSONValueObjectAppendNumberUlong, VAR, FIELD)
-
-#define APPEND_BOOL(VAR, FIELD) \
-    APPEND(params->VAR ## _set, \
-           virJSONValueObjectAppendBoolean, VAR, FIELD)
-
-    APPEND_INT(compressLevel, "compress-level");
-    APPEND_INT(compressThreads, "compress-threads");
-    APPEND_INT(decompressThreads, "decompress-threads");
-    APPEND_INT(cpuThrottleInitial, "cpu-throttle-initial");
-    APPEND_INT(cpuThrottleIncrement, "cpu-throttle-increment");
-    APPEND_STR(tlsCreds, "tls-creds");
-    APPEND_STR(tlsHostname, "tls-hostname");
-    APPEND_ULONG(maxBandwidth, "max-bandwidth");
-    APPEND_ULONG(downtimeLimit, "downtime-limit");
-    APPEND_BOOL(blockIncremental, "block-incremental");
-    APPEND_ULONG(xbzrleCacheSize, "xbzrle-cache-size");
-
-#undef APPEND
-#undef APPEND_INT
-#undef APPEND_STR
-#undef APPEND_ULONG
-
-    if (virJSONValueObjectKeysNumber(args) == 0) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (virJSONValueObjectAppend(cmd, "arguments", args) < 0)
-        goto cleanup;
-    args = NULL;
+    params = NULL;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
@@ -2881,7 +2833,7 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
     ret = 0;
  cleanup:
     virJSONValueFree(cmd);
-    virJSONValueFree(args);
+    virJSONValueFree(params);
     virJSONValueFree(reply);
     return ret;
 }

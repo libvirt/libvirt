@@ -375,6 +375,61 @@ qemuMigrationParamsFromJSON(virJSONValuePtr params)
 }
 
 
+static virJSONValuePtr
+qemuMigrationParamsToJSON(qemuMigrationParamsPtr migParams)
+{
+    virJSONValuePtr params = NULL;
+
+    if (!(params = virJSONValueNewObject()))
+        return NULL;
+
+#define APPEND(VALID, API, VAR, FIELD) \
+    do { \
+        if (VALID && API(params, FIELD, migParams->params.VAR) < 0) \
+            goto error; \
+    } while (0)
+
+#define APPEND_INT(VAR, FIELD) \
+    APPEND(migParams->params.VAR ## _set, \
+           virJSONValueObjectAppendNumberInt, VAR, FIELD)
+
+#define APPEND_STR(VAR, FIELD) \
+    APPEND(migParams->params.VAR, \
+           virJSONValueObjectAppendString, VAR, FIELD)
+
+#define APPEND_ULONG(VAR, FIELD) \
+    APPEND(migParams->params.VAR ## _set, \
+           virJSONValueObjectAppendNumberUlong, VAR, FIELD)
+
+#define APPEND_BOOL(VAR, FIELD) \
+    APPEND(migParams->params.VAR ## _set, \
+           virJSONValueObjectAppendBoolean, VAR, FIELD)
+
+    APPEND_INT(compressLevel, "compress-level");
+    APPEND_INT(compressThreads, "compress-threads");
+    APPEND_INT(decompressThreads, "decompress-threads");
+    APPEND_INT(cpuThrottleInitial, "cpu-throttle-initial");
+    APPEND_INT(cpuThrottleIncrement, "cpu-throttle-increment");
+    APPEND_STR(tlsCreds, "tls-creds");
+    APPEND_STR(tlsHostname, "tls-hostname");
+    APPEND_ULONG(maxBandwidth, "max-bandwidth");
+    APPEND_ULONG(downtimeLimit, "downtime-limit");
+    APPEND_BOOL(blockIncremental, "block-incremental");
+    APPEND_ULONG(xbzrleCacheSize, "xbzrle-cache-size");
+
+#undef APPEND
+#undef APPEND_INT
+#undef APPEND_STR
+#undef APPEND_ULONG
+
+    return params;
+
+ error:
+    virJSONValueFree(params);
+    return NULL;
+}
+
+
 /**
  * qemuMigrationParamsApply
  * @driver: qemu driver
@@ -394,7 +449,9 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool xbzrleCacheSize_old = false;
+    virJSONValuePtr params = NULL;
     int ret = -1;
+    int rc;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
@@ -417,8 +474,15 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
         migParams->params.xbzrleCacheSize_set = false;
     }
 
-    if (qemuMonitorSetMigrationParams(priv->mon, &migParams->params) < 0)
+    if (!(params = qemuMigrationParamsToJSON(migParams)))
         goto cleanup;
+
+    if (virJSONValueObjectKeysNumber(params) > 0) {
+        rc = qemuMonitorSetMigrationParams(priv->mon, params);
+        params = NULL;
+        if (rc < 0)
+            goto cleanup;
+    }
 
     ret = 0;
 
@@ -428,6 +492,8 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
 
     if (xbzrleCacheSize_old)
         migParams->params.xbzrleCacheSize_set = true;
+
+    virJSONValueFree(params);
 
     return ret;
 }

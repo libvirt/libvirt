@@ -681,7 +681,7 @@ struct _qemuMonitorMigrationParams {
 int qemuMonitorGetMigrationParams(qemuMonitorPtr mon,
                                   virJSONValuePtr *params);
 int qemuMonitorSetMigrationParams(qemuMonitorPtr mon,
-                                  qemuMonitorMigrationParamsPtr params);
+                                  virJSONValuePtr params);
 
 typedef enum {
     QEMU_MONITOR_MIGRATION_STATUS_INACTIVE,

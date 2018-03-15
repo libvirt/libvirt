@@ -2642,29 +2642,28 @@ qemuMonitorGetMigrationParams(qemuMonitorPtr mon,
     return qemuMonitorJSONGetMigrationParams(mon, params);
 }
 
+
+/**
+ * qemuMonitorSetMigrationParams:
+ * @mon: Pointer to the monitor object.
+ * @params: Migration parameters.
+ *
+ * The @params object is consumed and should not be referenced by the caller
+ * after this function returns.
+ *
+ * Returns 0 on success, -1 on error.
+ */
 int
 qemuMonitorSetMigrationParams(qemuMonitorPtr mon,
-                              qemuMonitorMigrationParamsPtr params)
+                              virJSONValuePtr params)
 {
-    VIR_DEBUG("compressLevel=%d:%d compressThreads=%d:%d "
-              "decompressThreads=%d:%d cpuThrottleInitial=%d:%d "
-              "cpuThrottleIncrement=%d:%d tlsCreds=%s tlsHostname=%s "
-              "maxBandwidth=%d:%llu downtimeLimit=%d:%llu "
-              "blockIncremental=%d:%d xbzrleCacheSize=%d:%llu",
-              params->compressLevel_set, params->compressLevel,
-              params->compressThreads_set, params->compressThreads,
-              params->decompressThreads_set, params->decompressThreads,
-              params->cpuThrottleInitial_set, params->cpuThrottleInitial,
-              params->cpuThrottleIncrement_set, params->cpuThrottleIncrement,
-              NULLSTR(params->tlsCreds), NULLSTR(params->tlsHostname),
-              params->maxBandwidth_set, params->maxBandwidth,
-              params->downtimeLimit_set, params->downtimeLimit,
-              params->blockIncremental_set, params->blockIncremental,
-              params->xbzrleCacheSize_set, params->xbzrleCacheSize);
-
-    QEMU_CHECK_MONITOR_JSON(mon);
+    QEMU_CHECK_MONITOR_JSON_GOTO(mon, error);
 
     return qemuMonitorJSONSetMigrationParams(mon, params);
+
+ error:
+    virJSONValueFree(params);
+    return -1;
 }
 
 
