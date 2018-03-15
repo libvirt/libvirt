@@ -39,6 +39,42 @@ VIR_LOG_INIT("qemu.qemu_migration_params");
 
 #define QEMU_MIGRATION_TLS_ALIAS_BASE "libvirt_migrate"
 
+typedef struct _qemuMonitorMigrationParams qemuMonitorMigrationParams;
+typedef qemuMonitorMigrationParams *qemuMonitorMigrationParamsPtr;
+struct _qemuMonitorMigrationParams {
+    bool compressLevel_set;
+    int compressLevel;
+
+    bool compressThreads_set;
+    int compressThreads;
+
+    bool decompressThreads_set;
+    int decompressThreads;
+
+    bool cpuThrottleInitial_set;
+    int cpuThrottleInitial;
+
+    bool cpuThrottleIncrement_set;
+    int cpuThrottleIncrement;
+
+    /* Value is either NULL, "", or some string. NULL indicates no support;
+     * whereas, some string value indicates we can support setting/clearing */
+    char *tlsCreds;
+    char *tlsHostname;
+
+    bool maxBandwidth_set;
+    unsigned long long maxBandwidth;
+
+    bool downtimeLimit_set;
+    unsigned long long downtimeLimit;
+
+    bool blockIncremental_set;
+    bool blockIncremental;
+
+    bool xbzrleCacheSize_set;
+    unsigned long long xbzrleCacheSize;
+};
+
 struct _qemuMigrationParams {
     unsigned long long compMethods; /* bit-wise OR of qemuMigrationCompressMethod */
     virBitmapPtr caps;
