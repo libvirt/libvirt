@@ -672,7 +672,6 @@ noinst_LTLIBRARIES += libvirt-setuid-rpc-client.la
 libvirt_setuid_rpc_client_la_SOURCES = \
 		util/viralloc.c \
 		util/virarch.c \
-		util/virarptable.c \
 		util/viratomic.c \
 		util/viratomic.h \
 		util/virbitmap.c \
