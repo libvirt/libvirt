@@ -59,7 +59,7 @@ class WmiClass:
         """
         # sort vesioned classes by version in case input file did not have them
         # in order
-        self.versions = sorted(self.versions, key=lambda cls: cls.version)
+        self.versions = sorted(self.versions, key=lambda cls: cls.version or "")
 
         # if there's more than one verion make sure first one has name suffixed
         # because we'll generate "common" memeber and will be the "base" name
