@@ -14,6 +14,11 @@ matrix:
         - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=systemd"
     - compiler: clang
       os: osx
+      before_install:
+        - brew update
+        - brew upgrade
+        - brew install rpcgen yajl xz
+        - brew link --force python@2
       script:
         # We can't run make distcheck/syntax-check because they
         # fail on macOS, but doing 'install' and 'dist' gives us
@@ -98,9 +103,6 @@ env:
     # through homebrew on macOS and it's completely harmless on Linux
     - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/rpcgen/bin:$PATH"
     - VIR_TEST_DEBUG=1
-
-before_install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew upgrade && brew install rpcgen yajl xz && brew link --force python@2; fi
 
 before_script:
   - ./autogen.sh --prefix=$(pwd)/install-root
