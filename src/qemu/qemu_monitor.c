@@ -2622,9 +2622,20 @@ qemuMonitorSetMigrationCacheSize(qemuMonitorPtr mon,
 }
 
 
+/**
+ * qemuMonitorGetMigrationParams:
+ * @mon: Pointer to the monitor object.
+ * @params: Where to store migration parameters.
+ *
+ * If QEMU does not support querying migration parameters, the function will
+ * set @params to NULL and return 0 (success). The caller is responsible for
+ * freeing @params.
+ *
+ * Returns 0 on success, -1 on error.
+ */
 int
 qemuMonitorGetMigrationParams(qemuMonitorPtr mon,
-                              qemuMonitorMigrationParamsPtr params)
+                              virJSONValuePtr *params)
 {
     QEMU_CHECK_MONITOR_JSON(mon);
 

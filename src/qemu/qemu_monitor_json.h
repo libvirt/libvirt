@@ -135,7 +135,7 @@ int qemuMonitorJSONSetMigrationCacheSize(qemuMonitorPtr mon,
                                          unsigned long long cacheSize);
 
 int qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
-                                      qemuMonitorMigrationParamsPtr params);
+                                      virJSONValuePtr *params);
 int qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
                                       qemuMonitorMigrationParamsPtr params);
 

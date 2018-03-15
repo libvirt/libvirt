@@ -679,7 +679,7 @@ struct _qemuMonitorMigrationParams {
 };
 
 int qemuMonitorGetMigrationParams(qemuMonitorPtr mon,
-                                  qemuMonitorMigrationParamsPtr params);
+                                  virJSONValuePtr *params);
 int qemuMonitorSetMigrationParams(qemuMonitorPtr mon,
                                   qemuMonitorMigrationParamsPtr params);
 

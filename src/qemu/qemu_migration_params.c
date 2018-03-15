@@ -314,6 +314,67 @@ qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
 }
 
 
+static qemuMigrationParamsPtr
+qemuMigrationParamsFromJSON(virJSONValuePtr params)
+{
+    qemuMigrationParamsPtr migParams = NULL;
+
+    if (!(migParams = qemuMigrationParamsNew()))
+        return NULL;
+
+    if (!params)
+        return migParams;
+
+#define PARSE_SET(API, VAR, FIELD) \
+    do { \
+        if (API(params, FIELD, &migParams->params.VAR) == 0) \
+            migParams->params.VAR ## _set = true; \
+    } while (0)
+
+#define PARSE_INT(VAR, FIELD) \
+    PARSE_SET(virJSONValueObjectGetNumberInt, VAR, FIELD)
+
+#define PARSE_ULONG(VAR, FIELD) \
+    PARSE_SET(virJSONValueObjectGetNumberUlong, VAR, FIELD)
+
+#define PARSE_BOOL(VAR, FIELD) \
+    PARSE_SET(virJSONValueObjectGetBoolean, VAR, FIELD)
+
+#define PARSE_STR(VAR, FIELD) \
+    do { \
+        const char *str; \
+        if ((str = virJSONValueObjectGetString(params, FIELD))) { \
+            if (VIR_STRDUP(migParams->params.VAR, str) < 0) \
+                goto error; \
+        } \
+    } while (0)
+
+    PARSE_INT(compressLevel, "compress-level");
+    PARSE_INT(compressThreads, "compress-threads");
+    PARSE_INT(decompressThreads, "decompress-threads");
+    PARSE_INT(cpuThrottleInitial, "cpu-throttle-initial");
+    PARSE_INT(cpuThrottleIncrement, "cpu-throttle-increment");
+    PARSE_STR(tlsCreds, "tls-creds");
+    PARSE_STR(tlsHostname, "tls-hostname");
+    PARSE_ULONG(maxBandwidth, "max-bandwidth");
+    PARSE_ULONG(downtimeLimit, "downtime-limit");
+    PARSE_BOOL(blockIncremental, "block-incremental");
+    PARSE_ULONG(xbzrleCacheSize, "xbzrle-cache-size");
+
+#undef PARSE_SET
+#undef PARSE_INT
+#undef PARSE_ULONG
+#undef PARSE_BOOL
+#undef PARSE_STR
+
+    return migParams;
+
+ error:
+    qemuMigrationParamsFree(migParams);
+    return NULL;
+}
+
+
 /**
  * qemuMigrationParamsApply
  * @driver: qemu driver
@@ -527,28 +588,27 @@ qemuMigrationParamsFetch(virQEMUDriverPtr driver,
                          qemuMigrationParamsPtr *migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuMigrationParamsPtr params = NULL;
+    virJSONValuePtr jsonParams = NULL;
     int ret = -1;
     int rc;
 
     *migParams = NULL;
 
-    if (!(params = qemuMigrationParamsNew()))
-        return -1;
-
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
 
-    rc = qemuMonitorGetMigrationParams(priv->mon, &params->params);
+    rc = qemuMonitorGetMigrationParams(priv->mon, &jsonParams);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(*migParams, params);
+    if (!(*migParams = qemuMigrationParamsFromJSON(jsonParams)))
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
-    qemuMigrationParamsFree(params);
+    virJSONValueFree(jsonParams);
     return ret;
 }
 

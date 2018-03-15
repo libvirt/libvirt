@@ -2774,14 +2774,13 @@ qemuMonitorJSONSetMigrationCacheSize(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
-                                  qemuMonitorMigrationParamsPtr params)
+                                  virJSONValuePtr *params)
 {
     int ret = -1;
-    virJSONValuePtr result;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
 
-    memset(params, 0, sizeof(*params));
+    *params = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-migrate-parameters", NULL)))
         return -1;
@@ -2797,51 +2796,9 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
         goto cleanup;
 
-    result = virJSONValueObjectGet(reply, "return");
-
-#define PARSE_SET(API, VAR, FIELD) \
-    do { \
-        if (API(result, FIELD, &params->VAR) == 0) \
-            params->VAR ## _set = true; \
-    } while (0)
-
-#define PARSE_INT(VAR, FIELD) \
-    PARSE_SET(virJSONValueObjectGetNumberInt, VAR, FIELD)
-
-#define PARSE_ULONG(VAR, FIELD) \
-    PARSE_SET(virJSONValueObjectGetNumberUlong, VAR, FIELD)
-
-#define PARSE_BOOL(VAR, FIELD) \
-    PARSE_SET(virJSONValueObjectGetBoolean, VAR, FIELD)
-
-#define PARSE_STR(VAR, FIELD) \
-    do { \
-        const char *str; \
-        if ((str = virJSONValueObjectGetString(result, FIELD))) { \
-            if (VIR_STRDUP(params->VAR, str) < 0) \
-                goto cleanup; \
-        } \
-    } while (0)
-
-    PARSE_INT(compressLevel, "compress-level");
-    PARSE_INT(compressThreads, "compress-threads");
-    PARSE_INT(decompressThreads, "decompress-threads");
-    PARSE_INT(cpuThrottleInitial, "cpu-throttle-initial");
-    PARSE_INT(cpuThrottleIncrement, "cpu-throttle-increment");
-    PARSE_STR(tlsCreds, "tls-creds");
-    PARSE_STR(tlsHostname, "tls-hostname");
-    PARSE_ULONG(maxBandwidth, "max-bandwidth");
-    PARSE_ULONG(downtimeLimit, "downtime-limit");
-    PARSE_BOOL(blockIncremental, "block-incremental");
-    PARSE_ULONG(xbzrleCacheSize, "xbzrle-cache-size");
-
-#undef PARSE_SET
-#undef PARSE_INT
-#undef PARSE_ULONG
-#undef PARSE_BOOL
-#undef PARSE_STR
-
+    *params = virJSONValueObjectStealObject(reply, "return");
     ret = 0;
+
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
