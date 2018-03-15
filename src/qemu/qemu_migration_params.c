@@ -554,6 +554,22 @@ qemuMigrationParamsFetch(virQEMUDriverPtr driver,
 
 
 /**
+ * Returns  0 on success,
+ *          1 if the parameter is not supported by QEMU.
+ */
+int
+qemuMigrationParamsGetDowntimeLimit(qemuMigrationParamsPtr migParams,
+                                    unsigned long long *value)
+{
+    if (!migParams->params.downtimeLimit_set)
+        return 1;
+
+    *value = migParams->params.downtimeLimit;
+    return 0;
+}
+
+
+/**
  * qemuMigrationParamsCheck:
  *
  * Check supported migration parameters and keep their original values in

@@ -13533,8 +13533,7 @@ qemuDomainMigrateGetMaxDowntime(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    qemuDomainObjPrivatePtr priv;
-    qemuMonitorMigrationParams migparams = { 0 };
+    qemuMigrationParamsPtr migParams = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -13554,27 +13553,24 @@ qemuDomainMigrateGetMaxDowntime(virDomainPtr dom,
         goto endjob;
     }
 
-    priv = vm->privateData;
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuMigrationParamsFetch(driver, vm, QEMU_ASYNC_JOB_NONE,
+                                 &migParams) < 0)
+        goto endjob;
 
-    if (qemuMonitorGetMigrationParams(priv->mon, &migparams) == 0) {
-        if (migparams.downtimeLimit_set) {
-            *downtime = migparams.downtimeLimit;
-            ret = 0;
-        } else {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Querying migration downtime is not supported by "
-                             "QEMU binary"));
-        }
+    if (qemuMigrationParamsGetDowntimeLimit(migParams, downtime) == 1) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Querying migration downtime is not supported by "
+                         "QEMU binary"));
+        goto endjob;
     }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
+    ret = 0;
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
+    qemuMigrationParamsFree(migParams);
     virDomainObjEndAPI(&vm);
     return ret;
 }

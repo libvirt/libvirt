@@ -80,6 +80,10 @@ qemuMigrationParamsFetch(virQEMUDriverPtr driver,
                          qemuMigrationParamsPtr *migParams);
 
 int
+qemuMigrationParamsGetDowntimeLimit(qemuMigrationParamsPtr migParams,
+                                    unsigned long long *value);
+
+int
 qemuMigrationParamsCheck(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          int asyncJob,
