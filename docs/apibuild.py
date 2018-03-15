@@ -317,9 +317,9 @@ class index:
               # macro might be used to override functions or variables
               # definitions
               #
-             if self.macros.has_key(id):
+             if id in self.macros:
                  del self.macros[id]
-             if self.functions.has_key(id):
+             if id in self.functions:
                  self.warning("function %s from %s redeclared in %s" % (
                     id, self.functions[id].header, idx.functions[id].header))
              else:
@@ -330,30 +330,30 @@ class index:
               # macro might be used to override functions or variables
               # definitions
               #
-             if self.macros.has_key(id):
+             if id in self.macros:
                  del self.macros[id]
-             if self.variables.has_key(id):
+             if id in self.variables:
                  self.warning("variable %s from %s redeclared in %s" % (
                     id, self.variables[id].header, idx.variables[id].header))
              else:
                  self.variables[id] = idx.variables[id]
                  self.identifiers[id] = idx.variables[id]
         for id in idx.structs.keys():
-             if self.structs.has_key(id):
+             if id in self.structs:
                  self.warning("struct %s from %s redeclared in %s" % (
                     id, self.structs[id].header, idx.structs[id].header))
              else:
                  self.structs[id] = idx.structs[id]
                  self.identifiers[id] = idx.structs[id]
         for id in idx.unions.keys():
-             if self.unions.has_key(id):
+             if id in self.unions:
                  print("union %s from %s redeclared in %s" % (
                     id, self.unions[id].header, idx.unions[id].header))
              else:
                  self.unions[id] = idx.unions[id]
                  self.identifiers[id] = idx.unions[id]
         for id in idx.typedefs.keys():
-             if self.typedefs.has_key(id):
+             if id in self.typedefs:
                  self.warning("typedef %s from %s redeclared in %s" % (
                     id, self.typedefs[id].header, idx.typedefs[id].header))
              else:
@@ -364,20 +364,20 @@ class index:
               # macro might be used to override functions or variables
               # definitions
               #
-             if self.variables.has_key(id):
+             if id in self.variables:
                  continue
-             if self.functions.has_key(id):
+             if id in self.functions:
                  continue
-             if self.enums.has_key(id):
+             if id in self.enums:
                  continue
-             if self.macros.has_key(id):
+             if id in self.macros:
                  self.warning("macro %s from %s redeclared in %s" % (
                     id, self.macros[id].header, idx.macros[id].header))
              else:
                  self.macros[id] = idx.macros[id]
                  self.identifiers[id] = idx.macros[id]
         for id in idx.enums.keys():
-             if self.enums.has_key(id):
+             if id in self.enums:
                  self.warning("enum %s from %s redeclared in %s" % (
                     id, self.enums[id].header, idx.enums[id].header))
              else:
@@ -386,7 +386,7 @@ class index:
 
     def merge_public(self, idx):
         for id in idx.functions.keys():
-             if self.functions.has_key(id):
+             if id in self.functions:
                  # check that function condition agrees with header
                  if idx.functions[id].conditionals != \
                     self.functions[id].conditionals:
@@ -725,7 +725,7 @@ class CParser:
                 line = m.group(2).lstrip()
 
             if item:
-                if res.has_key(item):
+                if item in res:
                     res[item] = res[item] + " " + line
                 else:
                     res[item] = line
@@ -824,7 +824,7 @@ class CParser:
 
         if name[0:2] == '__':
             quiet = 1
-        if ignored_macros.has_key(name):
+        if name in ignored_macros:
             quiet = 1
 
         args = []
@@ -903,7 +903,7 @@ class CParser:
             quiet = 1
         if name[0:2] == '__':
             quiet = 1
-        if ignored_functions.has_key(name):
+        if name in ignored_functions:
             quiet = 1
 
         (ret, args) = description
@@ -1149,7 +1149,7 @@ class CParser:
                 while token is not None and token[1] != ";":
                     token = self.lexer.token()
                 return token
-            elif token[0] == "name" and ignored_words.has_key(token[1]):
+            elif token[0] == "name" and token[1] in ignored_words:
                 (n, info) = ignored_words[token[1]]
                 i = 0
                 while i < n:
@@ -2104,7 +2104,7 @@ class docBuilder:
                     # TODO: generalize this a bit
                     if lower == 'and' or lower == 'the':
                         pass
-                    elif self.xref.has_key(token):
+                    elif token in self.xref:
                         self.xref[token].append(id)
                     else:
                         self.xref[token] = [id]
@@ -2228,7 +2228,7 @@ class docBuilder:
             output.write("    <struct name='%s' file='%s' type='%s'" % (
                      name, self.modulename_file(id.header), id.info))
             name = id.info[7:]
-            if self.idx.structs.has_key(name) and ( \
+            if name in self.idx.structs and ( \
                type(self.idx.structs[name].info) == type(()) or
                 type(self.idx.structs[name].info) == type([])):
                 output.write(">\n")
@@ -2297,7 +2297,7 @@ class docBuilder:
             if ret[0] is not None:
                 if ret[0] == "void":
                     output.write("      <return type='void'/>\n")
-                elif (ret[1] is None or ret[1] == '') and not ignored_functions.has_key(name):
+                elif (ret[1] is None or ret[1] == '') and name not in ignored_functions:
                     self.error("Missing documentation for return of function `%s'" % name)
                 else:
                     output.write("      <return type='%s' info='%s'/>\n" % (
@@ -2307,7 +2307,7 @@ class docBuilder:
                 if param[0] == 'void':
                     continue
                 if (param[2] is None or param[2] == ''):
-                    if ignored_functions.has_key(name):
+                    if name in ignored_functions:
                         output.write("      <arg name='%s' type='%s' info=''/>\n" % (param[1], param[0]))
                     else:
                         self.error("Missing documentation for arg `%s' of function `%s'" % (param[1], name))
@@ -2332,7 +2332,7 @@ class docBuilder:
                                  string.lower(data)))
                 except:
                     self.warning("Header %s lacks a %s description" % (module, data))
-            if dict.info.has_key('Description'):
+            if 'Description' in dict.info:
                 desc = dict.info['Description']
                 if string.find(desc, "DEPRECATED") != -1:
                     output.write("     <deprecated/>\n")
@@ -2341,17 +2341,17 @@ class docBuilder:
         ids.sort()
         for id in uniq(ids):
             # Macros are sometime used to masquerade other types.
-            if dict.functions.has_key(id):
+            if id in dict.functions:
                 continue
-            if dict.variables.has_key(id):
+            if id in dict.variables:
                 continue
-            if dict.typedefs.has_key(id):
+            if id in dict.typedefs:
                 continue
-            if dict.structs.has_key(id):
+            if id in dict.structs:
                 continue
-            if dict.unions.has_key(id):
+            if id in dict.unions:
                 continue
-            if dict.enums.has_key(id):
+            if id in dict.enums:
                 continue
             output.write("     <exports symbol='%s' type='macro'/>\n" % (id))
         ids = dict.enums.keys()
@@ -2401,7 +2401,7 @@ class docBuilder:
                 for param in params:
                     if param[0] == 'void':
                         continue
-                    if funcs.has_key(param[0]):
+                    if param[0] in funcs:
                         funcs[param[0]].append(name)
                     else:
                         funcs[param[0]] = [name]
@@ -2431,7 +2431,7 @@ class docBuilder:
                 (ret, params, desc) = id.info
                 if ret[0] == "void":
                     continue
-                if funcs.has_key(ret[0]):
+                if ret[0] in funcs:
                     funcs[ret[0]].append(name)
                 else:
                     funcs[ret[0]] = [name]
