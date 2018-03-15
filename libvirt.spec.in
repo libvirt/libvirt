@@ -358,11 +358,9 @@ BuildRequires: ebtables
 BuildRequires: module-init-tools
 BuildRequires: cyrus-sasl-devel
 %if 0%{?fedora} || 0%{?rhel} >= 7
-# F22 polkit-devel doesn't pull in polkit anymore, which we need for pkcheck
 BuildRequires: polkit >= 0.112
-BuildRequires: polkit-devel >= 0.112
 %else
-BuildRequires: polkit-devel >= 0.93
+BuildRequires: polkit >= 0.93
 %endif
 # For mount/umount in FS driver
 BuildRequires: util-linux
