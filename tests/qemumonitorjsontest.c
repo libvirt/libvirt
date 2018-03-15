@@ -1787,104 +1787,6 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
     return ret;
 }
 
-static int
-testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
-{
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
-    qemuMonitorMigrationParams params;
-    int ret = -1;
-
-    if (!test)
-        return -1;
-
-    if (qemuMonitorTestAddItem(test, "query-migrate-parameters",
-                               "{"
-                               "    \"return\": {"
-                               "        \"decompress-threads\": 2,"
-                               "        \"cpu-throttle-increment\": 10,"
-                               "        \"compress-threads\": 8,"
-                               "        \"compress-level\": 1,"
-                               "        \"cpu-throttle-initial\": 20,"
-                               "        \"tls-creds\": \"tls0\","
-                               "        \"tls-hostname\": \"\","
-                               "        \"max-bandwidth\": 1234567890,"
-                               "        \"downtime-limit\": 500,"
-                               "        \"block-incremental\": true,"
-                               "        \"xbzrle-cache-size\": 67108864"
-                               "    }"
-                               "}") < 0) {
-        goto cleanup;
-    }
-
-    if (qemuMonitorJSONGetMigrationParams(qemuMonitorTestGetMonitor(test),
-                                          &params) < 0)
-        goto cleanup;
-
-#define CHECK_NUM(VAR, FIELD, VALUE, FMT) \
-    do { \
-        if (!params.VAR ## _set) { \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s is not set", FIELD); \
-            goto cleanup; \
-        } \
-        if (params.VAR != VALUE) { \
-            virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           "Invalid %s: " FMT ", expected " FMT, \
-                           FIELD, params.VAR, VALUE); \
-            goto cleanup; \
-        } \
-    } while (0)
-
-#define CHECK_INT(VAR, FIELD, VALUE) \
-    CHECK_NUM(VAR, FIELD, VALUE, "%d")
-
-#define CHECK_ULONG(VAR, FIELD, VALUE) \
-    CHECK_NUM(VAR, FIELD, VALUE, "%llu")
-
-#define CHECK_BOOL(VAR, FIELD, VALUE) \
-    CHECK_NUM(VAR, FIELD, VALUE, "%d")
-
-#define CHECK_STR(VAR, FIELD, VALUE) \
-    do { \
-        if (!params.VAR) { \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s is not set", FIELD); \
-            goto cleanup; \
-        } \
-        if (STRNEQ(params.VAR, VALUE)) { \
-            virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           "Invalid %s:'%s', expected '%s'", \
-                           FIELD, params.VAR, VALUE); \
-            goto cleanup; \
-        } \
-    } while (0)
-
-    CHECK_INT(compressLevel, "compress-level", 1);
-    CHECK_INT(compressThreads, "compress-threads", 8);
-    CHECK_INT(decompressThreads, "decompress-threads", 2);
-    CHECK_INT(cpuThrottleInitial, "cpu-throttle-initial", 20);
-    CHECK_INT(cpuThrottleIncrement, "cpu-throttle-increment", 10);
-    CHECK_STR(tlsCreds, "tls-creds", "tls0");
-    CHECK_STR(tlsHostname, "tls-hostname", "");
-    CHECK_ULONG(maxBandwidth, "max-bandwidth", 1234567890ULL);
-    CHECK_ULONG(downtimeLimit, "downtime-limit", 500ULL);
-    CHECK_BOOL(blockIncremental, "block-incremental", true);
-    CHECK_ULONG(xbzrleCacheSize, "xbzrle-cache-size", 67108864ULL);
-
-#undef CHECK_NUM
-#undef CHECK_INT
-#undef CHECK_ULONG
-#undef CHECK_BOOL
-#undef CHECK_STR
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(params.tlsCreds);
-    VIR_FREE(params.tlsHostname);
-    qemuMonitorTestFree(test);
-    return ret;
-}
-
 
 static int
 testQemuMonitorJSONqemuMonitorJSONGetMigrationCacheSize(const void *data)
@@ -3002,7 +2904,6 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetBlockInfo);
     DO_TEST(qemuMonitorJSONGetBlockStatsInfo);
     DO_TEST(qemuMonitorJSONGetMigrationCacheSize);
-    DO_TEST(qemuMonitorJSONGetMigrationParams);
     DO_TEST(qemuMonitorJSONGetMigrationStats);
     DO_TEST(qemuMonitorJSONGetChardevInfo);
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
