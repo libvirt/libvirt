@@ -478,7 +478,7 @@ class CLexer:
 
             if line[0] == '#':
                 self.tokens = list(map((lambda x: ('preproc', x)),
-                                       line.split())))
+                                       line.split()))
 
                 # We might have whitespace between the '#' and preproc
                 # macro name, so instead of having a single token element
