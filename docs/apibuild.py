@@ -478,8 +478,8 @@ class CLexer:
                 return None
 
             if line[0] == '#':
-                self.tokens = map((lambda x: ('preproc', x)),
-                                  line.split()))
+                self.tokens = list(map((lambda x: ('preproc', x)),
+                                       line.split())))
 
                 # We might have whitespace between the '#' and preproc
                 # macro name, so instead of having a single token element
@@ -2049,13 +2049,13 @@ class docBuilder:
         self.path = path
         self.directories = directories
         if name == "libvirt":
-            self.includes = includes + included_files.keys()
+            self.includes = includes + list(included_files.keys())
         elif name == "libvirt-qemu":
-            self.includes = includes + qemu_included_files.keys()
+            self.includes = includes + list(qemu_included_files.keys())
         elif name == "libvirt-lxc":
-            self.includes = includes + lxc_included_files.keys()
+            self.includes = includes + list(lxc_included_files.keys())
         elif name == "libvirt-admin":
-            self.includes = includes + admin_included_files.keys()
+            self.includes = includes + list(admin_included_files.keys())
         self.modules = {}
         self.headers = {}
         self.idx = index()
@@ -2383,9 +2383,12 @@ class docBuilder:
             module = self.modulename_file(file)
             output.write("    <file name='%s'>\n" % (module))
             dict = self.headers[file]
-            ids = uniq(dict.functions.keys() + dict.variables.keys() + \
-                  dict.macros.keys() + dict.typedefs.keys() + \
-                  dict.structs.keys() + dict.enums.keys())
+            ids = uniq(list(dict.functions.keys()) + \
+                       list(dict.variables.keys()) + \
+                       list(dict.macros.keys()) + \
+                       list(dict.typedefs.keys()) + \
+                       list(dict.structs.keys()) + \
+                       list(dict.enums.keys()))
             ids.sort()
             for id in ids:
                 output.write("      <ref name='%s'/>\n" % (id))
