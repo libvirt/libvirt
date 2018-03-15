@@ -16,9 +16,9 @@ matrix:
       os: osx
       before_install:
         - brew update
+        - brew unlink python
         - brew upgrade
         - brew install rpcgen yajl xz
-        - brew link --force python@2
       script:
         # We can't run make distcheck/syntax-check because they
         # fail on macOS, but doing 'install' and 'dist' gives us
