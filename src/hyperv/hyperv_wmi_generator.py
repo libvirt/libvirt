@@ -396,7 +396,7 @@ def open_and_print(filename):
     else:
         print("  GEN      " + filename)
 
-    return open(filename, "wb")
+    return open(filename, "wt")
 
 
 
@@ -468,7 +468,7 @@ def main():
     number = 0
     block = None
 
-    for line in file(input_filename, "rb").readlines():
+    for line in open(input_filename, "rt").readlines():
         number += 1
 
         if "#" in line:
