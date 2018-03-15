@@ -330,8 +330,13 @@ qemuHostdevPrepareMediatedDevices(virQEMUDriverPtr driver,
                                   int nhostdevs)
 {
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
-    bool supportsVFIO = qemuHostdevHostSupportsPassthroughVFIO();
+    bool supportsVFIO;
     size_t i;
+
+    /* Checking for VFIO only is fine with mdev, as IOMMU isolation is achieved
+     * by the physical parent device.
+     */
+    supportsVFIO = virFileExists("/dev/vfio/vfio");
 
     for (i = 0; i < nhostdevs; i++) {
         if (hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
