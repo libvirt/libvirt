@@ -133,8 +133,7 @@ def uniq(items):
     d = {}
     for item in items:
         d[item]=1
-    k = d.keys()
-    k.sort()
+    k = sorted(d.keys())
     return k
 
 class identifier:
@@ -2337,8 +2336,7 @@ class docBuilder:
                 if desc.find("DEPRECATED") != -1:
                     output.write("     <deprecated/>\n")
 
-        ids = dict.macros.keys()
-        ids.sort()
+        ids = sorted(dict.macros.keys())
         for id in uniq(ids):
             # Macros are sometime used to masquerade other types.
             if id in dict.functions:
@@ -2354,31 +2352,25 @@ class docBuilder:
             if id in dict.enums:
                 continue
             output.write("     <exports symbol='%s' type='macro'/>\n" % (id))
-        ids = dict.enums.keys()
-        ids.sort()
+        ids = sorted(dict.enums.keys())
         for id in uniq(ids):
             output.write("     <exports symbol='%s' type='enum'/>\n" % (id))
-        ids = dict.typedefs.keys()
-        ids.sort()
+        ids = sorted(dict.typedefs.keys())
         for id in uniq(ids):
             output.write("     <exports symbol='%s' type='typedef'/>\n" % (id))
-        ids = dict.structs.keys()
-        ids.sort()
+        ids = sorted(dict.structs.keys())
         for id in uniq(ids):
             output.write("     <exports symbol='%s' type='struct'/>\n" % (id))
-        ids = dict.variables.keys()
-        ids.sort()
+        ids = sorted(dict.variables.keys())
         for id in uniq(ids):
             output.write("     <exports symbol='%s' type='variable'/>\n" % (id))
-        ids = dict.functions.keys()
-        ids.sort()
+        ids = sorted(dict.functions.keys())
         for id in uniq(ids):
             output.write("     <exports symbol='%s' type='function'/>\n" % (id))
         output.write("    </file>\n")
 
     def serialize_xrefs_files(self, output):
-        headers = self.headers.keys()
-        headers.sort()
+        headers = sorted(self.headers.keys())
         for file in headers:
             module = self.modulename_file(file)
             output.write("    <file name='%s'>\n" % (module))
@@ -2410,8 +2402,7 @@ class docBuilder:
                         funcs[param[0]] = [name]
             except:
                 pass
-        typ = funcs.keys()
-        typ.sort()
+        typ = sorted(funcs.keys())
         for type in typ:
             if type == '' or type == 'void' or type == "int" or \
                type == "char *" or type == "const char *" :
@@ -2440,23 +2431,20 @@ class docBuilder:
                     funcs[ret[0]] = [name]
             except:
                 pass
-        typ = funcs.keys()
-        typ.sort()
+        typ = sorted(funcs.keys())
         for type in typ:
             if type == '' or type == 'void' or type == "int" or \
                type == "char *" or type == "const char *" :
                 continue
             output.write("    <type name='%s'>\n" % (type))
-            ids = funcs[type]
-            ids.sort()
+            ids = sorted(funcs[type])
             for id in ids:
                 output.write("      <ref name='%s'/>\n" % (id))
             output.write("    </type>\n")
 
     def serialize_xrefs_alpha(self, output):
         letter = None
-        ids = self.idx.identifiers.keys()
-        ids.sort()
+        ids = sorted(self.idx.identifiers.keys())
         for id in ids:
             if id[0] != letter:
                 if letter is not None:
@@ -2468,8 +2456,7 @@ class docBuilder:
             output.write("    </letter>\n")
 
     def serialize_xrefs_references(self, output):
-        typ = self.idx.identifiers.keys()
-        typ.sort()
+        typ = sorted(self.idx.identifiers.keys())
         for id in typ:
             idf = self.idx.identifiers[id]
             module = idf.header
@@ -2480,8 +2467,7 @@ class docBuilder:
 
     def serialize_xrefs_index(self, output):
         index = self.xref
-        typ = index.keys()
-        typ.sort()
+        typ = sorted(index.keys())
         letter = None
         count = 0
         chunk = 0
@@ -2553,30 +2539,24 @@ class docBuilder:
         output.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
         output.write("<api name='%s'>\n" % self.name)
         output.write("  <files>\n")
-        headers = self.headers.keys()
-        headers.sort()
+        headers = sorted(self.headers.keys())
         for file in headers:
             self.serialize_exports(output, file)
         output.write("  </files>\n")
         output.write("  <symbols>\n")
-        macros = self.idx.macros.keys()
-        macros.sort()
+        macros = sorted(self.idx.macros.keys())
         for macro in macros:
             self.serialize_macro(output, macro)
-        enums = self.idx.enums.keys()
-        enums.sort()
+        enums = sorted(self.idx.enums.keys())
         for enum in enums:
             self.serialize_enum(output, enum)
-        typedefs = self.idx.typedefs.keys()
-        typedefs.sort()
+        typedefs = sorted(self.idx.typedefs.keys())
         for typedef in typedefs:
             self.serialize_typedef(output, typedef)
-        variables = self.idx.variables.keys()
-        variables.sort()
+        variables = sorted(self.idx.variables.keys())
         for variable in variables:
             self.serialize_variable(output, variable)
-        functions = self.idx.functions.keys()
-        functions.sort()
+        functions = sorted(self.idx.functions.keys())
         for function in functions:
             self.serialize_function(output, function)
         output.write("  </symbols>\n")

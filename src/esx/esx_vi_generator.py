@@ -1704,8 +1704,7 @@ types_typedef.write(separator +
                     " * VI Enums\n" +
                     " */\n\n")
 
-names = enums_by_name.keys()
-names.sort()
+names = sorted(enums_by_name.keys())
 
 for name in names:
     types_typedef.write(enums_by_name[name].generate_typedef())
@@ -1726,8 +1725,7 @@ types_typeenum.write("\n")
 types_typetostring.write("\n")
 types_typefromstring.write("\n")
 
-names = objects_by_name.keys()
-names.sort()
+names = sorted(objects_by_name.keys())
 
 for name in names:
     types_typedef.write(objects_by_name[name].generate_typedef())
@@ -1748,8 +1746,7 @@ types_typeenum.write("\n")
 types_typetostring.write("\n")
 types_typefromstring.write("\n")
 
-names = managed_objects_by_name.keys()
-names.sort()
+names = sorted(managed_objects_by_name.keys())
 
 for name in names:
     types_typedef.write(managed_objects_by_name[name].generate_typedef())
@@ -1762,8 +1759,7 @@ for name in names:
 
 
 # output methods
-names = methods_by_name.keys()
-names.sort()
+names = sorted(methods_by_name.keys())
 
 for name in names:
     methods_header.write(methods_by_name[name].generate_header())
@@ -1782,8 +1778,7 @@ for name in names:
 
 
 # output helpers
-names = managed_objects_by_name.keys()
-names.sort()
+names = sorted(managed_objects_by_name.keys())
 
 for name in names:
     helpers_header.write(managed_objects_by_name[name].generate_helper_header())

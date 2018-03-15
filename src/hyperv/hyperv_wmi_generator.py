@@ -501,8 +501,7 @@ def main():
     classes_header.write(notice)
     classes_source.write(notice)
 
-    names = wmi_classes_by_name.keys()
-    names.sort()
+    names = sorted(wmi_classes_by_name.keys())
 
     for name in names:
         cls = wmi_classes_by_name[name]
