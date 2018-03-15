@@ -163,11 +163,11 @@ class identifier:
         if self.module is not None:
             r = r + " from %s" % (self.module)
         if self.info is not None:
-            r = r + " " +  `self.info`
+            r = r + " " + repr(self.info)
         if self.extra is not None:
-            r = r + " " + `self.extra`
+            r = r + " " + repr(self.extra)
         if self.conditionals is not None:
-            r = r + " " + `self.conditionals`
+            r = r + " " + repr(self.conditionals)
         return r
 
 
@@ -2316,7 +2316,7 @@ class docBuilder:
                     self.indexString(name, param[2])
         except:
             print("Exception:", sys.exc_info()[1], file=sys.stderr)
-            self.warning("Failed to save function %s info: %s" % (name, `id.info`))
+            self.warning("Failed to save function %s info: %s" % (name, repr(id.info)))
         output.write("    </%s>\n" % (id.type))
 
     def serialize_exports(self, output, file):
