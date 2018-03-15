@@ -305,7 +305,7 @@ BuildRequires: perl-interpreter
 %else
 BuildRequires: perl
 %endif
-BuildRequires: python
+BuildRequires: python2
 %if %{with_systemd}
 BuildRequires: systemd-units
 %endif
