@@ -122,11 +122,11 @@ hidden_macros = {
 }
 
 def escape(raw):
-    raw = string.replace(raw, '&', '&amp;')
-    raw = string.replace(raw, '<', '&lt;')
-    raw = string.replace(raw, '>', '&gt;')
-    raw = string.replace(raw, "'", '&apos;')
-    raw = string.replace(raw, '"', '&quot;')
+    raw = raw.replace('&', '&amp;')
+    raw = raw.replace('<', '&lt;')
+    raw = raw.replace('>', '&gt;')
+    raw = raw.replace("'", '&apos;')
+    raw = raw.replace('"', '&quot;')
     return raw
 
 def uniq(items):
@@ -440,16 +440,16 @@ class CLexer:
             if not line:
                 return None
             self.lineno = self.lineno + 1
-            line = string.lstrip(line)
-            line = string.rstrip(line)
+            line = line.lstrip()
+            line = line.rstrip()
             if line == '':
                 continue
             while line[-1] == '\\':
                 line = line[:-1]
                 n = self.input.readline()
                 self.lineno = self.lineno + 1
-                n = string.lstrip(n)
-                n = string.rstrip(n)
+                n = n.lstrip()
+                n = n.rstrip()
                 if not n:
                     break
                 else:
@@ -479,7 +479,7 @@ class CLexer:
 
             if line[0] == '#':
                 self.tokens = map((lambda x: ('preproc', x)),
-                                  string.split(line))
+                                  line.split()))
 
                 # We might have whitespace between the '#' and preproc
                 # macro name, so instead of having a single token element
@@ -572,21 +572,21 @@ class CLexer:
                     while i < l:
                         o = ord(line[i])
                         if (o >= 97 and o <= 122) or (o >= 65 and o <= 90) or \
-                           (o >= 48 and o <= 57) or string.find(
-                               " \t(){}:;,+-*/%&!|[]=><", line[i]) == -1:
+                           (o >= 48 and o <= 57) or \
+                           (" \t(){}:;,+-*/%&!|[]=><".find(line[i]) == -1):
                             i = i + 1
                         else:
                             break
                     self.tokens.append(('name', line[s:i]))
                     continue
-                if string.find("(){}:;,[]", line[i]) != -1:
+                if "(){}:;,[]".find(line[i]) != -1:
 #                 if line[i] == '(' or line[i] == ')' or line[i] == '{' or \
 #                   line[i] == '}' or line[i] == ':' or line[i] == ';' or \
 #                   line[i] == ',' or line[i] == '[' or line[i] == ']':
                     self.tokens.append(('sep', line[i]))
                     i = i + 1
                     continue
-                if string.find("+-*><=/%&!|.", line[i]) != -1:
+                if "+-*><=/%&!|.".find(line[i]) != -1:
 #                 if line[i] == '+' or line[i] == '-' or line[i] == '*' or \
 #                   line[i] == '>' or line[i] == '<' or line[i] == '=' or \
 #                   line[i] == '/' or line[i] == '%' or line[i] == '&' or \
@@ -599,7 +599,7 @@ class CLexer:
 
                     j = i + 1
                     if j < l and (
-                       string.find("+-*><=/%&!|", line[j]) != -1):
+                       "+-*><=/%&!|".find(line[j]) != -1):
 #                       line[j] == '+' or line[j] == '-' or line[j] == '*' or \
 #                       line[j] == '>' or line[j] == '<' or line[j] == '=' or \
 #                       line[j] == '/' or line[j] == '%' or line[j] == '&' or \
@@ -614,8 +614,8 @@ class CLexer:
                 while i < l:
                     o = ord(line[i])
                     if (o >= 97 and o <= 122) or (o >= 65 and o <= 90) or \
-                       (o >= 48 and o <= 57) or (
-                        string.find(" \t(){}:;,+-*/%&!|[]=><", line[i]) == -1):
+                       (o >= 48 and o <= 57) or \
+                       (" \t(){}:;,+-*/%&!|[]=><".find(line[i]) == -1):
 #                        line[i] != ' ' and line[i] != '\t' and
 #                        line[i] != '(' and line[i] != ')' and
 #                        line[i] != '{'  and line[i] != '}' and
@@ -714,7 +714,7 @@ class CParser:
 
     def parseTopComment(self, comment):
         res = {}
-        lines = string.split(comment, "\n")
+        lines = comment.split("\n")
         item = None
         for line in lines:
             line = line.lstrip().lstrip('*').lstrip()
@@ -763,10 +763,10 @@ class CParser:
             self.comment = self.comment + com
         token = self.lexer.token()
 
-        if string.find(self.comment, "DOC_DISABLE") != -1:
+        if self.comment.find("DOC_DISABLE") != -1:
             self.stop_error()
 
-        if string.find(self.comment, "DOC_ENABLE") != -1:
+        if self.comment.find("DOC_ENABLE") != -1:
             self.start_error()
 
         return token
@@ -789,7 +789,7 @@ class CParser:
             if not quiet:
                 self.warning("Missing * in type comment for %s" % (name))
             return((args, desc))
-        lines = string.split(self.comment, '\n')
+        lines = self.comment.split('\n')
         if lines[0] == '*':
             del lines[0]
         if lines[0] != "* %s:" % (name):
@@ -805,11 +805,11 @@ class CParser:
             l = lines[0]
             while len(l) > 0 and l[0] == '*':
                 l = l[1:]
-            l = string.strip(l)
+            l = l.strip()
             desc = desc + " " + l
             del lines[0]
 
-        desc = string.strip(desc)
+        desc = desc.strip()
 
         if quiet == 0:
             if desc == "":
@@ -838,7 +838,7 @@ class CParser:
             if not quiet:
                 self.warning("Missing * in macro comment for %s" % (name))
             return((args, desc))
-        lines = string.split(self.comment, '\n')
+        lines = self.comment.split('\n')
         if lines[0] == '*':
             del lines[0]
         if lines[0] != "* %s:" % (name):
@@ -852,9 +852,9 @@ class CParser:
         while len(lines) > 0 and lines[0][0:3] == '* @':
             l = lines[0][3:]
             try:
-                (arg, desc) = string.split(l, ':', 1)
-                desc=string.strip(desc)
-                arg=string.strip(arg)
+                (arg, desc) = l.split(':', 1)
+                desc = desc.strip()
+                arg = arg.strip()
             except:
                 if not quiet:
                     self.warning("Misformatted macro comment for %s" % (name))
@@ -862,11 +862,11 @@ class CParser:
                 del lines[0]
                 continue
             del lines[0]
-            l = string.strip(lines[0])
+            l = lines[0].strip()
             while len(l) > 2 and l[0:3] != '* @':
                 while l[0] == '*':
                     l = l[1:]
-                desc = desc + ' ' + string.strip(l)
+                desc = desc + ' ' + l.strip()
                 del lines[0]
                 if len(lines) == 0:
                     break
@@ -879,11 +879,11 @@ class CParser:
             l = lines[0]
             while len(l) > 0 and l[0] == '*':
                 l = l[1:]
-            l = string.strip(l)
+            l = l.strip()
             desc = desc + " " + l
             del lines[0]
 
-        desc = string.strip(desc)
+        desc = desc.strip()
 
         if quiet == 0:
             if desc == "":
@@ -918,7 +918,7 @@ class CParser:
             if not quiet:
                 self.warning("Missing * in function comment for %s" % (name))
             return(((ret[0], retdesc), args, desc))
-        lines = string.split(self.comment, '\n')
+        lines = self.comment.split('\n')
         if lines[0] == '*':
             del lines[0]
         if lines[0] != "* %s:" % (name):
@@ -933,9 +933,9 @@ class CParser:
         while len(lines) > 0 and lines[0][0:3] == '* @':
             l = lines[0][3:]
             try:
-                (arg, desc) = string.split(l, ':', 1)
-                desc=string.strip(desc)
-                arg=string.strip(arg)
+                (arg, desc) = l.split(':', 1)
+                desc = desc.strip()
+                arg = arg.strip()
             except:
                 if not quiet:
                     self.warning("Misformatted function comment for %s" % (name))
@@ -943,11 +943,11 @@ class CParser:
                 del lines[0]
                 continue
             del lines[0]
-            l = string.strip(lines[0])
+            l = lines[0].strip()
             while len(l) > 2 and l[0:3] != '* @':
                 while l[0] == '*':
                     l = l[1:]
-                desc = desc + ' ' + string.strip(l)
+                desc = desc + ' ' + l.strip()
                 del lines[0]
                 if len(lines) == 0:
                     break
@@ -978,16 +978,16 @@ class CParser:
                 l = l[i:]
             if len(l) >= 6 and l[0:7] == "Returns":
                 try:
-                    l = string.split(l, ' ', 1)[1]
+                    l = l.split(' ', 1)[1]
                 except:
                     l = ""
-                retdesc = string.strip(l)
+                retdesc = l.strip()
                 del lines[0]
                 while len(lines) > 0:
                     l = lines[0]
                     while len(l) > 0 and l[0] == '*':
                         l = l[1:]
-                    l = string.strip(l)
+                    l = l.strip()
                     retdesc = retdesc + " " + l
                     del lines[0]
             else:
@@ -999,8 +999,8 @@ class CParser:
 
         if desc is None:
             desc = ""
-        retdesc = string.strip(retdesc)
-        desc = string.strip(desc)
+        retdesc = retdesc.strip()
+        desc = desc.strip()
 
         if quiet == 0:
              #
@@ -1046,7 +1046,7 @@ class CParser:
                     lst.append(token[1])
                     token = self.lexer.token()
                 try:
-                    name = string.split(name, '(') [0]
+                    name = name.split('(') [0]
                 except:
                     pass
 
@@ -1083,7 +1083,7 @@ class CParser:
             apstr = self.lexer.tokens[0][1]
             try:
                 self.defines.append(apstr)
-                if string.find(apstr, 'ENABLED') != -1:
+                if apstr.find('ENABLED') != -1:
                     self.conditionals.append("defined(%s)" % apstr)
             except:
                 pass
@@ -1091,7 +1091,7 @@ class CParser:
             apstr = self.lexer.tokens[0][1]
             try:
                 self.defines.append(apstr)
-                if string.find(apstr, 'ENABLED') != -1:
+                if apstr.find('ENABLED') != -1:
                     self.conditionals.append("!defined(%s)" % apstr)
             except:
                 pass
@@ -1103,17 +1103,17 @@ class CParser:
                 apstr = apstr + tok[1]
             try:
                 self.defines.append(apstr)
-                if string.find(apstr, 'ENABLED') != -1:
+                if apstr.find('ENABLED') != -1:
                     self.conditionals.append(apstr)
             except:
                 pass
         elif name == "#else":
             if self.conditionals != [] and \
-               string.find(self.defines[-1], 'ENABLED') != -1:
+               self.defines[-1].find('ENABLED') != -1:
                 self.conditionals[-1] = "!(%s)" % self.conditionals[-1]
         elif name == "#endif":
             if self.conditionals != [] and \
-               string.find(self.defines[-1], 'ENABLED') != -1:
+               self.defines[-1].find('ENABLED') != -1:
                 self.conditionals = self.conditionals[:-1]
             self.defines = self.defines[:-1]
         token = self.lexer.token()
@@ -1181,7 +1181,7 @@ class CParser:
                 name = token[1]
                 signature = self.signature
                 if signature is not None:
-                    type = string.split(type, '(')[0]
+                    type = type.split('(')[0]
                     d = self.mergeFunctionComment(name,
                             ((type, None), signature), 1)
                     self.index_add(name, self.filename, not self.is_header,
@@ -1388,7 +1388,7 @@ class CParser:
                 self.cleanupComment()
                 if name is not None:
                     if self.comment is not None:
-                        comment = string.strip(self.comment)
+                        comment = self.comment.strip()
                         self.comment = None
                     self.enums.append((name, value, comment))
                 name = token[1]
@@ -2076,26 +2076,26 @@ class docBuilder:
     def indexString(self, id, str):
         if str is None:
             return
-        str = string.replace(str, "'", ' ')
-        str = string.replace(str, '"', ' ')
-        str = string.replace(str, "/", ' ')
-        str = string.replace(str, '*', ' ')
-        str = string.replace(str, "[", ' ')
-        str = string.replace(str, "]", ' ')
-        str = string.replace(str, "(", ' ')
-        str = string.replace(str, ")", ' ')
-        str = string.replace(str, "<", ' ')
-        str = string.replace(str, '>', ' ')
-        str = string.replace(str, "&", ' ')
-        str = string.replace(str, '#', ' ')
-        str = string.replace(str, ",", ' ')
-        str = string.replace(str, '.', ' ')
-        str = string.replace(str, ';', ' ')
-        tokens = string.split(str)
+        str = str.replace("'", ' ')
+        str = str.replace('"', ' ')
+        str = str.replace("/", ' ')
+        str = str.replace('*', ' ')
+        str = str.replace("[", ' ')
+        str = str.replace("]", ' ')
+        str = str.replace("(", ' ')
+        str = str.replace(")", ' ')
+        str = str.replace("<", ' ')
+        str = str.replace('>', ' ')
+        str = str.replace("&", ' ')
+        str = str.replace('#', ' ')
+        str = str.replace(",", ' ')
+        str = str.replace('.', ' ')
+        str = str.replace(';', ' ')
+        tokens = str.split()
         for token in tokens:
             try:
                 c = token[0]
-                if string.find(string.letters, c) < 0:
+                if string.letters.find(c) < 0:
                     pass
                 elif len(token) < 3:
                     pass
@@ -2137,7 +2137,7 @@ class docBuilder:
             for file in files:
                 skip = 1
                 for incl in self.includes:
-                    if string.find(file, incl) != -1:
+                    if file.find(incl) != -1:
                         skip = 0
                         break
                 if skip == 0:
@@ -2146,7 +2146,7 @@ class docBuilder:
             for file in files:
                 skip = 1
                 for incl in self.includes:
-                    if string.find(file, incl) != -1:
+                    if file.find(incl) != -1:
                         skip = 0
                         break
                 if skip == 0:
@@ -2334,7 +2334,7 @@ class docBuilder:
                     self.warning("Header %s lacks a %s description" % (module, data))
             if 'Description' in dict.info:
                 desc = dict.info['Description']
-                if string.find(desc, "DEPRECATED") != -1:
+                if desc.find("DEPRECATED") != -1:
                     output.write("     <deprecated/>\n")
 
         ids = dict.macros.keys()
