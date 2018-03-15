@@ -520,6 +520,39 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
 }
 
 
+int
+qemuMigrationParamsFetch(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         int asyncJob,
+                         qemuMigrationParamsPtr *migParams)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuMigrationParamsPtr params = NULL;
+    int ret = -1;
+    int rc;
+
+    *migParams = NULL;
+
+    if (!(params = qemuMigrationParamsNew()))
+        return -1;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
+    rc = qemuMonitorGetMigrationParams(priv->mon, &params->params);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(*migParams, params);
+    ret = 0;
+
+ cleanup:
+    qemuMigrationParamsFree(params);
+    return ret;
+}
+
+
 /**
  * qemuMigrationParamsCheck:
  *
@@ -535,11 +568,9 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
                          qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuMigrationParamsPtr origParams = NULL;
     qemuMonitorMigrationCaps cap;
     qemuMigrationParty party;
     size_t i;
-    int ret = -1;
 
     if (asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
         party = QEMU_MIGRATION_SOURCE;
@@ -570,31 +601,12 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
         }
     }
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        return -1;
-
-    if (!(origParams = qemuMigrationParamsNew()))
-        goto cleanup;
-
     /*
      * We want to disable all migration capabilities after migration, no need
      * to ask QEMU for their current settings.
      */
 
-    if (qemuMonitorGetMigrationParams(priv->mon, &origParams->params) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-
-    if (ret == 0)
-        VIR_STEAL_PTR(priv->job.migParams, origParams);
-    qemuMigrationParamsFree(origParams);
-
-    return ret;
+    return qemuMigrationParamsFetch(driver, vm, asyncJob, &priv->job.migParams);
 }
 
 
