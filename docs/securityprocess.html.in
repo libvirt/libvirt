@@ -37,6 +37,19 @@
       moderator and the reporter copied on any replies.
     </p>
 
+    <h2><a id="secnotice">Security notices</a></h2>
+
+    <p>
+      Information for all historical security issues is maintained in
+      machine parsable format in the
+      <a href="https://libvirt.org/git/?p=libvirt-security-notice.git;a=log">libvirt-security-notice GIT repository</a> and
+      <a href="https://security.libvirt.org">published online</a>
+      in text, HTML and XML formats. Security notices are published
+      on the <a href="https://libvirt.org/contact.html#email">libvirt-announce mailing list</a>
+      when any embargo is lifted, or as soon as triaged if already
+      public knowledge.
+    </p>
+
     <h2><a id="seclist">Security team</a></h2>
 
     <p>
@@ -101,13 +114,6 @@
       each currently maintained stable release branch. The distro maintainers
       will be responsible for backporting the officially published fixes to
       other release branches where applicable.
-    </p>
-
-    <h2><a id="notification">Notification of issues</a></h2>
-
-    <p>
-      When an embargo expires, security issues will be announced on both
-      the libvirt development and announcement <a href="https://libvirt.org/contact.html#email">mailing lists</a>.
     </p>
   </body>
 </html>
