@@ -20,6 +20,8 @@
 # <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import print_function
+
 import sys
 import os
 import os.path
@@ -390,16 +392,16 @@ class Property:
 
 def open_and_print(filename):
     if filename.startswith("./"):
-        print "  GEN      " + filename[2:]
+        print("  GEN      " + filename[2:])
     else:
-        print "  GEN      " + filename
+        print("  GEN      " + filename)
 
     return open(filename, "wb")
 
 
 
 def report_error(message):
-    print "error: " + message
+    print("error: " + message)
     sys.exit(1)
 
 

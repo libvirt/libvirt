@@ -7,6 +7,9 @@
 #
 # daniel@veillard.com
 #
+
+from __future__ import print_function
+
 import os, sys
 import string
 import glob
@@ -150,8 +153,8 @@ class identifier:
         else:
             self.conditionals = conditionals[:]
         if self.name == debugsym and not quiet:
-            print "=> define %s : %s" % (debugsym, (module, type, info,
-                                         extra, conditionals))
+            print("=> define %s : %s" % (debugsym, (module, type, info,
+                                         extra, conditionals)))
 
     def __repr__(self):
         r = "%s %s:" % (self.type, self.name)
@@ -210,8 +213,8 @@ class identifier:
     def update(self, header, module, type = None, info = None, extra=None,
                conditionals=None):
         if self.name == debugsym and not quiet:
-            print "=> update %s : %s" % (debugsym, (module, type, info,
-                                         extra, conditionals))
+            print("=> update %s : %s" % (debugsym, (module, type, info,
+                                         extra, conditionals)))
         if header is not None and self.header is None:
             self.set_header(module)
         if module is not None and (self.module is None or self.header == self.module):
@@ -243,7 +246,7 @@ class index:
     def warning(self, msg):
         global warnings
         warnings = warnings + 1
-        print msg
+        print(msg)
 
     def add_ref(self, name, header, module, static, type, lineno, info=None, extra=None, conditionals = None):
         if name[0:2] == '__':
@@ -263,7 +266,7 @@ class index:
             self.references[name] = d
 
         if name == debugsym and not quiet:
-            print "New ref: %s" % (d)
+            print("New ref: %s" % (d))
 
         return d
 
@@ -304,7 +307,7 @@ class index:
                 self.warning("Unable to register type ", type)
 
         if name == debugsym and not quiet:
-            print "New symbol: %s" % (d)
+            print("New symbol: %s" % (d))
 
         return d
 
@@ -344,8 +347,8 @@ class index:
                  self.identifiers[id] = idx.structs[id]
         for id in idx.unions.keys():
              if self.unions.has_key(id):
-                 print "union %s from %s redeclared in %s" % (
-                    id, self.unions[id].header, idx.unions[id].header)
+                 print("union %s from %s redeclared in %s" % (
+                    id, self.unions[id].header, idx.unions[id].header))
              else:
                  self.unions[id] = idx.unions[id]
                  self.identifiers[id] = idx.unions[id]
@@ -394,8 +397,8 @@ class index:
                  up = idx.functions[id]
                  self.functions[id].update(None, up.module, up.type, up.info, up.extra)
          #     else:
-         #         print "Function %s from %s is not declared in headers" % (
-         #              id, idx.functions[id].module)
+         #         print("Function %s from %s is not declared in headers" % (
+         #               id, idx.functions[id].module))
          # TODO: do the same for variables.
 
     def analyze_dict(self, type, dict):
@@ -407,9 +410,9 @@ class index:
             if id.static == 0:
                 public = public + 1
         if count != public:
-            print "  %d %s , %d public" % (count, type, public)
+            print("  %d %s , %d public" % (count, type, public))
         elif count != 0:
-            print "  %d public %s" % (count, type)
+            print("  %d public %s" % (count, type))
 
 
     def analyze(self):
@@ -460,9 +463,9 @@ class CLexer:
         self.tokens.insert(0, token)
 
     def debug(self):
-        print "Last token: ", self.last
-        print "Token queue: ", self.tokens
-        print "Line %d end: " % (self.lineno), self.line
+        print("Last token: ", self.last)
+        print("Token queue: ", self.tokens)
+        print("Line %d end: " % (self.lineno), self.line)
 
     def token(self):
         while self.tokens == []:
@@ -691,22 +694,22 @@ class CParser:
         warnings = warnings + 1
         if self.no_error:
             return
-        print msg
+        print(msg)
 
     def error(self, msg, token=-1):
         if self.no_error:
             return
 
-        print "Parse Error: " + msg
+        print("Parse Error: " + msg)
         if token != -1:
-            print "Got token ", token
+            print("Got token ", token)
         self.lexer.debug()
         sys.exit(1)
 
     def debug(self, msg, token=-1):
-        print "Debug: " + msg
+        print("Debug: " + msg)
         if token != -1:
-            print "Got token ", token
+            print("Got token ", token)
         self.lexer.debug()
 
     def parseTopComment(self, comment):
@@ -1018,7 +1021,7 @@ class CParser:
 
     def parsePreproc(self, token):
         if debug:
-            print "=> preproc ", token, self.lexer.tokens
+            print("=> preproc ", token, self.lexer.tokens)
         name = token[1]
         if name == "#include":
             token = self.lexer.token()
@@ -1156,7 +1159,7 @@ class CParser:
                 continue
             else:
                 if debug:
-                    print "=> ", token
+                    print("=> ", token)
                 return token
         return None
 
@@ -1267,7 +1270,7 @@ class CParser:
             elif token[0] == "sep" and token[1] == "}":
                 self.struct_fields = fields
                  #self.debug("end parseStruct", token)
-                 #print fields
+                 #print(fields)
                 token = self.token()
                 return token
             else:
@@ -1306,7 +1309,7 @@ class CParser:
                 self.type = base_type
         self.struct_fields = fields
          #self.debug("end parseStruct", token)
-         #print fields
+         #print(fields)
         return token
 
      #
@@ -1322,7 +1325,7 @@ class CParser:
             elif token[0] == "sep" and token[1] == "}":
                 self.union_fields = fields
                 # self.debug("end parseUnion", token)
-                # print fields
+                # print(fields)
                 token = self.token()
                 return token
             else:
@@ -1356,7 +1359,7 @@ class CParser:
                 self.type = base_type
         self.union_fields = fields
         # self.debug("end parseUnion", token)
-        # print fields
+        # print(fields)
         return token
 
      #
@@ -1914,7 +1917,7 @@ class CParser:
                         return token
                     if token[0] == 'sep' and token[1] == "{":
                         token = self.token()
-#                        print 'Entering extern "C line ', self.lineno()
+#                        print('Entering extern "C line ', self.lineno())
                         while token is not None and (token[0] != 'sep' or
                               token[1] != "}"):
                             if token[0] == 'name':
@@ -1924,7 +1927,7 @@ class CParser:
                                  "token %s %s unexpected at the top level" % (
                                         token[0], token[1]))
                                 token = self.parseGlobal(token)
-#                        print 'Exiting extern "C" line', self.lineno()
+#                        print('Exiting extern "C" line', self.lineno())
                         token = self.token()
                         return token
                 else:
@@ -2025,7 +2028,7 @@ class CParser:
 
     def parse(self):
         if not quiet:
-            print "Parsing %s" % (self.filename)
+            print("Parsing %s" % (self.filename))
         token = self.token()
         while token is not None:
             if token[0] == 'name':
@@ -2064,11 +2067,11 @@ class docBuilder:
     def warning(self, msg):
         global warnings
         warnings = warnings + 1
-        print msg
+        print(msg)
 
     def error(self, msg):
         self.errors += 1
-        print >>sys.stderr, "Error:", msg
+        print("Error:", msg, file=sys.stderr)
 
     def indexString(self, id, str):
         if str is None:
@@ -2110,7 +2113,7 @@ class docBuilder:
 
     def analyze(self):
         if not quiet:
-            print "Project %s : %d headers, %d modules" % (self.name, len(self.headers.keys()), len(self.modules.keys()))
+            print("Project %s : %d headers, %d modules" % (self.name, len(self.headers.keys()), len(self.modules.keys())))
         self.idx.analyze()
 
     def scanHeaders(self):
@@ -2271,7 +2274,7 @@ class docBuilder:
     def serialize_function(self, output, name):
         id = self.idx.functions[name]
         if name == debugsym and not quiet:
-            print "=>", id
+            print("=>", id)
 
         # NB: this is consumed by a regex in 'getAPIFilenames' in hvsupport.pl
         output.write("    <%s name='%s' file='%s' module='%s'>\n" % (id.type,
@@ -2312,7 +2315,7 @@ class docBuilder:
                     output.write("      <arg name='%s' type='%s' info='%s'/>\n" % (param[1], param[0], escape(param[2])))
                     self.indexString(name, param[2])
         except:
-            print >>sys.stderr, "Exception:", sys.exc_info()[1]
+            print("Exception:", sys.exc_info()[1], file=sys.stderr)
             self.warning("Failed to save function %s info: %s" % (name, `id.info`))
         output.write("    </%s>\n" % (id.type))
 
@@ -2542,7 +2545,7 @@ class docBuilder:
     def serialize(self):
         filename = "%s/%s-api.xml" % (self.path, self.name)
         if not quiet:
-            print "Saving XML description %s" % (filename)
+            print("Saving XML description %s" % (filename))
         output = open(filename, "w")
         output.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
         output.write("<api name='%s'>\n" % self.name)
@@ -2578,12 +2581,12 @@ class docBuilder:
         output.close()
 
         if self.errors > 0:
-            print >>sys.stderr, "apibuild.py: %d error(s) encountered during generation" % self.errors
+            print("apibuild.py: %d error(s) encountered during generation" % self.errors, file=sys.stderr)
             sys.exit(3)
 
         filename = "%s/%s-refs.xml" % (self.path, self.name)
         if not quiet:
-            print "Saving XML Cross References %s" % (filename)
+            print("Saving XML Cross References %s" % (filename))
         output = open(filename, "w")
         output.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
         output.write("<apirefs name='%s'>\n" % self.name)
@@ -2596,7 +2599,7 @@ class app:
     def warning(self, msg):
         global warnings
         warnings = warnings + 1
-        print msg
+        print(msg)
 
     def rebuild(self, name):
         if name not in ["libvirt", "libvirt-qemu", "libvirt-lxc", "libvirt-admin"]:
@@ -2609,7 +2612,7 @@ class app:
             builddir = None
         if glob.glob(srcdir + "/../src/libvirt.c") != [] :
             if not quiet:
-                print "Rebuilding API description for %s" % name
+                print("Rebuilding API description for %s" % name)
             dirs = [srcdir + "/../src",
                     srcdir + "/../src/util",
                     srcdir + "/../include/libvirt"]
@@ -2619,7 +2622,7 @@ class app:
             builder = docBuilder(name, srcdir, dirs, [])
         elif glob.glob("src/libvirt.c") != [] :
             if not quiet:
-                print "Rebuilding API description for %s" % name
+                print("Rebuilding API description for %s" % name)
             builder = docBuilder(name, srcdir,
                                  ["src", "src/util", "include/libvirt"],
                                  [])
