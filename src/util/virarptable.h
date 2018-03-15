@@ -25,7 +25,6 @@
 # define __VIR_ARPTABLE_H__
 
 # include "internal.h"
-# include <linux/rtnetlink.h>
 
 typedef struct _virArpTableEntry virArpTableEntry;
 typedef virArpTableEntry *virArpTableEntryPtr;

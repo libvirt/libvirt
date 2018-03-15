@@ -26,6 +26,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <arpa/inet.h>
+#ifdef __linux__
+# include <linux/rtnetlink.h>
+#endif
 
 #include "viralloc.h"
 #include "virarptable.h"
