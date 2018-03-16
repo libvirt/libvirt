@@ -15873,6 +15873,8 @@ virDomainDiskDefParse(const char *xmlStr,
     xmlDocPtr xml;
     xmlXPathContextPtr ctxt = NULL;
     virDomainDiskDefPtr disk = NULL;
+    virSecurityLabelDefPtr *seclabels = NULL;
+    size_t nseclabels = 0;
 
     if (!(xml = virXMLParseStringCtxt(xmlStr, _("(disk_definition)"), &ctxt)))
         goto cleanup;
@@ -15884,10 +15886,13 @@ virDomainDiskDefParse(const char *xmlStr,
         goto cleanup;
     }
 
+    if (def) {
+        seclabels = def->seclabels;
+        nseclabels = def->nseclabels;
+    }
+
     disk = virDomainDiskDefParseXML(xmlopt, ctxt->node, ctxt,
-                                    NULL, def->seclabels,
-                                    def->nseclabels,
-                                    flags);
+                                    NULL, seclabels, nseclabels, flags);
 
  cleanup:
     xmlFreeDoc(xml);
