@@ -950,17 +950,22 @@ qemuMigrationParamsSetString(qemuMigrationParamsPtr migParams,
 
 
 /**
- * Returns  0 on success,
+ * Returns -1 on error,
+ *          0 on success,
  *          1 if the parameter is not supported by QEMU.
  */
 int
-qemuMigrationParamsGetDowntimeLimit(qemuMigrationParamsPtr migParams,
-                                    unsigned long long *value)
+qemuMigrationParamsGetULL(qemuMigrationParamsPtr migParams,
+                          qemuMigrationParam param,
+                          unsigned long long *value)
 {
-    if (!migParams->params[QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT].set)
+    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_ULL) < 0)
+        return -1;
+
+    if (!migParams->params[param].set)
         return 1;
 
-    *value = migParams->params[QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT].value.ull;
+    *value = migParams->params[param].value.ull;
     return 0;
 }
 

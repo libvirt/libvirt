@@ -116,8 +116,9 @@ qemuMigrationParamsSetString(qemuMigrationParamsPtr migParams,
                              const char *value);
 
 int
-qemuMigrationParamsGetDowntimeLimit(qemuMigrationParamsPtr migParams,
-                                    unsigned long long *value);
+qemuMigrationParamsGetULL(qemuMigrationParamsPtr migParams,
+                          qemuMigrationParam param,
+                          unsigned long long *value);
 
 int
 qemuMigrationParamsCheck(virQEMUDriverPtr driver,

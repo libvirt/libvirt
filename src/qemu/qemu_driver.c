@@ -13535,6 +13535,7 @@ qemuDomainMigrateGetMaxDowntime(virDomainPtr dom,
     virDomainObjPtr vm;
     qemuMigrationParamsPtr migParams = NULL;
     int ret = -1;
+    int rc;
 
     virCheckFlags(0, -1);
 
@@ -13557,7 +13558,13 @@ qemuDomainMigrateGetMaxDowntime(virDomainPtr dom,
                                  &migParams) < 0)
         goto endjob;
 
-    if (qemuMigrationParamsGetDowntimeLimit(migParams, downtime) == 1) {
+    if ((rc = qemuMigrationParamsGetULL(migParams,
+                                        QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT,
+                                        downtime)) < 0) {
+        goto endjob;
+    }
+
+    if (rc == 1) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Querying migration downtime is not supported by "
                          "QEMU binary"));
