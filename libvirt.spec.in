@@ -1760,6 +1760,14 @@ exit 0
 
 %if %{with_lxc}
 %files daemon-driver-lxc
+%config(noreplace) %{_sysconfdir}/libvirt/virtlxcd.conf
+%{_datadir}/augeas/lenses/virtlxcd.aug
+%{_datadir}/augeas/lenses/tests/test_virtlxcd.aug
+%{_unitdir}/virtlxcd.service
+%{_unitdir}/virtlxcd.socket
+%{_unitdir}/virtlxcd-ro.socket
+%{_unitdir}/virtlxcd-admin.socket
+%attr(0755, root, root) %{_sbindir}/virtlxcd
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
 %config(noreplace) %{_sysconfdir}/libvirt/lxc.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.lxc

@@ -160,6 +160,9 @@
 /src/lxc/lxc_monitor_protocol.h
 /src/lxc/lxc_protocol.[ch]
 /src/lxc/test_libvirtd_lxc.aug
+/src/lxc/test_virtlxcd.aug
+/src/lxc/virtlxcd.aug
+/src/lxc/virtlxcd.conf
 /src/network/test_virtnetworkd.aug
 /src/network/virtnetworkd.aug
 /src/network/virtnetworkd.conf
@@ -198,6 +201,7 @@
 /src/virtxend
 /src/virtlockd
 /src/virtlogd
+/src/virtlxcd
 /src/virtnetworkd
 /src/virtnodedevd
 /src/virtnwfilterd

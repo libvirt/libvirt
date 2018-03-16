@@ -1,0 +1,40 @@
+[Unit]
+Description=Virtualization lxc daemon
+Conflicts=libvirtd.service
+Requires=virtlxcd.socket
+Requires=virtlxcd-ro.socket
+Requires=virtlxcd-admin.socket
+Wants=systemd-machined.service
+Before=libvirt-guests.service
+After=network.target
+After=dbus.service
+After=apparmor.service
+After=local-fs.target
+After=remote-fs.target
+After=systemd-logind.service
+After=systemd-machined.service
+Documentation=man:libvirtd(8)
+Documentation=https://libvirt.org
+
+[Service]
+Type=notify
+ExecStart=@sbindir@/virtlxcd --timeout 120
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+# At least 1 FD per guest, often 2 (eg qemu monitor + qemu agent).
+# eg if we want to support 4096 guests, we'll typically need 8192 FDs
+# If changing this, also consider virtlogd.service & virtlockd.service
+# limits which are also related to number of guests
+LimitNOFILE=8192
+# The cgroups pids controller can limit the number of tasks started by
+# the daemon, which can limit the number of domains for some hypervisors.
+# A conservative default of 8 tasks per guest results in a TasksMax of
+# 32k to support 4096 guests.
+TasksMax=32768
+
+[Install]
+WantedBy=multi-user.target
+Also=virtlxcd.socket
+Also=virtlxcd-ro.socket
+Also=virtlxcd-admin.socket

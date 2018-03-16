@@ -110,6 +110,69 @@ endif WITH_BLKID
 libvirt_driver_lxc_impl_la_LIBADD += $(SECDRIVER_LIBS)
 libvirt_driver_lxc_impl_la_SOURCES = $(LXC_DRIVER_SOURCES)
 
+
+sbin_PROGRAMS += virtlxcd
+
+nodist_conf_DATA += lxc/virtlxcd.conf
+augeas_DATA += lxc/virtlxcd.aug
+augeastest_DATA += lxc/test_virtlxcd.aug
+CLEANFILES += lxc/virtlxcd.aug
+
+virtlxcd_SOURCES = $(REMOTE_DAEMON_SOURCES)
+virtlxcd_CFLAGS = \
+       $(REMOTE_DAEMON_CFLAGS) \
+       -DDAEMON_NAME="\"virtlxcd\"" \
+       -DMODULE_NAME="\"lxc\"" \
+       $(NULL)
+virtlxcd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
+virtlxcd_LDADD = $(REMOTE_DAEMON_LD_ADD)
+
+SYSTEMD_UNIT_FILES += \
+	virtlxcd.service \
+	virtlxcd.socket \
+	virtlxcd-ro.socket \
+	virtlxcd-admin.socket \
+	$(NULL)
+SYSTEMD_UNIT_FILES_IN += \
+	lxc/virtlxcd.service.in \
+	$(NULL)
+
+VIRTLXCD_UNIT_VARS = \
+	$(VIRTD_UNIT_VARS) \
+	-e 's|[@]name[@]|Libvirt lxc|g' \
+	-e 's|[@]service[@]|virtlxcd|g' \
+	-e 's|[@]sockprefix[@]|virtlxcd|g' \
+	$(NULL)
+
+virtlxcd.service: lxc/virtlxcd.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTLXCD_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+virtlxc%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTLXCD_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+lxc/virtlxcd.conf: remote/libvirtd.conf.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtlxcd/' \
+		$< > $@
+
+lxc/virtlxcd.aug: remote/libvirtd.aug.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtlxcd/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtlxcd/' \
+		$< > $@
+
+lxc/test_virtlxcd.aug: remote/test_libvirtd.aug.in \
+		lxc/virtlxcd.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) lxc/virtlxcd.conf \
+		$(srcdir)/remote/test_libvirtd.aug.in | \
+		$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtlxcd/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtlxcd/' \
+		> $@ || rm -f $@
+
 libexec_PROGRAMS += libvirt_lxc
 
 libvirt_lxc_SOURCES = \
