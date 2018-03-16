@@ -1066,7 +1066,6 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
         if (!vm->persistent) {
             virDomainObjListRemove(driver->domains, vm);
             virObjectLock(vm);
-            goto cleanup;
         }
         goto endjob;
     }
