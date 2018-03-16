@@ -11,7 +11,6 @@
 from __future__ import print_function
 
 import os, sys
-import string
 import glob
 import re
 
@@ -2092,23 +2091,20 @@ class docBuilder:
         str = str.replace(';', ' ')
         tokens = str.split()
         for token in tokens:
-            try:
-                c = token[0]
-                if string.letters.find(c) < 0:
-                    pass
-                elif len(token) < 3:
-                    pass
-                else:
-                    lower = string.lower(token)
-                    # TODO: generalize this a bit
-                    if lower == 'and' or lower == 'the':
-                        pass
-                    elif token in self.xref:
-                        self.xref[token].append(id)
-                    else:
-                        self.xref[token] = [id]
-            except:
+            c = token[0]
+            if not re.match(r"[a-zA-Z]", c):
                 pass
+            elif len(token) < 3:
+                pass
+            else:
+                lower = token.lower()
+                # TODO: generalize this a bit
+                if lower == 'and' or lower == 'the':
+                    pass
+                elif token in self.xref:
+                    self.xref[token].append(id)
+                else:
+                    self.xref[token] = [id]
 
     def analyze(self):
         if not quiet:
