@@ -41,4 +41,67 @@ libvirt_driver_interface_la_LIBADD += $(UDEV_LIBS)
 libvirt_driver_interface_la_SOURCES += $(INTERFACE_DRIVER_UDEV_SOURCES)
 endif WITH_UDEV
 libvirt_driver_interface_la_LIBADD += ../gnulib/lib/libgnu.la
+
+sbin_PROGRAMS += virtinterfaced
+
+nodist_conf_DATA += interface/virtinterfaced.conf
+augeas_DATA += interface/virtinterfaced.aug
+augeastest_DATA += interface/test_virtinterfaced.aug
+CLEANFILES += interface/virtinterfaced.aug
+
+virtinterfaced_SOURCES = $(REMOTE_DAEMON_SOURCES)
+virtinterfaced_CFLAGS = \
+       $(REMOTE_DAEMON_CFLAGS) \
+       -DDAEMON_NAME="\"virtinterfaced\"" \
+       -DMODULE_NAME="\"interface\"" \
+       $(NULL)
+virtinterfaced_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
+virtinterfaced_LDADD = $(REMOTE_DAEMON_LD_ADD)
+
+SYSTEMD_UNIT_FILES += \
+	virtinterfaced.service \
+	virtinterfaced.socket \
+	virtinterfaced-ro.socket \
+	virtinterfaced-admin.socket \
+	$(NULL)
+SYSTEMD_UNIT_FILES_IN += \
+	interface/virtinterfaced.service.in \
+	$(NULL)
+
+VIRTINTERFACED_UNIT_VARS = \
+	$(VIRTD_UNIT_VARS) \
+	-e 's|[@]name[@]|Libvirt interface|g' \
+	-e 's|[@]service[@]|virtinterfaced|g' \
+	-e 's|[@]sockprefix[@]|virtinterfaced|g' \
+	$(NULL)
+
+virtinterfaced.service: interface/virtinterfaced.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTINTERFACED_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+virtinterface%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTINTERFACED_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+interface/virtinterfaced.conf: remote/libvirtd.conf.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtinterfaced/' \
+		$< > $@
+
+interface/virtinterfaced.aug: remote/libvirtd.aug.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtinterfaced/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtinterfaced/' \
+		$< > $@
+
+interface/test_virtinterfaced.aug: remote/test_libvirtd.aug.in \
+		interface/virtinterfaced.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) interface/virtinterfaced.conf \
+		$(srcdir)/remote/test_libvirtd.aug.in | \
+		$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtinterfaced/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtinterfaced/' \
+		> $@ || rm -f $@
+
 endif WITH_INTERFACE

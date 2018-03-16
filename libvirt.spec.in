@@ -1609,6 +1609,14 @@ exit 0
 %ghost %{_sysconfdir}/libvirt/nwfilter/*.xml
 
 %files daemon-driver-interface
+%config(noreplace) %{_sysconfdir}/libvirt/virtinterfaced.conf
+%{_datadir}/augeas/lenses/virtinterfaced.aug
+%{_datadir}/augeas/lenses/tests/test_virtinterfaced.aug
+%{_unitdir}/virtinterfaced.service
+%{_unitdir}/virtinterfaced.socket
+%{_unitdir}/virtinterfaced-ro.socket
+%{_unitdir}/virtinterfaced-admin.socket
+%attr(0755, root, root) %{_sbindir}/virtinterfaced
 %{_libdir}/%{name}/connection-driver/libvirt_driver_interface.so
 
 %files daemon-driver-network

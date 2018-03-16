@@ -1,0 +1,24 @@
+[Unit]
+Description=Virtualization interface daemon
+Conflicts=libvirtd.service
+Requires=virtinterfaced.socket
+Requires=virtinterfaced-ro.socket
+Requires=virtinterfaced-admin.socket
+After=network.target
+After=dbus.service
+After=apparmor.service
+After=local-fs.target
+Documentation=man:libvirtd(8)
+Documentation=https://libvirt.org
+
+[Service]
+Type=notify
+ExecStart=@sbindir@/virtinterfaced --timeout 120
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Also=virtinterfaced.socket
+Also=virtinterfaced-ro.socket
+Also=virtinterfaced-admin.socket

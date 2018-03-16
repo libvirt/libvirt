@@ -120,6 +120,9 @@
 /src/admin/admin_server_dispatch_stubs.h
 /src/esx/*.generated.*
 /src/hyperv/*.generated.*
+/src/interface/test_virtinterfaced.aug
+/src/interface/virtinterfaced.aug
+/src/interface/virtinterfaced.conf
 /src/libvirt*.def
 /src/libvirt.syms
 /src/libvirt_access.syms
@@ -176,6 +179,7 @@
 /src/util/virkeycodetable*.h
 /src/util/virkeynametable*.h
 /src/virt-aa-helper
+/src/virtinterfaced
 /src/virtlockd
 /src/virtlogd
 /src/virtnetworkd
