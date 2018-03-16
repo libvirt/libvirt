@@ -196,6 +196,9 @@
 /src/test*.aug
 /src/util/virkeycodetable*.h
 /src/util/virkeynametable*.h
+/src/vbox/test_virtvboxd.aug
+/src/vbox/virtvboxd.aug
+/src/vbox/virtvboxd.conf
 /src/virt-aa-helper
 /src/virtinterfaced
 /src/virtxend
@@ -209,6 +212,7 @@
 /src/virtqemud
 /src/virtsecretd
 /src/virtstoraged
+/src/virtvboxd
 /src/virt-guest-shutdown.target
 /tests/*.log
 /tests/*.pid

@@ -1802,6 +1802,14 @@ exit 0
 
 %if %{with_vbox}
 %files daemon-driver-vbox
+%config(noreplace) %{_sysconfdir}/libvirt/virtvboxd.conf
+%{_datadir}/augeas/lenses/virtvboxd.aug
+%{_datadir}/augeas/lenses/tests/test_virtvboxd.aug
+%{_unitdir}/virtvboxd.service
+%{_unitdir}/virtvboxd.socket
+%{_unitdir}/virtvboxd-ro.socket
+%{_unitdir}/virtvboxd-admin.socket
+%attr(0755, root, root) %{_sbindir}/virtvboxd
 %{_libdir}/%{name}/connection-driver/libvirt_driver_vbox.so
 %endif
 

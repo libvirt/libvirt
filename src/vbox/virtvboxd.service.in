@@ -1,0 +1,25 @@
+[Unit]
+Description=Virtualization vbox daemon
+Conflicts=libvirtd.service
+Requires=virtvboxd.socket
+Requires=virtvboxd-ro.socket
+Requires=virtvboxd-admin.socket
+After=network.target
+After=dbus.service
+After=apparmor.service
+After=local-fs.target
+After=remote-fs.target
+Documentation=man:libvirtd(8)
+Documentation=https://libvirt.org
+
+[Service]
+Type=notify
+ExecStart=@sbindir@/virtvboxd --timeout 120
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Also=virtvboxd.socket
+Also=virtvboxd-ro.socket
+Also=virtvboxd-admin.socket
