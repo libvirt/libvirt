@@ -52,7 +52,7 @@
         <dd>Get involved in the libvirt community &amp; student outreach programs</dd>
 
         <dt><a href="securityprocess.html">Security vulnerabilities</a></dt>
-        <dd>Report vulnerabilities to the libvirt security response team</dd>
+        <dd>View security notices and report vulnerabilities to the libvirt security response team</dd>
 
         <dt><a href="bugs.html">Bug reporting</a></dt>
         <dd>View and report bugs in libvirt packages</dd>
