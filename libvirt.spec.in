@@ -1653,6 +1653,14 @@ exit 0
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
 
 %files daemon-driver-nwfilter
+%config(noreplace) %{_sysconfdir}/libvirt/virtnwfilterd.conf
+%{_datadir}/augeas/lenses/virtnwfilterd.aug
+%{_datadir}/augeas/lenses/tests/test_virtnwfilterd.aug
+%{_unitdir}/virtnwfilterd.service
+%{_unitdir}/virtnwfilterd.socket
+%{_unitdir}/virtnwfilterd-ro.socket
+%{_unitdir}/virtnwfilterd-admin.socket
+%attr(0755, root, root) %{_sbindir}/virtnwfilterd
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 %ghost %dir %{_localstatedir}/run/libvirt/network/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nwfilter.so

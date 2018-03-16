@@ -163,6 +163,9 @@
 /src/node_device/test_virtnodedevd.aug
 /src/node_device/virtnodedevd.aug
 /src/node_device/virtnodedevd.conf
+/src/nwfilter/test_virtnwfilterd.aug
+/src/nwfilter/virtnwfilterd.aug
+/src/nwfilter/virtnwfilterd.conf
 /src/qemu/test_libvirtd_qemu.aug
 /src/remote/*_client_bodies.h
 /src/remote/*_protocol.[ch]
@@ -190,6 +193,7 @@
 /src/virtlogd
 /src/virtnetworkd
 /src/virtnodedevd
+/src/virtnwfilterd
 /src/virtproxyd
 /src/virtsecretd
 /src/virtstoraged
