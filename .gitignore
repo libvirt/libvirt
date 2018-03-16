@@ -217,7 +217,11 @@
 /src/virtsecretd
 /src/virtstoraged
 /src/virtvboxd
+/src/virtvzd
 /src/virt-guest-shutdown.target
+/src/vz/test_virtvzd.aug
+/src/vz/virtvzd.aug
+/src/vz/virtvzd.conf
 /tests/*.log
 /tests/*.pid
 /tests/*.trs

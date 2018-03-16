@@ -37,4 +37,67 @@ libvirt_driver_vz_impl_la_LIBADD = \
 	$(PARALLELS_SDK_LIBS) \
 	$(LIBNL_LIBS) \
 	$(NULL)
+
+sbin_PROGRAMS += virtvzd
+
+nodist_conf_DATA += vz/virtvzd.conf
+augeas_DATA += vz/virtvzd.aug
+augeastest_DATA += vz/test_virtvzd.aug
+CLEANFILES += vz/virtvzd.aug
+
+virtvzd_SOURCES = $(REMOTE_DAEMON_SOURCES)
+virtvzd_CFLAGS = \
+       $(REMOTE_DAEMON_CFLAGS) \
+       -DDAEMON_NAME="\"virtvzd\"" \
+       -DMODULE_NAME="\"vz\"" \
+       $(NULL)
+virtvzd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
+virtvzd_LDADD = $(REMOTE_DAEMON_LD_ADD)
+
+SYSTEMD_UNIT_FILES += \
+	virtvzd.service \
+	virtvzd.socket \
+	virtvzd-ro.socket \
+	virtvzd-admin.socket \
+	$(NULL)
+SYSTEMD_UNIT_FILES_IN += \
+	vz/virtvzd.service.in \
+	$(NULL)
+
+VIRTVZD_UNIT_VARS = \
+	$(VIRTD_UNIT_VARS) \
+	-e 's|[@]name[@]|Libvirt vz|g' \
+	-e 's|[@]service[@]|virtvzd|g' \
+	-e 's|[@]sockprefix[@]|virtvzd|g' \
+	$(NULL)
+
+virtvzd.service: vz/virtvzd.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTVZD_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+virtvz%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTVZD_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+vz/virtvzd.conf: remote/libvirtd.conf.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtvzd/' \
+		$< > $@
+
+vz/virtvzd.aug: remote/libvirtd.aug.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtvzd/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtvzd/' \
+		$< > $@
+
+vz/test_virtvzd.aug: remote/test_libvirtd.aug.in \
+		vz/virtvzd.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) vz/virtvzd.conf \
+		$(srcdir)/remote/test_libvirtd.aug.in | \
+		$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtvzd/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtvzd/' \
+		> $@ || rm -f $@
+
 endif WITH_VZ
