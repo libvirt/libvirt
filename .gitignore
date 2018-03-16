@@ -139,6 +139,9 @@
 /src/libvirtd
 /src/libvirtd*.logrotate
 /src/libxl/test_libvirtd_libxl.aug
+/src/libxl/test_virtxend.aug
+/src/libxl/virtxend.aug
+/src/libxl/virtxend.conf
 /src/locking/libxl-lockd.conf
 /src/locking/libxl-sanlock.conf
 /src/locking/lock_daemon_dispatch_stubs.h
@@ -189,6 +192,7 @@
 /src/util/virkeynametable*.h
 /src/virt-aa-helper
 /src/virtinterfaced
+/src/virtxend
 /src/virtlockd
 /src/virtlogd
 /src/virtnetworkd

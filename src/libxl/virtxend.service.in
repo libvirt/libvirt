@@ -1,0 +1,29 @@
+[Unit]
+Description=Virtualization xen daemon
+Conflicts=libvirtd.service
+Requires=virtxend.socket
+Requires=virtxend-ro.socket
+Requires=virtxend-admin.socket
+After=network.target
+After=dbus.service
+After=apparmor.service
+After=local-fs.target
+After=remote-fs.target
+After=xencommons.service
+Conflicts=xendomains.service
+Documentation=man:libvirtd(8)
+Documentation=https://libvirt.org
+ConditionPathExists=/proc/xen/capabilities
+
+[Service]
+Type=notify
+ExecStart=@sbindir@/virtxend --timeout 120
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+Also=virtxend.socket
+Also=virtxend-ro.socket
+Also=virtxend-admin.socket

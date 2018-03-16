@@ -65,6 +65,69 @@ libvirt_driver_libxl_impl_la_LIBADD = \
 	$(NULL)
 libvirt_driver_libxl_impl_la_SOURCES = $(LIBXL_DRIVER_SOURCES)
 
+sbin_PROGRAMS += virtxend
+
+nodist_conf_DATA += libxl/virtxend.conf
+augeas_DATA += libxl/virtxend.aug
+augeastest_DATA += libxl/test_virtxend.aug
+CLEANFILES += libxl/virtxend.aug
+
+virtxend_SOURCES = $(REMOTE_DAEMON_SOURCES)
+virtxend_CFLAGS = \
+       $(REMOTE_DAEMON_CFLAGS) \
+       -DDAEMON_NAME="\"virtxend\"" \
+       -DMODULE_NAME="\"libxl\"" \
+       $(NULL)
+virtxend_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
+virtxend_LDADD = $(REMOTE_DAEMON_LD_ADD)
+
+SYSTEMD_UNIT_FILES += \
+	virtxend.service \
+	virtxend.socket \
+	virtxend-ro.socket \
+	virtxend-admin.socket \
+	$(NULL)
+SYSTEMD_UNIT_FILES_IN += \
+	libxl/virtxend.service.in \
+	$(NULL)
+
+VIRTXEND_UNIT_VARS = \
+	$(COMMON_UNIT_VARS) \
+	-e 's|[@]deps[@]|Conflicts=$(LIBVIRTD_SOCKET_UNIT_FILES)\nConditionPathExists=/proc/xen/capabilities|g' \
+	-e 's|[@]name[@]|Libvirt libxl|g' \
+	-e 's|[@]service[@]|virtxend|g' \
+	-e 's|[@]sockprefix[@]|virtxend|g' \
+	$(NULL)
+
+virtxend.service: libxl/virtxend.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTXEND_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+virtxen%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTXEND_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+libxl/virtxend.conf: remote/libvirtd.conf.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtxend/' \
+		$< > $@
+
+libxl/virtxend.aug: remote/libvirtd.aug.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtxend/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtxend/' \
+		$< > $@
+
+libxl/test_virtxend.aug: remote/test_libvirtd.aug.in \
+		libxl/virtxend.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) libxl/virtxend.conf \
+		$(srcdir)/remote/test_libvirtd.aug.in | \
+		$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtxend/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtxend/' \
+		> $@ || rm -f $@
+
 conf_DATA += libxl/libxl.conf
 augeas_DATA += libxl/libvirtd_libxl.aug
 augeastest_DATA += libxl/test_libvirtd_libxl.aug

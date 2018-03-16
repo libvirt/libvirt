@@ -1765,6 +1765,14 @@ exit 0
 
 %if %{with_libxl}
 %files daemon-driver-libxl
+%config(noreplace) %{_sysconfdir}/libvirt/virtxend.conf
+%{_datadir}/augeas/lenses/virtxend.aug
+%{_datadir}/augeas/lenses/tests/test_virtxend.aug
+%{_unitdir}/virtxend.service
+%{_unitdir}/virtxend.socket
+%{_unitdir}/virtxend-ro.socket
+%{_unitdir}/virtxend-admin.socket
+%attr(0755, root, root) %{_sbindir}/virtxend
 %config(noreplace) %{_sysconfdir}/libvirt/libxl.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.libxl
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-lockd.conf
