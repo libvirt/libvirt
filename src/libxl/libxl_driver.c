@@ -2794,6 +2794,7 @@ libxlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
                                    &oldDef)))
         goto cleanup;
 
+    virObjectRef(vm);
     def = NULL;
     vm->persistent = 1;
 
@@ -2801,7 +2802,7 @@ libxlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
                             cfg->caps,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+        virObjectLock(vm);
         goto cleanup;
     }
 
@@ -2815,8 +2816,7 @@ libxlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
  cleanup:
     virDomainDefFree(def);
     virDomainDefFree(oldDef);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         libxlDomainEventQueue(driver, event);
     virObjectUnref(cfg);
