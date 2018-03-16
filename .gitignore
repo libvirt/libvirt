@@ -175,6 +175,9 @@
 /src/secret/test_virtsecretd.aug
 /src/secret/virtsecretd.aug
 /src/secret/virtsecretd.conf
+/src/storage/test_virtstoraged.aug
+/src/storage/virtstoraged.aug
+/src/storage/virtstoraged.conf
 /src/test*.aug
 /src/util/virkeycodetable*.h
 /src/util/virkeynametable*.h
@@ -185,6 +188,7 @@
 /src/virtnetworkd
 /src/virtproxyd
 /src/virtsecretd
+/src/virtstoraged
 /src/virt-guest-shutdown.target
 /tests/*.log
 /tests/*.pid

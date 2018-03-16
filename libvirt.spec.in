@@ -1663,6 +1663,14 @@ exit 0
 %files daemon-driver-storage
 
 %files daemon-driver-storage-core
+%config(noreplace) %{_sysconfdir}/libvirt/virtstoraged.conf
+%{_datadir}/augeas/lenses/virtstoraged.aug
+%{_datadir}/augeas/lenses/tests/test_virtstoraged.aug
+%{_unitdir}/virtstoraged.service
+%{_unitdir}/virtstoraged.socket
+%{_unitdir}/virtstoraged-ro.socket
+%{_unitdir}/virtstoraged-admin.socket
+%attr(0755, root, root) %{_sbindir}/virtstoraged
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
 %{_libdir}/%{name}/connection-driver/libvirt_driver_storage.so
 %{_libdir}/%{name}/storage-backend/libvirt_storage_backend_fs.so

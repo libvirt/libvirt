@@ -142,6 +142,68 @@ mod_LTLIBRARIES += libvirt_driver_storage.la
 libvirt_driver_storage_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
 libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
 
+sbin_PROGRAMS += virtstoraged
+
+nodist_conf_DATA += storage/virtstoraged.conf
+augeas_DATA += storage/virtstoraged.aug
+augeastest_DATA += storage/test_virtstoraged.aug
+CLEANFILES += storage/virtstoraged.aug
+
+virtstoraged_SOURCES = $(REMOTE_DAEMON_SOURCES)
+virtstoraged_CFLAGS = \
+       $(REMOTE_DAEMON_CFLAGS) \
+       -DDAEMON_NAME="\"virtstoraged\"" \
+       -DMODULE_NAME="\"storage\"" \
+       $(NULL)
+virtstoraged_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
+virtstoraged_LDADD = $(REMOTE_DAEMON_LD_ADD)
+
+SYSTEMD_UNIT_FILES += \
+	virtstoraged.service \
+	virtstoraged.socket \
+	virtstoraged-ro.socket \
+	virtstoraged-admin.socket \
+	$(NULL)
+SYSTEMD_UNIT_FILES_IN += \
+	storage/virtstoraged.service.in \
+	$(NULL)
+
+VIRTSTORAGED_UNIT_VARS = \
+	$(VIRTD_UNIT_VARS) \
+	-e 's|[@]name[@]|Libvirt storage|g' \
+	-e 's|[@]service[@]|virtstoraged|g' \
+	-e 's|[@]sockprefix[@]|virtstoraged|g' \
+	$(NULL)
+
+virtstoraged.service: storage/virtstoraged.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTSTORAGED_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+virtstorage%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTSTORAGED_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+storage/virtstoraged.conf: remote/libvirtd.conf.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtstoraged/' \
+		$< > $@
+
+storage/virtstoraged.aug: remote/libvirtd.aug.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtstoraged/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtstoraged/' \
+		$< > $@
+
+storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
+		storage/virtstoraged.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) storage/virtstoraged.conf \
+		$(srcdir)/remote/test_libvirtd.aug.in | \
+		$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtstoraged/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtstoraged/' \
+		> $@ || rm -f $@
+
 
 libvirt_storage_backend_fs_la_SOURCES = $(STORAGE_DRIVER_FS_SOURCES)
 libvirt_storage_backend_fs_la_CFLAGS = \
