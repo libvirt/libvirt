@@ -170,6 +170,9 @@
 /src/nwfilter/virtnwfilterd.aug
 /src/nwfilter/virtnwfilterd.conf
 /src/qemu/test_libvirtd_qemu.aug
+/src/qemu/test_virtqemud.aug
+/src/qemu/virtqemud.aug
+/src/qemu/virtqemud.conf
 /src/remote/*_client_bodies.h
 /src/remote/*_protocol.[ch]
 /src/remote/*_stubs.h
@@ -199,6 +202,7 @@
 /src/virtnodedevd
 /src/virtnwfilterd
 /src/virtproxyd
+/src/virtqemud
 /src/virtsecretd
 /src/virtstoraged
 /src/virt-guest-shutdown.target

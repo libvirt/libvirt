@@ -1735,6 +1735,14 @@ exit 0
 
 %if %{with_qemu}
 %files daemon-driver-qemu
+%config(noreplace) %{_sysconfdir}/libvirt/virtqemud.conf
+%{_datadir}/augeas/lenses/virtqemud.aug
+%{_datadir}/augeas/lenses/tests/test_virtqemud.aug
+%{_unitdir}/virtqemud.service
+%{_unitdir}/virtqemud.socket
+%{_unitdir}/virtqemud-ro.socket
+%{_unitdir}/virtqemud-admin.socket
+%attr(0755, root, root) %{_sbindir}/virtqemud
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf

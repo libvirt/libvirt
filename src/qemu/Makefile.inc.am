@@ -112,6 +112,68 @@ CLEANFILES += \
 
 endif WITH_DTRACE_PROBES
 
+sbin_PROGRAMS += virtqemud
+
+nodist_conf_DATA += qemu/virtqemud.conf
+augeas_DATA += qemu/virtqemud.aug
+augeastest_DATA += qemu/test_virtqemud.aug
+CLEANFILES += qemu/virtqemud.aug
+
+virtqemud_SOURCES = $(REMOTE_DAEMON_SOURCES)
+virtqemud_CFLAGS = \
+       $(REMOTE_DAEMON_CFLAGS) \
+       -DDAEMON_NAME="\"virtqemud\"" \
+       -DMODULE_NAME="\"qemu\"" \
+       $(NULL)
+virtqemud_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
+virtqemud_LDADD = $(REMOTE_DAEMON_LD_ADD)
+
+SYSTEMD_UNIT_FILES += \
+	virtqemud.service \
+	virtqemud.socket \
+	virtqemud-ro.socket \
+	virtqemud-admin.socket \
+	$(NULL)
+SYSTEMD_UNIT_FILES_IN += \
+	qemu/virtqemud.service.in \
+	$(NULL)
+
+VIRTQEMUD_UNIT_VARS = \
+	$(VIRTD_UNIT_VARS) \
+	-e 's|[@]name[@]|Libvirt qemu|g' \
+	-e 's|[@]service[@]|virtqemud|g' \
+	-e 's|[@]sockprefix[@]|virtqemud|g' \
+	$(NULL)
+
+virtqemud.service: qemu/virtqemud.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTQEMUD_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+virtqemu%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTQEMUD_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+qemu/virtqemud.conf: remote/libvirtd.conf.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtqemud/' \
+		$< > $@
+
+qemu/virtqemud.aug: remote/libvirtd.aug.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtqemud/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtqemud/' \
+		$< > $@
+
+qemu/test_virtqemud.aug: remote/test_libvirtd.aug.in \
+		qemu/virtqemud.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) qemu/virtqemud.conf \
+		$(srcdir)/remote/test_libvirtd.aug.in | \
+		$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtqemud/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtqemud/' \
+		> $@ || rm -f $@
+
 conf_DATA += qemu/qemu.conf
 
 augeas_DATA += qemu/libvirtd_qemu.aug
