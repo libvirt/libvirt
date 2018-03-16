@@ -315,7 +315,7 @@ virDomainDiskDefCheckDuplicateInfo;
 virDomainDiskDefForeachPath;
 virDomainDiskDefFree;
 virDomainDiskDefNew;
-virDomainDiskDefSourceParse;
+virDomainDiskDefParse;
 virDomainDiskDetectZeroesTypeFromString;
 virDomainDiskDetectZeroesTypeToString;
 virDomainDiskDeviceTypeToString;

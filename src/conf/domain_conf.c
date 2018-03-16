@@ -15864,44 +15864,35 @@ virDomainDeviceDefParse(const char *xmlStr,
 }
 
 
-virStorageSourcePtr
-virDomainDiskDefSourceParse(const char *xmlStr,
-                            const virDomainDef *def,
-                            virDomainXMLOptionPtr xmlopt,
-                            unsigned int flags)
+virDomainDiskDefPtr
+virDomainDiskDefParse(const char *xmlStr,
+                      const virDomainDef *def,
+                      virDomainXMLOptionPtr xmlopt,
+                      unsigned int flags)
 {
     xmlDocPtr xml;
-    xmlNodePtr node;
     xmlXPathContextPtr ctxt = NULL;
     virDomainDiskDefPtr disk = NULL;
-    virStorageSourcePtr ret = NULL;
 
     if (!(xml = virXMLParseStringCtxt(xmlStr, _("(disk_definition)"), &ctxt)))
         goto cleanup;
-    node = ctxt->node;
 
-    if (!virXMLNodeNameEqual(node, "disk")) {
+    if (!virXMLNodeNameEqual(ctxt->node, "disk")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("expecting root element of 'disk', not '%s'"),
-                       node->name);
+                       ctxt->node->name);
         goto cleanup;
     }
 
-    flags |= VIR_DOMAIN_DEF_PARSE_DISK_SOURCE;
-    if (!(disk = virDomainDiskDefParseXML(xmlopt, node, ctxt,
-                                          NULL, def->seclabels,
-                                          def->nseclabels,
-                                          flags)))
-        goto cleanup;
-
-    ret = disk->src;
-    disk->src = NULL;
+    disk = virDomainDiskDefParseXML(xmlopt, ctxt->node, ctxt,
+                                    NULL, def->seclabels,
+                                    def->nseclabels,
+                                    flags);
 
  cleanup:
-    virDomainDiskDefFree(disk);
     xmlFreeDoc(xml);
     xmlXPathFreeContext(ctxt);
-    return ret;
+    return disk;
 }
 
 
