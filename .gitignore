@@ -118,6 +118,9 @@
 /src/admin/admin_client.h
 /src/admin/admin_protocol.[ch]
 /src/admin/admin_server_dispatch_stubs.h
+/src/bhyve/test_virtbhyved.aug
+/src/bhyve/virtbhyved.aug
+/src/bhyve/virtbhyved.conf
 /src/esx/*.generated.*
 /src/hyperv/*.generated.*
 /src/interface/test_virtinterfaced.aug
@@ -200,6 +203,7 @@
 /src/vbox/virtvboxd.aug
 /src/vbox/virtvboxd.conf
 /src/virt-aa-helper
+/src/virtbhyved
 /src/virtinterfaced
 /src/virtxend
 /src/virtlockd
