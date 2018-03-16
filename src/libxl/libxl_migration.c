@@ -804,9 +804,10 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     }
     VIR_FREE(socks);
     virObjectUnref(args);
-    virPortAllocatorRelease(priv->migrationPort);
-    priv->migrationPort = 0;
-
+    if (priv) {
+        virPortAllocatorRelease(priv->migrationPort);
+        priv->migrationPort = 0;
+    }
     /* Remove virDomainObj from domain list */
     if (vm) {
         virDomainObjListRemove(driver->domains, vm);
