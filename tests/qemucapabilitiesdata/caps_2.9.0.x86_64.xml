@@ -195,6 +195,7 @@
   <flag name='sdl-gl'/>
   <flag name='hda-output'/>
   <flag name='blockdev-del'/>
+  <flag name='vmgenid'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>320947</microcodeVersion>

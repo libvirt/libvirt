@@ -489,6 +489,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "screendump_device",
               "hda-output",
               "blockdev-del",
+              "vmgenid",
     );
 
 
@@ -1121,6 +1122,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtual-css-bridge", QEMU_CAPS_CCW },
     { "vfio-ccw", QEMU_CAPS_DEVICE_VFIO_CCW },
     { "hda-output", QEMU_CAPS_HDA_OUTPUT },
+    { "vmgenid", QEMU_CAPS_DEVICE_VMGENID },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {

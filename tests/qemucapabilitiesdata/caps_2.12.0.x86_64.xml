@@ -204,6 +204,7 @@
   <flag name='screendump_device'/>
   <flag name='hda-output'/>
   <flag name='blockdev-del'/>
+  <flag name='vmgenid'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>390813</microcodeVersion>
