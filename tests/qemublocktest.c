@@ -117,15 +117,16 @@ static int
 mymain(void)
 {
     int ret = 0;
-    struct testBackingXMLjsonXMLdata data;
+    struct testBackingXMLjsonXMLdata xmljsonxmldata;
 
     virTestCounterReset("qemu storage source xml->json->xml ");
 
 #define TEST_JSON_FORMAT(tpe, xmlstr) \
     do { \
-        data.type = tpe; \
-        data.xml = xmlstr; \
-        if (virTestRun(virTestCounterNext(), testBackingXMLjsonXML, &data) < 0) \
+        xmljsonxmldata.type = tpe; \
+        xmljsonxmldata.xml = xmlstr; \
+        if (virTestRun(virTestCounterNext(), testBackingXMLjsonXML, \
+                       &xmljsonxmldata) < 0) \
             ret = -1; \
     } while (0)
 
