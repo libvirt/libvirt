@@ -5584,6 +5584,13 @@ virDomainDeviceDefValidateAliasesIterator(virDomainDefPtr def,
         virDomainChrEquals(def->serials[0], dev->data.chr))
         return 0;
 
+    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
+        dev->data.hostdev->parent.type == VIR_DOMAIN_DEVICE_NET) {
+        /* This hostdev is a copy of some previous interface.
+         * Aliases are duplicated. */
+        return 0;
+    }
+
     if (virHashLookup(data->aliases, alias)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("non unique alias detected: %s"),
