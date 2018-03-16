@@ -1207,6 +1207,17 @@ virNetlinkDelLink(const char *ifname ATTRIBUTE_UNUSED,
     return -1;
 }
 
+
+int
+virNetlinkGetNeighbor(void **nlData ATTRIBUTE_UNUSED,
+                      uint32_t src_pid ATTRIBUTE_UNUSED,
+                      uint32_t dst_pid ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return -1;
+}
+
+
 /**
  * stopNetlinkEventServer: stop the monitor to receive netlink
  * messages for libvirtd
