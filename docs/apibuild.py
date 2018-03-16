@@ -2326,10 +2326,10 @@ class docBuilder:
             for data in ('Summary', 'Description', 'Author'):
                 try:
                     output.write("     <%s>%s</%s>\n" % (
-                                 string.lower(data),
+                                 data.lower(),
                                  escape(dict.info[data]),
-                                 string.lower(data)))
-                except:
+                                 data.lower()))
+                except KeyError:
                     self.warning("Header %s lacks a %s description" % (module, data))
             if 'Description' in dict.info:
                 desc = dict.info['Description']
