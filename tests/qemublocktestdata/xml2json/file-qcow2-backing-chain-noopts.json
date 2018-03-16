@@ -1,0 +1,130 @@
+{
+  "node-name": "#block126",
+  "read-only": false,
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1507297895",
+    "node-name": "#block004",
+    "read-only": false,
+    "discard": "unmap"
+  },
+  "backing": "#block313"
+}
+{
+  "node-name": "#block313",
+  "read-only": true,
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1484071872",
+    "node-name": "#block256",
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": "#block556"
+}
+{
+  "node-name": "#block556",
+  "read-only": true,
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483615252",
+    "node-name": "#block418",
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": "#block767"
+}
+{
+  "node-name": "#block767",
+  "read-only": true,
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483605924",
+    "node-name": "#block624",
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": "#block937"
+}
+{
+  "node-name": "#block937",
+  "read-only": true,
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483605920",
+    "node-name": "#block869",
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": "#block1157"
+}
+{
+  "node-name": "#block1157",
+  "read-only": true,
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483546244",
+    "node-name": "#block1047",
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": "#block1392"
+}
+{
+  "node-name": "#block1392",
+  "read-only": true,
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483545901",
+    "node-name": "#block1279",
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": "#block1523"
+}
+{
+  "node-name": "#block1523",
+  "read-only": true,
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483545313",
+    "node-name": "#block1444",
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": "#block1742"
+}
+{
+  "node-name": "#block1742",
+  "read-only": true,
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.1483536402",
+    "node-name": "#block1602",
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": "#block1909"
+}
+{
+  "node-name": "#block1909",
+  "read-only": true,
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/rhel7.3.qcow2",
+    "node-name": "#block1864",
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": null
+}

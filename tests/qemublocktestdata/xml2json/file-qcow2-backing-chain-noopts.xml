@@ -1,0 +1,113 @@
+<disk type='file' device='disk'>
+  <driver name='qemu' type='qcow2'/>
+  <source file='/var/lib/libvirt/images/rhel7.3.1507297895'>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='#block004'/>
+        <nodename type='format' name='#block126'/>
+      </nodenames>
+    </privateData>
+  </source>
+  <backingStore type='file' index='1'>
+    <format type='qcow2'/>
+    <source file='/var/lib/libvirt/images/rhel7.3.1484071872'>
+      <privateData>
+        <nodenames>
+          <nodename type='storage' name='#block256'/>
+          <nodename type='format' name='#block313'/>
+        </nodenames>
+      </privateData>
+    </source>
+    <backingStore type='file' index='2'>
+      <format type='qcow2'/>
+      <source file='/var/lib/libvirt/images/rhel7.3.1483615252'>
+        <privateData>
+          <nodenames>
+            <nodename type='storage' name='#block418'/>
+            <nodename type='format' name='#block556'/>
+          </nodenames>
+        </privateData>
+      </source>
+      <backingStore type='file' index='3'>
+        <format type='qcow2'/>
+        <source file='/var/lib/libvirt/images/rhel7.3.1483605924'>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='#block624'/>
+              <nodename type='format' name='#block767'/>
+            </nodenames>
+          </privateData>
+        </source>
+        <backingStore type='file' index='4'>
+          <format type='qcow2'/>
+          <source file='/var/lib/libvirt/images/rhel7.3.1483605920'>
+            <privateData>
+              <nodenames>
+                <nodename type='storage' name='#block869'/>
+                <nodename type='format' name='#block937'/>
+              </nodenames>
+            </privateData>
+          </source>
+          <backingStore type='file' index='5'>
+            <format type='qcow2'/>
+            <source file='/var/lib/libvirt/images/rhel7.3.1483546244'>
+              <privateData>
+                <nodenames>
+                  <nodename type='storage' name='#block1047'/>
+                  <nodename type='format' name='#block1157'/>
+                </nodenames>
+              </privateData>
+            </source>
+            <backingStore type='file' index='6'>
+              <format type='qcow2'/>
+              <source file='/var/lib/libvirt/images/rhel7.3.1483545901'>
+                <privateData>
+                  <nodenames>
+                    <nodename type='storage' name='#block1279'/>
+                    <nodename type='format' name='#block1392'/>
+                  </nodenames>
+                </privateData>
+              </source>
+              <backingStore type='file' index='7'>
+                <format type='qcow2'/>
+                <source file='/var/lib/libvirt/images/rhel7.3.1483545313'>
+                  <privateData>
+                    <nodenames>
+                      <nodename type='storage' name='#block1444'/>
+                      <nodename type='format' name='#block1523'/>
+                    </nodenames>
+                  </privateData>
+                </source>
+                <backingStore type='file' index='8'>
+                  <format type='qcow2'/>
+                  <source file='/var/lib/libvirt/images/rhel7.3.1483536402'>
+                    <privateData>
+                      <nodenames>
+                        <nodename type='storage' name='#block1602'/>
+                        <nodename type='format' name='#block1742'/>
+                      </nodenames>
+                    </privateData>
+                  </source>
+                  <backingStore type='file' index='9'>
+                    <format type='qcow2'/>
+                    <source file='/var/lib/libvirt/images/rhel7.3.qcow2'>
+                      <privateData>
+                        <nodenames>
+                          <nodename type='storage' name='#block1864'/>
+                          <nodename type='format' name='#block1909'/>
+                        </nodenames>
+                      </privateData>
+                    </source>
+                    <backingStore/>
+                  </backingStore>
+                </backingStore>
+              </backingStore>
+            </backingStore>
+          </backingStore>
+        </backingStore>
+      </backingStore>
+    </backingStore>
+  </backingStore>
+  <target dev='vda' bus='virtio'/>
+  <alias name='virtio-disk0'/>
+</disk>

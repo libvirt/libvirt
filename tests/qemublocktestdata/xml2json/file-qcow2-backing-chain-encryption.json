@@ -1,0 +1,34 @@
+{
+  "node-name": "node-b-f",
+  "read-only": false,
+  "driver": "qcow2",
+  "encrypt": {
+    "format": "luks",
+    "key-secret": "node-b-f-encalias"
+  },
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/a",
+    "node-name": "node-a-s",
+    "read-only": false,
+    "discard": "unmap"
+  },
+  "backing": "node-b-f"
+}
+{
+  "node-name": "node-b-f",
+  "read-only": true,
+  "driver": "qcow2",
+  "encrypt": {
+    "format": "aes",
+    "key-secret": "node-b-f-encalias"
+  },
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/b",
+    "node-name": "node-b-s",
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": null
+}
