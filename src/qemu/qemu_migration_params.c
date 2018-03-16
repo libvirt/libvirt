@@ -115,6 +115,13 @@ struct _qemuMigrationParamsFlagMapItem {
     int party; /* bit-wise OR of qemuMigrationParty */
 };
 
+typedef struct _qemuMigrationParamsTPMapItem qemuMigrationParamsTPMapItem;
+struct _qemuMigrationParamsTPMapItem {
+    const char *typedParam;
+    qemuMigrationParam param;
+    int party; /* bit-wise OR of qemuMigrationParty */
+};
+
 /* Migration capabilities which should always be enabled as long as they
  * are supported by QEMU. If the capability is supposed to be enabled on both
  * sides of migration, it won't be enabled unless both sides support it.
@@ -136,6 +143,34 @@ static const qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMap[] = {
 
     {VIR_MIGRATE_POSTCOPY,
      QEMU_MIGRATION_CAP_POSTCOPY,
+     QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
+};
+
+/* Translation from VIR_MIGRATE_PARAM_* typed parameters to
+ * qemuMigrationParams. */
+static const qemuMigrationParamsTPMapItem qemuMigrationParamsTPMap[] = {
+    {VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL,
+     QEMU_MIGRATION_PARAM_THROTTLE_INITIAL,
+     QEMU_MIGRATION_SOURCE},
+
+    {VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT,
+     QEMU_MIGRATION_PARAM_THROTTLE_INCREMENT,
+     QEMU_MIGRATION_SOURCE},
+
+    {VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL,
+     QEMU_MIGRATION_PARAM_COMPRESS_LEVEL,
+     QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
+
+    {VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS,
+     QEMU_MIGRATION_PARAM_COMPRESS_THREADS,
+     QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
+
+    {VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS,
+     QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS,
+     QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
+
+    {VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE,
+     QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE,
      QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 };
 
@@ -361,30 +396,6 @@ qemuMigrationParamsSetCompression(virTypedParameterPtr params,
         ignore_value(virBitmapSetBit(migParams->caps, cap));
     }
 
-    if (qemuMigrationParamsGetTPInt(migParams,
-                                    QEMU_MIGRATION_PARAM_COMPRESS_LEVEL,
-                                    params, nparams,
-                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL) < 0)
-        goto error;
-
-    if (qemuMigrationParamsGetTPInt(migParams,
-                                    QEMU_MIGRATION_PARAM_COMPRESS_THREADS,
-                                    params, nparams,
-                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS) < 0)
-        goto error;
-
-    if (qemuMigrationParamsGetTPInt(migParams,
-                                    QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS,
-                                    params, nparams,
-                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS) < 0)
-        goto error;
-
-    if (qemuMigrationParamsGetTPULL(migParams,
-                                    QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE,
-                                    params, nparams,
-                                    VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE) < 0)
-        goto error;
-
     if ((migParams->params[QEMU_MIGRATION_PARAM_COMPRESS_LEVEL].set ||
          migParams->params[QEMU_MIGRATION_PARAM_COMPRESS_THREADS].set ||
          migParams->params[QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS].set) &&
@@ -437,18 +448,32 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
         }
     }
 
-    if (party == QEMU_MIGRATION_SOURCE) {
-        if (qemuMigrationParamsGetTPInt(migParams,
-                                        QEMU_MIGRATION_PARAM_THROTTLE_INITIAL,
-                                        params, nparams,
-                                        VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL) < 0)
-            goto error;
+    for (i = 0; i < ARRAY_CARDINALITY(qemuMigrationParamsTPMap); i++) {
+        const qemuMigrationParamsTPMapItem *item = &qemuMigrationParamsTPMap[i];
 
-        if (qemuMigrationParamsGetTPInt(migParams,
-                                        QEMU_MIGRATION_PARAM_THROTTLE_INCREMENT,
-                                        params, nparams,
-                                        VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT) < 0)
-            goto error;
+        if (!(item->party & party))
+            continue;
+
+        VIR_DEBUG("Setting migration parameter '%s' from '%s'",
+                  qemuMigrationParamTypeToString(item->param), item->typedParam);
+
+        switch (qemuMigrationParamTypes[item->param]) {
+        case QEMU_MIGRATION_PARAM_TYPE_INT:
+            if (qemuMigrationParamsGetTPInt(migParams, item->param, params,
+                                            nparams, item->typedParam) < 0)
+                goto error;
+            break;
+
+        case QEMU_MIGRATION_PARAM_TYPE_ULL:
+            if (qemuMigrationParamsGetTPULL(migParams, item->param, params,
+                                            nparams, item->typedParam) < 0)
+                goto error;
+            break;
+
+        case QEMU_MIGRATION_PARAM_TYPE_BOOL:
+        case QEMU_MIGRATION_PARAM_TYPE_STRING:
+            break;
+        }
     }
 
     if ((migParams->params[QEMU_MIGRATION_PARAM_THROTTLE_INITIAL].set ||
@@ -493,29 +518,32 @@ qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
             return -1;
     }
 
-    if (qemuMigrationParamsSetTPInt(migParams,
-                                    QEMU_MIGRATION_PARAM_COMPRESS_LEVEL,
-                                    params, nparams, maxparams,
-                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL) < 0)
-        return -1;
+    for (i = 0; i < ARRAY_CARDINALITY(qemuMigrationParamsTPMap); i++) {
+        const qemuMigrationParamsTPMapItem *item = &qemuMigrationParamsTPMap[i];
 
-    if (qemuMigrationParamsSetTPInt(migParams,
-                                    QEMU_MIGRATION_PARAM_COMPRESS_THREADS,
-                                    params, nparams, maxparams,
-                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS) < 0)
-        return -1;
+        if (!(item->party & QEMU_MIGRATION_DESTINATION))
+            continue;
 
-    if (qemuMigrationParamsSetTPInt(migParams,
-                                    QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS,
-                                    params, nparams, maxparams,
-                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS) < 0)
-        return -1;
+        switch (qemuMigrationParamTypes[item->param]) {
+        case QEMU_MIGRATION_PARAM_TYPE_INT:
+            if (qemuMigrationParamsSetTPInt(migParams, item->param,
+                                            params, nparams, maxparams,
+                                            item->typedParam) < 0)
+                return -1;
+            break;
 
-    if (qemuMigrationParamsSetTPULL(migParams,
-                                    QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE,
-                                    params, nparams, maxparams,
-                                    VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE) < 0)
-        return -1;
+        case QEMU_MIGRATION_PARAM_TYPE_ULL:
+            if (qemuMigrationParamsSetTPULL(migParams, item->param,
+                                            params, nparams, maxparams,
+                                            item->typedParam) < 0)
+                return -1;
+            break;
+
+        case QEMU_MIGRATION_PARAM_TYPE_BOOL:
+        case QEMU_MIGRATION_PARAM_TYPE_STRING:
+            break;
+        }
+    }
 
     return 0;
 }
