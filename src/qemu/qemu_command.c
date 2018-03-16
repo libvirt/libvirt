@@ -2545,8 +2545,34 @@ qemuControllerModelUSBToCaps(int model)
 }
 
 
+static const char *
+qemuBuildUSBControllerFindMasterAlias(const virDomainDef *domainDef,
+                                      const virDomainControllerDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < domainDef->ncontrollers; i++) {
+        const virDomainControllerDef *tmp = domainDef->controllers[i];
+
+        if (tmp->type != VIR_DOMAIN_CONTROLLER_TYPE_USB)
+            continue;
+
+        if (tmp->idx != def->idx)
+            continue;
+
+        if (tmp->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB)
+            continue;
+
+        return tmp->info.alias;
+    }
+
+    return NULL;
+}
+
+
 static int
-qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
+qemuBuildUSBControllerDevStr(const virDomainDef *domainDef,
+                             virDomainControllerDefPtr def,
                              virQEMUCapsPtr qemuCaps,
                              virBuffer *buf)
 {
@@ -2586,11 +2612,19 @@ qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
                           def->opts.usbopts.ports, def->opts.usbopts.ports);
     }
 
-    if (def->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB)
+    if (def->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB) {
+        const char *masterbus;
+
+        if (!(masterbus = qemuBuildUSBControllerFindMasterAlias(domainDef, def))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("masterbus not found"));
+            return -1;
+        }
         virBufferAsprintf(buf, ",masterbus=%s.0,firstport=%d",
-                          def->info.alias, def->info.master.usb.startport);
-    else
+                          masterbus, def->info.master.usb.startport);
+    } else {
         virBufferAsprintf(buf, ",id=%s", def->info.alias);
+    }
 
     return 0;
 }
@@ -2722,7 +2756,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
-        if (qemuBuildUSBControllerDevStr(def, qemuCaps, &buf) == -1)
+        if (qemuBuildUSBControllerDevStr(domainDef, def, qemuCaps, &buf) == -1)
             goto error;
 
         if (nusbcontroller)
