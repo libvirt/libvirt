@@ -150,12 +150,21 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
 {
     virMediatedDevicePtr ret = NULL;
     virMediatedDevicePtr dev = NULL;
+    char *sysfspath = NULL;
+
+    if (!(sysfspath = virMediatedDeviceGetSysfsPath(uuidstr)))
+        goto cleanup;
+
+    if (!virFileExists(sysfspath)) {
+        virReportError(VIR_ERR_DEVICE_MISSING,
+                       _("mediated device '%s' not found"), uuidstr);
+        goto cleanup;
+    }
 
     if (VIR_ALLOC(dev) < 0)
-        return NULL;
-
-    if (!(dev->path = virMediatedDeviceGetSysfsPath(uuidstr)))
         goto cleanup;
+
+    VIR_STEAL_PTR(dev->path, sysfspath);
 
     /* Check whether the user-provided model corresponds with the actually
      * supported mediated device's API.
@@ -167,6 +176,7 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
     VIR_STEAL_PTR(ret, dev);
 
  cleanup:
+    VIR_FREE(sysfspath);
     virMediatedDeviceFree(dev);
     return ret;
 }
