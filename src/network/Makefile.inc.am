@@ -49,6 +49,68 @@ libvirt_driver_network_impl_la_CFLAGS = \
 libvirt_driver_network_impl_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
 libvirt_driver_network_impl_la_LIBADD  = $(DBUS_LIBS) $(LIBXML_LIBS)
 
+sbin_PROGRAMS += virtnetworkd
+
+nodist_conf_DATA += network/virtnetworkd.conf
+augeas_DATA += network/virtnetworkd.aug
+augeastest_DATA += network/test_virtnetworkd.aug
+CLEANFILES += network/virtnetworkd.aug
+
+virtnetworkd_SOURCES = $(REMOTE_DAEMON_SOURCES)
+virtnetworkd_CFLAGS = \
+       $(REMOTE_DAEMON_CFLAGS) \
+       -DDAEMON_NAME="\"virtnetworkd\"" \
+       -DMODULE_NAME="\"network\"" \
+       $(NULL)
+virtnetworkd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
+virtnetworkd_LDADD = $(REMOTE_DAEMON_LD_ADD)
+
+SYSTEMD_UNIT_FILES += \
+	virtnetworkd.service \
+	virtnetworkd.socket \
+	virtnetworkd-ro.socket \
+	virtnetworkd-admin.socket \
+	$(NULL)
+SYSTEMD_UNIT_FILES_IN += \
+	network/virtnetworkd.service.in \
+	$(NULL)
+
+VIRTNETWORKD_UNIT_VARS = \
+	$(VIRTD_UNIT_VARS) \
+	-e 's|[@]name[@]|Libvirt network|g' \
+	-e 's|[@]service[@]|virtnetworkd|g' \
+	-e 's|[@]sockprefix[@]|virtnetworkd|g' \
+	$(NULL)
+
+virtnetworkd.service: network/virtnetworkd.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTNETWORKD_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+virtnetwork%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTNETWORKD_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+network/virtnetworkd.conf: remote/libvirtd.conf.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtnetworkd/' \
+		$< > $@
+
+network/virtnetworkd.aug: remote/libvirtd.aug.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtnetworkd/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtnetworkd/' \
+		$< > $@
+
+network/test_virtnetworkd.aug: remote/test_libvirtd.aug.in \
+		network/virtnetworkd.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) network/virtnetworkd.conf \
+		$(srcdir)/remote/test_libvirtd.aug.in | \
+		$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/,/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtnetworkd/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtnetworkd/' \
+		> $@ || rm -f $@
+
 libexec_PROGRAMS += libvirt_leaseshelper
 libvirt_leaseshelper_SOURCES = $(NETWORK_LEASES_HELPER_SOURCES)
 libvirt_leaseshelper_LDFLAGS = \

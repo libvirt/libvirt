@@ -1,0 +1,25 @@
+[Unit]
+Description=Virtualization network daemon
+Conflicts=libvirtd.service
+Requires=virtnetworkd.socket
+Requires=virtnetworkd-ro.socket
+Requires=virtnetworkd-admin.socket
+After=network.target
+After=dbus.service
+After=apparmor.service
+After=local-fs.target
+Documentation=man:libvirtd(8)
+Documentation=https://libvirt.org
+
+[Service]
+Type=notify
+ExecStart=@sbindir@/virtnetworkd --timeout 120
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+Also=virtnetworkd.socket
+Also=virtnetworkd-ro.socket
+Also=virtnetworkd-admin.socket

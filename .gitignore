@@ -154,6 +154,9 @@
 /src/lxc/lxc_monitor_protocol.h
 /src/lxc/lxc_protocol.[ch]
 /src/lxc/test_libvirtd_lxc.aug
+/src/network/test_virtnetworkd.aug
+/src/network/virtnetworkd.aug
+/src/network/virtnetworkd.conf
 /src/qemu/test_libvirtd_qemu.aug
 /src/remote/*_client_bodies.h
 /src/remote/*_protocol.[ch]
@@ -175,6 +178,7 @@
 /src/virt-aa-helper
 /src/virtlockd
 /src/virtlogd
+/src/virtnetworkd
 /src/virtproxyd
 /src/virtsecretd
 /src/virt-guest-shutdown.target
