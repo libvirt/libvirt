@@ -299,7 +299,7 @@ libxlDoMigrateReceive(void *opaque)
  cleanup:
     if (remove_dom) {
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
+        virObjectLock(vm);
     }
     virDomainObjEndAPI(&vm);
 }
@@ -1336,8 +1336,11 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
                              VIR_DOMAIN_SHUTOFF_FAILED);
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
-        if (!vm->persistent)
+        if (!vm->persistent) {
             virDomainObjListRemove(driver->domains, vm);
+            /* Caller passed a locked vm and expects the same on return */
+            virObjectLock(vm);
+        }
     }
 
     if (event)
