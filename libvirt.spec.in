@@ -1642,6 +1642,14 @@ exit 0
 %endif
 
 %files daemon-driver-nodedev
+%config(noreplace) %{_sysconfdir}/libvirt/virtnodedevd.conf
+%{_datadir}/augeas/lenses/virtnodedevd.aug
+%{_datadir}/augeas/lenses/tests/test_virtnodedevd.aug
+%{_unitdir}/virtnodedevd.service
+%{_unitdir}/virtnodedevd.socket
+%{_unitdir}/virtnodedevd-ro.socket
+%{_unitdir}/virtnodedevd-admin.socket
+%attr(0755, root, root) %{_sbindir}/virtnodedevd
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
 
 %files daemon-driver-nwfilter

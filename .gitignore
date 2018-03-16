@@ -160,6 +160,9 @@
 /src/network/test_virtnetworkd.aug
 /src/network/virtnetworkd.aug
 /src/network/virtnetworkd.conf
+/src/node_device/test_virtnodedevd.aug
+/src/node_device/virtnodedevd.aug
+/src/node_device/virtnodedevd.conf
 /src/qemu/test_libvirtd_qemu.aug
 /src/remote/*_client_bodies.h
 /src/remote/*_protocol.[ch]
@@ -186,6 +189,7 @@
 /src/virtlockd
 /src/virtlogd
 /src/virtnetworkd
+/src/virtnodedevd
 /src/virtproxyd
 /src/virtsecretd
 /src/virtstoraged
