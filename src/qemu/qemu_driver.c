@@ -20667,15 +20667,15 @@ qemuARPGetInterfaces(virDomainObjPtr vm,
                 if (VIR_ALLOC(iface) < 0)
                     goto cleanup;
 
-                iface->naddrs = 1;
                 if (VIR_STRDUP(iface->name, vm->def->nets[i]->ifname) < 0)
                     goto cleanup;
 
                 if (VIR_STRDUP(iface->hwaddr, macaddr) < 0)
                     goto cleanup;
 
-                if (VIR_ALLOC_N(iface->addrs, iface->naddrs) < 0)
+                if (VIR_ALLOC(iface->addrs) < 0)
                     goto cleanup;
+                iface->naddrs = 1;
 
                 if (VIR_STRDUP(iface->addrs->addr, entry.ipaddr) < 0)
                     goto cleanup;
@@ -20691,6 +20691,7 @@ qemuARPGetInterfaces(virDomainObjPtr vm,
 
  cleanup:
     virArpTableFree(table);
+    virDomainInterfaceFree(iface);
 
     if (ifaces_ret) {
         for (i = 0; i < ifaces_count; i++)
