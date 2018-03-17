@@ -47,6 +47,7 @@ VIR_LOG_INIT("util.arptable");
 # define NDA_RTA(r) \
     ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct ndmsg))))
 
+
 static int
 parse_rtattr(struct rtattr *tb[], int max, struct rtattr *rta, int len)
 {
@@ -64,7 +65,9 @@ parse_rtattr(struct rtattr *tb[], int max, struct rtattr *rta, int len)
     return 0;
 }
 
-virArpTablePtr virArpTableGet(void)
+
+virArpTablePtr
+virArpTableGet(void)
 {
     int num = 0;
     int msglen;
@@ -156,6 +159,7 @@ virArpTablePtr virArpTableGet(void)
     return table;
 
  cleanup:
+    virArpTableFree(table);
     VIR_FREE(ipstr);
     VIR_FREE(nlData);
     return NULL;
@@ -163,7 +167,8 @@ virArpTablePtr virArpTableGet(void)
 
 #else
 
-virArpTablePtr virArpTableGet(void)
+virArpTablePtr
+virArpTableGet(void)
 {
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("get arp table not implemented on this platform"));
@@ -176,6 +181,10 @@ void
 virArpTableFree(virArpTablePtr table)
 {
     size_t i;
+
+    if (!table)
+        return;
+
     for (i = 0; i < table->n; i++) {
         VIR_FREE(table->t[i].ipaddr);
         VIR_FREE(table->t[i].mac);
