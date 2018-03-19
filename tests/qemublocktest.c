@@ -464,6 +464,7 @@ mymain(void)
     TEST_DISK_TO_JSON("file-qcow2-backing-chain-noopts");
     TEST_DISK_TO_JSON("file-qcow2-backing-chain-unterminated");
     TEST_DISK_TO_JSON("file-qcow2-backing-chain-encryption");
+    TEST_DISK_TO_JSON("network-qcow2-backing-chain-encryption_auth");
 
  cleanup:
     virHashFree(diskxmljsondata.schema);
