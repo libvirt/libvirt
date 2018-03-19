@@ -415,6 +415,8 @@ mymain(void)
     TEST_DISK_TO_JSON("file-vpc-noopts");
 
     TEST_DISK_TO_JSON("file-backing_basic-noopts");
+    TEST_DISK_TO_JSON("dir-fat-readonly");
+    TEST_DISK_TO_JSON("dir-fat-floppy");
 
  cleanup:
     virHashFree(diskxmljsondata.schema);
