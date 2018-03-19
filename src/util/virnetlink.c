@@ -373,11 +373,13 @@ virNetlinkDumpCommand(struct nl_msg *nl_msg,
             if (callback(msg, opaque) < 0)
                 goto cleanup;
         }
+        VIR_FREE(resp);
     }
 
     ret = 0;
 
  cleanup:
+    VIR_FREE(resp);
     virNetlinkFree(nlhandle);
     return ret;
 }
