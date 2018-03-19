@@ -612,7 +612,8 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
         if (qemuAssignDeviceWatchdogAlias(def->watchdog) < 0)
             return -1;
     }
-    if (def->memballoon) {
+    if (def->memballoon &&
+        def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
         if (qemuAssingDeviceMemballoonAlias(def->memballoon, 0) < 0)
             return -1;
     }

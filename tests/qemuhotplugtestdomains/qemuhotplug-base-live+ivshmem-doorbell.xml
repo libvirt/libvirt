@@ -44,9 +44,7 @@
     <input type='keyboard' bus='ps2'>
       <alias name='input1'/>
     </input>
-    <memballoon model='none'>
-      <alias name='balloon0'/>
-    </memballoon>
+    <memballoon model='none'/>
     <shmem name='shmem0'>
       <model type='ivshmem-plain'/>
       <size unit='M'>4</size>

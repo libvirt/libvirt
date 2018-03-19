@@ -59,9 +59,7 @@
     <input type='keyboard' bus='ps2'>
       <alias name='input1'/>
     </input>
-    <memballoon model='none'>
-      <alias name='balloon0'/>
-    </memballoon>
+    <memballoon model='none'/>
     <panic model='s390'/>
   </devices>
   <seclabel type='none' model='none'/>
