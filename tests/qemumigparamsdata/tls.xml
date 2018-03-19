@@ -1,0 +1,13 @@
+<test>
+  <migParams>
+    <param name='compress-level' value='1'/>
+    <param name='compress-threads' value='8'/>
+    <param name='decompress-threads' value='2'/>
+    <param name='cpu-throttle-initial' value='20'/>
+    <param name='cpu-throttle-increment' value='10'/>
+    <param name='tls-creds' value=''/>
+    <param name='tls-hostname' value=''/>
+    <param name='max-bandwidth' value='33554432'/>
+    <param name='downtime-limit' value='300'/>
+  </migParams>
+</test>

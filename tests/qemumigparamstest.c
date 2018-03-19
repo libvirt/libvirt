@@ -230,6 +230,9 @@ mymain(void)
     DO_TEST("unsupported");
     DO_TEST("empty");
     DO_TEST("basic");
+    DO_TEST("tls");
+    DO_TEST("tls-enabled");
+    DO_TEST("tls-hostname");
 
     qemuTestDriverFree(&driver);
 
