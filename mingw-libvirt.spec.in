@@ -1,5 +1,16 @@
 %{?mingw_package_header}
 
+# This spec file assumes you are building on a Fedora version
+# that's still supported by the vendor. It may work on other distros
+# or versions, but no effort will be made to ensure that going forward.
+%define min_fedora 26
+
+%if 0%{?fedora} && 0%{?fedora} >= %{min_fedora}
+    %define supported_platform 1
+%else
+    %define supported_platform 0
+%endif
+
 # Default to skipping autoreconf.  Distros can change just this one line
 # (or provide a command-line override) if they backport any patches that
 # touch configure.ac or Makefile.am.
@@ -124,6 +135,11 @@ MinGW Windows libvirt virtualization library, static version.
 %setup -q -n libvirt-%{version}
 
 %build
+%if ! %{supported_platform}
+echo "This RPM requires Fedora >= %{min_fedora}"
+exit 1
+%endif
+
 %if ! %{with_phyp}
     %define _without_phyp --without-phyp
 %endif
