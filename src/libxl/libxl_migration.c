@@ -733,9 +733,8 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
                            _("missing host in migration URI: %s"),
                            uri_in);
             goto error;
-        } else {
-            hostname = uri->server;
         }
+        hostname = uri->server;
 
         if (uri->port == 0) {
             if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
