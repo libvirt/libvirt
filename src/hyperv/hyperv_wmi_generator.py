@@ -271,7 +271,7 @@ class WmiClass:
 
         # isolate those that are common for all and keep track of their postions
         pos = 0
-        for key in property_info:
+        for key in sorted(property_info):
             info = property_info[key]
             # exists in all class versions
             if info[1] == num_classes:
