@@ -417,6 +417,8 @@ mymain(void)
     TEST_DISK_TO_JSON("file-backing_basic-noopts");
     TEST_DISK_TO_JSON("dir-fat-readonly");
     TEST_DISK_TO_JSON("dir-fat-floppy");
+    TEST_DISK_TO_JSON("file-raw-aio_native");
+    TEST_DISK_TO_JSON("file-backing_basic-aio_threads");
 
  cleanup:
     virHashFree(diskxmljsondata.schema);
