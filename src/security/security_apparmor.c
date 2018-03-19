@@ -761,6 +761,51 @@ AppArmorRestoreMemoryLabel(virSecurityManagerPtr mgr,
 
 /* Called when hotplugging */
 static int
+AppArmorSetInputLabel(virSecurityManagerPtr mgr,
+                      virDomainDefPtr def,
+                      virDomainInputDefPtr input)
+{
+    if (input == NULL)
+        return 0;
+
+    switch ((virDomainInputType) input->type) {
+    case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+        if (input->source.evdev == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s: passthrough input device has no source"),
+                           __func__);
+            return -1;
+        }
+        if (!virFileExists(input->source.evdev)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s: \'%s\' does not exist"),
+                           __func__, input->source.evdev);
+            return -1;
+        }
+        return reload_profile(mgr, def, input->source.evdev, true);
+        break;
+
+    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+    case VIR_DOMAIN_INPUT_TYPE_KBD:
+    case VIR_DOMAIN_INPUT_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
+AppArmorRestoreInputLabel(virSecurityManagerPtr mgr,
+                          virDomainDefPtr def,
+                          virDomainInputDefPtr input ATTRIBUTE_UNUSED)
+{
+    return reload_profile(mgr, def, NULL, false);
+}
+
+/* Called when hotplugging */
+static int
 AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def,
                               virStorageSourcePtr src)
@@ -1160,6 +1205,9 @@ virSecurityDriver virAppArmorSecurityDriver = {
 
     .domainSetSecurityMemoryLabel       = AppArmorSetMemoryLabel,
     .domainRestoreSecurityMemoryLabel   = AppArmorRestoreMemoryLabel,
+
+    .domainSetSecurityInputLabel        = AppArmorSetInputLabel,
+    .domainRestoreSecurityInputLabel    = AppArmorRestoreInputLabel,
 
     .domainSetSecurityDaemonSocketLabel = AppArmorSetSecurityDaemonSocketLabel,
     .domainSetSecuritySocketLabel       = AppArmorSetSecuritySocketLabel,
