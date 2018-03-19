@@ -777,7 +777,7 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
      * 3. re-combine the realpath with the remaining suffix
      * Note: A totally non existent path is used as-is
      */
-     if ((pathdir = mdir_name(path)) == NULL)
+     if (VIR_STRDUP_QUIET(pathdir, path) < 0)
          goto cleanup;
      while (!virFileExists(pathdir)) {
          if ((pathtmp = mdir_name(pathdir)) == NULL)
