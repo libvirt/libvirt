@@ -83,6 +83,8 @@ struct _virJSONValue {
 void virJSONValueFree(virJSONValuePtr value);
 void virJSONValueHashFree(void *opaque, const void *name);
 
+virJSONType virJSONValueGetType(const virJSONValue *value);
+
 int virJSONValueObjectCreate(virJSONValuePtr *obj, ...)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
 int virJSONValueObjectCreateVArgs(virJSONValuePtr *obj, va_list args)

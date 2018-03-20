@@ -68,6 +68,13 @@ struct _virJSONParser {
 };
 
 
+virJSONType
+virJSONValueGetType(const virJSONValue *value)
+{
+    return value->type;
+}
+
+
 /**
  * virJSONValueObjectAddVArgs:
  * @obj: JSON object to add the values to
