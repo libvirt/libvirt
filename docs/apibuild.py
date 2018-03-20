@@ -478,8 +478,8 @@ class CLexer:
                 # of '#define' we might end up with '#' and 'define'. This
                 # merges them back together
                 if self.tokens[0][1] == "#":
-                    self.tokens[0] = ('preproc', self.tokens[0][1] + self.tokens[1][1])
-                    self.tokens = self.tokens[:1] + self.tokens[2:]
+                    self.tokens[0] = ('preproc', "#" + self.tokens[1][1])
+                    del self.tokens[1]
                 break
             l = len(line)
             if line[0] == '"' or line[0] == "'":
