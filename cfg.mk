@@ -496,6 +496,7 @@ ctype_re = isalnum|isalpha|isascii|isblank|iscntrl|isdigit|isgraph|islower\
 
 sc_avoid_ctype_macros:
 	@prohibit='\b($(ctype_re)) *\(' \
+	in_vc_files='\.[ch]$$' \
 	halt='use c-ctype.h instead of ctype macros' \
 	  $(_sc_search_regexp)
 
