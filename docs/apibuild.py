@@ -385,8 +385,8 @@ class index:
                  up = idx.functions[id]
                  # check that function condition agrees with header
                  if up.conditionals != self.functions[id].conditionals:
-                     self.warning("Header condition differs from Function for %s:" \
-                                      % id)
+                     self.warning("Header condition differs from Function"
+                                  " for %s:" % id)
                      self.warning("  H: %s" % self.functions[id].conditionals)
                      self.warning("  C: %s" % up.conditionals)
                  self.functions[id].update(None, up.module, up.type, up.info, up.extra)
@@ -1882,7 +1882,7 @@ class CParser:
                         raise Exception()
                 except:
                     self.error(("struct '%s' is not allowed to contain long "
-                                "field '%s', use long long instead") \
+                                "field '%s', use long long instead")
                                % (name, field[1]))
 
      #
@@ -1939,8 +1939,8 @@ class CParser:
                 if token[1] == "[":
                     type = type + token[1]
                     token = self.token()
-                    while token is not None and (token[0] != "sep" or \
-                          token[1] != ";"):
+                    while token is not None and (token[0] != "sep" or
+                                                 token[1] != ";"):
                         type = type + token[1]
                         token = self.token()
 
@@ -1954,9 +1954,9 @@ class CParser:
                     token = self.parseBlock(token)
                 else:
                     self.comment = None
-                    while token is not None and (token[0] != "sep" or \
-                          (token[1] != ';' and token[1] != ',')):
-                            token = self.token()
+                    while token is not None and (token[0] != "sep" or
+                                                 token[1] not in ',;'):
+                        token = self.token()
                 self.comment = None
                 if token is None or token[0] != "sep" or (token[1] != ';' and
                    token[1] != ','):
@@ -2351,11 +2351,11 @@ class docBuilder:
             module = self.modulename_file(file)
             output.write("    <file name='%s'>\n" % (module))
             dict = self.headers[file]
-            ids = uniq(list(dict.functions.keys()) + \
-                       list(dict.variables.keys()) + \
-                       list(dict.macros.keys()) + \
-                       list(dict.typedefs.keys()) + \
-                       list(dict.structs.keys()) + \
+            ids = uniq(list(dict.functions.keys()) +
+                       list(dict.variables.keys()) +
+                       list(dict.macros.keys()) +
+                       list(dict.typedefs.keys()) +
+                       list(dict.structs.keys()) +
                        list(dict.enums.keys()))
             for id in ids:
                 output.write("      <ref name='%s'/>\n" % (id))
