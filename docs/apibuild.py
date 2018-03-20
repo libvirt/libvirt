@@ -483,28 +483,16 @@ class CLexer:
                 break
             l = len(line)
             if line[0] == '"' or line[0] == "'":
-                end = line[0]
-                line = line[1:]
-                found = 0
-                tok = ""
-                while found == 0:
-                    i = 0
-                    l = len(line)
-                    while i < l:
-                        if line[i] == end:
-                            self.line = line[i+1:]
-                            line = line[:i]
-                            l = i
-                            found = 1
-                            break
-                        if line[i] == '\\':
-                            i = i + 1
-                        i = i + 1
-                    tok = tok + line
-                    if found == 0:
-                        line = self.getline()
-                        if line is None:
-                            return None
+                quote = line[0]
+                i = 1
+                while quote not in line[i:]:
+                    i = len(line)
+                    nextline = self.getline()
+                    if nextline is None:
+                        return None
+                    line += nextline
+
+                tok, self.line = line[1:].split(quote, 1)
                 self.last = ('string', tok)
                 return self.last
 
