@@ -1519,9 +1519,9 @@ exit 0
 
 %if %{with_systemd}
     %if %{with_systemd_macros}
-        %systemd_post virtlockd.socket virtlockd-admin.socket \
-            virtlogd.socket virtlogd-admin.socket \
-            libvirtd.service
+        %systemd_post virtlockd.socket virtlockd-admin.socket
+        %systemd_post virtlogd.socket virtlogd-admin.socket
+        %systemd_post libvirtd.service
     %else
 if [ $1 -eq 1 ] ; then
     # Initial installation
@@ -1556,9 +1556,9 @@ touch %{_localstatedir}/lib/rpm-state/libvirt/restart || :
 %preun daemon
 %if %{with_systemd}
     %if %{with_systemd_macros}
-        %systemd_preun libvirtd.service \
-            virtlogd.socket virtlogd-admin.socket virtlogd.service \
-            virtlockd.socket virtlockd-admin.socket virtlockd.service
+        %systemd_preun libvirtd.service
+        %systemd_preun virtlogd.socket virtlogd-admin.socket virtlogd.service
+        %systemd_preun virtlockd.socket virtlockd-admin.socket virtlockd.service
     %else
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
