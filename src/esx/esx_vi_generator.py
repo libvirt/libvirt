@@ -1021,20 +1021,16 @@ class ManagedObject(GenericObject):
 
 
     def generate_helper_header(self):
-        header = ""
-
         # functions
-        header += ("int esxVI_Lookup%s(esxVI_Context *ctx, "
-                                      "const char *name, "
-                                      "esxVI_ManagedObjectReference *root, "
-                                      "esxVI_String *selectedPropertyNameList, "
-                                      "esxVI_%s **item, "
-                                      "esxVI_Occurrence occurrence);\n") \
-                  % (self.name, self.name)
-
-        header += "\n"
-
-        return header
+        return (
+            "int esxVI_Lookup%(name)s(esxVI_Context *ctx,"
+                                     " const char *name,"
+                                     " esxVI_ManagedObjectReference *root,"
+                                     " esxVI_String *selectedPropertyNameList,"
+                                     " esxVI_%(name)s **item,"
+                                     " esxVI_Occurrence occurrence);\n\n"
+            % {"name": self.name}
+        )
 
 
     def generate_source(self):
