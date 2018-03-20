@@ -248,11 +248,12 @@ class index:
             return None
         d = None
         try:
-           d = self.identifiers[name]
-           d.update(header, module, type, lineno, info, extra, conditionals)
+            d = self.identifiers[name]
+            d.update(header, module, type, lineno, info, extra, conditionals)
         except:
-           d = identifier(name, header, module, type, lineno, info, extra, conditionals)
-           self.identifiers[name] = d
+            d = identifier(name, header, module, type, lineno, info, extra,
+                           conditionals)
+            self.identifiers[name] = d
 
         if d is not None and static == 1:
             d.set_static(1)
@@ -265,16 +266,18 @@ class index:
 
         return d
 
-    def add(self, name, header, module, static, type, lineno, info=None, extra=None, conditionals=None):
+    def add(self, name, header, module, static, type, lineno, info=None,
+            extra=None, conditionals=None):
         if name[0:2] == '__':
             return None
         d = None
         try:
-           d = self.identifiers[name]
-           d.update(header, module, type, lineno, info, extra, conditionals)
+            d = self.identifiers[name]
+            d.update(header, module, type, lineno, info, extra, conditionals)
         except:
-           d = identifier(name, header, module, type, lineno, info, extra, conditionals)
-           self.identifiers[name] = d
+            d = identifier(name, header, module, type, lineno, info, extra,
+                           conditionals)
+            self.identifiers[name] = d
 
         if d is not None and static == 1:
             d.set_static(1)
@@ -308,92 +311,93 @@ class index:
 
     def merge(self, idx):
         for id in idx.functions.keys():
-              #
-              # macro might be used to override functions or variables
-              # definitions
-              #
-             if id in self.macros:
-                 del self.macros[id]
-             if id in self.functions:
-                 self.warning("function %s from %s redeclared in %s" % (
+            #
+            # macro might be used to override functions or variables
+            # definitions
+            #
+            if id in self.macros:
+                del self.macros[id]
+            if id in self.functions:
+                self.warning("function %s from %s redeclared in %s" % (
                     id, self.functions[id].header, idx.functions[id].header))
-             else:
-                 self.functions[id] = idx.functions[id]
-                 self.identifiers[id] = idx.functions[id]
+            else:
+                self.functions[id] = idx.functions[id]
+                self.identifiers[id] = idx.functions[id]
         for id in idx.variables.keys():
-              #
-              # macro might be used to override functions or variables
-              # definitions
-              #
-             if id in self.macros:
-                 del self.macros[id]
-             if id in self.variables:
-                 self.warning("variable %s from %s redeclared in %s" % (
+            #
+            # macro might be used to override functions or variables
+            # definitions
+            #
+            if id in self.macros:
+                del self.macros[id]
+            if id in self.variables:
+                self.warning("variable %s from %s redeclared in %s" % (
                     id, self.variables[id].header, idx.variables[id].header))
-             else:
-                 self.variables[id] = idx.variables[id]
-                 self.identifiers[id] = idx.variables[id]
+            else:
+                self.variables[id] = idx.variables[id]
+                self.identifiers[id] = idx.variables[id]
         for id in idx.structs.keys():
-             if id in self.structs:
-                 self.warning("struct %s from %s redeclared in %s" % (
+            if id in self.structs:
+                self.warning("struct %s from %s redeclared in %s" % (
                     id, self.structs[id].header, idx.structs[id].header))
-             else:
-                 self.structs[id] = idx.structs[id]
-                 self.identifiers[id] = idx.structs[id]
+            else:
+                self.structs[id] = idx.structs[id]
+                self.identifiers[id] = idx.structs[id]
         for id in idx.unions.keys():
-             if id in self.unions:
-                 print("union %s from %s redeclared in %s" % (
+            if id in self.unions:
+                print("union %s from %s redeclared in %s" % (
                     id, self.unions[id].header, idx.unions[id].header))
-             else:
-                 self.unions[id] = idx.unions[id]
-                 self.identifiers[id] = idx.unions[id]
+            else:
+                self.unions[id] = idx.unions[id]
+                self.identifiers[id] = idx.unions[id]
         for id in idx.typedefs.keys():
-             if id in self.typedefs:
-                 self.warning("typedef %s from %s redeclared in %s" % (
+            if id in self.typedefs:
+                self.warning("typedef %s from %s redeclared in %s" % (
                     id, self.typedefs[id].header, idx.typedefs[id].header))
-             else:
-                 self.typedefs[id] = idx.typedefs[id]
-                 self.identifiers[id] = idx.typedefs[id]
+            else:
+                self.typedefs[id] = idx.typedefs[id]
+                self.identifiers[id] = idx.typedefs[id]
         for id in idx.macros.keys():
-              #
-              # macro might be used to override functions or variables
-              # definitions
-              #
-             if id in self.variables:
-                 continue
-             if id in self.functions:
-                 continue
-             if id in self.enums:
-                 continue
-             if id in self.macros:
-                 self.warning("macro %s from %s redeclared in %s" % (
+            #
+            # macro might be used to override functions or variables
+            # definitions
+            #
+            if id in self.variables:
+                continue
+            if id in self.functions:
+                continue
+            if id in self.enums:
+                continue
+            if id in self.macros:
+                self.warning("macro %s from %s redeclared in %s" % (
                     id, self.macros[id].header, idx.macros[id].header))
-             else:
-                 self.macros[id] = idx.macros[id]
-                 self.identifiers[id] = idx.macros[id]
+            else:
+                self.macros[id] = idx.macros[id]
+                self.identifiers[id] = idx.macros[id]
         for id in idx.enums.keys():
-             if id in self.enums:
-                 self.warning("enum %s from %s redeclared in %s" % (
+            if id in self.enums:
+                self.warning("enum %s from %s redeclared in %s" % (
                     id, self.enums[id].header, idx.enums[id].header))
-             else:
-                 self.enums[id] = idx.enums[id]
-                 self.identifiers[id] = idx.enums[id]
+            else:
+                self.enums[id] = idx.enums[id]
+                self.identifiers[id] = idx.enums[id]
 
     def merge_public(self, idx):
         for id in idx.functions.keys():
-             if id in self.functions:
-                 up = idx.functions[id]
-                 # check that function condition agrees with header
-                 if up.conditionals != self.functions[id].conditionals:
-                     self.warning("Header condition differs from Function"
-                                  " for %s:" % id)
-                     self.warning("  H: %s" % self.functions[id].conditionals)
-                     self.warning("  C: %s" % up.conditionals)
-                 self.functions[id].update(None, up.module, up.type, up.info, up.extra)
-         #     else:
-         #         print("Function %s from %s is not declared in headers" % (
-         #               id, idx.functions[id].module))
-         # TODO: do the same for variables.
+            if id in self.functions:
+                up = idx.functions[id]
+                # check that function condition agrees with header
+                if up.conditionals != self.functions[id].conditionals:
+                    self.warning("Header condition differs from Function"
+                                 " for %s:" % id)
+                    self.warning("  H: %s" % self.functions[id].conditionals)
+                    self.warning("  C: %s" % up.conditionals)
+                self.functions[id].update(None, up.module, up.type, up.info,
+                                          up.extra)
+        #     else:
+        #         print("Function %s from %s is not declared in headers" % (
+        #               id, idx.functions[id].module))
+        # TODO: do the same for variables.
 
     def analyze_dict(self, type, dict):
         count = 0
@@ -725,7 +729,7 @@ class CParser:
             elif line[i] == '*':
                 return line[:i] + line[i + 1:]
             else:
-                 return line
+                return line
         return line
 
     def cleanupComment(self):
@@ -876,11 +880,11 @@ class CParser:
 
         return((args, desc))
 
-     #
-     # Parse a comment block and merge the information found in the
-     # parameters descriptions, finally returns a block as complete
-     # as possible
-     #
+    #
+    # Parse a comment block and merge the information found in the
+    # parameters descriptions, finally returns a block as complete
+    # as possible
+    #
     def mergeFunctionComment(self, name, description, quiet=0):
         global ignored_functions
 
@@ -988,9 +992,9 @@ class CParser:
         desc = desc.strip()
 
         if quiet == 0:
-             #
-             # report missing comments
-             #
+            #
+            # report missing comments
+            #
             i = 0
             while i < nbargs:
                 if args[i][2] is None and args[i][0] != "void" and args[i][1] is not None:
@@ -1022,7 +1026,7 @@ class CParser:
             if token is None:
                 return None
             if token[0] == 'preproc':
-                 # TODO macros with arguments
+                # TODO macros with arguments
                 name = token[1]
                 lst = []
                 token = self.lexer.token()
@@ -1107,11 +1111,11 @@ class CParser:
             token = self.lexer.token()
         return token
 
-     #
-     # token acquisition on top of the lexer, it handle internally
-     # preprocessor and comments since they are logically not part of
-     # the program structure.
-     #
+    #
+    # token acquisition on top of the lexer, it handle internally
+    # preprocessor and comments since they are logically not part of
+    # the program structure.
+    #
     def push(self, tok):
         self.lexer.push(tok)
 
@@ -1148,9 +1152,9 @@ class CParser:
                 return token
         return None
 
-     #
-     # Parse a typedef, it records the type and its name.
-     #
+    #
+    # Parse a typedef, it records the type and its name.
+    #
     def parseTypedef(self, token):
         if token is None:
             return None
@@ -1160,7 +1164,7 @@ class CParser:
             return None
         base_type = self.type
         type = base_type
-         #self.debug("end typedef type", token)
+        # self.debug("end typedef type", token)
         while token is not None:
             if token[0] == "name":
                 name = token[1]
@@ -1185,7 +1189,7 @@ class CParser:
             else:
                 self.error("parsing typedef: expecting a name")
                 return token
-             #self.debug("end typedef", token)
+            # self.debug("end typedef", token)
             if token is not None and token[0] == 'sep' and token[1] == ',':
                 type = base_type
                 token = self.token()
@@ -1203,10 +1207,10 @@ class CParser:
         token = self.token()
         return token
 
-     #
-     # Parse a C code block, used for functions it parse till
-     # the balancing } included
-     #
+    #
+    # Parse a C code block, used for functions it parse till
+    # the balancing } included
+    #
     def parseBlock(self, token):
         while token is not None:
             if token[0] == "sep" and token[1] == "{":
@@ -1242,27 +1246,27 @@ class CParser:
                     token = self.token()
         return token
 
-     #
-     # Parse a C struct definition till the balancing }
-     #
+    #
+    # Parse a C struct definition till the balancing }
+    #
     def parseStruct(self, token):
         fields = []
-         #self.debug("start parseStruct", token)
+        # self.debug("start parseStruct", token)
         while token is not None:
             if token[0] == "sep" and token[1] == "{":
                 token = self.token()
                 token = self.parseTypeBlock(token)
             elif token[0] == "sep" and token[1] == "}":
                 self.struct_fields = fields
-                 #self.debug("end parseStruct", token)
-                 #print(fields)
+                # self.debug("end parseStruct", token)
+                # print(fields)
                 token = self.token()
                 return token
             else:
                 base_type = self.type
-                 #self.debug("before parseType", token)
+                # self.debug("before parseType", token)
                 token = self.parseType(token)
-                 #self.debug("after parseType", token)
+                # self.debug("after parseType", token)
                 if token is not None and token[0] == "name":
                     fname = token[1]
                     token = self.token()
@@ -1293,13 +1297,13 @@ class CParser:
                     token = self.token()
                 self.type = base_type
         self.struct_fields = fields
-         #self.debug("end parseStruct", token)
-         #print(fields)
+        # self.debug("end parseStruct", token)
+        # print(fields)
         return token
 
-     #
-     # Parse a C union definition till the balancing }
-     #
+    #
+    # Parse a C union definition till the balancing }
+    #
     def parseUnion(self, token):
         fields = []
         # self.debug("start parseUnion", token)
@@ -1347,9 +1351,9 @@ class CParser:
         # print(fields)
         return token
 
-     #
-     # Parse a C enum block, parse till the balancing }
-     #
+    #
+    # Parse a C enum block, parse till the balancing }
+    #
     def parseEnumBlock(self, token):
         self.enums = []
         name = None
@@ -1512,10 +1516,10 @@ class CParser:
 
         return token
 
-     #
-     # Parse a C definition block, used for structs or unions it parse till
-     # the balancing }
-     #
+    #
+    # Parse a C definition block, used for structs or unions it parse till
+    # the balancing }
+    #
     def parseTypeBlock(self, token):
         while token is not None:
             if token[0] == "sep" and token[1] == "{":
@@ -1528,11 +1532,11 @@ class CParser:
                 token = self.token()
         return token
 
-     #
-     # Parse a type: the fact that the type name can either occur after
-     #    the definition or within the definition makes it a little harder
-     #    if inside, the name token is pushed back before returning
-     #
+    #
+    # Parse a type: the fact that the type name can either occur after
+    #    the definition or within the definition makes it a little harder
+    #    if inside, the name token is pushed back before returning
+    #
     def parseType(self, token):
         self.type = ""
         self.struct_fields = []
@@ -1710,9 +1714,9 @@ class CParser:
             self.type = self.type + " " + token[1]
             token = self.token()
 
-         #
-         # if there is a parenthesis here, this means a function type
-         #
+        #
+        # if there is a parenthesis here, this means a function type
+        #
         if token is not None and token[0] == "sep" and token[1] == '(':
             self.type = self.type + token[1]
             token = self.token()
@@ -1743,9 +1747,9 @@ class CParser:
             token = nametok
             return token
 
-         #
-         # do some lookahead for arrays
-         #
+        #
+        # do some lookahead for arrays
+        #
         if token is not None and token[0] == "name":
             nametok = token
             token = self.token()
@@ -1765,7 +1769,7 @@ class CParser:
                     self.error("parsing array type, ']' expected", token)
                     return token
             elif token is not None and token[0] == "sep" and token[1] == ':':
-                 # remove :12 in case it's a limited int size
+                # remove :12 in case it's a limited int size
                 token = self.token()
                 token = self.token()
             self.lexer.push(token)
@@ -1773,9 +1777,9 @@ class CParser:
 
         return token
 
-     #
-     # Parse a signature: '(' has been parsed and we scan the type definition
-     #    up to the ')' included
+    #
+    # Parse a signature: '(' has been parsed and we scan the type definition
+    #    up to the ')' included
     def parseSignature(self, token):
         signature = []
         if token is not None and token[0] == "sep" and token[1] == ')':
@@ -1791,7 +1795,7 @@ class CParser:
                 token = self.token()
                 continue
             elif token is not None and token[0] == "sep" and token[1] == ')':
-                 # only the type was provided
+                # only the type was provided
                 if self.type == "...":
                     signature.append((self.type, "...", None))
                 else:
@@ -1885,10 +1889,10 @@ class CParser:
                                 "field '%s', use long long instead")
                                % (name, field[1]))
 
-     #
-     # Parse a global definition, be it a type, variable or function
-     # the extern "C" blocks are a bit nasty and require it to recurse.
-     #
+    #
+    # Parse a global definition, be it a type, variable or function
+    # the extern "C" blocks are a bit nasty and require it to recurse.
+    #
     def parseGlobal(self, token):
         static = 0
         if token[1] == 'extern':
@@ -1945,9 +1949,9 @@ class CParser:
                         token = self.token()
 
             if token is not None and token[0] == "op" and token[1] == "=":
-                 #
-                 # Skip the initialization of the variable
-                 #
+                #
+                # Skip the initialization of the variable
+                #
                 token = self.token()
                 if token[0] == 'sep' and token[1] == '{':
                     token = self.token()
