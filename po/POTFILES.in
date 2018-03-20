@@ -141,6 +141,7 @@ src/qemu/qemu_monitor_json.c
 src/qemu/qemu_monitor_text.c
 src/qemu/qemu_parse_command.c
 src/qemu/qemu_process.c
+src/qemu/qemu_qapi.c
 src/remote/remote_client_bodies.h
 src/remote/remote_daemon.c
 src/remote/remote_daemon_config.c
