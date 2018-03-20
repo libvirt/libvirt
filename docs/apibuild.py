@@ -15,10 +15,10 @@ import sys
 import glob
 import re
 
-quiet=True
-warnings=0
-debug=False
-debugsym=None
+quiet = True
+warnings = 0
+debug = False
+debugsym = None
 
 #
 # C parser analysis code
@@ -132,7 +132,7 @@ def escape(raw):
 def uniq(items):
     d = {}
     for item in items:
-        d[item]=1
+        d[item] = 1
     k = sorted(d.keys())
     return k
 
@@ -1408,7 +1408,7 @@ class CParser:
                         value = "%d" % (int(value) + 1)
                     except:
                         self.warning("Failed to compute value of enum %s" % (name))
-                        value=""
+                        value = ""
                 if token[0] == "sep" and token[1] == ",":
                     if commentsBeforeVal:
                         self.cleanupComment()
@@ -2286,7 +2286,7 @@ class docBuilder:
                 if apstr != "":
                     apstr = apstr + " &amp;&amp; "
                 apstr = apstr + cond
-            output.write("      <cond>%s</cond>\n"% (apstr))
+            output.write("      <cond>%s</cond>\n" % (apstr))
         try:
             (ret, params, desc) = id.info
             output.write("      <info><![CDATA[%s]]></info>\n" % (desc))
@@ -2479,7 +2479,7 @@ class docBuilder:
                         output.write("      </letter>\n")
                         output.write("    </chunk>\n")
                         count = 0
-                        chunks.append(["chunk%s" % (chunk -1), first_letter, letter])
+                        chunks.append(["chunk%s" % (chunk - 1), first_letter, letter])
                     output.write("    <chunk name='chunk%s'>\n" % (chunk))
                     first_letter = id[0]
                     chunk = chunk + 1
@@ -2502,7 +2502,7 @@ class docBuilder:
             output.write("      </letter>\n")
             output.write("    </chunk>\n")
             if count != 0:
-                chunks.append(["chunk%s" % (chunk -1), first_letter, letter])
+                chunks.append(["chunk%s" % (chunk - 1), first_letter, letter])
             output.write("    <chunks>\n")
             for ch in chunks:
                 output.write("      <chunk name='%s' start='%s' end='%s'/>\n" % (

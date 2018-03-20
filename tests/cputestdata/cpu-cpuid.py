@@ -325,7 +325,7 @@ def formatCpuid(cpuid, path, comment):
                 line = ("  <cpuid eax_in='0x%08x' ecx_in='0x%02x' "
                         "eax='0x%08x' ebx='0x%08x' "
                         "ecx='0x%08x' edx='0x%08x'/>\n")
-                f.write(line %(
+                f.write(line % (
                         in_eax, in_ecx,
                         leaf["eax"], leaf["ebx"], leaf["ecx"], leaf["edx"]))
         f.write("</cpudata>\n")

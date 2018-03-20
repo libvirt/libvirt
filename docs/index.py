@@ -58,7 +58,7 @@ libxml2.registerErrorHandler(callback, None)
 # The dictionary of tables required and the SQL command needed
 # to create them
 #
-TABLES={
+TABLES = {
   "symbols": """CREATE TABLE symbols (
            name varchar(255) BINARY NOT NULL,
            module varchar(255) BINARY NOT NULL,
@@ -116,8 +116,8 @@ TABLES={
 #
 # The XML API description file to parse
 #
-API="libvirt-api.xml"
-DB=None
+API = "libvirt-api.xml"
+DB = None
 
 #########################################################################
 #                                                                       #
