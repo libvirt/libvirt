@@ -1578,9 +1578,9 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "migrate-incoming", QEMU_CAPS_INCOMING_DEFER },
     { "query-hotpluggable-cpus", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS },
     { "query-qmp-schema", QEMU_CAPS_QUERY_QMP_SCHEMA },
-    { "query-cpu-model-expansion", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION},
-    { "query-cpu-definitions", QEMU_CAPS_QUERY_CPU_DEFINITIONS},
-    { "query-named-block-nodes", QEMU_CAPS_QUERY_NAMED_BLOCK_NODES}
+    { "query-cpu-model-expansion", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION },
+    { "query-cpu-definitions", QEMU_CAPS_QUERY_CPU_DEFINITIONS },
+    { "query-named-block-nodes", QEMU_CAPS_QUERY_NAMED_BLOCK_NODES },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
