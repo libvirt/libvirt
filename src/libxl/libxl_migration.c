@@ -256,7 +256,7 @@ libxlMigrationDstArgsOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(libxlMigrationDstArgs)
 
 static void
-libxlDoMigrateReceive(void *opaque)
+libxlDoMigrateDstReceive(void *opaque)
 {
     libxlMigrationDstArgs *args = opaque;
     virDomainObjPtr vm = args->vm;
@@ -306,9 +306,9 @@ libxlDoMigrateReceive(void *opaque)
 
 
 static void
-libxlMigrateReceive(virNetSocketPtr sock,
-                    int events ATTRIBUTE_UNUSED,
-                    void *opaque)
+libxlMigrateDstReceive(virNetSocketPtr sock,
+                       int events ATTRIBUTE_UNUSED,
+                       void *opaque)
 {
     libxlMigrationDstArgs *args = opaque;
     virNetSocketPtr *socks = args->socks;
@@ -335,7 +335,7 @@ libxlMigrateReceive(virNetSocketPtr sock,
      */
     args->recvfd = recvfd;
     if (virThreadCreate(&thread, false,
-                        libxlDoMigrateReceive, args) < 0) {
+                        libxlDoMigrateDstReceive, args) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to create thread for receiving migration data"));
         goto fail;
@@ -357,10 +357,10 @@ libxlMigrateReceive(virNetSocketPtr sock,
 }
 
 static int
-libxlDoMigrateSend(libxlDriverPrivatePtr driver,
-                   virDomainObjPtr vm,
-                   unsigned long flags,
-                   int sockfd)
+libxlDoMigrateSrcSend(libxlDriverPrivatePtr driver,
+                      virDomainObjPtr vm,
+                      unsigned long flags,
+                      int sockfd)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     int xl_flags = 0;
@@ -395,11 +395,11 @@ libxlDomainMigrationIsAllowed(virDomainDefPtr def)
 }
 
 char *
-libxlDomainMigrationBegin(virConnectPtr conn,
-                          virDomainObjPtr vm,
-                          const char *xmlin,
-                          char **cookieout,
-                          int *cookieoutlen)
+libxlDomainMigrationSrcBegin(virConnectPtr conn,
+                             virDomainObjPtr vm,
+                             const char *xmlin,
+                             char **cookieout,
+                             int *cookieoutlen)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
@@ -449,9 +449,9 @@ libxlDomainMigrationBegin(virConnectPtr conn,
 }
 
 virDomainDefPtr
-libxlDomainMigrationPrepareDef(libxlDriverPrivatePtr driver,
-                               const char *dom_xml,
-                               const char *dname)
+libxlDomainMigrationDstPrepareDef(libxlDriverPrivatePtr driver,
+                                  const char *dom_xml,
+                                  const char *dname)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainDefPtr def;
@@ -554,12 +554,12 @@ libxlDomainMigrationPrepareAny(virConnectPtr dconn,
 }
 
 int
-libxlDomainMigrationPrepareTunnel3(virConnectPtr dconn,
-                                   virStreamPtr st,
-                                   virDomainDefPtr *def,
-                                   const char *cookiein,
-                                   int cookieinlen,
-                                   unsigned int flags)
+libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
+                                      virStreamPtr st,
+                                      virDomainDefPtr *def,
+                                      const char *cookiein,
+                                      int cookieinlen,
+                                      unsigned int flags)
 {
     libxlMigrationCookiePtr mig = NULL;
     libxlDriverPrivatePtr driver = dconn->privateData;
@@ -619,7 +619,7 @@ libxlDomainMigrationPrepareTunnel3(virConnectPtr dconn,
     args->nsocks = 0;
     mig = NULL;
 
-    if (virThreadCreate(&thread, false, libxlDoMigrateReceive, args) < 0) {
+    if (virThreadCreate(&thread, false, libxlDoMigrateDstReceive, args) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to create thread for receiving migration data"));
         goto error;
@@ -645,13 +645,13 @@ libxlDomainMigrationPrepareTunnel3(virConnectPtr dconn,
 }
 
 int
-libxlDomainMigrationPrepare(virConnectPtr dconn,
-                            virDomainDefPtr *def,
-                            const char *uri_in,
-                            char **uri_out,
-                            const char *cookiein,
-                            int cookieinlen,
-                            unsigned int flags)
+libxlDomainMigrationDstPrepare(virConnectPtr dconn,
+                               virDomainDefPtr *def,
+                               const char *uri_in,
+                               char **uri_out,
+                               const char *cookiein,
+                               int cookieinlen,
+                               unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dconn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
@@ -782,7 +782,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
 
         if (virNetSocketAddIOCallback(socks[i],
                                       VIR_EVENT_HANDLE_READABLE,
-                                      libxlMigrateReceive,
+                                      libxlMigrateDstReceive,
                                       args,
                                       NULL) < 0)
             continue;
@@ -834,10 +834,10 @@ struct _libxlTunnelMigrationThread {
 
 /*
  * The data flow of tunnel3 migration in the src side:
- * libxlDoMigrateSend() -> pipe
- * libxlTunnel3MigrationFunc() polls pipe out and then write to dest stream.
+ * libxlDoMigrateSrcSend() -> pipe
+ * libxlTunnel3MigrationSrcFunc() polls pipe out and then write to dest stream.
  */
-static void libxlTunnel3MigrationFunc(void *arg)
+static void libxlTunnel3MigrationSrcFunc(void *arg)
 {
     libxlTunnelMigrationThread *data = (libxlTunnelMigrationThread *)arg;
     char *buffer = NULL;
@@ -858,7 +858,7 @@ static void libxlTunnel3MigrationFunc(void *arg)
             if (errno == EAGAIN || errno == EINTR)
                 continue;
             virReportError(errno, "%s",
-                           _("poll failed in libxlTunnel3MigrationFunc"));
+                           _("poll failed in libxlTunnel3MigrationSrcFunc"));
             goto cleanup;
         }
 
@@ -904,11 +904,11 @@ struct libxlTunnelControl {
 };
 
 static int
-libxlMigrationStartTunnel(libxlDriverPrivatePtr driver,
-                          virDomainObjPtr vm,
-                          unsigned long flags,
-                          virStreamPtr st,
-                          struct libxlTunnelControl **tnl)
+libxlMigrationSrcStartTunnel(libxlDriverPrivatePtr driver,
+                             virDomainObjPtr vm,
+                             unsigned long flags,
+                             virStreamPtr st,
+                             struct libxlTunnelControl **tnl)
 {
     struct libxlTunnelControl *tc = NULL;
     libxlTunnelMigrationThread *arg = NULL;
@@ -931,7 +931,7 @@ libxlMigrationStartTunnel(libxlDriverPrivatePtr driver,
     /* Write to dest stream */
     arg->st = st;
     if (virThreadCreate(&tc->thread, true,
-                        libxlTunnel3MigrationFunc, arg) < 0) {
+                        libxlTunnel3MigrationSrcFunc, arg) < 0) {
         virReportError(errno, "%s",
                        _("Unable to create tunnel migration thread"));
         goto out;
@@ -939,16 +939,17 @@ libxlMigrationStartTunnel(libxlDriverPrivatePtr driver,
 
     virObjectUnlock(vm);
     /* Send data to pipe */
-    ret = libxlDoMigrateSend(driver, vm, flags, tc->dataFD[1]);
+    ret = libxlDoMigrateSrcSend(driver, vm, flags, tc->dataFD[1]);
     virObjectLock(vm);
 
  out:
-    /* libxlMigrationStopTunnel will be called in libxlDoMigrateP2P to free
-     * all resources for us. */
+    /* libxlMigrationSrcStopTunnel will be called in libxlDoMigrateSrcP2P
+     * to free all resources for us.
+     */
     return ret;
 }
 
-static void libxlMigrationStopTunnel(struct libxlTunnelControl *tc)
+static void libxlMigrationSrcStopTunnel(struct libxlTunnelControl *tc)
 {
     if (!tc)
         return;
@@ -966,15 +967,15 @@ static void libxlMigrationStopTunnel(struct libxlTunnelControl *tc)
  * introduced in libxl.
  */
 static int
-libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
-                  virDomainObjPtr vm,
-                  virConnectPtr sconn,
-                  const char *xmlin,
-                  virConnectPtr dconn,
-                  const char *dconnuri ATTRIBUTE_UNUSED,
-                  const char *dname,
-                  const char *uri,
-                  unsigned int flags)
+libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
+                     virDomainObjPtr vm,
+                     virConnectPtr sconn,
+                     const char *xmlin,
+                     virConnectPtr dconn,
+                     const char *dconnuri ATTRIBUTE_UNUSED,
+                     const char *dname,
+                     const char *uri,
+                     unsigned int flags)
 {
     virDomainPtr ddomain = NULL;
     virTypedParameterPtr params = NULL;
@@ -992,8 +993,8 @@ libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
     virStreamPtr st = NULL;
     struct libxlTunnelControl *tc = NULL;
 
-    dom_xml = libxlDomainMigrationBegin(sconn, vm, xmlin,
-                                        &cookieout, &cookieoutlen);
+    dom_xml = libxlDomainMigrationSrcBegin(sconn, vm, xmlin,
+                                           &cookieout, &cookieoutlen);
     if (!dom_xml)
         goto cleanup;
 
@@ -1048,10 +1049,10 @@ libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
 
     VIR_DEBUG("Perform3 uri=%s", NULLSTR(uri_out));
     if (flags & VIR_MIGRATE_TUNNELLED)
-        ret = libxlMigrationStartTunnel(driver, vm, flags, st, &tc);
+        ret = libxlMigrationSrcStartTunnel(driver, vm, flags, st, &tc);
     else
-        ret = libxlDomainMigrationPerform(driver, vm, NULL, NULL,
-                                          uri_out, NULL, flags);
+        ret = libxlDomainMigrationSrcPerform(driver, vm, NULL, NULL,
+                                             uri_out, NULL, flags);
     if (ret < 0)
         orig_err = virSaveLastError();
 
@@ -1082,7 +1083,7 @@ libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
         orig_err = virSaveLastError();
 
     VIR_DEBUG("Confirm3 cancelled=%d vm=%p", cancelled, vm);
-    ret = libxlDomainMigrationConfirm(driver, vm, flags, cancelled);
+    ret = libxlDomainMigrationSrcConfirm(driver, vm, flags, cancelled);
 
     if (ret < 0)
         VIR_WARN("Guest %s probably left in 'paused' state on source",
@@ -1090,7 +1091,7 @@ libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
 
  cleanup:
     if (flags & VIR_MIGRATE_TUNNELLED) {
-        libxlMigrationStopTunnel(tc);
+        libxlMigrationSrcStopTunnel(tc);
         virObjectUnref(st);
     }
 
@@ -1129,14 +1130,14 @@ static virConnectAuth virConnectAuthConfig = {
  * the migration process with an established virConnectPtr to the destination.
  */
 int
-libxlDomainMigrationPerformP2P(libxlDriverPrivatePtr driver,
-                               virDomainObjPtr vm,
-                               virConnectPtr sconn,
-                               const char *xmlin,
-                               const char *dconnuri,
-                               const char *uri_str ATTRIBUTE_UNUSED,
-                               const char *dname,
-                               unsigned int flags)
+libxlDomainMigrationSrcPerformP2P(libxlDriverPrivatePtr driver,
+                                  virDomainObjPtr vm,
+                                  virConnectPtr sconn,
+                                  const char *xmlin,
+                                  const char *dconnuri,
+                                  const char *uri_str ATTRIBUTE_UNUSED,
+                                  const char *dname,
+                                  unsigned int flags)
 {
     int ret = -1;
     bool useParams;
@@ -1170,8 +1171,8 @@ libxlDomainMigrationPerformP2P(libxlDriverPrivatePtr driver,
         goto cleanup;
     }
 
-    ret = libxlDoMigrateP2P(driver, vm, sconn, xmlin, dconn, dconnuri,
-                            dname, uri_str, flags);
+    ret = libxlDoMigrateSrcP2P(driver, vm, sconn, xmlin, dconn, dconnuri,
+                               dname, uri_str, flags);
 
  cleanup:
     orig_err = virSaveLastError();
@@ -1187,13 +1188,13 @@ libxlDomainMigrationPerformP2P(libxlDriverPrivatePtr driver,
 }
 
 int
-libxlDomainMigrationPerform(libxlDriverPrivatePtr driver,
-                            virDomainObjPtr vm,
-                            const char *dom_xml ATTRIBUTE_UNUSED,
-                            const char *dconnuri ATTRIBUTE_UNUSED,
-                            const char *uri_str,
-                            const char *dname ATTRIBUTE_UNUSED,
-                            unsigned int flags)
+libxlDomainMigrationSrcPerform(libxlDriverPrivatePtr driver,
+                               virDomainObjPtr vm,
+                               const char *dom_xml ATTRIBUTE_UNUSED,
+                               const char *dconnuri ATTRIBUTE_UNUSED,
+                               const char *uri_str,
+                               const char *dname ATTRIBUTE_UNUSED,
+                               unsigned int flags)
 {
     libxlDomainObjPrivatePtr priv = vm->privateData;
     char *hostname = NULL;
@@ -1233,7 +1234,7 @@ libxlDomainMigrationPerform(libxlDriverPrivatePtr driver,
 
     /* suspend vm and send saved data to dst through socket fd */
     virObjectUnlock(vm);
-    ret = libxlDoMigrateSend(driver, vm, flags, sockfd);
+    ret = libxlDoMigrateSrcSend(driver, vm, flags, sockfd);
     virObjectLock(vm);
 
     if (ret < 0)
@@ -1249,10 +1250,10 @@ libxlDomainMigrationPerform(libxlDriverPrivatePtr driver,
 }
 
 virDomainPtr
-libxlDomainMigrationFinish(virConnectPtr dconn,
-                           virDomainObjPtr vm,
-                           unsigned int flags,
-                           int cancelled)
+libxlDomainMigrationDstFinish(virConnectPtr dconn,
+                              virDomainObjPtr vm,
+                              unsigned int flags,
+                              int cancelled)
 {
     libxlDriverPrivatePtr driver = dconn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
@@ -1350,10 +1351,10 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
 }
 
 int
-libxlDomainMigrationConfirm(libxlDriverPrivatePtr driver,
-                            virDomainObjPtr vm,
-                            unsigned int flags,
-                            int cancelled)
+libxlDomainMigrationSrcConfirm(libxlDriverPrivatePtr driver,
+                               virDomainObjPtr vm,
+                               unsigned int flags,
+                               int cancelled)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     libxlDomainObjPrivatePtr priv = vm->privateData;
@@ -1361,7 +1362,7 @@ libxlDomainMigrationConfirm(libxlDriverPrivatePtr driver,
     int ret = -1;
 
     if (cancelled) {
-        /* Resume lock process that was paused in MigrationPerform */
+        /* Resume lock process that was paused in MigrationSrcPerform */
         virDomainLockProcessResume(driver->lockManager,
                                    "xen:///system",
                                    vm,

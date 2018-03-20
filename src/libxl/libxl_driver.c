@@ -5897,8 +5897,8 @@ libxlDomainMigrateBegin3Params(virDomainPtr domain,
         goto cleanup;
     }
 
-    xmlout = libxlDomainMigrationBegin(domain->conn, vm, xmlin,
-                                       cookieout, cookieoutlen);
+    xmlout = libxlDomainMigrationSrcBegin(domain->conn, vm, xmlin,
+                                          cookieout, cookieoutlen);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -5943,14 +5943,14 @@ libxlDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
 
         goto error;
 
-    if (!(def = libxlDomainMigrationPrepareDef(driver, dom_xml, dname)))
+    if (!(def = libxlDomainMigrationDstPrepareDef(driver, dom_xml, dname)))
         goto error;
 
     if (virDomainMigratePrepareTunnel3ParamsEnsureACL(dconn, def) < 0)
         goto error;
 
-    if (libxlDomainMigrationPrepareTunnel3(dconn, st, &def, cookiein,
-                                           cookieinlen, flags) < 0)
+    if (libxlDomainMigrationDstPrepareTunnel3(dconn, st, &def, cookiein,
+                                              cookieinlen, flags) < 0)
         goto error;
 
     return 0;
@@ -5998,14 +5998,14 @@ libxlDomainMigratePrepare3Params(virConnectPtr dconn,
 
         goto error;
 
-    if (!(def = libxlDomainMigrationPrepareDef(driver, dom_xml, dname)))
+    if (!(def = libxlDomainMigrationDstPrepareDef(driver, dom_xml, dname)))
         goto error;
 
     if (virDomainMigratePrepare3ParamsEnsureACL(dconn, def) < 0)
         goto error;
 
-    if (libxlDomainMigrationPrepare(dconn, &def, uri_in, uri_out,
-                                    cookiein, cookieinlen, flags) < 0)
+    if (libxlDomainMigrationDstPrepare(dconn, &def, uri_in, uri_out,
+                                       cookiein, cookieinlen, flags) < 0)
         goto error;
 
     return 0;
@@ -6061,12 +6061,12 @@ libxlDomainMigratePerform3Params(virDomainPtr dom,
         goto cleanup;
 
     if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
-        if (libxlDomainMigrationPerformP2P(driver, vm, dom->conn, dom_xml,
-                                           dconnuri, uri, dname, flags) < 0)
+        if (libxlDomainMigrationSrcPerformP2P(driver, vm, dom->conn, dom_xml,
+                                              dconnuri, uri, dname, flags) < 0)
             goto cleanup;
     } else {
-        if (libxlDomainMigrationPerform(driver, vm, dom_xml, dconnuri,
-                                        uri, dname, flags) < 0)
+        if (libxlDomainMigrationSrcPerform(driver, vm, dom_xml, dconnuri,
+                                           uri, dname, flags) < 0)
             goto cleanup;
     }
 
@@ -6127,7 +6127,7 @@ libxlDomainMigrateFinish3Params(virConnectPtr dconn,
         return NULL;
     }
 
-    ret = libxlDomainMigrationFinish(dconn, vm, flags, cancelled);
+    ret = libxlDomainMigrationDstFinish(dconn, vm, flags, cancelled);
 
     libxlDomainObjEndJob(driver, vm);
 
@@ -6164,7 +6164,7 @@ libxlDomainMigrateConfirm3Params(virDomainPtr domain,
     if (virDomainMigrateConfirm3ParamsEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
-    ret = libxlDomainMigrationConfirm(driver, vm, flags, cancelled);
+    ret = libxlDomainMigrationSrcConfirm(driver, vm, flags, cancelled);
 
  cleanup:
     virDomainObjEndAPI(&vm);
