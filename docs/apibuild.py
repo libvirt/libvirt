@@ -590,7 +590,7 @@ class CLexer:
 #                   line[i] == '>' or line[i] == '<' or line[i] == '=' or \
 #                   line[i] == '/' or line[i] == '%' or line[i] == '&' or \
 #                   line[i] == '!' or line[i] == '|' or line[i] == '.':
-                    if line[i] == '.' and  i + 2 < l and \
+                    if line[i] == '.' and i + 2 < l and \
                        line[i+1] == '.' and line[i+2] == '.':
                         self.tokens.append(('name', '...'))
                         i = i + 3
@@ -1401,7 +1401,7 @@ class CParser:
                     while token[0] != "sep" or (token[1] != ',' and
                           token[1] != '}'):
                         # We might be dealing with '1U << 12' here
-                        value = value + re.sub("^(\d+)U$","\\1", token[1])
+                        value = value + re.sub("^(\d+)U$", "\\1", token[1])
                         token = self.token()
                 else:
                     try:
@@ -1735,7 +1735,7 @@ class CParser:
             while token is not None and token[0] == "op" and token[1] == '*':
                 self.type = self.type + token[1]
                 token = self.token()
-            if token is None or token[0] != "name" :
+            if token is None or token[0] != "name":
                 self.error("parsing function type, name expected", token)
                 return token
             self.type = self.type + token[1]
@@ -1825,41 +1825,42 @@ class CParser:
     # this dict contains the functions that are allowed to use [unsigned]
     # long for legacy reasons in their signature and return type. this list is
     # fixed. new procedures and public APIs have to use [unsigned] long long
-    long_legacy_functions = \
-      { "virGetVersion"                  : (False, ("libVer", "typeVer")),
-        "virConnectGetLibVersion"        : (False, ("libVer")),
-        "virConnectGetVersion"           : (False, ("hvVer")),
-        "virDomainGetMaxMemory"          : (True,  ()),
-        "virDomainMigrate"               : (False, ("flags", "bandwidth")),
-        "virDomainMigrate2"              : (False, ("flags", "bandwidth")),
-        "virDomainMigrateBegin3"         : (False, ("flags", "bandwidth")),
-        "virDomainMigrateConfirm3"       : (False, ("flags", "bandwidth")),
-        "virDomainMigrateDirect"         : (False, ("flags", "bandwidth")),
-        "virDomainMigrateFinish"         : (False, ("flags")),
-        "virDomainMigrateFinish2"        : (False, ("flags")),
-        "virDomainMigrateFinish3"        : (False, ("flags")),
-        "virDomainMigratePeer2Peer"      : (False, ("flags", "bandwidth")),
-        "virDomainMigratePerform"        : (False, ("flags", "bandwidth")),
-        "virDomainMigratePerform3"       : (False, ("flags", "bandwidth")),
-        "virDomainMigratePrepare"        : (False, ("flags", "bandwidth")),
-        "virDomainMigratePrepare2"       : (False, ("flags", "bandwidth")),
-        "virDomainMigratePrepare3"       : (False, ("flags", "bandwidth")),
-        "virDomainMigratePrepareTunnel"  : (False, ("flags", "bandwidth")),
-        "virDomainMigratePrepareTunnel3" : (False, ("flags", "bandwidth")),
-        "virDomainMigrateToURI"          : (False, ("flags", "bandwidth")),
-        "virDomainMigrateToURI2"         : (False, ("flags", "bandwidth")),
-        "virDomainMigrateVersion1"       : (False, ("flags", "bandwidth")),
-        "virDomainMigrateVersion2"       : (False, ("flags", "bandwidth")),
-        "virDomainMigrateVersion3"       : (False, ("flags", "bandwidth")),
-        "virDomainMigrateSetMaxSpeed"    : (False, ("bandwidth")),
-        "virDomainSetMaxMemory"          : (False, ("memory")),
-        "virDomainSetMemory"             : (False, ("memory")),
-        "virDomainSetMemoryFlags"        : (False, ("memory")),
-        "virDomainBlockCommit"           : (False, ("bandwidth")),
-        "virDomainBlockJobSetSpeed"      : (False, ("bandwidth")),
-        "virDomainBlockPull"             : (False, ("bandwidth")),
-        "virDomainBlockRebase"           : (False, ("bandwidth")),
-        "virDomainMigrateGetMaxSpeed"    : (False, ("bandwidth")) }
+    long_legacy_functions = {
+        "virGetVersion": (False, ("libVer", "typeVer")),
+        "virConnectGetLibVersion": (False, ("libVer")),
+        "virConnectGetVersion": (False, ("hvVer")),
+        "virDomainGetMaxMemory": (True, ()),
+        "virDomainMigrate": (False, ("flags", "bandwidth")),
+        "virDomainMigrate2": (False, ("flags", "bandwidth")),
+        "virDomainMigrateBegin3": (False, ("flags", "bandwidth")),
+        "virDomainMigrateConfirm3": (False, ("flags", "bandwidth")),
+        "virDomainMigrateDirect": (False, ("flags", "bandwidth")),
+        "virDomainMigrateFinish": (False, ("flags")),
+        "virDomainMigrateFinish2": (False, ("flags")),
+        "virDomainMigrateFinish3": (False, ("flags")),
+        "virDomainMigratePeer2Peer": (False, ("flags", "bandwidth")),
+        "virDomainMigratePerform": (False, ("flags", "bandwidth")),
+        "virDomainMigratePerform3": (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepare": (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepare2": (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepare3": (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepareTunnel": (False, ("flags", "bandwidth")),
+        "virDomainMigratePrepareTunnel3": (False, ("flags", "bandwidth")),
+        "virDomainMigrateToURI": (False, ("flags", "bandwidth")),
+        "virDomainMigrateToURI2": (False, ("flags", "bandwidth")),
+        "virDomainMigrateVersion1": (False, ("flags", "bandwidth")),
+        "virDomainMigrateVersion2": (False, ("flags", "bandwidth")),
+        "virDomainMigrateVersion3": (False, ("flags", "bandwidth")),
+        "virDomainMigrateSetMaxSpeed": (False, ("bandwidth")),
+        "virDomainSetMaxMemory": (False, ("memory")),
+        "virDomainSetMemory": (False, ("memory")),
+        "virDomainSetMemoryFlags": (False, ("memory")),
+        "virDomainBlockCommit": (False, ("bandwidth")),
+        "virDomainBlockJobSetSpeed": (False, ("bandwidth")),
+        "virDomainBlockPull": (False, ("bandwidth")),
+        "virDomainBlockRebase": (False, ("bandwidth")),
+        "virDomainMigrateGetMaxSpeed": (False, ("bandwidth"))
+    }
 
     def checkLongLegacyFunction(self, name, return_type, signature):
         if "long" in return_type and "long long" not in return_type:
@@ -1883,10 +1884,11 @@ class CParser:
     # this dict contains the structs that are allowed to use [unsigned]
     # long for legacy reasons. this list is fixed. new structs have to use
     # [unsigned] long long
-    long_legacy_struct_fields = \
-      { "_virDomainInfo"                 : ("maxMem", "memory"),
-        "_virNodeInfo"                   : ("memory"),
-        "_virDomainBlockJobInfo"         : ("bandwidth") }
+    long_legacy_struct_fields = {
+        "_virDomainInfo": ("maxMem", "memory"),
+        "_virNodeInfo": ("memory"),
+        "_virDomainBlockJobInfo": ("bandwidth")
+    }
 
     def checkLongLegacyStruct(self, name, fields):
         for field in fields:
@@ -1934,7 +1936,7 @@ class CParser:
         elif token[1] == 'static':
             static = 1
             token = self.token()
-            if token is None or  token[0] != 'name':
+            if token is None or token[0] != 'name':
                 return token
 
         if token[1] == 'typedef':
@@ -2205,7 +2207,7 @@ class docBuilder:
         output.write("    </macro>\n")
 
     def serialize_union(self, output, field, desc):
-        output.write("      <field name='%s' type='union' info='%s'>\n" % (field[1] , desc))
+        output.write("      <field name='%s' type='union' info='%s'>\n" % (field[1], desc))
         output.write("        <union>\n")
         for f in field[3]:
             desc = f[2]
@@ -2213,7 +2215,7 @@ class docBuilder:
                 desc = ''
             else:
                 desc = escape(desc)
-            output.write("          <field name='%s' type='%s' info='%s'/>\n" % (f[1] , f[0], desc))
+            output.write("          <field name='%s' type='%s' info='%s'/>\n" % (f[1], f[0], desc))
 
         output.write("        </union>\n")
         output.write("      </field>\n")
@@ -2238,13 +2240,13 @@ class docBuilder:
                         if field[0] == "union":
                             self.serialize_union(output, field, desc)
                         else:
-                            output.write("      <field name='%s' type='%s' info='%s'/>\n" % (field[1] , field[0], desc))
+                            output.write("      <field name='%s' type='%s' info='%s'/>\n" % (field[1], field[0], desc))
                 except:
                     self.warning("Failed to serialize struct %s" % (name))
                 output.write("    </struct>\n")
             else:
                 output.write("/>\n")
-        else :
+        else:
             output.write("    <typedef name='%s' file='%s' type='%s'" % (
                          name, self.modulename_file(id.header), id.info))
             try:
@@ -2401,7 +2403,7 @@ class docBuilder:
         typ = sorted(funcs.keys())
         for type in typ:
             if type == '' or type == 'void' or type == "int" or \
-               type == "char *" or type == "const char *" :
+               type == "char *" or type == "const char *":
                 continue
             output.write("    <type name='%s'>\n" % (type))
             ids = funcs[type]
@@ -2430,7 +2432,7 @@ class docBuilder:
         typ = sorted(funcs.keys())
         for type in typ:
             if type == '' or type == 'void' or type == "int" or \
-               type == "char *" or type == "const char *" :
+               type == "char *" or type == "const char *":
                 continue
             output.write("    <type name='%s'>\n" % (type))
             ids = sorted(funcs[type])
@@ -2589,7 +2591,7 @@ class app:
         builddir = os.path.abspath((os.environ["builddir"]))
         if srcdir == builddir:
             builddir = None
-        if glob.glob(srcdir + "/../src/libvirt.c") != [] :
+        if glob.glob(srcdir + "/../src/libvirt.c") != []:
             if not quiet:
                 print("Rebuilding API description for %s" % name)
             dirs = [srcdir + "/../src",
@@ -2599,7 +2601,7 @@ class app:
                 not os.path.exists(srcdir + "/../include/libvirt/libvirt-common.h")):
                 dirs.append(builddir + "/../include/libvirt")
             builder = docBuilder(name, srcdir, dirs, [])
-        elif glob.glob("src/libvirt.c") != [] :
+        elif glob.glob("src/libvirt.c") != []:
             if not quiet:
                 print("Rebuilding API description for %s" % name)
             builder = docBuilder(name, srcdir,

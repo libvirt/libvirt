@@ -342,21 +342,23 @@ class WmiClassVersion:
 
 
 class Property:
-    typemap = {"boolean"  : "BOOL",
-               "string"   : "STR",
-               "datetime" : "STR",
-               "int8"     : "INT8",
-               "sint8"    : "INT8",
-               "int16"    : "INT16",
-               "sint16"   : "INT16",
-               "int32"    : "INT32",
-               "sint32"   : "INT32",
-               "int64"    : "INT64",
-               "sint64"   : "INT64",
-               "uint8"    : "UINT8",
-               "uint16"   : "UINT16",
-               "uint32"   : "UINT32",
-               "uint64"   : "UINT64"}
+    typemap = {
+        "boolean": "BOOL",
+        "string": "STR",
+        "datetime": "STR",
+        "int8": "INT8",
+        "sint8": "INT8",
+        "int16": "INT16",
+        "sint16": "INT16",
+        "int32": "INT32",
+        "sint32": "INT32",
+        "int64": "INT64",
+        "sint64": "INT64",
+        "uint8": "UINT8",
+        "uint16": "UINT16",
+        "uint32": "UINT32",
+        "uint64": "UINT64"
+    }
 
 
     def __init__(self, type, name, is_array):

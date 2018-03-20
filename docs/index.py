@@ -59,21 +59,21 @@ libxml2.registerErrorHandler(callback, None)
 # to create them
 #
 TABLES={
-  "symbols" : """CREATE TABLE symbols (
+  "symbols": """CREATE TABLE symbols (
            name varchar(255) BINARY NOT NULL,
            module varchar(255) BINARY NOT NULL,
            type varchar(25) NOT NULL,
            descr varchar(255),
            UNIQUE KEY name (name),
            KEY module (module))""",
-  "words" : """CREATE TABLE words (
+  "words": """CREATE TABLE words (
            name varchar(50) BINARY NOT NULL,
            symbol varchar(255) BINARY NOT NULL,
            relevance int,
            KEY name (name),
            KEY symbol (symbol),
            UNIQUE KEY ID (name, symbol))""",
-  "wordsHTML" : """CREATE TABLE wordsHTML (
+  "wordsHTML": """CREATE TABLE wordsHTML (
            name varchar(50) BINARY NOT NULL,
            resource varchar(255) BINARY NOT NULL,
            section varchar(255),
@@ -82,30 +82,30 @@ TABLES={
            KEY name (name),
            KEY resource (resource),
            UNIQUE KEY ref (name, resource))""",
-  "wordsArchive" : """CREATE TABLE wordsArchive (
+  "wordsArchive": """CREATE TABLE wordsArchive (
            name varchar(50) BINARY NOT NULL,
            ID int(11) NOT NULL,
            relevance int,
            KEY name (name),
            UNIQUE KEY ref (name, ID))""",
-  "pages" : """CREATE TABLE pages (
+  "pages": """CREATE TABLE pages (
            resource varchar(255) BINARY NOT NULL,
            title varchar(255) BINARY NOT NULL,
            UNIQUE KEY name (resource))""",
-  "archives" : """CREATE TABLE archives (
+  "archives": """CREATE TABLE archives (
            ID int(11) NOT NULL auto_increment,
            resource varchar(255) BINARY NOT NULL,
            title varchar(255) BINARY NOT NULL,
            UNIQUE KEY id (ID,resource(255)),
            INDEX (ID),
            INDEX (resource))""",
-  "Queries" : """CREATE TABLE Queries (
+  "Queries": """CREATE TABLE Queries (
            ID int(11) NOT NULL auto_increment,
            Value varchar(50) NOT NULL,
            Count int(11) NOT NULL,
            UNIQUE KEY id (ID,Value(35)),
            INDEX (ID))""",
-  "AllQueries" : """CREATE TABLE AllQueries (
+  "AllQueries": """CREATE TABLE AllQueries (
            ID int(11) NOT NULL auto_increment,
            Value varchar(50) NOT NULL,
            Count int(11) NOT NULL,
@@ -171,7 +171,7 @@ def checkTables(db, verbose = 1):
             if verbose:
                 print "Table %s contains %d records" % (table, row[0])
         except:
-            print "Troubles with table %s : repairing" % (table)
+            print "Troubles with table %s: repairing" % (table)
             ret = c.execute("repair table %s" % table)
             print "repairing returned %d" % (ret)
             ret = c.execute("SELECT count(*) from %s" % table)
@@ -1041,7 +1041,7 @@ def analyzeHTMLPages():
             doc = libxml2.htmlParseFile(html, None)
         try:
             res = analyzeHTML(doc, html)
-            print "Parsed %s : %d paragraphs" % (html, res)
+            print "Parsed %s: %d paragraphs" % (html, res)
             ret = ret + 1
         except:
             print "could not parse %s" % (html)
@@ -1230,7 +1230,7 @@ def main():
             elif args[i] == '--archive-year':
                 i = i + 1
                 year = args[i]
-                months = ["January" , "February", "March", "April", "May",
+                months = ["January", "February", "March", "April", "May",
                           "June", "July", "August", "September", "October",
                           "November", "December"]
                 for month in months:

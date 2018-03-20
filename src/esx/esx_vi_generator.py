@@ -1342,61 +1342,53 @@ predefined_objects = ["AnyType",
                       "MethodFault",
                       "ManagedObjectReference"]
 
-additional_enum_features = { "ManagedEntityStatus"      : Enum.FEATURE__ANY_TYPE,
-                             "TaskInfoState"            : Enum.FEATURE__ANY_TYPE,
-                             "VirtualMachinePowerState" : Enum.FEATURE__ANY_TYPE }
+additional_enum_features = {
+    "ManagedEntityStatus": Enum.FEATURE__ANY_TYPE,
+    "TaskInfoState": Enum.FEATURE__ANY_TYPE,
+    "VirtualMachinePowerState": Enum.FEATURE__ANY_TYPE
+}
 
-additional_object_features = { "AutoStartDefaults"          : Object.FEATURE__ANY_TYPE,
-                               "AutoStartPowerInfo"         : Object.FEATURE__ANY_TYPE,
-                               "DatastoreHostMount"         : Object.FEATURE__DEEP_COPY |
-                                                              Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "DatastoreInfo"              : Object.FEATURE__ANY_TYPE |
-                                                              Object.FEATURE__DYNAMIC_CAST,
-                               "HostConfigManager"          : Object.FEATURE__ANY_TYPE,
-                               "HostCpuIdInfo"              : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "HostDatastoreBrowserSearchResults" : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "HostHostBusAdapter"         : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "HostInternetScsiHba"        : Object.FEATURE__DYNAMIC_CAST |
-                                                              Object.FEATURE__DEEP_COPY,
-                               "HostInternetScsiTargetTransport"  : Object.FEATURE__DYNAMIC_CAST,
-                               "HostScsiDisk"               : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE |
-                                                              Object.FEATURE__DYNAMIC_CAST,
-                               "HostScsiTopologyInterface"  : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "HostScsiTopologyLun"        : Object.FEATURE__ANY_TYPE |
-                                                              Object.FEATURE__LIST |
-                                                              Object.FEATURE__DEEP_COPY,
-                               "HostScsiTopologyTarget"     : Object.FEATURE__ANY_TYPE |
-                                                              Object.FEATURE__LIST,
-                               "HostPortGroup"              : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "HostVirtualSwitch"          : Object.FEATURE__DEEP_COPY |
-                                                              Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "ManagedObjectReference"     : Object.FEATURE__ANY_TYPE,
-                               "ObjectContent"              : Object.FEATURE__DEEP_COPY,
-                               "PhysicalNic"                : Object.FEATURE__DEEP_COPY |
-                                                              Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "ResourcePoolResourceUsage"  : Object.FEATURE__ANY_TYPE,
-                               "ScsiLun"                    : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE |
-                                                              Object.FEATURE__DEEP_COPY,
-                               "ScsiLunDurableName"         : Object.FEATURE__LIST,
-                               "ServiceContent"             : Object.FEATURE__DESERIALIZE,
-                               "SharesInfo"                 : Object.FEATURE__ANY_TYPE,
-                               "TaskInfo"                   : Object.FEATURE__LIST |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "UserSession"                : Object.FEATURE__ANY_TYPE,
-                               "VirtualMachineQuestionInfo" : Object.FEATURE__ANY_TYPE,
-                               "VirtualMachineSnapshotTree" : Object.FEATURE__DEEP_COPY |
-                                                              Object.FEATURE__ANY_TYPE,
-                               "VmEventArgument"            : Object.FEATURE__DESERIALIZE }
+additional_object_features = {
+    "AutoStartDefaults": Object.FEATURE__ANY_TYPE,
+    "AutoStartPowerInfo": Object.FEATURE__ANY_TYPE,
+    "DatastoreHostMount": (Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST |
+                           Object.FEATURE__ANY_TYPE),
+    "DatastoreInfo": Object.FEATURE__ANY_TYPE | Object.FEATURE__DYNAMIC_CAST,
+    "HostConfigManager": Object.FEATURE__ANY_TYPE,
+    "HostCpuIdInfo": Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
+    "HostDatastoreBrowserSearchResults": (Object.FEATURE__LIST |
+                                          Object.FEATURE__ANY_TYPE),
+    "HostHostBusAdapter": Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
+    "HostInternetScsiHba": (Object.FEATURE__DYNAMIC_CAST |
+                            Object.FEATURE__DEEP_COPY),
+    "HostInternetScsiTargetTransport": Object.FEATURE__DYNAMIC_CAST,
+    "HostScsiDisk": (Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE |
+                     Object.FEATURE__DYNAMIC_CAST),
+    "HostScsiTopologyInterface": (Object.FEATURE__LIST |
+                                  Object.FEATURE__ANY_TYPE),
+    "HostScsiTopologyLun": (Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST |
+                            Object.FEATURE__DEEP_COPY),
+    "HostScsiTopologyTarget": Object.FEATURE__ANY_TYPE | Object.FEATURE__LIST,
+    "HostPortGroup": Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
+    "HostVirtualSwitch": (Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST |
+                          Object.FEATURE__ANY_TYPE),
+    "ManagedObjectReference": Object.FEATURE__ANY_TYPE,
+    "ObjectContent": Object.FEATURE__DEEP_COPY,
+    "PhysicalNic": (Object.FEATURE__DEEP_COPY | Object.FEATURE__LIST |
+                    Object.FEATURE__ANY_TYPE),
+    "ResourcePoolResourceUsage": Object.FEATURE__ANY_TYPE,
+    "ScsiLun": (Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE |
+                Object.FEATURE__DEEP_COPY),
+    "ScsiLunDurableName": Object.FEATURE__LIST,
+    "ServiceContent": Object.FEATURE__DESERIALIZE,
+    "SharesInfo": Object.FEATURE__ANY_TYPE,
+    "TaskInfo": Object.FEATURE__LIST | Object.FEATURE__ANY_TYPE,
+    "UserSession": Object.FEATURE__ANY_TYPE,
+    "VirtualMachineQuestionInfo": Object.FEATURE__ANY_TYPE,
+    "VirtualMachineSnapshotTree": (Object.FEATURE__DEEP_COPY |
+                                   Object.FEATURE__ANY_TYPE),
+    "VmEventArgument": Object.FEATURE__DESERIALIZE
+}
 
 removed_object_features = {}
 
