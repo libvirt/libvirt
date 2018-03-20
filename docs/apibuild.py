@@ -432,21 +432,17 @@ class CLexer:
             line = self.input.readline()
             if not line:
                 return None
-            self.lineno = self.lineno + 1
-            line = line.lstrip()
-            line = line.rstrip()
+            self.lineno += 1
+            line = line.strip()
             if line == '':
                 continue
             while line[-1] == '\\':
                 line = line[:-1]
-                n = self.input.readline()
-                self.lineno = self.lineno + 1
-                n = n.lstrip()
-                n = n.rstrip()
+                n = self.input.readline().strip()
+                self.lineno += 1
                 if not n:
                     break
-                else:
-                    line = line + n
+                line += n
         return line
 
     def getlineno(self):
