@@ -756,48 +756,38 @@ class CParser:
     #
     # Parse a comment block associate to a typedef
     #
-    def parseTypeComment(self, name, quiet=0):
+    def parseTypeComment(self, name, quiet=False):
         if name[0:2] == '__':
-            quiet = 1
-
-        args = []
-        desc = ""
+            quiet = True
 
         if self.comment is None:
             if not quiet:
                 self.warning("Missing comment for type %s" % (name))
-            return((args, desc))
-        if self.comment[0] != '*':
+            return None
+        if not self.comment.startswith('*'):
             if not quiet:
                 self.warning("Missing * in type comment for %s" % (name))
-            return((args, desc))
+            return None
+
         lines = self.comment.split('\n')
-        if lines[0] == '*':
-            del lines[0]
+        # Remove lines that contain only single asterisk
+        lines[:] = [line for line in lines if line.strip() != '*']
+
         if lines[0] != "* %s:" % (name):
             if not quiet:
                 self.warning("Misformatted type comment for %s" % (name))
                 self.warning("  Expecting '* %s:' got '%s'" % (name, lines[0]))
-            return((args, desc))
+            return None
         del lines[0]
-        while len(lines) > 0 and lines[0] == '*':
-            del lines[0]
-        desc = ""
-        while len(lines) > 0:
-            l = lines[0]
-            while len(l) > 0 and l[0] == '*':
-                l = l[1:]
-            l = l.strip()
-            desc = desc + " " + l
-            del lines[0]
 
-        desc = desc.strip()
+        # Concatenate all remaining lines by striping leading asterisks
+        desc = " ".join([line.lstrip("*").strip() for line in lines]).strip()
 
-        if quiet == 0:
-            if desc == "":
-                self.warning("Type comment for %s lack description of the macro" % (name))
+        if not (quiet or desc):
+            self.warning("Type comment for %s lack description of the macro"
+                         % (name))
 
-        return(desc)
+        return desc
     #
     # Parse a comment block associate to a macro
     #
