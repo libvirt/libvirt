@@ -283,24 +283,19 @@ class index:
             d.set_static(1)
 
         if d is not None and name is not None and type is not None:
-            if type == "function":
-                self.functions[name] = d
-            elif type == "functype":
-                self.functions[name] = d
-            elif type == "variable":
-                self.variables[name] = d
-            elif type == "include":
-                self.includes[name] = d
-            elif type == "struct":
-                self.structs[name] = d
-            elif type == "union":
-                self.unions[name] = d
-            elif type == "enum":
-                self.enums[name] = d
-            elif type == "typedef":
-                self.typedefs[name] = d
-            elif type == "macro":
-                self.macros[name] = d
+            type_map = {
+                "function": self.functions,
+                "functype": self.functions,
+                "variable": self.variables,
+                "include": self.includes,
+                "struct": self.structs,
+                "union": self.unions,
+                "enum": self.enums,
+                "typedef": self.typedefs,
+                "macro": self.macros
+            }
+            if type in type_map:
+                type_map[type][name] = d
             else:
                 self.warning("Unable to register type ", type)
 
