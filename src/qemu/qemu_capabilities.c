@@ -1833,7 +1833,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsIntelIOMMU[] = {
     { "device-iotlb", QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB },
 };
 
-/* see documentation for virQEMUCapsQMPSchemaGetByPath for the query format */
+/* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/options/+gluster/debug-level", QEMU_CAPS_GLUSTER_DEBUG_LEVEL},
     { "blockdev-add/arg-type/+gluster/debug", QEMU_CAPS_GLUSTER_DEBUG_LEVEL},
@@ -4579,7 +4579,7 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCapsPtr qemuCaps,
     for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsQMPSchemaQueries); i++) {
         entry = virQEMUCapsQMPSchemaQueries + i;
 
-        if (virQEMUCapsQMPSchemaQueryPath(entry->value, schema))
+        if (virQEMUQAPISchemaPathExists(entry->value, schema))
             virQEMUCapsSet(qemuCaps, entry->flag);
     }
 
