@@ -386,14 +386,13 @@ class index:
     def merge_public(self, idx):
         for id in idx.functions.keys():
              if id in self.functions:
+                 up = idx.functions[id]
                  # check that function condition agrees with header
-                 if idx.functions[id].conditionals != \
-                    self.functions[id].conditionals:
+                 if up.conditionals != self.functions[id].conditionals:
                      self.warning("Header condition differs from Function for %s:" \
                                       % id)
                      self.warning("  H: %s" % self.functions[id].conditionals)
-                     self.warning("  C: %s" % idx.functions[id].conditionals)
-                 up = idx.functions[id]
+                     self.warning("  C: %s" % up.conditionals)
                  self.functions[id].update(None, up.module, up.type, up.info, up.extra)
          #     else:
          #         print("Function %s from %s is not declared in headers" % (
@@ -515,7 +514,7 @@ class CLexer:
                 self.last = ('string', tok)
                 return self.last
 
-            if l >= 2 and line[0] == '/' and line[1] == '*':
+            if line.startswith("/*"):
                 line = line[2:]
                 found = 0
                 tok = ""
@@ -539,7 +538,7 @@ class CLexer:
                             return None
                 self.last = ('comment', tok)
                 return self.last
-            if l >= 2 and line[0] == '/' and line[1] == '/':
+            if line.startswith("//"):
                 line = line[2:]
                 self.last = ('comment', line)
                 return self.last
@@ -564,28 +563,23 @@ class CLexer:
                 if line[i] == ' ' or line[i] == '\t':
                     i = i + 1
                     continue
-                o = ord(line[i])
-                if (o >= 97 and o <= 122) or (o >= 65 and o <= 90) or \
-                   (o >= 48 and o <= 57):
+                if line[i].isalnum():
                     s = i
                     while i < l:
-                        o = ord(line[i])
-                        if (o >= 97 and o <= 122) or (o >= 65 and o <= 90) or \
-                           (o >= 48 and o <= 57) or \
-                           (" \t(){}:;,+-*/%&!|[]=><".find(line[i]) == -1):
+                        if line[i] not in " \t(){}:;,+-*/%&!|[]=><":
                             i = i + 1
                         else:
                             break
                     self.tokens.append(('name', line[s:i]))
                     continue
-                if "(){}:;,[]".find(line[i]) != -1:
+                if line[i] in "(){}:;,[]":
 #                 if line[i] == '(' or line[i] == ')' or line[i] == '{' or \
 #                   line[i] == '}' or line[i] == ':' or line[i] == ';' or \
 #                   line[i] == ',' or line[i] == '[' or line[i] == ']':
                     self.tokens.append(('sep', line[i]))
                     i = i + 1
                     continue
-                if "+-*><=/%&!|.".find(line[i]) != -1:
+                if line[i] in "+-*><=/%&!|.":
 #                 if line[i] == '+' or line[i] == '-' or line[i] == '*' or \
 #                   line[i] == '>' or line[i] == '<' or line[i] == '=' or \
 #                   line[i] == '/' or line[i] == '%' or line[i] == '&' or \
@@ -597,8 +591,7 @@ class CLexer:
                         continue
 
                     j = i + 1
-                    if j < l and (
-                       "+-*><=/%&!|".find(line[j]) != -1):
+                    if j < l and line[j] in "+-*><=/%&!|":
 #                       line[j] == '+' or line[j] == '-' or line[j] == '*' or \
 #                       line[j] == '>' or line[j] == '<' or line[j] == '=' or \
 #                       line[j] == '/' or line[j] == '%' or line[j] == '&' or \
@@ -611,10 +604,7 @@ class CLexer:
                     continue
                 s = i
                 while i < l:
-                    o = ord(line[i])
-                    if (o >= 97 and o <= 122) or (o >= 65 and o <= 90) or \
-                       (o >= 48 and o <= 57) or \
-                       (" \t(){}:;,+-*/%&!|[]=><".find(line[i]) == -1):
+                    if line[i] not in " \t(){}:;,+-*/%&!|[]=><":
 #                        line[i] != ' ' and line[i] != '\t' and
 #                        line[i] != '(' and line[i] != ')' and
 #                        line[i] != '{'  and line[i] != '}' and
@@ -1555,10 +1545,8 @@ class CParser:
         if token is None:
             return token
 
-        while token[0] == "name" and (
-              token[1] == "const" or \
-              token[1] == "unsigned" or \
-              token[1] == "signed"):
+        while (token[0] == "name" and
+               token[1] in ["const", "unsigned", "signed"]):
             if self.type == "":
                 self.type = token[1]
             else:
@@ -2402,8 +2390,7 @@ class docBuilder:
                 pass
         typ = sorted(funcs.keys())
         for type in typ:
-            if type == '' or type == 'void' or type == "int" or \
-               type == "char *" or type == "const char *":
+            if type in ['', "void", "int", "char *", "const char *"]:
                 continue
             output.write("    <type name='%s'>\n" % (type))
             ids = funcs[type]
@@ -2431,8 +2418,7 @@ class docBuilder:
                 pass
         typ = sorted(funcs.keys())
         for type in typ:
-            if type == '' or type == 'void' or type == "int" or \
-               type == "char *" or type == "const char *":
+            if type in ['', "void", "int", "char *", "const char *"]:
                 continue
             output.write("    <type name='%s'>\n" % (type))
             ids = sorted(funcs[type])
