@@ -7,10 +7,12 @@ matrix:
     - compiler: gcc
       dist: trusty
       env:
+        - PYTHON=$(which python2)
         - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=upstart"
     - compiler: clang
       dist: trusty
       env:
+        - PYTHON=$(which python3)
         - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=systemd"
     - compiler: clang
       os: osx
