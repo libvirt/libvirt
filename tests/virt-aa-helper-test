@@ -359,6 +359,9 @@ testme "0" "hugepages" "-r -u $valid_uuid -F /run/hugepages/kvm/\*\*" "$test_xml
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,<graphics.*>,<graphics type='vnc' socket='/var/lib/libvirt/qemu/myself.vnc'><listen type='address' address='0.0.0.0'/></graphics>,g" "$template_xml" > "$test_xml"
 testme "0" "vnc socket" "-r -u $valid_uuid" "$test_xml"
 
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<input type='passthrough' bus='virtio'><source evdev='$disk2' /></input></devices>,g" "$template_xml" > "$test_xml"
+testme "0" "input dev passthrough" "-r -u $valid_uuid" "$test_xml"
+
 testme "0" "help" "-h"
 
 echo "" >$output

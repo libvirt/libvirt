@@ -1157,6 +1157,14 @@ get_files(vahControl * ctl)
         }
     }
 
+    for (i = 0; i < ctl->def->ninputs; i++) {
+        if (ctl->def->inputs[i] &&
+                ctl->def->inputs[i]->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
+            if (vah_add_file(&buf, ctl->def->inputs[i]->source.evdev, "rw") != 0)
+                goto cleanup;
+        }
+    }
+
     for (i = 0; i < ctl->def->nnets; i++) {
         if (ctl->def->nets[i] &&
                 ctl->def->nets[i]->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
