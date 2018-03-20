@@ -362,6 +362,9 @@ testme "0" "vnc socket" "-r -u $valid_uuid" "$test_xml"
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<input type='passthrough' bus='virtio'><source evdev='$disk2' /></input></devices>,g" "$template_xml" > "$test_xml"
 testme "0" "input dev passthrough" "-r -u $valid_uuid" "$test_xml"
 
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,<memory>524288</memory>,<memory>1048576</memory>,g" -e "s,</devices>,<memory model='nvdimm'><source><path>$disk2</path></source><target><size unit='KiB'>524288</size><node>0</node></target></memory></devices>,g" "$template_xml" > "$test_xml"
+testme "0" "nvdimm" "-r -u $valid_uuid" "$test_xml"
+
 testme "0" "help" "-h"
 
 echo "" >$output
