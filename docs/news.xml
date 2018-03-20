@@ -35,6 +35,17 @@
 <libvirt>
   <release version="v4.2.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          Support building with Python 3
+        </summary>
+        <description>
+          Python is required to build libvirt, and up until now only Python 2
+          could be used as an interpreter. All scripts used during build have
+          now been made compatible with Python 3, which means both major
+          releases of the language are fully supported.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
