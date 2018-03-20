@@ -156,7 +156,7 @@ class identifier:
         if self.static:
             r = r + " static"
         if self.module is not None:
-            r = r + " from %s" % (self.module)
+            r = r + " from %s" % self.module
         if self.info is not None:
             r = r + " " + repr(self.info)
         if self.extra is not None:
@@ -458,7 +458,7 @@ class CLexer:
     def debug(self):
         print("Last token: ", self.last)
         print("Token queue: ", self.tokens)
-        print("Line %d end: " % (self.lineno), self.line)
+        print("Line %d end: " % self.lineno, self.line)
 
     def token(self):
         while self.tokens == []:
@@ -744,20 +744,20 @@ class CParser:
 
         if self.comment is None:
             if not quiet:
-                self.warning("Missing comment for type %s" % (name))
+                self.warning("Missing comment for type %s" % name)
             return None
         if not self.comment.startswith('*'):
             if not quiet:
-                self.warning("Missing * in type comment for %s" % (name))
+                self.warning("Missing * in type comment for %s" % name)
             return None
 
         lines = self.comment.split('\n')
         # Remove lines that contain only single asterisk
         lines[:] = [line for line in lines if line.strip() != '*']
 
-        if lines[0] != "* %s:" % (name):
+        if lines[0] != "* %s:" % name:
             if not quiet:
-                self.warning("Misformatted type comment for %s" % (name))
+                self.warning("Misformatted type comment for %s" % name)
                 self.warning("  Expecting '* %s:' got '%s'" % (name, lines[0]))
             return None
         del lines[0]
@@ -767,7 +767,7 @@ class CParser:
 
         if not (quiet or desc):
             self.warning("Type comment for %s lack description of the macro"
-                         % (name))
+                         % name)
 
         return desc
     #
@@ -786,33 +786,33 @@ class CParser:
 
         if self.comment is None:
             if not quiet:
-                self.warning("Missing comment for macro %s" % (name))
-            return((args, desc))
+                self.warning("Missing comment for macro %s" % name)
+            return args, desc
         if self.comment[0] != '*':
             if not quiet:
-                self.warning("Missing * in macro comment for %s" % (name))
-            return((args, desc))
+                self.warning("Missing * in macro comment for %s" % name)
+            return args, desc
         lines = self.comment.split('\n')
         if lines[0] == '*':
             del lines[0]
-        if lines[0] != "* %s:" % (name):
+        if lines[0] != "* %s:" % name:
             if not quiet:
-                self.warning("Misformatted macro comment for %s" % (name))
+                self.warning("Misformatted macro comment for %s" % name)
                 self.warning("  Expecting '* %s:' got '%s'" % (name, lines[0]))
-            return((args, desc))
+            return args, desc
         del lines[0]
         while lines[0] == '*':
             del lines[0]
         while len(lines) > 0 and lines[0][0:3] == '* @':
             l = lines[0][3:]
             try:
-                (arg, desc) = l.split(':', 1)
+                arg, desc = l.split(':', 1)
                 desc = desc.strip()
                 arg = arg.strip()
             except:
                 if not quiet:
-                    self.warning("Misformatted macro comment for %s" % (name))
-                    self.warning("  problem with '%s'" % (lines[0]))
+                    self.warning("Misformatted macro comment for %s" % name)
+                    self.warning("  problem with '%s'" % lines[0])
                 del lines[0]
                 continue
             del lines[0]
@@ -841,9 +841,9 @@ class CParser:
 
         if quiet == 0:
             if desc == "":
-                self.warning("Macro comment for %s lack description of the macro" % (name))
+                self.warning("Macro comment for %s lack description of the macro" % name)
 
-        return((args, desc))
+        return args, desc
 
     #
     # Parse a comment block and merge the information found in the
@@ -860,26 +860,26 @@ class CParser:
         if name in ignored_functions:
             quiet = 1
 
-        (ret, args) = description
+        ret, args = description
         desc = ""
         retdesc = ""
 
         if self.comment is None:
             if not quiet:
-                self.warning("Missing comment for function %s" % (name))
-            return(((ret[0], retdesc), args, desc))
+                self.warning("Missing comment for function %s" % name)
+            return (ret[0], retdesc), args, desc
         if self.comment[0] != '*':
             if not quiet:
-                self.warning("Missing * in function comment for %s" % (name))
-            return(((ret[0], retdesc), args, desc))
+                self.warning("Missing * in function comment for %s" % name)
+            return (ret[0], retdesc), args, desc
         lines = self.comment.split('\n')
         if lines[0] == '*':
             del lines[0]
-        if lines[0] != "* %s:" % (name):
+        if lines[0] != "* %s:" % name:
             if not quiet:
-                self.warning("Misformatted function comment for %s" % (name))
+                self.warning("Misformatted function comment for %s" % name)
                 self.warning("  Expecting '* %s:' got '%s'" % (name, lines[0]))
-            return(((ret[0], retdesc), args, desc))
+            return (ret[0], retdesc), args, desc
         del lines[0]
         while lines[0] == '*':
             del lines[0]
@@ -887,13 +887,13 @@ class CParser:
         while len(lines) > 0 and lines[0][0:3] == '* @':
             l = lines[0][3:]
             try:
-                (arg, desc) = l.split(':', 1)
+                arg, desc = l.split(':', 1)
                 desc = desc.strip()
                 arg = arg.strip()
             except:
                 if not quiet:
-                    self.warning("Misformatted function comment for %s" % (name))
-                    self.warning("  problem with '%s'" % (lines[0]))
+                    self.warning("Misformatted function comment for %s" % name)
+                    self.warning("  problem with '%s'" % lines[0])
                 del lines[0]
                 continue
             del lines[0]
@@ -966,12 +966,12 @@ class CParser:
                     self.warning("Function comment for %s lacks description of arg %s" % (name, args[i][1]))
                 i = i + 1
             if retdesc == "" and ret[0] != "void":
-                self.warning("Function comment for %s lacks description of return value" % (name))
+                self.warning("Function comment for %s lacks description of return value" % name)
             if desc == "":
-                self.warning("Function comment for %s lacks description of the function" % (name))
+                self.warning("Function comment for %s lacks description of the function" % name)
 
 
-        return(((ret[0], retdesc), args, desc))
+        return (ret[0], retdesc), args, desc
 
     def parsePreproc(self, token):
         if debug:
@@ -1362,7 +1362,7 @@ class CParser:
                     try:
                         value = "%d" % (int(value) + 1)
                     except:
-                        self.warning("Failed to compute value of enum %s" % (name))
+                        self.warning("Failed to compute value of enum %s" % name)
                         value = ""
                 if token[0] == "sep" and token[1] == ",":
                     if commentsBeforeVal:
@@ -1822,7 +1822,7 @@ class CParser:
                     raise Exception()
             except:
                 self.error(("function '%s' is not allowed to return long, "
-                            "use long long instead") % (name))
+                            "use long long instead") % name)
 
         for param in signature:
             if "long" in param[0] and "long long" not in param[0]:
@@ -2156,7 +2156,7 @@ class docBuilder:
                              name, escape(desc)))
                 self.indexString(name, desc)
             else:
-                output.write("      <arg name='%s'/>\n" % (name))
+                output.write("      <arg name='%s'/>\n" % name)
         output.write("    </macro>\n")
 
     def serialize_union(self, output, field, desc):
@@ -2195,7 +2195,7 @@ class docBuilder:
                         else:
                             output.write("      <field name='%s' type='%s' info='%s'/>\n" % (field[1], field[0], desc))
                 except:
-                    self.warning("Failed to serialize struct %s" % (name))
+                    self.warning("Failed to serialize struct %s" % name)
                 output.write("    </struct>\n")
             else:
                 output.write("/>\n")
