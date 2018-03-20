@@ -90,7 +90,7 @@ virConnectNumOfSecrets(virConnectPtr conn)
  * @secrets: Pointer to a variable to store the array containing the secret
  *           objects or NULL if the list is not required (just returns the
  *           number of secrets).
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virConnectListAllSecretsFlags.
  *
  * Collect the list of secrets, and allocate an array to store those
  * objects.

@@ -72,7 +72,7 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
  * @devices: Pointer to a variable to store the array containing the node
  *           device objects or NULL if the list is not required (just returns
  *           number of node devices).
- * @flags: bitwise-OR of virConnectListAllNodeDevices.
+ * @flags: bitwise-OR of virConnectListAllNodeDeviceFlags.
  *
  * Collect the list of node devices, and allocate an array to store those
  * objects.
