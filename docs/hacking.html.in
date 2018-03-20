@@ -15,7 +15,7 @@
 
       <li>
         <p>Official upstream repository is kept in git
-        (<code>git://libvirt.org/libvirt.git</code>) and is browsable
+        (<code>https://libvirt.org/git/libvirt.git</code>) and is browsable
         along with other libvirt-related repositories
         (e.g. libvirt-python) <a href="https://libvirt.org/git/">online</a>.</p>
       </li>

@@ -25,7 +25,7 @@ few prerequisites, later, a plain `git pull && make' should be sufficient.
 
 You can get a copy of the source repository like this:
 
-        $ git clone git://libvirt.org/libvirt
+        $ git clone https://libvirt.org/git/libvirt.git
         $ cd libvirt
 
 As an optional step, if you already have a copy of the gnulib git

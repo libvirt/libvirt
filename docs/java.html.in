@@ -29,7 +29,7 @@ href="http://git-scm.com/">git</a> repository available on
 <a href="https://libvirt.org/git/">libvirt.org</a>:
 </p>
 <pre>
-git clone git://libvirt.org/libvirt-java.git
+git clone https://libvirt.org/git/libvirt-java.git
 </pre>
 <p>
 It can also be browsed at

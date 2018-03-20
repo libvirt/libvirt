@@ -14,7 +14,7 @@ href="http://git-scm.com/">git</a> repository available on
 <a href="https://libvirt.org/git/">libvirt.org</a>:
 </p>
 <pre>
-git clone git://libvirt.org/libvirt-php.git
+git clone https://libvirt.org/git/libvirt-php.git
 </pre>
 <p>
 It can also be browsed at

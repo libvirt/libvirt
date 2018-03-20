@@ -50,7 +50,7 @@
     </p>
 
 <pre>
-git clone git://libvirt.org/libvirt-csharp.git
+git clone https://libvirt.org/git/libvirt-csharp.git
 </pre>
 
     <p>

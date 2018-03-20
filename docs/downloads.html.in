@@ -517,6 +517,15 @@
     </p>
 
     <pre>
+git clone https://libvirt.org/git/[module name].git</pre>
+
+    <p>
+      The <code>git://</code> protocol is also available if desired, but
+      <code>https://</code> is encouraged, since it is more reliable when
+      faced with strict firewalls.
+    </p>
+
+    <pre>
 git clone git://libvirt.org/[module name].git</pre>
 
     <p>
