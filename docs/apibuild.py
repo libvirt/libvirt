@@ -2318,8 +2318,7 @@ class docBuilder:
                 if desc.find("DEPRECATED") != -1:
                     output.write("     <deprecated/>\n")
 
-        ids = sorted(dict.macros.keys())
-        for id in uniq(ids):
+        for id in uniq(dict.macros.keys()):
             # Macros are sometime used to masquerade other types.
             if id in dict.functions:
                 continue
@@ -2334,20 +2333,15 @@ class docBuilder:
             if id in dict.enums:
                 continue
             output.write("     <exports symbol='%s' type='macro'/>\n" % (id))
-        ids = sorted(dict.enums.keys())
-        for id in uniq(ids):
+        for id in uniq(dict.enums.keys()):
             output.write("     <exports symbol='%s' type='enum'/>\n" % (id))
-        ids = sorted(dict.typedefs.keys())
-        for id in uniq(ids):
+        for id in uniq(dict.typedefs.keys()):
             output.write("     <exports symbol='%s' type='typedef'/>\n" % (id))
-        ids = sorted(dict.structs.keys())
-        for id in uniq(ids):
+        for id in uniq(dict.structs.keys()):
             output.write("     <exports symbol='%s' type='struct'/>\n" % (id))
-        ids = sorted(dict.variables.keys())
-        for id in uniq(ids):
+        for id in uniq(dict.variables.keys()):
             output.write("     <exports symbol='%s' type='variable'/>\n" % (id))
-        ids = sorted(dict.functions.keys())
-        for id in uniq(ids):
+        for id in uniq(dict.functions.keys()):
             output.write("     <exports symbol='%s' type='function'/>\n" % (id))
         output.write("    </file>\n")
 
@@ -2363,7 +2357,6 @@ class docBuilder:
                        list(dict.typedefs.keys()) + \
                        list(dict.structs.keys()) + \
                        list(dict.enums.keys()))
-            ids.sort()
             for id in ids:
                 output.write("      <ref name='%s'/>\n" % (id))
             output.write("    </file>\n")
