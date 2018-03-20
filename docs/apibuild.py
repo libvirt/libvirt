@@ -137,8 +137,8 @@ def uniq(items):
     return k
 
 class identifier:
-    def __init__(self, name, header=None, module=None, type=None, lineno = 0,
-                 info=None, extra=None, conditionals = None):
+    def __init__(self, name, header=None, module=None, type=None, lineno=0,
+                 info=None, extra=None, conditionals=None):
         self.name = name
         self.header = header
         self.module = module
@@ -209,7 +209,7 @@ class identifier:
     def get_conditionals(self):
         return self.conditionals
 
-    def update(self, header, module, type = None, info = None, extra=None,
+    def update(self, header, module, type=None, info=None, extra=None,
                conditionals=None):
         if self.name == debugsym and not quiet:
             print("=> update %s : %s" % (debugsym, (module, type, info,
@@ -228,7 +228,7 @@ class identifier:
             self.set_conditionals(conditionals)
 
 class index:
-    def __init__(self, name = "noname"):
+    def __init__(self, name="noname"):
         self.name = name
         self.identifiers = {}
         self.functions = {}
@@ -247,7 +247,7 @@ class index:
         warnings = warnings + 1
         print(msg)
 
-    def add_ref(self, name, header, module, static, type, lineno, info=None, extra=None, conditionals = None):
+    def add_ref(self, name, header, module, static, type, lineno, info=None, extra=None, conditionals=None):
         if name[0:2] == '__':
             return None
         d = None
@@ -269,7 +269,7 @@ class index:
 
         return d
 
-    def add(self, name, header, module, static, type, lineno, info=None, extra=None, conditionals = None):
+    def add(self, name, header, module, static, type, lineno, info=None, extra=None, conditionals=None):
         if name[0:2] == '__':
             return None
         d = None
@@ -629,7 +629,7 @@ class CLexer:
 
 class CParser:
     """The C module parser"""
-    def __init__(self, filename, idx = None):
+    def __init__(self, filename, idx=None):
         self.filename = filename
         if len(filename) > 2 and filename[-2:] == '.h':
             self.is_header = 1
@@ -661,7 +661,7 @@ class CParser:
     def lineno(self):
         return self.lexer.getlineno()
 
-    def index_add(self, name, module, static, type, info=None, extra = None):
+    def index_add(self, name, module, static, type, info=None, extra=None):
         if self.is_header == 1:
             self.index.add(name, module, module, static, type, self.lineno(),
                            info, extra, self.conditionals)
@@ -670,7 +670,7 @@ class CParser:
                            info, extra, self.conditionals)
 
     def index_add_ref(self, name, module, static, type, info=None,
-                      extra = None):
+                      extra=None):
         if self.is_header == 1:
             self.index.add_ref(name, module, module, static, type,
                                self.lineno(), info, extra, self.conditionals)
@@ -763,7 +763,7 @@ class CParser:
     #
     # Parse a comment block associate to a typedef
     #
-    def parseTypeComment(self, name, quiet = 0):
+    def parseTypeComment(self, name, quiet=0):
         if name[0:2] == '__':
             quiet = 1
 
@@ -808,7 +808,7 @@ class CParser:
     #
     # Parse a comment block associate to a macro
     #
-    def parseMacroComment(self, name, quiet = 0):
+    def parseMacroComment(self, name, quiet=0):
         global ignored_macros
 
         if name[0:2] == '__':
@@ -885,7 +885,7 @@ class CParser:
      # parameters descriptions, finally returns a block as complete
      # as possible
      #
-    def mergeFunctionComment(self, name, description, quiet = 0):
+    def mergeFunctionComment(self, name, description, quiet=0):
         global ignored_functions
 
         if name == 'main':

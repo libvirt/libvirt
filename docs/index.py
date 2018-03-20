@@ -144,7 +144,7 @@ def createTable(db, name):
         return -1
     return ret
 
-def checkTables(db, verbose = 1):
+def checkTables(db, verbose=1):
     global TABLES
 
     if db is None:
@@ -188,7 +188,7 @@ def checkTables(db, verbose = 1):
         pass
     return 0
 
-def openMySQL(db="libvir", passwd=None, verbose = 1):
+def openMySQL(db="libvir", passwd=None, verbose=1):
     global DB
 
     if passwd is None:
@@ -275,25 +275,25 @@ def updateSymbol(name, module, type, desc):
 
     return ret
 
-def addFunction(name, module, desc = ""):
+def addFunction(name, module, desc=""):
     return updateSymbol(name, module, 'function', desc)
 
-def addMacro(name, module, desc = ""):
+def addMacro(name, module, desc=""):
     return updateSymbol(name, module, 'macro', desc)
 
-def addEnum(name, module, desc = ""):
+def addEnum(name, module, desc=""):
     return updateSymbol(name, module, 'enum', desc)
 
-def addStruct(name, module, desc = ""):
+def addStruct(name, module, desc=""):
     return updateSymbol(name, module, 'struct', desc)
 
-def addConst(name, module, desc = ""):
+def addConst(name, module, desc=""):
     return updateSymbol(name, module, 'const', desc)
 
-def addType(name, module, desc = ""):
+def addType(name, module, desc=""):
     return updateSymbol(name, module, 'type', desc)
 
-def addFunctype(name, module, desc = ""):
+def addFunctype(name, module, desc=""):
     return updateSymbol(name, module, 'functype', desc)
 
 def addPage(resource, title):
@@ -1055,7 +1055,7 @@ def analyzeHTMLPages():
 
 import time
 
-def getXMLDateArchive(t = None):
+def getXMLDateArchive(t=None):
     if t is None:
         t = time.time()
     T = time.gmtime(t)
@@ -1064,7 +1064,7 @@ def getXMLDateArchive(t = None):
     url = "http://www.redhat.com/archives/libvir-list/%d-%s/date.html" % (year, month)
     return url
 
-def scanXMLMsgArchive(url, title, force = 0):
+def scanXMLMsgArchive(url, title, force=0):
     if url is None or title is None:
         return 0
 
@@ -1094,7 +1094,7 @@ def scanXMLMsgArchive(url, title, force = 0):
 
     return 1
 
-def scanXMLDateArchive(t = None, force = 0):
+def scanXMLDateArchive(t=None, force=0):
     global wordsDictArchive
 
     wordsDictArchive = {}
@@ -1138,7 +1138,7 @@ def scanXMLDateArchive(t = None, force = 0):
 #          Main code: open the DB, the API XML and analyze it           #
 #                                                                       #
 #########################################################################
-def analyzeArchives(t = None, force = 0):
+def analyzeArchives(t=None, force=0):
     global wordsDictArchive
 
     ret = scanXMLDateArchive(t, force)

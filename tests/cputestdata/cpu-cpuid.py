@@ -343,12 +343,12 @@ def convert(path):
     with open(path, "w") as f:
         json.dump({"return": {"model": {"name": "base", "props": props}},
                    "id": "model-expansion"},
-                  f, indent = 2, separators = (',', ': '))
+                  f, indent=2, separators=(',', ': '))
         f.write("\n")
 
         for chunk in rest:
             f.write("\n")
-            json.dump(chunk, f, indent = 2, separators = (',', ': '))
+            json.dump(chunk, f, indent=2, separators=(',', ': '))
             f.write("\n")
 
 
