@@ -787,6 +787,10 @@ mymain(void)
             QEMU_CAPS_SECCOMP_BLACKLIST);
     DO_TEST_PARSE_ERROR("minimal-no-memory", NONE);
     DO_TEST("minimal-msg-timestamp", QEMU_CAPS_MSG_TIMESTAMP);
+
+    DO_TEST_CAPS_LATEST("genid");
+    DO_TEST_CAPS_LATEST("genid-auto");
+
     DO_TEST("machine-aliases1", NONE);
     DO_TEST("machine-aliases2", QEMU_CAPS_KVM);
     DO_TEST("machine-core-on", NONE);
