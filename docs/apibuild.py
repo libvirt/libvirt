@@ -721,15 +721,8 @@ class CParser:
         self.index.info = res
 
     def strip_lead_star(self, line):
-        l = len(line)
-        i = 0
-        while i < l:
-            if line[i] == ' ' or line[i] == '\t':
-                i += 1
-            elif line[i] == '*':
-                return line[:i] + line[i + 1:]
-            else:
-                return line
+        if line.lstrip().startswith('*'):
+            line = line.replace('*', '', 1)
         return line
 
     def cleanupComment(self):
