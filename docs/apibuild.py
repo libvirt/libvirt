@@ -742,7 +742,7 @@ class CParser:
         return line
 
     def cleanupComment(self):
-        if type(self.comment) != type(""):
+        if not isinstance(self.comment, str):
             return
         # remove the leading * on multi-line comments
         lines = self.comment.splitlines(True)
@@ -2223,9 +2223,8 @@ class docBuilder:
             output.write("    <struct name='%s' file='%s' type='%s'" % (
                      name, self.modulename_file(id.header), id.info))
             name = id.info[7:]
-            if name in self.idx.structs and ( \
-               type(self.idx.structs[name].info) == type(()) or
-                type(self.idx.structs[name].info) == type([])):
+            if (name in self.idx.structs and
+                    isinstance(self.idx.structs[name].info, (list, tuple))):
                 output.write(">\n")
                 try:
                     for field in self.idx.structs[name].info:
