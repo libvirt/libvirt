@@ -39,50 +39,7 @@ It can also be browsed at
 <a href="https://libvirt.org/git/?p=libvirt-java.git;a=summary">https://libvirt.org/git/?p=libvirt-java.git;a=summary</a>
 </pre>
 
-<p></p>
-<h2>GIT repository mirror</h2>
 
-<p>
-  The source code is also mirrored on <a href="http://www.gitorious.org">gitorious</a>
-  to aid in public development. You clone the repo with
-</p>
-
-<pre>
-  git clone git://gitorious.org/libvirt/libvirt-java.git
-</pre>
-
-<p>
-  It can also be browsed at
-</p>
-
-<pre>
-
-  <a href="http://gitorious.org/libvirt/libvirt-java">http://gitorious.org/libvirt/libvirt-java</a>
-</pre>
-
-<p></p>
-<h2>CVS repository access (Deprecated)</h2>
-
-<p> The old source repository uses <a
-href="http://ximbiot.com/cvs/cvshome/docs/">CVS</a> and anonymous access
-is provided. Prior to accessing the server is it necessary to authenticate
-using the password <code>anoncvs</code>. This can be accomplished with
-the <code>cvs login</code> command:
-</p>
-
-<pre>
-  # cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs login
-</pre>
-
-<p>
-  Once authenticated, a checkout can be obtained using
-</p>
-
-<pre>
-  # cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs co libvirt-java
-</pre>
-
-<p></p>
 <h2>Building</h2>
 <p>The code is built using ant, and assumes that you have the jna jar installed. Once you have downloaded
 the code you can build the code with</p>
