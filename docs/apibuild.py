@@ -130,11 +130,7 @@ def escape(raw):
     return raw
 
 def uniq(items):
-    d = {}
-    for item in items:
-        d[item] = 1
-    k = sorted(d.keys())
-    return k
+    return sorted(set(items))
 
 class identifier:
     def __init__(self, name, header=None, module=None, type=None, lineno=0,
