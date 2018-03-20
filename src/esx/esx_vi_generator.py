@@ -49,10 +49,7 @@ separator = "/* " + ("* " * 37) + "*\n"
 
 
 def aligned(left, right, length=59):
-    while len(left) < length:
-        left += " "
-
-    return left + right
+    return left.ljust(length, ' ') + right
 
 
 
