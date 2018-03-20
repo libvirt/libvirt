@@ -7776,35 +7776,12 @@ qemuMonitorJSONGetHotpluggableCPUs(qemuMonitorPtr mon,
 }
 
 
-static int
-qemuMonitorJSONFillQMPSchema(size_t pos ATTRIBUTE_UNUSED,
-                             virJSONValuePtr item,
-                             void *opaque)
-{
-    const char *name;
-    virHashTablePtr schema = opaque;
-
-    if (!(name = virJSONValueObjectGetString(item, "name"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("malformed QMP schema"));
-        return -1;
-    }
-
-    if (virHashAddEntry(schema, name, item) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-virHashTablePtr
+virJSONValuePtr
 qemuMonitorJSONQueryQMPSchema(qemuMonitorPtr mon)
 {
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
-    virJSONValuePtr arr;
-    virHashTablePtr schema = NULL;
-    virHashTablePtr ret = NULL;
+    virJSONValuePtr ret = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-qmp-schema", NULL)))
         return NULL;
@@ -7815,21 +7792,13 @@ qemuMonitorJSONQueryQMPSchema(qemuMonitorPtr mon)
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
         goto cleanup;
 
-    arr = virJSONValueObjectGet(reply, "return");
-
-    if (!(schema = virHashCreate(512, virJSONValueHashFree)))
-        goto cleanup;
-
-    if (virJSONValueArrayForeachSteal(arr, qemuMonitorJSONFillQMPSchema,
-                                      schema) < 0)
-        goto cleanup;
-
-    VIR_STEAL_PTR(ret, schema);
+    if (!(ret = virJSONValueObjectStealArray(reply, "return")))
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-qmp-schema reply is not an array"));
 
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
-    virHashFree(schema);
 
     return ret;
 }

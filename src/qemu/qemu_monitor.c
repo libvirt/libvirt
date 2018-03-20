@@ -4316,7 +4316,7 @@ qemuMonitorGetRTCTime(qemuMonitorPtr mon,
 }
 
 
-virHashTablePtr
+virJSONValuePtr
 qemuMonitorQueryQMPSchema(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR_JSON_NULL(mon);

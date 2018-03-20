@@ -1175,7 +1175,7 @@ int qemuMonitorMigrateContinue(qemuMonitorPtr mon,
 int qemuMonitorGetRTCTime(qemuMonitorPtr mon,
                           struct tm *tm);
 
-virHashTablePtr qemuMonitorQueryQMPSchema(qemuMonitorPtr mon);
+virJSONValuePtr qemuMonitorQueryQMPSchema(qemuMonitorPtr mon);
 
 int qemuMonitorSetBlockThreshold(qemuMonitorPtr mon,
                                  const char *nodename,

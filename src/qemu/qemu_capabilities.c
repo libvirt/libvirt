@@ -4570,11 +4570,16 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCapsPtr qemuCaps,
                                       qemuMonitorPtr mon)
 {
     struct virQEMUCapsStringFlags *entry;
-    virHashTablePtr schema;
+    virJSONValuePtr schemareply;
+    virHashTablePtr schema = NULL;
     size_t i;
 
-    if (!(schema = qemuMonitorQueryQMPSchema(mon)))
+    if (!(schemareply = qemuMonitorQueryQMPSchema(mon)))
         return -1;
+
+    if (!(schema = virQEMUQAPISchemaConvert(schemareply)))
+        return -1;
+    schemareply = NULL;
 
     for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsQMPSchemaQueries); i++) {
         entry = virQEMUCapsQMPSchemaQueries + i;

@@ -185,3 +185,53 @@ virQEMUQAPISchemaPathExists(const char *query,
 
     return !!entry;
 }
+
+static int
+virQEMUQAPISchemaEntryProcess(size_t pos ATTRIBUTE_UNUSED,
+                              virJSONValuePtr item,
+                              void *opaque)
+{
+    const char *name;
+    virHashTablePtr schema = opaque;
+
+    if (!(name = virJSONValueObjectGetString(item, "name"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed QMP schema"));
+        return -1;
+    }
+
+    if (virHashAddEntry(schema, name, item) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * virQEMUQAPISchemaConvert:
+ * @schemareply: Schema data as returned by the qemu monitor
+ *
+ * Converts the schema into the hash-table used by the functions working with
+ * the schema. @schemareply is consumed and freed.
+ */
+virHashTablePtr
+virQEMUQAPISchemaConvert(virJSONValuePtr schemareply)
+{
+    virHashTablePtr schema;
+    virHashTablePtr ret = NULL;
+
+    if (!(schema = virHashCreate(512, virJSONValueHashFree)))
+        goto cleanup;
+
+    if (virJSONValueArrayForeachSteal(schemareply,
+                                      virQEMUQAPISchemaEntryProcess,
+                                      schema) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret, schema);
+
+ cleanup:
+    virJSONValueFree(schemareply);
+    virHashFree(schema);
+    return ret;
+}

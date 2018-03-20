@@ -516,7 +516,7 @@ int qemuMonitorJSONGetHotpluggableCPUs(qemuMonitorPtr mon,
                                        size_t *nentries)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-virHashTablePtr qemuMonitorJSONQueryQMPSchema(qemuMonitorPtr mon)
+virJSONValuePtr qemuMonitorJSONQueryQMPSchema(qemuMonitorPtr mon)
     ATTRIBUTE_NONNULL(1);
 
 int qemuMonitorJSONSetBlockThreshold(qemuMonitorPtr mon,
