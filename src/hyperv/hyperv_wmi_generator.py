@@ -44,9 +44,9 @@ class WmiClass:
     to.
     """
 
-    def __init__(self, name, versions = []):
+    def __init__(self, name, versions=None):
         self.name = name
-        self.versions = versions
+        self.versions = versions if versions else list()
         self.common = None
 
 
