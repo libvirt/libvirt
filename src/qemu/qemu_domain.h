@@ -176,7 +176,6 @@ struct _qemuDomainJobObj {
     bool spiceMigration;                /* we asked for spice migration and we
                                          * should wait for it to finish */
     bool spiceMigrated;                 /* spice migration completed */
-    bool postcopyEnabled;               /* post-copy migration was enabled */
     char *error;                        /* job event completion error */
     bool dumpCompleted;                 /* dump completed */
 

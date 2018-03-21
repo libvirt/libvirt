@@ -13818,7 +13818,7 @@ qemuDomainMigrateStartPostCopy(virDomainPtr dom,
         goto endjob;
     }
 
-    if (!priv->job.postcopyEnabled) {
+    if (!(priv->job.apiFlags & VIR_MIGRATE_POSTCOPY)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("switching to post-copy requires migration to be "
                          "started with VIR_MIGRATE_POSTCOPY flag"));
