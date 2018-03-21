@@ -66,6 +66,22 @@
           If someone customizing IP address inside VM, it will be helpful.
         </description>
       </change>
+      <change>
+        <summary>
+          Xen: Remove hard-coded scheduler weight
+        </summary>
+        <description>
+          The libxl driver was accidentally hard-coding the per-domain
+          scheduler weight to 1000, silently ignoring any user-provided
+          <code>&lt;shares&gt;</code> in <code>&lt;cputune&gt;</code>. The
+          driver now honors <code>&lt;shares&gt;</code>, and defers setting
+          a default value to Xen. Note that the Xen default is 256, so any
+          domains started after this improvement will have one fourth the
+          shares of previously started domains. If all domains must have
+          equal CPU shares, administrators must manually set the weight of
+          previously started domains to 256, or restart them.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
