@@ -1,14 +1,9 @@
 module Test_virtlockd =
-  let conf = "log_level = 3
-log_filters=\"3:remote 4:event\"
-log_outputs=\"3:syslog:libvirtd\"
-max_clients = 10
-admin_max_clients = 10
-"
+   ::CONFIG::
 
    test Virtlockd.lns get conf =
         { "log_level" = "3" }
         { "log_filters" = "3:remote 4:event" }
-        { "log_outputs" = "3:syslog:libvirtd" }
-        { "max_clients" = "10" }
-        { "admin_max_clients" = "10" }
+        { "log_outputs" = "3:syslog:virtlockd" }
+        { "max_clients" = "1024" }
+        { "admin_max_clients" = "5" }
