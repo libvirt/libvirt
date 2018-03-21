@@ -76,7 +76,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
     virJSONValuePtr base;
     const char *metatype;
 
-    do {
+    while (1) {
         if (!(base = virHashLookup(schema, baseName)))
             return NULL;
 
@@ -114,7 +114,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
         }
 
         query++;
-    } while (*query);
+    }
 
     return base;
 }
