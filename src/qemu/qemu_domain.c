@@ -2087,6 +2087,9 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
                                                           priv->job.phase));
     }
 
+    if (priv->job.asyncJob != QEMU_ASYNC_JOB_NONE)
+        virBufferAsprintf(&attrBuf, " flags='0x%lx'", priv->job.apiFlags);
+
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
         size_t i;
         virDomainDiskDefPtr disk;
@@ -2380,6 +2383,11 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
             }
             VIR_FREE(tmp);
         }
+    }
+
+    if (virXPathULongHex("string(@flags)", ctxt, &priv->job.apiFlags) == -2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid job flags"));
+        goto cleanup;
     }
 
     if ((n = virXPathNodeSet("./disk[@migrating='yes']", ctxt, &nodes)) < 0)
