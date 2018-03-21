@@ -51,7 +51,6 @@ module Test_libvirtd =
         { "log_level" = "3" }
         { "log_filters" = "3:remote 4:event" }
         { "log_outputs" = "3:syslog:libvirtd" }
-        { "log_buffer_size" = "64" }
         { "audit_level" = "2" }
         { "audit_logging" = "1" }
         { "host_uuid" = "00000000-0000-0000-0000-000000000000" }

@@ -72,7 +72,6 @@ module Libvirtd =
    let logging_entry = int_entry "log_level"
                      | str_entry "log_filters"
                      | str_entry "log_outputs"
-                     | int_entry "log_buffer_size"
 
    let auditing_entry = int_entry "audit_level"
                       | bool_entry "audit_logging"
