@@ -147,9 +147,8 @@ static int dryRunStatus;
 
 /*
  * virCommandFDIsSet:
- * @fd: FD to test
- * @set: the set
- * @set_size: actual size of @set
+ * @cmd: pointer to virCommand
+ * @fd: file descriptor to query
  *
  * Check if FD is already in @set or not.
  *
