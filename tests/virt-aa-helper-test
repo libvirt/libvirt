@@ -108,6 +108,9 @@ testme() {
     outstr="$2"
     args="$3"
     input=""
+    checkrule="$5"
+
+    tmpout="$tmpdir/checkrule.out"
 
     if [ -n "$4" ]; then
         input="$4"
@@ -127,13 +130,23 @@ testme() {
     echo "': " >$output
     set +e
     if [ -n "$input" ]; then
-        LD_LIBRARY_PATH="$ld_library_path" $exe $extra_args $args < $input >$output 2>&1
+        LD_LIBRARY_PATH="$ld_library_path" $exe $extra_args $args < $input >"$tmpout" 2>&1
     else
-        LD_LIBRARY_PATH="$ld_library_path" $exe $extra_args $args >$output 2>&1
+        LD_LIBRARY_PATH="$ld_library_path" $exe $extra_args $args >"$tmpout" 2>&1
     fi
     rc="$?"
+    cat "$tmpout" >"$output"
+
+    rule_missing=0
+    if [ -n "$checkrule" ]; then
+        if ! grep -q "$checkrule" "$tmpout"; then
+            echo "FAIL: missing rule '$checkrule'" >"$output"
+            rule_missing=1
+        fi
+    fi
+
     set -e
-    if [ "$rc" = "$expected" ]; then
+    if [ "$rc" = "$expected" ] && [ $rule_missing -eq 0 ]; then
         echo "pass" >$output
     else
         echo "FAIL: exited with '$rc'" >$output
@@ -234,19 +247,19 @@ testme "1" "-c with invalid domain name char *" "-c -u $valid_uuid" "$test_xml"
 
 echo "Expected pass:" >$output
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" "$template_xml" > "$test_xml"
-testme "0" "create (x86_64)" "-c -u $valid_uuid" "$test_xml"
+testme "0" "create (x86_64)" "-c -u $valid_uuid" "$test_xml" "$disk1.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,arch='x86_64',arch='i686',g" "$template_xml" > "$test_xml"
-testme "0" "create (i686)" "-c -u $valid_uuid" "$test_xml"
+testme "0" "create (i686)" "-c -u $valid_uuid" "$test_xml" "$disk1.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,arch='x86_64',arch='ppc',g" "$template_xml" > "$test_xml"
-testme "0" "create (ppc)" "-c -u $valid_uuid" "$test_xml"
+testme "0" "create (ppc)" "-c -u $valid_uuid" "$test_xml" "$disk1.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</disk>,</disk><disk type='file' device='disk'><driver name='qemu' type='raw'/><source file='$disk2'/><target dev='hdb' bus='ide'/></disk>,g" "$template_xml" > "$test_xml"
-testme "0" "create multiple disks" "-c -u $valid_uuid" "$test_xml"
+testme "0" "create multiple disks" "-c -u $valid_uuid" "$test_xml" "$disk1.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###',${disk1}'/><readonly,g" "$template_xml" > "$test_xml"
-testme "0" "create (readonly)" "-c -u $valid_uuid" "$test_xml"
+testme "0" "create (readonly)" "-c -u $valid_uuid" "$test_xml" "$disk1.*rk,$"
 
 if [ "$test_hostdev" = "yes" ]; then
     sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</disk>,</disk><hostdev mode='subsystem' type='usb'><source><address bus='002' device='004'/></source></hostdev>,g" "$template_xml" > "$test_xml"
@@ -257,73 +270,73 @@ if [ "$test_hostdev" = "yes" ]; then
 fi
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$nonexistent,g" "$template_xml" > "$test_xml"
-testme "0" "create (non-existent disk)" "-c -u $valid_uuid" "$test_xml"
+testme "0" "create (non-existent disk)" "-c -u $valid_uuid" "$test_xml" "$nonexistent.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$relative_disk1,g" "$template_xml" > "$test_xml"
-testme "0" "create (relative path)" "-c -u $valid_uuid" "$test_xml"
+testme "0" "create (relative path)" "-c -u $valid_uuid" "$test_xml" "$disk1.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk2,g" "$template_xml" > "$test_xml"
-testme "0" "replace" "-r -u $valid_uuid" "$test_xml"
+testme "0" "replace" "-r -u $valid_uuid" "$test_xml" "$disk2.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$nonexistent,g" "$template_xml" > "$test_xml"
-testme "0" "replace (non-existent disk)" "-r -u $valid_uuid" "$test_xml"
+testme "0" "replace (non-existent disk)" "-r -u $valid_uuid" "$test_xml" "$nonexistent.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" "$template_xml" > "$test_xml"
-testme "0" "replace (adding disk)" "-r -u $valid_uuid -f $disk2" "$test_xml"
+testme "0" "replace (adding disk)" "-r -u $valid_uuid -f $disk2" "$test_xml" "$disk2.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" "$template_xml" > "$test_xml"
-testme "0" "replace (adding non-existent disk)" "-r -u $valid_uuid -f $nonexistent" "$test_xml"
+testme "0" "replace (adding non-existent disk)" "-r -u $valid_uuid -f $nonexistent" "$test_xml" "$nonexistent.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" "$template_xml" > "$test_xml"
-testme "0" "replace (appending disk)" "-r -u $valid_uuid -F $disk2" "$test_xml"
+testme "0" "replace (appending disk)" "-r -u $valid_uuid -F $disk2" "$test_xml" "$disk2.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" "$template_xml" > "$test_xml"
-testme "0" "replace (appending non-existent disk)" "-r -u $valid_uuid -F $nonexistent" "$test_xml"
+testme "0" "replace (appending non-existent disk)" "-r -u $valid_uuid -F $nonexistent" "$test_xml" "$nonexistent.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<disk type='block' device='cdrom'><target dev='hdc' bus='ide'/><readonly/></disk></devices>,g" "$template_xml" > "$test_xml"
 testme "0" "disk (empty cdrom)" "-r -u $valid_uuid" "$test_xml"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<serial type='file'><source path='$tmpdir/serial.log'/><target port='0'/></serial></devices>,g" "$template_xml" > "$test_xml"
-testme "0" "serial" "-r -u $valid_uuid" "$test_xml"
+testme "0" "serial" "-r -u $valid_uuid" "$test_xml" "$tmpdir/serial.log.*rw,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<serial type='pty'><target port='0'/></serial></devices>,g" "$template_xml" > "$test_xml"
 testme "0" "serial (pty)" "-r -u $valid_uuid" "$test_xml"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<serial type='dev'><source path='/dev/ttyS0'/><target port='0'/></serial></devices>,g" "$template_xml" > "$test_xml"
-testme "0" "serial (dev)" "-r -u $valid_uuid" "$test_xml"
+testme "0" "serial (dev)" "-r -u $valid_uuid" "$test_xml" "/dev/ttyS0.*rw,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<serial type='pipe'><source path='$tmpdir/serial.pipe'/><target port='0'/></serial></devices>,g" "$template_xml" > "$test_xml"
-mkfifo "$tmpdir/serial.pipe.in" "$tmpdir/serial.pipe.out"
+mkfifo "$tmpdir/serial.pipe.in" "$tmpdir/serial.pipe.out" "$tmpdir/serial.pipe.in.*rw,$"
 testme "0" "serial (pipe)" "-r -u $valid_uuid" "$test_xml"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<console type='file'><source path='$tmpdir/console.log'/><target port='0'/></console></devices>,g" "$template_xml" > "$test_xml"
 touch "$tmpdir/console.log"
-testme "0" "console" "-r -u $valid_uuid" "$test_xml"
+testme "0" "console" "-r -u $valid_uuid" "$test_xml" "$tmpdir/console.log.*rw,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<console type='pty'><target port='0'/></console></devices>,g" "$template_xml" > "$test_xml"
 testme "0" "console (pty)" "-r -u $valid_uuid" "$test_xml"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<console type='pipe'><source path='$tmpdir/console.pipe'/><target port='0'/></console></devices>,g" "$template_xml" > "$test_xml"
 mkfifo "$tmpdir/console.pipe.in" "$tmpdir/console.pipe.out"
-testme "0" "console (pipe)" "-r -u $valid_uuid" "$test_xml"
+testme "0" "console (pipe)" "-r -u $valid_uuid" "$test_xml" "$tmpdir/console.pipe.out.*rw,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<parallel type='pty'><source path='/dev/pts/0'/><target port='0'/></parallel></devices>,g" "$template_xml" > "$test_xml"
-testme "0" "parallel (pty)" "-r -u $valid_uuid" "$test_xml"
+testme "0" "parallel (pty)" "-r -u $valid_uuid" "$test_xml" "/dev/pts/0.*rw,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<parallel type='pipe'><source path='$tmpdir/parallel.pipe'/><target port='0'/></parallel></devices>,g" "$template_xml" > "$test_xml"
 mkfifo "$tmpdir/parallel.pipe.in" "$tmpdir/parallel.pipe.out"
-testme "0" "parallel (pipe)" "-r -u $valid_uuid" "$test_xml"
+testme "0" "parallel (pipe)" "-r -u $valid_uuid" "$test_xml" "$tmpdir/parallel.pipe.in.*rw,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<channel type='unix'><source mode='bind' path='$tmpdir/guestfwd'/><target type='guestfwd' address='10.0.2.1' port='4600'/></channel></devices>,g" "$template_xml" > "$test_xml"
 touch "$tmpdir/guestfwd"
-testme "0" "channel (unix)" "-r -u $valid_uuid" "$test_xml"
+testme "0" "channel (unix)" "-r -u $valid_uuid" "$test_xml" "$tmpdir/guestfwd.*rw,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<channel type='pty'><target type='virtio'/></channel></devices>,g" "$template_xml" > "$test_xml"
 testme "0" "channel (pty)" "-r -u $valid_uuid" "$test_xml"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<kernel>$tmpdir/kernel</kernel></os>,g" "$template_xml" > "$test_xml"
 touch "$tmpdir/kernel"
-testme "0" "kernel" "-r -u $valid_uuid" "$test_xml"
+testme "0" "kernel" "-r -u $valid_uuid" "$test_xml" "$tmpdir/kernel.*r,$"
 
 testfw "ovmf (old path)" "/usr/share/ovmf/OVMF.fd"
 testfw "OVMF (new path)" "/usr/share/OVMF/OVMF_CODE.fd"
@@ -333,37 +346,37 @@ testfw "qemu-efi" "/usr/share/qemu-efi/QEMU_EFI.fd"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<initrd>$tmpdir/initrd</initrd></os>,g" "$template_xml" > "$test_xml"
 touch "$tmpdir/initrd"
-testme "0" "initrd" "-r -u $valid_uuid" "$test_xml"
+testme "0" "initrd" "-r -u $valid_uuid" "$test_xml" "$tmpdir/initrd.*r,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<kernel>/boot/kernel</kernel></os>,g" "$template_xml" > "$test_xml"
-testme "0" "kernel in /boot" "-r -u $valid_uuid" "$test_xml"
+testme "0" "kernel in /boot" "-r -u $valid_uuid" "$test_xml" "/boot/kernel.*r,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<initrd>/boot/initrd</initrd></os>,g" "$template_xml" > "$test_xml"
-testme "0" "initrd in /boot" "-r -u $valid_uuid" "$test_xml"
+testme "0" "initrd in /boot" "-r -u $valid_uuid" "$test_xml" "/boot/initrd.*r,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<kernel>/vmlinuz</kernel></os>,g" "$template_xml" > "$test_xml"
-testme "0" "kernel is /vmlinuz" "-r -u $valid_uuid" "$test_xml"
+testme "0" "kernel is /vmlinuz" "-r -u $valid_uuid" "$test_xml" "/vmlinuz.*r,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<initrd>/initrd/ramdisk</initrd></os>,g" "$template_xml" > "$test_xml"
-testme "0" "initrd is /initrd/ramdisk" "-r -u $valid_uuid" "$test_xml"
+testme "0" "initrd is /initrd/ramdisk" "-r -u $valid_uuid" "$test_xml" "/initrd/ramdisk.*r,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</os>,<initrd>/initrd.img</initrd></os>,g" "$template_xml" > "$test_xml"
-testme "0" "initrd is /initrd.img" "-r -u $valid_uuid" "$test_xml"
+testme "0" "initrd is /initrd.img" "-r -u $valid_uuid" "$test_xml" "/initrd.img.*r,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,<graphics*,<graphics type='sdl' display=':0.0' xauth='/home/myself/.Xauthority'/>,g" "$template_xml" > "$test_xml"
-testme "0" "sdl Xauthority" "-r -u $valid_uuid" "$test_xml"
+testme "0" "sdl Xauthority" "-r -u $valid_uuid" "$test_xml" "/home/myself/.Xauthority.*r,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" "$template_xml" > "$test_xml"
-testme "0" "hugepages" "-r -u $valid_uuid -F /run/hugepages/kvm/\*\*" "$test_xml"
+testme "0" "hugepages" "-r -u $valid_uuid -F /run/hugepages/kvm/\*\*" "$test_xml" "/run/hugepages/kvm/.*rwk,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,<graphics.*>,<graphics type='vnc' socket='/var/lib/libvirt/qemu/myself.vnc'><listen type='address' address='0.0.0.0'/></graphics>,g" "$template_xml" > "$test_xml"
-testme "0" "vnc socket" "-r -u $valid_uuid" "$test_xml"
+testme "0" "vnc socket" "-r -u $valid_uuid" "$test_xml" "/var/lib/libvirt/qemu/myself.vnc.*rw,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<input type='passthrough' bus='virtio'><source evdev='$disk2' /></input></devices>,g" "$template_xml" > "$test_xml"
-testme "0" "input dev passthrough" "-r -u $valid_uuid" "$test_xml"
+testme "0" "input dev passthrough" "-r -u $valid_uuid" "$test_xml" "$disk2.*rw,$"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,<memory>524288</memory>,<memory>1048576</memory>,g" -e "s,</devices>,<memory model='nvdimm'><source><path>$disk2</path></source><target><size unit='KiB'>524288</size><node>0</node></target></memory></devices>,g" "$template_xml" > "$test_xml"
-testme "0" "nvdimm" "-r -u $valid_uuid" "$test_xml"
+testme "0" "nvdimm" "-r -u $valid_uuid" "$test_xml" "$disk2.*rw,$"
 
 testme "0" "help" "-h"
 
