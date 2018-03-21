@@ -68,7 +68,8 @@ void qemuProcessIncomingDefFree(qemuProcessIncomingDefPtr inc);
 
 int qemuProcessBeginJob(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
-                        virDomainJobOperation operation);
+                        virDomainJobOperation operation,
+                        unsigned long apiFlags);
 void qemuProcessEndJob(virQEMUDriverPtr driver,
                        virDomainObjPtr vm);
 

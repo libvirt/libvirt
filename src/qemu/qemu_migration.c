@@ -80,7 +80,8 @@ VIR_ENUM_IMPL(qemuMigrationJobPhase, QEMU_MIGRATION_PHASE_LAST,
 static int
 qemuMigrationJobStart(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
-                      qemuDomainAsyncJob job)
+                      qemuDomainAsyncJob job,
+                      unsigned long apiFlags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 static void
@@ -1985,7 +1986,8 @@ qemuMigrationSrcBegin(virConnectPtr conn,
     qemuDomainAsyncJob asyncJob;
 
     if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
-        if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                  flags) < 0)
             goto cleanup;
         asyncJob = QEMU_ASYNC_JOB_MIGRATION_OUT;
     } else {
@@ -2320,7 +2322,8 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                                          !!(flags & VIR_MIGRATE_NON_SHARED_INC)) < 0)
         goto cleanup;
 
-    if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+    if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
+                              flags) < 0)
         goto cleanup;
     qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PREPARE);
 
@@ -4440,7 +4443,8 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+    if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
+                              flags) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm) && !(flags & VIR_MIGRATE_OFFLINE)) {
@@ -4552,7 +4556,8 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
 
     /* If we didn't start the job in the begin phase, start it now. */
     if (!(flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
-        if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                  flags) < 0)
             goto cleanup;
     } else if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_OUT)) {
         goto cleanup;
@@ -5291,7 +5296,8 @@ qemuMigrationSrcCancel(virQEMUDriverPtr driver,
 static int
 qemuMigrationJobStart(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
-                      qemuDomainAsyncJob job)
+                      qemuDomainAsyncJob job,
+                      unsigned long apiFlags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainJobOperation op;
@@ -5307,7 +5313,7 @@ qemuMigrationJobStart(virQEMUDriverPtr driver,
                JOB_MASK(QEMU_JOB_MIGRATION_OP);
     }
 
-    if (qemuDomainObjBeginAsyncJob(driver, vm, job, op) < 0)
+    if (qemuDomainObjBeginAsyncJob(driver, vm, job, op, apiFlags) < 0)
         return -1;
 
     priv->job.current->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION;

@@ -267,7 +267,7 @@ qemuAutostartDomain(virDomainObjPtr vm,
     if (vm->autostart &&
         !virDomainObjIsActive(vm)) {
         if (qemuProcessBeginJob(driver, vm,
-                                VIR_DOMAIN_JOB_OPERATION_START) < 0) {
+                                VIR_DOMAIN_JOB_OPERATION_START, flags) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to start job on VM '%s': %s"),
                            vm->def->name, virGetLastErrorMessage());
@@ -1767,7 +1767,8 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     virObjectRef(vm);
     def = NULL;
 
-    if (qemuProcessBeginJob(driver, vm, VIR_DOMAIN_JOB_OPERATION_START) < 0) {
+    if (qemuProcessBeginJob(driver, vm, VIR_DOMAIN_JOB_OPERATION_START,
+                            flags) < 0) {
         qemuDomainRemoveInactiveJob(driver, vm);
         goto cleanup;
     }
@@ -3323,7 +3324,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_SAVE,
-                                   VIR_DOMAIN_JOB_OPERATION_SAVE) < 0)
+                                   VIR_DOMAIN_JOB_OPERATION_SAVE, flags) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
@@ -3931,7 +3932,8 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
 
     if (qemuDomainObjBeginAsyncJob(driver, vm,
                                    QEMU_ASYNC_JOB_DUMP,
-                                   VIR_DOMAIN_JOB_OPERATION_DUMP) < 0)
+                                   VIR_DOMAIN_JOB_OPERATION_DUMP,
+                                   flags) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
@@ -4156,7 +4158,8 @@ processWatchdogEvent(virQEMUDriverPtr driver,
     case VIR_DOMAIN_WATCHDOG_ACTION_DUMP:
         if (qemuDomainObjBeginAsyncJob(driver, vm,
                                        QEMU_ASYNC_JOB_DUMP,
-                                       VIR_DOMAIN_JOB_OPERATION_DUMP) < 0) {
+                                       VIR_DOMAIN_JOB_OPERATION_DUMP,
+                                       flags) < 0) {
             goto cleanup;
         }
 
@@ -4242,9 +4245,10 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
     virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     bool removeInactive = false;
+    unsigned long flags = VIR_DUMP_MEMORY_ONLY;
 
     if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_DUMP,
-                                   VIR_DOMAIN_JOB_OPERATION_DUMP) < 0)
+                                   VIR_DOMAIN_JOB_OPERATION_DUMP, flags) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
@@ -4275,7 +4279,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
 
     switch (action) {
     case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
-        if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0)
+        if (doCoreDumpToAutoDumpPath(driver, vm, flags) < 0)
             goto endjob;
         ATTRIBUTE_FALLTHROUGH;
 
@@ -4292,7 +4296,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
         break;
 
     case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
-        if (doCoreDumpToAutoDumpPath(driver, vm, VIR_DUMP_MEMORY_ONLY) < 0)
+        if (doCoreDumpToAutoDumpPath(driver, vm, flags) < 0)
             goto endjob;
         ATTRIBUTE_FALLTHROUGH;
 
@@ -6747,7 +6751,8 @@ qemuDomainRestoreFlags(virConnectPtr conn,
         priv->hookRun = true;
     }
 
-    if (qemuProcessBeginJob(driver, vm, VIR_DOMAIN_JOB_OPERATION_RESTORE) < 0)
+    if (qemuProcessBeginJob(driver, vm, VIR_DOMAIN_JOB_OPERATION_RESTORE,
+                            flags) < 0)
         goto cleanup;
 
     ret = qemuDomainSaveImageStartVM(conn, driver, vm, &fd, data, path,
@@ -7335,7 +7340,8 @@ qemuDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     if (virDomainCreateWithFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuProcessBeginJob(driver, vm, VIR_DOMAIN_JOB_OPERATION_START) < 0)
+    if (qemuProcessBeginJob(driver, vm, VIR_DOMAIN_JOB_OPERATION_START,
+                            flags) < 0)
         goto cleanup;
 
     if (virDomainObjIsActive(vm)) {
@@ -15186,7 +15192,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
      * 'savevm' blocks the monitor. External snapshot will then modify the
      * job mask appropriately. */
     if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_SNAPSHOT,
-                                   VIR_DOMAIN_JOB_OPERATION_SNAPSHOT) < 0)
+                                   VIR_DOMAIN_JOB_OPERATION_SNAPSHOT, flags) < 0)
         goto cleanup;
 
     qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
@@ -15785,7 +15791,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     }
 
     if (qemuProcessBeginJob(driver, vm,
-                            VIR_DOMAIN_JOB_OPERATION_SNAPSHOT_REVERT) < 0)
+                            VIR_DOMAIN_JOB_OPERATION_SNAPSHOT_REVERT,
+                            flags) < 0)
         goto cleanup;
 
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))

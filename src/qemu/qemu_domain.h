@@ -182,6 +182,7 @@ struct _qemuDomainJobObj {
     bool dumpCompleted;                 /* dump completed */
 
     qemuMigrationParamsPtr migParams;
+    unsigned long apiFlags; /* flags passed to the API which started the async job */
 };
 
 typedef void (*qemuDomainCleanupCallback)(virQEMUDriverPtr driver,
@@ -493,7 +494,8 @@ int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
 int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
                                qemuDomainAsyncJob asyncJob,
-                               virDomainJobOperation operation)
+                               virDomainJobOperation operation,
+                               unsigned long apiFlags)
     ATTRIBUTE_RETURN_CHECK;
 int qemuDomainObjBeginNestedJob(virQEMUDriverPtr driver,
                                 virDomainObjPtr obj,

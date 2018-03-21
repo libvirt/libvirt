@@ -4183,10 +4183,11 @@ qemuProcessIncomingDefNew(virQEMUCapsPtr qemuCaps,
 int
 qemuProcessBeginJob(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
-                    virDomainJobOperation operation)
+                    virDomainJobOperation operation,
+                    unsigned long apiFlags)
 {
     if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_START,
-                                   operation) < 0)
+                                   operation, apiFlags) < 0)
         return -1;
 
     qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);

@@ -339,6 +339,7 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
     VIR_FREE(job->current);
     qemuMigrationParamsFree(job->migParams);
     job->migParams = NULL;
+    job->apiFlags = 0;
 }
 
 void
@@ -354,6 +355,7 @@ qemuDomainObjRestoreJob(virDomainObjPtr obj,
     job->asyncOwner = priv->job.asyncOwner;
     job->phase = priv->job.phase;
     VIR_STEAL_PTR(job->migParams, priv->job.migParams);
+    job->apiFlags = priv->job.apiFlags;
 
     qemuDomainObjResetJob(priv);
     qemuDomainObjResetAsyncJob(priv);
@@ -5805,7 +5807,8 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
         asyncDuration = now - priv->job.asyncStarted;
 
     VIR_WARN("Cannot start job (%s, %s) for domain %s; "
-             "current job is (%s, %s) owned by (%llu %s, %llu %s) "
+             "current job is (%s, %s) "
+             "owned by (%llu %s, %llu %s (flags=0x%lx)) "
              "for (%llus, %llus)",
              qemuDomainJobTypeToString(job),
              qemuDomainAsyncJobTypeToString(asyncJob),
@@ -5814,6 +5817,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
              qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
              priv->job.owner, NULLSTR(priv->job.ownerAPI),
              priv->job.asyncOwner, NULLSTR(priv->job.asyncOwnerAPI),
+             priv->job.apiFlags,
              duration / 1000, asyncDuration / 1000);
 
     if (nested || qemuDomainNestedJobAllowed(priv, job))
@@ -5877,7 +5881,8 @@ int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
 int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
                                qemuDomainAsyncJob asyncJob,
-                               virDomainJobOperation operation)
+                               virDomainJobOperation operation,
+                               unsigned long apiFlags)
 {
     qemuDomainObjPrivatePtr priv;
 
@@ -5887,6 +5892,7 @@ int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
 
     priv = obj->privateData;
     priv->job.current->operation = operation;
+    priv->job.apiFlags = apiFlags;
     return 0;
 }
 
