@@ -899,6 +899,7 @@ qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
  * @driver: pointer to qemu driver
  * @vm: domain object
  * @asyncJob: migration job to join
+ * @apiFlags: API flags used to start the migration
  *
  * Deconstruct all the setup possibly done for TLS - delete the TLS and
  * security objects, free the secinfo, and reset the migration params to "".
@@ -907,13 +908,16 @@ static void
 qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             int asyncJob,
-                            qemuMigrationParamsPtr origParams)
+                            qemuMigrationParamsPtr origParams,
+                            unsigned long apiFlags)
 {
     char *tlsAlias = NULL;
     char *secAlias = NULL;
 
-    /* If QEMU does not support TLS migration we didn't set the aliases. */
-    if (!origParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set)
+    /* There's nothing to do if QEMU does not support TLS migration or we were
+     * not asked to enable it. */
+    if (!origParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set ||
+        !(apiFlags & VIR_MIGRATE_TLS))
         return;
 
     /* NB: If either or both fail to allocate memory we can still proceed
@@ -1081,11 +1085,13 @@ void
 qemuMigrationParamsReset(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          int asyncJob,
-                         qemuMigrationParamsPtr origParams)
+                         qemuMigrationParamsPtr origParams,
+                         unsigned long apiFlags)
 {
     virErrorPtr err = virSaveLastError();
 
-    VIR_DEBUG("Resetting migration parameters %p", origParams);
+    VIR_DEBUG("Resetting migration parameters %p, flags 0x%lx",
+              origParams, apiFlags);
 
     if (!virDomainObjIsActive(vm) || !origParams)
         goto cleanup;
@@ -1093,7 +1099,7 @@ qemuMigrationParamsReset(virQEMUDriverPtr driver,
     if (qemuMigrationParamsApply(driver, vm, asyncJob, origParams) < 0)
         goto cleanup;
 
-    qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams);
+    qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams, apiFlags);
 
  cleanup:
     if (err) {

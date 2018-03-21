@@ -133,7 +133,8 @@ void
 qemuMigrationParamsReset(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          int asyncJob,
-                         qemuMigrationParamsPtr origParams);
+                         qemuMigrationParamsPtr origParams,
+                         unsigned long apiFlags);
 
 void
 qemuMigrationParamsFormat(virBufferPtr buf,
