@@ -2,6 +2,10 @@ sudo: false
 language: c
 cache: ccache
 
+branches:
+  except:
+  - /^.*-maint$/
+
 matrix:
   include:
     - compiler: gcc
