@@ -51,10 +51,10 @@ virCommandPtr virCommandNewVAList(const char *binary, va_list list)
  * delayed until the Run/RunAsync methods
  */
 
-enum {
+typedef enum {
     /* Close the FD in the parent */
     VIR_COMMAND_PASS_FD_CLOSE_PARENT = (1 << 0),
-};
+} virCommandPassFDFlags;
 
 void virCommandPassFD(virCommandPtr cmd,
                       int fd,

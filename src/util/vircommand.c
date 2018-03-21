@@ -173,9 +173,9 @@ virCommandFDIsSet(virCommandPtr cmd,
 
 /*
  * virCommandFDSet:
- * @fd: FD to be put into @set
- * @set: the set
- * @set_size: actual size of @set
+ * @cmd: pointer to virCommand
+ * @fd: file descriptor to pass
+ * @flags: extra flags; binary-OR of virCommandPassFDFlags
  *
  * This is practically generalized implementation
  * of FD_SET() as we do not want to be limited
@@ -976,7 +976,7 @@ virCommandNewVAList(const char *binary, va_list list)
  * virCommandPassFD:
  * @cmd: the command to modify
  * @fd: fd to reassign to the child
- * @flags: the flags
+ * @flags: extra flags; binary-OR of virCommandPassFDFlags
  *
  * Transfer the specified file descriptor to the child, instead
  * of closing it on exec. @fd must not be one of the three
