@@ -111,9 +111,32 @@ sub name_to_TypeName {
 }
 
 sub get_conn_arg {
+    my $proc = shift;
+    my $args = shift;
+    my $rets = shift;
+
     if ($structprefix eq "admin") {
         return "priv->dmn";
     }
+
+    my @types;
+    push @types, @{$args} if $args;
+    push @types, @{$rets} if $rets;
+
+    # This correctly detects most APIs
+    foreach my $type (@types) {
+        if ($type =~ /remote_nonnull_interface/) {
+            return "priv->interfaceConn";
+        }
+    }
+
+    # This is for the few virConnect APIs that
+    # return things which aren't objects. eg list
+    # of pool names, or number of pools.
+    if ($proc =~ /Connect.*Interface/ || $proc =~ /InterfaceChange/) {
+        return "priv->interfaceConn";
+    }
+
     return "priv->conn";
 }
 
@@ -481,7 +504,7 @@ elsif ($mode eq "server") {
         my @free_list = ();
         my @free_list_on_error = ("virNetMessageSaveError(rerr);");
 
-        my $conn = get_conn_arg();
+        my $conn = get_conn_arg($call->{ProcName}, $call->{args_members}, $call->{ret_members});
 
         # handle arguments to the function
         if ($argtype ne "void") {
