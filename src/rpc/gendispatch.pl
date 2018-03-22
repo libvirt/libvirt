@@ -110,18 +110,12 @@ sub name_to_TypeName {
     return $typename;
 }
 
-sub push_privconn {
-    my $args = shift;
-
-    if (!@$args) {
-        if ($structprefix eq "admin") {
-            push(@$args, "priv->dmn");
-        } else {
-            push(@$args, "priv->conn");
-        }
+sub get_conn_arg {
+    if ($structprefix eq "admin") {
+        return "priv->dmn";
     }
+    return "priv->conn";
 }
-
 
 # Read the input file (usually remote_protocol.x) and form an
 # opinion about the name, args and return type of each RPC.
@@ -487,6 +481,8 @@ elsif ($mode eq "server") {
         my @free_list = ();
         my @free_list_on_error = ("virNetMessageSaveError(rerr);");
 
+        my $conn = get_conn_arg();
+
         # handle arguments to the function
         if ($argtype ne "void") {
             # node device is special, as it's identified by name
@@ -497,7 +493,7 @@ elsif ($mode eq "server") {
                 $has_node_device = 1;
                 push(@vars_list, "virNodeDevicePtr dev = NULL");
                 push(@getters_list,
-                     "    if (!(dev = virNodeDeviceLookupByName(priv->conn, args->name)))\n" .
+                     "    if (!(dev = virNodeDeviceLookupByName($conn, args->name)))\n" .
                      "        goto cleanup;\n");
                 push(@args_list, "dev");
                 push(@free_list,
@@ -513,7 +509,7 @@ elsif ($mode eq "server") {
 
                     push(@vars_list, "vir${type_name}Ptr $2 = NULL");
                     push(@getters_list,
-                         "    if (!($2 = get_nonnull_$1(priv->conn, args->$2)))\n" .
+                         "    if (!($2 = get_nonnull_$1($conn, args->$2)))\n" .
                          "        goto cleanup;\n");
                     push(@args_list, "$2");
                     push(@free_list,
@@ -522,7 +518,7 @@ elsif ($mode eq "server") {
                     push(@vars_list, "virDomainPtr dom = NULL");
                     push(@vars_list, "virDomainSnapshotPtr snapshot = NULL");
                     push(@getters_list,
-                         "    if (!(dom = get_nonnull_domain(priv->conn, args->${1}.dom)))\n" .
+                         "    if (!(dom = get_nonnull_domain($conn, args->${1}.dom)))\n" .
                          "        goto cleanup;\n" .
                          "\n" .
                          "    if (!(snapshot = get_nonnull_domain_snapshot(dom, args->${1})))\n" .
@@ -532,11 +528,11 @@ elsif ($mode eq "server") {
                          "    virObjectUnref(snapshot);\n" .
                          "    virObjectUnref(dom);");
                 } elsif ($args_member =~ m/^(?:(?:admin|remote)_string|remote_uuid) (\S+)<\S+>;/) {
-                    push_privconn(\@args_list);
+                    push(@args_list, $conn) if !@args_list;
                     push(@args_list, "args->$1.$1_val");
                     push(@args_list, "args->$1.$1_len");
                 } elsif ($args_member =~ m/^(?:opaque|(?:admin|remote)_nonnull_string) (\S+)<\S+>;(.*)$/) {
-                    push_privconn(\@args_list);
+                    push(@args_list, $conn) if !@args_list;
 
                     my $cast = "";
                     my $arg_name = $1;
@@ -553,7 +549,7 @@ elsif ($mode eq "server") {
                     push(@args_list, "${cast}args->$arg_name.${arg_name}_val");
                     push(@args_list, "args->$arg_name.${arg_name}_len");
                 } elsif ($args_member =~ m/^(?:unsigned )?int (\S+)<\S+>;/) {
-                    push_privconn(\@args_list);
+                    push(@args_list, $conn) if !@args_list;
 
                     push(@args_list, "args->$1.$1_val");
                     push(@args_list, "args->$1.$1_len");
@@ -561,7 +557,7 @@ elsif ($mode eq "server") {
                     push(@vars_list, "virTypedParameterPtr $1 = NULL");
                     push(@vars_list, "int n$1 = 0");
                     if ($call->{ProcName} eq "NodeSetMemoryParameters") {
-                        push(@args_list, "priv->conn");
+                        push(@args_list, "$conn");
                     }
                     push(@args_list, "$1");
                     push(@args_list, "n$1");
@@ -576,25 +572,25 @@ elsif ($mode eq "server") {
                     # just make all other array types fail
                     die "unhandled type for argument value: $args_member";
                 } elsif ($args_member =~ m/^remote_uuid (\S+);/) {
-                    push_privconn(\@args_list);
+                    push(@args_list, $conn) if !@args_list;
 
                     push(@args_list, "(unsigned char *) args->$1");
                 } elsif ($args_member =~ m/^(?:admin|remote)_string (\S+);/) {
-                    push_privconn(\@args_list);
+                    push(@args_list, $conn) if !@args_list;
 
                     push(@vars_list, "char *$1");
                     push(@optionals_list, "$1");
                     push(@args_list, "$1");
                 } elsif ($args_member =~ m/^(?:admin|remote)_nonnull_string (\S+);/) {
-                    push_privconn(\@args_list);
+                    push(@args_list, $conn) if !@args_list;
 
                     push(@args_list, "args->$1");
                 } elsif ($args_member =~ m/^(unsigned )?int (\S+);/) {
-                    push_privconn(\@args_list);
+                    push(@args_list, $conn) if !@args_list;
 
                     push(@args_list, "args->$2");
                 } elsif ($args_member =~ m/^(unsigned )?hyper (\S+);/) {
-                    push_privconn(\@args_list);
+                    push(@args_list, $conn) if !@args_list;
 
                     my $arg_name = $2;
 
@@ -613,7 +609,7 @@ elsif ($mode eq "server") {
 
                     push(@vars_list, "virNet${type_name}Ptr $2 = NULL");
                     push(@getters_list,
-                         "    if (!($2 = get_nonnull_$1(priv->dmn, args->$2)))\n" .
+                         "    if (!($2 = get_nonnull_$1($conn, args->$2)))\n" .
                          "        goto cleanup;\n");
                     push(@args_list, "$2");
                     push(@free_list,
@@ -624,7 +620,7 @@ elsif ($mode eq "server") {
                     push(@vars_list, "virNetServerPtr srv = NULL");
                     push(@vars_list, "virNetServer${type_name}Ptr $2 = NULL");
                     push(@getters_list,
-                         "    if (!(srv = get_nonnull_server(priv->dmn, args->$2.srv)))\n" .
+                         "    if (!(srv = get_nonnull_server($conn, args->$2.srv)))\n" .
                          "        goto cleanup;\n");
                     push(@getters_list,
                          "    if (!($2 = get_nonnull_$1(srv, args->$2)))\n" .
@@ -900,7 +896,7 @@ elsif ($mode eq "server") {
         # select struct type for multi-return-value functions
         if ($multi_ret) {
             if (defined $call->{ret_offset}) {
-                push_privconn(\@args_list);
+                push(@args_list, $conn) if !@args_list;
 
                 if ($modern_ret_as_list) {
                     my $struct_name = name_to_TypeName($modern_ret_struct_name);
@@ -999,12 +995,7 @@ elsif ($mode eq "server") {
 
         print "\n";
 
-        if ($structprefix eq "admin") {
-            print "    if (!priv->dmn) {\n";
-        } else {
-            print "    if (!priv->conn) {\n";
-        }
-
+        print "    if (!$conn) {\n";
         print "        virReportError(VIR_ERR_INTERNAL_ERROR, \"%s\", _(\"connection not open\"));\n";
         print "        goto cleanup;\n";
         print "    }\n";
@@ -1034,7 +1025,7 @@ elsif ($mode eq "server") {
         }
 
         if ($call->{streamflag} ne "none") {
-            print "    if (!(st = virStreamNew(priv->conn, VIR_STREAM_NONBLOCK)))\n";
+            print "    if (!(st = virStreamNew($conn, VIR_STREAM_NONBLOCK)))\n";
             print "        goto cleanup;\n";
             print "\n";
             print "    if (!(stream = daemonCreateClientStream(client, st, remoteProgram, &msg->header, sparse)))\n";
@@ -1051,7 +1042,7 @@ elsif ($mode eq "server") {
         } elsif (!$multi_ret) {
             my $proc_name = $call->{ProcName};
 
-            push_privconn(\@args_list);
+            push(@args_list, $conn) if !@args_list;
 
             if ($structprefix eq "qemu" &&
                 $call->{ProcName} =~ /^(Connect)?Domain/) {
