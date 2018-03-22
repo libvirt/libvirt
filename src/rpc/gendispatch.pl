@@ -137,6 +137,9 @@ sub get_conn_arg {
         if ($type =~ /remote_nonnull_nwfilter/) {
             return "priv->nwfilterConn";
         }
+        if ($type =~ /remote_nonnull_secret/) {
+            return "priv->secretConn";
+        }
     }
 
     # This is for the few virConnect APIs that
@@ -153,6 +156,9 @@ sub get_conn_arg {
     }
     if ($proc =~ /Connect.*NWFilter/) {
         return "priv->nwfilterConn";
+    }
+    if ($proc =~ /Connect.*Secret/) {
+        return "priv->secretConn";
     }
 
     return "priv->conn";

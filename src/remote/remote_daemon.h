@@ -78,6 +78,7 @@ struct daemonClientPrivate {
     virConnectPtr networkConn;
     virConnectPtr nodedevConn;
     virConnectPtr nwfilterConn;
+    virConnectPtr secretConn;
 
     daemonClientStreamPtr streams;
 };
