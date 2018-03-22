@@ -128,6 +128,9 @@ sub get_conn_arg {
         if ($type =~ /remote_nonnull_interface/) {
             return "priv->interfaceConn";
         }
+        if ($type =~ /remote_nonnull_network/) {
+            return "priv->networkConn";
+        }
     }
 
     # This is for the few virConnect APIs that
@@ -135,6 +138,9 @@ sub get_conn_arg {
     # of pool names, or number of pools.
     if ($proc =~ /Connect.*Interface/ || $proc =~ /InterfaceChange/) {
         return "priv->interfaceConn";
+    }
+    if ($proc =~ /Connect.*Network/) {
+        return "priv->networkConn";
     }
 
     return "priv->conn";

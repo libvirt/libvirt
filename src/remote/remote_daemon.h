@@ -75,6 +75,7 @@ struct daemonClientPrivate {
      */
     virConnectPtr conn;
     virConnectPtr interfaceConn;
+    virConnectPtr networkConn;
 
     daemonClientStreamPtr streams;
 };
