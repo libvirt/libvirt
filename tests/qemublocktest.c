@@ -62,7 +62,7 @@ testBackingXMLjsonXML(const void *args)
         goto cleanup;
     }
 
-    if (!(backendprops = qemuBlockStorageSourceGetBackendProps(xmlsrc))) {
+    if (!(backendprops = qemuBlockStorageSourceGetBackendProps(xmlsrc, true))) {
         fprintf(stderr, "failed to format disk source json\n");
         goto cleanup;
     }

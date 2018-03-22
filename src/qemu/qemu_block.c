@@ -655,13 +655,14 @@ qemuBlockStorageSourceBuildHostsJSONInetSocketAddress(virStorageSourcePtr src)
 
 
 static virJSONValuePtr
-qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src)
+qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src,
+                                      bool legacy)
 {
     virJSONValuePtr servers = NULL;
     virJSONValuePtr props = NULL;
     virJSONValuePtr ret = NULL;
 
-    if (!(servers = qemuBlockStorageSourceBuildHostsJSONSocketAddress(src, true)))
+    if (!(servers = qemuBlockStorageSourceBuildHostsJSONSocketAddress(src, legacy)))
         return NULL;
 
      /* { driver:"gluster",
@@ -1022,12 +1023,14 @@ qemuBlockStorageSourceGetVvfatProps(virStorageSourcePtr src)
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
+ * @legacy: use legacy formatting of attributes (for -drive / old qemus)
  *
  * Creates a JSON object describing the underlying storage or protocol of a
  * storage source. Returns NULL on error and reports an appropriate error message.
  */
 virJSONValuePtr
-qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
+qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
+                                      bool legacy)
 {
     int actualType = virStorageSourceGetActualType(src);
     virJSONValuePtr fileprops = NULL;
@@ -1054,7 +1057,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
     case VIR_STORAGE_TYPE_NETWORK:
         switch ((virStorageNetProtocol) src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-            if (!(fileprops = qemuBlockStorageSourceGetGlusterProps(src)))
+            if (!(fileprops = qemuBlockStorageSourceGetGlusterProps(src, legacy)))
                 return NULL;
             break;
 

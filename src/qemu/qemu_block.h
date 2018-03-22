@@ -58,7 +58,8 @@ bool
 qemuBlockStorageSourceSupportsConcurrentAccess(virStorageSourcePtr src);
 
 virJSONValuePtr
-qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src);
+qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
+                                      bool legacy);
 
 virURIPtr
 qemuBlockStorageSourceGetURI(virStorageSourcePtr src);
