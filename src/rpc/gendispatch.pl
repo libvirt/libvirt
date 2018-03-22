@@ -131,6 +131,9 @@ sub get_conn_arg {
         if ($type =~ /remote_nonnull_network/) {
             return "priv->networkConn";
         }
+        if ($type =~ /remote_nonnull_node_device/) {
+            return "priv->nodedevConn";
+        }
     }
 
     # This is for the few virConnect APIs that
@@ -141,6 +144,9 @@ sub get_conn_arg {
     }
     if ($proc =~ /Connect.*Network/) {
         return "priv->networkConn";
+    }
+    if ($proc =~ /Node.*Device/) {
+        return "priv->nodedevConn";
     }
 
     return "priv->conn";
