@@ -616,6 +616,7 @@ qemumonitorjsontest_SOURCES = \
 	qemumonitorjsontest.c \
 	testutils.c testutils.h \
 	testutilsqemu.c testutilsqemu.h \
+	testutilsqemuschema.c testutilsqemuschema.h \
 	$(NULL)
 qemumonitorjsontest_LDADD = libqemumonitortestutils.la \
 	$(qemu_LDADDS) $(LDADDS)
@@ -694,6 +695,7 @@ else ! WITH_QEMU
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c \
 	qemuhelptest.c domainsnapshotxml2xmltest.c \
 	qemumonitortest.c testutilsqemu.c testutilsqemu.h \
+	testutilsqemuschema.c testutilsqemuschema.h \
 	qemumonitorjsontest.c qemuhotplugtest.c \
 	qemuagenttest.c qemucapabilitiestest.c \
 	qemucaps2xmltest.c qemucommandutiltest.c \

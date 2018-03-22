@@ -21,10 +21,12 @@
 
 #include "testutils.h"
 #include "testutilsqemu.h"
+#include "testutilsqemuschema.h"
 #include "qemumonitortestutils.h"
 #include "qemu/qemu_domain.h"
 #include "qemu/qemu_block.h"
 #include "qemu/qemu_monitor_json.h"
+#include "qemu/qemu_qapi.h"
 #include "virthread.h"
 #include "virerror.h"
 #include "virstring.h"
@@ -2828,12 +2830,60 @@ testBlockNodeNameDetect(const void *opaque)
 }
 
 
+struct testQAPISchemaData {
+    virHashTablePtr schema;
+    const char *name;
+    const char *query;
+    const char *json;
+    bool success;
+};
+
+
+static int
+testQAPISchema(const void *opaque)
+{
+    const struct testQAPISchemaData *data = opaque;
+    virBuffer debug = VIR_BUFFER_INITIALIZER;
+    virJSONValuePtr schemaroot;
+    virJSONValuePtr json = NULL;
+    int ret = -1;
+
+    if (virQEMUQAPISchemaPathGet(data->query, data->schema, &schemaroot) < 0)
+        goto cleanup;
+
+    if (!(json = virJSONValueFromString(data->json)))
+        goto cleanup;
+
+    if ((testQEMUSchemaValidate(json, schemaroot, data->schema, &debug) == 0) != data->success) {
+        if (!data->success)
+            VIR_TEST_VERBOSE("\nschema validation should have failed\n");
+    } else {
+        ret = 0;
+    }
+
+    if (virTestGetDebug() ||
+        (ret < 0 && virTestGetVerbose())) {
+        char *debugstr = virBufferContentAndReset(&debug);
+        fprintf(stderr, "\n%s\n", debugstr);
+        VIR_FREE(debugstr);
+    }
+
+
+ cleanup:
+    virBufferFreeAndReset(&debug);
+    virJSONValueFree(json);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
     int ret = 0;
     virQEMUDriver driver;
     testQemuMonitorJSONSimpleFuncData simpleFunc;
+    struct testQAPISchemaData qapiData;
+    char *metaschema = NULL;
 
 #if !WITH_YAJL
     fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
@@ -2982,8 +3032,64 @@ mymain(void)
 
 #undef DO_TEST_BLOCK_NODE_DETECT
 
-    qemuTestDriverFree(&driver);
+#define DO_TEST_QAPI_SCHEMA(nme, rootquery, scc, jsonstr) \
+    do { \
+        qapiData.name = nme; \
+        qapiData.query = rootquery; \
+        qapiData.success = scc; \
+        qapiData.json = jsonstr; \
+        if (virTestRun("qapi schema " nme, testQAPISchema, &qapiData) < 0)\
+            ret = -1; \
+    } while (0)
 
+    if (!(qapiData.schema = testQEMUSchemaLoad())) {
+        VIR_TEST_VERBOSE("failed to load qapi schema\n");
+        ret = -1;
+        goto cleanup;
+    }
+
+    DO_TEST_QAPI_SCHEMA("string", "trace-event-get-state/arg-type", true,
+                        "{\"name\":\"test\"}");
+    DO_TEST_QAPI_SCHEMA("all attrs", "trace-event-get-state/arg-type", true,
+                        "{\"name\":\"test\", \"vcpu\":123}");
+    DO_TEST_QAPI_SCHEMA("attr type mismatch", "trace-event-get-state/arg-type", false,
+                        "{\"name\":123}");
+    DO_TEST_QAPI_SCHEMA("missing mandatory attr", "trace-event-get-state/arg-type", false,
+                        "{\"vcpu\":123}");
+    DO_TEST_QAPI_SCHEMA("attr name not present", "trace-event-get-state/arg-type", false,
+                        "{\"name\":\"test\", \"blah\":123}");
+    DO_TEST_QAPI_SCHEMA("variant", "blockdev-add/arg-type", true,
+                        "{\"driver\":\"file\", \"filename\":\"ble\"}");
+    DO_TEST_QAPI_SCHEMA("variant wrong", "blockdev-add/arg-type", false,
+                        "{\"driver\":\"filefilefilefile\", \"filename\":\"ble\"}");
+    DO_TEST_QAPI_SCHEMA("variant missing mandatory", "blockdev-add/arg-type", false,
+                        "{\"driver\":\"file\", \"pr-manager\":\"ble\"}");
+    DO_TEST_QAPI_SCHEMA("variant missing discriminator", "blockdev-add/arg-type", false,
+                        "{\"node-name\":\"dfgfdg\"}");
+    DO_TEST_QAPI_SCHEMA("alternate 1", "blockdev-add/arg-type", true,
+                        "{\"driver\":\"qcow2\","
+                         "\"file\": { \"driver\":\"file\", \"filename\":\"ble\"}}");
+    DO_TEST_QAPI_SCHEMA("alternate 2", "blockdev-add/arg-type", true,
+                        "{\"driver\":\"qcow2\",\"file\": \"somepath\"}");
+    DO_TEST_QAPI_SCHEMA("alternate 2", "blockdev-add/arg-type", false,
+                        "{\"driver\":\"qcow2\",\"file\": 1234}");
+
+    if (!(metaschema = virTestLoadFilePath("qemuqapischema.json", NULL))) {
+        VIR_TEST_VERBOSE("failed to load qapi schema\n");
+        ret = -1;
+        goto cleanup;
+    }
+
+    DO_TEST_QAPI_SCHEMA("schema-meta", "query-qmp-schema/ret-type", true,
+                        metaschema);
+
+
+#undef DO_TEST_QAPI_SCHEMA
+
+ cleanup:
+    VIR_FREE(metaschema);
+    virHashFree(qapiData.schema);
+    qemuTestDriverFree(&driver);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
