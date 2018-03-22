@@ -883,6 +883,9 @@ virBufferStrcat(virBufferPtr buf, ...)
 {
     va_list ap;
 
+    if (!buf)
+        return;
+
     va_start(ap, buf);
     virBufferStrcatVArgs(buf, ap);
     va_end(ap);
