@@ -42,6 +42,7 @@ struct _testQemuMonitorJSONSimpleFuncData {
     int (* func) (qemuMonitorPtr mon);
     virDomainXMLOptionPtr xmlopt;
     const char *reply;
+    virHashTablePtr schema;
 };
 
 const char *queryBlockReply =
@@ -1266,7 +1267,7 @@ testQemuMonitorJSONSimpleFunc(const void *opaque)
     testQemuMonitorJSONSimpleFuncDataPtr data =
         (testQemuMonitorJSONSimpleFuncDataPtr) opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    qemuMonitorTestPtr test = qemuMonitorTestNewSchema(xmlopt, data->schema);
     const char *reply = data->reply;
     int ret = -1;
 
@@ -2896,6 +2897,13 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
+    if (!(qapiData.schema = testQEMUSchemaLoad())) {
+        VIR_TEST_VERBOSE("failed to load qapi schema\n");
+        ret = -1;
+        goto cleanup;
+    }
+    simpleFunc.schema = qapiData.schema;
+
 #define DO_TEST(name) \
     if (virTestRun(# name, testQemuMonitorJSON ## name, driver.xmlopt) < 0) \
         ret = -1
@@ -3042,11 +3050,6 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-    if (!(qapiData.schema = testQEMUSchemaLoad())) {
-        VIR_TEST_VERBOSE("failed to load qapi schema\n");
-        ret = -1;
-        goto cleanup;
-    }
 
     DO_TEST_QAPI_SCHEMA("string", "trace-event-get-state/arg-type", true,
                         "{\"name\":\"test\"}");
