@@ -140,6 +140,9 @@ sub get_conn_arg {
         if ($type =~ /remote_nonnull_secret/) {
             return "priv->secretConn";
         }
+        if ($type =~ /remote_nonnull_storage/) {
+            return "priv->storageConn";
+        }
     }
 
     # This is for the few virConnect APIs that
@@ -159,6 +162,9 @@ sub get_conn_arg {
     }
     if ($proc =~ /Connect.*Secret/) {
         return "priv->secretConn";
+    }
+    if ($proc =~ /Connect.*Storage/) {
+        return "priv->storageConn";
     }
 
     return "priv->conn";
