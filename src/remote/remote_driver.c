@@ -1345,25 +1345,35 @@ remoteConnectOpen(virConnectPtr conn,
         rflags |= VIR_DRV_OPEN_REMOTE_RO;
 
     /*
-     * If no servername is given, and no +XXX
-     * transport is listed, or transport is unix,
-     * and path is /session, and uid is unprivileged
-     * then auto-spawn a daemon.
+     * User session daemon is used for
+     *
+     *  - Any URI with /session suffix
+     *  - Test driver, if a protocol is given
+     *
+     * provided we are running non-root
      */
     if (conn->uri &&
-        !conn->uri->server &&
         conn->uri->path &&
         conn->uri->scheme &&
-        (transport == NULL || STREQ(transport, "unix")) &&
         (STREQ(conn->uri->path, "/session") ||
          STRPREFIX(conn->uri->scheme, "test+")) &&
         geteuid() > 0) {
-        VIR_DEBUG("Auto-spawn user daemon instance");
+        VIR_DEBUG("User session daemon required");
         rflags |= VIR_DRV_OPEN_REMOTE_USER;
+
+        /*
+         * Furthermore if no servername is given, and no +XXX
+         * transport is listed, or transport is unix,
+         * and uid is unprivileged then auto-spawn a daemon.
+         */
         if (!virIsSUID() &&
+            !conn->uri->server &&
+            (transport == NULL || STREQ(transport, "unix")) &&
             (!autostart ||
-             STRNEQ(autostart, "0")))
+             STRNEQ(autostart, "0"))) {
+            VIR_DEBUG("Try daemon autostart");
             rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
+        }
     }
 
     /*
