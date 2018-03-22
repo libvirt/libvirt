@@ -1782,12 +1782,15 @@ static int testConnectListDomains(virConnectPtr conn,
                                         NULL, NULL);
 }
 
-static int testDomainDestroy(virDomainPtr domain)
+static int testDomainDestroyFlags(virDomainPtr domain,
+                                  unsigned int flags)
 {
     testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
     int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_DESTROY_GRACEFUL, -1);
 
     if (!(privdom = testDomObjFromDomain(domain)))
         goto cleanup;
@@ -1811,6 +1814,11 @@ static int testDomainDestroy(virDomainPtr domain)
     virDomainObjEndAPI(&privdom);
     testObjectEventQueue(privconn, event);
     return ret;
+}
+
+static int testDomainDestroy(virDomainPtr domain)
+{
+    return testDomainDestroyFlags(domain, 0);
 }
 
 static int testDomainResume(virDomainPtr domain)
@@ -6872,6 +6880,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainShutdownFlags = testDomainShutdownFlags, /* 0.9.10 */
     .domainReboot = testDomainReboot, /* 0.1.1 */
     .domainDestroy = testDomainDestroy, /* 0.1.1 */
+    .domainDestroyFlags = testDomainDestroyFlags, /* 4.2.0 */
     .domainGetOSType = testDomainGetOSType, /* 0.1.9 */
     .domainGetMaxMemory = testDomainGetMaxMemory, /* 0.1.4 */
     .domainSetMaxMemory = testDomainSetMaxMemory, /* 0.1.1 */
