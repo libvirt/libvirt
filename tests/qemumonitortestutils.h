@@ -74,13 +74,16 @@ int qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
                                  const char *response);
 
 # define qemuMonitorTestNewSimple(json, xmlopt) \
-    qemuMonitorTestNew(json, xmlopt, NULL, NULL, NULL)
+    qemuMonitorTestNew(json, xmlopt, NULL, NULL, NULL, NULL)
+# define qemuMonitorTestNewSchema(xmlopt, schema) \
+    qemuMonitorTestNew(true, xmlopt, NULL, NULL, NULL, schema)
 
 qemuMonitorTestPtr qemuMonitorTestNew(bool json,
                                       virDomainXMLOptionPtr xmlopt,
                                       virDomainObjPtr vm,
                                       virQEMUDriverPtr driver,
-                                      const char *greeting);
+                                      const char *greeting,
+                                      virHashTablePtr schema);
 
 qemuMonitorTestPtr qemuMonitorTestNewFromFile(const char *fileName,
                                               virDomainXMLOptionPtr xmlopt,

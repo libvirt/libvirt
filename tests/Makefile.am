@@ -555,6 +555,7 @@ endif ! WITH_LIBXL
 QEMUMONITORTESTUTILS_SOURCES = \
 	qemumonitortestutils.c \
 	qemumonitortestutils.h \
+	testutilsqemuschema.h testutilsqemuschema.c \
 	$(NULL)
 
 if WITH_QEMU
@@ -616,7 +617,6 @@ qemumonitorjsontest_SOURCES = \
 	qemumonitorjsontest.c \
 	testutils.c testutils.h \
 	testutilsqemu.c testutilsqemu.h \
-	testutilsqemuschema.c testutilsqemuschema.h \
 	$(NULL)
 qemumonitorjsontest_LDADD = libqemumonitortestutils.la \
 	$(qemu_LDADDS) $(LDADDS)

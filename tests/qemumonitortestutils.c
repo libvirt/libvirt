@@ -25,12 +25,14 @@
 #include <time.h>
 
 #include "testutils.h"
+#include "testutilsqemuschema.h"
 #include "qemumonitortestutils.h"
 
 #include "virthread.h"
 #include "qemu/qemu_processpriv.h"
 #include "qemu/qemu_monitor.h"
 #include "qemu/qemu_agent.h"
+#include "qemu/qemu_qapi.h"
 #include "rpc/virnetsocket.h"
 #include "viralloc.h"
 #include "virlog.h"
@@ -76,6 +78,7 @@ struct _qemuMonitorTest {
     qemuMonitorTestItemPtr *items;
 
     virDomainObjPtr vm;
+    virHashTablePtr qapischema;
 };
 
 
@@ -537,6 +540,67 @@ qemuMonitorTestHandlerDataFree(void *opaque)
     VIR_FREE(data);
 }
 
+
+/* Returns -1 on error, 0 if validation was successful/not necessary, 1 if
+ * the validation has failed, and the reply was properly constructed */
+static int
+qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
+                                             const char *cmdname,
+                                             virJSONValuePtr args)
+{
+    virBuffer debug = VIR_BUFFER_INITIALIZER;
+    virJSONValuePtr schemaroot;
+    virJSONValuePtr emptyargs = NULL;
+    char *schemapath = NULL;
+    int ret = -1;
+
+    if (!test->qapischema || !test->json || test->agent)
+        return 0;
+
+    /* 'device_add' needs to be skipped as it does not have fully defined schema */
+    if (STREQ(cmdname, "device_add"))
+        return 0;
+
+    if (virAsprintf(&schemapath, "%s/arg-type", cmdname) < 0)
+        goto cleanup;
+
+    if (virQEMUQAPISchemaPathGet(schemapath, test->qapischema, &schemaroot) < 0) {
+        if (qemuMonitorReportError(test,
+                                   "command '%s' not found in QAPI schema",
+                                   cmdname) == 0)
+            ret = 1;
+        goto cleanup;
+    }
+
+    if (!args) {
+        if (!(emptyargs = virJSONValueNewObject()))
+            goto cleanup;
+
+        args = emptyargs;
+    }
+
+    if (testQEMUSchemaValidate(args, schemaroot, test->qapischema, &debug) < 0) {
+        char *debugmsg = virBufferContentAndReset(&debug);
+        if (qemuMonitorReportError(test,
+                                   "failed to validate arguments of '%s' "
+                                   "against QAPI schema: %s",
+                                   cmdname, debugmsg) == 0)
+            ret = 1;
+
+        VIR_FREE(debugmsg);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&debug);
+    virJSONValueFree(emptyargs);
+    VIR_FREE(schemapath);
+    return ret;
+}
+
+
 static int
 qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
                                      qemuMonitorTestItemPtr item,
@@ -544,10 +608,12 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
 {
     struct qemuMonitorTestHandlerData *data = item->opaque;
     virJSONValuePtr val = NULL;
+    virJSONValuePtr cmdargs = NULL;
     char *cmdcopy = NULL;
     const char *cmdname;
     char *tmp;
     int ret = -1;
+    int rc;
 
     if (test->agent || test->json) {
         if (!(val = virJSONValueFromString(cmdstr)))
@@ -557,6 +623,8 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
             ret = qemuMonitorReportError(test, "Missing command name in %s", cmdstr);
             goto cleanup;
         }
+
+        cmdargs = virJSONValueObjectGet(val, "arguments");
     } else {
         if (VIR_STRDUP(cmdcopy, cmdstr) < 0)
             return -1;
@@ -570,6 +638,14 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
             goto cleanup;
         }
         *tmp = '\0';
+    }
+
+    if ((rc = qemuMonitorTestProcessCommandDefaultValidate(test, cmdname, cmdargs)) < 0)
+        goto cleanup;
+
+    if (rc == 1) {
+        ret = 0;
+        goto cleanup;
     }
 
     if (data->command_name && STRNEQ(data->command_name, cmdname))
@@ -1160,7 +1236,8 @@ qemuMonitorTestNew(bool json,
                    virDomainXMLOptionPtr xmlopt,
                    virDomainObjPtr vm,
                    virQEMUDriverPtr driver,
-                   const char *greeting)
+                   const char *greeting,
+                   virHashTablePtr schema)
 {
     qemuMonitorTestPtr test = NULL;
     virDomainChrSourceDef src;
@@ -1171,6 +1248,7 @@ qemuMonitorTestNew(bool json,
         goto error;
 
     test->json = json;
+    test->qapischema = schema;
     if (!(test->mon = qemuMonitorOpen(test->vm,
                                       &src,
                                       json,
@@ -1249,7 +1327,8 @@ qemuMonitorTestNewFromFile(const char *fileName,
                     goto error;
             } else {
                 /* Create new mocked monitor with our greeting */
-                if (!(test = qemuMonitorTestNew(true, xmlopt, NULL, NULL, singleReply)))
+                if (!(test = qemuMonitorTestNew(true, xmlopt, NULL, NULL,
+                                                singleReply, NULL)))
                     goto error;
             }
 
@@ -1331,7 +1410,7 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
     if (virTestLoadFile(fileName, &jsonstr) < 0)
         return NULL;
 
-    if (!(ret = qemuMonitorTestNew(true, driver->xmlopt, vm, driver, NULL)))
+    if (!(ret = qemuMonitorTestNew(true, driver->xmlopt, vm, driver, NULL, NULL)))
         goto cleanup;
 
     tmp = jsonstr;
