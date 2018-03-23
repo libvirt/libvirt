@@ -444,6 +444,7 @@ typedef enum {
     QEMU_CAPS_DEVICE_PL011, /* -device pl011 (not user-instantiable) */
     QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT, /* -machine pseries,max-cpu-compat= */
     QEMU_CAPS_DUMP_COMPLETED, /* DUMP_COMPLETED event */
+    QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW, /* -device virtio-gpu-ccw */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

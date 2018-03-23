@@ -460,6 +460,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "pl011",
               "machine.pseries.max-cpu-compat",
               "dump-completed",
+              "virtio-gpu-ccw",
     );
 
 
@@ -1695,6 +1696,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "sclplmconsole", QEMU_CAPS_DEVICE_SCLPLMCONSOLE },
     { "isa-serial", QEMU_CAPS_DEVICE_ISA_SERIAL },
     { "pl011", QEMU_CAPS_DEVICE_PL011 },
+    { "virtio-gpu-ccw", QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {
@@ -1948,6 +1950,9 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
     { "spapr-pci-host-bridge", virQEMUCapsObjectPropsSpaprPCIHostBridge,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsSpaprPCIHostBridge),
       QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE },
+    { "virtio-gpu-ccw", virQEMUCapsObjectPropsVirtioGpu,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioGpu),
+      QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW },
 };
 
 

@@ -3552,6 +3552,71 @@
 {
   "return": [
     {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "ioeventfd",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "devno",
+      "description": "Identifier of an I/O device in the channel subsystem, example: fe.1.23ab",
+      "type": "str"
+    },
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-gpu-device>"
+    },
+    {
+      "name": "yres",
+      "type": "uint32"
+    },
+    {
+      "name": "xres",
+      "type": "uint32"
+    },
+    {
+      "name": "iommu_platform",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "max_outputs",
+      "type": "uint32"
+    },
+    {
+      "name": "max_hostmem",
+      "type": "size"
+    },
+    {
+      "name": "max_revision",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-34"
+}
+
+{
+  "return": [
+    {
       "hotpluggable-cpus": true,
       "name": "s390-ccw-virtio-2.7",
       "cpu-max": 248
@@ -3604,7 +3669,7 @@
       "alias": "s390-ccw-virtio"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -6259,20 +6324,20 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "return": [
     "emulator"
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -7428,7 +7493,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -7490,7 +7555,7 @@
       "capability": "dirty-bitmaps"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -18858,11 +18923,11 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
-  "id": "libvirt-41",
+  "id": "libvirt-42",
   "error": {
     "class": "GenericError",
     "desc": "The CPU definition 'max' is unknown."

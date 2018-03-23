@@ -146,6 +146,7 @@
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
   <flag name='dump-completed'/>
+  <flag name='virtio-gpu-ccw'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>
