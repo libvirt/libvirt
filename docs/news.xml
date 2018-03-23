@@ -46,6 +46,16 @@
           releases of the language are fully supported.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Provide ccw address support for graphics and input devices
+        </summary>
+        <description>
+          Support the virtio-gpu-ccw device as a video device and
+          virtio-{keyboard, mouse, tablet}-ccw devices as input devices
+          on S390.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
