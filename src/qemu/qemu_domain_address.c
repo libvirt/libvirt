@@ -1338,6 +1338,7 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 static virDomainPCIAddressSetPtr
 qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
+                              virQEMUCapsPtr qemuCaps,
                               unsigned int nbuses,
                               bool dryRun)
 {
@@ -1354,6 +1355,9 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
     /* pSeries domains support multiple pci-root controllers */
     if (qemuDomainIsPSeries(def))
         addrs->areMultipleRootsSupported = true;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE))
+        addrs->isPCIeToPCIBridgeSupported = true;
 
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
@@ -2361,7 +2365,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
 
     if (nbuses > 0) {
         /* 1st pass to figure out how many PCI bridges we need */
-        if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, true)))
+        if (!(addrs = qemuDomainPCIAddressSetCreate(def, qemuCaps, nbuses, true)))
             goto cleanup;
 
         if (qemuDomainValidateDevicePCISlotsChipsets(def, qemuCaps,
@@ -2491,7 +2495,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         addrs = NULL;
     }
 
-    if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, false)))
+    if (!(addrs = qemuDomainPCIAddressSetCreate(def, qemuCaps, nbuses, false)))
         goto cleanup;
 
     if (qemuDomainSupportsPCI(def, qemuCaps)) {

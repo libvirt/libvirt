@@ -118,6 +118,8 @@ struct _virDomainPCIAddressSet {
                              and addresses aren't saved in device infos */
     /* If true, the guest can have multiple pci-root controllers */
     bool areMultipleRootsSupported;
+    /* If true, the guest can use the pcie-to-pci-bridge controller */
+    bool isPCIeToPCIBridgeSupported;
 };
 typedef struct _virDomainPCIAddressSet virDomainPCIAddressSet;
 typedef virDomainPCIAddressSet *virDomainPCIAddressSetPtr;
