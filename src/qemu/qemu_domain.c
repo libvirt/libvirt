@@ -4109,8 +4109,23 @@ qemuDomainDeviceDefValidateVideo(const virDomainVideoDef *video)
 
 
 static int
+qemuDomainValidateStorageSource(virStorageSourcePtr src)
+{
+    if (src->format == VIR_STORAGE_FILE_COW) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                      _("'cow' storage format is not supported"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk)
 {
+    virStorageSourcePtr n;
+
     if (disk->src->shared && !disk->src->readonly) {
         if (disk->src->format <= VIR_STORAGE_FILE_AUTO) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -4125,6 +4140,11 @@ qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk)
                              "supported storage format"), disk->dst);
             return -1;
         }
+    }
+
+    for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (qemuDomainValidateStorageSource(n) < 0)
+            return -1;
     }
 
     return 0;
@@ -11837,6 +11857,9 @@ qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
             n->debug = true;
             n->debugLevel = cfg->glusterDebugLevel;
         }
+
+        if (qemuDomainValidateStorageSource(n) < 0)
+            return -1;
     }
 
     return 0;

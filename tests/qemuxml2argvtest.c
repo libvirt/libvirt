@@ -912,6 +912,7 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("disk-drive-fmt-qcow",
             QEMU_CAPS_DRIVE_BOOT);
+    DO_TEST_PARSE_ERROR("disk-drive-fmt-cow", QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-shared",
             QEMU_CAPS_DRIVE_SERIAL);
     DO_TEST_PARSE_ERROR("disk-drive-shared-qcow", NONE);
