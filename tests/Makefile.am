@@ -655,12 +655,14 @@ qemuhotplugtest_SOURCES = \
 qemuhotplugtest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS) $(LDADDS)
 
 qemublocktest_SOURCES = \
-	qemublocktest.c testutils.h testutils.c
-qemublocktest_LDADD = $(LDADDS) \
+	qemublocktest.c \
+	testutils.h testutils.c \
+	$(NULL)
+qemublocktest_LDADD = \
 	../src/libvirt_conf.la \
 	../src/libvirt_util.la \
 	$(qemu_LDADDS) \
-	../gnulib/lib/libgnu.la \
+	$(LDADDS) \
 	$(NULL)
 
 domainsnapshotxml2xmltest_SOURCES = \
