@@ -1187,6 +1187,13 @@ mymain(void)
             QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS,
             QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
+    DO_TEST("video-virtio-gpu-ccw-auto",
+            QEMU_CAPS_VIRTIO_CCW,
+            QEMU_CAPS_DEVICE_VIRTIO_GPU,
+            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS,
+            QEMU_CAPS_VNC,
+            QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
 
     DO_TEST("intel-iommu",
             QEMU_CAPS_DEVICE_INTEL_IOMMU);
