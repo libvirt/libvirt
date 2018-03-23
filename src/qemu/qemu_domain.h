@@ -888,9 +888,6 @@ bool qemuDomainVcpuHotplugIsInOrder(virDomainDefPtr def)
 void qemuDomainVcpuPersistOrder(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
 
-int qemuDomainDefValidateDisk(const virDomainDiskDef *disk,
-                              virQEMUCapsPtr qemuCaps);
-
 int qemuDomainCheckMonitor(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            qemuDomainAsyncJob asyncJob);
