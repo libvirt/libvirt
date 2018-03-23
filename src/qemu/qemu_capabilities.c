@@ -461,6 +461,11 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "machine.pseries.max-cpu-compat",
               "dump-completed",
               "virtio-gpu-ccw",
+              "virtio-keyboard-ccw",
+
+              /* 285 */
+              "virtio-mouse-ccw",
+              "virtio-tablet-ccw",
     );
 
 
@@ -1697,6 +1702,9 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "isa-serial", QEMU_CAPS_DEVICE_ISA_SERIAL },
     { "pl011", QEMU_CAPS_DEVICE_PL011 },
     { "virtio-gpu-ccw", QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW },
+    { "virtio-keyboard-ccw", QEMU_CAPS_DEVICE_VIRTIO_KEYBOARD_CCW },
+    { "virtio-mouse-ccw", QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW },
+    { "virtio-tablet-ccw", QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {

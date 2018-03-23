@@ -147,6 +147,9 @@
   <flag name='iscsi.password-secret'/>
   <flag name='dump-completed'/>
   <flag name='virtio-gpu-ccw'/>
+  <flag name='virtio-keyboard-ccw'/>
+  <flag name='virtio-mouse-ccw'/>
+  <flag name='virtio-tablet-ccw'/>
   <version>2011000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>342058</microcodeVersion>
