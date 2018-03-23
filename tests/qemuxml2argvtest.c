@@ -3008,6 +3008,13 @@ mymain(void)
     DO_TEST("disk-many-format-probing", QEMU_CAPS_DRIVE_BOOT);
     driver.config->allowDiskFormatProbing = false;
 
+    DO_TEST("video-virtio-gpu-ccw", QEMU_CAPS_VIRTIO_CCW,
+            QEMU_CAPS_DEVICE_VIRTIO_GPU,
+            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS,
+            QEMU_CAPS_VNC,
+            QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 

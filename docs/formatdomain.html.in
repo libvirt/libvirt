@@ -6484,6 +6484,9 @@ qemu-kvm -net nic,model=? /dev/null
       <dd>
         The optional <code>address</code> sub-element can be used to
         tie the video device to a particular PCI slot.
+        On S390, <code>address</code> can be used to provide the
+        CCW address for the video device (<span class="since">
+        since 4.2.0</span>).
       </dd>
 
       <dt><code>driver</code></dt>

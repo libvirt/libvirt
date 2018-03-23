@@ -132,7 +132,7 @@ VIR_ENUM_IMPL(qemuDeviceVideoSecondary, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* don't support vbox */
               "qxl",
               "", /* don't support parallels */
-              "virtio-gpu-pci",
+              "virtio-gpu",
               "" /* don't support gop */);
 
 VIR_ENUM_DECL(qemuSoundCodec)
@@ -4296,7 +4296,16 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
         goto error;
     }
 
-    virBufferAsprintf(&buf, "%s,id=%s", model, video->info.alias);
+    if (STREQ(model, "virtio-gpu")) {
+        if (video->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
+            virBufferAsprintf(&buf, "%s-ccw", model);
+        else
+            virBufferAsprintf(&buf, "%s-pci", model);
+    } else {
+        virBufferAsprintf(&buf, "%s", model);
+    }
+
+    virBufferAsprintf(&buf, ",id=%s", video->info.alias);
 
     if (video->accel && video->accel->accel3d == VIR_TRISTATE_SWITCH_ON) {
         virBufferAsprintf(&buf, ",virgl=%s",
