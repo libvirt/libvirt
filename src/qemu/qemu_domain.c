@@ -11834,6 +11834,9 @@ qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
     if (!src)
         src = disk->src;
 
+    /* transfer properties valid only for the top level image */
+    src->detect_zeroes = disk->detect_zeroes;
+
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (n->type == VIR_STORAGE_TYPE_NETWORK &&
             n->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
@@ -11844,6 +11847,11 @@ qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
 
         if (qemuDomainValidateStorageSource(n, qemuCaps) < 0)
             return -1;
+
+        /* transfer properties valid for the full chain */
+        n->iomode = disk->iomode;
+        n->cachemode = disk->cachemode;
+        n->discard = disk->discard;
     }
 
     return 0;
