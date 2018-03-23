@@ -25,8 +25,17 @@ AC_DEFUN([LIBVIRT_ARG_POLKIT], [
 AC_DEFUN([LIBVIRT_CHECK_POLKIT], [
   AC_REQUIRE([LIBVIRT_CHECK_DBUS])
 
+  if test "x$with_polkit" = "xcheck"; then
+    dnl For --with-polkit=check, also require the pkcheck binary, even
+    dnl though we talk to polkit directly over D-Bus.
+    AC_PATH_PROG([PKCHECK_PATH], [pkcheck], [], [$LIBVIRT_SBIN_PATH])
+    if test "x$PKCHECK_PATH" = "x" ; then
+        with_polkit="no"
+    fi
+  fi
+
   if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
-    dnl All we need to talk to polkit is D-Bus.
+    dnl For --with-polkit=yes, all we need is D-Bus.
     if test "x$with_dbus" = "xyes" ; then
       AC_DEFINE_UNQUOTED([WITH_POLKIT], 1,
           [use PolicyKit for UNIX socket access checks])
