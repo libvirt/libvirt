@@ -8701,6 +8701,32 @@ qemuBuildNetCommandLine(virQEMUDriverPtr driver,
 }
 
 
+static const char *
+qemuBuildSmartcardFindCCIDController(const virDomainDef *def,
+                                     const virDomainSmartcardDef *smartcard)
+{
+    size_t i;
+
+    /* Should never happen. But doesn't hurt to check. */
+    if (smartcard->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID)
+        return NULL;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        const virDomainControllerDef *tmp = def->controllers[i];
+
+        if (tmp->type != VIR_DOMAIN_CONTROLLER_TYPE_CCID)
+            continue;
+
+        if (tmp->idx != smartcard->info.addr.ccid.controller)
+            continue;
+
+        return tmp->info.alias;
+    }
+
+    return NULL;
+}
+
+
 static int
 qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
                               virCommandPtr cmd,
@@ -8714,6 +8740,7 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
     char *devstr;
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *database;
+    const char *contAlias = NULL;
 
     if (!def->nsmartcards)
         return 0;
@@ -8811,8 +8838,17 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
         virBufferFreeAndReset(&opt);
         return -1;
     }
+
+    if (!(contAlias = qemuBuildSmartcardFindCCIDController(def,
+                                                           smartcard))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to find controller for %s"),
+                       smartcard->info.alias);
+        return -1;
+    }
+
     virCommandAddArg(cmd, "-device");
-    virBufferAsprintf(&opt, ",id=%s,bus=ccid0.0", smartcard->info.alias);
+    virBufferAsprintf(&opt, ",id=%s,bus=%s.0", smartcard->info.alias, contAlias);
     virCommandAddArgBuffer(cmd, &opt);
 
     return 0;

@@ -31,6 +31,8 @@ server,nowait \
 -global PIIX4_PM.disable_s4=0 \
 -boot cd \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x8 \
+-device usb-ccid,id=ua-myCCID,bus=ua-SomeWeirdController.0,port=1 \
+-device usb-ccid,id=ua-myCCID2,bus=ua-SomeWeirdController.0,port=2 \
 -usb \
 -drive file=/var/lib/libvirt/images/fd.img,format=raw,if=none,\
 id=drive-ua-myDisk1,cache=none \
@@ -55,6 +57,7 @@ bus=pci.0,addr=0x9 \
 -device rtl8139,vlan=2,id=ua-AndAlsoClientMode,mac=52:54:00:8c:b1:f8,bus=pci.0,\
 addr=0xa \
 -net socket,connect=127.0.0.1:1234,vlan=2,name=hostua-AndAlsoClientMode \
+-device ccid-card-emulated,backend=nss-emulated,id=smartcard0,bus=ua-myCCID.0 \
 -chardev pty,id=charserial0 \
 -device isa-serial,chardev=charserial0,id=serial0 \
 -chardev pty,id=charserial1 \

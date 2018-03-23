@@ -85,6 +85,14 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
     </controller>
     <controller type='fdc' index='0'/>
+    <controller type='ccid' index='0'>
+      <alias name='ua-myCCID'/>
+      <address type='usb' bus='0' port='1'/>
+    </controller>
+    <controller type='ccid' index='1'>
+      <alias name='ua-myCCID2'/>
+      <address type='usb' bus='0' port='2'/>
+    </controller>
     <interface type='ethernet'>
       <mac address='52:54:00:d6:c0:0b'/>
       <model type='virtio'/>
@@ -109,6 +117,9 @@
       <alias name='ua-AndAlsoClientMode'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
     </interface>
+    <smartcard mode='host'>
+      <address type='ccid' controller='0' slot='0'/>
+    </smartcard>
     <serial type='pty'>
       <target type='isa-serial' port='0'>
         <model name='isa-serial'/>
