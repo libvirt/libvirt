@@ -1350,7 +1350,6 @@ remoteConnectOpen(virConnectPtr conn,
      */
     if (!conn->uri) {
         VIR_DEBUG("Auto-probe remote URI");
-#ifndef __sun
         if (geteuid() > 0) {
             VIR_DEBUG("Auto-spawn user daemon instance");
             rflags |= VIR_DRV_OPEN_REMOTE_USER;
@@ -1359,7 +1358,6 @@ remoteConnectOpen(virConnectPtr conn,
                  STRNEQ(autostart, "0")))
                 rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
         }
-#endif
     }
 
     ret = doRemoteOpen(conn, priv, auth, conf, rflags);

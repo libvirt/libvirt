@@ -675,30 +675,6 @@ daemonVersion(const char *argv0)
     printf("%s (%s) %s\n", argv0, PACKAGE_NAME, PACKAGE_VERSION);
 }
 
-#ifdef __sun
-static int
-daemonSetupPrivs(void)
-{
-    chown("/var/run/libvirt", SYSTEM_UID, SYSTEM_UID);
-
-    if (__init_daemon_priv(PU_RESETGROUPS | PU_CLEARLIMITSET,
-                           SYSTEM_UID, SYSTEM_UID, PRIV_XVM_CONTROL, NULL)) {
-        VIR_ERROR(_("additional privileges are required"));
-        return -1;
-    }
-
-    if (priv_set(PRIV_OFF, PRIV_ALLSETS, PRIV_FILE_LINK_ANY, PRIV_PROC_INFO,
-                 PRIV_PROC_SESSION, PRIV_PROC_EXEC, PRIV_PROC_FORK, NULL)) {
-        VIR_ERROR(_("failed to set reduced privileges"));
-        return -1;
-    }
-
-    return 0;
-}
-#else
-# define daemonSetupPrivs() 0
-#endif
-
 
 static void daemonShutdownHandler(virNetDaemonPtr dmn,
                                   siginfo_t *sig ATTRIBUTE_UNUSED,
@@ -1333,15 +1309,6 @@ int main(int argc, char **argv) {
 
     if (virNetDaemonAddServer(dmn, srv) < 0) {
         ret = VIR_DAEMON_ERR_INIT;
-        goto cleanup;
-    }
-
-    /* Beyond this point, nothing should rely on using
-     * getuid/geteuid() == 0, for privilege level checks.
-     */
-    VIR_DEBUG("Dropping privileges (if required)");
-    if (daemonSetupPrivs() < 0) {
-        ret = VIR_DAEMON_ERR_PRIVS;
         goto cleanup;
     }
 
