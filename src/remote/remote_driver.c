@@ -710,6 +710,39 @@ remoteConnectSupportsFeatureUnlocked(virConnectPtr conn,
         var->ignore = 1; \
         continue; \
     }
+
+
+static char *remoteGetUNIXSocketNonRoot(void)
+{
+    char *sockname = NULL;
+    char *userdir = virGetUserRuntimeDirectory();
+
+    if (!userdir)
+        return NULL;
+
+    if (virAsprintf(&sockname, "%s/" LIBVIRTD_USER_UNIX_SOCKET, userdir) < 0) {
+        VIR_FREE(userdir);
+        return NULL;
+    }
+    VIR_FREE(userdir);
+
+    VIR_DEBUG("Chosen UNIX sockname %s", sockname);
+    return sockname;
+}
+
+static char *remoteGetUNIXSocketRoot(unsigned int flags)
+{
+    char *sockname = NULL;
+
+    if (VIR_STRDUP(sockname,
+                   flags & VIR_DRV_OPEN_REMOTE_RO ?
+                   LIBVIRTD_PRIV_UNIX_SOCKET_RO : LIBVIRTD_PRIV_UNIX_SOCKET) < 0)
+        return NULL;
+
+    VIR_DEBUG("Chosen UNIX sockname %s", sockname);
+    return sockname;
+}
+
 /*
  * URIs that this driver needs to handle:
  *
@@ -971,9 +1004,7 @@ doRemoteOpen(virConnectPtr conn,
                 goto failed;
             }
 
-            if (VIR_STRDUP(sockname,
-                           flags & VIR_DRV_OPEN_REMOTE_RO ?
-                           LIBVIRTD_PRIV_UNIX_SOCKET_RO : LIBVIRTD_PRIV_UNIX_SOCKET) < 0)
+            if (!(sockname = remoteGetUNIXSocketRoot(flags)))
                 goto failed;
         }
 
@@ -1008,9 +1039,7 @@ doRemoteOpen(virConnectPtr conn,
                 goto failed;
             }
 
-            if (VIR_STRDUP(sockname,
-                           flags & VIR_DRV_OPEN_REMOTE_RO ?
-                           LIBVIRTD_PRIV_UNIX_SOCKET_RO : LIBVIRTD_PRIV_UNIX_SOCKET) < 0)
+            if (!(sockname = remoteGetUNIXSocketRoot(flags)))
                 goto failed;
         }
 
@@ -1037,24 +1066,12 @@ doRemoteOpen(virConnectPtr conn,
 #ifndef WIN32
     case trans_unix:
         if (!sockname) {
-            if (flags & VIR_DRV_OPEN_REMOTE_USER) {
-                char *userdir = virGetUserRuntimeDirectory();
-
-                if (!userdir)
-                    goto failed;
-
-                if (virAsprintf(&sockname, "%s/" LIBVIRTD_USER_UNIX_SOCKET, userdir) < 0) {
-                    VIR_FREE(userdir);
-                    goto failed;
-                }
-                VIR_FREE(userdir);
-            } else {
-                if (VIR_STRDUP(sockname,
-                               flags & VIR_DRV_OPEN_REMOTE_RO ?
-                               LIBVIRTD_PRIV_UNIX_SOCKET_RO : LIBVIRTD_PRIV_UNIX_SOCKET) < 0)
-                    goto failed;
-            }
-            VIR_DEBUG("Proceeding with sockname %s", sockname);
+            if (flags & VIR_DRV_OPEN_REMOTE_USER)
+                sockname = remoteGetUNIXSocketNonRoot();
+            else
+                sockname = remoteGetUNIXSocketRoot(flags);
+            if (!sockname)
+                goto failed;
         }
 
         if ((flags & VIR_DRV_OPEN_REMOTE_AUTOSTART) &&
@@ -1087,9 +1104,7 @@ doRemoteOpen(virConnectPtr conn,
                 goto failed;
             }
 
-            if (VIR_STRDUP(sockname,
-                           flags & VIR_DRV_OPEN_REMOTE_RO ?
-                           LIBVIRTD_PRIV_UNIX_SOCKET_RO : LIBVIRTD_PRIV_UNIX_SOCKET) < 0)
+            if (!(sockname = remoteGetUNIXSocketRoot(flags)))
                 goto failed;
         }
 
