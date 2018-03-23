@@ -3955,6 +3955,8 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
 
     if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         suffix = "-pci";
+    } else if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+        suffix = "-ccw";
     } else if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO) {
         suffix = "-device";
     } else {
@@ -3966,7 +3968,9 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
 
     switch ((virDomainInputType) dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_MOUSE)) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_MOUSE) ||
+            (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("virtio-mouse is not supported by this QEMU binary"));
             goto error;
@@ -3974,7 +3978,9 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
         virBufferAsprintf(&buf, "virtio-mouse%s,id=%s", suffix, dev->info.alias);
         break;
     case VIR_DOMAIN_INPUT_TYPE_TABLET:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_TABLET)) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_TABLET) ||
+            (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("virtio-tablet is not supported by this QEMU binary"));
             goto error;
@@ -3982,7 +3988,9 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
         virBufferAsprintf(&buf, "virtio-tablet%s,id=%s", suffix, dev->info.alias);
         break;
     case VIR_DOMAIN_INPUT_TYPE_KBD:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_KEYBOARD)) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_KEYBOARD) ||
+            (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_KEYBOARD_CCW))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("virtio-keyboard is not supported by this QEMU binary"));
             goto error;

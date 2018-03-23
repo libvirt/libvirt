@@ -6048,6 +6048,8 @@ qemu-kvm -net nic,model=? /dev/null
       sub-element <code>&lt;address&gt;</code> which can tie the
       device to a particular PCI
       slot, <a href="#elementsAddress">documented above</a>.
+      On S390, <code>address</code> can be used to provide a CCW address for
+      an input device (<span class="since">since 4.2.0</span>).
 
       For type <code>passthrough</code>, the mandatory sub-element <code>source</code>
       must have an <code>evdev</code> attribute containing the absolute path to the

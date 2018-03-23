@@ -1230,6 +1230,14 @@ mymain(void)
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
 
     DO_TEST("user-aliases", NONE);
+    DO_TEST("input-virtio-ccw",
+            QEMU_CAPS_VIRTIO_CCW,
+            QEMU_CAPS_VIRTIO_KEYBOARD,
+            QEMU_CAPS_VIRTIO_MOUSE,
+            QEMU_CAPS_VIRTIO_TABLET,
+            QEMU_CAPS_DEVICE_VIRTIO_KEYBOARD_CCW,
+            QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW,
+            QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW);
 
     /* Test disks with format probing enabled for legacy reasons.
      * New tests should not go in this section. */

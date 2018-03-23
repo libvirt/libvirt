@@ -3015,6 +3015,14 @@ mymain(void)
             QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
 
+    DO_TEST("input-virtio-ccw", QEMU_CAPS_VIRTIO_CCW,
+            QEMU_CAPS_VIRTIO_KEYBOARD,
+            QEMU_CAPS_VIRTIO_MOUSE,
+            QEMU_CAPS_VIRTIO_TABLET,
+            QEMU_CAPS_DEVICE_VIRTIO_KEYBOARD_CCW,
+            QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW,
+            QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW);
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
