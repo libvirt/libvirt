@@ -119,6 +119,7 @@ EXTRA_DIST = \
 	oomtrace.pl \
 	qemuagentdata \
 	qemuargv2xmldata \
+	qemublocktestdata \
 	qemucapabilitiesdata \
 	qemucaps2xmldata \
 	qemuhotplugtestcpus \
@@ -657,8 +658,10 @@ qemuhotplugtest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS) $(LDADDS)
 qemublocktest_SOURCES = \
 	qemublocktest.c \
 	testutils.h testutils.c \
+	testutilsqemu.h testutilsqemu.c \
 	$(NULL)
 qemublocktest_LDADD = \
+	libqemumonitortestutils.la \
 	../src/libvirt_conf.la \
 	../src/libvirt_util.la \
 	$(qemu_LDADDS) \

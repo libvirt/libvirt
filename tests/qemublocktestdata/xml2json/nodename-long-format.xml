@@ -1,0 +1,12 @@
+<disk device='disk'>
+  <driver name='qemu' type='raw'/>
+  <source file='/path'>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='test2'/>
+        <nodename type='format' name='0123456789ABCDEF0123456789ABCDEF'/>
+      </nodenames>
+    </privateData>
+  </source>
+  <target dev='vda'/>
+</disk>
