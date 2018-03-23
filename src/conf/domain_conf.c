@@ -28979,11 +28979,13 @@ int
 virDomainNetAllocateActualDevice(virDomainDefPtr dom,
                                  virDomainNetDefPtr iface)
 {
-    if (!netAllocate) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("Network device allocation not available"));
-        return -1;
-    }
+    /* Just silently ignore if network driver isn't present. If something
+     * has tried to use a NIC with type=network, other code will already
+     * cause an error. This ensures type=bridge doesn't break when
+     * network driver is compiled out.
+     */
+    if (!netAllocate)
+        return 0;
 
     return netAllocate(dom, iface);
 }
@@ -28992,11 +28994,8 @@ void
 virDomainNetNotifyActualDevice(virDomainDefPtr dom,
                                virDomainNetDefPtr iface)
 {
-    if (!netNotify) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("Network device notification not available"));
+    if (!netNotify)
         return;
-    }
 
     netNotify(dom, iface);
 }
@@ -29006,11 +29005,8 @@ int
 virDomainNetReleaseActualDevice(virDomainDefPtr dom,
                                 virDomainNetDefPtr iface)
 {
-    if (!netRelease) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("Network device release not available"));
-        return -1;
-    }
+    if (!netRelease)
+        return 0;
 
     return netRelease(dom, iface);
 }
@@ -29019,11 +29015,8 @@ bool
 virDomainNetBandwidthChangeAllowed(virDomainNetDefPtr iface,
                                    virNetDevBandwidthPtr newBandwidth)
 {
-    if (!netBandwidthChangeAllowed) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("Network device bandwidth change query not available"));
-        return -1;
-    }
+    if (!netBandwidthChangeAllowed)
+        return 0;
 
     return netBandwidthChangeAllowed(iface, newBandwidth);
 }
@@ -29032,11 +29025,8 @@ int
 virDomainNetBandwidthUpdate(virDomainNetDefPtr iface,
                             virNetDevBandwidthPtr newBandwidth)
 {
-    if (!netBandwidthUpdate) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("Network device bandwidth update not available"));
-        return -1;
-    }
+    if (!netBandwidthUpdate)
+        return 0;
 
     return netBandwidthUpdate(iface, newBandwidth);
 }
