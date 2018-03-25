@@ -6181,7 +6181,8 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
         if (ARCH_IS_X86(def->os.arch) && qemuDomainIsI440FX(def) &&
             usb && usb->idx == 0 &&
             (usb->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT ||
-             usb->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI)) {
+             usb->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI) &&
+            !virDomainDeviceAliasIsUserAlias(usb->info.alias)) {
             VIR_DEBUG("Removing default USB controller from domain '%s'"
                       " for migration compatibility", def->name);
             toremove++;
@@ -6202,7 +6203,9 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
         }
 
         if (pci && pci->idx == 0 &&
-            pci->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
+            pci->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
+            !virDomainDeviceAliasIsUserAlias(pci->info.alias) &&
+            !pci->opts.pciopts.pcihole64) {
             VIR_DEBUG("Removing default pci-root from domain '%s'"
                       " for migration compatibility", def->name);
             toremove++;
