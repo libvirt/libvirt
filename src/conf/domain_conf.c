@@ -5573,7 +5573,7 @@ virDomainDeviceDefValidateAliasesIterator(virDomainDefPtr def,
     struct virDomainDefValidateAliasesData *data = opaque;
     const char *alias = info->alias;
 
-    if (!alias || !virDomainDeviceAliasIsUserAlias(alias))
+    if (!virDomainDeviceAliasIsUserAlias(alias))
         return 0;
 
     /* Some crazy backcompat for consoles. */
@@ -6702,7 +6702,7 @@ virDomainDeviceAddressParseXML(xmlNodePtr address,
 bool
 virDomainDeviceAliasIsUserAlias(const char *aliasStr)
 {
-    return STRPREFIX(aliasStr, USER_ALIAS_PREFIX);
+    return aliasStr && STRPREFIX(aliasStr, USER_ALIAS_PREFIX);
 }
 
 
