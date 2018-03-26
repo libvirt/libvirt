@@ -284,7 +284,7 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl)
 
     VIR_FREE(ctrl->devptmx);
 
-    virObjectUnref(ctrl->vm);
+    virDomainObjEndAPI(&ctrl->vm);
     VIR_FREE(ctrl->name);
 
     if (ctrl->timerShutdown != -1)

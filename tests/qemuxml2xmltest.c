@@ -96,7 +96,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     ret = 0;
 
  cleanup:
-    virObjectUnref(obj);
+    virDomainObjEndAPI(&obj);
     VIR_FREE(actual);
     return ret;
 }
