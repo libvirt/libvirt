@@ -107,7 +107,8 @@ virSocketAddrParseInternal(struct addrinfo **res,
     int err;
 
     if (val == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s", _("Missing address"));
+        if (reportError)
+            virReportError(VIR_ERR_INVALID_ARG, "%s", _("Missing address"));
         return -1;
     }
 
