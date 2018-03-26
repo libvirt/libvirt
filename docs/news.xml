@@ -49,6 +49,18 @@
       </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          Improve handling of device mapper targets
+        </summary>
+        <description>
+          When starting a domain with a disk backed by a device
+          mapper volume libvirt also needs to allow the storage
+          backing the device mapper in CGroups. In the past
+          kernel did not care, but starting from 4.16 CGroups are
+          consulted on each access to the device mapper target.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v4.2.0" date="2018-04-01">
