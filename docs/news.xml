@@ -37,6 +37,16 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Support hot plug and hot unplug of mediated devices
+        </summary>
+        <description>
+          Libvirt now allows mediated devices to be hot plugged and hot
+          unplugged from a guest rather than reporting an error that this isn't
+          supported. In fact, kernel has been supporting this since 4.10.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
