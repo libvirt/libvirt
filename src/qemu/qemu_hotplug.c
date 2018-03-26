@@ -2567,6 +2567,88 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuDomainAttachMediatedDevice(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainHostdevDefPtr hostdev)
+{
+    int ret = -1;
+    char *devstr = NULL;
+    bool added = false;
+    bool teardowncgroup = false;
+    bool teardownlabel = false;
+    bool teardowndevice = false;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_HOSTDEV,
+                                { .hostdev = hostdev } };
+
+    if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
+        return -1;
+
+    if (qemuHostdevPrepareMediatedDevices(driver,
+                                          vm->def->name,
+                                          &hostdev,
+                                          1) < 0)
+        goto cleanup;
+    added = true;
+
+    if (qemuDomainNamespaceSetupHostdev(vm, hostdev) < 0)
+        goto cleanup;
+    teardowndevice = true;
+
+    if (qemuSetupHostdevCgroup(vm, hostdev) < 0)
+        goto cleanup;
+    teardowncgroup = true;
+
+    if (qemuSecuritySetHostdevLabel(driver, vm, hostdev) < 0)
+        goto cleanup;
+    teardownlabel = true;
+
+    if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
+        goto cleanup;
+
+    if (!(devstr = qemuBuildHostdevMediatedDevStr(vm->def, hostdev,
+                                                  priv->qemuCaps)))
+        goto cleanup;
+
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
+        goto cleanup;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorAddDevice(priv->mon, devstr);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    virDomainAuditHostdev(vm, hostdev, "attach", ret == 0);
+    if (ret < 0)
+        goto cleanup;
+
+    VIR_APPEND_ELEMENT_INPLACE(vm->def->hostdevs, vm->def->nhostdevs, hostdev);
+    ret = 0;
+ cleanup:
+    if (ret < 0) {
+        if (teardowncgroup && qemuTeardownHostdevCgroup(vm, hostdev) < 0)
+            VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
+        if (teardownlabel &&
+            qemuSecurityRestoreHostdevLabel(driver, vm, hostdev) < 0)
+            VIR_WARN("Unable to restore host device labelling on hotplug fail");
+        if (teardowndevice &&
+            qemuDomainNamespaceTeardownHostdev(vm, hostdev) < 0)
+            VIR_WARN("Unable to remove host device from /dev");
+        if (added)
+            qemuHostdevReAttachMediatedDevices(driver,
+                                               vm->def->name,
+                                               &hostdev,
+                                               1);
+        qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
+    }
+    VIR_FREE(devstr);
+    return ret;
+}
+
+
 int
 qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
@@ -2600,6 +2682,10 @@ qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
         if (qemuDomainAttachSCSIVHostDevice(driver, vm, hostdev) < 0)
+            goto error;
+        break;
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+        if (qemuDomainAttachMediatedDevice(driver, vm, hostdev) < 0)
             goto error;
         break;
 
