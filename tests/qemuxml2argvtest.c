@@ -2801,9 +2801,7 @@ mymain(void)
             QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4,
             QEMU_CAPS_ICH9_USB_EHCI1);
 
-    DO_TEST("disk-virtio-scsi-reservations",
-            QEMU_CAPS_DRIVE_BOOT, QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_BLOCK, QEMU_CAPS_PR_MANAGER_HELPER);
+    DO_TEST_CAPS_LATEST("disk-virtio-scsi-reservations");
 
     /* Test disks with format probing enabled for legacy reasons.
      * New tests should not go in this section. */
