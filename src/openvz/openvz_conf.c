@@ -626,7 +626,6 @@ int openvzLoadDomains(struct openvz_driver *driver)
     virCommandFree(cmd);
     VIR_FREE(temp);
     VIR_FREE(outbuf);
-    virObjectUnref(dom);
     virDomainDefFree(def);
     return -1;
 }
