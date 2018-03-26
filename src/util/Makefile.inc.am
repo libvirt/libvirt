@@ -35,6 +35,8 @@ UTIL_SOURCES = \
 	util/virdbus.c \
 	util/virdbus.h \
 	util/virdbuspriv.h \
+	util/virdevmapper.c \
+	util/virdevmapper.h \
 	util/virdnsmasq.c \
 	util/virdnsmasq.h \
 	util/virebtables.c \

@@ -1670,6 +1670,10 @@ virDBusMessageUnref;
 virDBusSetSharedBus;
 
 
+# util/virdevmapper.h
+virDevMapperGetTargets;
+
+
 # util/virdnsmasq.h
 dnsmasqAddDhcpHost;
 dnsmasqAddHost;
