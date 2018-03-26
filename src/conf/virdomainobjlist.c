@@ -536,6 +536,7 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
         goto error;
 
     if (virHashAddEntry(doms->objsName, obj->def->name, obj) < 0) {
+        virObjectRef(obj);
         virHashRemoveEntry(doms->objs, uuidstr);
         goto error;
     }
@@ -551,7 +552,7 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
     return obj;
 
  error:
-    virObjectUnref(obj);
+    virDomainObjEndAPI(&obj);
     VIR_FREE(statusFile);
     return NULL;
 }
