@@ -4030,6 +4030,17 @@ qemuDomainRemoveSCSIVHostDevice(virQEMUDriverPtr driver,
     qemuHostdevReAttachSCSIVHostDevices(driver, vm->def->name, &hostdev, 1);
 }
 
+
+static void
+qemuDomainRemoveMediatedDevice(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainHostdevDefPtr hostdev)
+{
+    qemuHostdevReAttachMediatedDevices(driver, vm->def->name, &hostdev, 1);
+    qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
+}
+
+
 static int
 qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
@@ -4132,6 +4143,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
         qemuDomainRemoveSCSIVHostDevice(driver, vm, hostdev);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+        qemuDomainRemoveMediatedDevice(driver, vm, hostdev);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         break;
@@ -5062,6 +5074,32 @@ qemuDomainDetachSCSIVHostDevice(virQEMUDriverPtr driver,
     return ret;
 }
 
+
+static int
+qemuDomainDetachMediatedDevice(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainHostdevDefPtr detach)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (!detach->info->alias) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("device cannot be detached without a device alias"));
+        return -1;
+    }
+
+    qemuDomainMarkDeviceForRemoval(vm, detach->info);
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorDelDevice(priv->mon, detach->info->alias);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+    return ret;
+}
+
+
 static int
 qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
@@ -5084,6 +5122,9 @@ qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
         ret = qemuDomainDetachSCSIVHostDevice(driver, vm, detach);
+        break;
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+        ret = qemuDomainDetachMediatedDevice(driver, vm, detach);
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -5114,6 +5155,7 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
     virDomainHostdevSubsysUSBPtr usbsrc = &subsys->u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &subsys->u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &subsys->u.scsi;
+    virDomainHostdevSubsysMediatedDevPtr mdevsrc = &subsys->u.mdev;
     virDomainHostdevDefPtr detach = NULL;
     int idx;
 
@@ -5162,6 +5204,11 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
             }
             break;
         }
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+            virReportError(VIR_ERR_DEVICE_MISSING,
+                           _("mediated device '%s' not found"),
+                           mdevsrc->uuidstr);
+            break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
             break;
         default:
