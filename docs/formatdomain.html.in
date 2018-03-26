@@ -1531,8 +1531,8 @@
           <dd>The virtual CPU will claim the feature is supported regardless
             of it being supported by host CPU.</dd>
           <dt><code>require</code></dt>
-          <dd>Guest creation will fail unless the feature is supported by host
-            CPU.</dd>
+          <dd>Guest creation will fail unless the feature is supported by the
+            host CPU or the hypervisor is able to emulate it.</dd>
           <dt><code>optional</code></dt>
           <dd>The feature will be supported by virtual CPU if and only if it
             is supported by host CPU.</dd>
