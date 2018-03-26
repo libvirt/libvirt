@@ -92,6 +92,11 @@ int virSocketAddrParse(virSocketAddrPtr addr,
                        const char *val,
                        int family);
 
+int virSocketAddrParseAny(virSocketAddrPtr addr,
+                          const char *val,
+                          int family,
+                          bool reportError);
+
 int virSocketAddrParseIPv4(virSocketAddrPtr addr,
                            const char *val);
 

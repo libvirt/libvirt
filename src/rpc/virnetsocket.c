@@ -333,7 +333,7 @@ int virNetSocketNewListenTCP(const char *nodename,
      * startup in most cases.
      */
     if (nodename &&
-        !(virSocketAddrParse(&tmp_addr, nodename, AF_UNSPEC) > 0 &&
+        !(virSocketAddrParseAny(&tmp_addr, nodename, AF_UNSPEC, false) > 0 &&
           virSocketAddrIsWildcard(&tmp_addr)))
         hints.ai_flags |= AI_ADDRCONFIG;
 

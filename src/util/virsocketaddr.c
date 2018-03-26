@@ -101,6 +101,7 @@ static int
 virSocketAddrParseInternal(struct addrinfo **res,
                            const char *val,
                            int family,
+                           int ai_flags,
                            bool reportError)
 {
     struct addrinfo hints;
@@ -114,7 +115,7 @@ virSocketAddrParseInternal(struct addrinfo **res,
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = family;
-    hints.ai_flags = AI_NUMERICHOST;
+    hints.ai_flags = ai_flags;
     if ((err = getaddrinfo(val, NULL, &hints, res)) != 0) {
         if (reportError)
             virReportError(VIR_ERR_SYSTEM_ERROR,
@@ -143,13 +144,59 @@ int virSocketAddrParse(virSocketAddrPtr addr, const char *val, int family)
     int len;
     struct addrinfo *res;
 
-    if (virSocketAddrParseInternal(&res, val, family, true) < 0)
+    if (virSocketAddrParseInternal(&res, val, family, AI_NUMERICHOST, true) < 0)
         return -1;
 
     if (res == NULL) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("No socket addresses found for '%s'"),
                        val);
+        return -1;
+    }
+
+    len = res->ai_addrlen;
+    if (addr != NULL) {
+        memcpy(&addr->data.stor, res->ai_addr, len);
+        addr->len = res->ai_addrlen;
+    }
+
+    freeaddrinfo(res);
+    return len;
+}
+
+/**
+ * virSocketAddrParseAny:
+ * @addr: where to store the return value, optional.
+ * @val: a network host name or a numeric network address IPv4 or IPv6
+ * @family: address family to pass down to getaddrinfo
+ * @reportError: boolean to control error reporting
+ *
+ * Mostly a wrapper for getaddrinfo() extracting the address storage
+ * from a host name like acme.example.com or a numeric string like 1.2.3.4
+ * or 2001:db8:85a3:0:0:8a2e:370:7334.
+ *
+ * When @val is a network host name, this function may be susceptible to a
+ * delay due to potentially lengthy netork host address lookups.
+ *
+ * Returns the length of the network address or -1 in case of error.
+ */
+int virSocketAddrParseAny(virSocketAddrPtr addr,
+                          const char *val,
+                          int family,
+                          bool reportError)
+{
+    int len;
+    struct addrinfo *res;
+
+    if (virSocketAddrParseInternal(&res, val, family, 0, reportError) < 0)
+        return -1;
+
+    if (res == NULL) {
+        if (reportError) {
+            virReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("No socket addresses found for '%s'"),
+                           val);
+        }
         return -1;
     }
 
@@ -1105,7 +1152,7 @@ virSocketAddrNumericFamily(const char *address)
     struct addrinfo *res;
     unsigned short family;
 
-    if (virSocketAddrParseInternal(&res, address, AF_UNSPEC, false) < 0)
+    if (virSocketAddrParseInternal(&res, address, AF_UNSPEC, AI_NUMERICHOST, false) < 0)
         return -1;
 
     family = res->ai_addr->sa_family;
