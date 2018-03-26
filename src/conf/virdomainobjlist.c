@@ -220,6 +220,42 @@ virDomainObjPtr virDomainObjListFindByName(virDomainObjListPtr doms,
 }
 
 
+/**
+ * @doms: Domain object list pointer
+ * @vm: Domain object to be added
+ *
+ * Upon entry @vm should have at least 1 ref and be locked.
+ *
+ * Add the @vm into the @doms->objs and @doms->objsName hash
+ * tables.
+ *
+ * Returns 0 on success with 2 references and locked
+ *        -1 on failure with 1 reference and locked
+ */
+static int
+virDomainObjListAddObjLocked(virDomainObjListPtr doms,
+                             virDomainObjPtr vm)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+    if (virHashAddEntry(doms->objs, uuidstr, vm) < 0)
+        return -1;
+
+    if (virHashAddEntry(doms->objsName, vm->def->name, vm) < 0) {
+        virObjectRef(vm);
+        virHashRemoveEntry(doms->objs, uuidstr);
+        return -1;
+    }
+
+    /* Since domain is in two hash tables, increment the
+     * reference counter */
+    virObjectRef(vm);
+
+    return 0;
+}
+
+
 /*
  * virDomainObjListAddLocked:
  *
@@ -294,22 +330,10 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
             goto cleanup;
         vm->def = def;
 
-        virUUIDFormat(def->uuid, uuidstr);
-        if (virHashAddEntry(doms->objs, uuidstr, vm) < 0) {
+        if (virDomainObjListAddObjLocked(doms, vm) < 0) {
             virDomainObjEndAPI(&vm);
             return NULL;
         }
-
-        if (virHashAddEntry(doms->objsName, def->name, vm) < 0) {
-            virObjectRef(vm);
-            virHashRemoveEntry(doms->objs, uuidstr);
-            virDomainObjEndAPI(&vm);
-            return NULL;
-        }
-
-        /* Since domain is in two hash tables, increment the
-         * reference counter */
-        virObjectRef(vm);
     }
  cleanup:
     return vm;
@@ -532,18 +556,8 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
         goto error;
     }
 
-    if (virHashAddEntry(doms->objs, uuidstr, obj) < 0)
+    if (virDomainObjListAddObjLocked(doms, obj) < 0)
         goto error;
-
-    if (virHashAddEntry(doms->objsName, obj->def->name, obj) < 0) {
-        virObjectRef(obj);
-        virHashRemoveEntry(doms->objs, uuidstr);
-        goto error;
-    }
-
-    /* Since domain is in two hash tables, increment the
-     * reference counter */
-    virObjectRef(obj);
 
     if (notify)
         (*notify)(obj, 1, opaque);
