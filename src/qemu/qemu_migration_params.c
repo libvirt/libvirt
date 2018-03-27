@@ -299,17 +299,17 @@ qemuMigrationParamsSetEmptyTLS(virQEMUDriverPtr driver,
                                int asyncJob,
                                qemuMonitorMigrationParamsPtr migParams)
 {
-   qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
 
-   if (qemuMigrationParamsCheckTLSCreds(driver, vm, asyncJob) < 0)
-       return -1;
+    if (qemuMigrationParamsCheckTLSCreds(driver, vm, asyncJob) < 0)
+        return -1;
 
-   if (!priv->migTLSAlias)
-       return 0;
+    if (!priv->migTLSAlias)
+        return 0;
 
-   if (VIR_STRDUP(migParams->tlsCreds, "") < 0 ||
-       VIR_STRDUP(migParams->tlsHostname, "") < 0)
-       return -1;
+    if (VIR_STRDUP(migParams->tlsCreds, "") < 0 ||
+        VIR_STRDUP(migParams->tlsHostname, "") < 0)
+        return -1;
 
     return 0;
 }
