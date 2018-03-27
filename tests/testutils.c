@@ -800,8 +800,8 @@ virTestCompareToFile(const char *strcontent,
 
         if (filecontentLen > 0 &&
             filecontent[filecontentLen - 1] == '\n' &&
-            strcontent[strlen(strcontent) - 1] != '\n') {
-            if (virAsprintf(&fixedcontent, "%s\n", strcontent) < 0)
+            cmpcontent[strlen(cmpcontent) - 1] != '\n') {
+            if (virAsprintf(&fixedcontent, "%s\n", cmpcontent) < 0)
                 goto failure;
             cmpcontent = fixedcontent;
         }
