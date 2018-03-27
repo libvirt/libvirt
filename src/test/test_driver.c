@@ -1720,16 +1720,14 @@ static virDomainPtr testDomainLookupByID(virConnectPtr conn,
     virDomainPtr ret = NULL;
     virDomainObjPtr dom;
 
-    if (!(dom = virDomainObjListFindByID(privconn->domains, id))) {
+    if (!(dom = virDomainObjListFindByIDRef(privconn->domains, id))) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);
-        goto cleanup;
+        return NULL;
     }
 
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid, dom->def->id);
 
- cleanup:
-    if (dom)
-        virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 
