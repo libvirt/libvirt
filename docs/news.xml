@@ -45,6 +45,17 @@
         </description>
       </change>
     </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          Xen: Drop support for Xen 4.4 and 4.5
+        </summary>
+        <description>
+          Xen 4.4 and 4.5 are no longer supported by the Xen community.
+          Drop support for these older versions and require Xen >= 4.6.
+        </description>
+      </change>
+    </section>
     <section title="Improvements">
       <change>
         <summary>
