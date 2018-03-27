@@ -1185,6 +1185,17 @@ static void umlShutdownVMDaemon(struct uml_driver *driver,
 }
 
 
+static int umlConnectURIProbe(char **uri)
+{
+    if (uml_driver == NULL)
+        return 0;
+
+    return VIR_STRDUP(*uri, uml_driver->privileged ?
+                      "uml:///system" :
+                      "uml:///session");
+}
+
+
 static virDrvOpenStatus umlConnectOpen(virConnectPtr conn,
                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                        virConfPtr conf ATTRIBUTE_UNUSED,
@@ -1193,13 +1204,7 @@ static virDrvOpenStatus umlConnectOpen(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (conn->uri == NULL) {
-        if (uml_driver == NULL)
-            return VIR_DRV_OPEN_DECLINED;
-
-        if (!(conn->uri = virURIParse(uml_driver->privileged ?
-                                      "uml:///system" :
-                                      "uml:///session")))
-            return VIR_DRV_OPEN_ERROR;
+        return VIR_DRV_OPEN_DECLINED;
     } else {
         if (conn->uri->scheme == NULL ||
             STRNEQ(conn->uri->scheme, "uml"))
@@ -2947,6 +2952,7 @@ umlDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 
 static virHypervisorDriver umlHypervisorDriver = {
     .name = "UML",
+    .connectURIProbe = umlConnectURIProbe,
     .connectOpen = umlConnectOpen, /* 0.5.0 */
     .connectClose = umlConnectClose, /* 0.5.0 */
     .connectGetType = umlConnectGetType, /* 0.5.0 */

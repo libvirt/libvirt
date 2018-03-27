@@ -180,6 +180,17 @@ bhyveDomObjFromDomain(virDomainPtr domain)
     return vm;
 }
 
+
+static int
+bhyveConnectURIProbe(char **uri)
+{
+    if (bhyve_driver == NULL)
+        return 0;
+
+    return VIR_STRDUP(*uri, "bhyve:///system");
+}
+
+
 static virDrvOpenStatus
 bhyveConnectOpen(virConnectPtr conn,
                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
@@ -189,11 +200,7 @@ bhyveConnectOpen(virConnectPtr conn,
      virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
      if (conn->uri == NULL) {
-         if (bhyve_driver == NULL)
-             return VIR_DRV_OPEN_DECLINED;
-
-         if (!(conn->uri = virURIParse("bhyve:///system")))
-             return VIR_DRV_OPEN_ERROR;
+         return VIR_DRV_OPEN_DECLINED;
      } else {
          if (!conn->uri->scheme || STRNEQ(conn->uri->scheme, "bhyve"))
              return VIR_DRV_OPEN_DECLINED;
@@ -1673,6 +1680,7 @@ bhyveConnectGetDomainCapabilities(virConnectPtr conn,
 
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
+    .connectURIProbe = bhyveConnectURIProbe,
     .connectOpen = bhyveConnectOpen, /* 1.2.2 */
     .connectClose = bhyveConnectClose, /* 1.2.2 */
     .connectGetVersion = bhyveConnectGetVersion, /* 1.2.2 */

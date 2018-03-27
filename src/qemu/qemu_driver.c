@@ -1115,6 +1115,25 @@ qemuStateCleanup(void)
 }
 
 
+static int
+qemuConnectURIProbe(char **uri)
+{
+    virQEMUDriverConfigPtr cfg = NULL;
+    int ret = -1;
+
+    if (qemu_driver == NULL)
+        return 0;
+
+    cfg = virQEMUDriverGetConfig(qemu_driver);
+    if (VIR_STRDUP(*uri, cfg->uri) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virObjectUnref(cfg);
+    return ret;
+}
+
 static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                         virConfPtr conf ATTRIBUTE_UNUSED,
@@ -1125,15 +1144,7 @@ static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (conn->uri == NULL) {
-        if (qemu_driver == NULL) {
-            ret = VIR_DRV_OPEN_DECLINED;
-            goto cleanup;
-        }
-
-        cfg = virQEMUDriverGetConfig(qemu_driver);
-
-        if (!(conn->uri = virURIParse(cfg->uri)))
-            goto cleanup;
+        return VIR_DRV_OPEN_DECLINED;
     } else {
         /* If URI isn't 'qemu' its definitely not for us */
         if (conn->uri->scheme == NULL ||
@@ -21336,6 +21347,7 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
 
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
+    .connectURIProbe = qemuConnectURIProbe,
     .connectOpen = qemuConnectOpen, /* 0.2.0 */
     .connectClose = qemuConnectClose, /* 0.2.0 */
     .connectSupportsFeature = qemuConnectSupportsFeature, /* 0.5.0 */

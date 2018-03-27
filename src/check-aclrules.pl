@@ -59,6 +59,7 @@ my %whitelist = (
     "storageClose" => 1,
     "interfaceOpen" => 1,
     "interfaceClose" => 1,
+    "connectURIProbe" => 1,
     );
 
 # Temp hack - remove it once xen driver is fixed

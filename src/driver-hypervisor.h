@@ -25,6 +25,9 @@
 #  error "Don't include this file directly, only use driver.h"
 # endif
 
+typedef int
+(*virDrvConnectURIProbe)(char **uri);
+
 typedef virDrvOpenStatus
 (*virDrvConnectOpen)(virConnectPtr conn,
                      virConnectAuthPtr auth,
@@ -1300,6 +1303,7 @@ typedef virHypervisorDriver *virHypervisorDriverPtr;
  */
 struct _virHypervisorDriver {
     const char *name; /* the name of the driver */
+    virDrvConnectURIProbe connectURIProbe;
     virDrvConnectOpen connectOpen;
     virDrvConnectClose connectClose;
     virDrvConnectSupportsFeature connectSupportsFeature;

@@ -1331,6 +1331,20 @@ openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
     return openvzDomainSetVcpusFlags(dom, nvcpus, VIR_DOMAIN_AFFECT_LIVE);
 }
 
+
+static int
+openvzConnectURIProbe(char **uri)
+{
+    if (!virFileExists("/proc/vz"))
+        return 0;
+
+    if (access("/proc/vz", W_OK) < 0)
+        return 0;
+
+    return VIR_STRDUP(*uri, "openvz:///system");
+}
+
+
 static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
                                           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                           virConfPtr conf ATTRIBUTE_UNUSED,
@@ -1341,14 +1355,7 @@ static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (conn->uri == NULL) {
-        if (!virFileExists("/proc/vz"))
-            return VIR_DRV_OPEN_DECLINED;
-
-        if (access("/proc/vz", W_OK) < 0)
-            return VIR_DRV_OPEN_DECLINED;
-
-        if (!(conn->uri = virURIParse("openvz:///system")))
-            return VIR_DRV_OPEN_ERROR;
+        return VIR_DRV_OPEN_DECLINED;
     } else {
         /* If scheme isn't 'openvz', then its for another driver */
         if (conn->uri->scheme == NULL ||
@@ -2450,6 +2457,7 @@ openvzDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 
 static virHypervisorDriver openvzHypervisorDriver = {
     .name = "OPENVZ",
+    .connectURIProbe = openvzConnectURIProbe,
     .connectOpen = openvzConnectOpen, /* 0.3.1 */
     .connectClose = openvzConnectClose, /* 0.3.1 */
     .connectGetType = openvzConnectGetType, /* 0.3.1 */

@@ -827,6 +827,16 @@ libxlStateReload(void)
 }
 
 
+static int
+libxlConnectURIProbe(char **uri)
+{
+    if (libxl_driver == NULL)
+        return 0;
+
+    return VIR_STRDUP(*uri, "xen:///system");
+}
+
+
 static virDrvOpenStatus
 libxlConnectOpen(virConnectPtr conn,
                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
@@ -836,11 +846,7 @@ libxlConnectOpen(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (conn->uri == NULL) {
-        if (libxl_driver == NULL)
-            return VIR_DRV_OPEN_DECLINED;
-
-        if (!(conn->uri = virURIParse("xen:///system")))
-            return VIR_DRV_OPEN_ERROR;
+        return VIR_DRV_OPEN_DECLINED;
     } else {
         /* Only xen scheme */
         if (conn->uri->scheme == NULL || STRNEQ(conn->uri->scheme, "xen"))
@@ -6466,6 +6472,7 @@ libxlConnectBaselineCPU(virConnectPtr conn,
 
 static virHypervisorDriver libxlHypervisorDriver = {
     .name = LIBXL_DRIVER_NAME,
+    .connectURIProbe = libxlConnectURIProbe,
     .connectOpen = libxlConnectOpen, /* 0.9.0 */
     .connectClose = libxlConnectClose, /* 0.9.0 */
     .connectGetType = libxlConnectGetType, /* 0.9.0 */

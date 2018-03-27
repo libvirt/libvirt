@@ -152,6 +152,16 @@ lxcDomObjFromDomain(virDomainPtr domain)
 
 /* Functions */
 
+static int
+lxcConnectURIProbe(char **uri)
+{
+    if (lxc_driver == NULL)
+        return 0;
+
+    return VIR_STRDUP(*uri, "lxc:///system");
+}
+
+
 static virDrvOpenStatus lxcConnectOpen(virConnectPtr conn,
                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                        virConfPtr conf ATTRIBUTE_UNUSED,
@@ -161,11 +171,7 @@ static virDrvOpenStatus lxcConnectOpen(virConnectPtr conn,
 
     /* Verify uri was specified */
     if (conn->uri == NULL) {
-        if (lxc_driver == NULL)
-            return VIR_DRV_OPEN_DECLINED;
-
-        if (!(conn->uri = virURIParse("lxc:///system")))
-            return VIR_DRV_OPEN_ERROR;
+        return VIR_DRV_OPEN_DECLINED;
     } else {
         if (conn->uri->scheme == NULL ||
             STRNEQ(conn->uri->scheme, "lxc"))
@@ -5537,6 +5543,7 @@ lxcDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 /* Function Tables */
 static virHypervisorDriver lxcHypervisorDriver = {
     .name = LXC_DRIVER_NAME,
+    .connectURIProbe = lxcConnectURIProbe,
     .connectOpen = lxcConnectOpen, /* 0.4.2 */
     .connectClose = lxcConnectClose, /* 0.4.2 */
     .connectSupportsFeature = lxcConnectSupportsFeature, /* 1.2.2 */

@@ -499,6 +499,13 @@ vboxAttachStorageControllers(virDomainDefPtr def,
 }
 
 
+static int
+vboxConnectURIProbe(char **uri)
+{
+    return VIR_STRDUP(*uri, geteuid() ? "vbox:///session" : "vbox:///system");
+}
+
+
 static virDrvOpenStatus
 vboxConnectOpen(virConnectPtr conn,
                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
@@ -510,9 +517,8 @@ vboxConnectOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (conn->uri == NULL &&
-        !(conn->uri = virURIParse(uid ? "vbox:///session" : "vbox:///system")))
-        return VIR_DRV_OPEN_ERROR;
+    if (conn->uri == NULL)
+        return VIR_DRV_OPEN_DECLINED;
 
     if (conn->uri->scheme == NULL ||
         STRNEQ(conn->uri->scheme, "vbox"))
@@ -7980,6 +7986,7 @@ vboxDomainSendKey(virDomainPtr dom,
 
 static virHypervisorDriver vboxCommonDriver = {
     .name = "VBOX",
+    .connectURIProbe = vboxConnectURIProbe,
     .connectOpen = vboxConnectOpen, /* 0.6.3 */
     .connectClose = vboxConnectClose, /* 0.6.3 */
     .connectGetVersion = vboxConnectGetVersion, /* 0.6.3 */

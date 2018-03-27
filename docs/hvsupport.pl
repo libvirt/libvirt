@@ -184,7 +184,7 @@ foreach my $drivertable (@drivertable) {
                 my $api;
                 if (exists $apis{"vir$name"}) {
                     $api = "vir$name";
-                } elsif ($name =~ /\w+(Open|Close)/) {
+                } elsif ($name =~ /\w+(Open|Close|URIProbe)/) {
                     next;
                 } else {
                     die "driver $name does not have a public API";
@@ -241,12 +241,12 @@ foreach my $src (@srcs) {
 
                 next if $api eq "no" || $api eq "name";
 
-                die "Method $meth in $src is missing version" unless defined $vers;
+                die "Method $meth in $src is missing version" unless defined $vers || $api eq "connectURIProbe";
 
                 die "Driver method for $api is NULL in $src" if $meth eq "NULL";
 
                 if (!exists($groups{$ingrp}->{apis}->{$api})) {
-                    next if $api =~ /\w(Open|Close)/;
+                    next if $api =~ /\w(Open|Close|URIProbe)/;
 
                     die "Found unexpected method $api in $ingrp\n";
                 }

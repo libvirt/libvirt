@@ -975,6 +975,19 @@ virConnectOpenInternal(const char *name,
     } else {
         if (virConnectGetDefaultURI(conf, &uristr) < 0)
             goto failed;
+
+        if (uristr == NULL) {
+            VIR_DEBUG("Trying to probe for default URI");
+            for (i = 0; i < virConnectDriverTabCount && uristr == NULL; i++) {
+                if (virConnectDriverTab[i]->hypervisorDriver->connectURIProbe) {
+                    if (virConnectDriverTab[i]->hypervisorDriver->connectURIProbe(&uristr) < 0)
+                        goto failed;
+                    VIR_DEBUG("%s driver URI probe returned '%s'",
+                              virConnectDriverTab[i]->hypervisorDriver->name,
+                              uristr ? uristr : "");
+                }
+            }
+        }
     }
 
     if (uristr) {
