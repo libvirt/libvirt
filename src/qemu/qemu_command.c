@@ -1804,8 +1804,6 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     if (disk->cachemode) {
         virBufferAsprintf(&opt, ",cache=%s",
                           qemuDiskCacheV2TypeToString(disk->cachemode));
-    } else if (disk->src->shared && !disk->src->readonly) {
-        virBufferAddLit(&opt, ",cache=none");
     }
 
     if (disk->copy_on_read) {

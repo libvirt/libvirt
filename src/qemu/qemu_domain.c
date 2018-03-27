@@ -11891,11 +11891,22 @@ qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
 }
 
 
+static void
+qemuDomainPrepareDiskCachemode(virDomainDiskDefPtr disk)
+{
+    if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DEFAULT &&
+        disk->src->shared && !disk->src->readonly)
+        disk->cachemode = VIR_DOMAIN_DISK_CACHE_DISABLE;
+}
+
+
 int
 qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
                             qemuDomainObjPrivatePtr priv,
                             virQEMUDriverConfigPtr cfg)
 {
+    qemuDomainPrepareDiskCachemode(disk);
+
     if (qemuDomainPrepareDiskSourceTLS(disk->src, cfg) < 0)
         return -1;
 

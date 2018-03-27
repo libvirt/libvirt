@@ -15,7 +15,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-i686</emulator>
     <disk type='block' device='disk'>
-      <driver name='qemu' type='raw'/>
+      <driver name='qemu' type='raw' cache='none'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='hda' bus='ide'/>
       <shareable/>
