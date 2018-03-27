@@ -747,8 +747,10 @@ static int umlProcessAutoDestroyDom(void *payload,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    if (dom && !dom->persistent)
+    if (!dom->persistent) {
         virDomainObjListRemove(data->driver->domains, dom);
+        dom = NULL;
+    }
 
     if (dom)
         virObjectUnlock(dom);
