@@ -477,15 +477,6 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
                 addr->bus++;
             }
         }
-    } else if (flags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE &&
-               addrs->buses[0].model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
-        /* NB: if the root bus is pci-root, and we couldn't find an
-         * open place to connect a pci-bridge, then there is nothing
-         * we can do (since the only way to gain a new slot that
-         * accepts a pci-bridge is to add *a pci-bridge* (which is the
-         * reason we're here in the first place!)
-         */
-        model = VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE;
     } else if (flags & (VIR_PCI_CONNECT_TYPE_PCIE_DEVICE |
                         VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT)) {
         model = VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT;
