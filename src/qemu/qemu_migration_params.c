@@ -123,6 +123,36 @@ qemuMigrationParamsFree(qemuMigrationParamsPtr migParams)
             migParams->params.VAR ## _set = true; \
     } while (0)
 
+
+int
+qemuMigrationParamsSetCompression(virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                                  qemuMigrationCompressionPtr compression,
+                                  qemuMigrationParamsPtr migParams)
+{
+    if (compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE))
+        ignore_value(virBitmapSetBit(migParams->caps,
+                                     QEMU_MONITOR_MIGRATION_CAPS_XBZRLE));
+
+    if (compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_MT))
+        ignore_value(virBitmapSetBit(migParams->caps,
+                                     QEMU_MONITOR_MIGRATION_CAPS_COMPRESS));
+
+    migParams->params.compressLevel_set = compression->level_set;
+    migParams->params.compressLevel = compression->level;
+
+    migParams->params.compressThreads_set = compression->threads_set;
+    migParams->params.compressThreads = compression->threads;
+
+    migParams->params.decompressThreads_set = compression->dthreads_set;
+    migParams->params.decompressThreads = compression->dthreads;
+
+    migParams->params.xbzrleCacheSize_set = compression->xbzrle_cache_set;
+    migParams->params.xbzrleCacheSize = compression->xbzrle_cache;
+
+    return 0;
+}
+
+
 qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,
@@ -337,35 +367,6 @@ qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
     if (VIR_STRDUP(migParams->params.tlsCreds, "") < 0 ||
         VIR_STRDUP(migParams->params.tlsHostname, "") < 0)
         return -1;
-
-    return 0;
-}
-
-
-int
-qemuMigrationParamsSetCompression(virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                                  qemuMigrationCompressionPtr compression,
-                                  qemuMigrationParamsPtr migParams)
-{
-    if (compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE))
-        ignore_value(virBitmapSetBit(migParams->caps,
-                                     QEMU_MONITOR_MIGRATION_CAPS_XBZRLE));
-
-    if (compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_MT))
-        ignore_value(virBitmapSetBit(migParams->caps,
-                                     QEMU_MONITOR_MIGRATION_CAPS_COMPRESS));
-
-    migParams->params.compressLevel_set = compression->level_set;
-    migParams->params.compressLevel = compression->level;
-
-    migParams->params.compressThreads_set = compression->threads_set;
-    migParams->params.compressThreads = compression->threads;
-
-    migParams->params.decompressThreads_set = compression->dthreads_set;
-    migParams->params.decompressThreads = compression->dthreads;
-
-    migParams->params.xbzrleCacheSize_set = compression->xbzrle_cache_set;
-    migParams->params.xbzrleCacheSize = compression->xbzrle_cache;
 
     return 0;
 }
