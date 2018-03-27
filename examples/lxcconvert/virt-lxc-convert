@@ -123,5 +123,5 @@ if test -z "$mem_limit"; then
     echo "lxc.cgroup.memory.limit_in_bytes = $memory" >> "$conf_new"
 fi
 
-virsh -c lxc:/// domxml-from-native lxc-tools $conf_new
+virsh -c lxc:///system domxml-from-native lxc-tools $conf_new
 exit $?

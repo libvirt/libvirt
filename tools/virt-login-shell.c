@@ -253,7 +253,7 @@ main(int argc, char **argv)
     if (virConfGetValueBool(conf, "auto_shell", &autoshell) < 0)
         goto cleanup;
 
-    conn = virConnectOpen("lxc:///");
+    conn = virConnectOpen("lxc:///system");
     if (!conn)
         goto cleanup;
 

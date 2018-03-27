@@ -1,5 +1,5 @@
 # URIs to check for running guests
-# example: URIS='default xen:///system vbox+tcp://host/system lxc:///'
+# example: URIS='default xen:///system vbox+tcp://host/system lxc:///system'
 #URIS=default
 
 # action taken on host boot

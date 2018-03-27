@@ -308,8 +308,8 @@ unit file specifies how systemd will start the libvirt LXC container
 Description=My little container
 
 [Service]
-ExecStart=/usr/bin/virsh -c lxc:/// start --pass-fds 3 mycontainer
-ExecStop=/usr/bin/virsh -c lxc:/// destroy mycontainer
+ExecStart=/usr/bin/virsh -c lxc:///system start --pass-fds 3 mycontainer
+ExecStop=/usr/bin/virsh -c lxc:///system destroy mycontainer
 Type=oneshot
 RemainAfterExit=yes
 KillMode=none
@@ -621,9 +621,9 @@ The use of namespace passthrough requires libvirt >= 1.2.19
 As with any libvirt virtualization driver, LXC containers can be
 managed via a wide variety of libvirt based tools. At the lowest
 level the <code>virsh</code> command can be used to perform many
-tasks, by passing the <code>-c lxc:///</code> argument. As an
+tasks, by passing the <code>-c lxc:///system</code> argument. As an
 alternative to repeating the URI with every command, the <code>LIBVIRT_DEFAULT_URI</code>
-environment variable can be set to <code>lxc:///</code>. The
+environment variable can be set to <code>lxc:///system</code>. The
 examples that follow outline some common operations with virsh
 and LXC. For further details about usage of virsh consult its
 manual page.
@@ -637,7 +637,7 @@ document and loads it into libvirt, saving the configuration on disk
 </p>
 
 <pre>
-# virsh -c lxc:/// define myguest.xml
+# virsh -c lxc:///system define myguest.xml
 </pre>
 
 <h3><a id="usageView">Viewing container configuration</a></h3>
@@ -652,7 +652,7 @@ using the <code>--inactive</code> flag
 </p>
 
 <pre>
-# virsh -c lxc:/// dumpxml myguest
+# virsh -c lxc:///system dumpxml myguest
 </pre>
 
 <h3><a id="usageStart">Starting containers</a></h3>
@@ -663,7 +663,7 @@ container from a previously defined persistent configuration
 </p>
 
 <pre>
-# virsh -c lxc:/// start myguest
+# virsh -c lxc:///system start myguest
 </pre>
 
 <p>
@@ -673,7 +673,7 @@ by libvirt, using the <code>virsh create</code> command.
 </p>
 
 <pre>
-# virsh -c lxc:/// create myguest.xml
+# virsh -c lxc:///system create myguest.xml
 </pre>
 
 
@@ -689,7 +689,7 @@ to PID 1 inside the container.
 </p>
 
 <pre>
-# virsh -c lxc:/// shutdown myguest
+# virsh -c lxc:///system shutdown myguest
 </pre>
 
 <p>
@@ -698,7 +698,7 @@ request, it can be forcibly stopped using the <code>virsh destroy</code>
 </p>
 
 <pre>
-# virsh -c lxc:/// destroy myguest
+# virsh -c lxc:///system destroy myguest
 </pre>
 
 
@@ -714,7 +714,7 @@ to PID 1 inside the container.
 </p>
 
 <pre>
-# virsh -c lxc:/// reboot myguest
+# virsh -c lxc:///system reboot myguest
 </pre>
 
 <h3><a id="usageDelete">Undefining (deleting) a container configuration</a></h3>
@@ -726,7 +726,7 @@ running, this will turn it into a "transient" guest.
 </p>
 
 <pre>
-# virsh -c lxc:/// undefine myguest
+# virsh -c lxc:///system undefine myguest
 </pre>
 
 <h3><a id="usageConnect">Connecting to a container console</a></h3>
@@ -737,7 +737,7 @@ to the text console associated with a container.
 </p>
 
 <pre>
-# virsh -c lxc:/// console myguest
+# virsh -c lxc:///system console myguest
 </pre>
 
 <p>
@@ -749,7 +749,7 @@ as 'console0', 'console1', 'console2', etc.
 </p>
 
 <pre>
-# virsh -c lxc:/// console myguest --devname console1
+# virsh -c lxc:///system console myguest --devname console1
 </pre>
 
 <h3><a id="usageEnter">Running commands in a container</a></h3>
@@ -761,7 +761,7 @@ and then execute an arbitrary command.
 </p>
 
 <pre>
-# virsh -c lxc:/// lxc-enter-namespace myguest -- /bin/ls -al /dev
+# virsh -c lxc:///system lxc-enter-namespace myguest -- /bin/ls -al /dev
 </pre>
 
 <h3><a id="usageTop">Monitoring container utilization</a></h3>
@@ -773,7 +773,7 @@ host
 </p>
 
 <pre>
-# virt-top -c lxc:///
+# virt-top -c lxc:///system
 </pre>
 
 <h3><a id="usageConvert">Converting LXC container configuration</a></h3>
@@ -784,7 +784,7 @@ most of the LXC container configuration into a domain XML fragment
 </p>
 
 <pre>
-# virsh -c lxc:/// domxml-from-native lxc-tools /var/lib/lxc/myguest/config
+# virsh -c lxc:///system domxml-from-native lxc-tools /var/lib/lxc/myguest/config
 </pre>
 
 <p>

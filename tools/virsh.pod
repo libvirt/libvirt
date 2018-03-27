@@ -266,7 +266,7 @@ connect locally as root to the daemon supervising QEMU and KVM domains
 
 connect locally as a normal user to his own set of QEMU and KVM domains
 
-=item lxc:///
+=item lxc:///system
 
 connect to a local linux container
 

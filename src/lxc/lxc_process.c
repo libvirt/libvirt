@@ -105,7 +105,7 @@ virLXCProcessReboot(virLXCDriverPtr driver,
         virObjectRef(conn);
         autodestroy = true;
     } else {
-        conn = virConnectOpen("lxc:///");
+        conn = virConnectOpen("lxc:///system");
         /* Ignoring NULL conn which is mostly harmless here */
     }
 
@@ -1625,7 +1625,7 @@ virLXCProcessAutostartAll(virLXCDriverPtr driver)
      * to lookup the bridge associated with a virtual
      * network
      */
-    virConnectPtr conn = virConnectOpen("lxc:///");
+    virConnectPtr conn = virConnectOpen("lxc:///system");
     /* Ignoring NULL conn which is mostly harmless here */
 
     struct virLXCProcessAutostartData data = { driver, conn };
