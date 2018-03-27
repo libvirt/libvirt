@@ -1806,8 +1806,10 @@ static int testDomainDestroyFlags(virDomainPtr domain,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    if (!privdom->persistent)
+    if (!privdom->persistent) {
         virDomainObjListRemove(privconn->domains, privdom);
+        virObjectLock(privdom);
+    }
 
     ret = 0;
  cleanup:
@@ -1905,8 +1907,10 @@ static int testDomainShutdownFlags(virDomainPtr domain,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
 
-    if (!privdom->persistent)
+    if (!privdom->persistent) {
         virDomainObjListRemove(privconn->domains, privdom);
+        virObjectLock(privdom);
+    }
 
     ret = 0;
  cleanup:
@@ -1975,8 +1979,10 @@ static int testDomainReboot(virDomainPtr domain,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
 
-        if (!privdom->persistent)
+        if (!privdom->persistent) {
             virDomainObjListRemove(privconn->domains, privdom);
+            virObjectLock(privdom);
+        }
     }
 
     ret = 0;
@@ -2114,8 +2120,10 @@ testDomainSaveFlags(virDomainPtr domain, const char *path,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SAVED);
 
-    if (!privdom->persistent)
+    if (!privdom->persistent) {
         virDomainObjListRemove(privconn->domains, privdom);
+        virObjectLock(privdom);
+    }
 
     ret = 0;
  cleanup:
@@ -2300,8 +2308,10 @@ static int testDomainCoreDumpWithFormat(virDomainPtr domain,
         event = virDomainEventLifecycleNewFromObj(privdom,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
-        if (!privdom->persistent)
+        if (!privdom->persistent) {
             virDomainObjListRemove(privconn->domains, privdom);
+            virObjectLock(privdom);
+        }
     }
 
     ret = 0;
@@ -3080,10 +3090,12 @@ static int testDomainUndefineFlags(virDomainPtr domain,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
     privdom->hasManagedSave = false;
 
-    if (virDomainObjIsActive(privdom))
+    if (virDomainObjIsActive(privdom)) {
         privdom->persistent = 0;
-    else
+    } else {
         virDomainObjListRemove(privconn->domains, privdom);
+        virObjectLock(privdom);
+    }
 
     ret = 0;
 
