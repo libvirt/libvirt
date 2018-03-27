@@ -376,9 +376,6 @@ nwfilterConnectOpen(virConnectPtr conn,
         /* Only hypervisor drivers are permitted to auto-open on NULL uri */
         return VIR_DRV_OPEN_DECLINED;
     } else {
-        if (STRNEQ_NULLABLE(conn->uri->scheme, "nwfilter"))
-            return VIR_DRV_OPEN_DECLINED;
-
         if (driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("nwfilter state driver is not active"));
@@ -709,6 +706,7 @@ static virHypervisorDriver nwfilterHypervisorDriver = {
 
 static virConnectDriver nwfilterConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "nwfilter", NULL },
     .hypervisorDriver = &nwfilterHypervisorDriver,
     .nwfilterDriver = &nwfilterDriver,
 };

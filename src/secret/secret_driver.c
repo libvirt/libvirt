@@ -529,9 +529,6 @@ secretConnectOpen(virConnectPtr conn,
         /* Only hypervisor drivers are permitted to auto-open on NULL uri */
         return VIR_DRV_OPEN_DECLINED;
     } else {
-        if (STRNEQ_NULLABLE(conn->uri->scheme, "secret"))
-            return VIR_DRV_OPEN_DECLINED;
-
         if (driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("secret state driver is not active"));
@@ -659,6 +656,7 @@ static virHypervisorDriver secretHypervisorDriver = {
 
 static virConnectDriver secretConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "secret", NULL },
     .hypervisorDriver = &secretHypervisorDriver,
     .secretDriver = &secretDriver,
 };

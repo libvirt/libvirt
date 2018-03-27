@@ -389,9 +389,6 @@ storageConnectOpen(virConnectPtr conn,
         /* Only hypervisor drivers are permitted to auto-open on NULL uri */
         return VIR_DRV_OPEN_DECLINED;
     } else {
-        if (STRNEQ_NULLABLE(conn->uri->scheme, "storage"))
-            return VIR_DRV_OPEN_DECLINED;
-
         if (driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("storage state driver is not active"));
@@ -2852,6 +2849,7 @@ static virHypervisorDriver storageHypervisorDriver = {
 
 static virConnectDriver storageConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "storage", NULL },
     .hypervisorDriver = &storageHypervisorDriver,
     .storageDriver = &storageDriver,
 };

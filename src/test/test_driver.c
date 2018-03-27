@@ -1457,9 +1457,6 @@ testConnectOpen(virConnectPtr conn,
     if (!conn->uri)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (!conn->uri->scheme || STRNEQ(conn->uri->scheme, "test"))
-        return VIR_DRV_OPEN_DECLINED;
-
     /* From this point on, the connection is for us. */
     if (!conn->uri->path
         || conn->uri->path[0] == '\0'
@@ -7062,6 +7059,7 @@ static virNodeDeviceDriver testNodeDeviceDriver = {
 
 static virConnectDriver testConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "test", NULL },
     .hypervisorDriver = &testHypervisorDriver,
     .interfaceDriver = &testInterfaceDriver,
     .networkDriver = &testNetworkDriver,

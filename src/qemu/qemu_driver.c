@@ -1146,13 +1146,6 @@ static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
     if (conn->uri == NULL) {
         return VIR_DRV_OPEN_DECLINED;
     } else {
-        /* If URI isn't 'qemu' its definitely not for us */
-        if (conn->uri->scheme == NULL ||
-            STRNEQ(conn->uri->scheme, "qemu")) {
-            ret = VIR_DRV_OPEN_DECLINED;
-            goto cleanup;
-        }
-
         if (qemu_driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("qemu state driver is not active"));
@@ -21564,6 +21557,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
 
 static virConnectDriver qemuConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "qemu", NULL },
     .hypervisorDriver = &qemuHypervisorDriver,
 };
 

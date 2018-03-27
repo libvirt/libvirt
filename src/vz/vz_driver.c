@@ -361,19 +361,6 @@ vzConnectOpen(virConnectPtr conn,
     if (!conn->uri)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (!conn->uri->scheme)
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (STRNEQ(conn->uri->scheme, "vz") &&
-        STRNEQ(conn->uri->scheme, "parallels"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (STREQ(conn->uri->scheme, "vz") && STRNEQ(conn->driver->name, "vz"))
-        return VIR_DRV_OPEN_DECLINED;
-
-    if (STREQ(conn->uri->scheme, "parallels") && STRNEQ(conn->driver->name, "Parallels"))
-        return VIR_DRV_OPEN_DECLINED;
-
     /* From this point on, the connection is for us. */
     if (STRNEQ_NULLABLE(conn->uri->path, "/system")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4140,6 +4127,7 @@ static virHypervisorDriver vzHypervisorDriver = {
 
 static virConnectDriver vzConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "vz", NULL },
     .hypervisorDriver = &vzHypervisorDriver,
 };
 
@@ -4209,6 +4197,7 @@ vzRegister(void)
     parallelsHypervisorDriver.name = "Parallels";
     parallelsConnectDriver = vzConnectDriver;
     parallelsConnectDriver.hypervisorDriver = &parallelsHypervisorDriver;
+    parallelsConnectDriver.uriSchemes = (const char *[]){ "parallels", NULL },
     if (virRegisterConnectDriver(&parallelsConnectDriver, true) < 0)
         return -1;
 

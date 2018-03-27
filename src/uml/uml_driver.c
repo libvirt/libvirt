@@ -1206,10 +1206,6 @@ static virDrvOpenStatus umlConnectOpen(virConnectPtr conn,
     if (conn->uri == NULL) {
         return VIR_DRV_OPEN_DECLINED;
     } else {
-        if (conn->uri->scheme == NULL ||
-            STRNEQ(conn->uri->scheme, "uml"))
-            return VIR_DRV_OPEN_DECLINED;
-
         /* Check path and tell them correct path if they made a mistake */
         if (uml_driver->privileged) {
             if (STRNEQ(conn->uri->path, "/system") &&
@@ -3014,6 +3010,7 @@ static virHypervisorDriver umlHypervisorDriver = {
 
 static virConnectDriver umlConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "uml", NULL },
     .hypervisorDriver = &umlHypervisorDriver,
 };
 

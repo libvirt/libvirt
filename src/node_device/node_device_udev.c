@@ -1958,6 +1958,7 @@ static virHypervisorDriver udevHypervisorDriver = {
 
 static virConnectDriver udevConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "nodedev", NULL },
     .hypervisorDriver = &udevHypervisorDriver,
     .nodeDeviceDriver = &udevNodeDeviceDriver,
 };

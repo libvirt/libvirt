@@ -164,9 +164,6 @@ netcfConnectOpen(virConnectPtr conn,
         /* Only hypervisor drivers are permitted to auto-open on NULL uri */
         return VIR_DRV_OPEN_DECLINED;
     } else {
-        if (STRNEQ_NULLABLE(conn->uri->scheme, "interface"))
-            return VIR_DRV_OPEN_DECLINED;
-
         if (driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("interface state driver is not active"));
@@ -1221,6 +1218,7 @@ static virHypervisorDriver interfaceHypervisorDriver = {
 
 static virConnectDriver interfaceConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "interface", NULL },
     .hypervisorDriver = &interfaceHypervisorDriver,
     .interfaceDriver = &interfaceDriver,
 };

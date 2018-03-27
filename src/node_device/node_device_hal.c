@@ -784,6 +784,7 @@ static virHypervisorDriver halHypervisorDriver = {
 
 static virConnectDriver halConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "nodedev", NULL },
     .hypervisorDriver = &halHypervisorDriver,
     .nodeDeviceDriver = &halNodeDeviceDriver,
 };

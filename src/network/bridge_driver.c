@@ -883,9 +883,6 @@ networkConnectOpen(virConnectPtr conn,
         /* Only hypervisor drivers are permitted to auto-open on NULL uri */
         return VIR_DRV_OPEN_DECLINED;
     } else {
-        if (STRNEQ_NULLABLE(conn->uri->scheme, "network"))
-            return VIR_DRV_OPEN_DECLINED;
-
         if (network_driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("network state driver is not active"));
@@ -5613,6 +5610,7 @@ static virHypervisorDriver networkHypervisorDriver = {
 
 static virConnectDriver networkConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "network", NULL },
     .hypervisorDriver = &networkHypervisorDriver,
     .networkDriver = &networkDriver,
 };

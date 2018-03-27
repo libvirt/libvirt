@@ -58,9 +58,7 @@ static virDrvOpenStatus dummyConnectOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (conn->uri == NULL ||
-        conn->uri->scheme == NULL ||
-        STRNEQ(conn->uri->scheme, "vbox"))
+    if (conn->uri == NULL)
         return VIR_DRV_OPEN_DECLINED;
 
     if (conn->uri->path == NULL || STREQ(conn->uri->path, "")) {
@@ -96,6 +94,7 @@ static virHypervisorDriver vboxDriverDummy = {
 
 static virConnectDriver vboxConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "vbox", NULL },
     .hypervisorDriver = NULL,
 };
 

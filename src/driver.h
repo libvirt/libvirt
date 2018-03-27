@@ -81,6 +81,12 @@ typedef virConnectDriver *virConnectDriverPtr;
 struct _virConnectDriver {
     /* Wether driver permits a server in the URI */
     bool localOnly;
+    /*
+     * NULL terminated list of supported URI schemes.
+     *  - Single element { NULL } list indicates no supported schemes
+     *  - NULL list indicates wildcard supportnig all schemes
+     */
+    const char **uriSchemes;
     virHypervisorDriverPtr hypervisorDriver;
     virInterfaceDriverPtr interfaceDriver;
     virNetworkDriverPtr networkDriver;

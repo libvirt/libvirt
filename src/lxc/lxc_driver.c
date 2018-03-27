@@ -173,10 +173,6 @@ static virDrvOpenStatus lxcConnectOpen(virConnectPtr conn,
     if (conn->uri == NULL) {
         return VIR_DRV_OPEN_DECLINED;
     } else {
-        if (conn->uri->scheme == NULL ||
-            STRNEQ(conn->uri->scheme, "lxc"))
-            return VIR_DRV_OPEN_DECLINED;
-
         /* If path isn't '/' then they typoed, tell them correct path */
         if (conn->uri->path != NULL &&
             STRNEQ(conn->uri->path, "/") &&
@@ -5634,6 +5630,7 @@ static virHypervisorDriver lxcHypervisorDriver = {
 
 static virConnectDriver lxcConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "lxc", NULL },
     .hypervisorDriver = &lxcHypervisorDriver,
 };
 

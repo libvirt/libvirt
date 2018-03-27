@@ -1073,6 +1073,30 @@ virConnectOpenInternal(const char *name,
             continue;
         }
 
+        /* Filter drivers based on declared URI schemes */
+        if (virConnectDriverTab[i]->uriSchemes && ret->uri) {
+            bool matchScheme = false;
+            size_t s;
+            if (!ret->uri->scheme) {
+                VIR_DEBUG("No URI scheme, skipping driver with URI whitelist");
+                continue;
+            }
+            VIR_DEBUG("Checking for supported URI schemes");
+            for (s = 0; virConnectDriverTab[i]->uriSchemes[s] != NULL; s++) {
+                if (STREQ(ret->uri->scheme, virConnectDriverTab[i]->uriSchemes[s])) {
+                    VIR_DEBUG("Matched URI scheme '%s'", ret->uri->scheme);
+                    matchScheme = true;
+                    break;
+                }
+            }
+            if (!matchScheme) {
+                VIR_DEBUG("No matching URI scheme");
+                continue;
+            }
+        } else {
+            VIR_DEBUG("Matching any URI scheme for '%s'", ret->uri ? ret->uri->scheme : "");
+        }
+
         ret->driver = virConnectDriverTab[i]->hypervisorDriver;
         ret->interfaceDriver = virConnectDriverTab[i]->interfaceDriver;
         ret->networkDriver = virConnectDriverTab[i]->networkDriver;

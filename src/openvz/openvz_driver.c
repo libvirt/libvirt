@@ -1357,11 +1357,6 @@ static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
     if (conn->uri == NULL) {
         return VIR_DRV_OPEN_DECLINED;
     } else {
-        /* If scheme isn't 'openvz', then its for another driver */
-        if (conn->uri->scheme == NULL ||
-            STRNEQ(conn->uri->scheme, "openvz"))
-            return VIR_DRV_OPEN_DECLINED;
-
         /* If path isn't /system, then they typoed, so tell them correct path */
         if (conn->uri->path == NULL ||
             STRNEQ(conn->uri->path, "/system")) {
@@ -2521,6 +2516,7 @@ static virHypervisorDriver openvzHypervisorDriver = {
 
 static virConnectDriver openvzConnectDriver = {
     .localOnly = true,
+    .uriSchemes = (const char *[]){ "openvz", NULL },
     .hypervisorDriver = &openvzHypervisorDriver,
 };
 
