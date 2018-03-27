@@ -346,8 +346,10 @@ umlInotifyEvent(int watch,
             event = virDomainEventLifecycleNewFromObj(dom,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
-            if (!dom->persistent)
+            if (!dom->persistent) {
                 virDomainObjListRemove(driver->domains, dom);
+                virObjectLock(dom);
+            }
         } else if (e.mask & (IN_CREATE | IN_MODIFY)) {
             VIR_DEBUG("Got inotify domain startup '%s'", name);
             if (virDomainObjIsActive(dom)) {
@@ -377,8 +379,10 @@ umlInotifyEvent(int watch,
                 event = virDomainEventLifecycleNewFromObj(dom,
                                                  VIR_DOMAIN_EVENT_STOPPED,
                                                  VIR_DOMAIN_EVENT_STOPPED_FAILED);
-                if (!dom->persistent)
+                if (!dom->persistent) {
                     virDomainObjListRemove(driver->domains, dom);
+                    virObjectLock(dom);
+                }
             } else if (umlIdentifyChrPTY(driver, dom) < 0) {
                 VIR_WARN("Could not identify character devices for new domain");
                 umlShutdownVMDaemon(driver, dom,
@@ -387,8 +391,10 @@ umlInotifyEvent(int watch,
                 event = virDomainEventLifecycleNewFromObj(dom,
                                                  VIR_DOMAIN_EVENT_STOPPED,
                                                  VIR_DOMAIN_EVENT_STOPPED_FAILED);
-                if (!dom->persistent)
+                if (!dom->persistent) {
                     virDomainObjListRemove(driver->domains, dom);
+                    virObjectLock(dom);
+                }
             }
         }
         virDomainObjEndAPI(&dom);
