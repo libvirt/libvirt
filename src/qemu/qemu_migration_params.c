@@ -229,21 +229,6 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
 }
 
 
-static int
-qemuMigrationParamsSetCapability(virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                                 qemuMonitorMigrationCaps capability,
-                                 bool state,
-                                 qemuMigrationParamsPtr migParams)
-{
-    if (state)
-        ignore_value(virBitmapSetBit(migParams->caps, capability));
-    else
-        ignore_value(virBitmapClearBit(migParams->caps, capability));
-
-    return 0;
-}
-
-
 /* qemuMigrationParamsEnableTLS
  * @driver: pointer to qemu driver
  * @vm: domain object
@@ -358,23 +343,17 @@ qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
 
 
 int
-qemuMigrationParamsSetCompression(virDomainObjPtr vm,
+qemuMigrationParamsSetCompression(virDomainObjPtr vm ATTRIBUTE_UNUSED,
                                   qemuMigrationCompressionPtr compression,
                                   qemuMigrationParamsPtr migParams)
 {
-    if (qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
-                                         compression->methods &
-                                         (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE),
-                                         migParams) < 0)
-        return -1;
+    if (compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE))
+        ignore_value(virBitmapSetBit(migParams->caps,
+                                     QEMU_MONITOR_MIGRATION_CAPS_XBZRLE));
 
-    if (qemuMigrationParamsSetCapability(vm,
-                                         QEMU_MONITOR_MIGRATION_CAPS_COMPRESS,
-                                         compression->methods &
-                                         (1ULL << QEMU_MIGRATION_COMPRESS_MT),
-                                         migParams) < 0)
-        return -1;
+    if (compression->methods & (1ULL << QEMU_MIGRATION_COMPRESS_MT))
+        ignore_value(virBitmapSetBit(migParams->caps,
+                                     QEMU_MONITOR_MIGRATION_CAPS_COMPRESS));
 
     migParams->params.compressLevel_set = compression->level_set;
     migParams->params.compressLevel = compression->level;
