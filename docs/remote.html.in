@@ -130,14 +130,14 @@ to distinguish this from a local URI.
 Some examples:
 </p>
     <ul>
-      <li><code>xen+ssh://rjones@towada/</code><br/> &#x2014; Connect to a
+      <li><code>xen+ssh://rjones@towada/system</code><br/> &#x2014; Connect to a
 remote Xen hypervisor on host <code>towada</code> using ssh transport and ssh
 username <code>rjones</code>.
 </li>
-      <li><code>xen://towada/</code><br/> &#x2014; Connect to a
+      <li><code>xen://towada/system</code><br/> &#x2014; Connect to a
 remote Xen hypervisor on host <code>towada</code> using TLS.
 </li>
-      <li><code>xen://towada/?no_verify=1</code><br/> &#x2014; Connect to a
+      <li><code>xen://towada/system?no_verify=1</code><br/> &#x2014; Connect to a
 remote Xen hypervisor on host <code>towada</code> using TLS.  Do not verify
 the server's certificate.
 </li>

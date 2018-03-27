@@ -254,7 +254,7 @@ common are:
 
 =over 4
 
-=item xen:///
+=item xen:///system
 
 this is used to connect to the local Xen hypervisor
 

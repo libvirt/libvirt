@@ -43,11 +43,11 @@
     </p>
 
 <pre>
-xen:///                        (local access, direct)
-xen+unix:///                   (local access, via daemon)
-xen://example.com/             (remote access, TLS/x509)
-xen+tcp://example.com/         (remote access, SASl/Kerberos)
-xen+ssh://root@example.com/    (remote access, SSH tunnelled)
+xen:///system                     (local access, direct)
+xen+unix:///system                (local access, via daemon)
+xen://example.com/system          (remote access, TLS/x509)
+xen+tcp://example.com/system      (remote access, SASl/Kerberos)
+xen+ssh://root@example.com/system (remote access, SSH tunnelled)
 </pre>
 
     <h2><a id="imex">Import and export of libvirt domain XML configs</a></h2>
@@ -76,7 +76,7 @@ xen+ssh://root@example.com/    (remote access, SSH tunnelled)
       which can then be used by libvirt.
     </p>
 
-    <pre>$ virsh -c xen:/// domxml-from-native xen-xm rhel5.cfg
+    <pre>$ virsh -c xen:///system domxml-from-native xen-xm rhel5.cfg
 &lt;domain type='xen'&gt;
   &lt;name&gt;rhel5pv&lt;/name&gt;
   &lt;uuid&gt;8f07fe28-753f-2729-d76d-bdbd892f949a&lt;/uuid&gt;
@@ -122,7 +122,7 @@ xen+ssh://root@example.com/    (remote access, SSH tunnelled)
       format.
     </p>
 
-    <pre>$ virsh -c xen:/// domxml-to-native xen-xm rhel5pv.xml
+    <pre>$ virsh -c xen:///system domxml-to-native xen-xm rhel5pv.xml
 name = "rhel5pv"
 uuid = "8f07fe28-753f-2729-d76d-bdbd892f949a"
 maxmem = 2500

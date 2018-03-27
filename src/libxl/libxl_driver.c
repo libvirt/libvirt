@@ -839,7 +839,7 @@ libxlConnectOpen(virConnectPtr conn,
         if (libxl_driver == NULL)
             return VIR_DRV_OPEN_DECLINED;
 
-        if (!(conn->uri = virURIParse("xen:///")))
+        if (!(conn->uri = virURIParse("xen:///system")))
             return VIR_DRV_OPEN_ERROR;
     } else {
         /* Only xen scheme */
@@ -863,7 +863,7 @@ libxlConnectOpen(virConnectPtr conn,
             STRNEQ(conn->uri->path, "/") &&
             STRNEQ(conn->uri->path, "/system")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected Xen URI path '%s', try xen:///"),
+                           _("unexpected Xen URI path '%s', try xen:///system"),
                            NULLSTR(conn->uri->path));
             return VIR_DRV_OPEN_ERROR;
         }

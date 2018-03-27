@@ -954,15 +954,15 @@ virConnectOpenInternal(const char *name,
         goto failed;
     }
 
-    /* Convert xen -> xen:/// for back compat */
+    /* Convert xen -> xen:///system for back compat */
     if (name && STRCASEEQ(name, "xen"))
-        name = "xen:///";
+        name = "xen:///system";
 
-    /* Convert xen:// -> xen:/// because xmlParseURI cannot parse the
+    /* Convert xen:// -> xen:///system because xmlParseURI cannot parse the
      * former.  This allows URIs such as xen://localhost to work.
      */
     if (name && STREQ(name, "xen://"))
-        name = "xen:///";
+        name = "xen:///system";
 
     /*
      * If no URI is passed, then check for an environment string if not
