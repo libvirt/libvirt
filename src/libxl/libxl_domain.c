@@ -886,7 +886,7 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
         if (virBitmapToData(cpumask, &map.map, (int *)&map.size) < 0)
             goto cleanup;
 
-        if (libxl_set_vcpuaffinity(cfg->ctx, vm->def->id, i, &map) != 0) {
+        if (libxl_set_vcpuaffinity(cfg->ctx, vm->def->id, i, &map, NULL) != 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to pin vcpu '%zu' with libxenlight"), i);
             goto cleanup;

@@ -8,7 +8,7 @@
 
     <p>
       The libvirt libxl driver provides the ability to manage virtual
-      machines on any Xen release from 4.4.0 onwards.
+      machines on any Xen release from 4.6.0 onwards.
     </p>
 
     <h2><a id="project">Project Links</a></h2>
