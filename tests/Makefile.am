@@ -127,6 +127,7 @@ EXTRA_DIST = \
 	qemuhotplugtestdomains \
 	qemumonitorjsondata \
 	qemuxml2argvdata \
+	qemuxml2startupxmloutdata \
 	qemuxml2xmloutdata \
 	qemustatusxml2xmldata \
 	qemuqapischema.json \

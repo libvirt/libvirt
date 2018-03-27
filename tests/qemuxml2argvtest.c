@@ -277,6 +277,7 @@ struct testInfo {
     unsigned int flags;
     unsigned int parseFlags;
     bool skipLegacyCPUs;
+    virDomainObjPtr vm;
 };
 
 
@@ -402,9 +403,39 @@ testUpdateQEMUCaps(const struct testInfo *info,
 
 
 static int
-testCompareXMLToArgv(const void *data)
+testCompareXMLToStartupXML(const void *data)
 {
     const struct testInfo *info = data;
+    unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
+    char *xml = NULL;
+    char *actual = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&xml, "%s/qemuxml2startupxmloutdata/%s.xml",
+                    abs_srcdir, info->name) < 0)
+        goto cleanup;
+
+    if (!virFileExists(xml)) {
+        ret = EXIT_AM_SKIP;
+        goto cleanup;
+    }
+
+    if (!(actual = virDomainDefFormat(info->vm->def, NULL, format_flags)))
+        goto cleanup;
+
+    ret = virTestCompareToFile(actual, xml);
+
+ cleanup:
+    VIR_FREE(xml);
+    VIR_FREE(actual);
+    return ret;
+}
+
+
+static int
+testCompareXMLToArgv(const void *data)
+{
+    struct testInfo *info = (void *) data;
     char *xml = NULL;
     char *args = NULL;
     char *migrateURI = NULL;
@@ -532,6 +563,9 @@ testCompareXMLToArgv(const void *data)
         ret = 0;
     }
 
+    if (!(flags & FLAG_EXPECT_FAILURE) && ret == 0)
+        VIR_STEAL_PTR(info->vm, vm);
+
  cleanup:
     VIR_FREE(log);
     VIR_FREE(actualargv);
@@ -625,7 +659,7 @@ mymain(void)
     do { \
         static struct testInfo info = { \
             name, NULL, migrateFrom, migrateFd, (flags), parseFlags, \
-            false \
+            false, NULL \
         }; \
         info.skipLegacyCPUs = skipLegacyCPUs; \
         if (testInitQEMUCaps(&info, gic) < 0) \
@@ -634,7 +668,11 @@ mymain(void)
         if (virTestRun("QEMU XML-2-ARGV " name, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
+        if (info.vm && virTestRun("QEMU XML-2-startup-XML " name, \
+                                  testCompareXMLToStartupXML, &info) < 0) \
+            ret = -1; \
         virObjectUnref(info.qemuCaps); \
+        virObjectUnref(info.vm); \
     } while (0)
 
 # define DO_TEST(name, ...) \
