@@ -7058,8 +7058,6 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
 
     VIR_DEBUG("vm=%s, conn=%p", dom->def->name, conn);
 
-    virObjectRef(dom);
-
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
 
@@ -7089,7 +7087,6 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
     qemuDomainEventQueue(driver, event);
 
  cleanup:
-    virDomainObjEndAPI(&dom);
     return dom;
 }
 
