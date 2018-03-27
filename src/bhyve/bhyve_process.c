@@ -53,7 +53,7 @@
 
 VIR_LOG_INIT("bhyve.bhyve_process");
 
-static virDomainObjPtr
+static void
 bhyveProcessAutoDestroy(virDomainObjPtr vm,
                         virConnectPtr conn ATTRIBUTE_UNUSED,
                         void *opaque)
@@ -62,12 +62,8 @@ bhyveProcessAutoDestroy(virDomainObjPtr vm,
 
     virBhyveProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
 
-    if (!vm->persistent) {
+    if (!vm->persistent)
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
-    }
-
-    return vm;
 }
 
 static void

@@ -59,7 +59,7 @@ VIR_LOG_INIT("lxc.lxc_process");
 
 #define START_POSTFIX ": starting up\n"
 
-static virDomainObjPtr
+static void
 lxcProcessAutoDestroy(virDomainObjPtr dom,
                       virConnectPtr conn,
                       void *opaque)
@@ -79,15 +79,11 @@ lxcProcessAutoDestroy(virDomainObjPtr dom,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
     priv->doneStopEvent = true;
 
-    if (!dom->persistent) {
+    if (!dom->persistent)
         virDomainObjListRemove(driver->domains, dom);
-        dom = NULL;
-    }
 
     if (event)
         virObjectEventStateQueue(driver->domainEventState, event);
-
-    return dom;
 }
 
 /*

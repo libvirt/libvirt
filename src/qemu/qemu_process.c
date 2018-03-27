@@ -7046,7 +7046,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-static virDomainObjPtr
+static void
 qemuProcessAutoDestroy(virDomainObjPtr dom,
                        virConnectPtr conn,
                        void *opaque)
@@ -7070,7 +7070,7 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
     VIR_DEBUG("Killing domain");
 
     if (qemuProcessBeginStopJob(driver, dom, QEMU_JOB_DESTROY, true) < 0)
-        goto cleanup;
+        return;
 
     qemuProcessStop(driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED,
                     QEMU_ASYNC_JOB_NONE, stopFlags);
@@ -7085,9 +7085,6 @@ qemuProcessAutoDestroy(virDomainObjPtr dom,
     qemuDomainObjEndJob(driver, dom);
 
     qemuDomainEventQueue(driver, event);
-
- cleanup:
-    return dom;
 }
 
 int qemuProcessAutoDestroyAdd(virQEMUDriverPtr driver,

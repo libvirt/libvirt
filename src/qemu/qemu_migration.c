@@ -1954,7 +1954,7 @@ qemuMigrationDstRun(virQEMUDriverPtr driver,
  * qemuDomainMigrateBegin3 and qemuDomainMigratePerform3 or
  * qemuDomainMigratePerform3 and qemuDomainMigrateConfirm3.
  */
-static virDomainObjPtr
+static void
 qemuMigrationSrcCleanup(virDomainObjPtr vm,
                         virConnectPtr conn,
                         void *opaque)
@@ -1969,7 +1969,7 @@ qemuMigrationSrcCleanup(virDomainObjPtr vm,
                                               priv->job.phase));
 
     if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_OUT))
-        goto cleanup;
+        return;
 
     VIR_DEBUG("The connection which started outgoing migration of domain %s"
               " was closed; canceling the migration",
@@ -2005,9 +2005,6 @@ qemuMigrationSrcCleanup(virDomainObjPtr vm,
         /* unreachable */
         ;
     }
-
- cleanup:
-    return vm;
 }
 
 

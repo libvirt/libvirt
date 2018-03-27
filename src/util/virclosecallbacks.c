@@ -359,10 +359,9 @@ virCloseCallbacksRun(virCloseCallbacksPtr closeCallbacks,
          * we're about to call the callback function and we have another
          * ref anyway (so it cannot be deleted).
          *
-         * Call the callback function, ignoring the return since it might be
-         * NULL. Once we're done with the object, then end the API usage. */
+         * Call the callback function and end the API usage. */
         virObjectUnref(vm);
-        ignore_value(list->entries[i].callback(vm, conn, opaque));
+        list->entries[i].callback(vm, conn, opaque);
         virDomainObjEndAPI(&vm);
     }
     VIR_FREE(list->entries);
