@@ -1751,19 +1751,16 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     /* def:nets */
-    if (VIR_ALLOC_N(def->nets, 4) < 0)
-        goto cleanup;
-
-    def->nnets = 0;
-
     for (controller = 0; controller < 4; ++controller) {
-        if (virVMXParseEthernet(conf, controller,
-                                &def->nets[def->nnets]) < 0) {
+        virDomainNetDefPtr net = NULL;
+        if (virVMXParseEthernet(conf, controller, &net) < 0)
             goto cleanup;
-        }
 
-        if (def->nets[def->nnets] != NULL)
-            ++def->nnets;
+        if (!net)
+            continue;
+
+        if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0)
+            goto cleanup;
     }
 
     /* def:inputs */
