@@ -62,10 +62,6 @@ nodeConnectOpen(virConnectPtr conn,
         if (STRNEQ_NULLABLE(conn->uri->scheme, "nodedev"))
             return VIR_DRV_OPEN_DECLINED;
 
-        /* Leave for remote driver */
-        if (conn->uri->server != NULL)
-            return VIR_DRV_OPEN_DECLINED;
-
         if (driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("nodedev state driver is not active"));

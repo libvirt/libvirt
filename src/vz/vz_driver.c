@@ -374,10 +374,6 @@ vzConnectOpen(virConnectPtr conn,
     if (STREQ(conn->uri->scheme, "parallels") && STRNEQ(conn->driver->name, "Parallels"))
         return VIR_DRV_OPEN_DECLINED;
 
-    /* Remote driver should handle these. */
-    if (conn->uri->server)
-        return VIR_DRV_OPEN_DECLINED;
-
     /* From this point on, the connection is for us. */
     if (STRNEQ_NULLABLE(conn->uri->path, "/system")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4143,6 +4139,7 @@ static virHypervisorDriver vzHypervisorDriver = {
 };
 
 static virConnectDriver vzConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &vzHypervisorDriver,
 };
 

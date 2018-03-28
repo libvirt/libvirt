@@ -167,10 +167,6 @@ netcfConnectOpen(virConnectPtr conn,
         if (STRNEQ_NULLABLE(conn->uri->scheme, "interface"))
             return VIR_DRV_OPEN_DECLINED;
 
-        /* Leave for remote driver */
-        if (conn->uri->server != NULL)
-            return VIR_DRV_OPEN_DECLINED;
-
         if (driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("interface state driver is not active"));
@@ -1224,6 +1220,7 @@ static virHypervisorDriver interfaceHypervisorDriver = {
 
 
 static virConnectDriver interfaceConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &interfaceHypervisorDriver,
     .interfaceDriver = &interfaceDriver,
 };

@@ -1362,10 +1362,6 @@ static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
             STRNEQ(conn->uri->scheme, "openvz"))
             return VIR_DRV_OPEN_DECLINED;
 
-        /* If server name is given, its for remote driver */
-        if (conn->uri->server != NULL)
-            return VIR_DRV_OPEN_DECLINED;
-
         /* If path isn't /system, then they typoed, so tell them correct path */
         if (conn->uri->path == NULL ||
             STRNEQ(conn->uri->path, "/system")) {
@@ -2524,6 +2520,7 @@ static virHypervisorDriver openvzHypervisorDriver = {
 };
 
 static virConnectDriver openvzConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &openvzHypervisorDriver,
 };
 

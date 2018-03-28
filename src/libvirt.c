@@ -1068,6 +1068,11 @@ virConnectOpenInternal(const char *name,
         VIR_DEBUG("trying driver %zu (%s) ...",
                   i, virConnectDriverTab[i]->hypervisorDriver->name);
 
+        if (virConnectDriverTab[i]->localOnly && ret->uri && ret->uri->server) {
+            VIR_DEBUG("Server present, skipping local only driver");
+            continue;
+        }
+
         ret->driver = virConnectDriverTab[i]->hypervisorDriver;
         ret->interfaceDriver = virConnectDriverTab[i]->interfaceDriver;
         ret->networkDriver = virConnectDriverTab[i]->networkDriver;

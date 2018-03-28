@@ -524,10 +524,6 @@ vboxConnectOpen(virConnectPtr conn,
         STRNEQ(conn->uri->scheme, "vbox"))
         return VIR_DRV_OPEN_DECLINED;
 
-    /* Leave for remote driver */
-    if (conn->uri->server != NULL)
-        return VIR_DRV_OPEN_DECLINED;
-
     if (conn->uri->path == NULL || STREQ(conn->uri->path, "")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no VirtualBox driver path specified (try vbox:///session)"));

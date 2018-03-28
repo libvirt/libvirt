@@ -1957,6 +1957,7 @@ static virHypervisorDriver udevHypervisorDriver = {
 
 
 static virConnectDriver udevConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &udevHypervisorDriver,
     .nodeDeviceDriver = &udevNodeDeviceDriver,
 };

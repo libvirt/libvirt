@@ -140,10 +140,6 @@ vmwareConnectOpen(virConnectPtr conn,
              STRNEQ(conn->uri->scheme, "vmwarefusion")))
             return VIR_DRV_OPEN_DECLINED;
 
-        /* If server name is given, its for remote driver */
-        if (conn->uri->server != NULL)
-            return VIR_DRV_OPEN_DECLINED;
-
         /* If path isn't /session, then they typoed, so tell them correct path */
         if (conn->uri->path == NULL || STRNEQ(conn->uri->path, "/session")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1271,6 +1267,7 @@ static virHypervisorDriver vmwareHypervisorDriver = {
 };
 
 static virConnectDriver vmwareConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &vmwareHypervisorDriver,
 };
 

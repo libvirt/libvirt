@@ -783,6 +783,7 @@ static virHypervisorDriver halHypervisorDriver = {
 
 
 static virConnectDriver halConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &halHypervisorDriver,
     .nodeDeviceDriver = &halNodeDeviceDriver,
 };

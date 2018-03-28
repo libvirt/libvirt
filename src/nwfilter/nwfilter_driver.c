@@ -379,10 +379,6 @@ nwfilterConnectOpen(virConnectPtr conn,
         if (STRNEQ_NULLABLE(conn->uri->scheme, "nwfilter"))
             return VIR_DRV_OPEN_DECLINED;
 
-        /* Leave for remote driver */
-        if (conn->uri->server != NULL)
-            return VIR_DRV_OPEN_DECLINED;
-
         if (driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("nwfilter state driver is not active"));
@@ -712,6 +708,7 @@ static virHypervisorDriver nwfilterHypervisorDriver = {
 
 
 static virConnectDriver nwfilterConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &nwfilterHypervisorDriver,
     .nwfilterDriver = &nwfilterDriver,
 };

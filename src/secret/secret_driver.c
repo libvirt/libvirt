@@ -532,10 +532,6 @@ secretConnectOpen(virConnectPtr conn,
         if (STRNEQ_NULLABLE(conn->uri->scheme, "secret"))
             return VIR_DRV_OPEN_DECLINED;
 
-        /* Leave for remote driver */
-        if (conn->uri->server != NULL)
-            return VIR_DRV_OPEN_DECLINED;
-
         if (driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("secret state driver is not active"));
@@ -662,6 +658,7 @@ static virHypervisorDriver secretHypervisorDriver = {
 
 
 static virConnectDriver secretConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &secretHypervisorDriver,
     .secretDriver = &secretDriver,
 };

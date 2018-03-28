@@ -392,10 +392,6 @@ storageConnectOpen(virConnectPtr conn,
         if (STRNEQ_NULLABLE(conn->uri->scheme, "storage"))
             return VIR_DRV_OPEN_DECLINED;
 
-        /* Leave for remote driver */
-        if (conn->uri->server != NULL)
-            return VIR_DRV_OPEN_DECLINED;
-
         if (driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("storage state driver is not active"));
@@ -2855,6 +2851,7 @@ static virHypervisorDriver storageHypervisorDriver = {
 };
 
 static virConnectDriver storageConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &storageHypervisorDriver,
     .storageDriver = &storageDriver,
 };

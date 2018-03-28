@@ -79,6 +79,8 @@ typedef struct _virConnectDriver virConnectDriver;
 typedef virConnectDriver *virConnectDriverPtr;
 
 struct _virConnectDriver {
+    /* Wether driver permits a server in the URI */
+    bool localOnly;
     virHypervisorDriverPtr hypervisorDriver;
     virInterfaceDriverPtr interfaceDriver;
     virNetworkDriverPtr networkDriver;

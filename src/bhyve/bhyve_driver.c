@@ -205,9 +205,6 @@ bhyveConnectOpen(virConnectPtr conn,
          if (!conn->uri->scheme || STRNEQ(conn->uri->scheme, "bhyve"))
              return VIR_DRV_OPEN_DECLINED;
 
-         if (conn->uri->server)
-             return VIR_DRV_OPEN_DECLINED;
-
          if (STRNEQ_NULLABLE(conn->uri->path, "/system")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unexpected bhyve URI path '%s', try bhyve:///system"),
@@ -1738,6 +1735,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
 
 
 static virConnectDriver bhyveConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &bhyveHypervisorDriver,
 };
 

@@ -852,10 +852,6 @@ libxlConnectOpen(virConnectPtr conn,
         if (conn->uri->scheme == NULL || STRNEQ(conn->uri->scheme, "xen"))
             return VIR_DRV_OPEN_DECLINED;
 
-        /* If server name is given, its for remote driver */
-        if (conn->uri->server != NULL)
-            return VIR_DRV_OPEN_DECLINED;
-
         /* Error if xen or libxl scheme specified but driver not started. */
         if (libxl_driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -6582,6 +6578,7 @@ static virHypervisorDriver libxlHypervisorDriver = {
 };
 
 static virConnectDriver libxlConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &libxlHypervisorDriver,
 };
 

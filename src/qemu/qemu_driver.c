@@ -1153,12 +1153,6 @@ static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
             goto cleanup;
         }
 
-        /* Allow remote driver to deal with URIs with hostname server */
-        if (conn->uri->server != NULL) {
-            ret = VIR_DRV_OPEN_DECLINED;
-            goto cleanup;
-        }
-
         if (qemu_driver == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("qemu state driver is not active"));
@@ -21569,6 +21563,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
 
 
 static virConnectDriver qemuConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &qemuHypervisorDriver,
 };
 

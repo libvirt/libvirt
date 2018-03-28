@@ -1460,10 +1460,6 @@ testConnectOpen(virConnectPtr conn,
     if (!conn->uri->scheme || STRNEQ(conn->uri->scheme, "test"))
         return VIR_DRV_OPEN_DECLINED;
 
-    /* Remote driver should handle these. */
-    if (conn->uri->server)
-        return VIR_DRV_OPEN_DECLINED;
-
     /* From this point on, the connection is for us. */
     if (!conn->uri->path
         || conn->uri->path[0] == '\0'
@@ -7065,6 +7061,7 @@ static virNodeDeviceDriver testNodeDeviceDriver = {
 };
 
 static virConnectDriver testConnectDriver = {
+    .localOnly = true,
     .hypervisorDriver = &testHypervisorDriver,
     .interfaceDriver = &testInterfaceDriver,
     .networkDriver = &testNetworkDriver,
