@@ -1525,6 +1525,7 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
     qemuDomainSecretInfoPtr encinfo = NULL;
     virJSONValuePtr srcprops = NULL;
     char *source = NULL;
+    bool rawluks = false;
     int ret = -1;
 
     if (srcpriv) {
@@ -1598,14 +1599,21 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
     }
     virBufferAddLit(buf, ",");
 
-    if (encinfo)
-        virQEMUBuildLuksOpts(buf, &disk->src->encryption->encinfo,
-                             encinfo->s.aes.alias);
+    if (encinfo) {
+        if (disk->src->format == VIR_STORAGE_FILE_RAW) {
+            virBufferAsprintf(buf, "key-secret=%s,", encinfo->s.aes.alias);
+            rawluks = true;
+        } else if (disk->src->format == VIR_STORAGE_FILE_QCOW2 &&
+                   disk->src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+            virBufferAddLit(buf, "encrypt.format=luks,");
+            virBufferAsprintf(buf, "encrypt.key-secret=%s,", encinfo->s.aes.alias);
+        }
+    }
 
     if (disk->src->format > 0 &&
         disk->src->type != VIR_STORAGE_TYPE_DIR) {
         const char *qemuformat = virStorageFileFormatTypeToString(disk->src->format);
-        if (qemuDomainDiskHasEncryptionSecret(disk->src))
+        if (rawluks)
             qemuformat = "luks";
         virBufferAsprintf(buf, "format=%s,", qemuformat);
     }
