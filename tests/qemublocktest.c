@@ -405,6 +405,8 @@ mymain(void)
     TEST_DISK_TO_JSON_FULL("nodename-long-format", true);
     TEST_DISK_TO_JSON_FULL("nodename-long-protocol", true);
 
+    TEST_DISK_TO_JSON("file-raw-noopts");
+
  cleanup:
     virHashFree(diskxmljsondata.schema);
     qemuTestDriverFree(&driver);

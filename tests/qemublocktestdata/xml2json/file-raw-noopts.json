@@ -1,0 +1,12 @@
+{
+  "node-name": "0123456789ABCDEF0123456789ABCDE",
+  "read-only": false,
+  "driver": "raw",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/i.img",
+    "node-name": "0123456789ABCDEF0123456789ABCDE",
+    "read-only": false,
+    "discard": "unmap"
+  }
+}
