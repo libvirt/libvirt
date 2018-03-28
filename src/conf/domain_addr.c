@@ -416,6 +416,7 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
     size_t i;
     int model;
     bool needDMIToPCIBridge = false;
+    bool needPCIeToPCIBridge = false;
 
     add = addr->bus - addrs->nbuses + 1;
     if (add <= 0)
@@ -436,27 +437,41 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
             model = VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE;
 
             /* if there aren't yet any buses that will accept a
-             * pci-bridge, and the caller is asking for one, we'll need to
-             * add a dmi-to-pci-bridge first.
+             * pci-bridge, but we need one for the device's PCI address
+             * to make sense, it means the guest only has a PCIe topology
+             * configured so far, and we need to create a traditional PCI
+             * topology to accomodate the new device.
              */
             needDMIToPCIBridge = true;
+            needPCIeToPCIBridge = true;
             for (i = 0; i < addrs->nbuses; i++) {
                 if (addrs->buses[i].flags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE) {
                     needDMIToPCIBridge = false;
+                    needPCIeToPCIBridge = false;
                     break;
                 }
             }
-            if (needDMIToPCIBridge && add == 1) {
+
+            /* Prefer pcie-to-pci-bridge, fall back to dmi-to-pci-bridge */
+            if (addrs->isPCIeToPCIBridgeSupported)
+                needDMIToPCIBridge = false;
+            else
+                needPCIeToPCIBridge = false;
+
+            if ((needDMIToPCIBridge || needPCIeToPCIBridge) && add == 1) {
                 /* We need to add a single pci-bridge to provide the bus
                  * our legacy PCI device will be plugged into; however, we
                  * have also determined that there isn't yet any proper
-                 * place to connect that pci-bridge we're about to add (on
-                 * a system with pcie-root, that "proper place" would be a
-                 * dmi-to-pci-bridge". So, to give the pci-bridge a place
-                 * to connect, we increase the count of buses to add,
-                 * while also incrementing the bus number in the address
-                 * for the device (since the pci-bridge will now be at an
-                 * index 1 higher than the caller had anticipated).
+                 * place to connect that pci-bridge we're about to add,
+                 * which means we're dealing with a pure PCIe guest. We
+                 * need to create a traditional PCI topology, and for that
+                 * we have two options: dmi-to-pci-bridge + pci-bridge or
+                 * pcie-root-port + pcie-to-pci-bridge (the latter of which
+                 * is pretty much a pci-bridge as far as devices attached
+                 * to it are concerned and as such makes the pci-bridge
+                 * unnecessary). Either way, there's going to be one more
+                 * controller than initially expected, and the 'bus' part
+                 * of the device's address will need to be bumped.
                  */
                 add++;
                 addr->bus++;
@@ -530,6 +545,30 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
          */
         if (virDomainPCIAddressBusSetModel(&addrs->buses[i++],
                                            VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE) < 0) {
+            return -1;
+        }
+    }
+
+    if (needPCIeToPCIBridge) {
+        /* We need a pcie-root-port to plug pcie-to-pci-bridge into; however,
+         * qemuDomainAssignPCIAddresses() will, in some cases, create a dummy
+         * PCIe device and reserve an address for it in order to leave the
+         * user with an empty pcie-root-port ready for hotplugging, and if
+         * we didn't do anything other than adding the pcie-root-port here
+         * it would be used for that, which we don't want. So we change the
+         * connect flags to make sure only the pcie-to-pci-bridge will be
+         * connected to the pcie-root-port we just added, and another one
+         * will be allocated for the dummy PCIe device later on.
+         */
+        if (virDomainPCIAddressBusSetModel(&addrs->buses[i],
+                                           VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT) < 0) {
+            return -1;
+        }
+        addrs->buses[i].flags = VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE;
+        i++;
+
+        if (virDomainPCIAddressBusSetModel(&addrs->buses[i++],
+                                           VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE) < 0) {
             return -1;
         }
     }

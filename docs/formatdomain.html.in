@@ -4114,10 +4114,14 @@
       devices (although libvirt will never auto-assign a PCI device to
       a PCIe slot, it will allow manual specification of such an
       assignment). Devices connected to pcie-root cannot be
-      hotplugged. In order to make standard PCI slots available on a
-      system which has a pcie-root controller, a pci controller
-      with <code>model='dmi-to-pci-bridge'</code> is automatically
-      added, usually at the defacto standard location of slot=0x1e. A
+      hotplugged. If traditional PCI devices are present in the guest
+      configuration, a <code>pcie-to-pci-bridge</code> controller will
+      automatically be added: this controller, which plugs into a
+      <code>pcie-root-port</code>, provides 31 usable PCI slots (1-31) with
+      hotplug support (<span class="since">since 4.3.0</span>). If the QEMU
+      binary doesn't support the corresponding device, then a
+      <code>dmi-to-pci-bridge</code> controller will be added instead,
+      usually at the defacto standard location of slot=0x1e. A
       dmi-to-pci-bridge controller plugs into a PCIe slot (as provided
       by pcie-root), and itself provides 31 standard PCI slots (which
       also do not support device hotplug). In order to have
