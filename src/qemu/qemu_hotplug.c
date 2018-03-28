@@ -956,9 +956,9 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         queueSize = net->driver.virtio.queues;
         if (!queueSize)
             queueSize = 1;
-        if (!qemuDomainSupportsNetdev(vm->def, priv->qemuCaps, net)) {
+        if (!qemuDomainSupportsNicdev(vm->def, net)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Netdev support unavailable"));
+                           "%s", _("Nicdev support unavailable"));
             goto cleanup;
         }
 

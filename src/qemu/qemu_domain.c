@@ -9177,16 +9177,6 @@ qemuDomainSupportsNicdev(virDomainDefPtr def,
 }
 
 bool
-qemuDomainSupportsNetdev(virDomainDefPtr def,
-                         virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
-                         virDomainNetDefPtr net)
-{
-    if (!qemuDomainSupportsNicdev(def, net))
-        return false;
-    return true;
-}
-
-bool
 qemuDomainNetSupportsMTU(virDomainNetType type)
 {
     switch (type) {

@@ -642,11 +642,11 @@ qemuInterfaceOpenVhostNet(virDomainDefPtr def,
         return 0;
     }
 
-    /* If qemu doesn't support vhost-net mode (including the -netdev command
-     * option), don't try to open the device.
+    /* If qemu doesn't support vhost-net mode (including the -netdev and
+     * -device command options), don't try to open the device.
      */
     if (!(virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOST_NET) &&
-          qemuDomainSupportsNetdev(def, qemuCaps, net))) {
+          qemuDomainSupportsNicdev(def, net))) {
         if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("vhost-net is not supported with "
