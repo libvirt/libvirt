@@ -356,21 +356,6 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
             goto cleanup;
         }
 
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_MULTIFUNCTION)) {
-            if (info->addr.pci.function != 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Only PCI device addresses with function=0 "
-                                 "are supported with this QEMU binary"));
-                goto cleanup;
-            }
-            if (info->addr.pci.multi == VIR_TRISTATE_SWITCH_ON) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("'multifunction=on' is not supported with "
-                                 "this QEMU binary"));
-                goto cleanup;
-            }
-        }
-
         if (contIsPHB && contTargetIndex > 0) {
             /* The PCI bus created by a spapr-pci-host-bridge device with
              * alias 'x' will be called 'x.0' rather than 'x'; however,

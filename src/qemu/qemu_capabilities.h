@@ -132,7 +132,7 @@ typedef enum {
     X_QEMU_CAPS_DEVICE_QXL_VGA, /* primary qxl device named qxl-vga? */
 
     /* 60 */
-    QEMU_CAPS_PCI_MULTIFUNCTION, /* -device multifunction=on|off */
+    X_QEMU_CAPS_PCI_MULTIFUNCTION, /* -device multifunction=on|off */
     QEMU_CAPS_VIRTIO_IOEVENTFD, /* virtio-{net|blk}-pci.ioeventfd=on */
     QEMU_CAPS_SGA, /* Serial Graphics Adapter */
     QEMU_CAPS_VIRTIO_BLK_EVENT_IDX, /* virtio-blk-pci.event_idx */

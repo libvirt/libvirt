@@ -1114,7 +1114,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
-    { "multifunction", QEMU_CAPS_PCI_MULTIFUNCTION },
     { "bootindex", QEMU_CAPS_BOOTINDEX },
     { "ioeventfd", QEMU_CAPS_VIRTIO_IOEVENTFD },
     { "event_idx", QEMU_CAPS_VIRTIO_BLK_EVENT_IDX },
