@@ -1177,7 +1177,7 @@ exclude_file_name_regexp--sc_prohibit_close = \
   (\.p[yl]$$|\.spec\.in$$|^docs/|^(src/util/virfile\.c|src/libvirt-stream\.c|tests/vir.+mock\.c|tests/commandhelper\.c)$$)
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
-  (^tests/(qemuhelp|virhostcpu|virpcitest)data/|docs/js/.*\.js|docs/fonts/.*\.woff|\.diff|tests/virconfdata/no-newline\.conf$$)
+  (^tests/(virhostcpu|virpcitest)data/|docs/js/.*\.js|docs/fonts/.*\.woff|\.diff|tests/virconfdata/no-newline\.conf$$)
 
 _src2=src/(util/vircommand|libvirt|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon|remote/remote_daemon)
 exclude_file_name_regexp--sc_prohibit_fork_wrappers = \
@@ -1225,7 +1225,7 @@ exclude_file_name_regexp--sc_require_config_h_first = \
 	^(examples/|tools/virsh-edit\.c$$)
 
 exclude_file_name_regexp--sc_trailing_blank = \
-  /qemuhelpdata/|/sysinfodata/.*\.data|/virhostcpudata/.*\.cpuinfo|^gnulib/local/.*/.*diff$$
+  /sysinfodata/.*\.data|/virhostcpudata/.*\.cpuinfo|^gnulib/local/.*/.*diff$$
 
 exclude_file_name_regexp--sc_unmarked_diagnostics = \
   ^(docs/apibuild.py|tests/virt-aa-helper-test|docs/js/.*\.js)$$

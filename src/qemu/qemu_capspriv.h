@@ -37,8 +37,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 uid_t runUid,
                                 gid_t runGid,
                                 unsigned int microcodeVersion,
-                                const char *kernelVersion,
-                                bool qmpOnly);
+                                const char *kernelVersion);
 
 int virQEMUCapsLoadCache(virArch hostArch,
                          virQEMUCapsPtr qemuCaps,
@@ -85,20 +84,6 @@ void
 virQEMUCapsSetGICCapabilities(virQEMUCapsPtr qemuCaps,
                               virGICCapability *capabilities,
                               size_t ncapabilities);
-
-int
-virQEMUCapsParseHelpStr(const char *qemu,
-                        const char *str,
-                        virQEMUCapsPtr qemuCaps,
-                        unsigned int *version,
-                        bool *is_kvm,
-                        unsigned int *kvm_version,
-                        bool check_yajl,
-                        const char *qmperr);
-
-int
-virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps,
-                          const char *str);
 
 int
 virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
