@@ -8,7 +8,6 @@
   <flag name='enable-kvm'/>
   <flag name='monitor-json'/>
   <flag name='sdl'/>
-  <flag name='netdev'/>
   <flag name='rtc'/>
   <flag name='vhost-net'/>
   <flag name='nodefconfig'/>

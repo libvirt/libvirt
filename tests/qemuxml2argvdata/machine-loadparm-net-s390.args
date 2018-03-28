@@ -16,7 +16,7 @@ QEMU_AUDIO_DRV=none \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
--device virtio-net-ccw,vlan=0,id=net0,mac=00:11:22:33:44:54,devno=fe.0.0000,\
-bootindex=1 \
--net user,vlan=0,name=hostnet0 \
+-netdev user,id=hostnet0 \
+-device virtio-net-ccw,netdev=hostnet0,id=net0,mac=00:11:22:33:44:54,\
+devno=fe.0.0000,bootindex=1 \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001

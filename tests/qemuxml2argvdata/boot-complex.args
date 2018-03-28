@@ -36,7 +36,9 @@ readonly=on \
 -global isa-fdc.driveA=drive-fdc0-0-0 \
 -drive file=/dev/fd1,format=raw,if=none,id=drive-fdc0-0-1 \
 -global isa-fdc.driveB=drive-fdc0-0-1 \
--device virtio-net-pci,vlan=0,id=net0,mac=00:11:22:33:44:11,bus=pci.0,addr=0x3 \
--net user,vlan=0,name=hostnet0 \
--device virtio-net-pci,vlan=1,id=net1,mac=00:11:22:33:44:22,bus=pci.0,addr=0x4 \
--net user,vlan=1,name=hostnet1
+-netdev user,id=hostnet0 \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=00:11:22:33:44:11,bus=pci.0,\
+addr=0x3 \
+-netdev user,id=hostnet1 \
+-device virtio-net-pci,netdev=hostnet1,id=net1,mac=00:11:22:33:44:22,bus=pci.0,\
+addr=0x4

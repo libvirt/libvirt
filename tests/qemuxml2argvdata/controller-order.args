@@ -28,8 +28,9 @@ id=virtio-disk0 \
 -drive file=/tmp/Fedora-17-x86_64-Live-Desktop.iso,format=raw,if=none,\
 id=drive-ide0-1-0,media=cdrom,readonly=on \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
--device virtio-net-pci,vlan=0,id=net0,mac=52:54:00:4d:4b:19,bus=pci.0,addr=0x3 \
--net user,vlan=0,name=hostnet0 \
+-netdev user,id=hostnet0 \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:4d:4b:19,bus=pci.0,\
+addr=0x3 \
 -chardev spicevmc,id=charsmartcard0,name=smartcard \
 -device ccid-card-passthru,chardev=charsmartcard0,id=smartcard0,bus=ccid0.0 \
 -chardev pty,id=charserial0 \

@@ -27,8 +27,9 @@ id=virtio-disk0 \
 -drive file=/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso,format=raw,if=none,\
 id=drive-ide0-1-0,media=cdrom,readonly=on \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
--device rtl8139,vlan=0,id=net0,mac=52:54:00:71:70:89,bus=pci.0,addr=0x7 \
--net tap,fd=3,vlan=0,name=hostnet0 \
+-netdev tap,fd=3,id=hostnet0 \
+-device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:71:70:89,bus=pci.0,\
+addr=0x7 \
 -device usb-tablet,id=input0,bus=usb.0,port=1 \
 -spice port=5900,addr=127.0.0.1 \
 -vga std \

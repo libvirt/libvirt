@@ -17,8 +17,10 @@ QEMU_AUDIO_DRV=none \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -boot c \
--device virtio-net-ccw,vlan=0,id=net0,mac=00:11:22:33:44:55,devno=fe.0.0001 \
--net user,vlan=0,name=hostnet0 \
--device virtio-net-ccw,vlan=1,id=net1,mac=00:11:22:33:44:54,devno=fe.0.0000 \
--net user,vlan=1,name=hostnet1 \
+-netdev user,id=hostnet0 \
+-device virtio-net-ccw,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,\
+devno=fe.0.0001 \
+-netdev user,id=hostnet1 \
+-device virtio-net-ccw,netdev=hostnet1,id=net1,mac=00:11:22:33:44:54,\
+devno=fe.0.0000 \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a

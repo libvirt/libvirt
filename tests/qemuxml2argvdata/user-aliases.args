@@ -48,15 +48,15 @@ id=ua-myEncryptedDisk1 \
 if=none,id=drive-ua-WhatAnAwesomeCDROM,media=cdrom,readonly=on,cache=none \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ua-WhatAnAwesomeCDROM,\
 id=ua-WhatAnAwesomeCDROM \
--device virtio-net-pci,vlan=0,id=ua-CheckoutThisNIC,mac=52:54:00:d6:c0:0b,\
-bus=pci.0,addr=0x3 \
--net tap,fd=3,vlan=0,name=hostua-CheckoutThisNIC \
--device rtl8139,vlan=1,id=ua-WeCanAlsoDoServerMode,mac=52:54:00:22:c9:42,\
-bus=pci.0,addr=0x9 \
--net socket,listen=127.0.0.1:1234,vlan=1,name=hostua-WeCanAlsoDoServerMode \
--device rtl8139,vlan=2,id=ua-AndAlsoClientMode,mac=52:54:00:8c:b1:f8,bus=pci.0,\
-addr=0xa \
--net socket,connect=127.0.0.1:1234,vlan=2,name=hostua-AndAlsoClientMode \
+-netdev tap,fd=3,id=hostua-CheckoutThisNIC \
+-device virtio-net-pci,netdev=hostua-CheckoutThisNIC,id=ua-CheckoutThisNIC,\
+mac=52:54:00:d6:c0:0b,bus=pci.0,addr=0x3 \
+-netdev socket,listen=127.0.0.1:1234,id=hostua-WeCanAlsoDoServerMode \
+-device rtl8139,netdev=hostua-WeCanAlsoDoServerMode,\
+id=ua-WeCanAlsoDoServerMode,mac=52:54:00:22:c9:42,bus=pci.0,addr=0x9 \
+-netdev socket,connect=127.0.0.1:1234,id=hostua-AndAlsoClientMode \
+-device rtl8139,netdev=hostua-AndAlsoClientMode,id=ua-AndAlsoClientMode,\
+mac=52:54:00:8c:b1:f8,bus=pci.0,addr=0xa \
 -device ccid-card-emulated,backend=nss-emulated,id=smartcard0,bus=ua-myCCID.0 \
 -chardev pty,id=charserial0 \
 -device isa-serial,chardev=charserial0,id=serial0 \

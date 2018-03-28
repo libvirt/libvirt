@@ -33,9 +33,9 @@ ats=on,bus=pci.0,addr=0x3 \
 path=/export/fs2 \
 -device virtio-9p-pci,id=fs1,fsdev=fsdev-fs1,mount_tag=fs2,iommu_platform=on,\
 ats=on,bus=pci.0,addr=0x4 \
--device virtio-net-pci,vlan=0,id=net0,mac=52:54:56:58:5a:5c,bus=pci.0,addr=0x6,\
-iommu_platform=on,ats=on \
--net user,vlan=0,name=hostnet0 \
+-netdev user,id=hostnet0 \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:56:58:5a:5c,bus=pci.0,\
+addr=0x6,iommu_platform=on,ats=on \
 -device virtio-mouse-pci,id=input0,bus=pci.0,addr=0xe,iommu_platform=on,ats=on \
 -device virtio-keyboard-pci,id=input1,bus=pci.0,addr=0x10,iommu_platform=on,\
 ats=on \

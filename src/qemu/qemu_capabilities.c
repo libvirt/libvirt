@@ -3641,7 +3641,6 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_RTC);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOST_NET);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NODEFCONFIG);

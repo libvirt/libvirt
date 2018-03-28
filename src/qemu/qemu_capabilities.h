@@ -87,7 +87,7 @@ typedef enum {
     X_QEMU_CAPS_DEVICE, /* Is the -device arg available */
     QEMU_CAPS_SDL, /* Is the new -sdl arg available */
     X_QEMU_CAPS_SMP_TOPOLOGY, /* -smp has sockets/cores/threads */
-    QEMU_CAPS_NETDEV, /* -netdev flag & netdev_add/remove */
+    X_QEMU_CAPS_NETDEV, /* -netdev flag & netdev_add/remove */
 
     /* 30 */
     QEMU_CAPS_RTC, /* The -rtc flag for clock options */

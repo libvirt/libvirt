@@ -2382,12 +2382,6 @@ qemuProcessSetLinkStates(virQEMUDriverPtr driver,
 
             VIR_DEBUG("Setting link state: %s", def->nets[i]->info.alias);
 
-            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV)) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("Setting of link state is not supported by this qemu"));
-                goto cleanup;
-            }
-
             rv = qemuMonitorSetLink(priv->mon,
                                     def->nets[i]->info.alias,
                                     VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN);

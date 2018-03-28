@@ -9178,12 +9178,12 @@ qemuDomainSupportsNicdev(virDomainDefPtr def,
 
 bool
 qemuDomainSupportsNetdev(virDomainDefPtr def,
-                         virQEMUCapsPtr qemuCaps,
+                         virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
                          virDomainNetDefPtr net)
 {
     if (!qemuDomainSupportsNicdev(def, net))
         return false;
-    return virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV);
+    return true;
 }
 
 bool
