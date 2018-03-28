@@ -413,7 +413,7 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
      */
 
     if (flags & VIR_PCI_CONNECT_TYPE_PCI_DEVICE) {
-        if (addrs->multipleRootsSupported) {
+        if (addrs->areMultipleRootsSupported) {
             /* Use a pci-root controller to expand the guest's PCI
              * topology if it supports having more than one */
             model = VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT;
