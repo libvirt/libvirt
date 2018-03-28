@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=spice \
 -nodefaults \
 -chardev socket,id=charmonitor,\
 path=/tmp/lib/domain--1-virt-manager-basic/monitor.sock,server,nowait \
--mon chardev=charmonitor,id=monitor,mode=readline \
+-mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc,driftfix=slew \
 -no-kvm-pit-reinjection \
 -no-hpet \

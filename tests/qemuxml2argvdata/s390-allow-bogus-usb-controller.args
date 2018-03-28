@@ -16,7 +16,7 @@ QEMU_AUDIO_DRV=none \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-test/monitor.sock,\
 server,nowait \
--mon chardev=charmonitor,id=monitor,mode=readline \
+-mon chardev=charmonitor,id=monitor,mode=control \
 -device virtio-serial-s390,id=virtio-serial0 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-s390,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \

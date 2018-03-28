@@ -6,7 +6,6 @@
   <flag name='mem-path'/>
   <flag name='drive-serial'/>
   <flag name='enable-kvm'/>
-  <flag name='monitor-json'/>
   <flag name='sdl'/>
   <flag name='rtc'/>
   <flag name='vhost-net'/>

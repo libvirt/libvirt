@@ -16,7 +16,7 @@ QEMU_AUDIO_DRV=none \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,\
 server,nowait \
--mon chardev=charmonitor,id=monitor,mode=readline \
+-mon chardev=charmonitor,id=monitor,mode=control \
 -boot c \
 -kernel /var/lib/libvirt/images/guest.vmlinuz \
 -initrd /var/lib/libvirt/images/guest.initramfs \

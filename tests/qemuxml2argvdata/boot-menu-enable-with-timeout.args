@@ -15,7 +15,7 @@ QEMU_AUDIO_DRV=none \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
 server,nowait \
--mon chardev=charmonitor,id=monitor,mode=readline \
+-mon chardev=charmonitor,id=monitor,mode=control \
 -no-acpi \
 -boot order=d,menu=on,splash-time=3000 \
 -usb \

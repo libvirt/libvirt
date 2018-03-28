@@ -20,7 +20,7 @@ mem-path=/dev/hugepages1G/libvirt/qemu/-1-SomeDummyHugepagesGu,size=805306368 \
 -nodefaults \
 -chardev socket,id=charmonitor,\
 path=/tmp/lib/domain--1-SomeDummyHugepagesGu/monitor.sock,server,nowait \
--mon chardev=charmonitor,id=monitor,mode=readline \
+-mon chardev=charmonitor,id=monitor,mode=control \
 -no-acpi \
 -boot c \
 -usb \

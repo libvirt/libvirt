@@ -17,7 +17,7 @@ QEMU_AUDIO_DRV=none \
 -nodefaults \
 -chardev socket,id=charmonitor,\
 path=/tmp/lib/domain--1-aarch64test/monitor.sock,server,nowait \
--mon chardev=charmonitor,id=monitor,mode=readline \
+-mon chardev=charmonitor,id=monitor,mode=control \
 -no-acpi \
 -boot c \
 -drive file=/aarch64.raw,format=raw,if=none,id=drive-virtio-disk0 \

@@ -57,7 +57,7 @@ QEMU_AUDIO_DRV=none \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest/monitor.sock,\
 server,nowait \
--mon chardev=charmonitor,id=monitor,mode=readline \
+-mon chardev=charmonitor,id=monitor,mode=control \
 -boot c \
 -usb \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2

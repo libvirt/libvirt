@@ -15,7 +15,7 @@ QEMU_AUDIO_DRV=none \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-q35-test/monitor.sock,\
 server,nowait \
--mon chardev=charmonitor,id=monitor,mode=readline \
+-mon chardev=charmonitor,id=monitor,mode=control \
 -no-acpi \
 -boot c \
 -device ioh3420,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\

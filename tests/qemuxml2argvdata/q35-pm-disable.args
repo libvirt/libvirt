@@ -15,7 +15,7 @@ QEMU_AUDIO_DRV=none \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-q35/monitor.sock,server,\
 nowait \
--mon chardev=charmonitor,id=monitor,mode=readline \
+-mon chardev=charmonitor,id=monitor,mode=control \
 -no-acpi \
 -global ICH9-LPC.disable_s3=1 \
 -global ICH9-LPC.disable_s4=1 \

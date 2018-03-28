@@ -1654,14 +1654,10 @@ qemuBuildDiskThrottling(virDomainDiskDefPtr disk,
 
 static void
 qemuBuildDiskFrontendAttributeErrorPolicy(virDomainDiskDefPtr disk,
-                                          virQEMUCapsPtr qemuCaps,
                                           virBufferPtr buf)
 {
     const char *wpolicy = NULL;
     const char *rpolicy = NULL;
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MONITOR_JSON))
-        return;
 
     if (disk->error_policy)
         wpolicy = virDomainDiskErrorPolicyTypeToString(disk->error_policy);
@@ -1712,7 +1708,7 @@ qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
         virBufferEscape(buf, '\\', " ", "%s", disk->serial);
     }
 
-    qemuBuildDiskFrontendAttributeErrorPolicy(disk, qemuCaps, buf);
+    qemuBuildDiskFrontendAttributeErrorPolicy(disk, buf);
 }
 
 

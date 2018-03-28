@@ -25,7 +25,7 @@ mem-path=/dev/hugepages2M/libvirt/qemu/-1-fedora,share=no,size=536870912 \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-fedora/monitor.sock,\
 server,nowait \
--mon chardev=charmonitor,id=monitor,mode=readline \
+-mon chardev=charmonitor,id=monitor,mode=control \
 -boot c \
 -usb \
 -drive file=/var/lib/libvirt/images/fedora.qcow2,format=qcow2,if=none,\

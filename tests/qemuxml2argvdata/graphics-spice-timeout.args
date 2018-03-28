@@ -16,7 +16,7 @@ QEMU_AUDIO_DRV=spice \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-f14/monitor.sock,server,\
 nowait \
--mon chardev=charmonitor,id=monitor,mode=readline \
+-mon chardev=charmonitor,id=monitor,mode=control \
 -boot dc \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
 -usb \

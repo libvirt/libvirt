@@ -80,7 +80,7 @@ typedef enum {
     X_QEMU_CAPS_MIGRATE_QEMU_UNIX, /* qemu migration via unix sockets */
     X_QEMU_CAPS_CHARDEV, /* Is the new -chardev arg available */
     QEMU_CAPS_ENABLE_KVM, /* -enable-kvm flag */
-    QEMU_CAPS_MONITOR_JSON, /* JSON mode for monitor */
+    X_QEMU_CAPS_MONITOR_JSON, /* JSON mode for monitor */
 
     /* 25 */
     X_QEMU_CAPS_BALLOON, /* -balloon available */
