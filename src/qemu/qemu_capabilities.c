@@ -507,6 +507,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               /* 315 */
               "vfio-pci.display",
+              "blockdev",
     );
 
 
