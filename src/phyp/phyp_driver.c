@@ -1155,7 +1155,7 @@ phypConnectOpen(virConnectPtr conn,
     if (VIR_ALLOC(uuid_table) < 0)
         goto failure;
 
-    if (conn->uri->path) {
+    if (conn->uri->path[0] != '\0') {
         /* need to shift one byte in order to remove the first "/" of URI component */
         if (VIR_STRDUP(managed_system,
                        conn->uri->path + (conn->uri->path[0] == '/')) < 0)

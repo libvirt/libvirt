@@ -1150,12 +1150,6 @@ static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
     }
 
     cfg = virQEMUDriverGetConfig(qemu_driver);
-    if (conn->uri->path == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("no QEMU URI path given, try %s"),
-                       cfg->uri);
-        goto cleanup;
-    }
 
     if (virQEMUDriverIsPrivileged(qemu_driver)) {
         if (STRNEQ(conn->uri->path, "/system") &&

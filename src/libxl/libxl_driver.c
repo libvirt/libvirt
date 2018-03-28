@@ -853,13 +853,12 @@ libxlConnectOpen(virConnectPtr conn,
     }
 
     /* /session isn't supported in libxenlight */
-    if (conn->uri->path &&
-        STRNEQ(conn->uri->path, "") &&
+    if (STRNEQ(conn->uri->path, "") &&
         STRNEQ(conn->uri->path, "/") &&
         STRNEQ(conn->uri->path, "/system")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected Xen URI path '%s', try xen:///system"),
-                       NULLSTR(conn->uri->path));
+                       conn->uri->path);
         return VIR_DRV_OPEN_ERROR;
     }
 

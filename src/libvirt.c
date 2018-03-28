@@ -1007,6 +1007,12 @@ virConnectOpenInternal(const char *name,
             goto failed;
         }
 
+        /* Avoid need for drivers to worry about NULLs, as
+         * no one needs to distinguish "" vs NULL */
+        if (ret->uri->path == NULL &&
+            VIR_STRDUP(ret->uri->path, "") < 0)
+            goto failed;
+
         VIR_DEBUG("Split \"%s\" to URI components:\n"
                   "  scheme %s\n"
                   "  server %s\n"
@@ -1016,7 +1022,7 @@ virConnectOpenInternal(const char *name,
                   uristr,
                   NULLSTR(ret->uri->scheme), NULLSTR(ret->uri->server),
                   NULLSTR(ret->uri->user), ret->uri->port,
-                  NULLSTR(ret->uri->path));
+                  ret->uri->path);
 
         if (ret->uri->scheme == NULL) {
             virReportError(VIR_ERR_NO_CONNECT,

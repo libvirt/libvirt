@@ -1454,9 +1454,8 @@ testConnectOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (!conn->uri->path
-        || conn->uri->path[0] == '\0'
-        || (conn->uri->path[0] == '/' && conn->uri->path[1] == '\0')) {
+    if (conn->uri->path[0] == '\0' ||
+        (conn->uri->path[0] == '/' && conn->uri->path[1] == '\0')) {
         virReportError(VIR_ERR_INVALID_ARG,
                        "%s", _("testOpen: supply a path or use test:///default"));
         return VIR_DRV_OPEN_ERROR;

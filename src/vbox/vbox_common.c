@@ -517,12 +517,6 @@ vboxConnectOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (conn->uri->path == NULL || STREQ(conn->uri->path, "")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("no VirtualBox driver path specified (try vbox:///session)"));
-        return VIR_DRV_OPEN_ERROR;
-    }
-
     if (uid != 0) {
         if (STRNEQ(conn->uri->path, "/session")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

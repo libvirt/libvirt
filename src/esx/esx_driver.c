@@ -852,7 +852,7 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (STRCASENEQ(conn->uri->scheme, "vpx") &&
-        conn->uri->path && STRNEQ(conn->uri->path, "/")) {
+        STRNEQ(conn->uri->path, "/")) {
         VIR_WARN("Ignoring unexpected path '%s' for non-vpx scheme '%s'",
                  conn->uri->path, conn->uri->scheme);
     }

@@ -131,7 +131,7 @@ vmwareConnectOpen(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     /* If path isn't /session, then they typoed, so tell them correct path */
-    if (conn->uri->path == NULL || STRNEQ(conn->uri->path, "/session")) {
+    if (STRNEQ(conn->uri->path, "/session")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected VMware URI path '%s', try vmwareplayer:///session, vmwarews:///session or vmwarefusion:///session"),
                        NULLSTR(conn->uri->path));

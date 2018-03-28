@@ -199,7 +199,7 @@ bhyveConnectOpen(virConnectPtr conn,
 {
      virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-     if (STRNEQ_NULLABLE(conn->uri->path, "/system")) {
+     if (STRNEQ(conn->uri->path, "/system")) {
          virReportError(VIR_ERR_INTERNAL_ERROR,
                         _("Unexpected bhyve URI path '%s', try bhyve:///system"),
                         conn->uri->path);
