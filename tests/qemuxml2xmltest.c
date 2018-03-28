@@ -1123,6 +1123,7 @@ mymain(void)
             QEMU_CAPS_PCI_MULTIFUNCTION,
             QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_SERIAL);
     DO_TEST("aarch64-video-default",
