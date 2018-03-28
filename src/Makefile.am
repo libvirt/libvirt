@@ -115,7 +115,6 @@ include qemu/Makefile.inc.am
 include bhyve/Makefile.inc.am
 include xenconfig/Makefile.inc.am
 include libxl/Makefile.inc.am
-include xen/Makefile.inc.am
 include xenapi/Makefile.inc.am
 include vz/Makefile.inc.am
 include lxc/Makefile.inc.am
