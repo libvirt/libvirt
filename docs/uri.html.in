@@ -254,86 +254,12 @@ application wishes to connect specifically to a Xen hypervisor, then
 for future proofing it should choose a full <a href="#URI_xen"><code>xen:///</code> URI</a>.
 </p>
     <h3>
-      <a id="URI_file">File paths (xend-unix-server)</a>
-    </h3>
-    <p>
-If XenD is running and configured in <code>/etc/xen/xend-config.sxp</code>:
-</p>
-    <pre>
-(xend-unix-server yes)
-</pre>
-    <p>
-then it listens on a Unix domain socket, usually at
-<code>/var/lib/xend/xend-socket</code>.  You may pass a different path
-using a file URI such as:
-</p>
-    <pre>
-virsh -c ///var/run/xend/xend-socket
-</pre>
-    <h3>
-      <a id="URI_http">Legacy: <code>http://...</code> (xend-http-server)</a>
-    </h3>
-    <p>
-If XenD is running and configured in <code>/etc/xen/xend-config.sxp</code>:
-
-</p>
-    <pre>
-(xend-http-server yes)
-</pre>
-    <p>
-then it listens on TCP port 8000.  libvirt allows you to
-try to connect to xend running on remote machines by passing
-<code>http://<i>hostname</i>[:<i>port</i>]/</code>, for example:
-
-</p>
-    <pre>
-virsh -c http://oirase/ list
-</pre>
-    <p>
-This method is unencrypted and insecure and is definitely not
-recommended for production use.  Instead use <a href="remote.html">libvirt's remote support</a>.
-</p>
-    <p>
-Notes:
-</p>
-    <ol>
-      <li> The HTTP client does not fully support IPv6. </li>
-      <li> Many features do not work as expected across HTTP connections, in
- particular, <a href="html/libvirt-libvirt-host.html#virConnectGetCapabilities">virConnectGetCapabilities</a>.
- The <a href="remote.html">remote support</a> however does work
- correctly. </li>
-      <li> XenD's new-style XMLRPC interface is not supported by
- libvirt, only the old-style sexpr interface known in the Xen
- documentation as "unix server" or "http server".</li>
-    </ol>
-    <h3>
       <a id="URI_legacy_xen">Legacy: <code>"xen"</code></a>
     </h3>
     <p>
 Another legacy URI is to specify name as the string
 <code>"xen"</code>.  This will continue to refer to the Xen
 hypervisor.  However you should prefer a full <a href="#URI_xen"><code>xen:///</code> URI</a> in all future code.
-</p>
-    <h3>
-      <a id="URI_legacy_proxy">Legacy: Xen proxy</a>
-    </h3>
-    <p>
-Libvirt continues to support connections to a separately running Xen
-proxy daemon.  This provides a way to allow non-root users to make a
-safe (read-only) subset of queries to the hypervisor.
-</p>
-    <p>
-There is no specific "Xen proxy" URI.  However if a Xen URI of any of
-the ordinary or legacy forms is used (eg. <code>NULL</code>,
-<code>""</code>, <code>"xen"</code>, ...) which fails, <i>and</i> the
-user is not root, <i>and</i> the Xen proxy socket can be connected to
-(<code>/tmp/libvirt_proxy_conn</code>), then libvirt will use a proxy
-connection.
-</p>
-    <p>
-You should consider using <a href="remote.html">libvirt remote support</a>
-in future. <span class="since">Since 0.8.6</span> libvirt doesn't contain
-the Xen proxy anymore and you should use libvirtd instead.
 </p>
   </body>
 </html>

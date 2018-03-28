@@ -122,7 +122,8 @@
       <li>The hardware architecture being used</li>
       <li>The name of the hypervisor (Xen, QEMU, KVM)</li>
       <li>The XML config of the guest domain if relevant</li>
-      <li>For Xen hypervisor, the XenD logfile from /var/log/xen</li>
+      <li>For Xen hypervisor, the domain logfiles from /var/log/xen and
+          /var/log/libvirt/libxl</li>
       <li>For QEMU/KVM, the domain logfile from /var/log/libvirt/qemu</li>
     </ul>
 

@@ -185,7 +185,7 @@
   --without-avahi \
   --without-polkit \
   --without-python \
-  --without-xen \
+  --without-libxl \
   --without-qemu \
   --without-lxc \
   --without-openvz \
