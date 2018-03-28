@@ -22,7 +22,6 @@
 
 #include "testutils.h"
 #include "testutilslxc.h"
-#include "testutilsxen.h"
 #include "testutilsqemu.h"
 #include "capabilities.h"
 #include "virbitmap.h"
@@ -264,34 +263,6 @@ test_virCapsDomainDataLookupQEMU(const void *data ATTRIBUTE_UNUSED)
 }
 #endif /* WITH_QEMU */
 
-#ifdef WITH_XEN
-static int
-test_virCapsDomainDataLookupXen(const void *data ATTRIBUTE_UNUSED)
-{
-    int ret = -1;
-    virCapsPtr caps = NULL;
-
-    if (!(caps = testXenCapsInit())) {
-        ret = -1;
-        goto out;
-    }
-
-    CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
-        VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686, VIR_DOMAIN_VIRT_XEN,
-        "/usr/lib/xen/bin/qemu-dm", "xenfv");
-    CAPSCOMP(VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
-        VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_I686, VIR_DOMAIN_VIRT_XEN,
-        "/usr/lib/xen/bin/qemu-dm", "xenpv");
-
-    CAPS_EXPECT_ERR(VIR_DOMAIN_OSTYPE_XEN, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, "xenfv");
-
-    ret = 0;
- out:
-    virObjectUnref(caps);
-    return ret;
-}
-#endif /* WITH_XEN */
-
 #ifdef WITH_LXC
 static int
 test_virCapsDomainDataLookupLXC(const void *data ATTRIBUTE_UNUSED)
@@ -328,11 +299,6 @@ mymain(void)
 #ifdef WITH_QEMU
     if (virTestRun("virCapsDomainDataLookupQEMU",
                    test_virCapsDomainDataLookupQEMU, NULL) < 0)
-        ret = -1;
-#endif
-#ifdef WITH_XEN
-    if (virTestRun("virCapsDomainDataLookupXen",
-                   test_virCapsDomainDataLookupXen, NULL) < 0)
         ret = -1;
 #endif
 #ifdef WITH_LXC

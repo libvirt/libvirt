@@ -161,7 +161,6 @@ EXTRA_DIST = \
 	virusbtestdata \
 	vmwareverdata \
 	vmx2xmldata \
-	xencapsdata \
 	xlconfigdata \
 	xmconfigdata \
 	xml2sexprdata \
@@ -271,10 +270,6 @@ endif WITH_SECDRIVER_SELINUX
 # This is a fake SSH we use from virnetsockettest
 ssh_SOURCES = ssh.c
 ssh_LDADD = $(COVERAGE_LDFLAGS)
-
-if WITH_XEN
-test_programs += xencapstest
-endif WITH_XEN
 
 if WITH_LIBXL
 test_programs += xlconfigtest xml2sexprtest sexpr2xmltest \
@@ -497,18 +492,6 @@ sockettest_SOURCES = \
 	sockettest.c \
 	testutils.c testutils.h
 sockettest_LDADD = $(LDADDS)
-
-if WITH_XEN
-xen_LDADDS = ../src/libvirt_driver_xen_impl.la
-xen_LDADDS += $(LDADDS)
-
-xencapstest_SOURCES = \
-	xencapstest.c testutils.h testutils.c
-xencapstest_LDADD = $(xen_LDADDS)
-
-else ! WITH_XEN
-EXTRA_DIST += xencapstest.c testutilsxen.c testutilsxen.h
-endif ! WITH_XEN
 
 if WITH_LIBXL
 libxl_LDADDS = ../src/libvirt_driver_libxl_impl.la
@@ -984,9 +967,6 @@ endif WITH_LXC
 if WITH_QEMU
 vircapstest_SOURCES += testutilsqemu.c testutilsqemu.h
 endif WITH_QEMU
-if WITH_XEN
-vircapstest_SOURCES += testutilsxen.c testutilsxen.h
-endif WITH_XEN
 vircapstest_LDADD = $(qemu_LDADDS) $(LDADDS)
 
 domaincapsmock_la_SOURCES = domaincapsmock.c

@@ -82,9 +82,6 @@ mymain(void)
 #ifdef WITH_NWFILTER
     TEST("nwfilter");
 #endif
-#ifdef WITH_XEN
-    TEST("xen");
-#endif
 #ifdef WITH_LIBXL
     TEST("libxl");
 #endif

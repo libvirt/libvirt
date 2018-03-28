@@ -6,8 +6,6 @@
 #  include "libxl/libxl_capabilities.h"
 # endif
 
-virCapsPtr testXenCapsInit(void);
-
 virCapsPtr testXLInitCaps(void);
 
 #endif /* _TESTUTILSXEN_H_ */
