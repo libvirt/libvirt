@@ -1344,9 +1344,7 @@ remoteConnectOpen(virConnectPtr conn,
 
     /*
      * If URI is NULL, then do a UNIX connection possibly auto-spawning
-     * unprivileged server and probe remote server for URI. On Solaris,
-     * this isn't supported, but we may be privileged enough to connect
-     * to the UNIX socket anyway.
+     * unprivileged server and probe remote server for URI.
      */
     if (!conn->uri) {
         VIR_DEBUG("Auto-probe remote URI");
