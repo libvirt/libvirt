@@ -1286,6 +1286,36 @@ virVMXGatherSCSIControllers(virVMXContext *ctx, virDomainDefPtr def,
     return result;
 }
 
+struct virVMXConfigScanResults {
+    int networks_max_index;
+};
+
+static int
+virVMXConfigScanResultsCollector(const char* name,
+                                 virConfValuePtr value ATTRIBUTE_UNUSED,
+                                 void *opaque)
+{
+    struct virVMXConfigScanResults *results = opaque;
+
+    if (STRCASEPREFIX(name, "ethernet")) {
+        unsigned int idx;
+        char *p;
+
+        if (virStrToLong_uip(name + 8, &p, 10, &idx) < 0 ||
+            *p != '.') {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to parse the index of the VMX key '%s'"),
+                           name);
+            return -1;
+        }
+
+        if ((int) idx > results->networks_max_index)
+            results->networks_max_index = (int) idx;
+    }
+
+    return 0;
+}
+
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1322,6 +1352,7 @@ virVMXParseConfig(virVMXContext *ctx,
     bool hgfs_disabled = true;
     long long sharedFolder_maxNum = 0;
     int cpumasklen;
+    struct virVMXConfigScanResults results = { -1 };
 
     if (ctx->parseFileName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1356,6 +1387,9 @@ virVMXParseConfig(virVMXContext *ctx,
         if (conf == NULL)
             goto cleanup;
     }
+
+    if (virConfWalk(conf, virVMXConfigScanResultsCollector, &results) < 0)
+        goto cleanup;
 
     /* Allocate domain def */
     if (!(def = virDomainDefNew()))
@@ -1751,7 +1785,7 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     /* def:nets */
-    for (controller = 0; controller < 4; ++controller) {
+    for (controller = 0; controller <= results.networks_max_index; ++controller) {
         virDomainNetDefPtr net = NULL;
         if (virVMXParseEthernet(conf, controller, &net) < 0)
             goto cleanup;
@@ -2536,13 +2570,6 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
 
     if (def == NULL || *def != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
-
-    if (controller < 0 || controller > 3) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Ethernet controller index %d out of [0..3] range"),
-                       controller);
         return -1;
     }
 
