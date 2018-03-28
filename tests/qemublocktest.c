@@ -406,6 +406,13 @@ mymain(void)
     TEST_DISK_TO_JSON_FULL("nodename-long-protocol", true);
 
     TEST_DISK_TO_JSON("file-raw-noopts");
+    TEST_DISK_TO_JSON("file-bochs-noopts");
+    TEST_DISK_TO_JSON("file-cloop-noopts");
+    TEST_DISK_TO_JSON("file-dmg-noopts");
+    TEST_DISK_TO_JSON("file-ploop-noopts");
+    TEST_DISK_TO_JSON("file-vdi-noopts");
+    TEST_DISK_TO_JSON("file-vhd-noopts");
+    TEST_DISK_TO_JSON("file-vpc-noopts");
 
  cleanup:
     virHashFree(diskxmljsondata.schema);

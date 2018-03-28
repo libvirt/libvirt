@@ -1,0 +1,12 @@
+<disk device='disk'>
+  <driver name='qemu' type='dmg'/>
+  <source file='/path/to/i.img'>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='test2'/>
+        <nodename type='format' name='test1'/>
+      </nodenames>
+    </privateData>
+  </source>
+  <target dev='vda'/>
+</disk>
