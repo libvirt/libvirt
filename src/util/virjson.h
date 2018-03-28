@@ -112,6 +112,8 @@ virJSONValuePtr virJSONValueObjectGetArray(virJSONValuePtr object,
                                            const char *key);
 virJSONValuePtr virJSONValueObjectStealArray(virJSONValuePtr object,
                                              const char *key);
+virJSONValuePtr virJSONValueObjectStealObject(virJSONValuePtr object,
+                                              const char *key);
 
 const char *virJSONValueObjectGetString(virJSONValuePtr object, const char *key);
 const char *virJSONValueObjectGetStringOrNumber(virJSONValuePtr object, const char *key);

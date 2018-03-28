@@ -2098,6 +2098,7 @@ virJSONValueObjectIsNull;
 virJSONValueObjectKeysNumber;
 virJSONValueObjectRemoveKey;
 virJSONValueObjectStealArray;
+virJSONValueObjectStealObject;
 virJSONValueToString;
 
 

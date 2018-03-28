@@ -1400,6 +1400,14 @@ virJSONValueObjectStealArray(virJSONValuePtr object, const char *key)
 }
 
 
+virJSONValuePtr
+virJSONValueObjectStealObject(virJSONValuePtr object,
+                              const char *key)
+{
+    return virJSONValueObjectStealByType(object, key, VIR_JSON_TYPE_OBJECT);
+}
+
+
 int
 virJSONValueObjectIsNull(virJSONValuePtr object,
                          const char *key)
