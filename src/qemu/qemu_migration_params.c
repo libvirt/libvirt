@@ -39,46 +39,29 @@ VIR_LOG_INIT("qemu.qemu_migration_params");
 
 #define QEMU_MIGRATION_TLS_ALIAS_BASE "libvirt_migrate"
 
-typedef struct _qemuMonitorMigrationParams qemuMonitorMigrationParams;
-typedef qemuMonitorMigrationParams *qemuMonitorMigrationParamsPtr;
-struct _qemuMonitorMigrationParams {
-    bool compressLevel_set;
-    int compressLevel;
+typedef enum {
+    QEMU_MIGRATION_PARAM_TYPE_INT,
+    QEMU_MIGRATION_PARAM_TYPE_ULL,
+    QEMU_MIGRATION_PARAM_TYPE_BOOL,
+    QEMU_MIGRATION_PARAM_TYPE_STRING,
+} qemuMigrationParamType;
 
-    bool compressThreads_set;
-    int compressThreads;
-
-    bool decompressThreads_set;
-    int decompressThreads;
-
-    bool cpuThrottleInitial_set;
-    int cpuThrottleInitial;
-
-    bool cpuThrottleIncrement_set;
-    int cpuThrottleIncrement;
-
-    /* Value is either NULL, "", or some string. NULL indicates no support;
-     * whereas, some string value indicates we can support setting/clearing */
-    char *tlsCreds;
-    char *tlsHostname;
-
-    bool maxBandwidth_set;
-    unsigned long long maxBandwidth;
-
-    bool downtimeLimit_set;
-    unsigned long long downtimeLimit;
-
-    bool blockIncremental_set;
-    bool blockIncremental;
-
-    bool xbzrleCacheSize_set;
-    unsigned long long xbzrleCacheSize;
+typedef struct _qemuMigrationParamValue qemuMigrationParamValue;
+typedef qemuMigrationParamValue *qemuMigrationParamValuePtr;
+struct _qemuMigrationParamValue {
+    bool set;
+    union {
+        int i; /* exempt from syntax-check */
+        unsigned long long ull;
+        bool b;
+        char *s;
+    } value;
 };
 
 struct _qemuMigrationParams {
     unsigned long long compMethods; /* bit-wise OR of qemuMigrationCompressMethod */
     virBitmapPtr caps;
-    qemuMonitorMigrationParams params;
+    qemuMigrationParamValue params[QEMU_MIGRATION_PARAM_LAST];
 };
 
 typedef enum {
@@ -93,6 +76,20 @@ VIR_ENUM_IMPL(qemuMigrationCompressMethod, QEMU_MIGRATION_COMPRESS_LAST,
               "mt",
 );
 
+VIR_ENUM_DECL(qemuMigrationParam)
+VIR_ENUM_IMPL(qemuMigrationParam, QEMU_MIGRATION_PARAM_LAST,
+              "compress-level",
+              "compress-threads",
+              "decompress-threads",
+              "cpu-throttle-initial",
+              "cpu-throttle-increment",
+              "tls-creds",
+              "tls-hostname",
+              "max-bandwidth",
+              "downtime-limit",
+              "block-incremental",
+              "xbzrle-cache-size",
+);
 
 typedef struct _qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOnItem;
 struct _qemuMigrationParamsAlwaysOnItem {
@@ -129,6 +126,21 @@ static const qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMap[] = {
      QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 };
 
+static const qemuMigrationParamType qemuMigrationParamTypes[] = {
+    [QEMU_MIGRATION_PARAM_COMPRESS_LEVEL] = QEMU_MIGRATION_PARAM_TYPE_INT,
+    [QEMU_MIGRATION_PARAM_COMPRESS_THREADS] = QEMU_MIGRATION_PARAM_TYPE_INT,
+    [QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS] = QEMU_MIGRATION_PARAM_TYPE_INT,
+    [QEMU_MIGRATION_PARAM_THROTTLE_INITIAL] = QEMU_MIGRATION_PARAM_TYPE_INT,
+    [QEMU_MIGRATION_PARAM_THROTTLE_INCREMENT] = QEMU_MIGRATION_PARAM_TYPE_INT,
+    [QEMU_MIGRATION_PARAM_TLS_CREDS] = QEMU_MIGRATION_PARAM_TYPE_STRING,
+    [QEMU_MIGRATION_PARAM_TLS_HOSTNAME] = QEMU_MIGRATION_PARAM_TYPE_STRING,
+    [QEMU_MIGRATION_PARAM_MAX_BANDWIDTH] = QEMU_MIGRATION_PARAM_TYPE_ULL,
+    [QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT] = QEMU_MIGRATION_PARAM_TYPE_ULL,
+    [QEMU_MIGRATION_PARAM_BLOCK_INCREMENTAL] = QEMU_MIGRATION_PARAM_TYPE_BOOL,
+    [QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE] = QEMU_MIGRATION_PARAM_TYPE_ULL,
+};
+verify(ARRAY_CARDINALITY(qemuMigrationParamTypes) == QEMU_MIGRATION_PARAM_LAST);
+
 
 static qemuMigrationParamsPtr
 qemuMigrationParamsNew(void)
@@ -153,26 +165,120 @@ qemuMigrationParamsNew(void)
 void
 qemuMigrationParamsFree(qemuMigrationParamsPtr migParams)
 {
+    size_t i;
+
     if (!migParams)
         return;
 
+    for (i = 0; i < QEMU_MIGRATION_PARAM_LAST; i++) {
+        if (qemuMigrationParamTypes[i] == QEMU_MIGRATION_PARAM_TYPE_STRING)
+            VIR_FREE(migParams->params[i].value.s);
+    }
+
     virBitmapFree(migParams->caps);
-    VIR_FREE(migParams->params.tlsCreds);
-    VIR_FREE(migParams->params.tlsHostname);
     VIR_FREE(migParams);
 }
 
 
-#define GET(API, PARAM, VAR) \
-    do { \
-        int rc; \
-        if ((rc = API(params, nparams, VIR_MIGRATE_PARAM_ ## PARAM, \
-                      &migParams->params.VAR)) < 0) \
-            goto error; \
- \
-        if (rc == 1) \
-            migParams->params.VAR ## _set = true; \
-    } while (0)
+static int
+qemuMigrationParamsCheckType(qemuMigrationParam param,
+                             qemuMigrationParamType type)
+{
+    if (qemuMigrationParamTypes[param] != type) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Type mismatch for '%s' migration parameter"),
+                       qemuMigrationParamTypeToString(param));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuMigrationParamsGetTPInt(qemuMigrationParamsPtr migParams,
+                            qemuMigrationParam param,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            const char *name)
+{
+    int rc;
+
+    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_INT) < 0)
+        return -1;
+
+    if (!params)
+        return 0;
+
+    if ((rc = virTypedParamsGetInt(params, nparams, name,
+                                   &migParams->params[param].value.i)) < 0)
+        return -1;
+
+    migParams->params[param].set = !!rc;
+    return 0;
+}
+
+
+static int
+qemuMigrationParamsSetTPInt(qemuMigrationParamsPtr migParams,
+                            qemuMigrationParam param,
+                            virTypedParameterPtr *params,
+                            int *nparams,
+                            int *maxparams,
+                            const char *name)
+{
+    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_INT) < 0)
+        return -1;
+
+    if (!migParams->params[param].set)
+        return 0;
+
+    return virTypedParamsAddInt(params, nparams, maxparams, name,
+                                migParams->params[param].value.i);
+}
+
+
+static int
+qemuMigrationParamsGetTPULL(qemuMigrationParamsPtr migParams,
+                            qemuMigrationParam param,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            const char *name)
+{
+    int rc;
+
+    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_ULL) < 0)
+        return -1;
+
+    if (!params)
+        return 0;
+
+    if ((rc = virTypedParamsGetULLong(params, nparams, name,
+                                      &migParams->params[param].value.ull)) < 0)
+        return -1;
+
+    migParams->params[param].set = !!rc;
+    return 0;
+}
+
+
+static int
+qemuMigrationParamsSetTPULL(qemuMigrationParamsPtr migParams,
+                            qemuMigrationParam param,
+                            virTypedParameterPtr *params,
+                            int *nparams,
+                            int *maxparams,
+                            const char *name)
+{
+    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_ULL) < 0)
+        return -1;
+
+    if (!migParams->params[param].set)
+        return 0;
+
+    return virTypedParamsAddULLong(params, nparams, maxparams, name,
+                                   migParams->params[param].value.ull);
+}
 
 
 static int
@@ -222,23 +328,40 @@ qemuMigrationParamsSetCompression(virTypedParameterPtr params,
         ignore_value(virBitmapSetBit(migParams->caps, cap));
     }
 
-    if (params) {
-        GET(virTypedParamsGetInt, COMPRESSION_MT_LEVEL, compressLevel);
-        GET(virTypedParamsGetInt, COMPRESSION_MT_THREADS, compressThreads);
-        GET(virTypedParamsGetInt, COMPRESSION_MT_DTHREADS, decompressThreads);
-        GET(virTypedParamsGetULLong, COMPRESSION_XBZRLE_CACHE, xbzrleCacheSize);
-    }
+    if (qemuMigrationParamsGetTPInt(migParams,
+                                    QEMU_MIGRATION_PARAM_COMPRESS_LEVEL,
+                                    params, nparams,
+                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL) < 0)
+        goto error;
 
-    if ((migParams->params.compressLevel_set ||
-         migParams->params.compressThreads_set ||
-         migParams->params.decompressThreads_set) &&
+    if (qemuMigrationParamsGetTPInt(migParams,
+                                    QEMU_MIGRATION_PARAM_COMPRESS_THREADS,
+                                    params, nparams,
+                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS) < 0)
+        goto error;
+
+    if (qemuMigrationParamsGetTPInt(migParams,
+                                    QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS,
+                                    params, nparams,
+                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS) < 0)
+        goto error;
+
+    if (qemuMigrationParamsGetTPULL(migParams,
+                                    QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE,
+                                    params, nparams,
+                                    VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE) < 0)
+        goto error;
+
+    if ((migParams->params[QEMU_MIGRATION_PARAM_COMPRESS_LEVEL].set ||
+         migParams->params[QEMU_MIGRATION_PARAM_COMPRESS_THREADS].set ||
+         migParams->params[QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS].set) &&
         !(migParams->compMethods & (1ULL << QEMU_MIGRATION_COMPRESS_MT))) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Turn multithread compression on to tune it"));
         goto error;
     }
 
-    if (migParams->params.xbzrleCacheSize_set &&
+    if (migParams->params[QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE].set &&
         !(migParams->compMethods & (1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE))) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Turn xbzrle compression on to tune it"));
@@ -281,15 +404,22 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
         }
     }
 
-    if (params) {
-        if (party == QEMU_MIGRATION_SOURCE) {
-            GET(virTypedParamsGetInt, AUTO_CONVERGE_INITIAL, cpuThrottleInitial);
-            GET(virTypedParamsGetInt, AUTO_CONVERGE_INCREMENT, cpuThrottleIncrement);
-        }
+    if (party == QEMU_MIGRATION_SOURCE) {
+        if (qemuMigrationParamsGetTPInt(migParams,
+                                        QEMU_MIGRATION_PARAM_THROTTLE_INITIAL,
+                                        params, nparams,
+                                        VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL) < 0)
+            goto error;
+
+        if (qemuMigrationParamsGetTPInt(migParams,
+                                        QEMU_MIGRATION_PARAM_THROTTLE_INCREMENT,
+                                        params, nparams,
+                                        VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT) < 0)
+            goto error;
     }
 
-    if ((migParams->params.cpuThrottleInitial_set ||
-         migParams->params.cpuThrottleIncrement_set) &&
+    if ((migParams->params[QEMU_MIGRATION_PARAM_THROTTLE_INITIAL].set ||
+         migParams->params[QEMU_MIGRATION_PARAM_THROTTLE_INCREMENT].set) &&
         !(flags & VIR_MIGRATE_AUTO_CONVERGE)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Turn auto convergence on to tune it"));
@@ -306,8 +436,6 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
     return NULL;
 }
 
-#undef GET
-
 
 int
 qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
@@ -319,7 +447,7 @@ qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
     size_t i;
 
     if (migParams->compMethods == 1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE &&
-        !migParams->params.xbzrleCacheSize_set) {
+        !migParams->params[QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE].set) {
         *flags |= VIR_MIGRATE_COMPRESSED;
         return 0;
     }
@@ -332,20 +460,29 @@ qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
             return -1;
     }
 
-#define SET(API, PARAM, VAR) \
-    do { \
-        if (migParams->params.VAR ## _set && \
-            API(params, nparams, maxparams, VIR_MIGRATE_PARAM_ ## PARAM, \
-                migParams->params.VAR) < 0) \
-            return -1; \
-    } while (0)
+    if (qemuMigrationParamsSetTPInt(migParams,
+                                    QEMU_MIGRATION_PARAM_COMPRESS_LEVEL,
+                                    params, nparams, maxparams,
+                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL) < 0)
+        return -1;
 
-    SET(virTypedParamsAddInt, COMPRESSION_MT_LEVEL, compressLevel);
-    SET(virTypedParamsAddInt, COMPRESSION_MT_THREADS, compressThreads);
-    SET(virTypedParamsAddInt, COMPRESSION_MT_DTHREADS, decompressThreads);
-    SET(virTypedParamsAddULLong, COMPRESSION_XBZRLE_CACHE, xbzrleCacheSize);
+    if (qemuMigrationParamsSetTPInt(migParams,
+                                    QEMU_MIGRATION_PARAM_COMPRESS_THREADS,
+                                    params, nparams, maxparams,
+                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS) < 0)
+        return -1;
 
-#undef SET
+    if (qemuMigrationParamsSetTPInt(migParams,
+                                    QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS,
+                                    params, nparams, maxparams,
+                                    VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS) < 0)
+        return -1;
+
+    if (qemuMigrationParamsSetTPULL(migParams,
+                                    QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE,
+                                    params, nparams, maxparams,
+                                    VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE) < 0)
+        return -1;
 
     return 0;
 }
@@ -354,7 +491,11 @@ qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
 qemuMigrationParamsPtr
 qemuMigrationParamsFromJSON(virJSONValuePtr params)
 {
-    qemuMigrationParamsPtr migParams = NULL;
+    qemuMigrationParamsPtr migParams;
+    qemuMigrationParamValuePtr pv;
+    const char *name;
+    const char *str;
+    size_t i;
 
     if (!(migParams = qemuMigrationParamsNew()))
         return NULL;
@@ -362,47 +503,35 @@ qemuMigrationParamsFromJSON(virJSONValuePtr params)
     if (!params)
         return migParams;
 
-#define PARSE_SET(API, VAR, FIELD) \
-    do { \
-        if (API(params, FIELD, &migParams->params.VAR) == 0) \
-            migParams->params.VAR ## _set = true; \
-    } while (0)
+    for (i = 0; i < QEMU_MIGRATION_PARAM_LAST; i++) {
+        name = qemuMigrationParamTypeToString(i);
+        pv = &migParams->params[i];
 
-#define PARSE_INT(VAR, FIELD) \
-    PARSE_SET(virJSONValueObjectGetNumberInt, VAR, FIELD)
+        switch (qemuMigrationParamTypes[i]) {
+        case QEMU_MIGRATION_PARAM_TYPE_INT:
+            if (virJSONValueObjectGetNumberInt(params, name, &pv->value.i) == 0)
+                pv->set = true;
+            break;
 
-#define PARSE_ULONG(VAR, FIELD) \
-    PARSE_SET(virJSONValueObjectGetNumberUlong, VAR, FIELD)
+        case QEMU_MIGRATION_PARAM_TYPE_ULL:
+            if (virJSONValueObjectGetNumberUlong(params, name, &pv->value.ull) == 0)
+                pv->set = true;
+            break;
 
-#define PARSE_BOOL(VAR, FIELD) \
-    PARSE_SET(virJSONValueObjectGetBoolean, VAR, FIELD)
+        case QEMU_MIGRATION_PARAM_TYPE_BOOL:
+            if (virJSONValueObjectGetBoolean(params, name, &pv->value.b) == 0)
+                pv->set = true;
+            break;
 
-#define PARSE_STR(VAR, FIELD) \
-    do { \
-        const char *str; \
-        if ((str = virJSONValueObjectGetString(params, FIELD))) { \
-            if (VIR_STRDUP(migParams->params.VAR, str) < 0) \
-                goto error; \
-        } \
-    } while (0)
-
-    PARSE_INT(compressLevel, "compress-level");
-    PARSE_INT(compressThreads, "compress-threads");
-    PARSE_INT(decompressThreads, "decompress-threads");
-    PARSE_INT(cpuThrottleInitial, "cpu-throttle-initial");
-    PARSE_INT(cpuThrottleIncrement, "cpu-throttle-increment");
-    PARSE_STR(tlsCreds, "tls-creds");
-    PARSE_STR(tlsHostname, "tls-hostname");
-    PARSE_ULONG(maxBandwidth, "max-bandwidth");
-    PARSE_ULONG(downtimeLimit, "downtime-limit");
-    PARSE_BOOL(blockIncremental, "block-incremental");
-    PARSE_ULONG(xbzrleCacheSize, "xbzrle-cache-size");
-
-#undef PARSE_SET
-#undef PARSE_INT
-#undef PARSE_ULONG
-#undef PARSE_BOOL
-#undef PARSE_STR
+        case QEMU_MIGRATION_PARAM_TYPE_STRING:
+            if ((str = virJSONValueObjectGetString(params, name))) {
+                if (VIR_STRDUP(pv->value.s, str) < 0)
+                    goto error;
+                pv->set = true;
+            }
+            break;
+        }
+    }
 
     return migParams;
 
@@ -416,48 +545,43 @@ virJSONValuePtr
 qemuMigrationParamsToJSON(qemuMigrationParamsPtr migParams)
 {
     virJSONValuePtr params = NULL;
+    qemuMigrationParamValuePtr pv;
+    const char *name;
+    size_t i;
+    int rc;
 
     if (!(params = virJSONValueNewObject()))
         return NULL;
 
-#define APPEND(VALID, API, VAR, FIELD) \
-    do { \
-        if (VALID && API(params, FIELD, migParams->params.VAR) < 0) \
-            goto error; \
-    } while (0)
+    for (i = 0; i < QEMU_MIGRATION_PARAM_LAST; i++) {
+        name = qemuMigrationParamTypeToString(i);
+        pv = &migParams->params[i];
 
-#define APPEND_INT(VAR, FIELD) \
-    APPEND(migParams->params.VAR ## _set, \
-           virJSONValueObjectAppendNumberInt, VAR, FIELD)
+        if (!pv->set)
+            continue;
 
-#define APPEND_STR(VAR, FIELD) \
-    APPEND(migParams->params.VAR, \
-           virJSONValueObjectAppendString, VAR, FIELD)
+        rc = 0;
+        switch (qemuMigrationParamTypes[i]) {
+        case QEMU_MIGRATION_PARAM_TYPE_INT:
+            rc = virJSONValueObjectAppendNumberInt(params, name, pv->value.i);
+            break;
 
-#define APPEND_ULONG(VAR, FIELD) \
-    APPEND(migParams->params.VAR ## _set, \
-           virJSONValueObjectAppendNumberUlong, VAR, FIELD)
+        case QEMU_MIGRATION_PARAM_TYPE_ULL:
+            rc = virJSONValueObjectAppendNumberUlong(params, name, pv->value.ull);
+            break;
 
-#define APPEND_BOOL(VAR, FIELD) \
-    APPEND(migParams->params.VAR ## _set, \
-           virJSONValueObjectAppendBoolean, VAR, FIELD)
+        case QEMU_MIGRATION_PARAM_TYPE_BOOL:
+            rc = virJSONValueObjectAppendBoolean(params, name, pv->value.b);
+            break;
 
-    APPEND_INT(compressLevel, "compress-level");
-    APPEND_INT(compressThreads, "compress-threads");
-    APPEND_INT(decompressThreads, "decompress-threads");
-    APPEND_INT(cpuThrottleInitial, "cpu-throttle-initial");
-    APPEND_INT(cpuThrottleIncrement, "cpu-throttle-increment");
-    APPEND_STR(tlsCreds, "tls-creds");
-    APPEND_STR(tlsHostname, "tls-hostname");
-    APPEND_ULONG(maxBandwidth, "max-bandwidth");
-    APPEND_ULONG(downtimeLimit, "downtime-limit");
-    APPEND_BOOL(blockIncremental, "block-incremental");
-    APPEND_ULONG(xbzrleCacheSize, "xbzrle-cache-size");
+        case QEMU_MIGRATION_PARAM_TYPE_STRING:
+            rc = virJSONValueObjectAppendString(params, name, pv->value.s);
+            break;
+        }
 
-#undef APPEND
-#undef APPEND_INT
-#undef APPEND_STR
-#undef APPEND_ULONG
+        if (rc < 0)
+            goto error;
+    }
 
     return params;
 
@@ -487,6 +611,7 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool xbzrleCacheSize_old = false;
     virJSONValuePtr params = NULL;
+    qemuMigrationParam xbzrle = QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE;
     int ret = -1;
     int rc;
 
@@ -501,14 +626,14 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
      * we need to set it via migrate-set-cache-size and tell
      * qemuMonitorSetMigrationParams to ignore this parameter.
      */
-    if (migParams->params.xbzrleCacheSize_set &&
+    if (migParams->params[xbzrle].set &&
         (!priv->job.migParams ||
-         !priv->job.migParams->params.xbzrleCacheSize_set)) {
+         !priv->job.migParams->params[xbzrle].set)) {
         if (qemuMonitorSetMigrationCacheSize(priv->mon,
-                                             migParams->params.xbzrleCacheSize) < 0)
+                                             migParams->params[xbzrle].value.ull) < 0)
             goto cleanup;
         xbzrleCacheSize_old = true;
-        migParams->params.xbzrleCacheSize_set = false;
+        migParams->params[xbzrle].set = false;
     }
 
     if (!(params = qemuMigrationParamsToJSON(migParams)))
@@ -528,7 +653,7 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
         ret = -1;
 
     if (xbzrleCacheSize_old)
-        migParams->params.xbzrleCacheSize_set = true;
+        migParams->params[xbzrle].set = true;
 
     virJSONValueFree(params);
 
@@ -574,7 +699,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
         goto error;
     }
 
-    if ((!priv->job.migParams->params.tlsCreds)) {
+    if (!priv->job.migParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("TLS migration is not supported with this "
                          "QEMU binary"));
@@ -605,8 +730,12 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                                 *tlsAlias, &tlsProps) < 0)
         goto error;
 
-    if (VIR_STRDUP(migParams->params.tlsCreds, *tlsAlias) < 0 ||
-        VIR_STRDUP(migParams->params.tlsHostname, hostname ? hostname : "") < 0)
+    if (qemuMigrationParamsSetString(migParams,
+                                     QEMU_MIGRATION_PARAM_TLS_CREDS,
+                                     *tlsAlias) < 0 ||
+        qemuMigrationParamsSetString(migParams,
+                                     QEMU_MIGRATION_PARAM_TLS_HOSTNAME,
+                                     hostname ? hostname : "") < 0)
         goto error;
 
     ret = 0;
@@ -638,11 +767,13 @@ qemuMigrationParamsDisableTLS(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (!priv->job.migParams->params.tlsCreds)
+    if (!priv->job.migParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set)
         return 0;
 
-    if (VIR_STRDUP(migParams->params.tlsCreds, "") < 0 ||
-        VIR_STRDUP(migParams->params.tlsHostname, "") < 0)
+    if (qemuMigrationParamsSetString(migParams,
+                                     QEMU_MIGRATION_PARAM_TLS_CREDS, "") < 0 ||
+        qemuMigrationParamsSetString(migParams,
+                                     QEMU_MIGRATION_PARAM_TLS_HOSTNAME, "") < 0)
         return -1;
 
     return 0;
@@ -667,7 +798,7 @@ qemuMigrationParamsResetTLS(virQEMUDriverPtr driver,
     char *secAlias = NULL;
 
     /* If QEMU does not support TLS migration we didn't set the aliases. */
-    if (!origParams->params.tlsCreds)
+    if (!origParams->params[QEMU_MIGRATION_PARAM_TLS_CREDS].set)
         return;
 
     /* NB: If either or both fail to allocate memory we can still proceed
@@ -716,6 +847,21 @@ qemuMigrationParamsFetch(virQEMUDriverPtr driver,
 }
 
 
+int
+qemuMigrationParamsSetString(qemuMigrationParamsPtr migParams,
+                             qemuMigrationParam param,
+                             const char *value)
+{
+    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_STRING) < 0)
+        return -1;
+
+    if (VIR_STRDUP(migParams->params[param].value.s, value) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * Returns  0 on success,
  *          1 if the parameter is not supported by QEMU.
@@ -724,10 +870,10 @@ int
 qemuMigrationParamsGetDowntimeLimit(qemuMigrationParamsPtr migParams,
                                     unsigned long long *value)
 {
-    if (!migParams->params.downtimeLimit_set)
+    if (!migParams->params[QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT].set)
         return 1;
 
-    *value = migParams->params.downtimeLimit;
+    *value = migParams->params[QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT].value.ull;
     return 0;
 }
 

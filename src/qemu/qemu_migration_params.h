@@ -27,6 +27,21 @@
 # include "qemu_monitor.h"
 # include "qemu_conf.h"
 
+typedef enum {
+    QEMU_MIGRATION_PARAM_COMPRESS_LEVEL,
+    QEMU_MIGRATION_PARAM_COMPRESS_THREADS,
+    QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS,
+    QEMU_MIGRATION_PARAM_THROTTLE_INITIAL,
+    QEMU_MIGRATION_PARAM_THROTTLE_INCREMENT,
+    QEMU_MIGRATION_PARAM_TLS_CREDS,
+    QEMU_MIGRATION_PARAM_TLS_HOSTNAME,
+    QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
+    QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT,
+    QEMU_MIGRATION_PARAM_BLOCK_INCREMENTAL,
+    QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE,
+
+    QEMU_MIGRATION_PARAM_LAST
+} qemuMigrationParam;
 
 typedef struct _qemuMigrationParams qemuMigrationParams;
 typedef qemuMigrationParams *qemuMigrationParamsPtr;
@@ -78,6 +93,11 @@ qemuMigrationParamsFetch(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          int asyncJob,
                          qemuMigrationParamsPtr *migParams);
+
+int
+qemuMigrationParamsSetString(qemuMigrationParamsPtr migParams,
+                             qemuMigrationParam param,
+                             const char *value);
 
 int
 qemuMigrationParamsGetDowntimeLimit(qemuMigrationParamsPtr migParams,
