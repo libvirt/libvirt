@@ -2439,11 +2439,6 @@ int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
         return -1;
     }
 
-    if (!(*def = virDomainFSDefNew()))
-        return -1;
-
-    (*def)->type = VIR_DOMAIN_FS_TYPE_MOUNT;
-
     snprintf(prefix, sizeof(prefix), "sharedFolder%d", number);
 
     VMX_BUILD_NAME(present);
@@ -2454,14 +2449,19 @@ int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
 
     /* vmx:present */
     if (virVMXGetConfigBoolean(conf, present_name, &present, false, true) < 0)
-        goto cleanup;
+        return -1;
 
     /* vmx:enabled */
     if (virVMXGetConfigBoolean(conf, enabled_name, &enabled, false, true) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(present && enabled))
-        goto ignore;
+        return 0;
+
+    if (!(*def = virDomainFSDefNew()))
+        return -1;
+
+    (*def)->type = VIR_DOMAIN_FS_TYPE_MOUNT;
 
     /* vmx:hostPath */
     if (virVMXGetConfigString(conf, hostPath_name, &hostPath, false) < 0)
@@ -2497,14 +2497,6 @@ int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
     VIR_FREE(guestName);
 
     return result;
-
- ignore:
-    virDomainFSDefFree(*def);
-    *def = NULL;
-
-    result = 0;
-
-    goto cleanup;
 }
 
 
@@ -2557,9 +2549,6 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         return -1;
     }
 
-    if (VIR_ALLOC(*def) < 0)
-        return -1;
-
     snprintf(prefix, sizeof(prefix), "ethernet%d", controller);
 
     VMX_BUILD_NAME(present);
@@ -2575,17 +2564,20 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
 
     /* vmx:present */
     if (virVMXGetConfigBoolean(conf, present_name, &present, false, true) < 0)
-        goto cleanup;
+        return -1;
 
     /* vmx:startConnected */
     if (virVMXGetConfigBoolean(conf, startConnected_name, &startConnected,
                                true, true) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     /* FIXME: Need to distiguish between active and inactive domains here */
     if (! present/* && ! startConnected*/)
-        goto ignore;
+        return 0;
+
+    if (VIR_ALLOC(*def) < 0)
+        return -1;
 
     /* vmx:connectionType -> def:type */
     if (virVMXGetConfigString(conf, connectionType_name, &connectionType,
@@ -2726,14 +2718,6 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
     VIR_FREE(vnet);
 
     return result;
-
- ignore:
-    virDomainNetDefFree(*def);
-    *def = NULL;
-
-    result = 0;
-
-    goto cleanup;
 }
 
 
@@ -2773,11 +2757,6 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
         return -1;
     }
 
-    if (!(*def = virDomainChrDefNew(NULL)))
-        return -1;
-
-    (*def)->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
-
     snprintf(prefix, sizeof(prefix), "serial%d", port);
 
     VMX_BUILD_NAME(present);
@@ -2788,17 +2767,22 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
 
     /* vmx:present */
     if (virVMXGetConfigBoolean(conf, present_name, &present, false, true) < 0)
-        goto cleanup;
+        return -1;
 
     /* vmx:startConnected */
     if (virVMXGetConfigBoolean(conf, startConnected_name, &startConnected,
                                true, true) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     /* FIXME: Need to distiguish between active and inactive domains here */
     if (! present/* && ! startConnected*/)
-        goto ignore;
+        return 0;
+
+    if (!(*def = virDomainChrDefNew(NULL)))
+        return -1;
+
+    (*def)->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
 
     /* vmx:fileType -> def:type */
     if (virVMXGetConfigString(conf, fileType_name, &fileType, true) < 0)
@@ -2919,14 +2903,6 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
     virURIFree(parsedUri);
 
     return result;
-
- ignore:
-    virDomainChrDefFree(*def);
-    *def = NULL;
-
-    result = 0;
-
-    goto cleanup;
 }
 
 
@@ -2961,11 +2937,6 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
         return -1;
     }
 
-    if (!(*def = virDomainChrDefNew(NULL)))
-        return -1;
-
-    (*def)->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
-
     snprintf(prefix, sizeof(prefix), "parallel%d", port);
 
     VMX_BUILD_NAME(present);
@@ -2975,17 +2946,22 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
 
     /* vmx:present */
     if (virVMXGetConfigBoolean(conf, present_name, &present, false, true) < 0)
-        goto cleanup;
+        return -1;
 
     /* vmx:startConnected */
     if (virVMXGetConfigBoolean(conf, startConnected_name, &startConnected,
                                true, true) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     /* FIXME: Need to distiguish between active and inactive domains here */
     if (! present/* && ! startConnected*/)
-        goto ignore;
+        return 0;
+
+    if (!(*def = virDomainChrDefNew(NULL)))
+        return -1;
+
+    (*def)->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
 
     /* vmx:fileType -> def:type */
     if (virVMXGetConfigString(conf, fileType_name, &fileType, false) < 0)
@@ -3029,14 +3005,6 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
     VIR_FREE(fileName);
 
     return result;
-
- ignore:
-    virDomainChrDefFree(*def);
-    *def = NULL;
-
-    result = 0;
-
-    goto cleanup;
 }
 
 
