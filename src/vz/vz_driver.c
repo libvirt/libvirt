@@ -358,9 +358,6 @@ vzConnectOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (!conn->uri)
-        return VIR_DRV_OPEN_DECLINED;
-
     /* From this point on, the connection is for us. */
     if (STRNEQ_NULLABLE(conn->uri->path, "/system")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

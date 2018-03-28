@@ -1141,9 +1141,6 @@ phypConnectOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (!conn || !conn->uri)
-        return VIR_DRV_OPEN_DECLINED;
-
     if (conn->uri->server == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Missing server name in phyp:// URI"));

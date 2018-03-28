@@ -1354,29 +1354,25 @@ static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (conn->uri == NULL) {
-        return VIR_DRV_OPEN_DECLINED;
-    } else {
-        /* If path isn't /system, then they typoed, so tell them correct path */
-        if (conn->uri->path == NULL ||
-            STRNEQ(conn->uri->path, "/system")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected OpenVZ URI path '%s', try openvz:///system"),
-                           conn->uri->path);
-            return VIR_DRV_OPEN_ERROR;
-        }
+    /* If path isn't /system, then they typoed, so tell them correct path */
+    if (conn->uri->path == NULL ||
+        STRNEQ(conn->uri->path, "/system")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected OpenVZ URI path '%s', try openvz:///system"),
+                       conn->uri->path);
+        return VIR_DRV_OPEN_ERROR;
+    }
 
-        if (!virFileExists("/proc/vz")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("OpenVZ control file /proc/vz does not exist"));
-            return VIR_DRV_OPEN_ERROR;
-        }
+    if (!virFileExists("/proc/vz")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("OpenVZ control file /proc/vz does not exist"));
+        return VIR_DRV_OPEN_ERROR;
+    }
 
-        if (access("/proc/vz", W_OK) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("OpenVZ control file /proc/vz is not accessible"));
-            return VIR_DRV_OPEN_ERROR;
-        }
+    if (access("/proc/vz", W_OK) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("OpenVZ control file /proc/vz is not accessible"));
+        return VIR_DRV_OPEN_ERROR;
     }
 
     /* We now know the URI is definitely for this driver, so beyond

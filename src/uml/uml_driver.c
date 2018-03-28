@@ -1203,33 +1203,29 @@ static virDrvOpenStatus umlConnectOpen(virConnectPtr conn,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (conn->uri == NULL) {
-        return VIR_DRV_OPEN_DECLINED;
-    } else {
-        /* Check path and tell them correct path if they made a mistake */
-        if (uml_driver->privileged) {
-            if (STRNEQ(conn->uri->path, "/system") &&
-                STRNEQ(conn->uri->path, "/session")) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected UML URI path '%s', try uml:///system"),
-                               conn->uri->path);
-                return VIR_DRV_OPEN_ERROR;
-            }
-        } else {
-            if (STRNEQ(conn->uri->path, "/session")) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected UML URI path '%s', try uml:///session"),
-                               conn->uri->path);
-                return VIR_DRV_OPEN_ERROR;
-            }
-        }
-
-        /* URI was good, but driver isn't active */
-        if (uml_driver == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("uml state driver is not active"));
+    /* Check path and tell them correct path if they made a mistake */
+    if (uml_driver->privileged) {
+        if (STRNEQ(conn->uri->path, "/system") &&
+            STRNEQ(conn->uri->path, "/session")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected UML URI path '%s', try uml:///system"),
+                           conn->uri->path);
             return VIR_DRV_OPEN_ERROR;
         }
+    } else {
+        if (STRNEQ(conn->uri->path, "/session")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected UML URI path '%s', try uml:///session"),
+                           conn->uri->path);
+            return VIR_DRV_OPEN_ERROR;
+        }
+    }
+
+    /* URI was good, but driver isn't active */
+    if (uml_driver == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("uml state driver is not active"));
+        return VIR_DRV_OPEN_ERROR;
     }
 
     if (virConnectOpenEnsureACL(conn) < 0)

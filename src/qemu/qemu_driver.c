@@ -1143,38 +1143,34 @@ static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
     virDrvOpenStatus ret = VIR_DRV_OPEN_ERROR;
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (conn->uri == NULL) {
-        return VIR_DRV_OPEN_DECLINED;
-    } else {
-        if (qemu_driver == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("qemu state driver is not active"));
-            goto cleanup;
-        }
+    if (qemu_driver == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qemu state driver is not active"));
+        goto cleanup;
+    }
 
-        cfg = virQEMUDriverGetConfig(qemu_driver);
-        if (conn->uri->path == NULL) {
+    cfg = virQEMUDriverGetConfig(qemu_driver);
+    if (conn->uri->path == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("no QEMU URI path given, try %s"),
+                       cfg->uri);
+        goto cleanup;
+    }
+
+    if (virQEMUDriverIsPrivileged(qemu_driver)) {
+        if (STRNEQ(conn->uri->path, "/system") &&
+            STRNEQ(conn->uri->path, "/session")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("no QEMU URI path given, try %s"),
-                           cfg->uri);
+                           _("unexpected QEMU URI path '%s', try qemu:///system"),
+                           conn->uri->path);
             goto cleanup;
         }
-
-        if (virQEMUDriverIsPrivileged(qemu_driver)) {
-            if (STRNEQ(conn->uri->path, "/system") &&
-                STRNEQ(conn->uri->path, "/session")) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected QEMU URI path '%s', try qemu:///system"),
-                               conn->uri->path);
-                goto cleanup;
-            }
-        } else {
-            if (STRNEQ(conn->uri->path, "/session")) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected QEMU URI path '%s', try qemu:///session"),
-                               conn->uri->path);
-                goto cleanup;
-            }
+    } else {
+        if (STRNEQ(conn->uri->path, "/session")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected QEMU URI path '%s', try qemu:///session"),
+                           conn->uri->path);
+            goto cleanup;
         }
     }
 

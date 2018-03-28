@@ -845,26 +845,22 @@ libxlConnectOpen(virConnectPtr conn,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (conn->uri == NULL) {
-        return VIR_DRV_OPEN_DECLINED;
-    } else {
-        /* Error if xen or libxl scheme specified but driver not started. */
-        if (libxl_driver == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("libxenlight state driver is not active"));
-            return VIR_DRV_OPEN_ERROR;
-        }
+    /* Error if xen or libxl scheme specified but driver not started. */
+    if (libxl_driver == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libxenlight state driver is not active"));
+        return VIR_DRV_OPEN_ERROR;
+    }
 
-        /* /session isn't supported in libxenlight */
-        if (conn->uri->path &&
-            STRNEQ(conn->uri->path, "") &&
-            STRNEQ(conn->uri->path, "/") &&
-            STRNEQ(conn->uri->path, "/system")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected Xen URI path '%s', try xen:///system"),
-                           NULLSTR(conn->uri->path));
-            return VIR_DRV_OPEN_ERROR;
-        }
+    /* /session isn't supported in libxenlight */
+    if (conn->uri->path &&
+        STRNEQ(conn->uri->path, "") &&
+        STRNEQ(conn->uri->path, "/") &&
+        STRNEQ(conn->uri->path, "/system")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected Xen URI path '%s', try xen:///system"),
+                       NULLSTR(conn->uri->path));
+        return VIR_DRV_OPEN_ERROR;
     }
 
     if (virConnectOpenEnsureACL(conn) < 0)

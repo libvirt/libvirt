@@ -1074,9 +1074,13 @@ virConnectOpenInternal(const char *name,
         }
 
         /* Filter drivers based on declared URI schemes */
-        if (virConnectDriverTab[i]->uriSchemes && ret->uri) {
+        if (virConnectDriverTab[i]->uriSchemes) {
             bool matchScheme = false;
             size_t s;
+            if (!ret->uri) {
+                VIR_DEBUG("No URI, skipping driver with URI whitelist");
+                continue;
+            }
             if (!ret->uri->scheme) {
                 VIR_DEBUG("No URI scheme, skipping driver with URI whitelist");
                 continue;

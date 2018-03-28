@@ -878,31 +878,25 @@ networkConnectOpen(virConnectPtr conn,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    /* Verify uri was specified */
-    if (conn->uri == NULL) {
-        /* Only hypervisor drivers are permitted to auto-open on NULL uri */
-        return VIR_DRV_OPEN_DECLINED;
-    } else {
-        if (network_driver == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("network state driver is not active"));
+    if (network_driver == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("network state driver is not active"));
+        return VIR_DRV_OPEN_ERROR;
+    }
+
+    if (network_driver->privileged) {
+        if (STRNEQ(conn->uri->path, "/system")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected network URI path '%s', try network:///system"),
+                           conn->uri->path);
             return VIR_DRV_OPEN_ERROR;
         }
-
-        if (network_driver->privileged) {
-            if (STRNEQ(conn->uri->path, "/system")) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected network URI path '%s', try network:///system"),
-                               conn->uri->path);
-                return VIR_DRV_OPEN_ERROR;
-            }
-        } else {
-            if (STRNEQ(conn->uri->path, "/session")) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected network URI path '%s', try network:///session"),
-                               conn->uri->path);
-                return VIR_DRV_OPEN_ERROR;
-            }
+    } else {
+        if (STRNEQ(conn->uri->path, "/session")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected network URI path '%s', try network:///session"),
+                           conn->uri->path);
+            return VIR_DRV_OPEN_ERROR;
         }
     }
 

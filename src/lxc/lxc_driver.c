@@ -169,26 +169,21 @@ static virDrvOpenStatus lxcConnectOpen(virConnectPtr conn,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    /* Verify uri was specified */
-    if (conn->uri == NULL) {
-        return VIR_DRV_OPEN_DECLINED;
-    } else {
-        /* If path isn't '/' then they typoed, tell them correct path */
-        if (conn->uri->path != NULL &&
-            STRNEQ(conn->uri->path, "/") &&
-            STRNEQ(conn->uri->path, "/system")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected LXC URI path '%s', try lxc:///system"),
-                           conn->uri->path);
-            return VIR_DRV_OPEN_ERROR;
-        }
+    /* If path isn't '/' then they typoed, tell them correct path */
+    if (conn->uri->path != NULL &&
+        STRNEQ(conn->uri->path, "/") &&
+        STRNEQ(conn->uri->path, "/system")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected LXC URI path '%s', try lxc:///system"),
+                       conn->uri->path);
+        return VIR_DRV_OPEN_ERROR;
+    }
 
-        /* URI was good, but driver isn't active */
-        if (lxc_driver == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("lxc state driver is not active"));
-            return VIR_DRV_OPEN_ERROR;
-        }
+    /* URI was good, but driver isn't active */
+    if (lxc_driver == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("lxc state driver is not active"));
+        return VIR_DRV_OPEN_ERROR;
     }
 
     if (virConnectOpenEnsureACL(conn) < 0)
