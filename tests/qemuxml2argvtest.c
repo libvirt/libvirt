@@ -1700,6 +1700,8 @@ mymain(void)
 # ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
     DO_TEST("luks-disks", QEMU_CAPS_OBJECT_SECRET);
     DO_TEST("luks-disks-source", QEMU_CAPS_OBJECT_SECRET);
+    DO_TEST_PARSE_ERROR("luks-disks-source-qcow2", QEMU_CAPS_OBJECT_SECRET);
+    DO_TEST("luks-disks-source-qcow2", QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_QCOW2_LUKS);
 # else
     DO_TEST_FAILURE("luks-disks", QEMU_CAPS_OBJECT_SECRET);
 # endif
