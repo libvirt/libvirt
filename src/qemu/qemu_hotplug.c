@@ -825,7 +825,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     char *nicstr = NULL;
     char *netstr = NULL;
     int ret = -1;
-    int vlan;
     bool releaseaddr = false;
     bool iface_connected = false;
     virDomainNetType actualType;
@@ -836,7 +835,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     char *charDevAlias = NULL;
     bool charDevPlugged = false;
     bool netdevPlugged = false;
-    bool hostPlugged = false;
+    char *netdev_name;
 
     /* preallocate new slot for device */
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1) < 0)
@@ -1029,7 +1028,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
 
     releaseaddr = true;
 
-    vlan = -1;
     if (VIR_ALLOC_N(tapfdName, tapfdSize) < 0 ||
         VIR_ALLOC_N(vhostfdName, vhostfdSize) < 0)
         goto cleanup;
@@ -1078,7 +1076,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     for (i = 0; i < vhostfdSize; i++)
         VIR_FORCE_CLOSE(vhostfd[i]);
 
-    if (!(nicstr = qemuBuildNicDevStr(vm->def, net, vlan, 0,
+    if (!(nicstr = qemuBuildNicDevStr(vm->def, net, -1, 0,
                                       queueSize, priv->qemuCaps)))
         goto try_remove;
 
@@ -1169,31 +1167,17 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         goto cleanup;
 
     virErrorPreserveLast(&originalError);
-    if (vlan < 0) {
-        char *netdev_name;
-        if (virAsprintf(&netdev_name, "host%s", net->info.alias) >= 0) {
-            qemuDomainObjEnterMonitor(driver, vm);
-            if (charDevPlugged &&
-                qemuMonitorDetachCharDev(priv->mon, charDevAlias) < 0)
-                VIR_WARN("Failed to remove associated chardev %s", charDevAlias);
-            if (netdevPlugged &&
-                qemuMonitorRemoveNetdev(priv->mon, netdev_name) < 0)
-                VIR_WARN("Failed to remove network backend for netdev %s",
-                         netdev_name);
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
-            VIR_FREE(netdev_name);
-        }
-    } else {
-        char *hostnet_name;
-        if (virAsprintf(&hostnet_name, "host%s", net->info.alias) >= 0) {
-            qemuDomainObjEnterMonitor(driver, vm);
-            if (hostPlugged &&
-                qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0)
-                VIR_WARN("Failed to remove network backend for vlan %d, net %s",
-                         vlan, hostnet_name);
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
-            VIR_FREE(hostnet_name);
-        }
+    if (virAsprintf(&netdev_name, "host%s", net->info.alias) >= 0) {
+        qemuDomainObjEnterMonitor(driver, vm);
+        if (charDevPlugged &&
+            qemuMonitorDetachCharDev(priv->mon, charDevAlias) < 0)
+            VIR_WARN("Failed to remove associated chardev %s", charDevAlias);
+        if (netdevPlugged &&
+            qemuMonitorRemoveNetdev(priv->mon, netdev_name) < 0)
+            VIR_WARN("Failed to remove network backend for netdev %s",
+                     netdev_name);
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        VIR_FREE(netdev_name);
     }
     virErrorRestore(&originalError);
     goto cleanup;
