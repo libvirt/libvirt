@@ -225,6 +225,7 @@
   <flag name='iscsi.password-secret'/>
   <flag name='isa-serial'/>
   <flag name='dump-completed'/>
+  <flag name='qcow2-luks'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>390060</microcodeVersion>

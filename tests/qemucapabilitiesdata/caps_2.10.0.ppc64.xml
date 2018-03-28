@@ -185,6 +185,7 @@
   <flag name='isa-serial'/>
   <flag name='machine.pseries.max-cpu-compat'/>
   <flag name='dump-completed'/>
+  <flag name='qcow2-luks'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>382824</microcodeVersion>

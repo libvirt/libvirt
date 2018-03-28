@@ -187,6 +187,7 @@
   <flag name='isa-serial'/>
   <flag name='pl011'/>
   <flag name='dump-completed'/>
+  <flag name='qcow2-luks'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>342346</microcodeVersion>

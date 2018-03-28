@@ -146,6 +146,7 @@
   <flag name='disk-share-rw'/>
   <flag name='iscsi.password-secret'/>
   <flag name='dump-completed'/>
+  <flag name='qcow2-luks'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>303326</microcodeVersion>

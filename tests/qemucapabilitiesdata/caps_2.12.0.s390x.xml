@@ -150,6 +150,7 @@
   <flag name='virtio-keyboard-ccw'/>
   <flag name='virtio-mouse-ccw'/>
   <flag name='virtio-tablet-ccw'/>
+  <flag name='qcow2-luks'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>
