@@ -805,8 +805,6 @@ bool qemuDomainSupportsNetdev(virDomainDefPtr def,
 
 bool qemuDomainNetSupportsMTU(virDomainNetType type);
 
-int qemuDomainNetVLAN(virDomainNetDefPtr def);
-
 int qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
                               virDomainObjPtr vm);
 
