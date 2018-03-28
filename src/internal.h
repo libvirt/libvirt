@@ -75,6 +75,7 @@
 # define STRNEQLEN(a, b, n) (strncmp(a, b, n) != 0)
 # define STRCASENEQLEN(a, b, n) (c_strncasecmp(a, b, n) != 0)
 # define STRPREFIX(a, b) (strncmp(a, b, strlen(b)) == 0)
+# define STRCASEPREFIX(a, b) (c_strncasecmp(a, b, strlen(b)) == 0)
 # define STRSKIP(a, b) (STRPREFIX(a, b) ? (a) + strlen(b) : NULL)
 
 # define STREQ_NULLABLE(a, b) \
