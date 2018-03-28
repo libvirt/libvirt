@@ -35,6 +35,15 @@
 <libvirt>
   <release version="v4.3.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: Add support for the pcie-to-pci-bridge controller
+        </summary>
+        <description>
+          Pure PCIe guests such as x86_64/q35 and aarch64/virt will now
+          add this controller when traditional PCI devices are in use.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
