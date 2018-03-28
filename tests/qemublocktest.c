@@ -414,6 +414,8 @@ mymain(void)
     TEST_DISK_TO_JSON("file-vhd-noopts");
     TEST_DISK_TO_JSON("file-vpc-noopts");
 
+    TEST_DISK_TO_JSON("file-backing_basic-noopts");
+
  cleanup:
     virHashFree(diskxmljsondata.schema);
     qemuTestDriverFree(&driver);
