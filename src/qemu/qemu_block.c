@@ -27,6 +27,24 @@
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
+/* qemu declares the buffer for node names as a 32 byte array */
+static const size_t qemuBlockNodeNameBufSize = 32;
+
+static int
+qemuBlockNodeNameValidate(const char *nn)
+{
+    if (!nn)
+        return 0;
+
+    if (strlen(nn) >= qemuBlockNodeNameBufSize) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("node-name '%s' too long for qemu"), nn);
+        return -1;
+    }
+
+    return 0;
+}
+
 
 static int
 qemuBlockNamedNodesArrayToHash(size_t pos ATTRIBUTE_UNUSED,
@@ -1107,7 +1125,8 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
         break;
     }
 
-    if (virJSONValueObjectAdd(fileprops, "S:node-name", src->nodestorage, NULL) < 0) {
+    if (qemuBlockNodeNameValidate(src->nodestorage) < 0 ||
+        virJSONValueObjectAdd(fileprops, "S:node-name", src->nodestorage, NULL) < 0) {
         virJSONValueFree(fileprops);
         return NULL;
     }
