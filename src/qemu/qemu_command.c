@@ -7464,7 +7464,6 @@ qemuBuildSmpCommandLine(virCommandPtr cmd,
 static int
 qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
                     const virDomainDef *def,
-                    virQEMUCapsPtr qemuCaps,
                     virCommandPtr cmd)
 {
     const long system_page_size = virGetSystemPageSizeKB();
@@ -7482,13 +7481,6 @@ qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
      */
     if (def->mem.hugepages[0].size == system_page_size)
         return 0;
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEM_PATH)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("hugepage backing not supported by '%s'"),
-                       def->emulator);
-        return -1;
-    }
 
     if (qemuGetDomainHupageMemPath(def, cfg, def->mem.hugepages[0].size, &mem_path) < 0)
         return -1;
@@ -7534,7 +7526,7 @@ qemuBuildMemCommandLine(virCommandPtr cmd,
      * the hugepages and no numa node is specified.
      */
     if (!virDomainNumaGetNodeCount(def->numa) &&
-        qemuBuildMemPathStr(cfg, def, qemuCaps, cmd) < 0)
+        qemuBuildMemPathStr(cfg, def, cmd) < 0)
         return -1;
 
     if (def->mem.locked && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_REALTIME_MLOCK)) {
@@ -7664,7 +7656,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     }
 
     if (!needBackend &&
-        qemuBuildMemPathStr(cfg, def, qemuCaps, cmd) < 0)
+        qemuBuildMemPathStr(cfg, def, cmd) < 0)
         goto cleanup;
 
     for (i = 0; i < ncells; i++) {

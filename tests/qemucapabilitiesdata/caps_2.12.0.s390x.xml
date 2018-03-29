@@ -3,7 +3,6 @@
   <selfctime>0</selfctime>
   <selfvers>0</selfvers>
   <usedQMP/>
-  <flag name='mem-path'/>
   <flag name='drive-serial'/>
   <flag name='enable-kvm'/>
   <flag name='sdl'/>

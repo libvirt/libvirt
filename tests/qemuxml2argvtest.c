@@ -866,7 +866,7 @@ mymain(void)
     DO_TEST("pmu-feature", NONE);
     DO_TEST("pmu-feature-off", NONE);
 
-    DO_TEST("hugepages", QEMU_CAPS_MEM_PATH);
+    DO_TEST("hugepages", NONE);
     DO_TEST("hugepages-numa", QEMU_CAPS_RTC,
             QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4,
             QEMU_CAPS_VIRTIO_SCSI,
@@ -875,23 +875,23 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_HDA_DUPLEX, QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_DEVICE_PC_DIMM,
-            QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST_LINUX("hugepages-pages", QEMU_CAPS_MEM_PATH,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST_LINUX("hugepages-pages",
                   QEMU_CAPS_OBJECT_MEMORY_RAM,
                   QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-pages2", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
+    DO_TEST("hugepages-pages2", QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-pages3", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_RAM,
+    DO_TEST("hugepages-pages3", QEMU_CAPS_OBJECT_MEMORY_RAM,
             QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST_LINUX("hugepages-shared", QEMU_CAPS_MEM_PATH,
+    DO_TEST_LINUX("hugepages-shared",
                   QEMU_CAPS_OBJECT_MEMORY_RAM,
                   QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_PARSE_ERROR("hugepages-memaccess-invalid", NONE);
-    DO_TEST_FAILURE("hugepages-pages4", QEMU_CAPS_MEM_PATH,
+    DO_TEST_FAILURE("hugepages-pages4",
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-pages5", QEMU_CAPS_MEM_PATH);
+    DO_TEST("hugepages-pages5", NONE);
     DO_TEST("hugepages-pages6", NONE);
-    DO_TEST("hugepages-pages7", QEMU_CAPS_MEM_PATH,
+    DO_TEST("hugepages-pages7",
             QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-memaccess", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_DEVICE_PC_DIMM,
@@ -899,7 +899,7 @@ mymain(void)
     DO_TEST("hugepages-memaccess2", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_DEVICE_PC_DIMM,
             QEMU_CAPS_NUMA);
-    DO_TEST_FAILURE("hugepages-memaccess3", QEMU_CAPS_MEM_PATH,
+    DO_TEST_FAILURE("hugepages-memaccess3",
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("nosharepages", QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_MEM_MERGE);
@@ -2956,14 +2956,14 @@ mymain(void)
             QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM,
             QEMU_CAPS_VIRTIO_PCI_ATS);
 
-    DO_TEST("fd-memory-numa-topology", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_FILE,
+    DO_TEST("fd-memory-numa-topology", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_KVM);
-    DO_TEST("fd-memory-numa-topology2", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_FILE,
+    DO_TEST("fd-memory-numa-topology2", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_KVM);
-    DO_TEST("fd-memory-numa-topology3", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_FILE,
+    DO_TEST("fd-memory-numa-topology3", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_KVM);
 
-    DO_TEST("fd-memory-no-numa-topology", QEMU_CAPS_MEM_PATH, QEMU_CAPS_OBJECT_MEMORY_FILE,
+    DO_TEST("fd-memory-no-numa-topology", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_KVM);
 
     DO_TEST("cpu-check-none", QEMU_CAPS_KVM);
