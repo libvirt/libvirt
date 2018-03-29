@@ -1120,8 +1120,7 @@ mymain(void)
     DO_TEST("nographics", NONE);
     DO_TEST("nographics-display",
             QEMU_CAPS_DISPLAY);
-    DO_TEST("nographics-vga",
-            QEMU_CAPS_VGA_NONE);
+    DO_TEST("nographics-vga", NONE);
     DO_TEST("graphics-spice",
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_QXL,

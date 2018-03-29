@@ -113,7 +113,7 @@ typedef enum {
     /* 45 */
     X_QEMU_CAPS_VGA_QXL, /* The 'qxl' arg for '-vga' */
     QEMU_CAPS_SPICE, /* Is -spice avail */
-    QEMU_CAPS_VGA_NONE, /* The 'none' arg for '-vga' */
+    X_QEMU_CAPS_VGA_NONE, /* The 'none' arg for '-vga' */
     X_QEMU_CAPS_MIGRATE_QEMU_FD, /* -incoming fd:n */
     QEMU_CAPS_BOOTINDEX, /* -device bootindex property */
 

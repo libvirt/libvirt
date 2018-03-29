@@ -7,7 +7,6 @@
   <flag name='no-hpet'/>
   <flag name='no-kvm-pit'/>
   <flag name='spice'/>
-  <flag name='vga-none'/>
   <flag name='boot-index'/>
   <flag name='hda-duplex'/>
   <flag name='drive-aio'/>
