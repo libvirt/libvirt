@@ -837,7 +837,6 @@ mymain(void)
             QEMU_CAPS_ENABLE_KVM,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_CCID_PASSTHRU,
-            QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_HDA_DUPLEX,
             QEMU_CAPS_USB_HUB,
@@ -864,7 +863,7 @@ mymain(void)
             QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_SPICE, QEMU_CAPS_CHARDEV_SPICEVMC,
+            QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_HDA_DUPLEX, QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_DEVICE_PC_DIMM,
@@ -1135,7 +1134,6 @@ mymain(void)
     DO_TEST("graphics-spice-agentmouse",
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-spice-compression",
             QEMU_CAPS_SPICE,
@@ -1153,7 +1151,6 @@ mymain(void)
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
-            QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-spice-agent-file-xfer",
             QEMU_CAPS_SPICE,
@@ -1324,15 +1321,13 @@ mymain(void)
             QEMU_CAPS_DEVICE_SCLPCONSOLE);
     DO_TEST("channel-spicevmc",
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("channel-spicevmc-old",
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_SPICEVMC,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("channel-virtio-default",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_CHARDEV_SPICEVMC);
+            QEMU_CAPS_SPICE);
     DO_TEST("channel-virtio-unix", NONE);
 
     DO_TEST("smartcard-host",
@@ -1342,8 +1337,7 @@ mymain(void)
     DO_TEST("smartcard-passthrough-tcp",
             QEMU_CAPS_CCID_PASSTHRU);
     DO_TEST("smartcard-passthrough-spicevmc",
-            QEMU_CAPS_CCID_PASSTHRU,
-            QEMU_CAPS_CHARDEV_SPICEVMC);
+            QEMU_CAPS_CCID_PASSTHRU);
     DO_TEST("smartcard-controller",
             QEMU_CAPS_CCID_EMULATED);
 
@@ -1395,14 +1389,12 @@ mymain(void)
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_CHARDEV_SPICEVMC);
+            QEMU_CAPS_SPICE);
     DO_TEST("usb-redir-boot",
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_USB_REDIR_BOOTINDEX);
     DO_TEST("usb-redir-filter",
@@ -1410,12 +1402,10 @@ mymain(void)
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_USB_REDIR_FILTER);
     DO_TEST("usb-redir-filter-version",
             QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_USB_REDIR_FILTER);
     DO_TEST("usb1-usb2",
             QEMU_CAPS_PIIX3_USB_UHCI,
@@ -2186,7 +2176,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_ICH9_INTEL_HDA,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_HDA_DUPLEX,
             QEMU_CAPS_DEVICE_ISA_SERIAL,

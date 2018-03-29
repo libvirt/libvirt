@@ -856,7 +856,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_ICH9_INTEL_HDA,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_HDA_DUPLEX,
             QEMU_CAPS_USB_REDIR);

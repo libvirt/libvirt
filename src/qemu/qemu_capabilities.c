@@ -2097,8 +2097,7 @@ virQEMUCapsProbeQMPObjects(virQEMUCapsPtr qemuCaps,
     }
 
     /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEVMC))
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC);
+    virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC);
 
     return 0;
 }
@@ -3631,7 +3630,6 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEVMC);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_SHUTDOWN);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE);

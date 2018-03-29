@@ -5030,11 +5030,6 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEVMC)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("spicevmc not supported in this QEMU binary"));
-            goto cleanup;
-        }
         virBufferAsprintf(&buf, "spicevmc,id=%s,name=%s", charAlias,
                           virDomainChrSpicevmcTypeToString(dev->data.spicevmc));
         break;
