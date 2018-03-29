@@ -336,7 +336,7 @@ qemuAgentIOProcessLine(qemuAgentPtr mon,
         goto cleanup;
     }
 
-    if (obj->type != VIR_JSON_TYPE_OBJECT) {
+    if (virJSONValueGetType(obj) != VIR_JSON_TYPE_OBJECT) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Parsed JSON reply '%s' isn't an object"), line);
         goto cleanup;
@@ -1872,7 +1872,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
         goto cleanup;
     }
 
-    if (data->type != VIR_JSON_TYPE_ARRAY) {
+    if (virJSONValueGetType(data) != VIR_JSON_TYPE_ARRAY) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("guest-get-fsinfo return information was not "
                          "an array"));
@@ -1931,7 +1931,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
             goto cleanup;
         }
 
-        if (entry->type != VIR_JSON_TYPE_ARRAY) {
+        if (virJSONValueGetType(entry) != VIR_JSON_TYPE_ARRAY) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("guest-get-fsinfo 'disk' data was not an array"));
             goto cleanup;

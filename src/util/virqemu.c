@@ -146,16 +146,17 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
                                    bool nested)
 {
     struct virQEMUCommandLineJSONIteratorData data = { key, buf, arrayFunc };
+    virJSONType type = virJSONValueGetType(value);
     virJSONValuePtr elem;
     size_t i;
 
-    if (!key && value->type != VIR_JSON_TYPE_OBJECT) {
+    if (!key && type != VIR_JSON_TYPE_OBJECT) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("only JSON objects can be top level"));
         return -1;
     }
 
-    switch ((virJSONType) value->type) {
+    switch (type) {
     case VIR_JSON_TYPE_STRING:
         virBufferAsprintf(buf, "%s=", key);
         virQEMUBuildBufferEscapeComma(buf, value->data.string);

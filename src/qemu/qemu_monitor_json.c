@@ -197,7 +197,7 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
     if (!(obj = virJSONValueFromString(line)))
         goto cleanup;
 
-    if (obj->type != VIR_JSON_TYPE_OBJECT) {
+    if (virJSONValueGetType(obj) != VIR_JSON_TYPE_OBJECT) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Parsed JSON reply '%s' isn't an object"), line);
         goto cleanup;
@@ -1978,7 +1978,7 @@ qemuMonitorJSONGetBlockDev(virJSONValuePtr devices,
 {
     virJSONValuePtr dev = virJSONValueArrayGet(devices, idx);
 
-    if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
+    if (!dev || virJSONValueGetType(dev) != VIR_JSON_TYPE_OBJECT) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("query-block device entry was not in expected format"));
         return NULL;
@@ -2197,7 +2197,7 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
         const char *dev_name;
 
-        if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
+        if (!dev || virJSONValueGetType(dev) != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("blockstats device entry was not "
                              "in expected format"));
@@ -3276,7 +3276,7 @@ qemuMonitorJSONGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
     for (i = 0; i < virJSONValueArraySize(formats); i++) {
         virJSONValuePtr dumpformat = virJSONValueArrayGet(formats, i);
 
-        if (!dumpformat || dumpformat->type != VIR_JSON_TYPE_STRING) {
+        if (!dumpformat || virJSONValueGetType(dumpformat) != VIR_JSON_TYPE_STRING) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing entry in supported dump formats"));
             goto cleanup;
@@ -4791,7 +4791,7 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
         virJSONValuePtr inserted;
         const char *current_dev;
 
-        if (!temp_dev || temp_dev->type != VIR_JSON_TYPE_OBJECT) {
+        if (!temp_dev || virJSONValueGetType(temp_dev) != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("block_io_throttle device entry "
                              "was not in expected format"));
@@ -5261,7 +5261,7 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
             for (j = 0; j < len; j++) {
                 virJSONValuePtr blocker = virJSONValueArrayGet(blockers, j);
 
-                if (blocker->type != VIR_JSON_TYPE_STRING) {
+                if (virJSONValueGetType(blocker) != VIR_JSON_TYPE_STRING) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("unexpected value in unavailable-features "
                                      "array"));
@@ -5304,7 +5304,7 @@ qemuMonitorJSONParseCPUModelProperty(const char *key,
 
     prop = machine_model->props + machine_model->nprops;
 
-    switch ((virJSONType) value->type) {
+    switch ((virJSONType) virJSONValueGetType(value)) {
     case VIR_JSON_TYPE_STRING:
         if (VIR_STRDUP(prop->value.string, virJSONValueGetString(value)) < 0)
             return -1;
@@ -6193,7 +6193,7 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
         virJSONValuePtr cap = virJSONValueArrayGet(caps, i);
         const char *name;
 
-        if (!cap || cap->type != VIR_JSON_TYPE_OBJECT) {
+        if (!cap || virJSONValueGetType(cap) != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing entry in migration capabilities list"));
             goto cleanup;
@@ -6343,7 +6343,7 @@ qemuMonitorJSONGetGICCapabilities(qemuMonitorPtr mon,
         bool kernel;
         bool emulated;
 
-        if (!cap || cap->type != VIR_JSON_TYPE_OBJECT) {
+        if (!cap || virJSONValueGetType(cap) != VIR_JSON_TYPE_OBJECT) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing entry in GIC capabilities list"));
             goto cleanup;
