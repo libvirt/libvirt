@@ -56,7 +56,6 @@ int qemuInterfaceBridgeConnect(virDomainDefPtr def,
 
 int qemuInterfaceOpenVhostNet(virDomainDefPtr def,
                               virDomainNetDefPtr net,
-                              virQEMUCapsPtr qemuCaps,
                               int *vhostfd,
                               size_t *vhostfdSize);
 #endif /* __QEMU_INTERFACE_H__ */

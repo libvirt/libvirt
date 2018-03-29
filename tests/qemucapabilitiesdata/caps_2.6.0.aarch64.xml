@@ -4,7 +4,6 @@
   <selfvers>0</selfvers>
   <usedQMP/>
   <flag name='kvm'/>
-  <flag name='vhost-net'/>
   <flag name='nodefconfig'/>
   <flag name='boot-menu'/>
   <flag name='fsdev'/>

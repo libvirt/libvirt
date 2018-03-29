@@ -895,8 +895,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                                        tapfd, &tapfdSize) < 0)
             goto cleanup;
         iface_connected = true;
-        if (qemuInterfaceOpenVhostNet(vm->def, net, priv->qemuCaps,
-                                      vhostfd, &vhostfdSize) < 0)
+        if (qemuInterfaceOpenVhostNet(vm->def, net, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
         break;
 
@@ -916,8 +915,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                                        VIR_NETDEV_VPORT_PROFILE_OP_CREATE) < 0)
             goto cleanup;
         iface_connected = true;
-        if (qemuInterfaceOpenVhostNet(vm->def, net, priv->qemuCaps,
-                                      vhostfd, &vhostfdSize) < 0)
+        if (qemuInterfaceOpenVhostNet(vm->def, net, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
         break;
 
@@ -936,8 +934,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                                          tapfd, tapfdSize) < 0)
             goto cleanup;
         iface_connected = true;
-        if (qemuInterfaceOpenVhostNet(vm->def, net, priv->qemuCaps,
-                                      vhostfd, &vhostfdSize) < 0)
+        if (qemuInterfaceOpenVhostNet(vm->def, net, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
         break;
 

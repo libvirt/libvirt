@@ -8478,8 +8478,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
 
         memset(vhostfd, -1, vhostfdSize * sizeof(vhostfd[0]));
 
-        if (qemuInterfaceOpenVhostNet(def, net, qemuCaps,
-                                      vhostfd, &vhostfdSize) < 0)
+        if (qemuInterfaceOpenVhostNet(def, net, vhostfd, &vhostfdSize) < 0)
             goto cleanup;
     }
 
