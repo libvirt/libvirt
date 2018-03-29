@@ -56,7 +56,6 @@
   <flag name='block-job-async'/>
   <flag name='scsi-cd'/>
   <flag name='ide-cd'/>
-  <flag name='no-user-config'/>
   <flag name='hda-micro'/>
   <flag name='dump-guest-memory'/>
   <flag name='nec-usb-xhci'/>

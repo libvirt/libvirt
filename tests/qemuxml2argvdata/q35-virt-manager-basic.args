@@ -11,6 +11,7 @@ QEMU_AUDIO_DRV=spice \
 -m 4096 \
 -smp 2,sockets=2,cores=1,threads=1 \
 -uuid 1b826c23-8767-47ad-a6b5-c83a88277f71 \
+-no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,\
 path=/tmp/lib/domain--1-virt-manager-basic/monitor.sock,server,nowait \

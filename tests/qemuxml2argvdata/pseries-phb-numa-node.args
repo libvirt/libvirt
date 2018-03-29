@@ -18,6 +18,7 @@ policy=bind \
 -numa node,nodeid=1,cpus=4-7,memdev=ram-node1 \
 -uuid 87eedafe-eedc-4336-8130-ed9fe5dc90c8 \
 -nographic \
+-no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
 server,nowait \

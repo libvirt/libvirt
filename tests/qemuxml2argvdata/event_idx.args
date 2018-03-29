@@ -12,6 +12,7 @@ QEMU_AUDIO_DRV=none \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid bba65c0e-c049-934f-b6aa-4e2c0582acdf \
 -nographic \
+-no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-test/monitor.sock,\
 server,nowait \

@@ -17,6 +17,7 @@ share=yes,size=15032385536 \
 -numa node,nodeid=0,cpus=0-7,memdev=ram-node0 \
 -uuid 126f2720-6f8e-45ab-a886-ec9277079a67 \
 -nographic \
+-no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,\
 path=/tmp/lib/domain--1-instance-00000092/monitor.sock,server,nowait \

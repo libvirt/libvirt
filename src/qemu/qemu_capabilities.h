@@ -178,7 +178,7 @@ typedef enum {
     QEMU_CAPS_BLOCKJOB_ASYNC, /* new block-job-cancel, block-stream */
     QEMU_CAPS_SCSI_CD, /* -device scsi-cd */
     QEMU_CAPS_IDE_CD, /* -device ide-cd */
-    QEMU_CAPS_NO_USER_CONFIG, /* -no-user-config */
+    X_QEMU_CAPS_NO_USER_CONFIG, /* -no-user-config */
 
     /* 95 */
     QEMU_CAPS_HDA_MICRO, /* -device hda-micro */

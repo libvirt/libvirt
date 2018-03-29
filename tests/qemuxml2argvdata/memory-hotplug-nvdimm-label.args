@@ -16,6 +16,7 @@ share=no,size=536870912 \
 -device nvdimm,node=0,label-size=131072,memdev=memnvdimm0,id=nvdimm0,slot=0 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -nographic \
+-no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
 server,nowait \

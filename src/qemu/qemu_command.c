@@ -10079,10 +10079,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     }
 
     /* Disable global config files and default devices */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_USER_CONFIG))
-        virCommandAddArg(cmd, "-no-user-config");
-    else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NODEFCONFIG))
-        virCommandAddArg(cmd, "-nodefconfig");
+    virCommandAddArg(cmd, "-no-user-config");
     virCommandAddArg(cmd, "-nodefaults");
 
     if (qemuBuildSgaCommandLine(cmd, def, qemuCaps) < 0)

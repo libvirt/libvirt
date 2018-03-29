@@ -14,6 +14,7 @@ QEMU_AUDIO_DRV=none \
 -numa node,nodeid=1,cpus=8-15,mem=107 \
 -uuid 11dbdcdd-4c3b-482b-8903-9bdb8c0a2774 \
 -nographic \
+-no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,\
 path=/tmp/lib/domain--1-pcie-expander-bus-te/monitor.sock,server,nowait \

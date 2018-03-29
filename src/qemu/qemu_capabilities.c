@@ -3658,7 +3658,6 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_FSDEV_WRITEOUT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_WAKEUP);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_USER_CONFIG);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV_BRIDGE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SECCOMP_SANDBOX);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DTB);
