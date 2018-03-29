@@ -64,7 +64,6 @@
   <flag name='vnc-websocket'/>
   <flag name='drive-discard'/>
   <flag name='mlock'/>
-  <flag name='vnc-share-policy'/>
   <flag name='device-del-event'/>
   <flag name='dmi-to-pci-bridge'/>
   <flag name='usb-storage'/>

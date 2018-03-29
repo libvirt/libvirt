@@ -7648,13 +7648,6 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
     }
 
     if (graphics->data.vnc.sharePolicy) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_SHARE_POLICY)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("vnc display sharing policy is not "
-                             "supported with this QEMU"));
-            goto error;
-        }
-
         virBufferAsprintf(&opt, ",share=%s",
                           virDomainGraphicsVNCSharePolicyTypeToString(
                               graphics->data.vnc.sharePolicy));

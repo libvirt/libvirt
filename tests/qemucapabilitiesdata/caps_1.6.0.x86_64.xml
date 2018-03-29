@@ -77,7 +77,6 @@
   <flag name='mem-merge'/>
   <flag name='vnc-websocket'/>
   <flag name='mlock'/>
-  <flag name='vnc-share-policy'/>
   <flag name='device-del-event'/>
   <flag name='dmi-to-pci-bridge'/>
   <flag name='i440fx-pci-hole64-size'/>

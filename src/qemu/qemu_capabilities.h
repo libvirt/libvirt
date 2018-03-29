@@ -258,7 +258,7 @@ typedef enum {
     QEMU_CAPS_REALTIME_MLOCK, /* -realtime mlock=on|off */
 
     /* 150 */
-    QEMU_CAPS_VNC_SHARE_POLICY, /* set display sharing policy */
+    X_QEMU_CAPS_VNC_SHARE_POLICY, /* set display sharing policy */
     QEMU_CAPS_DEVICE_DEL_EVENT, /* DEVICE_DELETED event */
     QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, /* -device i82801b11-bridge */
     QEMU_CAPS_I440FX_PCI_HOLE64_SIZE, /* i440FX-pcihost.pci-hole64-size */
