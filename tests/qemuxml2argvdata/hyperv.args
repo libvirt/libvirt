@@ -19,5 +19,6 @@ hv_synic,hv_stimer,hv_reset,hv_vendor_id=KVM Hv' \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
 -boot n \
 -usb

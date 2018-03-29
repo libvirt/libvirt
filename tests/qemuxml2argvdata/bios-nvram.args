@@ -20,6 +20,7 @@ readonly=on \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-test-bios/monitor.sock,\
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
 -boot c \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \

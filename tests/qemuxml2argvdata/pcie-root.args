@@ -17,5 +17,6 @@ QEMU_AUDIO_DRV=none \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-q35-test/monitor.sock,\
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
 -no-acpi \
 -boot c

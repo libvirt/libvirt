@@ -17,6 +17,7 @@ QEMU_AUDIO_DRV=none \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-guest/monitor.sock,\
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
 -boot c \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x1 \
 -chardev pty,id=charconsole0 \

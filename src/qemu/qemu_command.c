@@ -6152,32 +6152,13 @@ qemuBuildClockCommandLine(virCommandPtr cmd,
                           virQEMUCapsPtr qemuCaps)
 {
     size_t i;
+    char *rtcopt;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_RTC)) {
-        char *rtcopt;
-        virCommandAddArg(cmd, "-rtc");
-        if (!(rtcopt = qemuBuildClockArgStr(&def->clock)))
-            return -1;
-        virCommandAddArg(cmd, rtcopt);
-        VIR_FREE(rtcopt);
-    } else {
-        switch (def->clock.offset) {
-        case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
-        case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
-            virCommandAddArg(cmd, "-localtime");
-            break;
-
-        case VIR_DOMAIN_CLOCK_OFFSET_UTC:
-            /* Nothing, its the default */
-            break;
-
-        default:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported clock offset '%s'"),
-                           virDomainClockOffsetTypeToString(def->clock.offset));
-            return -1;
-        }
-    }
+    virCommandAddArg(cmd, "-rtc");
+    if (!(rtcopt = qemuBuildClockArgStr(&def->clock)))
+        return -1;
+    virCommandAddArg(cmd, rtcopt);
+    VIR_FREE(rtcopt);
 
     if (def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE &&
         def->clock.data.timezone) {
@@ -6219,16 +6200,6 @@ qemuBuildClockCommandLine(virCommandPtr cmd,
                                    virDomainTimerTickpolicyTypeToString(def->clock.timers[i]->tickpolicy));
                     return -1;
                 }
-            } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_RTC) &&
-                       (def->clock.timers[i]->tickpolicy
-                        != VIR_DOMAIN_TIMER_TICKPOLICY_DELAY) &&
-                       (def->clock.timers[i]->tickpolicy != -1)) {
-                /* a non-default rtc policy was given, but there is no
-                   way to implement it in this version of qemu */
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unsupported rtc tickpolicy '%s'"),
-                               virDomainTimerTickpolicyTypeToString(def->clock.timers[i]->tickpolicy));
-                return -1;
             }
             break;
 

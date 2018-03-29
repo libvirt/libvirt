@@ -90,7 +90,7 @@ typedef enum {
     X_QEMU_CAPS_NETDEV, /* -netdev flag & netdev_add/remove */
 
     /* 30 */
-    QEMU_CAPS_RTC, /* The -rtc flag for clock options */
+    X_QEMU_CAPS_RTC, /* The -rtc flag for clock options */
     QEMU_CAPS_VHOST_NET, /* vhost-net support available */
     QEMU_CAPS_RTC_TD_HACK, /* -rtc-td-hack available */
     QEMU_CAPS_NO_HPET, /* -no-hpet flag is supported */
