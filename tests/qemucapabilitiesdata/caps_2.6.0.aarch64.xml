@@ -55,7 +55,6 @@
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
   <flag name='megasas'/>
-  <flag name='ipv6-migration'/>
   <flag name='machine-opt'/>
   <flag name='machine-usb-opt'/>
   <flag name='pci-bridge'/>

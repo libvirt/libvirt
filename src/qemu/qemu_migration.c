@@ -2085,7 +2085,6 @@ qemuMigrationDstPrepare(virDomainObjPtr vm,
     } else {
         bool encloseAddress = false;
         bool hostIPv6Capable = false;
-        bool qemuIPv6Capable = false;
         struct addrinfo *info = NULL;
         struct addrinfo hints = { .ai_flags = AI_ADDRCONFIG,
                                   .ai_socktype = SOCK_STREAM };
@@ -2095,16 +2094,9 @@ qemuMigrationDstPrepare(virDomainObjPtr vm,
             freeaddrinfo(info);
             hostIPv6Capable = true;
         }
-        qemuIPv6Capable = virQEMUCapsGet(priv->qemuCaps,
-                                         QEMU_CAPS_IPV6_MIGRATION);
 
         if (listenAddress) {
             if (virSocketAddrNumericFamily(listenAddress) == AF_INET6) {
-                if (!qemuIPv6Capable) {
-                    virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                                   _("qemu isn't capable of IPv6"));
-                    goto cleanup;
-                }
                 if (!hostIPv6Capable) {
                     virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                                    _("host isn't capable of IPv6"));
@@ -2115,7 +2107,7 @@ qemuMigrationDstPrepare(virDomainObjPtr vm,
             } else {
                 /* listenAddress is a hostname or IPv4 */
             }
-        } else if (qemuIPv6Capable && hostIPv6Capable) {
+        } else if (hostIPv6Capable) {
             /* Listen on :: instead of 0.0.0.0 if QEMU understands it
              * and there is at least one IPv6 address configured
              */
