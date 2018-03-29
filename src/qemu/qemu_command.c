@@ -6375,17 +6375,10 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
     }
 
     if (def->os.bootmenu) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_MENU)) {
-            if (def->os.bootmenu == VIR_TRISTATE_BOOL_YES)
-                virBufferAddLit(&boot_buf, "menu=on,");
-            else
-                virBufferAddLit(&boot_buf, "menu=off,");
-        } else {
-            /* We cannot emit an error when bootmenu is enabled but
-             * unsupported because of backward compatibility */
-            VIR_WARN("bootmenu is enabled but not "
-                     "supported by this QEMU binary");
-        }
+        if (def->os.bootmenu == VIR_TRISTATE_BOOL_YES)
+            virBufferAddLit(&boot_buf, "menu=on,");
+        else
+            virBufferAddLit(&boot_buf, "menu=off,");
     }
 
     if (def->os.bios.rt_set) {

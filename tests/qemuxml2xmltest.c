@@ -289,7 +289,7 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI);
     DO_TEST("bootindex-floppy-q35",
             QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI, QEMU_CAPS_BOOT_MENU,
+            QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_BOOTINDEX);
     DO_TEST("boot-multi", NONE);
     DO_TEST("boot-menu-enable-with-timeout", NONE);

@@ -19,7 +19,7 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-acpi \
--boot dc \
+-boot order=dc,menu=on \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
 -usb \
 -drive file=/var/lib/libvirt/images/f14.img,format=qcow2,if=none,\

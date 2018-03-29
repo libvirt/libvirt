@@ -19,7 +19,7 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-acpi \
--boot dc \
+-boot order=dc,menu=on \
 -usb \
 -drive file=/var/lib/libvirt/images/f14.img,format=qcow2,if=none,\
 id=drive-virtio-disk0 \

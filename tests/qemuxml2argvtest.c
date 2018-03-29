@@ -763,24 +763,19 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI);
     DO_TEST("bootindex-floppy-q35",
             QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI, QEMU_CAPS_BOOT_MENU,
+            QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_BOOTINDEX);
-    DO_TEST("boot-multi", QEMU_CAPS_BOOT_MENU);
-    DO_TEST("boot-menu-enable",
-            QEMU_CAPS_BOOT_MENU);
+    DO_TEST("boot-multi", NONE);
+    DO_TEST("boot-menu-enable", NONE);
     DO_TEST("boot-menu-enable-bootindex",
-            QEMU_CAPS_BOOT_MENU,
             QEMU_CAPS_BOOTINDEX);
     DO_TEST("boot-menu-enable-with-timeout",
-            QEMU_CAPS_BOOT_MENU,
             QEMU_CAPS_SPLASH_TIMEOUT);
-    DO_TEST_FAILURE("boot-menu-enable-with-timeout", QEMU_CAPS_BOOT_MENU);
+    DO_TEST_FAILURE("boot-menu-enable-with-timeout", NONE);
     DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout-invalid", NONE);
-    DO_TEST("boot-menu-disable", QEMU_CAPS_BOOT_MENU);
-    DO_TEST("boot-menu-disable-drive",
-            QEMU_CAPS_BOOT_MENU);
+    DO_TEST("boot-menu-disable", NONE);
+    DO_TEST("boot-menu-disable-drive", NONE);
     DO_TEST("boot-menu-disable-drive-bootindex",
-            QEMU_CAPS_BOOT_MENU,
             QEMU_CAPS_BOOTINDEX);
     DO_TEST_PARSE_ERROR("boot-dev+order",
             QEMU_CAPS_BOOTINDEX,
@@ -840,7 +835,6 @@ mymain(void)
     DO_TEST("controller-order",
             QEMU_CAPS_KVM,
             QEMU_CAPS_ENABLE_KVM,
-            QEMU_CAPS_BOOT_MENU,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_DRIVE_AIO,
             QEMU_CAPS_CCID_PASSTHRU,

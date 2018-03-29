@@ -19,7 +19,7 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-acpi \
--boot dc \
+-boot order=dc,menu=on \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
 -usb \
 -drive file=/dev/sdfake,format=qcow2,if=none,id=drive-virtio-disk0 \

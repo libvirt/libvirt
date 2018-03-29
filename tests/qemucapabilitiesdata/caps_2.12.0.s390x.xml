@@ -4,7 +4,6 @@
   <selfvers>0</selfvers>
   <usedQMP/>
   <flag name='enable-kvm'/>
-  <flag name='boot-menu'/>
   <flag name='fsdev'/>
   <flag name='name-process'/>
   <flag name='smbios-type'/>

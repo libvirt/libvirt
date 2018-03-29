@@ -18,7 +18,7 @@ QEMU_AUDIO_DRV=none \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
--boot c \
+-boot order=c,menu=on \
 -usb \
 -tpmdev passthrough,id=tpm-tpm0,path=/dev/tpm0,\
 cancel-path=/sys/class/misc/tpm0/device/cancel \
