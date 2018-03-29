@@ -4467,16 +4467,8 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
     }
 
     virBufferAddLit(&buf, ",host=");
-    if (pcisrc->addr.domain) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_HOST_PCI_MULTIDOMAIN)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("non-zero domain='%.4x' in host device PCI address "
-                             "not supported in this QEMU binary"),
-                           pcisrc->addr.domain);
-            goto error;
-        }
+    if (pcisrc->addr.domain)
         virBufferAsprintf(&buf, "%.4x:", pcisrc->addr.domain);
-    }
     virBufferAsprintf(&buf, "%.2x:%.2x.%.1x",
                       pcisrc->addr.bus, pcisrc->addr.slot,
                       pcisrc->addr.function);

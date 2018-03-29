@@ -1200,15 +1200,11 @@ mymain(void)
     DO_TEST("net-mcast", NONE);
     DO_TEST("net-udp", NONE);
     DO_TEST("net-hostdev", NONE);
-    DO_TEST("net-hostdev-multidomain",
-            QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
-    DO_TEST_FAILURE("net-hostdev-multidomain", NONE);
+    DO_TEST("net-hostdev-multidomain", NONE);
     DO_TEST("net-hostdev-vfio",
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("net-hostdev-vfio-multidomain",
-            QEMU_CAPS_DEVICE_VFIO_PCI, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
-    DO_TEST_FAILURE("net-hostdev-vfio-multidomain",
-                    QEMU_CAPS_DEVICE_VFIO_PCI);
+            QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_FAILURE("net-hostdev-fail",
                     QEMU_CAPS_DEVICE_VFIO_PCI);
 
@@ -1478,15 +1474,13 @@ mymain(void)
     DO_TEST("hostdev-vfio",
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio-multidomain",
-            QEMU_CAPS_DEVICE_VFIO_PCI, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
+            QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-mdev-precreated",
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_PARSE_ERROR("hostdev-mdev-src-address-invalid",
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_PARSE_ERROR("hostdev-mdev-invalid-target-address",
             QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST_FAILURE("hostdev-vfio-multidomain",
-                    QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pci-rom", NONE);
 
     DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, 0, GIC_NONE, NONE);
@@ -1734,17 +1728,14 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("pseries-hostdevs-1",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_HOST_PCI_MULTIDOMAIN,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pseries-hostdevs-2",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_HOST_PCI_MULTIDOMAIN,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pseries-hostdevs-3",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_HOST_PCI_MULTIDOMAIN,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_VFIO_PCI);
 
