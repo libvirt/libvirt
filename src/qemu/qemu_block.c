@@ -992,6 +992,25 @@ qemuBlockStorageSourceGetFileProps(virStorageSourcePtr src)
 }
 
 
+static virJSONValuePtr
+qemuBlockStorageSourceGetVvfatProps(virStorageSourcePtr src)
+{
+    virJSONValuePtr ret = NULL;
+
+    /* libvirt currently does not handle the following attributes:
+     * '*fat-type': 'int'
+     * '*label': 'str'
+     */
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:driver", "vvfat",
+                                          "s:dir", src->path,
+                                          "b:floppy", src->floppyimg,
+                                          "b:rw", !src->readonly, NULL));
+
+    return ret;
+}
+
+
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
@@ -1008,8 +1027,14 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
     switch ((virStorageType)actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
-    case VIR_STORAGE_TYPE_DIR:
         if (!(fileprops = qemuBlockStorageSourceGetFileProps(src)))
+            return NULL;
+        break;
+
+    case VIR_STORAGE_TYPE_DIR:
+        /* qemu handles directories by exposing them as a device with emulated
+         * FAT filesystem */
+        if (!(fileprops = qemuBlockStorageSourceGetVvfatProps(src)))
             return NULL;
         break;
 
