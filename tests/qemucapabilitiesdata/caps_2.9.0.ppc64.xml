@@ -19,7 +19,6 @@
   <flag name='usb-hub'/>
   <flag name='ich9-ahci'/>
   <flag name='virtio-blk-pci.scsi'/>
-  <flag name='drive-copy-on-read'/>
   <flag name='fsdev-writeout'/>
   <flag name='drive-iotune'/>
   <flag name='system_wakeup'/>

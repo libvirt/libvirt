@@ -1348,13 +1348,6 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk,
             return -1;
         }
 
-        if (disk->copy_on_read &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("copy_on_read is not supported by this QEMU binary"));
-            return -1;
-        }
-
         if (disk->discard &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DISCARD)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

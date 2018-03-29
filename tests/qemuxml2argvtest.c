@@ -950,8 +950,6 @@ mymain(void)
     DO_TEST("disk-drive-cache-v2-none", NONE);
     DO_TEST("disk-drive-cache-directsync", NONE);
     DO_TEST("disk-drive-cache-unsafe", NONE);
-    DO_TEST("disk-drive-copy-on-read",
-            QEMU_CAPS_DRIVE_COPY_ON_READ);
     DO_TEST("disk-drive-network-nbd", NONE);
     DO_TEST("disk-drive-network-nbd-export", NONE);
     DO_TEST("disk-drive-network-nbd-ipv6", NONE);
@@ -1036,7 +1034,6 @@ mymain(void)
             QEMU_CAPS_VIRTIO_TX_ALG,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("disk-copy_on_read",
-            QEMU_CAPS_DRIVE_COPY_ON_READ,
             QEMU_CAPS_VIRTIO_TX_ALG,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("disk-drive-discard",
