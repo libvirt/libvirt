@@ -20,6 +20,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -usb \

@@ -18,6 +18,7 @@ QEMU_AUDIO_DRV=none \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -boot d \
 -usb \
 -drive file=ftp://host.name:21/url/path/file.iso,format=raw,if=none,\

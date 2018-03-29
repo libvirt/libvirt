@@ -19,6 +19,7 @@ TZ=Europe/Paris \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=localtime \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -usb \

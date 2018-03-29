@@ -28,6 +28,7 @@ mem-path=/dev/hugepages2M/libvirt/qemu/-1-fedora,share=no,size=536870912 \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -boot c \
 -usb \
 -drive file=/var/lib/libvirt/images/fedora.qcow2,format=qcow2,if=none,\

@@ -20,6 +20,7 @@ BAR='' \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -usb \

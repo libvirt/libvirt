@@ -2110,13 +2110,7 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
      */
     if ((!useAgent) ||
         (ret < 0 && (acpiRequested || !flags))) {
-#if WITH_YAJL
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("ACPI reboot is not supported with this QEMU binary"));
-            goto endjob;
-        }
-#else
+#if !WITH_YAJL
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("ACPI reboot is not supported without the JSON monitor"));
         goto endjob;

@@ -20,6 +20,7 @@ file=/tmp/lib/domain--1-QEMUGuest2/master-key.aes \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x3 \

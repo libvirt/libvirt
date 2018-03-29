@@ -150,7 +150,7 @@ typedef enum {
     QEMU_CAPS_PCI_OHCI, /* -device pci-ohci */
     QEMU_CAPS_USB_REDIR, /* -device usb-redir */
     QEMU_CAPS_USB_HUB, /* -device usb-hub */
-    QEMU_CAPS_NO_SHUTDOWN, /* usable -no-shutdown */
+    X_QEMU_CAPS_NO_SHUTDOWN, /* usable -no-shutdown */
 
     /* 75 */
     QEMU_CAPS_DRIVE_CACHE_UNSAFE, /* Is cache=unsafe supported? */

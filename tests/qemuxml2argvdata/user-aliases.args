@@ -29,6 +29,7 @@ mem-path=/dev/hugepages1G/libvirt/qemu/-1-gentoo,size=1073741824 \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -global PIIX4_PM.disable_s3=0 \
 -global PIIX4_PM.disable_s4=0 \
 -boot cd \

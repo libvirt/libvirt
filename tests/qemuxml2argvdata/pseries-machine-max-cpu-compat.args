@@ -19,4 +19,5 @@ QEMU_AUDIO_DRV=none \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -boot c

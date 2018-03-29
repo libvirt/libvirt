@@ -20,5 +20,6 @@ hv_synic,hv_stimer,hv_reset,hv_vendor_id=KVM Hv' \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -boot n \
 -usb

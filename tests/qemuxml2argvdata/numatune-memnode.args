@@ -27,6 +27,7 @@ host-nodes=5,host-nodes=7,policy=bind \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -usb \

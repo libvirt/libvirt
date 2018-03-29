@@ -31,6 +31,7 @@ share=no,size=15032385536 \
 path=/tmp/lib/domain--1-instance-00000092/monitor.sock,server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -usb \

@@ -23,6 +23,7 @@ mem-path=/dev/hugepages1G/libvirt/qemu/-1-SomeDummyHugepagesGu,size=805306368 \
 path=/tmp/lib/domain--1-SomeDummyHugepagesGu/monitor.sock,server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -usb \

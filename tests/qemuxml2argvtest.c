@@ -1647,8 +1647,6 @@ mymain(void)
             QEMU_CAPS_SCSI_LSI);
 
     DO_TEST("monitor-json", NONE);
-    DO_TEST("no-shutdown",
-            QEMU_CAPS_NO_SHUTDOWN);
 
     DO_TEST("seclabel-dynamic", NONE);
     DO_TEST("seclabel-dynamic-baselabel", NONE);

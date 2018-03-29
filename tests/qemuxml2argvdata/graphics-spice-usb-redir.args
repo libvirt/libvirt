@@ -17,6 +17,7 @@ QEMU_AUDIO_DRV=spice \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -device ich9-usb-ehci1,id=usb,bus=pci.0,addr=0x4.0x7 \

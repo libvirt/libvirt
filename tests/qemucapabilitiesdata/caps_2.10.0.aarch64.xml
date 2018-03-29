@@ -17,7 +17,6 @@
   <flag name='vt82c686b-usb-uhci'/>
   <flag name='pci-ohci'/>
   <flag name='usb-hub'/>
-  <flag name='no-shutdown'/>
   <flag name='cache-unsafe'/>
   <flag name='ich9-ahci'/>
   <flag name='no-acpi'/>

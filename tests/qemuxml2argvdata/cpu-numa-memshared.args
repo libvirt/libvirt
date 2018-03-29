@@ -26,6 +26,7 @@ share=no,size=112197632 \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -no-acpi \
 -boot n \
 -usb \

@@ -19,6 +19,7 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -global kvm-pit.lost_tick_policy=delay \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -usb \

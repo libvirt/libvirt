@@ -18,6 +18,7 @@ QEMU_AUDIO_DRV=none \
 nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -no-acpi \
 -global ICH9-LPC.disable_s3=1 \
 -global ICH9-LPC.disable_s4=1 \

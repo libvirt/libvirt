@@ -19,6 +19,7 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-kvm-pit-reinjection \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -usb \

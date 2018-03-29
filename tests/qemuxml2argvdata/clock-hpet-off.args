@@ -20,6 +20,7 @@ server,nowait \
 -rtc base=utc,driftfix=slew \
 -no-kvm-pit-reinjection \
 -no-hpet \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -usb \

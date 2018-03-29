@@ -6224,10 +6224,8 @@ qemuBuildPMCommandLine(virCommandPtr cmd,
      * when QEMU stops. If we use no-shutdown, then we can
      * watch for this event and do a soft/warm reboot.
      */
-    if (priv->monJSON && priv->allowReboot == VIR_TRISTATE_BOOL_YES &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
+    if (priv->monJSON && priv->allowReboot == VIR_TRISTATE_BOOL_YES)
         virCommandAddArg(cmd, "-no-shutdown");
-    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI)) {
         if (def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON)

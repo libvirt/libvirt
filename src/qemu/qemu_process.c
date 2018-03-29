@@ -7484,17 +7484,10 @@ qemuProcessReconnect(void *opaque)
         /* We can't get the monitor back, so must kill the VM
          * to remove danger of it ending up running twice if
          * user tries to start it again later
-         */
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NO_SHUTDOWN)) {
-            /* If we couldn't get the monitor and qemu supports
-             * no-shutdown, we can safely say that the domain
-             * crashed ... */
-            state = VIR_DOMAIN_SHUTOFF_CRASHED;
-        } else {
-            /* ... but if it doesn't we can't say what the state
-             * really is and FAILED means "failed to start" */
-            state = VIR_DOMAIN_SHUTOFF_UNKNOWN;
-        }
+         * If we couldn't get the monitor since QEMU supports
+         * no-shutdown, we can safely say that the domain
+         * crashed ... */
+        state = VIR_DOMAIN_SHUTOFF_CRASHED;
         /* If BeginJob failed, we jumped here without a job, let's hope another
          * thread didn't have a chance to start playing with the domain yet
          * (it's all we can do anyway).

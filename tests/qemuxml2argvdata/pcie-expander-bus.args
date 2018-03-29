@@ -20,6 +20,7 @@ QEMU_AUDIO_DRV=none \
 path=/tmp/lib/domain--1-pcie-expander-bus-te/monitor.sock,server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -no-acpi \
 -boot c \
 -device pxb-pcie,bus_nr=254,id=pci.1,numa_node=0,bus=pcie.0,addr=0x4 \

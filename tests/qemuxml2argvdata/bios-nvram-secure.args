@@ -22,6 +22,7 @@ readonly=on \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
+-no-shutdown \
 -boot order=c,menu=on \
 -device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1e \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0 \
