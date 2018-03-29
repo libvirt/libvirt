@@ -139,7 +139,7 @@ typedef enum {
     QEMU_CAPS_VIRTIO_NET_EVENT_IDX, /* virtio-net-pci.event_idx */
 
     /* 65 */
-    QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC, /* Is cache=directsync supported? */
+    X_QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC, /* Is cache=directsync supported? */
     QEMU_CAPS_PIIX3_USB_UHCI, /* -device piix3-usb-uhci */
     QEMU_CAPS_PIIX4_USB_UHCI, /* -device piix4-usb-uhci */
     QEMU_CAPS_USB_EHCI, /* -device usb-ehci */

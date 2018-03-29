@@ -948,8 +948,7 @@ mymain(void)
     DO_TEST("disk-drive-cache-v2-wt", NONE);
     DO_TEST("disk-drive-cache-v2-wb", NONE);
     DO_TEST("disk-drive-cache-v2-none", NONE);
-    DO_TEST("disk-drive-cache-directsync",
-            QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC);
+    DO_TEST("disk-drive-cache-directsync", NONE);
     DO_TEST("disk-drive-cache-unsafe",
             QEMU_CAPS_DRIVE_CACHE_UNSAFE);
     DO_TEST("disk-drive-copy-on-read",

@@ -12,7 +12,6 @@
   <flag name='virtio-blk-pci.ioeventfd'/>
   <flag name='virtio-blk-pci.event_idx'/>
   <flag name='virtio-net-pci.event_idx'/>
-  <flag name='cache-directsync'/>
   <flag name='piix3-usb-uhci'/>
   <flag name='piix4-usb-uhci'/>
   <flag name='usb-ehci'/>

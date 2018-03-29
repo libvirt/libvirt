@@ -9,7 +9,6 @@
   <flag name='virtio-blk-pci.ioeventfd'/>
   <flag name='virtio-blk-pci.event_idx'/>
   <flag name='virtio-net-pci.event_idx'/>
-  <flag name='cache-directsync'/>
   <flag name='no-shutdown'/>
   <flag name='cache-unsafe'/>
   <flag name='fsdev-readonly'/>
