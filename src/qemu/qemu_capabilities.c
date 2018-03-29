@@ -3626,7 +3626,6 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_FSDEV_READONLY);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_FSDEV_WRITEOUT);

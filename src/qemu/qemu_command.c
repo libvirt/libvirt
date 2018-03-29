@@ -1348,13 +1348,6 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk,
             return -1;
         }
 
-        if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_UNSAFE &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk cache mode 'unsafe' is not supported by this QEMU"));
-            return -1;
-        }
-
         if (disk->copy_on_read &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

@@ -153,7 +153,7 @@ typedef enum {
     X_QEMU_CAPS_NO_SHUTDOWN, /* usable -no-shutdown */
 
     /* 75 */
-    QEMU_CAPS_DRIVE_CACHE_UNSAFE, /* Is cache=unsafe supported? */
+    X_QEMU_CAPS_DRIVE_CACHE_UNSAFE, /* Is cache=unsafe supported? */
     X_QEMU_CAPS_PCI_ROMBAR, /* -device rombar=0|1 */
     QEMU_CAPS_ICH9_AHCI, /* -device ich9-ahci */
     QEMU_CAPS_NO_ACPI, /* -no-acpi */
