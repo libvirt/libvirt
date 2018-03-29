@@ -4117,6 +4117,13 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src)
         return -1;
     }
 
+    if (src->format == VIR_STORAGE_FILE_DIR) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'directory' storage format is not directly supported by QEMU, "
+                         "use 'dir' disk type instead"));
+        return -1;
+    }
+
     return 0;
 }
 
