@@ -1949,21 +1949,18 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
                       int count,
                       virHashTablePtr info)
 {
+    char *id = NULL;
     size_t i;
+    int ret = -1;
 
     for (i = 0; i < count; i++) {
         virDomainChrDefPtr chr = devices[i];
         if (chr->source->type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            char id[32];
             qemuMonitorChardevInfoPtr entry;
 
-            if (snprintf(id, sizeof(id), "char%s",
-                         chr->info.alias) >= sizeof(id)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to format device alias "
-                                 "for PTY retrieval"));
+            VIR_FREE(id);
+            if (virAsprintf(&id, "char%s", chr->info.alias) < 0)
                 return -1;
-            }
 
             entry = virHashLookup(info, id);
             if (!entry || !entry->ptyPath) {
@@ -1973,7 +1970,7 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
                      */
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("no assigned pty for device %s"), id);
-                    return -1;
+                    goto cleanup;
                 } else {
                     /* 'info chardev' had no pty path for this chardev,
                      * but the log output had, so we're fine
@@ -1984,11 +1981,14 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
 
             VIR_FREE(chr->source->data.file.path);
             if (VIR_STRDUP(chr->source->data.file.path, entry->ptyPath) < 0)
-                return -1;
+                goto cleanup;
         }
     }
 
-    return 0;
+    ret = 0;
+ cleanup:
+    VIR_FREE(id);
+    return ret;
 }
 
 static int
@@ -2040,7 +2040,8 @@ qemuProcessRefreshChannelVirtioState(virQEMUDriverPtr driver,
     int agentReason = VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL;
     qemuMonitorChardevInfoPtr entry;
     virObjectEventPtr event = NULL;
-    char id[32];
+    char *id = NULL;
+    int ret = -1;
 
     if (booted)
         agentReason = VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_DOMAIN_STARTED;
@@ -2048,13 +2049,10 @@ qemuProcessRefreshChannelVirtioState(virQEMUDriverPtr driver,
     for (i = 0; i < vm->def->nchannels; i++) {
         virDomainChrDefPtr chr = vm->def->channels[i];
         if (chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
-            if (snprintf(id, sizeof(id), "char%s",
-                         chr->info.alias) >= sizeof(id)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("failed to format device alias "
-                                 "for PTY retrieval"));
-                return -1;
-            }
+
+            VIR_FREE(id);
+            if (virAsprintf(&id, "char%s", chr->info.alias) < 0)
+                goto cleanup;
 
             /* port state not reported */
             if (!(entry = virHashLookup(info, id)) ||
@@ -2071,7 +2069,10 @@ qemuProcessRefreshChannelVirtioState(virQEMUDriverPtr driver,
         }
     }
 
-    return 0;
+    ret = 0;
+ cleanup:
+    VIR_FREE(id);
+    return ret;
 }
 
 
