@@ -8153,18 +8153,11 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
 static int
 qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
                              virCommandPtr cmd,
-                             virDomainDefPtr def,
                              virQEMUCapsPtr qemuCaps,
                              virDomainGraphicsDefPtr graphics)
 {
     switch (graphics->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("sdl not supported by '%s'"), def->emulator);
-            return -1;
-        }
-
         if (graphics->data.sdl.xauth)
             virCommandAddEnvPair(cmd, "XAUTHORITY", graphics->data.sdl.xauth);
         if (graphics->data.sdl.display)
@@ -10136,7 +10129,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         goto error;
 
     for (i = 0; i < def->ngraphics; ++i) {
-        if (qemuBuildGraphicsCommandLine(cfg, cmd, def, qemuCaps,
+        if (qemuBuildGraphicsCommandLine(cfg, cmd, qemuCaps,
                                          def->graphics[i]) < 0)
             goto error;
     }

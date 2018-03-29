@@ -1138,8 +1138,9 @@ mymain(void)
     VIR_FREE(driver.config->vncSASLdir);
     VIR_FREE(driver.config->vncTLSx509certdir);
 
-    DO_TEST("graphics-sdl", QEMU_CAPS_SDL, QEMU_CAPS_DEVICE_VGA);
-    DO_TEST("graphics-sdl-fullscreen", QEMU_CAPS_SDL,
+    DO_TEST("graphics-sdl",
+            QEMU_CAPS_DEVICE_VGA);
+    DO_TEST("graphics-sdl-fullscreen",
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("nographics", NONE);
     DO_TEST("nographics-display",

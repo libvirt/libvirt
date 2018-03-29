@@ -85,7 +85,7 @@ typedef enum {
     /* 25 */
     X_QEMU_CAPS_BALLOON, /* -balloon available */
     X_QEMU_CAPS_DEVICE, /* Is the -device arg available */
-    QEMU_CAPS_SDL, /* Is the new -sdl arg available */
+    X_QEMU_CAPS_SDL, /* Is the new -sdl arg available */
     X_QEMU_CAPS_SMP_TOPOLOGY, /* -smp has sockets/cores/threads */
     X_QEMU_CAPS_NETDEV, /* -netdev flag & netdev_add/remove */
 
