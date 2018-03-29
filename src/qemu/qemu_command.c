@@ -7068,8 +7068,7 @@ qemuBuildNameCommandLine(virCommandPtr cmd,
 
     virQEMUBuildBufferEscapeComma(&buf, def->name);
 
-    if (cfg->setProcessName &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME_PROCESS))
+    if (cfg->setProcessName)
         virBufferAsprintf(&buf, ",process=qemu:%s", def->name);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME_DEBUG_THREADS))

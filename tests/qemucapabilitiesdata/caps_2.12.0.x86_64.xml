@@ -6,7 +6,6 @@
   <flag name='kvm'/>
   <flag name='no-hpet'/>
   <flag name='no-kvm-pit'/>
-  <flag name='name-process'/>
   <flag name='smbios-type'/>
   <flag name='spice'/>
   <flag name='vga-none'/>
