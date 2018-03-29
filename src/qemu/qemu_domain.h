@@ -154,7 +154,9 @@ struct _qemuDomainJobInfo {
     qemuDomainMirrorStats mirrorStats;
 };
 
-struct qemuDomainJobObj {
+typedef struct _qemuDomainJobObj qemuDomainJobObj;
+typedef qemuDomainJobObj *qemuDomainJobObjPtr;
+struct _qemuDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
     qemuDomainJob active;               /* Currently running job */
     unsigned long long owner;           /* Thread id which set current job */
@@ -254,7 +256,7 @@ typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
 struct _qemuDomainObjPrivate {
     virQEMUDriverPtr driver;
 
-    struct qemuDomainJobObj job;
+    qemuDomainJobObj job;
 
     virBitmapPtr namespaces;
 
@@ -513,7 +515,7 @@ void qemuDomainObjSetJobPhase(virQEMUDriverPtr driver,
 void qemuDomainObjSetAsyncJobMask(virDomainObjPtr obj,
                                   unsigned long long allowedJobs);
 void qemuDomainObjRestoreJob(virDomainObjPtr obj,
-                             struct qemuDomainJobObj *job);
+                             qemuDomainJobObjPtr job);
 void qemuDomainObjDiscardAsyncJob(virQEMUDriverPtr driver,
                                   virDomainObjPtr obj);
 void qemuDomainObjReleaseAsyncJob(virDomainObjPtr obj);

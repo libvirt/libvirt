@@ -309,7 +309,7 @@ qemuDomainObjInitJob(qemuDomainObjPrivatePtr priv)
 static void
 qemuDomainObjResetJob(qemuDomainObjPrivatePtr priv)
 {
-    struct qemuDomainJobObj *job = &priv->job;
+    qemuDomainJobObjPtr job = &priv->job;
 
     job->active = QEMU_JOB_NONE;
     job->owner = 0;
@@ -320,7 +320,7 @@ qemuDomainObjResetJob(qemuDomainObjPrivatePtr priv)
 static void
 qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
 {
-    struct qemuDomainJobObj *job = &priv->job;
+    qemuDomainJobObjPtr job = &priv->job;
 
     job->asyncJob = QEMU_ASYNC_JOB_NONE;
     job->asyncOwner = 0;
@@ -342,7 +342,7 @@ qemuDomainObjResetAsyncJob(qemuDomainObjPrivatePtr priv)
 
 void
 qemuDomainObjRestoreJob(virDomainObjPtr obj,
-                        struct qemuDomainJobObj *job)
+                        qemuDomainJobObjPtr job)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
 
