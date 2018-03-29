@@ -7295,21 +7295,39 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
             goto cleanup;
 
         if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON) {
-            if (def->gic_version != VIR_GIC_VERSION_NONE) {
-                /* The default GIC version (GICv2) should not be specified on
-                 * the QEMU commandline for backwards compatibility reasons */
-                if (def->gic_version != VIR_GIC_VERSION_2) {
-                    if (!virQEMUCapsGet(qemuCaps,
-                                        QEMU_CAPS_MACH_VIRT_GIC_VERSION)) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("gic-version option is not available "
-                                         "with this QEMU binary"));
-                        goto cleanup;
-                    }
+            bool hasGICVersionOption = virQEMUCapsGet(qemuCaps,
+                                                      QEMU_CAPS_MACH_VIRT_GIC_VERSION);
 
-                    virBufferAsprintf(&buf, ",gic-version=%s",
-                                      virGICVersionTypeToString(def->gic_version));
+            switch ((virGICVersion) def->gic_version) {
+            case VIR_GIC_VERSION_2:
+                if (!hasGICVersionOption) {
+                    /* If the gic-version option is not available, we can't
+                     * configure the GIC; however, we know that before the
+                     * option was introduced the guests would always get a
+                     * GICv2, so in order to maintain compatibility with
+                     * those old QEMU versions all we need to do is stop
+                     * early instead of erroring out */
+                    break;
                 }
+                ATTRIBUTE_FALLTHROUGH;
+
+            case VIR_GIC_VERSION_3:
+            case VIR_GIC_VERSION_HOST:
+                if (!hasGICVersionOption) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("gic-version option is not available "
+                                     "with this QEMU binary"));
+                    goto cleanup;
+                }
+
+                virBufferAsprintf(&buf, ",gic-version=%s",
+                                  virGICVersionTypeToString(def->gic_version));
+                break;
+
+            case VIR_GIC_VERSION_NONE:
+            case VIR_GIC_VERSION_LAST:
+            default:
+                break;
             }
         }
 
