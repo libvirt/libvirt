@@ -6,7 +6,6 @@
   <flag name='kvm'/>
   <flag name='no-hpet'/>
   <flag name='no-kvm-pit'/>
-  <flag name='nodefconfig'/>
   <flag name='boot-menu'/>
   <flag name='fsdev'/>
   <flag name='name-process'/>

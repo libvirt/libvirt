@@ -823,7 +823,7 @@ mymain(void)
     DO_TEST("q35-noacpi-nouefi", NONE);
     DO_TEST("q35-acpi-nouefi", NONE);
 
-    DO_TEST("clock-utc", QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("clock-utc", NONE);
     DO_TEST("clock-localtime", NONE);
     DO_TEST("clock-localtime-basis-localtime", NONE);
     DO_TEST("clock-variable", NONE);
@@ -939,10 +939,8 @@ mymain(void)
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("floppy-drive-fat",
             QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST("disk-drive-readonly-disk",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("disk-drive-readonly-no-device",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("disk-drive-readonly-disk", NONE);
+    DO_TEST("disk-drive-readonly-no-device", NONE);
     DO_TEST("disk-drive-fmt-qcow",
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST_PARSE_ERROR("disk-drive-fmt-cow", QEMU_CAPS_DRIVE_BOOT);
@@ -975,7 +973,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("disk-drive-network-iscsi-auth-wrong-secrettype", NONE);
     DO_TEST_PARSE_ERROR("disk-drive-network-source-auth-both", NONE);
     DO_TEST("disk-drive-network-iscsi-lun",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_VIRTIO_SCSI,
+            QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_BLOCK);
     DO_TEST("disk-drive-network-gluster",
             QEMU_CAPS_GLUSTER_DEBUG_LEVEL);
@@ -1001,66 +999,49 @@ mymain(void)
                         QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST_FAILURE("disk-usb-nosupport", NONE);
     DO_TEST("disk-usb-device",
-            QEMU_CAPS_DEVICE_USB_STORAGE,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST("disk-usb-device-removable",
             QEMU_CAPS_DEVICE_USB_STORAGE,
-            QEMU_CAPS_USB_STORAGE_REMOVABLE, QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_USB_STORAGE_REMOVABLE);
     DO_TEST_FAILURE("disk-usb-pci",
-                    QEMU_CAPS_DEVICE_USB_STORAGE, QEMU_CAPS_NODEFCONFIG);
+                    QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST("disk-scsi-device",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_LSI);
     DO_TEST("disk-scsi-device-auto",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_LSI);
     DO_TEST("disk-scsi-disk-split",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-scsi-disk-wwn",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-scsi-disk-vpd",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST_FAILURE("disk-scsi-disk-vpd-build-error",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_DISK_WWN);
-    DO_TEST("disk-scsi-vscsi",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("disk-scsi-vscsi", NONE);
     DO_TEST("disk-scsi-virtio-scsi",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-virtio-scsi-num_queues",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-virtio-scsi-cmd_per_lun",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-virtio-scsi-max_sectors",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-virtio-scsi-ioeventfd",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_IOEVENTFD, QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-scsi-megasas",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_MEGASAS);
     DO_TEST("disk-scsi-mptsas1068",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_MPTSAS1068,
             QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-sata-device",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_ICH9_AHCI);
+            QEMU_CAPS_ICH9_AHCI);
     DO_TEST("disk-aio",
             QEMU_CAPS_DRIVE_AIO);
-    DO_TEST("disk-source-pool",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("disk-source-pool-mode",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("disk-source-pool", NONE);
+    DO_TEST("disk-source-pool-mode", NONE);
     DO_TEST("disk-ioeventfd",
             QEMU_CAPS_VIRTIO_IOEVENTFD,
             QEMU_CAPS_VIRTIO_TX_ALG,
@@ -1077,7 +1058,7 @@ mymain(void)
     DO_TEST("disk-snapshot", NONE);
     DO_TEST_PARSE_ERROR("disk-same-targets",
                         QEMU_CAPS_SCSI_LSI,
-                        QEMU_CAPS_DEVICE_USB_STORAGE, QEMU_CAPS_NODEFCONFIG);
+                        QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST_PARSE_ERROR("disk-drive-address-conflict",
                         QEMU_CAPS_ICH9_AHCI);
     DO_TEST_PARSE_ERROR("disk-hostdev-scsi-address-conflict",
@@ -1164,7 +1145,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_CHARDEV_SPICEVMC,
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-spice-compression",
             QEMU_CAPS_SPICE,
@@ -1179,7 +1159,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL);
     DO_TEST("graphics-spice-usb-redir",
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
@@ -1224,11 +1203,9 @@ mymain(void)
     DO_TEST("net-user-addr", NONE);
     DO_TEST("net-virtio", NONE);
     DO_TEST("net-virtio-device",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_VIRTIO_TX_ALG);
-    DO_TEST("net-virtio-disable-offloads",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("net-virtio-netdev",
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_VIRTIO_TX_ALG);
+    DO_TEST("net-virtio-disable-offloads", NONE);
+    DO_TEST("net-virtio-netdev", NONE);
     DO_TEST("net-virtio-s390",
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST("net-virtio-ccw",
@@ -1245,23 +1222,17 @@ mymain(void)
     DO_TEST("net-server", NONE);
     DO_TEST("net-mcast", NONE);
     DO_TEST("net-udp", NONE);
-    DO_TEST("net-hostdev",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("net-hostdev", NONE);
     DO_TEST("net-hostdev-multidomain",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
-    DO_TEST_FAILURE("net-hostdev-multidomain",
-                    QEMU_CAPS_NODEFCONFIG);
+    DO_TEST_FAILURE("net-hostdev-multidomain", NONE);
     DO_TEST("net-hostdev-vfio",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("net-hostdev-vfio-multidomain",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
     DO_TEST_FAILURE("net-hostdev-vfio-multidomain",
-                    QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VFIO_PCI);
+                    QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_FAILURE("net-hostdev-fail",
-                    QEMU_CAPS_NODEFCONFIG,
                     QEMU_CAPS_DEVICE_VFIO_PCI);
 
 
@@ -1270,7 +1241,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_CHARDEV_LOGFILE);
     DO_TEST("serial-spiceport",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE,
@@ -1284,46 +1254,34 @@ mymain(void)
             QEMU_CAPS_DEVICE_ISA_SERIAL);
 
     DO_TEST("serial-vc-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("serial-pty-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("serial-dev-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("serial-dev-chardev-iobase",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("serial-file-chardev",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_CHARDEV_FILE_APPEND);
     DO_TEST("serial-unix-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("serial-tcp-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("serial-udp-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("serial-tcp-telnet-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     driver.config->chardevTLS = 1;
     DO_TEST("serial-tcp-tlsx509-chardev",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
     driver.config->chardevTLSx509verify = 1;
     DO_TEST("serial-tcp-tlsx509-chardev-verify",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
     driver.config->chardevTLSx509verify = 0;
     DO_TEST("serial-tcp-tlsx509-chardev-notls",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
     VIR_FREE(driver.config->chardevTLSx509certdir);
@@ -1334,13 +1292,11 @@ mymain(void)
         return EXIT_FAILURE;
 # ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
     DO_TEST("serial-tcp-tlsx509-secret-chardev",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_OBJECT_SECRET,
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
 # else
     DO_TEST_FAILURE("serial-tcp-tlsx509-secret-chardev",
-                    QEMU_CAPS_NODEFCONFIG,
                     QEMU_CAPS_OBJECT_SECRET,
                     QEMU_CAPS_DEVICE_ISA_SERIAL,
                     QEMU_CAPS_OBJECT_TLS_CREDS_X509);
@@ -1348,156 +1304,109 @@ mymain(void)
     driver.config->chardevTLS = 0;
     VIR_FREE(driver.config->chardevTLSx509certdir);
     DO_TEST("serial-many-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("parallel-tcp-chardev",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("parallel-parport-chardev",
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
+    DO_TEST("parallel-tcp-chardev", NONE);
+    DO_TEST("parallel-parport-chardev", NONE);
     DO_TEST("console-compat-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("pci-serial-dev-chardev",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_PCI_SERIAL);
 
-    DO_TEST("channel-guestfwd",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("channel-virtio",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("channel-virtio-state",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("channel-virtio-auto",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("channel-virtio-autoassign",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("channel-virtio-autoadd",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("console-virtio",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("channel-guestfwd", NONE);
+    DO_TEST("channel-virtio", NONE);
+    DO_TEST("channel-virtio-state", NONE);
+    DO_TEST("channel-virtio-auto", NONE);
+    DO_TEST("channel-virtio-autoassign", NONE);
+    DO_TEST("channel-virtio-autoadd", NONE);
+    DO_TEST("console-virtio", NONE);
     DO_TEST("console-virtio-many",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST("console-virtio-s390",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST("console-virtio-ccw",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_VIRTIO_CCW,
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST("console-sclp",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_SCLPCONSOLE);
     DO_TEST("channel-spicevmc",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("channel-spicevmc-old",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_SPICEVMC,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("channel-virtio-default",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_CHARDEV_SPICEVMC);
-    DO_TEST("channel-virtio-unix",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("channel-virtio-unix", NONE);
 
     DO_TEST("smartcard-host",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_CCID_EMULATED);
     DO_TEST("smartcard-host-certificates",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_CCID_EMULATED);
     DO_TEST("smartcard-passthrough-tcp",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_CCID_PASSTHRU);
     DO_TEST("smartcard-passthrough-spicevmc",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_CCID_PASSTHRU,
             QEMU_CAPS_CHARDEV_SPICEVMC);
     DO_TEST("smartcard-controller",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_CCID_EMULATED);
 
     DO_TEST("chardev-reconnect",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_CHARDEV_RECONNECT,
             QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_EGD,
             QEMU_CAPS_CCID_PASSTHRU);
     DO_TEST_PARSE_ERROR("chardev-reconnect-invalid-timeout",
-                        QEMU_CAPS_NODEFCONFIG,
                         QEMU_CAPS_CHARDEV_RECONNECT);
     DO_TEST_PARSE_ERROR("chardev-reconnect-generated-path",
-                        QEMU_CAPS_NODEFCONFIG,
                         QEMU_CAPS_CHARDEV_RECONNECT);
 
-    DO_TEST("usb-controller",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("usb-controller", NONE);
     DO_TEST("usb-piix3-controller",
-            QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_PIIX3_USB_UHCI);
     DO_TEST("usb-ich9-ehci-addr",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_ICH9_USB_EHCI1);
-    DO_TEST("input-usbmouse-addr",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("input-usbmouse-addr", NONE);
     DO_TEST("usb-ich9-companion",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_ICH9_USB_EHCI1);
     DO_TEST_PARSE_ERROR("usb-ich9-no-companion",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_ICH9_USB_EHCI1);
     DO_TEST("usb-ich9-autoassign",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_HUB);
     DO_TEST("usb-hub",
-            QEMU_CAPS_USB_HUB,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_USB_HUB);
     DO_TEST("usb-hub-autoadd",
-            QEMU_CAPS_USB_HUB,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_USB_HUB);
     DO_TEST("usb-hub-autoadd-deluxe",
-            QEMU_CAPS_USB_HUB,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_USB_HUB);
     DO_TEST_PARSE_ERROR("usb-hub-conflict",
-            QEMU_CAPS_USB_HUB,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_USB_HUB);
     DO_TEST_PARSE_ERROR("usb-hub-nonexistent",
-            QEMU_CAPS_USB_HUB,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_USB_HUB);
     DO_TEST("usb-port-missing",
-            QEMU_CAPS_USB_HUB,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_USB_HUB);
     DO_TEST_FAILURE("usb-bus-missing",
-                    QEMU_CAPS_USB_HUB,
-                    QEMU_CAPS_NODEFCONFIG);
+                    QEMU_CAPS_USB_HUB);
     DO_TEST("usb-ports",
-            QEMU_CAPS_USB_HUB,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_USB_HUB);
     DO_TEST_PARSE_ERROR("usb-ports-out-of-range",
-            QEMU_CAPS_USB_HUB,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_USB_HUB);
     DO_TEST("usb-port-autoassign",
-            QEMU_CAPS_USB_HUB,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_USB_HUB);
     DO_TEST("usb-redir",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_CHARDEV_SPICEVMC);
     DO_TEST("usb-redir-boot",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
@@ -1506,7 +1415,6 @@ mymain(void)
             QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_USB_REDIR_BOOTINDEX);
     DO_TEST("usb-redir-filter",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
@@ -1514,25 +1422,19 @@ mymain(void)
             QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_USB_REDIR_FILTER);
     DO_TEST("usb-redir-filter-version",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_USB_REDIR_FILTER);
     DO_TEST("usb1-usb2",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1);
-    DO_TEST("usb-none",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST_PARSE_ERROR("usb-none-other",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("usb-none", NONE);
+    DO_TEST_PARSE_ERROR("usb-none-other", NONE);
     DO_TEST_PARSE_ERROR("usb-none-hub",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_USB_HUB);
-    DO_TEST_PARSE_ERROR("usb-none-usbtablet",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST_PARSE_ERROR("usb-none-usbtablet", NONE);
     DO_TEST("usb-controller-default-q35",
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_PCI_OHCI,
@@ -1552,18 +1454,15 @@ mymain(void)
                     QEMU_CAPS_PCI_OHCI,
                     QEMU_CAPS_PIIX3_USB_UHCI);
     DO_TEST("usb-controller-xhci",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_NEC_USB_XHCI,
             QEMU_CAPS_NEC_USB_XHCI_PORTS);
     DO_TEST("usb-xhci-autoassign",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_NEC_USB_XHCI,
             QEMU_CAPS_NEC_USB_XHCI_PORTS,
             QEMU_CAPS_USB_HUB);
     DO_TEST_PARSE_ERROR("usb-controller-xhci-limit",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_NEC_USB_XHCI,
             QEMU_CAPS_NEC_USB_XHCI_PORTS);
@@ -1577,67 +1476,56 @@ mymain(void)
     DO_TEST_PARSE_ERROR("smbios-uuid-match", QEMU_CAPS_SMBIOS_TYPE);
 
     DO_TEST("watchdog", NONE);
-    DO_TEST("watchdog-device", QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("watchdog-device", NONE);
     DO_TEST("watchdog-dump", NONE);
     DO_TEST("watchdog-injectnmi", NONE);
     DO_TEST("watchdog-diag288",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_BOOTINDEX, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("balloon-device", QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("balloon-device-deflate", QEMU_CAPS_NODEFCONFIG,
+    DO_TEST("balloon-device", NONE);
+    DO_TEST("balloon-device-deflate",
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
-    DO_TEST("balloon-ccw-deflate", QEMU_CAPS_NODEFCONFIG,
+    DO_TEST("balloon-ccw-deflate",
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
-    DO_TEST("balloon-mmio-deflate", QEMU_CAPS_NODEFCONFIG,
+    DO_TEST("balloon-mmio-deflate",
             QEMU_CAPS_DTB, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
-    DO_TEST("balloon-device-deflate-off", QEMU_CAPS_NODEFCONFIG,
+    DO_TEST("balloon-device-deflate-off",
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
-    DO_TEST("balloon-device-auto",
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("balloon-device-period", QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("balloon-device-auto", NONE);
+    DO_TEST("balloon-device-period", NONE);
     DO_TEST("sound", NONE);
     DO_TEST("sound-device",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_HDA_DUPLEX, QEMU_CAPS_HDA_MICRO,
             QEMU_CAPS_DEVICE_ICH9_INTEL_HDA,
             QEMU_CAPS_OBJECT_USB_AUDIO);
     DO_TEST("fs9p",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_FSDEV,
+            QEMU_CAPS_FSDEV,
             QEMU_CAPS_FSDEV_WRITEOUT);
     DO_TEST("fs9p-ccw",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_FSDEV,
+            QEMU_CAPS_FSDEV,
             QEMU_CAPS_FSDEV_WRITEOUT,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
 
     DO_TEST("hostdev-usb-address", NONE);
-    DO_TEST("hostdev-usb-address-device",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("hostdev-usb-address-device", NONE);
     DO_TEST("hostdev-usb-address-device-boot",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_BOOTINDEX,
+            QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_USB_HOST_BOOTINDEX);
     DO_TEST("hostdev-pci-address", NONE);
-    DO_TEST("hostdev-pci-address-device",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("hostdev-pci-address-device", NONE);
     DO_TEST("hostdev-vfio",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio-multidomain",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
     DO_TEST("hostdev-mdev-precreated",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_PARSE_ERROR("hostdev-mdev-src-address-invalid",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_PARSE_ERROR("hostdev-mdev-invalid-target-address",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_FAILURE("hostdev-vfio-multidomain",
-                    QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("pci-rom",
-            QEMU_CAPS_NODEFCONFIG);
+                    QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST("pci-rom", NONE);
 
     DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, 0, GIC_NONE, NONE);
     DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, 0, GIC_NONE, NONE);
@@ -1782,13 +1670,10 @@ mymain(void)
             QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH);
 
     DO_TEST("multifunction-pci-device",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_SCSI_LSI);
 
-    DO_TEST("monitor-json",
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("monitor-json", NONE);
     DO_TEST("no-shutdown",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_NO_SHUTDOWN);
 
     DO_TEST("seclabel-dynamic", NONE);
@@ -1806,60 +1691,48 @@ mymain(void)
 
     DO_TEST("pseries-basic",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-vio",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-usb-default",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_PCI_OHCI);
     DO_TEST("pseries-usb-multi",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY,
             QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_PCI_OHCI);
     DO_TEST("pseries-vio-user-assigned",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST_PARSE_ERROR("pseries-vio-address-clash",
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
+    DO_TEST_PARSE_ERROR("pseries-vio-address-clash", NONE);
     DO_TEST("pseries-nvram",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_NVRAM);
     DO_TEST("pseries-usb-kbd", QEMU_CAPS_PCI_OHCI,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_USB_KBD,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-cpu-exact",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST_PARSE_ERROR("pseries-no-parallel",
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
+    DO_TEST_PARSE_ERROR("pseries-no-parallel", NONE);
 
     qemuTestSetHostArch(driver.caps, VIR_ARCH_PPC64);
     DO_TEST("pseries-cpu-compat", QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-machine-max-cpu-compat",
             QEMU_CAPS_KVM,
             QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT,
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("pseries-cpu-le", QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST_FAILURE("pseries-cpu-compat-power9",
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                     QEMU_CAPS_KVM);
@@ -1868,29 +1741,23 @@ mymain(void)
     DO_TEST("pseries-cpu-compat-power9",
             QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
     qemuTestSetHostCPU(driver.caps, NULL);
 
     qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
 
     DO_TEST("pseries-panic-missing",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-panic-no-address",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST_FAILURE("pseries-panic-address",
-                    QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                    QEMU_CAPS_NODEFCONFIG);
+                    QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
 
     DO_TEST("pseries-phb-simple",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("pseries-phb-default-missing",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("pseries-phb-numa-node",
             QEMU_CAPS_NUMA,
@@ -1903,31 +1770,25 @@ mymain(void)
     DO_TEST_PARSE_ERROR("pseries-phb-invalid-target-index-3", NONE);
 
     DO_TEST("pseries-many-devices",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("pseries-many-buses-1",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("pseries-many-buses-2",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("pseries-hostdevs-1",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_HOST_PCI_MULTIDOMAIN,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pseries-hostdevs-2",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_HOST_PCI_MULTIDOMAIN,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pseries-hostdevs-3",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_HOST_PCI_MULTIDOMAIN,
             QEMU_CAPS_VIRTIO_SCSI,
@@ -1943,66 +1804,51 @@ mymain(void)
     DO_TEST_PARSE_ERROR("pseries-features-invalid-machine", NONE);
 
     DO_TEST("pseries-serial-native",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-serial+console-native",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-serial-compat",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-serial-pci",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_SERIAL);
     DO_TEST("pseries-serial-usb",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_QEMU_XHCI,
             QEMU_CAPS_DEVICE_USB_SERIAL);
     DO_TEST("pseries-console-native",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-console-virtio",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST_PARSE_ERROR("pseries-serial-invalid-machine", NONE);
 
     DO_TEST("mach-virt-serial-native",
-            QEMU_CAPS_DEVICE_PL011,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_PL011);
     DO_TEST("mach-virt-serial+console-native",
-            QEMU_CAPS_DEVICE_PL011,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_PL011);
     DO_TEST("mach-virt-serial-compat",
-            QEMU_CAPS_DEVICE_PL011,
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_PL011);
     DO_TEST("mach-virt-serial-pci",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_SERIAL);
     DO_TEST("mach-virt-serial-usb",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
             QEMU_CAPS_DEVICE_QEMU_XHCI,
             QEMU_CAPS_DEVICE_USB_SERIAL);
     DO_TEST("mach-virt-console-native",
-            QEMU_CAPS_DEVICE_PL011,
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("mach-virt-console-virtio",
-            QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_DEVICE_PL011);
+    DO_TEST("mach-virt-console-virtio", NONE);
     DO_TEST_PARSE_ERROR("mach-virt-serial-invalid-machine", NONE);
 
     DO_TEST("disk-ide-drive-split",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_IDE_CD);
     DO_TEST("disk-ide-wwn",
             QEMU_CAPS_IDE_CD,
@@ -2010,7 +1856,6 @@ mymain(void)
 
     DO_TEST("disk-geometry", NONE);
     DO_TEST("disk-blockio",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_IDE_CD, QEMU_CAPS_BLOCKIO);
 
     DO_TEST("video-device-pciaddr-default",
@@ -2089,7 +1934,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_EGD);
     DO_TEST("virtio-rng-ccw",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_VIRTIO_CCW,
             QEMU_CAPS_VIRTIO_S390,
@@ -2097,47 +1941,38 @@ mymain(void)
             QEMU_CAPS_OBJECT_RNG_RANDOM);
 
     DO_TEST("s390-allow-bogus-usb-none",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_RANDOM);
     DO_TEST("s390-allow-bogus-usb-controller",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_RANDOM);
 
     DO_TEST("s390-panic-no-address",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_CCW,
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST_FAILURE("s390-panic-address",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_CCW,
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST("s390-panic-missing",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_CCW,
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST_PARSE_ERROR("s390-no-parallel",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_CCW,
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST("s390-serial",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_CCW,
             QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_SCLPCONSOLE);
     DO_TEST("s390-serial-2",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_CCW,
             QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_SCLPCONSOLE,
             QEMU_CAPS_DEVICE_SCLPLMCONSOLE);
     DO_TEST("s390-serial-console",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_VIRTIO_CCW,
             QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_DEVICE_SCLPCONSOLE);
@@ -2526,21 +2361,21 @@ mymain(void)
             QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
 
     DO_TEST("arm-vexpressa9-nodevs",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB);
+            QEMU_CAPS_DTB);
     DO_TEST("arm-vexpressa9-basic",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB);
+            QEMU_CAPS_DTB);
     DO_TEST("arm-vexpressa9-virtio",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
+            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
     DO_TEST("arm-virt-virtio",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
+            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
 
     DO_TEST("aarch64-virt-virtio",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
+            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
@@ -2550,7 +2385,7 @@ mymain(void)
        but virtio-mmio is always used unless PCI addresses are manually
        specified. */
     DO_TEST("aarch64-virtio-pci-default",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
+            QEMU_CAPS_DTB,
             QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
@@ -2560,7 +2395,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("aarch64-virt-2.6-virtio-pci-default",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
+            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
             QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -2570,7 +2405,7 @@ mymain(void)
     /* Example of using virtio-pci with no explicit PCI controller
        but with manual PCI addresses */
     DO_TEST("aarch64-virtio-pci-manual-addresses",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
+            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
             QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -2578,26 +2413,25 @@ mymain(void)
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("aarch64-video-virtio-gpu-pci",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_OBJECT_GPEX,
+            QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_DEVICE_PCI_BRIDGE, QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_VIRTIO_GPU, QEMU_CAPS_BOOTINDEX);
     DO_TEST("aarch64-video-default",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_OBJECT_GPEX,
+            QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_DEVICE_PCI_BRIDGE, QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_VIRTIO_GPU, QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_VNC);
     DO_TEST("aarch64-aavmf-virtio-mmio",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
+            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
     DO_TEST("aarch64-virt-default-nic",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO);
     qemuTestSetHostArch(driver.caps, VIR_ARCH_AARCH64);
     DO_TEST("aarch64-cpu-passthrough",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
+            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_KVM);
     DO_TEST_GIC("aarch64-gic-none", GIC_NONE,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
@@ -2676,14 +2510,13 @@ mymain(void)
                         QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
                         QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST("aarch64-kvm-32-on-64",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
+            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_KVM, QEMU_CAPS_CPU_AARCH64_OFF);
     DO_TEST_FAILURE("aarch64-kvm-32-on-64",
-            QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
+            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_KVM);
     DO_TEST("aarch64-pci-serial",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_PCI_SERIAL,
             QEMU_CAPS_CHARDEV_LOGFILE,
             QEMU_CAPS_OBJECT_GPEX,
@@ -2691,7 +2524,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCIE_ROOT_PORT);
     DO_TEST("aarch64-traditional-pci",
-            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_OBJECT_GPEX,
             QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
@@ -2711,13 +2543,13 @@ mymain(void)
     DO_TEST("kvm-pit-discard", QEMU_CAPS_KVM_PIT_TICK_POLICY);
     DO_TEST("no-kvm-pit-device", NONE);
 
-    DO_TEST("panic", QEMU_CAPS_DEVICE_PANIC,
-            QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("panic-double", QEMU_CAPS_DEVICE_PANIC,
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("panic",
+            QEMU_CAPS_DEVICE_PANIC);
+    DO_TEST("panic-double",
+            QEMU_CAPS_DEVICE_PANIC);
 
-    DO_TEST("panic-no-address", QEMU_CAPS_DEVICE_PANIC,
-            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("panic-no-address",
+            QEMU_CAPS_DEVICE_PANIC);
 
     DO_TEST("fips-enabled", QEMU_CAPS_ENABLE_FIPS);
 
@@ -2900,10 +2732,10 @@ mymain(void)
     DO_TEST("debug-threads", QEMU_CAPS_NAME_DEBUG_THREADS);
 
     DO_TEST("master-key", QEMU_CAPS_OBJECT_SECRET);
-    DO_TEST("usb-long-port-path", QEMU_CAPS_NODEFCONFIG,
+    DO_TEST("usb-long-port-path",
             QEMU_CAPS_USB_HUB);
     DO_TEST_PARSE_ERROR("usb-too-long-port-path-invalid",
-                        QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_USB_HUB);
+                        QEMU_CAPS_USB_HUB);
 
     DO_TEST("acpi-table", NONE);
     DO_TEST("intel-iommu",
