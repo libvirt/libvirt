@@ -47,7 +47,6 @@
   <flag name='usb-redir.filter'/>
   <flag name='ide-drive.wwn'/>
   <flag name='scsi-disk.wwn'/>
-  <flag name='seccomp-sandbox'/>
   <flag name='reboot-timeout'/>
   <flag name='dump-guest-core'/>
   <flag name='seamless-migration'/>
