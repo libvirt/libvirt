@@ -1340,14 +1340,12 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk,
 
     if (qemuCaps) {
         if (disk->serial &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL)) {
-            if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
-                disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("scsi-block 'lun' devices do not support the "
-                                 "serial property"));
-                return -1;
-            }
+            disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+            disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("scsi-block 'lun' devices do not support the "
+                             "serial property"));
+            return -1;
         }
 
         if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
@@ -1685,7 +1683,6 @@ qemuBuildDiskFrontendAttributeErrorPolicy(virDomainDiskDefPtr disk,
 
 static void
 qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
-                                virQEMUCapsPtr qemuCaps,
                                 virBufferPtr buf)
 {
     /* generate geometry command string */
@@ -1702,8 +1699,7 @@ qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
                               virDomainDiskGeometryTransTypeToString(disk->geometry.trans));
     }
 
-    if (disk->serial &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL)) {
+    if (disk->serial) {
         virBufferAddLit(buf, ",serial=");
         virBufferEscape(buf, '\\', " ", "%s", disk->serial);
     }
@@ -1752,7 +1748,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
 
     /* Format attributes for the drive itself (not the storage backing it) which
      * we've formatted historically with -drive */
-    qemuBuildDiskFrontendAttributes(disk, qemuCaps, &opt);
+    qemuBuildDiskFrontendAttributes(disk, &opt);
 
     /* While this is a frontend attribute, it only makes sense to be used when
      * legacy -drive is used. In modern qemu the 'ide-cd' or 'scsi-cd' are used.

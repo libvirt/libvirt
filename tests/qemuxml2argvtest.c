@@ -948,8 +948,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("disk-drive-fmt-cow", QEMU_CAPS_DRIVE_BOOT);
     DO_TEST_PARSE_ERROR("disk-drive-fmt-dir", QEMU_CAPS_DRIVE_BOOT);
     DO_TEST_PARSE_ERROR("disk-drive-fmt-iso", QEMU_CAPS_DRIVE_BOOT);
-    DO_TEST("disk-drive-shared",
-            QEMU_CAPS_DRIVE_SERIAL);
+    DO_TEST("disk-drive-shared", NONE);
     DO_TEST_PARSE_ERROR("disk-drive-shared-qcow", NONE);
     DO_TEST("disk-drive-shared-locking",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DISK_SHARE_RW);
@@ -1097,8 +1096,7 @@ mymain(void)
             QEMU_CAPS_SCSI_BLOCK,
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-serial",
-            QEMU_CAPS_KVM,
-            QEMU_CAPS_DRIVE_SERIAL);
+            QEMU_CAPS_KVM);
     DO_TEST_PARSE_ERROR("disk-fdc-incompatible-address",
                         NONE);
     DO_TEST_PARSE_ERROR("disk-ide-incompatible-address",
@@ -2007,7 +2005,7 @@ mymain(void)
             QEMU_CAPS_IDE_CD);
     DO_TEST("disk-ide-wwn",
             QEMU_CAPS_IDE_CD,
-            QEMU_CAPS_DRIVE_SERIAL, QEMU_CAPS_IDE_DRIVE_WWN);
+            QEMU_CAPS_IDE_DRIVE_WWN);
 
     DO_TEST("disk-geometry", NONE);
     DO_TEST("disk-blockio",
