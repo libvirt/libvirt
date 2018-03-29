@@ -1043,6 +1043,16 @@ virJSONValueGetString(virJSONValuePtr string)
 }
 
 
+const char *
+virJSONValueGetNumberString(virJSONValuePtr number)
+{
+    if (number->type != VIR_JSON_TYPE_NUMBER)
+        return NULL;
+
+    return number->data.number;
+}
+
+
 int
 virJSONValueGetNumberInt(virJSONValuePtr number,
                          int *value)

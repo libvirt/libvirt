@@ -2038,6 +2038,7 @@ virJSONValueGetBoolean;
 virJSONValueGetNumberDouble;
 virJSONValueGetNumberInt;
 virJSONValueGetNumberLong;
+virJSONValueGetNumberString;
 virJSONValueGetNumberUint;
 virJSONValueGetNumberUlong;
 virJSONValueGetString;

@@ -134,6 +134,7 @@ const char *virJSONValueObjectGetKey(virJSONValuePtr object, unsigned int n);
 virJSONValuePtr virJSONValueObjectGetValue(virJSONValuePtr object, unsigned int n);
 
 const char *virJSONValueGetString(virJSONValuePtr object);
+const char *virJSONValueGetNumberString(virJSONValuePtr number);
 int virJSONValueGetNumberInt(virJSONValuePtr object, int *value);
 int virJSONValueGetNumberUint(virJSONValuePtr object, unsigned int *value);
 int virJSONValueGetNumberLong(virJSONValuePtr object, long long *value);
