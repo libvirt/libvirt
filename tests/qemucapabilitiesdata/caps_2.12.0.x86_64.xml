@@ -9,7 +9,6 @@
   <flag name='spice'/>
   <flag name='boot-index'/>
   <flag name='hda-duplex'/>
-  <flag name='drive-aio'/>
   <flag name='ccid-emulated'/>
   <flag name='ccid-passthru'/>
   <flag name='chardev-spicevmc'/>

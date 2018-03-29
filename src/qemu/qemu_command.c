@@ -1382,13 +1382,6 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk,
                            _("detect_zeroes is not supported by this QEMU binary"));
             return -1;
         }
-
-        if (disk->iomode &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_AIO)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk aio mode not supported with this QEMU binary"));
-            return -1;
-        }
     }
 
     if (disk->serial &&

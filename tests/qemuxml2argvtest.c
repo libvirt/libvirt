@@ -836,7 +836,6 @@ mymain(void)
             QEMU_CAPS_KVM,
             QEMU_CAPS_ENABLE_KVM,
             QEMU_CAPS_PIIX3_USB_UHCI,
-            QEMU_CAPS_DRIVE_AIO,
             QEMU_CAPS_CCID_PASSTHRU,
             QEMU_CAPS_CHARDEV_SPICEVMC,
             QEMU_CAPS_SPICE,
@@ -1032,8 +1031,7 @@ mymain(void)
             QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-sata-device",
             QEMU_CAPS_ICH9_AHCI);
-    DO_TEST("disk-aio",
-            QEMU_CAPS_DRIVE_AIO);
+    DO_TEST("disk-aio", NONE);
     DO_TEST("disk-source-pool", NONE);
     DO_TEST("disk-source-pool-mode", NONE);
     DO_TEST("disk-ioeventfd",
