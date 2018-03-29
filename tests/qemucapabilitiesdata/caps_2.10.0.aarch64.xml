@@ -20,7 +20,6 @@
   <flag name='ich9-ahci'/>
   <flag name='no-acpi'/>
   <flag name='virtio-blk-pci.scsi'/>
-  <flag name='fsdev-writeout'/>
   <flag name='drive-iotune'/>
   <flag name='system_wakeup'/>
   <flag name='scsi-disk.channel'/>

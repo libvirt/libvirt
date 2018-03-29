@@ -164,7 +164,7 @@ typedef enum {
     X_QEMU_CAPS_VIRTIO_BLK_SG_IO, /* SG_IO commands */
     X_QEMU_CAPS_DRIVE_COPY_ON_READ, /* -drive copy-on-read */
     X_QEMU_CAPS_CPU_HOST, /* support for -cpu host */
-    QEMU_CAPS_FSDEV_WRITEOUT, /* -fsdev writeout supported */
+    X_QEMU_CAPS_FSDEV_WRITEOUT, /* -fsdev writeout supported */
 
     /* 85 */
     QEMU_CAPS_DRIVE_IOTUNE, /* -drive bps= and friends */

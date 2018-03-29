@@ -2312,8 +2312,7 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
 
 
 static char *
-qemuBuildFSStr(virDomainFSDefPtr fs,
-               virQEMUCapsPtr qemuCaps)
+qemuBuildFSStr(virDomainFSDefPtr fs)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *driver = qemuDomainFSDriverTypeToString(fs->fsdriver);
@@ -2351,15 +2350,8 @@ qemuBuildFSStr(virDomainFSDefPtr fs,
         }
     }
 
-    if (fs->wrpolicy) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV_WRITEOUT)) {
-            virBufferAsprintf(&opt, ",writeout=%s", wrpolicy);
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("filesystem writeout not supported"));
-            goto error;
-        }
-    }
+    if (fs->wrpolicy)
+        virBufferAsprintf(&opt, ",writeout=%s", wrpolicy);
 
     virBufferAsprintf(&opt, ",id=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
     virBufferAsprintf(&opt, ",path=%s", fs->src->path);
@@ -2430,7 +2422,7 @@ qemuBuildFSDevCommandLine(virCommandPtr cmd,
         virDomainFSDefPtr fs = def->fss[i];
 
         virCommandAddArg(cmd, "-fsdev");
-        if (!(optstr = qemuBuildFSStr(fs, qemuCaps)))
+        if (!(optstr = qemuBuildFSStr(fs)))
             return -1;
         virCommandAddArg(cmd, optstr);
         VIR_FREE(optstr);
