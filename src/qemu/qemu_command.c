@@ -1132,15 +1132,6 @@ qemuCheckDiskConfigBlkdeviotune(virDomainDiskDefPtr disk,
     }
 
     if (qemuCaps) {
-        /* block I/O throttling */
-        if (qemuDiskConfigBlkdeviotuneHasBasic(disk) &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("block I/O throttling not supported with this "
-                             "QEMU binary"));
-            return -1;
-        }
-
         /* block I/O throttling 1.7 */
         if (qemuDiskConfigBlkdeviotuneHasMax(disk) &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX)) {

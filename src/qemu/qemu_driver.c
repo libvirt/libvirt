@@ -18234,13 +18234,6 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         supportMaxLengthOptions =
             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH);
 
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("block I/O throttling not supported with this "
-                         "QEMU binary"));
-            goto endjob;
-        }
-
         if (!supportMaxOptions &&
             (set_fields & (QEMU_BLOCK_IOTUNE_SET_BYTES_MAX |
                            QEMU_BLOCK_IOTUNE_SET_IOPS_MAX |
@@ -18419,13 +18412,6 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     if (def) {
         /* If the VM is running, we can check if the current VM can use
          * optional parameters or not. */
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("block I/O throttling not supported with this "
-                         "QEMU binary"));
-            goto endjob;
-        }
-
         maxparams = QEMU_NB_BLOCK_IO_TUNE_BASE_PARAMS;
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX))
             maxparams += QEMU_NB_BLOCK_IO_TUNE_MAX_PARAMS;

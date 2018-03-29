@@ -167,7 +167,7 @@ typedef enum {
     X_QEMU_CAPS_FSDEV_WRITEOUT, /* -fsdev writeout supported */
 
     /* 85 */
-    QEMU_CAPS_DRIVE_IOTUNE, /* -drive bps= and friends */
+    X_QEMU_CAPS_DRIVE_IOTUNE, /* -drive bps= and friends */
     QEMU_CAPS_WAKEUP, /* system_wakeup monitor command */
     QEMU_CAPS_SCSI_DISK_CHANNEL, /* Is scsi-disk.channel available? */
     QEMU_CAPS_SCSI_BLOCK, /* -device scsi-block */
