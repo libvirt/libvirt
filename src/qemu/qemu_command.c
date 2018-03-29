@@ -6348,15 +6348,8 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
         virCommandAddArgList(cmd, "-initrd", def->os.initrd, NULL);
     if (def->os.cmdline)
         virCommandAddArgList(cmd, "-append", def->os.cmdline, NULL);
-    if (def->os.dtb) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DTB)) {
-            virCommandAddArgList(cmd, "-dtb", def->os.dtb, NULL);
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("dtb is not supported with this QEMU binary"));
-            goto error;
-        }
-    }
+    if (def->os.dtb)
+        virCommandAddArgList(cmd, "-dtb", def->os.dtb, NULL);
     if (def->os.slic_table) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
         virCommandAddArg(cmd, "-acpitable");

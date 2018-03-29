@@ -233,7 +233,7 @@ typedef enum {
     QEMU_CAPS_OBJECT_RNG_RANDOM, /* the rng-random backend for virtio rng */
     QEMU_CAPS_OBJECT_RNG_EGD, /* EGD protocol daemon for rng */
     QEMU_CAPS_VIRTIO_CCW, /* -device virtio-*-ccw */
-    QEMU_CAPS_DTB, /* -dtb file */
+    X_QEMU_CAPS_DTB, /* -dtb file */
     QEMU_CAPS_SCSI_MEGASAS, /* -device megasas */
 
     /* 135 */

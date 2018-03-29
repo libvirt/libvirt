@@ -1459,7 +1459,7 @@ mymain(void)
     DO_TEST("balloon-ccw-deflate",
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
     DO_TEST("balloon-mmio-deflate",
-            QEMU_CAPS_DTB, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
+            QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
     DO_TEST("balloon-device-deflate-off",
             QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE);
@@ -1939,8 +1939,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_SCLPCONSOLE);
 
     DO_TEST("ppc-dtb",
-            QEMU_CAPS_KVM,
-            QEMU_CAPS_DTB);
+            QEMU_CAPS_KVM);
     DO_TEST("ppce500-serial",
             QEMU_CAPS_KVM);
 
@@ -2308,22 +2307,17 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
 
-    DO_TEST("arm-vexpressa9-nodevs",
-            QEMU_CAPS_DTB);
-    DO_TEST("arm-vexpressa9-basic",
-            QEMU_CAPS_DTB);
+    DO_TEST("arm-vexpressa9-nodevs", NONE);
+    DO_TEST("arm-vexpressa9-basic", NONE);
     DO_TEST("arm-vexpressa9-virtio",
-            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
     DO_TEST("arm-virt-virtio",
-            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
 
     DO_TEST("aarch64-virt-virtio",
-            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
@@ -2333,7 +2327,6 @@ mymain(void)
        but virtio-mmio is always used unless PCI addresses are manually
        specified. */
     DO_TEST("aarch64-virtio-pci-default",
-            QEMU_CAPS_DTB,
             QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
@@ -2343,7 +2336,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_PL011,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("aarch64-virt-2.6-virtio-pci-default",
-            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
             QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -2353,7 +2345,6 @@ mymain(void)
     /* Example of using virtio-pci with no explicit PCI controller
        but with manual PCI addresses */
     DO_TEST("aarch64-virtio-pci-manual-addresses",
-            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM,
             QEMU_CAPS_OBJECT_GPEX, QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -2372,7 +2363,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_GPU, QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_VNC);
     DO_TEST("aarch64-aavmf-virtio-mmio",
-            QEMU_CAPS_DTB,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
     DO_TEST("aarch64-virt-default-nic",
