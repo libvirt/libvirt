@@ -9,7 +9,7 @@ BAR='' \
 /usr/bin/qemu-system-i686 \
 -name QEMUGuest1 \
 -S \
--M pc \
+-machine pc,accel=tcg \
 -m 214 \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \

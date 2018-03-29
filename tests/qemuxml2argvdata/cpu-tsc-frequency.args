@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name QEMUGuest1 \
 -S \
--M pc \
+-machine pc,accel=kvm \
 -cpu Haswell,+vme,+ds,+acpi,+ss,+ht,+tm,+pbe,+dtes64,+monitor,+ds_cpl,+vmx,\
 +smx,+est,+tm2,+xtpr,+pdcm,+osxsave,+f16c,+rdrand,+pdpe1gb,+abm,+lahf_lm,\
 +invtsc,tsc-frequency=3504000000 \

@@ -6997,6 +6997,9 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                             const virDomainDef *def,
                             virQEMUCapsPtr qemuCaps)
 {
+    virTristateSwitch vmport = def->features[VIR_DOMAIN_FEATURE_VMPORT];
+    virTristateSwitch smm = def->features[VIR_DOMAIN_FEATURE_SMM];
+    virCPUDefPtr cpu = def->cpu;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool obsoleteAccel = false;
     size_t i;
@@ -7009,245 +7012,203 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     if (!def->os.machine)
         return 0;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_OPT)) {
-        /* if no parameter to the machine type is needed, we still use
-         * '-M' to keep the most of the compatibility with older versions.
-         */
-        virCommandAddArgList(cmd, "-M", def->os.machine, NULL);
+    virCommandAddArg(cmd, "-machine");
+    virBufferAdd(&buf, def->os.machine, -1);
+
+    if (def->virtType == VIR_DOMAIN_VIRT_QEMU)
+        virBufferAddLit(&buf, ",accel=tcg");
+    else if (def->virtType == VIR_DOMAIN_VIRT_KVM)
+        virBufferAddLit(&buf, ",accel=kvm");
+    else
+        obsoleteAccel = true;
+
+    /* To avoid the collision of creating USB controllers when calling
+     * machine->init in QEMU, it needs to set usb=off
+     */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT))
+        virBufferAddLit(&buf, ",usb=off");
+
+    if (vmport) {
+        if (!virQEMUCapsSupportsVmport(qemuCaps, def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vmport is not available "
+                             "with this QEMU binary"));
+            goto cleanup;
+        }
+
+        virBufferAsprintf(&buf, ",vmport=%s",
+                          virTristateSwitchTypeToString(vmport));
+    }
+
+    if (smm) {
+        if (!virQEMUCapsSupportsSMM(qemuCaps, def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("smm is not available with this QEMU binary"));
+            goto cleanup;
+        }
+
+        virBufferAsprintf(&buf, ",smm=%s",
+                          virTristateSwitchTypeToString(smm));
+    }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE)) {
+        if (def->mem.dump_core) {
+            virBufferAsprintf(&buf, ",dump-guest-core=%s",
+                              virTristateSwitchTypeToString(def->mem.dump_core));
+        } else {
+            virBufferAsprintf(&buf, ",dump-guest-core=%s",
+                              cfg->dumpGuestCore ? "on" : "off");
+        }
+    } else {
         if (def->mem.dump_core) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("dump-guest-core is not available "
                              "with this QEMU binary"));
-            return -1;
+            goto cleanup;
         }
+    }
 
-        if (def->mem.nosharepages) {
+    if (def->mem.nosharepages) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEM_MERGE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("disable shared memory is not available "
                              "with this QEMU binary"));
-            return -1;
+            goto cleanup;
         }
 
-        obsoleteAccel = true;
+        virBufferAddLit(&buf, ",mem-merge=off");
+    }
 
-        if (def->keywrap) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("key wrap support is not available "
-                             "with this QEMU binary"));
-            return -1;
-        }
+    if (def->keywrap &&
+        !qemuAppendKeyWrapMachineParms(&buf, qemuCaps, def->keywrap))
+        goto cleanup;
 
-        for (i = 0; i < def->nmems; i++) {
-            if (def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+    if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON) {
+        bool hasGICVersionOption = virQEMUCapsGet(qemuCaps,
+                                                  QEMU_CAPS_MACH_VIRT_GIC_VERSION);
+
+        switch ((virGICVersion) def->gic_version) {
+        case VIR_GIC_VERSION_2:
+            if (!hasGICVersionOption) {
+                /* If the gic-version option is not available, we can't
+                 * configure the GIC; however, we know that before the
+                 * option was introduced the guests would always get a
+                 * GICv2, so in order to maintain compatibility with
+                 * those old QEMU versions all we need to do is stop
+                 * early instead of erroring out */
+                break;
+            }
+            ATTRIBUTE_FALLTHROUGH;
+
+        case VIR_GIC_VERSION_3:
+        case VIR_GIC_VERSION_HOST:
+            if (!hasGICVersionOption) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("nvdimm is not available "
+                               _("gic-version option is not available "
                                  "with this QEMU binary"));
+                goto cleanup;
+            }
+
+            virBufferAsprintf(&buf, ",gic-version=%s",
+                              virGICVersionTypeToString(def->gic_version));
+            break;
+
+        case VIR_GIC_VERSION_NONE:
+        case VIR_GIC_VERSION_LAST:
+        default:
+            break;
+        }
+    }
+
+    /* We don't report errors on missing cap here - -device code will do that */
+    if (def->iommu &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU)) {
+        switch (def->iommu->model) {
+        case VIR_DOMAIN_IOMMU_MODEL_INTEL:
+            if (!qemuDomainIsQ35(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("IOMMU device: '%s' is only supported with "
+                                 "Q35 machines"),
+                               virDomainIOMMUModelTypeToString(def->iommu->model));
                 return -1;
             }
+            virBufferAddLit(&buf, ",iommu=on");
+            break;
+        case VIR_DOMAIN_IOMMU_MODEL_LAST:
+            break;
         }
-    } else {
-        virTristateSwitch vmport = def->features[VIR_DOMAIN_FEATURE_VMPORT];
-        virTristateSwitch smm = def->features[VIR_DOMAIN_FEATURE_SMM];
-        virCPUDefPtr cpu = def->cpu;
-
-        virCommandAddArg(cmd, "-machine");
-        virBufferAdd(&buf, def->os.machine, -1);
-
-        if (def->virtType == VIR_DOMAIN_VIRT_QEMU)
-            virBufferAddLit(&buf, ",accel=tcg");
-        else if (def->virtType == VIR_DOMAIN_VIRT_KVM)
-            virBufferAddLit(&buf, ",accel=kvm");
-        else
-            obsoleteAccel = true;
-
-        /* To avoid the collision of creating USB controllers when calling
-         * machine->init in QEMU, it needs to set usb=off
-         */
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT))
-            virBufferAddLit(&buf, ",usb=off");
-
-        if (vmport) {
-            if (!virQEMUCapsSupportsVmport(qemuCaps, def)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("vmport is not available "
-                                 "with this QEMU binary"));
-                goto cleanup;
-            }
-
-            virBufferAsprintf(&buf, ",vmport=%s",
-                              virTristateSwitchTypeToString(vmport));
-        }
-
-        if (smm) {
-            if (!virQEMUCapsSupportsSMM(qemuCaps, def)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("smm is not available with this QEMU binary"));
-                goto cleanup;
-            }
-
-            virBufferAsprintf(&buf, ",smm=%s",
-                              virTristateSwitchTypeToString(smm));
-        }
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE)) {
-            if (def->mem.dump_core) {
-                virBufferAsprintf(&buf, ",dump-guest-core=%s",
-                                  virTristateSwitchTypeToString(def->mem.dump_core));
-            } else {
-                virBufferAsprintf(&buf, ",dump-guest-core=%s",
-                                  cfg->dumpGuestCore ? "on" : "off");
-            }
-        } else {
-            if (def->mem.dump_core) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("dump-guest-core is not available "
-                                 "with this QEMU binary"));
-                goto cleanup;
-            }
-        }
-
-        if (def->mem.nosharepages) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEM_MERGE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("disable shared memory is not available "
-                                 "with this QEMU binary"));
-                goto cleanup;
-            }
-
-            virBufferAddLit(&buf, ",mem-merge=off");
-        }
-
-        if (def->keywrap &&
-            !qemuAppendKeyWrapMachineParms(&buf, qemuCaps, def->keywrap))
-            goto cleanup;
-
-        if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON) {
-            bool hasGICVersionOption = virQEMUCapsGet(qemuCaps,
-                                                      QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-
-            switch ((virGICVersion) def->gic_version) {
-            case VIR_GIC_VERSION_2:
-                if (!hasGICVersionOption) {
-                    /* If the gic-version option is not available, we can't
-                     * configure the GIC; however, we know that before the
-                     * option was introduced the guests would always get a
-                     * GICv2, so in order to maintain compatibility with
-                     * those old QEMU versions all we need to do is stop
-                     * early instead of erroring out */
-                    break;
-                }
-                ATTRIBUTE_FALLTHROUGH;
-
-            case VIR_GIC_VERSION_3:
-            case VIR_GIC_VERSION_HOST:
-                if (!hasGICVersionOption) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("gic-version option is not available "
-                                     "with this QEMU binary"));
-                    goto cleanup;
-                }
-
-                virBufferAsprintf(&buf, ",gic-version=%s",
-                                  virGICVersionTypeToString(def->gic_version));
-                break;
-
-            case VIR_GIC_VERSION_NONE:
-            case VIR_GIC_VERSION_LAST:
-            default:
-                break;
-            }
-        }
-
-        /* We don't report errors on missing cap here - -device code will do that */
-        if (def->iommu &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU)) {
-            switch (def->iommu->model) {
-            case VIR_DOMAIN_IOMMU_MODEL_INTEL:
-                if (!qemuDomainIsQ35(def)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("IOMMU device: '%s' is only supported with "
-                                     "Q35 machines"),
-                                   virDomainIOMMUModelTypeToString(def->iommu->model));
-                    return -1;
-                }
-                virBufferAddLit(&buf, ",iommu=on");
-                break;
-            case VIR_DOMAIN_IOMMU_MODEL_LAST:
-                break;
-            }
-        }
-
-        for (i = 0; i < def->nmems; i++) {
-            if (def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
-                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("nvdimm isn't supported by this QEMU binary"));
-                    goto cleanup;
-                }
-                virBufferAddLit(&buf, ",nvdimm=on");
-                break;
-            }
-        }
-
-        if (def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_DOMAIN_IOAPIC_NONE) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("I/O APIC tuning is not supported by this "
-                                 "QEMU binary"));
-                goto cleanup;
-            }
-            switch ((virDomainIOAPIC) def->features[VIR_DOMAIN_FEATURE_IOAPIC]) {
-            case VIR_DOMAIN_IOAPIC_QEMU:
-                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("split I/O APIC is not supported by this "
-                                     "QEMU binary"));
-                    goto cleanup;
-                }
-                virBufferAddLit(&buf, ",kernel_irqchip=split");
-                break;
-            case VIR_DOMAIN_IOAPIC_KVM:
-                virBufferAddLit(&buf, ",kernel_irqchip=on");
-                break;
-            case VIR_DOMAIN_IOAPIC_NONE:
-            case VIR_DOMAIN_IOAPIC_LAST:
-                break;
-            }
-        }
-
-        if (def->features[VIR_DOMAIN_FEATURE_HPT] != VIR_DOMAIN_HPT_RESIZING_NONE) {
-            const char *str;
-
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("HTP resizing is not supported by this "
-                                 "QEMU binary"));
-                goto cleanup;
-            }
-
-            str = virDomainHPTResizingTypeToString(def->features[VIR_DOMAIN_FEATURE_HPT]);
-            if (!str) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Invalid setting for HPT resizing"));
-                goto cleanup;
-            }
-
-            virBufferAsprintf(&buf, ",resize-hpt=%s", str);
-        }
-
-        if (cpu && cpu->model &&
-            cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
-            qemuDomainIsPSeries(def) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT)) {
-            virBufferAsprintf(&buf, ",max-cpu-compat=%s", cpu->model);
-        }
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_LOADPARM))
-            qemuAppendLoadparmMachineParm(&buf, def);
-
-        virCommandAddArgBuffer(cmd, &buf);
     }
+
+    for (i = 0; i < def->nmems; i++) {
+        if (def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("nvdimm isn't supported by this QEMU binary"));
+                goto cleanup;
+            }
+            virBufferAddLit(&buf, ",nvdimm=on");
+            break;
+        }
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_DOMAIN_IOAPIC_NONE) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("I/O APIC tuning is not supported by this "
+                             "QEMU binary"));
+            goto cleanup;
+        }
+        switch ((virDomainIOAPIC) def->features[VIR_DOMAIN_FEATURE_IOAPIC]) {
+        case VIR_DOMAIN_IOAPIC_QEMU:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("split I/O APIC is not supported by this "
+                                 "QEMU binary"));
+                goto cleanup;
+            }
+            virBufferAddLit(&buf, ",kernel_irqchip=split");
+            break;
+        case VIR_DOMAIN_IOAPIC_KVM:
+            virBufferAddLit(&buf, ",kernel_irqchip=on");
+            break;
+        case VIR_DOMAIN_IOAPIC_NONE:
+        case VIR_DOMAIN_IOAPIC_LAST:
+            break;
+        }
+    }
+
+    if (def->features[VIR_DOMAIN_FEATURE_HPT] != VIR_DOMAIN_HPT_RESIZING_NONE) {
+        const char *str;
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("HTP resizing is not supported by this "
+                             "QEMU binary"));
+            goto cleanup;
+        }
+
+        str = virDomainHPTResizingTypeToString(def->features[VIR_DOMAIN_FEATURE_HPT]);
+        if (!str) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid setting for HPT resizing"));
+            goto cleanup;
+        }
+
+        virBufferAsprintf(&buf, ",resize-hpt=%s", str);
+    }
+
+    if (cpu && cpu->model &&
+        cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
+        qemuDomainIsPSeries(def) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT)) {
+        virBufferAsprintf(&buf, ",max-cpu-compat=%s", cpu->model);
+    }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_LOADPARM))
+        qemuAppendLoadparmMachineParm(&buf, def);
+
+    virCommandAddArgBuffer(cmd, &buf);
 
     if (obsoleteAccel &&
         qemuBuildObsoleteAccelArg(cmd, def, qemuCaps) < 0)

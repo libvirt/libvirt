@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name lots-of-disks \
 -S \
--M pc-i440fx-1.4 \
+-machine pc-i440fx-1.4,accel=tcg \
 -cpu qemu64,-kvmclock \
 -bios /usr/share/seabios/bios.bin \
 -m 3907 \

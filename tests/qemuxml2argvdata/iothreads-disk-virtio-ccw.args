@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name QEMUGuest1 \
 -S \
--M s390-ccw \
+-machine s390-ccw,accel=tcg \
 -m 214 \
 -smp 1,sockets=1,cores=1,threads=1 \
 -object iothread,id=iothread1 \

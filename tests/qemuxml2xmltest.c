@@ -618,7 +618,6 @@ mymain(void)
 
     DO_TEST("pseries-features",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
 
     DO_TEST("pseries-serial-native",
@@ -1137,7 +1136,6 @@ mymain(void)
     DO_TEST("intel-iommu",
             QEMU_CAPS_DEVICE_INTEL_IOMMU);
     DO_TEST("intel-iommu-machine",
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_IOMMU);
     DO_TEST("intel-iommu-caching-mode",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,

@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i686 \
 -name QEMUGuest1 \
 -S \
--M pc \
+-machine pc,accel=kvm \
 -cpu host,+abm,+ds,-invtsc \
 -m 214 \
 -smp 1,sockets=1,cores=1,threads=1 \

@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i686 \
 -name SomeDummyHugepagesGuest \
 -S \
--M pc \
+-machine pc,accel=tcg \
 -m 1024 \
 -smp 2,sockets=2,cores=1,threads=1 \
 -object memory-backend-ram,id=ram-node0,size=268435456 \

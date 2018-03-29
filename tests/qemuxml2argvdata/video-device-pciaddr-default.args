@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name QEMUGuest1 \
 -S \
--M pc-0.15 \
+-machine pc-0.15,accel=kvm \
 -m 1024 \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid cdbebdfa-1d6d-65c3-be0f-fd74b978a773 \

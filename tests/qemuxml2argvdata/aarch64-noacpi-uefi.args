@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name guest \
 -S \
--M virt \
+-machine virt,accel=tcg \
 -cpu cortex-a57 \
 -drive file=/usr/share/AAVMF/AAVMF_CODE.fd,if=pflash,format=raw,unit=0,\
 readonly=on \

@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name QEMUGuest1 \
 -S \
--M pc \
+-machine pc,accel=tcg \
 -cpu core2duo \
 -m 214 \
 -smp 6,sockets=1,cores=2,threads=3 \

@@ -732,32 +732,30 @@ mymain(void)
     DO_TEST("minimal-msg-timestamp", QEMU_CAPS_MSG_TIMESTAMP);
     DO_TEST("machine-aliases1", NONE);
     DO_TEST("machine-aliases2", QEMU_CAPS_KVM);
-    DO_TEST("machine-core-on", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST("machine-core-on",
             QEMU_CAPS_DUMP_GUEST_CORE);
     driver.config->dumpGuestCore = true;
-    DO_TEST("machine-core-off", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST("machine-core-off",
             QEMU_CAPS_DUMP_GUEST_CORE);
     driver.config->dumpGuestCore = false;
-    DO_TEST("machine-core-cfg-off", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST("machine-core-cfg-off",
             QEMU_CAPS_DUMP_GUEST_CORE);
     DO_TEST_FAILURE("machine-core-on", NONE);
-    DO_TEST_FAILURE("machine-core-on", QEMU_CAPS_MACHINE_OPT);
+    DO_TEST_FAILURE("machine-core-on", NONE);
     DO_TEST("machine-smm-opt",
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_SMM_OPT,
             QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("machine-usb-opt", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST("machine-usb-opt",
             QEMU_CAPS_MACHINE_USB_OPT);
-    DO_TEST("machine-vmport-opt", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST("machine-vmport-opt",
             QEMU_CAPS_MACHINE_VMPORT_OPT);
-    DO_TEST("kvm", QEMU_CAPS_MACHINE_OPT);
-    DO_TEST("default-kvm-host-arch", QEMU_CAPS_MACHINE_OPT);
-    DO_TEST("default-qemu-host-arch", QEMU_CAPS_MACHINE_OPT);
-    DO_TEST("x86-kvm-32-on-64", QEMU_CAPS_MACHINE_OPT);
+    DO_TEST("default-kvm-host-arch", NONE);
+    DO_TEST("default-qemu-host-arch", NONE);
+    DO_TEST("x86-kvm-32-on-64", NONE);
     DO_TEST("boot-cdrom", NONE);
     DO_TEST("boot-network", NONE);
     DO_TEST("boot-floppy", NONE);
@@ -811,7 +809,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_SMM_OPT,
             QEMU_CAPS_VIRTIO_SCSI);
 
@@ -897,7 +894,7 @@ mymain(void)
     DO_TEST_FAILURE("hugepages-memaccess3",
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("nosharepages", QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_MEM_MERGE);
+    DO_TEST("nosharepages", QEMU_CAPS_MEM_MERGE);
     DO_TEST("disk-cdrom", NONE);
     DO_TEST("disk-iscsi", NONE);
     DO_TEST("disk-cdrom-network-http", QEMU_CAPS_KVM);
@@ -1691,7 +1688,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST("pseries-machine-max-cpu-compat",
             QEMU_CAPS_KVM,
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("pseries-cpu-le", QEMU_CAPS_KVM,
@@ -1760,11 +1756,9 @@ mymain(void)
 
     DO_TEST("pseries-features",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
     DO_TEST_FAILURE("pseries-features",
-                    QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                    QEMU_CAPS_MACHINE_OPT);
+                    QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST_PARSE_ERROR("pseries-features-invalid-machine", NONE);
 
     DO_TEST("pseries-serial-native",
@@ -2130,7 +2124,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     DO_TEST("q35-virt-manager-basic",
             QEMU_CAPS_KVM,
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_VMPORT_OPT,
             QEMU_CAPS_ICH9_DISABLE_S3,
             QEMU_CAPS_ICH9_DISABLE_S4,
@@ -2375,80 +2368,79 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_KVM);
     DO_TEST_GIC("aarch64-gic-none", GIC_NONE,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-none-v2", GIC_V2,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-none-v3", GIC_V3,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-none-both", GIC_BOTH,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-none-tcg", GIC_BOTH,
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-default", GIC_NONE,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-default-v2", GIC_V2,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-default-v3", GIC_V3,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-default-both", GIC_BOTH,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-v2", GIC_NONE,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-v2", GIC_V2,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-v2", GIC_V3,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-v2", GIC_BOTH,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_FAILURE("aarch64-gic-v3",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT);
+            QEMU_CAPS_KVM, NONE);
     DO_TEST_GIC("aarch64-gic-v3", GIC_NONE,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-v3", GIC_V2,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-v3", GIC_V3,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-v3", GIC_BOTH,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_FAILURE("aarch64-gic-host",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT);
+            QEMU_CAPS_KVM, NONE);
     DO_TEST_GIC("aarch64-gic-host", GIC_NONE,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-host", GIC_V2,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-host", GIC_V3,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_GIC("aarch64-gic-host", GIC_BOTH,
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_PARSE_ERROR("aarch64-gic-invalid",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_KVM,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_PARSE_ERROR("aarch64-gic-not-virt",
-                        QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+                        QEMU_CAPS_KVM,
                         QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_PARSE_ERROR("aarch64-gic-not-arm",
-                        QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
+                        QEMU_CAPS_KVM,
                         QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST("aarch64-kvm-32-on-64",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
@@ -2519,110 +2511,113 @@ mymain(void)
     DO_TEST("memory-hotplug-ppc64-nonuma", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("memory-hotplug-nvdimm", QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_DEVICE_NVDIMM,
+    DO_TEST("memory-hotplug-nvdimm",
+            QEMU_CAPS_DEVICE_NVDIMM,
             QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("memory-hotplug-nvdimm-access", QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_DEVICE_NVDIMM,
+    DO_TEST("memory-hotplug-nvdimm-access",
+            QEMU_CAPS_DEVICE_NVDIMM,
             QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("memory-hotplug-nvdimm-label", QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_DEVICE_NVDIMM,
+    DO_TEST("memory-hotplug-nvdimm-label",
+            QEMU_CAPS_DEVICE_NVDIMM,
             QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
 
     DO_TEST("machine-aeskeywrap-on-caps",
-            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_AES_KEY_WRAP,
+            QEMU_CAPS_AES_KEY_WRAP,
             QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_FAILURE("machine-aeskeywrap-on-caps", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST_FAILURE("machine-aeskeywrap-on-caps",
                     QEMU_CAPS_VIRTIO_SCSI,
                     QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST_FAILURE("machine-aeskeywrap-on-caps", NONE);
 
     DO_TEST("machine-aeskeywrap-on-cap",
-            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_AES_KEY_WRAP,
+            QEMU_CAPS_AES_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_FAILURE("machine-aeskeywrap-on-cap", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST_FAILURE("machine-aeskeywrap-on-cap",
                     QEMU_CAPS_VIRTIO_SCSI,
                     QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST_FAILURE("machine-aeskeywrap-on-cap", NONE);
 
     DO_TEST("machine-aeskeywrap-off-caps",
-            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
+            QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_FAILURE("machine-aeskeywrap-off-caps", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST_FAILURE("machine-aeskeywrap-off-caps",
                     QEMU_CAPS_VIRTIO_SCSI,
                     QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST_FAILURE("machine-aeskeywrap-off-caps", NONE);
 
     DO_TEST("machine-aeskeywrap-off-cap",
-            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_AES_KEY_WRAP,
+            QEMU_CAPS_AES_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_FAILURE("machine-aeskeywrap-off-cap", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST_FAILURE("machine-aeskeywrap-off-cap",
                     QEMU_CAPS_VIRTIO_SCSI,
                     QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST_FAILURE("machine-aeskeywrap-off-cap", NONE);
 
     DO_TEST("machine-deakeywrap-on-caps",
-            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
+            QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_FAILURE("machine-deakeywrap-on-caps", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST_FAILURE("machine-deakeywrap-on-caps",
                     QEMU_CAPS_VIRTIO_SCSI,
                     QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST_FAILURE("machine-deakeywrap-on-caps", NONE);
 
     DO_TEST("machine-deakeywrap-on-cap",
-            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_DEA_KEY_WRAP,
+            QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_FAILURE("machine-deakeywrap-on-cap", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST_FAILURE("machine-deakeywrap-on-cap",
                     QEMU_CAPS_VIRTIO_SCSI,
                     QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST_FAILURE("machine-deakeywrap-on-cap", NONE);
 
     DO_TEST("machine-deakeywrap-off-caps",
-            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
+            QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_FAILURE("machine-deakeywrap-off-caps", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST_FAILURE("machine-deakeywrap-off-caps",
                     QEMU_CAPS_VIRTIO_SCSI,
                     QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST_FAILURE("machine-deakeywrap-off-caps", NONE);
 
     DO_TEST("machine-deakeywrap-off-cap",
-            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_DEA_KEY_WRAP,
+            QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
-    DO_TEST_FAILURE("machine-deakeywrap-off-cap", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST_FAILURE("machine-deakeywrap-off-cap",
                     QEMU_CAPS_VIRTIO_SCSI,
                     QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST_FAILURE("machine-deakeywrap-off-cap", NONE);
 
     DO_TEST("machine-keywrap-none-caps",
-            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
+            QEMU_CAPS_AES_KEY_WRAP, QEMU_CAPS_DEA_KEY_WRAP,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("machine-keywrap-none",
-            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_VIRTIO_SCSI,
+            QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
 
-    DO_TEST("machine-loadparm-s390", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST("machine-loadparm-s390",
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_BOOTINDEX, QEMU_CAPS_LOADPARM);
-    DO_TEST("machine-loadparm-net-s390", QEMU_CAPS_MACHINE_OPT,
+    DO_TEST("machine-loadparm-net-s390",
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390,
             QEMU_CAPS_BOOTINDEX, QEMU_CAPS_LOADPARM);
     DO_TEST("machine-loadparm-multiple-disks-nets-s390",
-            QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_VIRTIO_CCW,
+            QEMU_CAPS_VIRTIO_CCW,
             QEMU_CAPS_VIRTIO_S390, QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_LOADPARM);
     DO_TEST_PARSE_ERROR("machine-loadparm-s390-char-invalid",
-                        QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_VIRTIO_CCW,
+                        QEMU_CAPS_VIRTIO_CCW,
                         QEMU_CAPS_VIRTIO_S390, QEMU_CAPS_BOOTINDEX,
                         QEMU_CAPS_LOADPARM);
     DO_TEST_PARSE_ERROR("machine-loadparm-s390-len-invalid",
-                        QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_VIRTIO_CCW,
+                        QEMU_CAPS_VIRTIO_CCW,
                         QEMU_CAPS_VIRTIO_S390, QEMU_CAPS_BOOTINDEX,
                         QEMU_CAPS_LOADPARM);
 
@@ -2682,10 +2677,8 @@ mymain(void)
     DO_TEST("intel-iommu",
             QEMU_CAPS_DEVICE_INTEL_IOMMU);
     DO_TEST("intel-iommu-machine",
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_IOMMU);
     DO_TEST("intel-iommu-caching-mode",
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_KERNEL_IRQCHIP,
             QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -2697,14 +2690,12 @@ mymain(void)
             QEMU_CAPS_INTEL_IOMMU_INTREMAP,
             QEMU_CAPS_INTEL_IOMMU_CACHING_MODE);
     DO_TEST("intel-iommu-eim",
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_KERNEL_IRQCHIP,
             QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT,
             QEMU_CAPS_INTEL_IOMMU_INTREMAP,
             QEMU_CAPS_INTEL_IOMMU_EIM,
             QEMU_CAPS_DEVICE_INTEL_IOMMU);
     DO_TEST("intel-iommu-device-iotlb",
-            QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_KERNEL_IRQCHIP,
             QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT,
             QEMU_CAPS_INTEL_IOMMU_INTREMAP,

@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name test-bios \
 -S \
--M pc \
+-machine pc,accel=tcg \
 -drive file=/usr/share/OVMF/OVMF_CODE.fd,if=pflash,format=raw,unit=0,\
 readonly=on \
 -drive file=/usr/share/OVMF/OVMF_VARS.fd,if=pflash,format=raw,unit=1 \
