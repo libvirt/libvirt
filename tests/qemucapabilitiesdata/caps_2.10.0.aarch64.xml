@@ -157,6 +157,7 @@
   <flag name='nbd-tls'/>
   <flag name='sdl-gl'/>
   <flag name='hda-output'/>
+  <flag name='blockdev-del'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>303541</microcodeVersion>

@@ -129,6 +129,7 @@
   <flag name='vfio-ccw'/>
   <flag name='sdl-gl'/>
   <flag name='screendump_device'/>
+  <flag name='blockdev-del'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>371055</microcodeVersion>

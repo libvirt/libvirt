@@ -488,6 +488,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "sdl-gl",
               "screendump_device",
               "hda-output",
+              "blockdev-del",
     );
 
 
@@ -997,6 +998,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-named-block-nodes", QEMU_CAPS_QUERY_NAMED_BLOCK_NODES },
     { "query-cpus-fast", QEMU_CAPS_QUERY_CPUS_FAST },
     { "qom-list-properties", QEMU_CAPS_QOM_LIST_PROPERTIES },
+    { "blockdev-del", QEMU_CAPS_BLOCKDEV_DEL },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
