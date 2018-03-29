@@ -743,8 +743,6 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_MACHINE_SMM_OPT,
             QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("machine-usb-opt",
-            QEMU_CAPS_MACHINE_USB_OPT);
     DO_TEST("machine-vmport-opt",
             QEMU_CAPS_MACHINE_VMPORT_OPT);
     DO_TEST("default-kvm-host-arch", NONE);

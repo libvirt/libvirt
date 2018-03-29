@@ -239,7 +239,7 @@ typedef enum {
     /* 135 */
     X_QEMU_CAPS_IPV6_MIGRATION, /* -incoming [::] */
     X_QEMU_CAPS_MACHINE_OPT, /* -machine xxxx*/
-    QEMU_CAPS_MACHINE_USB_OPT, /* -machine xxx,usb=on/off */
+    X_QEMU_CAPS_MACHINE_USB_OPT, /* -machine xxx,usb=on/off */
     QEMU_CAPS_DEVICE_TPM_PASSTHROUGH, /* -tpmdev passthrough */
     QEMU_CAPS_DEVICE_TPM_TIS, /* -device tpm_tis */
 

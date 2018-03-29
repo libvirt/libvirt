@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name QEMUGuest1 \
 -S \
--machine pc,accel=kvm,dump-guest-core=off \
+-machine pc,accel=kvm,usb=off,dump-guest-core=off \
 -cpu core2duo,+ds,+acpi,+ht,+tm,+ds_cpl,+vmx,+est,+xtpr,+3dnowext,+lahf_lm,-nx,\
 -cx16,-tm2,-pbe,-ss,-sse4a,-wdt \
 -m 214 \

@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name guest1 \
 -S \
--machine s390-ccw-virtio,accel=kvm,dump-guest-core=off \
+-machine s390-ccw-virtio,accel=kvm,usb=off,dump-guest-core=off \
 -cpu zEC12,dfppc=on,stckf=off \
 -m 214 \
 -smp 1,sockets=1,cores=1,threads=1 \

@@ -7017,8 +7017,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     /* To avoid the collision of creating USB controllers when calling
      * machine->init in QEMU, it needs to set usb=off
      */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT))
-        virBufferAddLit(&buf, ",usb=off");
+    virBufferAddLit(&buf, ",usb=off");
 
     if (vmport) {
         if (!virQEMUCapsSupportsVmport(qemuCaps, def)) {

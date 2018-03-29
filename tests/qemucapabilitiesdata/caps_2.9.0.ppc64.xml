@@ -50,7 +50,6 @@
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
   <flag name='megasas'/>
-  <flag name='machine-usb-opt'/>
   <flag name='nvram'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>

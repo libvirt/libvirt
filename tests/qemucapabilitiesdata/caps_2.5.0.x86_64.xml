@@ -68,7 +68,6 @@
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
   <flag name='megasas'/>
-  <flag name='machine-usb-opt'/>
   <flag name='tpm-passthrough'/>
   <flag name='tpm-tis'/>
   <flag name='pci-bridge'/>

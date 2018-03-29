@@ -3753,10 +3753,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     virQEMUCapsInitQMPBasicArch(qemuCaps);
 
-    /* USB option is supported v1.3.0 onwards */
-    if (qemuCaps->version >= 1003000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_USB_OPT);
-
     /* WebSockets were introduced between 1.3.0 and 1.3.1 */
     if (qemuCaps->version >= 1003001)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_WEBSOCKET);

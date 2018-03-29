@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest \
 -S \
--machine q35,accel=tcg,dump-guest-core=off \
+-machine q35,accel=tcg,usb=off,dump-guest-core=off \
 -cpu Haswell \
 -m 1024 \
 -smp 1,sockets=1,cores=1,threads=1 \
