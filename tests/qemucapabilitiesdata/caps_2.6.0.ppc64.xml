@@ -18,7 +18,6 @@
   <flag name='pci-ohci'/>
   <flag name='usb-hub'/>
   <flag name='ich9-ahci'/>
-  <flag name='fsdev-readonly'/>
   <flag name='virtio-blk-pci.scsi'/>
   <flag name='drive-copy-on-read'/>
   <flag name='fsdev-writeout'/>

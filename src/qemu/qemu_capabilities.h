@@ -157,7 +157,7 @@ typedef enum {
     X_QEMU_CAPS_PCI_ROMBAR, /* -device rombar=0|1 */
     QEMU_CAPS_ICH9_AHCI, /* -device ich9-ahci */
     QEMU_CAPS_NO_ACPI, /* -no-acpi */
-    QEMU_CAPS_FSDEV_READONLY, /* -fsdev readonly supported */
+    X_QEMU_CAPS_FSDEV_READONLY, /* -fsdev readonly supported */
 
     /* 80 */
     QEMU_CAPS_VIRTIO_BLK_SCSI, /* virtio-blk-pci.scsi */
