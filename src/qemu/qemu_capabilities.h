@@ -188,7 +188,7 @@ typedef enum {
     QEMU_CAPS_BALLOON_EVENT, /* Async event for balloon changes */
 
     /* 100 */
-    QEMU_CAPS_NETDEV_BRIDGE, /* bridge helper support */
+    X_QEMU_CAPS_NETDEV_BRIDGE, /* bridge helper support */
     QEMU_CAPS_SCSI_LSI, /* -device lsi */
     QEMU_CAPS_VIRTIO_SCSI, /* -device virtio-scsi-* */
     QEMU_CAPS_BLOCKIO, /* -device ...logical_block_size & co */
