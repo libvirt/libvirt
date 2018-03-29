@@ -4124,6 +4124,13 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src)
         return -1;
     }
 
+    if (src->format == VIR_STORAGE_FILE_ISO) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("storage format 'iso' is not directly supported by QEMU, "
+                         "use 'raw' instead"));
+        return -1;
+    }
+
     return 0;
 }
 
