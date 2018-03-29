@@ -1465,9 +1465,9 @@ mymain(void)
     DO_TEST_PARSE_ERROR("usb-controller-qemu-xhci-limit",
                         QEMU_CAPS_DEVICE_QEMU_XHCI);
 
-    DO_TEST("smbios", QEMU_CAPS_SMBIOS_TYPE);
-    DO_TEST_PARSE_ERROR("smbios-date", QEMU_CAPS_SMBIOS_TYPE);
-    DO_TEST_PARSE_ERROR("smbios-uuid-match", QEMU_CAPS_SMBIOS_TYPE);
+    DO_TEST("smbios", NONE);
+    DO_TEST_PARSE_ERROR("smbios-date", NONE);
+    DO_TEST_PARSE_ERROR("smbios-uuid-match", NONE);
 
     DO_TEST("watchdog", NONE);
     DO_TEST("watchdog-device", NONE);

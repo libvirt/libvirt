@@ -108,7 +108,7 @@ typedef enum {
     QEMU_CAPS_NESTING, /* -enable-nesting (SVM/VMX) */
     X_QEMU_CAPS_NAME_PROCESS, /* Is -name process= available */
     X_QEMU_CAPS_DRIVE_READONLY, /* -drive readonly=on|off */
-    QEMU_CAPS_SMBIOS_TYPE, /* Is -smbios type= available */
+    X_QEMU_CAPS_SMBIOS_TYPE, /* Is -smbios type= available */
 
     /* 45 */
     X_QEMU_CAPS_VGA_QXL, /* The 'qxl' arg for '-vga' */

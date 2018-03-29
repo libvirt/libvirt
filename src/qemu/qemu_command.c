@@ -5906,8 +5906,7 @@ qemuBuildSmbiosChassisStr(virSysinfoChassisDefPtr def)
 static int
 qemuBuildSmbiosCommandLine(virCommandPtr cmd,
                            virQEMUDriverPtr driver,
-                           const virDomainDef *def,
-                           virQEMUCapsPtr qemuCaps)
+                           const virDomainDef *def)
 {
     size_t i;
     virSysinfoDefPtr source = NULL;
@@ -5916,13 +5915,6 @@ qemuBuildSmbiosCommandLine(virCommandPtr cmd,
     if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_NONE ||
         def->os.smbios_mode == VIR_DOMAIN_SMBIOS_EMULATE)
         return 0;
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMBIOS_TYPE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("the QEMU binary %s does not support smbios settings"),
-                       def->emulator);
-        return -1;
-    }
 
     /* should we really error out or just warn in those cases ? */
     if (def->os.smbios_mode == VIR_DOMAIN_SMBIOS_HOST) {
@@ -9972,7 +9964,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     virUUIDFormat(def->uuid, uuid);
     virCommandAddArgList(cmd, "-uuid", uuid, NULL);
 
-    if (qemuBuildSmbiosCommandLine(cmd, driver, def, qemuCaps) < 0)
+    if (qemuBuildSmbiosCommandLine(cmd, driver, def) < 0)
         goto error;
 
     /*
