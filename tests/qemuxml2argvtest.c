@@ -1103,10 +1103,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_VGA);
     DO_TEST("graphics-sdl-fullscreen",
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("nographics", NONE);
-    DO_TEST("nographics-display",
-            QEMU_CAPS_DISPLAY);
-    DO_TEST("nographics-vga", NONE);
     DO_TEST("graphics-spice",
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_QXL,

@@ -20,7 +20,7 @@ mem-path=/var/lib/libvirt/qemu/ram/libvirt/qemu/-1-instance-00000092/ram-node1,\
 share=yes,size=15032385536 \
 -numa node,nodeid=1,cpus=8-15,memdev=ram-node1 \
 -uuid 126f2720-6f8e-45ab-a886-ec9277079a67 \
--nographic \
+-display none \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,\

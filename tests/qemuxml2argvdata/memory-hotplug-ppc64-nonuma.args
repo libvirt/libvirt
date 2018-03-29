@@ -15,7 +15,7 @@ QEMU_AUDIO_DRV=none \
 -object memory-backend-ram,id=memdimm1,size=536870912 \
 -device pc-dimm,memdev=memdimm1,id=dimm1,slot=1 \
 -uuid 49545eb3-75e1-2d0a-acdd-f0294406c99e \
--nographic \
+-display none \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\

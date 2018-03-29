@@ -21,7 +21,7 @@ serial=CZC1065993,asset=CZC1065993,location=Upside down' \
 asset=40000101,sku=Type3Sku1' \
 -smbios 'type=11,value=Hello,value=World,value=This is,,\
  more tricky value=escaped' \
--nographic \
+-display none \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\

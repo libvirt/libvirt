@@ -21,7 +21,7 @@ host-nodes=1-3,policy=bind \
 mem-path=/dev/hugepages2M/libvirt/qemu/-1-fedora,share=no,size=536870912 \
 -device pc-dimm,node=0,memdev=memdimm1,id=dimm1,slot=1 \
 -uuid 63840878-0deb-4095-97e6-fc444d9bc9fa \
--nographic \
+-display none \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-fedora/monitor.sock,\

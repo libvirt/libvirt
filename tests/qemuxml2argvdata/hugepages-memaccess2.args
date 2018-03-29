@@ -31,7 +31,7 @@ mem-path=/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1,share=yes,size=536870912,\
 host-nodes=0-3,policy=bind \
 -device pc-dimm,node=1,memdev=memdimm0,id=dimm0,slot=0,addr=4294967296 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
--nographic \
+-display none \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\

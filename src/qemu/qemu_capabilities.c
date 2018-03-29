@@ -3619,16 +3619,6 @@ static qemuMonitorCallbacks callbacks = {
 };
 
 
-/* Capabilities that we assume are always enabled
- * for QEMU >= 1.2.0
- */
-static void
-virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
-{
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DISPLAY);
-}
-
-
 /**
  * virQEMUCapsInitQMPArch:
  * @qemuCaps: QEMU capabilities
@@ -3757,8 +3747,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     qemuCaps->version = major * 1000000 + minor * 1000 + micro;
     qemuCaps->package = package;
     qemuCaps->usedQMP = true;
-
-    virQEMUCapsInitQMPBasic(qemuCaps);
 
     if (virQEMUCapsInitQMPArch(qemuCaps, mon) < 0)
         goto cleanup;

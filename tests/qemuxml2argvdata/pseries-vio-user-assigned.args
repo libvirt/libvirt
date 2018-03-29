@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=none \
 -m 512 \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 2754dd7b-ac8a-4850-aec0-1f3fcd43235b \
--nographic \
+-display none \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\

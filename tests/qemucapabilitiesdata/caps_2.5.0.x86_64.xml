@@ -146,7 +146,6 @@
   <flag name='spice-unix'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='tls-creds-x509'/>
-  <flag name='display'/>
   <flag name='smm'/>
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='machine-iommu'/>

@@ -9824,12 +9824,8 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
      * these defaults ourselves...
      */
     if (!def->ngraphics) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISPLAY)) {
-            virCommandAddArg(cmd, "-display");
-            virCommandAddArg(cmd, "none");
-        } else {
-            virCommandAddArg(cmd, "-nographic");
-        }
+        virCommandAddArg(cmd, "-display");
+        virCommandAddArg(cmd, "none");
 
         if (cfg->nogfxAllowHostAudio)
             virCommandAddEnvPassBlockSUID(cmd, "QEMU_AUDIO_DRV", NULL);
