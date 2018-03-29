@@ -4109,7 +4109,8 @@ qemuDomainDeviceDefValidateVideo(const virDomainVideoDef *video)
 
 
 static int
-qemuDomainValidateStorageSource(virStorageSourcePtr src)
+qemuDomainValidateStorageSource(virStorageSourcePtr src,
+                                virQEMUCapsPtr qemuCaps)
 {
     if (src->format == VIR_STORAGE_FILE_COW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4131,12 +4132,22 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src)
         return -1;
     }
 
+    if (src->format == VIR_STORAGE_FILE_QCOW2 &&
+        src->encryption &&
+        src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_QCOW2_LUKS)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("LUKS encrypted QCOW2 images are not suppored by this QEMU"));
+        return -1;
+    }
+
     return 0;
 }
 
 
 static int
-qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk)
+qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
+                                virQEMUCapsPtr qemuCaps)
 {
     virStorageSourcePtr n;
 
@@ -4157,7 +4168,7 @@ qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk)
     }
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (qemuDomainValidateStorageSource(n) < 0)
+        if (qemuDomainValidateStorageSource(n, qemuCaps) < 0)
             return -1;
     }
 
@@ -4988,7 +4999,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = qemuDomainDeviceDefValidateDisk(dev->data.disk);
+        ret = qemuDomainDeviceDefValidateDisk(dev->data.disk, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_CONTROLLER:
@@ -11872,7 +11883,7 @@ qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
             n->debugLevel = cfg->glusterDebugLevel;
         }
 
-        if (qemuDomainValidateStorageSource(n) < 0)
+        if (qemuDomainValidateStorageSource(n, qemuCaps) < 0)
             return -1;
     }
 
