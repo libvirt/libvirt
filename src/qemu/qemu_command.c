@@ -2461,12 +2461,6 @@ qemuBuildFSDevCommandLine(virCommandPtr cmd,
 {
     size_t i;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV) && def->nfss) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("filesystem passthrough not supported by this QEMU"));
-        return -1;
-    }
-
     for (i = 0; i < def->nfss; i++) {
         char *optstr;
         virDomainFSDefPtr fs = def->fss[i];
