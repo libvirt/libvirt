@@ -18727,7 +18727,6 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
                                unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     qemuAgentPtr agent;
     int ret = -1;
@@ -18752,8 +18751,6 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
-    priv = vm->privateData;
-
     if (virDomainPMSuspendForDurationEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
@@ -18763,15 +18760,6 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
-        goto endjob;
-    }
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_WAKEUP) &&
-        (target == VIR_NODE_SUSPEND_TARGET_MEM ||
-         target == VIR_NODE_SUSPEND_TARGET_HYBRID)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("Unable to suspend domain due to "
-                         "missing system_wakeup monitor command"));
         goto endjob;
     }
 
@@ -18834,13 +18822,6 @@ qemuDomainPMWakeup(virDomainPtr dom,
     }
 
     priv = vm->privateData;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_WAKEUP)) {
-       virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                      _("Unable to wake up domain due to "
-                        "missing system_wakeup monitor command"));
-       goto endjob;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorSystemWakeup(priv->mon);

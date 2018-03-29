@@ -959,7 +959,6 @@ struct virQEMUCapsStringFlags {
 
 
 struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
-    { "system_wakeup", QEMU_CAPS_WAKEUP },
     { "transaction", QEMU_CAPS_TRANSACTION },
     { "block-stream", QEMU_CAPS_BLOCKJOB_ASYNC },
     { "dump-guest-memory", QEMU_CAPS_DUMP_GUEST_MEMORY },
@@ -3626,7 +3625,6 @@ static qemuMonitorCallbacks callbacks = {
 static void
 virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_WAKEUP);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV_BRIDGE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SECCOMP_SANDBOX);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DTB);

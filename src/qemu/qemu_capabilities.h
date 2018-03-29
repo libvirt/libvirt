@@ -168,7 +168,7 @@ typedef enum {
 
     /* 85 */
     X_QEMU_CAPS_DRIVE_IOTUNE, /* -drive bps= and friends */
-    QEMU_CAPS_WAKEUP, /* system_wakeup monitor command */
+    X_QEMU_CAPS_WAKEUP, /* system_wakeup monitor command */
     QEMU_CAPS_SCSI_DISK_CHANNEL, /* Is scsi-disk.channel available? */
     QEMU_CAPS_SCSI_BLOCK, /* -device scsi-block */
     QEMU_CAPS_TRANSACTION, /* transaction monitor command */

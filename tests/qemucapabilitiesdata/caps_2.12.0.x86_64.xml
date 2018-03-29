@@ -27,7 +27,6 @@
   <flag name='ich9-ahci'/>
   <flag name='no-acpi'/>
   <flag name='virtio-blk-pci.scsi'/>
-  <flag name='system_wakeup'/>
   <flag name='scsi-disk.channel'/>
   <flag name='scsi-block'/>
   <flag name='transaction'/>
