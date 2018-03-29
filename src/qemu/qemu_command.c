@@ -6181,26 +6181,7 @@ qemuBuildClockCommandLine(virCommandPtr cmd,
             break;
 
         case VIR_DOMAIN_TIMER_NAME_RTC:
-            /* This has already been taken care of (in qemuBuildClockArgStr)
-               if QEMU_CAPS_RTC is set (mutually exclusive with
-               QEMUD_FLAG_RTC_TD_HACK) */
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_RTC_TD_HACK)) {
-                switch (def->clock.timers[i]->tickpolicy) {
-                case -1:
-                case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
-                    /* the default - do nothing */
-                    break;
-                case VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP:
-                    virCommandAddArg(cmd, "-rtc-td-hack");
-                    break;
-                case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
-                case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unsupported rtc tickpolicy '%s'"),
-                                   virDomainTimerTickpolicyTypeToString(def->clock.timers[i]->tickpolicy));
-                    return -1;
-                }
-            }
+            /* Already handled in qemuBuildClockArgStr */
             break;
 
         case VIR_DOMAIN_TIMER_NAME_PIT:
