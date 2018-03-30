@@ -1715,7 +1715,6 @@ mymain(void)
     DO_TEST_FAILURE("cpu-host-model-nofallback", NONE);
     skipLegacyCPUs = false;
     DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM);
-    DO_TEST_FAILURE("cpu-host-passthrough", NONE);
     DO_TEST_FAILURE("cpu-qemu-host-passthrough", QEMU_CAPS_KVM);
 
     qemuTestSetHostArch(driver.caps, VIR_ARCH_S390X);
