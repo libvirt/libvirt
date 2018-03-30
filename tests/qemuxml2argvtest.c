@@ -2384,6 +2384,8 @@ mymain(void)
     DO_TEST("q35-virt-manager-basic",
             QEMU_CAPS_KVM,
             QEMU_CAPS_RTC,
+            QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_MACHINE_VMPORT_OPT,
             QEMU_CAPS_ICH9_DISABLE_S3,
             QEMU_CAPS_ICH9_DISABLE_S4,
             QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,

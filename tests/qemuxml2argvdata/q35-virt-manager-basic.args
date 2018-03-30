@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=spice \
 /usr/bin/qemu-system-x86_64 \
 -name virt-manager-basic \
 -S \
--M pc-q35-2.7 \
+-machine pc-q35-2.7,accel=kvm,vmport=off \
 -m 4096 \
 -smp 2,sockets=2,cores=1,threads=1 \
 -uuid 1b826c23-8767-47ad-a6b5-c83a88277f71 \
