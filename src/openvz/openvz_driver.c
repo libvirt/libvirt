@@ -319,22 +319,18 @@ openvzDomainGetHostname(virDomainPtr dom, unsigned int flags)
 
     hostname = openvzVEGetStringParam(dom, "hostname");
     if (hostname == NULL)
-        goto error;
+        goto cleanup;
 
     /* vzlist prints an unset hostname as '-' */
     if (STREQ(hostname, "-")) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Hostname of '%s' is unset"), vm->def->name);
-        goto error;
+        VIR_FREE(hostname);
     }
 
  cleanup:
     virDomainObjEndAPI(&vm);
     return hostname;
-
- error:
-    VIR_FREE(hostname);
-    goto cleanup;
 }
 
 
