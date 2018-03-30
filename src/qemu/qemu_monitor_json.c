@@ -5443,7 +5443,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
     if (VIR_STRDUP(machine_model->name, cpu_name) < 0)
         goto cleanup;
 
-    if (VIR_ALLOC_N(machine_model->props, cpu_props->data.object.npairs) < 0)
+    if (VIR_ALLOC_N(machine_model->props, virJSONValueObjectKeysNumber(cpu_props)) < 0)
         goto cleanup;
 
     if (virJSONValueObjectForeachKeyValue(cpu_props,
