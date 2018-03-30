@@ -14811,7 +14811,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             goto cleanup;
 
-        ret = qemuMonitorTransaction(priv->mon, actions);
+        ret = qemuMonitorTransaction(priv->mon, &actions);
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0 || ret < 0) {
             ret = -1;
@@ -14855,7 +14855,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         }
     }
 
-    if (ret == 0 || !actions) {
+    if (ret == 0 || !do_transaction) {
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0 ||
             (persist && virDomainSaveConfig(cfg->configDir, driver->caps,
                                             vm->newDef) < 0))

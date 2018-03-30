@@ -4125,18 +4125,14 @@ qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
 }
 
 int
-qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
+qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr *actions)
 {
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
-    virJSONValuePtr act = actions;
-    bool protect = actions->protect;
 
-    /* We do NOT want to free actions when recursively freeing cmd.  */
-    actions->protect = true;
     cmd = qemuMonitorJSONMakeCommand("transaction",
-                                     "a:actions", &act,
+                                     "a:actions", actions,
                                      NULL);
     if (!cmd)
         goto cleanup;
@@ -4151,7 +4147,6 @@ qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
-    actions->protect = protect;
     return ret;
 }
 

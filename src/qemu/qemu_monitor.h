@@ -898,7 +898,7 @@ int qemuMonitorDiskSnapshot(qemuMonitorPtr mon,
                             const char *file,
                             const char *format,
                             bool reuse);
-int qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
+int qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr *actions)
     ATTRIBUTE_NONNULL(2);
 int qemuMonitorDriveMirror(qemuMonitorPtr mon,
                            const char *device,

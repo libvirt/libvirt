@@ -253,7 +253,7 @@ int qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon,
                                 bool reuse)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
-int qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
+int qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr *actions)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
                                const char *device,

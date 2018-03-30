@@ -3386,9 +3386,9 @@ qemuMonitorDriveMirror(qemuMonitorPtr mon,
 
 /* Use the transaction QMP command to run atomic snapshot commands.  */
 int
-qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
+qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr *actions)
 {
-    VIR_DEBUG("actions=%p", actions);
+    VIR_DEBUG("actions=%p", *actions);
 
     QEMU_CHECK_MONITOR_JSON(mon);
 
