@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name QEMUGuest1 \
 -S \
--machine pc,accel=tcg \
+-machine pc,accel=tcg,dump-guest-core=off \
 -m 214 \
 -smp 16,sockets=2,cores=4,threads=2 \
 -object memory-backend-file,id=ram-node0,\

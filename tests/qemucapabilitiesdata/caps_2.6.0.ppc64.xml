@@ -35,7 +35,6 @@
   <flag name='ide-drive.wwn'/>
   <flag name='scsi-disk.wwn'/>
   <flag name='reboot-timeout'/>
-  <flag name='dump-guest-core'/>
   <flag name='seamless-migration'/>
   <flag name='block-commit'/>
   <flag name='vnc'/>

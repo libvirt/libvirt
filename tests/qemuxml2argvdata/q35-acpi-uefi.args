@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest \
 -S \
--machine q35,accel=tcg \
+-machine q35,accel=tcg,dump-guest-core=off \
 -cpu Haswell \
 -drive file=/usr/share/OVMF/OVMF_CODE.fd,if=pflash,format=raw,unit=0,\
 readonly=on \

@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i686 \
 -name QEMUGuest1 \
 -S \
--machine pc,accel=tcg \
+-machine pc,accel=tcg,dump-guest-core=off \
 -m 214 \
 -smp 2,sockets=2,cores=1,threads=1 \
 -object iothread,id=iothread5 \

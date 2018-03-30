@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-arm \
 -name armtest \
 -S \
--machine virt,accel=kvm \
+-machine virt,accel=kvm,dump-guest-core=off \
 -cpu host,aarch64=off \
 -m 1024 \
 -smp 1,sockets=1,cores=1,threads=1 \

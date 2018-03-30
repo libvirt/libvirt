@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name instance-00000092 \
 -S \
--machine pc-i440fx-wily,accel=kvm \
+-machine pc-i440fx-wily,accel=kvm,dump-guest-core=off \
 -m 14336 \
 -mem-prealloc \
 -smp 8,sockets=8,cores=1,threads=1 \

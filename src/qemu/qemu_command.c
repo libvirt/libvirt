@@ -7051,21 +7051,12 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                           virTristateSwitchTypeToString(smm));
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE)) {
-        if (def->mem.dump_core) {
-            virBufferAsprintf(&buf, ",dump-guest-core=%s",
-                              virTristateSwitchTypeToString(def->mem.dump_core));
-        } else {
-            virBufferAsprintf(&buf, ",dump-guest-core=%s",
-                              cfg->dumpGuestCore ? "on" : "off");
-        }
+    if (def->mem.dump_core) {
+        virBufferAsprintf(&buf, ",dump-guest-core=%s",
+                          virTristateSwitchTypeToString(def->mem.dump_core));
     } else {
-        if (def->mem.dump_core) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("dump-guest-core is not available "
-                             "with this QEMU binary"));
-            goto cleanup;
-        }
+        virBufferAsprintf(&buf, ",dump-guest-core=%s",
+                          cfg->dumpGuestCore ? "on" : "off");
     }
 
     if (def->mem.nosharepages) {

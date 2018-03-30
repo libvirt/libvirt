@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name foo \
 -S \
--machine pc,accel=kvm \
+-machine pc,accel=kvm,dump-guest-core=off \
 -cpu core2duo,+ds,+acpi,+ss,+ht,+tm,+pbe,+ds_cpl,+vmx,+est,+tm2,+cx16,+xtpr,\
 +lahf_lm,l3-cache=off \
 -m 214 \

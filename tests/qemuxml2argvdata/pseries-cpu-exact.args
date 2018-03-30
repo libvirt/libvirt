@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc64 \
 -name QEMUGuest1 \
 -S \
--machine pseries,accel=tcg \
+-machine pseries,accel=tcg,dump-guest-core=off \
 -cpu POWER7 \
 -m 512 \
 -smp 1,sockets=1,cores=1,threads=1 \

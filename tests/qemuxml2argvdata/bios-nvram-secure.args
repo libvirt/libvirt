@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name test-bios \
 -S \
--machine pc-q35-2.5,accel=tcg,smm=on \
+-machine pc-q35-2.5,accel=tcg,smm=on,dump-guest-core=off \
 -global driver=cfi.pflash01,property=secure,value=on \
 -drive file=/usr/share/OVMF/OVMF_CODE.secboot.fd,if=pflash,format=raw,unit=0,\
 readonly=on \

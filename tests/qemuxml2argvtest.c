@@ -732,16 +732,10 @@ mymain(void)
     DO_TEST("minimal-msg-timestamp", QEMU_CAPS_MSG_TIMESTAMP);
     DO_TEST("machine-aliases1", NONE);
     DO_TEST("machine-aliases2", QEMU_CAPS_KVM);
-    DO_TEST("machine-core-on",
-            QEMU_CAPS_DUMP_GUEST_CORE);
+    DO_TEST("machine-core-on", NONE);
     driver.config->dumpGuestCore = true;
-    DO_TEST("machine-core-off",
-            QEMU_CAPS_DUMP_GUEST_CORE);
+    DO_TEST("machine-core-off", NONE);
     driver.config->dumpGuestCore = false;
-    DO_TEST("machine-core-cfg-off",
-            QEMU_CAPS_DUMP_GUEST_CORE);
-    DO_TEST_FAILURE("machine-core-on", NONE);
-    DO_TEST_FAILURE("machine-core-on", NONE);
     DO_TEST("machine-smm-opt",
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
