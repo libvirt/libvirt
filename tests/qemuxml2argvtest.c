@@ -1322,10 +1322,6 @@ mymain(void)
     DO_TEST("channel-spicevmc",
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("channel-spicevmc-old",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_SPICEVMC,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("channel-virtio-default",
             QEMU_CAPS_SPICE);
     DO_TEST("channel-virtio-unix", NONE);

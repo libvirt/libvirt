@@ -5360,8 +5360,7 @@ qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
 
 static char *
 qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
-                                virDomainChrDefPtr dev,
-                                virQEMUCapsPtr qemuCaps)
+                                virDomainChrDefPtr dev)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *contAlias;
@@ -5371,13 +5370,7 @@ qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
         virBufferAddLit(&buf, "virtconsole");
         break;
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
-        /* Legacy syntax  '-device spicevmc' */
-        if (dev->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC)) {
-            virBufferAddLit(&buf, "spicevmc");
-        } else {
-            virBufferAddLit(&buf, "virtserialport");
-        }
+        virBufferAddLit(&buf, "virtserialport");
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -5415,19 +5408,13 @@ qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
         goto error;
     }
 
-    if (!(dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
-          dev->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
-          virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC))) {
-        virBufferAsprintf(&buf, ",chardev=char%s,id=%s",
-                          dev->info.alias, dev->info.alias);
-        if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
-            (dev->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC ||
-             dev->target.name)) {
-            virBufferAsprintf(&buf, ",name=%s", dev->target.name
-                              ? dev->target.name : "com.redhat.spice.0");
-        }
-    } else {
-        virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
+    virBufferAsprintf(&buf, ",chardev=char%s,id=%s",
+                      dev->info.alias, dev->info.alias);
+    if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+        (dev->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC ||
+         dev->target.name)) {
+        virBufferAsprintf(&buf, ",name=%s", dev->target.name
+                          ? dev->target.name : "com.redhat.spice.0");
     }
     if (virBufferCheckError(&buf) < 0)
         goto error;
@@ -9174,23 +9161,15 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
             break;
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC) &&
-                channel->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
-                /* spicevmc was originally introduced via a -device
-                 * with a backend internal to qemu; although we prefer
-                 * the newer -chardev interface.  */
-                ;
-            } else {
-                if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                                      channel->source,
-                                                      channel->info.alias,
-                                                      qemuCaps, true,
-                                                      chardevStdioLogd)))
-                    return -1;
-                virCommandAddArg(cmd, "-chardev");
-                virCommandAddArg(cmd, devstr);
-                VIR_FREE(devstr);
-            }
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
+                                                  channel->source,
+                                                  channel->info.alias,
+                                                  qemuCaps, true,
+                                                  chardevStdioLogd)))
+                return -1;
+            virCommandAddArg(cmd, "-chardev");
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
 
             if (qemuBuildChrDeviceCommandLine(cmd, def, channel, qemuCaps) < 0)
                 return -1;
@@ -10210,8 +10189,7 @@ qemuBuildParallelChrDeviceStr(char **deviceStr,
 static int
 qemuBuildChannelChrDeviceStr(char **deviceStr,
                              const virDomainDef *def,
-                             virDomainChrDefPtr chr,
-                             virQEMUCapsPtr qemuCaps)
+                             virDomainChrDefPtr chr)
 {
     int ret = -1;
     char *addr = NULL;
@@ -10232,7 +10210,7 @@ qemuBuildChannelChrDeviceStr(char **deviceStr,
         break;
 
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
-        if (!(*deviceStr = qemuBuildVirtioSerialPortDevStr(def, chr, qemuCaps)))
+        if (!(*deviceStr = qemuBuildVirtioSerialPortDevStr(def, chr)))
             goto cleanup;
         break;
 
@@ -10251,8 +10229,7 @@ qemuBuildChannelChrDeviceStr(char **deviceStr,
 static int
 qemuBuildConsoleChrDeviceStr(char **deviceStr,
                              const virDomainDef *def,
-                             virDomainChrDefPtr chr,
-                             virQEMUCapsPtr qemuCaps)
+                             virDomainChrDefPtr chr)
 {
     int ret = -1;
 
@@ -10264,7 +10241,7 @@ qemuBuildConsoleChrDeviceStr(char **deviceStr,
         break;
 
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
-        if (!(*deviceStr = qemuBuildVirtioSerialPortDevStr(def, chr, qemuCaps)))
+        if (!(*deviceStr = qemuBuildVirtioSerialPortDevStr(def, chr)))
             goto cleanup;
         break;
 
@@ -10306,11 +10283,11 @@ qemuBuildChrDeviceStr(char **deviceStr,
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
-        ret = qemuBuildChannelChrDeviceStr(deviceStr, vmdef, chr, qemuCaps);
+        ret = qemuBuildChannelChrDeviceStr(deviceStr, vmdef, chr);
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
-        ret = qemuBuildConsoleChrDeviceStr(deviceStr, vmdef, chr, qemuCaps);
+        ret = qemuBuildConsoleChrDeviceStr(deviceStr, vmdef, chr);
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:

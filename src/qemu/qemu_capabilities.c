@@ -1020,7 +1020,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-scsi-ccw", QEMU_CAPS_VIRTIO_SCSI },
     { "virtio-scsi-device", QEMU_CAPS_VIRTIO_SCSI },
     { "megasas", QEMU_CAPS_SCSI_MEGASAS },
-    { "spicevmc", QEMU_CAPS_DEVICE_SPICEVMC },
     { "qxl", QEMU_CAPS_DEVICE_QXL },
     { "sga", QEMU_CAPS_SGA },
     { "scsi-block", QEMU_CAPS_SCSI_BLOCK },
@@ -2095,9 +2094,6 @@ virQEMUCapsProbeQMPObjects(virQEMUCapsPtr qemuCaps,
                                       nvalues, values);
         virStringListFreeCount(values, nvalues);
     }
-
-    /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
-    virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC);
 
     return 0;
 }

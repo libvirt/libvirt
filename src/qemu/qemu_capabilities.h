@@ -127,7 +127,7 @@ typedef enum {
     /* 55 */
     QEMU_CAPS_CCID_PASSTHRU, /* -device ccid-card-passthru */
     X_QEMU_CAPS_CHARDEV_SPICEVMC, /* newer -chardev spicevmc */
-    QEMU_CAPS_DEVICE_SPICEVMC, /* older -device spicevmc*/
+    X_QEMU_CAPS_DEVICE_SPICEVMC, /* older -device spicevmc*/
     QEMU_CAPS_VIRTIO_TX_ALG, /* -device virtio-net-pci,tx=string */
     X_QEMU_CAPS_DEVICE_QXL_VGA, /* primary qxl device named qxl-vga? */
 
