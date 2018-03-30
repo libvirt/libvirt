@@ -1336,14 +1336,13 @@ int qemuAgentFSFreeze(qemuAgentPtr mon, const char **mountpoints,
             return -1;
 
         cmd = qemuAgentMakeCommand("guest-fsfreeze-freeze-list",
-                                   "a:mountpoints", arg, NULL);
+                                   "a:mountpoints", &arg, NULL);
     } else {
         cmd = qemuAgentMakeCommand("guest-fsfreeze-freeze", NULL);
     }
 
     if (!cmd)
         goto cleanup;
-    arg = NULL;
 
     if (qemuAgentCommand(mon, cmd, &reply, true,
                          VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
@@ -1611,11 +1610,9 @@ qemuAgentSetVCPUsCommand(qemuAgentPtr mon,
     }
 
     if (!(cmd = qemuAgentMakeCommand("guest-set-vcpus",
-                                     "a:vcpus", cpus,
+                                     "a:vcpus", &cpus,
                                      NULL)))
         goto cleanup;
-
-    cpus = NULL;
 
     if (qemuAgentCommand(mon, cmd, &reply, true,
                          VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)

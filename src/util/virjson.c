@@ -109,8 +109,11 @@ virJSONValueGetType(const virJSONValue *value)
  * d: double precision floating point number
  * n: json null value
  *
+ * The following two cases take a pointer to a pointer to a virJSONValuePtr. The
+ * pointer is cleared when the virJSONValuePtr is stolen into the object.
  * a: json object, must be non-NULL
  * A: json object, omitted if NULL
+ *
  * m: a bitmap represented as a JSON array, must be non-NULL
  * M: a bitmap represented as a JSON array, omitted if NULL
  *
@@ -241,9 +244,9 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
 
         case 'A':
         case 'a': {
-            virJSONValuePtr val = va_arg(args, virJSONValuePtr);
+            virJSONValuePtr *val = va_arg(args, virJSONValuePtr *);
 
-            if (!val) {
+            if (!(*val)) {
                 if (type == 'A')
                     continue;
 
@@ -253,7 +256,8 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
                 goto cleanup;
             }
 
-            rc = virJSONValueObjectAppend(obj, key, val);
+            if ((rc = virJSONValueObjectAppend(obj, key, *val)) == 0)
+                *val = NULL;
         }   break;
 
         case 'M':

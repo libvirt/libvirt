@@ -67,10 +67,8 @@ testBackingXMLjsonXML(const void *args)
         goto cleanup;
     }
 
-    if (virJSONValueObjectCreate(&wrapper, "a:file", backendprops, NULL) < 0)
+    if (virJSONValueObjectCreate(&wrapper, "a:file", &backendprops, NULL) < 0)
         goto cleanup;
-
-    backendprops = NULL;
 
     if (!(propsstr = virJSONValueToString(wrapper, false)))
         goto cleanup;

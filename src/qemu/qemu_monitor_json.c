@@ -3950,13 +3950,10 @@ int qemuMonitorJSONAddObject(qemuMonitorPtr mon,
     cmd = qemuMonitorJSONMakeCommand("object-add",
                                      "s:qom-type", type,
                                      "s:id", objalias,
-                                     "A:props", props,
+                                     "A:props", &props,
                                      NULL);
     if (!cmd)
         goto cleanup;
-
-    /* @props is part of @cmd now. Avoid double free */
-    props = NULL;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
@@ -4133,12 +4130,13 @@ qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr actions)
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
+    virJSONValuePtr act = actions;
     bool protect = actions->protect;
 
     /* We do NOT want to free actions when recursively freeing cmd.  */
     actions->protect = true;
     cmd = qemuMonitorJSONMakeCommand("transaction",
-                                     "a:actions", actions,
+                                     "a:actions", &act,
                                      NULL);
     if (!cmd)
         goto cleanup;
@@ -4425,14 +4423,11 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
     }
 
     cmd = qemuMonitorJSONMakeCommand("send-key",
-                                     "a:keys", keys,
+                                     "a:keys", &keys,
                                      "p:hold-time", holdtime,
                                      NULL);
     if (!cmd)
         goto cleanup;
-
-    /* @keys is part of @cmd now. Avoid double free */
-    keys = NULL;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
@@ -5390,14 +5385,9 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-cpu-model-expansion",
                                            "s:type", typeStr,
-                                           "a:model", model,
+                                           "a:model", &model,
                                            NULL)))
         goto cleanup;
-
-    /* model will be freed when cmd is freed. we set model
-     * to NULL to avoid double freeing.
-     */
-    model = NULL;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
@@ -6263,12 +6253,10 @@ qemuMonitorJSONSetMigrationCapability(qemuMonitorPtr mon,
     cap = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("migrate-set-capabilities",
-                                     "a:capabilities", caps,
+                                     "a:capabilities", &caps,
                                      NULL);
     if (!cmd)
         goto cleanup;
-
-    caps = NULL;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
@@ -6410,7 +6398,7 @@ qemuMonitorJSONBuildInetSocketAddress(const char *host,
         return NULL;
 
     if (virJSONValueObjectCreate(&addr, "s:type", "inet",
-                                        "a:data", data, NULL) < 0) {
+                                        "a:data", &data, NULL) < 0) {
         virJSONValueFree(data);
         return NULL;
     }
@@ -6428,7 +6416,7 @@ qemuMonitorJSONBuildUnixSocketAddress(const char *path)
         return NULL;
 
     if (virJSONValueObjectCreate(&addr, "s:type", "unix",
-                                        "a:data", data, NULL) < 0) {
+                                        "a:data", &data, NULL) < 0) {
         virJSONValueFree(data);
         return NULL;
     }
@@ -6454,12 +6442,9 @@ qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
         return ret;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("nbd-server-start",
-                                           "a:addr", addr,
+                                           "a:addr", &addr,
                                            NULL)))
         goto cleanup;
-
-    /* From now on, @addr is part of @cmd */
-    addr = NULL;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
@@ -6763,10 +6748,9 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
 
     if (!(ret = qemuMonitorJSONMakeCommand("chardev-add",
                                            "s:id", chrID,
-                                           "a:backend", backend,
+                                           "a:backend", &backend,
                                            NULL)))
         goto cleanup;
-    backend = NULL;
 
  cleanup:
     VIR_FREE(tlsalias);

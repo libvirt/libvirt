@@ -674,10 +674,8 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src)
                                  "s:driver", "gluster",
                                  "s:volume", src->volume,
                                  "s:path", src->path,
-                                 "a:server", servers, NULL) < 0)
+                                 "a:server", &servers, NULL) < 0)
         goto cleanup;
-
-    servers = NULL;
 
     if (src->debug &&
         virJSONValueObjectAdd(props, "u:debug", src->debugLevel, NULL) < 0)
@@ -719,7 +717,7 @@ qemuBlockStorageSourceGetVxHSProps(virStorageSourcePtr src)
                                  "s:driver", protocol,
                                  "S:tls-creds", src->tlsAlias,
                                  "s:vdisk-id", src->path,
-                                 "a:server", server, NULL) < 0)
+                                 "a:server", &server, NULL) < 0)
         virJSONValueFree(server);
 
     return ret;
@@ -867,13 +865,11 @@ qemuBlockStorageSourceGetNBDProps(virStorageSourcePtr src)
 
     if (virJSONValueObjectCreate(&ret,
                                  "s:driver", "nbd",
-                                 "a:server", serverprops,
+                                 "a:server", &serverprops,
                                  "S:export", src->path,
                                  "S:tls-creds", src->tlsAlias,
                                  NULL) < 0)
         goto cleanup;
-
-    serverprops = NULL;
 
  cleanup:
     virJSONValueFree(serverprops);
@@ -902,12 +898,10 @@ qemuBlockStorageSourceGetRBDProps(virStorageSourcePtr src)
                                  "s:image", src->path,
                                  "S:snapshot", src->snapshot,
                                  "S:conf", src->configFile,
-                                 "A:server", servers,
+                                 "A:server", &servers,
                                  "S:user", username,
                                  NULL) < 0)
         goto cleanup;
-
-    servers = NULL;
 
  cleanup:
     virJSONValueFree(servers);
@@ -935,12 +929,10 @@ qemuBlockStorageSourceGetSheepdogProps(virStorageSourcePtr src)
     /* libvirt does not support the 'snap-id' and 'tag' properties */
     if (virJSONValueObjectCreate(&ret,
                                  "s:driver", "sheepdog",
-                                 "a:server", serverprops,
+                                 "a:server", &serverprops,
                                  "s:vdi", src->path,
                                  NULL) < 0)
         goto cleanup;
-
-    serverprops = NULL;
 
  cleanup:
     virJSONValueFree(serverprops);
@@ -971,12 +963,10 @@ qemuBlockStorageSourceGetSshProps(virStorageSourcePtr src)
     if (virJSONValueObjectCreate(&ret,
                                  "s:driver", "ssh",
                                  "s:path", src->path,
-                                 "a:server", serverprops,
+                                 "a:server", &serverprops,
                                  "S:user", username,
                                  NULL) < 0)
         goto cleanup;
-
-    serverprops = NULL;
 
  cleanup:
     virJSONValueFree(serverprops);
