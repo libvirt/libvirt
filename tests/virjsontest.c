@@ -430,6 +430,51 @@ testJSONEscapeObj(const void *data ATTRIBUTE_UNUSED)
 
 
 static int
+testJSONObjectFormatSteal(const void *opaque ATTRIBUTE_UNUSED)
+{
+    virJSONValuePtr a1 = NULL;
+    virJSONValuePtr a2 = NULL;
+    virJSONValuePtr t1 = NULL;
+    virJSONValuePtr t2 = NULL;
+    int ret = -1;
+
+    if (!(a1 = virJSONValueNewString("test")) ||
+        !(a2 = virJSONValueNewString("test"))) {
+        VIR_TEST_VERBOSE("Failed to create json object");
+    }
+
+    if (virJSONValueObjectCreate(&t1, "a:t", &a1, "s:f", NULL, NULL) != -1) {
+        VIR_TEST_VERBOSE("virJSONValueObjectCreate(t1) should have failed\n");
+        goto cleanup;
+    }
+
+    if (a1) {
+        VIR_TEST_VERBOSE("appended object a1 was not consumed\n");
+        goto cleanup;
+    }
+
+    if (virJSONValueObjectCreate(&t2, "s:f", NULL, "a:t", &a1, NULL) != -1) {
+        VIR_TEST_VERBOSE("virJSONValueObjectCreate(t2) should have failed\n");
+        goto cleanup;
+    }
+
+    if (!a2) {
+        VIR_TEST_VERBOSE("appended object a2 was consumed\n");
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(a1);
+    virJSONValueFree(a2);
+    virJSONValueFree(t1);
+    virJSONValueFree(t2);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -588,6 +633,8 @@ mymain(void)
                  NULL, true);
     DO_TEST_FULL("create object with nested json in attribute", EscapeObj,
                  NULL, NULL, true);
+    DO_TEST_FULL("stealing of attributes while creating objects",
+                 ObjectFormatSteal, NULL, NULL, true);
 
 #define DO_TEST_DEFLATTEN(name, pass) \
     DO_TEST_FULL(name, Deflatten, name, NULL, pass)
