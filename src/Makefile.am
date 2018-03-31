@@ -668,7 +668,7 @@ libvirt_lxc_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 
 # Since virt-login-shell will be setuid, we must do everything
 # we can to avoid linking to other libraries. Many of them do
-# unsafe things in functions marked __atttribute__((constructor)).
+# unsafe things in functions marked __attribute__((constructor)).
 # This library is built to include the bare minimum required to
 # have a RPC client for local UNIX socket access only. We use
 # the ../config-post.h header to disable all external deps that
