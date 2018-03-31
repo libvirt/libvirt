@@ -567,7 +567,7 @@ $ virsh domxml-to-native qemu-argv demo.xml
       </dl>
       <p>Example:</p><pre>
 &lt;domain type='qemu' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'&gt;
-  &lt;name&gt;QEmu-fedora-i686&lt;/name&gt;
+  &lt;name&gt;QEMU-fedora-i686&lt;/name&gt;
   &lt;memory&gt;219200&lt;/memory&gt;
   &lt;os&gt;
     &lt;type arch='i686' machine='pc'&gt;hvm&lt;/type&gt;
@@ -587,7 +587,7 @@ $ virsh domxml-to-native qemu-argv demo.xml
     <h3>QEMU emulated guest on x86_64</h3>
 
         <pre>&lt;domain type='qemu'&gt;
-  &lt;name&gt;QEmu-fedora-i686&lt;/name&gt;
+  &lt;name&gt;QEMU-fedora-i686&lt;/name&gt;
   &lt;uuid&gt;c7a5fdbd-cdaf-9455-926a-d65c16db1809&lt;/uuid&gt;
   &lt;memory&gt;219200&lt;/memory&gt;
   &lt;currentMemory&gt;219200&lt;/currentMemory&gt;

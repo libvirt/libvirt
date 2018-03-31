@@ -30,7 +30,7 @@
           the message is discarded, if higher the message is output. If
           no filter matches, then a general priority level is applied to
           all remaining messages. This allows, for example, capturing all
-          debug messages for the QEmu driver, but otherwise only allowing
+          debug messages for the QEMU driver, but otherwise only allowing
           errors to show up from other parts.</li>
       <li><b>log outputs</b>: once a message has gone through filtering a set of
           output defines where to send the message, they can also filter
@@ -236,7 +236,7 @@ export LIBVIRT_LOG_OUTPUTS="1:file:virsh.log"</pre>
     what is happening and where things are going wrong, allowing to then
     put the correct breakpoints when running under a debugger.</p>
     <p>To activate full debug of the libvirt entry points, utility
-    functions and the QEmu/KVM driver, set:</p>
+    functions and the QEMU/KVM driver, set:</p>
     <pre>log_filters="1:libvirt 1:util 1:qemu"
 log_outputs="1:file:/var/log/libvirt/libvirtd.log"</pre>
     <p>in libvirtd.conf and restart the daemon will allow to

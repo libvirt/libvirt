@@ -46,18 +46,18 @@ connect to initialize the library. It will then fork a libvirt_proxy
 program running as root and providing read_only access to the API, this is
 then only useful for reporting and monitoring.</p>
 
-    <h2><a id="QEmu">QEmu and KVM support</a></h2>
+    <h2><a id="QEMU">QEMU and KVM support</a></h2>
 
-    <p>The model for QEmu and KVM is completely similar, basically KVM is based
-on QEmu for the process controlling a new domain, only small details differs
+    <p>The model for QEMU and KVM is completely similar, basically KVM is based
+on QEMU for the process controlling a new domain, only small details differs
 between the two. In both case the libvirt API is provided by a controlling
 process forked by libvirt in the background and which launch and control the
-QEmu or KVM process. That program called libvirt_qemud talks though a specific
-protocol to the library, and connects to the console of the QEmu process in
+QEMU or KVM process. That program called libvirt_qemud talks though a specific
+protocol to the library, and connects to the console of the QEMU process in
 order to control and report on its status. Libvirt tries to expose all the
-emulations models of QEmu, the selection is done when creating the new
+emulations models of QEMU, the selection is done when creating the new
 domain, by specifying the architecture and machine type targeted.</p>
-    <p>The code controlling the QEmu process is available in the
+    <p>The code controlling the QEMU process is available in the
 <code>qemud/</code> directory.</p>
 
     <h2><a id="drivers">Driver based architecture</a></h2>
@@ -83,9 +83,9 @@ drivers present in driver.h:</p>
     is in the <code>proxy/</code> directory.</li>
       <li>xm_internal: provide support for Xen defined but not running
     domains.</li>
-      <li>qemu_internal: implement the driver functions for QEmu and
+      <li>qemu_internal: implement the driver functions for QEMU and
     KVM virtualization engines. It also uses a qemud/ specific daemon
-    which interacts with the QEmu process to implement libvirt API.</li>
+    which interacts with the QEMU process to implement libvirt API.</li>
       <li>test: this is a test driver useful for regression tests of the
     front-end part of libvirt.</li>
     </ul>

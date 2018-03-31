@@ -649,7 +649,7 @@ networkMigrateStateFiles(virNetworkDriverStatePtr driver)
 /**
  * networkStateInitialize:
  *
- * Initialization function for the QEmu daemon
+ * Initialization function for the QEMU daemon
  */
 static int
 networkStateInitialize(bool privileged,
@@ -814,7 +814,7 @@ networkStateAutoStart(void)
 /**
  * networkStateReload:
  *
- * Function to restart the QEmu daemon, it will recheck the configuration
+ * Function to restart the QEMU daemon, it will recheck the configuration
  * files and update its state and the networking
  */
 static int
@@ -840,7 +840,7 @@ networkStateReload(void)
 /**
  * networkStateCleanup:
  *
- * Shutdown the QEmu daemon, it will stop all active domains and networks
+ * Shutdown the QEMU daemon, it will stop all active domains and networks
  */
 static int
 networkStateCleanup(void)

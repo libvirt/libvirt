@@ -600,7 +600,7 @@ qemuDomainFindMaxID(virDomainObjPtr vm,
 /**
  * qemuStateInitialize:
  *
- * Initialization function for the QEmu daemon
+ * Initialization function for the QEMU daemon
  */
 static int
 qemuStateInitialize(bool privileged,
@@ -951,7 +951,7 @@ qemuStateInitialize(bool privileged,
 /**
  * qemuStateAutoStart:
  *
- * Function to auto start the QEmu daemons
+ * Function to auto start the QEMU daemons
  */
 static void
 qemuStateAutoStart(void)
@@ -978,7 +978,7 @@ static void qemuNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
 /**
  * qemuStateReload:
  *
- * Function to restart the QEmu daemon, it will recheck the configuration
+ * Function to restart the QEMU daemon, it will recheck the configuration
  * files and update its state and the networking
  */
 static int
@@ -1069,7 +1069,7 @@ qemuStateStop(void)
 /**
  * qemuStateCleanup:
  *
- * Shutdown the QEmu daemon, it will stop all active domains and networks
+ * Shutdown the QEMU daemon, it will stop all active domains and networks
  */
 static int
 qemuStateCleanup(void)

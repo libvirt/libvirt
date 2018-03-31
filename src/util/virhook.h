@@ -28,7 +28,7 @@
 
 typedef enum {
     VIR_HOOK_DRIVER_DAEMON = 0,        /* Daemon related events */
-    VIR_HOOK_DRIVER_QEMU,              /* QEmu domains related events */
+    VIR_HOOK_DRIVER_QEMU,              /* QEMU domains related events */
     VIR_HOOK_DRIVER_LXC,               /* LXC domains related events */
     VIR_HOOK_DRIVER_NETWORK,           /* network related events */
     VIR_HOOK_DRIVER_LIBXL,             /* Xen libxl domains related events */

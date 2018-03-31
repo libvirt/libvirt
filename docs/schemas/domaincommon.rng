@@ -5821,7 +5821,7 @@
 
   <!--
        Optional hypervisor extensions in their own namespace:
-         QEmu
+         QEMU
     -->
   <define name="qemucmdline">
     <element name="commandline" ns="http://libvirt.org/schemas/domain/qemu/1.0">

@@ -10009,7 +10009,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
 
     /*
      * do not use boot=on for drives when not using KVM since this
-     * is not supported at all in upstream QEmu.
+     * is not supported at all in upstream QEMU.
      */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
         (def->virtType == VIR_DOMAIN_VIRT_QEMU))
