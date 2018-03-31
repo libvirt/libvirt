@@ -9734,6 +9734,16 @@ qemuBuildSeccompSandboxCommandLine(virCommandPtr cmd,
         return 0;
     }
 
+    /* Use blacklist by default if supported */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SECCOMP_BLACKLIST)) {
+        virCommandAddArgList(cmd, "-sandbox",
+                             "on,obsolete=deny,elevateprivileges=deny,"
+                             "spawn=deny,resourcecontrol=deny",
+                             NULL);
+        return 0;
+    }
+
+    /* Seccomp whitelist is opt-in */
     if (cfg->seccompSandbox > 0)
         virCommandAddArgList(cmd, "-sandbox", "on", NULL);
 
