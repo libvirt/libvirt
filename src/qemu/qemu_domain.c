@@ -4173,7 +4173,7 @@ qemuDomainDeviceDefValidateControllerAttributes(const virDomainControllerDef *co
  *
  * Using the @qemuCaps, let's ensure the provided @model can be supported
  *
- * Returns true if acceptible, false otherwise with error message set.
+ * Returns true if acceptable, false otherwise with error message set.
  */
 static bool
 qemuDomainCheckSCSIControllerModel(virQEMUCapsPtr qemuCaps,
