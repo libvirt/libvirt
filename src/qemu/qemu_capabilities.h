@@ -452,6 +452,7 @@ typedef enum {
     QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW, /* -device virtio-tablet-ccw */
     QEMU_CAPS_QCOW2_LUKS, /* qcow2 format support LUKS encryption */
     QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE, /* -device pcie-pci-bridge */
+    QEMU_CAPS_SECCOMP_BLACKLIST, /* -sandbox.elevateprivileges */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

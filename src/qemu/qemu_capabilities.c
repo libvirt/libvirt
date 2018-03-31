@@ -468,6 +468,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "virtio-tablet-ccw",
               "qcow2-luks",
               "pcie-pci-bridge",
+              "seccomp-blacklist",
     );
 
 
@@ -2419,6 +2420,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "loadparm", QEMU_CAPS_LOADPARM },
     { "vnc", "vnc", QEMU_CAPS_VNC_MULTI_SERVERS },
     { "chardev", "reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
+    { "sandbox", "elevateprivileges", QEMU_CAPS_SECCOMP_BLACKLIST },
 };
 
 static int
