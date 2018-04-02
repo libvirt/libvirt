@@ -1245,7 +1245,7 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0) {
         if (!vm->persistent) {
             virDomainObjListRemove(driver->domains, vm);
-            vm = NULL;
+            virObjectLock(vm);
         }
         goto cleanup;
     }
@@ -1258,7 +1258,7 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
         virLXCDomainObjEndJob(driver, vm);
         if (!vm->persistent) {
             virDomainObjListRemove(driver->domains, vm);
-            vm = NULL;
+            virObjectLock(vm);
         }
         goto cleanup;
     }
