@@ -1,7 +1,7 @@
 /*
  * Copyright IBM Corp. 2008
  *
- * lxc_container.h: header file for fcns run inside container
+ * lxc_container.h: Performs container setup tasks
  *
  * Authors:
  *  David L. Leskovec <dlesko at linux.vnet.ibm.com>

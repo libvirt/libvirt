@@ -3,7 +3,7 @@
  * Copyright (C) 2008 IBM Corp.
  * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
- * lxc_container.c: file description
+ * lxc_container.c: Performs container setup tasks
  *
  * Authors:
  *  David L. Leskovec <dlesko at linux.vnet.ibm.com>
