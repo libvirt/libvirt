@@ -928,6 +928,7 @@ doRemoteOpen(virConnectPtr conn,
         if (!priv->tls)
             goto failed;
         priv->is_secure = 1;
+        ATTRIBUTE_FALLTHROUGH;
 #else
         (void)tls_priority;
         (void)sanity;
@@ -937,7 +938,6 @@ doRemoteOpen(virConnectPtr conn,
         goto failed;
 #endif
 
-        ATTRIBUTE_FALLTHROUGH;
     case trans_tcp:
         priv->client = virNetClientNewTCP(priv->hostname, port, AF_UNSPEC);
         if (!priv->client)
