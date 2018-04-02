@@ -493,6 +493,7 @@ lxcDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     if (virDomainSaveConfig(cfg->configDir, driver->caps,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainObjListRemove(driver->domains, vm);
+        virObjectLock(vm);
         goto cleanup;
     }
 
@@ -557,6 +558,7 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
         vm->persistent = 0;
     } else {
         virDomainObjListRemove(driver->domains, vm);
+        virObjectLock(vm);
     }
 
     ret = 0;
@@ -1529,8 +1531,10 @@ lxcDomainDestroyFlags(virDomainPtr dom,
 
  endjob:
     virLXCDomainObjEndJob(driver, vm);
-    if (!vm->persistent)
+    if (!vm->persistent) {
         virDomainObjListRemove(driver->domains, vm);
+        virObjectLock(vm);
+    }
 
  cleanup:
     virDomainObjEndAPI(&vm);
