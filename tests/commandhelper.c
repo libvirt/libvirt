@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     int ret = EXIT_FAILURE;
 
     if (!log)
-        goto cleanup;
+        return ret;
 
     for (i = 1; i < argc; i++)
         fprintf(log, "ARG:%s\n", argv[i]);
