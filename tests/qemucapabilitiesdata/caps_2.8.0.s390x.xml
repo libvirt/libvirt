@@ -104,6 +104,7 @@
   <flag name='virtio-blk.num-queues'/>
   <flag name='sclplmconsole'/>
   <flag name='dump-completed'/>
+  <flag name='disk-write-cache'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>241633</microcodeVersion>

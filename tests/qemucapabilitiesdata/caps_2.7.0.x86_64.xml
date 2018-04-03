@@ -175,6 +175,7 @@
   <flag name='virtio-blk.num-queues'/>
   <flag name='isa-serial'/>
   <flag name='dump-completed'/>
+  <flag name='disk-write-cache'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>239029</microcodeVersion>

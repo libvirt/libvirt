@@ -194,6 +194,7 @@
   <flag name='pcie-pci-bridge'/>
   <flag name='seccomp-blacklist'/>
   <flag name='query-cpus-fast'/>
+  <flag name='disk-write-cache'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>390060</microcodeVersion>

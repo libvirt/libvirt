@@ -152,6 +152,7 @@
   <flag name='pl011'/>
   <flag name='dump-completed'/>
   <flag name='qcow2-luks'/>
+  <flag name='disk-write-cache'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>303541</microcodeVersion>

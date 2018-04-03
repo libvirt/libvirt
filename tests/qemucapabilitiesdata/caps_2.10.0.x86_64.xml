@@ -195,6 +195,7 @@
   <flag name='isa-serial'/>
   <flag name='dump-completed'/>
   <flag name='qcow2-luks'/>
+  <flag name='disk-write-cache'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>344938</microcodeVersion>
