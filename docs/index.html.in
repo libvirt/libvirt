@@ -28,7 +28,7 @@
         The libvirt project:
       </p>
       <ul>
-        <li>is a toolkit to manage virtualization hosts</li>
+        <li>is a toolkit to manage <a href="platforms.html.in">virtualization platforms</a></li>
         <li>is accessible from C, Python, Perl, Java and more</li>
         <li>is licensed under open source licenses</li>
         <li>supports <a href="drvqemu.html">KVM</a>,
