@@ -497,6 +497,38 @@ virLogHostnameString(char **rawmsg,
     return 0;
 }
 
+/* virLogFiltersFind:
+ * @filters: haystack
+ * @nfilters: haystack size
+ * @key1: primary string 'needle'
+ * @key2: secondary integer 'needle'
+ *
+ * Performs "first match" search on the input set of filters, using @key1
+ * (string) and  @key2 (integer) as primary and secondary keys respectively.
+ * Secondary key is only considered if primary key wasn't provided.
+ *
+ * Returns a pointer to the matched object or NULL if no match was found.
+ */
+static virLogFilterPtr
+virLogFiltersFind(virLogFilterPtr *filters,
+                  size_t nfilters,
+                  const char *key1,
+                  unsigned int key2)
+{
+    size_t i;
+
+    if (!key1 && key2 == 0)
+        return NULL;
+
+    for (i = 0; i < nfilters; i++) {
+        if ((key1 && STREQ(key1, filters[i]->match)) ||
+            filters[i]->flags == key2)
+            return filters[i];
+    }
+
+    return NULL;
+}
+
 
 static void
 virLogSourceUpdate(virLogSourcePtr source)
@@ -1409,7 +1441,8 @@ virLogFilterNew(const char *match,
     virLogFilterPtr ret = NULL;
     char *mdup = NULL;
 
-    virCheckFlags(VIR_LOG_STACK_TRACE, NULL);
+    virCheckFlags(VIR_LOG_STACK_TRACE |
+                  VIR_LOG_WILDCARD, NULL);
 
     if (priority < VIR_LOG_DEBUG || priority > VIR_LOG_ERROR) {
         virReportError(VIR_ERR_INVALID_ARG, _("Invalid log priority %d"),
@@ -1528,6 +1561,8 @@ virLogDefineOutputs(virLogOutputPtr *outputs, size_t noutputs)
 int
 virLogDefineFilters(virLogFilterPtr *filters, size_t nfilters)
 {
+    virLogFilterPtr rc;
+
     if (virLogInitialize() < 0)
         return -1;
 
@@ -1535,6 +1570,10 @@ virLogDefineFilters(virLogFilterPtr *filters, size_t nfilters)
     virLogResetFilters();
     virLogFilters = filters;
     virLogNbFilters = nfilters;
+
+    /* if there's a wildcard filter, update default priority */
+    if ((rc = virLogFiltersFind(filters, nfilters, NULL, VIR_LOG_WILDCARD)))
+        virLogDefaultPriority = rc->priority;
     virLogUnlock();
 
     return 0;
@@ -1709,6 +1748,9 @@ virLogParseFilter(const char *src)
         flags |= VIR_LOG_STACK_TRACE;
         match++;
     }
+
+    if (STREQ(match, "*"))
+        flags |= VIR_LOG_WILDCARD;
 
     /* match string cannot comprise just from a single '+' */
     if (!*match) {
