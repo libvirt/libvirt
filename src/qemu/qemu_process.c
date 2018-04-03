@@ -3028,7 +3028,7 @@ qemuProcessUpdateState(virQEMUDriverPtr driver, virDomainObjPtr vm)
 static int
 qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              qemuMigrationJobPhase phase,
+                              const qemuDomainJobObj *job,
                               virDomainState state,
                               int reason)
 {
@@ -3037,7 +3037,7 @@ qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
                     (state == VIR_DOMAIN_RUNNING &&
                      reason == VIR_DOMAIN_RUNNING_POSTCOPY);
 
-    switch (phase) {
+    switch ((qemuMigrationJobPhase) job->phase) {
     case QEMU_MIGRATION_PHASE_NONE:
     case QEMU_MIGRATION_PHASE_PERFORM2:
     case QEMU_MIGRATION_PHASE_BEGIN3:
@@ -3086,7 +3086,7 @@ qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
 static int
 qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               qemuMigrationJobPhase phase,
+                               const qemuDomainJobObj *job,
                                virDomainState state,
                                int reason,
                                unsigned int *stopFlags)
@@ -3096,7 +3096,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
                      reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED);
     bool resume = false;
 
-    switch (phase) {
+    switch ((qemuMigrationJobPhase) job->phase) {
     case QEMU_MIGRATION_PHASE_NONE:
     case QEMU_MIGRATION_PHASE_PREPARE:
     case QEMU_MIGRATION_PHASE_FINISH2:
@@ -3191,13 +3191,13 @@ qemuProcessRecoverJob(virQEMUDriverPtr driver,
 
     switch (job->asyncJob) {
     case QEMU_ASYNC_JOB_MIGRATION_OUT:
-        if (qemuProcessRecoverMigrationOut(driver, vm, job->phase,
+        if (qemuProcessRecoverMigrationOut(driver, vm, job,
                                            state, reason, stopFlags) < 0)
             return -1;
         break;
 
     case QEMU_ASYNC_JOB_MIGRATION_IN:
-        if (qemuProcessRecoverMigrationIn(driver, vm, job->phase,
+        if (qemuProcessRecoverMigrationIn(driver, vm, job,
                                           state, reason) < 0)
             return -1;
         break;
