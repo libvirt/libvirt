@@ -797,10 +797,11 @@ virTestCompareToFile(const char *strcontent,
 
     if (filecontent) {
         size_t filecontentLen = strlen(filecontent);
+        size_t cmpcontentLen = strlen(cmpcontent);
 
         if (filecontentLen > 0 &&
             filecontent[filecontentLen - 1] == '\n' &&
-            cmpcontent[strlen(cmpcontent) - 1] != '\n') {
+            (cmpcontentLen == 0 || cmpcontent[cmpcontentLen - 1] != '\n')) {
             if (virAsprintf(&fixedcontent, "%s\n", cmpcontent) < 0)
                 goto failure;
             cmpcontent = fixedcontent;
