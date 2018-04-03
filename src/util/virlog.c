@@ -1699,7 +1699,7 @@ virLogParseFilter(const char *src)
     if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
         (prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid priority '%s' for output '%s'"),
+                       _("Invalid priority '%s' for filter '%s'"),
                        tokens[0], src);
         goto cleanup;
     }
