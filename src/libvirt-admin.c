@@ -64,8 +64,10 @@ virAdmGlobalInit(void)
 
     virLogSetFromEnv();
 
+#ifdef HAVE_LIBINTL_H
     if (!bindtextdomain(PACKAGE, LOCALEDIR))
         goto error;
+#endif /* HAVE_LIBINTL_H */
 
     if (!VIR_CLASS_NEW(remoteAdminPriv, virClassForObjectLockable()))
         goto error;

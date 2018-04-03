@@ -363,8 +363,10 @@ virGlobalInit(void)
         goto error;
 #endif
 
+#ifdef HAVE_LIBINTL_H
     if (!bindtextdomain(PACKAGE, LOCALEDIR))
         goto error;
+#endif /* HAVE_LIBINTL_H */
 
     /*
      * Note we must avoid everything except 'remote' driver

@@ -127,8 +127,7 @@ if test -d .git || test -f .git; then
     expected_hash=$(cat "$state_file" 2>/dev/null)
     actual_hash=$(gnulib_hash "$no_git")
 
-    if test "$actual_hash" = "$expected_hash" && \
-       test -f po/Makevars && test -f AUTHORS; then
+    if test "$actual_hash" = "$expected_hash" && test -f AUTHORS; then
         # The gnulib hash matches our expectations, and all the files
         # that can only be generated through bootstrap are present:
         # we just need to run autoreconf. Unless we're performing a

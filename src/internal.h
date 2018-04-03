@@ -26,6 +26,7 @@
 # include <verify.h>
 # include <stdbool.h>
 # include <stdint.h>
+# include <string.h>
 
 # if STATIC_ANALYSIS
 #  undef NDEBUG /* Don't let a prior NDEBUG definition cause trouble.  */
@@ -45,14 +46,13 @@
 /* The library itself needs to know enum sizes.  */
 # define VIR_ENUM_SENTINELS
 
-/* All uses of _() within the library should pick up translations from
- * libvirt's message files, rather than from the package that is
- * linking in the library.  Setting this macro before including
- * "gettext.h" means that gettext() (and _()) will properly expand to
- * dgettext.  */
-# define DEFAULT_TEXT_DOMAIN PACKAGE
-# include "gettext.h"
-# define _(str) gettext(str)
+# ifdef HAVE_LIBINTL_H
+#  define DEFAULT_TEXT_DOMAIN PACKAGE
+#  include <libintl.h>
+#  define _(str) dgettext(PACKAGE, str)
+# else /* HAVE_LIBINTL_H */
+#  define _(str) str
+# endif /* HAVE_LIBINTL_H */
 # define N_(str) str
 
 # include "libvirt/libvirt.h"

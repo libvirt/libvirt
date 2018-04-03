@@ -257,6 +257,7 @@ LIBVIRT_ARG_LIBSSH
 LIBVIRT_ARG_LIBXML
 LIBVIRT_ARG_MACVTAP
 LIBVIRT_ARG_NETCF
+LIBVIRT_ARG_NLS
 LIBVIRT_ARG_NSS
 LIBVIRT_ARG_NUMACTL
 LIBVIRT_ARG_OPENWSMAN
@@ -298,6 +299,7 @@ LIBVIRT_CHECK_LIBSSH
 LIBVIRT_CHECK_LIBXML
 LIBVIRT_CHECK_MACVTAP
 LIBVIRT_CHECK_NETCF
+LIBVIRT_CHECK_NLS
 LIBVIRT_CHECK_NUMACTL
 LIBVIRT_CHECK_NWFILTER
 LIBVIRT_CHECK_OPENWSMAN
@@ -732,33 +734,7 @@ if test "$enable_test_locking" = "yes"; then
 fi
 AM_CONDITIONAL([WITH_CIL],[test "$enable_test_locking" = "yes"])
 
-dnl Check for gettext - don't go any newer than what RHEL 5 supports
-dnl
-dnl save and restore CPPFLAGS around gettext check as the internal iconv
-dnl check might leave -I/usr/local/include in CPPFLAGS on FreeBSD resulting
-dnl in the build picking up previously installed libvirt/libvirt.h instead
-dnl of the correct one from the source tree.
-dnl compute the difference between save_CPPFLAGS and CPPFLAGS and append it
-dnl to INCLUDES in order to preserve changes made by gettext but in a place
-dnl that does not break the build
-save_CPPFLAGS="$CPPFLAGS"
-AM_GNU_GETTEXT_VERSION([0.17])
-AM_GNU_GETTEXT([external])
-GETTEXT_CPPFLAGS=
-if test "x$save_CPPFLAGS" != "x$CPPFLAGS"; then
- set dummy $CPPFLAGS; shift
- for var
- do
-   case " $var " in
-     " $save_CPPFLAGS ") ;;
-     *) GETTEXT_CPPFLAGS="$GETTEXT_CPPFLAGS $var" ;;
-   esac
- done
-fi
-CPPFLAGS="$save_CPPFLAGS"
-AC_SUBST([GETTEXT_CPPFLAGS])
-
-ALL_LINGUAS=`cd "$srcdir/po" > /dev/null && ls *.po | sed 's+\.po$++'`
+LIBVIRT_GETTEXT
 
 dnl Cygwin, MinGW and MSVC checks
 LIBVIRT_WIN_CHECK_COMMON
@@ -909,7 +885,7 @@ AC_CONFIG_FILES([\
         src/libvirt-qemu.pc \
         src/libvirt-lxc.pc \
         libvirt.spec mingw-libvirt.spec \
-        po/Makefile.in \
+        po/Makefile \
         include/libvirt/libvirt-common.h \
         examples/Makefile \
         tests/Makefile \
@@ -990,6 +966,7 @@ LIBVIRT_RESULT_LIBXL
 LIBVIRT_RESULT_LIBXML
 LIBVIRT_RESULT_MACVTAP
 LIBVIRT_RESULT_NETCF
+LIBVIRT_RESULT_NLS
 LIBVIRT_RESULT_NSS
 LIBVIRT_RESULT_NUMACTL
 LIBVIRT_RESULT_OPENWSMAN

@@ -23,7 +23,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <gettext.h>
+#ifdef HAVE_LIBINTL_H
+# include <libintl.h>
+#endif /* HAVE_LIBINTL_H */
 #include <getopt.h>
 
 #include "internal.h"
