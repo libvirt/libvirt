@@ -9035,15 +9035,19 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
     size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
     size_t i;
     bool hotplug;
+    bool fast;
     int rc;
     int ret = -1;
 
     hotplug = qemuDomainSupportsNewVcpuHotplug(vm);
+    fast = virQEMUCapsGet(QEMU_DOMAIN_PRIVATE(vm)->qemuCaps,
+                          QEMU_CAPS_QUERY_CPUS_FAST);
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    rc = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &info, maxvcpus, hotplug);
+    rc = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &info, maxvcpus,
+                               hotplug, fast);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
@@ -9062,7 +9066,7 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
          * thread, but it runs every vCPU in that same thread. So it
          * is impossible to setup different affinity per thread.
          *
-         * What's more the 'query-cpus' command returns bizarre
+         * What's more the 'query-cpus[-fast]' command returns bizarre
          * data for the threads. It gives the TCG thread for the
          * vCPU 0, but for vCPUs 1-> N, it actually replies with
          * the main process thread ID.
@@ -9150,6 +9154,7 @@ qemuDomainRefreshVcpuHalted(virQEMUDriverPtr driver,
     virBitmapPtr haltedmap = NULL;
     size_t i;
     int ret = -1;
+    bool fast;
 
     /* Not supported currently for TCG, see qemuDomainRefreshVcpuInfo */
     if (vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
@@ -9163,8 +9168,10 @@ qemuDomainRefreshVcpuHalted(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    haltedmap = qemuMonitorGetCpuHalted(qemuDomainGetMonitor(vm), maxvcpus);
-
+    fast = virQEMUCapsGet(QEMU_DOMAIN_PRIVATE(vm)->qemuCaps,
+                          QEMU_CAPS_QUERY_CPUS_FAST);
+    haltedmap = qemuMonitorGetCpuHalted(qemuDomainGetMonitor(vm), maxvcpus,
+                                        fast);
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || !haltedmap)
         goto cleanup;
 
