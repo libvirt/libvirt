@@ -3772,8 +3772,6 @@ qemuDumpToFd(virQEMUDriverPtr driver,
     if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
         return -1;
 
-    priv->job.dump_memory_only = true;
-
     if (detach)
         priv->job.current->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP;
     else
@@ -13464,7 +13462,7 @@ static int qemuDomainAbortJob(virDomainPtr dom)
     }
 
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_DUMP &&
-        priv->job.dump_memory_only) {
+        priv->job.apiFlags & VIR_DUMP_MEMORY_ONLY) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot abort memory-only dump"));
         goto endjob;
