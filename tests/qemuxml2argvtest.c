@@ -2039,6 +2039,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("tpm-no-backend-invalid",
                         QEMU_CAPS_DEVICE_TPM_PASSTHROUGH, QEMU_CAPS_DEVICE_TPM_TIS);
     DO_TEST_CAPS_LATEST("tpm-emulator");
+    DO_TEST_CAPS_LATEST("tpm-emulator-tpm2");
 
     DO_TEST_PARSE_ERROR("pci-domain-invalid", NONE);
     DO_TEST_PARSE_ERROR("pci-bus-invalid", NONE);

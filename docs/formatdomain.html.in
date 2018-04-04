@@ -7728,7 +7728,7 @@ qemu-kvm -net nic,model=? /dev/null
     <p>
       The TPM device enables a QEMU guest to have access to TPM
       functionality. The TPM device may either be a TPM 1.2 or
-      a TPM 2.
+      a TPM 2.0.
     </p>
     <p>
       The TPM passthrough device type provides access to the host's TPM
@@ -7765,7 +7765,7 @@ qemu-kvm -net nic,model=? /dev/null
   ...
   &lt;devices&gt;
     &lt;tpm model='tpm-tis'&gt;
-      &lt;backend type='emulator'&gt;
+      &lt;backend type='emulator' version='2.0'&gt;
       &lt;/backend&gt;
     &lt;/tpm&gt;
   &lt;/devices&gt;
@@ -7780,7 +7780,7 @@ qemu-kvm -net nic,model=? /dev/null
           <code>tpm-tis</code> will automatically be chosen.
           <span class="since">Since 4.4.0</span>, another available choice
           is the <code>tpm-crb</code>, which should only be used when the
-          backend device is a TPM 2.
+          backend device is a TPM 2.0.
         </p>
       </dd>
       <dt><code>backend</code></dt>
@@ -7814,6 +7814,19 @@ qemu-kvm -net nic,model=? /dev/null
             </p>
           </dd>
         </dl>
+      </dd>
+      <dt><code>version</code></dt>
+      <dd>
+        <p>
+          The <code>version</code> attribute indicates the version
+          of the TPM. By default a TPM 1.2 is created. This attribute
+          only works with the <code>emulator</code> backend. The following
+          versions are supported:
+        </p>
+        <ul>
+          <li>'1.2' : creates a TPM 1.2</li>
+          <li>'2.0' : creates a TPM 2.0</li>
+        </ul>
       </dd>
     </dl>
 

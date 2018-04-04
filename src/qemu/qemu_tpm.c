@@ -121,16 +121,32 @@ qemuTPMEmulatorInit(void)
  *
  * @swtpmStorageDir: directory for swtpm persistent state
  * @uuid: The UUID of the VM for which to create the storage
+ * @tpmversion: version of the TPM
  *
  * Create the swtpm's storage path
  */
 static char *
 qemuTPMCreateEmulatorStoragePath(const char *swtpmStorageDir,
-                                 const char *uuidstr)
+                                 const char *uuidstr,
+                                 virDomainTPMVersion tpmversion)
 {
     char *path = NULL;
+    const char *dir = "";
 
-    ignore_value(virAsprintf(&path, "%s/%s/tpm1.2", swtpmStorageDir, uuidstr));
+    switch (tpmversion) {
+    case VIR_DOMAIN_TPM_VERSION_1_2:
+        dir = "tpm1.2";
+        break;
+    case VIR_DOMAIN_TPM_VERSION_2_0:
+        dir = "tpm2";
+        break;
+    case VIR_DOMAIN_TPM_VERSION_DEFAULT:
+    case VIR_DOMAIN_TPM_VERSION_LAST:
+        return NULL;
+    }
+
+    ignore_value(virAsprintf(&path, "%s/%s/%s", swtpmStorageDir, uuidstr,
+                             dir));
 
     return path;
 }
@@ -285,7 +301,8 @@ qemuTPMEmulatorInitPaths(virDomainTPMDefPtr tpm,
 
     if (!tpm->data.emulator.storagepath &&
         !(tpm->data.emulator.storagepath =
-            qemuTPMCreateEmulatorStoragePath(swtpmStorageDir, uuidstr)))
+            qemuTPMCreateEmulatorStoragePath(swtpmStorageDir, uuidstr,
+                                             tpm->version)))
         return -1;
 
     return 0;
@@ -385,6 +402,7 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
  * @swtpm_group: The group id to switch to
  * @logfile: The file to write the log into; it must be writable
  *           for the user given by userid or 'tss'
+ * @tpmversion: The version of the TPM, either a TPM 1.2 or TPM 2
  *
  * Setup the external swtpm by creating endorsement key and
  * certificates for it.
@@ -396,7 +414,8 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
                         bool privileged,
                         uid_t swtpm_user,
                         gid_t swtpm_group,
-                        const char *logfile)
+                        const char *logfile,
+                        const virDomainTPMVersion tpmversion)
 {
     virCommandPtr cmd = NULL;
     int exitstatus;
@@ -420,6 +439,18 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
 
     virCommandSetUID(cmd, swtpm_user);
     virCommandSetGID(cmd, swtpm_group);
+
+    switch (tpmversion) {
+    case VIR_DOMAIN_TPM_VERSION_1_2:
+        break;
+    case VIR_DOMAIN_TPM_VERSION_2_0:
+        virCommandAddArgList(cmd, "--tpm2", NULL);
+        break;
+    case VIR_DOMAIN_TPM_VERSION_DEFAULT:
+    case VIR_DOMAIN_TPM_VERSION_LAST:
+        break;
+    }
+
 
     virCommandAddArgList(cmd,
                          "--tpm-state", storagepath,
@@ -484,7 +515,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
     if (created &&
         qemuTPMEmulatorRunSetup(tpm->data.emulator.storagepath, vmname, vmuuid,
                                 privileged, swtpm_user, swtpm_group,
-                                tpm->data.emulator.logfile) < 0)
+                                tpm->data.emulator.logfile, tpm->version) < 0)
         goto error;
 
     unlink(tpm->data.emulator.source.data.nix.path);
@@ -508,6 +539,17 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
 
     virCommandSetUID(cmd, swtpm_user);
     virCommandSetGID(cmd, swtpm_group);
+
+    switch (tpm->version) {
+    case VIR_DOMAIN_TPM_VERSION_1_2:
+        break;
+    case VIR_DOMAIN_TPM_VERSION_2_0:
+        virCommandAddArg(cmd, "--tpm2");
+        break;
+    case VIR_DOMAIN_TPM_VERSION_DEFAULT:
+    case VIR_DOMAIN_TPM_VERSION_LAST:
+        break;
+    }
 
     return cmd;
 

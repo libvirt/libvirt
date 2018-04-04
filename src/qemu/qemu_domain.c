@@ -5394,7 +5394,34 @@ qemuDomainDeviceDefValidateVsock(const virDomainVsockDef *vsock ATTRIBUTE_UNUSED
                          "with this QEMU binary"));
         return -1;
     }
+    return 0;
+}
 
+
+static int
+qemuDomainDeviceDefValidateTPM(virDomainTPMDef *tpm,
+                               const virDomainDef *def ATTRIBUTE_UNUSED)
+{
+    /* TPM 1.2 and 2 are not compatible, so we choose a specific version here */
+    if (tpm->version == VIR_DOMAIN_TPM_VERSION_DEFAULT)
+        tpm->version = VIR_DOMAIN_TPM_VERSION_1_2;
+
+    switch (tpm->version) {
+    case VIR_DOMAIN_TPM_VERSION_1_2:
+        /* only TIS available for emulator */
+        if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR &&
+            tpm->model != VIR_DOMAIN_TPM_MODEL_TIS) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported interface %s for TPM 1.2"),
+                           virDomainTPMModelTypeToString(tpm->model));
+            return -1;
+        }
+        break;
+    case VIR_DOMAIN_TPM_VERSION_2_0:
+    case VIR_DOMAIN_TPM_VERSION_DEFAULT:
+    case VIR_DOMAIN_TPM_VERSION_LAST:
+        break;
+    }
     return 0;
 }
 
@@ -5462,6 +5489,10 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         ret = qemuDomainDeviceDefValidateVsock(dev->data.vsock, qemuCaps);
         break;
 
+    case VIR_DOMAIN_DEVICE_TPM:
+        ret = qemuDomainDeviceDefValidateTPM(dev->data.tpm, def);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -5471,7 +5502,6 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_SHMEM:
-    case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_NONE:
