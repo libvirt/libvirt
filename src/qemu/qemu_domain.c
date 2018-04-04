@@ -9161,8 +9161,13 @@ qemuDomainRefreshVcpuHalted(virQEMUDriverPtr driver,
         return 0;
 
     /* The halted state is interresting only on s390(x). On other platforms
-     * the data would be stale at the time when it would be used. */
-    if (!ARCH_IS_S390(vm->def->os.arch))
+     * the data would be stale at the time when it would be used.
+     * Calling qemuMonitorGetCpuHalted() can adversely affect the running
+     * VM's performance unless QEMU supports query-cpus-fast.
+     */
+    if (!ARCH_IS_S390(vm->def->os.arch) ||
+        !virQEMUCapsGet(QEMU_DOMAIN_PRIVATE(vm)->qemuCaps,
+                        QEMU_CAPS_QUERY_CPUS_FAST))
         return 0;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
