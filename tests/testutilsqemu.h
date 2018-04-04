@@ -16,6 +16,9 @@ enum {
 virCapsPtr testQemuCapsInit(void);
 virDomainXMLOptionPtr testQemuXMLConfInit(void);
 
+
+virQEMUCapsPtr qemuTestParseCapabilitiesArch(virArch arch,
+                                             const char *capsFile);
 virQEMUCapsPtr qemuTestParseCapabilities(virCapsPtr caps,
                                          const char *capsFile);
 

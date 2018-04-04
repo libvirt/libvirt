@@ -486,16 +486,13 @@ qemuTestSetHostCPU(virCapsPtr caps,
 
 
 virQEMUCapsPtr
-qemuTestParseCapabilities(virCapsPtr caps,
-                          const char *capsFile)
+qemuTestParseCapabilitiesArch(virArch arch,
+                              const char *capsFile)
 {
     virQEMUCapsPtr qemuCaps = NULL;
 
-    if (!caps)
-        return NULL;
-
     if (!(qemuCaps = virQEMUCapsNew()) ||
-        virQEMUCapsLoadCache(caps->host.arch, qemuCaps, capsFile) < 0)
+        virQEMUCapsLoadCache(arch, qemuCaps, capsFile) < 0)
         goto error;
 
     return qemuCaps;
@@ -504,6 +501,18 @@ qemuTestParseCapabilities(virCapsPtr caps,
     virObjectUnref(qemuCaps);
     return NULL;
 }
+
+
+virQEMUCapsPtr
+qemuTestParseCapabilities(virCapsPtr caps,
+                          const char *capsFile)
+{
+    if (!caps)
+        return NULL;
+
+    return qemuTestParseCapabilitiesArch(caps->host.arch, capsFile);
+}
+
 
 void qemuTestDriverFree(virQEMUDriver *driver)
 {
