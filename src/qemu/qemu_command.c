@@ -1824,6 +1824,30 @@ qemuCheckIOThreads(const virDomainDef *def,
 }
 
 
+static int
+qemuBuildDriveDevCacheStr(virDomainDiskDefPtr disk,
+                          virBufferPtr buf,
+                          virQEMUCapsPtr qemuCaps)
+{
+    bool wb;
+
+    if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DEFAULT)
+        return 0;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_WRITE_CACHE))
+        return 0;
+
+    if (qemuDomainDiskCachemodeFlags(disk->cachemode, &wb, NULL, NULL) < 0)
+        return -1;
+
+    virBufferStrcat(buf, ",write-cache=",
+                    virTristateSwitchTypeToString(virTristateSwitchFromBool(wb)),
+                    NULL);
+
+    return 0;
+}
+
+
 char *
 qemuBuildDriveDevStr(const virDomainDef *def,
                      virDomainDiskDefPtr disk,
@@ -2139,6 +2163,9 @@ qemuBuildDriveDevStr(const virDomainDef *def,
             }
         }
     }
+
+    if (qemuBuildDriveDevCacheStr(disk, &opt, qemuCaps) < 0)
+        goto error;
 
     if (virBufferCheckError(&opt) < 0)
         goto error;
