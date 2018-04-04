@@ -1517,15 +1517,104 @@ int qemuMonitorJSONSystemReset(qemuMonitorPtr mon)
 }
 
 
-/*
+/**
+ * qemuMonitorJSONExtractCPUS390Info:
+ * @jsoncpu: pointer to a single JSON cpu entry
+ * @cpu: pointer to a single cpu entry
  *
+ * Derive the legacy cpu info 'halted' information
+ * from the more accurate s390 cpu state. @cpu is
+ * modified only on success.
+ *
+ * Note: the 'uninitialized' s390 cpu state can't be
+ *       mapped to halted yes/no.
+ *
+ * A s390 cpu entry could look like this
+ *  { "arch": "s390",
+ *    "cpu-index": 0,
+ *    "qom-path": "/machine/unattached/device[0]",
+ *    "thread_id": 3081,
+ *    "cpu-state": "operating" }
+ *
+ */
+static void
+qemuMonitorJSONExtractCPUS390Info(virJSONValuePtr jsoncpu,
+                                  struct qemuMonitorQueryCpusEntry *cpu)
+{
+    const char *cpu_state = virJSONValueObjectGetString(jsoncpu, "cpu-state");
+
+    if (STREQ_NULLABLE(cpu_state, "operating") ||
+        STREQ_NULLABLE(cpu_state, "load"))
+        cpu->halted = false;
+    else if (STREQ_NULLABLE(cpu_state, "stopped") ||
+             STREQ_NULLABLE(cpu_state, "check-stop"))
+        cpu->halted = true;
+}
+
+
+/**
+ * qemuMonitorJSONExtractCPUArchInfo:
+ * @jsoncpu: pointer to a single JSON cpu entry
+ * @cpu: pointer to a single cpu entry
+ *
+ * Extracts architecure specific virtual CPU data for a single
+ * CPU from the QAPI response using an architecture specific
+ * function.
+ *
+ */
+static void
+qemuMonitorJSONExtractCPUArchInfo(virJSONValuePtr jsoncpu,
+                                  struct qemuMonitorQueryCpusEntry *cpu)
+{
+    const char *arch = virJSONValueObjectGetString(jsoncpu, "arch");
+
+    if (STREQ_NULLABLE(arch, "s390"))
+        qemuMonitorJSONExtractCPUS390Info(jsoncpu, cpu);
+}
+
+
+/**
+ * qemuMonitorJSONExtractCPUInfo:
+ * @data: JSON response data
+ * @entries: filled with detected cpu entries on success
+ * @nentries: number of entries returned
+ * @fast: true if this is a response from query-cpus-fast
+ *
+ * The JSON response @data will have the following format
+ * in case @fast == false
  * [{ "arch": "x86",
  *    "current": true,
  *    "CPU": 0,
  *    "qom_path": "/machine/unattached/device[0]",
  *    "pc": -2130415978,
  *    "halted": true,
- *    "thread_id": 2631237},
+ *    "thread_id": 2631237,
+ *    ...},
+ *    {...}
+ *  ]
+ * and for @fast == true
+ * [{ "arch": "x86",
+ *    "cpu-index": 0,
+ *    "props": {
+ *       "core-id": 0,
+ *       "thread-id": 0,
+ *       "socket-id": 0
+ *    },
+ *    "qom-path": "/machine/unattached/device[0]",
+ *    "thread-id": 2631237,
+ *    ...},
+ *    {...}
+ *  ]
+ * or for s390
+ * [{ "arch": "s390",
+ *    "cpu-index": 0,
+ *    "props": {
+ *       "core-id": 0
+ *    },
+ *    "qom-path": "/machine/unattached/device[0]",
+ *    "thread-id": 1237,
+ *    "cpu-state": "operating",
+ *    ...},
  *    {...}
  *  ]
  */
@@ -1577,6 +1666,9 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
         cpus[i].halted = halted;
         if (VIR_STRDUP(cpus[i].qom_path, qom_path) < 0)
             goto cleanup;
+
+        /* process optional architecture-specific data */
+        qemuMonitorJSONExtractCPUArchInfo(entry, cpus + i);
     }
 
     VIR_STEAL_PTR(*entries, cpus);

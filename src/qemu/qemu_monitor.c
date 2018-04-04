@@ -2071,7 +2071,7 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
 virBitmapPtr
 qemuMonitorGetCpuHalted(qemuMonitorPtr mon,
                         size_t maxvcpus,
-                        bool fast ATTRIBUTE_UNUSED)
+                        bool fast)
 {
     struct qemuMonitorQueryCpusEntry *cpuentries = NULL;
     size_t ncpuentries = 0;
@@ -2083,7 +2083,7 @@ qemuMonitorGetCpuHalted(qemuMonitorPtr mon,
 
     if (mon->json)
         rc = qemuMonitorJSONQueryCPUs(mon, &cpuentries, &ncpuentries, false,
-                                      false);
+                                      fast);
     else
         rc = qemuMonitorTextQueryCPUs(mon, &cpuentries, &ncpuentries);
 
