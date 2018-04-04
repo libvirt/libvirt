@@ -60,6 +60,14 @@ update-po: $(POFILES)
 
 update-gmo: $(GMOFILES)
 
+push-pot: $(POTFILE)
+	zanata push --push-type=source
+
+pull-po: $(POTFILE)
+	zanata pull --create-skeletons
+	$(MAKE) update-po
+	$(MAKE) update-gmo
+
 $(POTFILE): POTFILES $(POTFILE_DEPS)
 	$(XGETTEXT) -o $(srcdir)/$@-t $(XGETTEXT_ARGS) \
 	  --files-from=$(abs_srcdir)/POTFILES
