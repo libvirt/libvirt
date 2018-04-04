@@ -11866,6 +11866,81 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
 }
 
 
+/**
+ * qemuDomainDiskCachemodeFlags:
+ *
+ * Converts disk cachemode to the cache mode options for qemu. Returns -1 for
+ * invalid @cachemode values and fills the flags and returns 0 on success.
+ * Flags may be NULL.
+ */
+int
+qemuDomainDiskCachemodeFlags(int cachemode,
+                             bool *writeback,
+                             bool *direct,
+                             bool *noflush)
+{
+    bool dummy;
+
+    if (!writeback)
+        writeback = &dummy;
+
+    if (!direct)
+        direct = &dummy;
+
+    if (!noflush)
+        noflush = &dummy;
+
+    /* Mapping of cache modes to the attributes according to qemu-options.hx
+     *              │ cache.writeback   cache.direct   cache.no-flush
+     * ─────────────┼─────────────────────────────────────────────────
+     * writeback    │ true              false          false
+     * none         │ true              true           false
+     * writethrough │ false             false          false
+     * directsync   │ false             true           false
+     * unsafe       │ true              false          true
+     */
+    switch ((virDomainDiskCache) cachemode) {
+    case VIR_DOMAIN_DISK_CACHE_DISABLE: /* 'none' */
+        *writeback = true;
+        *direct = true;
+        *noflush = false;
+        break;
+
+    case VIR_DOMAIN_DISK_CACHE_WRITETHRU:
+        *writeback = false;
+        *direct = false;
+        *noflush = false;
+        break;
+
+    case VIR_DOMAIN_DISK_CACHE_WRITEBACK:
+        *writeback = true;
+        *direct = false;
+        *noflush = false;
+        break;
+
+    case VIR_DOMAIN_DISK_CACHE_DIRECTSYNC:
+        *writeback = false;
+        *direct = true;
+        *noflush = false;
+        break;
+
+    case VIR_DOMAIN_DISK_CACHE_UNSAFE:
+        *writeback = true;
+        *direct = false;
+        *noflush = true;
+        break;
+
+    case VIR_DOMAIN_DISK_CACHE_DEFAULT:
+    case VIR_DOMAIN_DISK_CACHE_LAST:
+    default:
+        virReportEnumRangeError(virDomainDiskCache, cachemode);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 void
 qemuProcessEventFree(struct qemuProcessEvent *event)
 {
