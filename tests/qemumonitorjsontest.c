@@ -3007,6 +3007,8 @@ mymain(void)
     DO_TEST_CPU_INFO("ppc64-hotplug-4", 24);
     DO_TEST_CPU_INFO("ppc64-no-threads", 16);
 
+    DO_TEST_CPU_INFO_FAST("s390-fast", 2);
+
 #define DO_TEST_BLOCK_NODE_DETECT(testname) \
     do { \
         if (virTestRun("node-name-detect(" testname ")", \

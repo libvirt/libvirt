@@ -1,0 +1,21 @@
+{
+  "return": [
+    {
+      "props": {
+        "core-id": 1
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[1]",
+      "type": "host-s390x-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[0]",
+      "type": "host-s390x-cpu"
+    }
+  ],
+  "id": "libvirt-41"
+}
