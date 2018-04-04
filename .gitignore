@@ -101,6 +101,9 @@
 /mingw-libvirt.spec
 /mkinstalldirs
 /po/*gmo
+/po/*po
+!/po/*.mini.po
+/po/*pot
 /proxy/
 /python/
 /run
