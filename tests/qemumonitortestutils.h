@@ -99,5 +99,6 @@ void qemuMonitorTestFree(qemuMonitorTestPtr test);
 
 qemuMonitorPtr qemuMonitorTestGetMonitor(qemuMonitorTestPtr test);
 qemuAgentPtr qemuMonitorTestGetAgent(qemuMonitorTestPtr test);
+virDomainObjPtr qemuMonitorTestGetDomainObj(qemuMonitorTestPtr test);
 
 #endif /* __VIR_QEMU_MONITOR_TEST_UTILS_H__ */

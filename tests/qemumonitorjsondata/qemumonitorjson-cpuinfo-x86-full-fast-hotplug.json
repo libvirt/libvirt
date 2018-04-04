@@ -1,0 +1,115 @@
+{
+  "return": [
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 10
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu10",
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 9
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu9",
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 8
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu8",
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 7
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu7",
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 6
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu6",
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 5
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu5",
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 4
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu4",
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 3
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu3",
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 2
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu2",
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu1",
+      "type": "Broadwell-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[0]",
+      "type": "Broadwell-x86_64-cpu"
+    }
+  ],
+  "id": "libvirt-51"
+}
