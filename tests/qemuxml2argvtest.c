@@ -593,6 +593,7 @@ mymain(void)
     int ret = 0;
     char *fakerootdir;
     bool skipLegacyCPUs = false;
+    char *capslatest_x86_64 = NULL;
 
     if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
         fprintf(stderr, "Out of memory\n");
@@ -657,6 +658,73 @@ mymain(void)
     VIR_FREE(driver.config->memoryBackingDir);
     if (VIR_STRDUP_QUIET(driver.config->memoryBackingDir, "/var/lib/libvirt/qemu/ram") < 0)
         return EXIT_FAILURE;
+
+    if (!(capslatest_x86_64 = testQemuGetLatestCapsForArch(abs_srcdir "/qemucapabilitiesdata",
+                                                           "x86_64", "xml")))
+        return EXIT_FAILURE;
+
+    VIR_TEST_VERBOSE("\nlatest caps x86_64: %s\n", capslatest_x86_64);
+
+
+/**
+ * The following set of macros allows testing of XML -> argv conversion with a
+ * real set of capabilities gathered from a real qemu copy. It is desired to use
+ * these for positive test cases as it provides combinations of flags which
+ * can be met in real life.
+ *
+ * The capabilities are taken from the real capabilities stored in
+ * tests/qemucapabilitiesdata.
+ *
+ * It is suggested to use the DO_TEST_CAPS_LATEST macro which always takes the
+ * most recent capability set. In cases when the new code would change behaviour
+ * the test cases should be forked using DO_TEST_CAPS_VER with the appropriate
+ * version.
+ */
+# define DO_TEST_CAPS_INTERNAL(name, suffix, migrateFrom, flags, parseFlags, \
+                               gic, arch, capsfile) \
+    do { \
+        static struct testInfo info = { \
+            name, "." suffix, NULL, migrateFrom, migrateFrom ? 7 : -1,\
+            (flags), parseFlags, false, NULL \
+        }; \
+        info.skipLegacyCPUs = skipLegacyCPUs; \
+        if (testInitQEMUCaps(&info, gic) < 0) \
+            return EXIT_FAILURE; \
+        if (!(info.qemuCaps = qemuTestParseCapabilitiesArch(virArchFromString(arch), \
+                                                            capsfile))) \
+            return EXIT_FAILURE; \
+        if (virTestRun("QEMU XML-2-ARGV " name "." suffix, \
+                       testCompareXMLToArgv, &info) < 0) \
+            ret = -1; \
+        virObjectUnref(info.qemuCaps); \
+        virObjectUnref(info.vm); \
+    } while (0)
+
+# define TEST_CAPS_PATH abs_srcdir "/qemucapabilitiesdata/caps_"
+
+# define DO_TEST_CAPS_ARCH_VER_FULL(name, flags, parseFlags, gic, arch, ver) \
+    DO_TEST_CAPS_INTERNAL(name, arch "-" ver, NULL, flags, parseFlags, gic, \
+                          arch, TEST_CAPS_PATH ver "." arch ".xml")
+
+# define DO_TEST_CAPS_ARCH_VER(name, gic, arch, ver) \
+    DO_TEST_CAPS_ARCH_VER_FULL(name, 0, 0, gic, arch, ver)
+
+# define DO_TEST_CAPS_VER(name, ver) \
+    DO_TEST_CAPS_ARCH_VER(name, GIC_NONE, "x86_64", ver)
+
+# define DO_TEST_CAPS_LATEST(name) \
+    DO_TEST_CAPS_INTERNAL(name, "x86_64-latest", NULL, 0, 0, GIC_NONE, "x86_64", \
+                          capslatest_x86_64)
+
+/**
+ * The following test macros should be used only in cases when the tests require
+ * testing of some non-standard combination of capability flags
+ */
+# define DO_TEST_CAPS_FULL(name, flags, parseFlags, ver) \
+    DO_TEST_CAPS_ARCH(name, NULL, flags, parseFlags, GIC_NONE, "x86_64", ver)
+
+# define DO_TEST_CAPS(name, ver) \
+    DO_TEST_CAPS_FULL(name, 0, 0, ver)
 
 # define DO_TEST_FULL(name, migrateFrom, migrateFd, flags, \
                       parseFlags, gic, ...) \
@@ -2769,6 +2837,7 @@ mymain(void)
 
     qemuTestDriverFree(&driver);
     VIR_FREE(fakerootdir);
+    VIR_FREE(capslatest_x86_64);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
