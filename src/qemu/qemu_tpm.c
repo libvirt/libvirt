@@ -29,6 +29,7 @@
 
 #include "qemu_extdevice.h"
 #include "qemu_domain.h"
+#include "qemu_security.h"
 
 #include "conf/domain_conf.h"
 #include "vircommand.h"
@@ -654,11 +655,12 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
 {
     int ret = -1;
     virCommandPtr cmd = NULL;
-    int exitstatus;
+    int exitstatus = 0;
     char *errbuf = NULL;
     virQEMUDriverConfigPtr cfg;
     virDomainTPMDefPtr tpm = def->tpm;
     char *shortName = virDomainDefGetShortName(def);
+    int cmdret = 0;
 
     if (!shortName)
         return -1;
@@ -679,7 +681,12 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
 
     virCommandSetErrorBuffer(cmd, &errbuf);
 
-    if (virCommandRun(cmd, &exitstatus) < 0 || exitstatus != 0) {
+    if (qemuSecurityStartTPMEmulator(driver, def, cmd,
+                                     cfg->swtpm_user, cfg->swtpm_group,
+                                     &exitstatus, &cmdret) < 0)
+        goto cleanup;
+
+    if (cmdret < 0 || exitstatus != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not start 'swtpm'. exitstatus: %d, "
                          "error: %s"), exitstatus, errbuf);
@@ -734,6 +741,7 @@ qemuExtTPMStop(virQEMUDriverPtr driver,
             goto cleanup;
 
         qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
+        qemuSecurityCleanupTPMEmulator(driver, def);
         break;
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_TPM_TYPE_LAST:

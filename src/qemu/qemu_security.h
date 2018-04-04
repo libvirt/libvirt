@@ -84,6 +84,17 @@ int qemuSecurityRestoreChardevLabel(virQEMUDriverPtr driver,
                                     virDomainObjPtr vm,
                                     virDomainChrDefPtr chr);
 
+int qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
+                                 virDomainDefPtr def,
+                                 virCommandPtr cmd,
+                                 uid_t uid,
+                                 gid_t gid,
+                                 int *exitstatus,
+                                 int *cmdret);
+
+void qemuSecurityCleanupTPMEmulator(virQEMUDriverPtr driver,
+                                    virDomainDefPtr def);
+
 /* Please note that for these APIs there is no wrapper yet. Do NOT blindly add
  * new APIs here. If an API can touch a /dev file add a proper wrapper instead.
  */

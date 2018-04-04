@@ -424,3 +424,72 @@ qemuSecurityRestoreChardevLabel(virQEMUDriverPtr driver,
     virSecurityManagerTransactionAbort(driver->securityManager);
     return ret;
 }
+
+
+/*
+ * qemuSecurityStartTPMEmulator:
+ *
+ * @driver: the QEMU driver
+ * @def: the domain definition
+ * @cmd: the command to run
+ * @uid: the uid to run the emulator
+ * @gid: the gid to run the emulator
+ * @existstatus: pointer to int returning exit status of process
+ * @cmdret: pointer to int returning result of virCommandRun
+ *
+ * Start the TPM emulator with approriate labels. Apply security
+ * labels to files first.
+ * This function returns -1 on security setup error, 0 if all the
+ * setup was done properly. In case the virCommand failed to run
+ * 0 is returned but cmdret is set appropriately with the process
+ * exitstatus also set.
+ */
+int
+qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
+                             virDomainDefPtr def,
+                             virCommandPtr cmd,
+                             uid_t uid,
+                             gid_t gid,
+                             int *exitstatus,
+                             int *cmdret)
+{
+    int ret = -1;
+
+    if (virSecurityManagerSetTPMLabels(driver->securityManager,
+                                       def) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
+                                               def, cmd) < 0)
+        goto cleanup;
+
+    if (virSecurityManagerPreFork(driver->securityManager) < 0)
+        goto cleanup;
+
+    ret = 0;
+    /* make sure we run this with the appropriate user */
+    virCommandSetUID(cmd, uid);
+    virCommandSetGID(cmd, gid);
+
+    *cmdret = virCommandRun(cmd, exitstatus);
+
+    virSecurityManagerPostFork(driver->securityManager);
+
+    if (*cmdret < 0)
+        goto cleanup;
+
+    return 0;
+
+ cleanup:
+    virSecurityManagerRestoreTPMLabels(driver->securityManager, def);
+
+    return ret;
+}
+
+
+void
+qemuSecurityCleanupTPMEmulator(virQEMUDriverPtr driver,
+                               virDomainDefPtr def)
+{
+    virSecurityManagerRestoreTPMLabels(driver->securityManager, def);
+}

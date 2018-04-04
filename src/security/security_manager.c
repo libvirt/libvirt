@@ -1204,3 +1204,39 @@ virSecurityManagerRestoreChardevLabel(virSecurityManagerPtr mgr,
     virReportUnsupportedError();
     return -1;
 }
+
+
+int
+virSecurityManagerSetTPMLabels(virSecurityManagerPtr mgr,
+                               virDomainDefPtr vm)
+{
+    int ret;
+
+    if (mgr->drv->domainSetSecurityTPMLabels) {
+        virObjectLock(mgr);
+        ret = mgr->drv->domainSetSecurityTPMLabels(mgr, vm);
+        virObjectUnlock(mgr);
+
+        return ret;
+    }
+
+    return 0;
+}
+
+
+int
+virSecurityManagerRestoreTPMLabels(virSecurityManagerPtr mgr,
+                                   virDomainDefPtr vm)
+{
+    int ret;
+
+    if (mgr->drv->domainRestoreSecurityTPMLabels) {
+        virObjectLock(mgr);
+        ret = mgr->drv->domainRestoreSecurityTPMLabels(mgr, vm);
+        virObjectUnlock(mgr);
+
+        return ret;
+    }
+
+    return 0;
+}
