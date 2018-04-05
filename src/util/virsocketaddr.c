@@ -176,7 +176,7 @@ int virSocketAddrParse(virSocketAddrPtr addr, const char *val, int family)
  * or 2001:db8:85a3:0:0:8a2e:370:7334.
  *
  * When @val is a network host name, this function may be susceptible to a
- * delay due to potentially lengthy netork host address lookups.
+ * delay due to potentially lengthy network host address lookups.
  *
  * Returns the length of the network address or -1 in case of error.
  */
