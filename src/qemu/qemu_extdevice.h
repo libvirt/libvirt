@@ -50,4 +50,10 @@ void qemuExtDevicesStop(virQEMUDriverPtr driver,
                         virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+bool qemuExtDevicesHasDevice(virDomainDefPtr def);
+
+int qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
+                              virDomainDefPtr def,
+                              virCgroupPtr cgroup);
+
 #endif /* __QEMU_EXTDEVICE_H__ */

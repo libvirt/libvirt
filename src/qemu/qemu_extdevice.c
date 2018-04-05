@@ -30,6 +30,8 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "virtime.h"
+#include "virtpm.h"
+#include "virpidfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -151,4 +153,28 @@ qemuExtDevicesStop(virQEMUDriverPtr driver,
 
     if (def->tpm)
         qemuExtTPMStop(driver, def);
+}
+
+
+bool
+qemuExtDevicesHasDevice(virDomainDefPtr def)
+{
+    if (def->tpm && def->tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR)
+        return true;
+
+    return false;
+}
+
+
+int
+qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
+                          virDomainDefPtr def,
+                          virCgroupPtr cgroup)
+{
+    int ret = 0;
+
+    if (def->tpm)
+        ret = qemuExtTPMSetupCgroup(driver, def, cgroup);
+
+    return ret;
 }

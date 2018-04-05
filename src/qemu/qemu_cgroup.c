@@ -26,6 +26,7 @@
 #include "qemu_cgroup.h"
 #include "qemu_domain.h"
 #include "qemu_process.h"
+#include "qemu_extdevice.h"
 #include "vircgroup.h"
 #include "virlog.h"
 #include "viralloc.h"
@@ -1168,6 +1169,40 @@ qemuSetupCgroupCpusetCpus(virCgroupPtr cgroup,
     ret = 0;
  cleanup:
     VIR_FREE(new_cpus);
+    return ret;
+}
+
+
+int
+qemuSetupCgroupForExtDevices(virDomainObjPtr vm,
+                             virQEMUDriverPtr driver)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virCgroupPtr cgroup_temp = NULL;
+    int ret = -1;
+
+    if (!qemuExtDevicesHasDevice(vm->def) ||
+        priv->cgroup == NULL)
+        return 0; /* Not supported, so claim success */
+
+    /*
+     * If CPU cgroup controller is not initialized here, then we need
+     * neither period nor quota settings.  And if CPUSET controller is
+     * not initialized either, then there's nothing to do anyway.
+     */
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) &&
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return 0;
+
+    if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
+                           false, &cgroup_temp) < 0)
+        goto cleanup;
+
+    ret = qemuExtDevicesSetupCgroup(driver, vm->def, cgroup_temp);
+
+ cleanup:
+    virCgroupFree(&cgroup_temp);
+
     return ret;
 }
 
