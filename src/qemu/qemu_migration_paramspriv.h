@@ -28,4 +28,8 @@ qemuMigrationParamsToJSON(qemuMigrationParamsPtr migParams);
 qemuMigrationParamsPtr
 qemuMigrationParamsFromJSON(virJSONValuePtr params);
 
+virJSONValuePtr
+qemuMigrationCapsToJSON(virBitmapPtr caps,
+                        virBitmapPtr states);
+
 #endif /* __QEMU_MIGRATION_PARAMSPRIV_H__ */

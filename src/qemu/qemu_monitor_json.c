@@ -6111,47 +6111,14 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONSetMigrationCapabilities(qemuMonitorPtr mon,
-                                        virBitmapPtr caps,
-                                        virBitmapPtr states)
+                                        virJSONValuePtr caps)
 {
     int ret = -1;
-    qemuMonitorMigrationCaps bit;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
-    virJSONValuePtr cap = NULL;
-    virJSONValuePtr array;
-
-    if (!(array = virJSONValueNewArray()))
-        goto cleanup;
-
-    for (bit = 0; bit < QEMU_MONITOR_MIGRATION_CAPS_LAST; bit++) {
-        bool supported = false;
-        bool state = false;
-
-        ignore_value(virBitmapGetBit(caps, bit, &supported));
-        if (!supported)
-            continue;
-
-        ignore_value(virBitmapGetBit(states, bit, &state));
-
-        if (!(cap = virJSONValueNewObject()))
-            goto cleanup;
-
-        if (virJSONValueObjectAppendString(cap, "capability",
-                                           qemuMonitorMigrationCapsTypeToString(bit)) < 0)
-            goto cleanup;
-
-        if (virJSONValueObjectAppendBoolean(cap, "state", state) < 0)
-            goto cleanup;
-
-        if (virJSONValueArrayAppend(array, cap) < 0)
-            goto cleanup;
-
-        cap = NULL;
-    }
 
     cmd = qemuMonitorJSONMakeCommand("migrate-set-capabilities",
-                                     "a:capabilities", &array,
+                                     "a:capabilities", &caps,
                                      NULL);
     if (!cmd)
         goto cleanup;
@@ -6164,8 +6131,7 @@ qemuMonitorJSONSetMigrationCapabilities(qemuMonitorPtr mon,
 
     ret = 0;
  cleanup:
-    virJSONValueFree(array);
-    virJSONValueFree(cap);
+    virJSONValueFree(caps);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;

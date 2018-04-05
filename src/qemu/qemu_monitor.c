@@ -3957,22 +3957,27 @@ qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
 }
 
 
+/**
+ * qemuMonitorSetMigrationCapabilities:
+ * @mon: Pointer to the monitor object.
+ * @caps: Migration capabilities.
+ *
+ * The @caps object is consumed and should not be referenced by the caller
+ * after this function returns.
+ *
+ * Returns 0 on success, -1 on error.
+ */
 int
 qemuMonitorSetMigrationCapabilities(qemuMonitorPtr mon,
-                                    virBitmapPtr caps,
-                                    virBitmapPtr states)
+                                    virJSONValuePtr caps)
 {
-    char *capsStr = virBitmapFormat(caps);
-    char *statesStr = virBitmapFormat(states);
+    QEMU_CHECK_MONITOR_JSON_GOTO(mon, error);
 
-    VIR_DEBUG("caps=%s, states=%s", NULLSTR(capsStr), NULLSTR(statesStr));
+    return qemuMonitorJSONSetMigrationCapabilities(mon, caps);
 
-    VIR_FREE(capsStr);
-    VIR_FREE(statesStr);
-
-    QEMU_CHECK_MONITOR_JSON(mon);
-
-    return qemuMonitorJSONSetMigrationCapabilities(mon, caps, states);
+ error:
+    virJSONValueFree(caps);
+    return -1;
 }
 
 

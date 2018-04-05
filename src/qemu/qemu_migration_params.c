@@ -591,6 +591,53 @@ qemuMigrationParamsToJSON(qemuMigrationParamsPtr migParams)
 }
 
 
+virJSONValuePtr
+qemuMigrationCapsToJSON(virBitmapPtr caps,
+                        virBitmapPtr states)
+{
+    virJSONValuePtr json = NULL;
+    virJSONValuePtr cap = NULL;
+    qemuMonitorMigrationCaps bit;
+    const char *name;
+
+    if (!(json = virJSONValueNewArray()))
+        return NULL;
+
+    for (bit = 0; bit < QEMU_MONITOR_MIGRATION_CAPS_LAST; bit++) {
+        bool supported = false;
+        bool state = false;
+
+        ignore_value(virBitmapGetBit(caps, bit, &supported));
+        if (!supported)
+            continue;
+
+        ignore_value(virBitmapGetBit(states, bit, &state));
+
+        if (!(cap = virJSONValueNewObject()))
+            goto error;
+
+        name = qemuMonitorMigrationCapsTypeToString(bit);
+        if (virJSONValueObjectAppendString(cap, "capability", name) < 0)
+            goto error;
+
+        if (virJSONValueObjectAppendBoolean(cap, "state", state) < 0)
+            goto error;
+
+        if (virJSONValueArrayAppend(json, cap) < 0)
+            goto error;
+
+        cap = NULL;
+    }
+
+    return json;
+
+ error:
+    virJSONValueFree(json);
+    virJSONValueFree(cap);
+    return NULL;
+}
+
+
 /**
  * qemuMigrationParamsApply
  * @driver: qemu driver
@@ -611,6 +658,7 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool xbzrleCacheSize_old = false;
     virJSONValuePtr params = NULL;
+    virJSONValuePtr caps = NULL;
     qemuMigrationParam xbzrle = QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE;
     int ret = -1;
     int rc;
@@ -618,9 +666,15 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    if (qemuMonitorSetMigrationCapabilities(priv->mon, priv->migrationCaps,
-                                            migParams->caps) < 0)
+    if (!(caps = qemuMigrationCapsToJSON(priv->migrationCaps, migParams->caps)))
         goto cleanup;
+
+    if (virJSONValueArraySize(caps) > 0) {
+        rc = qemuMonitorSetMigrationCapabilities(priv->mon, caps);
+        caps = NULL;
+        if (rc < 0)
+            goto cleanup;
+    }
 
     /* If QEMU is too old to support xbzrle-cache-size migration parameter,
      * we need to set it via migrate-set-cache-size and tell
@@ -974,6 +1028,7 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virBitmapPtr migEvent = NULL;
+    virJSONValuePtr json = NULL;
     char **caps = NULL;
     char **capStr;
     int ret = -1;
@@ -1014,10 +1069,14 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
 
         ignore_value(virBitmapSetBit(migEvent, QEMU_MONITOR_MIGRATION_CAPS_EVENTS));
 
+        if (!(json = qemuMigrationCapsToJSON(migEvent, migEvent)))
+            goto cleanup;
+
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             goto cleanup;
 
-        rc = qemuMonitorSetMigrationCapabilities(priv->mon, migEvent, migEvent);
+        rc = qemuMonitorSetMigrationCapabilities(priv->mon, json);
+        json = NULL;
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;
@@ -1039,6 +1098,7 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
+    virJSONValueFree(json);
     virStringListFree(caps);
     return ret;
 }

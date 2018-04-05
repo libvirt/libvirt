@@ -32,6 +32,7 @@
 #include "virstring.h"
 #include "cpu/cpu.h"
 #include "qemu/qemu_monitor.h"
+#include "qemu/qemu_migration_paramspriv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -2141,6 +2142,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *data)
     const char *cap;
     char **caps = NULL;
     virBitmapPtr bitmap = NULL;
+    virJSONValuePtr json = NULL;
     const char *reply =
         "{"
         "    \"return\": ["
@@ -2176,12 +2178,15 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *data)
         goto cleanup;
 
     ignore_value(virBitmapSetBit(bitmap, QEMU_MONITOR_MIGRATION_CAPS_XBZRLE));
-    if (qemuMonitorJSONSetMigrationCapabilities(qemuMonitorTestGetMonitor(test),
-                                                bitmap, bitmap) < 0)
+    if (!(json = qemuMigrationCapsToJSON(bitmap, bitmap)))
         goto cleanup;
 
-    ret = 0;
+    ret = qemuMonitorJSONSetMigrationCapabilities(qemuMonitorTestGetMonitor(test),
+                                                  json);
+    json = NULL;
+
  cleanup:
+    virJSONValueFree(json);
     qemuMonitorTestFree(test);
     virStringListFree(caps);
     virBitmapFree(bitmap);

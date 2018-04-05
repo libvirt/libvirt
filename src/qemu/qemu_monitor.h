@@ -728,8 +728,7 @@ VIR_ENUM_DECL(qemuMonitorMigrationCaps);
 int qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
                                         char ***capabilities);
 int qemuMonitorSetMigrationCapabilities(qemuMonitorPtr mon,
-                                        virBitmapPtr caps,
-                                        virBitmapPtr states);
+                                        virJSONValuePtr caps);
 
 int qemuMonitorGetGICCapabilities(qemuMonitorPtr mon,
                                   virGICCapability **capabilities);
