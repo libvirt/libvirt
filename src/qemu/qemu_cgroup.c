@@ -37,6 +37,7 @@
 #include "virtypedparam.h"
 #include "virnuma.h"
 #include "virsystemd.h"
+#include "virdevmapper.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -60,7 +61,10 @@ qemuSetupImagePathCgroup(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int perms = VIR_CGROUP_DEVICE_READ;
-    int ret;
+    char **targetPaths = NULL;
+    size_t i;
+    int rv;
+    int ret = -1;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
@@ -71,12 +75,41 @@ qemuSetupImagePathCgroup(virDomainObjPtr vm,
     VIR_DEBUG("Allow path %s, perms: %s",
               path, virCgroupGetDevicePermsString(perms));
 
-    ret = virCgroupAllowDevicePath(priv->cgroup, path, perms, true);
+    rv = virCgroupAllowDevicePath(priv->cgroup, path, perms, true);
 
     virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
                              virCgroupGetDevicePermsString(perms),
-                             ret);
+                             rv);
+    if (rv < 0)
+        goto cleanup;
 
+    if (rv > 0) {
+        /* @path is neither character device nor block device. */
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (virDevMapperGetTargets(path, &targetPaths) < 0 &&
+        errno != ENOSYS && errno != EBADF) {
+        virReportSystemError(errno,
+                             _("Unable to get devmapper targets for %s"),
+                             path);
+        goto cleanup;
+    }
+
+    for (i = 0; targetPaths && targetPaths[i]; i++) {
+        rv = virCgroupAllowDevicePath(priv->cgroup, targetPaths[i], perms, false);
+
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", targetPaths[i],
+                                 virCgroupGetDevicePermsString(perms),
+                                 rv);
+        if (rv < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virStringListFree(targetPaths);
     return ret;
 }
 
@@ -130,6 +163,13 @@ qemuTeardownImageCgroup(virDomainObjPtr vm,
 
     virDomainAuditCgroupPath(vm, priv->cgroup, "deny", src->path,
                              virCgroupGetDevicePermsString(perms), ret);
+
+    /* If you're looking for a counter part to
+     * qemuSetupImagePathCgroup you're at the right place.
+     * However, we can't just blindly deny all the device mapper
+     * targets of src->path because they might still be used by
+     * another disk in domain. Just like we are not removing
+     * disks from namespace. */
 
     return ret;
 }
