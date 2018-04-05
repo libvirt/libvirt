@@ -32,6 +32,7 @@
 #include "virstring.h"
 #include "cpu/cpu.h"
 #include "qemu/qemu_monitor.h"
+#include "qemu/qemu_migration_params.h"
 #include "qemu/qemu_migration_paramspriv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -2166,18 +2167,18 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *data)
                                             &caps) < 0)
         goto cleanup;
 
-    cap = qemuMonitorMigrationCapsTypeToString(QEMU_MONITOR_MIGRATION_CAPS_XBZRLE);
+    cap = qemuMigrationCapabilityTypeToString(QEMU_MIGRATION_CAP_XBZRLE);
     if (!virStringListHasString((const char **) caps, cap)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Expected capability %s is missing", cap);
         goto cleanup;
     }
 
-    bitmap = virBitmapNew(QEMU_MONITOR_MIGRATION_CAPS_LAST);
+    bitmap = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
     if (!bitmap)
         goto cleanup;
 
-    ignore_value(virBitmapSetBit(bitmap, QEMU_MONITOR_MIGRATION_CAPS_XBZRLE));
+    ignore_value(virBitmapSetBit(bitmap, QEMU_MIGRATION_CAP_XBZRLE));
     if (!(json = qemuMigrationCapsToJSON(bitmap, bitmap)))
         goto cleanup;
 

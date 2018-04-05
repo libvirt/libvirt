@@ -711,20 +711,6 @@ int qemuMonitorGetMigrationStats(qemuMonitorPtr mon,
                                  qemuMonitorMigrationStatsPtr stats,
                                  char **error);
 
-typedef enum {
-    QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
-    QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
-    QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
-    QEMU_MONITOR_MIGRATION_CAPS_EVENTS,
-    QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
-    QEMU_MONITOR_MIGRATION_CAPS_COMPRESS,
-    QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER,
-
-    QEMU_MONITOR_MIGRATION_CAPS_LAST
-} qemuMonitorMigrationCaps;
-
-VIR_ENUM_DECL(qemuMonitorMigrationCaps);
-
 int qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
                                         char ***capabilities);
 int qemuMonitorSetMigrationCapabilities(qemuMonitorPtr mon,

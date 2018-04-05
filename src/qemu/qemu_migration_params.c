@@ -76,6 +76,17 @@ VIR_ENUM_IMPL(qemuMigrationCompressMethod, QEMU_MIGRATION_COMPRESS_LAST,
               "mt",
 );
 
+VIR_ENUM_IMPL(qemuMigrationCapability, QEMU_MIGRATION_CAP_LAST,
+              "xbzrle",
+              "auto-converge",
+              "rdma-pin-all",
+              "events",
+              "postcopy-ram",
+              "compress",
+              "pause-before-switchover",
+);
+
+
 VIR_ENUM_DECL(qemuMigrationParam)
 VIR_ENUM_IMPL(qemuMigrationParam, QEMU_MIGRATION_PARAM_LAST,
               "compress-level",
@@ -93,36 +104,36 @@ VIR_ENUM_IMPL(qemuMigrationParam, QEMU_MIGRATION_PARAM_LAST,
 
 typedef struct _qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOnItem;
 struct _qemuMigrationParamsAlwaysOnItem {
-    qemuMonitorMigrationCaps cap;
+    qemuMigrationCapability cap;
     int party; /* bit-wise OR of qemuMigrationParty */
 };
 
 typedef struct _qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMapItem;
 struct _qemuMigrationParamsFlagMapItem {
     virDomainMigrateFlags flag;
-    qemuMonitorMigrationCaps cap;
+    qemuMigrationCapability cap;
     int party; /* bit-wise OR of qemuMigrationParty */
 };
 
 /* Migration capabilities which should always be enabled as long as they
  * are supported by QEMU. */
 static const qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOn[] = {
-    {QEMU_MONITOR_MIGRATION_CAPS_PAUSE_BEFORE_SWITCHOVER,
+    {QEMU_MIGRATION_CAP_PAUSE_BEFORE_SWITCHOVER,
      QEMU_MIGRATION_SOURCE},
 };
 
-/* Translation from virDomainMigrateFlags to qemuMonitorMigrationCaps. */
+/* Translation from virDomainMigrateFlags to qemuMigrationCapability. */
 static const qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMap[] = {
     {VIR_MIGRATE_RDMA_PIN_ALL,
-     QEMU_MONITOR_MIGRATION_CAPS_RDMA_PIN_ALL,
+     QEMU_MIGRATION_CAP_RDMA_PIN_ALL,
      QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 
     {VIR_MIGRATE_AUTO_CONVERGE,
-     QEMU_MONITOR_MIGRATION_CAPS_AUTO_CONVERGE,
+     QEMU_MIGRATION_CAP_AUTO_CONVERGE,
      QEMU_MIGRATION_SOURCE},
 
     {VIR_MIGRATE_POSTCOPY,
-     QEMU_MONITOR_MIGRATION_CAPS_POSTCOPY,
+     QEMU_MIGRATION_CAP_POSTCOPY,
      QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 };
 
@@ -150,7 +161,7 @@ qemuMigrationParamsNew(void)
     if (VIR_ALLOC(params) < 0)
         return NULL;
 
-    params->caps = virBitmapNew(QEMU_MONITOR_MIGRATION_CAPS_LAST);
+    params->caps = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
     if (!params->caps)
         goto error;
 
@@ -289,7 +300,7 @@ qemuMigrationParamsSetCompression(virTypedParameterPtr params,
 {
     size_t i;
     int method;
-    qemuMonitorMigrationCaps cap;
+    qemuMigrationCapability cap;
 
     for (i = 0; i < nparams; i++) {
         if (STRNEQ(params[i].field, VIR_MIGRATE_PARAM_COMPRESSION))
@@ -314,11 +325,11 @@ qemuMigrationParamsSetCompression(virTypedParameterPtr params,
 
         switch ((qemuMigrationCompressMethod) method) {
         case QEMU_MIGRATION_COMPRESS_XBZRLE:
-            cap = QEMU_MONITOR_MIGRATION_CAPS_XBZRLE;
+            cap = QEMU_MIGRATION_CAP_XBZRLE;
             break;
 
         case QEMU_MIGRATION_COMPRESS_MT:
-            cap = QEMU_MONITOR_MIGRATION_CAPS_COMPRESS;
+            cap = QEMU_MIGRATION_CAP_COMPRESS;
             break;
 
         case QEMU_MIGRATION_COMPRESS_LAST:
@@ -371,7 +382,7 @@ qemuMigrationParamsSetCompression(virTypedParameterPtr params,
     if (!migParams->compMethods && (flags & VIR_MIGRATE_COMPRESSED)) {
         migParams->compMethods = 1ULL << QEMU_MIGRATION_COMPRESS_XBZRLE;
         ignore_value(virBitmapSetBit(migParams->caps,
-                                     QEMU_MONITOR_MIGRATION_CAPS_XBZRLE));
+                                     QEMU_MIGRATION_CAP_XBZRLE));
     }
 
     return 0;
@@ -394,12 +405,12 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
         return NULL;
 
     for (i = 0; i < ARRAY_CARDINALITY(qemuMigrationParamsFlagMap); i++) {
-        qemuMonitorMigrationCaps cap = qemuMigrationParamsFlagMap[i].cap;
+        qemuMigrationCapability cap = qemuMigrationParamsFlagMap[i].cap;
 
         if (qemuMigrationParamsFlagMap[i].party & party &&
             flags & qemuMigrationParamsFlagMap[i].flag) {
             VIR_DEBUG("Enabling migration capability '%s'",
-                      qemuMonitorMigrationCapsTypeToString(cap));
+                      qemuMigrationCapabilityTypeToString(cap));
             ignore_value(virBitmapSetBit(migParams->caps, cap));
         }
     }
@@ -597,13 +608,13 @@ qemuMigrationCapsToJSON(virBitmapPtr caps,
 {
     virJSONValuePtr json = NULL;
     virJSONValuePtr cap = NULL;
-    qemuMonitorMigrationCaps bit;
+    qemuMigrationCapability bit;
     const char *name;
 
     if (!(json = virJSONValueNewArray()))
         return NULL;
 
-    for (bit = 0; bit < QEMU_MONITOR_MIGRATION_CAPS_LAST; bit++) {
+    for (bit = 0; bit < QEMU_MIGRATION_CAP_LAST; bit++) {
         bool supported = false;
         bool state = false;
 
@@ -616,7 +627,7 @@ qemuMigrationCapsToJSON(virBitmapPtr caps,
         if (!(cap = virJSONValueNewObject()))
             goto error;
 
-        name = qemuMonitorMigrationCapsTypeToString(bit);
+        name = qemuMigrationCapabilityTypeToString(bit);
         if (virJSONValueObjectAppendString(cap, "capability", name) < 0)
             goto error;
 
@@ -947,7 +958,7 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
                          qemuMigrationParamsPtr migParams)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuMonitorMigrationCaps cap;
+    qemuMigrationCapability cap;
     qemuMigrationParty party;
     size_t i;
 
@@ -956,7 +967,7 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
     else
         party = QEMU_MIGRATION_DESTINATION;
 
-    for (cap = 0; cap < QEMU_MONITOR_MIGRATION_CAPS_LAST; cap++) {
+    for (cap = 0; cap < QEMU_MIGRATION_CAP_LAST; cap++) {
         bool state = false;
 
         ignore_value(virBitmapGetBit(migParams->caps, cap, &state));
@@ -964,7 +975,7 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
         if (state && !qemuMigrationCapsGet(vm, cap)) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                            _("Migration option '%s' is not supported by QEMU binary"),
-                           qemuMonitorMigrationCapsTypeToString(cap));
+                           qemuMigrationCapabilityTypeToString(cap));
             return -1;
         }
     }
@@ -975,7 +986,7 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
         if (qemuMigrationParamsAlwaysOn[i].party & party &&
             qemuMigrationCapsGet(vm, cap)) {
             VIR_DEBUG("Enabling migration capability '%s'",
-                      qemuMonitorMigrationCapsTypeToString(cap));
+                      qemuMigrationCapabilityTypeToString(cap));
             ignore_value(virBitmapSetBit(migParams->caps, cap));
         }
     }
@@ -1047,12 +1058,12 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    priv->migrationCaps = virBitmapNew(QEMU_MONITOR_MIGRATION_CAPS_LAST);
+    priv->migrationCaps = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
     if (!priv->migrationCaps)
         goto cleanup;
 
     for (capStr = caps; *capStr; capStr++) {
-        int cap = qemuMonitorMigrationCapsTypeFromString(*capStr);
+        int cap = qemuMigrationCapabilityTypeFromString(*capStr);
 
         if (cap < 0) {
             VIR_DEBUG("Unknown migration capability: '%s'", *capStr);
@@ -1063,11 +1074,11 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
     }
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT)) {
-        migEvent = virBitmapNew(QEMU_MONITOR_MIGRATION_CAPS_LAST);
+        migEvent = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
         if (!migEvent)
             goto cleanup;
 
-        ignore_value(virBitmapSetBit(migEvent, QEMU_MONITOR_MIGRATION_CAPS_EVENTS));
+        ignore_value(virBitmapSetBit(migEvent, QEMU_MIGRATION_CAP_EVENTS));
 
         if (!(json = qemuMigrationCapsToJSON(migEvent, migEvent)))
             goto cleanup;
@@ -1093,7 +1104,7 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
      * else.
      */
     ignore_value(virBitmapClearBit(priv->migrationCaps,
-                                   QEMU_MONITOR_MIGRATION_CAPS_EVENTS));
+                                   QEMU_MIGRATION_CAP_EVENTS));
 
     ret = 0;
 
@@ -1106,7 +1117,7 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
 
 bool
 qemuMigrationCapsGet(virDomainObjPtr vm,
-                     qemuMonitorMigrationCaps cap)
+                     qemuMigrationCapability cap)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool enabled = false;

@@ -28,6 +28,19 @@
 # include "qemu_conf.h"
 
 typedef enum {
+    QEMU_MIGRATION_CAP_XBZRLE,
+    QEMU_MIGRATION_CAP_AUTO_CONVERGE,
+    QEMU_MIGRATION_CAP_RDMA_PIN_ALL,
+    QEMU_MIGRATION_CAP_EVENTS,
+    QEMU_MIGRATION_CAP_POSTCOPY,
+    QEMU_MIGRATION_CAP_COMPRESS,
+    QEMU_MIGRATION_CAP_PAUSE_BEFORE_SWITCHOVER,
+
+    QEMU_MIGRATION_CAP_LAST
+} qemuMigrationCapability;
+VIR_ENUM_DECL(qemuMigrationCapability)
+
+typedef enum {
     QEMU_MIGRATION_PARAM_COMPRESS_LEVEL,
     QEMU_MIGRATION_PARAM_COMPRESS_THREADS,
     QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS,
@@ -122,6 +135,6 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
 
 bool
 qemuMigrationCapsGet(virDomainObjPtr vm,
-                     qemuMonitorMigrationCaps cap);
+                     qemuMigrationCapability cap);
 
 #endif /* __QEMU_MIGRATION_PARAMS_H__ */
