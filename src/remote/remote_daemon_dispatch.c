@@ -1673,6 +1673,11 @@ void remoteRelayConnectionClosedEvent(virConnectPtr conn ATTRIBUTE_UNUSED, int r
 #define DEREG_CB(conn, eventCallbacks, neventCallbacks, deregFcn, name) \
     do { \
         size_t i; \
+        if (neventCallbacks && !conn) { \
+            VIR_WARN("Have %zu %s event callbacks but no connection", \
+                     neventCallbacks, name); \
+            break; \
+        } \
         for (i = 0; i < neventCallbacks; i++) { \
             int callbackID = eventCallbacks[i]->callbackID; \
             if (callbackID < 0) { \
@@ -1715,7 +1720,7 @@ remoteClientFreePrivateCallbacks(struct daemonClientPrivate *priv)
              priv->nqemuEventCallbacks,
              virConnectDomainQemuMonitorEventDeregister, "qemu monitor");
 
-    if (priv->closeRegistered) {
+    if (priv->closeRegistered && priv->conn) {
         if (virConnectUnregisterCloseCallback(priv->conn,
                                               remoteRelayConnectionClosedEvent) < 0)
             VIR_WARN("unexpected close callback event deregister failure");
@@ -1751,9 +1756,7 @@ static void remoteClientCloseFunc(virNetServerClientPtr client)
 
     daemonRemoveAllClientStreams(priv->streams);
 
-    /* Deregister event delivery callback */
-    if (priv->conn)
-        remoteClientFreePrivateCallbacks(priv);
+    remoteClientFreePrivateCallbacks(priv);
 }
 
 
