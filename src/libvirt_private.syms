@@ -218,6 +218,7 @@ virDomainChrSourceDefClear;
 virDomainChrSourceDefCopy;
 virDomainChrSourceDefFree;
 virDomainChrSourceDefGetPath;
+virDomainChrSourceDefNew;
 virDomainChrSpicevmcTypeFromString;
 virDomainChrSpicevmcTypeToString;
 virDomainChrTcpProtocolTypeFromString;

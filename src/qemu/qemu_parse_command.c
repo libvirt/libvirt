@@ -2484,7 +2484,7 @@ qemuParseCommandLine(virCapsPtr caps,
             if (monConfig) {
                 virDomainChrSourceDefPtr chr;
 
-                if (VIR_ALLOC(chr) < 0)
+                if (!(chr = virDomainChrSourceDefNew(NULL)))
                     goto error;
 
                 if (qemuParseCommandLineChr(chr, val) < 0) {

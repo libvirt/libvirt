@@ -2827,6 +2827,9 @@ bool virDomainDefHasDeviceAddress(virDomainDefPtr def,
 
 void virDomainDefFree(virDomainDefPtr vm);
 
+virDomainChrSourceDefPtr
+virDomainChrSourceDefNew(virDomainXMLOptionPtr xmlopt);
+
 virDomainChrDefPtr virDomainChrDefNew(virDomainXMLOptionPtr xmlopt);
 
 virDomainDefPtr virDomainDefNew(void);

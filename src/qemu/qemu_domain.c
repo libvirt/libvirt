@@ -2422,7 +2422,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     xmlNodePtr node = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
 
-    if (VIR_ALLOC(priv->monConfig) < 0)
+    if (!(priv->monConfig = virDomainChrSourceDefNew(NULL)))
         goto error;
 
     if (!(monitorpath =

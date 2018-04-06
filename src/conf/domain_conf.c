@@ -12211,7 +12211,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 }
 
 
-static virDomainChrSourceDefPtr
+virDomainChrSourceDefPtr
 virDomainChrSourceDefNew(virDomainXMLOptionPtr xmlopt)
 {
     virDomainChrSourceDefPtr def = NULL;
