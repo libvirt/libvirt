@@ -6,7 +6,7 @@ LANGS := \
 	af am anp ar as ast bal be bg bn_IN \
 	bn bo br brx bs ca cs cy da de_CH \
 	de el en_GB eo es et eu fa fil fi \
-	fr gl gu he hi hr hu ia \
+	fr fur gl gu he hi hr hu ia \
 	id ilo is it ja ka kk km kn ko \
 	kw_GB kw@kkcor kw kw@uccor ky lt lv mai mk ml \
 	mn mr ms nb nds ne nl nn nso \
