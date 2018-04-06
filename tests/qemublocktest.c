@@ -466,6 +466,11 @@ mymain(void)
     TEST_DISK_TO_JSON("file-qcow2-backing-chain-encryption");
     TEST_DISK_TO_JSON("network-qcow2-backing-chain-encryption_auth");
 
+    TEST_DISK_TO_JSON("file-backing_basic-unmap");
+    TEST_DISK_TO_JSON("file-backing_basic-unmap-detect");
+    TEST_DISK_TO_JSON("file-backing_basic-unmap-ignore");
+    TEST_DISK_TO_JSON("file-backing_basic-detect");
+
  cleanup:
     virHashFree(diskxmljsondata.schema);
     qemuTestDriverFree(&driver);
