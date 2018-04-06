@@ -2,20 +2,20 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
-    <h1>Xen hypervisor driver</h1>
+    <h1>libxl hypervisor driver for Xen</h1>
 
     <ul id="toc"></ul>
 
     <p>
-      The libvirt Xen driver provides the ability to manage virtual machines
-      on any Xen release from 3.0.1 onwards.
+      The libvirt libxl driver provides the ability to manage virtual
+      machines on any Xen release from 4.4.0 onwards.
     </p>
 
     <h2><a id="project">Project Links</a></h2>
 
     <ul>
       <li>
-        The <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen</a>
+        The <a href="https://www.xenproject.org">Xen</a>
         hypervisor on Linux and Solaris hosts
       </li>
     </ul>
@@ -23,54 +23,23 @@
     <h2><a id="prereq">Deployment pre-requisites</a></h2>
 
     <p>
-      The libvirt Xen driver uses a combination of channels to manage Xen
-      virtual machines.
+      The libvirt libxl driver uses Xen's libxl API, also known as
+      libxenlight, to implement libvirt's hypervisor driver
+      functionality. libxl provides a consolidated interface for
+      managing a Xen host and its virtual machines, unlike old
+      versions of Xen where applications often had to communicate
+      with xend, xenstored, and the hypervisor itself via hypercalls.
+      With libxl the only pre-requisit is a properly installed Xen
+      host with the libxl toolstack running in a service domain
+      (often Domain-0).
     </p>
 
-    <ul>
-      <li>
-        <strong>XenD</strong>: Access to the Xen daemon is a mandatory
-        requirement for the libvirt Xen driver. It requires that the UNIX
-        socket interface be enabled in the <code>/etc/xen/xend-config.sxp</code>
-        configuration file. Specifically the config settings
-        <code>(xend-unix-server yes)</code>. This path is usually restricted
-        to only allow the <code>root</code> user access. As an alternative,
-        the HTTP interface can be used, however, this has significant security
-        implications.
-      </li>
-      <li>
-        <strong>XenStoreD</strong>: Access to the Xenstore daemon enables
-        more efficient codepaths for looking up domain information which
-        lowers the CPU overhead of management.
-      </li>
-      <li>
-        <strong>Hypercalls</strong>: The ability to make direct hypercalls
-        allows the most efficient codepaths in the driver to be used for
-        monitoring domain status.
-      </li>
-      <li>
-        <strong>XM config</strong>: When using Xen releases prior to 3.0.4,
-        there is no inactive domain management in XenD. For such releases,
-        libvirt will automatically process XM configuration files kept in
-        the <code>/etc/xen</code> directory. It is important not to place
-        any other non-config files in this directory.
-      </li>
-      <li>
-        <strong>libxl</strong>: Starting with Xen 4.2, the legacy XenD/xm
-        toolstack is deprecated in favor of libxl, also commonly called
-        libxenlight.  libvirt supports this new Xen toolstack via the
-        libxl driver.  If XenD is enabled, the legacy xen driver consisting
-        of the above mentioned channels will be used.  If XenD is disabled,
-        the libxl driver will be used.
-      </li>
-    </ul>
-
-    <h2><a id="uri">Connections to Xen driver</a></h2>
+    <h2><a id="uri">Connections to libxl driver</a></h2>
 
     <p>
-    The libvirt Xen driver is a single-instance privileged driver,
-    with a driver name of 'xen'. Some example connection URIs for
-    the libvirt driver are:
+      The libvirt libxl driver is a single-instance privileged driver,
+      with a driver name of 'xen'. Some example connection URIs for
+      the libxl driver are:
     </p>
 
 <pre>
@@ -83,18 +52,28 @@ xen+ssh://root@example.com/    (remote access, SSH tunnelled)
 
     <h2><a id="imex">Import and export of libvirt domain XML configs</a></h2>
 
-    <p>The Xen driver currently supports two native
-      config formats. The first known as <code>xen-xm</code> is the format
-      used by the XM tool for files in <code>/etc/xen</code>. The second
-      known as <code>xen-sxpr</code>, is the format used for interacting
-      with the XenD's legacy HTTP RPC service.</p>
+    <p>
+      The libxl driver currently supports three native
+      config formats. The first, known as <code>xen-xm</code>, is the
+      original Xen virtual machine config format used by the legacy
+      xm/xend toolstack. The second, known as <code>xen-sxpr</code>,
+      is also one of the original formats that was used by xend's
+      legacy HTTP RPC service. For compatibility, import and export
+      of these legacy formats is supported by the libxl driver.
+    </p>
+
+    <p>
+      The third format is <code>xen-xl</code>, which is the virtual
+      machine config format supported by modern Xen. The <code>xen-xl</code>
+      format is described in the xl.cfg(5) man page.
+    </p>
 
     <h3><a id="xmlimport">Converting from XM config files to domain XML</a></h3>
 
     <p>
       The <code>virsh domxml-from-native</code> provides a way to convert an
-      existing set of XM config files into a guest description using libvirt Domain XML
-      that can then be used by libvirt.
+      existing set of xl, xm, or sxpr config files to libvirt Domain XML,
+      which can then be used by libvirt.
     </p>
 
     <pre>$ virsh -c xen:/// domxml-from-native xen-xm rhel5.cfg
@@ -139,7 +118,7 @@ xen+ssh://root@example.com/    (remote access, SSH tunnelled)
 
     <p>
       The <code>virsh domxml-to-native</code> provides a way to convert a
-      guest description using libvirt Domain XML, into the XM config file
+      guest description using libvirt Domain XML into xl, xm, or sxpr config
       format.
     </p>
 
