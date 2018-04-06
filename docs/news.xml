@@ -45,6 +45,18 @@
         </description>
       </change>
     </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          Xen: Drop the legacy xend-based driver
+        </summary>
+        <description>
+          The xm/xend toolstack was deprecated in Xen 4.2 and removed
+          from the Xen sources in the 4.5 development cycle. The libvirt
+          driver based on xend is now removed from the libvirt sources.
+        </description>
+      </change>
+    </section>
     <section title="Improvements">
       <change>
         <summary>
