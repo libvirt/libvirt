@@ -116,7 +116,9 @@ struct _qemuMigrationParamsFlagMapItem {
 };
 
 /* Migration capabilities which should always be enabled as long as they
- * are supported by QEMU. */
+ * are supported by QEMU. If the capability is supposed to be enabled on both
+ * sides of migration, it won't be enabled unless both sides support it.
+ */
 static const qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOn[] = {
     {QEMU_MIGRATION_CAP_PAUSE_BEFORE_SWITCHOVER,
      QEMU_MIGRATION_SOURCE},
@@ -975,7 +977,8 @@ int
 qemuMigrationParamsCheck(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          int asyncJob,
-                         qemuMigrationParamsPtr migParams)
+                         qemuMigrationParamsPtr migParams,
+                         virBitmapPtr remoteCaps)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuMigrationCapability cap;
@@ -1005,6 +1008,21 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
 
         if (qemuMigrationParamsAlwaysOn[i].party & party &&
             qemuMigrationCapsGet(vm, cap)) {
+            if (qemuMigrationParamsAlwaysOn[i].party != party) {
+                bool remote = false;
+
+                if (remoteCaps)
+                    ignore_value(virBitmapGetBit(remoteCaps, cap, &remote));
+
+                if (!remote) {
+                    VIR_DEBUG("Not enabling migration capability '%s'; it is "
+                              "not supported or automatically enabled by the "
+                              "other side of migration",
+                              qemuMigrationCapabilityTypeToString(cap));
+                    continue;
+                }
+            }
+
             VIR_DEBUG("Enabling migration capability '%s'",
                       qemuMigrationCapabilityTypeToString(cap));
             ignore_value(virBitmapSetBit(migParams->caps, cap));

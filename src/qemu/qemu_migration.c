@@ -1913,6 +1913,9 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
 
     cookieFlags |= QEMU_MIGRATION_COOKIE_ALLOW_REBOOT;
 
+    if (!(flags & VIR_MIGRATE_OFFLINE))
+        cookieFlags |= QEMU_MIGRATION_COOKIE_CAPS;
+
     if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))
         goto cleanup;
 
@@ -2205,7 +2208,8 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         }
         cookieFlags = 0;
     } else {
-        cookieFlags = QEMU_MIGRATION_COOKIE_GRAPHICS;
+        cookieFlags = QEMU_MIGRATION_COOKIE_GRAPHICS |
+                      QEMU_MIGRATION_COOKIE_CAPS;
     }
 
     if (flags & VIR_MIGRATE_POSTCOPY &&
@@ -2299,7 +2303,8 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                                        QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG |
                                        QEMU_MIGRATION_COOKIE_CPU_HOTPLUG |
                                        QEMU_MIGRATION_COOKIE_CPU |
-                                       QEMU_MIGRATION_COOKIE_ALLOW_REBOOT)))
+                                       QEMU_MIGRATION_COOKIE_ALLOW_REBOOT |
+                                       QEMU_MIGRATION_COOKIE_CAPS)))
         goto cleanup;
 
     if (STREQ_NULLABLE(protocol, "rdma") &&
@@ -2378,7 +2383,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     }
 
     if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
-                                 migParams) < 0)
+                                 migParams, mig->caps->automatic) < 0)
         goto stopjob;
 
     /* Migrations using TLS need to add the "tls-creds-x509" object and
@@ -3302,7 +3307,9 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     }
 
     mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
-                                 cookieFlags | QEMU_MIGRATION_COOKIE_GRAPHICS);
+                                 cookieFlags |
+                                 QEMU_MIGRATION_COOKIE_GRAPHICS |
+                                 QEMU_MIGRATION_COOKIE_CAPS);
     if (!mig)
         goto error;
 
@@ -3310,7 +3317,7 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
         VIR_WARN("unable to provide data for graphics client relocation");
 
     if (qemuMigrationParamsCheck(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                 migParams) < 0)
+                                 migParams, mig->caps->automatic) < 0)
         goto error;
 
     if (flags & VIR_MIGRATE_TLS) {

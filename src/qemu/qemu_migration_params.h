@@ -123,7 +123,8 @@ int
 qemuMigrationParamsCheck(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          int asyncJob,
-                         qemuMigrationParamsPtr migParams);
+                         qemuMigrationParamsPtr migParams,
+                         virBitmapPtr remoteCaps);
 
 void
 qemuMigrationParamsReset(virQEMUDriverPtr driver,
