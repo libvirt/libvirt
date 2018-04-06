@@ -1162,6 +1162,9 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
     if (!legacy) {
         if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, fileprops) < 0)
             goto cleanup;
+
+        if (virJSONValueObjectAdd(fileprops, "b:read-only", src->readonly, NULL) < 0)
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(ret, fileprops);
