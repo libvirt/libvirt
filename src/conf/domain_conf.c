@@ -11138,7 +11138,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         }
 
-        if (VIR_ALLOC(def->data.vhostuser) < 0)
+        if (!(def->data.vhostuser = virDomainChrSourceDefNew(xmlopt)))
             goto error;
 
         def->data.vhostuser->type = VIR_DOMAIN_CHR_TYPE_UNIX;
