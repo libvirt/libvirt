@@ -218,13 +218,9 @@ storageDriverAutostartCallback(virStoragePoolObjPtr obj,
 static void
 storageDriverAutostart(void)
 {
-    virConnectPtr conn = NULL;
-
     virStoragePoolObjListForEach(driver->pools,
                                  storageDriverAutostartCallback,
                                  NULL);
-
-    virObjectUnref(conn);
 }
 
 /**
