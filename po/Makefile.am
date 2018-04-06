@@ -5,7 +5,7 @@ MSGID_BUGS_ADDRESS = https://libvirt.org/bugs.html
 LANGS := \
 	af am anp ar as ast bal be bg bn_IN \
 	bn bo br brx bs ca cs cy da de_CH \
-	de el en_GB eo es et eu fa fi \
+	de el en_GB eo es et eu fa fil fi \
 	fr gl gu he hi hr hu ia \
 	id ilo is it ja ka kk km kn ko \
 	kw_GB kw@kkcor kw kw@uccor ky lt lv mai mk ml \
