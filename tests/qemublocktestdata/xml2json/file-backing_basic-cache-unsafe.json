@@ -1,0 +1,91 @@
+{
+  "node-name": "node-a-f",
+  "read-only": false,
+  "cache": {
+    "direct": false,
+    "no-flush": true
+  },
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/a",
+    "node-name": "node-a-s",
+    "cache": {
+      "direct": false,
+      "no-flush": true
+    },
+    "read-only": false,
+    "discard": "unmap"
+  },
+  "backing": "node-b-f"
+}
+{
+  "node-name": "node-b-f",
+  "read-only": true,
+  "cache": {
+    "direct": false,
+    "no-flush": true
+  },
+  "driver": "qcow2",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/b",
+    "node-name": "node-b-s",
+    "cache": {
+      "direct": false,
+      "no-flush": true
+    },
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": "node-c-f"
+}
+{
+  "node-name": "node-c-f",
+  "read-only": true,
+  "cache": {
+    "direct": false,
+    "no-flush": true
+  },
+  "driver": "qcow2",
+  "file": {
+    "driver": "gluster",
+    "volume": "images",
+    "path": "c",
+    "server": [
+      {
+        "type": "inet",
+        "host": "test.org",
+        "port": "24007"
+      }
+    ],
+    "node-name": "node-c-s",
+    "cache": {
+      "direct": false,
+      "no-flush": true
+    },
+    "read-only": true,
+    "discard": "unmap"
+  },
+  "backing": "node-d-f"
+}
+{
+  "node-name": "node-d-f",
+  "read-only": true,
+  "cache": {
+    "direct": false,
+    "no-flush": true
+  },
+  "driver": "raw",
+  "file": {
+    "driver": "file",
+    "filename": "/var/lib/libvirt/images/d",
+    "node-name": "node-d-s",
+    "cache": {
+      "direct": false,
+      "no-flush": true
+    },
+    "read-only": true,
+    "discard": "unmap"
+  }
+}

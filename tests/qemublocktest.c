@@ -471,6 +471,14 @@ mymain(void)
     TEST_DISK_TO_JSON("file-backing_basic-unmap-ignore");
     TEST_DISK_TO_JSON("file-backing_basic-detect");
 
+    TEST_DISK_TO_JSON("file-backing_basic-cache-none");
+    TEST_DISK_TO_JSON("file-backing_basic-cache-writethrough");
+    TEST_DISK_TO_JSON("file-backing_basic-cache-writeback");
+    TEST_DISK_TO_JSON("file-backing_basic-cache-directsync");
+    TEST_DISK_TO_JSON("file-backing_basic-cache-unsafe");
+    TEST_DISK_TO_JSON("network-qcow2-backing-chain-cache-unsafe");
+    TEST_DISK_TO_JSON("dir-fat-cache");
+
  cleanup:
     virHashFree(diskxmljsondata.schema);
     qemuTestDriverFree(&driver);

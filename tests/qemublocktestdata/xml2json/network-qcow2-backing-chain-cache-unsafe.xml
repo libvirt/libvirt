@@ -1,0 +1,31 @@
+<disk type='network' device='disk'>
+  <driver name='qemu' type='qcow2' cache='unsafe'/>
+  <source protocol='rbd' name='rbdpool/rbdimg'>
+    <host name='host1.example.com'/>
+    <host name='host2.example.com'/>
+    <auth username='testuser-rbd'>
+      <secret type='ceph' usage='testuser-rbd-secret'/>
+    </auth>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='node-a-s'/>
+        <nodename type='format' name='node-b-f'/>
+      </nodenames>
+    </privateData>
+  </source>
+  <backingStore type='network' index='1'>
+    <format type='qcow2'/>
+    <source protocol='iscsi' name='iscsitarget/1'>
+      <host name='example.org'/>
+      <privateData>
+        <nodenames>
+          <nodename type='storage' name='node-b-s'/>
+          <nodename type='format' name='node-b-f'/>
+        </nodenames>
+      </privateData>
+    </source>
+    <backingStore/>
+  </backingStore>
+  <target dev='vda' bus='virtio'/>
+  <alias name='virtio-disk0'/>
+</disk>
