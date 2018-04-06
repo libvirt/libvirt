@@ -5740,17 +5740,3 @@ qemuMigrationSrcFetchMirrorStats(virQEMUDriverPtr driver,
     virHashFree(blockinfo);
     return 0;
 }
-
-
-bool
-qemuMigrationCapsGet(virDomainObjPtr vm,
-                     qemuMonitorMigrationCaps cap)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    bool enabled = false;
-
-    if (priv->migrationCaps)
-        ignore_value(virBitmapGetBit(priv->migrationCaps, cap, &enabled));
-
-    return enabled;
-}

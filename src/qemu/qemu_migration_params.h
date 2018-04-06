@@ -84,4 +84,8 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
                        int asyncJob);
 
+bool
+qemuMigrationCapsGet(virDomainObjPtr vm,
+                     qemuMonitorMigrationCaps cap);
+
 #endif /* __QEMU_MIGRATION_PARAMS_H__ */
