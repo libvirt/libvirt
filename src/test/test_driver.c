@@ -5026,7 +5026,6 @@ testStorageVolLookupByName(virStoragePoolPtr pool,
 
 
 struct storageVolLookupData {
-    virConnectPtr conn;
     const char *key;
     const char *path;
     virStorageVolDefPtr voldef;
@@ -5053,7 +5052,7 @@ testStorageVolLookupByKey(virConnectPtr conn,
     virStoragePoolObjPtr obj;
     virStoragePoolDefPtr def;
     struct storageVolLookupData data = {
-        .conn = conn, .key = key, .voldef = NULL };
+        .key = key, .voldef = NULL };
     virStorageVolPtr vol = NULL;
 
     testDriverLock(privconn);
@@ -5097,7 +5096,7 @@ testStorageVolLookupByPath(virConnectPtr conn,
     virStoragePoolObjPtr obj;
     virStoragePoolDefPtr def;
     struct storageVolLookupData data = {
-        .conn = conn, .path = path, .voldef = NULL };
+        .path = path, .voldef = NULL };
     virStorageVolPtr vol = NULL;
 
     testDriverLock(privconn);

@@ -1520,7 +1520,6 @@ storageVolLookupByName(virStoragePoolPtr pool,
 
 
 struct storageVolLookupData {
-    virConnectPtr conn;
     const char *key;
     char *cleanpath;
     const char *path;
@@ -1547,7 +1546,7 @@ storageVolLookupByKey(virConnectPtr conn,
     virStoragePoolObjPtr obj;
     virStoragePoolDefPtr def;
     struct storageVolLookupData data = {
-        .conn = conn, .key = key, .voldef = NULL };
+        .key = key, .voldef = NULL };
     virStorageVolPtr vol = NULL;
 
     if ((obj = virStoragePoolObjListSearch(driver->pools,
@@ -1627,7 +1626,7 @@ storageVolLookupByPath(virConnectPtr conn,
     virStoragePoolObjPtr obj;
     virStoragePoolDefPtr def;
     struct storageVolLookupData data = {
-        .conn = conn, .path = path, .voldef = NULL };
+        .path = path, .voldef = NULL };
     virStorageVolPtr vol = NULL;
 
     if (!(data.cleanpath = virFileSanitizePath(path)))
