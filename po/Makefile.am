@@ -9,7 +9,7 @@ LANGS := \
 	fr fur ga gl gu he hi hr hu ia \
 	id ilo is it ja ka kk km kn ko \
 	kw_GB kw@kkcor kw kw@uccor ky lt lv mai mk ml \
-	mn mr ms nb nds ne nl nn nso \
+	mn mr ms my nb nds ne nl nn nso \
 	or pa pl pt_BR pt ro ru si sk sl \
 	sq sr@latin sr sv ta te tg th tr tw \
 	uk ur vi wba yo zh_CN zh_HK zh_TW zu
