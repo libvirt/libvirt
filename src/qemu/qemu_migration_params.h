@@ -65,6 +65,9 @@ typedef enum {
 } qemuMigrationParty;
 
 
+virBitmapPtr
+qemuMigrationParamsGetAlwaysOnCaps(qemuMigrationParty party);
+
 qemuMigrationParamsPtr
 qemuMigrationParamsFromFlags(virTypedParameterPtr params,
                              int nparams,

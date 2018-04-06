@@ -33,6 +33,7 @@
 
 #include "qemu_domain.h"
 #include "qemu_migration_cookie.h"
+#include "qemu_migration_params.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -50,7 +51,8 @@ VIR_ENUM_IMPL(qemuMigrationCookieFlag,
               "memory-hotplug",
               "cpu-hotplug",
               "cpu",
-              "allowReboot");
+              "allowReboot",
+              "capabilities");
 
 
 static void
@@ -94,6 +96,18 @@ qemuMigrationCookieNBDFree(qemuMigrationCookieNBDPtr nbd)
 }
 
 
+static void
+qemuMigrationCookieCapsFree(qemuMigrationCookieCapsPtr caps)
+{
+    if (!caps)
+        return;
+
+    virBitmapFree(caps->supported);
+    virBitmapFree(caps->automatic);
+    VIR_FREE(caps);
+}
+
+
 void
 qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
 {
@@ -112,6 +126,7 @@ qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
     VIR_FREE(mig->lockDriver);
     VIR_FREE(mig->jobInfo);
     virCPUDefFree(mig->cpu);
+    qemuMigrationCookieCapsFree(mig->caps);
     VIR_FREE(mig);
 }
 
@@ -550,6 +565,33 @@ qemuMigrationCookieAddAllowReboot(qemuMigrationCookiePtr mig,
 }
 
 
+static int
+qemuMigrationCookieAddCaps(qemuMigrationCookiePtr mig,
+                           virDomainObjPtr vm,
+                           qemuMigrationParty party)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    qemuMigrationCookieCapsFree(mig->caps);
+    if (VIR_ALLOC(mig->caps) < 0)
+        return -1;
+
+    if (priv->migrationCaps)
+        mig->caps->supported = virBitmapNewCopy(priv->migrationCaps);
+    else
+        mig->caps->supported = virBitmapNew(0);
+
+    mig->caps->automatic = qemuMigrationParamsGetAlwaysOnCaps(party);
+
+    if (!mig->caps->supported || !mig->caps->automatic)
+        return -1;
+
+    mig->flags |= QEMU_MIGRATION_COOKIE_CAPS;
+
+    return 0;
+}
+
+
 static void
 qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
                                      qemuMigrationCookieGraphicsPtr grap)
@@ -710,6 +752,33 @@ qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
 }
 
 
+static void
+qemuMigrationCookieCapsXMLFormat(virBufferPtr buf,
+                                 qemuMigrationCookieCapsPtr caps)
+{
+    qemuMigrationCapability cap;
+
+    virBufferAddLit(buf, "<capabilities>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (cap = 0; cap < QEMU_MIGRATION_CAP_LAST; cap++) {
+        bool supported = false;
+        bool automatic = false;
+
+        ignore_value(virBitmapGetBit(caps->supported, cap, &supported));
+        ignore_value(virBitmapGetBit(caps->automatic, cap, &automatic));
+        if (supported) {
+            virBufferAsprintf(buf, "<cap name='%s' auto='%s'/>\n",
+                              qemuMigrationCapabilityTypeToString(cap),
+                              automatic ? "yes" : "no");
+        }
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</capabilities>\n");
+}
+
+
 static int
 qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
                              virBufferPtr buf,
@@ -792,6 +861,9 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
 
     if (mig->flags & QEMU_MIGRATION_COOKIE_ALLOW_REBOOT)
         qemuDomainObjPrivateXMLFormatAllowReboot(buf, mig->allowReboot);
+
+    if (mig->flags & QEMU_MIGRATION_COOKIE_CAPS)
+        qemuMigrationCookieCapsXMLFormat(buf, mig->caps);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</qemu-migration>\n");
@@ -1067,6 +1139,59 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
 }
 
 
+static qemuMigrationCookieCapsPtr
+qemuMigrationCookieCapsXMLParse(xmlXPathContextPtr ctxt)
+{
+    qemuMigrationCookieCapsPtr caps = NULL;
+    xmlNodePtr *nodes = NULL;
+    qemuMigrationCookieCapsPtr ret = NULL;
+    char *name = NULL;
+    char *automatic = NULL;
+    int cap;
+    size_t i;
+    int n;
+
+    if (VIR_ALLOC(caps) < 0)
+        return NULL;
+
+    if (!(caps->supported = virBitmapNew(QEMU_MIGRATION_CAP_LAST)) ||
+        !(caps->automatic = virBitmapNew(QEMU_MIGRATION_CAP_LAST)))
+        goto cleanup;
+
+    if ((n = virXPathNodeSet("./capabilities[1]/cap", ctxt, &nodes)) < 0)
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        if (!(name = virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing migration capability name"));
+            goto cleanup;
+        }
+
+        if ((cap = qemuMigrationCapabilityTypeFromString(name)) < 0)
+            VIR_DEBUG("unknown migration capability '%s'", name);
+        else
+            ignore_value(virBitmapSetBit(caps->supported, cap));
+
+        if ((automatic = virXMLPropString(nodes[i], "auto")) &&
+            STREQ(automatic, "yes"))
+            ignore_value(virBitmapSetBit(caps->automatic, cap));
+
+        VIR_FREE(name);
+        VIR_FREE(automatic);
+    }
+
+    VIR_STEAL_PTR(ret, caps);
+
+ cleanup:
+    qemuMigrationCookieCapsFree(caps);
+    VIR_FREE(nodes);
+    VIR_FREE(name);
+    VIR_FREE(automatic);
+    return ret;
+}
+
+
 static int
 qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                             virQEMUDriverPtr driver,
@@ -1246,6 +1371,10 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         qemuDomainObjPrivateXMLParseAllowReboot(ctxt, &mig->allowReboot) < 0)
         goto error;
 
+    if (flags & QEMU_MIGRATION_COOKIE_CAPS &&
+        !(mig->caps = qemuMigrationCookieCapsXMLParse(ctxt)))
+        goto error;
+
     virObjectUnref(caps);
     return 0;
 
@@ -1286,6 +1415,7 @@ int
 qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
                         virQEMUDriverPtr driver,
                         virDomainObjPtr dom,
+                        qemuMigrationParty party,
                         char **cookieout,
                         int *cookieoutlen,
                         unsigned int flags)
@@ -1328,6 +1458,10 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
 
     if (flags & QEMU_MIGRATION_COOKIE_ALLOW_REBOOT)
         qemuMigrationCookieAddAllowReboot(mig, dom);
+
+    if (flags & QEMU_MIGRATION_COOKIE_CAPS &&
+        qemuMigrationCookieAddCaps(mig, dom, party) < 0)
+        return -1;
 
     if (!(*cookieout = qemuMigrationCookieXMLFormatStr(driver, mig)))
         return -1;

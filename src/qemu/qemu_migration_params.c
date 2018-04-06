@@ -153,6 +153,26 @@ static const qemuMigrationParamType qemuMigrationParamTypes[] = {
 verify(ARRAY_CARDINALITY(qemuMigrationParamTypes) == QEMU_MIGRATION_PARAM_LAST);
 
 
+virBitmapPtr
+qemuMigrationParamsGetAlwaysOnCaps(qemuMigrationParty party)
+{
+    virBitmapPtr caps = NULL;
+    size_t i;
+
+    if (!(caps = virBitmapNew(QEMU_MIGRATION_CAP_LAST)))
+        return NULL;
+
+    for (i = 0; i < ARRAY_CARDINALITY(qemuMigrationParamsAlwaysOn); i++) {
+        if (!(qemuMigrationParamsAlwaysOn[i].party & party))
+            continue;
+
+        ignore_value(virBitmapSetBit(caps, qemuMigrationParamsAlwaysOn[i].cap));
+    }
+
+    return caps;
+}
+
+
 static qemuMigrationParamsPtr
 qemuMigrationParamsNew(void)
 {

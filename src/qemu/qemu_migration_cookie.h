@@ -19,6 +19,8 @@
 #ifndef __QEMU_MIGRATION_COOKIE_H__
 # define __QEMU_MIGRATION_COOKIE_H__
 
+# include "qemu_migration_params.h"
+
 typedef enum {
     QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS,
     QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE,
@@ -30,6 +32,7 @@ typedef enum {
     QEMU_MIGRATION_COOKIE_FLAG_CPU_HOTPLUG,
     QEMU_MIGRATION_COOKIE_FLAG_CPU,
     QEMU_MIGRATION_COOKIE_FLAG_ALLOW_REBOOT,
+    QEMU_MIGRATION_COOKIE_FLAG_CAPS,
 
     QEMU_MIGRATION_COOKIE_FLAG_LAST
 } qemuMigrationCookieFlags;
@@ -47,6 +50,7 @@ typedef enum {
     QEMU_MIGRATION_COOKIE_CPU_HOTPLUG = (1 << QEMU_MIGRATION_COOKIE_FLAG_CPU_HOTPLUG),
     QEMU_MIGRATION_COOKIE_CPU = (1 << QEMU_MIGRATION_COOKIE_FLAG_CPU),
     QEMU_MIGRATION_COOKIE_ALLOW_REBOOT = (1 << QEMU_MIGRATION_COOKIE_FLAG_ALLOW_REBOOT),
+    QEMU_MIGRATION_COOKIE_CAPS = (1 << QEMU_MIGRATION_COOKIE_FLAG_CAPS),
 } qemuMigrationCookieFeatures;
 
 typedef struct _qemuMigrationCookieGraphics qemuMigrationCookieGraphics;
@@ -92,6 +96,13 @@ struct _qemuMigrationCookieNBD {
     } *disks;
 };
 
+typedef struct _qemuMigrationCookieCaps qemuMigrationCookieCaps;
+typedef qemuMigrationCookieCaps *qemuMigrationCookieCapsPtr;
+struct _qemuMigrationCookieCaps {
+    virBitmapPtr supported;
+    virBitmapPtr automatic;
+};
+
 typedef struct _qemuMigrationCookie qemuMigrationCookie;
 typedef qemuMigrationCookie *qemuMigrationCookiePtr;
 struct _qemuMigrationCookie {
@@ -132,6 +143,9 @@ struct _qemuMigrationCookie {
 
     /* If flags & QEMU_MIGRATION_COOKIE_ALLOW_REBOOT */
     virTristateBool allowReboot;
+
+    /* If flags & QEMU_MIGRATION_COOKIE_CAPS */
+    qemuMigrationCookieCapsPtr caps;
 };
 
 
@@ -139,6 +153,7 @@ int
 qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
                         virQEMUDriverPtr driver,
                         virDomainObjPtr dom,
+                        qemuMigrationParty party,
                         char **cookieout,
                         int *cookieoutlen,
                         unsigned int flags);
