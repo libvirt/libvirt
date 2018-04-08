@@ -40,7 +40,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <regex.h>
-#include <dirent.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
@@ -48,7 +47,8 @@
 #ifdef __linux__
 # include <linux/if_tun.h>    /* IFF_TUN, IFF_NO_PI */
 #elif defined(__FreeBSD__)
-# include <net/if_tap.h>
+# include <net/if_mib.h>
+# include <sys/sysctl.h>
 #endif
 #if defined(HAVE_GETIFADDRS) && defined(AF_LINK)
 # include <ifaddrs.h>
@@ -101,55 +101,44 @@ virNetDevTapGetName(int tapfd ATTRIBUTE_UNUSED, char **ifname ATTRIBUTE_UNUSED)
 char*
 virNetDevTapGetRealDeviceName(char *ifname ATTRIBUTE_UNUSED)
 {
-#ifdef TAPGIFNAME
+#ifdef IFDATA_DRIVERNAME
+    int ifindex = 0;
+    int name[6];
+    size_t len = 0;
     char *ret = NULL;
-    struct dirent *dp;
-    DIR *dirp = NULL;
-    char *devpath = NULL;
-    int fd;
 
-    if (virDirOpen(&dirp, "/dev") < 0)
+    if ((ifindex = if_nametoindex(ifname)) == 0) {
+        virReportSystemError(errno,
+                             _("Unable to get interface index for '%s'"),
+                             ifname);
         return NULL;
-
-    while (virDirRead(dirp, &dp, "/dev") > 0) {
-        if (STRPREFIX(dp->d_name, "tap")) {
-            struct ifreq ifr;
-            if (virAsprintf(&devpath, "/dev/%s", dp->d_name) < 0)
-                goto cleanup;
-            if ((fd = open(devpath, O_RDWR)) < 0) {
-                if (errno == EBUSY) {
-                    VIR_FREE(devpath);
-                    continue;
-                }
-
-                virReportSystemError(errno, _("Unable to open '%s'"), devpath);
-                goto cleanup;
-            }
-
-            if (ioctl(fd, TAPGIFNAME, (void *)&ifr) < 0) {
-                virReportSystemError(errno, "%s",
-                                     _("Unable to query tap interface name"));
-                goto cleanup;
-            }
-
-            if (STREQ(ifname, ifr.ifr_name)) {
-                /* we can ignore the return value
-                 * because we still have nothing
-                 * to do but return;
-                 */
-                ignore_value(VIR_STRDUP(ret, dp->d_name));
-                goto cleanup;
-            }
-
-            VIR_FREE(devpath);
-            VIR_FORCE_CLOSE(fd);
-        }
     }
 
- cleanup:
-    VIR_FREE(devpath);
-    VIR_FORCE_CLOSE(fd);
-    VIR_DIR_CLOSE(dirp);
+    name[0] = CTL_NET;
+    name[1] = PF_LINK;
+    name[2] = NETLINK_GENERIC;
+    name[3] = IFMIB_IFDATA;
+    name[4] = ifindex;
+    name[5] = IFDATA_DRIVERNAME;
+
+    if (sysctl(name, 6, NULL, &len, 0, 0) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to get driver name for '%s'"),
+                             ifname);
+        return NULL;
+    }
+
+    if (VIR_ALLOC_N(ret, len) < 0)
+        return NULL;
+
+    if (sysctl(name, 6, ret, &len, 0, 0) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to get driver name for '%s'"),
+                             ifname);
+        VIR_FREE(ret);
+        return NULL;
+    }
+
     return ret;
 #else
     return NULL;
