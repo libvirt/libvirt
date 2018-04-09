@@ -6051,6 +6051,39 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
 
 
 /**
+ * qemuProcessGenID:
+ * @vm: Pointer to domain object
+ * @flags: qemuProcessStartFlags
+ *
+ * If this domain is requesting to use genid, then update the GUID
+ * value if the VIR_QEMU_PROCESS_START_GEN_VMID flag is set. This
+ * flag is set on specific paths during domain start processing when
+ * there is the possibility that the VM is potentially re-executing
+ * something that has already been executed before.
+ */
+static int
+qemuProcessGenID(virDomainObjPtr vm,
+                 unsigned int flags)
+{
+    if (!vm->def->genidRequested)
+        return 0;
+
+    /* If we are coming from a path where we must provide a new gen id
+     * value regardless of whether it was previously generated or provided,
+     * then generate a new GUID value before we build the command line. */
+    if (flags & VIR_QEMU_PROCESS_START_GEN_VMID) {
+        if (virUUIDGenerate(vm->def->genid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to regenerate genid"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+/**
  * qemuProcessLaunch:
  *
  * Launch a new QEMU process with stopped virtual CPUs.
@@ -6102,7 +6135,8 @@ qemuProcessLaunch(virConnectPtr conn,
     virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
                   VIR_QEMU_PROCESS_START_PAUSED |
                   VIR_QEMU_PROCESS_START_AUTODESTROY |
-                  VIR_QEMU_PROCESS_START_NEW, -1);
+                  VIR_QEMU_PROCESS_START_NEW |
+                  VIR_QEMU_PROCESS_START_GEN_VMID, -1);
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -6125,6 +6159,9 @@ qemuProcessLaunch(virConnectPtr conn,
                                             QEMU_DOMAIN_LOG_CONTEXT_MODE_START)))
         goto cleanup;
     logfile = qemuDomainLogContextGetWriteFD(logCtxt);
+
+    if (qemuProcessGenID(vm, flags) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(driver,
@@ -6491,7 +6528,8 @@ qemuProcessStart(virConnectPtr conn,
 
     virCheckFlagsGoto(VIR_QEMU_PROCESS_START_COLD |
                       VIR_QEMU_PROCESS_START_PAUSED |
-                      VIR_QEMU_PROCESS_START_AUTODESTROY, cleanup);
+                      VIR_QEMU_PROCESS_START_AUTODESTROY |
+                      VIR_QEMU_PROCESS_START_GEN_VMID, cleanup);
 
     if (!migrateFrom && !snapshot)
         flags |= VIR_QEMU_PROCESS_START_NEW;
