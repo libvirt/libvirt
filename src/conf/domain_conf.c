@@ -18920,6 +18920,34 @@ virDomainDefParseXML(xmlDocPtr xml,
         VIR_FREE(tmp);
     }
 
+    /* Extract domain genid - a genid can either be provided or generated */
+    if ((n = virXPathNodeSet("./genid", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n > 0) {
+        if (n != 1) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("element 'genid' can only appear once"));
+            goto error;
+        }
+        def->genidRequested = true;
+        if (!(tmp = virXPathString("string(./genid)", ctxt))) {
+            if (virUUIDGenerate(def->genid) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("Failed to generate genid"));
+                goto error;
+            }
+            def->genidGenerated = true;
+        } else {
+            if (virUUIDParse(tmp, def->genid) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("malformed genid element"));
+                goto error;
+            }
+        }
+    }
+    VIR_FREE(nodes);
+
     /* Extract short description of domain (title) */
     def->title = virXPathString("string(./title[1])", ctxt);
     if (def->title && strchr(def->title, '\n')) {
@@ -22031,6 +22059,25 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain uuid %s does not match source %s"),
                        uuiddst, uuidsrc);
+        goto error;
+    }
+
+    if (src->genidRequested != dst->genidRequested) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target domain requested genid does not match source"));
+        goto error;
+    }
+
+    if (src->genidRequested &&
+        memcmp(src->genid, dst->genid, VIR_UUID_BUFLEN) != 0) {
+        char guidsrc[VIR_UUID_STRING_BUFLEN];
+        char guiddst[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(src->genid, guidsrc);
+        virUUIDFormat(dst->genid, guiddst);
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain genid %s does not match source %s"),
+                       guiddst, guidsrc);
         goto error;
     }
 
@@ -26751,6 +26798,13 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
     virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
+
+    if (def->genidRequested) {
+        char genidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(def->genid, genidstr);
+        virBufferAsprintf(buf, "<genid>%s</genid>\n", genidstr);
+    }
 
     virBufferEscapeString(buf, "<title>%s</title>\n", def->title);
 

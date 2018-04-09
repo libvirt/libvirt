@@ -502,6 +502,14 @@
           <ref name="UUID"/>
         </element>
       </optional>
+      <optional>
+        <element name="genid">
+          <choice>
+            <ref name="UUID"/>
+            <empty/>
+          </choice>
+        </element>
+      </optional>
     </interleave>
   </define>
   <define name="idmap">

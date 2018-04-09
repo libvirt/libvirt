@@ -276,6 +276,8 @@ mymain(void)
     setenv("PATH", "/bin", 1);
 
     DO_TEST("minimal", NONE);
+    DO_TEST("genid", NONE);
+    DO_TEST("genid-auto", NONE);
     DO_TEST("machine-core-on", NONE);
     DO_TEST("machine-core-off", NONE);
     DO_TEST("machine-loadparm-multiple-disks-nets-s390", NONE);
@@ -1220,7 +1222,8 @@ mymain(void)
 }
 
 VIR_TEST_MAIN_PRELOAD(mymain,
-                      abs_builddir "/.libs/virpcimock.so")
+                      abs_builddir "/.libs/virpcimock.so",
+                      abs_builddir "/.libs/virrandommock.so")
 
 #else
 
