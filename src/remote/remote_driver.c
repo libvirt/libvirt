@@ -738,51 +738,41 @@ doRemoteOpen(virConnectPtr conn,
      * URIs we don't care about */
 
     if (conn->uri) {
-        if (!conn->uri->scheme) {
-            /* This is the ///var/lib/xen/xend-socket local path style */
-            if (!conn->uri->path)
-                return VIR_DRV_OPEN_DECLINED;
-            if (conn->uri->path[0] != '/')
-                return VIR_DRV_OPEN_DECLINED;
+        transport_str = get_transport_from_scheme(conn->uri->scheme);
 
-            transport = trans_unix;
+        if (!transport_str) {
+            if (conn->uri->server)
+                transport = trans_tls;
+            else
+                transport = trans_unix;
         } else {
-            transport_str = get_transport_from_scheme(conn->uri->scheme);
-
-            if (!transport_str) {
-                if (conn->uri->server)
-                    transport = trans_tls;
-                else
-                    transport = trans_unix;
-            } else {
-                if (STRCASEEQ(transport_str, "tls")) {
-                    transport = trans_tls;
-                } else if (STRCASEEQ(transport_str, "unix")) {
-                    if (conn->uri->server) {
-                        virReportError(VIR_ERR_INVALID_ARG,
-                                       _("using unix socket and remote "
-                                         "server '%s' is not supported."),
-                                       conn->uri->server);
-                        return VIR_DRV_OPEN_ERROR;
-                    } else {
-                        transport = trans_unix;
-                    }
-                } else if (STRCASEEQ(transport_str, "ssh")) {
-                    transport = trans_ssh;
-                } else if (STRCASEEQ(transport_str, "libssh2")) {
-                    transport = trans_libssh2;
-                } else if (STRCASEEQ(transport_str, "ext")) {
-                    transport = trans_ext;
-                } else if (STRCASEEQ(transport_str, "tcp")) {
-                    transport = trans_tcp;
-                } else if (STRCASEEQ(transport_str, "libssh")) {
-                    transport = trans_libssh;
-                } else {
-                    virReportError(VIR_ERR_INVALID_ARG, "%s",
-                                   _("remote_open: transport in URL not recognised "
-                                     "(should be tls|unix|ssh|ext|tcp|libssh2)"));
+            if (STRCASEEQ(transport_str, "tls")) {
+                transport = trans_tls;
+            } else if (STRCASEEQ(transport_str, "unix")) {
+                if (conn->uri->server) {
+                    virReportError(VIR_ERR_INVALID_ARG,
+                                   _("using unix socket and remote "
+                                     "server '%s' is not supported."),
+                                   conn->uri->server);
                     return VIR_DRV_OPEN_ERROR;
+                } else {
+                    transport = trans_unix;
                 }
+            } else if (STRCASEEQ(transport_str, "ssh")) {
+                transport = trans_ssh;
+            } else if (STRCASEEQ(transport_str, "libssh2")) {
+                transport = trans_libssh2;
+            } else if (STRCASEEQ(transport_str, "ext")) {
+                transport = trans_ext;
+            } else if (STRCASEEQ(transport_str, "tcp")) {
+                transport = trans_tcp;
+            } else if (STRCASEEQ(transport_str, "libssh")) {
+                transport = trans_libssh;
+            } else {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               _("remote_open: transport in URL not recognised "
+                                 "(should be tls|unix|ssh|ext|tcp|libssh2)"));
+                return VIR_DRV_OPEN_ERROR;
             }
         }
     } else {

@@ -905,7 +905,7 @@ virConnectGetDefaultURI(virConfPtr conf,
 static int
 virConnectCheckURIMissingSlash(const char *uristr, virURIPtr uri)
 {
-    if (!uri->scheme || !uri->path || !uri->server)
+    if (!uri->path || !uri->server)
         return 0;
 
     /* To avoid false positives, only check drivers that mandate
@@ -1018,6 +1018,13 @@ virConnectOpenInternal(const char *name,
                   NULLSTR(ret->uri->user), ret->uri->port,
                   NULLSTR(ret->uri->path));
 
+        if (ret->uri->scheme == NULL) {
+            virReportError(VIR_ERR_NO_CONNECT,
+                           _("URI '%s' does not include a driver name"),
+                           name);
+            goto failed;
+        }
+
         if (virConnectCheckURIMissingSlash(uristr,
                                            ret->uri) < 0) {
             goto failed;
@@ -1038,7 +1045,7 @@ virConnectOpenInternal(const char *name,
          * not being able to connect to libvirtd or not being able to find
          * certificates. */
         if (STREQ(virConnectDriverTab[i]->hypervisorDriver->name, "remote") &&
-            ret->uri != NULL && ret->uri->scheme != NULL &&
+            ret->uri != NULL &&
             (
 #ifndef WITH_PHYP
              STRCASEEQ(ret->uri->scheme, "phyp") ||
@@ -1079,10 +1086,6 @@ virConnectOpenInternal(const char *name,
             size_t s;
             if (!ret->uri) {
                 VIR_DEBUG("No URI, skipping driver with URI whitelist");
-                continue;
-            }
-            if (!ret->uri->scheme) {
-                VIR_DEBUG("No URI scheme, skipping driver with URI whitelist");
                 continue;
             }
             VIR_DEBUG("Checking for supported URI schemes");
