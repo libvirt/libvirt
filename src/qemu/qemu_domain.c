@@ -109,6 +109,7 @@ VIR_ENUM_IMPL(qemuDomainNamespace, QEMU_DOMAIN_NS_LAST,
 #define PROC_MOUNTS "/proc/mounts"
 #define DEVPREFIX "/dev/"
 #define DEV_VFIO "/dev/vfio/vfio"
+#define DEVICE_MAPPER_CONTROL_PATH "/dev/mapper/control"
 
 
 struct _qemuDomainLogContext {
@@ -10213,6 +10214,11 @@ qemuDomainSetupDisk(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
             goto cleanup;
     }
 
+    /* qemu-pr-helper might require access to /dev/mapper/control. */
+    if (virStoragePRDefIsEnabled(disk->src->pr) &&
+        qemuDomainCreateDevice(DEVICE_MAPPER_CONTROL_PATH, data, true) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     VIR_FREE(dst);
@@ -11224,6 +11230,7 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
     virStorageSourcePtr next;
     const char **paths = NULL;
     size_t npaths = 0;
+    char *dmPath = NULL;
     int ret = -1;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
@@ -11240,11 +11247,18 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
             goto cleanup;
     }
 
+    /* qemu-pr-helper might require access to /dev/mapper/control. */
+    if (virStoragePRDefIsEnabled(src->pr) &&
+        (VIR_STRDUP(dmPath, DEVICE_MAPPER_CONTROL_PATH) < 0 ||
+         VIR_APPEND_ELEMENT_COPY(paths, npaths, dmPath) < 0))
+        goto cleanup;
+
     if (qemuDomainNamespaceMknodPaths(vm, paths, npaths) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
+    VIR_FREE(dmPath);
     VIR_FREE(paths);
     return ret;
 }
