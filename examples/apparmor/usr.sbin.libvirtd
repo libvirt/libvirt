@@ -65,6 +65,10 @@
   signal (read, send) peer=libvirt-*,
   signal (send) set=("kill", "term") peer=unconfined,
 
+  # For communication/control to qemu-bridge-helper
+  unix (send, receive) type=stream addr=none peer=(label=/usr/sbin/libvirtd//qemu_bridge_helper),
+  signal (send) set=("term") peer=/usr/sbin/libvirtd//qemu_bridge_helper,
+
   # Very lenient profile for libvirtd since we want to first focus on confining
   # the guests. Guests will have a very restricted profile.
   / r,
@@ -111,6 +115,10 @@
    capability net_admin,
 
    network inet stream,
+
+   # For communication/control from libvirtd
+   unix (send, receive) type=stream addr=none peer=(label=/usr/sbin/libvirtd),
+   signal (receive) set=("term") peer=/usr/sbin/libvirtd,
 
    /dev/net/tun rw,
    /etc/qemu/** r,
