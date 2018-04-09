@@ -851,6 +851,7 @@ struct _virStorageBackendQemuImgInfo {
     int format;
     const char *path;
     unsigned long long size_arg;
+    unsigned long long allocation;
     bool encryption;
     bool preallocate;
     const char *compat;
@@ -884,8 +885,12 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr enc,
                               virStorageFileFormatTypeToString(info.backingFormat));
         if (info.encryption)
             virBufferAddLit(&buf, "encryption=on,");
-        if (info.preallocate)
-            virBufferAddLit(&buf, "preallocation=metadata,");
+        if (info.preallocate) {
+            if (info.size_arg > info.allocation)
+                virBufferAddLit(&buf, "preallocation=metadata,");
+            else
+                virBufferAddLit(&buf, "preallocation=falloc,");
+        }
     }
 
     if (info.nocow)
@@ -1182,6 +1187,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
     struct _virStorageBackendQemuImgInfo info = {
         .format = vol->target.format,
         .path = vol->target.path,
+        .allocation = vol->target.allocation,
         .encryption = vol->target.encryption != NULL,
         .preallocate = !!(flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA),
         .compat = vol->target.compat,

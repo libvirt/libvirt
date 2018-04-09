@@ -1,4 +1,4 @@
 qemu-img convert -f raw -O qcow2 \
--o encryption=on,preallocation=metadata \
+-o encryption=on,preallocation=falloc \
 /var/lib/libvirt/images/sparse.img \
 /var/lib/libvirt/images/OtherDemo.img
