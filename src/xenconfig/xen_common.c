@@ -202,7 +202,7 @@ xenConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid)
     }
 
     if (!(val = virConfGetValue(conf, name))) {
-        if (virUUIDGenerate(uuid)) {
+        if (virUUIDGenerate(uuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Failed to generate UUID"));
             return -1;

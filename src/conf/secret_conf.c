@@ -177,7 +177,7 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
 
     uuidstr = virXPathString("string(./uuid)", ctxt);
     if (!uuidstr) {
-        if (virUUIDGenerate(def->uuid)) {
+        if (virUUIDGenerate(def->uuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Failed to generate UUID"));
             goto cleanup;
