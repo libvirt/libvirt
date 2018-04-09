@@ -11196,7 +11196,7 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
                              virStorageSourcePtr src)
 {
     virStorageSourcePtr next;
-    char **paths = NULL;
+    const char **paths = NULL;
     size_t npaths = 0;
     int ret = -1;
 
@@ -11214,7 +11214,7 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
             goto cleanup;
     }
 
-    if (qemuDomainNamespaceMknodPaths(vm, (const char **)paths, npaths) < 0)
+    if (qemuDomainNamespaceMknodPaths(vm, paths, npaths) < 0)
         return -1;
 
     ret = 0;
