@@ -147,6 +147,8 @@ int virTestMain(int argc,
     }
 
 virCapsPtr virTestGenericCapsInit(void);
+int virTestCapsBuildNUMATopology(virCapsPtr caps,
+                                 int seq);
 virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void);
 
 typedef enum {

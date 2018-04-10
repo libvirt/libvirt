@@ -1228,6 +1228,57 @@ virCapsPtr virTestGenericCapsInit(void)
     return NULL;
 }
 
+
+#define MAX_CELLS 4
+#define MAX_CPUS_IN_CELL 2
+#define MAX_MEM_IN_CELL 2097152
+
+/*
+ * Build NUMA topology with cell id starting from (0 + seq)
+ * for testing
+ */
+int
+virTestCapsBuildNUMATopology(virCapsPtr caps,
+                             int seq)
+{
+    virCapsHostNUMACellCPUPtr cell_cpus = NULL;
+    int core_id, cell_id;
+    int id;
+
+    id = 0;
+    for (cell_id = 0; cell_id < MAX_CELLS; cell_id++) {
+        if (VIR_ALLOC_N(cell_cpus, MAX_CPUS_IN_CELL) < 0)
+            goto error;
+
+        for (core_id = 0; core_id < MAX_CPUS_IN_CELL; core_id++) {
+            cell_cpus[core_id].id = id + core_id;
+            cell_cpus[core_id].socket_id = cell_id + seq;
+            cell_cpus[core_id].core_id = id + core_id;
+            if (!(cell_cpus[core_id].siblings =
+                  virBitmapNew(MAX_CPUS_IN_CELL)))
+                goto error;
+            ignore_value(virBitmapSetBit(cell_cpus[core_id].siblings, id));
+        }
+        id++;
+
+        if (virCapabilitiesAddHostNUMACell(caps, cell_id + seq,
+                                           MAX_MEM_IN_CELL,
+                                           MAX_CPUS_IN_CELL, cell_cpus,
+                                           VIR_ARCH_NONE, NULL,
+                                           VIR_ARCH_NONE, NULL) < 0)
+           goto error;
+
+        cell_cpus = NULL;
+    }
+
+    return 0;
+
+ error:
+    virCapabilitiesClearHostNUMACellCPUTopology(cell_cpus, MAX_CPUS_IN_CELL);
+    VIR_FREE(cell_cpus);
+    return -1;
+}
+
 static virDomainDefParserConfig virTestGenericDomainDefParserConfig = {
     .features = VIR_DOMAIN_DEF_FEATURE_INDIVIDUAL_VCPUS,
 };

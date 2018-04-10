@@ -400,7 +400,12 @@ virCapsPtr testQemuCapsInit(void)
 
     qemuTestSetHostCPU(caps, NULL);
 
-    caps->host.nnumaCell_max = 4;
+    /*
+     * Build a NUMA topology with cell_id (NUMA node id
+     * being 3(0 + 3),4(1 + 3), 5 and 6
+     */
+    if (virTestCapsBuildNUMATopology(caps, 3) < 0)
+        goto cleanup;
 
     if (testQemuAddI686Guest(caps) < 0)
         goto cleanup;
