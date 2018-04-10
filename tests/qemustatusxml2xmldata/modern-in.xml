@@ -252,7 +252,7 @@
     <device alias='usb'/>
     <device alias='ide0-0-0'/>
   </devices>
-  <numad nodeset='0' cpuset='0-7'/>
+  <numad nodeset='6' cpuset='0-7'/>
   <libDir path='/var/lib/libvirt/qemu/domain-1-upstream'/>
   <channelTargetDir path='/var/lib/libvirt/qemu/channel/target/domain-1-upstream'/>
   <chardevStdioLogd/>

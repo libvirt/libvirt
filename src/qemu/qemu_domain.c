@@ -2236,6 +2236,8 @@ qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
     virCapsPtr caps = NULL;
     char *nodeset;
     char *cpuset;
+    int nodesetSize = 0;
+    size_t i;
     int ret = -1;
 
     nodeset = virXPathString("string(./numad/@nodeset)", ctxt);
@@ -2247,8 +2249,14 @@ qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
+    /* Figure out how big the nodeset bitmap needs to be.
+     * This is necessary because NUMA node IDs are not guaranteed to
+     * start from 0 or be densely allocated */
+    for (i = 0; i < caps->host.nnumaCell; i++)
+        nodesetSize = MAX(nodesetSize, caps->host.numaCell[i]->num + 1);
+
     if (nodeset &&
-        virBitmapParse(nodeset, &priv->autoNodeset, caps->host.nnumaCell_max) < 0)
+        virBitmapParse(nodeset, &priv->autoNodeset, nodesetSize) < 0)
         goto cleanup;
 
     if (cpuset) {
