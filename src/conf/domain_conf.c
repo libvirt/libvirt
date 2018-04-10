@@ -20820,8 +20820,7 @@ virDomainDiskDefCheckABIStability(virDomainDiskDefPtr src,
 
     }
 
-    if (src->src->readonly != dst->src->readonly ||
-        src->src->shared != dst->src->shared) {
+    if (src->src->readonly != dst->src->readonly) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Target disk access mode does not match source"));
         return false;
