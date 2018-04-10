@@ -9724,6 +9724,21 @@ qemuBuildCommandLineValidate(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuBuildSeccompSandboxCommandLine(virCommandPtr cmd,
+                                   virQEMUDriverConfigPtr cfg,
+                                   virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED)
+{
+    if (cfg->seccompSandbox == 0)
+        virCommandAddArgList(cmd, "-sandbox", "off", NULL);
+    else if (cfg->seccompSandbox > 0)
+        virCommandAddArgList(cmd, "-sandbox", "on", NULL);
+
+    return 0;
+
+}
+
+
 /*
  * Constructs a argv suitable for launching qemu with config defined
  * for a given virtual machine.
@@ -9954,10 +9969,8 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
                                  ? qemucmd->env_value[i] : "");
     }
 
-    if (cfg->seccompSandbox == 0)
-        virCommandAddArgList(cmd, "-sandbox", "off", NULL);
-    else if (cfg->seccompSandbox > 0)
-        virCommandAddArgList(cmd, "-sandbox", "on", NULL);
+    if (qemuBuildSeccompSandboxCommandLine(cmd, cfg, qemuCaps) < 0)
+        goto error;
 
     if (qemuBuildPanicCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
