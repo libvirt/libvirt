@@ -41,12 +41,6 @@ VIR_LOG_INIT("util.hash");
 
 /* #define DEBUG_GROW */
 
-#define virHashIterationError(ret) \
-    do { \
-        VIR_ERROR(_("Hash operation not allowed during iteration")); \
-        return ret; \
-    } while (0)
-
 /*
  * A single entry in the hash table
  */
@@ -66,10 +60,6 @@ struct _virHashTable {
     uint32_t seed;
     size_t size;
     size_t nbElems;
-    /* True iff we are iterating over hash entries. */
-    bool iterating;
-    /* Pointer to the current entry during iteration. */
-    virHashEntryPtr current;
     virHashDataFree dataFree;
     virHashKeyCode keyCode;
     virHashKeyEqual keyEqual;
@@ -339,9 +329,6 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
     if ((table == NULL) || (name == NULL))
         return -1;
 
-    if (table->iterating)
-        virHashIterationError(-1);
-
     key = virHashComputeKey(table, name);
 
     /* Check for duplicate entry */
@@ -551,9 +538,6 @@ virHashRemoveEntry(virHashTablePtr table, const void *name)
     nextptr = table->table + virHashComputeKey(table, name);
     for (entry = *nextptr; entry; entry = entry->next) {
         if (table->keyEqual(entry->name, name)) {
-            if (table->iterating && table->current != entry)
-                virHashIterationError(-1);
-
             if (table->dataFree)
                 table->dataFree(entry->payload, entry->name);
             if (table->keyFree)
@@ -593,18 +577,11 @@ virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
     if (table == NULL || iter == NULL)
         return -1;
 
-    if (table->iterating)
-        virHashIterationError(-1);
-
-    table->iterating = true;
-    table->current = NULL;
     for (i = 0; i < table->size; i++) {
         virHashEntryPtr entry = table->table[i];
         while (entry) {
             virHashEntryPtr next = entry->next;
-            table->current = entry;
             ret = iter(entry->payload, entry->name, data);
-            table->current = NULL;
 
             if (ret < 0)
                 goto cleanup;
@@ -615,7 +592,6 @@ virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
 
     ret = 0;
  cleanup:
-    table->iterating = false;
     return ret;
 }
 
@@ -643,11 +619,6 @@ virHashRemoveSet(virHashTablePtr table,
     if (table == NULL || iter == NULL)
         return -1;
 
-    if (table->iterating)
-        virHashIterationError(-1);
-
-    table->iterating = true;
-    table->current = NULL;
     for (i = 0; i < table->size; i++) {
         virHashEntryPtr *nextptr = table->table + i;
 
@@ -667,7 +638,6 @@ virHashRemoveSet(virHashTablePtr table,
             }
         }
     }
-    table->iterating = false;
 
     return count;
 }
@@ -723,23 +693,16 @@ void *virHashSearch(const virHashTable *ctable,
     if (table == NULL || iter == NULL)
         return NULL;
 
-    if (table->iterating)
-        virHashIterationError(NULL);
-
-    table->iterating = true;
-    table->current = NULL;
     for (i = 0; i < table->size; i++) {
         virHashEntryPtr entry;
         for (entry = table->table[i]; entry; entry = entry->next) {
             if (iter(entry->payload, entry->name, data)) {
-                table->iterating = false;
                 if (name)
                     *name = table->keyCopy(entry->name);
                 return entry->payload;
             }
         }
     }
-    table->iterating = false;
 
     return NULL;
 }

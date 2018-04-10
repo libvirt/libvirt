@@ -221,32 +221,6 @@ testHashRemoveForEachAll(void *payload ATTRIBUTE_UNUSED,
 }
 
 
-const int testHashCountRemoveForEachForbidden = ARRAY_CARDINALITY(uuids);
-
-static int
-testHashRemoveForEachForbidden(void *payload ATTRIBUTE_UNUSED,
-                               const void *name,
-                               void *data)
-{
-    virHashTablePtr hash = data;
-    size_t i;
-
-    for (i = 0; i < ARRAY_CARDINALITY(uuids_subset); i++) {
-        if (STREQ(uuids_subset[i], name)) {
-            int next = (i + 1) % ARRAY_CARDINALITY(uuids_subset);
-
-            if (virHashRemoveEntry(hash, uuids_subset[next]) == 0) {
-                VIR_TEST_VERBOSE(
-                        "\nentry \"%s\" should not be allowed to be removed",
-                        uuids_subset[next]);
-            }
-            break;
-        }
-    }
-    return 0;
-}
-
-
 static int
 testHashRemoveForEach(const void *data)
 {
@@ -294,61 +268,6 @@ testHashSteal(const void *data ATTRIBUTE_UNUSED)
 
     if (testHashCheckCount(hash, count) < 0)
         goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    virHashFree(hash);
-    return ret;
-}
-
-
-static int
-testHashIter(void *payload ATTRIBUTE_UNUSED,
-             const void *name ATTRIBUTE_UNUSED,
-             void *data ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-static int
-testHashForEachIter(void *payload ATTRIBUTE_UNUSED,
-                    const void *name ATTRIBUTE_UNUSED,
-                    void *data)
-{
-    virHashTablePtr hash = data;
-
-    if (virHashAddEntry(hash, uuids_new[0], NULL) == 0)
-        VIR_TEST_VERBOSE("\nadding entries in ForEach should be forbidden");
-
-    if (virHashUpdateEntry(hash, uuids_new[0], NULL) == 0)
-        VIR_TEST_VERBOSE("\nupdating entries in ForEach should be forbidden");
-
-    if (virHashSteal(hash, uuids_new[0]) != NULL)
-        VIR_TEST_VERBOSE("\nstealing entries in ForEach should be forbidden");
-
-    if (virHashSteal(hash, uuids_new[0]) != NULL)
-        VIR_TEST_VERBOSE("\nstealing entries in ForEach should be forbidden");
-
-    if (virHashForEach(hash, testHashIter, NULL) >= 0)
-        VIR_TEST_VERBOSE("\niterating through hash in ForEach"
-                " should be forbidden");
-    return 0;
-}
-
-static int
-testHashForEach(const void *data ATTRIBUTE_UNUSED)
-{
-    virHashTablePtr hash;
-    int ret = -1;
-
-    if (!(hash = testHashInit(0)))
-        return -1;
-
-    if (virHashForEach(hash, testHashForEachIter, hash)) {
-        VIR_TEST_VERBOSE("\nvirHashForEach didn't go through all entries");
-        goto cleanup;
-    }
 
     ret = 0;
 
@@ -628,9 +547,7 @@ mymain(void)
     DO_TEST("Remove", Remove);
     DO_TEST_DATA("Remove in ForEach", RemoveForEach, Some);
     DO_TEST_DATA("Remove in ForEach", RemoveForEach, All);
-    DO_TEST_DATA("Remove in ForEach", RemoveForEach, Forbidden);
     DO_TEST("Steal", Steal);
-    DO_TEST("Forbidden ops in ForEach", ForEach);
     DO_TEST("RemoveSet", RemoveSet);
     DO_TEST("Search", Search);
     DO_TEST("GetItems", GetItems);
