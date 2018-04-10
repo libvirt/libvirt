@@ -29,5 +29,6 @@
     </console>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <memballoon model='xen'/>
   </devices>
 </domain>

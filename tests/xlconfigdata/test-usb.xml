@@ -31,5 +31,6 @@
         <address bus='1' device='3'/>
       </source>
     </hostdev>
+    <memballoon model='xen'/>
   </devices>
 </domain>

@@ -29,5 +29,6 @@
     </channel>
     <input type='mouse' bus='xen'/>
     <input type='keyboard' bus='xen'/>
+    <memballoon model='xen'/>
   </devices>
 </domain>

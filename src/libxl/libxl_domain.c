@@ -413,6 +413,16 @@ libxlDomainDefPostParse(virDomainDefPtr def,
             def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
     }
 
+    /* add implicit balloon device */
+    if (def->memballoon == NULL) {
+        virDomainMemballoonDefPtr memballoon;
+        if (VIR_ALLOC(memballoon) < 0)
+            return -1;
+
+        memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_XEN;
+        def->memballoon = memballoon;
+    }
+
     return 0;
 }
 

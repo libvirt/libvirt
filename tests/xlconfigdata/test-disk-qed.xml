@@ -41,5 +41,6 @@
     <video>
       <model type='cirrus' vram='8192' heads='1' primary='yes'/>
     </video>
+    <memballoon model='xen'/>
   </devices>
 </domain>

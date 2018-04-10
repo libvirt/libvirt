@@ -626,6 +626,30 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             return -1;
     }
 
+    /* only the 'xen' balloon device model is supported */
+    if (def->memballoon) {
+        int model = def->memballoon->model;
+
+        switch ((virDomainMemballoonModel)model) {
+        case VIR_DOMAIN_MEMBALLOON_MODEL_XEN:
+            break;
+        case VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported balloon device model '%s'"),
+                           virDomainMemballoonModelTypeToString(model));
+            return -1;
+        case VIR_DOMAIN_MEMBALLOON_MODEL_NONE:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s",
+                           _("balloon device cannot be disabled"));
+            return -1;
+        case VIR_DOMAIN_MEMBALLOON_MODEL_LAST:
+        default:
+            virReportEnumRangeError(virDomainMemballoonModel, model);
+            return -1;
+        }
+    }
+
     return 0;
 }
 
