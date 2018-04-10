@@ -114,6 +114,8 @@ qemuSetupImagePathCgroup(virDomainObjPtr vm,
 }
 
 
+#define DEVICE_MAPPER_CONTROL_PATH "/dev/mapper/control"
+
 static int
 qemuSetupImageCgroupInternal(virDomainObjPtr vm,
                              virStorageSourcePtr src,
@@ -124,6 +126,10 @@ qemuSetupImageCgroupInternal(virDomainObjPtr vm,
                   NULLSTR(src->path), virStorageTypeToString(src->type));
         return 0;
     }
+
+    if (virStoragePRDefIsManaged(src->pr) &&
+        qemuSetupImagePathCgroup(vm, DEVICE_MAPPER_CONTROL_PATH, false) < 0)
+        return -1;
 
     return qemuSetupImagePathCgroup(vm, src->path, src->readonly || forceReadonly);
 }
@@ -142,9 +148,8 @@ qemuTeardownImageCgroup(virDomainObjPtr vm,
                         virStorageSourcePtr src)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int perms = VIR_CGROUP_DEVICE_READ |
-                VIR_CGROUP_DEVICE_WRITE |
-                VIR_CGROUP_DEVICE_MKNOD;
+    int perms = VIR_CGROUP_DEVICE_RWM;
+    size_t i;
     int ret;
 
     if (!virCgroupHasController(priv->cgroup,
@@ -156,6 +161,28 @@ qemuTeardownImageCgroup(virDomainObjPtr vm,
                   NULLSTR(src->path), virStorageTypeToString(src->type));
         return 0;
     }
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virStorageSourcePtr diskSrc = vm->def->disks[i]->src;
+
+        if (src == diskSrc)
+            continue;
+
+        if (virStoragePRDefIsManaged(diskSrc->pr))
+            break;
+    }
+
+    if (i == vm->def->ndisks) {
+        VIR_DEBUG("Disabling device mapper control");
+        ret = virCgroupDenyDevicePath(priv->cgroup,
+                                      DEVICE_MAPPER_CONTROL_PATH, perms, true);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
+                                 DEVICE_MAPPER_CONTROL_PATH,
+                                 virCgroupGetDevicePermsString(perms), ret);
+        if (ret < 0)
+            return ret;
+    }
+
 
     VIR_DEBUG("Deny path %s", src->path);
 
