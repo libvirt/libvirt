@@ -9719,18 +9719,6 @@ qemuBuildCommandLineValidate(virQEMUDriverPtr driver,
         return -1;
     }
 
-    for (i = 0; i < def->ndisks; i++) {
-        virDomainDiskDefPtr disk = def->disks[i];
-
-        if (disk->src->driverName != NULL &&
-            STRNEQ(disk->src->driverName, "qemu")) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported driver name '%s' for disk '%s'"),
-                           disk->src->driverName, disk->src->path);
-            return -1;
-        }
-    }
-
     return 0;
 }
 

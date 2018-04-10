@@ -4142,6 +4142,7 @@ static int
 qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
                                 virQEMUCapsPtr qemuCaps)
 {
+    const char *driverName = virDomainDiskGetDriver(disk);
     virStorageSourcePtr n;
 
     if (disk->src->shared && !disk->src->readonly) {
@@ -4158,6 +4159,13 @@ qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
                              "supported storage format"), disk->dst);
             return -1;
         }
+    }
+
+    if (driverName && STRNEQ(driverName, "qemu")) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported driver name '%s' for disk '%s'"),
+                       driverName, disk->dst);
+        return -1;
     }
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
