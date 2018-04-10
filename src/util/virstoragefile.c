@@ -2048,7 +2048,6 @@ virStorageSourceCopy(const virStorageSource *src,
 
     if (VIR_STRDUP(ret->path, src->path) < 0 ||
         VIR_STRDUP(ret->volume, src->volume) < 0 ||
-        VIR_STRDUP(ret->driverName, src->driverName) < 0 ||
         VIR_STRDUP(ret->relPath, src->relPath) < 0 ||
         VIR_STRDUP(ret->backingStoreRaw, src->backingStoreRaw) < 0 ||
         VIR_STRDUP(ret->snapshot, src->snapshot) < 0 ||
@@ -2133,10 +2132,6 @@ virStorageSourceInitChainElement(virStorageSourcePtr newelem,
     if (transferLabels &&
         !newelem->seclabels &&
         virStorageSourceSeclabelsCopy(newelem, old) < 0)
-        goto cleanup;
-
-    if (!newelem->driverName &&
-        VIR_STRDUP(newelem->driverName, old->driverName) < 0)
         goto cleanup;
 
     newelem->shared = old->shared;
@@ -2266,7 +2261,6 @@ virStorageSourceClear(virStorageSourcePtr def)
     VIR_FREE(def->snapshot);
     VIR_FREE(def->configFile);
     virStorageSourcePoolDefFree(def->srcpool);
-    VIR_FREE(def->driverName);
     virBitmapFree(def->features);
     VIR_FREE(def->compat);
     virStorageEncryptionFree(def->encryption);

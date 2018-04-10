@@ -644,6 +644,8 @@ struct _virDomainDiskDef {
 
     virDomainBlockIoTuneInfo blkdeviotune;
 
+    char *driverName;
+
     char *serial;
     char *wwn;
     char *vendor;

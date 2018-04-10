@@ -1784,6 +1784,7 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->dst);
     virStorageSourceFree(def->mirror);
     VIR_FREE(def->wwn);
+    VIR_FREE(def->driverName);
     VIR_FREE(def->vendor);
     VIR_FREE(def->product);
     VIR_FREE(def->domain_name);
@@ -1848,7 +1849,7 @@ virDomainDiskEmptySource(virDomainDiskDefPtr def)
 const char *
 virDomainDiskGetDriver(const virDomainDiskDef *def)
 {
-    return def->src->driverName;
+    return def->driverName;
 }
 
 
@@ -1856,11 +1857,11 @@ int
 virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)
 {
     int ret;
-    char *tmp = def->src->driverName;
+    char *tmp = def->driverName;
 
-    ret = VIR_STRDUP(def->src->driverName, name);
+    ret = VIR_STRDUP(def->driverName, name);
     if (ret < 0)
-        def->src->driverName = tmp;
+        def->driverName = tmp;
     else
         VIR_FREE(tmp);
     return ret;
@@ -9137,7 +9138,7 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
     char *tmp = NULL;
     int ret = -1;
 
-    def->src->driverName = virXMLPropString(cur, "name");
+    def->driverName = virXMLPropString(cur, "name");
 
     if ((tmp = virXMLPropString(cur, "cache")) &&
         (def->cachemode = virDomainDiskCacheTypeFromString(tmp)) < 0) {

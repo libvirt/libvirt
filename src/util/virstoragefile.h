@@ -246,7 +246,6 @@ struct _virStorageSource {
 
     virObjectPtr privateData;
 
-    char *driverName;
     int format; /* virStorageFileFormat in domain backing chains, but
                  * pool-specific enum for storage volumes */
     virBitmapPtr features;
