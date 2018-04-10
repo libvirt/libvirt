@@ -2765,7 +2765,7 @@ const char *virDomainDiskGetSource(virDomainDiskDef const *def);
 int virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src)
     ATTRIBUTE_RETURN_CHECK;
 void virDomainDiskEmptySource(virDomainDiskDefPtr def);
-const char *virDomainDiskGetDriver(virDomainDiskDefPtr def);
+const char *virDomainDiskGetDriver(const virDomainDiskDef *def);
 int virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)
     ATTRIBUTE_RETURN_CHECK;
 int virDomainDiskGetFormat(virDomainDiskDefPtr def);

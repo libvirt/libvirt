@@ -1846,7 +1846,7 @@ virDomainDiskEmptySource(virDomainDiskDefPtr def)
 
 
 const char *
-virDomainDiskGetDriver(virDomainDiskDefPtr def)
+virDomainDiskGetDriver(const virDomainDiskDef *def)
 {
     return def->src->driverName;
 }
