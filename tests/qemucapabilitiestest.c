@@ -163,9 +163,6 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-    DO_TEST("x86_64", "caps_1.2.2");
-    DO_TEST("x86_64", "caps_1.3.1");
-    DO_TEST("x86_64", "caps_1.4.2");
     DO_TEST("x86_64", "caps_1.5.3");
     DO_TEST("x86_64", "caps_1.6.0");
     DO_TEST("x86_64", "caps_1.7.0");

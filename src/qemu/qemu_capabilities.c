@@ -3758,7 +3758,7 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCapsPtr qemuCaps,
 }
 
 #define QEMU_MIN_MAJOR 1
-#define QEMU_MIN_MINOR 2
+#define QEMU_MIN_MINOR 5
 #define QEMU_MIN_MICRO 0
 
 int
@@ -3796,7 +3796,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
                        _("QEMU version >= %d.%d.%d is required, but %d.%d.%d found"),
                        QEMU_MIN_MAJOR, QEMU_MIN_MINOR, QEMU_MIN_MICRO,
                        major, minor, micro);
-        ret = 0;
         goto cleanup;
     }
 
