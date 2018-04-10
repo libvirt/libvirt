@@ -9729,9 +9729,12 @@ qemuBuildSeccompSandboxCommandLine(virCommandPtr cmd,
                                    virQEMUDriverConfigPtr cfg,
                                    virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED)
 {
-    if (cfg->seccompSandbox == 0)
+    if (cfg->seccompSandbox == 0) {
         virCommandAddArgList(cmd, "-sandbox", "off", NULL);
-    else if (cfg->seccompSandbox > 0)
+        return 0;
+    }
+
+    if (cfg->seccompSandbox > 0)
         virCommandAddArgList(cmd, "-sandbox", "on", NULL);
 
     return 0;
