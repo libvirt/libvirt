@@ -9400,7 +9400,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                                physical_block_size);
                 goto error;
             }
-        } else if (!def->src->driverName &&
+        } else if (!virDomainDiskGetDriver(def) &&
                    virXMLNodeNameEqual(cur, "driver")) {
             if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
                 goto error;
@@ -23101,7 +23101,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
-    virBufferEscapeString(&driverBuf, " name='%s'", def->src->driverName);
+    virBufferEscapeString(&driverBuf, " name='%s'", virDomainDiskGetDriver(def));
     if (def->src->format > 0)
         virBufferAsprintf(&driverBuf, " type='%s'",
                           virStorageFileFormatTypeToString(def->src->format));

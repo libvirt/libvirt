@@ -783,7 +783,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
                 def->device = VIR_DOMAIN_DISK_DEVICE_FLOPPY;
             }
         } else if (STREQ(keywords[i], "format")) {
-            if (VIR_STRDUP(def->src->driverName, "qemu") < 0)
+            if (virDomainDiskSetDriver(def, "qemu") < 0)
                 goto error;
             def->src->format = virStorageFileFormatTypeFromString(values[i]);
         } else if (STREQ(keywords[i], "cache")) {
