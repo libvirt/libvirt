@@ -23,7 +23,7 @@
         (hvm
             (kernel /usr/lib/xen/boot/hvmloader)
             (boot c)
-            (device_model /usr/lib/xen/bin/qemu-dm)
+            (device_model /usr/lib/xen/bin/qemu-system-i386)
             (keymap en-us)
             (localtime 0)
             (pae 1)

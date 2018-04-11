@@ -3,7 +3,7 @@
 (on_reboot 'restart')(on_crash 'restart')\
 (image (hvm (kernel '/usr/lib/xen/boot/hvmloader')(vcpus 1)(boot c)\
 (cdrom '/root/boot.iso')(acpi 1)(usb 1)(parallel none)\
-(serial (/dev/ttyS0 /dev/ttyS1))(device_model '/usr/lib64/xen/bin/qemu-dm')\
+(serial (/dev/ttyS0 /dev/ttyS1))(device_model '/usr/lib/xen/bin/qemu-system-i386')\
 (vnc 1)))(device (vbd (dev 'ioemu:hda')(uname 'file:/root/foo.img')\
 (mode 'w')))\
 (device (vbd (dev 'hdc:cdrom')\

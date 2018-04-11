@@ -19,7 +19,7 @@
   </features>
   <clock offset='utc' adjustment='reset'/>
   <devices>
-    <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
+    <emulator>/usr/lib/xen/bin/qemu-system-i386</emulator>
     <disk type='block' device='disk'>
       <driver name='phy'/>
       <source dev='/dev/HostVG/XenGuest2'/>
