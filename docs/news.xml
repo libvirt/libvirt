@@ -64,6 +64,19 @@
           TLS environment which is setup for the migration connection.
         </description>
       </change>
+      <change>
+        <summary>
+          Add support for VM Generation ID
+        </summary>
+        <description>
+          The VM Generatation ID exposes a 128-bit, cryptographically
+          random, integer value identifier, referred to as a Globally
+          Unique Identifier (GUID) to the guest in order to notify the
+          guest operating system when the virtual machine is executed
+          with a different configuration. Add a new domain XML processing
+          and a domain capabilities feature.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
