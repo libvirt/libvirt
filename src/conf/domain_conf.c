@@ -8735,6 +8735,9 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
     if (VIR_ALLOC(backingStore) < 0)
         goto cleanup;
 
+    /* backing store is always read-only */
+    backingStore->readonly = true;
+
     /* terminator does not have a type */
     if (!(type = virXMLPropString(ctxt->node, "type"))) {
         VIR_STEAL_PTR(src->backingStore, backingStore);

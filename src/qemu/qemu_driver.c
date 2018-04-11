@@ -14680,6 +14680,9 @@ qemuDomainSnapshotUpdateDiskSources(qemuDomainSnapshotDiskDataPtr dd,
     if (dd->initialized)
         virStorageFileDeinit(dd->src);
 
+    /* the old disk image is now readonly */
+    dd->disk->src->readonly = true;
+
     VIR_STEAL_PTR(dd->disk->src->relPath, dd->relPath);
     VIR_STEAL_PTR(dd->src->backingStore, dd->disk->src);
     VIR_STEAL_PTR(dd->disk->src, dd->src);

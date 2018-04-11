@@ -3425,6 +3425,7 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent)
         if (virStorageSourceInitChainElement(ret, parent, true) < 0)
             goto error;
 
+        ret->readonly = true;
         ret->detected = true;
     }
 
