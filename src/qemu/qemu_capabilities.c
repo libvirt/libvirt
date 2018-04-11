@@ -2702,6 +2702,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
                             virDomainVirtType type)
 {
     virCPUDefPtr cpu = NULL;
+    virCPUDefPtr cpuExpanded = NULL;
     virCPUDefPtr migCPU = NULL;
     virCPUDefPtr hostCPU = NULL;
     virCPUDefPtr fullCPU = NULL;
@@ -2736,9 +2737,13 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
                                       NULL, NULL)))
             goto error;
 
-        for (i = 0; i < cpu->nfeatures; i++) {
-            if (cpu->features[i].policy == VIR_CPU_FEATURE_REQUIRE &&
-                virCPUDefUpdateFeature(fullCPU, cpu->features[i].name,
+        if (!(cpuExpanded = virCPUDefCopy(cpu)) ||
+            virCPUExpandFeatures(qemuCaps->arch, cpuExpanded) < 0)
+            goto error;
+
+        for (i = 0; i < cpuExpanded->nfeatures; i++) {
+            if (cpuExpanded->features[i].policy == VIR_CPU_FEATURE_REQUIRE &&
+                virCPUDefUpdateFeature(fullCPU, cpuExpanded->features[i].name,
                                        VIR_CPU_FEATURE_REQUIRE) < 0)
                 goto error;
         }
@@ -2760,6 +2765,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
     virQEMUCapsSetHostModel(qemuCaps, type, cpu, migCPU, fullCPU);
 
  cleanup:
+    virCPUDefFree(cpuExpanded);
     virCPUDefFree(hostCPU);
     return;
 
