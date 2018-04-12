@@ -46,7 +46,7 @@
  * longer be used in code. Periodically we can then purge all the
  * X_ flags and re-group what's left.
  */
-typedef enum {
+typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 0 */
     X_QEMU_CAPS_KQEMU, /* Whether KQEMU is compiled in */
     X_QEMU_CAPS_VNC_COLON, /* VNC takes or address + display */
