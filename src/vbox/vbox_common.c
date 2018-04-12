@@ -7978,7 +7978,7 @@ vboxDomainSendKey(virDomainPtr dom,
  * Function Tables
  */
 
-virHypervisorDriver vboxCommonDriver = {
+static virHypervisorDriver vboxCommonDriver = {
     .name = "VBOX",
     .connectOpen = vboxConnectOpen, /* 0.6.3 */
     .connectClose = vboxConnectClose, /* 0.6.3 */
