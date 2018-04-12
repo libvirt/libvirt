@@ -3029,6 +3029,7 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
     unsigned long long pagesize = mem->pagesize;
     bool needHugepage = !!pagesize;
     bool useHugepage = !!pagesize;
+    int discard = mem->discard;
 
     /* The difference between @needHugepage and @useHugepage is that the latter
      * is true whenever huge page is defined for the current memory cell.
@@ -3039,8 +3040,7 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
     *backendProps = NULL;
     *backendType = NULL;
 
-    if (memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT &&
-        mem->targetNode >= 0) {
+    if (mem->targetNode >= 0) {
         /* memory devices could provide a invalid guest node */
         if (mem->targetNode >= virDomainNumaGetNodeCount(def->numa)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3050,11 +3050,18 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
             return -1;
         }
 
-        memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, mem->targetNode);
+        if (memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
+            memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, mem->targetNode);
+
+        if (discard == VIR_TRISTATE_BOOL_ABSENT)
+            discard = virDomainNumaGetNodeDiscard(def->numa, mem->targetNode);
     }
 
     if (memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
         memAccess = def->mem.access;
+
+    if (discard == VIR_TRISTATE_BOOL_ABSENT)
+        discard = def->mem.discard;
 
     if (virDomainNumatuneGetMode(def->numa, mem->targetNode, &mode) < 0 &&
         virDomainNumatuneGetMode(def->numa, -1, &mode) < 0)
@@ -3142,6 +3149,20 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
                                   "s:mem-path", memPath,
                                   NULL) < 0)
             goto cleanup;
+
+        if (!mem->nvdimmPath &&
+            discard == VIR_TRISTATE_BOOL_YES) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("this QEMU doesn't support memory discard"));
+                goto cleanup;
+            }
+
+            if (virJSONValueObjectAdd(props,
+                                      "B:discard-data", true,
+                                      NULL) < 0)
+                goto cleanup;
+        }
 
         switch (memAccess) {
         case VIR_DOMAIN_MEMORY_ACCESS_SHARED:
