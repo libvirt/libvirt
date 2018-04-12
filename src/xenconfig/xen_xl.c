@@ -170,17 +170,8 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
         if (xenConfigGetBool(conf, "nestedhvm", &val, -1) < 0)
             return -1;
 
-        if (val == 1) {
-            virCPUDefPtr cpu;
-
-            if (VIR_ALLOC(cpu) < 0)
-                return -1;
-
-            cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
-            cpu->type = VIR_CPU_TYPE_GUEST;
-            def->cpu = cpu;
-        } else if (val == 0) {
-            const char *vtfeature = NULL;
+        if (val != -1) {
+            const char *vtfeature = "vmx";
 
             if (caps && caps->host.cpu && ARCH_IS_X86(def->os.arch)) {
                 if (virCPUCheckFeature(caps->host.arch, caps->host.cpu, "vmx"))
@@ -189,27 +180,23 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
                     vtfeature = "svm";
             }
 
-            if (vtfeature) {
+            if (!def->cpu) {
                 virCPUDefPtr cpu;
-
                 if (VIR_ALLOC(cpu) < 0)
                     return -1;
 
-                if (VIR_ALLOC(cpu->features) < 0) {
-                    VIR_FREE(cpu);
-                    return -1;
-                }
-
-                if (VIR_STRDUP(cpu->features->name, vtfeature) < 0) {
-                    VIR_FREE(cpu->features);
-                    VIR_FREE(cpu);
-                    return -1;
-                }
-                cpu->features->policy = VIR_CPU_FEATURE_DISABLE;
-                cpu->nfeatures = cpu->nfeatures_max = 1;
                 cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
                 cpu->type = VIR_CPU_TYPE_GUEST;
+                cpu->nfeatures = 0;
+                cpu->nfeatures_max = 0;
                 def->cpu = cpu;
+            }
+
+            if (val == 0) {
+                if (virCPUDefAddFeature(def->cpu,
+                                        vtfeature,
+                                        VIR_CPU_FEATURE_DISABLE) < 0)
+                    return -1;
             }
         }
     } else {
