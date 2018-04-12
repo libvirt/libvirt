@@ -218,6 +218,41 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
     return 0;
 }
 
+/*
+ * Translate CPU feature name from libvirt to libxl (from_libxl=false) or from
+ * libxl to libvirt (from_libxl=true).
+ */
+const char *
+xenTranslateCPUFeature(const char *feature_name, bool from_libxl)
+{
+    static const char *translation_table[][2] = {
+        /* libvirt name, libxl name */
+        { "cx16", "cmpxchg16" },
+        { "cid", "cntxid" },
+        { "ds_cpl", "dscpl" },
+        { "pclmuldq", "pclmulqdq" },
+        { "pni", "sse3" },
+        { "ht", "htt" },
+        { "pn", "psn" },
+        { "clflush", "clfsh" },
+        { "sep", "sysenter" },
+        { "cx8", "cmpxchg8" },
+        { "nodeid_msr", "nodeid" },
+        { "cr8legacy", "altmovcr8" },
+        { "lahf_lm", "lahfsahf" },
+        { "cmp_legacy", "cmplegacy" },
+        { "fxsr_opt", "ffxsr" },
+        { "pdpe1gb", "page1gb" },
+        { "spec-ctrl", "ibrsb" },
+    };
+    size_t i;
+
+    for (i = 0; i < ARRAY_CARDINALITY(translation_table); i++)
+        if (STREQ(translation_table[i][from_libxl], feature_name))
+            return translation_table[i][!from_libxl];
+    return feature_name;
+}
+
 
 static int
 xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)

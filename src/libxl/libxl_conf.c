@@ -50,6 +50,7 @@
 #include "secret_util.h"
 #include "cpu/cpu.h"
 #include "xen_common.h"
+#include "xen_xl.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
@@ -394,6 +395,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             def->cpu && def->cpu->mode == (VIR_CPU_MODE_HOST_PASSTHROUGH)) {
             bool hasHwVirt = false;
             bool svm = false, vmx = false;
+            char xlCPU[32];
 
             /* enable nested HVM only if global nested_hvm option enable it and
              * host support it*/
@@ -411,17 +413,45 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                         case VIR_CPU_FEATURE_DISABLE:
                         case VIR_CPU_FEATURE_FORBID:
                             if ((vmx && STREQ(def->cpu->features[i].name, "vmx")) ||
-                                (svm && STREQ(def->cpu->features[i].name, "svm")))
+                                (svm && STREQ(def->cpu->features[i].name, "svm"))) {
                                 hasHwVirt = false;
+                                continue;
+                            }
+
+                            snprintf(xlCPU,
+                                    sizeof(xlCPU),
+                                    "%s=0",
+                                    xenTranslateCPUFeature(
+                                        def->cpu->features[i].name,
+                                        false));
+                            if (libxl_cpuid_parse_config(&b_info->cpuid, xlCPU)) {
+                                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                        _("unsupported cpu feature '%s'"),
+                                        def->cpu->features[i].name);
+                                return -1;
+                            }
                             break;
 
                         case VIR_CPU_FEATURE_FORCE:
                         case VIR_CPU_FEATURE_REQUIRE:
                             if ((vmx && STREQ(def->cpu->features[i].name, "vmx")) ||
-                                (svm && STREQ(def->cpu->features[i].name, "svm")))
+                                (svm && STREQ(def->cpu->features[i].name, "svm"))) {
                                 hasHwVirt = true;
-                            break;
+                                continue;
+                            }
 
+                            snprintf(xlCPU,
+                                    sizeof(xlCPU),
+                                    "%s=1",
+                                    xenTranslateCPUFeature(
+                                        def->cpu->features[i].name, false));
+                            if (libxl_cpuid_parse_config(&b_info->cpuid, xlCPU)) {
+                                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                        _("unsupported cpu feature '%s'"),
+                                        def->cpu->features[i].name);
+                                return -1;
+                            }
+                            break;
                         case VIR_CPU_FEATURE_OPTIONAL:
                         case VIR_CPU_FEATURE_LAST:
                             break;

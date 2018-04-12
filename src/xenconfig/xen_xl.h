@@ -33,4 +33,6 @@ virDomainDefPtr xenParseXL(virConfPtr conn,
 
 virConfPtr xenFormatXL(virDomainDefPtr def, virConnectPtr);
 
+const char *xenTranslateCPUFeature(const char *feature_name, bool from_libxl);
+
 #endif /* __VIR_XEN_XL_H__ */
