@@ -3917,15 +3917,15 @@ qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorGetObjectProps(qemuMonitorPtr mon,
-                          const char *type,
+qemuMonitorGetDeviceProps(qemuMonitorPtr mon,
+                          const char *device,
                           char ***props)
 {
-    VIR_DEBUG("type=%s props=%p", type, props);
+    VIR_DEBUG("device=%s props=%p", device, props);
 
     QEMU_CHECK_MONITOR_JSON(mon);
 
-    return qemuMonitorJSONGetObjectProps(mon, type, props);
+    return qemuMonitorJSONGetDeviceProps(mon, device, props);
 }
 
 

@@ -1042,8 +1042,8 @@ int qemuMonitorGetKVMState(qemuMonitorPtr mon,
 
 int qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
                               char ***types);
-int qemuMonitorGetObjectProps(qemuMonitorPtr mon,
-                              const char *type,
+int qemuMonitorGetDeviceProps(qemuMonitorPtr mon,
+                              const char *device,
                               char ***props);
 char *qemuMonitorGetTargetArch(qemuMonitorPtr mon);
 

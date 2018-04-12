@@ -2084,7 +2084,7 @@ virQEMUCapsProbeQMPObjects(virQEMUCapsPtr qemuCaps,
         if (cap >= 0 && !virQEMUCapsGet(qemuCaps, cap))
             continue;
 
-        if ((nvalues = qemuMonitorGetObjectProps(mon,
+        if ((nvalues = qemuMonitorGetDeviceProps(mon,
                                                  type,
                                                  &values)) < 0)
             return -1;
