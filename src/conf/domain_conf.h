@@ -1180,6 +1180,7 @@ typedef virDomainChrSourceReconnectDef *virDomainChrSourceReconnectDefPtr;
 
 /* The host side information for a character device.  */
 struct _virDomainChrSourceDef {
+    virObject parent;
     int type; /* virDomainChrType */
     virObjectPtr privateData;
     union {
