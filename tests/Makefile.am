@@ -528,6 +528,7 @@ libxlxml2domconfigtest_LDADD = $(libxl_LDADDS) $(LIBXML_LIBS)
 
 virmocklibxl_la_SOURCES = \
 	virmocklibxl.c
+virmocklibxl_la_CFLAGS = $(LIBXL_CFLAGS)
 virmocklibxl_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virmocklibxl_la_LIBADD = $(MOCKLIBS_LIBS)
 

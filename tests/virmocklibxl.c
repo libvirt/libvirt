@@ -27,6 +27,7 @@
 # include <sys/stat.h>
 # include <unistd.h>
 # include <libxl.h>
+# include <util/virfile.h>
 # include <xenstore.h>
 # include <xenctrl.h>
 # include <sys/socket.h>
@@ -48,6 +49,25 @@ VIR_MOCK_IMPL_RET_ARGS(xc_interface_open,
     return (void*)0x1;
 }
 
+
+VIR_MOCK_IMPL_RET_ARGS(libxl_get_version_info,
+                       const libxl_version_info*,
+                       libxl_ctx *, ctx)
+{
+    static libxl_version_info info;
+
+    memset(&info, 0, sizeof(info));
+
+    /* silence gcc warning about unused function */
+    if (0)
+        real_libxl_get_version_info(ctx);
+    return &info;
+}
+
+VIR_MOCK_STUB_RET_ARGS(libxl_get_free_memory,
+                       int, 0,
+                       libxl_ctx *, ctx,
+                       uint32_t *, memkb);
 
 VIR_MOCK_STUB_RET_ARGS(xc_interface_close,
                        int, 0,
@@ -74,6 +94,17 @@ VIR_MOCK_STUB_RET_ARGS(bind,
                        int, sockfd,
                        const struct sockaddr *, addr,
                        socklen_t, addrlen)
+
+VIR_MOCK_IMPL_RET_ARGS(virFileMakePath, int,
+                       const char *, path)
+{
+    /* replace log path with a writable directory */
+    if (strstr(path, "/log/")) {
+        snprintf((char*)path, strlen(path), ".");
+        return 0;
+    }
+    return real_virFileMakePath(path);
+}
 
 VIR_MOCK_IMPL_RET_ARGS(__xstat, int,
                        int, ver,

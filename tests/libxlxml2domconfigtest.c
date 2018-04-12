@@ -56,8 +56,8 @@ testCompareXMLToDomConfig(const char *xmlfile,
     int ret = -1;
     libxl_domain_config actualconfig;
     libxl_domain_config expectconfig;
+    libxlDriverConfigPtr cfg;
     xentoollog_logger *log = NULL;
-    libxl_ctx *ctx = NULL;
     virPortAllocatorRangePtr gports = NULL;
     virDomainXMLOptionPtr xmlopt = NULL;
     virDomainDefPtr vmdef = NULL;
@@ -68,10 +68,18 @@ testCompareXMLToDomConfig(const char *xmlfile,
     libxl_domain_config_init(&actualconfig);
     libxl_domain_config_init(&expectconfig);
 
+    if (!(cfg = libxlDriverConfigNew()))
+        goto cleanup;
+
+    cfg->caps = caps;
+
     if (!(log = (xentoollog_logger *)xtl_createlogger_stdiostream(stderr, XTL_DEBUG, 0)))
         goto cleanup;
 
-    if (libxl_ctx_alloc(&ctx, LIBXL_VERSION, 0, log) < 0)
+    /* replace logger with stderr one */
+    libxl_ctx_free(cfg->ctx);
+
+    if (libxl_ctx_alloc(&cfg->ctx, LIBXL_VERSION, 0, log) < 0)
         goto cleanup;
 
     if (!(gports = virPortAllocatorRangeNew("vnc", 5900, 6000)))
@@ -84,22 +92,22 @@ testCompareXMLToDomConfig(const char *xmlfile,
                                         NULL, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (libxlBuildDomainConfig(gports, vmdef, NULL, ctx, caps, &actualconfig) < 0)
+    if (libxlBuildDomainConfig(gports, vmdef, cfg, &actualconfig) < 0)
         goto cleanup;
 
-    if (!(actualjson = libxl_domain_config_to_json(ctx, &actualconfig))) {
+    if (!(actualjson = libxl_domain_config_to_json(cfg->ctx, &actualconfig))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Failed to retrieve JSON doc for libxl_domain_config");
         goto cleanup;
     }
 
     virTestLoadFile(jsonfile, &tempjson);
-    if (libxl_domain_config_from_json(ctx, &expectconfig, tempjson) != 0) {
+    if (libxl_domain_config_from_json(cfg->ctx, &expectconfig, tempjson) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Failed to create libxl_domain_config from JSON doc");
         goto cleanup;
     }
-    if (!(expectjson = libxl_domain_config_to_json(ctx, &expectconfig))) {
+    if (!(expectjson = libxl_domain_config_to_json(cfg->ctx, &expectconfig))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Failed to retrieve JSON doc for libxl_domain_config");
         goto cleanup;
@@ -122,10 +130,11 @@ testCompareXMLToDomConfig(const char *xmlfile,
     virDomainDefFree(vmdef);
     virPortAllocatorRangeFree(gports);
     virObjectUnref(xmlopt);
-    libxl_ctx_free(ctx);
     libxl_domain_config_dispose(&actualconfig);
     libxl_domain_config_dispose(&expectconfig);
     xtl_logger_destroy(log);
+    cfg->caps = NULL;
+    virObjectUnref(cfg);
     return ret;
 }
 

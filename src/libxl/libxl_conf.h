@@ -215,9 +215,7 @@ libxlCreateXMLConf(void);
 int
 libxlBuildDomainConfig(virPortAllocatorRangePtr graphicsports,
                        virDomainDefPtr def,
-                       const char *channelDir LIBXL_ATTR_UNUSED,
-                       libxl_ctx *ctx,
-                       virCapsPtr caps,
+                       libxlDriverConfigPtr cfg,
                        libxl_domain_config *d_config);
 
 static inline void

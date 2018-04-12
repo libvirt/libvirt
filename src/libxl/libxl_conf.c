@@ -271,11 +271,12 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
 
 static int
 libxlMakeDomBuildInfo(virDomainDefPtr def,
-                      libxl_ctx *ctx,
+                      libxlDriverConfigPtr cfg,
                       virCapsPtr caps,
                       libxl_domain_config *d_config)
 {
     virDomainClockDef clock = def->clock;
+    libxl_ctx *ctx = cfg->ctx;
     libxl_domain_build_info *b_info = &d_config->b_info;
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
     size_t i;
@@ -2346,17 +2347,17 @@ libxlDriverNodeGetInfo(libxlDriverPrivatePtr driver, virNodeInfoPtr info)
 int
 libxlBuildDomainConfig(virPortAllocatorRangePtr graphicsports,
                        virDomainDefPtr def,
-                       const char *channelDir LIBXL_ATTR_UNUSED,
-                       libxl_ctx *ctx,
-                       virCapsPtr caps,
+                       libxlDriverConfigPtr cfg,
                        libxl_domain_config *d_config)
 {
+    virCapsPtr caps = cfg->caps;
+    libxl_ctx *ctx = cfg->ctx;
     libxl_domain_config_init(d_config);
 
     if (libxlMakeDomCreateInfo(ctx, def, &d_config->c_info) < 0)
         return -1;
 
-    if (libxlMakeDomBuildInfo(def, ctx, caps, d_config) < 0)
+    if (libxlMakeDomBuildInfo(def, cfg, caps, d_config) < 0)
         return -1;
 
 #ifdef LIBXL_HAVE_VNUMA
@@ -2388,7 +2389,7 @@ libxlBuildDomainConfig(virPortAllocatorRangePtr graphicsports,
 #endif
 
 #ifdef LIBXL_HAVE_DEVICE_CHANNEL
-    if (libxlMakeChannelList(channelDir, def, d_config) < 0)
+    if (libxlMakeChannelList(cfg->channelDir, def, d_config) < 0)
         return -1;
 #endif
 
