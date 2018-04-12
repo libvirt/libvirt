@@ -80,7 +80,8 @@ libxlDriverConfigDispose(void *obj)
 
     virObjectUnref(cfg->caps);
     libxl_ctx_free(cfg->ctx);
-    libxlLoggerFree(cfg->logger);
+    if (cfg->logger)
+        libxlLoggerFree(cfg->logger);
 
     VIR_FREE(cfg->configDir);
     VIR_FREE(cfg->autostartDir);
