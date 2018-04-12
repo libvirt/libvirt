@@ -424,6 +424,12 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             libxl_defbool_set(&b_info->u.hvm.nested_hvm, hasHwVirt);
         }
 
+        if (def->cpu && def->cpu->mode == VIR_CPU_MODE_CUSTOM) {
+            VIR_WARN("Ignoring CPU with mode=custom, update your config to "
+                     "mode=host-passthrough to avoid risk of changed guest "
+                     "semantics when mode=custom is supported in the future");
+        }
+
         if (def->nsounds > 0) {
             /*
              * Use first sound device.  man xl.cfg(5) describes soundhw as
