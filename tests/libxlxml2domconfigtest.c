@@ -209,6 +209,7 @@ mymain(void)
     DO_TEST("moredevs-hvm");
     DO_TEST("vnuma-hvm");
     DO_TEST("multiple-ip");
+    DO_TEST("fullvirt-cpuid");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
