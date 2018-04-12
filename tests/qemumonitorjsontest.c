@@ -2585,6 +2585,9 @@ testQemuMonitorCPUInfoFormat(qemuMonitorCPUInfoPtr vcpus,
             virBufferAddLit(&buf, "\n");
         }
 
+        if (vcpu->halted)
+            virBufferAddLit(&buf, "halted\n");
+
         virBufferAdjustIndent(&buf, -4);
     }
 
