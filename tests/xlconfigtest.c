@@ -270,6 +270,7 @@ mymain(void)
     DO_TEST("fullvirt-multi-timer");
     DO_TEST("fullvirt-nestedhvm");
     DO_TEST("fullvirt-nestedhvm-disabled");
+    DO_TEST("fullvirt-cpuid");
 #ifdef LIBXL_HAVE_VNUMA
     DO_TEST("fullvirt-vnuma");
     DO_TEST_PARSE("fullvirt-vnuma-autocomplete", false);
