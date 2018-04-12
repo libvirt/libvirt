@@ -28,12 +28,14 @@ module Libvirtd_libxl =
    let lock_entry = str_entry "lock_manager"
    let keepalive_interval_entry = int_entry "keepalive_interval"
    let keepalive_count_entry = int_entry "keepalive_count"
+   let nested_hvm_entry = bool_entry "nested_hvm"
 
    (* Each entry in the config is one of the following ... *)
    let entry = autoballoon_entry
              | lock_entry
              | keepalive_interval_entry
              | keepalive_count_entry
+             | nested_hvm_entry
 
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]

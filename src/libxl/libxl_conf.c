@@ -395,10 +395,12 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             bool hasHwVirt = false;
             bool svm = false, vmx = false;
 
+            /* enable nested HVM only if global nested_hvm option enable it and
+             * host support it*/
             if (ARCH_IS_X86(def->os.arch)) {
                 vmx = virCPUCheckFeature(caps->host.arch, caps->host.cpu, "vmx");
                 svm = virCPUCheckFeature(caps->host.arch, caps->host.cpu, "svm");
-                hasHwVirt = vmx | svm;
+                hasHwVirt = cfg->nested_hvm && (vmx | svm);
             }
 
             if (def->cpu->nfeatures) {
@@ -415,6 +417,11 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
 
                         case VIR_CPU_FEATURE_FORCE:
                         case VIR_CPU_FEATURE_REQUIRE:
+                            if ((vmx && STREQ(def->cpu->features[i].name, "vmx")) ||
+                                (svm && STREQ(def->cpu->features[i].name, "svm")))
+                                hasHwVirt = true;
+                            break;
+
                         case VIR_CPU_FEATURE_OPTIONAL:
                         case VIR_CPU_FEATURE_LAST:
                             break;
@@ -1756,6 +1763,9 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
         goto cleanup;
 
     if (virConfGetValueUInt(conf, "keepalive_count", &cfg->keepAliveCount) < 0)
+        goto cleanup;
+
+    if (virConfGetValueBool(conf, "nested_hvm", &cfg->nested_hvm) < 0)
         goto cleanup;
 
     ret = 0;

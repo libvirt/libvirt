@@ -88,6 +88,8 @@ struct _libxlDriverConfig {
     int keepAliveInterval;
     unsigned int keepAliveCount;
 
+    bool nested_hvm;
+
     /* Once created, caps are immutable */
     virCapsPtr caps;
 

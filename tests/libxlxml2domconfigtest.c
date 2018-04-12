@@ -76,6 +76,9 @@ testCompareXMLToDomConfig(const char *xmlfile,
     if (!(log = (xentoollog_logger *)xtl_createlogger_stdiostream(stderr, XTL_DEBUG, 0)))
         goto cleanup;
 
+    /* for testing nested HVM */
+    cfg->nested_hvm = true;
+
     /* replace logger with stderr one */
     libxl_ctx_free(cfg->ctx);
 
