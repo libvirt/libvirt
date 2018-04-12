@@ -6127,6 +6127,38 @@ int qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
+                              const char *object,
+                              char ***props)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    *props = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-list-properties",
+                                           "s:typename", object,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONHasError(reply, "DeviceNotFound")) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    ret = qemuMonitorJSONParsePropsList(cmd, reply, props);
+ cleanup:
+    virJSONValueFree(reply);
+    virJSONValueFree(cmd);
+    return ret;
+}
+
+
 char *
 qemuMonitorJSONGetTargetArch(qemuMonitorPtr mon)
 {

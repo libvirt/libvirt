@@ -1048,6 +1048,9 @@ int qemuMonitorGetObjectTypes(qemuMonitorPtr mon,
 int qemuMonitorGetDeviceProps(qemuMonitorPtr mon,
                               const char *device,
                               char ***props);
+int qemuMonitorGetObjectProps(qemuMonitorPtr mon,
+                              const char *object,
+                              char ***props);
 char *qemuMonitorGetTargetArch(qemuMonitorPtr mon);
 
 int qemuMonitorNBDServerStart(qemuMonitorPtr mon,

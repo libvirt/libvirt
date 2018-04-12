@@ -445,6 +445,10 @@ int qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
                                   const char *device,
                                   char ***props)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
+                                  const char *object,
+                                  char ***props)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 char *qemuMonitorJSONGetTargetArch(qemuMonitorPtr mon);
 
 int qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,

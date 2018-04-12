@@ -3932,6 +3932,19 @@ qemuMonitorGetDeviceProps(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorGetObjectProps(qemuMonitorPtr mon,
+                          const char *object,
+                          char ***props)
+{
+    VIR_DEBUG("object=%s props=%p", object, props);
+
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONGetObjectProps(mon, object, props);
+}
+
+
 char *
 qemuMonitorGetTargetArch(qemuMonitorPtr mon)
 {
