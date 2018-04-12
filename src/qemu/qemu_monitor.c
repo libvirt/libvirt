@@ -2731,37 +2731,6 @@ qemuMonitorMigrateToHost(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
-                            unsigned int flags,
-                            const char * const *argv)
-{
-    char *argstr;
-    char *dest = NULL;
-    int ret = -1;
-    VIR_DEBUG("argv=%p flags=0x%x", argv, flags);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    argstr = virArgvToString(argv);
-    if (!argstr)
-        goto cleanup;
-
-    if (virAsprintf(&dest, "exec:%s", argstr) < 0)
-        goto cleanup;
-
-    if (mon->json)
-        ret = qemuMonitorJSONMigrate(mon, flags, dest);
-    else
-        ret = qemuMonitorTextMigrate(mon, flags, dest);
-
- cleanup:
-    VIR_FREE(argstr);
-    VIR_FREE(dest);
-    return ret;
-}
-
-
-int
 qemuMonitorMigrateCancel(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR(mon);

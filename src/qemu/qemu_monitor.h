@@ -784,10 +784,6 @@ int qemuMonitorMigrateToHost(qemuMonitorPtr mon,
                              const char *hostname,
                              int port);
 
-int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
-                                unsigned int flags,
-                                const char * const *argv);
-
 int qemuMonitorMigrateCancel(qemuMonitorPtr mon);
 
 int qemuMonitorGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
