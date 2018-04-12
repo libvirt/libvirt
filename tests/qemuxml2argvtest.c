@@ -265,8 +265,7 @@ static virStorageDriver fakeStorageDriver = {
 typedef enum {
     FLAG_EXPECT_FAILURE     = 1 << 0,
     FLAG_EXPECT_PARSE_ERROR = 1 << 1,
-    FLAG_JSON               = 1 << 2,
-    FLAG_FIPS               = 1 << 3,
+    FLAG_FIPS               = 1 << 2,
 } virQemuXML2ArgvTestFlags;
 
 struct testInfo {
@@ -461,9 +460,6 @@ testCompareXMLToArgv(const void *data)
 
     virSetConnectSecret(conn);
     virSetConnectStorage(conn);
-
-    if (virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_MONITOR_JSON))
-        flags |= FLAG_JSON;
 
     if (virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
         flags |= FLAG_FIPS;
