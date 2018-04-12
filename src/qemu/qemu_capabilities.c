@@ -1101,14 +1101,14 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "pcie-pci-bridge", QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {
     { "deflate-on-oom", QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE },
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
     { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBlk[] = {
     { "bootindex", QEMU_CAPS_BOOTINDEX },
     { "ioeventfd", QEMU_CAPS_VIRTIO_IOEVENTFD },
     { "event_idx", QEMU_CAPS_VIRTIO_BLK_EVENT_IDX },
@@ -1122,7 +1122,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBlk[] = {
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioNet[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioNet[] = {
     { "tx", QEMU_CAPS_VIRTIO_TX_ALG },
     { "event_idx", QEMU_CAPS_VIRTIO_NET_EVENT_IDX },
     { "rx_queue_size", QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE },
@@ -1133,90 +1133,90 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioNet[] = {
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSpaprPCIHostBridge[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsSpaprPCIHostBridge[] = {
     { "numa_node", QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioSCSI[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioSCSI[] = {
     { "iothread", QEMU_CAPS_VIRTIO_SCSI_IOTHREAD },
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
     { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsPCIAssign[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsPCIAssign[] = {
     { "configfd", QEMU_CAPS_PCI_CONFIGFD },
     { "bootindex", QEMU_CAPS_PCI_BOOTINDEX },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVfioPCI[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVfioPCI[] = {
     { "bootindex", QEMU_CAPS_VFIO_PCI_BOOTINDEX },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSCSIDisk[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsSCSIDisk[] = {
     { "channel", QEMU_CAPS_SCSI_DISK_CHANNEL },
     { "wwn", QEMU_CAPS_SCSI_DISK_WWN },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsIDEDrive[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsIDEDrive[] = {
     { "wwn", QEMU_CAPS_IDE_DRIVE_WWN },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsPiix4PM[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsPiix4PM[] = {
     { "disable_s3", QEMU_CAPS_PIIX_DISABLE_S3 },
     { "disable_s4", QEMU_CAPS_PIIX_DISABLE_S4 },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUSBRedir[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBRedir[] = {
     { "filter", QEMU_CAPS_USB_REDIR_FILTER },
     { "bootindex", QEMU_CAPS_USB_REDIR_BOOTINDEX },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUSBHost[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBHost[] = {
     { "bootindex", QEMU_CAPS_USB_HOST_BOOTINDEX },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSCSIGeneric[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsSCSIGeneric[] = {
     { "bootindex", QEMU_CAPS_DEVICE_SCSI_GENERIC_BOOTINDEX },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsI440FXPCIHost[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsI440FXPCIHost[] = {
     { "pci-hole64-size", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQ35PCIHost[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsQ35PCIHost[] = {
     { "pci-hole64-size", QEMU_CAPS_Q35_PCI_HOLE64_SIZE },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUSBStorage[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBStorage[] = {
     { "removable", QEMU_CAPS_USB_STORAGE_REMOVABLE },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsKVMPit[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsKVMPit[] = {
     { "lost_tick_policy", QEMU_CAPS_KVM_PIT_TICK_POLICY },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVGA[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVGA[] = {
     { "vgamem_mb", QEMU_CAPS_VGA_VGAMEM },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVmwareSvga[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVmwareSvga[] = {
     { "vgamem_mb", QEMU_CAPS_VMWARE_SVGA_VGAMEM },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxl[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsQxl[] = {
     { "vgamem_mb", QEMU_CAPS_QXL_VGAMEM },
     { "vram64_size_mb", QEMU_CAPS_QXL_VRAM64 },
     { "max_outputs", QEMU_CAPS_QXL_MAX_OUTPUTS },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioGpu[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioGpu[] = {
     { "virgl", QEMU_CAPS_VIRTIO_GPU_VIRGL },
     { "max_outputs", QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS },
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
@@ -1224,16 +1224,16 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioGpu[] = {
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsICH9[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsICH9[] = {
     { "disable_s3", QEMU_CAPS_ICH9_DISABLE_S3 },
     { "disable_s4", QEMU_CAPS_ICH9_DISABLE_S4 },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUSBNECXHCI[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsUSBNECXHCI[] = {
     { "p3", QEMU_CAPS_NEC_USB_XHCI_PORTS },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsIntelIOMMU[] = {
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
     { "intremap", QEMU_CAPS_INTEL_IOMMU_INTREMAP },
     { "caching-mode", QEMU_CAPS_INTEL_IOMMU_CACHING_MODE },
     { "eim", QEMU_CAPS_INTEL_IOMMU_EIM },
@@ -1256,108 +1256,108 @@ struct virQEMUCapsObjectTypeProps {
     int capsCondition;
 };
 
-static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
-    { "virtio-blk-pci", virQEMUCapsObjectPropsVirtioBlk,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBlk),
+static struct virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
+    { "virtio-blk-pci", virQEMUCapsDevicePropsVirtioBlk,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBlk),
       -1 },
-    { "virtio-net-pci", virQEMUCapsObjectPropsVirtioNet,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioNet),
+    { "virtio-net-pci", virQEMUCapsDevicePropsVirtioNet,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioNet),
       QEMU_CAPS_DEVICE_VIRTIO_NET },
-    { "virtio-scsi-pci", virQEMUCapsObjectPropsVirtioSCSI,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioSCSI),
+    { "virtio-scsi-pci", virQEMUCapsDevicePropsVirtioSCSI,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioSCSI),
       QEMU_CAPS_VIRTIO_SCSI },
-    { "virtio-blk-ccw", virQEMUCapsObjectPropsVirtioBlk,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBlk),
+    { "virtio-blk-ccw", virQEMUCapsDevicePropsVirtioBlk,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBlk),
       QEMU_CAPS_VIRTIO_CCW },
-    { "virtio-net-ccw", virQEMUCapsObjectPropsVirtioNet,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioNet),
+    { "virtio-net-ccw", virQEMUCapsDevicePropsVirtioNet,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioNet),
       QEMU_CAPS_DEVICE_VIRTIO_NET },
-    { "virtio-scsi-ccw", virQEMUCapsObjectPropsVirtioSCSI,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioSCSI),
+    { "virtio-scsi-ccw", virQEMUCapsDevicePropsVirtioSCSI,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioSCSI),
       QEMU_CAPS_VIRTIO_SCSI },
-    { "virtio-blk-s390", virQEMUCapsObjectPropsVirtioBlk,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBlk),
+    { "virtio-blk-s390", virQEMUCapsDevicePropsVirtioBlk,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBlk),
       QEMU_CAPS_VIRTIO_S390 },
-    { "virtio-net-s390", virQEMUCapsObjectPropsVirtioNet,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioNet),
+    { "virtio-net-s390", virQEMUCapsDevicePropsVirtioNet,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioNet),
       QEMU_CAPS_DEVICE_VIRTIO_NET },
-    { "pci-assign", virQEMUCapsObjectPropsPCIAssign,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsPCIAssign),
+    { "pci-assign", virQEMUCapsDevicePropsPCIAssign,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsPCIAssign),
       -1 },
-    { "kvm-pci-assign", virQEMUCapsObjectPropsPCIAssign,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsPCIAssign),
+    { "kvm-pci-assign", virQEMUCapsDevicePropsPCIAssign,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsPCIAssign),
       -1 },
-    { "vfio-pci", virQEMUCapsObjectPropsVfioPCI,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVfioPCI),
+    { "vfio-pci", virQEMUCapsDevicePropsVfioPCI,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVfioPCI),
       QEMU_CAPS_DEVICE_VFIO_PCI },
-    { "scsi-disk", virQEMUCapsObjectPropsSCSIDisk,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsSCSIDisk),
+    { "scsi-disk", virQEMUCapsDevicePropsSCSIDisk,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsSCSIDisk),
       -1 },
-    { "ide-drive", virQEMUCapsObjectPropsIDEDrive,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsIDEDrive),
+    { "ide-drive", virQEMUCapsDevicePropsIDEDrive,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsIDEDrive),
       -1 },
-    { "PIIX4_PM", virQEMUCapsObjectPropsPiix4PM,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsPiix4PM),
+    { "PIIX4_PM", virQEMUCapsDevicePropsPiix4PM,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsPiix4PM),
       -1 },
-    { "usb-redir", virQEMUCapsObjectPropsUSBRedir,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBRedir),
+    { "usb-redir", virQEMUCapsDevicePropsUSBRedir,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsUSBRedir),
       QEMU_CAPS_USB_REDIR },
-    { "usb-host", virQEMUCapsObjectPropsUSBHost,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBHost),
+    { "usb-host", virQEMUCapsDevicePropsUSBHost,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsUSBHost),
       -1 },
-    { "scsi-generic", virQEMUCapsObjectPropsSCSIGeneric,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsSCSIGeneric),
+    { "scsi-generic", virQEMUCapsDevicePropsSCSIGeneric,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsSCSIGeneric),
       QEMU_CAPS_DEVICE_SCSI_GENERIC },
-    { "i440FX-pcihost", virQEMUCapsObjectPropsI440FXPCIHost,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsI440FXPCIHost),
+    { "i440FX-pcihost", virQEMUCapsDevicePropsI440FXPCIHost,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsI440FXPCIHost),
       -1 },
-    { "q35-pcihost", virQEMUCapsObjectPropsQ35PCIHost,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsQ35PCIHost),
+    { "q35-pcihost", virQEMUCapsDevicePropsQ35PCIHost,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsQ35PCIHost),
       -1 },
-    { "usb-storage", virQEMUCapsObjectPropsUSBStorage,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBStorage),
+    { "usb-storage", virQEMUCapsDevicePropsUSBStorage,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsUSBStorage),
       QEMU_CAPS_DEVICE_USB_STORAGE },
-    { "kvm-pit", virQEMUCapsObjectPropsKVMPit,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsKVMPit),
+    { "kvm-pit", virQEMUCapsDevicePropsKVMPit,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsKVMPit),
       -1 },
-    { "VGA", virQEMUCapsObjectPropsVGA,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVGA),
+    { "VGA", virQEMUCapsDevicePropsVGA,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVGA),
       QEMU_CAPS_DEVICE_VGA },
-    { "vmware-svga", virQEMUCapsObjectPropsVmwareSvga,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVmwareSvga),
+    { "vmware-svga", virQEMUCapsDevicePropsVmwareSvga,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVmwareSvga),
       QEMU_CAPS_DEVICE_VMWARE_SVGA },
-    { "qxl", virQEMUCapsObjectPropsQxl,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsQxl),
+    { "qxl", virQEMUCapsDevicePropsQxl,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsQxl),
       QEMU_CAPS_DEVICE_QXL },
-    { "virtio-gpu-pci", virQEMUCapsObjectPropsVirtioGpu,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioGpu),
+    { "virtio-gpu-pci", virQEMUCapsDevicePropsVirtioGpu,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioGpu),
       QEMU_CAPS_DEVICE_VIRTIO_GPU },
-    { "virtio-gpu-device", virQEMUCapsObjectPropsVirtioGpu,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioGpu),
+    { "virtio-gpu-device", virQEMUCapsDevicePropsVirtioGpu,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioGpu),
       QEMU_CAPS_DEVICE_VIRTIO_GPU },
-    { "ICH9-LPC", virQEMUCapsObjectPropsICH9,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsICH9),
+    { "ICH9-LPC", virQEMUCapsDevicePropsICH9,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsICH9),
       -1 },
-    { "virtio-balloon-pci", virQEMUCapsObjectPropsVirtioBalloon,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBalloon),
+    { "virtio-balloon-pci", virQEMUCapsDevicePropsVirtioBalloon,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBalloon),
       -1 },
-    { "virtio-balloon-ccw", virQEMUCapsObjectPropsVirtioBalloon,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBalloon),
+    { "virtio-balloon-ccw", virQEMUCapsDevicePropsVirtioBalloon,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBalloon),
       -1 },
-    { "virtio-balloon-device", virQEMUCapsObjectPropsVirtioBalloon,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBalloon),
+    { "virtio-balloon-device", virQEMUCapsDevicePropsVirtioBalloon,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBalloon),
       -1 },
-    { "nec-usb-xhci", virQEMUCapsObjectPropsUSBNECXHCI,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBNECXHCI),
+    { "nec-usb-xhci", virQEMUCapsDevicePropsUSBNECXHCI,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsUSBNECXHCI),
       QEMU_CAPS_NEC_USB_XHCI },
-    { "intel-iommu", virQEMUCapsObjectPropsIntelIOMMU,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsIntelIOMMU),
+    { "intel-iommu", virQEMUCapsDevicePropsIntelIOMMU,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsIntelIOMMU),
       QEMU_CAPS_DEVICE_INTEL_IOMMU },
-    { "spapr-pci-host-bridge", virQEMUCapsObjectPropsSpaprPCIHostBridge,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsSpaprPCIHostBridge),
+    { "spapr-pci-host-bridge", virQEMUCapsDevicePropsSpaprPCIHostBridge,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsSpaprPCIHostBridge),
       QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE },
-    { "virtio-gpu-ccw", virQEMUCapsObjectPropsVirtioGpu,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioGpu),
+    { "virtio-gpu-ccw", virQEMUCapsDevicePropsVirtioGpu,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioGpu),
       QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW },
 };
 
@@ -2068,7 +2068,7 @@ virQEMUCapsProbeQMPEvents(virQEMUCapsPtr qemuCaps,
 
 
 static int
-virQEMUCapsProbeQMPObjects(virQEMUCapsPtr qemuCaps,
+virQEMUCapsProbeQMPDevices(virQEMUCapsPtr qemuCaps,
                            qemuMonitorPtr mon)
 {
     int nvalues;
@@ -2083,20 +2083,20 @@ virQEMUCapsProbeQMPObjects(virQEMUCapsPtr qemuCaps,
                                   nvalues, values);
     virStringListFreeCount(values, nvalues);
 
-    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsObjectProps); i++) {
-        const char *type = virQEMUCapsObjectProps[i].type;
-        int cap = virQEMUCapsObjectProps[i].capsCondition;
+    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsDeviceProps); i++) {
+        const char *device = virQEMUCapsDeviceProps[i].type;
+        int cap = virQEMUCapsDeviceProps[i].capsCondition;
 
         if (cap >= 0 && !virQEMUCapsGet(qemuCaps, cap))
             continue;
 
         if ((nvalues = qemuMonitorGetDeviceProps(mon,
-                                                 type,
+                                                 device,
                                                  &values)) < 0)
             return -1;
         virQEMUCapsProcessStringFlags(qemuCaps,
-                                      virQEMUCapsObjectProps[i].nprops,
-                                      virQEMUCapsObjectProps[i].props,
+                                      virQEMUCapsDeviceProps[i].nprops,
+                                      virQEMUCapsDeviceProps[i].props,
                                       nvalues, values);
         virStringListFreeCount(values, nvalues);
     }
@@ -3833,7 +3833,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     if (virQEMUCapsProbeQMPEvents(qemuCaps, mon) < 0)
         goto cleanup;
-    if (virQEMUCapsProbeQMPObjects(qemuCaps, mon) < 0)
+    if (virQEMUCapsProbeQMPDevices(qemuCaps, mon) < 0)
         goto cleanup;
     if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, mon) < 0)
         goto cleanup;
