@@ -253,6 +253,91 @@ xenTranslateCPUFeature(const char *feature_name, bool from_libxl)
     return feature_name;
 }
 
+static int
+xenParseXLCPUID(virConfPtr conf, virDomainDefPtr def)
+{
+    const char *cpuid_str = NULL;
+    char **cpuid_pairs = NULL;
+    char **name_and_value = NULL;
+    size_t i;
+    int ret = -1;
+    int policy;
+
+    if (xenConfigGetString(conf, "cpuid", &cpuid_str, NULL) < 0)
+        return -1;
+
+    if (!cpuid_str)
+        return 0;
+
+    if (!def->cpu) {
+        if (VIR_ALLOC(def->cpu) < 0)
+            goto cleanup;
+        def->cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
+        def->cpu->type = VIR_CPU_TYPE_GUEST;
+        def->cpu->nfeatures = 0;
+        def->cpu->nfeatures_max = 0;
+    }
+
+    cpuid_pairs = virStringSplit(cpuid_str, ",", 0);
+    if (!cpuid_pairs)
+        goto cleanup;
+
+    if (!cpuid_pairs[0]) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (STRNEQ(cpuid_pairs[0], "host")) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("cpuid starting with %s is not supported, only libxl format is"),
+                       cpuid_pairs[0]);
+        goto cleanup;
+    }
+
+    for (i = 1; cpuid_pairs[i]; i++) {
+        name_and_value = virStringSplit(cpuid_pairs[i], "=", 2);
+        if (!name_and_value)
+            goto cleanup;
+        if (!name_and_value[0] || !name_and_value[1]) {
+            virReportError(VIR_ERR_CONF_SYNTAX,
+                           _("Invalid libxl cpuid key=value element: %s"),
+                           cpuid_pairs[i]);
+            goto cleanup;
+        }
+        if (STREQ(name_and_value[1], "1")) {
+            policy = VIR_CPU_FEATURE_FORCE;
+        } else if (STREQ(name_and_value[1], "0")) {
+            policy = VIR_CPU_FEATURE_DISABLE;
+        } else if (STREQ(name_and_value[1], "x")) {
+            policy = VIR_CPU_FEATURE_OPTIONAL;
+        } else if (STREQ(name_and_value[1], "k")) {
+            policy = VIR_CPU_FEATURE_OPTIONAL;
+        } else if (STREQ(name_and_value[1], "s")) {
+            policy = VIR_CPU_FEATURE_OPTIONAL;
+        } else {
+            virReportError(VIR_ERR_CONF_SYNTAX,
+                           _("Invalid libxl cpuid value: %s"),
+                           cpuid_pairs[i]);
+            goto cleanup;
+        }
+
+        if (virCPUDefAddFeature(def->cpu,
+                                xenTranslateCPUFeature(name_and_value[0], true),
+                                policy) < 0)
+            goto cleanup;
+
+        virStringListFree(name_and_value);
+        name_and_value = NULL;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virStringListFree(name_and_value);
+    virStringListFree(cpuid_pairs);
+    return ret;
+}
+
 
 static int
 xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
@@ -1089,6 +1174,9 @@ xenParseXL(virConfPtr conf,
         goto cleanup;
 #endif
 
+    if (xenParseXLCPUID(conf, def) < 0)
+        goto cleanup;
+
     if (xenParseXLDisk(conf, def) < 0)
         goto cleanup;
 
@@ -1229,6 +1317,79 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
      } /* !hvm */
 
     return 0;
+}
+
+static int
+xenFormatXLCPUID(virConfPtr conf, virDomainDefPtr def)
+{
+    char **cpuid_pairs = NULL;
+    char *cpuid_string = NULL;
+    size_t i, j;
+    int ret = -1;
+
+    if (!def->cpu)
+        return 0;
+
+    if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+        VIR_WARN("ignoring CPU mode '%s', only host-passthrough mode "
+                 "is supported", virCPUModeTypeToString(def->cpu->mode));
+        return 0;
+    }
+
+    /* "host" + all features + NULL */
+    if (VIR_ALLOC_N(cpuid_pairs, def->cpu->nfeatures + 2) < 0)
+        return -1;
+
+    if (VIR_STRDUP(cpuid_pairs[0], "host") < 0)
+        goto cleanup;
+
+    j = 1;
+    for (i = 0; i < def->cpu->nfeatures; i++) {
+        const char *feature_name = xenTranslateCPUFeature(
+                def->cpu->features[i].name,
+                false);
+        const char *policy = NULL;
+
+        if (STREQ(feature_name, "vmx") || STREQ(feature_name, "svm"))
+            /* ignore vmx/svm in cpuid option, translated into nestedhvm
+             * elsewhere */
+            continue;
+
+        switch (def->cpu->features[i].policy) {
+            case VIR_CPU_FEATURE_FORCE:
+            case VIR_CPU_FEATURE_REQUIRE:
+                policy = "1";
+                break;
+            case VIR_CPU_FEATURE_OPTIONAL:
+                policy = "x";
+                break;
+            case VIR_CPU_FEATURE_DISABLE:
+            case VIR_CPU_FEATURE_FORBID:
+                policy = "0";
+                break;
+        }
+        if (virAsprintf(&cpuid_pairs[j++], "%s=%s",
+                        feature_name,
+                        policy) < 0)
+            goto cleanup;
+    }
+    cpuid_pairs[j] = NULL;
+
+    if (j > 1) {
+        cpuid_string = virStringListJoin((const char **)cpuid_pairs, ",");
+        if (!cpuid_string)
+            goto cleanup;
+
+        if (xenConfigSetString(conf, "cpuid", cpuid_string) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virStringListFree(cpuid_pairs);
+    VIR_FREE(cpuid_string);
+    return ret;
 }
 
 #ifdef LIBXL_HAVE_VNUMA
@@ -1999,6 +2160,9 @@ xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
         goto cleanup;
 
     if (xenFormatXLOS(conf, def) < 0)
+        goto cleanup;
+
+    if (xenFormatXLCPUID(conf, def) < 0)
         goto cleanup;
 
 #ifdef LIBXL_HAVE_VNUMA
