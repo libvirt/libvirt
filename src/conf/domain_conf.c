@@ -934,7 +934,7 @@ VIR_ENUM_IMPL(virDomainShmemModel, VIR_DOMAIN_SHMEM_MODEL_LAST,
 static virClassPtr virDomainObjClass;
 static virClassPtr virDomainXMLOptionClass;
 static void virDomainObjDispose(void *obj);
-static void virDomainXMLOptionClassDispose(void *obj);
+static void virDomainXMLOptionDispose(void *obj);
 
 static int virDomainObjOnceInit(void)
 {
@@ -947,7 +947,7 @@ static int virDomainObjOnceInit(void)
     if (!(virDomainXMLOptionClass = virClassNew(virClassForObject(),
                                                 "virDomainXMLOption",
                                                 sizeof(virDomainXMLOption),
-                                                virDomainXMLOptionClassDispose)))
+                                                virDomainXMLOptionDispose)))
         return -1;
 
     return 0;
@@ -957,7 +957,7 @@ VIR_ONCE_GLOBAL_INIT(virDomainObj)
 
 
 static void
-virDomainXMLOptionClassDispose(void *obj)
+virDomainXMLOptionDispose(void *obj)
 {
     virDomainXMLOptionPtr xmlopt = obj;
 

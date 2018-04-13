@@ -58,14 +58,14 @@ VIR_ENUM_IMPL(virCapsHostPMTarget, VIR_NODE_SUSPEND_TARGET_LAST,
               "suspend_mem", "suspend_disk", "suspend_hybrid");
 
 static virClassPtr virCapsClass;
-static void virCapabilitiesDispose(void *obj);
+static void virCapsDispose(void *obj);
 
 static int virCapabilitiesOnceInit(void)
 {
     if (!(virCapsClass = virClassNew(virClassForObject(),
                                      "virCaps",
                                      sizeof(virCaps),
-                                     virCapabilitiesDispose)))
+                                     virCapsDispose)))
         return -1;
 
     return 0;
@@ -215,7 +215,7 @@ virCapabilitiesClearSecModel(virCapsHostSecModelPtr secmodel)
 }
 
 static void
-virCapabilitiesDispose(void *object)
+virCapsDispose(void *object)
 {
     virCapsPtr caps = object;
     size_t i;
