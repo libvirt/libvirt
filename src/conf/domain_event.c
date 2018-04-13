@@ -270,13 +270,13 @@ struct _virDomainEventDeviceRemovalFailed {
 typedef struct _virDomainEventDeviceRemovalFailed virDomainEventDeviceRemovalFailed;
 typedef virDomainEventDeviceRemovalFailed *virDomainEventDeviceRemovalFailedPtr;
 
-struct _virDomainEventMetadataCange {
+struct _virDomainEventMetadataChange {
     virDomainEvent parent;
 
     int type;
     char *nsuri;
 };
-typedef struct _virDomainEventMetadataCange virDomainEventMetadataChange;
+typedef struct _virDomainEventMetadataChange virDomainEventMetadataChange;
 typedef virDomainEventMetadataChange *virDomainEventMetadataChangePtr;
 
 struct _virDomainEventBlockThreshold {
