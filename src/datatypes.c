@@ -653,7 +653,7 @@ virNodeDeviceDispose(void *obj)
     VIR_DEBUG("release dev %p %s", dev, dev->name);
 
     VIR_FREE(dev->name);
-    VIR_FREE(dev->parent);
+    VIR_FREE(dev->parentName);
 
     virObjectUnref(dev->conn);
 }

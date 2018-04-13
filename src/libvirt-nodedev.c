@@ -346,16 +346,16 @@ virNodeDeviceGetParent(virNodeDevicePtr dev)
 
     virCheckNodeDeviceReturn(dev, NULL);
 
-    if (!dev->parent) {
+    if (!dev->parentName) {
         if (dev->conn->nodeDeviceDriver && dev->conn->nodeDeviceDriver->nodeDeviceGetParent) {
-            dev->parent = dev->conn->nodeDeviceDriver->nodeDeviceGetParent(dev);
+            dev->parentName = dev->conn->nodeDeviceDriver->nodeDeviceGetParent(dev);
         } else {
             virReportUnsupportedError();
             virDispatchError(dev->conn);
             return NULL;
         }
     }
-    return dev->parent;
+    return dev->parentName;
 }
 
 

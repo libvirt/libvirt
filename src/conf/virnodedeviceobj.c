@@ -870,7 +870,7 @@ virNodeDeviceObjListExportCallback(void *payload,
         virNodeDeviceMatch(obj, data->flags)) {
         if (data->devices) {
             if (!(device = virGetNodeDevice(data->conn, def->name)) ||
-                VIR_STRDUP(device->parent, def->parent) < 0) {
+                VIR_STRDUP(device->parentName, def->parent) < 0) {
                 virObjectUnref(device);
                 data->error = true;
                 goto cleanup;

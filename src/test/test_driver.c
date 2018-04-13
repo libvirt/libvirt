@@ -5416,7 +5416,7 @@ testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
     def = virNodeDeviceObjGetDef(obj);
 
     if ((ret = virGetNodeDevice(conn, name))) {
-        if (VIR_STRDUP(ret->parent, def->parent) < 0) {
+        if (VIR_STRDUP(ret->parentName, def->parent) < 0) {
             virObjectUnref(ret);
             ret = NULL;
         }
@@ -5641,8 +5641,8 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     if (!(dev = virGetNodeDevice(conn, objdef->name)))
         goto cleanup;
 
-    VIR_FREE(dev->parent);
-    if (VIR_STRDUP(dev->parent, def->parent) < 0)
+    VIR_FREE(dev->parentName);
+    if (VIR_STRDUP(dev->parentName, def->parent) < 0)
         goto cleanup;
 
     ret = dev;

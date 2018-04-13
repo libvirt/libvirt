@@ -2028,7 +2028,7 @@ struct remote_node_device_get_parent_args {
 };
 
 struct remote_node_device_get_parent_ret {
-    remote_string parent;
+    remote_string parentName;
 };
 
 struct remote_node_device_num_of_caps_args {

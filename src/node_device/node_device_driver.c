@@ -256,7 +256,7 @@ nodeDeviceLookupByName(virConnectPtr conn,
         goto cleanup;
 
     if ((device = virGetNodeDevice(conn, name))) {
-        if (VIR_STRDUP(device->parent, def->parent) < 0) {
+        if (VIR_STRDUP(device->parentName, def->parent) < 0) {
             virObjectUnref(device);
             device = NULL;
         }
@@ -290,7 +290,7 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
         goto cleanup;
 
     if ((device = virGetNodeDevice(conn, def->name))) {
-        if (VIR_STRDUP(device->parent, def->parent) < 0) {
+        if (VIR_STRDUP(device->parentName, def->parent) < 0) {
             virObjectUnref(device);
             device = NULL;
         }

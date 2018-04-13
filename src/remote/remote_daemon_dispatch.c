@@ -3805,7 +3805,7 @@ remoteDispatchNodeDeviceGetParent(virNetServerPtr server ATTRIBUTE_UNUSED,
     parent = virNodeDeviceGetParent(dev);
 
     if (parent == NULL) {
-        ret->parent = NULL;
+        ret->parentName = NULL;
     } else {
         /* remoteDispatchClientRequest will free this. */
         char **parent_p;
@@ -3815,7 +3815,7 @@ remoteDispatchNodeDeviceGetParent(virNetServerPtr server ATTRIBUTE_UNUSED,
             VIR_FREE(parent_p);
             goto cleanup;
         }
-        ret->parent = parent_p;
+        ret->parentName = parent_p;
     }
 
     rv = 0;

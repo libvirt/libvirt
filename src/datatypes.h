@@ -618,7 +618,7 @@ struct _virNodeDevice {
     virObject object;
     virConnectPtr conn;                 /* pointer back to the connection */
     char *name;                         /* device name (unique on node) */
-    char *parent;                       /* parent device name */
+    char *parentName;                   /* parent device name */
 };
 
 /**
