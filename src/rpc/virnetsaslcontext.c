@@ -52,6 +52,7 @@ struct _virNetSASLSession {
 
 static virClassPtr virNetSASLContextClass;
 static virClassPtr virNetSASLSessionClass;
+static void virNetSASLContextDispose(void *obj);
 static void virNetSASLSessionDispose(void *obj);
 
 static int virNetSASLContextOnceInit(void)
@@ -59,7 +60,7 @@ static int virNetSASLContextOnceInit(void)
     if (!(virNetSASLContextClass = virClassNew(virClassForObjectLockable(),
                                                "virNetSASLContext",
                                                sizeof(virNetSASLContext),
-                                               NULL)))
+                                               virNetSASLContextDispose)))
         return -1;
 
     if (!(virNetSASLSessionClass = virClassNew(virClassForObjectLockable(),
@@ -684,6 +685,11 @@ ssize_t virNetSASLSessionDecode(virNetSASLSessionPtr sasl,
  cleanup:
     virObjectUnlock(sasl);
     return ret;
+}
+
+void virNetSASLContextDispose(void *obj ATTRIBUTE_UNUSED)
+{
+    return;
 }
 
 void virNetSASLSessionDispose(void *obj)
