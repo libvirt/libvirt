@@ -649,16 +649,10 @@ virQEMUCapsFindBinary(const char *format,
     char *binary = NULL;
 
     if (virAsprintf(&binary, format, archstr) < 0)
-        goto out;
+        return NULL;
 
     ret = virFindFileInPath(binary);
     VIR_FREE(binary);
-    if (ret && virFileIsExecutable(ret))
-        goto out;
-
-    VIR_FREE(ret);
-
- out:
     return ret;
 }
 

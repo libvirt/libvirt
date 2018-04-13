@@ -179,8 +179,6 @@ virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps)
     binary = virFindFileInPath("grub-bhyve");
     if (binary == NULL)
         goto out;
-    if (!virFileIsExecutable(binary))
-        goto out;
 
     cmd = virCommandNew(binary);
     virCommandAddArg(cmd, "--help");
@@ -314,8 +312,6 @@ virBhyveProbeCaps(unsigned int *caps)
 
     binary = virFindFileInPath("bhyve");
     if (binary == NULL)
-        goto out;
-    if (!virFileIsExecutable(binary))
         goto out;
 
     if ((ret = bhyveProbeCapsRTC_UTC(caps, binary)))
