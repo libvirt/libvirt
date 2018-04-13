@@ -321,6 +321,11 @@ sc_prohibit_internal_functions:
 	halt='use VIR_ macros instead of internal functions' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_raw_virclassnew:
+	@prohibit='virClassNew *\(' \
+	halt='use VIR_CLASS_NEW instead of virClassNew' \
+	  $(_sc_search_regexp)
+
 # Avoid raw malloc and free, except in documentation comments.
 sc_prohibit_raw_allocation:
 	@prohibit='^.[^*].*\<((m|c|re)alloc|free) *\([^)]' \
@@ -1187,6 +1192,9 @@ exclude_file_name_regexp--sc_prohibit_gethostname = ^src/util/vir(util|log)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_internal_functions = \
   ^src/(util/(viralloc|virutil|virfile)\.[hc]|esx/esx_vi\.c)$$
+
+exclude_file_name_regexp--sc_prohibit_raw_virclassnew = \
+  ^src/util/virobject\.[hc]$$
 
 exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
   ^src/rpc/gendispatch\.pl$$
