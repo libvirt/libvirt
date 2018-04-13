@@ -34,7 +34,7 @@
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 struct _virNetServerService {
-    virObject object;
+    virObject parent;
 
     size_t nsocks;
     virNetSocketPtr *socks;

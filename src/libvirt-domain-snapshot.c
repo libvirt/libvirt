@@ -1159,7 +1159,7 @@ int
 virDomainSnapshotRef(virDomainSnapshotPtr snapshot)
 {
     VIR_DEBUG("snapshot=%p, refs=%d", snapshot,
-              snapshot ? snapshot->object.u.s.refs : 0);
+              snapshot ? snapshot->parent.u.s.refs : 0);
 
     virResetLastError();
 

@@ -659,7 +659,7 @@ int
 virSecretRef(virSecretPtr secret)
 {
     VIR_DEBUG("secret=%p refs=%d", secret,
-              secret ? secret->object.u.s.refs : 0);
+              secret ? secret->parent.u.s.refs : 0);
 
     virResetLastError();
 

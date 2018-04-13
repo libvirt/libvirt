@@ -620,7 +620,7 @@ dnsmasqReload(pid_t pid ATTRIBUTE_UNUSED)
  *
  */
 struct _dnsmasqCaps {
-    virObject object;
+    virObject parent;
     char *binaryPath;
     bool noRefresh;
     time_t mtime;

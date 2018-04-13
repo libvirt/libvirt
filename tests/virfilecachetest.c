@@ -28,7 +28,7 @@
 
 
 struct _testFileCacheObj {
-    virObject object;
+    virObject parent;
     char *data;
 };
 typedef struct _testFileCacheObj testFileCacheObj;

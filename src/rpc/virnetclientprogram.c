@@ -40,7 +40,7 @@
 VIR_LOG_INIT("rpc.netclientprogram");
 
 struct _virNetClientProgram {
-    virObject object;
+    virObject parent;
 
     unsigned program;
     unsigned version;

@@ -504,7 +504,7 @@ int
 virNWFilterRef(virNWFilterPtr nwfilter)
 {
     VIR_DEBUG("nwfilter=%p refs=%d", nwfilter,
-              nwfilter ? nwfilter->object.u.s.refs : 0);
+              nwfilter ? nwfilter->parent.u.s.refs : 0);
 
     virResetLastError();
 

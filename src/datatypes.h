@@ -453,7 +453,7 @@ struct _virAdmConnectCloseCallbackData {
  * Internal structure associated to a connection
  */
 struct _virConnect {
-    virObjectLockable object;
+    virObjectLockable parent;
 
     /* All the variables from here, until declared otherwise in one of
      * the following comments, are setup at time of connection open
@@ -496,7 +496,7 @@ struct _virConnect {
  * Internal structure associated to an admin connection
  */
 struct _virAdmConnect {
-    virObjectLockable object;
+    virObjectLockable parent;
     virURIPtr uri;
 
     void *privateData;
@@ -512,7 +512,7 @@ struct _virAdmConnect {
  * Internal structure associated to a daemon server
  */
 struct _virAdmServer {
-    virObject object;
+    virObject parent;
     virAdmConnectPtr conn;          /* pointer back to the admin connection */
     char *name;                     /* the server external name */
 };
@@ -523,7 +523,7 @@ struct _virAdmServer {
  * Internal structure associated to a client connected to daemon
  */
 struct _virAdmClient {
-    virObject object;
+    virObject parent;
     virAdmServerPtr srv;            /* pointer to the server client is
                                      * connected to, which also holds a
                                      * reference back to the admin connection
@@ -539,7 +539,7 @@ struct _virAdmClient {
 * Internal structure associated to a domain
 */
 struct _virDomain {
-    virObject object;
+    virObject parent;
     virConnectPtr conn;                  /* pointer back to the connection */
     char *name;                          /* the domain external name */
     int id;                              /* the domain ID */
@@ -552,7 +552,7 @@ struct _virDomain {
 * Internal structure associated to a domain
 */
 struct _virNetwork {
-    virObject object;
+    virObject parent;
     virConnectPtr conn;                  /* pointer back to the connection */
     char *name;                          /* the network external name */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the network unique identifier */
@@ -564,7 +564,7 @@ struct _virNetwork {
 * Internal structure associated to a physical host interface
 */
 struct _virInterface {
-    virObject object;
+    virObject parent;
     virConnectPtr conn;                  /* pointer back to the connection */
     char *name;                          /* the network external name */
     char *mac;                           /* the interface MAC address */
@@ -576,7 +576,7 @@ struct _virInterface {
 * Internal structure associated to a storage pool
 */
 struct _virStoragePool {
-    virObject object;
+    virObject parent;
     virConnectPtr conn;                  /* pointer back to the connection */
     char *name;                          /* the storage pool external name */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the storage pool unique identifier */
@@ -595,7 +595,7 @@ struct _virStoragePool {
 * Internal structure associated to a storage volume
 */
 struct _virStorageVol {
-    virObject object;
+    virObject parent;
     virConnectPtr conn;                  /* pointer back to the connection */
     char *pool;                          /* Pool name of owner */
     char *name;                          /* the storage vol external name */
@@ -615,7 +615,7 @@ struct _virStorageVol {
  * Internal structure associated with a node device
  */
 struct _virNodeDevice {
-    virObject object;
+    virObject parent;
     virConnectPtr conn;                 /* pointer back to the connection */
     char *name;                         /* device name (unique on node) */
     char *parentName;                   /* parent device name */
@@ -627,7 +627,7 @@ struct _virNodeDevice {
  * Internal structure associated with a secret
  */
 struct _virSecret {
-    virObject object;
+    virObject parent;
     virConnectPtr conn;                  /* pointer back to the connection */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the secret unique identifier */
     int usageType;                       /* the type of usage */
@@ -644,7 +644,7 @@ typedef int (*virStreamFinishFunc)(virStreamPtr, void *opaque);
  * Internal structure associated with an input stream
  */
 struct _virStream {
-    virObject object;
+    virObject parent;
     virConnectPtr conn;
     unsigned int flags;
 
@@ -658,7 +658,7 @@ struct _virStream {
  * Internal structure associated with a domain snapshot
  */
 struct _virDomainSnapshot {
-    virObject object;
+    virObject parent;
     char *name;
     virDomainPtr domain;
 };
@@ -669,7 +669,7 @@ struct _virDomainSnapshot {
 * Internal structure associated to a network filter
 */
 struct _virNWFilter {
-    virObject object;
+    virObject parent;
     virConnectPtr conn;                  /* pointer back to the connection */
     char *name;                          /* the network filter external name */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the network filter unique identifier */

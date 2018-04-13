@@ -679,7 +679,7 @@ int
 virNetworkRef(virNetworkPtr network)
 {
     VIR_DEBUG("network=%p refs=%d", network,
-              network ? network->object.u.s.refs : 0);
+              network ? network->parent.u.s.refs : 0);
 
     virResetLastError();
 

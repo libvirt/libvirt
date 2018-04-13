@@ -340,7 +340,7 @@ int
 virAdmConnectRef(virAdmConnectPtr conn)
 {
     VIR_DEBUG("conn=%p refs=%d", conn,
-              conn ? conn->object.parent.u.s.refs : 0);
+              conn ? conn->parent.parent.u.s.refs : 0);
 
     virResetLastError();
     virCheckAdmConnectReturn(conn, -1);

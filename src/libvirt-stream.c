@@ -86,7 +86,7 @@ int
 virStreamRef(virStreamPtr stream)
 {
     VIR_DEBUG("stream=%p refs=%d", stream,
-              stream ? stream->object.u.s.refs : 0);
+              stream ? stream->parent.u.s.refs : 0);
 
     virResetLastError();
 

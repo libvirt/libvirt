@@ -868,7 +868,7 @@ virStoragePoolFree(virStoragePoolPtr pool)
 int
 virStoragePoolRef(virStoragePoolPtr pool)
 {
-    VIR_DEBUG("pool=%p refs=%d", pool, pool ? pool->object.u.s.refs : 0);
+    VIR_DEBUG("pool=%p refs=%d", pool, pool ? pool->parent.u.s.refs : 0);
 
     virResetLastError();
 
@@ -1904,7 +1904,7 @@ virStorageVolFree(virStorageVolPtr vol)
 int
 virStorageVolRef(virStorageVolPtr vol)
 {
-    VIR_DEBUG("vol=%p refs=%d", vol, vol ? vol->object.u.s.refs : 0);
+    VIR_DEBUG("vol=%p refs=%d", vol, vol ? vol->parent.u.s.refs : 0);
 
     virResetLastError();
 
