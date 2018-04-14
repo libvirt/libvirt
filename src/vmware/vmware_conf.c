@@ -33,6 +33,11 @@
 #include "vmx.h"
 #include "vmware_conf.h"
 #include "virstring.h"
+#include "virlog.h"
+
+#define VIR_FROM_THIS VIR_FROM_VMWARE
+
+VIR_LOG_INIT("vmware.vmware_conf");
 
 VIR_ENUM_IMPL(vmwareDriver, VMWARE_DRIVER_LAST,
               "player",
@@ -69,7 +74,7 @@ vmwareCapsInit(void)
         goto error;
 
     if (virCapabilitiesInitCaches(caps) < 0)
-        goto error;
+        VIR_WARN("Failed to get host CPU cache info");
 
     /* i686 guests are always supported */
     if ((guest = virCapabilitiesAddGuest(caps,
