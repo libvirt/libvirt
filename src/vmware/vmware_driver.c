@@ -127,6 +127,7 @@ vmwareConnectOpen(virConnectPtr conn,
     struct vmware_driver *driver;
     size_t i;
     char *tmp;
+    char *vmrun = NULL;
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -149,7 +150,14 @@ vmwareConnectOpen(virConnectPtr conn,
      * for auto detection of the backend
      */
     for (i = 0; i < ARRAY_CARDINALITY(vmrun_candidates); i++) {
-        driver->vmrun = virFindFileInPath(vmrun_candidates[i]);
+        vmrun = virFindFileInPath(vmrun_candidates[i]);
+        if (vmrun == NULL)
+            continue;
+        if (virFileResolveLink(vmrun, &driver->vmrun) < 0) {
+            virReportSystemError(errno, _("unable to resolve symlink '%s'"), vmrun);
+            goto cleanup;
+        }
+        VIR_FREE(vmrun);
         /* If we found one, we can stop looking */
         if (driver->vmrun)
             break;
@@ -200,6 +208,7 @@ vmwareConnectOpen(virConnectPtr conn,
 
  cleanup:
     vmwareFreeDriver(driver);
+    VIR_FREE(vmrun);
     return VIR_DRV_OPEN_ERROR;
 };
 
