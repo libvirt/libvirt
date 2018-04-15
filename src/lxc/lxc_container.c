@@ -574,7 +574,7 @@ static int lxcContainerUnmountSubtree(const char *prefix,
     const char *failedUmount = NULL;
     int ret = -1;
 
-    VIR_DEBUG("Unmount subtreee from %s", prefix);
+    VIR_DEBUG("Unmount subtree from %s", prefix);
 
     if (virFileGetMountReverseSubtree("/proc/mounts", prefix,
                                       &mounts, &nmounts) < 0)
