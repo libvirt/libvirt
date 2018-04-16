@@ -129,6 +129,8 @@ virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
         else
             vshError(ctl, _("failed to get vol '%s', specifying --%s "
                             "might help"), n, pooloptname);
+    } else {
+        vshResetLibvirtError();
     }
 
     /* If the pool was specified, then make sure that the returned
