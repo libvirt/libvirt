@@ -2351,7 +2351,8 @@ qemuBuildFSStr(virDomainFSDefPtr fs)
         virBufferAsprintf(&opt, ",writeout=%s", wrpolicy);
 
     virBufferAsprintf(&opt, ",id=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
-    virBufferAsprintf(&opt, ",path=%s", fs->src->path);
+    virBufferAddLit(&opt, ",path=");
+    virQEMUBuildBufferEscapeComma(&opt, fs->src->path);
 
     if (fs->readonly)
         virBufferAddLit(&opt, ",readonly");
@@ -2388,7 +2389,8 @@ qemuBuildFSDevStr(const virDomainDef *def,
     virBufferAsprintf(&opt, ",id=%s", fs->info.alias);
     virBufferAsprintf(&opt, ",fsdev=%s%s",
                       QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
-    virBufferAsprintf(&opt, ",mount_tag=%s", fs->dst);
+    virBufferAddLit(&opt, ",mount_tag=");
+    virQEMUBuildBufferEscapeComma(&opt, fs->dst);
 
     if (qemuBuildVirtioOptionsStr(&opt, fs->virtio, qemuCaps) < 0)
         goto error;
