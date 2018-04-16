@@ -9312,9 +9312,9 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
                                  NULL);
         }
 
-        virBufferAsprintf(&buf,
-                          "file=%s,if=pflash,format=raw,unit=%d",
-                          loader->path, unit);
+        virBufferAddLit(&buf, "file=");
+        virQEMUBuildBufferEscapeComma(&buf, loader->path);
+        virBufferAsprintf(&buf, ",if=pflash,format=raw,unit=%d", unit);
         unit++;
 
         if (loader->readonly) {
@@ -9327,9 +9327,9 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
 
         if (loader->nvram) {
             virBufferFreeAndReset(&buf);
-            virBufferAsprintf(&buf,
-                              "file=%s,if=pflash,format=raw,unit=%d",
-                              loader->nvram, unit);
+            virBufferAddLit(&buf, "file=");
+            virQEMUBuildBufferEscapeComma(&buf, loader->nvram);
+            virBufferAsprintf(&buf, ",if=pflash,format=raw,unit=%d", unit);
 
             virCommandAddArg(cmd, "-drive");
             virCommandAddArgBuffer(cmd, &buf);
