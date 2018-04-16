@@ -106,7 +106,6 @@ struct _qemuAgent {
     int fd;
     int watch;
 
-    bool connectPending;
     bool running;
 
     virDomainObjPtr vm;
@@ -180,14 +179,11 @@ static void qemuAgentDispose(void *obj)
 }
 
 static int
-qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
+qemuAgentOpenUnix(const char *monitor)
 {
     struct sockaddr_un addr;
     int monfd;
-    virTimeBackOffVar timeout;
     int ret = -1;
-
-    *inProgress = false;
 
     if ((monfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
         virReportSystemError(errno,
@@ -217,38 +213,10 @@ qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
         goto error;
     }
 
-    if (virTimeBackOffStart(&timeout, 1, 3*1000 /* ms */) < 0)
-        goto error;
-    while (virTimeBackOffWait(&timeout)) {
-        ret = connect(monfd, (struct sockaddr *)&addr, sizeof(addr));
-
-        if (ret == 0)
-            break;
-
-        if ((errno == ENOENT || errno == ECONNREFUSED) &&
-            virProcessKill(cpid, 0) == 0) {
-            /* ENOENT       : Socket may not have shown up yet
-             * ECONNREFUSED : Leftover socket hasn't been removed yet */
-            continue;
-        }
-
-        if ((errno == EINPROGRESS) ||
-            (errno == EAGAIN)) {
-            VIR_DEBUG("Connection attempt continuing in background");
-            *inProgress = true;
-            ret = 0;
-            break;
-        }
-
+    ret = connect(monfd, (struct sockaddr *)&addr, sizeof(addr));
+    if (ret < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to connect to monitor socket"));
-        goto error;
-
-    }
-
-    if (ret != 0) {
-        virReportSystemError(errno, "%s",
-                             _("monitor socket did not show up"));
         goto error;
     }
 
@@ -470,35 +438,6 @@ qemuAgentIOProcess(qemuAgentPtr mon)
 }
 
 
-static int
-qemuAgentIOConnect(qemuAgentPtr mon)
-{
-    int optval;
-    socklen_t optlen;
-
-    VIR_DEBUG("Checking on background connection status");
-
-    mon->connectPending = false;
-
-    optlen = sizeof(optval);
-
-    if (getsockopt(mon->fd, SOL_SOCKET, SO_ERROR,
-                   &optval, &optlen) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Cannot check socket connection status"));
-        return -1;
-    }
-
-    if (optval != 0) {
-        virReportSystemError(optval, "%s",
-                             _("Cannot connect to agent socket"));
-        return -1;
-    }
-
-    VIR_DEBUG("Agent is now connected");
-    return 0;
-}
-
 /*
  * Called when the monitor is able to write data
  * Call this function while holding the monitor lock.
@@ -630,13 +569,8 @@ qemuAgentIO(int watch, int fd, int events, void *opaque)
         error = true;
     } else {
         if (events & VIR_EVENT_HANDLE_WRITABLE) {
-            if (mon->connectPending) {
-                if (qemuAgentIOConnect(mon) < 0)
-                    error = true;
-            } else {
-                if (qemuAgentIOWrite(mon) < 0)
-                    error = true;
-            }
+            if (qemuAgentIOWrite(mon) < 0)
+                error = true;
             events &= ~VIR_EVENT_HANDLE_WRITABLE;
         }
 
@@ -768,8 +702,7 @@ qemuAgentOpen(virDomainObjPtr vm,
 
     switch (config->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        mon->fd = qemuAgentOpenUnix(config->data.nix.path, vm->pid,
-                                    &mon->connectPending);
+        mon->fd = qemuAgentOpenUnix(config->data.nix.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
@@ -790,10 +723,7 @@ qemuAgentOpen(virDomainObjPtr vm,
     if ((mon->watch = virEventAddHandle(mon->fd,
                                         VIR_EVENT_HANDLE_HANGUP |
                                         VIR_EVENT_HANDLE_ERROR |
-                                        VIR_EVENT_HANDLE_READABLE |
-                                        (mon->connectPending ?
-                                         VIR_EVENT_HANDLE_WRITABLE :
-                                         0),
+                                        VIR_EVENT_HANDLE_READABLE,
                                         qemuAgentIO,
                                         mon,
                                         virObjectFreeCallback)) < 0) {
