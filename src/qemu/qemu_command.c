@@ -7657,10 +7657,13 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
 
     if (cfg->vncTLS) {
         virBufferAddLit(&opt, ",tls");
-        if (cfg->vncTLSx509verify)
-            virBufferAsprintf(&opt, ",x509verify=%s", cfg->vncTLSx509certdir);
-        else
-            virBufferAsprintf(&opt, ",x509=%s", cfg->vncTLSx509certdir);
+        if (cfg->vncTLSx509verify) {
+            virBufferAddLit(&opt, ",x509verify=");
+            virQEMUBuildBufferEscapeComma(&opt, cfg->vncTLSx509certdir);
+        } else {
+            virBufferAddLit(&opt, ",x509=");
+            virQEMUBuildBufferEscapeComma(&opt, cfg->vncTLSx509certdir);
+        }
     }
 
     if (cfg->vncSASL) {
