@@ -459,8 +459,10 @@ qemuBuildRomStr(virBufferPtr buf,
         default:
             break;
         }
-        if (info->romfile)
-           virBufferAsprintf(buf, ",romfile=%s", info->romfile);
+        if (info->romfile) {
+           virBufferAddLit(buf, ",romfile=");
+           virQEMUBuildBufferEscapeComma(buf, info->romfile);
+        }
     }
     return 0;
 }
