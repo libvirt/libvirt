@@ -11199,7 +11199,7 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
     }
 
     if (qemuDomainNamespaceMknodPaths(vm, paths, npaths) < 0)
-        return -1;
+        goto cleanup;
 
     ret = 0;
  cleanup:
