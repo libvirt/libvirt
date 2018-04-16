@@ -2114,11 +2114,15 @@ qemuBuildDriveDevStr(const virDomainDef *def,
             virBufferAsprintf(&opt, ",wwn=0x%s", disk->wwn);
     }
 
-    if (disk->vendor)
-        virBufferAsprintf(&opt, ",vendor=%s", disk->vendor);
+    if (disk->vendor) {
+        virBufferAddLit(&opt, ",vendor=");
+        virQEMUBuildBufferEscapeComma(&opt, disk->vendor);
+    }
 
-    if (disk->product)
-        virBufferAsprintf(&opt, ",product=%s", disk->product);
+    if (disk->product) {
+        virBufferAddLit(&opt, ",product=");
+        virQEMUBuildBufferEscapeComma(&opt, disk->product);
+    }
 
     if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_REMOVABLE)) {
