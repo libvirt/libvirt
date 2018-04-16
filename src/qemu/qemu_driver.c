@@ -16827,13 +16827,12 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     if (save)
         ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps));
 
-    /* With synchronous block cancel, we must synthesize an event, and
-     * we silently ignore the ABORT_ASYNC flag.  With asynchronous
-     * block cancel, the event will come from qemu and will update the
-     * XML as appropriate, but without the ABORT_ASYNC flag, we must
-     * block to guarantee synchronous operation.  We do the waiting
-     * while still holding the VM job, to prevent newly scheduled
-     * block jobs from confusing us.  */
+    /*
+     * With the ABORT_ASYNC flag we don't need to do anything, the event will
+     * come from qemu and will update the XML as appropriate, but without the
+     * ABORT_ASYNC flag, we must block to guarantee synchronous operation.  We
+     * do the waiting while still holding the VM job, to prevent newly
+     * scheduled block jobs from confusing us. */
     if (!async) {
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         qemuBlockJobUpdate(vm, QEMU_ASYNC_JOB_NONE, disk, NULL);
