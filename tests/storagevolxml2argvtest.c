@@ -180,10 +180,10 @@ mymain(void)
     unsigned int flags = VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA;
 
 #define DO_TEST_FULL(shouldFail, parseflags, pool, vol, inputpool, inputvol, \
-                     cmdline, flags, imgformat) \
+                     cmdline, flags) \
     do { \
         struct testInfo info = { shouldFail, pool, vol, inputpool, inputvol, \
-                                 cmdline, flags, imgformat, parseflags }; \
+                                 cmdline, flags, FMT_COMPAT, parseflags }; \
         if (virTestRun("Storage Vol XML-2-argv " cmdline, \
                        testCompareXMLToArgvHelper, &info) < 0) \
             ret = -1; \
@@ -198,47 +198,47 @@ mymain(void)
 
     DO_TEST("pool-dir", "vol-qcow2",
             NULL, NULL,
-            "qcow2-compat", 0, FMT_COMPAT);
+            "qcow2-compat", 0);
     DO_TEST("pool-dir", "vol-qcow2-nobacking",
             NULL, NULL,
-            "qcow2-nobacking-prealloc-compat", flags, FMT_COMPAT);
+            "qcow2-nobacking-prealloc-compat", flags);
     DO_TEST("pool-dir", "vol-qcow2-nobacking",
             "pool-dir", "vol-file",
-            "qcow2-nobacking-convert-prealloc-compat", flags, FMT_COMPAT);
+            "qcow2-nobacking-convert-prealloc-compat", flags);
     DO_TEST("pool-dir", "vol-qcow2-lazy",
             NULL, NULL,
-            "qcow2-lazy", 0, FMT_COMPAT);
+            "qcow2-lazy", 0);
     DO_TEST("pool-dir", "vol-qcow2-1.1",
             NULL, NULL,
-            "qcow2-1.1", 0, FMT_COMPAT);
+            "qcow2-1.1", 0);
     DO_TEST_FAIL("pool-dir", "vol-qcow2-0.10-lazy",
                  NULL, NULL,
-                 "qcow2-0.10-lazy", 0, FMT_COMPAT);
+                 "qcow2-0.10-lazy", 0);
     DO_TEST("pool-dir", "vol-qcow2-nobacking",
             "pool-logical", "vol-logical",
-            "qcow2-from-logical-compat", 0, FMT_COMPAT);
+            "qcow2-from-logical-compat", 0);
     DO_TEST("pool-logical", "vol-logical",
             "pool-dir", "vol-qcow2-nobacking",
-            "logical-from-qcow2", 0, FMT_COMPAT);
+            "logical-from-qcow2", 0);
     DO_TEST("pool-dir", "vol-qcow2-nocow",
             NULL, NULL,
-            "qcow2-nocow-compat", 0, FMT_COMPAT);
+            "qcow2-nocow-compat", 0);
     DO_TEST("pool-dir", "vol-qcow2-nocapacity",
             "pool-dir", "vol-file",
-            "qcow2-nocapacity-convert-prealloc", flags, FMT_OPTIONS);
+            "qcow2-nocapacity-convert-prealloc", flags);
     DO_TEST("pool-dir", "vol-qcow2-zerocapacity",
             NULL, NULL,
-            "qcow2-zerocapacity", 0, FMT_COMPAT);
+            "qcow2-zerocapacity", 0);
     DO_TEST_FULL(false, VIR_VOL_XML_PARSE_OPT_CAPACITY,
                  "pool-dir", "vol-qcow2-nocapacity-backing", NULL, NULL,
-                 "qcow2-nocapacity", 0, FMT_OPTIONS);
+                 "qcow2-nocapacity", 0);
 
     DO_TEST("pool-dir", "vol-file-iso",
             NULL, NULL,
-            "iso", 0, FMT_OPTIONS);
+            "iso", 0);
     DO_TEST("pool-dir", "vol-file",
             "pool-dir", "vol-file-iso",
-            "iso-input", 0, FMT_OPTIONS);
+            "iso-input", 0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
