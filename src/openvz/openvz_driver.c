@@ -571,11 +571,8 @@ static int openvzDomainSuspend(virDomainPtr dom)
     if (!(vm = openvzDomObjFromDomain(driver, dom->uuid)))
         return -1;
 
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Domain is not running"));
+    if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
-    }
 
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
         openvzSetProgramSentinal(prog, vm->def->name);
@@ -601,11 +598,8 @@ static int openvzDomainResume(virDomainPtr dom)
     if (!(vm = openvzDomObjFromDomain(driver, dom->uuid)))
         return -1;
 
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("Domain is not running"));
+    if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
-    }
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
         openvzSetProgramSentinal(prog, vm->def->name);
@@ -1891,11 +1885,8 @@ openvzDomainInterfaceStats(virDomainPtr dom,
     if (!(vm = openvzDomObjFromDomain(driver, dom->uuid)))
         return -1;
 
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
+    if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
-    }
 
     if (!(net = virDomainNetFind(vm->def, device)))
         goto cleanup;
@@ -2131,11 +2122,8 @@ openvzDomainMigrateBegin3Params(virDomainPtr domain,
     if (!(vm = openvzDomObjFromDomain(driver, domain->uuid)))
         return NULL;
 
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
+    if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
-    }
 
     if (openvzGetVEStatus(vm, &status, NULL) == -1)
         goto cleanup;
