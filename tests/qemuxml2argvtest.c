@@ -410,6 +410,9 @@ testCompareXMLToStartupXML(const void *data)
     char *actual = NULL;
     int ret = -1;
 
+    if (!info->vm)
+        return EXIT_AM_SKIP;
+
     if (virAsprintf(&xml, "%s/qemuxml2startupxmloutdata/%s.xml",
                     abs_srcdir, info->name) < 0)
         goto cleanup;
@@ -664,8 +667,8 @@ mymain(void)
         if (virTestRun("QEMU XML-2-ARGV " name, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
-        if (info.vm && virTestRun("QEMU XML-2-startup-XML " name, \
-                                  testCompareXMLToStartupXML, &info) < 0) \
+        if (virTestRun("QEMU XML-2-startup-XML " name, \
+                       testCompareXMLToStartupXML, &info) < 0)  \
             ret = -1; \
         virObjectUnref(info.qemuCaps); \
         virObjectUnref(info.vm); \
