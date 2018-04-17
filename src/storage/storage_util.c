@@ -787,61 +787,6 @@ storagePloopResize(virStorageVolDefPtr vol,
     return ret;
 }
 
-/* Flag values shared w/ storagevolxml2argvtest.c.
- *
- * QEMU_IMG_BACKING_FORMAT_OPTIONS (added in qemu 0.11)
- * QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT
- *    was made necessary due to 2.0 change to change the default
- *    qcow2 file format from 0.10 to 1.1.
- */
-enum {
-    QEMU_IMG_BACKING_FORMAT_OPTIONS = 0,
-    QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT,
-};
-
-static bool
-virStorageBackendQemuImgSupportsCompat(const char *qemuimg)
-{
-    bool ret = false;
-    char *output;
-    virCommandPtr cmd = NULL;
-
-    cmd = virCommandNewArgList(qemuimg, "create", "-o", "?", "-f", "qcow2",
-                               "/dev/null", NULL);
-
-    virCommandAddEnvString(cmd, "LC_ALL=C");
-    virCommandSetOutputBuffer(cmd, &output);
-
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    if (strstr(output, "\ncompat "))
-        ret = true;
-
- cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(output);
-    return ret;
-}
-
-
-static int
-virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
-{
-    /* As of QEMU 0.11 the [-o options] support was added via qemu
-     * commit id '9ea2ea71', so we start with that base and figure
-     * out what else we have */
-    int ret = QEMU_IMG_BACKING_FORMAT_OPTIONS;
-
-    /* QEMU 2.0 changed to using a format that only QEMU 1.1 and newer
-     * understands. Since we still support QEMU 0.12 and newer, we need
-     * to be able to handle the previous format as can be set via a
-     * compat=0.10 option. */
-    if (virStorageBackendQemuImgSupportsCompat(qemuimg))
-        ret = QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT;
-
-    return ret;
-}
 
 /* The _virStorageBackendQemuImgInfo separates the command line building from
  * the volume definition so that qemuDomainSnapshotCreateInactiveExternal can
@@ -1089,14 +1034,12 @@ storageBackendCreateQemuImgSetBacking(virStoragePoolObjPtr pool,
 
 static int
 storageBackendCreateQemuImgSetOptions(virCommandPtr cmd,
-                                      int imgformat,
                                       virStorageEncryptionInfoDefPtr enc,
                                       struct _virStorageBackendQemuImgInfo info)
 {
     char *opts = NULL;
 
-    if (info.format == VIR_STORAGE_FILE_QCOW2 && !info.compat &&
-        imgformat >= QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT)
+    if (info.format == VIR_STORAGE_FILE_QCOW2 && !info.compat)
         info.compat = "0.10";
 
     if (storageBackendCreateQemuImgOpts(enc, &opts, info) < 0)
@@ -1170,16 +1113,13 @@ storageBackendResizeQemuImgImageOpts(virCommandPtr cmd,
 }
 
 
-/* Create a qemu-img virCommand from the supplied binary path,
- * volume definitions and imgformat
- */
+/* Create a qemu-img virCommand from the supplied arguments */
 virCommandPtr
 virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
                                          virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol,
                                          unsigned int flags,
                                          const char *create_tool,
-                                         int imgformat,
                                          const char *secretPath)
 {
     virCommandPtr cmd = NULL;
@@ -1293,7 +1233,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
         enc = &vol->target.encryption->encinfo;
     }
 
-    if (storageBackendCreateQemuImgSetOptions(cmd, imgformat, enc, info) < 0)
+    if (storageBackendCreateQemuImgSetOptions(cmd, enc, info) < 0)
         goto error;
     VIR_FREE(info.secretAlias);
 
@@ -1386,7 +1326,6 @@ storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
 {
     int ret = -1;
     char *create_tool;
-    int imgformat;
     virCommandPtr cmd;
     char *secretPath = NULL;
 
@@ -1400,10 +1339,6 @@ storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
         return -1;
     }
 
-    imgformat = virStorageBackendQEMUImgBackingFormat(create_tool);
-    if (imgformat < 0)
-        goto cleanup;
-
     if (vol->target.format == VIR_STORAGE_FILE_RAW &&
         vol->target.encryption &&
         vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
@@ -1414,7 +1349,7 @@ storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
 
     cmd = virStorageBackendCreateQemuImgCmdFromVol(pool, vol, inputvol,
                                                    flags, create_tool,
-                                                   imgformat, secretPath);
+                                                   secretPath);
     if (!cmd)
         goto cleanup;
 

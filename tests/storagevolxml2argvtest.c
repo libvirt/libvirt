@@ -40,7 +40,6 @@ testCompareXMLToArgvFiles(bool shouldFail,
                           const char *inputvolxml,
                           const char *cmdline,
                           unsigned int flags,
-                          int imgformat,
                           unsigned long parse_flags)
 {
     char *actualCmdline = NULL;
@@ -82,7 +81,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
 
     cmd = virStorageBackendCreateQemuImgCmdFromVol(obj, vol,
                                                    inputvol, flags,
-                                                   create_tool, imgformat,
+                                                   create_tool,
                                                    NULL);
     if (!cmd) {
         if (shouldFail) {
@@ -118,7 +117,6 @@ struct testInfo {
     const char *inputvol;
     const char *cmdline;
     unsigned int flags;
-    int imgformat;
     unsigned long parseflags;
 };
 
@@ -154,7 +152,7 @@ testCompareXMLToArgvHelper(const void *data)
     result = testCompareXMLToArgvFiles(info->shouldFail, poolxml, volxml,
                                        inputpoolxml, inputvolxml,
                                        cmdline, info->flags,
-                                       info->imgformat, info->parseflags);
+                                       info->parseflags);
 
  cleanup:
     VIR_FREE(poolxml);
@@ -165,12 +163,6 @@ testCompareXMLToArgvHelper(const void *data)
 
     return result;
 }
-
-enum {
-    FMT_OPTIONS = 0,
-    FMT_COMPAT,
-};
-
 
 
 static int
@@ -183,7 +175,7 @@ mymain(void)
                      cmdline, flags) \
     do { \
         struct testInfo info = { shouldFail, pool, vol, inputpool, inputvol, \
-                                 cmdline, flags, FMT_COMPAT, parseflags }; \
+                                 cmdline, flags, parseflags }; \
         if (virTestRun("Storage Vol XML-2-argv " cmdline, \
                        testCompareXMLToArgvHelper, &info) < 0) \
             ret = -1; \
