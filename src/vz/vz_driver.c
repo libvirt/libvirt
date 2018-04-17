@@ -3995,11 +3995,8 @@ vzDomainBlockResize(virDomainPtr domain,
     if (vzEnsureDomainExists(dom) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive(dom)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
+    if (virDomainObjCheckActive(dom) < 0)
         goto cleanup;
-    }
 
     if (!(disk = virDomainDiskByName(dom->def, path, false))) {
         virReportError(VIR_ERR_INVALID_ARG,
