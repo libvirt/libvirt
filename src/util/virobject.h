@@ -76,7 +76,8 @@ virClassPtr virClassForObjectRWLockable(void);
 # endif
 
 # define VIR_CLASS_NEW(name, prnt) \
-    (name##Class = virClassNew(prnt, #name, sizeof(name), name##Dispose))
+    verify_expr(offsetof(name, parent) == 0, \
+      (name##Class = virClassNew(prnt, #name, sizeof(name), name##Dispose)))
 
 virClassPtr
 virClassNew(virClassPtr parent,
