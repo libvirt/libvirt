@@ -80,15 +80,10 @@ static void virQEMUDriverConfigDispose(void *obj);
 
 static int virQEMUConfigOnceInit(void)
 {
-    virQEMUDriverConfigClass = virClassNew(virClassForObject(),
-                                           "virQEMUDriverConfig",
-                                           sizeof(virQEMUDriverConfig),
-                                           virQEMUDriverConfigDispose);
-
-    if (!virQEMUDriverConfigClass)
+    if (!VIR_CLASS_NEW(virQEMUDriverConfig, virClassForObject()))
         return -1;
-    else
-        return 0;
+
+    return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(virQEMUConfig)

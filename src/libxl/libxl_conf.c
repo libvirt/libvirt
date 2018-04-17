@@ -63,10 +63,7 @@ static void libxlDriverConfigDispose(void *obj);
 
 static int libxlConfigOnceInit(void)
 {
-    if (!(libxlDriverConfigClass = virClassNew(virClassForObject(),
-                                               "libxlDriverConfig",
-                                               sizeof(libxlDriverConfig),
-                                               libxlDriverConfigDispose)))
+    if (!VIR_CLASS_NEW(libxlDriverConfig, virClassForObject()))
         return -1;
 
     return 0;

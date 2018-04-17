@@ -58,10 +58,7 @@ virMediatedDeviceListDispose(void *obj);
 static int
 virMediatedOnceInit(void)
 {
-    if (!(virMediatedDeviceListClass = virClassNew(virClassForObjectLockable(),
-                                                   "virMediatedDeviceList",
-                                                   sizeof(virMediatedDeviceList),
-                                                   virMediatedDeviceListDispose)))
+    if (!VIR_CLASS_NEW(virMediatedDeviceList, virClassForObjectLockable()))
         return -1;
 
     return 0;

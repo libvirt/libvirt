@@ -62,10 +62,7 @@ static void virCapsDispose(void *obj);
 
 static int virCapabilitiesOnceInit(void)
 {
-    if (!(virCapsClass = virClassNew(virClassForObject(),
-                                     "virCaps",
-                                     sizeof(virCaps),
-                                     virCapsDispose)))
+    if (!VIR_CLASS_NEW(virCaps, virClassForObject()))
         return -1;
 
     return 0;

@@ -67,10 +67,7 @@ virAdmGlobalInit(void)
     if (!bindtextdomain(PACKAGE, LOCALEDIR))
         goto error;
 
-    if (!(remoteAdminPrivClass = virClassNew(virClassForObjectLockable(),
-                                             "remoteAdminPriv",
-                                             sizeof(remoteAdminPriv),
-                                             remoteAdminPrivDispose)))
+    if (!VIR_CLASS_NEW(remoteAdminPriv, virClassForObjectLockable()))
         goto error;
 
     return;

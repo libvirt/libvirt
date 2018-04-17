@@ -295,131 +295,47 @@ typedef virDomainEventBlockThreshold *virDomainEventBlockThresholdPtr;
 static int
 virDomainEventsOnceInit(void)
 {
-    if (!(virDomainEventClass =
-          virClassNew(virClassForObjectEvent(),
-                      "virDomainEvent",
-                      sizeof(virDomainEvent),
-                      virDomainEventDispose)))
+    if (!VIR_CLASS_NEW(virDomainEvent, virClassForObjectEvent()))
         return -1;
-    if (!(virDomainEventLifecycleClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventLifecycle",
-                      sizeof(virDomainEventLifecycle),
-                      virDomainEventLifecycleDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventLifecycle, virDomainEventClass))
         return -1;
-    if (!(virDomainEventRTCChangeClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventRTCChange",
-                      sizeof(virDomainEventRTCChange),
-                      virDomainEventRTCChangeDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventRTCChange, virDomainEventClass))
         return -1;
-    if (!(virDomainEventWatchdogClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventWatchdog",
-                      sizeof(virDomainEventWatchdog),
-                      virDomainEventWatchdogDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventWatchdog, virDomainEventClass))
         return -1;
-    if (!(virDomainEventIOErrorClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventIOError",
-                      sizeof(virDomainEventIOError),
-                      virDomainEventIOErrorDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventIOError, virDomainEventClass))
         return -1;
-    if (!(virDomainEventGraphicsClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventGraphics",
-                      sizeof(virDomainEventGraphics),
-                      virDomainEventGraphicsDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventGraphics, virDomainEventClass))
         return -1;
-    if (!(virDomainEventBlockJobClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventBlockJob",
-                      sizeof(virDomainEventBlockJob),
-                      virDomainEventBlockJobDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventBlockJob, virDomainEventClass))
         return -1;
-    if (!(virDomainEventDiskChangeClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventDiskChange",
-                      sizeof(virDomainEventDiskChange),
-                      virDomainEventDiskChangeDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventDiskChange, virDomainEventClass))
         return -1;
-    if (!(virDomainEventTrayChangeClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventTrayChange",
-                      sizeof(virDomainEventTrayChange),
-                      virDomainEventTrayChangeDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventTrayChange, virDomainEventClass))
         return -1;
-    if (!(virDomainEventBalloonChangeClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventBalloonChange",
-                      sizeof(virDomainEventBalloonChange),
-                      virDomainEventBalloonChangeDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventBalloonChange, virDomainEventClass))
         return -1;
-    if (!(virDomainEventDeviceRemovedClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventDeviceRemoved",
-                      sizeof(virDomainEventDeviceRemoved),
-                      virDomainEventDeviceRemovedDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventDeviceRemoved, virDomainEventClass))
         return -1;
-    if (!(virDomainEventDeviceAddedClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventDeviceAdded",
-                      sizeof(virDomainEventDeviceAdded),
-                      virDomainEventDeviceAddedDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventDeviceAdded, virDomainEventClass))
         return -1;
-    if (!(virDomainEventPMClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventPM",
-                      sizeof(virDomainEventPM),
-                      virDomainEventPMDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventPM, virDomainEventClass))
         return -1;
-    if (!(virDomainQemuMonitorEventClass =
-          virClassNew(virClassForObjectEvent(),
-                      "virDomainQemuMonitorEvent",
-                      sizeof(virDomainQemuMonitorEvent),
-                      virDomainQemuMonitorEventDispose)))
+    if (!VIR_CLASS_NEW(virDomainQemuMonitorEvent, virClassForObjectEvent()))
         return -1;
-    if (!(virDomainEventTunableClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventTunable",
-                      sizeof(virDomainEventTunable),
-                      virDomainEventTunableDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventTunable, virDomainEventClass))
         return -1;
-    if (!(virDomainEventAgentLifecycleClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventAgentLifecycle",
-                      sizeof(virDomainEventAgentLifecycle),
-                      virDomainEventAgentLifecycleDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventAgentLifecycle, virDomainEventClass))
         return -1;
-    if (!(virDomainEventMigrationIterationClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventMigrationIteration",
-                      sizeof(virDomainEventMigrationIteration),
-                      virDomainEventMigrationIterationDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventMigrationIteration, virDomainEventClass))
         return -1;
-    if (!(virDomainEventJobCompletedClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventJobCompleted",
-                      sizeof(virDomainEventJobCompleted),
-                      virDomainEventJobCompletedDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventJobCompleted, virDomainEventClass))
         return -1;
-    if (!(virDomainEventDeviceRemovalFailedClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventDeviceRemovalFailed",
-                      sizeof(virDomainEventDeviceRemovalFailed),
-                      virDomainEventDeviceRemovalFailedDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventDeviceRemovalFailed, virDomainEventClass))
         return -1;
-    if (!(virDomainEventMetadataChangeClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventMetadataChange",
-                      sizeof(virDomainEventMetadataChange),
-                      virDomainEventMetadataChangeDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventMetadataChange, virDomainEventClass))
         return -1;
-    if (!(virDomainEventBlockThresholdClass =
-          virClassNew(virDomainEventClass,
-                      "virDomainEventBlockThreshold",
-                      sizeof(virDomainEventBlockThreshold),
-                      virDomainEventBlockThresholdDispose)))
+    if (!VIR_CLASS_NEW(virDomainEventBlockThreshold, virDomainEventClass))
         return -1;
     return 0;
 }

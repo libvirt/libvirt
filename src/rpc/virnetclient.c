@@ -120,10 +120,7 @@ static void virNetClientDispose(void *obj);
 
 static int virNetClientOnceInit(void)
 {
-    if (!(virNetClientClass = virClassNew(virClassForObjectLockable(),
-                                          "virNetClient",
-                                          sizeof(virNetClient),
-                                          virNetClientDispose)))
+    if (!VIR_CLASS_NEW(virNetClient, virClassForObjectLockable()))
         return -1;
 
     return 0;

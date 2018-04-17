@@ -129,10 +129,7 @@ virFDStreamDataDispose(void *obj)
 
 static int virFDStreamDataOnceInit(void)
 {
-    if (!(virFDStreamDataClass = virClassNew(virClassForObjectLockable(),
-                                             "virFDStreamData",
-                                             sizeof(virFDStreamData),
-                                             virFDStreamDataDispose)))
+    if (!VIR_CLASS_NEW(virFDStreamData, virClassForObjectLockable()))
         return -1;
 
     return 0;

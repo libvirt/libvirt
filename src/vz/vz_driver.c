@@ -161,10 +161,7 @@ static void vzDriverDispose(void * obj)
 
 static int vzDriverOnceInit(void)
 {
-    if (!(vzDriverClass = virClassNew(virClassForObjectLockable(),
-                                      "vzDriver",
-                                      sizeof(vzDriver),
-                                      vzDriverDispose)))
+    if (!VIR_CLASS_NEW(vzDriver, virClassForObjectLockable()))
         return -1;
 
     return 0;

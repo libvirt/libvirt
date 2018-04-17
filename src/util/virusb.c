@@ -80,10 +80,7 @@ static void virUSBDeviceListDispose(void *obj);
 
 static int virUSBOnceInit(void)
 {
-    if (!(virUSBDeviceListClass = virClassNew(virClassForObjectLockable(),
-                                              "virUSBDeviceList",
-                                              sizeof(virUSBDeviceList),
-                                              virUSBDeviceListDispose)))
+    if (!VIR_CLASS_NEW(virUSBDeviceList, virClassForObjectLockable()))
         return -1;
 
     return 0;

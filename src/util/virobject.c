@@ -81,16 +81,10 @@ virObjectOnceInit(void)
                                        NULL)))
         return -1;
 
-    if (!(virObjectLockableClass = virClassNew(virObjectClass,
-                                               "virObjectLockable",
-                                               sizeof(virObjectLockable),
-                                               virObjectLockableDispose)))
+    if (!VIR_CLASS_NEW(virObjectLockable, virObjectClass))
         return -1;
 
-    if (!(virObjectRWLockableClass = virClassNew(virObjectClass,
-                                                 "virObjectRWLockable",
-                                                 sizeof(virObjectRWLockable),
-                                                 virObjectRWLockableDispose)))
+    if (!VIR_CLASS_NEW(virObjectRWLockable, virObjectClass))
         return -1;
 
     return 0;

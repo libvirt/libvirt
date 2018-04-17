@@ -138,10 +138,7 @@ static void qemuAgentDispose(void *obj);
 
 static int qemuAgentOnceInit(void)
 {
-    if (!(qemuAgentClass = virClassNew(virClassForObjectLockable(),
-                                       "qemuAgent",
-                                       sizeof(qemuAgent),
-                                       qemuAgentDispose)))
+    if (!VIR_CLASS_NEW(qemuAgent, virClassForObjectLockable()))
         return -1;
 
     return 0;

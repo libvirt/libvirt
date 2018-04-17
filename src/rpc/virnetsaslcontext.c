@@ -57,16 +57,10 @@ static void virNetSASLSessionDispose(void *obj);
 
 static int virNetSASLContextOnceInit(void)
 {
-    if (!(virNetSASLContextClass = virClassNew(virClassForObjectLockable(),
-                                               "virNetSASLContext",
-                                               sizeof(virNetSASLContext),
-                                               virNetSASLContextDispose)))
+    if (!VIR_CLASS_NEW(virNetSASLContext, virClassForObjectLockable()))
         return -1;
 
-    if (!(virNetSASLSessionClass = virClassNew(virClassForObjectLockable(),
-                                               "virNetSASLSession",
-                                               sizeof(virNetSASLSession),
-                                               virNetSASLSessionDispose)))
+    if (!VIR_CLASS_NEW(virNetSASLSession, virClassForObjectLockable()))
         return -1;
 
     return 0;

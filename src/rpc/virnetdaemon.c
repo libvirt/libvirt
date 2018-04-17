@@ -110,10 +110,7 @@ virNetDaemonDispose(void *obj)
 static int
 virNetDaemonOnceInit(void)
 {
-    if (!(virNetDaemonClass = virClassNew(virClassForObjectLockable(),
-                                          "virNetDaemon",
-                                          sizeof(virNetDaemon),
-                                          virNetDaemonDispose)))
+    if (!VIR_CLASS_NEW(virNetDaemon, virClassForObjectLockable()))
         return -1;
 
     return 0;

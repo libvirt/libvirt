@@ -110,16 +110,10 @@ struct _virStoragePoolObjList {
 static int
 virStorageVolObjOnceInit(void)
 {
-    if (!(virStorageVolObjClass = virClassNew(virClassForObjectLockable(),
-                                              "virStorageVolObj",
-                                              sizeof(virStorageVolObj),
-                                              virStorageVolObjDispose)))
+    if (!VIR_CLASS_NEW(virStorageVolObj, virClassForObjectLockable()))
         return -1;
 
-    if (!(virStorageVolObjListClass = virClassNew(virClassForObjectRWLockable(),
-                                                  "virStorageVolObjList",
-                                                  sizeof(virStorageVolObjList),
-                                                  virStorageVolObjListDispose)))
+    if (!VIR_CLASS_NEW(virStorageVolObjList, virClassForObjectRWLockable()))
         return -1;
 
     return 0;
@@ -207,16 +201,10 @@ virStorageVolObjListDispose(void *opaque)
 static int
 virStoragePoolObjOnceInit(void)
 {
-    if (!(virStoragePoolObjClass = virClassNew(virClassForObjectLockable(),
-                                               "virStoragePoolObj",
-                                               sizeof(virStoragePoolObj),
-                                               virStoragePoolObjDispose)))
+    if (!VIR_CLASS_NEW(virStoragePoolObj, virClassForObjectLockable()))
         return -1;
 
-    if (!(virStoragePoolObjListClass = virClassNew(virClassForObjectRWLockable(),
-                                                   "virStoragePoolObjList",
-                                                   sizeof(virStoragePoolObjList),
-                                                   virStoragePoolObjListDispose)))
+    if (!VIR_CLASS_NEW(virStoragePoolObjList, virClassForObjectRWLockable()))
         return -1;
 
     return 0;

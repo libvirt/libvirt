@@ -74,17 +74,12 @@ static void virNetworkObjListDispose(void *obj);
 static int
 virNetworkObjOnceInit(void)
 {
-    if (!(virNetworkObjClass = virClassNew(virClassForObjectLockable(),
-                                           "virNetworkObj",
-                                           sizeof(virNetworkObj),
-                                           virNetworkObjDispose)))
+    if (!VIR_CLASS_NEW(virNetworkObj, virClassForObjectLockable()))
         return -1;
 
-    if (!(virNetworkObjListClass = virClassNew(virClassForObjectRWLockable(),
-                                               "virNetworkObjList",
-                                               sizeof(virNetworkObjList),
-                                               virNetworkObjListDispose)))
+    if (!VIR_CLASS_NEW(virNetworkObjList, virClassForObjectRWLockable()))
         return -1;
+
     return 0;
 }
 

@@ -68,16 +68,10 @@ struct virSecretSearchData {
 static int
 virSecretObjOnceInit(void)
 {
-    if (!(virSecretObjClass = virClassNew(virClassForObjectLockable(),
-                                          "virSecretObj",
-                                          sizeof(virSecretObj),
-                                          virSecretObjDispose)))
+    if (!VIR_CLASS_NEW(virSecretObj, virClassForObjectLockable()))
         return -1;
 
-    if (!(virSecretObjListClass = virClassNew(virClassForObjectRWLockable(),
-                                              "virSecretObjList",
-                                              sizeof(virSecretObjList),
-                                              virSecretObjListDispose)))
+    if (!VIR_CLASS_NEW(virSecretObjList, virClassForObjectRWLockable()))
         return -1;
 
     return 0;

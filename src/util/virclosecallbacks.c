@@ -53,15 +53,10 @@ static void virCloseCallbacksDispose(void *obj);
 
 static int virCloseCallbacksOnceInit(void)
 {
-    virCloseCallbacksClass = virClassNew(virClassForObjectLockable(),
-                                         "virCloseCallbacks",
-                                         sizeof(virCloseCallbacks),
-                                         virCloseCallbacksDispose);
-
-    if (!virCloseCallbacksClass)
+    if (!VIR_CLASS_NEW(virCloseCallbacks, virClassForObjectLockable()))
         return -1;
-    else
-        return 0;
+
+    return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(virCloseCallbacks)

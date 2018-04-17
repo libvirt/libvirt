@@ -131,16 +131,10 @@ static void qemuDomainSaveCookieDispose(void *obj);
 static int
 qemuDomainOnceInit(void)
 {
-    if (!(qemuDomainLogContextClass = virClassNew(virClassForObject(),
-                                                 "qemuDomainLogContext",
-                                                 sizeof(qemuDomainLogContext),
-                                                 qemuDomainLogContextDispose)))
+    if (!VIR_CLASS_NEW(qemuDomainLogContext, virClassForObject()))
         return -1;
 
-    if (!(qemuDomainSaveCookieClass = virClassNew(virClassForObject(),
-                                                  "qemuDomainSaveCookie",
-                                                  sizeof(qemuDomainSaveCookie),
-                                                  qemuDomainSaveCookieDispose)))
+    if (!VIR_CLASS_NEW(qemuDomainSaveCookie, virClassForObject()))
         return -1;
 
     return 0;
@@ -992,14 +986,10 @@ static void qemuDomainDiskPrivateDispose(void *obj);
 static int
 qemuDomainDiskPrivateOnceInit(void)
 {
-    qemuDomainDiskPrivateClass = virClassNew(virClassForObject(),
-                                             "qemuDomainDiskPrivate",
-                                             sizeof(qemuDomainDiskPrivate),
-                                             qemuDomainDiskPrivateDispose);
-    if (!qemuDomainDiskPrivateClass)
+    if (!VIR_CLASS_NEW(qemuDomainDiskPrivate, virClassForObject()))
         return -1;
-    else
-        return 0;
+
+    return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(qemuDomainDiskPrivate)
@@ -1032,14 +1022,10 @@ static void qemuDomainStorageSourcePrivateDispose(void *obj);
 static int
 qemuDomainStorageSourcePrivateOnceInit(void)
 {
-    qemuDomainStorageSourcePrivateClass = virClassNew(virClassForObject(),
-                                                      "qemuDomainStorageSourcePrivate",
-                                                      sizeof(qemuDomainStorageSourcePrivate),
-                                                      qemuDomainStorageSourcePrivateDispose);
-    if (!qemuDomainStorageSourcePrivateClass)
+    if (!VIR_CLASS_NEW(qemuDomainStorageSourcePrivate, virClassForObject()))
         return -1;
-    else
-        return 0;
+
+    return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(qemuDomainStorageSourcePrivate)
@@ -1075,14 +1061,10 @@ static void qemuDomainVcpuPrivateDispose(void *obj);
 static int
 qemuDomainVcpuPrivateOnceInit(void)
 {
-    qemuDomainVcpuPrivateClass = virClassNew(virClassForObject(),
-                                             "qemuDomainVcpuPrivate",
-                                             sizeof(qemuDomainVcpuPrivate),
-                                             qemuDomainVcpuPrivateDispose);
-    if (!qemuDomainVcpuPrivateClass)
+    if (!VIR_CLASS_NEW(qemuDomainVcpuPrivate, virClassForObject()))
         return -1;
-    else
-        return 0;
+
+    return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(qemuDomainVcpuPrivate)
@@ -1119,15 +1101,10 @@ static void qemuDomainChrSourcePrivateDispose(void *obj);
 static int
 qemuDomainChrSourcePrivateOnceInit(void)
 {
-    qemuDomainChrSourcePrivateClass =
-        virClassNew(virClassForObject(),
-                    "qemuDomainChrSourcePrivate",
-                    sizeof(qemuDomainChrSourcePrivate),
-                    qemuDomainChrSourcePrivateDispose);
-    if (!qemuDomainChrSourcePrivateClass)
+    if (!VIR_CLASS_NEW(qemuDomainChrSourcePrivate, virClassForObject()))
         return -1;
-    else
-        return 0;
+
+    return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(qemuDomainChrSourcePrivate)

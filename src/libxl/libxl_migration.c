@@ -244,10 +244,7 @@ libxlMigrationDstArgsDispose(void *obj)
 static int
 libxlMigrationDstArgsOnceInit(void)
 {
-    if (!(libxlMigrationDstArgsClass = virClassNew(virClassForObject(),
-                                                   "libxlMigrationDstArgs",
-                                                   sizeof(libxlMigrationDstArgs),
-                                                   libxlMigrationDstArgsDispose)))
+    if (!VIR_CLASS_NEW(libxlMigrationDstArgs, virClassForObject()))
         return -1;
 
     return 0;

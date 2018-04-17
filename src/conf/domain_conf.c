@@ -938,16 +938,10 @@ static void virDomainXMLOptionDispose(void *obj);
 
 static int virDomainObjOnceInit(void)
 {
-    if (!(virDomainObjClass = virClassNew(virClassForObjectLockable(),
-                                          "virDomainObj",
-                                          sizeof(virDomainObj),
-                                          virDomainObjDispose)))
+    if (!VIR_CLASS_NEW(virDomainObj, virClassForObjectLockable()))
         return -1;
 
-    if (!(virDomainXMLOptionClass = virClassNew(virClassForObject(),
-                                                "virDomainXMLOption",
-                                                sizeof(virDomainXMLOption),
-                                                virDomainXMLOptionDispose)))
+    if (!VIR_CLASS_NEW(virDomainXMLOption, virClassForObject()))
         return -1;
 
     return 0;
@@ -12223,14 +12217,10 @@ static virClassPtr virDomainChrSourceDefClass;
 static int
 virDomainChrSourceDefOnceInit(void)
 {
-    virDomainChrSourceDefClass = virClassNew(virClassForObject(),
-                                             "virDomainChrSourceDef",
-                                             sizeof(virDomainChrSourceDef),
-                                             virDomainChrSourceDefDispose);
-    if (!virDomainChrSourceDefClass)
+    if (!VIR_CLASS_NEW(virDomainChrSourceDef, virClassForObject()))
         return -1;
-    else
-        return 0;
+
+    return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(virDomainChrSourceDef);

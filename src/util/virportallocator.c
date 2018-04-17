@@ -80,10 +80,7 @@ virPortAllocatorNew(void)
 static int
 virPortAllocatorOnceInit(void)
 {
-    if (!(virPortAllocatorClass = virClassNew(virClassForObjectLockable(),
-                                              "virPortAllocator",
-                                              sizeof(virPortAllocator),
-                                              virPortAllocatorDispose)))
+    if (!VIR_CLASS_NEW(virPortAllocator, virClassForObjectLockable()))
         return -1;
 
     if (!(virPortAllocatorInstance = virPortAllocatorNew()))
