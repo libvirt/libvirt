@@ -198,40 +198,6 @@ mymain(void)
 
     DO_TEST("pool-dir", "vol-qcow2",
             NULL, NULL,
-            "qcow2", 0, FMT_OPTIONS);
-    DO_TEST_FAIL("pool-dir", "vol-qcow2",
-                 NULL, NULL,
-                 "qcow2-prealloc", flags, FMT_OPTIONS);
-    DO_TEST("pool-dir", "vol-qcow2-nobacking",
-            NULL, NULL,
-            "qcow2-nobacking-prealloc", flags, FMT_OPTIONS);
-    DO_TEST("pool-dir", "vol-qcow2-nobacking",
-            "pool-dir", "vol-file",
-            "qcow2-nobacking-convert-prealloc", flags, FMT_OPTIONS);
-    DO_TEST_FAIL("pool-dir", "vol-qcow2",
-                 "pool-dir", "vol-file",
-                 "qcow2-convert-nobacking", 0, FMT_OPTIONS);
-    DO_TEST_FAIL("pool-dir", "vol-qcow2",
-                 "pool-dir", "vol-file",
-                 "qcow2-convert-prealloc", flags, FMT_OPTIONS);
-    DO_TEST("pool-dir", "vol-qcow2-lazy",
-            NULL, NULL,
-            "qcow2-lazy", 0, FMT_OPTIONS);
-    DO_TEST("pool-dir", "vol-qcow2-1.1",
-            NULL, NULL,
-            "qcow2-1.1", 0, FMT_OPTIONS);
-    DO_TEST_FAIL("pool-dir", "vol-qcow2-0.10-lazy",
-                 NULL, NULL,
-                 "qcow2-0.10-lazy", 0, FMT_OPTIONS);
-    DO_TEST("pool-dir", "vol-qcow2-nobacking",
-            "pool-logical", "vol-logical",
-            "qcow2-from-logical", 0, FMT_OPTIONS);
-    DO_TEST("pool-logical", "vol-logical",
-            "pool-dir", "vol-qcow2-nobacking",
-            "logical-from-qcow2", 0, FMT_OPTIONS);
-
-    DO_TEST("pool-dir", "vol-qcow2",
-            NULL, NULL,
             "qcow2-compat", 0, FMT_COMPAT);
     DO_TEST("pool-dir", "vol-qcow2-nobacking",
             NULL, NULL,
@@ -254,9 +220,6 @@ mymain(void)
     DO_TEST("pool-logical", "vol-logical",
             "pool-dir", "vol-qcow2-nobacking",
             "logical-from-qcow2", 0, FMT_COMPAT);
-    DO_TEST("pool-dir", "vol-qcow2-nocow",
-            NULL, NULL,
-            "qcow2-nocow", 0, FMT_OPTIONS);
     DO_TEST("pool-dir", "vol-qcow2-nocow",
             NULL, NULL,
             "qcow2-nocow-compat", 0, FMT_COMPAT);
