@@ -183,6 +183,7 @@
     <element name='features'>
       <interleave>
         <ref name='gic'/>
+        <ref name='vmcoreinfo'/>
       </interleave>
     </element>
   </define>
@@ -191,6 +192,12 @@
     <element name='gic'>
       <ref name='supported'/>
       <ref name='enum'/>
+    </element>
+  </define>
+
+  <define name='vmcoreinfo'>
+    <element name='vmcoreinfo'>
+      <ref name='supported'/>
     </element>
   </define>
 

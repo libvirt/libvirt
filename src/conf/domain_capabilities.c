@@ -583,6 +583,8 @@ virDomainCapsFormat(virDomainCapsPtr const caps)
     virBufferAdjustIndent(&buf, 2);
 
     virDomainCapsFeatureGICFormat(&buf, &caps->gic);
+    virBufferAsprintf(&buf, "<vmcoreinfo supported='%s'/>\n",
+                      caps->vmcoreinfo ? "yes" : "no");
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</features>\n");

@@ -4881,6 +4881,9 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
         domCaps->maxvcpus = MIN(domCaps->maxvcpus, hostmaxvcpus);
     }
 
+    domCaps->vmcoreinfo = virQEMUCapsGet(qemuCaps,
+                                         QEMU_CAPS_DEVICE_VMCOREINFO);
+
     if (virQEMUCapsFillDomainOSCaps(os, firmwares, nfirmwares) < 0 ||
         virQEMUCapsFillDomainCPUCaps(caps, qemuCaps, domCaps) < 0 ||
         virQEMUCapsFillDomainIOThreadCaps(qemuCaps, domCaps) < 0 ||

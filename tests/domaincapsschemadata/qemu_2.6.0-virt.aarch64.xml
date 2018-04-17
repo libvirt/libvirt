@@ -113,5 +113,6 @@
         <value>2</value>
       </enum>
     </gic>
+    <vmcoreinfo supported='no'/>
   </features>
 </domainCapabilities>

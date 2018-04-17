@@ -433,6 +433,7 @@
         &lt;value&gt;3&lt;/value&gt;
       &lt;/enum&gt;
     &lt;/gic&gt;
+    &lt;vmcoreinfo supported='yes'/&gt;
   &lt;/features&gt;
 &lt;/domainCapabilities&gt;
 </pre>
@@ -456,6 +457,10 @@
       <dd>Options for the <code>version</code> attribute of the
       <code>gic</code> element.</dd>
     </dl>
+
+    <h4><a id="elementsvmcoreinfo">vmcoreinfo</a></h4>
+
+    <p>Reports whether the vmcoreinfo feature can be enabled</p>
 
   </body>
 </html>
