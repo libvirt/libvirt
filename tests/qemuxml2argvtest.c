@@ -270,6 +270,7 @@ typedef enum {
 
 struct testInfo {
     const char *name;
+    const char *suffix;
     virQEMUCapsPtr qemuCaps;
     const char *migrateFrom;
     int migrateFd;
@@ -442,6 +443,7 @@ testCompareXMLToArgv(const void *data)
     char *args = NULL;
     char *migrateURI = NULL;
     char *actualargv = NULL;
+    const char *suffix = info->suffix;
     unsigned int flags = info->flags;
     unsigned int parseFlags = info->parseFlags;
     int ret = -1;
@@ -458,6 +460,9 @@ testCompareXMLToArgv(const void *data)
     if (!(conn = virGetConnect()))
         goto cleanup;
 
+    if (!suffix)
+        suffix = "";
+
     conn->secretDriver = &fakeSecretDriver;
     conn->storageDriver = &fakeStorageDriver;
 
@@ -472,8 +477,8 @@ testCompareXMLToArgv(const void *data)
 
     if (virAsprintf(&xml, "%s/qemuxml2argvdata/%s.xml",
                     abs_srcdir, info->name) < 0 ||
-        virAsprintf(&args, "%s/qemuxml2argvdata/%s.args",
-                    abs_srcdir, info->name) < 0)
+        virAsprintf(&args, "%s/qemuxml2argvdata/%s%s.args",
+                    abs_srcdir, info->name, suffix) < 0)
         goto cleanup;
 
     if (info->migrateFrom &&
@@ -657,7 +662,7 @@ mymain(void)
                       parseFlags, gic, ...) \
     do { \
         static struct testInfo info = { \
-            name, NULL, migrateFrom, migrateFd, (flags), parseFlags, \
+            name, NULL, NULL, migrateFrom, migrateFd, (flags), parseFlags, \
             false, NULL \
         }; \
         info.skipLegacyCPUs = skipLegacyCPUs; \
