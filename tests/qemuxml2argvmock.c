@@ -36,6 +36,7 @@
 #include "virstring.h"
 #include "virtpm.h"
 #include "virutil.h"
+#include "qemu/qemu_interface.h"
 #include <time.h>
 #include <unistd.h>
 
@@ -187,4 +188,22 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path ATTRIBUTE_UNUSED,
                                        char **ifname)
 {
     return VIR_STRDUP(*ifname, "vhost-user0");
+}
+
+int
+qemuInterfaceOpenVhostNet(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                          virDomainNetDefPtr net,
+                          int *vhostfd,
+                          size_t *vhostfdSize)
+{
+    size_t i;
+
+    if (!(net->model && STREQ(net->model, "virtio"))) {
+        *vhostfdSize = 0;
+        return 0;
+    }
+
+    for (i = 0; i < *vhostfdSize; i++)
+        vhostfd[i] = STDERR_FILENO + 42 + i;
+    return 0;
 }
