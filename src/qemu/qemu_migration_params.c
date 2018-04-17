@@ -771,6 +771,7 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
         migParams->params[xbzrle].set = true;
 
     virJSONValueFree(params);
+    virJSONValueFree(caps);
 
     return ret;
 }
