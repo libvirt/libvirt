@@ -26894,6 +26894,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             case VIR_DOMAIN_FEATURE_PAE:
             case VIR_DOMAIN_FEATURE_VIRIDIAN:
             case VIR_DOMAIN_FEATURE_PRIVNET:
+                /* NOTE: This is for old style <opt/> booleans. New XML
+                 * should use the explicit state=on|off output below */
                 switch ((virTristateSwitch) def->features[i]) {
                 case VIR_TRISTATE_SWITCH_ABSENT:
                     break;
