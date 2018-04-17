@@ -2584,11 +2584,8 @@ umlDomainOpenConsole(virDomainPtr dom,
     if (virDomainOpenConsoleEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                        "%s", _("domain is not running"));
+    if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
-    }
 
     if (dev_name) {
         for (i = 0; i < vm->def->nconsoles; i++) {
