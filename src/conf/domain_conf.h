@@ -2722,6 +2722,8 @@ virDomainObjIsActive(virDomainObjPtr dom)
     return dom->def->id != -1;
 }
 
+int virDomainObjCheckActive(virDomainObjPtr dom);
+
 int virDomainDefSetVcpusMax(virDomainDefPtr def,
                             unsigned int vcpus,
                             virDomainXMLOptionPtr xmlopt);

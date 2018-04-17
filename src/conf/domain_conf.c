@@ -5997,6 +5997,17 @@ virDomainDefValidate(virDomainDefPtr def,
     return 0;
 }
 
+int
+virDomainObjCheckActive(virDomainObjPtr dom)
+{
+    if (!virDomainObjIsActive(dom)) {
+       virReportError(VIR_ERR_OPERATION_INVALID,
+                      "%s", _("domain is not running"));
+       return -1;
+    }
+    return 0;
+}
+
 
 /**
  * virDomainDeviceLoadparmIsValid

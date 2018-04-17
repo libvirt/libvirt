@@ -474,6 +474,7 @@ virDomainNostateReasonTypeFromString;
 virDomainNostateReasonTypeToString;
 virDomainObjAssignDef;
 virDomainObjBroadcast;
+virDomainObjCheckActive;
 virDomainObjCopyPersistentDef;
 virDomainObjEndAPI;
 virDomainObjFormat;
