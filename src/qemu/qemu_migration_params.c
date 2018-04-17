@@ -84,6 +84,7 @@ VIR_ENUM_IMPL(qemuMigrationCapability, QEMU_MIGRATION_CAP_LAST,
               "postcopy-ram",
               "compress",
               "pause-before-switchover",
+              "late-block-activate",
 );
 
 
@@ -129,6 +130,9 @@ struct _qemuMigrationParamsTPMapItem {
 static const qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOn[] = {
     {QEMU_MIGRATION_CAP_PAUSE_BEFORE_SWITCHOVER,
      QEMU_MIGRATION_SOURCE},
+
+    {QEMU_MIGRATION_CAP_LATE_BLOCK_ACTIVATE,
+     QEMU_MIGRATION_DESTINATION},
 };
 
 /* Translation from virDomainMigrateFlags to qemuMigrationCapability. */
