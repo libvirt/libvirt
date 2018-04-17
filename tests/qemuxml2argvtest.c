@@ -668,7 +668,7 @@ mymain(void)
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
         if (virTestRun("QEMU XML-2-startup-XML " name, \
-                       testCompareXMLToStartupXML, &info) < 0)  \
+                       testCompareXMLToStartupXML, &info) < 0) \
             ret = -1; \
         virObjectUnref(info.qemuCaps); \
         virObjectUnref(info.vm); \
