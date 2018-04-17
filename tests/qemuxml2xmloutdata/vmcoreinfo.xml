@@ -9,7 +9,7 @@
     <boot dev='hd'/>
   </os>
   <features>
-    <vmcoreinfo/>
+    <vmcoreinfo state='on'/>
   </features>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

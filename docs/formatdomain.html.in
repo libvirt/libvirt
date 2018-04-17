@@ -1880,6 +1880,7 @@
   &lt;gic version='2'/&gt;
   &lt;ioapic driver='qemu'/&gt;
   &lt;hpt resizing='required'/&gt;
+  &lt;vmcoreinfo state='on'/&gt;
 &lt;/features&gt;
 ...</pre>
 
@@ -2061,7 +2062,7 @@
       </dd>
       <dt><code>vmcoreinfo</code></dt>
       <dd>Enable QEMU vmcoreinfo device to let the guest kernel save debug
-          details. <span class="since">Since 3.10.0</span> (QEMU only)
+          details. <span class="since">Since 4.4.0</span> (QEMU only)
       </dd>
     </dl>
 
