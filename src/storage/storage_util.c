@@ -423,7 +423,7 @@ storageBackendCreateRaw(virStoragePoolObjPtr pool,
         reflink_copy = true;
 
 
-    if (vol->target.encryption != NULL) {
+    if (vol->target.encryption) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("storage pool does not support encrypted volumes"));
         goto cleanup;
@@ -707,7 +707,7 @@ storageBackendCreatePloop(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    if (vol->target.encryption != NULL) {
+    if (vol->target.encryption) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("encrypted ploop volumes are not supported with "
                          "ploop init"));
@@ -1128,7 +1128,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
         .format = vol->target.format,
         .path = vol->target.path,
         .allocation = vol->target.allocation,
-        .encryption = vol->target.encryption != NULL,
+        .encryption = !!vol->target.encryption,
         .preallocate = !!(flags & VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA),
         .compat = vol->target.compat,
         .features = vol->target.features,
@@ -1169,8 +1169,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
                        _("format features only available with qcow2"));
         return NULL;
     }
-    if (info.format == VIR_STORAGE_FILE_RAW &&
-        vol->target.encryption != NULL) {
+    if (info.format == VIR_STORAGE_FILE_RAW && vol->target.encryption) {
         if (inputvol) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("cannot use inputvol with encrypted raw volume"));
@@ -1220,8 +1219,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
     if (info.backingPath)
         virCommandAddArgList(cmd, "-b", info.backingPath, NULL);
 
-    if (info.format == VIR_STORAGE_FILE_RAW &&
-        vol->target.encryption != NULL &&
+    if (info.format == VIR_STORAGE_FILE_RAW && vol->target.encryption &&
         vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
         if (virAsprintf(&info.secretAlias, "%s_luks0", vol->name) < 0)
             goto error;
@@ -1415,10 +1413,10 @@ virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
      */
     if ((vol->type == VIR_STORAGE_VOL_FILE &&
          (vol->target.format != VIR_STORAGE_FILE_RAW ||
-          vol->target.encryption != NULL)) ||
+          vol->target.encryption)) ||
         (inputvol->type == VIR_STORAGE_VOL_FILE &&
          (inputvol->target.format != VIR_STORAGE_FILE_RAW ||
-          inputvol->target.encryption != NULL))) {
+          inputvol->target.encryption))) {
         return storageBackendCreateQemuImg;
     }
 
@@ -2105,7 +2103,7 @@ storageBackendVolBuildLocal(virStoragePoolObjPtr pool,
     virStorageBackendBuildVolFrom create_func;
 
     if (inputvol) {
-        if (vol->target.encryption != NULL) {
+        if (vol->target.encryption) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("storage pool does not support "
                                    "building encrypted volumes from "
