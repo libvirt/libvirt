@@ -2693,7 +2693,7 @@ testQemuMonitorCPUInfo(const void *opaque)
 
     vm = qemuMonitorTestGetDomainObj(test);
     if (!vm)
-        return -1;
+        goto cleanup;
 
     rc = qemuMonitorGetCPUInfo(qemuMonitorTestGetMonitor(test),
                                &vcpus, data->maxvcpus, true, data->fast);
