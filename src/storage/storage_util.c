@@ -874,7 +874,7 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr enc,
 
 /* storageBackendCreateQemuImgCheckEncryption:
  * @format: format of file found
- * @conn: pointer to connection
+ * @type: TypeToString of format.type
  * @vol: pointer to volume def
  *
  * Ensure the proper setup for encryption.
@@ -1199,10 +1199,8 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
         return NULL;
 
     if (info.encryption &&
-        storageBackendCreateQemuImgCheckEncryption(info.format, type,
-                                                   vol) < 0)
+        storageBackendCreateQemuImgCheckEncryption(info.format, type, vol) < 0)
         return NULL;
-
 
     /* Size in KB */
     info.size_arg = VIR_DIV_UP(vol->target.capacity, 1024);
