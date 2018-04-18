@@ -1175,11 +1175,6 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
                            _("cannot use inputvol with encrypted raw volume"));
             return NULL;
         }
-        if (!info.encryption) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("missing encryption description"));
-            return NULL;
-        }
         if (vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
             type = "luks";
         } else {
