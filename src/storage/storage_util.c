@@ -1310,7 +1310,9 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObjPtr pool,
 
 
 static int
-storageBackendGenerateSecretData(virStorageVolDefPtr vol)
+storageBackendGenerateSecretData(virStoragePoolObjPtr pool,
+                                 virStorageVolDefPtr vol,
+                                 char **secretPath)
 {
     virStorageEncryptionPtr enc = vol->target.encryption;
 
@@ -1322,6 +1324,12 @@ storageBackendGenerateSecretData(virStorageVolDefPtr vol)
         (enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT ||
          enc->nsecrets == 0)) {
         if (virStorageGenerateQcowEncryption(vol) < 0)
+            return -1;
+    }
+
+    if (vol->target.format == VIR_STORAGE_FILE_RAW &&
+        enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+        if (!(*secretPath = storageBackendCreateQemuImgSecretPath(pool, vol)))
             return -1;
     }
 
@@ -1350,16 +1358,8 @@ storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
         return -1;
     }
 
-    if (storageBackendGenerateSecretData(vol) < 0)
+    if (storageBackendGenerateSecretData(pool, vol, &secretPath) < 0)
         goto cleanup;
-
-    if (vol->target.format == VIR_STORAGE_FILE_RAW &&
-        vol->target.encryption &&
-        vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
-        if (!(secretPath =
-              storageBackendCreateQemuImgSecretPath(pool, vol)))
-            goto cleanup;
-    }
 
     cmd = virStorageBackendCreateQemuImgCmdFromVol(pool, vol, inputvol,
                                                    flags, create_tool,
