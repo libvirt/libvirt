@@ -2041,6 +2041,20 @@ virStoragePRDefIsEqual(virStoragePRDefPtr a,
 }
 
 
+bool
+virStoragePRDefIsEnabled(virStoragePRDefPtr prd)
+{
+    return prd && prd->enabled == VIR_TRISTATE_BOOL_YES;
+}
+
+
+bool
+virStoragePRDefIsManaged(virStoragePRDefPtr prd)
+{
+    return prd && prd->managed == VIR_TRISTATE_BOOL_YES;
+}
+
+
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
                                     const char *model)

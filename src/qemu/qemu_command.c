@@ -1471,6 +1471,28 @@ qemuDiskSourceGetProps(virStorageSourcePtr src)
 
 
 static int
+qemuBuildDriveSourcePR(virBufferPtr buf,
+                       virDomainDiskDefPtr disk)
+{
+    char *alias = NULL;
+    const char *defaultAlias = NULL;
+
+    if (!virStoragePRDefIsEnabled(disk->src->pr))
+        return 0;
+
+    if (virStoragePRDefIsManaged(disk->src->pr))
+        defaultAlias = qemuDomainGetManagedPRAlias();
+    else if (!(alias = qemuDomainGetUnmanagedPRAlias(disk)))
+        return -1;
+
+
+    virBufferAsprintf(buf, ",file.pr-manager=%s", alias ? alias : defaultAlias);
+    VIR_FREE(alias);
+    return 0;
+}
+
+
+static int
 qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
                         virQEMUCapsPtr qemuCaps,
                         virBufferPtr buf)
@@ -1533,6 +1555,9 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
 
         if (disk->src->debug)
             virBufferAsprintf(buf, ",file.debug=%d", disk->src->debugLevel);
+
+        if (qemuBuildDriveSourcePR(buf, disk) < 0)
+            goto cleanup;
     } else {
         if (!(source = virQEMUBuildDriveCommandlineFromJSON(srcprops)))
             goto cleanup;
@@ -9620,6 +9645,112 @@ qemuBuildPanicCommandLine(virCommandPtr cmd,
 
 
 /**
+ * qemuBuildPRManagerInfoProps:
+ * @prd: disk PR runtime info
+ * @propsret: JSON properties to return
+ *
+ * Build the JSON properties for the pr-manager object.
+ *
+ * Returns: 0 on success (@propsret is NULL if no properties are needed),
+ *         -1 on failure (with error message set).
+ */
+int
+qemuBuildPRManagerInfoProps(virDomainObjPtr vm,
+                            const virDomainDiskDef *disk,
+                            virJSONValuePtr *propsret,
+                            char **aliasret)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *socketPath = NULL;
+    char *alias = NULL;
+    int ret = -1;
+
+    *propsret = NULL;
+    *aliasret = NULL;
+
+    if (!virStoragePRDefIsEnabled(disk->src->pr))
+        return 0;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("reservations not supported with this QEMU binary"));
+        return ret;
+    }
+
+    if (!(socketPath = qemuDomainGetPRSocketPath(vm, disk->src->pr)))
+        return ret;
+
+    if (virStoragePRDefIsManaged(disk->src->pr)) {
+        if (VIR_STRDUP(alias, qemuDomainGetManagedPRAlias()) < 0)
+            goto cleanup;
+    } else {
+        if (!(alias = qemuDomainGetUnmanagedPRAlias(disk)))
+            goto cleanup;
+    }
+
+    if (virJSONValueObjectCreate(propsret,
+                                 "s:path", socketPath,
+                                 NULL) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(*aliasret, alias);
+    ret = 0;
+ cleanup:
+    VIR_FREE(alias);
+    VIR_FREE(socketPath);
+    return ret;
+}
+
+
+static int
+qemuBuildMasterPRCommandLine(virDomainObjPtr vm,
+                             virCommandPtr cmd,
+                             const virDomainDef *def)
+{
+    size_t i;
+    bool managedAdded = false;
+    virJSONValuePtr props = NULL;
+    char *alias = NULL;
+    char *tmp = NULL;
+    int ret = -1;
+
+    for (i = 0; i < def->ndisks; i++) {
+        const virDomainDiskDef *disk = def->disks[i];
+
+        if (virStoragePRDefIsManaged(disk->src->pr)) {
+            if (managedAdded)
+                continue;
+
+            managedAdded = true;
+        }
+
+        if (qemuBuildPRManagerInfoProps(vm, disk, &props, &alias) < 0)
+            goto cleanup;
+
+        if (!props)
+            continue;
+
+        if (!(tmp = virQEMUBuildObjectCommandlineFromJSON("pr-manager-helper",
+                                                          alias,
+                                                          props)))
+            goto cleanup;
+        VIR_FREE(alias);
+        virJSONValueFree(props);
+        props = NULL;
+
+        virCommandAddArgList(cmd, "-object", tmp, NULL);
+        VIR_FREE(tmp);
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(alias);
+    virJSONValueFree(props);
+    return ret;
+}
+
+
+/**
  * qemuBuildCommandLineValidate:
  *
  * Prior to taking the plunge and building a long command line only
@@ -9785,6 +9916,9 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         virCommandAddArg(cmd, "-S"); /* freeze CPU */
 
     if (qemuBuildMasterKeyCommandLine(cmd, priv) < 0)
+        goto error;
+
+    if (qemuBuildMasterPRCommandLine(vm, cmd, def) < 0)
         goto error;
 
     if (enableFips)

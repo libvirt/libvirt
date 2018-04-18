@@ -12001,3 +12001,25 @@ qemuProcessEventFree(struct qemuProcessEvent *event)
     }
     VIR_FREE(event);
 }
+
+
+char *
+qemuDomainGetPRSocketPath(virDomainObjPtr vm,
+                          virStoragePRDefPtr pr)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    const char *defaultAlias = NULL;
+    char *ret = NULL;
+
+    if (!virStoragePRDefIsEnabled(pr))
+        return NULL;
+
+    if (virStoragePRDefIsManaged(pr)) {
+        defaultAlias = qemuDomainGetManagedPRAlias();
+        ignore_value(virAsprintf(&ret, "%s/%s.sock", priv->libDir, defaultAlias));
+    } else {
+        ignore_value(VIR_STRDUP(ret, pr->path));
+    }
+
+    return ret;
+}

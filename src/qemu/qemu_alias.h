@@ -92,4 +92,8 @@ char *qemuAliasTLSObjFromSrcAlias(const char *srcAlias)
 char *qemuAliasChardevFromDevAlias(const char *devAlias)
     ATTRIBUTE_NONNULL(1);
 
+const char *qemuDomainGetManagedPRAlias(void);
+
+char *qemuDomainGetUnmanagedPRAlias(const virDomainDiskDef *disk);
+
 #endif /* __QEMU_ALIAS_H__*/

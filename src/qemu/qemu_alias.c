@@ -773,3 +773,21 @@ qemuAliasChardevFromDevAlias(const char *devAlias)
 
     return ret;
 }
+
+
+const char *
+qemuDomainGetManagedPRAlias(void)
+{
+    return "pr-helper0";
+}
+
+
+char *
+qemuDomainGetUnmanagedPRAlias(const virDomainDiskDef *disk)
+{
+    char *ret;
+
+    ignore_value(virAsprintf(&ret, "pr-helper-%s", disk->info.alias));
+
+    return ret;
+}

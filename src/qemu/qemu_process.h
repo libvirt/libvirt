@@ -24,6 +24,7 @@
 
 # include "qemu_conf.h"
 # include "qemu_domain.h"
+# include "virstoragefile.h"
 
 int qemuProcessPrepareMonitorChr(virDomainChrSourceDefPtr monConfig,
                                  const char *domainDir);
