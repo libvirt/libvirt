@@ -4163,7 +4163,11 @@ static virStateDriver vzStateDriver = {
 
 /* Parallels domain type backward compatibility*/
 static virHypervisorDriver parallelsHypervisorDriver;
-static virConnectDriver parallelsConnectDriver;
+static virConnectDriver parallelsConnectDriver = {
+    .localOnly = true,
+    .uriSchemes = (const char *[]){ "parallels", NULL },
+    .hypervisorDriver = &parallelsHypervisorDriver,
+};
 
 /**
  * vzRegister:
@@ -4186,9 +4190,6 @@ vzRegister(void)
     /* Backward compatibility with Parallels domain type */
     parallelsHypervisorDriver = vzHypervisorDriver;
     parallelsHypervisorDriver.name = "Parallels";
-    parallelsConnectDriver = vzConnectDriver;
-    parallelsConnectDriver.hypervisorDriver = &parallelsHypervisorDriver;
-    parallelsConnectDriver.uriSchemes = (const char *[]){ "parallels", NULL },
     if (virRegisterConnectDriver(&parallelsConnectDriver, true) < 0)
         return -1;
 
