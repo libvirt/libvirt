@@ -17705,7 +17705,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
         topSource != disk->src) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHANGE_BACKING_FILE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this qemu doesn't support relative blockpull"));
+                           _("this qemu doesn't support relative block commit"));
             goto endjob;
         }
 
