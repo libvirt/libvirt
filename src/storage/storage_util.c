@@ -901,10 +901,10 @@ storageBackendCreateQemuImgCheckEncryption(int format,
                            _("too many secrets for qcow encryption"));
             return -1;
         }
-        if (enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT ||
-            enc->nsecrets == 0) {
-            if (virStorageGenerateQcowEncryption(vol) < 0)
-                return -1;
+        if (enc->nsecrets == 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("no secret provided for qcow encryption"));
+            return -1;
         }
     } else if (format == VIR_STORAGE_FILE_RAW) {
         if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
@@ -1310,6 +1310,26 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObjPtr pool,
 
 
 static int
+storageBackendGenerateSecretData(virStorageVolDefPtr vol)
+{
+    virStorageEncryptionPtr enc = vol->target.encryption;
+
+    if (!enc)
+        return 0;
+
+    if ((vol->target.format == VIR_STORAGE_FILE_QCOW ||
+         vol->target.format == VIR_STORAGE_FILE_QCOW2) &&
+        (enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT ||
+         enc->nsecrets == 0)) {
+        if (virStorageGenerateQcowEncryption(vol) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
                             virStorageVolDefPtr vol,
                             virStorageVolDefPtr inputvol,
@@ -1329,6 +1349,9 @@ storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
                          "not supported without qemu-img."));
         return -1;
     }
+
+    if (storageBackendGenerateSecretData(vol) < 0)
+        goto cleanup;
 
     if (vol->target.format == VIR_STORAGE_FILE_RAW &&
         vol->target.encryption &&
