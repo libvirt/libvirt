@@ -1520,20 +1520,6 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
 
         /* for now the DIR based storage is handled by the magic FAT format */
         if (actualType == VIR_STORAGE_TYPE_DIR) {
-            if (disk->src->format > 0 &&
-                disk->src->format != VIR_STORAGE_FILE_FAT) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unsupported disk driver type for '%s'"),
-                               virStorageFileFormatTypeToString(disk->src->format));
-                goto cleanup;
-            }
-
-            if (!disk->src->readonly) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("cannot create virtual FAT disks in read-write mode"));
-                goto cleanup;
-            }
-
             virBufferAddLit(buf, "fat:");
 
             if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)

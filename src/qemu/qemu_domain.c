@@ -4128,6 +4128,8 @@ static int
 qemuDomainValidateStorageSource(virStorageSourcePtr src,
                                 virQEMUCapsPtr qemuCaps)
 {
+    int actualType = virStorageSourceGetActualType(src);
+
     if (src->format == VIR_STORAGE_FILE_COW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                       _("'cow' storage format is not supported"));
@@ -4155,6 +4157,29 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("LUKS encrypted QCOW2 images are not suppored by this QEMU"));
         return -1;
+    }
+
+    if (src->format == VIR_STORAGE_FILE_FAT &&
+        actualType != VIR_STORAGE_TYPE_DIR) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("storage format 'fat' is supported only with 'dir' "
+                         "storage type"));
+        return -1;
+    }
+
+    if (actualType == VIR_STORAGE_TYPE_DIR) {
+        if (src->format > 0 &&
+            src->format != VIR_STORAGE_FILE_FAT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("storage type 'dir' requires use of storage format 'fat'"));
+            return -1;
+        }
+
+        if (!src->readonly) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtual FAT storage can't be accessed in read-write mode"));
+            return -1;
+        }
     }
 
     return 0;
