@@ -44,6 +44,18 @@
           add this controller when traditional PCI devices are in use.
         </description>
       </change>
+      <change>
+        <summary>
+          Xen: Support setting CPU features for host-passthrough model
+        </summary>
+        <description>
+          The CPU model presented to Xen HVM domains is equivalent to libvirt's
+          host-passthrough model, although individual features can be enabled
+          and disabled via the cpuid setting. The libvirt libxl driver now
+          supports enabling and disabling individual features of the
+          host-passthrough CPU model.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
