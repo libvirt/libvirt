@@ -11852,6 +11852,9 @@ qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
         n->iomode = disk->iomode;
         n->cachemode = disk->cachemode;
         n->discard = disk->discard;
+
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+            n->floppyimg = true;
     }
 
     return 0;
