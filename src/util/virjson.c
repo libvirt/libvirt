@@ -971,12 +971,9 @@ virJSONValueIsArray(virJSONValuePtr array)
 }
 
 
-ssize_t
+size_t
 virJSONValueArraySize(const virJSONValue *array)
 {
-    if (array->type != VIR_JSON_TYPE_ARRAY)
-        return -1;
-
     return array->data.array.nvalues;
 }
 

@@ -322,12 +322,7 @@ virNetDaemonNewPostExecRestart(virJSONValuePtr object,
             goto error;
     } else if (virJSONValueIsArray(servers)) {
         size_t i;
-        ssize_t n = virJSONValueArraySize(servers);
-        if (n < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Server count %zd should be positive"), n);
-            goto error;
-        }
+        size_t n = virJSONValueArraySize(servers);
         if (n > nDefServerNames) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Server count %zd greater than default name count %zu"),

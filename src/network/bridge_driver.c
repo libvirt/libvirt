@@ -4124,7 +4124,7 @@ networkGetDHCPLeases(virNetworkPtr net,
     size_t i, j;
     size_t nleases = 0;
     int rv = -1;
-    ssize_t size = 0;
+    size_t size = 0;
     int custom_lease_file_len = 0;
     bool need_results = !!leases;
     long long currtime = 0;
@@ -4179,11 +4179,12 @@ networkGetDHCPLeases(virNetworkPtr net,
             goto error;
         }
 
-        if ((size = virJSONValueArraySize(leases_array)) < 0) {
+        if (!virJSONValueIsArray(leases_array)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("couldn't fetch array of leases"));
+                           _("Malformed lease_entries array"));
             goto error;
         }
+        size = virJSONValueArraySize(leases_array);
     }
 
     currtime = (long long)time(NULL);

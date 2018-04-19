@@ -2928,8 +2928,7 @@ virStorageSourceParseBackingJSONGluster(virStorageSourcePtr src,
         return -1;
 
     nservers = virJSONValueArraySize(server);
-
-    if (nservers < 1) {
+    if (nservers == 0) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("at least 1 server is necessary in "
                          "JSON backing definition for gluster volume"));

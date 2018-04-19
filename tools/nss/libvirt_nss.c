@@ -309,8 +309,7 @@ findLease(const char *name,
     }
     VIR_DIR_CLOSE(dir);
 
-    if ((nleases = virJSONValueArraySize(leases_array)) < 0)
-        goto cleanup;
+    nleases = virJSONValueArraySize(leases_array);
     DEBUG("Read %zd leases", nleases);
 
 #if !defined(LIBVIRT_NSS_GUEST)

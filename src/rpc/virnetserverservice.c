@@ -325,7 +325,7 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
     virNetServerServicePtr svc;
     virJSONValuePtr socks;
     size_t i;
-    ssize_t n;
+    size_t n;
     unsigned int max;
 
     if (virNetServerServiceInitialize() < 0)
@@ -358,12 +358,13 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
         goto error;
     }
 
-    if ((n = virJSONValueArraySize(socks)) < 0) {
+    if (!virJSONValueIsArray(socks)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("socks field in JSON was not an array"));
+                       _("Malformed socks array"));
         goto error;
     }
 
+    n = virJSONValueArraySize(socks);
     if (VIR_ALLOC_N(svc->socks, n) < 0)
         goto error;
     svc->nsocks = n;

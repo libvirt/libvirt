@@ -101,11 +101,9 @@ testQEMUSchemaStealObjectMemberByName(const char *name,
 {
     virJSONValuePtr member;
     virJSONValuePtr ret = NULL;
-    size_t n;
     size_t i;
 
-    n = virJSONValueArraySize(members);
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(members); i++) {
         member = virJSONValueArrayGet(members, i);
 
         if (STREQ_NULLABLE(name, virJSONValueObjectGetString(member, "name"))) {
@@ -188,7 +186,6 @@ testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
                                          virHashTablePtr schema,
                                          virBufferPtr debug)
 {
-    size_t n;
     size_t i;
     virJSONValuePtr variants = NULL;
     virJSONValuePtr variant;
@@ -203,8 +200,7 @@ testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
         return -2;
     }
 
-    n = virJSONValueArraySize(variants);
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(variants); i++) {
         variant = virJSONValueArrayGet(variants, i);
 
         if (STREQ_NULLABLE(variantname,
@@ -342,7 +338,6 @@ testQEMUSchemaValidateEnum(virJSONValuePtr obj,
     const char *objstr;
     virJSONValuePtr values = NULL;
     virJSONValuePtr value;
-    size_t n;
     size_t i;
 
     if (virJSONValueGetType(obj) != VIR_JSON_TYPE_STRING) {
@@ -358,8 +353,7 @@ testQEMUSchemaValidateEnum(virJSONValuePtr obj,
         return -2;
     }
 
-    n = virJSONValueArraySize(values);
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(values); i++) {
         value = virJSONValueArrayGet(values, i);
 
         if (STREQ_NULLABLE(objstr, virJSONValueGetString(value))) {
@@ -383,7 +377,6 @@ testQEMUSchemaValidateArray(virJSONValuePtr objs,
     const char *elemtypename = virJSONValueObjectGetString(root, "element-type");
     virJSONValuePtr elementschema;
     virJSONValuePtr obj;
-    size_t n;
     size_t i;
 
     if (virJSONValueGetType(objs) != VIR_JSON_TYPE_ARRAY) {
@@ -401,8 +394,7 @@ testQEMUSchemaValidateArray(virJSONValuePtr objs,
     virBufferAddLit(debug, "[\n");
     virBufferAdjustIndent(debug, 3);
 
-    n = virJSONValueArraySize(objs);
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(objs); i++) {
         obj = virJSONValueArrayGet(objs, i);
 
         if (testQEMUSchemaValidateRecurse(obj, elementschema, schema, debug) < 0)
@@ -423,8 +415,8 @@ testQEMUSchemaValidateAlternate(virJSONValuePtr obj,
 {
     virJSONValuePtr members;
     virJSONValuePtr member;
-    size_t n;
     size_t i;
+    size_t n;
     const char *membertype;
     virJSONValuePtr memberschema;
     int indent;

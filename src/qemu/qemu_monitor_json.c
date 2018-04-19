@@ -1627,9 +1627,9 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
     struct qemuMonitorQueryCpusEntry *cpus = NULL;
     int ret = -1;
     size_t i;
-    ssize_t ncpus;
+    size_t ncpus;
 
-    if ((ncpus = virJSONValueArraySize(data)) <= 0)
+    if ((ncpus = virJSONValueArraySize(data)) == 0)
         return -2;
 
     if (VIR_ALLOC_N(cpus, ncpus) < 0)
@@ -3595,7 +3595,7 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValuePtr msg,
     int ret = -1;
     const char *tmp;
     virJSONValuePtr returnArray, entry, table, element;
-    ssize_t nTable;
+    size_t nTable;
     size_t i;
     virNetDevRxFilterPtr fil = virNetDevRxFilterNew();
 
@@ -3656,12 +3656,13 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValuePtr msg,
         goto cleanup;
     }
     if ((!(table = virJSONValueObjectGet(entry, "unicast-table"))) ||
-        ((nTable = virJSONValueArraySize(table)) < 0)) {
+        (!virJSONValueIsArray(table))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing or invalid 'unicast-table' array "
                          "in query-rx-filter response"));
         goto cleanup;
     }
+    nTable = virJSONValueArraySize(table);
     if (VIR_ALLOC_N(fil->unicast.table, nTable))
         goto cleanup;
     for (i = 0; i < nTable; i++) {
@@ -3697,12 +3698,13 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValuePtr msg,
         goto cleanup;
     }
     if ((!(table = virJSONValueObjectGet(entry, "multicast-table"))) ||
-        ((nTable = virJSONValueArraySize(table)) < 0)) {
+        (!virJSONValueIsArray(table))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing or invalid 'multicast-table' array "
                          "in query-rx-filter response"));
         goto cleanup;
     }
+    nTable = virJSONValueArraySize(table);
     if (VIR_ALLOC_N(fil->multicast.table, nTable))
         goto cleanup;
     for (i = 0; i < nTable; i++) {
@@ -3731,12 +3733,13 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValuePtr msg,
         goto cleanup;
     }
     if ((!(table = virJSONValueObjectGet(entry, "vlan-table"))) ||
-        ((nTable = virJSONValueArraySize(table)) < 0)) {
+        (!virJSONValueIsArray(table))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing or invalid 'vlan-table' array "
                          "in query-rx-filter response"));
         goto cleanup;
     }
+    nTable = virJSONValueArraySize(table);
     if (VIR_ALLOC_N(fil->vlan.table, nTable))
         goto cleanup;
     for (i = 0; i < nTable; i++) {
@@ -4575,7 +4578,7 @@ qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon)
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
-    ssize_t nr_results;
+    size_t nr_results;
     size_t i;
     virHashTablePtr blockJobs = NULL;
 
@@ -4591,12 +4594,7 @@ qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon)
         goto cleanup;
     }
 
-    if ((nr_results = virJSONValueArraySize(data)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("unable to determine array size"));
-        goto cleanup;
-    }
-
+    nr_results = virJSONValueArraySize(data);
     if (!(blockJobs = virHashCreate(nr_results, virHashValueFree)))
         goto cleanup;
 
@@ -5114,7 +5112,7 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     qemuMonitorMachineInfoPtr *infolist = NULL;
-    ssize_t n = 0;
+    size_t n = 0;
     size_t i;
 
     *machines = NULL;
@@ -5206,7 +5204,7 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     qemuMonitorCPUDefInfoPtr *cpulist = NULL;
-    int n = 0;
+    size_t n = 0;
     size_t i;
 
     *cpus = NULL;
@@ -5257,7 +5255,7 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
         if (virJSONValueObjectHasKey(child, "unavailable-features")) {
             virJSONValuePtr blockers;
             size_t j;
-            int len;
+            size_t len;
 
             blockers = virJSONValueObjectGetArray(child,
                                                   "unavailable-features");
@@ -5494,7 +5492,7 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     char **commandlist = NULL;
-    ssize_t n = 0;
+    size_t n = 0;
     size_t i;
 
     *commands = NULL;
@@ -5550,7 +5548,7 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     char **eventlist = NULL;
-    ssize_t n = 0;
+    size_t n = 0;
     size_t i;
 
     *events = NULL;
@@ -5614,7 +5612,7 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
     virJSONValuePtr data = NULL;
     virJSONValuePtr array = NULL;
     char **paramlist = NULL;
-    ssize_t n = 0;
+    size_t n = 0;
     size_t i;
 
     *params = NULL;
@@ -5646,17 +5644,17 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
                              "return data"));
             goto cleanup;
         }
+
+        if (!virJSONValueIsArray(array)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Malformed query-cmmand-line-options array"));
+            goto cleanup;
+        }
+
         qemuMonitorSetOptions(mon, array);
     }
 
-    if ((n = virJSONValueArraySize(array)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-command-line-options reply data was not "
-                         "an array"));
-        goto cleanup;
-    }
-
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(array); i++) {
         virJSONValuePtr child = virJSONValueArrayGet(array, i);
         const char *tmp;
 
@@ -5681,12 +5679,12 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
     if (found)
         *found = true;
 
-    if ((n = virJSONValueArraySize(data)) < 0) {
+    if (!virJSONValueIsArray(data)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-command-line-options parameter data was not "
-                         "an array"));
+                       _("Malformed query-cmmand-line-options parameters array"));
         goto cleanup;
     }
+    n = virJSONValueArraySize(data);
 
     /* null-terminated list */
     if (VIR_ALLOC_N(paramlist, n + 1) < 0)
@@ -5776,7 +5774,7 @@ int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     char **typelist = NULL;
-    ssize_t n = 0;
+    size_t n = 0;
     size_t i;
 
     *types = NULL;
@@ -5832,7 +5830,7 @@ int qemuMonitorJSONGetObjectListPaths(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     qemuMonitorJSONListPathPtr *pathlist = NULL;
-    ssize_t n = 0;
+    size_t n = 0;
     size_t i;
 
     *paths = NULL;
@@ -6062,7 +6060,7 @@ int qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     char **proplist = NULL;
-    ssize_t n = 0;
+    size_t n = 0;
     size_t i;
 
     *props = NULL;
@@ -6161,7 +6159,7 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
     virJSONValuePtr caps;
     char **list = NULL;
     size_t i;
-    ssize_t n;
+    size_t n;
 
     *capabilities = NULL;
 
@@ -6272,7 +6270,7 @@ qemuMonitorJSONGetGICCapabilities(qemuMonitorPtr mon,
     virJSONValuePtr caps;
     virGICCapability *list = NULL;
     size_t i;
-    ssize_t n;
+    size_t n;
 
     *capabilities = NULL;
 
@@ -6495,7 +6493,7 @@ qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     char **list = NULL;
-    ssize_t n = 0;
+    size_t n = 0;
     size_t i;
 
     *array = NULL;
@@ -6892,14 +6890,11 @@ qemuMonitorJSONParseCPUx86Features(virJSONValuePtr data)
     virCPUDataPtr cpudata = NULL;
     virCPUx86CPUID cpuid;
     size_t i;
-    ssize_t n;
-
-    n = virJSONValueArraySize(data);
 
     if (!(cpudata = virCPUDataNew(VIR_ARCH_X86_64)))
         goto error;
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(data); i++) {
         if (qemuMonitorJSONParseCPUx86FeatureWord(virJSONValueArrayGet(data, i),
                                                   &cpuid) < 0 ||
             virCPUx86DataAddCPUID(cpudata, &cpuid) < 0)
@@ -6960,7 +6955,7 @@ qemuMonitorJSONCheckCPUx86(qemuMonitorPtr mon)
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     size_t i;
-    ssize_t n;
+    size_t n;
     int ret = -1;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("qom-list",
@@ -7098,7 +7093,7 @@ qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     qemuMonitorIOThreadInfoPtr *infolist = NULL;
-    ssize_t n = 0;
+    size_t n = 0;
     size_t i;
 
     *iothreads = NULL;
@@ -7180,7 +7175,6 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data = NULL;
     qemuMonitorMemoryDeviceInfoPtr meminfo = NULL;
-    ssize_t n;
     size_t i;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-memory-devices", NULL)))
@@ -7198,9 +7192,8 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitorPtr mon,
         goto cleanup;
 
     data = virJSONValueObjectGetArray(reply, "return");
-    n = virJSONValueArraySize(data);
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(data); i++) {
         virJSONValuePtr elem = virJSONValueArrayGet(data, i);
         const char *type;
 
@@ -7666,7 +7659,7 @@ qemuMonitorJSONGetHotpluggableCPUs(qemuMonitorPtr mon,
                                    size_t *nentries)
 {
     struct qemuMonitorQueryHotpluggableCpusEntry *info = NULL;
-    ssize_t ninfo = 0;
+    size_t ninfo = 0;
     int ret = -1;
     size_t i;
     virJSONValuePtr data;

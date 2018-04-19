@@ -293,7 +293,6 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
 {
     virLockSpacePtr lockspace;
     virJSONValuePtr resources;
-    ssize_t n;
     size_t i;
 
     VIR_DEBUG("object=%p", object);
@@ -324,19 +323,19 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
         goto error;
     }
 
-    if ((n = virJSONValueArraySize(resources)) < 0) {
+    if (!virJSONValueIsArray(resources)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed resources value in JSON document"));
+                       _("Malformed resources array"));
         goto error;
     }
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(resources); i++) {
         virJSONValuePtr child = virJSONValueArrayGet(resources, i);
         virLockSpaceResourcePtr res;
         const char *tmp;
         virJSONValuePtr owners;
         size_t j;
-        ssize_t m;
+        size_t m;
 
         if (VIR_ALLOC(res) < 0)
             goto error;
@@ -396,18 +395,19 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
             goto error;
         }
 
-        if ((m = virJSONValueArraySize(owners)) < 0) {
+        if (!virJSONValueIsArray(owners)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Malformed owners value in JSON document"));
+                           _("Malformed owners array"));
             virLockSpaceResourceFree(res);
             goto error;
         }
 
-        res->nOwners = m;
+        m = virJSONValueArraySize(owners);
         if (VIR_ALLOC_N(res->owners, res->nOwners) < 0) {
             virLockSpaceResourceFree(res);
             goto error;
         }
+        res->nOwners = m;
 
         for (j = 0; j < res->nOwners; j++) {
             unsigned long long int owner;

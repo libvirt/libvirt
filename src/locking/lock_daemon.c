@@ -248,7 +248,6 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
     virJSONValuePtr child;
     virJSONValuePtr lockspaces;
     size_t i;
-    ssize_t n;
     const char *serverNames[] = { "virtlockd" };
 
     if (VIR_ALLOC(lockd) < 0)
@@ -281,13 +280,13 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
         goto error;
     }
 
-    if ((n = virJSONValueArraySize(lockspaces)) < 0) {
+    if (!virJSONValueIsArray(lockspaces)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed lockspaces data from JSON file"));
+                       _("Malformed lockspaces array"));
         goto error;
     }
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(lockspaces); i++) {
         virLockSpacePtr lockspace;
 
         child = virJSONValueArrayGet(lockspaces, i);

@@ -292,7 +292,6 @@ virLogHandlerNewPostExecRestart(virJSONValuePtr object,
 {
     virLogHandlerPtr handler;
     virJSONValuePtr files;
-    ssize_t n;
     size_t i;
 
     if (!(handler = virLogHandlerNew(privileged,
@@ -308,13 +307,13 @@ virLogHandlerNewPostExecRestart(virJSONValuePtr object,
         goto error;
     }
 
-    if ((n = virJSONValueArraySize(files)) < 0) {
+    if (!virJSONValueIsArray(files)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Malformed files data from JSON file"));
+                       _("Malformed files array"));
         goto error;
     }
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < virJSONValueArraySize(files); i++) {
         virLogHandlerLogFilePtr file;
         virJSONValuePtr child = virJSONValueArrayGet(files, i);
 

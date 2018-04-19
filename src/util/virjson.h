@@ -81,7 +81,7 @@ virJSONValuePtr virJSONValueObjectGetByType(virJSONValuePtr object,
 bool virJSONValueIsObject(virJSONValuePtr object);
 
 bool virJSONValueIsArray(virJSONValuePtr array);
-ssize_t virJSONValueArraySize(const virJSONValue *array);
+size_t virJSONValueArraySize(const virJSONValue *array);
 virJSONValuePtr virJSONValueArrayGet(virJSONValuePtr object, unsigned int element);
 virJSONValuePtr virJSONValueArraySteal(virJSONValuePtr object, unsigned int element);
 typedef int (*virJSONArrayIteratorFunc)(size_t pos,
