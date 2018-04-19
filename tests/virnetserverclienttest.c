@@ -152,7 +152,7 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
     ret = 0;
  cleanup:
     virObjectUnref(sock);
-    if (!client)
+    if (client)
         virNetServerClientClose(client);
     virObjectUnref(client);
     virObjectUnref(ident);
