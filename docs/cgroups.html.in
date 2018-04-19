@@ -23,12 +23,13 @@
 
     <p>
       The QEMU driver is capable of using the <code>cpuset</code>,
-      <code>cpu</code>, <code>memory</code>, <code>blkio</code> and
-      <code>devices</code> controllers. None of them are compulsory.
-      If any controller is not mounted, the resource management APIs
-      which use it will cease to operate. It is possible to explicitly
-      turn off use of a controller, even when mounted, via the
-      <code>/etc/libvirt/qemu.conf</code> configuration file.
+      <code>cpu</code>, <code>cpuacct</code>, <code>memory</code>,
+      <code>blkio</code> and <code>devices</code> controllers.
+      None of them are compulsory. If any controller is not mounted,
+      the resource management APIs which use it will cease to operate.
+      It is possible to explicitly turn off use of a controller,
+      even when mounted, via the <code>/etc/libvirt/qemu.conf</code>
+      configuration file.
     </p>
 
     <p>
