@@ -11871,7 +11871,8 @@ qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
     src->detect_zeroes = disk->detect_zeroes;
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (n->type == VIR_STORAGE_TYPE_NETWORK &&
+        if (cfg &&
+            n->type == VIR_STORAGE_TYPE_NETWORK &&
             n->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_GLUSTER_DEBUG_LEVEL)) {
             n->debug = true;
