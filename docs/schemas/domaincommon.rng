@@ -5109,6 +5109,11 @@
   <define name="rom">
     <element name="rom">
       <optional>
+        <attribute name="enabled">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
+      <optional>
         <attribute name="bar">
           <ref name="virOnOff"/>
         </attribute>

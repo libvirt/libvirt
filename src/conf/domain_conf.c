@@ -6095,9 +6095,17 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
     }
 
     if ((flags & VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM) &&
-        (info->rombar != VIR_TRISTATE_SWITCH_ABSENT || info->romfile)) {
+        (info->romenabled != VIR_TRISTATE_BOOL_ABSENT ||
+         info->rombar != VIR_TRISTATE_SWITCH_ABSENT ||
+         info->romfile)) {
 
         virBufferAddLit(buf, "<rom");
+        if (info->romenabled != VIR_TRISTATE_BOOL_ABSENT) {
+            const char *romenabled = virTristateBoolTypeToString(info->romenabled);
+
+            if (romenabled)
+                virBufferAsprintf(buf, " enabled='%s'", romenabled);
+        }
         if (info->rombar != VIR_TRISTATE_SWITCH_ABSENT) {
             const char *rombar = virTristateSwitchTypeToString(info->rombar);
 
@@ -6738,6 +6746,7 @@ virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
     xmlNodePtr boot = NULL;
     xmlNodePtr rom = NULL;
     char *type = NULL;
+    char *romenabled = NULL;
     char *rombar = NULL;
     char *aliasStr = NULL;
     int ret = -1;
@@ -6791,6 +6800,12 @@ virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
     }
 
     if (rom) {
+        if ((romenabled = virXMLPropString(rom, "enabled")) &&
+            ((info->romenabled = virTristateBoolTypeFromString(romenabled)) <= 0)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown rom enabled value '%s'"), romenabled);
+            goto cleanup;
+        }
         if ((rombar = virXMLPropString(rom, "bar")) &&
             ((info->rombar = virTristateSwitchTypeFromString(rombar)) <= 0)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -6798,6 +6813,13 @@ virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
             goto cleanup;
         }
         info->romfile = virXMLPropString(rom, "file");
+
+        if (info->romenabled == VIR_TRISTATE_BOOL_NO &&
+            (info->rombar != VIR_TRISTATE_SWITCH_ABSENT || info->romfile)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ROM tuning is not supported when ROM is disabled"));
+            goto cleanup;
+        }
     }
 
     if (address &&
@@ -6811,6 +6833,7 @@ virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
         virDomainDeviceInfoClear(info);
     VIR_FREE(type);
     VIR_FREE(rombar);
+    VIR_FREE(romenabled);
     VIR_FREE(aliasStr);
     return ret;
 }
