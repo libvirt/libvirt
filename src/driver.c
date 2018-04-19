@@ -45,6 +45,11 @@ static void *
 virDriverLoadModuleFile(const char *file)
 {
     void *handle = NULL;
+    int flags = RTLD_NOW | RTLD_GLOBAL;
+
+# ifdef RTLD_NODELETE
+    flags |= RTLD_NODELETE;
+# endif
 
     VIR_DEBUG("Load module file '%s'", file);
 
@@ -55,7 +60,7 @@ virDriverLoadModuleFile(const char *file)
 
     virUpdateSelfLastChanged(file);
 
-    if (!(handle = dlopen(file, RTLD_NOW | RTLD_GLOBAL)))
+    if (!(handle = dlopen(file, flags)))
         VIR_ERROR(_("failed to load module %s %s"), file, dlerror());
 
     return handle;

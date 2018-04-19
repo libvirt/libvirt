@@ -51,7 +51,11 @@ AM_LDFLAGS =	$(DRIVER_MODULES_LDFLAGS) \
 		$(CYGWIN_EXTRA_LDFLAGS) \
 		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
-AM_LDFLAGS_MOD = -module -avoid-version $(AM_LDFLAGS)
+AM_LDFLAGS_MOD = \
+	-module \
+	-avoid-version \
+	$(LIBVIRT_NODELETE) \
+	$(AM_LDFLAGS)
 AM_LDFLAGS_MOD_NOUNDEF = $(AM_LDFLAGS_MOD) $(NO_UNDEFINED_LDFLAGS)
 
 POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
