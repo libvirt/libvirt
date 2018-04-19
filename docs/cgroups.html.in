@@ -76,11 +76,13 @@
     <p>
       The systemd convention is for the scope name of virtual machines / containers
       to be of the general format <code>machine-$NAME.scope</code>. Libvirt forms the
-      <code>$NAME</code> part of this by concatenating the driver type with the name
-      of the guest, and then escaping any systemd reserved characters.
+      <code>$NAME</code> part of this by concatenating the driver type with the id
+      and truncated name of the guest, and then escaping any systemd reserved
+      characters.
       So for a guest <code>demo</code> running under the <code>lxc</code> driver,
-      we get a <code>$NAME</code> of <code>lxc-demo</code> which when escaped is
-      <code>lxc\x2ddemo</code>. So the complete scope name is <code>machine-lxc\x2ddemo.scope</code>.
+      we get a <code>$NAME</code> of <code>lxc-12345-demo</code> which when escaped
+      is <code>lxc\x2d12345\x2ddemo</code>. So the complete scope name is
+      <code>machine-lxc\x2d12345\x2ddemo.scope</code>.
       The scope names map directly to the cgroup directory names.
     </p>
 
@@ -113,19 +115,19 @@ $ROOT
   |
   +- machine.slice
       |
-      +- machine-qemu\x2dvm1.scope
+      +- machine-qemu\x2d1\x2dvm1.scope
       |   |
       |   +- emulator
       |   +- vcpu0
       |   +- vcpu1
       |
-      +- machine-qemu\x2dvm2.scope
+      +- machine-qemu\x2d2\x2dvm2.scope
       |   |
       |   +- emulator
       |   +- vcpu0
       |   +- vcpu1
       |
-      +- machine-qemu\x2dvm3.scope
+      +- machine-qemu\x2d3\x2dvm3.scope
       |   |
       |   +- emulator
       |   +- vcpu0
@@ -135,15 +137,15 @@ $ROOT
       |   |
       |   +- machine-engineering-testing.slice
       |   |   |
-      |   |   +- machine-lxc\x2dcontainer1.scope
+      |   |   +- machine-lxc\x2d11111\x2dcontainer1.scope
       |   |
       |   +- machine-engineering-production.slice
       |       |
-      |       +- machine-lxc\x2dcontainer2.scope
+      |       +- machine-lxc\x2d22222\x2dcontainer2.scope
       |
       +- machine-marketing.slice
           |
-          +- machine-lxc\x2dcontainer3.scope
+          +- machine-lxc\x2d33333\x2dcontainer3.scope
     </pre>
 
     <h3><a id="currentLayoutGeneric">Non-systemd cgroups layout</a></h3>
@@ -174,19 +176,19 @@ $ROOT
   |
   +- machine
       |
-      +- vm1.libvirt-qemu
+      +- qemu-1-vm1.libvirt-qemu
       |   |
       |   +- emulator
       |   +- vcpu0
       |   +- vcpu1
       |
-      +- vm2.libvirt-qemu
+      +- qeme-2-vm2.libvirt-qemu
       |   |
       |   +- emulator
       |   +- vcpu0
       |   +- vcpu1
       |
-      +- vm3.libvirt-qemu
+      +- qemu-3-vm3.libvirt-qemu
       |   |
       |   +- emulator
       |   +- vcpu0
@@ -196,15 +198,15 @@ $ROOT
       |   |
       |   +- testing.partition
       |   |   |
-      |   |   +- container1.libvirt-lxc
+      |   |   +- lxc-11111-container1.libvirt-lxc
       |   |
       |   +- production.partition
       |       |
-      |       +- container2.libvirt-lxc
+      |       +- lxc-22222-container2.libvirt-lxc
       |
       +- marketing.partition
           |
-          +- container3.libvirt-lxc
+          +- lxc-33333-container3.libvirt-lxc
     </pre>
 
     <h2><a id="customPartiton">Using custom partitions</a></h2>
