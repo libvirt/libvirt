@@ -95,7 +95,7 @@ virStorageDriverLoadBackendModule(const char *name,
                                             abs_topbuilddir "/src/.libs",
                                             STORAGE_BACKEND_MODULE_DIR,
                                             "LIBVIRT_STORAGE_BACKEND_DIR")))
-        return 1;
+        return -1;
 
     if ((ret = virDriverLoadModuleFull(modfile, regfunc)) != 0) {
         if (forceload) {

@@ -153,7 +153,7 @@ virDriverLoadModule(const char *name,
                                             abs_topbuilddir "/src/.libs",
                                             DEFAULT_DRIVER_DIR,
                                             "LIBVIRT_DRIVER_DIR")))
-        return 1;
+        return -1;
 
     ret = virDriverLoadModuleFull(modfile, regfunc);
 

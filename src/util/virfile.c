@@ -1736,6 +1736,10 @@ static bool useDirOverride;
  * run from the source tree. Otherwise it will return the
  * path in the installed location.
  *
+ * Note that this function does not actually check whether
+ * the file exists on disk, it merely builds the fully
+ * qualified path where it is supposed to exist.
+ *
  * If @envname is non-NULL it will override all other
  * directory lookup.
  *
