@@ -328,9 +328,6 @@ static void daemonInitialize(void)
 #ifdef WITH_NWFILTER
     VIR_DAEMON_LOAD_MODULE(nwfilterRegister, "nwfilter");
 #endif
-#ifdef WITH_XEN
-    VIR_DAEMON_LOAD_MODULE(xenRegister, "xen");
-#endif
 #ifdef WITH_LIBXL
     VIR_DAEMON_LOAD_MODULE(libxlRegister, "libxl");
 #endif
