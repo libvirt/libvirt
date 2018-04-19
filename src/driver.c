@@ -33,6 +33,7 @@
 
 VIR_LOG_INIT("driver");
 
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 /* XXX re-implement this for other OS, or use libtools helper lib ? */
 #define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
@@ -55,8 +56,11 @@ virDriverLoadModuleFile(const char *file)
 
     virUpdateSelfLastChanged(file);
 
-    if (!(handle = dlopen(file, flags)))
-        VIR_ERROR(_("failed to load module %s %s"), file, dlerror());
+    if (!(handle = dlopen(file, flags))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to load module '%s': %s"), file, dlerror());
+        return NULL;
+    }
 
     return handle;
 }
@@ -64,14 +68,19 @@ virDriverLoadModuleFile(const char *file)
 
 static void *
 virDriverLoadModuleFunc(void *handle,
+                        const char *file,
                         const char *funcname)
 {
     void *regsym;
 
     VIR_DEBUG("Lookup function '%s'", funcname);
 
-    if (!(regsym = dlsym(handle, funcname)))
-        VIR_ERROR(_("Missing module registration symbol %s"), funcname);
+    if (!(regsym = dlsym(handle, funcname))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to find symbol '%s' in module '%s': %s"),
+                       funcname, file, dlerror());
+        return NULL;
+    }
 
     return regsym;
 }
@@ -108,11 +117,18 @@ virDriverLoadModuleFull(const char *path,
     if (!(rethandle = virDriverLoadModuleFile(path)))
         goto cleanup;
 
-    if (!(regsym = virDriverLoadModuleFunc(rethandle, regfunc)))
+    if (!(regsym = virDriverLoadModuleFunc(rethandle, path, regfunc)))
         goto cleanup;
 
     if ((*regsym)() < 0) {
-        VIR_ERROR(_("Failed module registration %s"), regfunc);
+        /* regsym() should report an error itself, but lets
+         * just make sure */
+        virErrorPtr err = virGetLastError();
+        if (err == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to execute symbol '%s' in module '%s'"),
+                           regfunc, path);
+        }
         goto cleanup;
     }
 
@@ -131,7 +147,11 @@ virDriverLoadModuleFull(const char *path ATTRIBUTE_UNUSED,
                         const char *regfunc ATTRIBUTE_UNUSED)
 {
     VIR_DEBUG("dlopen not available on this platform");
-    return -1;
+    /* Since we have no dlopen(), but definition we have no
+     * loadable modules on disk, so we can resaonably
+     * return '1' instead of an error.
+     */
+    return 1;
 }
 #endif /* ! HAVE_DLFCN_H */
 
