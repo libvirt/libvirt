@@ -1353,6 +1353,8 @@ virVMXParseConfig(virVMXContext *ctx,
     long long sharedFolder_maxNum = 0;
     int cpumasklen;
     struct virVMXConfigScanResults results = { -1 };
+    long long coresPerSocket = 0;
+    virCPUDefPtr cpu = NULL;
 
     if (ctx->parseFileName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1515,6 +1517,31 @@ virVMXParseConfig(virVMXContext *ctx,
 
     if (virDomainDefSetVcpus(def, numvcpus) < 0)
         goto cleanup;
+
+    /* vmx:cpuid.coresPerSocket -> def:cpu */
+    if (virVMXGetConfigLong(conf, "cpuid.coresPerSocket", &coresPerSocket, 1,
+                            true) < 0)
+        goto cleanup;
+
+    if (coresPerSocket > 1) {
+        if (VIR_ALLOC(cpu) < 0)
+            goto cleanup;
+
+        cpu->type = VIR_CPU_TYPE_GUEST;
+        cpu->mode = VIR_CPU_MODE_CUSTOM;
+
+        cpu->sockets = numvcpus / coresPerSocket;
+        if (cpu->sockets <= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("VMX entry 'cpuid.coresPerSocket' smaller than "
+                             "'numvcpus'"));
+            goto cleanup;
+        }
+        cpu->cores = coresPerSocket;
+        cpu->threads = 1;
+
+        VIR_STEAL_PTR(def->cpu, cpu);
+    }
 
     /* vmx:sched.cpu.affinity -> def:cpumask */
     /* NOTE: maps to VirtualMachine:config.cpuAffinity.affinitySet */
@@ -1881,6 +1908,7 @@ virVMXParseConfig(virVMXContext *ctx,
     VIR_FREE(sched_cpu_affinity);
     VIR_FREE(sched_cpu_shares);
     VIR_FREE(guestOS);
+    virCPUDefFree(cpu);
 
     return def;
 }

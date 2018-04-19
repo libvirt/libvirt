@@ -10,6 +10,9 @@
   <os>
     <type arch='x86_64'>hvm</type>
   </os>
+  <cpu>
+    <topology sockets='4' cores='2' threads='1'/>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
