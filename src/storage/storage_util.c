@@ -1216,7 +1216,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
 
     if (info.format == VIR_STORAGE_FILE_RAW && vol->target.encryption &&
         vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
-        if (virAsprintf(&info.secretAlias, "%s_luks0", vol->name) < 0)
+        if (virAsprintf(&info.secretAlias, "%s_encrypt0", vol->name) < 0)
             goto error;
         if (storageBackendCreateQemuImgSecretObject(cmd, info.secretPath,
                                                     info.secretAlias) < 0)
@@ -1269,7 +1269,7 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObjPtr pool,
 
     if ((fd = mkostemp(secretPath, O_CLOEXEC)) < 0) {
         virReportSystemError(errno, "%s",
-                             _("failed to open luks secret file for write"));
+                             _("failed to open secret file for write"));
         goto error;
     }
 
@@ -1280,7 +1280,7 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObjPtr pool,
 
     if (safewrite(fd, secret, secretlen) < 0) {
         virReportSystemError(errno, "%s",
-                             _("failed to write luks secret file"));
+                             _("failed to write secret file"));
         goto error;
     }
     VIR_FORCE_CLOSE(fd);
@@ -1290,7 +1290,7 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObjPtr pool,
         if (chown(secretPath, vol->target.perms->uid,
                   vol->target.perms->gid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to chown luks secret file"));
+                           _("failed to chown secret file"));
             goto error;
         }
     }
@@ -2331,7 +2331,7 @@ storageBackendResizeQemuImg(virStoragePoolObjPtr pool,
               storageBackendCreateQemuImgSecretPath(pool, vol)))
             goto cleanup;
 
-        if (virAsprintf(&secretAlias, "%s_luks0", vol->name) < 0)
+        if (virAsprintf(&secretAlias, "%s_encrypt0", vol->name) < 0)
             goto cleanup;
     }
 
