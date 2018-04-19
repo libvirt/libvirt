@@ -3246,6 +3246,35 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
     virBufferAsprintf(&buffer, "numvcpus = \"%d\"\n", maxvcpus);
 
+    if (def->cpu) {
+        unsigned int calculated_vcpus;
+
+        if (def->cpu->mode != VIR_CPU_MODE_CUSTOM) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Expecting domain XML CPU mode 'custom' but "
+                             "found '%s'"),
+                           virCPUModeTypeToString(def->cpu->mode));
+            goto cleanup;
+        }
+
+        if (def->cpu->threads != 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only 1 thread per core is supported"));
+            goto cleanup;
+        }
+
+        calculated_vcpus = def->cpu->sockets * def->cpu->cores;
+        if (calculated_vcpus != maxvcpus) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Expecting domain XML CPU sockets per core as %d "
+                             "but found %d"),
+                           maxvcpus, calculated_vcpus);
+            goto cleanup;
+        }
+
+        virBufferAsprintf(&buffer, "cpuid.coresPerSocket = \"%d\"\n", def->cpu->cores);
+    }
+
     /* def:cpumask -> vmx:sched.cpu.affinity */
     if (def->cpumask && virBitmapSize(def->cpumask) > 0) {
         int bit;

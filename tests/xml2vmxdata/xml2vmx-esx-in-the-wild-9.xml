@@ -1,0 +1,37 @@
+<domain type='vmware'>
+  <name>v2v-windows-kkulkarn</name>
+  <uuid>42009372-17da-be73-779d-007ccf1bd228</uuid>
+  <description>MIQ GUID=b55c806d-99b9-4fa5-bbcc-a4de04f822e5</description>
+  <memory unit='KiB'>16777216</memory>
+  <currentMemory unit='KiB'>16777216</currentMemory>
+  <vcpu placement='static'>16</vcpu>
+  <cputune>
+    <shares>16000</shares>
+  </cputune>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <cpu>
+    <topology sockets='4' cores='4' threads='1'/>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/v2v-windows-kkulkarn.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='scsi' index='0' model='lsisas1068'/>
+    <interface type='bridge'>
+      <mac address='00:50:56:80:b3:81'/>
+      <source bridge='VM Network'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <video>
+      <model type='vmvga' vram='8192' primary='yes'/>
+    </video>
+  </devices>
+</domain>
