@@ -1163,7 +1163,10 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
         if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, fileprops) < 0)
             goto cleanup;
 
-        if (virJSONValueObjectAdd(fileprops, "b:read-only", src->readonly, NULL) < 0)
+        if (virJSONValueObjectAdd(fileprops,
+                                  "b:read-only", src->readonly,
+                                  "s:discard", "unmap",
+                                  NULL) < 0)
             goto cleanup;
     }
 
