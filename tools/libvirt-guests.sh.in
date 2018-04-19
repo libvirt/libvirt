@@ -363,8 +363,10 @@ print_guests_shutdown()
         esac
 
         name=$(guest_name "$uri" "$guest")
-        eval_gettext "Shutdown of guest \$name complete."
-        echo
+        if [ -n "$name" ]; then
+            eval_gettext "Shutdown of guest \$name complete."
+            echo
+        fi
     done
 }
 
