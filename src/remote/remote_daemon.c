@@ -87,6 +87,7 @@ enum {
     VIR_DAEMON_ERR_CONFIG,
     VIR_DAEMON_ERR_HOOKS,
     VIR_DAEMON_ERR_AUDIT,
+    VIR_DAEMON_ERR_DRIVER,
 
     VIR_DAEMON_ERR_LAST
 };
@@ -102,7 +103,8 @@ VIR_ENUM_IMPL(virDaemonErr, VIR_DAEMON_ERR_LAST,
               "Unable to initialize network sockets",
               "Unable to load configuration file",
               "Unable to look for hook scripts",
-              "Unable to initialize audit system")
+              "Unable to initialize audit system",
+              "Unable to initialize driver")
 
 static int daemonForkIntoBackground(const char *argv0)
 {
@@ -294,9 +296,7 @@ static int daemonErrorLogFilter(virErrorPtr err, int priority)
 }
 
 
-#define VIR_DAEMON_LOAD_MODULE(func, module) \
-    virDriverLoadModule(module, #func, false)
-static void daemonInitialize(void)
+static int daemonInitialize(void)
 {
     /*
      * Note that the order is important: the first ones have a higher
@@ -305,52 +305,60 @@ static void daemonInitialize(void)
      * driver, since their resources must be auto-started before any
      * domains can be auto-started.
      */
-    /* We don't care if any of these fail, because the whole point
-     * is to allow users to only install modules they want to use.
-     * If they try to open a connection for a module that
-     * is not loaded they'll get a suitable error at that point
-     */
 #ifdef WITH_NETWORK
-    VIR_DAEMON_LOAD_MODULE(networkRegister, "network");
+    if (virDriverLoadModule("network", "networkRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_INTERFACE
-    VIR_DAEMON_LOAD_MODULE(interfaceRegister, "interface");
+    if (virDriverLoadModule("interface", "interfaceRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_STORAGE
-    VIR_DAEMON_LOAD_MODULE(storageRegister, "storage");
+    if (virDriverLoadModule("storage", "storageRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_NODE_DEVICES
-    VIR_DAEMON_LOAD_MODULE(nodedevRegister, "nodedev");
+    if (virDriverLoadModule("nodedev", "nodedevRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_SECRETS
-    VIR_DAEMON_LOAD_MODULE(secretRegister, "secret");
+    if (virDriverLoadModule("secret", "secretRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_NWFILTER
-    VIR_DAEMON_LOAD_MODULE(nwfilterRegister, "nwfilter");
+    if (virDriverLoadModule("nwfilter", "nwfilterRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_LIBXL
-    VIR_DAEMON_LOAD_MODULE(libxlRegister, "libxl");
+    if (virDriverLoadModule("libxl", "libxlRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_QEMU
-    VIR_DAEMON_LOAD_MODULE(qemuRegister, "qemu");
+    if (virDriverLoadModule("qemu", "qemuRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_LXC
-    VIR_DAEMON_LOAD_MODULE(lxcRegister, "lxc");
+    if (virDriverLoadModule("lxc", "lxcRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_UML
-    VIR_DAEMON_LOAD_MODULE(umlRegister, "uml");
+    if (virDriverLoadModule("uml", "umlRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_VBOX
-    VIR_DAEMON_LOAD_MODULE(vboxRegister, "vbox");
+    if (virDriverLoadModule("vbox", "vboxRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_BHYVE
-    VIR_DAEMON_LOAD_MODULE(bhyveRegister, "bhyve");
+    if (virDriverLoadModule("bhyve", "bhyveRegister", false) < 0)
+        return -1;
 #endif
 #ifdef WITH_VZ
-    VIR_DAEMON_LOAD_MODULE(vzRegister, "vz");
+    if (virDriverLoadModule("vz", "vzRegister", false) < 0)
+        return -1;
 #endif
+    return 0;
 }
-#undef VIR_DAEMON_LOAD_MODULE
 
 
 static int ATTRIBUTE_NONNULL(3)
@@ -1283,7 +1291,7 @@ int main(int argc, char **argv) {
     }
 
     if (!(dmn = virNetDaemonNew())) {
-        ret = VIR_DAEMON_ERR_INIT;
+        ret = VIR_DAEMON_ERR_DRIVER;
         goto cleanup;
     }
 
@@ -1309,7 +1317,10 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    daemonInitialize();
+    if (daemonInitialize() < 0) {
+        ret = VIR_DAEMON_ERR_INIT;
+        goto cleanup;
+    }
 
     remoteProcs[REMOTE_PROC_AUTH_LIST].needAuth = false;
     remoteProcs[REMOTE_PROC_AUTH_SASL_INIT].needAuth = false;
