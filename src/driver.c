@@ -53,11 +53,6 @@ virDriverLoadModuleFile(const char *file)
 
     VIR_DEBUG("Load module file '%s'", file);
 
-    if (access(file, R_OK) < 0) {
-        VIR_INFO("Module %s not accessible", file);
-        return NULL;
-    }
-
     virUpdateSelfLastChanged(file);
 
     if (!(handle = dlopen(file, flags)))
@@ -105,10 +100,13 @@ virDriverLoadModuleFull(const char *path,
     int (*regsym)(void);
     int ret = -1;
 
-    if (!(rethandle = virDriverLoadModuleFile(path))) {
-        ret = 1;
-        goto cleanup;
+    if (!virFileExists(path)) {
+        VIR_INFO("Module '%s' does not exists", path);
+        return 1;
     }
+
+    if (!(rethandle = virDriverLoadModuleFile(path)))
+        goto cleanup;
 
     if (!(regsym = virDriverLoadModuleFunc(rethandle, regfunc)))
         goto cleanup;
