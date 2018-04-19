@@ -86,12 +86,11 @@ virDriverLoadModuleFunc(void *handle,
  * virDriverLoadModuleFull:
  * @path: filename of module to load
  * @regfunc: name of the function that registers the module
- * @handle: Returns handle of the loaded library if not NULL
  *
  * Loads a loadable module named @path and calls the
- * registration function @regfunc. If @handle is not NULL the handle is returned
- * in the variable. Otherwise the handle is leaked so that the module stays
- * loaded forever.
+ * registration function @regfunc. The module will never
+ * be unloaded because unloading is not safe in a multi-threaded
+ * application.
  *
  * The module is automatically looked up in the appropriate place (git or
  * installed directory).
@@ -100,8 +99,7 @@ virDriverLoadModuleFunc(void *handle,
  */
 int
 virDriverLoadModuleFull(const char *path,
-                        const char *regfunc,
-                        void **handle)
+                        const char *regfunc)
 {
     void *rethandle = NULL;
     int (*regsym)(void);
@@ -120,11 +118,7 @@ virDriverLoadModuleFull(const char *path,
         goto cleanup;
     }
 
-    if (handle)
-        VIR_STEAL_PTR(*handle, rethandle);
-    else
-        rethandle = NULL;
-
+    rethandle = NULL;
     ret = 0;
 
  cleanup:
@@ -136,12 +130,9 @@ virDriverLoadModuleFull(const char *path,
 #else /* ! HAVE_DLFCN_H */
 int
 virDriverLoadModuleFull(const char *path ATTRIBUTE_UNUSED,
-                        const char *regfunc ATTRIBUTE_UNUSED,
-                        void **handle)
+                        const char *regfunc ATTRIBUTE_UNUSED)
 {
     VIR_DEBUG("dlopen not available on this platform");
-    if (handle)
-        *handle = NULL;
     return -1;
 }
 #endif /* ! HAVE_DLFCN_H */
@@ -164,7 +155,7 @@ virDriverLoadModule(const char *name,
                                             "LIBVIRT_DRIVER_DIR")))
         return 1;
 
-    ret = virDriverLoadModuleFull(modfile, regfunc, NULL);
+    ret = virDriverLoadModuleFull(modfile, regfunc);
 
     VIR_FREE(modfile);
 

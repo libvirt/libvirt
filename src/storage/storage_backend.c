@@ -97,7 +97,7 @@ virStorageDriverLoadBackendModule(const char *name,
                                             "LIBVIRT_STORAGE_BACKEND_DIR")))
         return 1;
 
-    if ((ret = virDriverLoadModuleFull(modfile, regfunc, NULL)) != 0) {
+    if ((ret = virDriverLoadModuleFull(modfile, regfunc)) != 0) {
         if (forceload) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to load storage backend module '%s'"),
