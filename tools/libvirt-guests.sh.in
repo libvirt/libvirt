@@ -336,8 +336,8 @@ check_guests_shutdown()
     guests_to_check=$2
 
     guests_shutting_down=
-    for guest in $guests; do
-        if ! guest_is_on "$uri" "$guests_to_check" >/dev/null 2>&1; then
+    for guest in $guests_to_check; do
+        if ! guest_is_on "$uri" "$guest" >/dev/null 2>&1; then
             eval_gettext "Failed to determine state of guest: \$guest. Not tracking it anymore."
             echo
             continue
