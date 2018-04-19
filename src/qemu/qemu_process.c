@@ -2555,6 +2555,224 @@ qemuProcessResctrlCreate(virQEMUDriverPtr driver,
 }
 
 
+static char *
+qemuProcessBuildPRHelperPidfilePath(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    const char *prdAlias = qemuDomainGetManagedPRAlias();
+
+    return virPidFileBuildPath(priv->libDir, prdAlias);
+}
+
+
+static void
+qemuProcessKillPRDaemon(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virErrorPtr orig_err;
+    char *pidfile;
+
+    if (!priv->prDaemonRunning)
+        return;
+
+    if (!(pidfile = qemuProcessBuildPRHelperPidfilePath(vm))) {
+        VIR_WARN("Unable to construct pr-helper pidfile path");
+        return;
+    }
+
+    virErrorPreserveLast(&orig_err);
+    if (virPidFileForceCleanupPath(pidfile) < 0) {
+        VIR_WARN("Unable to kill pr-helper process");
+    } else {
+        if (unlink(pidfile) < 0 &&
+            errno != ENOENT) {
+            virReportSystemError(errno,
+                                 _("Unable to remove stale pidfile %s"),
+                                 pidfile);
+        } else {
+            priv->prDaemonRunning = false;
+        }
+    }
+    virErrorRestore(&orig_err);
+
+    VIR_FREE(pidfile);
+}
+
+
+static int
+qemuProcessStartPRDaemonHook(void *opaque)
+{
+    virDomainObjPtr vm = opaque;
+    size_t i, nfds = 0;
+    int *fds = NULL;
+    int ret = -1;
+
+    if (virProcessGetNamespaces(vm->pid, &nfds, &fds) < 0)
+        return ret;
+
+    if (nfds > 0 &&
+        virProcessSetNamespaces(nfds, fds) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    for (i = 0; i < nfds; i++)
+        VIR_FORCE_CLOSE(fds[i]);
+    VIR_FREE(fds);
+    return ret;
+}
+
+
+static int
+qemuProcessStartPRDaemon(virDomainObjPtr vm,
+                         const virDomainDiskDef *disk)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    virQEMUDriverConfigPtr cfg;
+    int errfd = -1;
+    char *pidfile = NULL;
+    int pidfd = -1;
+    char *socketPath = NULL;
+    pid_t cpid = -1;
+    virCommandPtr cmd = NULL;
+    virTimeBackOffVar timebackoff;
+    const unsigned long long timeout = 500000; /* ms */
+    int ret = -1;
+
+    if (!virStoragePRDefIsManaged(disk->src->pr) ||
+        priv->prDaemonRunning)
+        return 0;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (!virFileIsExecutable(cfg->prHelperName)) {
+        virReportSystemError(errno, _("'%s' is not a suitable pr helper"),
+                             cfg->prHelperName);
+        goto cleanup;
+    }
+
+    if (!(pidfile = qemuProcessBuildPRHelperPidfilePath(vm)))
+        goto cleanup;
+
+    /* Just try to acquire. Dummy pid will be replaced later */
+    if ((pidfd = virPidFileAcquirePath(pidfile, false, -1)) < 0)
+        goto cleanup;
+
+    if (!(socketPath = qemuDomainGetPRSocketPath(vm, disk->src->pr)))
+        goto cleanup;
+
+    /* Remove stale socket */
+    if (unlink(socketPath) < 0 &&
+        errno != ENOENT) {
+        virReportSystemError(errno,
+                             _("Unable to remove stale socket path: %s"),
+                             socketPath);
+        goto cleanup;
+    }
+
+    if (!(cmd = virCommandNewArgList(cfg->prHelperName,
+                                     "-k", socketPath,
+                                     "-f", pidfile,
+                                     NULL)))
+        goto cleanup;
+
+    virCommandDaemonize(cmd);
+    /* We want our virCommand to write child PID into the pidfile
+     * so that we can read it even before exec(). */
+    virCommandSetPidFile(cmd, pidfile);
+    virCommandSetErrorFD(cmd, &errfd);
+
+    /* Place the process into the same namespace and cgroup as
+     * qemu (so that it shares the same view of the system). */
+    virCommandSetPreExecHook(cmd, qemuProcessStartPRDaemonHook, vm);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    if (virPidFileReadPath(pidfile, &cpid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("pr helper %s didn't show up"),
+                       cfg->prHelperName);
+        goto cleanup;
+    }
+
+    if (virTimeBackOffStart(&timebackoff, 1, timeout) < 0)
+        goto cleanup;
+    while (virTimeBackOffWait(&timebackoff)) {
+        char errbuf[1024] = { 0 };
+
+        if (virFileExists(socketPath))
+            break;
+
+        if (virProcessKill(cpid, 0) == 0)
+            continue;
+
+        if (saferead(errfd, errbuf, sizeof(errbuf) - 1) < 0) {
+            virReportSystemError(errno,
+                                 _("pr helper %s died unexpectedly"),
+                                 cfg->prHelperName);
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("pr helper died and reported: %s"), errbuf);
+        }
+        goto cleanup;
+    }
+
+    if (!virFileExists(socketPath)) {
+        virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
+                       _("pr helper socked did not show up"));
+        goto cleanup;
+    }
+
+    if (priv->cgroup &&
+        virCgroupAddMachineTask(priv->cgroup, cpid) < 0)
+        goto cleanup;
+
+    if (qemuSecurityDomainSetPathLabel(driver->securityManager,
+                                       vm->def, socketPath, true) < 0)
+        goto cleanup;
+
+    priv->prDaemonRunning = true;
+    ret = 1;
+ cleanup:
+    if (ret < 0) {
+        virCommandAbort(cmd);
+        if (cpid >= 0)
+            virProcessKillPainfully(cpid, true);
+        if (pidfile)
+            unlink(pidfile);
+    }
+    virCommandFree(cmd);
+    VIR_FREE(socketPath);
+    VIR_FORCE_CLOSE(pidfd);
+    VIR_FREE(pidfile);
+    VIR_FORCE_CLOSE(errfd);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
+static int
+qemuProcessMaybeStartPRDaemon(virDomainObjPtr vm)
+{
+    size_t i;
+    int rv;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        const virDomainDiskDef *disk = vm->def->disks[i];
+
+        if ((rv = qemuProcessStartPRDaemon(vm, disk)) < 0)
+            return -1;
+
+        if (rv > 0)
+            return 1;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuProcessInitPasswords(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
@@ -6071,6 +6289,10 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessResctrlCreate(driver, vm) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Setting up PR daemon");
+    if (qemuProcessMaybeStartPRDaemon(vm) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Setting domain security labels");
     if (qemuSecuritySetAllLabel(driver,
                                 vm,
@@ -6597,6 +6819,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     /* Remove the master key */
     qemuDomainMasterKeyRemove(priv);
+
+    /* Do this before we delete the tree and remove pidfile. */
+    qemuProcessKillPRDaemon(vm);
 
     virFileDeleteTree(priv->libDir);
     virFileDeleteTree(priv->channelTargetDir);
