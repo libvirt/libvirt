@@ -145,6 +145,44 @@ testQemuDiskXMLToPropsClear(struct testQemuDiskXMLToJSONData *data)
 }
 
 
+static int
+testQemuDiskXMLToJSONFakeSecrets(virStorageSourcePtr src)
+{
+    qemuDomainStorageSourcePrivatePtr srcpriv;
+
+    if (!src->privateData &&
+        !(src->privateData = qemuDomainStorageSourcePrivateNew()))
+        return -1;
+
+    srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
+    if (src->auth) {
+        if (VIR_ALLOC(srcpriv->secinfo) < 0)
+            return -1;
+
+        srcpriv->secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
+        if (VIR_STRDUP(srcpriv->secinfo->s.aes.username, src->auth->username) < 0)
+            return -1;
+
+        if (virAsprintf(&srcpriv->secinfo->s.aes.alias, "%s-secalias",
+                        NULLSTR(src->nodestorage)) < 0)
+            return -1;
+    }
+
+    if (src->encryption) {
+        if (VIR_ALLOC(srcpriv->encinfo) < 0)
+            return -1;
+
+        srcpriv->encinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
+        if (virAsprintf(&srcpriv->encinfo->s.aes.alias, "%s-encalias",
+                        NULLSTR(src->nodeformat)) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 static const char *testQemuDiskXMLToJSONPath = abs_srcdir "/qemublocktestdata/xml2json/";
 
 static int
@@ -180,6 +218,9 @@ testQemuDiskXMLToProps(const void *opaque)
         goto cleanup;
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (testQemuDiskXMLToJSONFakeSecrets(n) < 0)
+            goto cleanup;
+
         if (!(props = qemuBlockStorageSourceGetBlockdevProps(n))) {
             if (!data->fail) {
                 VIR_TEST_VERBOSE("failed to generate qemu blockdev props\n");
@@ -419,6 +460,7 @@ mymain(void)
     TEST_DISK_TO_JSON("dir-fat-floppy");
     TEST_DISK_TO_JSON("file-raw-aio_native");
     TEST_DISK_TO_JSON("file-backing_basic-aio_threads");
+    TEST_DISK_TO_JSON("file-raw-luks");
 
  cleanup:
     virHashFree(diskxmljsondata.schema);

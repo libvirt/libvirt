@@ -1,0 +1,15 @@
+<disk device='disk'>
+  <driver name='qemu' type='raw'/>
+  <source file='/path/luks.img'>
+    <encryption format='luks'>
+      <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
+    </encryption>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='test2'/>
+        <nodename type='format' name='test1'/>
+      </nodenames>
+    </privateData>
+  </source>
+  <target dev='vda'/>
+</disk>
