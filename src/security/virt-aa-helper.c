@@ -964,7 +964,7 @@ get_files(vahControl * ctl)
 
     /* load the storage driver so that backing store can be accessed */
 #ifdef WITH_STORAGE
-    virDriverLoadModule("storage", "storageRegister");
+    virDriverLoadModule("storage", "storageRegister", false);
 #endif
 
     for (i = 0; i < ctl->def->ndisks; i++) {

@@ -103,15 +103,22 @@ virDriverLoadModuleFunc(void *handle,
  */
 int
 virDriverLoadModuleFull(const char *path,
-                        const char *regfunc)
+                        const char *regfunc,
+                        bool required)
 {
     void *rethandle = NULL;
     int (*regsym)(void);
     int ret = -1;
 
     if (!virFileExists(path)) {
-        VIR_INFO("Module '%s' does not exists", path);
-        return 1;
+        if (required) {
+            virReportSystemError(errno,
+                                 _("Failed to find module '%s'"), path);
+            return -1;
+        } else {
+            VIR_INFO("Module '%s' does not exist", path);
+            return 1;
+        }
     }
 
     if (!(rethandle = virDriverLoadModuleFile(path)))
@@ -144,21 +151,29 @@ virDriverLoadModuleFull(const char *path,
 #else /* ! HAVE_DLFCN_H */
 int
 virDriverLoadModuleFull(const char *path ATTRIBUTE_UNUSED,
-                        const char *regfunc ATTRIBUTE_UNUSED)
+                        const char *regfunc ATTRIBUTE_UNUSED,
+                        bool required)
 {
     VIR_DEBUG("dlopen not available on this platform");
-    /* Since we have no dlopen(), but definition we have no
-     * loadable modules on disk, so we can resaonably
-     * return '1' instead of an error.
-     */
-    return 1;
+    if (required) {
+        virReportSystemError(ENOSYS,
+                             _("Failed to find module '%s': %s"), path);
+        return -1;
+    } else {
+        /* Since we have no dlopen(), but definition we have no
+         * loadable modules on disk, so we can resaonably
+         * return '1' instead of an error.
+         */
+        return 1;
+    }
 }
 #endif /* ! HAVE_DLFCN_H */
 
 
 int
 virDriverLoadModule(const char *name,
-                    const char *regfunc)
+                    const char *regfunc,
+                    bool required)
 {
     char *modfile = NULL;
     int ret;
@@ -173,7 +188,7 @@ virDriverLoadModule(const char *name,
                                             "LIBVIRT_DRIVER_DIR")))
         return -1;
 
-    ret = virDriverLoadModuleFull(modfile, regfunc);
+    ret = virDriverLoadModuleFull(modfile, regfunc, required);
 
     VIR_FREE(modfile);
 

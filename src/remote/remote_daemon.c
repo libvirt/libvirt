@@ -295,7 +295,7 @@ static int daemonErrorLogFilter(virErrorPtr err, int priority)
 
 
 #define VIR_DAEMON_LOAD_MODULE(func, module) \
-    virDriverLoadModule(module, #func)
+    virDriverLoadModule(module, #func, false)
 static void daemonInitialize(void)
 {
     /*
