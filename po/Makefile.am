@@ -16,9 +16,9 @@ LANGS := \
 
 
 POTFILE_DEPS := $(shell $(SED) 's,^,$(top_srcdir)/,' $(srcdir)/POTFILES)
-POTFILE := $(DOMAIN).pot
-POFILES := $(LANGS:%=%.po)
-GMOFILES := $(LANGS:%=%.gmo)
+POTFILE := $(srcdir)/$(DOMAIN).pot
+POFILES := $(LANGS:%=$(srcdir)/%.po)
+GMOFILES := $(LANGS:%=$(srcdir)/%.gmo)
 
 MAINTAINERCLEANFILES = $(POTFILE) $(POFILES) $(GMOFILES)
 
@@ -71,19 +71,19 @@ pull-po: $(POTFILE)
 	$(MAKE) update-gmo
 
 $(POTFILE): POTFILES $(POTFILE_DEPS)
-	$(XGETTEXT) -o $(srcdir)/$@-t $(XGETTEXT_ARGS) \
+	$(XGETTEXT) -o $@-t $(XGETTEXT_ARGS) \
 	  --files-from=$(abs_srcdir)/POTFILES
 	$(SED) $(SED_PO_FIXUP_ARGS) < $@-t > $@
 	rm -f $@-t
 
-%.po: %.mini.po $(POTFILE)
+$(srcdir)/%.po: $(srcdir)/%.mini.po $(POTFILE)
 	$(MSGMERGE) --no-fuzzy-matching $< $(POTFILE) | \
 	  $(SED) $(SED_PO_FIXUP_ARGS) > $@
 
-%.gmo: %.po
-	rm -f $(srcdir)/$@ $@-t
-	$(MSGFMT) -c -o $@-t $(srcdir)/$<
-	mv $@-t $(srcdir)/$@
+$(srcdir)/%.gmo: $(srcdir)/%.po
+	rm -f $@ $@-t
+	$(MSGFMT) -c -o $@-t $<
+	mv $@-t $@
 
 .PRECIOUS: $(POTFILE) $(POFILES)
 
