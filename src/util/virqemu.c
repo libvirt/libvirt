@@ -303,7 +303,7 @@ virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str)
 
 
 /**
- * virQEMUBuildLuksOpts:
+ * virQEMUBuildQemuImgKeySecretOpts:
  * @buf: buffer to build the string into
  * @enc: pointer to encryption info
  * @alias: alias to use
@@ -323,9 +323,9 @@ virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str)
  *
  */
 void
-virQEMUBuildLuksOpts(virBufferPtr buf,
-                     virStorageEncryptionInfoDefPtr enc,
-                     const char *alias)
+virQEMUBuildQemuImgKeySecretOpts(virBufferPtr buf,
+                                 virStorageEncryptionInfoDefPtr enc,
+                                 const char *alias)
 {
     virBufferAsprintf(buf, "key-secret=%s,", alias);
 
