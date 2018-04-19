@@ -4186,7 +4186,7 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
 }
 
 
-static int
+int
 qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
                                 virQEMUCapsPtr qemuCaps)
 {
