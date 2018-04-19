@@ -529,7 +529,9 @@ libvirt_admin_la_SOURCES = \
 libvirt_admin_la_LDFLAGS = \
 		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_ADMIN_SYMBOL_FILE) \
 		-version-info $(LIBVIRT_VERSION_INFO) \
-		$(AM_LDFLAGS)
+		$(LIBVIRT_NODELETE) \
+		$(AM_LDFLAGS) \
+		$(NULL)
 
 libvirt_admin_la_LIBADD = \
 		libvirt.la \
@@ -644,6 +646,7 @@ libvirt_qemu_la_SOURCES = libvirt-qemu.c
 libvirt_qemu_la_LDFLAGS = \
 		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
 		-version-info $(LIBVIRT_VERSION_INFO) \
+		$(LIBVIRT_NODELETE) \
 		$(AM_LDFLAGS) \
 		$(NULL)
 libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
@@ -653,6 +656,7 @@ libvirt_lxc_la_SOURCES = libvirt-lxc.c
 libvirt_lxc_la_LDFLAGS = \
 		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_LXC_SYMBOL_FILE) \
 		-version-info $(LIBVIRT_VERSION_INFO) \
+		$(LIBVIRT_NODELETE) \
 		$(AM_LDFLAGS) \
 		$(NULL)
 libvirt_lxc_la_CFLAGS = $(AM_CFLAGS)
