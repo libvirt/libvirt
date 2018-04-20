@@ -40,6 +40,7 @@
 #if HAVE_SYS_UN_H
 # include <sys/un.h>
 #endif
+#include <fnmatch.h>
 
 #include "virerror.h"
 #include "virlog.h"
@@ -508,7 +509,7 @@ virLogSourceUpdate(virLogSourcePtr source)
         size_t i;
 
         for (i = 0; i < virLogNbFilters; i++) {
-            if (strstr(source->name, virLogFilters[i]->match)) {
+            if (fnmatch(virLogFilters[i]->match, source->name, 0) == 0) {
                 priority = virLogFilters[i]->priority;
                 flags = virLogFilters[i]->flags;
                 break;
