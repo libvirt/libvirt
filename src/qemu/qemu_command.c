@@ -442,11 +442,18 @@ static int
 qemuBuildRomStr(virBufferPtr buf,
                 virDomainDeviceInfoPtr info)
 {
-    if (info->rombar || info->romfile) {
+    if (info->romenabled || info->rombar || info->romfile) {
         if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("rombar and romfile are supported only for PCI devices"));
+                           "%s", _("ROM tuning is only supported for PCI devices"));
             return -1;
+        }
+
+        /* Passing an empty romfile= tells QEMU to disable ROM entirely for
+         * this device, and makes other settings irrelevant */
+        if (info->romenabled == VIR_TRISTATE_BOOL_NO) {
+            virBufferAddLit(buf, ",romfile=");
+            return 0;
         }
 
         switch (info->rombar) {
@@ -464,6 +471,7 @@ qemuBuildRomStr(virBufferPtr buf,
            virQEMUBuildBufferEscapeComma(buf, info->romfile);
         }
     }
+
     return 0;
 }
 
