@@ -3,7 +3,7 @@ module Test_virtlogd =
 
    test Virtlogd.lns get conf =
         { "log_level" = "3" }
-        { "log_filters" = "3:remote 4:event" }
+        { "log_filters" = "1:logging 4:object 4:json 4:event 1:util" }
         { "log_outputs" = "3:syslog:virtlogd" }
         { "max_clients" = "1024" }
         { "admin_max_clients" = "5" }
