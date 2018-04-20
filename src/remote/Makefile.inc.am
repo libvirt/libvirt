@@ -81,6 +81,17 @@ EXTRA_DIST += \
 	remote/libvirtd.sysctl \
 	$(NULL)
 
+# Needed to build libvirt.pot, so must be listed outside
+# the WITH_REMOTE/WITH_LIBVIRTD conditionals
+BUILT_SOURCES += \
+	$(REMOTE_DRIVER_GENERATED) \
+	$(LIBVIRTD_GENERATED) \
+	$(NULL)
+MAINTAINERCLEANFILES += \
+	$(REMOTE_DRIVER_GENERATED) \
+	$(LIBVIRTD_GENERATED) \
+	$(NULL)
+
 if WITH_REMOTE
 noinst_LTLIBRARIES += libvirt_driver_remote.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_remote.la
@@ -93,9 +104,6 @@ libvirt_driver_remote_la_CFLAGS = \
 libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
-BUILT_SOURCES += $(REMOTE_DRIVER_GENERATED)
-MAINTAINERCLEANFILES += $(REMOTE_DRIVER_GENERATED)
-
 endif WITH_REMOTE
 
 if WITH_REMOTE
@@ -107,9 +115,6 @@ endif ! WITH_REMOTE
 if WITH_LIBVIRTD
 
 sbin_PROGRAMS += libvirtd
-
-BUILT_SOURCES += $(LIBVIRTD_GENERATED)
-MAINTAINERCLEANFILES += $(LIBVIRTD_GENERATED)
 
 augeas_DATA += remote/libvirtd.aug
 
