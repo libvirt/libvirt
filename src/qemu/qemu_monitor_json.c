@@ -6051,32 +6051,16 @@ int qemuMonitorJSONSetObjectProperty(qemuMonitorPtr mon,
 #undef MAKE_SET_CMD
 
 
-int qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
-                                  const char *device,
-                                  char ***props)
+static int
+qemuMonitorJSONParsePropsList(virJSONValuePtr cmd,
+                              virJSONValuePtr reply,
+                              char ***props)
 {
-    int ret = -1;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
     char **proplist = NULL;
     size_t n = 0;
     size_t i;
-
-    *props = NULL;
-
-    if (!(cmd = qemuMonitorJSONMakeCommand("device-list-properties",
-                                           "s:typename", device,
-                                           NULL)))
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONHasError(reply, "DeviceNotFound")) {
-        ret = 0;
-        goto cleanup;
-    }
+    int ret = -1;
 
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
         goto cleanup;
@@ -6094,7 +6078,7 @@ int qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
 
         if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("device-list-properties reply data was missing 'name'"));
+                           _("reply data was missing 'name'"));
             goto cleanup;
         }
 
@@ -6108,8 +6092,37 @@ int qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
 
  cleanup:
     virStringListFree(proplist);
-    virJSONValueFree(cmd);
+    return ret;
+}
+
+
+int qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
+                                  const char *device,
+                                  char ***props)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    *props = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("device-list-properties",
+                                           "s:typename", device,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONHasError(reply, "DeviceNotFound")) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    ret = qemuMonitorJSONParsePropsList(cmd, reply, props);
+ cleanup:
     virJSONValueFree(reply);
+    virJSONValueFree(cmd);
     return ret;
 }
 
