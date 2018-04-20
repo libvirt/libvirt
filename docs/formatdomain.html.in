@@ -1063,9 +1063,11 @@
         suitable for the specific environment at the same time to mitigate
         the risks described above. <span class="since">Since 1.0.6</span></dd>
        <dt><code>source</code></dt>
-       <dd>In this attribute you can switch to file memorybacking or keep default anonymous.</dd>
+       <dd>In this attribute you can switch to file memorybacking or keep
+         default anonymous.</dd>
        <dt><code>access</code></dt>
-       <dd>Specify if memory is shared or private. This can be overridden per numa node by <code>memAccess</code></dd>
+       <dd>Specify if memory is shared or private. This can be overridden per
+         numa node by <code>memAccess</code></dd>
        <dt><code>allocation</code></dt>
        <dd>Specify when allocate the memory</dd>
     </dl>
