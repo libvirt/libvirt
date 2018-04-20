@@ -122,6 +122,7 @@
   <flag name='nbd-tls'/>
   <flag name='pr-manager-helper'/>
   <flag name='qom-list-properties'/>
+  <flag name='memory-backend-file.discard-data'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>

@@ -3617,6 +3617,60 @@
 {
   "return": [
     {
+      "name": "policy",
+      "type": "HostMemPolicy"
+    },
+    {
+      "name": "dump",
+      "type": "bool"
+    },
+    {
+      "name": "share",
+      "type": "bool"
+    },
+    {
+      "name": "prealloc",
+      "type": "bool"
+    },
+    {
+      "name": "size",
+      "type": "int"
+    },
+    {
+      "name": "host-nodes",
+      "type": "int"
+    },
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "merge",
+      "type": "bool"
+    },
+    {
+      "name": "align",
+      "type": "int"
+    },
+    {
+      "name": "mem-path",
+      "type": "string"
+    },
+    {
+      "name": "discard-data",
+      "type": "bool"
+    },
+    {
+      "name": "type",
+      "type": "string"
+    }
+  ],
+  "id": "libvirt-35"
+}
+
+{
+  "return": [
+    {
       "hotpluggable-cpus": true,
       "name": "s390-ccw-virtio-2.7",
       "cpu-max": 248
@@ -3669,7 +3723,7 @@
       "alias": "s390-ccw-virtio"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -6324,20 +6378,20 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "return": [
     "emulator"
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -7493,7 +7547,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -7555,7 +7609,7 @@
       "capability": "dirty-bitmaps"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -18923,11 +18977,11 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
-  "id": "libvirt-42",
+  "id": "libvirt-43",
   "error": {
     "class": "GenericError",
     "desc": "The CPU definition 'max' is unknown."

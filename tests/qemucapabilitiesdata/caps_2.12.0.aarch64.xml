@@ -160,9 +160,10 @@
   <flag name='nbd-tls'/>
   <flag name='pr-manager-helper'/>
   <flag name='qom-list-properties'/>
+  <flag name='memory-backend-file.discard-data'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>342346</microcodeVersion>
+  <microcodeVersion>343099</microcodeVersion>
   <package>v2.12.0-rc0</package>
   <arch>aarch64</arch>
   <cpu type='kvm' name='pxa262'/>

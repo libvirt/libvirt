@@ -5325,6 +5325,60 @@
 {
   "return": [
     {
+      "name": "policy",
+      "type": "HostMemPolicy"
+    },
+    {
+      "name": "dump",
+      "type": "bool"
+    },
+    {
+      "name": "share",
+      "type": "bool"
+    },
+    {
+      "name": "prealloc",
+      "type": "bool"
+    },
+    {
+      "name": "size",
+      "type": "int"
+    },
+    {
+      "name": "host-nodes",
+      "type": "int"
+    },
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "merge",
+      "type": "bool"
+    },
+    {
+      "name": "align",
+      "type": "int"
+    },
+    {
+      "name": "mem-path",
+      "type": "string"
+    },
+    {
+      "name": "discard-data",
+      "type": "bool"
+    },
+    {
+      "name": "type",
+      "type": "string"
+    }
+  ],
+  "id": "libvirt-37"
+}
+
+{
+  "return": [
+    {
       "hotpluggable-cpus": false,
       "name": "ref405ep",
       "cpu-max": 1
@@ -5457,7 +5511,7 @@
       "cpu-max": 1
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -7653,20 +7707,20 @@
       "static": false
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "return": [
     "emulator"
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -8822,7 +8876,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -8884,7 +8938,7 @@
       "capability": "dirty-bitmaps"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -20252,7 +20306,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {

@@ -463,6 +463,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 295 */
     QEMU_CAPS_QOM_LIST_PROPERTIES, /* qom-list-properties monitor command */
+    QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD, /* -object memory-backend-file,discard-data */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

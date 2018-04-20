@@ -198,9 +198,10 @@
   <flag name='tpm-crb'/>
   <flag name='pr-manager-helper'/>
   <flag name='qom-list-properties'/>
+  <flag name='memory-backend-file.discard-data'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>390060</microcodeVersion>
+  <microcodeVersion>390813</microcodeVersion>
   <package>v2.12.0-rc0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
