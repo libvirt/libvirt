@@ -197,6 +197,7 @@
   <flag name='nbd-tls'/>
   <flag name='tpm-crb'/>
   <flag name='pr-manager-helper'/>
+  <flag name='qom-list-properties'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>390060</microcodeVersion>

@@ -476,6 +476,9 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "nbd-tls",
               "tpm-crb",
               "pr-manager-helper",
+
+              /* 295 */
+              "qom-list-properties",
     );
 
 
@@ -984,6 +987,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-cpu-definitions", QEMU_CAPS_QUERY_CPU_DEFINITIONS },
     { "query-named-block-nodes", QEMU_CAPS_QUERY_NAMED_BLOCK_NODES },
     { "query-cpus-fast", QEMU_CAPS_QUERY_CPUS_FAST },
+    { "qom-list-properties", QEMU_CAPS_QOM_LIST_PROPERTIES },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
