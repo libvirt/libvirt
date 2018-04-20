@@ -87,7 +87,7 @@ VIR_ENUM_IMPL(virLogDestination, VIR_LOG_TO_OUTPUT_LAST,
 struct _virLogFilter {
     char *match;
     virLogPriority priority;
-    unsigned int flags;
+    unsigned int flags; /* bitwise OR of virLogFilterFlags */
 };
 
 static int virLogFiltersSerial = 1;
