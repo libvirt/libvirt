@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-24 06:05-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
@@ -301,10 +301,6 @@ msgid "%6s: Checking %-60s: "
 msgstr "%6s: Checking %-60s: "
 
 #, c-format
-msgid "%d status from xen daemon: %s:%s"
-msgstr "%d status from xen daemon: %s:%s"
-
-#, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
@@ -465,10 +461,6 @@ msgid "%s: initialization failed\n"
 msgstr "%s: initialisation failed\n"
 
 #, c-format
-msgid "%s: invalid path"
-msgstr "%s: invalid path"
-
-#, c-format
 msgid "%s: malformed fd %s"
 msgstr "%s: malformed fd %s"
 
@@ -590,9 +582,6 @@ msgstr "'info blockstats' not supported by this qemu"
 
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "'logical-id' missing in reply of guest-get-vcpus"
-
-msgid "'multifunction=on' is not supported with this QEMU binary"
-msgstr "'multifunction=on' is not supported with this QEMU binary"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "'online' missing in reply of guest-get-vcpus"
@@ -1464,10 +1453,6 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "Cannot find CPU model with PVR 0x%08x"
 
 #, c-format
-msgid "Cannot find QEMU binary %s"
-msgstr "Cannot find QEMU binary %s"
-
-#, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "Cannot find UML kernel %s"
 
@@ -1512,9 +1497,6 @@ msgid ""
 msgstr ""
 "Cannot instantiate filter due to unresolvable variables or unavailable list "
 "elements: %s"
-
-msgid "Cannot modify live config if domain is inactive"
-msgstr "Cannot modify live config if domain is inactive"
 
 #, c-format
 msgid "Cannot mount filesystem type %s"
@@ -1692,9 +1674,6 @@ msgstr "Cannot rename interface '%s' to '%s' on this platform"
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "Cannot run interactive console without a controlling TTY"
 
-msgid "Cannot save host domain"
-msgstr "Cannot save host domain"
-
 msgid "Cannot set a base label with AppArmour"
 msgstr "Cannot set a base label with AppArmour"
 
@@ -1822,10 +1801,6 @@ msgstr "Cannot use virtio serial for parallel/serial devices"
 
 msgid "Cannot write data"
 msgstr "Cannot write data"
-
-#, c-format
-msgid "Cap %s too big for destination"
-msgstr "Cap %s too big for destination"
 
 msgid "Capabilities not available"
 msgstr "Capabilities not available"
@@ -2924,14 +2899,6 @@ msgstr "Creation Time"
 msgid "Creation of %s volumes is not supported"
 msgstr "Creation of %s volumes is not supported"
 
-#, c-format
-msgid "Credit scheduler cap parameter (%d) is out of range (0-65534)"
-msgstr "Credit scheduler cap parameter (%d) is out of range (0-65534)"
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-
 msgid "Current:"
 msgstr "Current:"
 
@@ -3058,10 +3025,6 @@ msgstr "Device %s already exists"
 #, c-format
 msgid "Device %s detached\n"
 msgstr "Device %s detached\n"
-
-#, c-format
-msgid "Device %s has been assigned to guest %d"
-msgstr "Device %s has been assigned to guest %d"
 
 #, c-format
 msgid "Device %s in use"
@@ -3235,10 +3198,6 @@ msgid "Domain %s destroyed\n"
 msgstr "Domain %s destroyed\n"
 
 #, c-format
-msgid "Domain %s did not start"
-msgstr "Domain %s did not start"
-
-#, c-format
 msgid "Domain %s didn't show up"
 msgstr "Domain %s didn't show up"
 
@@ -3251,20 +3210,12 @@ msgid "Domain %s has no manage save image; removal skipped"
 msgstr "Domain %s has no manage save image; removal skipped"
 
 #, c-format
-msgid "Domain %s is already running"
-msgstr "Domain %s is already running"
-
-#, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "Domain %s is being rebooted\n"
 
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "Domain %s is being shutdown\n"
-
-#, c-format
-msgid "Domain %s isn't running."
-msgstr "Domain %s isn't running."
 
 #, c-format
 msgid "Domain %s marked as autostarted\n"
@@ -3549,12 +3500,6 @@ msgstr "Enter username for %s"
 msgid "Enter username for %s [%s]"
 msgstr "Enter username for %s [%s]"
 
-msgid "Error adding file to config cache"
-msgstr "Error adding file to config cache"
-
-msgid "Error adding file to config list"
-msgstr "Error adding file to config list"
-
 msgid "Error creating initial configuration"
 msgstr "Error creating initial configuration"
 
@@ -3569,9 +3514,6 @@ msgstr "Error from child process opening '%s'"
 #, c-format
 msgid "Error getting physical function's '%s' virtual_functions"
 msgstr "Error getting physical function's '%s' virtual_functions"
-
-msgid "Error looking up domain"
-msgstr "Error looking up domain"
 
 msgid "Error notify callback must be supplied"
 msgstr "Error notify callback must be supplied"
@@ -4140,10 +4082,6 @@ msgstr "Failed to create file '%s': couldn't determine fs type"
 msgid "Failed to create filesystem probe for device %s"
 msgstr "Failed to create filesystem probe for device %s"
 
-#, c-format
-msgid "Failed to create inactive domain %s"
-msgstr "Failed to create inactive domain %s"
-
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr "Failed to create interface node under bridge node in xml document"
 
@@ -4407,9 +4345,6 @@ msgstr "Failed to get UUID of created secret"
 
 msgid "Failed to get VNC port. Is this domain using VNC?"
 msgstr "Failed to get VNC port. Is this domain using VNC?"
-
-msgid "Failed to get a scheduler name"
-msgstr "Failed to get a scheduler name"
 
 #, c-format
 msgid "Failed to get block stats %s %s"
@@ -4867,10 +4802,6 @@ msgid "Failed to read PCI config space for %s"
 msgstr "Failed to read PCI config space for %s"
 
 #, c-format
-msgid "Failed to read any block statistics for domain %d"
-msgstr "Failed to read any block statistics for domain %d"
-
-#, c-format
 msgid "Failed to read file '%s'"
 msgstr "Failed to read file '%s'"
 
@@ -4905,9 +4836,6 @@ msgstr "Failed to reconnect to the hypervisor"
 
 msgid "Failed to recv file descriptor"
 msgstr "Failed to recv file descriptor"
-
-msgid "Failed to redefine sexpr"
-msgstr "Failed to redefine sexpr"
 
 #, c-format
 msgid "Failed to refresh pool %s"
@@ -5443,10 +5371,6 @@ msgstr "Found invalid device link '%s' in '%s'"
 msgid "Found unexpected controller model '%s' for disk '%s'"
 msgstr "Found unexpected controller model '%s' for disk '%s'"
 
-#, c-format
-msgid "Frontend block device not connected for domain %d"
-msgstr "Frontend block device not connected for domain %d"
-
 msgid "Fully-qualified path of block device"
 msgstr "Fully-qualified path of block device"
 
@@ -5640,9 +5564,6 @@ msgstr "HTTP response code %d for upload to '%s'"
 
 msgid "Handshake is already complete"
 msgstr "Handshake is already complete"
-
-msgid "Hash operation not allowed during iteration"
-msgstr "Hash operation not allowed during iteration"
 
 #, c-format
 msgid "Hook for %s, failed to find operation #%d"
@@ -6226,9 +6147,6 @@ msgstr ""
 msgid "Invalid parameter"
 msgstr "Invalid parameter"
 
-msgid "Invalid parameter count"
-msgstr "Invalid parameter count"
-
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "Invalid parameter to virXPathBoolean()"
 
@@ -6589,12 +6507,6 @@ msgid ""
 msgstr ""
 "Malformed 'uri_aliases' config entry '%s', expected 'alias=uri://host/path'"
 
-msgid "Malformed QEMU device list string, missing '='"
-msgstr "Malformed QEMU device list string, missing '='"
-
-msgid "Malformed QEMU device list string, missing quote"
-msgstr "Malformed QEMU device list string, missing quote"
-
 #, c-format
 msgid "Malformed TLS whitelist regular expression '%s'"
 msgstr "Malformed TLS whitelist regular expression '%s'"
@@ -6670,10 +6582,6 @@ msgstr "Max memory:"
 
 msgid "Maximum CPUs greater than specified machine type limit"
 msgstr "Maximum CPUs greater than specified machine type limit"
-
-#, c-format
-msgid "Memory %lu too small, min %lu"
-msgstr "Memory %lu too small, min %lu"
 
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
@@ -7228,9 +7136,6 @@ msgstr "Name or service not known"
 msgid "Name:"
 msgstr "Name:"
 
-msgid "Named device aliases are not supported"
-msgstr "Named device aliases are not supported"
-
 #, c-format
 msgid "Network %s XML configuration edited.\n"
 msgstr "Network %s XML configuration edited.\n"
@@ -7715,11 +7620,6 @@ msgstr "Only IPv4 or IPv6 addresses can be used with iptables"
 msgid "Only PCI device addresses with function=0 are supported"
 msgstr "Only PCI device addresses with function=0 are supported"
 
-msgid ""
-"Only PCI device addresses with function=0 are supported with this QEMU binary"
-msgstr ""
-"Only PCI device addresses with function=0 are supported with this QEMU binary"
-
 msgid "Only PTY console types are supported"
 msgstr "Only PTY console types are supported"
 
@@ -8203,9 +8103,6 @@ msgstr "QEMU Monitor Command"
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU binary %s is not executable"
-
-msgid "QEMU does not support seccomp sandboxes"
-msgstr "QEMU does not support seccomp sandboxes"
 
 msgid "QEMU guest agent is not available due to an error"
 msgstr "QEMU guest agent is not available due to an error"
@@ -8764,9 +8661,6 @@ msgstr "Setting disk %s is not allowed for disk of network type"
 
 msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
 msgstr "Setting disk 'requisite' is allowed only for cdrom or floppy"
-
-msgid "Setting of link state is not supported by this qemu"
-msgstr "Setting of link state is not supported by this qemu"
 
 #, c-format
 msgid ""
@@ -9773,14 +9667,6 @@ msgid "Transition started"
 msgstr "Transition started"
 
 #, c-format
-msgid ""
-"Transport '%s' in URI scheme is not supported, try again without the "
-"transport part"
-msgstr ""
-"Transport '%s' in URI scheme is not supported, try again without the "
-"transport part"
-
-#, c-format
 msgid "Transport error during %s: %s (%d)"
 msgstr "Transport error during %s: %s (%d)"
 
@@ -9955,9 +9841,6 @@ msgstr "Unable to associate file %s with loop device"
 #, c-format
 msgid "Unable to attach %s to loop device"
 msgstr "Unable to attach %s to loop device"
-
-msgid "Unable to attach network devices without vlan"
-msgstr "Unable to attach network devices without vlan"
 
 msgid "Unable to become session leader"
 msgstr "Unable to become session leader"
@@ -10476,14 +10359,6 @@ msgstr "Unable to initialise mutex"
 msgid "Unable to invoke fstrim"
 msgstr "Unable to invoke fstrim"
 
-#, c-format
-msgid "Unable to issue hypervisor ioctl %d"
-msgstr "Unable to issue hypervisor ioctl %d"
-
-#, c-format
-msgid "Unable to issue hypervisor ioctl %lu"
-msgstr "Unable to issue hypervisor ioctl %lu"
-
 msgid "Unable to join domain namespace"
 msgstr "Unable to join domain namespace"
 
@@ -10492,10 +10367,6 @@ msgstr "Unable to listen on socket"
 
 msgid "Unable to load certificate"
 msgstr "Unable to load certificate"
-
-#, c-format
-msgid "Unable to lock %zu bytes of memory"
-msgstr "Unable to lock %zu bytes of memory"
 
 msgid "Unable to lookup SELinux process context"
 msgstr "Unable to lookup SELinux process context"
@@ -10898,9 +10769,6 @@ msgstr "Unable to stat bind source %s"
 msgid "Unable to stat bind target %s"
 msgstr "Unable to stat bind target %s"
 
-msgid "Unable to suspend domain due to missing system_wakeup monitor command"
-msgstr "Unable to suspend domain due to missing system_wakeup monitor command"
-
 #, c-format
 msgid "Unable to symlink directory %s to %s"
 msgstr "Unable to symlink directory %s to %s"
@@ -10911,10 +10779,6 @@ msgstr "Unable to truncate %s"
 
 msgid "Unable to unescape command"
 msgstr "Unable to unescape command"
-
-#, c-format
-msgid "Unable to unlock %zu bytes of memory"
-msgstr "Unable to unlock %zu bytes of memory"
 
 #, c-format
 msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
@@ -10946,9 +10810,6 @@ msgstr "Unable to wait on monitor condition"
 
 msgid "Unable to wait on parent process"
 msgstr "Unable to wait on parent process"
-
-msgid "Unable to wake up domain due to missing system_wakeup monitor command"
-msgstr "Unable to wake up domain due to missing system_wakeup monitor command"
 
 msgid "Unable to watch epoll FD"
 msgstr "Unable to watch epoll FD"
@@ -11012,20 +10873,12 @@ msgid "Unexpected CPU mode %d"
 msgstr "Unexpected CPU mode %d"
 
 #, c-format
-msgid "Unexpected HTTP error code %d"
-msgstr "Unexpected HTTP error code %d"
-
-#, c-format
 msgid "Unexpected HTTP response during %s: %d"
 msgstr "Unexpected HTTP response during %s: %d"
 
 #, c-format
 msgid "Unexpected JSON reply '%s'"
 msgstr "Unexpected JSON reply '%s'"
-
-#, c-format
-msgid "Unexpected LXC URI path '%s', try lxc:///"
-msgstr "Unexpected LXC URI path '%s', try lxc:///"
 
 msgid "Unexpected QEMU agent still active during domain deletion"
 msgstr "Unexpected QEMU agent still active during domain deletion"
@@ -11256,13 +11109,6 @@ msgstr "Unknown release: %s"
 
 msgid "Unknown return code"
 msgstr "Unknown return code"
-
-msgid "Unknown scheduler"
-msgstr "Unknown scheduler"
-
-#, c-format
-msgid "Unknown scheduler %d"
-msgstr "Unknown scheduler %d"
 
 #, c-format
 msgid "Unknown source mode '%s'"
@@ -11653,10 +11499,6 @@ msgid "Wakeup a domain that was previously suspended by power management."
 msgstr "Wakeup a domain that was previously suspended by power management."
 
 #, c-format
-msgid "Weight %s too big for destination"
-msgstr "Weight %s too big for destination"
-
-#, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
@@ -11727,19 +11569,6 @@ msgstr "XML node doesn't contain text, expecting an xsd:dateTime value"
 #, c-format
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "XPath evaluation of response for call to '%s' failed"
-
-msgid "Xend only supports modifying both live and persistent config"
-msgstr "Xend only supports modifying both live and persistent config"
-
-#, c-format
-msgid "Xend returned HTTP Content-Length of %d, which exceeds maximum of %d"
-msgstr "Xend returned HTTP Content-Length of %d, which exceeds maximum of %d"
-
-msgid "Xm driver only supports adding disk or network devices"
-msgstr "Xm driver only supports adding disk or network devices"
-
-msgid "Xm driver only supports modifying persistent config"
-msgstr "Xm driver only supports modifying persistent config"
 
 msgid "You are trying to set a number of CPUs bigger than the max possible."
 msgstr "You are trying to set a number of CPUs bigger than the max possible."
@@ -11826,16 +11655,6 @@ msgstr "add a column showing parent snapshot"
 #, c-format
 msgid "adding %s device failed: %s"
 msgstr "adding %s device failed: %s"
-
-msgid "adding watch @introduceDomain"
-msgstr "adding watch @introduceDomain"
-
-msgid "adding watch @releaseDomain"
-msgstr "adding watch @releaseDomain"
-
-#, c-format
-msgid "adding watch on %s"
-msgstr "adding watch on %s"
 
 msgid "additionally display the type and device value"
 msgstr "additionally display the type and device value"
@@ -11945,10 +11764,6 @@ msgstr "argument key '%s' is too short, missing type prefix"
 #, c-format
 msgid "argument key '%s' must not have null value"
 msgstr "argument key '%s' must not have null value"
-
-#, c-format
-msgid "argument out of range: %d"
-msgstr "argument out of range: %d"
 
 msgid "argument unsupported"
 msgstr "argument unsupported"
@@ -12111,9 +11926,6 @@ msgstr "blkio cgroup isn't mounted"
 msgid "block"
 msgstr "block"
 
-msgid "block I/O throttling not supported with this QEMU binary"
-msgstr "block I/O throttling not supported with this QEMU binary"
-
 msgid "block copy is not supported with this QEMU binary"
 msgstr "block copy is not supported with this QEMU binary"
 
@@ -12133,12 +11945,6 @@ msgstr "block jobs not supported with this QEMU binary"
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr "block peek request too large for remote protocol, %zi > %d"
-
-msgid "block peeking not implemented"
-msgstr "block peeking not implemented"
-
-msgid "block statistics not supported on this platform"
-msgstr "block statistics not supported on this platform"
 
 msgid "block_io_throttle device entry was not in expected format"
 msgstr "block_io_throttle device entry was not in expected format"
@@ -12309,15 +12115,6 @@ msgstr "can't parse cputune quota value"
 
 msgid "can't parse cputune shares value"
 msgstr "can't parse cputune shares value"
-
-msgid "can't retrieve config entry for domain to overwrite"
-msgstr "can't retrieve config entry for domain to overwrite"
-
-msgid "can't retrieve config file for domain"
-msgstr "can't retrieve config file for domain"
-
-msgid "can't retrieve config filename for domain to overwrite"
-msgstr "can't retrieve config filename for domain to overwrite"
 
 msgid "can't shrink capacity below existing allocation"
 msgstr "can't shrink capacity below existing allocation"
@@ -12568,9 +12365,6 @@ msgstr "cannot delete snapshots of running domain"
 msgid "cannot detach device on inactive domain"
 msgstr "cannot detach device on inactive domain"
 
-msgid "cannot determine actual number of cells"
-msgstr "cannot determine actual number of cells"
-
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "cannot determine filesystem for '%s'"
@@ -12675,9 +12469,6 @@ msgstr "cannot find character device %s"
 msgid "cannot find console device '%s'"
 msgstr "cannot find console device '%s'"
 
-msgid "cannot find default console device"
-msgstr "cannot find default console device"
-
 #, c-format
 msgid "cannot find init path '%s' relative to container root"
 msgstr "cannot find init path '%s' relative to container root"
@@ -12725,14 +12516,8 @@ msgstr "cannot get CPU affinity of process %d"
 msgid "cannot get RSS for domain"
 msgstr "cannot get RSS for domain"
 
-msgid "cannot get VCPUs info"
-msgstr "cannot get VCPUs info"
-
 msgid "cannot get current time"
 msgstr "cannot get current time"
-
-msgid "cannot get domain details"
-msgstr "cannot get domain details"
 
 msgid "cannot get feature flags on macvtap tap"
 msgstr "cannot get feature flags on macvtap tap"
@@ -12763,9 +12548,6 @@ msgstr "cannot get the host uuid"
 
 msgid "cannot get the path of MEMORY cgroup controller"
 msgstr "cannot get the path of MEMORY cgroup controller"
-
-msgid "cannot get time of day"
-msgstr "cannot get time of day"
 
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "cannot get vCPU placement & pCPU time"
@@ -13232,10 +13014,6 @@ msgid "cannot read domain image '%s'"
 msgstr "cannot read domain image '%s'"
 
 #, c-format
-msgid "cannot read file %s"
-msgstr "cannot read file %s"
-
-#, c-format
 msgid "cannot read file '%s'"
 msgstr "cannot read file '%s'"
 
@@ -13419,10 +13197,6 @@ msgstr "cannot stat path '%s'"
 #, c-format
 msgid "cannot stat tap fd %d"
 msgstr "cannot stat tap fd %d"
-
-#, c-format
-msgid "cannot stat: %s"
-msgstr "cannot stat: %s"
 
 #, c-format
 msgid "cannot statvfs path '%s'"
@@ -13679,9 +13453,6 @@ msgstr "configuration file syntax error: %s"
 msgid "conflicting occurrences of kvmclock feature"
 msgstr "conflicting occurrences of kvmclock feature"
 
-msgid "conn, or private data is NULL"
-msgstr "conn, or private data is NULL"
-
 msgid "connect to the guest console"
 msgstr "connect to the guest console"
 
@@ -13750,9 +13521,6 @@ msgstr "convert an interface MAC address to interface name"
 
 msgid "convert an interface name to interface MAC address"
 msgstr "convert an interface name to interface MAC address"
-
-msgid "copy_on_read is not supported by this QEMU binary"
-msgstr "copy_on_read is not supported by this QEMU binary"
 
 msgid "corrupted profileid string"
 msgstr "corrupted profileid string"
@@ -13963,9 +13731,6 @@ msgstr "could not parse arguments"
 #, c-format
 msgid "could not parse weight %s"
 msgstr "could not parse weight %s"
-
-msgid "could not read CPU flags"
-msgstr "could not read CPU flags"
 
 msgid "could not read xml file"
 msgstr "could not read xml file"
@@ -14453,9 +14218,6 @@ msgstr "disk '%s' not ready for pivot yet"
 msgid "disk '%s' specified twice"
 msgstr "disk '%s' specified twice"
 
-msgid "disk aio mode not supported with this QEMU binary"
-msgstr "disk aio mode not supported with this QEMU binary"
-
 msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
 msgstr "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
 
@@ -14470,12 +14232,6 @@ msgstr "disk bus '%s' cannot be hotplugged."
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "disk bus '%s' cannot be updated."
-
-msgid "disk cache mode 'directsync' is not supported by this QEMU"
-msgstr "disk cache mode 'directsync' is not supported by this QEMU"
-
-msgid "disk cache mode 'unsafe' is not supported by this QEMU"
-msgstr "disk cache mode 'unsafe' is not supported by this QEMU"
 
 #, c-format
 msgid "disk device type '%s' cannot be detached"
@@ -14669,32 +14425,17 @@ msgstr "domain information in XML"
 msgid "domain information incomplete, missing HVM loader"
 msgstr "domain information incomplete, missing HVM loader"
 
-msgid "domain information incomplete, missing cpu_cap"
-msgstr "domain information incomplete, missing cpu_cap"
-
-msgid "domain information incomplete, missing cpu_weight"
-msgstr "domain information incomplete, missing cpu_weight"
-
-msgid "domain information incomplete, missing domid"
-msgstr "domain information incomplete, missing domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "domain information incomplete, missing kernel & bootloader"
 
 msgid "domain information incomplete, missing name"
 msgstr "domain information incomplete, missing name"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "domain information incomplete, missing uuid"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "domain information incomplete, vbd has no dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "domain information incomplete, vbd has no src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "domain information incorrect domid not numeric"
 
 msgid "domain is already running"
 msgstr "domain is already running"
@@ -14735,12 +14476,6 @@ msgstr "domain name or uuid"
 msgid "domain name, id or uuid"
 msgstr "domain name, id or uuid"
 
-msgid "domain not active"
-msgstr "domain not active"
-
-msgid "domain not running"
-msgstr "domain not running"
-
 msgid "domain save job"
 msgstr "domain save job"
 
@@ -14755,9 +14490,6 @@ msgstr "domain type"
 
 msgid "domain vcpu counts"
 msgstr "domain vcpu counts"
-
-msgid "domainBlockPeek is not supported for dom0"
-msgstr "domainBlockPeek is not supported for dom0"
 
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare did not set uri"
@@ -14797,17 +14529,11 @@ msgstr "driver of disk device"
 msgid "driver serial '%s' contains unsafe characters"
 msgstr "driver serial '%s' contains unsafe characters"
 
-msgid "dtb is not supported with this QEMU binary"
-msgstr "dtb is not supported with this QEMU binary"
-
 msgid "dump domain's memory only"
 msgstr "dump domain's memory only"
 
 msgid "dump the core of a domain to a file for analysis"
 msgstr "dump the core of a domain to a file for analysis"
-
-msgid "dump-guest-core is not available with this QEMU binary"
-msgstr "dump-guest-core is not available with this QEMU binary"
 
 msgid "dump-guest-memory is not supported"
 msgstr "dump-guest-memory is not supported"
@@ -15113,9 +14839,6 @@ msgstr "failed to authenticate using SSH agent: %s"
 msgid "failed to begin transaction: %s%s%s"
 msgstr "failed to begin transaction: %s%s%s"
 
-msgid "failed to build sexpr"
-msgstr "failed to build sexpr"
-
 msgid "failed to calculate ssh host key hash"
 msgstr "failed to calculate ssh host key hash"
 
@@ -15132,9 +14855,6 @@ msgstr "failed to collect snapshot list"
 msgid "failed to commit transaction: %s%s%s"
 msgstr "failed to commit transaction: %s%s%s"
 
-msgid "failed to connect to Xen Store"
-msgstr "failed to connect to Xen Store"
-
 msgid "failed to connect to monitor socket"
 msgstr "failed to connect to monitor socket"
 
@@ -15144,9 +14864,6 @@ msgstr "failed to connect to the RADOS monitor on: %s"
 
 msgid "failed to connect to the hypervisor"
 msgstr "failed to connect to the hypervisor"
-
-msgid "failed to connect to xend"
-msgstr "failed to connect to xend"
 
 msgid "failed to convert the XML node tree"
 msgstr "failed to convert the XML node tree"
@@ -15165,9 +14882,6 @@ msgstr "failed to create (start) interface %s: %s%s%s"
 msgid "failed to create a new XML namespace"
 msgstr "failed to create a new XML namespace"
 
-msgid "failed to create a socket"
-msgstr "failed to create a socket"
-
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "failed to create directory '%s'"
@@ -15178,10 +14892,6 @@ msgstr "failed to create include file"
 #, c-format
 msgid "failed to create lib dir '%s': %s"
 msgstr "failed to create lib dir '%s': %s"
-
-#, c-format
-msgid "failed to create link %s to %s"
-msgstr "failed to create link %s to %s"
 
 #, c-format
 msgid "failed to create log dir '%s': %s"
@@ -15386,10 +15096,6 @@ msgid "failed to lookup interface with MAC address '%s'"
 msgstr "failed to lookup interface with MAC address '%s'"
 
 #, c-format
-msgid "failed to lseek or read from file: %s"
-msgstr "failed to lseek or read from file: %s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "failed to mark network %s as autostarted"
 
@@ -15416,10 +15122,6 @@ msgid "failed to open file"
 msgstr "failed to open file"
 
 #, c-format
-msgid "failed to open for reading: %s"
-msgstr "failed to open for reading: %s"
-
-#, c-format
 msgid "failed to open logfile %s"
 msgstr "failed to open logfile %s"
 
@@ -15441,9 +15143,6 @@ msgstr "failed to parse %s"
 #, c-format
 msgid "failed to parse %sversion"
 msgstr "failed to parse %sversion"
-
-msgid "failed to parse Xend domain information"
-msgstr "failed to parse Xend domain information"
 
 msgid "failed to parse configuration file"
 msgstr "failed to parse configuration file"
@@ -15493,9 +15192,6 @@ msgstr "failed to read configuration file"
 msgid "failed to read configuration file %s"
 msgstr "failed to read configuration file %s"
 
-msgid "failed to read from Xen Daemon"
-msgstr "failed to read from Xen Daemon"
-
 msgid "failed to read from wakeup fd"
 msgstr "failed to read from wakeup fd"
 
@@ -15519,13 +15215,6 @@ msgstr "failed to read temporary file created with template %s"
 
 msgid "failed to register udev interface driver"
 msgstr "failed to register udev interface driver"
-
-#, c-format
-msgid "failed to remove link %s"
-msgstr "failed to remove link %s"
-
-msgid "failed to remove old domain from config map"
-msgstr "failed to remove old domain from config map"
 
 #, c-format
 msgid "failed to remove pool '%s'"
@@ -15680,9 +15369,6 @@ msgstr "failed to write known_host file '%s': %s"
 msgid "failed to write the log file"
 msgstr "failed to write the log file"
 
-msgid "failed to write to Xen Daemon"
-msgstr "failed to write to Xen Daemon"
-
 msgid "failed to write to profile"
 msgstr "failed to write to profile"
 
@@ -15750,12 +15436,6 @@ msgstr "filename containing updated XML for the target"
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "filesystem is not of type 'template' or 'mount'"
 
-msgid "filesystem passthrough not supported by this QEMU"
-msgstr "filesystem passthrough not supported by this QEMU"
-
-msgid "filesystem writeout not supported"
-msgstr "filesystem writeout not supported"
-
 #, c-format
 msgid "filter '%s' learning value '%s' invalid."
 msgstr "filter '%s' learning value '%s' invalid."
@@ -15797,9 +15477,6 @@ msgstr "find parent of snapshot name"
 
 msgid "find potential storage pool sources"
 msgstr "find potential storage pool sources"
-
-msgid "finding dom on config list"
-msgstr "finding dom on config list"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
@@ -16051,16 +15728,9 @@ msgid ""
 msgstr ""
 "hostname on destination resolved to localhost, but migration requires an FQDN"
 
-msgid "hotplug of device type not supported"
-msgstr "hotplug of device type not supported"
-
 #, c-format
 msgid "hub type %s not supported"
 msgstr "hub type %s not supported"
-
-#, c-format
-msgid "hugepage backing not supported by '%s'"
-msgstr "hugepage backing not supported by '%s'"
 
 msgid "hypervisor connection URI"
 msgstr "hypervisor connection URI"
@@ -16156,9 +15826,6 @@ msgstr "init binary must be specified"
 
 msgid "initial allocation size, as scaled integer (default bytes)"
 msgstr "initial allocation size, as scaled integer (default bytes)"
-
-msgid "initializing inotify"
-msgstr "initialising inotify"
 
 #, c-format
 msgid "input too large: %d * %d"
@@ -16433,9 +16100,6 @@ msgstr "invalid connection pointer in"
 msgid "invalid connection pointer in %s"
 msgstr "invalid connection pointer in %s"
 
-msgid "invalid cpumap_t size"
-msgstr "invalid cpumap_t size"
-
 #, c-format
 msgid "invalid database name: %s"
 msgstr "invalid database name: %s"
@@ -16590,36 +16254,6 @@ msgstr "invalid path '%s'"
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "invalid path, '%s' is not a known interface"
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range hda[1-63] - hdt[1-63] for "
-"domain %d"
-msgstr ""
-"invalid path, device names must be in the range hda[1-63] - hdt[1-63] for "
-"domain %d"
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range sda[1-15] - sdiv[1-15] for "
-"domain %d"
-msgstr ""
-"invalid path, device names must be in the range sda[1-15] - sdiv[1-15] for "
-"domain %d"
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15] for "
-"domain %d"
-msgstr ""
-"invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15] for "
-"domain %d"
-
-msgid "invalid path, should be vif<domid>.<n>."
-msgstr "invalid path, should be vif<domid>.<n>."
-
-msgid "invalid path, vif<domid> should match this domain ID"
-msgstr "invalid path, vif<domid> should match this domain ID"
 
 #, c-format
 msgid "invalid path: %s"
@@ -17111,9 +16745,6 @@ msgstr "lock manager connection has been restricted"
 
 msgid "lock owner details have not been registered"
 msgstr "lock owner details have not been registered"
-
-msgid "looking up dom"
-msgstr "looking up dom"
 
 msgid "lxc state driver is not active"
 msgstr "lxc state driver is not active"
@@ -18122,10 +17753,6 @@ msgid "no PCI vendor ID supplied for '%s'"
 msgstr "no PCI vendor ID supplied for '%s'"
 
 #, c-format
-msgid "no QEMU URI path given, try %s"
-msgstr "no QEMU URI path given, try %s"
-
-#, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
 msgstr "no SCSI LUN ID supplied for '%s'"
 
@@ -18172,9 +17799,6 @@ msgstr "no USB product ID supplied for '%s'"
 #, c-format
 msgid "no USB vendor ID supplied for '%s'"
 msgstr "no USB vendor ID supplied for '%s'"
-
-msgid "no VirtualBox driver path specified (try vbox:///session)"
-msgstr "no VirtualBox driver path specified (try vbox:///session)"
 
 #, c-format
 msgid "no WWNN supplied for '%s', and auto-generation failed"
@@ -18252,9 +17876,6 @@ msgstr "no domain config"
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr "no domain snapshot with matching name '%s'"
-
-msgid "no domain with matching id"
-msgstr "no domain with matching id"
 
 #, c-format
 msgid "no domain with matching id %d"
@@ -18433,9 +18054,6 @@ msgstr "node info not implemented on this platform"
 msgid "node information"
 msgstr "node information"
 
-msgid "node information incomplete, missing scheduler name"
-msgstr "node information incomplete, missing scheduler name"
-
 msgid "node memory stats not implemented on this platform"
 msgstr "node memory stats not implemented on this platform"
 
@@ -18556,9 +18174,6 @@ msgstr "offline migration must be specified with the persistent flag set"
 
 msgid "ok"
 msgstr "ok"
-
-msgid "on_xend_start not present in sexpr"
-msgstr "on_xend_start not present in sexpr"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "online commit not supported with this QEMU binary"
@@ -18728,10 +18343,6 @@ msgstr "parent %s would create cycle to %s"
 
 msgid "parser error"
 msgstr "parser error"
-
-#, c-format
-msgid "parsing uuid %s"
-msgstr "parsing uuid %s"
 
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "pass file descriptors N,M,... to the guest"
@@ -19111,9 +18722,6 @@ msgstr "read on wakeup fd failed"
 msgid "read-only connection"
 msgstr "read-only connection"
 
-msgid "readonly filesystem is not supported by this QEMU binary"
-msgstr "readonly filesystem is not supported by this QEMU binary"
-
 msgid "reattach node device to its device driver"
 msgstr "reattach node device to its device driver"
 
@@ -19210,9 +18818,6 @@ msgstr "requested authentication type %s rejected"
 #, c-format
 msgid "requested cpu amount exceeds maximum (%d > %d)"
 msgstr "requested cpu amount exceeds maximum (%d > %d)"
-
-msgid "requested device does not exist"
-msgstr "requested device does not exist"
 
 msgid "requested size of the cache (in bytes) used for compression"
 msgstr "requested size of the cache (in bytes) used for compression"
@@ -19409,10 +19014,6 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr "scripts are not supported on interfaces of type %s"
 
 #, c-format
-msgid "sdl not supported by '%s'"
-msgstr "sdl not supported by '%s'"
-
-#, c-format
 msgid "secret '%s' does not have a value"
 msgstr "secret '%s' does not have a value"
 
@@ -19525,17 +19126,11 @@ msgstr "setting VNC password failed"
 msgid "setting disk password is not supported"
 msgstr "setting disk password is not supported"
 
-msgid "setting of link state not supported: Link is up"
-msgstr "setting of link state not supported: Link is up"
-
 msgid "setting up HAL callbacks failed"
 msgstr "setting up HAL callbacks failed"
 
 msgid "setuid or setgid failed"
 msgstr "setuid or setgid failed"
-
-msgid "sexpr2string failed"
-msgstr "sexpr2string failed"
 
 msgid "sgio is only supported for scsi host device"
 msgstr "sgio is only supported for scsi host device"
@@ -19711,9 +19306,6 @@ msgstr "spice zlib missing compression"
 msgid "spicevmc device type only supports virtio"
 msgstr "spicevmc device type only supports virtio"
 
-msgid "spicevmc not supported in this QEMU binary"
-msgstr "spicevmc not supported in this QEMU binary"
-
 msgid "start a (previously defined) inactive domain"
 msgstr "start a (previously defined) inactive domain"
 
@@ -19743,14 +19335,6 @@ msgstr "started"
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "stat of '%s' failed"
-
-#, c-format
-msgid "stats->rd_bytes would overflow 64 bit counter for domain %d"
-msgstr "stats->rd_bytes would overflow 64 bit counter for domain %d"
-
-#, c-format
-msgid "stats->wr_bytes would overflow 64 bit counter for domain %d"
-msgstr "stats->wr_bytes would overflow 64 bit counter for domain %d"
 
 msgid "stopped, with no saved guests"
 msgstr "stopped, with no saved guests"
@@ -19892,10 +19476,6 @@ msgstr "target %s doesn't exist."
 msgid "target %s:%d already exists"
 msgstr "target %s:%d already exists"
 
-#, c-format
-msgid "target '%s' already exists"
-msgstr "target '%s' already exists"
-
 msgid "target config data type format"
 msgstr "target config data type format"
 
@@ -19956,10 +19536,6 @@ msgstr ""
 #, c-format
 msgid "the MAC address '%s' matches multiple interfaces"
 msgstr "the MAC address '%s' matches multiple interfaces"
-
-#, c-format
-msgid "the QEMU binary %s does not support smbios settings"
-msgstr "the QEMU binary %s does not support smbios settings"
 
 #, c-format
 msgid "the QEMU binary does not support %s"
@@ -20110,9 +19686,6 @@ msgstr "this network exists already"
 msgid "this platform is missing dlopen"
 msgstr "this platform is missing dlopen"
 
-msgid "this qemu binary requires libvirt to be compiled with yajl"
-msgstr "this qemu binary requires libvirt to be compiled with yajl"
-
 #, c-format
 msgid "this qemu doesn't support RNG device type '%s'"
 msgstr "this qemu doesn't support RNG device type '%s'"
@@ -20162,9 +19735,6 @@ msgstr "too many secrets for qcow encryption"
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr "top '%s' in chain for '%s' has no backing file"
-
-msgid "topology syntax error"
-msgstr "topology syntax error"
 
 msgid "total I/O operations limit per second"
 msgstr "total I/O operations limit per second"
@@ -20309,10 +19879,6 @@ msgid "unable to close pipe"
 msgstr "unable to close pipe"
 
 #, c-format
-msgid "unable to connect to '%s:%s'"
-msgstr "unable to connect to '%s:%s'"
-
-#, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "unable to connect to server at '%s:%s'"
 
@@ -20349,9 +19915,6 @@ msgstr "unable to determine array size"
 msgid "unable to determine if snapshot has parent"
 msgstr "unable to determine if snapshot has parent"
 
-msgid "unable to determine original VLAN"
-msgstr "unable to determine original VLAN"
-
 #, c-format
 msgid "unable to execute QEMU agent command '%s'"
 msgstr "unable to execute QEMU agent command '%s'"
@@ -20385,9 +19948,6 @@ msgstr "unable to get cpu account"
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr "unable to get current process context '%s'"
-
-msgid "unable to get current time"
-msgstr "unable to get current time"
 
 msgid "unable to get monitor count"
 msgstr "unable to get monitor count"
@@ -20479,10 +20039,6 @@ msgid "unable to register monitor events"
 msgstr "unable to register monitor events"
 
 #, c-format
-msgid "unable to resolve hostname '%s': %s"
-msgstr "unable to resolve hostname '%s': %s"
-
-#, c-format
 msgid "unable to save metadata for snapshot %s"
 msgstr "unable to save metadata for snapshot %s"
 
@@ -20540,9 +20096,6 @@ msgstr "unable to set user and group to '%ld:%ld' on '%s'"
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr "unable to stat for disk %s: %s"
-
-msgid "unable to store config file handle"
-msgstr "unable to store config file handle"
 
 msgid "unable to unload already unloaded profile"
 msgstr "unable to unload already unloaded profile"
@@ -20625,10 +20178,6 @@ msgstr "unexpected UML URI path '%s', try uml:///session"
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr "unexpected UML URI path '%s', try uml:///system"
-
-#, c-format
-msgid "unexpected Xen URI path '%s', try xen:///"
-msgstr "unexpected Xen URI path '%s', try xen:///"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -20920,9 +20469,6 @@ msgstr "unexpected value %s for on_poweroff"
 #, c-format
 msgid "unexpected value %s for on_reboot"
 msgstr "unexpected value %s for on_reboot"
-
-msgid "unexpected value from on_xend_start"
-msgstr "unexpected value from on_xend_start"
 
 #, c-format
 msgid "unexpected video model %d"
@@ -21653,9 +21199,6 @@ msgstr "unsupported console target type %s"
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "unsupported data type '%c' for arg '%s'"
 
-msgid "unsupported device type"
-msgstr "unsupported device type"
-
 #, c-format
 msgid "unsupported device type in network %s interface pool"
 msgstr "unsupported device type in network %s interface pool"
@@ -21716,12 +21259,6 @@ msgstr "unsupported flags: (0x%x)"
 msgid "unsupported graphics type '%s'"
 msgstr "unsupported graphics type '%s'"
 
-msgid "unsupported in dom interface < 5"
-msgstr "unsupported in dom interface < 5"
-
-msgid "unsupported in sys interface < 4"
-msgstr "unsupported in sys interface < 4"
-
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "unsupported input bus %s"
@@ -21746,10 +21283,6 @@ msgid "unsupported option '-%c'. See --help."
 msgstr "unsupported option '-%c'. See --help."
 
 #, c-format
-msgid "unsupported path, use xvdN, hdN, or sdN for domain %d"
-msgstr "unsupported path, use xvdN, hdN, or sdN for domain %d"
-
-#, c-format
 msgid "unsupported pit tickpolicy '%s'"
 msgstr "unsupported pit tickpolicy '%s'"
 
@@ -21760,10 +21293,6 @@ msgstr "unsupported protocol family '%s'"
 #, c-format
 msgid "unsupported protocol type %s"
 msgstr "unsupported protocol type %s"
-
-#, c-format
-msgid "unsupported rtc tickpolicy '%s'"
-msgstr "unsupported rtc tickpolicy '%s'"
 
 #, c-format
 msgid "unsupported rtc timer tickpolicy '%s'"
@@ -21967,9 +21496,6 @@ msgstr "virGetUserName is not available"
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "virGetUserRuntimeDirectory is not available"
 
-msgid "virHashLookup"
-msgstr "virHashLookup"
-
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL def"
 
@@ -22076,9 +21602,6 @@ msgstr "vmrun utility is missing"
 msgid "vnc display"
 msgstr "vnc display"
 
-msgid "vnc display sharing policy is not supported with this QEMU"
-msgstr "vnc display sharing policy is not supported with this QEMU"
-
 msgid "vnc graphics are not supported with this QEMU"
 msgstr "vnc graphics are not supported with this QEMU"
 
@@ -22129,9 +21652,6 @@ msgstr "wakeup a domain from pmsuspended state"
 
 msgid "warning"
 msgstr "warning"
-
-msgid "watch already tracked"
-msgstr "watch already tracked"
 
 msgid "watchdog"
 msgstr "watchdog"
@@ -22202,49 +21722,6 @@ msgstr "wwn of disk device"
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen bus does not support %s input device"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-
-msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-
-msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr "xenDaemonDomainMigrate: invalid port number"
-
-msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr ""
-"xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-
-msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr "xenDaemonDomainMigrate: unsupported flag"
-
-msgid "xenDaemonDomainMigrate: xend cannot migrate paused domains"
-msgstr "xenDaemonDomainMigrate: xend cannot migrate paused domains"
-
-msgid "xenDaemonGetAutostart failed to find this domain"
-msgstr "xenDaemonGetAutostart failed to find this domain"
-
-msgid "xenDaemonSetAutostart failed to find this domain"
-msgstr "xenDaemonSetAutostart failed to find this domain"
-
-msgid "xenXMConfigCacheRefresh: virHashAddEntry"
-msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
-
-#, c-format
-msgid "xend_post: error from xen daemon: %s"
-msgstr "xend_post: error from xen daemon: %s"
 
 msgid "xml data file to export from"
 msgstr "xml data file to export from"

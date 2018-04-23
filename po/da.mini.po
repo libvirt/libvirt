@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-26 08:52-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Danish (http://www.transifex.com/projects/p/fedora/language/"
@@ -547,26 +547,17 @@ msgstr "domæneinformation"
 msgid "domain information in XML"
 msgstr "domæneinformation i XML"
 
-msgid "domain information incomplete, missing domid"
-msgstr "domæneinformation ukomplet, mangler domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "domæneinformation ukomplet, mangler kerne & opstartsindlæser"
 
 msgid "domain information incomplete, missing name"
 msgstr "domæneinformation ukomplet, mangler navn"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "domæneinformation ukomplet, mangler uuid"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "domæneinformation ukomplet, vbd har ingen dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "domæneinformation ukomplet, vbd har ingen src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "domæneinformation fejl, domid er ikke numerisk"
 
 msgid "domain name or uuid"
 msgstr "domænenavn eller uuid"
@@ -604,9 +595,6 @@ msgstr "forventer en værdi"
 
 msgid "expecting an assignment"
 msgstr "forventer en tildeling"
-
-msgid "failed to connect to Xen Store"
-msgstr "kunne ikke forbinde til Xen Store"
 
 msgid "failed to connect to the hypervisor"
 msgstr "kunne ikke forbinde til hypervisor"
@@ -654,9 +642,6 @@ msgstr "kunne ikke åbne konfigurationsfilen for læsning"
 msgid "failed to open file"
 msgstr "kunne ikke åbne fil"
 
-msgid "failed to parse Xend domain information"
-msgstr "kunne ikke analysere domæneinformation for Xend"
-
 msgid "failed to parse configuration file"
 msgstr "kunne ikke analysere konfigurationsfilen"
 
@@ -670,9 +655,6 @@ msgstr "kunne ikke læse konfigurationsfilen"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "kunne ikke læse konfigurationsfilen %s"
-
-msgid "failed to read from Xen Daemon"
-msgstr "kunne ikke læse fra Xen-dæmonen"
 
 msgid "failed to save content"
 msgstr "kunne ikke gemme indhold"

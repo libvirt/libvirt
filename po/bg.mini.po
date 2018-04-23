@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-26 07:16-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bulgarian (http://www.transifex.com/projects/p/fedora/"
@@ -152,12 +152,6 @@ msgstr "Създаване на домейн."
 
 msgid "Create a network."
 msgstr "Създаване на мрежа."
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr ""
-"Параметъра за тежест на кредита на разпределителя (%d) е извън интервала "
-"(1-65535)"
 
 msgid "Define a domain."
 msgstr "Дефиниране на домейн."
@@ -691,9 +685,6 @@ msgstr "информация за домейн"
 msgid "domain information in XML"
 msgstr "информация за домейн в XML"
 
-msgid "domain information incomplete, missing domid"
-msgstr "информацията за домейна е непълна, липсва domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
 "информацията за домейна е непълна, липсва ядро и програма за начално "
@@ -702,17 +693,11 @@ msgstr ""
 msgid "domain information incomplete, missing name"
 msgstr "информацията за домейна е непълна, липсва име"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "информацията за домейна е непълна, липсва uuid"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "информацията за домейна е непълна, vbd няма dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "информацията за домейна е непълна, vbd няма src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "информацията за домейна е невярна, domid не е число"
 
 msgid "domain name or uuid"
 msgstr "име на домейн или uuid"
@@ -753,9 +738,6 @@ msgstr "очаква се стойност"
 
 msgid "expecting an assignment"
 msgstr "очаква се присвояване"
-
-msgid "failed to connect to Xen Store"
-msgstr "неуспешно свързване към xen хранилище"
 
 msgid "failed to connect to the hypervisor"
 msgstr "неуспех при свързване с хипервайзора"
@@ -812,9 +794,6 @@ msgstr "неуспешно отваряне на файл"
 msgid "failed to open the log file. check the log file path"
 msgstr "неуспех при отваряне на дневника. проверете пътя на файла"
 
-msgid "failed to parse Xend domain information"
-msgstr "неуспешен разбор на информацията за Xend домейн"
-
 msgid "failed to parse configuration file"
 msgstr "грешка при разбор на конфигурационния файл"
 
@@ -828,9 +807,6 @@ msgstr "грешка при четене на конфигурационния �
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "грешка при четене на конфигурационния файл %s"
-
-msgid "failed to read from Xen Daemon"
-msgstr "неуспешно четене от xen демона"
 
 msgid "failed to save content"
 msgstr "неуспешен запис на файл"

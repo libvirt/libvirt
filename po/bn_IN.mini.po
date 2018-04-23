@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-26 07:10-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bengali (India) (http://www.transifex.com/projects/p/libvirt/"
@@ -103,10 +103,6 @@ msgid "  NAME\n"
 msgstr "  NAME\n"
 
 #, c-format
-msgid "%d status from xen daemon: %s:%s"
-msgstr "xen ডেমন থেকে %d অবস্থা প্রাপ্ত হয়েছে: %s:%s"
-
-#, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
@@ -162,10 +158,6 @@ msgstr "%s: লগ ফাইল লিখতে ব্যর্থ: %s"
 #, c-format
 msgid "%s: initialization failed\n"
 msgstr "%s: প্রারম্ভ ব্যর্থ হয়েছে\n"
-
-#, c-format
-msgid "%s: invalid path"
-msgstr "%s: অবৈধ পাথ"
 
 #, c-format
 msgid ""
@@ -546,10 +538,6 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "CPU মডেল PVR 0x%08x সমেত খুঁজে পাওয়া যাবে না"
 
 #, c-format
-msgid "Cannot find QEMU binary %s"
-msgstr "QEMU বাইনারি %s অনুসন্ধান করতে ব্যর্থ"
-
-#, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "UML কার্নেল %s অনুসন্ধান করতে ব্যর্থ"
 
@@ -559,9 +547,6 @@ msgstr "নিরাপত্তা ড্রাইভার '%s' খুঁজ�
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "প্রদত্ত তথ্য অনুযায়ী প্রযোজ্য কোনো CPU মডেল পাওয়া যায়নি"
-
-msgid "Cannot modify live config if domain is inactive"
-msgstr "ডোমেইন নিষ্ক্রিয় থাকলে লাইভ কনফিগ পরিবর্তন করা সম্ভব নয়"
 
 msgid "Cannot open /dev/urandom"
 msgstr "/dev/urandom খুলতে ব্যর্থ"
@@ -653,10 +638,6 @@ msgstr "মাউন্ট করা নেম-স্পেস, শেয়ার 
 #, c-format
 msgid "Cannot use host name '%s' in network '%s'"
 msgstr "হোস্ট নাম '%s' নেটওয়ার্ক '%s' এ ব্যবহার করা যায় না"
-
-#, c-format
-msgid "Cap %s too big for destination"
-msgstr "গন্তব্যের ক্ষেত্রে Cap %s অত্যাধিক বড়"
 
 msgid "Capacity"
 msgstr "ধারণক্ষমতা"
@@ -956,11 +937,6 @@ msgstr "উপস্থিত ভলিউম থেকে একটি ভল�
 msgid "Create a vol."
 msgstr "একটি ভলিউম নির্মাণ করুন।"
 
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr ""
-"ক্রেডিট স্কেডিউলারের weight পরামিতির (%d) মান নির্দিষ্ট সীমা বহির্ভূত (1-65535)"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS HOST রেকর্ড সংশোধন করা যাবে না, শুধুমাত্র যোগ করা বা মোছা যাবে"
 
@@ -1100,10 +1076,6 @@ msgid "Domain %s is being shutdown\n"
 msgstr "ডোমেইন %s বন্ধ করা হচ্ছে\n"
 
 #, c-format
-msgid "Domain %s isn't running."
-msgstr "ডোমেইন %s বর্তমানে চলছে না।"
-
-#, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "ডোমেইন %s স্বয়ংক্রিয়রূপে প্রারম্ভকারী রূপে চিহ্নিত করা হয়েছে\n"
 
@@ -1217,21 +1189,12 @@ msgstr "%s-র জন্য ব্যবহারকারীর নাম ল�
 msgid "Enter username for %s [%s]"
 msgstr "%s [%s]-র জন্য ব্যবহারকারীর নাম লিখুন"
 
-msgid "Error adding file to config cache"
-msgstr "কনফিগ ক্যাশের মধ্যে ফাইল যোগ করতে ত্রুটি"
-
-msgid "Error adding file to config list"
-msgstr "কনফিগ তালিকার মধ্যে ফাইল যোগ করতে ত্রুটি"
-
 msgid "Error creating initial configuration"
 msgstr "প্রারম্ভিক কনফিগারেশন নির্মাণ করতে ব্যর্থ"
 
 #, c-format
 msgid "Error from child process creating '%s'"
 msgstr "'%s' নির্মাণকারী চাইল্ড প্রসেস থেকে উৎপন্ন ত্রুটি"
-
-msgid "Error looking up domain"
-msgstr "ডোমেইন অনুসন্ধান করতে ত্রুটি"
 
 #, c-format
 msgid "Error opening file %s"
@@ -1518,9 +1481,6 @@ msgstr "UUID নির্মাণ করতে ব্যর্থ"
 msgid "Failed to get UUID of created secret"
 msgstr "নির্মিত গোপনীয় তথ্যের UUID প্রাপ্ত করতে ব্যর্থ"
 
-msgid "Failed to get a scheduler name"
-msgstr "সিডিউলারের নাম প্রাপ্ত করতে ব্যর্থ"
-
 #, c-format
 msgid "Failed to get block stats %s %s"
 msgstr "ব্লক সংক্রান্ত পরিসংখ্যান প্রাপ্ত করতে ব্যর্থ %s %s"
@@ -1697,9 +1657,6 @@ msgstr "ডোমেইন %s পুনরায় বুট করতে ব্�
 
 msgid "Failed to reconnect to the hypervisor"
 msgstr "হাইপার-ভাইসরের সাথে পুনরায় সংযোগ করতে ব্যর্থ"
-
-msgid "Failed to redefine sexpr"
-msgstr "sexpr পুনরায় নির্ধারণ করতে ব্যর্থ"
 
 #, c-format
 msgid "Failed to refresh pool %s"
@@ -2126,9 +2083,6 @@ msgstr ""
 #, c-format
 msgid "Invalid netmask '%s' in network '%s'"
 msgstr "অবৈধ netmask '%s', '%s' নেটওয়ার্কে"
-
-msgid "Invalid parameter count"
-msgstr "অবৈধ পরামিতি সংখ্যা"
 
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "virXPathBoolean()-র অবৈধ পরামিতি"
@@ -3576,12 +3530,6 @@ msgstr "সর্বমোট"
 msgid "Trailing backslash"
 msgstr "ট্রেলিং ব্যাকস্ল্যাশ"
 
-#, c-format
-msgid ""
-"Transport '%s' in URI scheme is not supported, try again without the "
-"transport part"
-msgstr "পরিবহন '%s' URI স্কিমে সমর্থিত নয়, পরিবহন অংশ ছাড়া অাবার চেষ্টা করুন"
-
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr "টানেল মাইগ্রেশনের অনুরোধ জানানো হয়েছে কিন্তু অবৈধ RPC মেথড কল করা হয়েছে"
 
@@ -3621,9 +3569,6 @@ msgstr "<uuid> এবং <sysinfo> এর মধ্যে UUID গরমিল"
 
 msgid "UUID:"
 msgstr "UUID:"
-
-msgid "Unable to attach network devices without vlan"
-msgstr "vlan বিনা নেটওয়ার্ক ডিভাইস সংযুক্ত করতে ব্যর্থ"
 
 msgid "Unable to become session leader"
 msgstr "সেশানের অধিকর্তা হতে ব্যর্থ"
@@ -3710,10 +3655,6 @@ msgstr "CPU মিলের অপ্রত্যাশিত নিয়ম %d"
 #, c-format
 msgid "Unexpected CPU mode %d"
 msgstr "অপ্রত্যাশিত CPU মোড %d"
-
-#, c-format
-msgid "Unexpected LXC URI path '%s', try lxc:///"
-msgstr "অপ্রত্যাশিত LXC URI পাথ '%s', lxc:/// প্রচেষ্টা করুন"
 
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
@@ -3816,9 +3757,6 @@ msgstr "অজানা প্রোটোকল '%s'"
 #, c-format
 msgid "Unknown release: %s"
 msgstr "অজানা রিলিজ: %s"
-
-msgid "Unknown scheduler"
-msgstr "অজানা সময়নির্ধারণকারী"
 
 #, c-format
 msgid "Unknown source mode '%s'"
@@ -3954,10 +3892,6 @@ msgid "Volume path '%s' did not start with parent pool source device name."
 msgstr "'%s' ভলিউম পাথের প্রারম্ভে ঊর্ধ্বতন পুল উৎস ডিভাইসের নাম অনুপস্থিত।"
 
 #, c-format
-msgid "Weight %s too big for destination"
-msgstr "গন্তব্যের ক্ষেত্রে weight %s অত্যাধিক বড়"
-
-#, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
@@ -4025,16 +3959,6 @@ msgstr "সক্রিয় ডোমেইনের কাজ পরিত্য
 
 msgid "active"
 msgstr "সক্রিয়"
-
-msgid "adding watch @introduceDomain"
-msgstr "watch @introduceDomain যোগ করা হচ্ছে"
-
-msgid "adding watch @releaseDomain"
-msgstr "watch @releaseDomain যোগ করা হচ্ছে"
-
-#, c-format
-msgid "adding watch on %s"
-msgstr "%s-র জন্য watch (ওয়াচ) যোগ করা হচ্ছে"
 
 #, c-format
 msgid "address type='%s' not supported in hostdev interfaces"
@@ -4172,15 +4096,6 @@ msgstr "cputune কোটা মান পার্জ করা যাবে �
 
 msgid "can't parse cputune shares value"
 msgstr "cputune অংশীদারি মান পার্জ করা যাবে না"
-
-msgid "can't retrieve config entry for domain to overwrite"
-msgstr "নতুন করে লেখার জন্য চিহ্নিত ডোমেইনের এন্ট্রি উদ্ধার করতে ব্যর্থ"
-
-msgid "can't retrieve config file for domain"
-msgstr "ডোমেইনের জন্য কনফিগ ফাইল উদ্ধার করতে ব্যর্থ"
-
-msgid "can't retrieve config filename for domain to overwrite"
-msgstr "নতুন করে লেখার জন্য চিহ্নিত ডোমেইনের কনফিগ ফাইলের নাম উদ্ধার করতে ব্যর্থ"
 
 #, c-format
 msgid "can't update '%s' section of network '%s'"
@@ -4395,14 +4310,8 @@ msgstr "সোর্স ছাড়া '%s' ডিস্কের জন্য 
 msgid "cannot get CPU affinity of process %d"
 msgstr "%d প্রসেসের জন্য CPU অ্যাফিনিটি প্রাপ্ত করতে ব্যর্থ"
 
-msgid "cannot get VCPUs info"
-msgstr "VCPU-র তথ্য প্রাপ্ত করা সম্ভব নয়"
-
 msgid "cannot get current time"
 msgstr "বর্তমান সময় প্রাপ্ত করতে ব্যর্থ"
-
-msgid "cannot get domain details"
-msgstr "ডোমেইন সংক্রান্ত বিবরণ প্রাপ্ত করা সম্ভব নয়"
 
 #, c-format
 msgid "cannot get file context of '%s'"
@@ -4413,9 +4322,6 @@ msgstr "হোস্ট CPU-র ক্ষমতা প্রাপ্ত কর�
 
 msgid "cannot get interface flags on macvtap tap"
 msgstr "macvtap tap-র ক্ষেত্রে ইন্টারফেস ফ্ল্যাগ প্রাপ্ত করতে ব্যর্থ"
-
-msgid "cannot get time of day"
-msgstr "দিনের বর্তমান সময় সংগ্রহ করতে ব্যর্থ"
 
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU স্থাপনাও ও pCPU-র সময় প্রাপ্ত করতে ব্যর্থ"
@@ -4689,10 +4595,6 @@ msgid "cannot read domain image '%s'"
 msgstr "ডোমেইনের ইমেজ '%s' পড়তে ব্যর্থ"
 
 #, c-format
-msgid "cannot read file %s"
-msgstr "%s ফাইল পড়তে ব্যর্থ"
-
-#, c-format
 msgid "cannot read header '%s'"
 msgstr "হেডার '%s' পড়তে ব্যর্থ"
 
@@ -4789,10 +4691,6 @@ msgstr "'%s' stat করতে ব্যর্থ"
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "ফাইল '%s' stat করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot stat: %s"
-msgstr "stat করতে ব্যর্থ : %s"
 
 #, c-format
 msgid "cannot statvfs path '%s'"
@@ -4920,9 +4818,6 @@ msgstr "কনফিগারেশন ফাইলের মধ্যে সি
 msgid "configuration file syntax error: %s"
 msgstr "কনফিগারেশন ফাইলের মধ্যে সিন্টেক্স সংক্রান্ত সমস্যা: %s"
 
-msgid "conn, or private data is NULL"
-msgstr "conn, অথবা ব্যক্তিগত তথ্য NULL"
-
 msgid "connect to the guest console"
 msgstr "গেস্ট কনসোলের সাথে সংযোগ স্থাপন করুন"
 
@@ -5006,9 +4901,6 @@ msgstr "ইনপুট পাথ '%s' খুলতে ব্যর্থ"
 #, c-format
 msgid "could not parse weight %s"
 msgstr "%s ওজন পার্জ করা গেল না"
-
-msgid "could not read CPU flags"
-msgstr "CPU ফ্ল্যাগ পড়তে ব্যর্থ"
 
 #, c-format
 msgid "could not remove profile for '%s'"
@@ -5289,32 +5181,17 @@ msgstr "XML-র মধ্যে ডোমেইন সংক্রান্ত �
 msgid "domain information incomplete, missing HVM loader"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, HVM লোডার অনুপস্থিত"
 
-msgid "domain information incomplete, missing cpu_cap"
-msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, cpu_cap অনুপস্থিত"
-
-msgid "domain information incomplete, missing cpu_weight"
-msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, cpu_weight অনুপস্থিত"
-
-msgid "domain information incomplete, missing domid"
-msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, domid অনুপস্থিত"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, কার্নেল ও বুট-লোডার অনুপস্থিত"
 
 msgid "domain information incomplete, missing name"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, নাম অনুপস্থিত"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, uuid অনুপস্থিত"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd-র মধ্যে dev অনুপস্থিত"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd-র মধ্যে src অনুপস্থিত"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, domid সংখ্যামূলক নয়"
 
 msgid "domain is already running"
 msgstr "ডোমেইন বর্তমানে সক্রিয়"
@@ -5339,9 +5216,6 @@ msgstr "ডোমেইনের নাম, id অথবা uuid"
 
 msgid "domain state"
 msgstr "ডোমেইনের অবস্থা"
-
-msgid "domainBlockPeek is not supported for dom0"
-msgstr "dom0-র জন্য domainBlockPeek সমর্থিত নয়"
 
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare দ্বারা uri নির্ধারণ করা হয়নি"
@@ -5468,34 +5342,18 @@ msgstr "'%s' ফাইল থেকে পড়তে ব্যর্থ"
 msgid "failed to apply capabilities: %d"
 msgstr "ক্ষমতা প্রয়োগ করতে ব্যর্থ: %d"
 
-msgid "failed to build sexpr"
-msgstr "sexpr নির্মাণ করতে ব্যর্থ"
-
-msgid "failed to connect to Xen Store"
-msgstr "Xen Store-র সাথে সংযোগ করতে ব্যর্থ"
-
 msgid "failed to connect to monitor socket"
 msgstr "মনিটর সকেটের সাথে সংযোগ স্থাপন করতে ব্যর্থ"
 
 msgid "failed to connect to the hypervisor"
 msgstr "হাইপার-ভাইসরের সাথে সংযোগ করতে ব্যর্থ"
 
-msgid "failed to connect to xend"
-msgstr "xend-র সাথে সংযোগ করতে ব্যর্থ"
-
 msgid "failed to copy security label"
 msgstr "নিরাপত্তা স্তর অনুলিপি করতে ব্যর্থ"
-
-msgid "failed to create a socket"
-msgstr "সকেট নির্মাণ করতে ব্যর্থ"
 
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "'%s' ডিরেক্টরি নির্মাণ করতে ব্যর্থ"
-
-#, c-format
-msgid "failed to create link %s to %s"
-msgstr "%s লিংক, %s-র জন্য তৈরি করতে ব্যর্থ"
 
 #, c-format
 msgid "failed to create logfile %s"
@@ -5589,10 +5447,6 @@ msgid "failed to load module %s %s"
 msgstr "মডিউল লোড করতে ব্যর্থ %s %s"
 
 #, c-format
-msgid "failed to lseek or read from file: %s"
-msgstr "ফাইল থেকে lseek অথবা read করতে ব্যর্থ: %s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "নেটওয়ার্ক %s, স্বয়ং প্রারম্ভকারী রূপে চিহ্নিত করতে ব্যর্থ"
 
@@ -5610,15 +5464,8 @@ msgstr "পড়ার উদ্দেশ্যে কনফিগারেশন 
 msgid "failed to open file"
 msgstr "ফাইল খুলতে ব্যর্থ"
 
-#, c-format
-msgid "failed to open for reading: %s"
-msgstr "পড়ার উদ্দেশ্যে খুলতে ব্যর্থ: %s "
-
 msgid "failed to open the log file. check the log file path"
 msgstr "লগ ফাইল খুলতে ব্যর্থ। লগ ফাইলের পাথ পরীক্ষা করুন"
-
-msgid "failed to parse Xend domain information"
-msgstr "Xend ডোমেইন সংক্রান্ত তথ্য পার্স করতে ব্যর্থ"
 
 msgid "failed to parse configuration file"
 msgstr "কনফিগারেশন ফাইল পার্স করতে ব্যর্থ"
@@ -5640,9 +5487,6 @@ msgstr "কনফিগারেশন ফাইল পড়তে ব্যর্
 msgid "failed to read configuration file %s"
 msgstr "কনফিগারেশন ফাইল %s পড়তে ব্যর্থ"
 
-msgid "failed to read from Xen Daemon"
-msgstr "Xen Daemon থেকে পড়তে ব্যর্থ"
-
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "'%s'-র মধ্যে মিটাডাটার দৈর্ঘ্য পড়তে ব্যর্থ"
@@ -5657,13 +5501,6 @@ msgstr "qemu হেডার পড়তে ব্যর্থ"
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "%s টেমপ্লেট সহ নির্মিত অস্থায়ী ফাইল পড়তে ব্যর্থ"
-
-#, c-format
-msgid "failed to remove link %s"
-msgstr "%s লিংক মুছে ফেলতে ব্যর্থ"
-
-msgid "failed to remove old domain from config map"
-msgstr "কনফিগ ম্যাপ থেকে পুরোনো ডোমেইন মুছে ফেলতে ব্যর্থ"
 
 #, c-format
 msgid "failed to remove pool '%s'"
@@ -5715,9 +5552,6 @@ msgstr "কনফিগারেশন ফাইলের মধ্যে লি
 
 msgid "failed to write the log file"
 msgstr "লগ ফাইলের মধ্যে লিখতে ব্যর্থ"
-
-msgid "failed to write to Xen Daemon"
-msgstr "Xen Daemon-এ লিখতে ব্যর্থ"
 
 #, c-format
 msgid "failed writing to file '%s'"
@@ -5772,9 +5606,6 @@ msgstr "ফিল্টার একটি লুপের উপস্থাপ
 
 msgid "find potential storage pool sources"
 msgstr "সংগ্রহের পুলের সম্ভাব্য সোর্স অনুসন্ধান করা হবে"
-
-msgid "finding dom on config list"
-msgstr "কনফিগ তালিকার মধ্যে ডোমেইন অনুসন্ধান করা হচ্ছে"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "ফ্ল্যাগের পরামিতি VIR_MEMORY_VIRTUAL অথবা VIR_MEMORY_PHYSICAL হওয়া আবশ্যক"
@@ -5866,13 +5697,6 @@ msgstr "hostdev মোড '%s' সমর্থিত নয়"
 msgid "hostdev subsys type '%s' not supported"
 msgstr "hostdev subsys-র ধরন '%s' সমর্থিত নয়"
 
-msgid "hotplug of device type not supported"
-msgstr "এই ধরনের ডিভাইসের হট-প্লাগ সমর্থিত নয়"
-
-#, c-format
-msgid "hugepage backing not supported by '%s'"
-msgstr "'%s' দ্বারা hugepage ব্যাকিং সমর্থিত নয়"
-
 msgid "hypervisor connection URI"
 msgstr "হাইপার-ভাইসর সংযোগের URI"
 
@@ -5922,9 +5746,6 @@ msgstr "info মাইগ্রেশনের উত্তরের মধ্�
 
 msgid "init binary must be specified"
 msgstr "init বাইনারি অবশ্যই উল্লেখ করতে হবে"
-
-msgid "initializing inotify"
-msgstr "inotify আরম্ভ করা হচ্ছে"
 
 msgid "interface has no name"
 msgstr "ইন্টারফেসের কোনো নাম উপস্থিত নেই"
@@ -6358,9 +6179,6 @@ msgstr "VMX বিন্যাসের তালিকা অনুমোদি
 
 msgid "live migration"
 msgstr "লাইভ মাইগ্রেশন"
-
-msgid "looking up dom"
-msgstr "ডোমেইন অনুসন্ধান করা হচ্ছে"
 
 msgid "lxc state driver is not active"
 msgstr "lxc state ড্রাইভার বর্তমানে সক্রিয় নয়"
@@ -6930,10 +6748,6 @@ msgid "no PCI vendor ID supplied for '%s'"
 msgstr "'%s'-র জন্য PCI বিক্রেতার ID উল্লিখিত হয়নি"
 
 #, c-format
-msgid "no QEMU URI path given, try %s"
-msgstr "কোনো QEMU URI পাথ উল্লেখ করা হয়নি, %s প্রয়োগ করার প্রচেষ্টা করুন"
-
-#, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
 msgstr "'%s'-র জন্য SCSI LUN ID উল্লিখিত হয়নি"
 
@@ -6980,10 +6794,6 @@ msgstr "'%s'-র জন্য USB উৎপাদনের ID উল্লিখ
 #, c-format
 msgid "no USB vendor ID supplied for '%s'"
 msgstr "'%s'-র জন্য USB বিক্রেতার ID উল্লিখিত হয়নি"
-
-msgid "no VirtualBox driver path specified (try vbox:///session)"
-msgstr ""
-"VirtualBox ড্রাইভারের কোনো পাথ উল্লেখ করা হয়নি (vbox:///session প্রয়োগ করুন)"
 
 #, c-format
 msgid "no WWNN supplied for '%s', and auto-generation failed"
@@ -7035,9 +6845,6 @@ msgstr "কোনো ডোমেইন XML উল্লিখিত হয়ন�
 
 msgid "no domain config"
 msgstr "ডোমেইন কনফিগ অনুপস্থিত"
-
-msgid "no domain with matching id"
-msgstr "সুসংগত id সহ কোনো ডোমেইন উপস্থিত নেই"
 
 #, c-format
 msgid "no domain with matching id %d"
@@ -7151,9 +6958,6 @@ msgstr "এই প্ল্যাটফর্মের জন্য নোড �
 msgid "node information"
 msgstr "নোড সংক্রান্ত তথ্য"
 
-msgid "node information incomplete, missing scheduler name"
-msgstr "নোডের তথ্য অসম্পূর্ণ, সিডিউলারের নাম অনুপস্থিত"
-
 msgid "nodeset for NUMA memory tuning must be set if 'placement' is 'static'"
 msgstr ""
 "nodeset NUMA মেমরি টিউনিং এর ক্ষেত্রে অবশ্যই সেট থাকতে হবে, যদি 'placement' "
@@ -7179,9 +6983,6 @@ msgstr "VMX বিন্যাসের সংখ্যা অনুমোদি
 
 msgid "offline"
 msgstr "অফ-লাইন"
-
-msgid "on_xend_start not present in sexpr"
-msgstr "sexpr-র মধ্যে on_xend_start অনুপস্থিত"
 
 msgid "only TCP listen is supported for chr device"
 msgstr "chr ডিভাইসের জন্য শুধুমাত্র TCP listen সমর্থিত"
@@ -7246,10 +7047,6 @@ msgstr "পরামিতি=মান"
 
 msgid "parser error"
 msgstr "পার্সার সংক্রান্ত ত্রুটি"
-
-#, c-format
-msgid "parsing uuid %s"
-msgstr "uuid %s পার্স করা হচ্ছে"
 
 msgid "passthrough mode requires a character device type attribute"
 msgstr "passthrough মোডের ক্ষেত্রে একটি অক্ষর ডিভাইস ধরন অ্যাট্রিবিউটের প্রয়োজন"
@@ -7515,9 +7312,6 @@ msgstr "VNC পাসওয়ার্ড নির্ধারণ করতে �
 
 msgid "setting disk password is not supported"
 msgstr "ডিস্কের পাসওয়ার্ড নির্ধারণ ব্যবস্থা সমর্থিত নয়"
-
-msgid "sexpr2string failed"
-msgstr "sexpr2string বিফল"
 
 msgid "sgio is only supported for scsi host device"
 msgstr "sgio শুধুমাত্র scsi হোস্ট ডিভাইসের ক্ষেত্রে সমর্থিত"
@@ -7830,9 +7624,6 @@ msgstr "অত্যাধিক সংখ্যক মেমরির পরি
 msgid "too many secrets for qcow encryption"
 msgstr "qcow এনক্রিপশনের জন্য অত্যাধিক গোপনীয় তথ্য"
 
-msgid "topology syntax error"
-msgstr "টোপোলজির সিন্টেক্স সংক্রান্ত ত্রুটি"
-
 msgid "total and read/write bytes_sec cannot be set at the same time"
 msgstr "total এবং read/write bytes_sec একই সংগে সেট করা যায় না"
 
@@ -7879,10 +7670,6 @@ msgid "umlStartup: out of memory"
 msgstr "umlStartup: মেমরি অবশিষ্ট নেই"
 
 #, c-format
-msgid "unable to connect to '%s:%s'"
-msgstr "'%s:%s'-র সাথে সংযোগ স্থাপন করতে ব্যর্থ"
-
-#, c-format
 msgid "unable to create hugepage path %s"
 msgstr "hugepage পাথ %s নির্মাণ করতে ব্যর্থ"
 
@@ -7901,9 +7688,6 @@ msgstr ""
 "ইন্টারফেস '%s', '%s' নেটওয়ার্কে মুছতে ব্যর্থ। এটি বর্তমানে %d ডোমেন দ্বারা ব্যবহৃত "
 "হচ্ছে।"
 
-msgid "unable to determine original VLAN"
-msgstr "মূল VLAN নির্ধারণ করতে ব্যর্থ"
-
 #, c-format
 msgid "unable to execute QEMU command '%s'"
 msgstr "QEMU কমান্ড '%s' সঞ্চালনা করতে ব্যর্থ"
@@ -7918,9 +7702,6 @@ msgstr "uuid নির্মাণ করতে ব্যর্থ"
 #, c-format
 msgid "unable to get PID %d security context"
 msgstr "PID %d-র নিরাপত্তা সূচক কনটেক্সট প্রাপ্ত করতে ব্যর্থ"
-
-msgid "unable to get current time"
-msgstr "বর্তমান সময় প্রাপ্ত করতে ব্যর্থ"
 
 msgid "unable to handle disk requests in snapshot"
 msgstr "স্ন্যাপশটে ডিস্ক অনুরোধ পরিচালনা করতে ব্যর্থ"
@@ -7946,10 +7727,6 @@ msgid "unable to register monitor events"
 msgstr "মনিটর ইভেন্ট নিবন্ধন করতে ব্যর্থ"
 
 #, c-format
-msgid "unable to resolve hostname '%s': %s"
-msgstr "'%s' হোস্ট-নেম মীমাংসা করতে ব্যর্থ: %s"
-
-#, c-format
 msgid "unable to set ownership of '%s' to %d:%d"
 msgstr "'%s'-র মালিকানা %d-এ স্থাপন করতে ব্যর্থ:%d"
 
@@ -7968,9 +7745,6 @@ msgstr "নিরাপত্তার কনটেক্সট '%s', '%s'-র �
 #, c-format
 msgid "unable to set tty attributes: %s"
 msgstr "tty-র বৈশিষ্ট্য নির্ধারণ করতে ব্যর্থ: %s"
-
-msgid "unable to store config file handle"
-msgstr "কনফিগ ফাইলের হ্যান্ডেল সংরক্ষণ করতে ব্যর্থ"
 
 #, c-format
 msgid "unable to visit backing chain file %s"
@@ -8017,10 +7791,6 @@ msgstr "অপ্রত্যাশিত UML URI পাথ '%s', uml:///session
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr "অপ্রত্যাশিত UML URI পাথ '%s', uml:///system প্রচেষ্টা করুন"
-
-#, c-format
-msgid "unexpected Xen URI path '%s', try xen:///"
-msgstr "অপ্রত্যাশিত Xen URI পাথ '%s', xen:/// প্রচেষ্টা করুন"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -8259,9 +8029,6 @@ msgstr "on_poweroff-র ক্ষেত্রে অপ্রত্যাশি�
 #, c-format
 msgid "unexpected value %s for on_reboot"
 msgstr "on_reboot-র ক্ষেত্রে অপ্রত্যাশিত মান %s"
-
-msgid "unexpected value from on_xend_start"
-msgstr "on_xend_start থেকে অপ্রত্যাশিত মান"
 
 #, c-format
 msgid "unexpected video model %d"
@@ -8868,9 +8635,6 @@ msgstr "কনফিগারেশন সমর্থিত নয়: %s"
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "অসমর্থিত ধরনের তথ্য '%c', '%s' আর্গুমেন্টের জন্য চিহ্নিত করা হয়েছে"
 
-msgid "unsupported device type"
-msgstr "এই প্রকৃতির ডিভাইস সমর্থিত নয়"
-
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "ডিভাইস প্রস্তুতির সাথে অসমর্থিত ডিস্ক বাস '%s'"
@@ -9004,9 +8768,6 @@ msgstr "সংস্করণে গরমিল (প্রকৃত %x, প্�
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "নিরাপত্তার ফ্ল্যাগ সহ virDomainGetXMLDesc"
 
-msgid "virHashLookup"
-msgstr "virHashLookup"
-
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL def"
 
@@ -9054,9 +8815,6 @@ msgstr "ভলিউমের ব্যবহার চিহ্নিত কর
 msgid "warning"
 msgstr "সতর্কবার্তা"
 
-msgid "watch already tracked"
-msgstr "watch বর্তমানে অনুসরণ করা হচ্ছে"
-
 msgid "watchdog must contain model name"
 msgstr "watchdog-র মধ্যে মডেলের নাম অন্তর্ভুক্ত থাকা আবশ্যক"
 
@@ -9079,49 +8837,6 @@ msgstr "write: %s: অস্থায়ী ফাইলের মধ্যে ল�
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen bus দ্বারা %s ইনপুট ডিভাইস সমর্থিত হবে না"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: মাইগ্রেশনের সময় Xen দ্বারা ব্যান্ডউইতের সীমাবদ্ধতা সমর্থিত "
-"হয় না"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: মাইগ্রেশনের সময় ডোমেইনের নাম পরিবর্তনের প্রক্রিয়া Xen "
-"দ্বারা সমর্থিত হয় না"
-
-msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr "xenDaemonDomainMigrate: URI-র মধ্যে হোস্ট-নেম উল্লেখ করা আবশ্যক"
-
-msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr "xenDaemonDomainMigrate: পোর্ট সংখ্যা বৈধ নয়"
-
-msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr ""
-"xenDaemonDomainMigrate: Xen দ্বারা শুধুমাত্র xenmigr:// মাইগ্রেশন সমর্থিত হবে"
-
-msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr "xenDaemonDomainMigrate: ফ্ল্যাগ সমর্থিত নয়"
-
-msgid "xenDaemonDomainMigrate: xend cannot migrate paused domains"
-msgstr "xenDaemonDomainMigrate: স্থগিত ডোমেইল xend দ্বারা মাইগ্রেট করা সম্ভব নয়"
-
-msgid "xenDaemonGetAutostart failed to find this domain"
-msgstr "xenDaemonGetAutostart দ্বারা এই ডোমেইন সন্ধান করা যায়নি"
-
-msgid "xenDaemonSetAutostart failed to find this domain"
-msgstr "xenDaemonSetAutostart দ্বারা এই ডোমেইন সন্ধান করা যায়নি"
-
-msgid "xenXMConfigCacheRefresh: virHashAddEntry"
-msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
-
-#, c-format
-msgid "xend_post: error from xen daemon: %s"
-msgstr "xend_post: xen ডেমনে সমস্যা: %s"
 
 msgid "xml data file to export from"
 msgstr "এক্সপোর্ট করার উদ্দেশ্যে চিহ্নিত xml তথ্যের ফাইল"

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2016-09-15 06:18-0400\n"
 "Last-Translator: Zdenek <chmelarz@gmail.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/fedora/language/"
@@ -650,10 +650,6 @@ msgid "Domain %s is being shutdown\n"
 msgstr "Doména %s je právě vypínána\n"
 
 #, c-format
-msgid "Domain %s isn't running."
-msgstr "Doména %s neběží."
-
-#, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "Doména %s označena jako automaticky spouštěná\n"
 
@@ -1234,9 +1230,6 @@ msgstr "Neplatné jméno zařízení pevného disku: %s"
 
 msgid "Invalid ip address prefix value"
 msgstr "Neplatný prefix IP adresy"
-
-msgid "Invalid parameter count"
-msgstr "Neplatný počet parametrů"
 
 #, c-format
 msgid "Invalid port number: %s"
@@ -1857,9 +1850,6 @@ msgstr "Neznámý typ modelu '%s'"
 msgid "Unknown protocol '%s'"
 msgstr "Neznámý protokol '%s'"
 
-msgid "Unknown scheduler"
-msgstr "Neznámý plánovač"
-
 #, c-format
 msgid "Unknown source mode '%s'"
 msgstr "Neznámý mód pro zdroj '%s'"
@@ -1993,10 +1983,6 @@ msgstr "[--%s] <řetězec>"
 
 msgid "active"
 msgstr "aktivní"
-
-#, c-format
-msgid "argument out of range: %d"
-msgstr "argument je mimo rozsah: %d"
 
 msgid "attach device from an XML file"
 msgstr "připojit zařízení z XML souboru"
@@ -2200,10 +2186,6 @@ msgstr "nelze parsovat vnc port %s"
 #, c-format
 msgid "cannot read dir '%s'"
 msgstr "nelze číst adresář '%s'"
-
-#, c-format
-msgid "cannot read file %s"
-msgstr "nelze číst soubor %s"
 
 #, c-format
 msgid "cannot remove config %s"
@@ -2473,26 +2455,17 @@ msgstr "informace o doméně"
 msgid "domain information in XML"
 msgstr "informace o doméně v XML"
 
-msgid "domain information incomplete, missing domid"
-msgstr "neúplná informace o doméně, chybí domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "neúplná informace o doméně, chybí jádro a zavaděč"
 
 msgid "domain information incomplete, missing name"
 msgstr "neúplná informace o doméně, chybí jméno"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "neúplná informace o doméně, chybí UUID"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "neúplná informace o doméně, vbd nemá žádné zařízení"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "neúplná informace o doméně, vbd nemá žádný zdroj"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "nesprávná informace o doméně, domid není číslo"
 
 msgid "domain is already running"
 msgstr "doména již běží"
@@ -2505,12 +2478,6 @@ msgstr "uuid nebo jméno domény"
 
 msgid "domain name, id or uuid"
 msgstr "jméno, id nebo uuid domény"
-
-msgid "domain not active"
-msgstr "doména není aktivní"
-
-msgid "domain not running"
-msgstr "doména neběží"
 
 msgid "domain snapshot XML"
 msgstr "XML definice obrazu domény"
@@ -2584,23 +2551,11 @@ msgstr "selhalo systémové volání Xenu %s"
 msgid "failed to allocate buffer"
 msgstr "nepodařilo se alokovat buffer"
 
-msgid "failed to build sexpr"
-msgstr "selhala serializace sexpr"
-
 msgid "failed to close file"
 msgstr "selhalo zavření souboru"
 
-msgid "failed to connect to Xen Store"
-msgstr "nepodařilo se připojit ke Xen Store"
-
 msgid "failed to connect to the hypervisor"
 msgstr "nepodařilo se připojit se k hypervizoru"
-
-msgid "failed to connect to xend"
-msgstr "nepodařilo se připojit ke xend"
-
-msgid "failed to create a socket"
-msgstr "nepodařilo se vytvořit socket"
 
 #, c-format
 msgid "failed to create directory '%s'"
@@ -2699,9 +2654,6 @@ msgstr "nepodařilo se otevřít soubor"
 msgid "failed to open the log file. check the log file path"
 msgstr "Nepodařilo se otevřít log soubor. Zkontrolujte cestu k log souboru"
 
-msgid "failed to parse Xend domain information"
-msgstr "nepodařilo se parsovat doménové informace o Xend"
-
 msgid "failed to parse configuration file"
 msgstr "chyba při parsování konfigurační souboru"
 
@@ -2721,9 +2673,6 @@ msgstr "nepodařilo se načíst konfigurační soubor"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "nepodařilo se načíst konfigurační soubor %s"
-
-msgid "failed to read from Xen Daemon"
-msgstr "nepodařilo se číst z démona Xen"
 
 msgid "failed to save content"
 msgstr "nepodařilo se uložit obsah"
@@ -3426,10 +3375,6 @@ msgid "parser error"
 msgstr "chyba parseru"
 
 #, c-format
-msgid "parsing uuid %s"
-msgstr "parsuji uuid %s"
-
-#, c-format
 msgid "path '%s' is not absolute"
 msgstr "cesta '%s' není absolutní"
 
@@ -3521,9 +3466,6 @@ msgstr "tajné UUID"
 
 msgid "setting up HAL callbacks failed"
 msgstr "setting up HAL callbacks selhalo"
-
-msgid "sexpr2string failed"
-msgstr "sexpr2string selhalo"
 
 msgid "show version"
 msgstr "ukázat verzi"
@@ -3630,9 +3572,6 @@ msgstr "registrováno příliš mnoho ovladačů"
 msgid "too many drivers registered in %s"
 msgstr "registrováno příliš mnoho ovladačů v %s"
 
-msgid "topology syntax error"
-msgstr "chybná syntaxe topologie"
-
 msgid "tty console"
 msgstr "tty konzole"
 
@@ -3648,10 +3587,6 @@ msgstr "udev_monitor_new_from_netlink vrátil NULL"
 #, c-format
 msgid "unable to close %s"
 msgstr "nelze zavřít %s"
-
-#, c-format
-msgid "unable to connect to '%s:%s'"
-msgstr "nepodařilo se připojit k '%s:%s'"
 
 #, c-format
 msgid "unable to create rundir %s: %s"

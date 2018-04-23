@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-27 07:48-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
@@ -115,10 +115,6 @@ msgstr "네트워킹:"
 
 msgid " Storage:"
 msgstr "스토리지:"
-
-#, c-format
-msgid "%d status from xen daemon: %s:%s"
-msgstr "xen 데몬으로부터 %d 상태 : %s:%s"
 
 #, c-format
 msgid "%s\n"
@@ -224,10 +220,6 @@ msgstr "%s: 로그 파일 쓰기 실패: %s"
 #, c-format
 msgid "%s: initialization failed\n"
 msgstr "%s: 초기화 실패\n"
-
-#, c-format
-msgid "%s: invalid path"
-msgstr "%s: 잘못된 경로"
 
 #, c-format
 msgid ""
@@ -823,10 +815,6 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08x로 CPU 모델을 찾을 수 없음"
 
 #, c-format
-msgid "Cannot find QEMU binary %s"
-msgstr "QEMU 바이너리 %s를 찾을 수 없음"
-
-#, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "UML 커널 %s를 찾을 수 없음"
 
@@ -856,9 +844,6 @@ msgstr "'%s'에서 인터페이스 MTU를 구할 수 없음"
 #, c-format
 msgid "Cannot get interface flags on '%s'"
 msgstr "'%s'에서 인터페이스 플래그를 구할 수 없음"
-
-msgid "Cannot modify live config if domain is inactive"
-msgstr "도메인이 실행중이 아니면 라이브 설정을 변경할 수 없습니다"
 
 #, c-format
 msgid "Cannot mount filesystem type %s"
@@ -989,9 +974,6 @@ msgstr "멀티 핸들에서 초기화되지 않은 CURL 핸들을 제거할 수 
 msgid "Cannot rename interface '%s' to '%s' on this platform"
 msgstr "이 플랫폼에서 인터페이스 '%s'를 '%s'로 이름 변경할 수 없음"
 
-msgid "Cannot save host domain"
-msgstr "호스트 도메인을 저장할 수 없음"
-
 msgid "Cannot set autostart for transient domain"
 msgstr "임시 도메인의 autostart를 설정할 수 없음"
 
@@ -1081,10 +1063,6 @@ msgstr "네트워크 '%s'에서 호스트 이름 '%s'을 사용할 수 없음"
 
 msgid "Cannot use predefined UUID"
 msgstr "사전 지정된 UUID를 사용할 수 없음 "
-
-#, c-format
-msgid "Cap %s too big for destination"
-msgstr "캡 %s가 목적지로는 너무 큽니다"
 
 msgid "Capacity"
 msgstr "용량 "
@@ -1784,10 +1762,6 @@ msgstr "생성 시간 "
 msgid "Creation of %s volumes is not supported"
 msgstr "%s 볼륨 생성은 지원되지 않습니다 "
 
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr "크레딧 스케줄러의 weight 매개 변수 (%d) 범위 (1-65535) 초과"
-
 msgid "DNS HOST records cannot be modified, only added or deleted"
 msgstr "DNS 호스트 기록을 수정할 수 없습니다. 추가 또는 삭제만 가능합니다 "
 
@@ -1982,10 +1956,6 @@ msgid "Domain %s is being shutdown\n"
 msgstr "도메인 %s가 종료됨\n"
 
 #, c-format
-msgid "Domain %s isn't running."
-msgstr "도메인 %s가 실행중이 아닙니다."
-
-#, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "%s 도메인은 자동 시작으로 표시됨\n"
 
@@ -2175,21 +2145,12 @@ msgstr "%s에 대한 사용자명을 입력하십시오"
 msgid "Enter username for %s [%s]"
 msgstr "%s[%s]에 대한 사용자명을 입력하십시오"
 
-msgid "Error adding file to config cache"
-msgstr "파을을 설정 캐시에 넣는 중 오류"
-
-msgid "Error adding file to config list"
-msgstr "설정 목록에 파일을 추가하는 중 오류"
-
 msgid "Error creating initial configuration"
 msgstr "초기 설정 생성 오류"
 
 #, c-format
 msgid "Error from child process creating '%s'"
 msgstr "'%s' 자식 프로세스 생성시 오류 발생"
-
-msgid "Error looking up domain"
-msgstr "도메인 검색 오류"
 
 #, c-format
 msgid "Error opening file %s"
@@ -2622,9 +2583,6 @@ msgstr "생성된 비밀정보의 UUID를 얻는 데 실패"
 msgid "Failed to get VNC port. Is this domain using VNC?"
 msgstr "VNC 포트를 얻는데 실패했습니다. 이 도메인은 VNC를 사용하고 있습니까?"
 
-msgid "Failed to get a scheduler name"
-msgstr "스케줄러 이름을 얻는 데 실패"
-
 #, c-format
 msgid "Failed to get block stats %s %s"
 msgstr "%s %s 블럭 상태 보기 실패"
@@ -2902,9 +2860,6 @@ msgstr "도메인 %s를 재부팅하기 실패"
 
 msgid "Failed to reconnect to the hypervisor"
 msgstr "하이퍼바이저에 재연결 실패"
-
-msgid "Failed to redefine sexpr"
-msgstr "sexpr을 재정의하는 데 실패"
 
 #, c-format
 msgid "Failed to refresh pool %s"
@@ -3604,9 +3559,6 @@ msgstr "네트워크 '%s'에서 잘못된 넷 마스크 '%s'"
 
 msgid "Invalid parameter"
 msgstr "잘못된 매개 변수 "
-
-msgid "Invalid parameter count"
-msgstr "잘못된 매개변수 갯수"
 
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "virXPathBoolean()에 잘못된 매개변수 전달"
@@ -5461,14 +5413,6 @@ msgid "Trailing backslash"
 msgstr "백슬래시 트레일링"
 
 #, c-format
-msgid ""
-"Transport '%s' in URI scheme is not supported, try again without the "
-"transport part"
-msgstr ""
-"URI 스키마에서 전송 '%s'은 지원되지 않습니다, 전송 부분을 제외하고 다시 시도"
-"합니다 "
-
-#, c-format
 msgid "Transport error during %s: %s (%d)"
 msgstr "%s 도중 전송 오류: %s (%d)"
 
@@ -5555,9 +5499,6 @@ msgstr "LPAR를 테이블에 추가할 수 없음 "
 
 msgid "Unable to add epoll fd"
 msgstr "epoll fd를 추가할 수 없습니다 "
-
-msgid "Unable to attach network devices without vlan"
-msgstr "vlan없이 네트워크 장치를 부착할 수 없음"
 
 msgid "Unable to become session leader"
 msgstr "세션 리더가 되는 데 실패"
@@ -5856,10 +5797,6 @@ msgid "Unexpected HTTP response during %s: %d"
 msgstr "%s 도중 예상치 못한 HTTP 응답: %d"
 
 #, c-format
-msgid "Unexpected LXC URI path '%s', try lxc:///"
-msgstr "예기치 못한 LXC URI 경로 '%s', 다음을 시도해 보십시오: lxc:///"
-
-#, c-format
 msgid "Unexpected bhyve URI path '%s', try bhyve:///system"
 msgstr "예상치 못한 bhybe URI 경로 %s', bhyve:///system를 시도하십시오"
 
@@ -5987,9 +5924,6 @@ msgstr "알려지지 않은 릴리즈: %s"
 
 msgid "Unknown return code"
 msgstr "알 수 없는 반환 코드 "
-
-msgid "Unknown scheduler"
-msgstr "알려지지 않은 스케줄러"
 
 #, c-format
 msgid "Unknown source mode '%s'"
@@ -6193,10 +6127,6 @@ msgid "WARN"
 msgstr "경고 "
 
 #, c-format
-msgid "Weight %s too big for destination"
-msgstr "웨이트 %s가 목적지로는 너무 큽니다"
-
-#, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
@@ -6292,16 +6222,6 @@ msgstr "활성화"
 
 msgid "add a column showing parent snapshot"
 msgstr "부모 스냅샷을 표시하는 칼럼 추가 "
-
-msgid "adding watch @introduceDomain"
-msgstr "@introduceDomain에 감시 추가 중"
-
-msgid "adding watch @releaseDomain"
-msgstr "@releaseDomain에 감시 추가 중"
-
-#, c-format
-msgid "adding watch on %s"
-msgstr "%s에 감시 추가"
 
 #, c-format
 msgid "address type='%s' not supported in hostdev interfaces"
@@ -6469,15 +6389,6 @@ msgstr "cputune 쿼터 값을 구문 분석할 수 없음"
 
 msgid "can't parse cputune shares value"
 msgstr "cputune 공유 값을 구문 분석할 수 없음"
-
-msgid "can't retrieve config entry for domain to overwrite"
-msgstr "덮어쓸 도메인에 대한 설정 항목을 가져올 수 없습니다"
-
-msgid "can't retrieve config file for domain"
-msgstr "도메인에 대한 설정 파일을 읽어올 수 없습니다."
-
-msgid "can't retrieve config filename for domain to overwrite"
-msgstr "덮어쓸 도메인에 대한 설정 파일 이름을 가져올 수 없습니다"
 
 #, c-format
 msgid "can't update '%s' section of network '%s'"
@@ -6684,9 +6595,6 @@ msgstr "%s 아키텍쳐에 대한 CPU 맵을 찾을 수 없음"
 msgid "cannot find NIC definition for vlan %d"
 msgstr "vlan %d에 대해 NIC 정의를 찾을 수 없음"
 
-msgid "cannot find default console device"
-msgstr "디폴트 콘솔 장치를 찾을 수 없음 "
-
 #, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "새로 생성된 볼륨 '%s'를 찾을 수 없습니다"
@@ -6716,14 +6624,8 @@ msgstr "소스 없이 디스크 '%s'의 외부 스냅샷 이름을 생성할 수
 msgid "cannot get CPU affinity of process %d"
 msgstr "프로세스 %d의 CPU 진화도를 얻을 수 없음"
 
-msgid "cannot get VCPUs info"
-msgstr "VCPU 정보를 얻을 수 없음"
-
 msgid "cannot get current time"
 msgstr "현재 시간을 얻을 수 없음"
-
-msgid "cannot get domain details"
-msgstr "도메인 상세 정보를 얻을 수 없음"
 
 #, c-format
 msgid "cannot get file context of '%s'"
@@ -6740,9 +6642,6 @@ msgstr "호스트 uuid를 구할 수 없음 "
 
 msgid "cannot get the path of MEMORY cgroup controller"
 msgstr "MEMORY cgroup 컨트롤러의 경로를 얻을 수 없습니다 "
-
-msgid "cannot get time of day"
-msgstr "시간을 가져올 수 없음"
 
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU 위치와 pCPU 시간을 얻을 수 없음"
@@ -7028,10 +6927,6 @@ msgid "cannot read domain image '%s'"
 msgstr "도메인 이미지 '%s'를 읽을 수 없음"
 
 #, c-format
-msgid "cannot read file %s"
-msgstr "%s 파일을 읽을 수 없음"
-
-#, c-format
 msgid "cannot read file '%s'"
 msgstr "'%s' 파일을 읽을 수 없음"
 
@@ -7144,10 +7039,6 @@ msgstr "'%s'를 stat할 수 없음"
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "파일 '%s'를 stat할 수 없음"
-
-#, c-format
-msgid "cannot stat: %s"
-msgstr "stat할 수 없음: %s"
 
 #, c-format
 msgid "cannot statvfs path '%s'"
@@ -7301,9 +7192,6 @@ msgstr "설정 파일 구문 오류"
 msgid "configuration file syntax error: %s"
 msgstr "설정 파일 구문 오류: %s"
 
-msgid "conn, or private data is NULL"
-msgstr "연결 또는 비밀 데이터가 NULL입니다"
-
 msgid "connect to the guest console"
 msgstr "게스트 콘솔로 연결"
 
@@ -7399,9 +7287,6 @@ msgstr "CEPH_ARGS '%s'를 구문 분석할 수 없음 "
 #, c-format
 msgid "could not parse weight %s"
 msgstr "중량 %s을 구문 분석할 수 없음 "
-
-msgid "could not read CPU flags"
-msgstr "CPU 플래그를 읽을 수 없음"
 
 #, c-format
 msgid "could not remove profile for '%s'"
@@ -7671,9 +7556,6 @@ msgstr "디스크 '%s'는 스냅샷 모드 '%s'를 사용해야 함"
 msgid "disk '%s' specified twice"
 msgstr "디스크 '%s'가 두 번 지정됨"
 
-msgid "disk aio mode not supported with this QEMU binary"
-msgstr "이 QEMU 바이너리에서는 디스크 AIO 모드를 지원하지 않습니다"
-
 msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
 msgstr "디스크 속성: disk[,snapshot=type][,driver=type][,file=name]"
 
@@ -7790,32 +7672,17 @@ msgstr "XML에 있는 도메인 정보"
 msgid "domain information incomplete, missing HVM loader"
 msgstr "도메인 정보가 완료되지 않음, HVM 로더가 빠짐"
 
-msgid "domain information incomplete, missing cpu_cap"
-msgstr "도메인 정보가 완전하지 않음, cpu_cap이 빠짐"
-
-msgid "domain information incomplete, missing cpu_weight"
-msgstr "도메인 정보가 완전하지 않음, cpu_weight가 빠짐"
-
-msgid "domain information incomplete, missing domid"
-msgstr "도메인 정보가 완료되지 않음, domid 부재"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "도메인 정보가 완료되지 않음, 커널 & 부트로더 부재"
 
 msgid "domain information incomplete, missing name"
 msgstr "도메인 정보가 완료되지 않음, 이름 부재"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "도메인 정보가 완료되지 않음, uuid 부재"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "도메인 정보가 완료되지 않음, vbd는 dev가 없음"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "도메인 정보가 완료되지 않음, vbd는 src가 없음"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "도메인 정보가 수치가 아닌 잘못된 domid임"
 
 msgid "domain is already running"
 msgstr "도메인이 이미 실행중입니다"
@@ -7852,9 +7719,6 @@ msgstr "도메인 스냅샷 XML"
 
 msgid "domain state"
 msgstr "도메인 상태"
-
-msgid "domainBlockPeek is not supported for dom0"
-msgstr "dom0에 대해 domainBlockPeek가 지원되지 않습니다"
 
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare가 uri를 설정하지 않았음"
@@ -8015,9 +7879,6 @@ msgstr "SSH 에이전트 사용 인증 실패: %s"
 msgid "failed to begin transaction: %s%s%s"
 msgstr "트랜젝션 시작 실패: %s%s%s"
 
-msgid "failed to build sexpr"
-msgstr "sexpr 구축 실패"
-
 msgid "failed to calculate ssh host key hash"
 msgstr "ssh 호스트키 해시를 계산하는데 실패"
 
@@ -8034,17 +7895,11 @@ msgstr "스냅샷 목록을 수집하는데 실패"
 msgid "failed to commit transaction: %s%s%s"
 msgstr "트랜젝션 커밋 실패: %s%s%s"
 
-msgid "failed to connect to Xen Store"
-msgstr "Xen Store에 연결 실패"
-
 msgid "failed to connect to monitor socket"
 msgstr "모니터 소켓 연결 실패"
 
 msgid "failed to connect to the hypervisor"
 msgstr "하이퍼바이저에 연결 실패"
-
-msgid "failed to connect to xend"
-msgstr "xend에 연결하기 실패"
 
 msgid "failed to copy security label"
 msgstr "보안 레이블 복사 실패 "
@@ -8057,16 +7912,9 @@ msgstr "%s 생성 실패"
 msgid "failed to create (start) interface %s: %s%s%s"
 msgstr "%s 인터페이스 생성 (시작) 실패: %s%s%s"
 
-msgid "failed to create a socket"
-msgstr "소켓 생성 실패"
-
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "디렉터리 '%s' 생성 실패"
-
-#, c-format
-msgid "failed to create link %s to %s"
-msgstr "링크 %s를 %s에 대해 생성하는 데 실패"
 
 #, c-format
 msgid "failed to create logfile %s"
@@ -8230,10 +8078,6 @@ msgid "failed to lookup interface with MAC address '%s'"
 msgstr "MAC 주소 '%s'의 인터페이스를 검색하는데 실패했습니다 "
 
 #, c-format
-msgid "failed to lseek or read from file: %s"
-msgstr "파일에서 읽거나 lseek하는 데 실패했습니다: %s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "자동 시작으로 %s 네트워크를 표시하기 실패"
 
@@ -8256,10 +8100,6 @@ msgid "failed to open file"
 msgstr "파일 열기 실패"
 
 #, c-format
-msgid "failed to open for reading: %s"
-msgstr "읽기 용으로 열기 실패: %s"
-
-#, c-format
 msgid "failed to open ssh channel: %s"
 msgstr "ssh 채널 열기 실패: %s"
 
@@ -8273,9 +8113,6 @@ msgstr "로그 파일 열기 실패. 로그 파일 경로 확인"
 #, c-format
 msgid "failed to parse %s"
 msgstr "%s 구문 분석 실패"
-
-msgid "failed to parse Xend domain information"
-msgstr "Xend 도메인 정보 분석 실패"
 
 msgid "failed to parse configuration file"
 msgstr "설정 파일 구문 분석 실패"
@@ -8304,9 +8141,6 @@ msgstr "설정 파일 읽기 실패"
 msgid "failed to read configuration file %s"
 msgstr "%s 설정 파일 읽기 실패"
 
-msgid "failed to read from Xen Daemon"
-msgstr "Xen 데몬에서 읽기 실패"
-
 msgid "failed to read libxl header"
 msgstr "libxl 헤더를 읽는데 실패"
 
@@ -8327,13 +8161,6 @@ msgstr "템플릿 %s로 생성된 임시 파일을 읽는 데 실패"
 
 msgid "failed to register udev interface driver"
 msgstr "udev 인터페이스 드라이버를 등록하는데 실패"
-
-#, c-format
-msgid "failed to remove link %s"
-msgstr "링크 제거 실패: %s"
-
-msgid "failed to remove old domain from config map"
-msgstr "설정 맵에서 오래된 도메인을 삭제하는 데 실패했습니다"
 
 #, c-format
 msgid "failed to remove pool '%s'"
@@ -8421,9 +8248,6 @@ msgstr "설정 파일 쓰기 실패: %s"
 msgid "failed to write the log file"
 msgstr "로그 파일 쓰기 실패"
 
-msgid "failed to write to Xen Daemon"
-msgstr "Xen 데몬에 쓰기 실패"
-
 msgid "failed to write to profile"
 msgstr "프로파일에 쓰기 실패 "
 
@@ -8490,9 +8314,6 @@ msgstr "필터가 루프를 도입할 수 있습니다"
 
 msgid "find potential storage pool sources"
 msgstr "사용가능한 저장소 풀 소스를 찾습니다"
-
-msgid "finding dom on config list"
-msgstr "설정 파일에서 dom을 찾는 중"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr ""
@@ -8608,16 +8429,9 @@ msgstr "hostdev subsys 유형 '%s'가 지원되지 않음"
 msgid "hostname must be specified for netfs sources"
 msgstr "netfs 소스의 호스트 이름을 반드시 지정해야 함"
 
-msgid "hotplug of device type not supported"
-msgstr "장치 유형의 핫플러그가 지원되지 않음"
-
 #, c-format
 msgid "hub type %s not supported"
 msgstr "허브 유형 %s이 지원되지 않음 "
-
-#, c-format
-msgid "hugepage backing not supported by '%s'"
-msgstr "hugepage 지원이 '%s'에 의해 지원되지 않음"
 
 msgid "hypervisor connection URI"
 msgstr "하이퍼바이저 연결 URI"
@@ -8686,9 +8500,6 @@ msgstr "현재 스냅샷 정보"
 
 msgid "init binary must be specified"
 msgstr "init 바이너리를 지정해야 합니다"
-
-msgid "initializing inotify"
-msgstr "inotify 초기화 중"
 
 msgid "interface device (MAC Address)"
 msgstr "인터페이스 장치 (MAC 주소)"
@@ -8916,9 +8727,6 @@ msgstr "잘못된 연결 포인터"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "%s에 있는 잘못된 연결 포인터"
-
-msgid "invalid cpumap_t size"
-msgstr "잘못된 cpumap_t 크기 "
 
 #, c-format
 msgid "invalid database name: %s"
@@ -9287,9 +9095,6 @@ msgstr "잠금 관리자 연결이 제한되어 있습니다 "
 
 msgid "lock owner details have not been registered"
 msgstr "잠금 소유자 상세 정보가 등록되어 있지 않습니다 "
-
-msgid "looking up dom"
-msgstr "도메인을 검색중"
 
 msgid "lxc state driver is not active"
 msgstr "lxc 상태 드라이버가 작동중이 아닙니다"
@@ -9930,10 +9735,6 @@ msgid "no PCI vendor ID supplied for '%s'"
 msgstr "'%s'에 대해 PCI 벤더 ID가 지정되지 않았습니다"
 
 #, c-format
-msgid "no QEMU URI path given, try %s"
-msgstr "QEMU URI 경로가 주어지지 않았음. %s를 시도"
-
-#, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
 msgstr "'%s'에 대해 SCSI LUN ID가 지정되지 않았습니다"
 
@@ -9980,10 +9781,6 @@ msgstr "'%s'에 대해 USB 상품 ID가 지정되지 않았습니다"
 #, c-format
 msgid "no USB vendor ID supplied for '%s'"
 msgstr "'%s'에 대해 USB 벤더 ID가 지정되지 않았습니다"
-
-msgid "no VirtualBox driver path specified (try vbox:///session)"
-msgstr ""
-"VirtualBox 드라이버 경로가 지정되지 않았음(vbox:///session을 시도해 보십시오)"
 
 #, c-format
 msgid "no WWNN supplied for '%s', and auto-generation failed"
@@ -10049,9 +9846,6 @@ msgstr "도메인 설정 없음"
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr "일치하는 이름 '%s'의 도메인 스냅샷이 없음"
-
-msgid "no domain with matching id"
-msgstr "일치하는 id의 도메인이 없음"
 
 #, c-format
 msgid "no domain with matching id %d"
@@ -10186,9 +9980,6 @@ msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
 msgid "node information"
 msgstr "노드 정보"
 
-msgid "node information incomplete, missing scheduler name"
-msgstr "노드 정보가 불완전합니다, 스케줄러 이름이 빠졌습니다"
-
 msgid "nodeset for NUMA memory tuning must be set if 'placement' is 'static'"
 msgstr ""
 "'placement'가 'static'일 경우 NUMA 메모리 튜닝의 노드 집합을 설정해야 합니다"
@@ -10228,9 +10019,6 @@ msgstr "오프라인 마이그레이션은 소스 호스트에 의해 지원되�
 
 msgid "ok"
 msgstr "ok"
-
-msgid "on_xend_start not present in sexpr"
-msgstr "sexpr에 on_xend_start이 없음"
 
 msgid "only 1 graphics device of each type (sdl, vnc, spice) is supported"
 msgstr "각 유형 (sdl, vnc, spice)의 1 개의 그래픽 장치만이 지원됨"
@@ -10318,10 +10106,6 @@ msgstr "parameter=value"
 
 msgid "parser error"
 msgstr "구문 분석 오류"
-
-#, c-format
-msgid "parsing uuid %s"
-msgstr "uuid %s를 구문 분석 중"
 
 msgid "passthrough mode requires a character device type attribute"
 msgstr "통과 모드에는 문장 장치 유형 속성이 필요합니다 "
@@ -10628,10 +10412,6 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr "스트립트는 유형 %s의 인터페이스에서 지원되지 않음"
 
 #, c-format
-msgid "sdl not supported by '%s'"
-msgstr "sdl는 '%s'에 의해 지원되지 않음"
-
-#, c-format
 msgid "secret '%s' does not have a value"
 msgstr "비밀정보 '%s'는 값을 가지고 있지 않습니다"
 
@@ -10706,9 +10486,6 @@ msgstr "HAL 콜백 설정 실패 "
 
 msgid "setuid or setgid failed"
 msgstr "setuid 또는 setgid 실패 "
-
-msgid "sexpr2string failed"
-msgstr "sexpr2string 실패"
 
 msgid "sgio is only supported for scsi host device"
 msgstr "sgio는 scsi 호스트 장치에 대해서만 지원됩니다 "
@@ -10831,9 +10608,6 @@ msgstr "spice zlib 압축 누락"
 
 msgid "spicevmc device type only supports virtio"
 msgstr "spicevmc 장치 유형은 virtio 만을 지원합니다"
-
-msgid "spicevmc not supported in this QEMU binary"
-msgstr "spicevmc는 이 QEMU 바이너리에서 지원되지 않음 "
 
 msgid "start a (previously defined) inactive domain"
 msgstr "(기존에 정의된) 비활성화 도메인 시작"
@@ -10970,10 +10744,6 @@ msgstr "대상 %s이 존재하지 않습니다."
 msgid "target %s:%d already exists"
 msgstr "대상 %s:%d가 이미 존재합니다"
 
-#, c-format
-msgid "target '%s' already exists"
-msgstr "대상 '%s'이 이미 존재합니다"
-
 msgid "target config data type format"
 msgstr "대상 설정 데이터 유형 형식"
 
@@ -11014,10 +10784,6 @@ msgstr ""
 #, c-format
 msgid "the MAC address '%s' matches multiple interfaces"
 msgstr "MAC 주소 '%s'가 여러 인터페이스와 일치합니다 "
-
-#, c-format
-msgid "the QEMU binary %s does not support smbios settings"
-msgstr "QEMU 바이너리 %s는 smbios 설정을 지원하지 않음"
 
 #, c-format
 msgid "the QEMU binary does not support %s"
@@ -11148,9 +10914,6 @@ msgstr "너무 많은 메모리 stat이 요청되었습니다: %d > %d"
 msgid "too many secrets for qcow encryption"
 msgstr "qcow 암호화에 대해 너무 많은 비밀 정보"
 
-msgid "topology syntax error"
-msgstr "토폴로지 구문 오류"
-
 msgid "total and read/write bytes_sec cannot be set at the same time"
 msgstr "합계 및 bytes_sec 읽기/쓰기는 동시에 설정할 수 없습니다"
 
@@ -11253,10 +11016,6 @@ msgid "unable to close pipe"
 msgstr "파이프를 닫을 수 없음"
 
 #, c-format
-msgid "unable to connect to '%s:%s'"
-msgstr "'%s:%s'에 연결할 수 없음"
-
-#, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "'%s:%s'에 서버를 연결할 수 없음"
 
@@ -11282,9 +11041,6 @@ msgid ""
 msgstr ""
 "네트워크 '%s'에서 인터페이스 '%s'를 삭제할 수 없습니다. 이는 현재 %d 도메인"
 "에 의해 사용되고 있습니다. "
-
-msgid "unable to determine original VLAN"
-msgstr "원래의 VLAN을 결정할 수 없음"
 
 #, c-format
 msgid "unable to execute QEMU agent command '%s'"
@@ -11316,9 +11072,6 @@ msgstr "PID %d 보안 문맥을 얻을 수 없음"
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr "현재 프로세스 문맥 '%s'을 얻을 수 없음"
-
-msgid "unable to get current time"
-msgstr "현재 시간을 얻을 수 없음"
 
 msgid "unable to get screen resolution"
 msgstr "화면 해상도를 얻을 수 없음"
@@ -11375,10 +11128,6 @@ msgid "unable to register monitor events"
 msgstr "모니터 이벤트를 등록할 수 없음"
 
 #, c-format
-msgid "unable to resolve hostname '%s': %s"
-msgstr "호스트명 '%s'를 찾을 수 없음: %s"
-
-#, c-format
 msgid "unable to save metadata for snapshot %s"
 msgstr "스냅샷 %s의 메타데이터를 저장할 수 없음"
 
@@ -11417,9 +11166,6 @@ msgstr "소켓 보안 문맥 '%s'을 설정할 수 없음"
 #, c-format
 msgid "unable to set tty attributes: %s"
 msgstr "tty 특성을 설정하는 데 실패: %s"
-
-msgid "unable to store config file handle"
-msgstr "설정 파일 핸들을 저장하는 데 실패했습니다."
 
 #, c-format
 msgid "unable to visit backing chain file %s"
@@ -11483,10 +11229,6 @@ msgstr "예기치 못한 UML URI 경로 '%s', uml:///session을 시도"
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr "예기치 못한 UML URI 경로 '%s', uml:///system을 시도하십시오"
-
-#, c-format
-msgid "unexpected Xen URI path '%s', try xen:///"
-msgstr "예기치 못한 Xen URI 경로 '%s', xen:/// 을 시도해 보십시오"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -11746,9 +11488,6 @@ msgstr "on_poweroff에 대해 예기치 못한 %s 값"
 #, c-format
 msgid "unexpected value %s for on_reboot"
 msgstr "on_reboot에 대해 예기치 못한 값 %s"
-
-msgid "unexpected value from on_xend_start"
-msgstr "on_xend_start에 예기치 못한 값"
 
 #, c-format
 msgid "unexpected video model %d"
@@ -12422,9 +12161,6 @@ msgstr "지원되지 않는 콘솔 대상 유형 %s"
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "지원하지 않는 데이터 타입 '%c'가 인자 '%s'에 대해 사용됨"
 
-msgid "unsupported device type"
-msgstr "지원하지 않는 장치 유형"
-
 #, c-format
 msgid "unsupported device type in network %s interface pool"
 msgstr "네트워크 %s 인터페이스 풀에서 지원되지 않는 장치 유형"
@@ -12515,10 +12251,6 @@ msgid "unsupported option '-%c'. See --help."
 msgstr "지원되지 않는 옵션 '-%c'. --help 참조."
 
 #, c-format
-msgid "unsupported path, use xvdN, hdN, or sdN for domain %d"
-msgstr "지원되지 않는 경로, 도메인 %d의 xvdN, hdN, sdN 사용"
-
-#, c-format
 msgid "unsupported pit tickpolicy '%s'"
 msgstr "지원되지 않는 pit tickpolicy '%s'"
 
@@ -12529,10 +12261,6 @@ msgstr "지원되지 않는 프로토콜 제품군 '%s'"
 #, c-format
 msgid "unsupported protocol type %s"
 msgstr "지원되지 않는 프로토콜 유형 %s"
-
-#, c-format
-msgid "unsupported rtc tickpolicy '%s'"
-msgstr "지원되지 않는 rtc tickpolicy '%s'"
 
 #, c-format
 msgid "unsupported rtc timer tickpolicy '%s'"
@@ -12659,9 +12387,6 @@ msgstr "보안 플래그와 함께 virDomainSaveImageGetXMLDesc "
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "보안 플래그와 함께 virDomainSnapshotGetXMLDesc "
 
-msgid "virHashLookup"
-msgstr "virHashLookup"
-
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL 정의"
 
@@ -12692,9 +12417,6 @@ msgstr "vlan 태그 id %lu가 너무 큼 (최대값 4095)"
 
 msgid "vnc display"
 msgstr "vnc 화면"
-
-msgid "vnc display sharing policy is not supported with this QEMU"
-msgstr "vnc 화면 공유 정책은 QEMU로 지원되지 않습니다"
 
 msgid "vnc graphics are not supported with this QEMU"
 msgstr "vnc 그래픽은 QEMU로 지원되지 않습니다"
@@ -12738,9 +12460,6 @@ msgstr "vport 작동 '%s'은 host%d에 대해 지원되지 않습니다"
 msgid "warning"
 msgstr "경고"
 
-msgid "watch already tracked"
-msgstr "감시가 이미 추적중입니다"
-
 msgid "watchdog"
 msgstr "와치독"
 
@@ -12772,46 +12491,6 @@ msgstr "디스크 장치의 wwn"
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen 버스는 %s 입력 장치를 지원하지 않음  "
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen은 이전하는 동안의 대역폭 제한을 지원하지 않습니다"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen은 이전중에 도메인 이름 변경을 지원하지 않습니다"
-
-msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr "xenDaemonDomainMigrate: URI에서 호스트명이 지정되어야만 합니다"
-
-msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr "xenDaemonDomainMigrate: 잘못된 포트 번호"
-
-msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr "xenDaemonDomainMigrate: xenmigr:// 이전 만 Xen이 지원하고 있습니다"
-
-msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr "xenDaemonDomainMigrate: 지원하지 않는 플래그"
-
-msgid "xenDaemonDomainMigrate: xend cannot migrate paused domains"
-msgstr "xenDaemonDomainMigrate: xend은 일시정지된 도메인을 이전할 수 없습니다"
-
-msgid "xenDaemonGetAutostart failed to find this domain"
-msgstr "xenDaemonGetAutostart가 이 도메인을 찾는 데 실패했습니다"
-
-msgid "xenDaemonSetAutostart failed to find this domain"
-msgstr "xenDaemonSetAutostart가 이 도메인을 찾는 데 실패했습니다"
-
-msgid "xenXMConfigCacheRefresh: virHashAddEntry"
-msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
-
-#, c-format
-msgid "xend_post: error from xen daemon: %s"
-msgstr "xen_post: xen 데몬으로부터 오류: %s"
 
 msgid "xml data file to export from"
 msgstr "내보내기 할 xml 데이터 파일"

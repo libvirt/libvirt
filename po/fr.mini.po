@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-26 09:47-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: French <trans-fr@lists.fedoraproject.org>\n"
@@ -561,12 +561,6 @@ msgstr "Créer un pool"
 
 msgid "Create a vol."
 msgstr "Créer un volume."
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr ""
-"Le paramètre « poids » (%d) du planificateur à répartition de charge est "
-"hors limites (1-65535)"
 
 msgid "Define a domain."
 msgstr "Définir un domaine"
@@ -2499,9 +2493,6 @@ msgstr "informations du domaine en XML"
 msgid "domain information incomplete, missing HVM loader"
 msgstr "informations de domaine incomplètes, chargeur HVM manquant"
 
-msgid "domain information incomplete, missing domid"
-msgstr "informations de domaine incomplètes, domid manquant"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
 "informations de domaine incomplètes, noyau et chargeur de démarrage manquants"
@@ -2509,17 +2500,11 @@ msgstr ""
 msgid "domain information incomplete, missing name"
 msgstr "informations de domaine incomplètes, nom manquant"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "informations de domaine incomplètes, UUID manquant"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "informations de domaine incomplètes, vbd n'a pas de dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "informations de domaine incomplètes, vbd n'a pas de src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "informations de domaine incorrectes, domid non numérique"
 
 msgid "domain is not running"
 msgstr "le domaine n'est pas actif"
@@ -2582,20 +2567,11 @@ msgstr "chemin absolu attendu : %s"
 msgid "expecting an assignment"
 msgstr "affectation attendue"
 
-msgid "failed to connect to Xen Store"
-msgstr "Impossible de se connecter au magasin Xen"
-
 msgid "failed to connect to the hypervisor"
 msgstr "impossible de se connecter à l'hyperviseur"
 
-msgid "failed to connect to xend"
-msgstr "impossible de se connecter à Xen"
-
 msgid "failed to copy security label"
 msgstr "Impossible de copier le module de sécurité"
-
-msgid "failed to create a socket"
-msgstr "impossible de créer un socket"
 
 msgid "failed to generate XML"
 msgstr "impossible de créer XML"
@@ -2670,9 +2646,6 @@ msgstr "impossible d'ouvrir le fichier"
 msgid "failed to open the log file. check the log file path"
 msgstr "impossible d'ouvrir le fichier journal. Vérifiez son chemin d'accès"
 
-msgid "failed to parse Xend domain information"
-msgstr "impossible d'analyser les informations du domaine Xen"
-
 msgid "failed to parse configuration file"
 msgstr "impossible d'analyser le fichier de configuration"
 
@@ -2686,9 +2659,6 @@ msgstr "impossible de lire le fichier de configuration"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "impossible de lire le fichier de configuration %s"
-
-msgid "failed to read from Xen Daemon"
-msgstr "impossible de lire depuis le démon Xen"
 
 #, c-format
 msgid "failed to resize the RBD image '%s'"
@@ -3343,10 +3313,6 @@ msgstr "plus de mémoire disponible"
 msgid "parser error"
 msgstr "erreur de l'analyseur"
 
-#, c-format
-msgid "parsing uuid %s"
-msgstr "analyse de l'uuid %s"
-
 msgid "passthrough mode requires a character device type attribute"
 msgstr ""
 "le mode passthrough nécessite un attribut de type de périphérique de "
@@ -3591,9 +3557,6 @@ msgstr "trop de pilotes enregistrés"
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "trop de pilotes enregistrés dans %s"
-
-msgid "topology syntax error"
-msgstr "erreur de syntaxe dans la topologie"
 
 msgid "transient domains do not have any persistent config"
 msgstr "Les domaines temporaires n'ont pas de configuration persistante"
@@ -4227,31 +4190,3 @@ msgstr "où enregistrer les données"
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "le bus xen ne prend pas en charge le périphérique d'entrée %s"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate : Xen ne prend pas en charge la limitation de bande "
-"passante durant la migration"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate : Xen ne prend pas en charge le renommage de domaine "
-"durant la migration"
-
-msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr "xenDaemonDomainMigrate : un nom d'hôte doit être spécifié dans l'URI"
-
-msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr "xenDaemonDomainMigrate : numéro de port invalide"
-
-msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr ""
-"xenDaemonDomainMigrate : seules les migrations de xenmigr:// sont supportées "
-"par Xen"
-
-msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr "xenDaemonDomainMigrate : indicateur non supporté"

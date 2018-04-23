@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-03-05 01:32-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -64,10 +64,6 @@ msgid "  NAME\n"
 msgstr "  TÊN\n"
 
 #, c-format
-msgid "%d status from xen daemon: %s:%s"
-msgstr "trạng thái %d từ trình nền xen: %s:%s"
-
-#, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
@@ -118,10 +114,6 @@ msgstr "%s: ghi tập tin bản ghi thất bại: %s"
 #, c-format
 msgid "%s: initialization failed\n"
 msgstr "%s: khởi chạy thất bại\n"
-
-#, c-format
-msgid "%s: invalid path"
-msgstr "%s: đường dẫn không hợp lệ"
 
 #, c-format
 msgid ""
@@ -355,10 +347,6 @@ msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Không thể trích xuất phiên bản quản lý máy ảo %s đang chạy\n"
 
 #, c-format
-msgid "Cannot find QEMU binary %s"
-msgstr "Không thể tìm binary QEMU %s"
-
-#, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "Không thể tìm nhân UML %s"
 
@@ -368,9 +356,6 @@ msgstr "Không thể tìm mẫu CPU phù hợp cho dữ liệu đã cho"
 #, c-format
 msgid "Cannot find suitable emulator for %s"
 msgstr "Không thể tìm giả lập phù hợp cho %s"
-
-msgid "Cannot modify live config if domain is inactive"
-msgstr "Không thể thay đổi cấu hình sống nếu miền không hoạt động"
 
 msgid "Cannot open /dev/urandom"
 msgstr "Không thể mở /dev/urandom"
@@ -428,10 +413,6 @@ msgstr "Không thể hủy định miền tạm thời"
 
 msgid "Cannot unshare mount namespace"
 msgstr "Không thể tắt chia sẻ không gian tên lắp"
-
-#, c-format
-msgid "Cap %s too big for destination"
-msgstr "Mũ %s quá lớn cho chỗ ghi"
 
 msgid "Capabilities not available"
 msgstr "Các khả năng không sẵn có"
@@ -834,14 +815,6 @@ msgstr "Thời gian tạo"
 msgid "Creation of %s volumes is not supported"
 msgstr "Tạo các ổ %s không được hỗ trợ"
 
-#, c-format
-msgid "Credit scheduler cap parameter (%d) is out of range (0-65534)"
-msgstr "Thông số mũ của bộ lập lịch tin tưởng (%d) vượt miền (0-65534)"
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr "Thông số nặng của bộ lập lịch tin tưởng (%d) vượt miền (1-65535)"
-
 msgid "Data processed:"
 msgstr "Dữ liệu đã xử lý:"
 
@@ -1022,10 +995,6 @@ msgid "Domain %s is being shutdown\n"
 msgstr "Miền %s đang được tắt\n"
 
 #, c-format
-msgid "Domain %s isn't running."
-msgstr "Miền %s không đang chạy."
-
-#, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "Miền %s đã đánh dấu tự khởi động\n"
 
@@ -1181,21 +1150,12 @@ msgstr "Nhập tên người dùng cho %s"
 msgid "Enter username for %s [%s]"
 msgstr "Nhập tên người dùng cho %s [%s]"
 
-msgid "Error adding file to config cache"
-msgstr "Lỗi thêm tập tin vào đệm cấu hình"
-
-msgid "Error adding file to config list"
-msgstr "Lỗi thêm tập tin vào danh sách cấu hình"
-
 msgid "Error creating initial configuration"
 msgstr "Lỗi tạo cấu hình ban đầu"
 
 #, c-format
 msgid "Error from child process creating '%s'"
 msgstr "Lỗi từ tiến trình con tạo '%s'"
-
-msgid "Error looking up domain"
-msgstr "Lỗi tìm miền"
 
 #, c-format
 msgid "Error opening file %s"
@@ -1544,10 +1504,6 @@ msgid "Failed to create domain save file '%s'"
 msgstr "Thất bại khi tạo tập tin lưu miền '%s'"
 
 #, c-format
-msgid "Failed to create inactive domain %s"
-msgstr "Thất bại khi tạo miền không hoạt động %s"
-
-#, c-format
 msgid "Failed to create network from %s"
 msgstr "Thất bại khi tạo mạng từ %s"
 
@@ -1721,9 +1677,6 @@ msgstr "Không thể lấy số nhỏ %s"
 
 msgid "Failed to get UUID of created secret"
 msgstr "Thất bại khi lấy UUID của bí mật đã tạo"
-
-msgid "Failed to get a scheduler name"
-msgstr "Thất bại khi lấy một tên bộ lập lịch"
 
 #, c-format
 msgid "Failed to get block stats %s %s"
@@ -1932,9 +1885,6 @@ msgstr "Thất bại khi khởi động lại miền %s"
 
 msgid "Failed to reconnect to the hypervisor"
 msgstr "Thất bại khi kết nối lại tới trình quản lý máy ảo"
-
-msgid "Failed to redefine sexpr"
-msgstr "Thất bại khi định nghĩa lại sexpr"
 
 #, c-format
 msgid "Failed to refresh pool %s"
@@ -2431,9 +2381,6 @@ msgstr "Bộ lọc mạng không hợp lệ"
 #, c-format
 msgid "Invalid network filter: %s"
 msgstr "Bộ lọc mạng không hợp lệ: %s"
-
-msgid "Invalid parameter count"
-msgstr "Đếm tham số không hợp lệ"
 
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "Tham số không hợp lệ cho virXPathBoolean()"
@@ -3582,9 +3529,6 @@ msgstr "UUID:"
 msgid "Unable to add LPAR to the table"
 msgstr "Không thể thêm LPAR vào bảng"
 
-msgid "Unable to attach network devices without vlan"
-msgstr "Không thể gắn các thiết bị mạng mà không có vlan"
-
 msgid "Unable to become session leader"
 msgstr "Không thể trở thành lãnh đạo phiên làm việc"
 
@@ -3760,10 +3704,6 @@ msgstr "Chính sách tính năng CPU không mong đợi %d"
 msgid "Unexpected CPU match policy %d"
 msgstr "Chính sách khớp CPU không mong đợi %d"
 
-#, c-format
-msgid "Unexpected LXC URI path '%s', try lxc:///"
-msgstr "Đường dẫn URI của LXC không mong đợi '%s', thử lxc:///"
-
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "Bộ quản lý QEMU không mong đợi vẫn còn hoạt động trong khi xóa miền"
 
@@ -3816,9 +3756,6 @@ msgstr "Giao thức không rõ '%s'"
 #, c-format
 msgid "Unknown release: %s"
 msgstr "Phát hành không rõ: %s"
-
-msgid "Unknown scheduler"
-msgstr "Bộ lập lịch không rõ"
 
 #, c-format
 msgid "Unknown source mode '%s'"
@@ -3983,10 +3920,6 @@ msgid "Volume path '%s' did not start with parent pool source device name."
 msgstr "Đường dẫn ổ '%s' không bắt đầu với tên thiết bị nguồn pool cha."
 
 #, c-format
-msgid "Weight %s too big for destination"
-msgstr "sức nặng %s quá lớn cho chỗ ghi"
-
-#, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
@@ -4025,19 +3958,6 @@ msgstr "Nút XML không chứa chữ, mong đợi một giá trị xsd:dateTime"
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "Đánh giá XPath của đáp ứng cho cuộc gọi tới '%s' thất bại"
 
-msgid "Xend only supports modifying both live and persistent config"
-msgstr "Xen chỉ hỗ trợ cả cấu hình sống và cố định"
-
-#, c-format
-msgid "Xend returned HTTP Content-Length of %d, which exceeds maximum of %d"
-msgstr "Xen trả lại Độ dài Nội dung HTTP của %d vượt quá lớn nhất của %d"
-
-msgid "Xm driver only supports adding disk or network devices"
-msgstr "Trình điều khiển Xm chỉ hỗ trợ thêm đĩa hoặc thiết bị mạng"
-
-msgid "Xm driver only supports modifying persistent config"
-msgstr "Trình điều khiển Xm chỉ hỗ trợ thay đổi cấu hình cố định"
-
 msgid "You are trying to set a number of CPUs bigger than the max possible."
 msgstr "Bạn đang cố gắng đặt số CPU cao hơn lớn nhất có thể."
 
@@ -4075,16 +3995,6 @@ msgstr "hoạt động"
 msgid "adding %s device failed: %s"
 msgstr "thêm thiết bị %s thất bại: %s"
 
-msgid "adding watch @introduceDomain"
-msgstr "đang thêm watch @introduceDomain"
-
-msgid "adding watch @releaseDomain"
-msgstr "đang thêm watch @releaseDomain"
-
-#, c-format
-msgid "adding watch on %s"
-msgstr "thêm watch trên %s"
-
 msgid "affect next boot"
 msgstr "ảnh hưởng vào khởi động kế tiếp"
 
@@ -4094,10 +4004,6 @@ msgstr "ảnh hưởng vào miền đang chạy"
 #, c-format
 msgid "argument key '%s' is too short, missing type prefix"
 msgstr "khóa tham số '%s' quá ngắn, thiếu tiền tố kiểu"
-
-#, c-format
-msgid "argument out of range: %d"
-msgstr "tham số vượt miền: %d"
 
 msgid "arguments to echo"
 msgstr "các tham số tới echo"
@@ -4208,15 +4114,6 @@ msgstr "chỉ có thể xuyên qua các thư mục"
 #, c-format
 msgid "can't open session to the domain with id %d"
 msgstr "không thể mở phiên làm việc tới miền với id %d"
-
-msgid "can't retrieve config entry for domain to overwrite"
-msgstr "không thể lấy mục cấu hình cho miền để ghi đè"
-
-msgid "can't retrieve config file for domain"
-msgstr "không thể lấy tập tin cấu hình cho miền"
-
-msgid "can't retrieve config filename for domain to overwrite"
-msgstr "không thể lấy tên tập tin cấu hình cho miền để ghi đè"
 
 msgid "cannot acquire job mutex"
 msgstr "không thể lấy được mutex công việc"
@@ -4416,14 +4313,8 @@ msgstr "không thể tạo một uuid ngẫu nhiên cho instanceid"
 msgid "cannot get CPU affinity of process %d"
 msgstr "không thể lấy ái lực CPU của tiến trình %d"
 
-msgid "cannot get VCPUs info"
-msgstr "không thể lấy thông tin VCPU"
-
 msgid "cannot get current time"
 msgstr "không thể lấy giờ hiện tại"
-
-msgid "cannot get domain details"
-msgstr "không thể lấy các chi tiết miền"
 
 #, c-format
 msgid "cannot get file context of '%s'"
@@ -4437,9 +4328,6 @@ msgstr "không thể lấy cờ giao diện trên tap của macvtap"
 
 msgid "cannot get the host uuid"
 msgstr "không thể lấy uuid máy chủ"
-
-msgid "cannot get time of day"
-msgstr "không thể lấy giờ của ngày"
 
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "không thể lấy thay thế vCPU và thời gian pCPU"
@@ -4678,10 +4566,6 @@ msgid "cannot read domain image '%s'"
 msgstr "không thể đọc ảnh miền '%s'"
 
 #, c-format
-msgid "cannot read file %s"
-msgstr "không thể đọc tập tin %s"
-
-#, c-format
 msgid "cannot read header '%s'"
 msgstr "không thể đọc header '%s'"
 
@@ -4794,10 +4678,6 @@ msgstr "không thể thống kê '%s'"
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "không thể thống kê tập tin '%s'"
-
-#, c-format
-msgid "cannot stat: %s"
-msgstr "không thể thống kê: %s"
 
 #, c-format
 msgid "cannot statvfs path '%s'"
@@ -4924,9 +4804,6 @@ msgstr "lỗi cú pháp tập tin cấu hình"
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "lỗi cú pháp tập tin cấu hình: %s"
-
-msgid "conn, or private data is NULL"
-msgstr "conn, hoặc dữ liệu riêng là TRỐNG (NULL)"
 
 msgid "connect to the guest console"
 msgstr "kết nối tới console khách"
@@ -5079,9 +4956,6 @@ msgstr "không thể mở phiên VirtualBox với miền %s"
 #, c-format
 msgid "could not open input path '%s'"
 msgstr "không thể mở đường dẫn nhập '%s'"
-
-msgid "could not read CPU flags"
-msgstr "không thể đọc cờ CPU"
 
 #, c-format
 msgid "could not remove profile for '%s'"
@@ -5364,32 +5238,17 @@ msgstr "thông tin miền trong XML"
 msgid "domain information incomplete, missing HVM loader"
 msgstr "thông tin miền không hoàn thiện, thiếu bộ tải HVM"
 
-msgid "domain information incomplete, missing cpu_cap"
-msgstr "thông tin miền không hoàn thiện, thiếu cpu_cap"
-
-msgid "domain information incomplete, missing cpu_weight"
-msgstr "thông tin miền không hoàn thiện, thiếu cpu_weight"
-
-msgid "domain information incomplete, missing domid"
-msgstr "thông tin miền không đầy đủ, thiếu domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "thông tin miền không hoàn thiện, thiếu nhân & bộ khởi động"
 
 msgid "domain information incomplete, missing name"
 msgstr "thông tin miền không đầy đủ, thiếu tên"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "thông tin miền không đầy đủ, thiếu uuid"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "thông tin miền không đầy đủ, vbd không có dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "thông tin miền không đầy đủ, vbd không có src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "thông tin miền không chính xác domid không phải số"
 
 msgid "domain is already running"
 msgstr "miền đã đang chạy"
@@ -5412,12 +5271,6 @@ msgstr "tên miền hoặc uuid"
 msgid "domain name, id or uuid"
 msgstr "tên miền, id hoặc uuid"
 
-msgid "domain not active"
-msgstr "miền không hoạt động"
-
-msgid "domain not running"
-msgstr "miền không đang chạy"
-
 msgid "domain snapshot XML"
 msgstr "XML ảnh chụp miền"
 
@@ -5429,9 +5282,6 @@ msgstr "kiểu miền"
 
 msgid "domain vcpu counts"
 msgstr "số vcpu miền"
-
-msgid "domainBlockPeek is not supported for dom0"
-msgstr "domainBlockPeek không hỗ trợ cho dom0"
 
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare đã không đặt uri"
@@ -5577,31 +5427,15 @@ msgstr "thất bại khi đọc từ tập tin '%s'"
 msgid "failed to apply capabilities: %d"
 msgstr "thất bại khi áp dụng các khả năng: %d"
 
-msgid "failed to build sexpr"
-msgstr "thất bại khi dựng sexpr"
-
-msgid "failed to connect to Xen Store"
-msgstr "kết nối tới Xen Store thất bại"
-
 msgid "failed to connect to monitor socket"
 msgstr "thất bại khi kết nối tới socket bộ theo dõi"
 
 msgid "failed to connect to the hypervisor"
 msgstr "kết nối tới quản lý máy ảo thất bại"
 
-msgid "failed to connect to xend"
-msgstr "thất bại khi kết nối tới xend"
-
-msgid "failed to create a socket"
-msgstr "thất bại khi tạo một socket"
-
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "thất bại khi tạo thư mục '%s'"
-
-#, c-format
-msgid "failed to create link %s to %s"
-msgstr "thất bại khi tạo liên kết %s tới %s"
 
 #, c-format
 msgid "failed to create logfile %s"
@@ -5699,10 +5533,6 @@ msgid "failed to load module %s %s"
 msgstr "thất bại khi tải môđun %s %s"
 
 #, c-format
-msgid "failed to lseek or read from file: %s"
-msgstr "thất bại khi lseek hoặc đọc từ tập tin: %s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "thất bại khi đánh dấu network %s tự khởi động"
 
@@ -5724,15 +5554,8 @@ msgstr "mở tập tin cấu hình để đọc thất bại"
 msgid "failed to open file"
 msgstr "thất bại khi mở tập tin"
 
-#, c-format
-msgid "failed to open for reading: %s"
-msgstr "thất bại khi mở để đọc: %s"
-
 msgid "failed to open the log file. check the log file path"
 msgstr "mở tập tin bản ghi thất bại. kiểm tra đường dẫn tập tin bản ghi"
-
-msgid "failed to parse Xend domain information"
-msgstr "phân tích thông tin miền Xend thất bại"
 
 msgid "failed to parse configuration file"
 msgstr "phân tích tập tin cấu hình thất bại"
@@ -5754,9 +5577,6 @@ msgstr "đọc tập tin cấu hình thất bại"
 msgid "failed to read configuration file %s"
 msgstr "thất bại khi đọc tập tin cấu hình %s"
 
-msgid "failed to read from Xen Daemon"
-msgstr "thất bại khi đọc từ Trình nền Xen"
-
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "thất bại khi đọc độ dài dữ liệu meta trong '%s'"
@@ -5771,13 +5591,6 @@ msgstr "thất bại khi đọc header qemu"
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "thất bại khi đọc tập tin tạm được tạo với mẫu %s"
-
-#, c-format
-msgid "failed to remove link %s"
-msgstr "thất bại khi gỡ bỏ liên kết %s"
-
-msgid "failed to remove old domain from config map"
-msgstr "thất bại khi gỡ bỏ miền cũ từ bản đồ cấu hình"
 
 #, c-format
 msgid "failed to remove pool '%s'"
@@ -5841,9 +5654,6 @@ msgstr "thất bại khi ghi header tới tập tin lưu miền '%s'"
 msgid "failed to write the log file"
 msgstr "ghi tập tin bản ghi thất bại"
 
-msgid "failed to write to Xen Daemon"
-msgstr "thất bại khi ghi vào Trình nền Xen"
-
 #, c-format
 msgid "failed writing to file '%s'"
 msgstr "thất bại khi ghi vào tập tin '%s'"
@@ -5884,9 +5694,6 @@ msgstr "tập tin chứa các thuộc tính bí mật trong XML"
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "hệ thống tập tin không phải kiểu 'template' hoặc 'mount'"
 
-msgid "filesystem passthrough not supported by this QEMU"
-msgstr "xuyên qua hệ thống tập tin không được hỗ trợ bởi QEMU này"
-
 msgid "filter has no name"
 msgstr "bộ lọc không có tên"
 
@@ -5899,9 +5706,6 @@ msgstr "bộ lọc nên giới thiệu một vòng lặp"
 
 msgid "find potential storage pool sources"
 msgstr "tìm các nguồn pool lưu trữ tiềm năng"
-
-msgid "finding dom on config list"
-msgstr "đang tìm dom trên danh sách cấu hình"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "thông số cờ phải là VIR_MEMORY_VIRTUAL hoặc VIR_MEMORY_PHYSICAL"
@@ -5990,9 +5794,6 @@ msgstr ""
 "tên máy chủ trên chỗ ghi được giải quyết thành localhost, nhưng di trú yêu "
 "cầu một FQDN"
 
-msgid "hotplug of device type not supported"
-msgstr "cắm nóng của kiểu thiết bị không được hỗ trợ"
-
 msgid "hypervisor connection URI"
 msgstr "URI kết nối quản lý máy ảo"
 
@@ -6035,9 +5836,6 @@ msgstr "phản hồi balloon thông tin thiếu dữ liệu"
 
 msgid "info migration reply was missing return status"
 msgstr "phản hồi di trú thông tin thiếu trạng thái trả về"
-
-msgid "initializing inotify"
-msgstr "đang khởi chạy inotify"
 
 msgid "interface has no name"
 msgstr "giao diện không có tên"
@@ -6398,9 +6196,6 @@ msgstr "live"
 
 msgid "live migration"
 msgstr "di trú thời gian thực"
-
-msgid "looking up dom"
-msgstr "đang tra cứu dom"
 
 msgid "lxc state driver is not active"
 msgstr "trình điều khiển trạng thái lxc không hoạt động"
@@ -6814,10 +6609,6 @@ msgid "no PCI vendor ID supplied for '%s'"
 msgstr "không có ID nhà cung cấp PCI được cung cấp cho '%s'"
 
 #, c-format
-msgid "no QEMU URI path given, try %s"
-msgstr "không cho đường dẫn URI QEMU, thử %s"
-
-#, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
 msgstr "không có ID LUN của SCSI được cung cấp cho '%s'"
 
@@ -6864,11 +6655,6 @@ msgstr "không có ID sản phẩm USB được cung cấp cho '%s'"
 #, c-format
 msgid "no USB vendor ID supplied for '%s'"
 msgstr "không có ID nhà cung cấp USB cung cấp cho '%s'"
-
-msgid "no VirtualBox driver path specified (try vbox:///session)"
-msgstr ""
-"không có đường dẫn trình điều khiển VirtualBox được chỉ định (thử vbox:///"
-"session)"
 
 #, c-format
 msgid "no assigned pty for device %s"
@@ -6923,9 +6709,6 @@ msgstr "không có cấu hình miền"
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr "không có ảnh chụp miền khớp tên '%s'"
-
-msgid "no domain with matching id"
-msgstr "không có miền khớp id"
 
 #, c-format
 msgid "no domain with matching id %d"
@@ -7043,9 +6826,6 @@ msgstr "thông tin nút không thực hiện trên nền tảng này"
 msgid "node information"
 msgstr "thông tin nút"
 
-msgid "node information incomplete, missing scheduler name"
-msgstr "thông tin nút không hoàn thiện, thiếu tên bộ lập lịch"
-
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "các ncpu non-zero không khớp với các CPU NULL"
 
@@ -7069,9 +6849,6 @@ msgstr "nwfilter đang được dùng"
 
 msgid "offline"
 msgstr "ngoại tuyến"
-
-msgid "on_xend_start not present in sexpr"
-msgstr "on_xend_start không xuất hiện trong sexpr"
 
 msgid "only TCP listen is supported for chr device"
 msgstr "chỉ nghe TCP được hỗ trợ cho thiết bị ký tự"
@@ -7119,10 +6896,6 @@ msgstr "parameter=giá-trị"
 
 msgid "parser error"
 msgstr "lỗi phân tích"
-
-#, c-format
-msgid "parsing uuid %s"
-msgstr "đang phân tích uuid %s"
 
 #, c-format
 msgid "path '%s' is not absolute"
@@ -7262,9 +7035,6 @@ msgstr "đặt lại tên sang tên mới trong quá trình di trú (nếu hỗ 
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "kiểu xác thực %s đã yêu cầu bị từ chối"
-
-msgid "requested device does not exist"
-msgstr "thiết bị đã yêu cầu không tồn tại"
 
 #, c-format
 msgid ""
@@ -7410,9 +7180,6 @@ msgstr "cài đặt mật khẩu đĩa không được hỗ trợ"
 
 msgid "setting up HAL callbacks failed"
 msgstr "cài đặt callback HAL thất bại"
-
-msgid "sexpr2string failed"
-msgstr "sexpr2string thất bại"
 
 msgid "show inactive defined XML"
 msgstr "hiện XML đã định nghĩa không hoạt động"
@@ -7643,9 +7410,6 @@ msgstr "quá nhiều thống kê bộ nhớ được yêu cầu: %d > %d"
 msgid "too many secrets for qcow encryption"
 msgstr "quá nhiều bí mật cho mã hóa qcow"
 
-msgid "topology syntax error"
-msgstr "lỗi cú pháp tôpô"
-
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "phương thức vận tải unix, ssh và ext không được hỗ trợ trong Windows"
 
@@ -7707,10 +7471,6 @@ msgid "unable to close %s"
 msgstr "không thể đóng %s"
 
 #, c-format
-msgid "unable to connect to '%s:%s'"
-msgstr "không thể kết nối tới '%s:%s'"
-
-#, c-format
 msgid "unable to create hugepage path %s"
 msgstr "không thể tạo đường dẫn hugepage %s"
 
@@ -7720,9 +7480,6 @@ msgstr "không thể tạo rundir %s: %s"
 
 msgid "unable to create socket pair"
 msgstr "không thể tạo cặp socket"
-
-msgid "unable to determine original VLAN"
-msgstr "không thể quyết định VLAN gốc"
 
 #, c-format
 msgid "unable to execute QEMU command '%s'"
@@ -7742,9 +7499,6 @@ msgstr "không thể lấy PID %d ngữ cảnh bảo mật"
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr "không thể lấy ngữ cảnh tiến trình hiện tại '%s'"
-
-msgid "unable to get current time"
-msgstr "không thể lấy thời gian hiện tại"
 
 #, c-format
 msgid "unable to get tty attributes: %s"
@@ -7766,10 +7520,6 @@ msgstr "không thể phân tích địa chỉ mac '%s'"
 
 msgid "unable to register monitor events"
 msgstr "không thể đăng ký các sự kiện bộ theo dõi"
-
-#, c-format
-msgid "unable to resolve hostname '%s': %s"
-msgstr "không thể xử lý tên máy chủ '%s': %s"
 
 #, c-format
 msgid "unable to set ownership of '%s' to %d:%d"
@@ -7794,9 +7544,6 @@ msgstr "không thể đặt ngữ cảnh bảo mật socket '%s'"
 #, c-format
 msgid "unable to set tty attributes: %s"
 msgstr "không thể đặt các thuộc tính tty: %s"
-
-msgid "unable to store config file handle"
-msgstr "không thể lưu móc tập tin cấu hình"
 
 msgid "undefine VM on source"
 msgstr "huỷ định nghĩa máy ảo trên nguồn"
@@ -7838,10 +7585,6 @@ msgstr "đường dẫn URI UML '%s' không mong muốn, thử uml:///
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr "đường dẫn URI UML '%s' không mong muốn, thử uml:///system"
-
-#, c-format
-msgid "unexpected Xen URI path '%s', try xen:///"
-msgstr "đường dẫn URI Xen '%s' không mong muốn, thử xen:///"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -8024,9 +7767,6 @@ msgstr "giá trị %s không mong muốn cho on_poweroff"
 #, c-format
 msgid "unexpected value %s for on_reboot"
 msgstr "giá trị %s không mong muốn cho on_reboot"
-
-msgid "unexpected value from on_xend_start"
-msgstr "giá trị không mong muốn từ on_xend_start"
 
 #, c-format
 msgid "unexpected video model %d"
@@ -8378,9 +8118,6 @@ msgstr "kiểu đích console không hỗ trợ %s"
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "kiểu dữ liệu '%c' không hỗ trợ cho tham số '%s'"
 
-msgid "unsupported device type"
-msgstr "kiểu thiết bị không hỗ trợ"
-
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "tuyến đĩa không hỗ trợ '%s' với cài đặt thiết bị"
@@ -8440,10 +8177,6 @@ msgstr "tickpolicy pit không hỗ trợ '%s'"
 #, c-format
 msgid "unsupported protocol family '%s'"
 msgstr "họ giao thức không được hỗ trợ '%s'"
-
-#, c-format
-msgid "unsupported rtc tickpolicy '%s'"
-msgstr "tickpolicy rtc không hỗ trợ '%s'"
 
 #, c-format
 msgid "unsupported rtc timer tickpolicy '%s'"
@@ -8540,9 +8273,6 @@ msgstr "virGetUserID không có sẵn"
 msgid "virGetUserName is not available"
 msgstr "virGetUserName không có sẵn"
 
-msgid "virHashLookup"
-msgstr "virHashLookup"
-
 msgid "virInterfaceDefFormat missing interface name"
 msgstr "virInterfaceDefFormat thiếu tên giao diện"
 
@@ -8592,9 +8322,6 @@ msgstr "sử dụng ổ đã chỉ định, nhưng đường dẫn ổ bị thi�
 msgid "warning"
 msgstr "cảnh báo"
 
-msgid "watch already tracked"
-msgstr "watch đã theo dõi"
-
 msgid "watchdog must contain model name"
 msgstr "watchdog phải chứa tên mẫu"
 
@@ -8617,46 +8344,6 @@ msgstr "ghi: %s: thất bại khi ghi tập tin tạm: %s"
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "tuyến xen không hỗ trợ thiết bị nhập %s"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen không hỗ trợ giới hạn băng thông trong khi di trú"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen không hỗ trợ đặt tên lại miền trong khi di trú"
-
-msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr "xenDaemonDomainMigrate: một tên máy chủ phải được chỉ định trong URI"
-
-msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr "xenDaemonDomainMigrate: số cổng không hợp lệ"
-
-msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr "xenDaemonDomainMigrate: chỉ các di trú xenmigr:// được hỗ trợ bởi Xen"
-
-msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr "xenDaemonDomainMigrate: cờ không hỗ trợ"
-
-msgid "xenDaemonDomainMigrate: xend cannot migrate paused domains"
-msgstr "xenDaemonDomainMigrate: xend không thể di trú các miền đã dừng"
-
-msgid "xenDaemonGetAutostart failed to find this domain"
-msgstr "xenDaemonGetAutostart thất bại khi tìm miền này"
-
-msgid "xenDaemonSetAutostart failed to find this domain"
-msgstr "xenDaemonSetAutostart thất bại khi tìm miền này"
-
-msgid "xenXMConfigCacheRefresh: virHashAddEntry"
-msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
-
-#, c-format
-msgid "xend_post: error from xen daemon: %s"
-msgstr "xend_post: lỗi từ trình nền xen: %s"
 
 msgid "xml data file to export from"
 msgstr "tập tin dữ liệu xml để xuất từ"

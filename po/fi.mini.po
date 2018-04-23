@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2017-03-26 10:24-0400\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish (http://www.transifex.com/projects/p/fedora/language/"
@@ -766,20 +766,11 @@ msgstr "toimialueen tiedot"
 msgid "domain information in XML"
 msgstr "toimialuetiedot XML-muodossa"
 
-msgid "domain information incomplete, missing domid"
-msgstr "toimialuetieto on epätäydellistä, domid puuttuu"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "toimialuetieto on epätäydellistä, ydin ja käynnistyslatain puuttuu"
 
 msgid "domain information incomplete, missing name"
 msgstr "toimialuetiedot ovat epätäydellisiä, nimi puuttuu"
-
-msgid "domain information incomplete, missing uuid"
-msgstr "toimialuetieto on epätäydellistä, uuid puuttuu"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "toimialuetieto on virheellistä, domid ei ole numeerinen"
 
 msgid "domain is not running"
 msgstr "toimialue ei ole käynnissä"
@@ -823,9 +814,6 @@ msgstr "odotetaan arvoa"
 
 msgid "expecting an assignment"
 msgstr "odotetaan sijoitusta"
-
-msgid "failed to connect to Xen Store"
-msgstr "yhteydenotto Xen Storeen ei onnistunut"
 
 msgid "failed to connect to the hypervisor"
 msgstr "hypervisoriin ei saatu yhteyttä"
@@ -882,9 +870,6 @@ msgstr "ei voitu avata tiedostoa"
 msgid "failed to open the log file. check the log file path"
 msgstr "lokitiedoston avaaminen epäonnistui, tarkista polku"
 
-msgid "failed to parse Xend domain information"
-msgstr "Xend-toimialueen tietojen jäsentäminen epäonnistui"
-
 msgid "failed to parse configuration file"
 msgstr "asetustiedoston jäsentäminen epäonnistui"
 
@@ -898,9 +883,6 @@ msgstr "asetustiedoston lukeminen epäonnistui"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "asetustiedoston %s lukeminen epäonnistui"
-
-msgid "failed to read from Xen Daemon"
-msgstr "Luku Xen Daemonista epäonnistui"
 
 msgid "failed to save content"
 msgstr "sisältöä ei voitu tallentaa"
@@ -1211,9 +1193,6 @@ msgstr "liian monta rekisteröityä ajuria"
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "liian monta rekisteröityä ajuria kohteessa %s"
-
-msgid "topology syntax error"
-msgstr "topologiasyntaksivirhe"
 
 msgid "tty console"
 msgstr "tty-konsoli"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-03-03 07:52-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (http://www.transifex.com/projects/p/fedora/language/"
@@ -76,10 +76,6 @@ msgstr "%s: %d: неуспело заузимање %lu бајтова"
 #, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "%s: неуспело уписивање датотеке дневника: %s"
-
-#, c-format
-msgid "%s: invalid path"
-msgstr "%s: неисправна путања"
 
 msgid "'info blockstats' not supported by this qemu"
 msgstr "овај qemu не подржава „info blockstats“"
@@ -194,10 +190,6 @@ msgstr "Прављење складишта."
 
 msgid "Create a vol."
 msgstr "Прављење диска."
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr "Параметар значаја планера кредита (%d) је ван опсега (1-65535)"
 
 msgid "Define a domain."
 msgstr "Дефинисање домена."
@@ -413,9 +405,6 @@ msgstr "Неуспело рачвање као системска услуга: 
 
 msgid "Failed to generate UUID"
 msgstr "Неуспешно прављење UUID"
-
-msgid "Failed to get a scheduler name"
-msgstr "Неуспело прибављање назива планера"
 
 #, c-format
 msgid "Failed to get block stats %s %s"
@@ -900,9 +889,6 @@ msgstr "Укидање дефиниције подешавања за неакт
 msgid "Unknown"
 msgstr "Непознато"
 
-msgid "Unknown scheduler"
-msgstr "Непознат планер"
-
 msgid "Used memory:"
 msgstr "Употребљена меморија:"
 
@@ -981,16 +967,6 @@ msgstr "изгради складиште"
 
 msgid "building"
 msgstr "изградња"
-
-msgid "can't retrieve config entry for domain to overwrite"
-msgstr "не могу да добијем ставку подешавања како би је домен пребрисао"
-
-msgid "can't retrieve config file for domain"
-msgstr "не могу да добијем датотеку подешавања за домен"
-
-msgid "can't retrieve config filename for domain to overwrite"
-msgstr ""
-"не могу да добијем назив датотеке подешавања како би је домен пребрисао"
 
 msgid "cannot attach device on inactive domain"
 msgstr "не могу да прикачим уређај на неактивни домен"
@@ -1208,32 +1184,17 @@ msgstr "подаци о домену у XML-у"
 msgid "domain information incomplete, missing HVM loader"
 msgstr "непотпуни подаци о домену, недостаје HVM програм за учитавање"
 
-msgid "domain information incomplete, missing cpu_cap"
-msgstr "непотпуни подаци о домену, недостаје cpu_cap"
-
-msgid "domain information incomplete, missing cpu_weight"
-msgstr "непотпуни подаци о домену, недостаје cpu_weight"
-
-msgid "domain information incomplete, missing domid"
-msgstr "непотпуни подаци о домену, недостаје domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "непотпуни подаци о домену, недостаје језгро и покретачки програм"
 
 msgid "domain information incomplete, missing name"
 msgstr "непотпуни подаци о домену, недостаје име"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "непотпуни подаци о домену, недостаје uuid"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "непотпуни подаци о домену, vbd нема dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "непотпуни подаци о домену, vbd нема src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "подаци о домену су нетачни или domid није бројчан"
 
 msgid "domain is not in running state"
 msgstr "домен није у радном стању"
@@ -1252,9 +1213,6 @@ msgstr "име домена, id или uuid"
 
 msgid "domain state"
 msgstr "стање домена"
-
-msgid "domainBlockPeek is not supported for dom0"
-msgstr "domainBlockPeek није подржан за dom0"
 
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare није поставио ури"
@@ -1293,17 +1251,8 @@ msgstr "очекујем вредност"
 msgid "expecting an assignment"
 msgstr "очекујем доделу"
 
-msgid "failed to connect to Xen Store"
-msgstr "неуспело повезивање са Xen складиштем"
-
 msgid "failed to connect to the hypervisor"
 msgstr "неуспело повезивање са хипервизором"
-
-msgid "failed to connect to xend"
-msgstr "нисам успео да се повежем са xend"
-
-msgid "failed to create a socket"
-msgstr "нисам успео да направим прикључак"
 
 msgid "failed to generate XML"
 msgstr "неуспело прављење XML-а"
@@ -1383,9 +1332,6 @@ msgid "failed to open the log file. check the log file path"
 msgstr ""
 "неуспело отварање датотеке дневника. проверите путању до датотеке дневника"
 
-msgid "failed to parse Xend domain information"
-msgstr "неуспело тумачење података о Xend домену"
-
 msgid "failed to parse configuration file"
 msgstr "неуспело тумачење датотеке подешавања"
 
@@ -1403,14 +1349,8 @@ msgstr "неуспело читање датотеке подешавања"
 msgid "failed to read configuration file %s"
 msgstr "неуспело читање %s датотеке подешавања"
 
-msgid "failed to read from Xen Daemon"
-msgstr "неуспело читање из Xen демона"
-
 msgid "failed to read qemu header"
 msgstr "неуспело читање qemu заглавља"
-
-msgid "failed to remove old domain from config map"
-msgstr "неуспело брисање старог домена из мапе подешавања"
 
 msgid "failed to resume domain"
 msgstr "неуспело настављање домена"
@@ -1764,9 +1704,6 @@ msgstr "није пронађено корисничко име клијента
 msgid "no config file for %s"
 msgstr "не постоји датотека подешавања за %s"
 
-msgid "no domain with matching id"
-msgstr "нема домена који се поклапају са id-ом"
-
 #, c-format
 msgid "no domain with matching id %d"
 msgstr "нема домена који се поклапа са id %d"
@@ -1792,9 +1729,6 @@ msgstr "нема исправне везе"
 
 msgid "node information"
 msgstr "подаци о чвору"
-
-msgid "node information incomplete, missing scheduler name"
-msgstr "непотпуни подаци о чвору, недостаје назив планера"
 
 msgid "nparams too large"
 msgstr "nparams превелики"
@@ -1906,9 +1840,6 @@ msgstr "сачувај стање домена у датотеку"
 msgid "script used to bridge network interface"
 msgstr "скрипта употребљена за премошћавање мрежне спреге"
 
-msgid "sexpr2string failed"
-msgstr "неуспела sexpr2string радња"
-
 msgid "show version"
 msgstr "прикажи верзију"
 
@@ -2013,9 +1944,6 @@ msgstr "регистровано је превише управљачких пр
 msgid "too many drivers registered in %s"
 msgstr "регистровано је превише управљачких програма у %s"
 
-msgid "topology syntax error"
-msgstr "синтаксна грешка топологије"
-
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "Windows не подржава unix, ssh i ext начине преноса"
 
@@ -2027,12 +1955,6 @@ msgstr "врста складишта"
 
 msgid "unable to generate uuid"
 msgstr "не могу да генеришем uuid"
-
-msgid "unable to get current time"
-msgstr "неуспело добијање тренутног времена"
-
-msgid "unable to store config file handle"
-msgstr "неуспело руковање складиштењем датотеке подешавања"
 
 msgid "undefine an inactive pool"
 msgstr "укини дефиницију неактивног складишта"
@@ -2047,9 +1969,6 @@ msgstr "неочекивана врста домена %d"
 
 msgid "unexpected pool type"
 msgstr "неочекивана врста складишта"
-
-msgid "unexpected value from on_xend_start"
-msgstr "неочекивана вредност од on_xend_start"
 
 msgid "unknown OS type"
 msgstr "непозната врста ОС-а"
@@ -2134,9 +2053,6 @@ msgstr "vcpu број"
 msgid "version mismatch (actual %x, expected %x)"
 msgstr "неусаглашеност верзије (добијено %x, очекивано %x)"
 
-msgid "virHashLookup"
-msgstr "virHashLookup"
-
 msgid "vnc display"
 msgstr "vnc приказ"
 
@@ -2161,42 +2077,3 @@ msgstr "где сачувати податке"
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen магистрала не подржава %s уређај за унос"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen не подржава ограничавање пропусног опсега "
-"приликом премештања"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen не подржава промену имена домена приликом "
-"премештања"
-
-msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr "xenDaemonDomainMigrate: име домаћина мора бити наведено у УРИ-у"
-
-msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr "xenDaemonDomainMigrate: неисправан број порта"
-
-msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr "xenDaemonDomainMigrate: Xen подржава само xenmigr:// премештања"
-
-msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr "xenDaemonDomainMigrate: заставица није подржана"
-
-msgid "xenDaemonGetAutostart failed to find this domain"
-msgstr "xenDaemonGetAutostart није успео да пронађе овај домен"
-
-msgid "xenDaemonSetAutostart failed to find this domain"
-msgstr "xenDaemonSetAutostart није успео да пронађе овај домен"
-
-msgid "xenXMConfigCacheRefresh: virHashAddEntry"
-msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
-
-#, c-format
-msgid "xend_post: error from xen daemon: %s"
-msgstr "xend_post: грешка од xen демона: %s"

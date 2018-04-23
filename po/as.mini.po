@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-26 06:48-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -305,10 +305,6 @@ msgid "%6s: Checking %-60s: "
 msgstr "%6s: নিৰীক্ষণ কৰা হৈছে %-60s: "
 
 #, c-format
-msgid "%d status from xen daemon: %s:%s"
-msgstr "%d অৱস্থা xen ডেমনৰ পৰা: %s:%s"
-
-#, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
@@ -479,10 +475,6 @@ msgid "%s: initialization failed\n"
 msgstr "%s: আৰম্ভ কৰা ব্যৰ্থ হল\n"
 
 #, c-format
-msgid "%s: invalid path"
-msgstr "%s: অবৈধ পথ"
-
-#, c-format
 msgid "%s: malformed fd %s"
 msgstr "%s: ক্ষতিগ্ৰস্থ fd %s"
 
@@ -605,9 +597,6 @@ msgstr "'info blockstats' আদেশ এই qemu দ্বাৰা সমৰ�
 
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus ৰ উত্তৰত 'logical-id' নাই"
-
-msgid "'multifunction=on' is not supported with this QEMU binary"
-msgstr "এই QEMU লাইব্ৰেৰীৰ সৈতে 'multifunction=on' সমৰ্থিত নহয়"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus ৰ উত্তৰত 'online' নাই"
@@ -1498,10 +1487,6 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08x ৰ সৈতে CPU আৰ্হি পোৱা নাযায়"
 
 #, c-format
-msgid "Cannot find QEMU binary %s"
-msgstr "QEMU বাইনৰি %s অনুসন্ধান কৰোঁতে ব্যৰ্থ"
-
-#, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "UML কাৰ্ণেল %s বিচাৰিবলৈ ব্যৰ্থ"
 
@@ -1546,9 +1531,6 @@ msgid ""
 msgstr ""
 "সমাধান কৰিব নোৱাৰা চলকসমূহ অথবা উপলব্ধ নথকা তালিকা উপাদানসমূহৰ বাবে ফিল্টাৰ আৰম্ভ "
 "কৰিব পৰা নগল: %s"
-
-msgid "Cannot modify live config if domain is inactive"
-msgstr "ডোমেইন নিষ্ক্ৰিয় থাকিলে লাইভ বিন্যাস পৰিবৰ্তন কৰা সম্ভৱ নহয়"
 
 #, c-format
 msgid "Cannot mount filesystem type %s"
@@ -1737,9 +1719,6 @@ msgstr "এই প্লেটফৰ্মত আন্তঃপৃষ্ঠ '%s
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "এটা নিয়ন্ত্ৰণ কৰিব পৰা TTY নথকাকৈ ভাৱবিনিময়ী কনচৌল চলাব নোৱাৰি"
 
-msgid "Cannot save host domain"
-msgstr "হস্ট ডমেইন সংৰক্ষণ কৰিব নোৱাৰি"
-
 msgid "Cannot set a base label with AppArmour"
 msgstr "AppArmour ৰ সৈতে এটা ভিত্তি লেবেল সংহতি কৰিব নোৱাৰি"
 
@@ -1870,10 +1849,6 @@ msgstr "সমান্তৰাল/ক্ৰমিক ডিভাইচসম�
 
 msgid "Cannot write data"
 msgstr "তথ্য লিখিব নোৱাৰি"
-
-#, c-format
-msgid "Cap %s too big for destination"
-msgstr "গন্তব্যৰ ক্ষেত্ৰত Cap %s অত্যাধিক ডাঙৰ"
 
 msgid "Capabilities not available"
 msgstr "ক্ষমতাসমূহ উপলব্ধ নহয়"
@@ -2973,15 +2948,6 @@ msgstr "সৃষ্টি কৰাৰ সময়"
 msgid "Creation of %s volumes is not supported"
 msgstr "%s ভলিউমসমূহৰ সৃষ্টি সমৰ্থিত নহয়"
 
-#, c-format
-msgid "Credit scheduler cap parameter (%d) is out of range (0-65534)"
-msgstr "ক্ৰেডিট সূচক কেপ প্ৰাচল (%d) বিস্তাৰ (0-65534) ৰ বাহিৰ"
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr ""
-"ক্ৰেডিট স্কেডিউলাৰৰ weight স্থিতিমাপৰ (%d) মান নিৰ্দিষ্ট সীমা বহিৰ্ভূত (1 65535)"
-
 msgid "Current:"
 msgstr "বৰ্তমান:"
 
@@ -3128,10 +3094,6 @@ msgstr "ডিভাইচ %s ইতিমধ্যে অস্তিত্ব�
 #, c-format
 msgid "Device %s detached\n"
 msgstr "ডিভাইচ %s অসংলগ্ন কৰা হল\n"
-
-#, c-format
-msgid "Device %s has been assigned to guest %d"
-msgstr "ডিভাইচ %s ক অতিথি %d লে ধাৰ্য্য কৰা হৈছে"
 
 #, c-format
 msgid "Device %s in use"
@@ -3305,10 +3267,6 @@ msgid "Domain %s destroyed\n"
 msgstr "ডোমেইন %s ধ্বংশ কৰা হৈছে\n"
 
 #, c-format
-msgid "Domain %s did not start"
-msgstr "ডমেইন %s আৰম্ভ নহল"
-
-#, c-format
 msgid "Domain %s didn't show up"
 msgstr "ডমেইন %s দেখা পোৱা নগল"
 
@@ -3321,20 +3279,12 @@ msgid "Domain %s has no manage save image; removal skipped"
 msgstr "ডমেইন %s ৰ কোনো ব্যৱস্থাপনা সংৰক্ষণ ছবি নাই; আতৰোৱা বাদ দিয়া হল"
 
 #, c-format
-msgid "Domain %s is already running"
-msgstr "ডমেইন %s ইতিমধ্যে চলি আছে"
-
-#, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "ডোমেইন %s পুনঃ বুট কৰা হৈছে\n"
 
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "ডোমেইন %s বন্ধ কৰা হৈছে\n"
-
-#, c-format
-msgid "Domain %s isn't running."
-msgstr "ডোমেইন %s চলা নাই।"
 
 #, c-format
 msgid "Domain %s marked as autostarted\n"
@@ -3627,12 +3577,6 @@ msgstr "%s ৰ বাবে ব্যৱহাৰকৰ্তাৰ নাম �
 msgid "Enter username for %s [%s]"
 msgstr "%s [%s] ৰ বাবে ব্যৱহাৰকৰ্তাৰ নাম লিখক"
 
-msgid "Error adding file to config cache"
-msgstr "নে'টৱৰ্কৰ বিন্যাস '%s' বিশ্লষণ কৰোঁতে সমস্যা : %s"
-
-msgid "Error adding file to config list"
-msgstr "নে'টৱৰ্কৰ বিন্যাস '%s' বিশ্লষণ কৰোঁতে সমস্যা : %s"
-
 msgid "Error creating initial configuration"
 msgstr "প্ৰাৰম্ভিক বিন্যাস নিৰ্মাণ কৰিবলৈ ব্যৰ্থ"
 
@@ -3647,9 +3591,6 @@ msgstr "'%s' খোলোতে সন্তান প্ৰক্ৰিয়া�
 #, c-format
 msgid "Error getting physical function's '%s' virtual_functions"
 msgstr "ভৌতিক ফলনৰ '%s' virtual_functions প্ৰাপ্ত কৰোতে ত্ৰুটি"
-
-msgid "Error looking up domain"
-msgstr "ডোমেইন বিতৰণ কৰা হৈছে"
 
 msgid "Error notify callback must be supplied"
 msgstr "ত্ৰুটি অধিসূচনা কলবেক প্ৰদান কৰিব লাগিব"
@@ -4236,10 +4177,6 @@ msgstr "ফাইল '%s' সৃষ্টি কৰিবলে ব্যৰ্�
 msgid "Failed to create filesystem probe for device %s"
 msgstr "ডিভাইচ %s ৰ বাবে ফাইলচিস্টেম প্ৰৌব সৃষ্টি কৰিবলে ব্যৰ্থ"
 
-#, c-format
-msgid "Failed to create inactive domain %s"
-msgstr "নিষ্ক্ৰিয় ডমেইন %s সৃষ্টি কৰিবলে ব্যৰ্থ"
-
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr "xml দস্তাবেজত ব্ৰিজ ন'ডৰ অন্তৰ্গত আন্তঃপৃষ্ঠ ন'ড সৃষ্টি কৰিবলে ব্যৰ্থ"
 
@@ -4503,9 +4440,6 @@ msgstr "নিৰ্মিত গোপনীয় তথ্যেৰ UUID প্�
 
 msgid "Failed to get VNC port. Is this domain using VNC?"
 msgstr "VNC পোৰ্ট প্ৰাপ্ত কৰিবলে ব্যৰ্থ। এই ডমেইনে VNC ব্যৱহাৰ কৰি আছে নে?"
-
-msgid "Failed to get a scheduler name"
-msgstr "নাম"
 
 #, c-format
 msgid "Failed to get block stats %s %s"
@@ -4968,10 +4902,6 @@ msgid "Failed to read PCI config space for %s"
 msgstr "'%s' ৰ বাবে PCI বিন্যাস স্থান পঢ়িবলৈ ব্যৰ্থি"
 
 #, c-format
-msgid "Failed to read any block statistics for domain %d"
-msgstr "ডমেইন %d ৰ বাবে কোনো খণ্ড পৰিসংখ্যা পঢ়িবলে ব্যৰ্থ"
-
-#, c-format
 msgid "Failed to read file '%s'"
 msgstr "'%s' ফাইল খুলিবলৈ কৰোঁতে ব্যৰ্থ"
 
@@ -5006,9 +4936,6 @@ msgstr "হাইপাৰ্ভাইছৰৰ সৈতে পুনৰায় 
 
 msgid "Failed to recv file descriptor"
 msgstr "ফাইল বিৱৰক গ্ৰহণ কৰিবলে ব্যৰ্থ"
-
-msgid "Failed to redefine sexpr"
-msgstr "নে'টৱৰ্ক %s ৰ সংজ্ঞা আঁতৰাওঁতে ব্যৰ্থ"
 
 #, c-format
 msgid "Failed to refresh pool %s"
@@ -5540,10 +5467,6 @@ msgstr "'%s' ত অবৈধ ডিভাইচ সংযোগ '%s' পোৱ�
 msgid "Found unexpected controller model '%s' for disk '%s'"
 msgstr "ডিস্ক '%s' ৰ বাবে অপ্ৰত্যাশিত নিয়ন্ত্ৰক আৰ্হি '%s' পোৱা গল"
 
-#, c-format
-msgid "Frontend block device not connected for domain %d"
-msgstr "ডমেইন %d ৰ বাবে ফ্ৰণ্টএণ্ড খণ্ড ডিভাইচ সংযুক্ত নহয়"
-
 msgid "Fully-qualified path of block device"
 msgstr "খণ্ড ডিভাইচৰ সম্পূৰ্ণ-অৰ্হতাসম্পন্ন পথ"
 
@@ -5733,9 +5656,6 @@ msgstr "HTTP প্ৰতিক্ৰিয়া ক'ড %d আপল'ডৰ ব�
 
 msgid "Handshake is already complete"
 msgstr "হেণ্ডছেইক ইতিমধ্যে সম্পূৰ্ণ"
-
-msgid "Hash operation not allowed during iteration"
-msgstr "হেষ কাৰ্য্য ইটিৰেষণৰ সময়ত অনুমোদিত নহয়"
 
 #, c-format
 msgid "Hook for %s, failed to find operation #%d"
@@ -6344,9 +6264,6 @@ msgstr ""
 msgid "Invalid parameter"
 msgstr "অবৈধ প্ৰাচল"
 
-msgid "Invalid parameter count"
-msgstr "অবৈধ তৰ্ক"
-
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "virXPathBoolean() লৈ অবৈধ স্থিতিমাপ"
 
@@ -6708,12 +6625,6 @@ msgstr ""
 "ক্ষতিগ্ৰস্থ 'uri_aliases' সংৰূপ প্ৰবিষ্টি '%s', আশা কৰা হৈছিল 'alias=uri://host/"
 "path'"
 
-msgid "Malformed QEMU device list string, missing '='"
-msgstr "ক্ষতিগ্ৰস্থ QEMU ডিভাইচ তালিকা স্ট্ৰিং, '=' সন্ধানহীন"
-
-msgid "Malformed QEMU device list string, missing quote"
-msgstr "ক্ষতিগ্ৰস্থ QEMU ডিভাইচ তালিকা স্ট্ৰিং, কৌট সন্ধানহীন"
-
 #, c-format
 msgid "Malformed TLS whitelist regular expression '%s'"
 msgstr "ক্ষতিগ্ৰস্থ TLS whitelist সাধাৰণ অভিব্যক্তি '%s'"
@@ -6789,10 +6700,6 @@ msgstr "সৰ্বোচ্চ মেমৰি:"
 
 msgid "Maximum CPUs greater than specified machine type limit"
 msgstr "ধাৰ্য্যত মেচিন ধৰণ সীমাতকৈ সৰ্বাধিক CPUs অধিক"
-
-#, c-format
-msgid "Memory %lu too small, min %lu"
-msgstr "মেমৰি %lu অত্যাধিক সৰু, নূন্যতম %lu"
 
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
@@ -7375,9 +7282,6 @@ msgstr "নাম বা সেৱা অজ্ঞাত"
 msgid "Name:"
 msgstr "নাম:"
 
-msgid "Named device aliases are not supported"
-msgstr "নাম থকা ডিভাইচ এলিয়াচসমূহ সমৰ্থিত নহয়"
-
 #, c-format
 msgid "Network %s XML configuration edited.\n"
 msgstr "নেটৱৰ্ক %s XML সংৰূপ সম্পাদন কৰা হল।\n"
@@ -7884,10 +7788,6 @@ msgstr "কেৱল IPv4 অথবা IPv6 ঠিকনাসমূহ iptables
 msgid "Only PCI device addresses with function=0 are supported"
 msgstr "অকল function=0 সহ PCI ডিভাইচসমূহ সমৰ্থিত হ'ব"
 
-msgid ""
-"Only PCI device addresses with function=0 are supported with this QEMU binary"
-msgstr "এই QEMU বাইনাৰিৰৰ সৈতে কেৱল ফলন=0 ৰ সৈতে PCI ডিভাইচ ঠিকনাসমূহ সমৰ্থিত"
-
 msgid "Only PTY console types are supported"
 msgstr "কেৱল PTY কনচৌল ধৰণসমূহ সমৰ্থিত"
 
@@ -8368,9 +8268,6 @@ msgstr "QEMU মনিটৰ কমান্ড"
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU বাইনাৰি %s এক্সিকিউটেবুল নহয়"
-
-msgid "QEMU does not support seccomp sandboxes"
-msgstr "QEMU এ seccomp sandboxes সমৰ্থন নকৰে"
 
 msgid "QEMU guest agent is not available due to an error"
 msgstr "QEMU অতিথি সহায়ক এটা ত্ৰুটিৰ বাবে উপলব্ধ নহয়"
@@ -8930,9 +8827,6 @@ msgstr "নেটৱৰ্ক ধৰণৰ ডিস্কৰ বাবে ড�
 
 msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
 msgstr "ডিস্ক 'requisite' সংহতি কৰাটো কেৱল cdrom অথবা floppy ৰ বাবে অনুমোদিত"
-
-msgid "Setting of link state is not supported by this qemu"
-msgstr "এই qemu দ্বাৰা সংযোগ অৱস্থা সংহতি কৰাটো সমৰ্থিত নহয়"
 
 #, c-format
 msgid ""
@@ -9980,12 +9874,6 @@ msgid "Transition started"
 msgstr "পৰিবৰ্তন আৰম্ভ হল"
 
 #, c-format
-msgid ""
-"Transport '%s' in URI scheme is not supported, try again without the "
-"transport part"
-msgstr "URl আঁচনিত পৰিবহন '%s' সমৰ্থিত নহয়, পৰিবহন অংশ নথকাকৈ পুনৰ চেষ্টা কৰক"
-
-#, c-format
 msgid "Transport error during %s: %s (%d)"
 msgstr "পৰিবহন ত্ৰুটি %s: %s (%d)"
 
@@ -10164,9 +10052,6 @@ msgstr "ফাইল %s ক loop ডিভাইচ হিচাপে সংল
 #, c-format
 msgid "Unable to attach %s to loop device"
 msgstr "%s ক loop ডিভাইচত সংলগ্ন কৰিবলে অক্ষম"
-
-msgid "Unable to attach network devices without vlan"
-msgstr "vlan নোহোৱা নে'টৱৰ্ক ডিভাইচ সংযুক্ত কৰিবলৈ ব্যৰ্থ"
 
 msgid "Unable to become session leader"
 msgstr "%s বিনেস ফাইল পঢ়োঁতে বিফল"
@@ -10692,14 +10577,6 @@ msgstr "mutex আৰম্ভ কৰিবলে অক্ষম"
 msgid "Unable to invoke fstrim"
 msgstr "fstrim আৱাহন কৰিবলে অক্ষম"
 
-#, c-format
-msgid "Unable to issue hypervisor ioctl %d"
-msgstr "হাইপাৰভাইছৰ ioctl %d প্ৰেৰণ কৰিবলে অক্ষম"
-
-#, c-format
-msgid "Unable to issue hypervisor ioctl %lu"
-msgstr "হাইপাৰভাইছৰ ioctl %lu প্ৰেৰণ কৰিবলে অক্ষম"
-
 msgid "Unable to join domain namespace"
 msgstr "ডমেইন নেইমস্পেইচত অংশগ্ৰহণ কৰিবলে অক্ষম"
 
@@ -10708,10 +10585,6 @@ msgstr "চকেটত শুনিবলে অক্ষম"
 
 msgid "Unable to load certificate"
 msgstr "প্ৰমাণপত্ৰ ল'ড কৰিবলে অক্ষম"
-
-#, c-format
-msgid "Unable to lock %zu bytes of memory"
-msgstr "%zu বাইট মেমৰি লক কৰিবলে অক্ষম"
 
 msgid "Unable to lookup SELinux process context"
 msgstr "SELinux প্ৰক্ৰিয়া পৰিপ্ৰেক্ষতিত চাবলে অক্ষম"
@@ -11122,9 +10995,6 @@ msgstr "বান্ধনী উৎস %s stat কৰিবলে অক্ষ�
 msgid "Unable to stat bind target %s"
 msgstr "বান্ধনী লক্ষ্য %s বান্ধীবলে অক্ষম"
 
-msgid "Unable to suspend domain due to missing system_wakeup monitor command"
-msgstr "system_wakeup মনিটৰ কমান্ড নথকা বাবে ডমেইন স্থগিত কৰিবলে অক্ষম"
-
 #, c-format
 msgid "Unable to symlink directory %s to %s"
 msgstr "ডাইৰেকটৰি %s ক %s লে symlink কৰিব নোৱাৰি"
@@ -11135,10 +11005,6 @@ msgstr "%s চুটি কৰিবলে অক্ষম"
 
 msgid "Unable to unescape command"
 msgstr "কমান্ড unescape কৰিবলে অক্ষম"
-
-#, c-format
-msgid "Unable to unlock %zu bytes of memory"
-msgstr "%zu বাইট মেমৰি আনলক কৰিবলে অক্ষম"
 
 #, c-format
 msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
@@ -11171,9 +11037,6 @@ msgstr "মনিটৰ চুক্তিত অপেক্ষা কৰিব
 
 msgid "Unable to wait on parent process"
 msgstr "উপধায়ক প্ৰক্ৰিয়াত অপেক্ষা কৰিবলে অক্ষম"
-
-msgid "Unable to wake up domain due to missing system_wakeup monitor command"
-msgstr "system_wakeup মনিটৰ কমান্ড নথকা বাবে ডমেইন ৱেইক আপ কৰিবলে অক্ষম"
 
 msgid "Unable to watch epoll FD"
 msgstr "epoll FD চাবলে অক্ষম"
@@ -11237,20 +11100,12 @@ msgid "Unexpected CPU mode %d"
 msgstr "অপ্ৰত্যাশিত CPU অৱস্থা %d"
 
 #, c-format
-msgid "Unexpected HTTP error code %d"
-msgstr "অপ্ৰত্যাশিত HTTP ত্ৰুটি ক'ড %d"
-
-#, c-format
 msgid "Unexpected HTTP response during %s: %d"
 msgstr "%s ৰ সময়ত অপ্ৰত্যাশিত HTTP প্ৰতিক্ৰিয়া: %d"
 
 #, c-format
 msgid "Unexpected JSON reply '%s'"
 msgstr "অপ্ৰত্যাশিত JSON উত্তৰ '%s'"
-
-#, c-format
-msgid "Unexpected LXC URI path '%s', try lxc:///"
-msgstr "অপ্ৰত্যাশিত LXC URI পথ '%s', lxc:/// প্ৰচেষ্টা কৰকচেষ্টা কৰক"
 
 msgid "Unexpected QEMU agent still active during domain deletion"
 msgstr "ডমেইন মচি পেলোৱাৰ সময়ত অপ্ৰত্যাশিত QEMU সহায়ক এতিয়াও সক্ৰিয়"
@@ -11499,13 +11354,6 @@ msgstr "অজ্ঞাত মুক্তি: %s"
 
 msgid "Unknown return code"
 msgstr "অজ্ঞাত ঘুৰাই দিয়া ক'ড"
-
-msgid "Unknown scheduler"
-msgstr "অজ্ঞাত"
-
-#, c-format
-msgid "Unknown scheduler %d"
-msgstr "অজ্ঞাত সূচক %d"
 
 #, c-format
 msgid "Unknown source mode '%s'"
@@ -11918,10 +11766,6 @@ msgid "Wakeup a domain that was previously suspended by power management."
 msgstr "শক্তি ব্যৱস্থাপনা দ্বাৰা পূৰ্বতে স্থগিত এটা ডমেইনক সাৰ পোৱাওক।"
 
 #, c-format
-msgid "Weight %s too big for destination"
-msgstr "গন্তব্যৰ ক্ষেত্ৰত weight %s অত্যাধিক ডাঙৰ"
-
-#, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
@@ -12005,19 +11849,6 @@ msgstr "XML ন'ডে এটা লিখনী অন্তৰ্ভুক্�
 #, c-format
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "'%s' লে কলৰ বাবে প্ৰতিক্ৰিয়াৰ XPath মুল্যায়ন ব্যৰ্থ হল"
-
-msgid "Xend only supports modifying both live and persistent config"
-msgstr "Xend এ কেৱল পোণপটীয়া আৰু স্থায়ী সংৰূপ পৰিবৰ্তন কৰাটো সমৰ্থন কৰে"
-
-#, c-format
-msgid "Xend returned HTTP Content-Length of %d, which exceeds maximum of %d"
-msgstr "Xend এ %d ৰ HTTP সমল-দৈৰ্ঘ্য ঘুৰাই দিলে, যি %d ৰ সৰ্বাধিক অতিক্ৰম কৰে"
-
-msgid "Xm driver only supports adding disk or network devices"
-msgstr "Xm ড্ৰাইভাৰে কেৱল ডিস্ক অথবা নেটৱৰ্ক ডিভাইচসমূহ যোগ কৰাটো সমৰ্থন কৰে"
-
-msgid "Xm driver only supports modifying persistent config"
-msgstr "Xm ড্ৰাইভাৰে কেৱল স্থায়ী সংৰূপ পৰিবৰ্তন কৰাটো সমৰ্থন কৰে"
 
 msgid "You are trying to set a number of CPUs bigger than the max possible."
 msgstr "আপুনি সৰ্বাধিক সম্ভাব্যতকে অধিক CPUs ৰ সংখ্যা সংহতি কৰাৰ চেষ্টা কৰি আছে।"
@@ -12104,16 +11935,6 @@ msgstr "উপধায়ক স্নেপশ্বট দেখুৱা এট
 #, c-format
 msgid "adding %s device failed: %s"
 msgstr "%s ডিভাইচ যোগ কৰাটো ব্যৰ্থ হল: %s"
-
-msgid "adding watch @introduceDomain"
-msgstr "adding watch @introduceDomain"
-
-msgid "adding watch @releaseDomain"
-msgstr "adding watch @releaseDomain"
-
-#, c-format
-msgid "adding watch on %s"
-msgstr "%s ত watch যোগ কৰা হৈছে"
 
 msgid "additionally display the type and device value"
 msgstr "অতিৰিক্তভাৱে ধৰণ আৰু ডিভাইচৰ মান প্ৰদৰ্শন কৰক"
@@ -12223,10 +12044,6 @@ msgstr "তৰ্ক চাবি '%s' অত্যাধিক সৰু, ধ�
 #, c-format
 msgid "argument key '%s' must not have null value"
 msgstr "তৰ্ক কি' '%s' ৰ null মান থাকিব নোৱাৰিব"
-
-#, c-format
-msgid "argument out of range: %d"
-msgstr "তৰ্ক বিস্তাৰৰ বাহিৰ: %d"
 
 msgid "argument unsupported"
 msgstr "তৰ্ক অসমৰ্থিত"
@@ -12389,9 +12206,6 @@ msgstr "blkio cgroup মাউণ্ট কৰা নহয়"
 msgid "block"
 msgstr "ৰোধ কৰক"
 
-msgid "block I/O throttling not supported with this QEMU binary"
-msgstr "এই QEMU বাইনাৰিৰ সৈতে খণ্ড I/O থ্ৰটলিং সমৰ্থিত নহয়"
-
 msgid "block copy is not supported with this QEMU binary"
 msgstr "খণ্ড কপি এই QEMU বাইনাৰিৰ সৈতে সমৰ্থিত নহয়"
 
@@ -12411,12 +12225,6 @@ msgstr "এই QEMU বাইনাৰিৰ সৈতে খণ্ড কাৰ
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr "block peek অনুৰোধ দূৰৰ আচাৰ বিধিৰ কাৰণে বৰ দীঘল, %zi > %d"
-
-msgid "block peeking not implemented"
-msgstr "খণ্ড চোৱাটো প্ৰণয়ন কৰা হোৱা নাই"
-
-msgid "block statistics not supported on this platform"
-msgstr "খণ্ড পৰিসংখ্যাসমূহ এই প্লেটফৰ্মত সমৰ্থিত নহয়"
 
 msgid "block_io_throttle device entry was not in expected format"
 msgstr "block_io_throttle ডিভাইচ প্ৰবিষ্টি প্ৰত্যাশিত বিন্যাসত নাছিল"
@@ -12585,15 +12393,6 @@ msgstr "cputune কুটা মান বিশ্লেষণ কৰিব ন
 
 msgid "can't parse cputune shares value"
 msgstr "cputune অংশবোৰৰ মান বিশ্লেষণ কৰিব নোৱাৰি"
-
-msgid "can't retrieve config entry for domain to overwrite"
-msgstr "ডোমেইম"
-
-msgid "can't retrieve config file for domain"
-msgstr "ডোমেইন"
-
-msgid "can't retrieve config filename for domain to overwrite"
-msgstr "ডোমেইম"
 
 msgid "can't shrink capacity below existing allocation"
 msgstr "স্থায়ী আবণ্টনতকে কম ক্ষমতা কমাব পাৰি"
@@ -12847,9 +12646,6 @@ msgstr "চলি থকা ডমেইনৰ স্নেপশ্বটসম
 msgid "cannot detach device on inactive domain"
 msgstr "নিষ্ক্ৰিয় ডোমেইনৰ সৈতে ডিভাইচ সংযুক্ত কৰা নাযাব"
 
-msgid "cannot determine actual number of cells"
-msgstr "কোষসমূহৰ সঠিক সংখ্যা নিৰ্ধাৰণ কৰিব নোৱাৰি"
-
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "'%s' ৰ বাবে ফাইলচিস্টেম নিৰ্ধাৰণ কৰিব নোৱাৰি"
@@ -12960,9 +12756,6 @@ msgstr "আখৰ ডিভাইচ %s সন্ধান কৰিব নো�
 msgid "cannot find console device '%s'"
 msgstr "কনচৌল ডিভাইচ '%s' পোৱা নগল"
 
-msgid "cannot find default console device"
-msgstr "অবিকল্পিত কনচৌল ডিভাইচ বিচাৰি পোৱা নাযায়"
-
 #, c-format
 msgid "cannot find init path '%s' relative to container root"
 msgstr "বৈয়াম ৰুটৰ প্ৰসংগত init পথ '%s' সন্ধান কৰিব নোৱাৰি"
@@ -13014,14 +12807,8 @@ msgstr "%d প্ৰক্ৰিয়াৰ বাবে CPU এফিনিটি
 msgid "cannot get RSS for domain"
 msgstr "ডমেইনৰ বাবে RSS প্ৰাপ্ত কৰিব নোৱাৰি"
 
-msgid "cannot get VCPUs info"
-msgstr "VCPU ৰ তথ্য প্ৰাপ্ত কৰা সম্ভৱ নহয়"
-
 msgid "cannot get current time"
 msgstr "বৰ্তমানMemorySize পৰীক্ষা কৰোঁতে ব্যৰ্থ"
-
-msgid "cannot get domain details"
-msgstr "ডোমেইন সংক্ৰান্ত বিৱৰণ প্ৰাপ্ত কৰা সম্ভৱ নহয়"
 
 msgid "cannot get feature flags on macvtap tap"
 msgstr "macvtap টেপত বৈশিষ্ট্য ফ্লেগসমূহ প্ৰাপ্ত কৰিব নোৱাৰি"
@@ -13052,9 +12839,6 @@ msgstr "হস্ট uuid প্ৰাপ্ত কৰিব নোৱাৰি"
 
 msgid "cannot get the path of MEMORY cgroup controller"
 msgstr "MEMORY cgroup নিয়ন্ত্ৰকৰ পথ প্ৰাপ্ত কৰিব নোৱাৰি"
-
-msgid "cannot get time of day"
-msgstr "দিনৰ বৰ্তমান সময় পোৱা হৈছে"
 
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "vCPU স্থাপনাও আৰু pCPU ৰ সময় প্ৰাপ্ত কৰিবলৈ ব্যৰ্থ"
@@ -13518,10 +13302,6 @@ msgid "cannot read domain image '%s'"
 msgstr "ডোমেইনৰ প্ৰতিমূৰ্ত্তি '%s' পঢ়িবলৈ ব্যৰ্থ"
 
 #, c-format
-msgid "cannot read file %s"
-msgstr "%s পঢ়োঁতে ব্যৰ্থ"
-
-#, c-format
 msgid "cannot read file '%s'"
 msgstr "ফাইল '%s' পঢ়িব নোৱাৰি"
 
@@ -13700,10 +13480,6 @@ msgstr "ফাইল '%s' stat কৰোঁতে ব্যৰ্থ"
 #, c-format
 msgid "cannot stat path '%s'"
 msgstr "পথ '%s' ৰ পৰিসংখ্যা দিব নোৱাৰি"
-
-#, c-format
-msgid "cannot stat: %s"
-msgstr "affinity নিৰ্ধাৰণ কৰিব নোৱাৰি: %s"
 
 #, c-format
 msgid "cannot statvfs path '%s'"
@@ -13964,9 +13740,6 @@ msgstr "বিনেস ফাইলৰ শব্দবিনেসত ভুল
 msgid "conflicting occurrences of kvmclock feature"
 msgstr "kvmclock বৈশিষ্ট্যৰ দ্বন্দপূৰ্ণ উপস্থিতি"
 
-msgid "conn, or private data is NULL"
-msgstr "conn, বা ব্যক্তিগত তথ্য NULL"
-
 msgid "connect to the guest console"
 msgstr "অতিথি কনসোলৰ সৈতে সংযোগ স্থাপন কৰক"
 
@@ -14035,9 +13808,6 @@ msgstr "সংযোগমাধ্যম MAC ঠিকনাকে এটা �
 
 msgid "convert an interface name to interface MAC address"
 msgstr "এটা সংযোগমাধ্যমৰ নামকে সংযোগমাধ্যম MAC ঠিকনায় ৰূপান্তৰ কৰক"
-
-msgid "copy_on_read is not supported by this QEMU binary"
-msgstr "copy_on_read এই QEMU বাইনাৰি দ্বাৰা সমৰ্থিত নহয়"
 
 msgid "corrupted profileid string"
 msgstr "ক্ষতিগ্ৰস্থ profileid স্ট্ৰিং"
@@ -14268,9 +14038,6 @@ msgstr "লিখা বাইট প্ৰতি ছেকেণ্ড %s ল�
 #, c-format
 msgid "could not parse write iops sec %s"
 msgstr "লিখা iops ছেকেণ্ড %s বিশ্লেষণ কৰিব পৰা নগল"
-
-msgid "could not read CPU flags"
-msgstr "CPU ফ্লেগ পঢ়িবলৈ ব্যৰ্থৰ্থ"
 
 msgid "could not read xml file"
 msgstr "xml ফাইল পঢ়িব পৰা নগল"
@@ -14768,9 +14535,6 @@ msgstr "ডিস্ক '%s' এতিয়াও pivot ৰ বাবে প্ৰ
 msgid "disk '%s' specified twice"
 msgstr "ডিস্ক '%s' দুবাৰ ধাৰ্য্য কৰা হৈছে"
 
-msgid "disk aio mode not supported with this QEMU binary"
-msgstr "ডিস্ক aio অৱস্থা এই QEMU বাইনাৰিৰ সৈতে সমৰ্থিত নহয়"
-
 msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
 msgstr "ডিস্ক বৈশিষ্টসমূহ: disk[,snapshot=type][,driver=type][,file=name]"
 
@@ -14785,12 +14549,6 @@ msgstr "ডিষ্ক bus '%s' ক hotplug কৰিব নোৱাৰি।"
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "ডিস্ক বাচ '%s' আপডেইট কৰিব নোৱাৰি।"
-
-msgid "disk cache mode 'directsync' is not supported by this QEMU"
-msgstr "ডিস্ক ক্যাশ অৱস্থা 'directsync' এই QEMU দ্বাৰা সমৰ্থিত নহয় "
-
-msgid "disk cache mode 'unsafe' is not supported by this QEMU"
-msgstr "ডিস্ক ক্যাশ অৱস্থা 'unsafe' এই QEMU দ্বাৰা সমৰ্থিত নহয়"
 
 #, c-format
 msgid "disk device type '%s' cannot be detached"
@@ -15003,32 +14761,17 @@ msgstr "XML ত ডোমেইন সংক্ৰান্ত তথ্য"
 msgid "domain information incomplete, missing HVM loader"
 msgstr "ডোমেইম"
 
-msgid "domain information incomplete, missing cpu_cap"
-msgstr "ডোমেইম"
-
-msgid "domain information incomplete, missing cpu_weight"
-msgstr "ডোমেইম"
-
-msgid "domain information incomplete, missing domid"
-msgstr "ডোমেইন সংক্ৰান্ত তথ্য অসম্পূৰ্ণ, domid অনুপস্থিত"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "ডোমেইন সংক্ৰান্ত তথ্য অসম্পূৰ্ণ, কাৰ্ণেল আৰু বুট লোডাৰ অনুপস্থিত"
 
 msgid "domain information incomplete, missing name"
 msgstr "ডোমেইন সংক্ৰান্ত তথ্য অসম্পূৰ্ণ, নাম অনুপস্থিত"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "ডোমেইন সংক্ৰান্ত তথ্য অসম্পূৰ্ণ, uuid অনুপস্থিত"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ডোমেইন সংক্ৰান্ত তথ্য অসম্পূৰ্ণ, vbd ত dev অনুপস্থিত"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "ডোমেইন সংক্ৰান্ত তথ্য অসম্পূৰ্ণ, vbd ত src অনুপস্থিত"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "ডোমেইন সংক্ৰান্ত তথ্য অসম্পূৰ্ণ, domid সংখ্যামূলক নহয়"
 
 msgid "domain is already running"
 msgstr "ডোমেইন বৰ্তমানে সক্ৰিয়ন"
@@ -15069,12 +14812,6 @@ msgstr "ডোমেইনৰ নাম বা uuid"
 msgid "domain name, id or uuid"
 msgstr "ডোমেইনৰ নাম, id বা uuid"
 
-msgid "domain not active"
-msgstr "ডমেইন সক্ৰিয় নহয়"
-
-msgid "domain not running"
-msgstr "ডমেইন চলি থকা নাই"
-
 msgid "domain save job"
 msgstr "ডমেইন সংৰক্ষণ কাৰ্য্য"
 
@@ -15089,9 +14826,6 @@ msgstr "ডমেইনৰ ধৰণ"
 
 msgid "domain vcpu counts"
 msgstr "ডমেইন vcpu গণনাসমূহ"
-
-msgid "domainBlockPeek is not supported for dom0"
-msgstr "domainBlockPeek ক dom0 ই সমৰ্থন নকৰে"
 
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare এ uri নিৰ্ধাৰণ নকৰিলে"
@@ -15131,17 +14865,11 @@ msgstr "ডিস্ক ডিভাইচৰ চালক"
 msgid "driver serial '%s' contains unsafe characters"
 msgstr "চালকৰ ক্ৰমিক সংখ্যা '%s' ত উপস্থিত কিছু অক্ষৰ নিৰাপদ নহয়"
 
-msgid "dtb is not supported with this QEMU binary"
-msgstr "dtb এই QEMU বাইনাৰিৰ সৈতে সমৰ্থিত নহয়"
-
 msgid "dump domain's memory only"
 msgstr "ডাম্প ডমেইনৰ কেৱল মেমৰি"
 
 msgid "dump the core of a domain to a file for analysis"
 msgstr "পিছতলোচনাৰ উদ্দেশ্যে কোনো ডোমেইনৰ কোৰ তথ্য সংৰক্ষণ কৰক"
-
-msgid "dump-guest-core is not available with this QEMU binary"
-msgstr "dump-guest-core এই QEMU বাইনাৰিৰ সৈতে উপলব্ধ নহয়"
 
 msgid "dump-guest-memory is not supported"
 msgstr "dump-guest-memory সমৰ্থিত নহয়"
@@ -15463,9 +15191,6 @@ msgstr "SSH সহায়ক ব্যৱহাৰ কৰি প্ৰমাণ�
 msgid "failed to begin transaction: %s%s%s"
 msgstr "লেন দেন আৰম্ভ কৰিবলে ব্যৰ্থ: %s%s%s"
 
-msgid "failed to build sexpr"
-msgstr "%s পুল সৃষ্টি কৰিব পৰা ন'গ'ল"
-
 msgid "failed to calculate ssh host key hash"
 msgstr "ssh হস্ট কি' হেশ গণনা কৰিবলে ব্যৰ্থ"
 
@@ -15486,9 +15211,6 @@ msgstr "লেন দেন কমিট কৰিবলে ব্যৰ্থ: 
 msgid "failed to compile regex '%s': %s"
 msgstr "regex '%s' কমপাইল কৰিবলে ব্যৰ্থ: %s"
 
-msgid "failed to connect to Xen Store"
-msgstr "Xen Store ৰ সৈতে সংযোগ কৰোঁতে ব্যৰ্থ"
-
 msgid "failed to connect to monitor socket"
 msgstr "মনিটৰ ছকেটৰ সৈতে সংযোগ স্থাপন কৰিবলৈ ব্যৰ্থ"
 
@@ -15498,9 +15220,6 @@ msgstr "RADOS মনিটৰলে সংযোগ কৰিবলে ব্য
 
 msgid "failed to connect to the hypervisor"
 msgstr "হাইপাৰ ভাইসৰৰ সৈতে সংযোগ কৰোঁতে ব্যৰ্থ"
-
-msgid "failed to connect to xend"
-msgstr "Xen Store ৰ সৈতে সংযোগ কৰোঁতে ব্যৰ্থ"
 
 msgid "failed to convert the XML node tree"
 msgstr "XML ন'ড ট্ৰি পৰিবৰ্তন কৰিবলৈ ব্যৰ্থ"
@@ -15519,9 +15238,6 @@ msgstr "(start) আন্তঃপৃষ্ঠ %s সৃষ্টি কৰি�
 msgid "failed to create a new XML namespace"
 msgstr "এটা নতুন XML নেইমস্পেইচ সৃষ্টি কৰিবলৈ ব্যৰ্থ"
 
-msgid "failed to create a socket"
-msgstr "নোড বিতৰণ কৰোঁতে ব্যৰ্থ"
-
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "'%s' পঞ্জিকা নিৰ্মাণ কৰিবলৈ ব্যৰ্থ"
@@ -15532,10 +15248,6 @@ msgstr "include ফাইল সৃষ্টি কৰিবলে ব্যৰ�
 #, c-format
 msgid "failed to create lib dir '%s': %s"
 msgstr "lib dir '%s' নিৰ্মাণ কৰিবলৈ ব্যৰ্থ: %s"
-
-#, c-format
-msgid "failed to create link %s to %s"
-msgstr "%s লগ ফাইল নিৰ্মাণ কৰোঁতে ব্যৰ্থ: %s"
 
 #, c-format
 msgid "failed to create log dir '%s': %s"
@@ -15740,10 +15452,6 @@ msgid "failed to lookup interface with MAC address '%s'"
 msgstr "MAC ঠিকনা '%s' ৰ সৈতে আন্তঃপৃষ্ঠ চাব পৰা নগল"
 
 #, c-format
-msgid "failed to lseek or read from file: %s"
-msgstr "%s বিনেস ফাইল পঢ়োঁতে বিফল"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "নে'টৱৰ্ক %s, স্বয়ং প্ৰাৰম্ভকৰোঁতা হিচাপে চিহ্নিত কৰোঁতে ব্যৰ্থ"
 
@@ -15770,10 +15478,6 @@ msgid "failed to open file"
 msgstr "ফাইল খোলোঁতে ব্যৰ্থ"
 
 #, c-format
-msgid "failed to open for reading: %s"
-msgstr "পঢ়াৰ বাবে %s খোলোঁতে বিফল"
-
-#, c-format
 msgid "failed to open logfile %s"
 msgstr "লগফাইল %s খোলিবলৈ ব্যৰ্থ"
 
@@ -15795,9 +15499,6 @@ msgstr "%s বিশ্লেষণ কৰিবলে ব্যৰ্থ"
 #, c-format
 msgid "failed to parse %sversion"
 msgstr "%s সংস্কৰণ বিশ্লেষণ কৰিবলে ব্যৰ্থ"
-
-msgid "failed to parse Xend domain information"
-msgstr "Xend ডোমেইন সংক্ৰান্ত তথ্য বিশ্লষণ কৰোঁতে ব্যৰ্থ"
 
 msgid "failed to parse configuration file"
 msgstr "বিনেস ফাইল বিশ্লেষণ কৰিবলৈ বিফল"
@@ -15847,9 +15548,6 @@ msgstr "বিনেস ফাইল পঢ়োঁতে বিফল"
 msgid "failed to read configuration file %s"
 msgstr "%s বিনেস ফাইল পঢ়োঁতে বিফল"
 
-msgid "failed to read from Xen Daemon"
-msgstr "Xen Daemonৰ পৰা পঢ়োঁতে ব্যৰ্থ"
-
 msgid "failed to read from wakeup fd"
 msgstr "wakeup fd ৰ পৰা পঢ়িবলে ব্যৰ্থ"
 
@@ -15873,13 +15571,6 @@ msgstr "%s বিনেস ফাইল পঢ়োঁতে বিফল"
 
 msgid "failed to register udev interface driver"
 msgstr "udev আন্তঃপৃষ্ঠ ড্ৰাইভাৰ ৰেজিস্টাৰ কৰিবলে ব্যৰ্থ"
-
-#, c-format
-msgid "failed to remove link %s"
-msgstr "ডোমেইন %s পুনৰাৰম্ভ কৰোঁতে ব্যৰ্থ"
-
-msgid "failed to remove old domain from config map"
-msgstr "ডোমেইম"
 
 #, c-format
 msgid "failed to remove pool '%s'"
@@ -16034,9 +15725,6 @@ msgstr "known_host ফাইল '%s' লিখিবলে ব্যৰ্থ: %
 msgid "failed to write the log file"
 msgstr "লগ ফাইলত লিখোঁতে ব্যৰ্থ"
 
-msgid "failed to write to Xen Daemon"
-msgstr "Xen Daemon লৈ লিখিবলৈ ব্যৰ্থ"
-
 msgid "failed to write to profile"
 msgstr "আলেখ্যলে লিখিবলে ব্যৰ্থ"
 
@@ -16104,12 +15792,6 @@ msgstr "লক্ষ্যৰ বাবে আপডেইটেড XML অন�
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "ফাইলপ্ৰণালী 'template' বা 'mount' ধৰণৰ নহয়"
 
-msgid "filesystem passthrough not supported by this QEMU"
-msgstr "এই QEMU দ্বাৰা ফাইলচিস্টেম পাছথ্ৰু সমৰ্থিত নহয়"
-
-msgid "filesystem writeout not supported"
-msgstr "ফাইলচিস্টেম writeout সমৰ্থিত নহয়"
-
 #, c-format
 msgid "filter '%s' already exists with uuid %s"
 msgstr "ফিল্টাৰ '%s' ইতিমধ্যে uuid %s ৰ সৈতে অস্তিত্ববান"
@@ -16155,9 +15837,6 @@ msgstr "স্নেপশ্বট নামৰ উপধায়ক সন্ধ
 
 msgid "find potential storage pool sources"
 msgstr "পুল ভিতৰ"
-
-msgid "finding dom on config list"
-msgstr "বিন্যাস তালিকাত dom বিচৰা হৈছে"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "ফ্লেগৰ স্থিতিমাপ VIR_MEMORY_VIRTUAL বা VIR_MEMORY_PHYSICAL হোৱা আৱশ্যক"
@@ -16416,16 +16095,9 @@ msgid ""
 msgstr ""
 "গন্তব্যত হস্টনাম localhost লে সমাধান কৰা হৈছে, কিন্তু প্ৰব্ৰজনৰ এটা FQDNৰ প্ৰয়োজন"
 
-msgid "hotplug of device type not supported"
-msgstr "ডিভাইচৰ ধৰণৰ hotplug অসমৰ্থিত"
-
 #, c-format
 msgid "hub type %s not supported"
 msgstr "হাব ধৰণ %s সমৰ্থিত নহয়"
-
-#, c-format
-msgid "hugepage backing not supported by '%s'"
-msgstr "'%s' দ্বাৰা hugepage বেকিং সমৰ্থিত নহয়"
 
 msgid "hugepage size can't be zero"
 msgstr "hugepage আকাৰ শূন্য হব নোৱাৰিব"
@@ -16524,9 +16196,6 @@ msgstr "init বাইনাৰি ধাৰ্য্য কৰিব লাগ�
 
 msgid "initial allocation size, as scaled integer (default bytes)"
 msgstr "আৰম্ভণি আবণ্টন আকাৰ, স্কেইল্ড পূৰ্ণসংখ্যা হিচাপে (অবিকল্পিত বাইট)"
-
-msgid "initializing inotify"
-msgstr "inotify আৰম্ভ কৰা হৈছে"
 
 #, c-format
 msgid "input too large: %d * %d"
@@ -16831,9 +16500,6 @@ msgstr "অবৈধ সংযোগ নিৰ্দেশক ডিভাইচ
 msgid "invalid connection pointer in %s"
 msgstr "%s ত অবৈধ সংযোগ নিৰ্দেশক ডিভাইচ"
 
-msgid "invalid cpumap_t size"
-msgstr "অবৈধ cpumap_t আকাৰ"
-
 #, c-format
 msgid "invalid database name: %s"
 msgstr "অবৈধ ডাটাবেইচ নাম: %s"
@@ -16998,36 +16664,6 @@ msgstr "অবৈধ পথ '%s'"
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "পথ বৈধ নহয়, '%s' পৰিচিত সংযোগ মাধ্যম নহয়"
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range hda[1-63] - hdt[1-63] for "
-"domain %d"
-msgstr ""
-"অবৈধ পথ, ডিভাইচ নামসমূহ ডমেইন %d ৰ বাবে বিস্তাৰ hda[1-63] - hdt[1-63] ত থাকিব "
-"লাগিব"
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range sda[1-15] - sdiv[1-15] for "
-"domain %d"
-msgstr ""
-"অবৈধ পথ, ডিভাইচ নামসমূহ ডমেইন %d ৰ বাবে বিস্তাৰ sda[1-15] - sdiv[1-15] ত থাকিব "
-"লাগিব"
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15] for "
-"domain %d"
-msgstr ""
-"অবৈধ পথ, ডিভাইচ নামসমূহ ডমেইন %d ৰ বাবে বিস্তাৰ xvda[1-15] - xvdiz[1-15] ত "
-"থাকিব লাগিব"
-
-msgid "invalid path, should be vif<domid>.<n>."
-msgstr "অবৈধ পথ, vif<domid>.<n> হব লাগিব।"
-
-msgid "invalid path, vif<domid> should match this domain ID"
-msgstr "অবৈধ পথ, vif<domid> এই ডমেইন ID ৰ সৈতে মিল খাব লাগিব"
 
 #, c-format
 msgid "invalid path: %s"
@@ -17540,9 +17176,6 @@ msgstr "লক ব্যৱস্থাপক সংযোগ প্ৰতিব
 
 msgid "lock owner details have not been registered"
 msgstr "লক গৰাকী বিৱৰণসমূহ ৰেজিস্টাৰ কৰা হোৱা নাই"
-
-msgid "looking up dom"
-msgstr "dom সন্ধান কৰা হৈছে"
 
 msgid "lxc state driver is not active"
 msgstr "lxc state চালক বৰ্তমানে সক্ৰিয় নহয়"
@@ -18613,10 +18246,6 @@ msgid "no PCI vendor ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো PCI vendor ID দিয়া হোৱা নাই"
 
 #, c-format
-msgid "no QEMU URI path given, try %s"
-msgstr "কোনো QEMU URI পথ উল্লেখ কৰা নহয়, %s প্ৰয়োগ কৰাৰ প্ৰচেষ্টা কৰক"
-
-#, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো SCSI LUN ID দিয়া হোৱা নাই"
 
@@ -18663,9 +18292,6 @@ msgstr "'%s' ৰ কাৰণে কোনো USB উৎপাদন ID দি�
 #, c-format
 msgid "no USB vendor ID supplied for '%s'"
 msgstr "'%s' ৰ কাৰণে কোনো USB vendor ID দিয়া হোৱা নাই"
-
-msgid "no VirtualBox driver path specified (try vbox:///session)"
-msgstr "কোনো VirtualBox চালকৰ পথ দিয়া হোৱা নাই (vbox:///session চেষ্টা কৰক)"
 
 #, c-format
 msgid "no WWNN supplied for '%s', and auto-generation failed"
@@ -18746,9 +18372,6 @@ msgstr "নোডৰ ডোমেইন তালিকা"
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr "মিল খোৱা নাম '%s' ৰ সৈতে কোনো ডমেইন স্নেপশ্বট নাই"
-
-msgid "no domain with matching id"
-msgstr "id সৈতে মিল থকা কোনো ডোমেইন নাই"
 
 #, c-format
 msgid "no domain with matching id %d"
@@ -18927,9 +18550,6 @@ msgstr "এই স্থাপত্যৰ বাবে নোড সংক্�
 msgid "node information"
 msgstr "নোড সংক্ৰান্ত তথ্য"
 
-msgid "node information incomplete, missing scheduler name"
-msgstr "নোড নাম"
-
 msgid "node memory stats not implemented on this platform"
 msgstr "এই প্লেটপৰ্মত ন'ড মেমৰি পৰিসংখ্যা প্ৰণয়ন কৰা হোৱা নাই"
 
@@ -19054,9 +18674,6 @@ msgstr "অফলাইন প্ৰব্ৰজন স্থায়ী ফ্ল
 
 msgid "ok"
 msgstr "ঠিক আছে"
-
-msgid "on_xend_start not present in sexpr"
-msgstr "চালু start ভিতৰ"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "এই QEMU বাইনাৰিৰ সৈতে অনলাইন commit সমৰ্থিত নহয়"
@@ -19235,10 +18852,6 @@ msgstr "উপধায়ক %s এ %s লে চক্ৰ সৃষ্টি ক�
 
 msgid "parser error"
 msgstr "বিশ্লেষণ কৰোঁতাৰ ভুল"
-
-#, c-format
-msgid "parsing uuid %s"
-msgstr "parsing uuid %s"
 
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "ফাইল বিৱৰকসমূহ N,M,... অতিথিলৈ প্ৰেৰণ কৰক"
@@ -19626,9 +19239,6 @@ msgstr "wakeup fd ত পঢ়া ব্যৰ্থ হল"
 msgid "read-only connection"
 msgstr "অকল পঢ়োঁতেযোগ্য সংযোগ"
 
-msgid "readonly filesystem is not supported by this QEMU binary"
-msgstr "এই QEMU বাইনাৰি দ্বাৰা কেৱলপঢ়িব পৰা ফাইলচিস্টেম সমৰ্থিত নহয়"
-
 msgid "reattach node device to its device driver"
 msgstr "ডিভাইচ চালকৰ সৈতে নোড ডিভাইচ পুনৰায় সংযুক্ত কৰক"
 
@@ -19724,9 +19334,6 @@ msgstr "অনুৰোধ কৰা অনুমোদনৰ প্ৰণাল
 #, c-format
 msgid "requested cpu amount exceeds maximum (%d > %d)"
 msgstr "অনুৰোধ কৰা cpu পৰিমাণ সৰ্বাধিক মান অতিক্ৰম কৰে (%d > %d)"
-
-msgid "requested device does not exist"
-msgstr "অনুৰোধ কৰা ডিভাইচ অস্তিত্ববান নহয়"
 
 msgid "requested size of the cache (in bytes) used for compression"
 msgstr "সংকোচনৰ বাবে ব্যৱহৃত ক্যাশৰ অনুৰোধ কৰা আকাৰ (বাইটত)"
@@ -19923,10 +19530,6 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr "ধৰণ %s ৰ আন্তঃপৃষ্ঠসমূহৰ বাবে স্ক্ৰিপ্টসমূহ সমৰ্থিত নহয়"
 
 #, c-format
-msgid "sdl not supported by '%s'"
-msgstr "sdl '%s' দ্বাৰা সমৰ্থিত নহয়"
-
-#, c-format
 msgid "secret '%s' does not have a value"
 msgstr "'%s' গোপনীয় তথ্যেৰ কোনো মান নিৰ্ধাৰণ কৰা নহয়ই।"
 
@@ -20043,9 +19646,6 @@ msgstr "VNC পাছৱৰ্ডৰ প্ৰতিষ্ঠা বিফল"
 msgid "setting disk password is not supported"
 msgstr "ডিস্কৰ পাছৱৰ্ড নিৰ্ধাৰণ ব্যৱস্থা সমৰ্থিত নহয়"
 
-msgid "setting of link state not supported: Link is up"
-msgstr "সংযোগৰ অৱস্থা সংহতি কৰাটো সমৰ্থিত নহয়: সংযোগৰ অৱস্থা up"
-
 msgid ""
 "setting of timer catchup policies is only supported with tickpolicy='catchup'"
 msgstr "টাইমাৰ কেচআপ নীতিসমূহৰ ছেটিং কেৱল tickpolicy='catchup' ৰ সৈতে সমৰ্থিত"
@@ -20055,9 +19655,6 @@ msgstr "HAL কলবেকসমূহ সংহতি কৰাটো ব্�
 
 msgid "setuid or setgid failed"
 msgstr "setuid অথবা setgid ব্যৰ্থ হল"
-
-msgid "sexpr2string failed"
-msgstr "কাৰ্য্যকৰণ বিফল"
 
 msgid "sgio is only supported for scsi host device"
 msgstr "sgio কেৱল scsi হস্ট ডিভাইচৰ বাবে সমৰ্থিত"
@@ -20236,9 +19833,6 @@ msgstr "spice zlib এ সংকোচন হেৰাইছে"
 msgid "spicevmc device type only supports virtio"
 msgstr "spicevmc ডিভাইচ ধৰণে কেৱল virtio সমৰ্থন কৰে"
 
-msgid "spicevmc not supported in this QEMU binary"
-msgstr "এই QEMU বাইনাৰিত spicevmc সমৰ্থিত নহয়"
-
 msgid "start a (previously defined) inactive domain"
 msgstr "এটা (পূৰ্বে সংজ্ঞা কৰা) নিষ্ক্ৰিয় ডোমেইন আৰম্ভ কৰক"
 
@@ -20268,14 +19862,6 @@ msgstr "আৰম্ভ কৰা হল"
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "'%s' ৰ stat কৰিবলৈ ব্যৰ্থবলৈ ব্যৰ্থ"
-
-#, c-format
-msgid "stats->rd_bytes would overflow 64 bit counter for domain %d"
-msgstr "stats->rd_bytes এ ডমেইন %d ৰ বাবে ৬৪ বিট অভাৰফ্লো কৰিব"
-
-#, c-format
-msgid "stats->wr_bytes would overflow 64 bit counter for domain %d"
-msgstr "stats->wr_bytes এ ডমেইন %d ৰ বাবে ৬৪ বিট গণক অভাৰফ্লো কৰিব"
 
 msgid "stopped, with no saved guests"
 msgstr "বন্ধ কৰা হল, কোনো সংৰক্ষিত অতিথি নহোৱাকৈ"
@@ -20416,10 +20002,6 @@ msgstr "লক্ষ্য %s অস্তিত্ববান নহয়।"
 msgid "target %s:%d already exists"
 msgstr "%s:%d টাৰ্গেট বৰ্তমানে আছে"
 
-#, c-format
-msgid "target '%s' already exists"
-msgstr "লক্ষ্য '%s' ইতিমধ্যে অস্তিত্ববান"
-
 msgid "target config data type format"
 msgstr "লক্ষ্য বিন্যাসৰ তথ্যৰ ধৰণৰ আকৃতি"
 
@@ -20479,10 +20061,6 @@ msgstr ""
 #, c-format
 msgid "the MAC address '%s' matches multiple interfaces"
 msgstr "MAC ঠিকনা '%s' একাধিক আন্তঃপৃষ্ঠৰ সৈতে মিল খায়"
-
-#, c-format
-msgid "the QEMU binary %s does not support smbios settings"
-msgstr "QEMU বাইনাৰি %s এ smbios সংহতি সমৰ্থন নকৰে"
 
 #, c-format
 msgid "the QEMU binary does not support %s"
@@ -20630,9 +20208,6 @@ msgstr "এই নে'টৱৰ্ক ইতিমধ্যে আছে"
 msgid "this platform is missing dlopen"
 msgstr "এই প্লেটফৰ্মত dlopen সন্ধানহীন"
 
-msgid "this qemu binary requires libvirt to be compiled with yajl"
-msgstr "এই qemu বাইনাৰিৰ বাবে libvirt ক yaji ৰ সৈতে কমপাইল কৰিব লাগিব"
-
 #, c-format
 msgid "this qemu doesn't support RNG device type '%s'"
 msgstr "এই qemu এ RNG ডিভাইচ ধৰণ '%s' সমৰ্থন নকৰে"
@@ -20698,9 +20273,6 @@ msgstr "qcow এনক্ৰিপশনৰ বাবে অত্যাধি�
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr "'%s' ৰ বাবে ওপৰ '%s' ৰ কোনো বেকিং ফাইল"
-
-msgid "topology syntax error"
-msgstr "topology syntax ভুল"
 
 msgid "total I/O operations limit per second"
 msgstr "প্ৰতি ছেকেণ্ডড সৰ্বমুঠ I/O কাৰ্য্যসমূহ সীমা"
@@ -20854,10 +20426,6 @@ msgid "unable to close pipe"
 msgstr "pipe বন্ধ কৰিবলে অক্ষম"
 
 #, c-format
-msgid "unable to connect to '%s:%s'"
-msgstr "%s: %s ৰ সৈতে সংয়োগ কৰিবলৈ সক্ষম কৰক"
-
-#, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "'%s:%s' ত চাৰ্ভাৰৰ সৈতে সংযোগ কৰিবলে অক্ষম"
 
@@ -20893,9 +20461,6 @@ msgstr "এৰেৰ আকাৰ নিৰ্ধাৰণ কৰিবলে �
 
 msgid "unable to determine if snapshot has parent"
 msgstr "স্নেপশ্বট উপধায়ক আছে নে নিৰ্ধাৰণ কৰিবলে অক্ষম"
-
-msgid "unable to determine original VLAN"
-msgstr "মূল VLAN নিৰ্ধাৰণ কৰিবলৈ ব্যৰ্থ"
 
 #, c-format
 msgid "unable to execute QEMU agent command '%s'"
@@ -20934,9 +20499,6 @@ msgstr "cpu একাওণ্ট প্ৰাপ্ত কৰিবলে অ�
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr "বৰ্তমান প্ৰক্ৰিয়া পৰিপ্ৰেক্ষতিত '%s' প্ৰাপ্ত কৰিবলে অক্ষম"
-
-msgid "unable to get current time"
-msgstr "বৰ্তমানMemorySize পৰীক্ষা কৰোঁতে ব্যৰ্থ"
 
 msgid "unable to get monitor count"
 msgstr "মনিটৰ গণনা প্ৰাপ্ত কৰিবলে অক্ষম"
@@ -21032,10 +20594,6 @@ msgid "unable to register monitor events"
 msgstr "মনিটৰ ঘটনা নিবন্ধন কৰিবলৈ ব্যৰ্থ"
 
 #, c-format
-msgid "unable to resolve hostname '%s': %s"
-msgstr "tty %s খোলোঁতে ব্যৰ্থ: %s"
-
-#, c-format
 msgid "unable to save metadata for snapshot %s"
 msgstr "স্নেপশ্বট %s ৰ বাবে মেটাডাটা সংৰক্ষণ কৰিবলে অক্ষম"
 
@@ -21094,9 +20652,6 @@ msgstr "ব্যৱহাৰকাৰী আৰু দলক '%ld:%ld' লে �
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr "ডিস্ক %s ৰ বাবে পৰিসংখ্যা কৰিবলে অক্ষম: %s"
-
-msgid "unable to store config file handle"
-msgstr "%s বিনেস ফাইল পঢ়োঁতে বিফল"
 
 msgid "unable to unload already unloaded profile"
 msgstr "ইতিমধ্যে আনল'ড কৰা আলেখ্য আনল'ড কৰিবলে অক্ষম"
@@ -21187,10 +20742,6 @@ msgid ""
 msgstr ""
 "অপ্ৰত্যাশিত VMware URI পথ '%s', vmwareplayer:///session, vmwarews:///session "
 "অথবা vmwarefusion:///session চেষ্টা কৰক"
-
-#, c-format
-msgid "unexpected Xen URI path '%s', try xen:///"
-msgstr "অপ্ৰত্যাশিত Xen URI পথ '%s', xen:/// প্ৰচেষ্টা কৰক"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -21498,9 +21049,6 @@ msgstr "অপ্ৰত্যাশিত মান %s on_poweroff ৰ কাৰ
 #, c-format
 msgid "unexpected value %s for on_reboot"
 msgstr "অপ্ৰত্যাশিত মান %s on_reboot ৰ কাৰণে"
-
-msgid "unexpected value from on_xend_start"
-msgstr "চালু start"
 
 #, c-format
 msgid "unexpected video model %d"
@@ -22338,9 +21886,6 @@ msgstr "অসমৰ্থিত কনচৌল লক্ষ্য ধৰণ %s
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "অসমৰ্থিত ধৰণৰ তথ্য '%c', '%s' তৰ্কৰ বাবে চিহ্নিত কৰা হৈছে"
 
-msgid "unsupported device type"
-msgstr "%s প্ৰকৃতিৰ নিবেশ ডিভাইচ সমৰ্থিত নহয়"
-
 #, c-format
 msgid "unsupported device type in network %s interface pool"
 msgstr "নেটৱৰ্ক %s আন্তঃপৃষ্ঠ পুলত অসমৰ্থিত ডিভাইচ ধৰণ"
@@ -22407,12 +21952,6 @@ msgstr "অসমৰ্থিত ফ্লেগসমূহ: (0x%x)"
 msgid "unsupported graphics type '%s'"
 msgstr "অসমৰ্থিত গ্ৰাফিক্স ধৰণ '%s'"
 
-msgid "unsupported in dom interface < 5"
-msgstr "অসমৰ্থিত dom আন্তঃপৃষ্ঠ < 5"
-
-msgid "unsupported in sys interface < 4"
-msgstr "অসমৰ্থিত sys আন্তঃপৃষ্ঠ < 4"
-
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "অসমৰ্থিত নিবেশ বাছ %s"
@@ -22441,10 +21980,6 @@ msgid "unsupported option '-%c'. See --help."
 msgstr "অসমৰ্থিত বিকল্প ' %c'।   help দেখুন।"
 
 #, c-format
-msgid "unsupported path, use xvdN, hdN, or sdN for domain %d"
-msgstr "অসমৰ্থিত পথ, ডমেইন %d ৰ বাবে xvdN, hdN, অথবা sdN ব্যৱহাৰ কৰক"
-
-#, c-format
 msgid "unsupported pit tickpolicy '%s'"
 msgstr "অসমৰ্থিত pit tickpolicy '%s'"
 
@@ -22455,10 +21990,6 @@ msgstr "অসমৰ্থিত প্ৰোটোকল family '%s'"
 #, c-format
 msgid "unsupported protocol type %s"
 msgstr "অসমৰ্থিত প্ৰটোকল ধৰণ %s"
-
-#, c-format
-msgid "unsupported rtc tickpolicy '%s'"
-msgstr "অসমৰ্থিত rtc tickpolicy '%s'"
 
 #, c-format
 msgid "unsupported rtc timer tickpolicy '%s'"
@@ -22667,9 +22198,6 @@ msgstr "virGetUserName উপলব্ধ নহয়"
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "virGetUserRuntimeDirectory উপলব্ধ নহয়"
 
-msgid "virHashLookup"
-msgstr "virHashLookup"
-
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL def"
 
@@ -22774,9 +22302,6 @@ msgstr "vmrun সঁজুলি সন্ধানহীন"
 msgid "vnc display"
 msgstr "vnc প্ৰদৰ্শন"
 
-msgid "vnc display sharing policy is not supported with this QEMU"
-msgstr "এই QEMU ৰ সৈতে vnc প্ৰদৰ্শন অংশীদাৰী নীতি সমৰ্থিত নহয়"
-
 msgid "vnc graphics are not supported with this QEMU"
 msgstr "vnc গ্ৰাফিক্সসমূহ এই QEMU ৰ সৈতে সমৰ্থিত নহয়"
 
@@ -22827,9 +22352,6 @@ msgstr "এটা ডমেইনক pmsuspended অৱস্থাৰ পৰা
 
 msgid "warning"
 msgstr "সকিয়নী"
-
-msgid "watch already tracked"
-msgstr "ৱাচক ইতিমধ্যে ট্ৰেক কৰা হৈছে"
 
 msgid "watchdog"
 msgstr "watchdog"
@@ -22900,46 +22422,6 @@ msgstr "ডিস্ক ডিভাইচৰ wwn"
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen bus দ্বাৰা %s নিবেশ ডিভাইচ সমৰ্থিত নহয়"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: প্ৰব্ৰজনৰ সময়ত Xen এ bandwidth limits ৰ সমৰ্থন নকৰে"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: প্ৰব্ৰজনৰ সময়ত Xen এ ডোমেইনৰ পুনঃ নামকৰণৰ সমৰ্থন নকৰে"
-
-msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr "ভিতৰ"
-
-msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr "সংখ্যা"
-
-msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr "xenDaemonDomainMigrate: অকল xenmigr:// প্ৰব্ৰজন Xen ৰ দ্বাৰা সমৰ্থিত"
-
-msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr "xenDaemonDomainMigrate: অসমৰ্থিত ফ্লেগ"
-
-msgid "xenDaemonDomainMigrate: xend cannot migrate paused domains"
-msgstr "xenDaemonDomainMigrate: স্থগিত ডোমেইন xend দ্বাৰা প্ৰব্ৰজন কৰা সম্ভৱ নহয়"
-
-msgid "xenDaemonGetAutostart failed to find this domain"
-msgstr "ডোমেইম"
-
-msgid "xenDaemonSetAutostart failed to find this domain"
-msgstr "ডোমেইম"
-
-msgid "xenXMConfigCacheRefresh: virHashAddEntry"
-msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
-
-#, c-format
-msgid "xend_post: error from xen daemon: %s"
-msgstr "xend_post: xen ডেমনৰ পৰা ভুল: %s"
 
 msgid "xml data file to export from"
 msgstr "আমদানি কৰিব লগা xml তথ্যৰ ফাইল"

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-27 08:02-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Macedonian (http://www.transifex.com/projects/p/fedora/"
@@ -644,9 +644,6 @@ msgstr "информација за домен"
 msgid "domain information in XML"
 msgstr "информација за домен во XML"
 
-msgid "domain information incomplete, missing domid"
-msgstr "информацијата за доменот е нецелосна, недостасува domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
 "информацијата за доменот е нецелосна, недостасува кернел и подигач на "
@@ -655,17 +652,11 @@ msgstr ""
 msgid "domain information incomplete, missing name"
 msgstr "информацијата за доменот е нецелосна, недостасува име"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "информацијата за доменот е нецелосна, недостасува uuid"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "информацијата за домен не е комплетна, vbd нема dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "информацијата за домен не е комплетна, vbd нема извор"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "информацијата за доменот е неправилна, domid не е нумерички"
 
 msgid "domain name or uuid"
 msgstr "име или uuid на домен"
@@ -706,9 +697,6 @@ msgstr "се очекуваше вредност"
 
 msgid "expecting an assignment"
 msgstr "се очекуваше доделување"
-
-msgid "failed to connect to Xen Store"
-msgstr "не успеав да се поврзам со Xen Store"
 
 msgid "failed to connect to the hypervisor"
 msgstr "не успеав да се поврзам на хипервизорот"
@@ -765,9 +753,6 @@ msgstr "не успеав да ја отворам датотеката"
 msgid "failed to open the log file. check the log file path"
 msgstr "Не успеав да го отворам дневникот. Проверете ја патеката до датотеката"
 
-msgid "failed to parse Xend domain information"
-msgstr "не успеав да ја анализирам информацијата за Xend-домен"
-
 msgid "failed to parse configuration file"
 msgstr "не успеав да ја анализирам конфиг. датотека"
 
@@ -781,9 +766,6 @@ msgstr "не успеав да ја прочитам конфиг. датоте�
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "не успеав да ја прочитам конфиг. датотека %s"
-
-msgid "failed to read from Xen Daemon"
-msgstr "не успеав да прочитам од Xen-даемонот"
 
 msgid "failed to save content"
 msgstr "не успеав да ја зачувам содржината"

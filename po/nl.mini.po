@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-26 09:23-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -95,10 +95,6 @@ msgid " Storage:"
 msgstr " Opslag:"
 
 #, c-format
-msgid "%d status from xen daemon: %s:%s"
-msgstr "%d status van xen daemon: %s:%s"
-
-#, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
@@ -161,10 +157,6 @@ msgstr "%s: schrijven naar log bestand mislukte: %s"
 #, c-format
 msgid "%s: initialization failed\n"
 msgstr "%s: initialisatie mislukte\n"
-
-#, c-format
-msgid "%s: invalid path"
-msgstr "%s: ongeldig pad"
 
 #, c-format
 msgid ""
@@ -435,10 +427,6 @@ msgid "Cannot find '%s' in path"
 msgstr "Kan '%s' niet vinden in pad"
 
 #, c-format
-msgid "Cannot find QEMU binary %s"
-msgstr "Kan QEMU binaire %s niet vinden"
-
-#, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "Kan UML kernel %s niet vinden"
 
@@ -448,9 +436,6 @@ msgstr "Kan geen geschikt CPU model vinden voor gegeven data"
 #, c-format
 msgid "Cannot find suitable emulator for %s"
 msgstr "Kan geen geschikte emulator voor %s vinden"
-
-msgid "Cannot modify live config if domain is inactive"
-msgstr "Kan life config niet veranderen als domein actief is"
 
 msgid "Cannot open /dev/urandom"
 msgstr "Kan /dev/urandom niet openen"
@@ -512,10 +497,6 @@ msgstr "Kan overgang domeinn niet on-definiëren "
 
 msgid "Cannot unshare mount namespace"
 msgstr "Kan deling van aankoppel naam ruimte niet opheffen"
-
-#, c-format
-msgid "Cap %s too big for destination"
-msgstr "Cap %s is te groot voor bestemming"
 
 msgid "Capabilities not available"
 msgstr "Mogelijkheden niet beschikbaar"
@@ -1051,14 +1032,6 @@ msgstr "Aanmaak tijd"
 msgid "Creation of %s volumes is not supported"
 msgstr "Aanmaken van %s volumes wordt niet ondersteund"
 
-#, c-format
-msgid "Credit scheduler cap parameter (%d) is out of range (0-65534)"
-msgstr "Credit scheduler cap parameter (%d) is buiten de reeks (0-65534)"
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr "Credit scheduler weight parameter (%d) is buiten de reeks (1-65535)"
-
 msgid "Data processed:"
 msgstr "Verwerkte data:"
 
@@ -1244,10 +1217,6 @@ msgid "Domain %s is being shutdown\n"
 msgstr "Domein %s wordt afgesloten\n"
 
 #, c-format
-msgid "Domain %s isn't running."
-msgstr "Domein %s draait niet"
-
-#, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "Domein %s gemarkeerd om automatisch te starten\n"
 
@@ -1418,21 +1387,12 @@ msgstr "Vul gebruikersnaam in voor %s"
 msgid "Enter username for %s [%s]"
 msgstr "Vul gebruikersnaam in voor %s [%s]"
 
-msgid "Error adding file to config cache"
-msgstr "Fout bij toevoegen van bestand om cache te configureren"
-
-msgid "Error adding file to config list"
-msgstr "Fout bij toevoegen van bestand om lijst te configureren"
-
 msgid "Error creating initial configuration"
 msgstr "Fout bij aanmaken initiële configuratie"
 
 #, c-format
 msgid "Error from child process creating '%s'"
 msgstr "Fout van kind proces tijdens aanmaken van '%s'"
-
-msgid "Error looking up domain"
-msgstr "Fout bij opzoeken domein"
 
 #, c-format
 msgid "Error opening file %s"
@@ -1785,10 +1745,6 @@ msgid "Failed to create domain save file '%s'"
 msgstr "Aanmaken van domein opslag bestand '%s' mislukte"
 
 #, c-format
-msgid "Failed to create inactive domain %s"
-msgstr "Aanmaken van inactief domein %s mislukte"
-
-#, c-format
 msgid "Failed to create network from %s"
 msgstr "Aanmaken van netwerk uit %s mislukte"
 
@@ -1969,9 +1925,6 @@ msgstr "Krijgen van %s minor nummer mislukte"
 
 msgid "Failed to get UUID of created secret"
 msgstr "Verkrijgen van UUID van aangemaakt geheim mislukte"
-
-msgid "Failed to get a scheduler name"
-msgstr "Krijgen van scheduler naam mislukte"
 
 #, c-format
 msgid "Failed to get block stats %s %s"
@@ -2196,9 +2149,6 @@ msgstr "Rebooten van domein '%d' met  mislukte"
 
 msgid "Failed to reconnect to the hypervisor"
 msgstr "Opnieuw verbinden met de hypervisormislukte"
-
-msgid "Failed to redefine sexpr"
-msgstr "Herdefiniëren van sexpr mislukte"
 
 #, c-format
 msgid "Failed to refresh pool %s"
@@ -2758,9 +2708,6 @@ msgstr "Ongeldig netwerk filter"
 msgid "Invalid network filter: %s"
 msgstr "Ongeldig netwerk filter: %s"
 
-msgid "Invalid parameter count"
-msgstr "Ongeldig aantal parameters"
-
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "Ongeldige parameter voor virXPathBoolean()"
 
@@ -3035,9 +2982,6 @@ msgstr "Naam"
 
 msgid "Name:"
 msgstr "Naam:"
-
-msgid "Named device aliases are not supported"
-msgstr "Benoemde apparaat aliassen worden niet ondersteund"
 
 #, c-format
 msgid "Network %s created from %s\n"
@@ -4027,9 +3971,6 @@ msgstr "Kan geen toegang tot stream krijgen voor '%s'"
 msgid "Unable to add LPAR to the table"
 msgstr "Kan LPAR niet aan de tabel toevoegen"
 
-msgid "Unable to attach network devices without vlan"
-msgstr "Kan netwerk apparaten niet aansluiten zonder vlan"
-
 msgid "Unable to become session leader"
 msgstr "Kan geen sessie leider worden"
 
@@ -4215,10 +4156,6 @@ msgstr "Onverwachte CPU eigenschap tactiek %d"
 msgid "Unexpected CPU match policy %d"
 msgstr "Onverwachte CPU match tactiek %d"
 
-#, c-format
-msgid "Unexpected LXC URI path '%s', try lxc:///"
-msgstr "Onverwacht LXC URI pad '%s', probeer lxc:///"
-
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "Onverwachte QEMU monitor nog actief tijdens verwijderen van domein"
 
@@ -4282,9 +4219,6 @@ msgstr "Onbekend protocol '%s'"
 #, c-format
 msgid "Unknown release: %s"
 msgstr "Onbekende vrijgave: %s"
-
-msgid "Unknown scheduler"
-msgstr "Onbekende scheduler"
 
 #, c-format
 msgid "Unknown source mode '%s'"
@@ -4473,10 +4407,6 @@ msgid "Volume path '%s' did not start with parent pool source device name."
 msgstr "Volume pad '%s' begon niet met ouder pool bron apparaat naam."
 
 #, c-format
-msgid "Weight %s too big for destination"
-msgstr "Gewicht %s is te groot voor bestemming"
-
-#, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
@@ -4519,22 +4449,6 @@ msgstr "XML node bevat geen tekst, verwacht een xsd:dateTime waarde"
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "XPath evaluatie van antwoord van aanroep naar '%s' mislukte"
 
-msgid "Xend only supports modifying both live and persistent config"
-msgstr ""
-"Xend ondersteunt alleen het veranderen van zowel live als permanente config"
-
-#, c-format
-msgid "Xend returned HTTP Content-Length of %d, which exceeds maximum of %d"
-msgstr ""
-"Xend gaf HTTP content-length %d terug, wat het maximum van %d overschrijdt"
-
-msgid "Xm driver only supports adding disk or network devices"
-msgstr ""
-"Xm driver ondersteunt alleen het toevoegen van schijf of netwerk apparaten"
-
-msgid "Xm driver only supports modifying persistent config"
-msgstr "Xm driver ondersteunt alleen het veranderen van permanente config"
-
 msgid "You are trying to set a number of CPUs bigger than the max possible."
 msgstr ""
 "Je probeert het aantal CPU's groter in te stellen dan het maximaal mogelijke."
@@ -4573,16 +4487,6 @@ msgstr "actief"
 msgid "adding %s device failed: %s"
 msgstr "toevoegen %s apparaat mislukte: %s"
 
-msgid "adding watch @introduceDomain"
-msgstr "bewaker toevoegen op@introduceDomain"
-
-msgid "adding watch @releaseDomain"
-msgstr "bewaker toevoegen op @releaseDomain"
-
-#, c-format
-msgid "adding watch on %s"
-msgstr "toevoegen van bewaker op %s"
-
 msgid "affect next boot"
 msgstr "beïnvloed volgende opstart"
 
@@ -4601,10 +4505,6 @@ msgstr "apparmor_parser afgesloten met fout"
 #, c-format
 msgid "argument key '%s' is too short, missing type prefix"
 msgstr "argument sleutel '%s' is te kort, type prefix ontbreekt"
-
-#, c-format
-msgid "argument out of range: %d"
-msgstr "argument buiten de reeks: %d"
 
 msgid "arguments to echo"
 msgstr "argumenten om terug te geven"
@@ -4746,15 +4646,6 @@ msgstr "kan mappen alleen maar doorgeven"
 #, c-format
 msgid "can't open session to the domain with id %d"
 msgstr "kan sessie naar het domein met id %d niet openen"
-
-msgid "can't retrieve config entry for domain to overwrite"
-msgstr "kan config ingang voor te overschrijven domein niet verkrijgen "
-
-msgid "can't retrieve config file for domain"
-msgstr "kan config bestand voor domein niet verkrijgen"
-
-msgid "can't retrieve config filename for domain to overwrite"
-msgstr "kan config bestandsnaam voor te overschrijven domein niet verkrijgen "
 
 msgid "canceled by client"
 msgstr "geannuleerd door cliënt"
@@ -4951,9 +4842,6 @@ msgstr "kan NIC definitie voor vlan %d niet vinden"
 msgid "cannot find character device %s"
 msgstr "kan karakter apparaat %s niet vinden"
 
-msgid "cannot find default console device"
-msgstr "kan standaard console apparaat niet vinden"
-
 #, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "kan nieuw aangemaakt volume '%s' niet vinden"
@@ -4979,14 +4867,8 @@ msgstr "kan geen willekeurige uuid genereren voor instanceid"
 msgid "cannot get CPU affinity of process %d"
 msgstr "kan CPU affiniteit niet krijgen voor proces %d"
 
-msgid "cannot get VCPUs info"
-msgstr "kan geen VCPUs info krijgen"
-
 msgid "cannot get current time"
 msgstr "kan huidige tijd niet krijgen"
-
-msgid "cannot get domain details"
-msgstr "kan geen domein details krijgen"
 
 #, c-format
 msgid "cannot get file context of '%s'"
@@ -5000,9 +4882,6 @@ msgstr "kan interface vlaggen op macvtap tap niet krijgen"
 
 msgid "cannot get the host uuid"
 msgstr "kan host uuid niet krijgen"
-
-msgid "cannot get time of day"
-msgstr "kan de tijd van de dag niet krijgen"
 
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "kan vCPU plaatsing & pCPU tijd niet krijgen"
@@ -5286,10 +5165,6 @@ msgstr "kan map '%s' niet lezen"
 msgid "cannot read domain image '%s'"
 msgstr "kan domein image '%s' niet lezen"
 
-#, c-format
-msgid "cannot read file %s"
-msgstr "kan bestand %s niet lezen"
-
 msgid "cannot read from stream"
 msgstr "kan niet van stream lezen"
 
@@ -5410,10 +5285,6 @@ msgstr "kan niet stat fd: %d"
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "kan stat bestand '%s' niet uitvoeren"
-
-#, c-format
-msgid "cannot stat: %s"
-msgstr "kan niet stat: %s"
 
 #, c-format
 msgid "cannot statvfs path '%s'"
@@ -5567,9 +5438,6 @@ msgstr "syntax fout in configuratiebestand"
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "syntax fout in configuratiebestand: %s"
-
-msgid "conn, or private data is NULL"
-msgstr "conn, of privé data is NULL"
 
 msgid "connect to the guest console"
 msgstr "verbindt met de gast console"
@@ -5769,9 +5637,6 @@ msgstr "kon XML niet ontleden"
 
 msgid "could not parse arguments"
 msgstr "kon argumenten niet ontleden"
-
-msgid "could not read CPU flags"
-msgstr "kan CPU vlaggen niet lezen"
 
 msgid "could not read xml file"
 msgstr "kon xml bestand niet lezen"
@@ -6000,9 +5865,6 @@ msgstr "schijf %s heeft geen informatie encryptie"
 msgid "disk %s not found"
 msgstr "schijf %s niet gevonden"
 
-msgid "disk aio mode not supported with this QEMU binary"
-msgstr "schijf aio mode wordt niet ondersteund met dit QEMU binaire programma"
-
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "schijf bus '%s' ondersteunt geen hotplug"
@@ -6105,32 +5967,17 @@ msgstr "domein informatie in XML"
 msgid "domain information incomplete, missing HVM loader"
 msgstr "domein-informatie onvolledig, HVM lader ontbreekt"
 
-msgid "domain information incomplete, missing cpu_cap"
-msgstr "domein informatie onvolledig, cpu_cap ontbreekt"
-
-msgid "domain information incomplete, missing cpu_weight"
-msgstr "domein informatie onvolledig, cpu_weight ontbreekt"
-
-msgid "domain information incomplete, missing domid"
-msgstr "domein informatie onvolledig, domid ontbreekt"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "domein-informatie onvolledig, kernel en bootloader ontbreken"
 
 msgid "domain information incomplete, missing name"
 msgstr "domein-informatie onvolledig, naam ontbreekt"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "domein-informatie onvolledig, uuid ontbreekt"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "domein-informatie onvolledig, vbd heeft geen dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "domein-informatie onvolledig, vbd heeft geen src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "domein informatie onjuist, domid niet numeriek"
 
 msgid "domain is already running"
 msgstr "domein draait al"
@@ -6156,12 +6003,6 @@ msgstr "domein naam of uuid"
 msgid "domain name, id or uuid"
 msgstr "domein naam, id of uuid"
 
-msgid "domain not active"
-msgstr "domein niet actief"
-
-msgid "domain not running"
-msgstr "domein draait niet"
-
 msgid "domain save job"
 msgstr "domein opslaan taak"
 
@@ -6176,9 +6017,6 @@ msgstr "domein type"
 
 msgid "domain vcpu counts"
 msgstr "domein vcpu aantal"
-
-msgid "domainBlockPeek is not supported for dom0"
-msgstr "domainBlockPeek wordt niet ondersteund voor dom0"
 
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare stelde uri niet in"
@@ -6347,17 +6185,11 @@ msgstr "toewijzen van bestandsbuffer mislukte"
 msgid "failed to apply capabilities: %d"
 msgstr "Mogelijkheden toepassen mislukte: %d"
 
-msgid "failed to build sexpr"
-msgstr "bouwen van sexpr mislukte"
-
 msgid "failed to close file"
 msgstr "sluiten van bestand mislukte"
 
 msgid "failed to close or write to profile"
 msgstr "schrijven naar of sluiten van profiel mislukte"
-
-msgid "failed to connect to Xen Store"
-msgstr "Verbinden met Xen Store mislukte"
 
 msgid "failed to connect to monitor socket"
 msgstr "verbinden met monitor socket mislukte"
@@ -6365,22 +6197,12 @@ msgstr "verbinden met monitor socket mislukte"
 msgid "failed to connect to the hypervisor"
 msgstr "verbinden met de hypervisor mislukte"
 
-msgid "failed to connect to xend"
-msgstr "verbinden met xend mislukte"
-
-msgid "failed to create a socket"
-msgstr "aanmaken van socket mislukte"
-
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "aanmaken van map '%s' mislukte"
 
 msgid "failed to create include file"
 msgstr "aanmaken van include bestand mislukte"
-
-#, c-format
-msgid "failed to create link %s to %s"
-msgstr "aanmaken van link %s naar %s mislukte"
 
 #, c-format
 msgid "failed to create logfile %s"
@@ -6484,10 +6306,6 @@ msgid "failed to load module %s %s"
 msgstr "laden van module %s mislukt %s"
 
 #, c-format
-msgid "failed to lseek or read from file: %s"
-msgstr "lseak of lezen van bestand mislukte: %s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "netwerk %s als autostart te markeren mislukte"
 
@@ -6513,15 +6331,8 @@ msgstr "openen van configuratie bestand voor lezen mislukte"
 msgid "failed to open file"
 msgstr "openen van bestand mislukte"
 
-#, c-format
-msgid "failed to open for reading: %s"
-msgstr "openen voor lezen mislukte: %s"
-
 msgid "failed to open the log file. check the log file path"
 msgstr "het log bestand openen mislukte. controleer het log bestand pad"
-
-msgid "failed to parse Xend domain information"
-msgstr "ontleden van Xend domain informatie mislukte"
 
 msgid "failed to parse configuration file"
 msgstr "ontleden van configuratie bestand mislukte"
@@ -6546,9 +6357,6 @@ msgstr "lezen van configuratie bestand mislukte"
 msgid "failed to read configuration file %s"
 msgstr "lezen van configuratie bestand %s mislukte"
 
-msgid "failed to read from Xen Daemon"
-msgstr "lezen van Xen daemon mislukte"
-
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "lezen van metadata lengte in '%s' mislukte"
@@ -6563,13 +6371,6 @@ msgstr "kan qemu koptekst net lezen"
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr "lezen van tijdelijk bestand aangemaakt met sjabloon %s mislukte"
-
-#, c-format
-msgid "failed to remove link %s"
-msgstr "verwijderen van link %s mislukte"
-
-msgid "failed to remove old domain from config map"
-msgstr "verwijderen van oude domein uit config kaart mislukte"
 
 #, c-format
 msgid "failed to remove pool '%s'"
@@ -6636,9 +6437,6 @@ msgstr "schrijven van koptekst naar domein opslag bestand '%s' mislukte"
 msgid "failed to write the log file"
 msgstr "schrijven naar het log bestand mislukte"
 
-msgid "failed to write to Xen Daemon"
-msgstr "schrijven naar Xen daemon mislukte"
-
 msgid "failed to write to profile"
 msgstr "schrijven naar het profiel mislukte"
 
@@ -6689,9 +6487,6 @@ msgstr "bestand met geheim attributen in XML"
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "bestandssysteem is niet van het type 'template' of 'mount'"
 
-msgid "filesystem passthrough not supported by this QEMU"
-msgstr "bestandssysteem doorgeven niet ondersteund door deze QEMU"
-
 msgid "filter has no name"
 msgstr "filter heeft geen naam"
 
@@ -6704,9 +6499,6 @@ msgstr "filter zou een lus introduceren"
 
 msgid "find potential storage pool sources"
 msgstr "zoek naar potentiële opslag pool bronnen"
-
-msgid "finding dom on config list"
-msgstr "dom zoeken op config lijst"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "flags parameter moet VIR_MEMORY_VIRTUAL of VIR_MEMORY_PHYSICAL zijn"
@@ -6808,13 +6600,6 @@ msgstr ""
 "host naam op bestemming vastgesteld als localhost, maar migratie vereist een "
 "FQDN"
 
-msgid "hotplug of device type not supported"
-msgstr "hotpluggen van apparaat type niet ondersteund"
-
-#, c-format
-msgid "hugepage backing not supported by '%s'"
-msgstr "hugepage backing wordt niet ondersteund door '%s'"
-
 msgid "hypervisor connection URI"
 msgstr "hypervisor verbinding URI"
 
@@ -6864,9 +6649,6 @@ msgstr "info ballon antwoord miste ballon data"
 
 msgid "info migration reply was missing return status"
 msgstr "info migratie antwoord miste retour status"
-
-msgid "initializing inotify"
-msgstr "initialiseren van inotify"
 
 msgid "interface has no name"
 msgstr "interface heeft geen naam"
@@ -7274,9 +7056,6 @@ msgstr "levend"
 
 msgid "live migration"
 msgstr "live migratie"
-
-msgid "looking up dom"
-msgstr "dom opzoeken"
 
 msgid "lxc state driver is not active"
 msgstr "lxc toestand driver is niet actief"
@@ -7730,10 +7509,6 @@ msgid "no PCI vendor ID supplied for '%s'"
 msgstr "geen PCI leverancier ID opgegeven voor '%s'"
 
 #, c-format
-msgid "no QEMU URI path given, try %s"
-msgstr "geen QEMU URI pad opgegeven, probeer %s"
-
-#, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
 msgstr "geen SCSI LUN ID opgegeven voor '%s'"
 
@@ -7780,9 +7555,6 @@ msgstr "geen USB product ID opgegeven voor '%s'"
 #, c-format
 msgid "no USB vendor ID supplied for '%s'"
 msgstr "geen USB leverancier ID opgegeven voor '%s'"
-
-msgid "no VirtualBox driver path specified (try vbox:///session)"
-msgstr "geen VirtualBox driver pad gespecificeerd (probeer vbox:///session)"
 
 #, c-format
 msgid "no assigned pty for device %s"
@@ -7837,9 +7609,6 @@ msgstr "geen domein configuratie"
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr "geen domein snapshot met overeenkomende naam '%s'"
-
-msgid "no domain with matching id"
-msgstr "geen domein met overeenkomend id"
 
 #, c-format
 msgid "no domain with matching id %d"
@@ -7969,9 +7738,6 @@ msgstr "node info niet geïmplementeerd op dit platform"
 msgid "node information"
 msgstr "node informatie"
 
-msgid "node information incomplete, missing scheduler name"
-msgstr "node informatie onvolledig, scheduler naam ontbreekt"
-
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "niet-nul ncpus komt niet overeen met NULL cpus"
 
@@ -7995,9 +7761,6 @@ msgstr "nwfilter is in gebruik"
 
 msgid "offline"
 msgstr "offline"
-
-msgid "on_xend_start not present in sexpr"
-msgstr "on_xend_start miet aanwezig in sexpr"
 
 msgid "only TCP listen is supported for chr device"
 msgstr "alleen TCP luisteren wordt ondersteund voor chr apparaat"
@@ -8057,10 +7820,6 @@ msgstr "parameter=waarde"
 
 msgid "parser error"
 msgstr "ontleed fout"
-
-#, c-format
-msgid "parsing uuid %s"
-msgstr "ontleden van uuid %s"
 
 msgid "passthrough mode requires a character device type attribute"
 msgstr "doorgeef mode vereist een karakter apparaat type attribuut"
@@ -8228,9 +7987,6 @@ msgstr "geeft een nieuwe naam op tijdens migratie (als dit ondersteund wordt)"
 msgid "requested authentication type %s rejected"
 msgstr "aangvraagde authenticatie type %s is afgewezen"
 
-msgid "requested device does not exist"
-msgstr "aangevraagde apparaat bestaat niet"
-
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
@@ -8312,10 +8068,6 @@ msgid "script used to bridge network interface"
 msgstr "script gebruikt voor brug netwerk interface"
 
 #, c-format
-msgid "sdl not supported by '%s'"
-msgstr "sdl niet ondersteund door '%s'"
-
-#, c-format
 msgid "secret '%s' does not have a value"
 msgstr "geheim '%s' heeft geen waarde"
 
@@ -8383,9 +8135,6 @@ msgstr "instellen schijf wachtwoord wordt niet ondersteund"
 
 msgid "setting up HAL callbacks failed"
 msgstr "instellen van HAL callbacks faalde"
-
-msgid "sexpr2string failed"
-msgstr "sexpr2string mislukte"
 
 msgid "show free memory for all NUMA cells"
 msgstr "laat vrij geheugen voor alle NUMA cellen zien"
@@ -8458,9 +8207,6 @@ msgstr "spice zlib compressie ontbreekt"
 
 msgid "spicevmc device type only supports virtio"
 msgstr "spicevm apparaat type ondersteunt alleen virtio"
-
-msgid "spicevmc not supported in this QEMU binary"
-msgstr "spicevmc wordt niet ondersteund met dit QEMU binaire programma"
 
 msgid "start a (previously defined) inactive domain"
 msgstr "start een (eerder gedefinieerd) inactief domein"
@@ -8578,10 +8324,6 @@ msgstr "doel %s bestaat al"
 msgid "target %s:%d already exists"
 msgstr "doel %s:%d bestaat al"
 
-#, c-format
-msgid "target '%s' already exists"
-msgstr "Doel '%s' bestaat al"
-
 msgid "target config data type format"
 msgstr "doel config data formaat"
 
@@ -8613,10 +8355,6 @@ msgstr "sjabloon naam langer is dan maximum lengte"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: geef een pad op of gebruik test:///default"
-
-#, c-format
-msgid "the QEMU binary %s does not support smbios settings"
-msgstr "het QEMU binaire programma %s ondersteunt smbios instellingen niet"
 
 msgid "the backing volume if taking a snapshot"
 msgstr "de back-up volume als een snapshot genomen wordt"
@@ -8682,9 +8420,6 @@ msgstr "teveel geheugen stats verzocht: %d > %d"
 
 msgid "too many secrets for qcow encryption"
 msgstr "te veel geheimen voor qcow encryptie"
-
-msgid "topology syntax error"
-msgstr "topologie syntax fout"
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr ""
@@ -8756,10 +8491,6 @@ msgid "unable to close %s"
 msgstr "kan %s niet sluiten"
 
 #, c-format
-msgid "unable to connect to '%s:%s'"
-msgstr "kan niet verbinden met '%s:%s'"
-
-#, c-format
 msgid "unable to create hugepage path %s"
 msgstr "aanmaken van hugepage pad %s mislukte"
 
@@ -8769,9 +8500,6 @@ msgstr "niet in staat om rundir %s aan te maken: %s"
 
 msgid "unable to create socket pair"
 msgstr "kan socket paar niet aanmaken"
-
-msgid "unable to determine original VLAN"
-msgstr "kan originele VLAN niet bepalen"
 
 #, c-format
 msgid "unable to execute QEMU command '%s'"
@@ -8791,9 +8519,6 @@ msgstr "kan PID %d beveiliging context niet krijgen"
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr "kan huidig proces context '%s' niet krijgen"
-
-msgid "unable to get current time"
-msgstr "kan huidige tijd niet krijgen"
 
 #, c-format
 msgid "unable to handle monitor type: %s"
@@ -8822,10 +8547,6 @@ msgid "unable to register monitor events"
 msgstr "kan monitor gebeurtenissen niet registreren"
 
 #, c-format
-msgid "unable to resolve hostname '%s': %s"
-msgstr "kan host naam '%s' niet oplossen: %s"
-
-#, c-format
 msgid "unable to set ownership of '%s' to %d:%d"
 msgstr "kan eigenaar van '%s' niet instellen op %d:%d"
 
@@ -8852,9 +8573,6 @@ msgstr "kan socket beveiliging context '%s' niet instellen"
 #, c-format
 msgid "unable to set tty attributes: %s"
 msgstr "kan tty attributen niet instellen: %s"
-
-msgid "unable to store config file handle"
-msgstr "kan config bestand hendel niet opslaan"
 
 msgid "unable to unload already unloaded profile"
 msgstr "kan leeggemaakt profiel niet opnieuw leegmaken"
@@ -8904,10 +8622,6 @@ msgstr "onverwacht UML URI pad '%s', probeer uml:///session"
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr "onverwacht UML URI pad '%s', probeer uml:///system"
-
-#, c-format
-msgid "unexpected Xen URI path '%s', try xen:///"
-msgstr "onverwacht Xen URI pad '%s', probeer xen:///"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -9106,9 +8820,6 @@ msgstr "onverwachte waarde %s voor on_poweroff"
 #, c-format
 msgid "unexpected value %s for on_reboot"
 msgstr "onverwachte waarde %s voor on_reboot"
-
-msgid "unexpected value from on_xend_start"
-msgstr "onverwachte waarde van on_xend_start"
 
 #, c-format
 msgid "unexpected video model %d"
@@ -9525,9 +9236,6 @@ msgstr "niet-ondersteund console doel type %s"
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "niet-ondersteund data type '%c' voor arg '%s'"
 
-msgid "unsupported device type"
-msgstr "niet-ondersteund apparaat type"
-
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "niet-ondersteunde schijf bus '%s' met apparaat instelling"
@@ -9594,10 +9302,6 @@ msgstr "niet-ondersteund protocol family '%s'"
 #, c-format
 msgid "unsupported protocol type %s"
 msgstr "niet-ondersteund protocol type %s"
-
-#, c-format
-msgid "unsupported rtc tickpolicy '%s'"
-msgstr "niet-ondersteunde rtc tickpolicy '%s'"
 
 #, c-format
 msgid "unsupported rtc timer tickpolicy '%s'"
@@ -9710,9 +9414,6 @@ msgstr "virGetUserID is niet beschikbaar"
 msgid "virGetUserName is not available"
 msgstr "virGetUserName is niet beschikbaar"
 
-msgid "virHashLookup"
-msgstr "virHashLookup"
-
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL def"
 
@@ -9781,9 +9482,6 @@ msgstr "volume gebruik opgeven, maar volume pad ontbreekt"
 msgid "warning"
 msgstr "waarschuwing"
 
-msgid "watch already tracked"
-msgstr "bewaker al gevolgd"
-
 msgid "watchdog must contain model name"
 msgstr "bewaker moet model naam bevatten"
 
@@ -9806,51 +9504,6 @@ msgstr "write: %s: schrijven naar tijdelijk bestand mislukte: %s"
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen bus ondersteunt %s input apparaat niet"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen ondersteunt geen bandbreedte limieten tijdens de "
-"migratie"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen ondersteunt geen hernoemen van domeinen tijdens "
-"de migratie"
-
-msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr ""
-"xenDaemonDomainMigrate: een host naam moet in de URI gespecificeerd worden"
-
-msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr "xenDaemonDomainMigrate: ongeldig poort nummer"
-
-msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr ""
-"xenDaemonDomainMigrate: alleen xenmigr:// migraties worden ondersteund door "
-"Xen"
-
-msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr "xenDaemonDomainMigrate: niet-ondersteunde vlag"
-
-msgid "xenDaemonDomainMigrate: xend cannot migrate paused domains"
-msgstr "xenDaemonDomainMigrate: xend kan geen gepauzeerde domeinen migreren"
-
-msgid "xenDaemonGetAutostart failed to find this domain"
-msgstr "xenDaemonGetAutostart kon dit domein niet vinden"
-
-msgid "xenDaemonSetAutostart failed to find this domain"
-msgstr "xenDaemonSetAutostart kon dit domein niet vinden"
-
-msgid "xenXMConfigCacheRefresh: virHashAddEntry"
-msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
-
-#, c-format
-msgid "xend_post: error from xen daemon: %s"
-msgstr "xend_post: fout van xen daemon: %s"
 
 msgid "xml data file to export from"
 msgstr "xml data bestand waarnaar te exporteren"

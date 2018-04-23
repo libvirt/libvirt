@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-23 06:48-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -309,10 +309,6 @@ msgid "%6s: Checking %-60s: "
 msgstr "%6s: 確認中 %-60s: "
 
 #, c-format
-msgid "%d status from xen daemon: %s:%s"
-msgstr "Xen デーモンから %d の状態: %s:%s"
-
-#, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
@@ -479,10 +475,6 @@ msgid "%s: initialization failed\n"
 msgstr "%s: 初期化に失敗しました\n"
 
 #, c-format
-msgid "%s: invalid path"
-msgstr "%s: 無効なパス"
-
-#, c-format
 msgid "%s: malformed fd %s"
 msgstr "%s: 不正な形式の fd %s"
 
@@ -625,9 +617,6 @@ msgstr "'info blockstats'  はこの qemu ではサポートがありません"
 
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus の応答に 'logical-id' がありません"
-
-msgid "'multifunction=on' is not supported with this QEMU binary"
-msgstr "'multifunction=on' はこの QEMU バイナリーにサポートされていません"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus の応答に 'online' がありません"
@@ -1519,10 +1508,6 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08x を持つ CPU モデルを見つけられませんでした"
 
 #, c-format
-msgid "Cannot find QEMU binary %s"
-msgstr "QEMU バイナリー %s が見つかりません"
-
-#, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "UML カーネル %s を見つけられません"
 
@@ -1567,9 +1552,6 @@ msgid ""
 msgstr ""
 "解決できない変数または利用不可能な一覧要素のためフィルターを初期化できませ"
 "ん: %s"
-
-msgid "Cannot modify live config if domain is inactive"
-msgstr "ドメインが休止中に動的設定を変更できません"
 
 #, c-format
 msgid "Cannot mount filesystem type %s"
@@ -1749,9 +1731,6 @@ msgstr "このプラットフォームにおいて '%s' の名前を '%s' に変
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "TTY を制御せずに対話式コンソールを実行できません"
 
-msgid "Cannot save host domain"
-msgstr "ホストドメインを保存できません"
-
 msgid "Cannot set a base label with AppArmour"
 msgstr "AppArmour を用いてベースラベルを設定できません"
 
@@ -1884,10 +1863,6 @@ msgstr "パラレル/シリアルデバイスに対して virtio serial を使�
 
 msgid "Cannot write data"
 msgstr "データを書き込みできません"
-
-#, c-format
-msgid "Cap %s too big for destination"
-msgstr "キャップ %s が宛先にとって大きすぎます"
 
 msgid "Capabilities not available"
 msgstr "ケイパビリティが利用可能ではありません"
@@ -2983,16 +2958,6 @@ msgstr "作成時間"
 msgid "Creation of %s volumes is not supported"
 msgstr "%s ボリュームの作成はサポートされていません"
 
-#, c-format
-msgid "Credit scheduler cap parameter (%d) is out of range (0-65534)"
-msgstr ""
-"クレジットスケジューラーの cap パラメーター (%d) が範囲外です (0-65534)"
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr ""
-"credit スケジューラーの weight パラメーター (%d) が範囲外です (1-65535)"
-
 msgid "Current:"
 msgstr "カレント:"
 
@@ -3123,10 +3088,6 @@ msgstr "デバイス %s がすでに存在します"
 #, c-format
 msgid "Device %s detached\n"
 msgstr "デバイス %s が切断されました\n"
-
-#, c-format
-msgid "Device %s has been assigned to guest %d"
-msgstr "デバイス %s がゲスト %d に割り当てられました"
 
 #, c-format
 msgid "Device %s in use"
@@ -3296,10 +3257,6 @@ msgid "Domain %s destroyed\n"
 msgstr "ドメイン %s は強制停止されました\n"
 
 #, c-format
-msgid "Domain %s did not start"
-msgstr "ドメイン %s が開始しませんでした"
-
-#, c-format
 msgid "Domain %s didn't show up"
 msgstr "ドメイン %s が現れませんでした"
 
@@ -3312,20 +3269,12 @@ msgid "Domain %s has no manage save image; removal skipped"
 msgstr "ドメイン %s は管理保存イメージがありません。削除をスキップします"
 
 #, c-format
-msgid "Domain %s is already running"
-msgstr "ドメイン %s がすでに実行中です"
-
-#, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "ドメイン %s を再起動しています\n"
 
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "ドメイン %s はシャットダウン中です\n"
-
-#, c-format
-msgid "Domain %s isn't running."
-msgstr "ドメイン %s が実行中ではありません"
 
 #, c-format
 msgid "Domain %s marked as autostarted\n"
@@ -3615,12 +3564,6 @@ msgstr "%s のユーザー名を入力してください"
 msgid "Enter username for %s [%s]"
 msgstr "%s [%s] のユーザー名を入力してください"
 
-msgid "Error adding file to config cache"
-msgstr "ファイルを設定キャッシュに追加中にエラーが発生しました"
-
-msgid "Error adding file to config list"
-msgstr "ファイルを設定一覧に追加中にエラーが発生しました"
-
 msgid "Error creating initial configuration"
 msgstr "初期設定の作成中にエラーが発生しました"
 
@@ -3636,9 +3579,6 @@ msgstr "'%s' を開いている子プロセスからエラーが起きました"
 msgid "Error getting physical function's '%s' virtual_functions"
 msgstr ""
 "物理ファンクションの '%s' 仮想ファンクションの取得中にエラーが発生しました"
-
-msgid "Error looking up domain"
-msgstr "ドメインの検索においてエラーが発生しました"
 
 msgid "Error notify callback must be supplied"
 msgstr "エラー通知のコールバックが提供される必要があります"
@@ -4238,10 +4178,6 @@ msgstr ""
 msgid "Failed to create filesystem probe for device %s"
 msgstr "デバイス %s のファイルシステムのプローブ作成に失敗しました"
 
-#, c-format
-msgid "Failed to create inactive domain %s"
-msgstr "停止状態のドメイン %s の作成に失敗しました"
-
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr ""
 "XML ドキュメントにおいてブリッジノード化にインターフェースを作成できませんで"
@@ -4522,9 +4458,6 @@ msgstr "作成されたシークレットの UUID の取得に失敗しました
 msgid "Failed to get VNC port. Is this domain using VNC?"
 msgstr ""
 "VNC ポートの取得に失敗しました。このドメインは VNC ポートを使用していますか？"
-
-msgid "Failed to get a scheduler name"
-msgstr "スメジューラ名の取得に失敗しました"
 
 #, c-format
 msgid "Failed to get block stats %s %s"
@@ -4999,10 +4932,6 @@ msgid "Failed to read PCI config space for %s"
 msgstr "%s の PCI 設定空間の読み込みに失敗しました"
 
 #, c-format
-msgid "Failed to read any block statistics for domain %d"
-msgstr "ドメイン %d に対するすべてのブロック統計情報の読み込みに失敗しました"
-
-#, c-format
 msgid "Failed to read file '%s'"
 msgstr "ファイル '%s' を読み込めません"
 
@@ -5037,9 +4966,6 @@ msgstr "ハイパーバイザーへの再接続に失敗しました"
 
 msgid "Failed to recv file descriptor"
 msgstr "ファイル記述子の受信に失敗しました"
-
-msgid "Failed to redefine sexpr"
-msgstr "sexpr の再定義に失敗しました"
 
 #, c-format
 msgid "Failed to refresh pool %s"
@@ -5606,10 +5532,6 @@ msgstr ""
 "サポートされないコントローラーのモデル '%s' がディスク '%s' に対して見つかり"
 "ました"
 
-#, c-format
-msgid "Frontend block device not connected for domain %d"
-msgstr "フロントエンドのブロックデバイスがドメイン %d に接続されていません"
-
 msgid "Fully-qualified path of block device"
 msgstr "ブロックデバイスの完全修飾パス"
 
@@ -5804,9 +5726,6 @@ msgstr "HTTP 応答コード %d が '%s' へのアップロードに対してあ
 
 msgid "Handshake is already complete"
 msgstr "ハンドシェイクがすでに完了しています"
-
-msgid "Hash operation not allowed during iteration"
-msgstr "ハッシュの操作は繰り返し中に許可されません"
 
 #, c-format
 msgid "Hook for %s, failed to find operation #%d"
@@ -6381,9 +6300,6 @@ msgstr "無効なネットワークフィルター: %s"
 msgid "Invalid parameter"
 msgstr "無効なパラメーター"
 
-msgid "Invalid parameter count"
-msgstr "無効なパラメーターカウントです"
-
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "virXPathBoolean() への無効なパラメーター"
 
@@ -6749,12 +6665,6 @@ msgstr ""
 "不正な形式の 'uri_aliases' 設定エントリー '%s', 'alias=uri://host/path' が期"
 "待されます"
 
-msgid "Malformed QEMU device list string, missing '='"
-msgstr "不正な形式の QEMU デバイス一覧文字列、'=' がありません"
-
-msgid "Malformed QEMU device list string, missing quote"
-msgstr "不正な形式の QEMU デバイス一覧文字列、引用符がありません"
-
 #, c-format
 msgid "Malformed TLS whitelist regular expression '%s'"
 msgstr "不正な形式の TLS ホワイトリスト正規表現 '%s'"
@@ -6830,10 +6740,6 @@ msgstr "最大メモリー:"
 
 msgid "Maximum CPUs greater than specified machine type limit"
 msgstr "最大 CPU が指定されたマシン形式の制限値より大きいです"
-
-#, c-format
-msgid "Memory %lu too small, min %lu"
-msgstr "メモリー %lu が小さすぎます、最小 %lu です"
 
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
@@ -7409,9 +7315,6 @@ msgstr "不明な名前またはサービス"
 msgid "Name:"
 msgstr "名前:"
 
-msgid "Named device aliases are not supported"
-msgstr "名前付きデバイスのエイリアスはサポートされません"
-
 #, c-format
 msgid "Network %s XML configuration edited.\n"
 msgstr "ネットワーク %s XML 設定が変更されました。\n"
@@ -7910,12 +7813,6 @@ msgstr "IPv4 または IPv6 アドレスのみが iptables とともに使用で
 
 msgid "Only PCI device addresses with function=0 are supported"
 msgstr "function=0 を持つ PCI デバイスアドレスのみがサポートされます"
-
-msgid ""
-"Only PCI device addresses with function=0 are supported with this QEMU binary"
-msgstr ""
-"function=0 を持つ PCI デバイスアドレスのみがこの QEMU バイナリーでサポートさ"
-"れます。"
 
 msgid "Only PTY console types are supported"
 msgstr "PTY 形式のみがサポートされます"
@@ -8418,9 +8315,6 @@ msgstr "QEMU モニターコマンド"
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU バイナリー %s が実行可能ではありません"
-
-msgid "QEMU does not support seccomp sandboxes"
-msgstr "QEMU は seccomp サンドボックスをサポートしません"
 
 msgid "QEMU guest agent is not available due to an error"
 msgstr "QEMU ゲストエージェントがエラーのため利用可能ではありません"
@@ -8998,9 +8892,6 @@ msgstr "ディスク %s の設定はネットワークタイプのディスク�
 msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
 msgstr ""
 "ディスク 'requisite' の設定は CD-ROM またはフロッピーに対してのみ許可されます"
-
-msgid "Setting of link state is not supported by this qemu"
-msgstr "リンクステートの設定はこの QEMU によりサポートされていません"
 
 #, c-format
 msgid ""
@@ -10006,14 +9897,6 @@ msgid "Transition started"
 msgstr "転送が開始されました"
 
 #, c-format
-msgid ""
-"Transport '%s' in URI scheme is not supported, try again without the "
-"transport part"
-msgstr ""
-"URI スキーマにおいてトランスポート '%s' はサポートされません。トランスポート"
-"部分を外して再び試してください"
-
-#, c-format
 msgid "Transport error during %s: %s (%d)"
 msgstr "%s 中に転送エラーが発生しました: %s (%d)"
 
@@ -10192,9 +10075,6 @@ msgstr "ファイル %s を loop デバイスと関連付けられません"
 #, c-format
 msgid "Unable to attach %s to loop device"
 msgstr "%s をループデバイスに接続できません"
-
-msgid "Unable to attach network devices without vlan"
-msgstr "VLAN なしでネットワークデバイスを接続できません"
 
 msgid "Unable to become session leader"
 msgstr "セッションリーダーになれません"
@@ -10721,14 +10601,6 @@ msgstr "ミューテックスを初期化できません"
 msgid "Unable to invoke fstrim"
 msgstr "fstrim を呼び出せません"
 
-#, c-format
-msgid "Unable to issue hypervisor ioctl %d"
-msgstr "ハイパーバイザーの I/O 制御 %d を発行できません"
-
-#, c-format
-msgid "Unable to issue hypervisor ioctl %lu"
-msgstr "ハイパーバイザーの I/O 制御 %lu を発行できません"
-
 msgid "Unable to join domain namespace"
 msgstr "ドメインの名前空間に参加できません"
 
@@ -10737,10 +10609,6 @@ msgstr "ソケットにおいてリッスンできません"
 
 msgid "Unable to load certificate"
 msgstr "証明書が読み込めません"
-
-#, c-format
-msgid "Unable to lock %zu bytes of memory"
-msgstr "%zu バイトのメモリーをロックできません"
 
 msgid "Unable to lookup SELinux process context"
 msgstr "SELinux プロセスコンテキストを参照できません"
@@ -11146,9 +11014,6 @@ msgstr "バインドソース %s の統計を取得できません"
 msgid "Unable to stat bind target %s"
 msgstr "バインドターゲット %s の統計を取得できません"
 
-msgid "Unable to suspend domain due to missing system_wakeup monitor command"
-msgstr "system_wakeup モニターコマンドがないため、ドメインを一時停止できません"
-
 #, c-format
 msgid "Unable to symlink directory %s to %s"
 msgstr "ディレクトリー %s を %s にシンボリックリンクできません"
@@ -11159,10 +11024,6 @@ msgstr "%s を切り詰められません"
 
 msgid "Unable to unescape command"
 msgstr "コマンドをエスケープ解除できません"
-
-#, c-format
-msgid "Unable to unlock %zu bytes of memory"
-msgstr "%zu バイトのメモリーをロック解除できません"
 
 #, c-format
 msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
@@ -11194,9 +11055,6 @@ msgstr "モニター条件を待てません"
 
 msgid "Unable to wait on parent process"
 msgstr "親プロセスを待機できません"
-
-msgid "Unable to wake up domain due to missing system_wakeup monitor command"
-msgstr "system_wakeup モニターコマンドがないため、ドメインを再開できません"
 
 msgid "Unable to watch epoll FD"
 msgstr "epoll ファイルディスクリプターを監視できません"
@@ -11261,20 +11119,12 @@ msgid "Unexpected CPU mode %d"
 msgstr "予期しない CPU モード %d"
 
 #, c-format
-msgid "Unexpected HTTP error code %d"
-msgstr "予期しない HTTP エラーコード %d"
-
-#, c-format
 msgid "Unexpected HTTP response during %s: %d"
 msgstr "%s 中に予期しない HTTP 応答がありました: %d"
 
 #, c-format
 msgid "Unexpected JSON reply '%s'"
 msgstr "予期しない JSON 応答 '%s'"
-
-#, c-format
-msgid "Unexpected LXC URI path '%s', try lxc:///"
-msgstr "予期しない LXC URI パス '%s' です、lxc:/// を試してください"
 
 msgid "Unexpected QEMU agent still active during domain deletion"
 msgstr "予期しない QEMU エージェントがドメインの削除中にまだアクティブです"
@@ -11511,13 +11361,6 @@ msgstr "不明なリリース: %s"
 
 msgid "Unknown return code"
 msgstr "不明なリターンコード"
-
-msgid "Unknown scheduler"
-msgstr "不明なスケジューラー"
-
-#, c-format
-msgid "Unknown scheduler %d"
-msgstr "不明なスケジューラー %d"
 
 #, c-format
 msgid "Unknown source mode '%s'"
@@ -11929,10 +11772,6 @@ msgid "Wakeup a domain that was previously suspended by power management."
 msgstr "電源管理により以前に一時停止されたドメインを再開します。"
 
 #, c-format
-msgid "Weight %s too big for destination"
-msgstr "ウェイト %s が宛先にとって大きすぎます"
-
-#, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
@@ -12003,21 +11842,6 @@ msgstr "XML ノードがテキストを含んでいません、xsd:dateTime 値�
 #, c-format
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "'%s' への呼び出しに対する応答の XPath 評価が失敗しました"
-
-msgid "Xend only supports modifying both live and persistent config"
-msgstr "Xend バージョンが動的なまたは永続的な設定の変更をサポートしません"
-
-#, c-format
-msgid "Xend returned HTTP Content-Length of %d, which exceeds maximum of %d"
-msgstr ""
-"Xend が %d の HTTP Content-Length を返しました、最大値 %d を超えています"
-
-msgid "Xm driver only supports adding disk or network devices"
-msgstr ""
-"Xm ドライバーはディスクまたはネットワークデバイスの追加のみをサポートします"
-
-msgid "Xm driver only supports modifying persistent config"
-msgstr "Xm ドライバーは永続的な設定の修正のみをサポートします"
 
 msgid "You are trying to set a number of CPUs bigger than the max possible."
 msgstr "可能である最大よりも大きな CPU 数を設定しようとしています。"
@@ -12104,16 +11928,6 @@ msgstr "親スナップショットの表示列の追加"
 #, c-format
 msgid "adding %s device failed: %s"
 msgstr "%s デバイスの追加に失敗しました: %s"
-
-msgid "adding watch @introduceDomain"
-msgstr "@introduceDomain のウォッチを追加しています"
-
-msgid "adding watch @releaseDomain"
-msgstr "@releaseDomain のウォッチを追加しています"
-
-#, c-format
-msgid "adding watch on %s"
-msgstr "%s のウォッチを追加しています"
 
 msgid "additionally display the type and device value"
 msgstr "種類とデバイスの値の詳細表示"
@@ -12224,10 +12038,6 @@ msgstr "引数のキー '%s' が短すぎます、種別のプレフィックス
 #, c-format
 msgid "argument key '%s' must not have null value"
 msgstr "引数キー '%s' は NULL 値を取り得ません"
-
-#, c-format
-msgid "argument out of range: %d"
-msgstr "引数が範囲外です: %d"
 
 msgid "argument unsupported"
 msgstr "サポートされない"
@@ -12401,9 +12211,6 @@ msgstr "blkio cgroup がマウントされていません"
 msgid "block"
 msgstr "ブロック"
 
-msgid "block I/O throttling not supported with this QEMU binary"
-msgstr "ブロック I/O スロットリングはこの QEMU バイナリーでサポートされません"
-
 msgid "block copy is not supported with this QEMU binary"
 msgstr "ブロックコピーはこの QEMU バイナリーでサポートされていません"
 
@@ -12423,12 +12230,6 @@ msgstr "ブロックジョブはこの QEMU バイナリーでサポートされ
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr "block peek 要求はリモートプロトコルには大きすぎます %zi > %d"
-
-msgid "block peeking not implemented"
-msgstr "ブロックののぞき見は実装されていません"
-
-msgid "block statistics not supported on this platform"
-msgstr "ブロックの統計はこのプラットフォームにおいてサポートされません"
 
 msgid "block_io_throttle device entry was not in expected format"
 msgstr "block_io_throttle device 項目が期待した形式ではありませんでした"
@@ -12604,15 +12405,6 @@ msgstr "cputune quota の値を構文解析できません"
 
 msgid "can't parse cputune shares value"
 msgstr "cputune shares の値を構文解析できません"
-
-msgid "can't retrieve config entry for domain to overwrite"
-msgstr "上書きする為のドメインの設定エントリを取り込めません"
-
-msgid "can't retrieve config file for domain"
-msgstr "ドメインの設定ファイルを取り込めません"
-
-msgid "can't retrieve config filename for domain to overwrite"
-msgstr "上書きする為のドメインの設定ファイル名を取り込めません"
 
 msgid "can't shrink capacity below existing allocation"
 msgstr "現在の割り当てを下回る容量に縮小できません"
@@ -12872,9 +12664,6 @@ msgstr "実行中のドメインのスナップショットを削除できませ
 msgid "cannot detach device on inactive domain"
 msgstr "停止状態のドメインではデバイスを外せません"
 
-msgid "cannot determine actual number of cells"
-msgstr "セルの実番号を決定できません"
-
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "'%s' のファイルシステムがわかりませんでした"
@@ -12979,9 +12768,6 @@ msgstr "キャラクターデバイス %s を見つけられませんでした"
 msgid "cannot find console device '%s'"
 msgstr "コンソールデバイス '%s' が見つかりません"
 
-msgid "cannot find default console device"
-msgstr "デフォルトのコンソールデバイスを見つけられません"
-
 #, c-format
 msgid "cannot find init path '%s' relative to container root"
 msgstr ""
@@ -13031,14 +12817,8 @@ msgstr "プロセス %d の CPU アフィニティを取得できません"
 msgid "cannot get RSS for domain"
 msgstr "ドメインの RSS を取得できません"
 
-msgid "cannot get VCPUs info"
-msgstr "仮想 CPU の情報を取得できません"
-
 msgid "cannot get current time"
 msgstr "現在の時刻を取得できません"
-
-msgid "cannot get domain details"
-msgstr "ドメインの詳細を取得できません"
 
 msgid "cannot get feature flags on macvtap tap"
 msgstr "macvtap タップにおいて機能フラグを取得できません"
@@ -13069,9 +12849,6 @@ msgstr "ホストの UUID を取得できません"
 
 msgid "cannot get the path of MEMORY cgroup controller"
 msgstr "MEMORY cgroup controller のパスを取得できません"
-
-msgid "cannot get time of day"
-msgstr "時刻を取得できません"
 
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "仮想 CPU 配置と物理 CPU 時間を取得できません"
@@ -13541,10 +13318,6 @@ msgid "cannot read domain image '%s'"
 msgstr "ドメインのイメージ '%s' を読み込めませんでした"
 
 #, c-format
-msgid "cannot read file %s"
-msgstr "ファイル %s を読み込めませんでした"
-
-#, c-format
 msgid "cannot read file '%s'"
 msgstr "ファイル '%s' を読み込みできません"
 
@@ -13724,10 +13497,6 @@ msgstr "ファイル '%s' の統計が出来ません"
 #, c-format
 msgid "cannot stat path '%s'"
 msgstr "パス '%s' の情報を取得できません"
-
-#, c-format
-msgid "cannot stat: %s"
-msgstr "統計できません: %s"
 
 #, c-format
 msgid "cannot statvfs path '%s'"
@@ -13984,9 +13753,6 @@ msgstr "設定ファイルの構文エラー: %s"
 msgid "conflicting occurrences of kvmclock feature"
 msgstr "kvmclock 機能の発生が競合しています"
 
-msgid "conn, or private data is NULL"
-msgstr "接続、またはプライベートデータが NULL です"
-
 msgid "connect to the guest console"
 msgstr "ゲストのコンソールへの接続"
 
@@ -14055,9 +13821,6 @@ msgstr "インターフェースの MAC アドレスからインターフェー�
 
 msgid "convert an interface name to interface MAC address"
 msgstr "インターフェース名からインターフェースの MAC アドレスへの変換"
-
-msgid "copy_on_read is not supported by this QEMU binary"
-msgstr "copy_on_read はこの QEMU バイナリーによりサポートされていません"
 
 msgid "corrupted profileid string"
 msgstr "破損した profileid 文字列"
@@ -14268,9 +14031,6 @@ msgstr "引数を構文解析できませんでした"
 #, c-format
 msgid "could not parse weight %s"
 msgstr "ウェイト %s を構文解析できません"
-
-msgid "could not read CPU flags"
-msgstr "CPU フラグを読み込めませんでした"
 
 msgid "could not read xml file"
 msgstr "XML ファイルを読み込めませんでした"
@@ -14777,9 +14537,6 @@ msgstr "ディスク '%s' はまだピボットの準備ができていません
 msgid "disk '%s' specified twice"
 msgstr "ディスク '%s' が二重定義されました"
 
-msgid "disk aio mode not supported with this QEMU binary"
-msgstr "ディスク aio モードはこの QEMU バイナリーでサポートされません"
-
 msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
 msgstr "ディスク属性: disk[,snapshot=type][,driver=type][,file=name]"
 
@@ -14794,14 +14551,6 @@ msgstr "ディスクバス '%s' はホットプラグができません"
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "ディスクのバス '%s' は更新できません"
-
-msgid "disk cache mode 'directsync' is not supported by this QEMU"
-msgstr ""
-"ディスクキャッシュモード 'directsync' はこの QEMU によりサポートされていませ"
-"ん"
-
-msgid "disk cache mode 'unsafe' is not supported by this QEMU"
-msgstr "ディスクキャッシュモード 'unsafe' はこの QEMU によりサポートされません"
 
 #, c-format
 msgid "disk device type '%s' cannot be detached"
@@ -15015,32 +14764,17 @@ msgstr "XML 形式のドメイン情報"
 msgid "domain information incomplete, missing HVM loader"
 msgstr "ドメイン情報が不完全です、HVM ローダーがありません"
 
-msgid "domain information incomplete, missing cpu_cap"
-msgstr "ドメイン情報が不完全です、cpu_cap がありません"
-
-msgid "domain information incomplete, missing cpu_weight"
-msgstr "ドメイン情報が不完全です、cpu_weight がありません"
-
-msgid "domain information incomplete, missing domid"
-msgstr "ドメイン情報が不完全です、domid が不足しています"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "ドメイン情報が不完全です、カーネルとブートローダーが不足しています"
 
 msgid "domain information incomplete, missing name"
 msgstr "ドメイン情報が不完全です、name が不足しています"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "ドメイン情報が不完全です、uuid が不足しています"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ドメイン情報が不完全です、vbd に dev がありません"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "ドメイン情報が不完全です、vbd に src がありません"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "ドメイン情報が正しくありません、domid は数値ではありません"
 
 msgid "domain is already running"
 msgstr "ドメインがすでに実行中です"
@@ -15081,12 +14815,6 @@ msgstr "ドメインの名前または UUID"
 msgid "domain name, id or uuid"
 msgstr "ドメインの名前、ID または UUID"
 
-msgid "domain not active"
-msgstr "ドメインがアクティブではありません"
-
-msgid "domain not running"
-msgstr "ドメインが実行中ではありません"
-
 msgid "domain save job"
 msgstr "ドメイン保存ジョブ"
 
@@ -15101,9 +14829,6 @@ msgstr "ドメイン形式"
 
 msgid "domain vcpu counts"
 msgstr "ドメインの仮想 CPU 数"
-
-msgid "domainBlockPeek is not supported for dom0"
-msgstr "domainBlockPeek は dom0 にはサポートされていません"
 
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare は uri をセットしませんでした"
@@ -15143,17 +14868,11 @@ msgstr "ディスクデバイスのドライバー"
 msgid "driver serial '%s' contains unsafe characters"
 msgstr "ドライバーのシリアル '%s' が安全ではない文字を含んでいます"
 
-msgid "dtb is not supported with this QEMU binary"
-msgstr "dtb がこの QEMU バイナリーでサポートされません"
-
 msgid "dump domain's memory only"
 msgstr "ドメインのメモリーのみダンプ"
 
 msgid "dump the core of a domain to a file for analysis"
 msgstr "解析用ファイルへのドメインのコアダンプ"
-
-msgid "dump-guest-core is not available with this QEMU binary"
-msgstr "dump-guest-core がこの QEMU バイナリーで利用できません"
 
 msgid "dump-guest-memory is not supported"
 msgstr "dump-guest-memory はサポートされません"
@@ -15478,9 +15197,6 @@ msgstr "SSH エージェントを使用した認証に失敗しました: %s"
 msgid "failed to begin transaction: %s%s%s"
 msgstr "トランザクションの開始に失敗しました: %s%s%s"
 
-msgid "failed to build sexpr"
-msgstr "S 式のビルドに失敗しました"
-
 msgid "failed to calculate ssh host key hash"
 msgstr "SSH ホスト鍵ハッシュの計算に失敗しました"
 
@@ -15501,9 +15217,6 @@ msgstr "トランザクションのコミットに失敗しました: %s%s%s"
 msgid "failed to connect to %s"
 msgstr "%s への接続に失敗しました"
 
-msgid "failed to connect to Xen Store"
-msgstr "Xen Store への接続に失敗しました"
-
 msgid "failed to connect to monitor socket"
 msgstr "モニターソケットへの接続に失敗しました"
 
@@ -15513,9 +15226,6 @@ msgstr "RADOS モニターへの接続に失敗しました: %s"
 
 msgid "failed to connect to the hypervisor"
 msgstr "ハイパーバイザーへの接続に失敗しました"
-
-msgid "failed to connect to xend"
-msgstr "xend への接続に失敗しました"
 
 msgid "failed to convert the XML node tree"
 msgstr "XML ノードツリーの変換に失敗しました"
@@ -15534,9 +15244,6 @@ msgstr "インターフェース %s の作成（起動）に失敗しました: 
 msgid "failed to create a new XML namespace"
 msgstr "新しい XML 名前空間の作成に失敗しました"
 
-msgid "failed to create a socket"
-msgstr "ソケットの作成に失敗しました"
-
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "ディレクトリー '%s' の作成に失敗しました"
@@ -15547,10 +15254,6 @@ msgstr "取り込み用ファイルの作成に失敗しました"
 #, c-format
 msgid "failed to create lib dir '%s': %s"
 msgstr "ライブラリーディレクトリー '%s' の作成に失敗しました: %s"
-
-#, c-format
-msgid "failed to create link %s to %s"
-msgstr "%s から %s へのリンクの作成に失敗しました"
 
 #, c-format
 msgid "failed to create log dir '%s': %s"
@@ -15757,10 +15460,6 @@ msgid "failed to lookup interface with MAC address '%s'"
 msgstr "MAC アドレス '%s' を持つインターフェースの検索に失敗しました"
 
 #, c-format
-msgid "failed to lseek or read from file: %s"
-msgstr "ファイルから lseek または読み込みに失敗しました: %s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "ネットワーク %s を自動起動に設定するのに失敗しました"
 
@@ -15787,10 +15486,6 @@ msgid "failed to open file"
 msgstr "ファイルを開くのに失敗しました"
 
 #, c-format
-msgid "failed to open for reading: %s"
-msgstr "読み込み専用のオープンに失敗しました: %s"
-
-#, c-format
 msgid "failed to open logfile %s"
 msgstr "ログファイル %s を開けませんでした"
 
@@ -15812,15 +15507,6 @@ msgstr "%s の構文解析に失敗しました"
 #, c-format
 msgid "failed to parse %sversion"
 msgstr "%s のバージョンの構文解析に失敗しました"
-
-msgid "failed to parse Xend domain information"
-msgstr "Xend ドメイン情報の解析に失敗しました"
-
-msgid "failed to parse Xend response content length"
-msgstr "Xend 応答コンテンツ長の構文解析に失敗しました。"
-
-msgid "failed to parse Xend response return code"
-msgstr "Xend 応答リターンコードの構文解析に失敗しました"
 
 msgid "failed to parse configuration file"
 msgstr "設定ファイルの解析に失敗しました"
@@ -15874,9 +15560,6 @@ msgstr "設定ファイルの読み込みに失敗しました"
 msgid "failed to read configuration file %s"
 msgstr "設定ファイル %s の読み込みに失敗しました"
 
-msgid "failed to read from Xen Daemon"
-msgstr "Xen デーモンからの読み込みに失敗しました"
-
 msgid "failed to read from wakeup fd"
 msgstr "ウェイクアップファイル記述子からの読み込みに失敗しました"
 
@@ -15900,13 +15583,6 @@ msgstr "テンプレート %s で作成された一時ファイルの読み込�
 
 msgid "failed to register udev interface driver"
 msgstr "udev インターフェースドライバーの登録に失敗しました"
-
-#, c-format
-msgid "failed to remove link %s"
-msgstr "リンク %s の削除に失敗しました"
-
-msgid "failed to remove old domain from config map"
-msgstr "設定マップからの古いドメインの削除に失敗しました"
 
 #, c-format
 msgid "failed to remove pool '%s'"
@@ -16062,9 +15738,6 @@ msgstr "known_host ファイル '%s' の書き込みに失敗しました: %s"
 msgid "failed to write the log file"
 msgstr "ログファイルの書き込みに失敗しました"
 
-msgid "failed to write to Xen Daemon"
-msgstr "Xen デーモンへの書き込みに失敗しました"
-
 msgid "failed to write to profile"
 msgstr "プロファイルへの書き込みに失敗しました"
 
@@ -16134,12 +15807,6 @@ msgstr "ターゲットの更新した XML を含むファイル名"
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "ファイルシステムは「template」や「mount」のタイプではありません"
 
-msgid "filesystem passthrough not supported by this QEMU"
-msgstr "ファイルシステムパススルーはこの QEMU によりサポートされません"
-
-msgid "filesystem writeout not supported"
-msgstr "ファイルシステムの書き込みはサポートされません"
-
 #, c-format
 msgid "filter '%s' learning value '%s' invalid."
 msgstr "フィルター '%s' の学習値 '%s' が無効です。"
@@ -16182,9 +15849,6 @@ msgstr "指定されたスナップショット名の親の検索"
 
 msgid "find potential storage pool sources"
 msgstr "潜在的なストレージプールソースの検索"
-
-msgid "finding dom on config list"
-msgstr "設定一覧においてドメインを検索しています"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr ""
@@ -16462,16 +16126,9 @@ msgstr ""
 "宛先におけるホスト名は localhost に解決されましたが、マイグレーションには "
 "FQDN が必要です"
 
-msgid "hotplug of device type not supported"
-msgstr "デバイス形式の動的追加はサポートされません"
-
 #, c-format
 msgid "hub type %s not supported"
 msgstr "ハブの形式 %s はサポートされません"
-
-#, c-format
-msgid "hugepage backing not supported by '%s'"
-msgstr "hugepage バッキングは '%s' によりサポートされません"
 
 msgid "hypervisor connection URI"
 msgstr "ハイパーバイザーの接続 URI"
@@ -16570,9 +16227,6 @@ msgstr "init バイナリーが指定されなければいけません"
 
 msgid "initial allocation size, as scaled integer (default bytes)"
 msgstr "初期割り当て容量、単位付き整数 (初期値 バイト)"
-
-msgid "initializing inotify"
-msgstr "inotify の初期化中"
 
 #, c-format
 msgid "input too large: %d * %d"
@@ -16847,9 +16501,6 @@ msgstr "無効な接続ポインター"
 msgid "invalid connection pointer in %s"
 msgstr "%s で無効な接続ポインターです"
 
-msgid "invalid cpumap_t size"
-msgstr "無効な cpumap_t サイズ"
-
 #, c-format
 msgid "invalid database name: %s"
 msgstr "無効なデータベース名: %s"
@@ -17007,37 +16658,6 @@ msgstr "無効なパス '%s'"
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "無効なパス、'%s' は不明なインターフェイスです"
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range hda[1-63] - hdt[1-63] for "
-"domain %d"
-msgstr ""
-"無効なパスです、デバイス名はドメイン %d に対して hda[1-63] - hdt[1-63] の範囲"
-"でなければいけません"
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range sda[1-15] - sdiv[1-15] for "
-"domain %d"
-msgstr ""
-"無効なパスです、デバイス名はドメイン %d に対して sda[1-15] - sdiv[1-15] の範"
-"囲でなければいけません"
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15] for "
-"domain %d"
-msgstr ""
-"無効なパスです、デバイス名はドメイン %d に対して xvda[1-15] - xvdiz[1-15] の"
-"範囲でなければいけません"
-
-msgid "invalid path, should be vif<domid>.<n>."
-msgstr "無効なパスです、vif<domid>.<n> でなければいけません。"
-
-msgid "invalid path, vif<domid> should match this domain ID"
-msgstr ""
-"無効なパスです、vif<domid> がこのドメイン ID に一致しなければいけません。"
 
 #, c-format
 msgid "invalid path: %s"
@@ -17544,9 +17164,6 @@ msgstr "ロックマネージャーの接続が制限されました"
 
 msgid "lock owner details have not been registered"
 msgstr "ロックオーナーの詳細が登録されていませんでした"
-
-msgid "looking up dom"
-msgstr "ドメインの検索中"
 
 msgid "lxc state driver is not active"
 msgstr "lxc 状態ドライバーが有効ではありません"
@@ -18592,10 +18209,6 @@ msgid "no PCI vendor ID supplied for '%s'"
 msgstr "'%s' 用の PCI ベンダー ID がありません"
 
 #, c-format
-msgid "no QEMU URI path given, try %s"
-msgstr "QEMU URI パスが与えられていません、%s を試してください"
-
-#, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
 msgstr "'%s' 用の SCSI LUN ID がありません"
 
@@ -18642,11 +18255,6 @@ msgstr "'%s' の USB プロダクト ID がありません"
 #, c-format
 msgid "no USB vendor ID supplied for '%s'"
 msgstr "%s' の USB ベンダー ID がありません"
-
-msgid "no VirtualBox driver path specified (try vbox:///session)"
-msgstr ""
-"VirtualBox ドライバーのパスが指定されていません（vbox:///session を試してくだ"
-"さい）"
 
 #, c-format
 msgid "no WWNN supplied for '%s', and auto-generation failed"
@@ -18726,9 +18334,6 @@ msgstr "ドメイン設定がありません"
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr "名前 '%s' と一致するドメインスナップショットがありません"
-
-msgid "no domain with matching id"
-msgstr "一致する id のドメインはありません"
 
 #, c-format
 msgid "no domain with matching id %d"
@@ -18914,9 +18519,6 @@ msgstr "このプラットフォームではノード情報は実装されてい
 msgid "node information"
 msgstr "ノード情報"
 
-msgid "node information incomplete, missing scheduler name"
-msgstr "ノード情報が不完全です、スネジューラ名がありません"
-
 msgid "node memory stats not implemented on this platform"
 msgstr "ノードメモリーの統計はこのプラットフォームにおいて実装されていません"
 
@@ -19040,9 +18642,6 @@ msgstr "オフラインマイグレーションが永続フラグの設定を指
 
 msgid "ok"
 msgstr "ok"
-
-msgid "on_xend_start not present in sexpr"
-msgstr "on_xend_start は sexpr にありません"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "オンラインコミットはこの QEMU バイナリーでサポートされません"
@@ -19218,10 +18817,6 @@ msgstr "親 %s が %s にサイクルを作成しました"
 
 msgid "parser error"
 msgstr "構文解析エラー"
-
-#, c-format
-msgid "parsing uuid %s"
-msgstr "UUID %s の構文解析中です"
 
 msgid "passthrough mode requires a character device type attribute"
 msgstr "パススルーモードはキャラクターデバイスの type 属性が必要です"
@@ -19497,9 +19092,6 @@ msgstr ""
 "QEMU が unix ソケットモニターを使用していません、ファイル記述子 %s を送信でき"
 "ません"
 
-msgid "qemu isn't capable of IPv6"
-msgstr "QEMU は IPv6 に対応していません"
-
 msgid "qemu state driver is not active"
 msgstr "QEMU 状態ドライバーが活動中ではありません"
 
@@ -19598,11 +19190,6 @@ msgstr "起動ファイル記述子において読み込みに失敗しました
 msgid "read-only connection"
 msgstr "読み込み専用の接続"
 
-msgid "readonly filesystem is not supported by this QEMU binary"
-msgstr ""
-"読み込み専用ファイルシステムはこの QEMU バイナリーによりサポートされていませ"
-"ん"
-
 msgid "reattach node device to its device driver"
 msgstr "デバイスドライバーへのノードデバイスの再接続"
 
@@ -19699,9 +19286,6 @@ msgstr "要求された認証タイプ %s は拒否されました"
 #, c-format
 msgid "requested cpu amount exceeds maximum (%d > %d)"
 msgstr "要求された CPU の合計が最大値を超えています (%d > %d)"
-
-msgid "requested device does not exist"
-msgstr "要求されたデバイスが存在しません"
 
 msgid "requested size of the cache (in bytes) used for compression"
 msgstr "圧縮のために使用されるキャッシュの要求サイズ (バイト単位)"
@@ -19898,10 +19482,6 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr "スクリプトは形式 %s のインターフェースにおいてサポートされません"
 
 #, c-format
-msgid "sdl not supported by '%s'"
-msgstr "sdl は '%s' によりサポートされていません"
-
-#, c-format
 msgid "secret '%s' does not have a value"
 msgstr "シークレット '%s' が値を持ちません"
 
@@ -20014,17 +19594,11 @@ msgstr "VNC パスワードの設定に失敗しました"
 msgid "setting disk password is not supported"
 msgstr "ディスクパスワードの設定はサポートされません"
 
-msgid "setting of link state not supported: Link is up"
-msgstr "リンクステートの設定はサポートされません: リンクはアップしています"
-
 msgid "setting up HAL callbacks failed"
 msgstr "HAL 呼び出しのセットアップに失敗しました"
 
 msgid "setuid or setgid failed"
 msgstr "setuid または setgid に失敗しました"
-
-msgid "sexpr2string failed"
-msgstr "sexpr2string は失敗しました"
 
 msgid "sgio is only supported for scsi host device"
 msgstr "sgio は SCSI ホストデバイスのみに対してサポートされます"
@@ -20198,9 +19772,6 @@ msgstr "spice zlib に compression がありません"
 msgid "spicevmc device type only supports virtio"
 msgstr "spicevmc デバイス形式は virtio のみをサポートします"
 
-msgid "spicevmc not supported in this QEMU binary"
-msgstr "spicevmc はこの QEMU バイナリーにおいてサポートされません"
-
 msgid "start a (previously defined) inactive domain"
 msgstr "停止状態の（定義済み）ドメインの起動"
 
@@ -20230,18 +19801,6 @@ msgstr "開始済み"
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "'%s' の統計に失敗しました"
-
-#, c-format
-msgid "stats->rd_bytes would overflow 64 bit counter for domain %d"
-msgstr ""
-"stats->rd_bytes がドメイン %d に対して 64 ビットカウンターをオーバーフローし"
-"ました"
-
-#, c-format
-msgid "stats->wr_bytes would overflow 64 bit counter for domain %d"
-msgstr ""
-"stats->wr_bytes がドメイン %d に対して 64 ビットカウンターをオーバーフローし"
-"ました"
 
 msgid "stopped, with no saved guests"
 msgstr "停止済み、ゲストの保存なし"
@@ -20389,10 +19948,6 @@ msgstr "ターゲット %s が存在しません。"
 msgid "target %s:%d already exists"
 msgstr "ターゲット %s:%d はすでに存在します"
 
-#, c-format
-msgid "target '%s' already exists"
-msgstr "ターゲット '%s' がすでに存在します"
-
 msgid "target config data type format"
 msgstr "対象の設定データ種別の形式"
 
@@ -20455,10 +20010,6 @@ msgstr ""
 #, c-format
 msgid "the MAC address '%s' matches multiple interfaces"
 msgstr "MAC アドレス '%s' が複数のインターフェースに一致しました"
-
-#, c-format
-msgid "the QEMU binary %s does not support smbios settings"
-msgstr "QEMU バイナリー %s は smbios の設定をサポートしていません"
 
 #, c-format
 msgid "the QEMU binary does not support %s"
@@ -20614,10 +20165,6 @@ msgstr "このネットワークはすでに存在しています"
 msgid "this platform is missing dlopen"
 msgstr "このプラットフォームは dlopen がありません"
 
-msgid "this qemu binary requires libvirt to be compiled with yajl"
-msgstr ""
-"この QEMU バイナリーは libvirt が yajl を用いてコンパイルされる必要があります"
-
 #, c-format
 msgid "this qemu doesn't support RNG device type '%s'"
 msgstr "この QEMU  RNG デバイス種別 '%s' をサポートしません"
@@ -20670,9 +20217,6 @@ msgstr "qcow の暗号化に秘密が多過ぎます"
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr "最上部 '%s' (チェイン '%s') にバッキングファイルがありません"
-
-msgid "topology syntax error"
-msgstr "トポロジーの構文エラー"
 
 msgid "total I/O operations limit per second"
 msgstr "秒あたりの合計 I/O 回数制限"
@@ -20823,10 +20367,6 @@ msgid "unable to close pipe"
 msgstr "パイプをクローズできません"
 
 #, c-format
-msgid "unable to connect to '%s:%s'"
-msgstr "'%s:%s' に接続できません"
-
-#, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "'%s:%s' にあるサーバーに接続できません"
 
@@ -20863,9 +20403,6 @@ msgstr "配列の大きさを決定できません"
 msgid "unable to determine if snapshot has parent"
 msgstr "スナップショットが親を持つかどうかを決められません"
 
-msgid "unable to determine original VLAN"
-msgstr "元々の VLAN を決定できません"
-
 #, c-format
 msgid "unable to execute QEMU agent command '%s'"
 msgstr "QEMU エージェントコマンド '%s' を実行できません"
@@ -20899,9 +20436,6 @@ msgstr "cpu account を取得できません"
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr "現在のプロセスコンテキスト '%s' を取得できません"
-
-msgid "unable to get current time"
-msgstr "現在の時刻を取得できません"
 
 msgid "unable to get monitor count"
 msgstr "モニターの数を取得できません"
@@ -20998,10 +20532,6 @@ msgid "unable to register monitor events"
 msgstr "モニターイベントを登録できません"
 
 #, c-format
-msgid "unable to resolve hostname '%s': %s"
-msgstr "ホスト名 '%s' を名前解決できません: %s"
-
-#, c-format
 msgid "unable to save metadata for snapshot %s"
 msgstr "スナップショット %s のメタデータを保存できません"
 
@@ -21063,9 +20593,6 @@ msgstr "ユーザーとグループを '%ld:%ld' ('%s') に設定できません
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr "ディスク %s の統計情報を取得できません: %s"
-
-msgid "unable to store config file handle"
-msgstr "設定ファイルハンドルの格納に失敗しました"
 
 msgid "unable to unload already unloaded profile"
 msgstr "すでにアップロードされたプロファイルをアンロードできません"
@@ -21156,10 +20683,6 @@ msgid ""
 msgstr ""
 "予期しない VMware URI パス '%s' です。vmwareplayer:///session, vmwarews:///"
 "session または vmwarefusion:///session を試してください。"
-
-#, c-format
-msgid "unexpected Xen URI path '%s', try xen:///"
-msgstr "予期しない Xen URI パス '%s' です、xen:/// を試してください"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -21457,9 +20980,6 @@ msgstr "on_poweroff に予期しない値 %s です"
 #, c-format
 msgid "unexpected value %s for on_reboot"
 msgstr "on_reboot に予期しない値 %s です"
-
-msgid "unexpected value from on_xend_start"
-msgstr "on_xend_start から予期しないボリューム"
 
 #, c-format
 msgid "unexpected video model %d"
@@ -22212,9 +21732,6 @@ msgstr "サポートされないコンソールターゲット形式 %s"
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "サポートされないデータ形式 '%c' が引数 '%s' に対してあります"
 
-msgid "unsupported device type"
-msgstr "サポートされないデバイス形式です"
-
 #, c-format
 msgid "unsupported device type in network %s interface pool"
 msgstr ""
@@ -22276,12 +21793,6 @@ msgstr "未サポートのフラグ: (0x%x)"
 msgid "unsupported graphics type '%s'"
 msgstr "サポートされないグラフィック形式 '%s'"
 
-msgid "unsupported in dom interface < 5"
-msgstr "ドメインインターフェース < 5 においてサポートされません"
-
-msgid "unsupported in sys interface < 4"
-msgstr "システムインターフェース < 4 においてサポートされません"
-
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "サポートのない入力バス %s"
@@ -22307,12 +21818,6 @@ msgstr ""
 "サポートされないオプション '-%c' があります。 --help を参照してください。"
 
 #, c-format
-msgid "unsupported path, use xvdN, hdN, or sdN for domain %d"
-msgstr ""
-"サポートされないパスです。ドメイン %d に対して xvdN, hdN, または sdN を使用し"
-"てください"
-
-#, c-format
 msgid "unsupported pit tickpolicy '%s'"
 msgstr "サポートされない pit tickpolicy '%s'"
 
@@ -22323,10 +21828,6 @@ msgstr "プロトコルファミリー '%s' はサポートされません"
 #, c-format
 msgid "unsupported protocol type %s"
 msgstr "サポートされないプロトコル形式 %s"
-
-#, c-format
-msgid "unsupported rtc tickpolicy '%s'"
-msgstr "サポートされない rtc tickpolicy '%s'"
 
 #, c-format
 msgid "unsupported rtc timer tickpolicy '%s'"
@@ -22529,9 +22030,6 @@ msgstr "virGetUserName が利用できません"
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "virGetUserRuntimeDirectory が利用可能ではありません"
 
-msgid "virHashLookup"
-msgstr "virHashLookup"
-
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat が NULL 定義です"
 
@@ -22652,9 +22150,6 @@ msgstr "vmrun ユーティリティがありません"
 msgid "vnc display"
 msgstr "VNC ディスプレイ"
 
-msgid "vnc display sharing policy is not supported with this QEMU"
-msgstr "VNC ディスプレイ共有ポリシーはこの QEMU でサポートされません"
-
 msgid "vnc graphics are not supported with this QEMU"
 msgstr "VNC グラフィックスはこの QEMU でサポートされません"
 
@@ -22705,9 +22200,6 @@ msgstr "ドメインのサスペンド状態からの再開"
 
 msgid "warning"
 msgstr "警告"
-
-msgid "watch already tracked"
-msgstr "ウォッチがすでに開始されています"
 
 msgid "watchdog"
 msgstr "ウォッチドッグ"
@@ -22783,49 +22275,6 @@ msgstr "ディスクデバイスの WWN"
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen バスは %s 入力デバイスをサポートしません"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen は移行中にバンド幅の制限をサポートしません。"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate:  Xen は移行中にドメインの再命名をサポートしません。"
-
-msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr "xenDaemonDomainMigrate: ホスト名は URI で指定する必要があります"
-
-msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr "xenDaemonDomainMigrate: 無効なポート番号"
-
-msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr ""
-"xenDaemonDomainMigrate: xenmigr:// 移行のみが Xen でサポートされています"
-
-msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr "xenDaemonDomainMigrate: サポートされていないフラグ"
-
-msgid "xenDaemonDomainMigrate: xend cannot migrate paused domains"
-msgstr ""
-"xenDaemonDomainMigrate: xend は一時停止中のドメインをマイグレーションできませ"
-"ん"
-
-msgid "xenDaemonGetAutostart failed to find this domain"
-msgstr "xenDaemonGetAutostart このドメインの検出に失敗しました"
-
-msgid "xenDaemonSetAutostart failed to find this domain"
-msgstr "xenDaemonSetAutostart このドメインの検出に失敗しました"
-
-msgid "xenXMConfigCacheRefresh: virHashAddEntry"
-msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
-
-#, c-format
-msgid "xend_post: error from xen daemon: %s"
-msgstr "xend_post: xen デーモンからエラー: %s"
 
 msgid "xml data file to export from"
 msgstr "エクスポートする XML データファイル"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-26 07:12-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bosnian (http://www.transifex.com/projects/p/fedora/language/"
@@ -415,23 +415,14 @@ msgstr "podaci domene"
 msgid "domain information in XML"
 msgstr "podaci domene u XML-u"
 
-msgid "domain information incomplete, missing domid"
-msgstr "podaci domene nisu potpuni, nedostaje domid"
-
 msgid "domain information incomplete, missing name"
 msgstr "podaci domene nisu potpuni, nedostaje name"
-
-msgid "domain information incomplete, missing uuid"
-msgstr "podaci domene nisu potpuni, nedostaje uuid"
 
 msgid "domain information incomplete, vbd has no dev"
 msgstr "podaci domene nisu potpuni, vbd nema dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "podaci domene nisu potpuni, vbd nema src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "podaci domene nisu ispravni, domid nije broj"
 
 msgid "domain name or uuid"
 msgstr "naziv domene ili uuid"
@@ -470,9 +461,6 @@ msgstr "očekuje se vrijednost"
 msgid "expecting an assignment"
 msgstr "očekuje se dodjeljivanje"
 
-msgid "failed to connect to Xen Store"
-msgstr "uspostavljanje veze sa Xen Store nije uspjelo"
-
 msgid "failed to connect to the hypervisor"
 msgstr "uspostavljanje veze s hypervisorom nije uspjelo"
 
@@ -505,9 +493,6 @@ msgstr "otvaranje konfiguracijske datoteke za čitanje nije uspjelo"
 msgid "failed to open file"
 msgstr "otvaranje datoteke nije uspjelo"
 
-msgid "failed to parse Xend domain information"
-msgstr "raščlanjivanje podataka Xend domene nije uspjelo"
-
 msgid "failed to parse configuration file"
 msgstr "raščlanjivanje konfiguracijske datoteke nije uspjelo"
 
@@ -521,9 +506,6 @@ msgstr "čitanje konfiguracijske datoteke nije uspjelo"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "čitanje konfiguracijske datoteke %s nije uspjelo"
-
-msgid "failed to read from Xen Daemon"
-msgstr "čitanje iz demona Xen nije uspjelo"
 
 msgid "failed to save content"
 msgstr "spremanje sadržaja nije uspjelo"

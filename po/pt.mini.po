@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-24 02:16-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Portuguese <trans-pt@lists.fedoraproject.org>\n"
@@ -155,12 +155,6 @@ msgstr "Criar um domínio."
 
 msgid "Create a network."
 msgstr "Criar uma rede."
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr ""
-"O parâmetro de peso do escalonamento por créditos (%d) está fora do "
-"intervalo (1-65535)"
 
 msgid "Define a domain."
 msgstr "Definir um domínio."
@@ -723,9 +717,6 @@ msgstr "informação do domínio"
 msgid "domain information in XML"
 msgstr "informação do domínio em XML"
 
-msgid "domain information incomplete, missing domid"
-msgstr "informação do domínio incompleta, falta o 'domid'"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
 "informação do domínio incompleta, falta o 'kernel' & o gestor de arranque"
@@ -733,17 +724,11 @@ msgstr ""
 msgid "domain information incomplete, missing name"
 msgstr "informação do domínio incompleta, falta o nome"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "informação do domínio incompleta, falta o 'uuid'"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "informação do domínio incompleta, o 'vbd' não tem dispositivo"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "informação do domínio incompleta, o 'vbd' não tem origem"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "informação do domínio incompleta, o 'domid' não é numérico"
 
 msgid "domain name or uuid"
 msgstr "nome ou UUID do domínio"
@@ -784,9 +769,6 @@ msgstr "era esperado um valor"
 
 msgid "expecting an assignment"
 msgstr "era esperada uma atribuição"
-
-msgid "failed to connect to Xen Store"
-msgstr "não foi possível ligar ao Armazém do Xen"
 
 msgid "failed to connect to the hypervisor"
 msgstr "não foi possível ligar ao supervisor"
@@ -845,9 +827,6 @@ msgstr ""
 "não é possível aceder ao ficheiro de registo. Verifique a localização do "
 "registo"
 
-msgid "failed to parse Xend domain information"
-msgstr "não foi possível processar a informação do domínio do Xend"
-
 msgid "failed to parse configuration file"
 msgstr "não foi possível processar o ficheiro de configuração"
 
@@ -861,9 +840,6 @@ msgstr "não foi possível ler o ficheiro de configuração"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "não foi possível ler o ficheiro de configuração %s"
-
-msgid "failed to read from Xen Daemon"
-msgstr "não foi possível ler do Servidor do Xen"
 
 msgid "failed to save content"
 msgstr "não foi possível gravar o conteúdo"
@@ -1180,9 +1156,6 @@ msgstr "estão demasiados controladores registados"
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "estão demasiados controladores registados em %s"
-
-msgid "topology syntax error"
-msgstr "erro de sintaxe da topologia"
 
 msgid "tty console"
 msgstr "consola TTY"

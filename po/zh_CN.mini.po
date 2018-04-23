@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2018-04-06 11:06-0400\n"
 "Last-Translator: Leah Liu <lliu@redhat.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
@@ -340,10 +340,6 @@ msgid "%6s: Checking %-60s: "
 msgstr "%6s: 正在检查 %-60s: "
 
 #, c-format
-msgid "%d status from xen daemon: %s:%s"
-msgstr "来自 xen 守护进程的 %d 状态：%s:%s"
-
-#, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
@@ -582,10 +578,6 @@ msgid "%s: initialization failed\n"
 msgstr "%s：初始化失败\n"
 
 #, c-format
-msgid "%s: invalid path"
-msgstr "%s：无效路径"
-
-#, c-format
 msgid "%s: ipv6 family specified for non-IPv6 address '%s' in route definition"
 msgstr "%s：路由定义中没有为非 IPv6 网关 '%s' 指定 IPv6 产品线"
 
@@ -731,9 +723,6 @@ msgstr "guest-get-vcpus 回复中缺少 'logical-id'"
 
 msgid "'mountpoint' missing in reply of guest-get-fsinfo"
 msgstr "guest-get-fsinfo 回复中缺少 'mountpoint' "
-
-msgid "'multifunction=on' is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制不支持 'multifunction=on'"
 
 msgid "'name' missing in reply of guest-get-fsinfo"
 msgstr "guest-get-fsinfo 回复中缺少 'name' "
@@ -1666,10 +1655,6 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "无法找到使用 PVR 0x%08x 的 CPU 型号"
 
 #, c-format
-msgid "Cannot find QEMU binary %s"
-msgstr "无法找到 QEMU 二进制文件 %s"
-
-#, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "无法找到 UML 内核 %s"
 
@@ -1712,9 +1697,6 @@ msgid ""
 "Cannot instantiate filter due to unresolvable variables or unavailable list "
 "elements: %s"
 msgstr "由于有无法解析的变量或者不可用元素列表而无法举例说明过滤器：%s"
-
-msgid "Cannot modify live config if domain is inactive"
-msgstr "如果域不活跃则无法修改 live 配置"
 
 #, c-format
 msgid "Cannot mount filesystem type %s"
@@ -1905,9 +1887,6 @@ msgstr "无法在活跃的域中重新定义内存最大值"
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "没有控制的 TTY 则不能运行互动控制台"
 
-msgid "Cannot save host domain"
-msgstr "无法保存主机域"
-
 msgid "Cannot set a base label with AppArmour"
 msgstr "无法使用 AppArmour 设定基础标签"
 
@@ -2039,10 +2018,6 @@ msgstr "无法写入数据"
 #, c-format
 msgid "Cannot write device.map '%s'"
 msgstr "无法写入 device.map '%s'"
-
-#, c-format
-msgid "Cap %s too big for destination"
-msgstr "对于目的地来说 cap %s 太大"
 
 msgid "Capabilities not available"
 msgstr "不可用的功能"
@@ -3156,14 +3131,6 @@ msgstr "生成时间"
 msgid "Creation of %s volumes is not supported"
 msgstr "不支持生成 %s 卷"
 
-#, c-format
-msgid "Credit scheduler cap parameter (%d) is out of range (0-65534)"
-msgstr "信用调度程序 cap 参数（%d）超出范围（0-65534）"
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr "信用调度程序加权参数 (%d) 超出范围 （1-65535）"
-
 msgid "Current:"
 msgstr "当前："
 
@@ -3310,10 +3277,6 @@ msgstr "设备 %s 已存在"
 #, c-format
 msgid "Device %s detached\n"
 msgstr "已分离设备 %s\n"
-
-#, c-format
-msgid "Device %s has been assigned to guest %d"
-msgstr "已将设备 %s 分配给虚拟机 %d"
 
 #, c-format
 msgid "Device %s in use"
@@ -3479,10 +3442,6 @@ msgid "Domain %s destroyed\n"
 msgstr "域 %s 被删除\n"
 
 #, c-format
-msgid "Domain %s did not start"
-msgstr "域 %s 未启动"
-
-#, c-format
 msgid "Domain %s didn't show up"
 msgstr "未显示域 %s"
 
@@ -3495,20 +3454,12 @@ msgid "Domain %s has no manage save image; removal skipped"
 msgstr "域 %s 没有管理保存映像；跳过删除步骤。"
 
 #, c-format
-msgid "Domain %s is already running"
-msgstr "域 %s 已在运行"
-
-#, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "域 %s 正在被重新启动\n"
 
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "域 %s 被关闭\n"
-
-#, c-format
-msgid "Domain %s isn't running."
-msgstr "域 %s 没有在运行。"
 
 #, c-format
 msgid "Domain %s marked as autostarted\n"
@@ -3808,12 +3759,6 @@ msgstr "为 %s 输入用户名"
 msgid "Enter username for %s [%s]"
 msgstr "为 %s [%s] 输入用户名"
 
-msgid "Error adding file to config cache"
-msgstr "在 config 缓存中添加文件时出错"
-
-msgid "Error adding file to config list"
-msgstr "在 config 列表中添加文件时出错"
-
 msgid "Error creating initial configuration"
 msgstr "生成初始配置时出错"
 
@@ -3828,9 +3773,6 @@ msgstr "从自进程打开 '%s' 出错"
 #, c-format
 msgid "Error getting physical function's '%s' virtual_functions"
 msgstr "获取物理功能的 '%s' virtual_functions 失败"
-
-msgid "Error looking up domain"
-msgstr "正在查找域"
 
 msgid "Error notify callback must be supplied"
 msgstr "错误：必须指定通知回叫"
@@ -4418,10 +4360,6 @@ msgstr "生成文件 '%s' 失败：无法确定文件系统类型"
 msgid "Failed to create filesystem probe for device %s"
 msgstr "为设备 %s 生成文件系统探测失败"
 
-#, c-format
-msgid "Failed to create inactive domain %s"
-msgstr "生成不活跃域 %s 失败"
-
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr "在 xml 文档中在桥接接口下生成接口节点失败"
 
@@ -4691,9 +4629,6 @@ msgstr "获取生成的 secret 的 UUID 失败"
 
 msgid "Failed to get VNC port. Is this domain using VNC?"
 msgstr "获取 VNC 端口失败。这个域是使用 VNC 吗？"
-
-msgid "Failed to get a scheduler name"
-msgstr "获得调度程序名失败"
 
 #, c-format
 msgid "Failed to get block stats %s %s"
@@ -5150,10 +5085,6 @@ msgid "Failed to read PCI config space for %s"
 msgstr "读取 %s 的 PCI 配置空间失败"
 
 #, c-format
-msgid "Failed to read any block statistics for domain %d"
-msgstr "读取域 %d 的任意块统计数据失败"
-
-#, c-format
 msgid "Failed to read file '%s'"
 msgstr "读取文件 '%s' 失败"
 
@@ -5192,9 +5123,6 @@ msgstr "重新连接到 hypervisor 失败"
 
 msgid "Failed to recv file descriptor"
 msgstr "接收文件描述符失败"
-
-msgid "Failed to redefine sexpr"
-msgstr "重新定义 sexpr 失败"
 
 #, c-format
 msgid "Failed to refresh pool %s"
@@ -5755,10 +5683,6 @@ msgstr "在 '%s' 中找到无效设备链接 '%s'"
 msgid "Found unexpected controller model '%s' for disk '%s'"
 msgstr "为磁盘 '%s'  找到意外的控制器型号 '%s' "
 
-#, c-format
-msgid "Frontend block device not connected for domain %d"
-msgstr "前段块设备没有与域 %d 连接"
-
 msgid "Fully-qualified path of block device"
 msgstr "块设备的完全限定路径"
 
@@ -5947,9 +5871,6 @@ msgstr "用来上传的 HTTP 响应代码 %d 来自 '%s'"
 
 msgid "Handshake is already complete"
 msgstr "握手过程已完成"
-
-msgid "Hash operation not allowed during iteration"
-msgstr "迭代过程中部允许哈希操作"
 
 #, c-format
 msgid "Hook for %s, failed to find operation #%d"
@@ -6553,9 +6474,6 @@ msgstr "无效网络过滤器：%s"
 msgid "Invalid parameter"
 msgstr "无效参数"
 
-msgid "Invalid parameter count"
-msgstr "无效参数计数"
-
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "virXPathBoolean() 的无效参数"
 
@@ -6932,12 +6850,6 @@ msgid ""
 "Malformed 'uri_aliases' config entry '%s', expected 'alias=uri://host/path'"
 msgstr "不正常的 'uri_aliases' 配置条目 '%s'，应为 'alias=uri://host/path'。"
 
-msgid "Malformed QEMU device list string, missing '='"
-msgstr "不正常 QEMU 设备列表字符串，缺少 '='。"
-
-msgid "Malformed QEMU device list string, missing quote"
-msgstr "不正常 QEMU 设备列表字符串，缺少 quote。"
-
 #, c-format
 msgid "Malformed TLS whitelist regular expression '%s'"
 msgstr "受损的 TLS 白列表正则表达式 '%s'"
@@ -7013,10 +6925,6 @@ msgstr "最大内存："
 
 msgid "Maximum CPUs greater than specified machine type limit"
 msgstr "CPUs 最大值超过指定的机器类型限制"
-
-#, c-format
-msgid "Memory %lu too small, min %lu"
-msgstr "内存 %lu 太小，最小为 %lu"
 
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
@@ -7609,9 +7517,6 @@ msgstr "未知名称或者服务"
 msgid "Name:"
 msgstr "名称："
 
-msgid "Named device aliases are not supported"
-msgstr "不支持命名的设备别名"
-
 #, c-format
 msgid "Network %s XML configuration edited.\n"
 msgstr "已编辑网络 %s XML 配置\n"
@@ -8132,10 +8037,6 @@ msgstr "iptables 中只能使用 IPv4 或者 IPv6 地址"
 msgid "Only PCI device addresses with function=0 are supported"
 msgstr "只支持带 function=0 的 PCI 设备地址"
 
-msgid ""
-"Only PCI device addresses with function=0 are supported with this QEMU binary"
-msgstr "这个 QEMU 库只支持 function=0 的 PCI 设备地址"
-
 msgid "Only PTY console types are supported"
 msgstr "只支持 PTY 控制台类型"
 
@@ -8602,14 +8503,6 @@ msgstr "放弃提取操作"
 msgid "Pull complete"
 msgstr "提取完成"
 
-#, c-format
-msgid "QEMU %u.%u.%u is too new for help parsing"
-msgstr "QEMU %u.%u.%u 太新，无法帮助解析。"
-
-#, c-format
-msgid "QEMU / QMP failed: %s"
-msgstr "QEMU / QMP 失败：%s"
-
 msgid "QEMU Attach"
 msgstr "QEMU 附加"
 
@@ -8622,9 +8515,6 @@ msgstr "QEMU 监控程序命令"
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU 二进制文件 %s 不能执行"
-
-msgid "QEMU does not support seccomp sandboxes"
-msgstr "QEMU 不支持 seccomp 沙箱"
 
 msgid "QEMU guest agent is not available due to an error"
 msgstr "由于出错导致 QEMU 虚拟机代理不可用"
@@ -9168,9 +9058,6 @@ msgstr "不允许为网络类型磁盘设置磁盘 %s"
 
 msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
 msgstr "只能为 cdrom 或 floppy 介质设置磁盘 'requisite'"
-
-msgid "Setting of link state is not supported by this qemu"
-msgstr "这个 qemu 不支持设定链接状态"
 
 #, c-format
 msgid ""
@@ -10250,12 +10137,6 @@ msgid "Transition started"
 msgstr "传输开始"
 
 #, c-format
-msgid ""
-"Transport '%s' in URI scheme is not supported, try again without the "
-"transport part"
-msgstr "不支持 URI 方案中的传输 '%s'，请去掉传输部分，然后再试一次。"
-
-#, c-format
 msgid "Transport error during %s: %s (%d)"
 msgstr "%s 过程中的传输错误：%s（%d）"
 
@@ -10435,9 +10316,6 @@ msgstr "无法将文件 %s 与循环设备关联"
 #, c-format
 msgid "Unable to attach %s to loop device"
 msgstr "无法将 %s 附加到回路设备"
-
-msgid "Unable to attach network devices without vlan"
-msgstr "没有 vlan 无法附加网络设备"
 
 msgid "Unable to become session leader"
 msgstr "无法成为会话引导者"
@@ -10955,14 +10833,6 @@ msgstr "无法初始化互斥"
 msgid "Unable to invoke fstrim"
 msgstr "无法调用 fstrim"
 
-#, c-format
-msgid "Unable to issue hypervisor ioctl %d"
-msgstr "无法发出 hypervisor ioctl %d"
-
-#, c-format
-msgid "Unable to issue hypervisor ioctl %lu"
-msgstr "无法发出 hypervisor ioctl %lu"
-
 msgid "Unable to join domain namespace"
 msgstr "无法加入域名称空间"
 
@@ -10974,10 +10844,6 @@ msgstr "无法在插槽中侦听"
 
 msgid "Unable to load certificate"
 msgstr "无法载入证书"
-
-#, c-format
-msgid "Unable to lock %zu bytes of memory"
-msgstr "无法锁定内存的 %zu 字节"
 
 msgid "Unable to lookup SELinux process context"
 msgstr "无法查询 SELinux 进程上下文"
@@ -11394,9 +11260,6 @@ msgstr "无法统计源目标 %s"
 msgid "Unable to stat bind target %s"
 msgstr "无法统计捆绑目标 %s"
 
-msgid "Unable to suspend domain due to missing system_wakeup monitor command"
-msgstr "由于缺少 system_wakeup 监控程序命令无法挂起域"
-
 #, c-format
 msgid "Unable to symlink directory %s to %s"
 msgstr "无法将目录 %s 符号链接到 %s"
@@ -11410,10 +11273,6 @@ msgstr "无法截取 %s"
 
 msgid "Unable to unescape command"
 msgstr "无法取消退出命令"
-
-#, c-format
-msgid "Unable to unlock %zu bytes of memory"
-msgstr "无法解锁内存的 %zu 字节"
 
 #, c-format
 msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
@@ -11445,9 +11304,6 @@ msgstr "无法在监控程序环境中等待"
 
 msgid "Unable to wait on parent process"
 msgstr "无法在上级进程中等待"
-
-msgid "Unable to wake up domain due to missing system_wakeup monitor command"
-msgstr "由于缺少 system_wakeup 监控程序命令无法唤醒域"
 
 msgid "Unable to watch epoll FD"
 msgstr "无法观察 epoll fd"
@@ -11511,10 +11367,6 @@ msgid "Unexpected CPU mode %d"
 msgstr "意外的 CPU 模式 %d"
 
 #, c-format
-msgid "Unexpected HTTP error code %d"
-msgstr "意外 HTTP 错误代码 %d"
-
-#, c-format
 msgid "Unexpected HTTP response code %lu"
 msgstr "意外的 HTTP 响应代码 %lu"
 
@@ -11525,10 +11377,6 @@ msgstr "%s 过程中的以外 HTTP 响应：%d"
 #, c-format
 msgid "Unexpected JSON reply '%s'"
 msgstr "意外的 JSON 回复 '%s'"
-
-#, c-format
-msgid "Unexpected LXC URI path '%s', try lxc:///"
-msgstr "意外 LXC URI 路径 '%s'，尝试 lxc:///"
 
 msgid "Unexpected QEMU agent still active during domain deletion"
 msgstr "删除域的过程中意外 QEMU 代理仍活跃"
@@ -11818,13 +11666,6 @@ msgstr "未知发布：%s"
 
 msgid "Unknown return code"
 msgstr "未知的返回代码"
-
-msgid "Unknown scheduler"
-msgstr "未知调度程序"
-
-#, c-format
-msgid "Unknown scheduler %d"
-msgstr "未知调度程序 %d"
 
 #, c-format
 msgid "Unknown serial type: %X"
@@ -12271,10 +12112,6 @@ msgid "Wakeup a domain that was previously suspended by power management."
 msgstr "唤醒之前由电源管理挂起的域。"
 
 #, c-format
-msgid "Weight %s too big for destination"
-msgstr "对于目的地来说加权 %s 太大"
-
-#, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
@@ -12357,19 +12194,6 @@ msgstr "XML 节点不包含稳步，应为 xsd:dateTime 值"
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "用来调用 '%s' 的响应的 XPath 评估失败"
 
-msgid "Xend only supports modifying both live and persistent config"
-msgstr "Xend 只支持修改 live 且持久的配置"
-
-#, c-format
-msgid "Xend returned HTTP Content-Length of %d, which exceeds maximum of %d"
-msgstr "Xend 返回的 HTTP 内容长度为%d，超过最大值 %d。"
-
-msgid "Xm driver only supports adding disk or network devices"
-msgstr "Xm 驱动器只支持添加磁盘或者网络设备"
-
-msgid "Xm driver only supports modifying persistent config"
-msgstr "Xm 驱动器只支持修改持久配置"
-
 msgid "You are trying to set a number of CPUs bigger than the max possible."
 msgstr "您要设定大于最多 CPU 数的 CPU 数。"
 
@@ -12451,16 +12275,6 @@ msgstr "添加一列显示上级快照"
 #, c-format
 msgid "adding %s device failed: %s"
 msgstr "添加 %s 设备失败：%s"
-
-msgid "adding watch @introduceDomain"
-msgstr "正在添加 watch @introduceDomain"
-
-msgid "adding watch @releaseDomain"
-msgstr "正在添加 watch @releaseDomain"
-
-#, c-format
-msgid "adding watch on %s"
-msgstr "在 %s 中添加 watch"
 
 msgid "additionally display the type and device value"
 msgstr "type 和 device 值的附加显示"
@@ -12563,10 +12377,6 @@ msgstr "参数密钥 '%s' 太短，缺少类型前缀"
 #, c-format
 msgid "argument key '%s' must not have null value"
 msgstr "参数 '%s' 一定不能为 NULL"
-
-#, c-format
-msgid "argument out of range: %d"
-msgstr "参数超出范围：%d"
 
 msgid "argument unsupported"
 msgstr "不支持的参数"
@@ -12728,9 +12538,6 @@ msgstr "未挂载 blkio cgroup"
 msgid "block"
 msgstr "块"
 
-msgid "block I/O throttling not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制中不支持块 I/O节流"
-
 msgid "block copy is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持块复制"
 
@@ -12750,12 +12557,6 @@ msgstr "这个 QEMU 二进制中不支持块任务"
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
 msgstr "为远程协议请求的块 peek 过大，%zi > %d"
-
-msgid "block peeking not implemented"
-msgstr "未使用块窥视"
-
-msgid "block statistics not supported on this platform"
-msgstr "这个平台不支持块统计"
 
 msgid "block_io_throttle device entry was not in expected format"
 msgstr "block_io_throttle 设备条目格式不正确"
@@ -12928,15 +12729,6 @@ msgstr "无法解析 cputune 配额值"
 
 msgid "can't parse cputune shares value"
 msgstr "无法解析 cputune 共享值"
-
-msgid "can't retrieve config entry for domain to overwrite"
-msgstr "无法为域搜索用来覆盖的配置文件条目"
-
-msgid "can't retrieve config file for domain"
-msgstr "无法为域搜索配置文件"
-
-msgid "can't retrieve config filename for domain to overwrite"
-msgstr "无法为域搜索用来覆盖的配置文件文件名"
 
 msgid "can't shrink capacity below existing allocation"
 msgstr "无法缩小现有分配的容量"
@@ -13186,9 +12978,6 @@ msgstr "无法删除运行中的域的快照"
 msgid "cannot detach device on inactive domain"
 msgstr "无法在非活跃的域中分离设备"
 
-msgid "cannot determine actual number of cells"
-msgstr "无法确定单元的实际数值"
-
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "无法为 '%s' 确定文件系统"
@@ -13305,9 +13094,6 @@ msgstr "无法找到字符设备 %s"
 msgid "cannot find console device '%s'"
 msgstr "无法找到控制台设备 '%s'"
 
-msgid "cannot find default console device"
-msgstr "无法找到默认控制台设备"
-
 #, c-format
 msgid "cannot find init path '%s' relative to container root"
 msgstr "未找到与容器 root 相关的 init 路径 '%s'"
@@ -13363,14 +13149,8 @@ msgstr "无法获取进程 %d 的 CPU 亲和性"
 msgid "cannot get RSS for domain"
 msgstr "无法为域获取 RSS"
 
-msgid "cannot get VCPUs info"
-msgstr "无法获取 VCPU 信息"
-
 msgid "cannot get current time"
 msgstr "无法获得当前时间"
-
-msgid "cannot get domain details"
-msgstr "无法获取域详情"
 
 msgid "cannot get feature flags on macvtap tap"
 msgstr "无法在 macvtap tap 中获得功能标签"
@@ -13401,9 +13181,6 @@ msgstr "无法获得主机 uuid"
 
 msgid "cannot get the path of MEMORY cgroup controller"
 msgstr "无法获取 MEMORY cgroup 控制器路径"
-
-msgid "cannot get time of day"
-msgstr "正在获得日期"
 
 msgid "cannot get vCPU placement & pCPU time"
 msgstr "无法获取 vCPU 布置和 pCPU 时间"
@@ -13880,10 +13657,6 @@ msgid "cannot read domain image '%s'"
 msgstr "无法读取域映像 '%s'"
 
 #, c-format
-msgid "cannot read file %s"
-msgstr "无法读取文件 %s"
-
-#, c-format
 msgid "cannot read file '%s'"
 msgstr "无法读取文件 '%s'"
 
@@ -14061,10 +13834,6 @@ msgstr "无法 stat 文件 '%s'"
 #, c-format
 msgid "cannot stat path '%s'"
 msgstr "无法统计路径 '%s'"
-
-#, c-format
-msgid "cannot stat: %s"
-msgstr "无法 stat：%s"
 
 #, c-format
 msgid "cannot statvfs path '%s'"
@@ -14331,9 +14100,6 @@ msgstr "配置文件语法错误: %s"
 msgid "conflicting occurrences of kvmclock feature"
 msgstr "kvmclock 功能出现冲突"
 
-msgid "conn, or private data is NULL"
-msgstr "conn 或者专用数据为 NULL"
-
 msgid "connect to the guest console"
 msgstr "连接到客户会话"
 
@@ -14400,9 +14166,6 @@ msgstr "将接口 MAC 地址转换为接口名称"
 
 msgid "convert an interface name to interface MAC address"
 msgstr "将接口名称转换为接口 MAC 地址"
-
-msgid "copy_on_read is not supported by this QEMU binary"
-msgstr "这个 QEMU 二进制不支持 copy_on_read"
 
 msgid "corrupted profileid string"
 msgstr "崩溃的 profileid 字符串"
@@ -14633,9 +14396,6 @@ msgstr "无法解析写入字节数/秒 %s"
 #, c-format
 msgid "could not parse write iops sec %s"
 msgstr "无法解析写入 iops 数/秒 %s"
-
-msgid "could not read CPU flags"
-msgstr "无法读取 CPU 标签"
 
 msgid "could not read xml file"
 msgstr "无法读取 xml 文件"
@@ -15125,9 +14885,6 @@ msgstr "pivot 还不能使用磁盘 '%s'"
 msgid "disk '%s' specified twice"
 msgstr "两次指定磁盘 '%s'"
 
-msgid "disk aio mode not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制不支持磁盘 aio 模式"
-
 msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
 msgstr "磁盘属性: disk[,snapshot=type][,driver=type][,file=name]"
 
@@ -15142,12 +14899,6 @@ msgstr "无法热插拔磁盘总线 '%s'。"
 #, c-format
 msgid "disk bus '%s' cannot be updated."
 msgstr "无法更新磁盘总线 '%s'"
-
-msgid "disk cache mode 'directsync' is not supported by this QEMU"
-msgstr "这个 QEMU 不支持磁盘缓存模式 'directsync'"
-
-msgid "disk cache mode 'unsafe' is not supported by this QEMU"
-msgstr "这个 QEMU 不支持磁盘缓存模式 'undafe'"
 
 #, c-format
 msgid "disk device type '%s' cannot be detached"
@@ -15367,32 +15118,17 @@ msgstr "XML 中的域信息"
 msgid "domain information incomplete, missing HVM loader"
 msgstr "域信息不完全，缺少 HVM 装载程序"
 
-msgid "domain information incomplete, missing cpu_cap"
-msgstr "域信息不完整，缺少 cpu_cap"
-
-msgid "domain information incomplete, missing cpu_weight"
-msgstr "域信息不完整，缺少 cpu_weight"
-
-msgid "domain information incomplete, missing domid"
-msgstr "域信息不完全，缺少 domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "域信息不完全,缺少内核和启动器"
 
 msgid "domain information incomplete, missing name"
 msgstr "域信息不完全，缺少名称"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "域信息不完全，缺少 uuid"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "域信息不完全，vbd 没有 dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "域信息不完全，vbd 没有 src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "域信息不正确，domid 不是数字值"
 
 msgid "domain is already running"
 msgstr "域正在运行中"
@@ -15439,12 +15175,6 @@ msgstr "域名或 uuid"
 msgid "domain name, id or uuid"
 msgstr "域名，id 或 uuid"
 
-msgid "domain not active"
-msgstr "域不活跃"
-
-msgid "domain not running"
-msgstr "域未运行"
-
 msgid "domain save job"
 msgstr "域保存任务"
 
@@ -15462,9 +15192,6 @@ msgstr "域类型"
 
 msgid "domain vcpu counts"
 msgstr "域 vcpu 计数"
-
-msgid "domainBlockPeek is not supported for dom0"
-msgstr "不支持 dom0 中的 domainBlockPeek"
 
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare 没有设定 uri"
@@ -15508,17 +15235,11 @@ msgstr "磁盘设备驱动"
 msgid "driver serial '%s' contains unsafe characters"
 msgstr "驱动器序列号 '%s' 包含不安全字符"
 
-msgid "dtb is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持 dtb"
-
 msgid "dump domain's memory only"
 msgstr "只转储域的内存"
 
 msgid "dump the core of a domain to a file for analysis"
 msgstr "把一个域的内核 dump 到一个文件中以方便分析"
-
-msgid "dump-guest-core is not available with this QEMU binary"
-msgstr "在这个 QEMU 中不能使用 dump-guest-core"
 
 msgid "dump-guest-memory is not supported"
 msgstr "不支持 dump-guest-memory"
@@ -15858,9 +15579,6 @@ msgstr "使用 SSH 代理认证失败：%s"
 msgid "failed to begin transaction: %s%s%s"
 msgstr "开始传输失败：%s%s%s"
 
-msgid "failed to build sexpr"
-msgstr "构建 sexpr 失败"
-
 msgid "failed to calculate ssh host key hash"
 msgstr "计算 ssh 主机密钥哈希失败"
 
@@ -15881,9 +15599,6 @@ msgstr "提交传输失败：%s%s%s"
 msgid "failed to compile regex '%s': %s"
 msgstr "编译表达式  '%s': %s 失败"
 
-msgid "failed to connect to Xen Store"
-msgstr "连接到 Xen Store 失败"
-
 msgid "failed to connect to monitor socket"
 msgstr "无法连接到监控程序插槽"
 
@@ -15893,9 +15608,6 @@ msgstr "连接 %s 指定 RADOS 监视器失败"
 
 msgid "failed to connect to the hypervisor"
 msgstr "连接到管理程序失败"
-
-msgid "failed to connect to xend"
-msgstr "连接到 xend 失败"
 
 #, c-format
 msgid "failed to convert size: '%s'"
@@ -15911,9 +15623,6 @@ msgstr "生成 %s 失败"
 #, c-format
 msgid "failed to create (start) interface %s: %s%s%s"
 msgstr "生成（启动）接口 %s 失败：%s%s%s"
-
-msgid "failed to create a socket"
-msgstr "生成套接字失败"
 
 #, c-format
 msgid "failed to create directory '%s'"
@@ -15932,10 +15641,6 @@ msgstr "创建 json 失败"
 #, c-format
 msgid "failed to create lib dir '%s': %s"
 msgstr "创建 lib 目录 '%s' 失败：%s"
-
-#, c-format
-msgid "failed to create link %s to %s"
-msgstr "创建 %s 到 %s 的链接失败"
 
 #, c-format
 msgid "failed to create log dir '%s': %s"
@@ -16141,10 +15846,6 @@ msgid "failed to lookup interface with MAC address '%s'"
 msgstr "无法找到 MAC 地址为 '%s' 的接口"
 
 #, c-format
-msgid "failed to lseek or read from file: %s"
-msgstr "从文件 lseek 或者读取失败：%s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "把网络%s标记为自动启动失败"
 
@@ -16171,10 +15872,6 @@ msgid "failed to open file"
 msgstr "打开文件失败"
 
 #, c-format
-msgid "failed to open for reading: %s"
-msgstr "打开并读取失败：%s"
-
-#, c-format
 msgid "failed to open logfile %s"
 msgstr "打开日志文件 %s 失败"
 
@@ -16192,9 +15889,6 @@ msgstr "打开日志文件失败,检查日志文件路径"
 #, c-format
 msgid "failed to parse %s"
 msgstr "解析 %s 失败"
-
-msgid "failed to parse Xend domain information"
-msgstr "解释 Xend 域信息失败"
 
 msgid "failed to parse configuration file"
 msgstr "解析配置文件失败"
@@ -16285,9 +15979,6 @@ msgstr "读取配置文件失败"
 msgid "failed to read configuration file %s"
 msgstr "读取配置文件 %s 失败"
 
-msgid "failed to read from Xen Daemon"
-msgstr "从 Xen 守护进程读失败"
-
 msgid "failed to read from wakeup fd"
 msgstr "读取叫醒 fd 失败"
 
@@ -16311,13 +16002,6 @@ msgstr "读取使用模板 %s 创建的临时文件失败"
 
 msgid "failed to register udev interface driver"
 msgstr "注册 udev 接口驱动程序失败"
-
-#, c-format
-msgid "failed to remove link %s"
-msgstr "删除链接 %s 失败"
-
-msgid "failed to remove old domain from config map"
-msgstr "从配置映像中删除原来的域失败"
 
 #, c-format
 msgid "failed to remove pool '%s'"
@@ -16480,9 +16164,6 @@ msgstr "写入网络状态文件 '%s' 失败"
 msgid "failed to write the log file"
 msgstr "写入日志文件失败"
 
-msgid "failed to write to Xen Daemon"
-msgstr "写入 Xen 守护进程失败"
-
 msgid "failed to write to profile"
 msgstr "写入侧写失败"
 
@@ -16557,12 +16238,6 @@ msgstr "包含为目标更新的 XML 的文件名"
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "filesyste 不是 'template' 或者 'mount' 类型"
 
-msgid "filesystem passthrough not supported by this QEMU"
-msgstr "这个 QEMU 二进制中不支持文件系统转移"
-
-msgid "filesystem writeout not supported"
-msgstr "不支持文件系统写入"
-
 #, c-format
 msgid "filter '%s' already exists with uuid %s"
 msgstr "过滤器 ‘%s’ 已存在并使用 uuid %s"
@@ -16608,9 +16283,6 @@ msgstr "查找快照名称上级"
 
 msgid "find potential storage pool sources"
 msgstr "找到潜在存储池源"
-
-msgid "finding dom on config list"
-msgstr "正在 config 列表中查找 dom"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "标签参数必须为 VIR_MEMORY_VIRTUAL 或者 VIR_MEMORY_PHYSICAL"
@@ -16887,16 +16559,9 @@ msgid ""
 "hostname on destination resolved to localhost, but migration requires an FQDN"
 msgstr "本地主机在目的地解析了主机名，但迁移需要一个 FQDN。"
 
-msgid "hotplug of device type not supported"
-msgstr "不支持热查报设备类型"
-
 #, c-format
 msgid "hub type %s not supported"
 msgstr "不支持集线器类型 %s"
-
-#, c-format
-msgid "hugepage backing not supported by '%s'"
-msgstr "'%s' 不支持超大页面备份"
 
 msgid "hugepage size can't be zero"
 msgstr "hugepage 大小不能为 0"
@@ -16991,9 +16656,6 @@ msgstr "必须指定起始二进制代码"
 
 msgid "initial allocation size, as scaled integer (default bytes)"
 msgstr "初始化分配大小，以整数计（默认为 KiB）"
-
-msgid "initializing inotify"
-msgstr "初始化 inotify"
 
 #, c-format
 msgid "input too large: %d * %d"
@@ -17320,9 +16982,6 @@ msgstr "无效的连接指向"
 msgid "invalid connection pointer in %s"
 msgstr "无效的连接指向 %s"
 
-msgid "invalid cpumap_t size"
-msgstr "无效 cpumap_t size"
-
 #, c-format
 msgid "invalid database name: %s"
 msgstr "无效数据库名称：%s"
@@ -17504,30 +17163,6 @@ msgstr "无效路径 '%s'"
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
 msgstr "无效路径，'%s' 是未知接口"
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range hda[1-63] - hdt[1-63] for "
-"domain %d"
-msgstr "无效路径，域 %d 的设备名称必须在 hda[1-63] - hdt[1-63] 范围内 "
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range sda[1-15] - sdiv[1-15] for "
-"domain %d"
-msgstr "无效路径，域 %d 的设备名称必须在 sda[1-15] - sdiv[1-15] 范围内 "
-
-#, c-format
-msgid ""
-"invalid path, device names must be in the range xvda[1-15] - xvdiz[1-15] for "
-"domain %d"
-msgstr "无效路径，域 %d 的设备名称必须在 xvda[1-15] - xvdiz[1-15] 范围内 "
-
-msgid "invalid path, should be vif<domid>.<n>."
-msgstr "无效路径，应为 vif<domid>.<n>。"
-
-msgid "invalid path, vif<domid> should match this domain ID"
-msgstr "无效路径， vif<domid> 应符合中国域 ID"
 
 #, c-format
 msgid "invalid path: %s"
@@ -18059,9 +17694,6 @@ msgstr "已限制锁定管理程序连接"
 
 msgid "lock owner details have not been registered"
 msgstr "未注册锁拥有者详情"
-
-msgid "looking up dom"
-msgstr "查找 dom"
 
 msgid "lxc state driver is not active"
 msgstr "lxc 状态驱动程序未激活"
@@ -19168,10 +18800,6 @@ msgid "no PCI vendor ID supplied for '%s'"
 msgstr "没有为 '%s' 提供 PCI 经销商 ID"
 
 #, c-format
-msgid "no QEMU URI path given, try %s"
-msgstr "未给出 QEMU URI 路径，尝试 %s"
-
-#, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
 msgstr "没有为 '%s' 提供 SCSI LUN ID"
 
@@ -19218,9 +18846,6 @@ msgstr "没有为 '%s' 提供 USB 产品 ID"
 #, c-format
 msgid "no USB vendor ID supplied for '%s'"
 msgstr "没有为 '%s' 提供 USB 经销商 ID"
-
-msgid "no VirtualBox driver path specified (try vbox:///session)"
-msgstr "未指定 VirtualBox 驱动程序路径 (尝试：vbox:///session)"
 
 #, c-format
 msgid "no WWNN supplied for '%s', and auto-generation failed"
@@ -19305,9 +18930,6 @@ msgstr "节点域配置"
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr "没有与名称 '%s' 匹配的域快照"
-
-msgid "no domain with matching id"
-msgstr "没有匹配 id 的域"
 
 #, c-format
 msgid "no domain with matching id %d"
@@ -19506,9 +19128,6 @@ msgstr "这个平台中没有使用节点"
 msgid "node information"
 msgstr "节点信息"
 
-msgid "node information incomplete, missing scheduler name"
-msgstr "节点信息不完整，缺少调度程序名称"
-
 msgid "node memory stats not implemented on this platform"
 msgstr "在这个平台中未采用内存 stats"
 
@@ -19632,9 +19251,6 @@ msgstr "必须使用持久标签设置指定离线迁移"
 
 msgid "ok"
 msgstr "确定"
-
-msgid "on_xend_start not present in sexpr"
-msgstr "sexpr 中没有 on_xend_start"
 
 msgid "online commit not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持在线指派"
@@ -19816,10 +19432,6 @@ msgstr "语法错误"
 
 msgid "parsing sxpr config failed"
 msgstr "解析 sxpr 配置失败"
-
-#, c-format
-msgid "parsing uuid %s"
-msgstr "正在解析 uuid %s"
 
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "向虚拟机传递文件描述符 N、M......"
@@ -20214,9 +19826,6 @@ msgstr "只读访问阻断 %s"
 msgid "read-only connection"
 msgstr "只读连接"
 
-msgid "readonly filesystem is not supported by this QEMU binary"
-msgstr "这个 QEMU 二进制不支持只读文件系统"
-
 msgid "reattach node device to its device driver"
 msgstr "重新将节点设备附加到他的设备驱动程序中"
 
@@ -20308,9 +19917,6 @@ msgstr "请求的验证类型 %s 被拒绝"
 #, c-format
 msgid "requested cpu amount exceeds maximum (%d > %d)"
 msgstr "所需 cpu 量超过最大值（%d > %d）"
-
-msgid "requested device does not exist"
-msgstr "请求的设备不存在"
 
 msgid "requested size of the cache (in bytes) used for compression"
 msgstr "压缩中所需缓存大小（单位：字节）"
@@ -20498,10 +20104,6 @@ msgid "scripts are not supported on interfaces of type %s"
 msgstr "接口类型 %s 中不支持的脚本"
 
 #, c-format
-msgid "sdl not supported by '%s'"
-msgstr "'%s' 不支持 sdl"
-
-#, c-format
 msgid "seclabel for model %s is already provided"
 msgstr "已为型号 %s 提供 seclabel"
 
@@ -20622,9 +20224,6 @@ msgstr "设定 VNC 密码失败"
 msgid "setting disk password is not supported"
 msgstr "不支持设定磁盘密码"
 
-msgid "setting of link state not supported: Link is up"
-msgstr "不支持设定链接状态：链接为 up"
-
 msgid ""
 "setting of timer catchup policies is only supported with tickpolicy='catchup'"
 msgstr "只有在使用 tickpolicy='catchup' 后才支持设定计时器 catchup 策略"
@@ -20638,9 +20237,6 @@ msgstr "setuid 或者 setgid 失败"
 #, c-format
 msgid "setup of pcap handle failed: %s"
 msgstr "设置 pcap 句柄失败：%s"
-
-msgid "sexpr2string failed"
-msgstr "sexpr2string 失败"
 
 msgid "sgio is only supported for scsi host device"
 msgstr "只有 scsi 主机设备支持 sgio"
@@ -20820,9 +20416,6 @@ msgstr "spice zlib 缺少压缩"
 msgid "spicevmc device type only supports virtio"
 msgstr "spicevmc 设备类型只支持 virtio"
 
-msgid "spicevmc not supported in this QEMU binary"
-msgstr "这个 QEMU 二进制中不支持 spicevmc"
-
 msgid "start a (previously defined) inactive domain"
 msgstr "开始一个（以前定义的）非活跃的域"
 
@@ -20852,14 +20445,6 @@ msgstr "已启动"
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "stat 文件 '%s' 失败"
-
-#, c-format
-msgid "stats->rd_bytes would overflow 64 bit counter for domain %d"
-msgstr "stats->rd_bytes 会在域 %d 中溢出 64 位计数器"
-
-#, c-format
-msgid "stats->wr_bytes would overflow 64 bit counter for domain %d"
-msgstr "stats->wr_bytes 会在域 %d 中溢出 64 位计数器"
 
 msgid "stopped, with no saved guests"
 msgstr "停止，无保存的虚拟机"
@@ -21008,10 +20593,6 @@ msgid "target %s:%d already exists"
 msgstr "目标 %s:%d 已存在"
 
 #, c-format
-msgid "target '%s' already exists"
-msgstr "目标 '%s' 已存在"
-
-#, c-format
 msgid "target '%s' duplicated for disk sources '%s' and '%s'"
 msgstr "磁盘源 '%s' 和 '%s' 有重复的目标 '%s'"
 
@@ -21079,10 +20660,6 @@ msgstr "网络 %s 中有 <address> 或者 <pf> 子元素时不能使用 <forward
 #, c-format
 msgid "the MAC address '%s' matches multiple interfaces"
 msgstr "MAC 地址 '%s' 与多个接口映射"
-
-#, c-format
-msgid "the QEMU binary %s does not support smbios settings"
-msgstr "QEMU 二进制 %s 不支持 smbios 设定"
 
 #, c-format
 msgid "the QEMU binary does not support %s"
@@ -21224,9 +20801,6 @@ msgstr "这个网络已存在"
 msgid "this platform is missing dlopen"
 msgstr "这个平台缺少 dlopen"
 
-msgid "this qemu binary requires libvirt to be compiled with yajl"
-msgstr "这个 qemu 二进制文件需要使用 yajl 编译 libvirt"
-
 #, c-format
 msgid "this qemu doesn't support RNG device type '%s'"
 msgstr "这个 qemu 不支持 RNG 设备类型 '%s'"
@@ -21292,9 +20866,6 @@ msgstr "qcow 加密有太多 secret"
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr "链 '%s' 的顶部 '%s' 没有后备文件"
-
-msgid "topology syntax error"
-msgstr "拓扑结构句法错误"
 
 msgid "total I/O operations limit per second"
 msgstr "以每秒字节数位单位的总 I/O 操作限制"
@@ -21452,10 +21023,6 @@ msgid "unable to close pipe"
 msgstr "无法关闭管道"
 
 #, c-format
-msgid "unable to connect to '%s:%s'"
-msgstr "无法连接到 '%s:%s'"
-
-#, c-format
 msgid "unable to connect to server at '%s:%s'"
 msgstr "无法在 '%s :%s' 连接到服务器"
 
@@ -21490,9 +21057,6 @@ msgstr "无法确定阵列大小"
 msgid "unable to determine if snapshot has parent"
 msgstr "无法确定快照是否有上级"
 
-msgid "unable to determine original VLAN"
-msgstr "无法确定原始 VLAN"
-
 #, c-format
 msgid "unable to execute QEMU agent command '%s'"
 msgstr "无法执行 QEMU 代理命令 '%s'"
@@ -21526,9 +21090,6 @@ msgstr "无法获取 cpu 计数"
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr "无法获得当前进程上下文  '%s'"
-
-msgid "unable to get current time"
-msgstr "无法获得当前时间"
 
 msgid "unable to get monitor count"
 msgstr "无法获取监控程序计数"
@@ -21625,10 +21186,6 @@ msgid "unable to register monitor events"
 msgstr "无法注册监控程序事件"
 
 #, c-format
-msgid "unable to resolve hostname '%s': %s"
-msgstr "无法解析主机名 '%s'：%s"
-
-#, c-format
 msgid "unable to save metadata for snapshot %s"
 msgstr "无法为快照 %s 保存元数据"
 
@@ -21686,9 +21243,6 @@ msgstr "无法在  中将用户和组设定为  '%ld:%ld' '%s' "
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr "无法获取磁盘 %s 统计数据：%s"
-
-msgid "unable to store config file handle"
-msgstr "无法保存配置文件软件"
 
 msgid "unable to unload already unloaded profile"
 msgstr "无法载入已载入的侧写"
@@ -21771,10 +21325,6 @@ msgstr "意外的 UML URI 路径 '%s', 尝试 uml:///session"
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr "意外的 UML URI 路径 '%s', 尝试 uml:///system"
-
-#, c-format
-msgid "unexpected Xen URI path '%s', try xen:///"
-msgstr "意外的 Xen URI 路径 '%s'，尝试 xen:///"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -22093,9 +21643,6 @@ msgstr "on_poweroff 的意外值 %s"
 #, c-format
 msgid "unexpected value %s for on_reboot"
 msgstr "on_reboot 中的意外值 %s"
-
-msgid "unexpected value from on_xend_start"
-msgstr "on_xend_start 中的意外值"
 
 #, c-format
 msgid "unexpected video model %d"
@@ -22960,9 +22507,6 @@ msgstr "不支持的控制台目标类型 %s"
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "参数 '%c' 不支持的数据类型 '%s'"
 
-msgid "unsupported device type"
-msgstr "不支持的设备类型"
-
 #, c-format
 msgid "unsupported device type in network %s interface pool"
 msgstr "网络 %s 接口池中不支持的设备类型"
@@ -23033,12 +22577,6 @@ msgstr "不支持的标签：(0x%x)"
 msgid "unsupported graphics type '%s'"
 msgstr "不支持的图形类型 '%s' "
 
-msgid "unsupported in dom interface < 5"
-msgstr "在 dom interface < 5 中部支持"
-
-msgid "unsupported in sys interface < 4"
-msgstr "sys interface < 4 中部支持"
-
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "不支持的输入总线 %s"
@@ -23071,10 +22609,6 @@ msgid "unsupported option '-%c'. See --help."
 msgstr "不支持选项 '-%c'。参阅 --help。"
 
 #, c-format
-msgid "unsupported path, use xvdN, hdN, or sdN for domain %d"
-msgstr "不支持的路径，在域 %d 中使用 xvdN, hdN, 或者 sdN。"
-
-#, c-format
 msgid "unsupported pit tickpolicy '%s'"
 msgstr "不支持的 pit 计数策略 '%s'"
 
@@ -23085,10 +22619,6 @@ msgstr "不支持的协议 family %s"
 #, c-format
 msgid "unsupported protocol type %s"
 msgstr "不支持的协议类型 %s"
-
-#, c-format
-msgid "unsupported rtc tickpolicy '%s'"
-msgstr "不支持的 rtc 计数策略 '%s'"
 
 #, c-format
 msgid "unsupported rtc timer tickpolicy '%s'"
@@ -23316,9 +22846,6 @@ msgstr "virGetUserName 不可用"
 msgid "virGetUserRuntimeDirectory is not available"
 msgstr "virGetUserRuntimeDirectory 不可用"
 
-msgid "virHashLookup"
-msgstr "virHashLookup"
-
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL def"
 
@@ -23420,9 +22947,6 @@ msgstr "vmplayer u支持 libvirt suspend/resume (vmware pause/unpause) 操作 "
 msgid "vnc display"
 msgstr "vnc 显示"
 
-msgid "vnc display sharing policy is not supported with this QEMU"
-msgstr "这个 QEMU 不支持 vnc 显示共享策略"
-
 msgid "vnc graphics are not supported with this QEMU"
 msgstr "这个 QEMU 不支持 vnc 图形"
 
@@ -23473,9 +22997,6 @@ msgstr "从 pmsuspended 状态唤醒域"
 
 msgid "warning"
 msgstr "警告"
-
-msgid "watch already tracked"
-msgstr "已跟踪 watch"
 
 msgid "watchdog"
 msgstr "watchdog"
@@ -23546,44 +23067,6 @@ msgstr "磁盘设备的 wwn"
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen 总线不支持 %s 输入设备"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-msgstr "xenDaemonDomainMigrate：Xen 不支持在迁移时的带宽限制"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-msgstr "xenDaemonDomainMigrate：Xen 不支持在迁移时重新命名域"
-
-msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr "xenDaemonDomainMigrate：在 URI 中必须指定主机名"
-
-msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr "xenDaemonDomainMigrate：无效端口号"
-
-msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr "xenDaemonDomainMigrate：Xen 只支持 xenmigr:// 迁移"
-
-msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr "xenDaemonDomainMigrate：不支持的标记"
-
-msgid "xenDaemonDomainMigrate: xend cannot migrate paused domains"
-msgstr "xenDaemonDomainMigrate: xend 无法迁移暂停的域"
-
-msgid "xenDaemonGetAutostart failed to find this domain"
-msgstr "xenDaemonGetAutostart 无法找到这个域"
-
-msgid "xenDaemonSetAutostart failed to find this domain"
-msgstr "xenDaemonGetAutostart 无法找到这个域"
-
-msgid "xenXMConfigCacheRefresh: virHashAddEntry"
-msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
-
-#, c-format
-msgid "xend_post: error from xen daemon: %s"
-msgstr "xend_post：来自 xen 守护进程的错误：%s"
 
 msgid "xml data file to export from"
 msgstr "要从中导出的 xml 数据文件"

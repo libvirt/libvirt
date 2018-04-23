@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-27 04:56-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hungarian (http://www.transifex.com/projects/p/fedora/"
@@ -550,9 +550,6 @@ msgstr "tartományinformáció"
 msgid "domain information in XML"
 msgstr "tartományinformáció XML-ben"
 
-msgid "domain information incomplete, missing domid"
-msgstr "a tartományinformáció nem teljes - hiányzik a domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
 "a tartományinformáció nem teljes - hiányzik a rendszermag és a rendszerindító"
@@ -560,17 +557,11 @@ msgstr ""
 msgid "domain information incomplete, missing name"
 msgstr "a tartományinformáció nem teljes - hiányzik a név"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "a tartományinformáció nem teljes - hiányzik az uuid"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "a tartományinformáció nem teljes - vbd nem rendelkezik eszközzel (dev)"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "a tartományinformáció nem teljes - vbd nem rendelkezik forrással"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "a tartományinformáció helytelen - a domid nem numerikus"
 
 msgid "domain name or uuid"
 msgstr "tartománynév vagy uuid"
@@ -608,9 +599,6 @@ msgstr "egy érték várása"
 
 msgid "expecting an assignment"
 msgstr "egy hozzárendelés várása"
-
-msgid "failed to connect to Xen Store"
-msgstr "nem sikerült csatlakozni a Xen-tárolóhoz"
 
 msgid "failed to connect to the hypervisor"
 msgstr "nem sikerült csatlakozni a felügyelőhöz"
@@ -658,9 +646,6 @@ msgstr "nem sikerült olvasásra megnyitni a beállítási fájlt"
 msgid "failed to open file"
 msgstr "a fájl megnyitása nem sikerült"
 
-msgid "failed to parse Xend domain information"
-msgstr "Xend-tartományinformáció értelmezése nem sikerült"
-
 msgid "failed to parse configuration file"
 msgstr "nem sikerült értelmezni a beállítási fájlt"
 
@@ -674,9 +659,6 @@ msgstr "nem sikerült olvasni a beállítási fájlt"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "nem sikerült olvasni a(z) %s beállítási fájlt"
-
-msgid "failed to read from Xen Daemon"
-msgstr "nem sikerült olvasni a Xen-szolgáltatásból"
 
 msgid "failed to save content"
 msgstr "a tartalom mentése nem sikerült"

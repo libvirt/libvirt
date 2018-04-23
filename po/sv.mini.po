@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2017-02-26 05:02-0500\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -393,10 +393,6 @@ msgstr "Skapa ett nätverk."
 
 msgid "Create a restore point for interfaces settings"
 msgstr "Skapa en återställningspunkt för gränssnittsinställningar"
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr "Parametern för kreditplanerarvikt (%d) är ej i intervallet (1-65535)"
 
 msgid "Define a domain."
 msgstr "Definiera en domän."
@@ -1629,26 +1625,17 @@ msgstr "domäninformation"
 msgid "domain information in XML"
 msgstr "domäninformation i XML"
 
-msgid "domain information incomplete, missing domid"
-msgstr "domäninformation inkomplett, saknar domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "domäninformation ej komplett, saknar kärna & startprogram"
 
 msgid "domain information incomplete, missing name"
 msgstr "domäninformation inkomplett, saknar namn"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "domäninformation inkomplett, saknar uuid"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "domäninformation inkomplett, vbd har ingen dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "domäninformation inkomplett, vbd har ingen src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "domäninformation fel, domid är inte numerisk"
 
 msgid "domain name or uuid"
 msgstr "domännamn eller uuid"
@@ -1703,9 +1690,6 @@ msgstr "absolut sökväg förväntas: %s"
 
 msgid "expecting an assignment"
 msgstr "förväntar mig en tilldelning"
-
-msgid "failed to connect to Xen Store"
-msgstr "misslyckades att ansluta till Xen Store"
 
 msgid "failed to connect to the hypervisor"
 msgstr "misslyckades att ansluta till hypervisor"
@@ -1776,9 +1760,6 @@ msgstr "misslyckades att öppna fil"
 msgid "failed to open the log file. check the log file path"
 msgstr "misslyckades att öppna loggfil. kontrollera sökvägen till loggfilen"
 
-msgid "failed to parse Xend domain information"
-msgstr "misslyckades att analysera domäninformation för Xend"
-
 msgid "failed to parse configuration file"
 msgstr "kunde inte analysera konfigurationsfilen"
 
@@ -1792,9 +1773,6 @@ msgstr "kunde inte läsa konfigurationsfilen"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "kunde inte läsa konfigurationsfilen %s"
-
-msgid "failed to read from Xen Daemon"
-msgstr "misslyckades att läsa från Xen-demonen"
 
 msgid "failed to save content"
 msgstr "misslyckades att spara innehåll"
@@ -2341,9 +2319,6 @@ msgstr "för många drivrutiner registrerade"
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "för många drivrutiner registrerade i %s"
-
-msgid "topology syntax error"
-msgstr "syntaxfel i topologin"
 
 msgid "tty console"
 msgstr "tty-konsol"

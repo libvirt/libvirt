@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-27 07:53-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Lithuanian (http://www.transifex.com/projects/p/fedora/"
@@ -407,23 +407,14 @@ msgstr "domain information"
 msgid "domain information in XML"
 msgstr "domain information in XML"
 
-msgid "domain information incomplete, missing domid"
-msgstr "domain information incomplete, missing domid"
-
 msgid "domain information incomplete, missing name"
 msgstr "domain information incomplete, missing name"
-
-msgid "domain information incomplete, missing uuid"
-msgstr "domain information incomplete, missing uuid"
 
 msgid "domain information incomplete, vbd has no dev"
 msgstr "domain information incomplete, vbd has no dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "domain information incomplete, vbd has no src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "domain information incorrect domid not numeric"
 
 msgid "domain name or uuid"
 msgstr "domain name or uuid"
@@ -462,9 +453,6 @@ msgstr "expecting a value"
 msgid "expecting an assignment"
 msgstr "expecting an assignment"
 
-msgid "failed to connect to Xen Store"
-msgstr "failed to connect to Xen Store"
-
 msgid "failed to connect to the hypervisor"
 msgstr "failed to connect to the hypervisor"
 
@@ -497,9 +485,6 @@ msgstr "failed to open configuration file for reading"
 msgid "failed to open file"
 msgstr "failed to open file"
 
-msgid "failed to parse Xend domain information"
-msgstr "failed to parse Xend domain information"
-
 msgid "failed to parse configuration file"
 msgstr "failed to parse configuration file"
 
@@ -513,9 +498,6 @@ msgstr "failed to read configuration file"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "failed to read configuration file %s"
-
-msgid "failed to read from Xen Daemon"
-msgstr "failed to read from Xen Daemon"
 
 msgid "failed to save content"
 msgstr "failed to save content"

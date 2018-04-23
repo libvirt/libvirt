@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2018-02-24 11:19-0500\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/projects/p/libvirt/language/"
@@ -941,9 +941,6 @@ msgstr "informació del domini"
 msgid "domain information in XML"
 msgstr "informació de domini en XML"
 
-msgid "domain information incomplete, missing domid"
-msgstr "la informació del domini és incompleta, falta el domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
 "la informació del domini és incompleta, falta el kernel i el gestor "
@@ -952,17 +949,11 @@ msgstr ""
 msgid "domain information incomplete, missing name"
 msgstr "la informació del domini és incompleta, falta el nom"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "la informació del domini és incompleta, falta l'uuid"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "la informació del domini és incompleta, vbd no té dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "la informació del domini és incompleta, vbd no té src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "la informació del domini és incorrecta, domid no és numèric"
 
 msgid "domain is not in running state"
 msgstr "el domini no està en estat d'execució"
@@ -1022,9 +1013,6 @@ msgstr "s'espera un valor"
 msgid "expecting an assignment"
 msgstr "s'espera una assignació"
 
-msgid "failed to connect to Xen Store"
-msgstr "no s'ha pogut connectar al magatzem Xen"
-
 msgid "failed to connect to the hypervisor"
 msgstr "no s'ha pogut connectar a l'hipervisor"
 
@@ -1080,9 +1068,6 @@ msgstr "no s'ha pogut obrir el fitxer"
 msgid "failed to open the log file. check the log file path"
 msgstr "no s'ha pogut obrir el fitxer de registre, comproveu el camí al fitxer"
 
-msgid "failed to parse Xend domain information"
-msgstr "no s'ha pogut analitzar la informació del domini Xend"
-
 msgid "failed to parse configuration file"
 msgstr "no s'ha pogut analitzar el fitxer de configuració"
 
@@ -1096,9 +1081,6 @@ msgstr "no s'ha pogut llegir el fitxer de configuració"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "no s'ha pogut llegir el fitxer de configuració %s"
-
-msgid "failed to read from Xen Daemon"
-msgstr "no s'ha pogut llegir el dimoni Xen"
 
 msgid "failed to save content"
 msgstr "no s'ha pogut desar el contingut"
@@ -1371,9 +1353,6 @@ msgstr "no s'ha trobat cap nom d'usuari de client"
 #, c-format
 msgid "no config file for %s"
 msgstr "no hi ha fitxer de configuració per a %s"
-
-msgid "no domain with matching id"
-msgstr "no hi ha cap domini que coincideixi amb l'id"
 
 #, c-format
 msgid "no domain with matching id %d"

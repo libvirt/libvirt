@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2016-09-16 11:27-0400\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
@@ -97,10 +97,6 @@ msgid " Storage:"
 msgstr " Pamięć masowa:"
 
 #, c-format
-msgid "%d status from xen daemon: %s:%s"
-msgstr "stan %d z usługi Xen: %s:%s"
-
-#, c-format
 msgid "%s\n"
 msgstr "%s\n"
 
@@ -167,10 +163,6 @@ msgstr "%s: zapisanie pliku dziennika się nie powiodło: %s"
 #, c-format
 msgid "%s: initialization failed\n"
 msgstr "%s: zainicjowanie się nie powiodło\n"
-
-#, c-format
-msgid "%s: invalid path"
-msgstr "%s: nieprawidłowa ścieżka"
 
 #, c-format
 msgid ""
@@ -462,10 +454,6 @@ msgid "Cannot find '%s' in path"
 msgstr "Nie można odnaleźć „%s” w ścieżce"
 
 #, c-format
-msgid "Cannot find QEMU binary %s"
-msgstr "Nie można odnaleźć pliku binarnego QEMU %s"
-
-#, c-format
 msgid "Cannot find UML kernel %s"
 msgstr "Nie można odnaleźć jądra UML %s"
 
@@ -475,10 +463,6 @@ msgstr "Nie można odnaleźć odpowiedniego modelu procesora dla podanych danych
 #, c-format
 msgid "Cannot find suitable emulator for %s"
 msgstr "Nie można odnaleźć odpowiedniego emulatora dla %s"
-
-msgid "Cannot modify live config if domain is inactive"
-msgstr ""
-"Nie można zmodyfikować konfiguracji na żywo, jeśli domena jest nieaktywna"
 
 msgid "Cannot open /dev/urandom"
 msgstr "Nie można otworzyć /dev/urandom"
@@ -541,10 +525,6 @@ msgstr "Nie można usunąć określenia domeny przejściowej"
 
 msgid "Cannot unshare mount namespace"
 msgstr "Nie można usunąć współdzielenia przestrzeni nazw montowania"
-
-#, c-format
-msgid "Cap %s too big for destination"
-msgstr "Nakrycie %s jest za duże dla celu"
 
 msgid "Capabilities not available"
 msgstr "Możliwości są niedostępne"
@@ -1081,14 +1061,6 @@ msgstr "Czas utworzenia"
 msgid "Creation of %s volumes is not supported"
 msgstr "Utworzenie %s woluminów jest nieobsługiwane"
 
-#, c-format
-msgid "Credit scheduler cap parameter (%d) is out of range (0-65534)"
-msgstr "Zaufany parametr nakrycia planisty (%d) jest spoza zakresu (0-65534)"
-
-#, c-format
-msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr "Zaufany parametr wagi planisty (%d) jest spoza zakresu (1-65535)"
-
 msgid "Data processed:"
 msgstr "Przetworzono danych:"
 
@@ -1165,10 +1137,6 @@ msgstr "Odłącza urządzenie dyskowe."
 
 msgid "Detach network interface."
 msgstr "Odłącza interfejs sieciowy."
-
-#, c-format
-msgid "Device %s has been assigned to guest %d"
-msgstr "Urządzenie %s zostało przypisane do gościa %d"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -1280,10 +1248,6 @@ msgstr "Domena %s jest ponownie uruchamiana\n"
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "Domena %s jest wyłączana\n"
-
-#, c-format
-msgid "Domain %s isn't running."
-msgstr "Domena %s nie jest uruchomiona."
 
 #, c-format
 msgid "Domain %s marked as autostarted\n"
@@ -1457,21 +1421,12 @@ msgstr "Proszę podać nazwę użytkownika dla %s"
 msgid "Enter username for %s [%s]"
 msgstr "Proszę podać nazwę użytkownika dla %s [%s]"
 
-msgid "Error adding file to config cache"
-msgstr "Błąd podczas dodawania pliku do pamięci podręcznej konfiguracji"
-
-msgid "Error adding file to config list"
-msgstr "Błąd podczas dodawania pliku do listy konfiguracji"
-
 msgid "Error creating initial configuration"
 msgstr "Błąd podczas tworzenia początkowej konfiguracji"
 
 #, c-format
 msgid "Error from child process creating '%s'"
 msgstr "Błąd z procesu potomka tworzącego „%s”"
-
-msgid "Error looking up domain"
-msgstr "Błąd podczas wyszukiwania domeny"
 
 #, c-format
 msgid "Error opening file %s"
@@ -1840,10 +1795,6 @@ msgid "Failed to create domain save file '%s'"
 msgstr "Utworzenie pliku zapisu domeny „%s” się nie powiodło"
 
 #, c-format
-msgid "Failed to create inactive domain %s"
-msgstr "Utworzenie nieaktywnej domeny %s się nie powiodło"
-
-#, c-format
 msgid "Failed to create network from %s"
 msgstr "Utworzenie sieci z %s się nie powiodło"
 
@@ -2025,9 +1976,6 @@ msgstr "Uzyskanie pomniejszej liczby %s się nie powiodło"
 
 msgid "Failed to get UUID of created secret"
 msgstr "Uzyskanie UUID utworzonego sekretu się nie powiodło"
-
-msgid "Failed to get a scheduler name"
-msgstr "Uzyskanie nazwy planisty się nie powiodło"
 
 #, c-format
 msgid "Failed to get block stats %s %s"
@@ -2274,9 +2222,6 @@ msgstr ""
 
 msgid "Failed to reconnect to the hypervisor"
 msgstr "Ponowne połączenie z nadzorcą się nie powiodło"
-
-msgid "Failed to redefine sexpr"
-msgstr "Ponowne określenia sexpr się nie powiodło"
 
 #, c-format
 msgid "Failed to refresh pool %s"
@@ -2633,9 +2578,6 @@ msgstr "Kod odpowiedzi %d HTTP do pobierania z „%s”"
 msgid "HTTP response code %d for upload to '%s'"
 msgstr "Kod odpowiedzi %d HTTP do wysyłania do „%s”"
 
-msgid "Hash operation not allowed during iteration"
-msgstr "Działanie sumy kontrolnej nie jest dozwolone podczas iteracji"
-
 #, c-format
 msgid "Hook for %s, failed to find operation #%d"
 msgstr "Hak dla %s, odnalezienie działania #%d się nie powiodło"
@@ -2860,9 +2802,6 @@ msgstr "Nieprawidłowy filtr sieci"
 #, c-format
 msgid "Invalid network filter: %s"
 msgstr "Nieprawidłowy filtr sieci: %s"
-
-msgid "Invalid parameter count"
-msgstr "Nieprawidłowa liczba parametrów"
 
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr "Nieprawidłowy parametr virXPathBoolean()"
@@ -3144,9 +3083,6 @@ msgstr "Nieznana nazwa usługi"
 
 msgid "Name:"
 msgstr "Nazwa:"
-
-msgid "Named device aliases are not supported"
-msgstr "Aliasy nazwanych urządzeń są nieobsługiwane"
 
 #, c-format
 msgid "Network %s created from %s\n"
@@ -4166,9 +4102,6 @@ msgstr "Nie można dodać LPAR do tablicy"
 msgid "Unable to add handle %d to event loop"
 msgstr "Nie można dodać obsługi %d do pętli zdarzeń"
 
-msgid "Unable to attach network devices without vlan"
-msgstr "Nie można podłączyć urządzenia sieciowego bez VLAN"
-
 msgid "Unable to become session leader"
 msgstr "Nie można przełączyć na przywódcę sesji"
 
@@ -4411,10 +4344,6 @@ msgstr "Nieoczekiwana polityka funkcji procesora %d"
 msgid "Unexpected CPU match policy %d"
 msgstr "Nieoczekiwana pasująca polityka procesora %d"
 
-#, c-format
-msgid "Unexpected LXC URI path '%s', try lxc:///"
-msgstr "Nieoczekiwana ścieżka adresu URI LXC „%s”, należy wypróbować lxc:///"
-
 msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "Nieoczekiwany monitor QEMU jest nadal aktywny podczas usuwania domeny"
 
@@ -4486,9 +4415,6 @@ msgstr "Nieznany protokół „%s”"
 #, c-format
 msgid "Unknown release: %s"
 msgstr "Nieznane wydanie: %s"
-
-msgid "Unknown scheduler"
-msgstr "Nieznany planista"
 
 #, c-format
 msgid "Unknown source mode '%s'"
@@ -4679,10 +4605,6 @@ msgstr ""
 "źródłowego puli."
 
 #, c-format
-msgid "Weight %s too big for destination"
-msgstr "Waga %s jest za duża dla celu"
-
-#, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
@@ -4726,21 +4648,6 @@ msgstr "Węzeł XML nie zawiera tekstu, oczekiwano wartości xsd:dateTime"
 #, c-format
 msgid "XPath evaluation of response for call to '%s' failed"
 msgstr "Sprawdzenie XPath odpowiedzi na wywołanie do „%s” się nie powiodło"
-
-msgid "Xend only supports modifying both live and persistent config"
-msgstr "Xend obsługuje tylko modyfikowanie konfiguracji na żywo i trwałej"
-
-#, c-format
-msgid "Xend returned HTTP Content-Length of %d, which exceeds maximum of %d"
-msgstr "Xend zwróciło HTTP Content-Length %d, co przekracza maksimum %d"
-
-msgid "Xm driver only supports adding disk or network devices"
-msgstr ""
-"Sterownik Xm obsługuje tylko dodawanie urządzeń dysków lub urządzeń "
-"sieciowych"
-
-msgid "Xm driver only supports modifying persistent config"
-msgstr "Sterownik Xm obsługuje tylko modyfikowanie trwałej konfiguracji"
 
 msgid "You are trying to set a number of CPUs bigger than the max possible."
 msgstr ""
@@ -4789,16 +4696,6 @@ msgstr "aktywne"
 msgid "adding %s device failed: %s"
 msgstr "dodanie urządzenia %s się nie powiodło: %s"
 
-msgid "adding watch @introduceDomain"
-msgstr "dodawanie obserwacji @introduceDomain"
-
-msgid "adding watch @releaseDomain"
-msgstr "dodawanie obserwacji @releaseDomain"
-
-#, c-format
-msgid "adding watch on %s"
-msgstr "dodawanie obserwacji do %s"
-
 msgid "affect next boot"
 msgstr "ma wpływ na następne uruchomienie"
 
@@ -4820,10 +4717,6 @@ msgstr "apparmor_parser został zakończony z błędem"
 #, c-format
 msgid "argument key '%s' is too short, missing type prefix"
 msgstr "klucz parametru „%s” jest za krótki, brak przedrostka typu"
-
-#, c-format
-msgid "argument out of range: %d"
-msgstr "parametr jest spoza zakresu: %d"
 
 msgid "arguments to echo"
 msgstr "parametry dla polecenia echo"
@@ -4969,15 +4862,6 @@ msgstr "można przejść tylko przez katalogi"
 #, c-format
 msgid "can't open session to the domain with id %d"
 msgstr "nie można otworzyć sesji w domenie o identyfikatorze %d"
-
-msgid "can't retrieve config entry for domain to overwrite"
-msgstr "nie można pobrać wpisu konfiguracji dla domeny do zastąpienia"
-
-msgid "can't retrieve config file for domain"
-msgstr "nie można pobrać pliku konfiguracji dla domeny"
-
-msgid "can't retrieve config filename for domain to overwrite"
-msgstr "nie można pobrać nazwy pliku konfiguracji dla domeny do zastąpienia"
 
 msgid "canceled by client"
 msgstr "anulowano przez klienta"
@@ -5199,9 +5083,6 @@ msgstr "nie można odnaleźć definicji NIC dla VLAN %d"
 msgid "cannot find character device %s"
 msgstr "nie można odnaleźć urządzenia znakowego %s"
 
-msgid "cannot find default console device"
-msgstr "nie można odnaleźć domyślnego urządzenia konsoli"
-
 #, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "nie można odnaleźć nowo utworzonego woluminu „%s”"
@@ -5230,14 +5111,8 @@ msgstr "nie można utworzyć losowego UUID dla interfaceid"
 msgid "cannot get CPU affinity of process %d"
 msgstr "nie można uzyskać pokrewieństwa procesora procesu %d"
 
-msgid "cannot get VCPUs info"
-msgstr "nie można uzyskać informacji o wirtualnych procesorach"
-
 msgid "cannot get current time"
 msgstr "nie można uzyskać bieżącego czasu"
-
-msgid "cannot get domain details"
-msgstr "nie można uzyskać szczegółów domeny"
 
 #, c-format
 msgid "cannot get file context of '%s'"
@@ -5251,9 +5126,6 @@ msgstr "nie można uzyskać flag interfejsu w taśmie macvtap"
 
 msgid "cannot get the host uuid"
 msgstr "nie można uzyskać UUID gospodarza"
-
-msgid "cannot get time of day"
-msgstr "nie można uzyskać czasu"
 
 msgid "cannot get vCPU placement & pCPU time"
 msgstr ""
@@ -5548,10 +5420,6 @@ msgstr "nie można odczytać katalogu „%s”"
 msgid "cannot read domain image '%s'"
 msgstr "nie można odczytać obrazu domeny „%s”"
 
-#, c-format
-msgid "cannot read file %s"
-msgstr "nie można odczytać pliku %s"
-
 msgid "cannot read from stream"
 msgstr "nie można odczytać ze strumienia"
 
@@ -5680,10 +5548,6 @@ msgstr "nie można wykonać stat na fd %d"
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr "nie można wykonać stat na pliku „%s”"
-
-#, c-format
-msgid "cannot stat: %s"
-msgstr "nie można wykonać stat: %s"
 
 #, c-format
 msgid "cannot statvfs path '%s'"
@@ -5837,9 +5701,6 @@ msgstr "błąd składni pliku konfiguracji"
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "błąd składni pliku konfiguracji: %s"
-
-msgid "conn, or private data is NULL"
-msgstr "połączenie lub prywatne dane są PUSTE"
 
 msgid "connect to the guest console"
 msgstr "łączy się z konsolą gościa"
@@ -6042,9 +5903,6 @@ msgstr "nie można przetworzyć XML"
 
 msgid "could not parse arguments"
 msgstr "nie można przetworzyć parametrów"
-
-msgid "could not read CPU flags"
-msgstr "nie można odczytać flag procesora"
 
 msgid "could not read xml file"
 msgstr "nie można odczytać pliku XML"
@@ -6272,9 +6130,6 @@ msgstr "dysk %s nie ma żadnej informacji o szyfrowaniu"
 msgid "disk %s not found"
 msgstr "nie odnaleziono dysku %s"
 
-msgid "disk aio mode not supported with this QEMU binary"
-msgstr "tryb aio dysku jest nieobsługiwana przez ten plik binarny QEMU"
-
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
 msgstr "magistrali dysku „%s” nie można podłączać podczas pracy."
@@ -6377,32 +6232,17 @@ msgstr "informacje o domenie w XML"
 msgid "domain information incomplete, missing HVM loader"
 msgstr "informacje o domenie są niepełne, brak wczytywania HVM"
 
-msgid "domain information incomplete, missing cpu_cap"
-msgstr "informacje o domenie są niepełne, brak cpu_cap"
-
-msgid "domain information incomplete, missing cpu_weight"
-msgstr "informacje o domenie są niepełne, brak cpu_weight"
-
-msgid "domain information incomplete, missing domid"
-msgstr "informacje o domenie są niepełne, brak domid"
-
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "informacje o domenie są niepełne, brak jądra i programu startowego"
 
 msgid "domain information incomplete, missing name"
 msgstr "informacje o domenie są niepełne, brak nazwy"
 
-msgid "domain information incomplete, missing uuid"
-msgstr "informacje o domenie są niepełne, brak UUID"
-
 msgid "domain information incomplete, vbd has no dev"
 msgstr "informacje o domenie są niepełne, vbd nie ma dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "informacje o domenie są niepełne, vbd nie ma src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "informacje o domenie są nieprawidłowe, domid nie jest numeryczne"
 
 msgid "domain is already running"
 msgstr "domena jest już uruchomiona"
@@ -6428,12 +6268,6 @@ msgstr "nazwa lub UUID domeny"
 msgid "domain name, id or uuid"
 msgstr "nazwa domeny, identyfikator lub UUID"
 
-msgid "domain not active"
-msgstr "domena nie jest aktywna"
-
-msgid "domain not running"
-msgstr "domena nie jest uruchomiona"
-
 msgid "domain save job"
 msgstr "zadanie zapisu domeny"
 
@@ -6448,9 +6282,6 @@ msgstr "typ domeny"
 
 msgid "domain vcpu counts"
 msgstr "domena wirtualny procesor liczba"
-
-msgid "domainBlockPeek is not supported for dom0"
-msgstr "domainBlockPeek jest nieobsługiwane przez dom0"
 
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare nie ustawiło adresu URI"
@@ -6626,17 +6457,11 @@ msgstr "Przydzielenie bufora pliku się nie powiodło"
 msgid "failed to apply capabilities: %d"
 msgstr "zastosowanie możliwości się nie powiodło: %d"
 
-msgid "failed to build sexpr"
-msgstr "zbudowanie sexpr się nie powiodło"
-
 msgid "failed to close file"
 msgstr "zamknięcie pliku się nie powiodło"
 
 msgid "failed to close or write to profile"
 msgstr "zamknięcie lub zapisanie do profilu się nie powiodło"
-
-msgid "failed to connect to Xen Store"
-msgstr "połączenie się z Xen Store się nie powiodło"
 
 msgid "failed to connect to monitor socket"
 msgstr "połączenie się z gniazdem monitora się nie powiodło"
@@ -6644,15 +6469,9 @@ msgstr "połączenie się z gniazdem monitora się nie powiodło"
 msgid "failed to connect to the hypervisor"
 msgstr "połączenie się z nadzorcą się nie powiodło"
 
-msgid "failed to connect to xend"
-msgstr "połączenie się z usługą xend się nie powiodło"
-
 #, c-format
 msgid "failed to create %s"
 msgstr "utworzenie %s się nie powiodło"
-
-msgid "failed to create a socket"
-msgstr "utworzenie gniazda się nie powiodło"
 
 #, c-format
 msgid "failed to create directory '%s'"
@@ -6660,10 +6479,6 @@ msgstr "utworzenie katalogu „%s” się nie powiodło"
 
 msgid "failed to create include file"
 msgstr "utworzenie pliku include się nie powiodło"
-
-#, c-format
-msgid "failed to create link %s to %s"
-msgstr "utworzenie dowiązania %s do %s się nie powiodło"
 
 #, c-format
 msgid "failed to create logfile %s"
@@ -6774,10 +6589,6 @@ msgid "failed to load module %s %s"
 msgstr "wczytanie modułu %s %s się nie powiodło"
 
 #, c-format
-msgid "failed to lseek or read from file: %s"
-msgstr "wykonanie lseek lub odczytanie z pliku się nie powiodło: %s"
-
-#, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "oznaczenie sieci %s jako automatycznie uruchamianej się nie powiodło"
 
@@ -6803,17 +6614,10 @@ msgstr "otwarcie pliku konfiguracji do odczytania się nie powiodło"
 msgid "failed to open file"
 msgstr "otwarcie pliku się nie powiodło"
 
-#, c-format
-msgid "failed to open for reading: %s"
-msgstr "otwarcie do odczytania się nie powiodło: %s"
-
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 "otwarcie pliku dziennika się nie powiodło. należy sprawdzić ścieżkę do pliku "
 "dziennika"
-
-msgid "failed to parse Xend domain information"
-msgstr "przetworzenie informacji o domenie Xend się nie powiodło"
 
 msgid "failed to parse configuration file"
 msgstr "przetworzenie pliku konfiguracji się nie powiodło"
@@ -6838,9 +6642,6 @@ msgstr "odczytanie pliku konfiguracji się nie powiodło"
 msgid "failed to read configuration file %s"
 msgstr "odczytanie pliku konfiguracji %s się nie powiodło"
 
-msgid "failed to read from Xen Daemon"
-msgstr "odczytanie z usługi Xen się nie powiodło"
-
 #, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "odczytanie długości metadanych w „%s” się nie powiodło"
@@ -6857,13 +6658,6 @@ msgid "failed to read temporary file created with template %s"
 msgstr ""
 "odczytanie pliku tymczasowego utworzonego za pomocą szablonu %s się nie "
 "powiodło"
-
-#, c-format
-msgid "failed to remove link %s"
-msgstr "usunięcie dowiązania %s się nie powiodło"
-
-msgid "failed to remove old domain from config map"
-msgstr "usunięcie starej domeny z mapy konfiguracji się nie powiodło"
 
 #, c-format
 msgid "failed to remove pool '%s'"
@@ -6931,9 +6725,6 @@ msgstr "zapisanie nagłówka do pliku zapisu domeny „%s” się nie powiodło"
 msgid "failed to write the log file"
 msgstr "zapisanie pliku dziennika się nie powiodło"
 
-msgid "failed to write to Xen Daemon"
-msgstr "zapisanie do usługi Xen się nie powiodło"
-
 msgid "failed to write to profile"
 msgstr "zapisanie do profilu się nie powiodło"
 
@@ -6984,9 +6775,6 @@ msgstr "plik zawierający atrybuty sekretu w XML"
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "system plików nie jest typu „template” lub „mount”"
 
-msgid "filesystem passthrough not supported by this QEMU"
-msgstr "przejście przez system plików jest nieobsługiwane przez QEMU"
-
 msgid "filter has no name"
 msgstr "filtr nie ma nazwy"
 
@@ -6999,9 +6787,6 @@ msgstr "filtr wprowadziłby pętlę"
 
 msgid "find potential storage pool sources"
 msgstr "wyszukuje potencjalne źródła puli pamięci masowej"
-
-msgid "finding dom on config list"
-msgstr "wyszukiwanie dom na liście konfiguracji"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "parametr flag musi być VIR_MEMORY_VIRTUAL lub VIR_MEMORY_PHYSICAL"
@@ -7106,14 +6891,6 @@ msgstr ""
 "nazwa komputera na celu została rozwiązana na localhost, a migracja wymaga "
 "FQDN"
 
-msgid "hotplug of device type not supported"
-msgstr "podłączanie tego typu urządzenia podczas pracy jest nieobsługiwane"
-
-#, c-format
-msgid "hugepage backing not supported by '%s'"
-msgstr ""
-"tworzenie kopii zapasowych ogromnych stron nie jest obsługiwane przez „%s”"
-
 msgid "hypervisor connection URI"
 msgstr "adres URI połączenia z nadzorcą"
 
@@ -7164,9 +6941,6 @@ msgstr "brak zwrotnych danych balonu w odpowiedzi informacji o balonie"
 
 msgid "info migration reply was missing return status"
 msgstr "brak zwrotnego stanu w odpowiedzi informacji o migracji"
-
-msgid "initializing inotify"
-msgstr "inicjowanie inotify"
 
 msgid "interface has no name"
 msgstr "interfejs nie ma nazwy"
@@ -7603,9 +7377,6 @@ msgstr "działa"
 
 msgid "live migration"
 msgstr "migracja w czasie pracy"
-
-msgid "looking up dom"
-msgstr "wyszukiwania dom"
 
 msgid "lxc state driver is not active"
 msgstr "sterownik stanu LXC jest nieaktywny"
@@ -8078,10 +7849,6 @@ msgid "no PCI vendor ID supplied for '%s'"
 msgstr "nie podano identyfikatora producenta PCI dla „%s”"
 
 #, c-format
-msgid "no QEMU URI path given, try %s"
-msgstr "nie podano ścieżki URI QEMU, należy wypróbować %s"
-
-#, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
 msgstr "nie podano identyfikatora LUN SCSI dla „%s”"
 
@@ -8128,11 +7895,6 @@ msgstr "nie podano identyfikatora produktu USB dla „%s”"
 #, c-format
 msgid "no USB vendor ID supplied for '%s'"
 msgstr "nie podano identyfikatora producenta USB dla „%s”"
-
-msgid "no VirtualBox driver path specified (try vbox:///session)"
-msgstr ""
-"nie podano ścieżki do sterownika VirtualBox (należy wypróbować vbox:///"
-"session)"
 
 #, c-format
 msgid "no assigned pty for device %s"
@@ -8187,9 +7949,6 @@ msgstr "brak konfiguracji domeny"
 #, c-format
 msgid "no domain snapshot with matching name '%s'"
 msgstr "brak migawki domeny pasującej do nazwy „%s”"
-
-msgid "no domain with matching id"
-msgstr "brak domeny pasującej do identyfikatora"
 
 #, c-format
 msgid "no domain with matching id %d"
@@ -8328,9 +8087,6 @@ msgstr "informacje o węźle nie są zaimplementowane na tej platformie"
 msgid "node information"
 msgstr "informacje o węźle"
 
-msgid "node information incomplete, missing scheduler name"
-msgstr "informacje o węźle są niepełne, brak nazwy planisty"
-
 msgid "nonzero ncpus doesn't match with NULL cpus"
 msgstr "niezerowe nprocesory nie zgadzają się z PUSTYMI procesorami"
 
@@ -8354,9 +8110,6 @@ msgstr "nwfilter jest używany"
 
 msgid "offline"
 msgstr "offline"
-
-msgid "on_xend_start not present in sexpr"
-msgstr "brak on_xend_start w sexpr"
 
 msgid "only TCP listen is supported for chr device"
 msgstr "dla urządzeń znakowych obsługiwane jest tylko nasłuchiwanie TCP"
@@ -8420,10 +8173,6 @@ msgstr "parametr=wartość"
 
 msgid "parser error"
 msgstr "błąd parsera"
-
-#, c-format
-msgid "parsing uuid %s"
-msgstr "przetwarzanie UUID %s"
 
 msgid "passthrough mode requires a character device type attribute"
 msgstr "tryb przejścia wymaga atrybutu typu urządzenia znakowego"
@@ -8617,9 +8366,6 @@ msgstr "rename(„%s”, „%s”)"
 msgid "requested authentication type %s rejected"
 msgstr "żądany typ uwierzytelniania %s został odrzucony"
 
-msgid "requested device does not exist"
-msgstr "żądane urządzenie nie istnieje"
-
 #, c-format
 msgid ""
 "requested vcpus is greater than max allowable vcpus for the domain: %d > %d"
@@ -8705,10 +8451,6 @@ msgid "script used to bridge network interface"
 msgstr "skrypt użyty dla mostka interfejsu sieciowego"
 
 #, c-format
-msgid "sdl not supported by '%s'"
-msgstr "SDL nie jest obsługiwane przez „%s”"
-
-#, c-format
 msgid "secret '%s' does not have a value"
 msgstr "sekret „%s” nie ma wartości"
 
@@ -8777,9 +8519,6 @@ msgstr "ustawienie hasła dysku jest nieobsługiwane"
 msgid "setting up HAL callbacks failed"
 msgstr "ustawienie wywołań zwrotnych HAL się nie powiodło"
 
-msgid "sexpr2string failed"
-msgstr "sexpr2string się nie powiodło"
-
 msgid "show free memory for all NUMA cells"
 msgstr "wyświetla wolną pamięć dla wszystkich komórek NUMA"
 
@@ -8839,9 +8578,6 @@ msgstr "grafika spice jest nieobsługiwana przez to QEMU"
 
 msgid "spicevmc device type only supports virtio"
 msgstr "typ urządzenia spicevmc obsługuje tylko virtio"
-
-msgid "spicevmc not supported in this QEMU binary"
-msgstr "spicevmc jest nieobsługiwane przez ten plik binarny QEMU"
 
 msgid "start a (previously defined) inactive domain"
 msgstr "uruchamia (wcześniej określoną) nieaktywną domenę"
@@ -8965,10 +8701,6 @@ msgstr "cel %s już istnieje"
 msgid "target %s:%d already exists"
 msgstr "cel %s:%d już istnieje"
 
-#, c-format
-msgid "target '%s' already exists"
-msgstr "cel „%s” już istnieje"
-
 msgid "target config data type format"
 msgstr "docelowy format typu danych konfiguracji"
 
@@ -9000,10 +8732,6 @@ msgstr "nazwa szablonu przekracza maksymalną długość"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: należy podać ścieżkę lub użyć test:///domyślna"
-
-#, c-format
-msgid "the QEMU binary %s does not support smbios settings"
-msgstr "plik binarny QEMU %s nie obsługuje ustawień smbios"
 
 msgid "the backing volume if taking a snapshot"
 msgstr "wolumin zapasowy, jeśli wykonywana jest migawka"
@@ -9069,9 +8797,6 @@ msgstr "zażądano za dużo statystyk pamięci: %d > %d"
 
 msgid "too many secrets for qcow encryption"
 msgstr "za dużo sekretów dla szyfrowania qcow"
-
-msgid "topology syntax error"
-msgstr "błąd składni topologii"
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "metody przesyłu unix, ssh i ext nie są obsługiwane w systemie Windows"
@@ -9142,10 +8867,6 @@ msgid "unable to close %s"
 msgstr "nie można zamknąć %s"
 
 #, c-format
-msgid "unable to connect to '%s:%s'"
-msgstr "nie można połączyć się z „%s:%s”"
-
-#, c-format
 msgid "unable to create hugepage path %s"
 msgstr "nie można utworzyć ścieżki ogromnych stron %s"
 
@@ -9155,9 +8876,6 @@ msgstr "nie można utworzyć katalogu uruchamiania %s: %s"
 
 msgid "unable to create socket pair"
 msgstr "nie można utworzyć pary gniazd"
-
-msgid "unable to determine original VLAN"
-msgstr "nie można ustalić oryginalnego VLAN"
 
 #, c-format
 msgid "unable to execute QEMU command '%s'"
@@ -9177,9 +8895,6 @@ msgstr "nie można uzyskać kontekstu bezpieczeństwa PID %d"
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr "nie można uzyskać bieżącego kontekstu procesu „%s”"
-
-msgid "unable to get current time"
-msgstr "nie można uzyskać bieżącego czasu"
 
 msgid "unable to get node capabilities"
 msgstr "nie można uzyskać możliwości węzła"
@@ -9214,10 +8929,6 @@ msgid "unable to register monitor events"
 msgstr "nie można zarejestrować zdarzeń monitora"
 
 #, c-format
-msgid "unable to resolve hostname '%s': %s"
-msgstr "nie można rozwiązać nazwy gospodarza „%s”: %s"
-
-#, c-format
 msgid "unable to set ownership of '%s' to %d:%d"
 msgstr "nie można ustawić właściciela „%s” na %d:%d"
 
@@ -9244,9 +8955,6 @@ msgstr "nie można ustawić kontekstu bezpieczeństwa gniazda „%s”"
 #, c-format
 msgid "unable to set tty attributes: %s"
 msgstr "nie można ustawić atrybutów TTY: %s"
-
-msgid "unable to store config file handle"
-msgstr "nie można przechować obsługi pliku konfiguracji"
 
 msgid "unable to unload already unloaded profile"
 msgstr "nie można usunąć z pamięci już usuniętego profilu"
@@ -9296,10 +9004,6 @@ msgstr "nieoczekiwana ścieżka URI UML „%s”, należy wypróbować uml:///se
 #, c-format
 msgid "unexpected UML URI path '%s', try uml:///system"
 msgstr "nieoczekiwana ścieżka URI UML „%s”, należy wypróbować uml:///system"
-
-#, c-format
-msgid "unexpected Xen URI path '%s', try xen:///"
-msgstr "nieoczekiwana ścieżka URI Xena „%s”, należy wypróbować xen:///"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -9498,9 +9202,6 @@ msgstr "nieoczekiwana wartość %s dla on_poweroff"
 #, c-format
 msgid "unexpected value %s for on_reboot"
 msgstr "nieoczekiwana wartość %s dla on_reboot"
-
-msgid "unexpected value from on_xend_start"
-msgstr "nieoczekiwana wartość z on_xend_start"
 
 #, c-format
 msgid "unexpected video model %d"
@@ -9919,9 +9620,6 @@ msgstr "nieobsługiwany typ konsoli docelowej %s"
 msgid "unsupported data type '%c' for arg '%s'"
 msgstr "nieobsługiwany typ danych „%c” dla parametru „%s”"
 
-msgid "unsupported device type"
-msgstr "nieobsługiwany typ urządzenia"
-
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr "nieobsługiwana magistrala dysku „%s” w ustawieniach urządzenia"
@@ -9988,10 +9686,6 @@ msgstr "nieobsługiwana rodzina protokołów „%s”"
 #, c-format
 msgid "unsupported protocol type %s"
 msgstr "nieobsługiwany typ protokołu %s"
-
-#, c-format
-msgid "unsupported rtc tickpolicy '%s'"
-msgstr "nieobsługiwana polityka tyknięć rtc „%s”"
 
 #, c-format
 msgid "unsupported rtc timer tickpolicy '%s'"
@@ -10109,9 +9803,6 @@ msgstr "virGetUserID jest niedostępne"
 msgid "virGetUserName is not available"
 msgstr "virGetUserName jest niedostępne"
 
-msgid "virHashLookup"
-msgstr "virHashLookup"
-
 msgid "virInterfaceDefFormat NULL def"
 msgstr "virInterfaceDefFormat NULL def"
 
@@ -10187,9 +9878,6 @@ msgstr "podano użycie woluminu, ale brak ścieżki woluminu"
 msgid "warning"
 msgstr "ostrzeżenie"
 
-msgid "watch already tracked"
-msgstr "obserwacja jest już śledzona"
-
 msgid "watchdog must contain model name"
 msgstr "watchdog musi zawierać nazwę modelu"
 
@@ -10212,48 +9900,6 @@ msgstr "write: %s: zapisanie do pliku tymczasowego się nie powiodło: %s"
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "magistrala Xena nie obsługuje urządzenia wejściowego %s"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen nie obsługuje ograniczeń pasma podczas migracji"
-
-msgid ""
-"xenDaemonDomainMigrate: Xen does not support renaming domains during "
-"migration"
-msgstr ""
-"xenDaemonDomainMigrate: Xen nie obsługuje zmieniania domen podczas migracji"
-
-msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr ""
-"xenDaemonDomainMigrate: nazwa gospodarza musi zostać podana w adresie URI"
-
-msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr "xenDaemonDomainMigrate: nieprawidłowy numer portu"
-
-msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr ""
-"xenDaemonDomainMigrate: tylko migracje xenmigr:// są obsługiwane przez Xena"
-
-msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr "xenDaemonDomainMigrate: nieobsługiwana flaga"
-
-msgid "xenDaemonDomainMigrate: xend cannot migrate paused domains"
-msgstr "xenDaemonDomainMigrate: xend nie może migrować wstrzymanych domen"
-
-msgid "xenDaemonGetAutostart failed to find this domain"
-msgstr "odnalezienie tej domeny przez xenDaemonGetAutostart się nie powiodło"
-
-msgid "xenDaemonSetAutostart failed to find this domain"
-msgstr "odnalezienie tej domeny przez xenDaemonSetAutostart się nie powiodło"
-
-msgid "xenXMConfigCacheRefresh: virHashAddEntry"
-msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
-
-#, c-format
-msgid "xend_post: error from xen daemon: %s"
-msgstr "xend_post: błąd usługi Xen: %s"
 
 msgid "xml data file to export from"
 msgstr "plik danych XML do wyeksportowania"

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-03-17 01:56-0400\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/libvirt/"
@@ -529,23 +529,14 @@ msgstr "區域資訊"
 msgid "domain information in XML"
 msgstr "XML 格式的區域資訊"
 
-msgid "domain information incomplete, missing domid"
-msgstr "區域的資訊不全，沒有 domid"
-
 msgid "domain information incomplete, missing name"
 msgstr "區域的資訊不全，沒有名稱"
-
-msgid "domain information incomplete, missing uuid"
-msgstr "區域的資訊不全，沒有 uuid"
 
 msgid "domain information incomplete, vbd has no dev"
 msgstr "區域的資訊不全，vbd 沒有 dev"
 
 msgid "domain information incomplete, vbd has no src"
 msgstr "區域的資訊不全，vbd 沒有 src"
-
-msgid "domain information incorrect domid not numeric"
-msgstr "區域的資訊不正確，domid 並非數字型態"
 
 msgid "domain name or uuid"
 msgstr "區域名稱或 uuid"
@@ -583,9 +574,6 @@ msgstr "預期的是數值"
 
 msgid "expecting an assignment"
 msgstr "預期的是指定子"
-
-msgid "failed to connect to Xen Store"
-msgstr "無法連上 Xen Store"
 
 msgid "failed to connect to the hypervisor"
 msgstr "無法連上 hypervisor"
@@ -629,9 +617,6 @@ msgstr "無法開啟要讀取的設定檔"
 msgid "failed to open file"
 msgstr "無法開啟檔案"
 
-msgid "failed to parse Xend domain information"
-msgstr "無法解析 Xend 的區域資訊"
-
 msgid "failed to parse configuration file"
 msgstr "無法解析設定檔"
 
@@ -645,9 +630,6 @@ msgstr "無法讀取設定檔"
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "無法讀取設定檔 %s"
-
-msgid "failed to read from Xen Daemon"
-msgstr "無法從 Xen 系統程式讀取"
 
 msgid "failed to save content"
 msgstr "無法存入內容"

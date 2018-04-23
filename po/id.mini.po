@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2018-04-06 15:54+0100\n"
+"POT-Creation-Date: 2018-04-23 16:46+0100\n"
 "PO-Revision-Date: 2015-02-27 05:03-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Indonesian (http://www.transifex.com/projects/p/libvirt/"
@@ -414,14 +414,8 @@ msgstr "informasi domain"
 msgid "domain information in XML"
 msgstr "informasi domain di XML"
 
-msgid "domain information incomplete, missing domid"
-msgstr "informasi domain tidak lengkap, domid tidak ada"
-
 msgid "domain information incomplete, missing name"
 msgstr "informasi domain tidak lengkap, name tidak ada"
-
-msgid "domain information incomplete, missing uuid"
-msgstr "informasi domain tidak lengkap, uuid tidak ada"
 
 msgid "domain information incomplete, vbd has no dev"
 msgstr "informasi domain tidak lengkap, vbd tidak memiliki dev"
