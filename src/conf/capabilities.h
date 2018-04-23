@@ -107,7 +107,7 @@ typedef struct _virCapsHostNUMACellPageInfo virCapsHostNUMACellPageInfo;
 typedef virCapsHostNUMACellPageInfo *virCapsHostNUMACellPageInfoPtr;
 struct _virCapsHostNUMACellPageInfo {
     unsigned int size;      /* page size in kibibytes */
-    size_t avail;           /* the size of pool */
+    unsigned long long avail;           /* the size of pool */
 };
 
 typedef struct _virCapsHostNUMACell virCapsHostNUMACell;

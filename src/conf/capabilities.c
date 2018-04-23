@@ -816,7 +816,7 @@ virCapabilitiesFormatNUMATopology(virBufferPtr buf,
                               cells[i]->mem);
 
         for (j = 0; j < cells[i]->npageinfo; j++) {
-            virBufferAsprintf(buf, "<pages unit='KiB' size='%u'>%zu</pages>\n",
+            virBufferAsprintf(buf, "<pages unit='KiB' size='%u'>%llu</pages>\n",
                               cells[i]->pageinfo[j].size,
                               cells[i]->pageinfo[j].avail);
         }
@@ -1351,7 +1351,8 @@ virCapabilitiesGetNUMAPagesInfo(int node,
                                 int *npageinfo)
 {
     int ret = -1;
-    unsigned int *pages_size = NULL, *pages_avail = NULL;
+    unsigned int *pages_size = NULL;
+    unsigned long long *pages_avail = NULL;
     size_t npages, i;
 
     if (virNumaGetPages(node, &pages_size, &pages_avail, NULL, &npages) < 0)

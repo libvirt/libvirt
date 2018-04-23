@@ -125,8 +125,8 @@ virNumaGetDistances(int node ATTRIBUTE_UNUSED,
 int
 virNumaGetPages(int node,
                 unsigned int **pages_size,
-                unsigned int **pages_avail,
-                unsigned int **pages_free,
+                unsigned long long **pages_avail,
+                unsigned long long **pages_free,
                 size_t *npages)
 {
     const int pages_def[] = { 4, 2 * 1024, 1 * 1024 * 1024};

@@ -52,12 +52,12 @@ int virNumaGetNodeCPUs(int node, virBitmapPtr *cpus) ATTRIBUTE_NOINLINE;
 int virNumaGetPageInfo(int node,
                        unsigned int page_size,
                        unsigned long long huge_page_sum,
-                       unsigned int *page_avail,
-                       unsigned int *page_free);
+                       unsigned long long *page_avail,
+                       unsigned long long *page_free);
 int virNumaGetPages(int node,
                     unsigned int **pages_size,
-                    unsigned int **pages_avail,
-                    unsigned int **pages_free,
+                    unsigned long long **pages_avail,
+                    unsigned long long **pages_free,
                     size_t *npages)
     ATTRIBUTE_NONNULL(5) ATTRIBUTE_NOINLINE;
 int virNumaSetPagePoolSize(int node,

@@ -783,7 +783,7 @@ virHostMemGetFreePages(unsigned int npages,
     for (cell = startCell; cell <= lastCell; cell++) {
         for (i = 0; i < npages; i++) {
             unsigned int page_size = pages[i];
-            unsigned int page_free;
+            unsigned long long page_free;
 
             if (virNumaGetPageInfo(cell, page_size, 0, NULL, &page_free) < 0)
                 goto cleanup;

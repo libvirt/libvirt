@@ -563,8 +563,8 @@ virNumaGetHugePageInfoDir(char **path, int node)
 static int
 virNumaGetHugePageInfo(int node,
                        unsigned int page_size,
-                       unsigned int *page_avail,
-                       unsigned int *page_free)
+                       unsigned long long *page_avail,
+                       unsigned long long *page_free)
 {
     int ret = -1;
     char *path = NULL;
@@ -579,7 +579,7 @@ virNumaGetHugePageInfo(int node,
         if (virFileReadAll(path, 1024, &buf) < 0)
             goto cleanup;
 
-        if (virStrToLong_ui(buf, &end, 10, page_avail) < 0 ||
+        if (virStrToLong_ull(buf, &end, 10, page_avail) < 0 ||
             *end != '\n') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to parse: %s"),
@@ -598,7 +598,7 @@ virNumaGetHugePageInfo(int node,
         if (virFileReadAll(path, 1024, &buf) < 0)
             goto cleanup;
 
-        if (virStrToLong_ui(buf, &end, 10, page_free) < 0 ||
+        if (virStrToLong_ull(buf, &end, 10, page_free) < 0 ||
             *end != '\n') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to parse: %s"),
@@ -645,8 +645,8 @@ int
 virNumaGetPageInfo(int node,
                    unsigned int page_size,
                    unsigned long long huge_page_sum,
-                   unsigned int *page_avail,
-                   unsigned int *page_free)
+                   unsigned long long *page_avail,
+                   unsigned long long *page_free)
 {
     int ret = -1;
     long system_page_size = virGetSystemPageSize();
@@ -709,8 +709,8 @@ virNumaGetPageInfo(int node,
 int
 virNumaGetPages(int node,
                 unsigned int **pages_size,
-                unsigned int **pages_avail,
-                unsigned int **pages_free,
+                unsigned long long **pages_avail,
+                unsigned long long **pages_free,
                 size_t *npages)
 {
     int ret = -1;
@@ -718,7 +718,9 @@ virNumaGetPages(int node,
     DIR *dir = NULL;
     int direrr = 0;
     struct dirent *entry;
-    unsigned int *tmp_size = NULL, *tmp_avail = NULL, *tmp_free = NULL;
+    unsigned int *tmp_size = NULL;
+    unsigned long long *tmp_avail = NULL;
+    unsigned long long *tmp_free = NULL;
     unsigned int ntmp = 0;
     size_t i;
     bool exchange;
@@ -744,7 +746,9 @@ virNumaGetPages(int node,
 
     while (dir && (direrr = virDirRead(dir, &entry, path)) > 0) {
         const char *page_name = entry->d_name;
-        unsigned int page_size, page_avail = 0, page_free = 0;
+        unsigned int page_size;
+        unsigned long long page_avail = 0;
+        unsigned long long page_free = 0;
         char *end;
 
         /* Just to give you a hint, we're dealing with this:
@@ -934,8 +938,8 @@ int
 virNumaGetPageInfo(int node ATTRIBUTE_UNUSED,
                    unsigned int page_size ATTRIBUTE_UNUSED,
                    unsigned long long huge_page_sum ATTRIBUTE_UNUSED,
-                   unsigned int *page_avail ATTRIBUTE_UNUSED,
-                   unsigned int *page_free ATTRIBUTE_UNUSED)
+                   unsigned long long *page_avail ATTRIBUTE_UNUSED,
+                   unsigned long long *page_free ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                    _("page info is not supported on this platform"));
@@ -946,8 +950,8 @@ virNumaGetPageInfo(int node ATTRIBUTE_UNUSED,
 int
 virNumaGetPages(int node ATTRIBUTE_UNUSED,
                 unsigned int **pages_size ATTRIBUTE_UNUSED,
-                unsigned int **pages_avail ATTRIBUTE_UNUSED,
-                unsigned int **pages_free ATTRIBUTE_UNUSED,
+                unsigned long long **pages_avail ATTRIBUTE_UNUSED,
+                unsigned long long **pages_free ATTRIBUTE_UNUSED,
                 size_t *npages ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
