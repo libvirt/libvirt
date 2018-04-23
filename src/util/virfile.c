@@ -57,11 +57,10 @@
 #  include <linux/magic.h>
 # endif
 # include <sys/statfs.h>
-#endif
-
-#if defined(__linux__) && HAVE_DECL_LO_FLAGS_AUTOCLEAR
-# include <linux/loop.h>
-# include <sys/ioctl.h>
+# if HAVE_DECL_LO_FLAGS_AUTOCLEAR
+#  include <linux/loop.h>
+#  include <sys/ioctl.h>
+# endif
 #endif
 
 #include "configmake.h"
