@@ -239,6 +239,7 @@ libxlMigrationDstArgsDispose(void *obj)
 
     libxlMigrationCookieFree(args->migcookie);
     VIR_FREE(args->socks);
+    virObjectUnref(args->vm);
 }
 
 static int
@@ -608,7 +609,7 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
         goto error;
 
     args->conn = dconn;
-    args->vm = vm;
+    args->vm = virObjectRef(vm);
     args->flags = flags;
     args->migcookie = mig;
     /* Receive from pipeOut */
@@ -763,7 +764,7 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
         goto error;
 
     args->conn = dconn;
-    args->vm = vm;
+    args->vm = virObjectRef(vm);
     args->flags = flags;
     args->socks = socks;
     args->nsocks = nsocks;
