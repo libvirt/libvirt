@@ -42,7 +42,6 @@
 #endif
 
 #include <sys/types.h>
-#include <sys/ioctl.h>
 #include <string.h>
 #include <termios.h>
 
