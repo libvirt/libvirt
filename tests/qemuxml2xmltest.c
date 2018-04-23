@@ -475,6 +475,7 @@ mymain(void)
     DO_TEST("hostdev-mdev-precreated", NONE);
     DO_TEST("pci-rom", NONE);
     DO_TEST("pci-rom-disabled", NONE);
+    DO_TEST("pci-rom-disabled-invalid", NONE);
     DO_TEST("pci-serial-dev-chardev", NONE);
 
     DO_TEST("encrypted-disk", NONE);

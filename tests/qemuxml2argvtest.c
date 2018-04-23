@@ -1555,6 +1555,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pci-rom", NONE);
     DO_TEST("pci-rom-disabled", NONE);
+    DO_TEST("pci-rom-disabled-invalid", NONE);
 
     DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, 0, GIC_NONE, NONE);
     DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, 0, GIC_NONE, NONE);
