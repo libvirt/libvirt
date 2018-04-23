@@ -59,8 +59,9 @@
 # include <sys/statfs.h>
 # if HAVE_DECL_LO_FLAGS_AUTOCLEAR
 #  include <linux/loop.h>
-#  include <sys/ioctl.h>
 # endif
+# include <sys/ioctl.h>
+# include <linux/cdrom.h>
 #endif
 
 #include "configmake.h"
@@ -1936,6 +1937,59 @@ int virFileIsMountPoint(const char *file)
     VIR_FREE(parent);
     return ret;
 }
+
+
+#if defined(__linux__)
+/**
+ * virFileIsCDROM:
+ * @path: File to check
+ *
+ * Returns 1 if @path is a cdrom device 0 if it is not a cdrom and -1 on
+ * error. 'errno' of the failure is preserved and no libvirt errors are
+ * reported.
+ */
+int
+virFileIsCDROM(const char *path)
+{
+    struct stat st;
+    int fd;
+    int ret = -1;
+
+    if ((fd = open(path, O_RDONLY | O_NONBLOCK)) < 0)
+        goto cleanup;
+
+    if (fstat(fd, &st) < 0)
+        goto cleanup;
+
+    if (!S_ISBLK(st.st_mode)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    /* Attempt to detect via a CDROM specific ioctl */
+    if (ioctl(fd, CDROM_DRIVE_STATUS, CDSL_CURRENT) >= 0)
+        ret = 1;
+    else
+        ret = 0;
+
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+#else
+
+int
+virFileIsCDROM(const char *path)
+{
+    if (STRPREFIX(path, "/dev/cd", NULL) ||
+        STRPREFIX(path, "/dev/acd", NULL))
+        return 1;
+
+    return 0;
+}
+
+#endif /* defined(__linux__) */
 
 
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
