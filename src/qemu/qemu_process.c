@@ -2565,7 +2565,7 @@ qemuProcessBuildPRHelperPidfilePath(virDomainObjPtr vm)
 }
 
 
-static void
+void
 qemuProcessKillPRDaemon(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2623,7 +2623,7 @@ qemuProcessStartPRDaemonHook(void *opaque)
 }
 
 
-static int
+int
 qemuProcessStartPRDaemon(virDomainObjPtr vm,
                          const virDomainDiskDef *disk)
 {
