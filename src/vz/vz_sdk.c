@@ -1969,7 +1969,6 @@ prlsdkLoadDomain(vzDriverPtr driver,
             goto error;
         }
 
-        virObjectRef(dom);
         pdom = dom->privateData;
         pdom->sdkdom = sdkdom;
         PrlHandle_AddRef(sdkdom);
@@ -2235,7 +2234,6 @@ prlsdkHandleVmRemovedEvent(vzDriverPtr driver,
                     VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
     virDomainObjListRemove(driver->domains, dom);
-    virObjectLock(dom);
     virDomainObjEndAPI(&dom);
     return;
 }
@@ -4334,7 +4332,6 @@ prlsdkUnregisterDomain(vzDriverPtr driver, virDomainObjPtr dom, unsigned int fla
                     VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
     virDomainObjListRemove(driver->domains, dom);
-    virObjectLock(dom);
 
     ret = 0;
  cleanup:

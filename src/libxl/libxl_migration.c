@@ -265,7 +265,6 @@ libxlDoMigrateDstReceive(void *opaque)
     int recvfd = args->recvfd;
     size_t i;
     int ret;
-    bool remove_dom = 0;
 
     virObjectRef(vm);
     virObjectLock(vm);
@@ -280,7 +279,7 @@ libxlDoMigrateDstReceive(void *opaque)
                                   args->migcookie->xenMigStreamVer);
 
     if (ret < 0 && !vm->persistent)
-        remove_dom = true;
+        virDomainObjListRemove(driver->domains, vm);
 
     /* Remove all listen socks from event handler, and close them. */
     for (i = 0; i < nsocks; i++) {
@@ -296,10 +295,6 @@ libxlDoMigrateDstReceive(void *opaque)
     libxlDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (remove_dom) {
-        virDomainObjListRemove(driver->domains, vm);
-        virObjectLock(vm);
-    }
     virDomainObjEndAPI(&vm);
 }
 
@@ -581,9 +576,8 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto error;
-
-    virObjectRef(vm);
     *def = NULL;
+
     priv = vm->privateData;
 
     if (taint_hook) {
@@ -633,10 +627,8 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
     VIR_FORCE_CLOSE(dataFD[0]);
     virObjectUnref(args);
     /* Remove virDomainObj from domain list */
-    if (vm) {
+    if (vm)
         virDomainObjListRemove(driver->domains, vm);
-        virObjectLock(vm);
-    }
 
  done:
     virDomainObjEndAPI(&vm);
@@ -680,9 +672,8 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto error;
-
-    virObjectRef(vm);
     *def = NULL;
+
     priv = vm->privateData;
 
     if (taint_hook) {
@@ -807,10 +798,8 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
         priv->migrationPort = 0;
     }
     /* Remove virDomainObj from domain list */
-    if (vm) {
+    if (vm)
         virDomainObjListRemove(driver->domains, vm);
-        virObjectLock(vm);
-    }
 
  done:
     VIR_FREE(xmlout);
@@ -1336,11 +1325,8 @@ libxlDomainMigrationDstFinish(virConnectPtr dconn,
                              VIR_DOMAIN_SHUTOFF_FAILED);
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FAILED);
-        if (!vm->persistent) {
+        if (!vm->persistent)
             virDomainObjListRemove(driver->domains, vm);
-            /* Caller passed a locked vm and expects the same on return */
-            virObjectLock(vm);
-        }
     }
 
     if (event)
@@ -1392,11 +1378,8 @@ libxlDomainMigrationSrcConfirm(libxlDriverPrivatePtr driver,
     if (flags & VIR_MIGRATE_UNDEFINE_SOURCE)
         virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
 
-    if (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE)) {
+    if (!vm->persistent || (flags & VIR_MIGRATE_UNDEFINE_SOURCE))
         virDomainObjListRemove(driver->domains, vm);
-        /* Caller passed a locked vm and expects the same on return */
-        virObjectLock(vm);
-    }
 
     ret = 0;
 

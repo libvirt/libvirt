@@ -502,10 +502,8 @@ vmwareDomainShutdownFlags(virDomainPtr dom,
     if (vmwareStopVM(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN) < 0)
         goto cleanup;
 
-    if (!vm->persistent) {
+    if (!vm->persistent)
         virDomainObjListRemove(driver->domains, vm);
-        virObjectLock(vm);
-    }
 
     ret = 0;
  cleanup:
@@ -717,10 +715,8 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     vmdef = NULL;
 
     if (vmwareStartVM(driver, vm) < 0) {
-        if (!vm->persistent) {
+        if (!vm->persistent)
             virDomainObjListRemove(driver->domains, vm);
-            vm = NULL;
-        }
         goto cleanup;
     }
 
@@ -730,8 +726,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     virDomainDefFree(vmdef);
     VIR_FREE(vmx);
     VIR_FREE(vmxPath);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     vmwareDriverUnlock(driver);
     return dom;
 }
@@ -796,12 +791,10 @@ vmwareDomainUndefineFlags(virDomainPtr dom,
     if (vmwareUpdateVMStatus(driver, vm) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
+    if (virDomainObjIsActive(vm))
         vm->persistent = 0;
-    } else {
+    else
         virDomainObjListRemove(driver->domains, vm);
-        virObjectLock(vm);
-    }
 
     ret = 0;
 

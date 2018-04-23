@@ -379,10 +379,8 @@ umlInotifyEvent(int watch,
             event = virDomainEventLifecycleNewFromObj(dom,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
-            if (!dom->persistent) {
+            if (!dom->persistent)
                 virDomainObjListRemove(driver->domains, dom);
-                virObjectLock(dom);
-            }
         } else if (e.mask & (IN_CREATE | IN_MODIFY)) {
             VIR_DEBUG("Got inotify domain startup '%s'", name);
             if (virDomainObjIsActive(dom)) {
@@ -412,10 +410,8 @@ umlInotifyEvent(int watch,
                 event = virDomainEventLifecycleNewFromObj(dom,
                                                  VIR_DOMAIN_EVENT_STOPPED,
                                                  VIR_DOMAIN_EVENT_STOPPED_FAILED);
-                if (!dom->persistent) {
+                if (!dom->persistent)
                     virDomainObjListRemove(driver->domains, dom);
-                    virObjectLock(dom);
-                }
             } else if (umlIdentifyChrPTY(driver, dom) < 0) {
                 VIR_WARN("Could not identify character devices for new domain");
                 umlShutdownVMDaemon(driver, dom,
@@ -424,10 +420,8 @@ umlInotifyEvent(int watch,
                 event = virDomainEventLifecycleNewFromObj(dom,
                                                  VIR_DOMAIN_EVENT_STOPPED,
                                                  VIR_DOMAIN_EVENT_STOPPED_FAILED);
-                if (!dom->persistent) {
+                if (!dom->persistent)
                     virDomainObjListRemove(driver->domains, dom);
-                    virObjectLock(dom);
-                }
             }
         }
         virDomainObjEndAPI(&dom);
@@ -785,10 +779,8 @@ static int umlProcessAutoDestroyDom(void *payload,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    if (!dom->persistent) {
+    if (!dom->persistent)
         virDomainObjListRemove(data->driver->domains, dom);
-        virObjectLock(dom);
-    }
 
     virDomainObjEndAPI(&dom);
     if (event)
@@ -1609,10 +1601,8 @@ static virDomainPtr umlDomainCreateXML(virConnectPtr conn, const char *xml,
     if (umlStartVMDaemon(conn, driver, vm,
                          (flags & VIR_DOMAIN_START_AUTODESTROY)) < 0) {
         virDomainAuditStart(vm, "booted", false);
-        if (!vm->persistent) {
+        if (!vm->persistent)
             virDomainObjListRemove(driver->domains, vm);
-            vm = NULL;
-        }
         goto cleanup;
     }
     virDomainAuditStart(vm, "booted", true);
@@ -1624,8 +1614,7 @@ static virDomainPtr umlDomainCreateXML(virConnectPtr conn, const char *xml,
 
  cleanup:
     virDomainDefFree(def);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         umlDomainEventQueue(driver, event);
     umlDriverUnlock(driver);
@@ -1694,10 +1683,8 @@ umlDomainDestroyFlags(virDomainPtr dom,
     event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
-    if (!vm->persistent) {
+    if (!vm->persistent)
         virDomainObjListRemove(driver->domains, vm);
-        virObjectLock(vm);
-    }
     ret = 0;
 
  cleanup:
@@ -2009,7 +1996,6 @@ umlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     if (virDomainSaveConfig(driver->configDir, driver->caps,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
         goto cleanup;
     }
 
@@ -2017,8 +2003,7 @@ umlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 
  cleanup:
     virDomainDefFree(def);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     umlDriverUnlock(driver);
     return dom;
 }
@@ -2054,12 +2039,10 @@ static int umlDomainUndefineFlags(virDomainPtr dom,
     if (virDomainDeleteConfig(driver->configDir, driver->autostartDir, vm) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
+    if (virDomainObjIsActive(vm))
         vm->persistent = 0;
-    } else {
+    else
         virDomainObjListRemove(driver->domains, vm);
-        virObjectLock(vm);
-    }
 
     ret = 0;
 

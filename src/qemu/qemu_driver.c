@@ -1765,7 +1765,6 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
-    virObjectRef(vm);
     def = NULL;
 
     if (qemuProcessBeginJob(driver, vm, VIR_DOMAIN_JOB_OPERATION_START,
@@ -6737,7 +6736,6 @@ qemuDomainRestoreFlags(virConnectPtr conn,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
-    virObjectRef(vm);
     def = NULL;
 
     if (flags & VIR_DOMAIN_SAVE_RUNNING)
@@ -7411,9 +7409,8 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
                                    driver->xmlopt,
                                    0, &oldDef)))
         goto cleanup;
-
-    virObjectRef(vm);
     def = NULL;
+
     if (qemuDomainHasBlockjob(vm, true)) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE, "%s",
                        _("domain has active block job"));
@@ -16420,7 +16417,6 @@ static virDomainPtr qemuDomainQemuAttach(virConnectPtr conn,
                                    NULL)))
         goto cleanup;
 
-    virObjectRef(vm);
     def = NULL;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0) {

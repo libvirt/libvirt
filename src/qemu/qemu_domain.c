@@ -7167,24 +7167,9 @@ qemuDomainRemoveInactive(virQEMUDriverPtr driver,
         VIR_FREE(snapDir);
     }
 
-    virObjectRef(vm);
-
     virDomainObjListRemove(driver->domains, vm);
-    /*
-     * virDomainObjListRemove() leaves the domain unlocked so it can
-     * be unref'd for other drivers that depend on that, but we still
-     * need to reset a job and we have a reference from the API that
-     * called this function.  So we need to lock it back.  This is
-     * just a workaround for the qemu driver.
-     *
-     * XXX: Ideally, the global handling of domain objects and object
-     *      lists would be refactored so we don't need hacks like
-     *      this, but since that requires refactor of all drivers,
-     *      it's a work for another day.
-     */
-    virObjectLock(vm);
+
     virObjectUnref(cfg);
-    virObjectUnref(vm);
 }
 
 

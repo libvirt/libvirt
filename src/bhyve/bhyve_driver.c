@@ -550,7 +550,6 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     if (virDomainSaveConfig(BHYVE_CONFIG_DIR, caps,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainObjListRemove(privconn->domains, vm);
-        vm = NULL;
         goto cleanup;
     }
 
@@ -566,8 +565,7 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     virObjectUnref(caps);
     virDomainDefFree(def);
     virDomainDefFree(oldDef);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         virObjectEventStateQueue(privconn->domainEventState, event);
 
@@ -609,12 +607,10 @@ bhyveDomainUndefine(virDomainPtr domain)
                                               VIR_DOMAIN_EVENT_UNDEFINED,
                                               VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
-    if (virDomainObjIsActive(vm)) {
+    if (virDomainObjIsActive(vm))
         vm->persistent = 0;
-    } else {
+    else
         virDomainObjListRemove(privconn->domains, vm);
-        virObjectLock(vm);
-    }
 
     ret = 0;
 
@@ -958,10 +954,8 @@ bhyveDomainCreateXML(virConnectPtr conn,
                              VIR_DOMAIN_RUNNING_BOOTED,
                              start_flags) < 0) {
         /* If domain is not persistent, remove its data */
-        if (!vm->persistent) {
+        if (!vm->persistent)
             virDomainObjListRemove(privconn->domains, vm);
-            vm = NULL;
-        }
         goto cleanup;
     }
 
@@ -974,8 +968,7 @@ bhyveDomainCreateXML(virConnectPtr conn,
  cleanup:
     virObjectUnref(caps);
     virDomainDefFree(def);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     if (event)
         virObjectEventStateQueue(privconn->domainEventState, event);
 
@@ -1007,10 +1000,8 @@ bhyveDomainDestroy(virDomainPtr dom)
                                               VIR_DOMAIN_EVENT_STOPPED,
                                               VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    if (!vm->persistent) {
+    if (!vm->persistent)
         virDomainObjListRemove(privconn->domains, vm);
-        virObjectLock(vm);
-    }
 
  cleanup:
     virDomainObjEndAPI(&vm);

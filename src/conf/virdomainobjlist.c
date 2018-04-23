@@ -226,9 +226,13 @@ virDomainObjListFindByName(virDomainObjListPtr doms,
  * Upon entry @vm should have at least 1 ref and be locked.
  *
  * Add the @vm into the @doms->objs and @doms->objsName hash
- * tables.
+ * tables. Once successfully added into a table, increase the
+ * reference count since upon removal in virHashRemoveEntry
+ * the virObjectUnref will be called since the hash tables were
+ * configured to call virObjectFreeHashData when the object is
+ * removed from the hash table.
  *
- * Returns 0 on success with 2 references and locked
+ * Returns 0 on success with 3 references and locked
  *        -1 on failure with 1 reference and locked
  */
 static int
@@ -240,15 +244,12 @@ virDomainObjListAddObjLocked(virDomainObjListPtr doms,
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (virHashAddEntry(doms->objs, uuidstr, vm) < 0)
         return -1;
+    virObjectRef(vm);
 
     if (virHashAddEntry(doms->objsName, vm->def->name, vm) < 0) {
-        virObjectRef(vm);
         virHashRemoveEntry(doms->objs, uuidstr);
         return -1;
     }
-
-    /* Since domain is in two hash tables, increment the
-     * reference counter */
     virObjectRef(vm);
 
     return 0;
@@ -266,6 +267,9 @@ virDomainObjListAddObjLocked(virDomainObjListPtr doms,
  * the @def being added is assumed to represent a
  * live config, not a future inactive config
  *
+ * The returned @vm from this function will be locked and ref
+ * counted. The caller is expected to use virDomainObjEndAPI
+ * when it completes usage.
  */
 static virDomainObjPtr
 virDomainObjListAddLocked(virDomainObjListPtr doms,
@@ -311,9 +315,6 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
                               def,
                               !!(flags & VIR_DOMAIN_OBJ_LIST_ADD_LIVE),
                               oldDef);
-        /* XXX: Temporary until this API is fixed to return a locked and
-         *      refcnt'd object */
-        virObjectUnref(vm);
     } else {
         /* UUID does not match, but if a name matches, refuse it */
         if ((vm = virDomainObjListFindByNameLocked(doms, def->name))) {
@@ -371,7 +372,6 @@ virDomainObjListRemoveLocked(virDomainObjListPtr doms,
 
     virHashRemoveEntry(doms->objs, uuidstr);
     virHashRemoveEntry(doms->objsName, dom->def->name);
-    virObjectUnlock(dom);
 }
 
 
@@ -386,8 +386,7 @@ virDomainObjListRemoveLocked(virDomainObjListPtr doms,
  * no one else is either waiting for 'dom' or still using it.
  *
  * When this function returns, @dom will be removed from the hash
- * tables, unlocked, and returned with the refcnt that was present
- * upon entry.
+ * tables and returned with lock and refcnt that was present upon entry.
  */
 void
 virDomainObjListRemove(virDomainObjListPtr doms,
@@ -453,9 +452,11 @@ virDomainObjListRename(virDomainObjListPtr doms,
     if (virHashAddEntry(doms->objsName, new_name, dom) < 0)
         goto cleanup;
 
-    /* Okay, this is crazy. virHashAddEntry() does not increment
-     * the refcounter of @dom, but virHashRemoveEntry() does
-     * decrement it. We need to work around it. */
+    /* Increment the refcnt for @new_name. We're about to remove
+     * the @old_name which will cause the refcnt to be decremented
+     * via the virObjectUnref call made during the virObjectFreeHashData
+     * as a result of removing something from the object list hash
+     * table as set up during virDomainObjListNew. */
     virObjectRef(dom);
 
     rc = callback(dom, new_name, flags, opaque);
@@ -624,7 +625,7 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
         if (dom) {
             if (!liveStatus)
                 dom->persistent = 1;
-            virObjectUnlock(dom);
+            virDomainObjEndAPI(&dom);
         } else {
             VIR_ERROR(_("Failed to load config for domain '%s'"), entry->d_name);
         }

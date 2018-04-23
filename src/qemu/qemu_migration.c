@@ -2280,9 +2280,8 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
-
-    virObjectRef(vm);
     *def = NULL;
+
     priv = vm->privateData;
     if (VIR_STRDUP(priv->origname, origname) < 0)
         goto cleanup;

@@ -611,7 +611,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
         /* XXX OpenVZ doesn't appear to have concept of a transient domain */
         dom->persistent = 1;
 
-        virObjectUnlock(dom);
+        virDomainObjEndAPI(&dom);
         dom = NULL;
         def = NULL;
     }

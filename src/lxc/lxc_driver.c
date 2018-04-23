@@ -478,14 +478,12 @@ lxcDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
                                    0, &oldDef)))
         goto cleanup;
 
-    virObjectRef(vm);
     def = NULL;
     vm->persistent = 1;
 
     if (virDomainSaveConfig(cfg->configDir, driver->caps,
                             vm->newDef ? vm->newDef : vm->def) < 0) {
         virDomainObjListRemove(driver->domains, vm);
-        virObjectLock(vm);
         goto cleanup;
     }
 
@@ -546,12 +544,10 @@ static int lxcDomainUndefineFlags(virDomainPtr dom,
                                      VIR_DOMAIN_EVENT_UNDEFINED,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
-    if (virDomainObjIsActive(vm)) {
+    if (virDomainObjIsActive(vm))
         vm->persistent = 0;
-    } else {
+    else
         virDomainObjListRemove(driver->domains, vm);
-        virObjectLock(vm);
-    }
 
     ret = 0;
 
@@ -1233,14 +1229,11 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
-    virObjectRef(vm);
     def = NULL;
 
     if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0) {
-        if (!vm->persistent) {
+        if (!vm->persistent)
             virDomainObjListRemove(driver->domains, vm);
-            virObjectLock(vm);
-        }
         goto cleanup;
     }
 
@@ -1250,10 +1243,8 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
                            VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virDomainAuditStart(vm, "booted", false);
         virLXCDomainObjEndJob(driver, vm);
-        if (!vm->persistent) {
+        if (!vm->persistent)
             virDomainObjListRemove(driver->domains, vm);
-            virObjectLock(vm);
-        }
         goto cleanup;
     }
 
@@ -1523,10 +1514,8 @@ lxcDomainDestroyFlags(virDomainPtr dom,
 
  endjob:
     virLXCDomainObjEndJob(driver, vm);
-    if (!vm->persistent) {
+    if (!vm->persistent)
         virDomainObjListRemove(driver->domains, vm);
-        virObjectLock(vm);
-    }
 
  cleanup:
     virDomainObjEndAPI(&vm);

@@ -893,7 +893,7 @@ testParseDomains(testDriverPtr privconn,
     int num, ret = -1;
     size_t i;
     xmlNodePtr *nodes = NULL;
-    virDomainObjPtr obj;
+    virDomainObjPtr obj = NULL;
 
     num = virXPathNodeSet("/node/domain", ctxt, &nodes);
     if (num < 0)
@@ -921,10 +921,8 @@ testParseDomains(testDriverPtr privconn,
             goto error;
         }
 
-        if (testParseDomainSnapshots(privconn, obj, file, ctxt) < 0) {
-            virObjectUnlock(obj);
+        if (testParseDomainSnapshots(privconn, obj, file, ctxt) < 0)
             goto error;
-        }
 
         nsdata = def->namespaceData;
         obj->persistent = !nsdata->transient;
@@ -932,20 +930,19 @@ testParseDomains(testDriverPtr privconn,
 
         if (nsdata->runstate != VIR_DOMAIN_SHUTOFF) {
             if (testDomainStartState(privconn, obj,
-                                     VIR_DOMAIN_RUNNING_BOOTED) < 0) {
-                virObjectUnlock(obj);
+                                     VIR_DOMAIN_RUNNING_BOOTED) < 0)
                 goto error;
-            }
         } else {
             testDomainShutdownState(NULL, obj, 0);
         }
         virDomainObjSetState(obj, nsdata->runstate, 0);
 
-        virObjectUnlock(obj);
+        virDomainObjEndAPI(&obj);
     }
 
     ret = 0;
  error:
+    virDomainObjEndAPI(&obj);
     VIR_FREE(nodes);
     return ret;
 }
@@ -1678,10 +1675,8 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     def = NULL;
 
     if (testDomainStartState(privconn, dom, VIR_DOMAIN_RUNNING_BOOTED) < 0) {
-        if (!dom->persistent) {
+        if (!dom->persistent)
             virDomainObjListRemove(privconn->domains, dom);
-            dom = NULL;
-        }
         goto cleanup;
     }
 
@@ -1692,8 +1687,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid, dom->def->id);
 
  cleanup:
-    if (dom)
-        virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
     testObjectEventQueue(privconn, event);
     virDomainDefFree(def);
     testDriverUnlock(privconn);
@@ -1787,10 +1781,8 @@ static int testDomainDestroyFlags(virDomainPtr domain,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
 
-    if (!privdom->persistent) {
+    if (!privdom->persistent)
         virDomainObjListRemove(privconn->domains, privdom);
-        virObjectLock(privdom);
-    }
 
     ret = 0;
  cleanup:
@@ -1888,10 +1880,8 @@ static int testDomainShutdownFlags(virDomainPtr domain,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
 
-    if (!privdom->persistent) {
+    if (!privdom->persistent)
         virDomainObjListRemove(privconn->domains, privdom);
-        virObjectLock(privdom);
-    }
 
     ret = 0;
  cleanup:
@@ -1957,10 +1947,8 @@ static int testDomainReboot(virDomainPtr domain,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
 
-        if (!privdom->persistent) {
+        if (!privdom->persistent)
             virDomainObjListRemove(privconn->domains, privdom);
-            virObjectLock(privdom);
-        }
     }
 
     ret = 0;
@@ -2095,10 +2083,8 @@ testDomainSaveFlags(virDomainPtr domain, const char *path,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_SAVED);
 
-    if (!privdom->persistent) {
+    if (!privdom->persistent)
         virDomainObjListRemove(privconn->domains, privdom);
-        virObjectLock(privdom);
-    }
 
     ret = 0;
  cleanup:
@@ -2200,10 +2186,8 @@ testDomainRestoreFlags(virConnectPtr conn,
     def = NULL;
 
     if (testDomainStartState(privconn, dom, VIR_DOMAIN_RUNNING_RESTORED) < 0) {
-        if (!dom->persistent) {
+        if (!dom->persistent)
             virDomainObjListRemove(privconn->domains, dom);
-            dom = NULL;
-        }
         goto cleanup;
     }
 
@@ -2216,8 +2200,7 @@ testDomainRestoreFlags(virConnectPtr conn,
     virDomainDefFree(def);
     VIR_FREE(xml);
     VIR_FORCE_CLOSE(fd);
-    if (dom)
-        virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
     testObjectEventQueue(privconn, event);
     return ret;
 }
@@ -2280,10 +2263,8 @@ static int testDomainCoreDumpWithFormat(virDomainPtr domain,
         event = virDomainEventLifecycleNewFromObj(privdom,
                                          VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_CRASHED);
-        if (!privdom->persistent) {
+        if (!privdom->persistent)
             virDomainObjListRemove(privconn->domains, privdom);
-            virObjectLock(privdom);
-        }
     }
 
     ret = 0;
@@ -2800,8 +2781,7 @@ static virDomainPtr testDomainDefineXMLFlags(virConnectPtr conn,
  cleanup:
     virDomainDefFree(def);
     virDomainDefFree(oldDef);
-    if (dom)
-        virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
     testObjectEventQueue(privconn, event);
     return ret;
 }
@@ -3068,12 +3048,10 @@ static int testDomainUndefineFlags(virDomainPtr domain,
                                      VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
     privdom->hasManagedSave = false;
 
-    if (virDomainObjIsActive(privdom)) {
+    if (virDomainObjIsActive(privdom))
         privdom->persistent = 0;
-    } else {
+    else
         virDomainObjListRemove(privconn->domains, privdom);
-        virObjectLock(privdom);
-    }
 
     ret = 0;
 

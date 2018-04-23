@@ -982,8 +982,7 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
 
  cleanup:
     virDomainDefFree(vmdef);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     openvzDriverUnlock(driver);
     return dom;
 }
@@ -1071,8 +1070,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 
  cleanup:
     virDomainDefFree(vmdef);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     openvzDriverUnlock(driver);
     return dom;
 }
@@ -1151,12 +1149,10 @@ openvzDomainUndefineFlags(virDomainPtr dom,
     if (virRun(prog, NULL) < 0)
         goto cleanup;
 
-    if (virDomainObjIsActive(vm)) {
+    if (virDomainObjIsActive(vm))
         vm->persistent = 0;
-    } else {
+    else
         virDomainObjListRemove(driver->domains, vm);
-        virObjectLock(vm);
-    }
 
     ret = 0;
 
@@ -2232,16 +2228,13 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
 
  error:
     virDomainDefFree(def);
-    if (vm) {
+    if (vm)
         virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
-    }
 
  done:
     VIR_FREE(my_hostname);
     virURIFree(uri);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
@@ -2396,7 +2389,6 @@ openvzDomainMigrateConfirm3Params(virDomainPtr domain,
     VIR_DEBUG("Domain '%s' successfully migrated", vm->def->name);
 
     virDomainObjListRemove(driver->domains, vm);
-    virObjectLock(vm);
 
     ret = 0;
 

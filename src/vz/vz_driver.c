@@ -3161,7 +3161,6 @@ vzDomainMigratePerformStep(virDomainObjPtr dom,
         goto cleanup;
 
     virDomainObjListRemove(driver->domains, dom);
-    virObjectLock(dom);
 
     ret = 0;
 
