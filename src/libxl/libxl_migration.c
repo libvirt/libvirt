@@ -239,6 +239,7 @@ libxlMigrationDstArgsDispose(void *obj)
 
     libxlMigrationCookieFree(args->migcookie);
     VIR_FREE(args->socks);
+    virObjectUnref(args->conn);
     virObjectUnref(args->vm);
 }
 
@@ -608,7 +609,7 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
     if (!(args = virObjectNew(libxlMigrationDstArgsClass)))
         goto error;
 
-    args->conn = dconn;
+    args->conn = virObjectRef(dconn);
     args->vm = virObjectRef(vm);
     args->flags = flags;
     args->migcookie = mig;
@@ -763,7 +764,7 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
     if (!(args = virObjectNew(libxlMigrationDstArgsClass)))
         goto error;
 
-    args->conn = dconn;
+    args->conn = virObjectRef(dconn);
     args->vm = virObjectRef(vm);
     args->flags = flags;
     args->socks = socks;
