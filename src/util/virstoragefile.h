@@ -316,6 +316,8 @@ struct _virStorageSource {
 
     bool floppyimg; /* set to true if the storage source is going to be used
                        as a source for floppy drive */
+
+    bool hostcdrom; /* backing device is a cdrom */
 };
 
 

@@ -7530,6 +7530,14 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
             VIR_ALLOC(src->backingStore) < 0)
             goto cleanup;
 
+        /* host cdrom requires special treatment in qemu, so we need to check
+         * whether a block device is a cdrom */
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+            src->format == VIR_STORAGE_FILE_RAW &&
+            virStorageSourceIsBlockLocal(src) &&
+            virFileIsCDROM(src->path) == 1)
+            src->hostcdrom = true;
+
         ret = 0;
         goto cleanup;
     }
