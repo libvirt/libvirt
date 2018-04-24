@@ -678,6 +678,15 @@ typedef int
                            const char *cpu,
                            unsigned int flags);
 
+typedef int
+(*virDrvConnectCompareHypervisorCPU)(virConnectPtr conn,
+                                     const char *emulator,
+                                     const char *arch,
+                                     const char *machine,
+                                     const char *virttype,
+                                     const char *xmlCPU,
+                                     unsigned int flags);
+
 typedef char *
 (*virDrvConnectBaselineCPU)(virConnectPtr conn,
                             const char **xmlCPUs,
@@ -1538,6 +1547,7 @@ struct _virHypervisorDriver {
     virDrvDomainSetVcpu domainSetVcpu;
     virDrvDomainSetBlockThreshold domainSetBlockThreshold;
     virDrvDomainSetLifecycleAction domainSetLifecycleAction;
+    virDrvConnectCompareHypervisorCPU connectCompareHypervisorCPU;
 };
 
 

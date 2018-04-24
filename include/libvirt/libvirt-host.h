@@ -640,6 +640,13 @@ typedef enum {
 int virConnectCompareCPU(virConnectPtr conn,
                          const char *xmlDesc,
                          unsigned int flags);
+int virConnectCompareHypervisorCPU(virConnectPtr conn,
+                                   const char *emulator,
+                                   const char *arch,
+                                   const char *machine,
+                                   const char *virttype,
+                                   const char *xmlCPU,
+                                   unsigned int flags);
 
 int virConnectGetCPUModelNames(virConnectPtr conn,
                                const char *arch,

@@ -788,6 +788,7 @@ LIBVIRT_4.1.0 {
 LIBVIRT_4.4.0 {
     global:
         virDomainDetachDeviceAlias;
+        virConnectCompareHypervisorCPU;
 } LIBVIRT_4.1.0;
 
 # .... define new API here using predicted next version number ....
