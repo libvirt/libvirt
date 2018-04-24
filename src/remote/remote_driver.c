@@ -712,6 +712,7 @@ remoteConnectSupportsFeatureUnlocked(virConnectPtr conn,
     }
 
 
+#ifndef WIN32
 static char *remoteGetUNIXSocketNonRoot(void)
 {
     char *sockname = NULL;
@@ -729,6 +730,7 @@ static char *remoteGetUNIXSocketNonRoot(void)
     VIR_DEBUG("Chosen UNIX sockname %s", sockname);
     return sockname;
 }
+#endif /* WIN32 */
 
 static char *remoteGetUNIXSocketRoot(unsigned int flags)
 {
