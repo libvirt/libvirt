@@ -977,14 +977,22 @@ qemuBlockStorageSourceGetSshProps(virStorageSourcePtr src)
 static virJSONValuePtr
 qemuBlockStorageSourceGetFileProps(virStorageSourcePtr src)
 {
+    const char *driver = "file";
     const char *iomode = NULL;
     virJSONValuePtr ret = NULL;
 
     if (src->iomode != VIR_DOMAIN_DISK_IO_DEFAULT)
         iomode = virDomainDiskIoTypeToString(src->iomode);
 
+    if (virStorageSourceIsBlockLocal(src)) {
+        if (src->hostcdrom)
+            driver = "host_cdrom";
+        else
+            driver = "host_device";
+    }
+
     ignore_value(virJSONValueObjectCreate(&ret,
-                                          "s:driver", "file",
+                                          "s:driver", driver,
                                           "s:filename", src->path,
                                           "S:aio", iomode,
                                           NULL) < 0);
