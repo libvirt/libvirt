@@ -924,7 +924,7 @@ qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
     if (qemuSetUnprivSGIO(dev) < 0)
         goto cleanup;
 
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
+    if (qemuDomainDetermineDiskChain(driver, vm, disk, true) < 0)
         goto cleanup;
 
     switch ((virDomainDiskDevice) disk->device)  {

@@ -8502,7 +8502,6 @@ int
 qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk,
-                             bool force_probe,
                              bool report_broken)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -8517,9 +8516,6 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
         ret = 0;
         goto cleanup;
     }
-
-    if (force_probe)
-        virStorageSourceBackingStoreClear(src);
 
     /* There is no need to check the backing chain for disks without backing
      * support */

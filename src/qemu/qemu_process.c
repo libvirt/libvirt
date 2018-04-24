@@ -6019,7 +6019,9 @@ qemuProcessPrepareHostStorage(virQEMUDriverPtr driver,
         if (virStorageSourceIsEmpty(disk->src))
             continue;
 
-        if (qemuDomainDetermineDiskChain(driver, vm, disk, true, true) >= 0)
+        virStorageSourceBackingStoreClear(disk->src);
+
+        if (qemuDomainDetermineDiskChain(driver, vm, disk, true) >= 0)
             continue;
 
         if (qemuDomainCheckDiskStartupPolicy(driver, vm, idx, cold_boot) >= 0)
@@ -7695,7 +7697,8 @@ qemuProcessReconnect(void *opaque)
             /* This should be the only place that calls
              * qemuDomainDetermineDiskChain with @report_broken == false
              * to guarantee best-effort domain reconnect */
-            if (qemuDomainDetermineDiskChain(driver, obj, disk, true, false) < 0)
+            virStorageSourceBackingStoreClear(disk->src);
+            if (qemuDomainDetermineDiskChain(driver, obj, disk, false) < 0)
                 goto error;
         } else {
             VIR_DEBUG("skipping backing chain detection for '%s'", disk->dst);
