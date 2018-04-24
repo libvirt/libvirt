@@ -667,6 +667,14 @@ char *virConnectBaselineCPU(virConnectPtr conn,
                             const char **xmlCPUs,
                             unsigned int ncpus,
                             unsigned int flags);
+char *virConnectBaselineHypervisorCPU(virConnectPtr conn,
+                                      const char *emulator,
+                                      const char *arch,
+                                      const char *machine,
+                                      const char *virttype,
+                                      const char **xmlCPUs,
+                                      unsigned int ncpus,
+                                      unsigned int flags);
 
 
 int virNodeGetFreePages(virConnectPtr conn,

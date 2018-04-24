@@ -1127,6 +1127,9 @@ virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
  * Computes the most feature-rich CPU which is compatible with all given
  * host CPUs.
  *
+ * See virConnectBaselineHypervisorCPU() to get a CPU which can be provided
+ * by the hypervisor.
+ *
  * If @flags includes VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES then libvirt
  * will explicitly list all CPU features that are part of the host CPU,
  * without this flag features that are part of the CPU model will not be
@@ -1163,6 +1166,84 @@ virConnectBaselineCPU(virConnectPtr conn,
         cpu = conn->driver->connectBaselineCPU(conn, xmlCPUs, ncpus, flags);
         if (!cpu)
             goto error;
+        return cpu;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+
+/**
+ * virConnectBaselineHypervisorCPU:
+ *
+ * @conn: pointer to the hypervisor connection
+ * @emulator: path to the emulator binary
+ * @arch: CPU architecture
+ * @machine: machine type
+ * @virttype: virtualization type
+ * @xmlCPUs: array of XML descriptions of CPUs
+ * @ncpus: number of CPUs in xmlCPUs
+ * @flags: bitwise-OR of virConnectBaselineCPUFlags
+ *
+ * Computes the most feature-rich CPU which is compatible with all given CPUs
+ * and can be provided by the specified hypervisor. For best results the
+ * host-model CPUs as advertised by virConnectGetDomainCapabilities() should be
+ * passed in @xmlCPUs. Any of @emulator, @arch, @machine, and @virttype
+ * parameters may be NULL; libvirt will choose sensible defaults tailored to
+ * the host and its current configuration.
+ *
+ * This is different from virConnectBaselineCPU() which doesn't consider any
+ * hypervisor abilities when computing the best CPU.
+ *
+ * If @flags includes VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES then libvirt
+ * will explicitly list all CPU features that are part of the computed CPU,
+ * without this flag features that are part of the CPU model will not be
+ * listed.
+ *
+ * If @flags includes VIR_CONNECT_BASELINE_CPU_MIGRATABLE, the resulting
+ * CPU will not include features that block migration.
+ *
+ * Returns XML description of the computed CPU (caller frees) or NULL on error.
+ */
+char *
+virConnectBaselineHypervisorCPU(virConnectPtr conn,
+                                const char *emulator,
+                                const char *arch,
+                                const char *machine,
+                                const char *virttype,
+                                const char **xmlCPUs,
+                                unsigned int ncpus,
+                                unsigned int flags)
+{
+    size_t i;
+
+    VIR_DEBUG("conn=%p, emulator=%s, arch=%s, machine=%s, "
+              "virttype=%s, xmlCPUs=%p, ncpus=%u, flags=0x%x",
+              conn, NULLSTR(emulator), NULLSTR(arch), NULLSTR(machine),
+              NULLSTR(virttype), xmlCPUs, ncpus, flags);
+    if (xmlCPUs) {
+        for (i = 0; i < ncpus; i++)
+            VIR_DEBUG("xmlCPUs[%zu]=%s", i, NULLSTR(xmlCPUs[i]));
+    }
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgGoto(xmlCPUs, error);
+
+    if (conn->driver->connectBaselineHypervisorCPU) {
+        char *cpu;
+
+        cpu = conn->driver->connectBaselineHypervisorCPU(conn, emulator, arch,
+                                                         machine, virttype,
+                                                         xmlCPUs, ncpus, flags);
+        if (!cpu)
+            goto error;
+
         return cpu;
     }
 
