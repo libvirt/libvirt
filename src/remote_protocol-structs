@@ -2882,6 +2882,17 @@ struct remote_domain_set_lifecycle_action_args {
         u_int                      action;
         u_int                      flags;
 };
+struct remote_connect_compare_hypervisor_cpu_args {
+        remote_string              emulator;
+        remote_string              arch;
+        remote_string              machine;
+        remote_string              virttype;
+        remote_nonnull_string      xmlCPU;
+        u_int                      flags;
+};
+struct remote_connect_compare_hypervisor_cpu_ret {
+        int                        result;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3275,4 +3286,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SET_LIFECYCLE_ACTION = 390,
         REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_TARGET_PATH = 391,
         REMOTE_PROC_DOMAIN_DETACH_DEVICE_ALIAS = 392,
+        REMOTE_PROC_CONNECT_COMPARE_HYPERVISOR_CPU = 393,
 };

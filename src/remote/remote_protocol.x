@@ -3454,6 +3454,19 @@ struct remote_domain_set_lifecycle_action_args {
     unsigned int flags;
 };
 
+struct remote_connect_compare_hypervisor_cpu_args {
+    remote_string emulator;
+    remote_string arch;
+    remote_string machine;
+    remote_string virttype;
+    remote_nonnull_string xmlCPU;
+    unsigned int flags;
+};
+
+struct remote_connect_compare_hypervisor_cpu_ret {
+    int result;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6149,5 +6162,11 @@ enum remote_procedure {
      * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
      * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
      */
-    REMOTE_PROC_DOMAIN_DETACH_DEVICE_ALIAS = 392
+    REMOTE_PROC_DOMAIN_DETACH_DEVICE_ALIAS = 392,
+
+    /**
+     * @generate: both
+     * @acl: connect:write
+     */
+    REMOTE_PROC_CONNECT_COMPARE_HYPERVISOR_CPU = 393
 };
