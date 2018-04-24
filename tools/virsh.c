@@ -526,9 +526,6 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef WITH_UML
     vshPrint(ctl, " UML");
 #endif
-#ifdef WITH_XEN
-    vshPrint(ctl, " Xen");
-#endif
 #ifdef WITH_LIBXL
     vshPrint(ctl, " LibXL");
 #endif
