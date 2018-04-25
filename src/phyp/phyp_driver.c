@@ -530,7 +530,7 @@ phypUUIDTable_Push(virConnectPtr conn)
         channel =
             libssh2_scp_send(session, remote_file,
                              0x1FF & local_fileinfo.st_mode,
-                             (unsigned long) local_fileinfo.st_size);
+                             (unsigned long)local_fileinfo.st_size);
 
         if ((!channel) && (libssh2_session_last_errno(session) !=
                            LIBSSH2_ERROR_EAGAIN))
