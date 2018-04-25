@@ -3467,6 +3467,19 @@ struct remote_connect_compare_hypervisor_cpu_ret {
     int result;
 };
 
+struct remote_connect_baseline_hypervisor_cpu_args {
+    remote_string emulator;
+    remote_string arch;
+    remote_string machine;
+    remote_string virttype;
+    remote_nonnull_string xmlCPUs<REMOTE_CPU_BASELINE_MAX>; /* (const char **) */
+    unsigned int flags;
+};
+
+struct remote_connect_baseline_hypervisor_cpu_ret {
+    remote_nonnull_string cpu;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6168,5 +6181,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: connect:write
      */
-    REMOTE_PROC_CONNECT_COMPARE_HYPERVISOR_CPU = 393
+    REMOTE_PROC_CONNECT_COMPARE_HYPERVISOR_CPU = 393,
+
+    /**
+     * @generate: both
+     * @acl: connect:write
+     */
+    REMOTE_PROC_CONNECT_BASELINE_HYPERVISOR_CPU = 394
 };

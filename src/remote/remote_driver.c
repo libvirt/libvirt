@@ -8451,6 +8451,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainSetBlockThreshold = remoteDomainSetBlockThreshold, /* 3.2.0 */
     .domainSetLifecycleAction = remoteDomainSetLifecycleAction, /* 3.9.0 */
     .connectCompareHypervisorCPU = remoteConnectCompareHypervisorCPU, /* 4.4.0 */
+    .connectBaselineHypervisorCPU = remoteConnectBaselineHypervisorCPU, /* 4.4.0 */
 };
 
 static virNetworkDriver network_driver = {

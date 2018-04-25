@@ -2893,6 +2893,20 @@ struct remote_connect_compare_hypervisor_cpu_args {
 struct remote_connect_compare_hypervisor_cpu_ret {
         int                        result;
 };
+struct remote_connect_baseline_hypervisor_cpu_args {
+        remote_string              emulator;
+        remote_string              arch;
+        remote_string              machine;
+        remote_string              virttype;
+        struct {
+                u_int              xmlCPUs_len;
+                remote_nonnull_string * xmlCPUs_val;
+        } xmlCPUs;
+        u_int                      flags;
+};
+struct remote_connect_baseline_hypervisor_cpu_ret {
+        remote_nonnull_string      cpu;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3287,4 +3301,5 @@ enum remote_procedure {
         REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_TARGET_PATH = 391,
         REMOTE_PROC_DOMAIN_DETACH_DEVICE_ALIAS = 392,
         REMOTE_PROC_CONNECT_COMPARE_HYPERVISOR_CPU = 393,
+        REMOTE_PROC_CONNECT_BASELINE_HYPERVISOR_CPU = 394,
 };
