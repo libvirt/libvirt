@@ -3348,7 +3348,7 @@ networkValidate(virNetworkDriverStatePtr driver,
         virNetworkForwardIfDefPtr iface = &def->forward.ifs[i];
         char *sysfs_path = NULL;
 
-        switch ((virNetworkForwardHostdevDeviceType) iface->type) {
+        switch ((virNetworkForwardHostdevDeviceType)iface->type) {
         case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV:
             usesInterface = true;
 
@@ -4186,7 +4186,7 @@ networkGetDHCPLeases(virNetworkPtr net,
         }
     }
 
-    currtime = (long long) time(NULL);
+    currtime = (long long)time(NULL);
 
     for (i = 0; i < size; i++) {
         if (!(lease_tmp = virJSONValueArrayGet(leases_array, i))) {
