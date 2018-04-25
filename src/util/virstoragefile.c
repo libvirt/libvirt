@@ -4098,34 +4098,46 @@ virStorageFileIsInitialized(const virStorageSource *src)
 }
 
 
-static virStorageFileBackendPtr
-virStorageFileGetBackendForSupportCheck(const virStorageSource *src)
+static int
+virStorageFileGetBackendForSupportCheck(const virStorageSource *src,
+                                        virStorageFileBackendPtr *backend)
 {
     int actualType;
 
-    if (!src)
-        return NULL;
 
-    if (src->drv)
-        return src->drv->backend;
+    if (!src) {
+        *backend = NULL;
+        return 0;
+    }
+
+    if (src->drv) {
+        *backend = src->drv->backend;
+        return 0;
+    }
 
     actualType = virStorageSourceGetActualType(src);
 
-    return virStorageFileBackendForTypeInternal(actualType, src->protocol, false);
+    *backend = virStorageFileBackendForTypeInternal(actualType, src->protocol, false);
+    return 0;
 }
 
 
-static bool
+static int
 virStorageFileSupportsBackingChainTraversal(virStorageSourcePtr src)
 {
     virStorageFileBackendPtr backend;
+    int rv;
 
-    if (!(backend = virStorageFileGetBackendForSupportCheck(src)))
-        return false;
+    rv = virStorageFileGetBackendForSupportCheck(src, &backend);
+    if (rv < 0)
+        return -1;
+
+    if (!backend)
+        return 0;
 
     return backend->storageFileGetUniqueIdentifier &&
            backend->storageFileRead &&
-           backend->storageFileAccess;
+           backend->storageFileAccess ? 1 : 0;
 }
 
 
@@ -4137,15 +4149,19 @@ virStorageFileSupportsBackingChainTraversal(virStorageSourcePtr src)
  * Check if a storage file supports operations needed by the security
  * driver to perform labelling
  */
-bool
+int
 virStorageFileSupportsSecurityDriver(const virStorageSource *src)
 {
     virStorageFileBackendPtr backend;
+    int rv;
 
-    if (!(backend = virStorageFileGetBackendForSupportCheck(src)))
-        return false;
+    rv = virStorageFileGetBackendForSupportCheck(src, &backend);
+    if (rv < 0)
+        return -1;
+    if (backend == NULL)
+        return 0;
 
-    return !!backend->storageFileChown;
+    return backend->storageFileChown ? 1 : 0;
 }
 
 
@@ -4157,15 +4173,19 @@ virStorageFileSupportsSecurityDriver(const virStorageSource *src)
  * Check if a storage file supports checking if the storage source is accessible
  * for the given vm.
  */
-bool
+int
 virStorageFileSupportsAccess(const virStorageSource *src)
 {
     virStorageFileBackendPtr backend;
+    int ret;
 
-    if (!(backend = virStorageFileGetBackendForSupportCheck(src)))
-        return false;
+    ret = virStorageFileGetBackendForSupportCheck(src, &backend);
+    if (ret < 0)
+        return -1;
+    if (backend == NULL)
+        return 0;
 
-    return !!backend->storageFileAccess;
+    return backend->storageFileAccess ? 1 : 0;
 }
 
 
@@ -4514,14 +4534,16 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     ssize_t headerLen;
     virStorageSourcePtr backingStore = NULL;
     int backingFormat;
+    int rv;
 
     VIR_DEBUG("path=%s format=%d uid=%u gid=%u probe=%d",
               src->path, src->format,
               (unsigned int)uid, (unsigned int)gid, allow_probe);
 
     /* exit if we can't load information about the current image */
-    if (!virStorageFileSupportsBackingChainTraversal(src))
-        return 0;
+    rv = virStorageFileSupportsBackingChainTraversal(src);
+    if (rv <= 0)
+        return rv;
 
     if (virStorageFileInitAs(src, uid, gid) < 0)
         return -1;

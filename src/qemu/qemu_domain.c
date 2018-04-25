@@ -7514,19 +7514,24 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
     /* skip to the end of the chain if there is any */
     while (virStorageSourceHasBacking(src)) {
-        if (report_broken &&
-            virStorageFileSupportsAccess(src)) {
+        if (report_broken) {
+            int rv = virStorageFileSupportsAccess(src);
 
-            if (qemuDomainStorageFileInit(driver, vm, src, disk->src) < 0)
+            if (rv < 0)
                 goto cleanup;
 
-            if (virStorageFileAccess(src, F_OK) < 0) {
-                virStorageFileReportBrokenChain(errno, src, disk->src);
+            if (rv > 0) {
+                if (qemuDomainStorageFileInit(driver, vm, src, disk->src) < 0)
+                    goto cleanup;
+
+                if (virStorageFileAccess(src, F_OK) < 0) {
+                    virStorageFileReportBrokenChain(errno, src, disk->src);
+                    virStorageFileDeinit(src);
+                    goto cleanup;
+                }
+
                 virStorageFileDeinit(src);
-                goto cleanup;
             }
-
-            virStorageFileDeinit(src);
         }
         src = src->backingStore;
     }

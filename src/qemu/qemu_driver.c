@@ -308,9 +308,11 @@ qemuSecurityChownCallback(const virStorageSource *src,
     struct stat sb;
     int save_errno = 0;
     int ret = -1;
+    int rv;
 
-    if (!virStorageFileSupportsSecurityDriver(src))
-        return 0;
+    rv = virStorageFileSupportsSecurityDriver(src);
+    if (rv <= 0)
+        return rv;
 
     if (virStorageSourceIsLocalStorage(src)) {
         /* use direct chmod for local files so that the file doesn't
