@@ -3981,7 +3981,7 @@ esxNodeGetFreeMemory(virConnectPtr conn)
         goto cleanup;
     }
 
-    usageBytes = (unsigned long long) (memoryUsage->value) * 1048576;
+    usageBytes = (unsigned long long)(memoryUsage->value) * 1048576;
     result = memorySize->value - usageBytes;
 
  cleanup:
