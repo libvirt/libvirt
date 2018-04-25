@@ -220,7 +220,7 @@ qemuAgentOpenUnix(const char *monitor, pid_t cpid, bool *inProgress)
     if (virTimeBackOffStart(&timeout, 1, 3*1000 /* ms */) < 0)
         goto error;
     while (virTimeBackOffWait(&timeout)) {
-        ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
+        ret = connect(monfd, (struct sockaddr *)&addr, sizeof(addr));
 
         if (ret == 0)
             break;
@@ -2225,7 +2225,7 @@ qemuAgentSetUserPassword(qemuAgentPtr mon,
     virJSONValuePtr reply = NULL;
     char *password64 = NULL;
 
-    if (!(password64 = virStringEncodeBase64((unsigned char *) password,
+    if (!(password64 = virStringEncodeBase64((unsigned char *)password,
                                              strlen(password))))
         goto cleanup;
 

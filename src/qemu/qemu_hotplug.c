@@ -1207,7 +1207,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     /* this could have been changed by qemuHostdevPreparePCIDevices */
     backend = hostdev->source.subsys.u.pci.backend;
 
-    switch ((virDomainHostdevSubsysPCIBackendType) backend) {
+    switch ((virDomainHostdevSubsysPCIBackendType)backend) {
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4062,7 +4062,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     if (qemuDomainNamespaceTeardownHostdev(vm, hostdev) < 0)
         VIR_WARN("Unable to remove host device from /dev");
 
-    switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
+    switch ((virDomainHostdevSubsysType)hostdev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         qemuDomainRemovePCIHostDevice(driver, vm, hostdev);
         /* QEMU might no longer need to lock as much memory, eg. we just
@@ -4476,7 +4476,7 @@ qemuDomainRemoveDevice(virQEMUDriverPtr driver,
                        virDomainDeviceDefPtr dev)
 {
     int ret = -1;
-    switch ((virDomainDeviceType) dev->type) {
+    switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         ret = qemuDomainRemoveDiskDevice(driver, vm, dev->data.disk);
         break;
@@ -5413,7 +5413,7 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
         (auth->expires && auth->validTo <= now)) {
         expire = "now";
     } else if (auth->expires) {
-        if (virAsprintf(&validTo, "%lu", (unsigned long) auth->validTo) < 0)
+        if (virAsprintf(&validTo, "%lu", (unsigned long)auth->validTo) < 0)
             goto end_job;
         expire = validTo;
     } else {

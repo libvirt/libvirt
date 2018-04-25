@@ -2366,7 +2366,7 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
         for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsTPMModelsToCaps); i++) {
             const char *needle = virDomainTPMModelTypeToString(
                 virQEMUCapsTPMModelsToCaps[i].type);
-            if (virStringListHasString((const char **) entries, needle))
+            if (virStringListHasString((const char **)entries, needle))
                 virQEMUCapsSet(qemuCaps,
                                virQEMUCapsTPMModelsToCaps[i].caps);
         }
@@ -2380,7 +2380,7 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
         for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsTPMTypesToCaps); i++) {
             const char *needle = virDomainTPMBackendTypeToString(
                 virQEMUCapsTPMTypesToCaps[i].type);
-            if (virStringListHasString((const char **) entries, needle))
+            if (virStringListHasString((const char **)entries, needle))
                 virQEMUCapsSet(qemuCaps, virQEMUCapsTPMTypesToCaps[i].caps);
         }
     }
@@ -3456,11 +3456,11 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
     virBufferAdjustIndent(&buf, 2);
 
     virBufferAsprintf(&buf, "<qemuctime>%llu</qemuctime>\n",
-                      (long long) qemuCaps->ctime);
+                      (long long)qemuCaps->ctime);
     virBufferAsprintf(&buf, "<selfctime>%llu</selfctime>\n",
-                      (long long) qemuCaps->libvirtCtime);
+                      (long long)qemuCaps->libvirtCtime);
     virBufferAsprintf(&buf, "<selfvers>%lu</selfvers>\n",
-                      (unsigned long) qemuCaps->libvirtVersion);
+                      (unsigned long)qemuCaps->libvirtVersion);
 
     if (qemuCaps->usedQMP)
         virBufferAddLit(&buf, "<usedQMP/>\n");
@@ -3602,7 +3602,7 @@ virQEMUCapsIsValid(void *data,
         VIR_DEBUG("Outdated capabilities for '%s': QEMU binary changed "
                   "(%lld vs %lld)",
                   qemuCaps->binary,
-                  (long long) sb.st_ctime, (long long) qemuCaps->ctime);
+                  (long long)sb.st_ctime, (long long)qemuCaps->ctime);
         return false;
     }
 
@@ -3977,10 +3977,10 @@ virQEMUCapsInitQMPCommandAbort(virQEMUCapsInitQMPCommandPtr cmd)
     if (cmd->pid != 0) {
         char ebuf[1024];
 
-        VIR_DEBUG("Killing QMP caps process %lld", (long long) cmd->pid);
+        VIR_DEBUG("Killing QMP caps process %lld", (long long)cmd->pid);
         if (virProcessKill(cmd->pid, SIGKILL) < 0 && errno != ESRCH)
             VIR_ERROR(_("Failed to kill process %lld: %s"),
-                      (long long) cmd->pid,
+                      (long long)cmd->pid,
                       virStrerror(errno, ebuf, sizeof(ebuf)));
 
         VIR_FREE(*cmd->qmperr);
@@ -4458,7 +4458,7 @@ virQEMUCapsCompareArch(const void *payload,
                        const void *name ATTRIBUTE_UNUSED,
                        const void *opaque)
 {
-    struct virQEMUCapsSearchData *data = (struct virQEMUCapsSearchData *) opaque;
+    struct virQEMUCapsSearchData *data = (struct virQEMUCapsSearchData *)opaque;
     const virQEMUCaps *qemuCaps = payload;
 
     return qemuCaps->arch == data->arch;
@@ -4628,7 +4628,7 @@ virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
                 cpus = qemuCaps->tcgCPUModels;
 
             filtered = virDomainCapsCPUModelsFilter(cpus,
-                                                    (const char **) models,
+                                                    (const char **)models,
                                                     blacklist);
             virStringListFree(models);
         }

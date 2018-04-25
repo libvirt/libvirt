@@ -427,7 +427,7 @@ qemuDomainHasVirtioMMIODevicesCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO) {
         /* We can stop iterating as soon as we find the first
          * virtio-mmio device */
-        *((bool *) opaque) = true;
+        *((bool *)opaque) = true;
         return -1;
     }
 
@@ -508,11 +508,11 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
     virDomainPCIConnectFlags pciFlags = (VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
                                          VIR_PCI_CONNECT_HOTPLUGGABLE);
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_CONTROLLER: {
         virDomainControllerDefPtr cont = dev->data.controller;
 
-        switch ((virDomainControllerType) cont->type) {
+        switch ((virDomainControllerType)cont->type) {
         case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
             return virDomainPCIControllerModelToConnectType(cont->model);
 
@@ -786,7 +786,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:
-        switch ((virDomainVideoType) dev->data.video->type) {
+        switch ((virDomainVideoType)dev->data.video->type) {
         case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
             return virtioFlags;
 
@@ -824,7 +824,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         break;
 
     case VIR_DOMAIN_DEVICE_CHR:
-        switch ((virDomainChrSerialTargetType) dev->data.chr->targetType) {
+        switch ((virDomainChrSerialTargetType)dev->data.chr->targetType) {
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
             return pciFlags;
 
@@ -2346,7 +2346,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         virDomainControllerDefPtr cont = def->controllers[i];
 
         if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-            if ((int) cont->idx > max_idx)
+            if ((int)cont->idx > max_idx)
                 max_idx = cont->idx;
         }
     }

@@ -2820,7 +2820,7 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
 
     /* The parser requires /proc/pid, which only exists on platforms
      * like Linux where pid_t fits in int.  */
-    if ((int) pid != pid ||
+    if ((int)pid != pid ||
         qemuParseProcFileStrings(pid, "cmdline", &progargv) < 0 ||
         qemuParseProcFileStrings(pid, "environ", &progenv) < 0)
         goto cleanup;
@@ -2829,13 +2829,13 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
                                      pidfile, monConfig, monJSON)))
         goto cleanup;
 
-    if (virAsprintf(&exepath, "/proc/%d/exe", (int) pid) < 0)
+    if (virAsprintf(&exepath, "/proc/%d/exe", (int)pid) < 0)
         goto cleanup;
 
     if (virFileResolveLink(exepath, &emulator) < 0) {
         virReportSystemError(errno,
                              _("Unable to resolve %s for pid %u"),
-                             exepath, (int) pid);
+                             exepath, (int)pid);
         goto cleanup;
     }
     VIR_FREE(def->emulator);

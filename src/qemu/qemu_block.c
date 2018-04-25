@@ -987,7 +987,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src)
     int actualType = virStorageSourceGetActualType(src);
     virJSONValuePtr fileprops = NULL;
 
-    switch ((virStorageType) actualType) {
+    switch ((virStorageType)actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:

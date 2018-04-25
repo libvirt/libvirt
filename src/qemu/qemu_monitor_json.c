@@ -5325,7 +5325,7 @@ qemuMonitorJSONParseCPUModelProperty(const char *key,
 
     prop = machine_model->props + machine_model->nprops;
 
-    switch ((virJSONType) virJSONValueGetType(value)) {
+    switch ((virJSONType)virJSONValueGetType(value)) {
     case VIR_JSON_TYPE_STRING:
         if (VIR_STRDUP(prop->value.string, virJSONValueGetString(value)) < 0)
             return -1;
@@ -6589,7 +6589,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
         goto cleanup;
     }
 
-    switch ((virDomainChrType) chr->type) {
+    switch ((virDomainChrType)chr->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
         backend_type = "null";

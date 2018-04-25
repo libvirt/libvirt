@@ -205,7 +205,7 @@ qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDefPtr *hostdevs,
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        switch ((virDomainHostdevSubsysPCIBackendType) *backend) {
+        switch ((virDomainHostdevSubsysPCIBackendType)*backend) {
         case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
             if (supportsPassthroughVFIO &&
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {

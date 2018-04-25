@@ -92,7 +92,7 @@ qemuAssignDeviceChrAlias(virDomainDefPtr def,
     if (chr->info.alias)
         return 0;
 
-    switch ((virDomainChrDeviceType) chr->deviceType) {
+    switch ((virDomainChrDeviceType)chr->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
         prefix = "parallel";
         break;

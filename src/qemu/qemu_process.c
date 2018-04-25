@@ -2131,7 +2131,7 @@ qemuRefreshRTC(virQEMUDriverPtr driver,
         return;
 
     thenbits.tm_isdst = -1;
-    if ((then = mktime(&thenbits)) == (time_t) -1) {
+    if ((then = mktime(&thenbits)) == (time_t)-1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to convert time"));
         return;
@@ -3301,7 +3301,7 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
     if (qemuDomainUpdateDeviceList(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
         goto cleanup;
 
-    qemuDevices = (const char **) priv->qemuDevices;
+    qemuDevices = (const char **)priv->qemuDevices;
     if ((tmp = old)) {
         while (*tmp) {
             if (!virStringListHasString(qemuDevices, *tmp) &&
@@ -6026,7 +6026,7 @@ qemuProcessLaunch(virConnectPtr conn,
             rv = -1;
         }
         VIR_DEBUG("QEMU vm=%p name=%s running with pid=%lld",
-                  vm, vm->def->name, (long long) vm->pid);
+                  vm, vm->def->name, (long long)vm->pid);
     } else {
         VIR_DEBUG("QEMU vm=%p name=%s failed to spawn",
                   vm, vm->def->name);
@@ -6435,7 +6435,7 @@ qemuProcessKill(virDomainObjPtr vm, unsigned int flags)
 
     VIR_DEBUG("vm=%p name=%s pid=%lld flags=0x%x",
               vm, vm->def->name,
-              (long long) vm->pid, flags);
+              (long long)vm->pid, flags);
 
     if (!(flags & VIR_QEMU_PROCESS_KILL_NOCHECK)) {
         if (!virDomainObjIsActive(vm)) {
@@ -6516,7 +6516,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     VIR_DEBUG("Shutting down vm=%p name=%s id=%d pid=%lld, "
               "reason=%s, asyncJob=%s, flags=0x%x",
               vm, vm->def->name, vm->def->id,
-              (long long) vm->pid,
+              (long long)vm->pid,
               virDomainShutoffReasonTypeToString(reason),
               qemuDomainAsyncJobTypeToString(asyncJob),
               flags);

@@ -365,7 +365,7 @@ qemuMonitorOpenUnix(const char *monitor,
     if (virTimeBackOffStart(&timebackoff, 1, timeout * 1000) < 0)
         goto error;
     while (virTimeBackOffWait(&timebackoff)) {
-        ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
+        ret = connect(monfd, (struct sockaddr *)&addr, sizeof(addr));
 
         if (ret == 0)
             break;

@@ -1035,7 +1035,7 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
     if (virStorageSourceIsEmpty(src))
         return 1;
 
-    switch ((virStorageType) actualType) {
+    switch ((virStorageType)actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:
@@ -2618,7 +2618,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 
     *devstr = NULL;
 
-    switch ((virDomainControllerType) def->type) {
+    switch ((virDomainControllerType)def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         switch ((virDomainControllerModelSCSI) def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
@@ -3923,7 +3923,7 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
         goto error;
     }
 
-    switch ((virDomainInputType) dev->type) {
+    switch ((virDomainInputType)dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_MOUSE) ||
             (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
@@ -4489,7 +4489,7 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
     int backend = pcisrc->backend;
 
     /* caller has to assign proper passthrough backend type */
-    switch ((virDomainHostdevSubsysPCIBackendType) backend) {
+    switch ((virDomainHostdevSubsysPCIBackendType)backend) {
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
         virBufferAddLit(&buf, "pci-assign");
         if (configfd && *configfd)
@@ -6116,7 +6116,7 @@ qemuBuildClockCommandLine(virCommandPtr cmd,
     }
 
     for (i = 0; i < def->clock.ntimers; i++) {
-        switch ((virDomainTimerNameType) def->clock.timers[i]->name) {
+        switch ((virDomainTimerNameType)def->clock.timers[i]->name) {
         case VIR_DOMAIN_TIMER_NAME_PLATFORM:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported timer type (name) '%s'"),
@@ -8051,7 +8051,7 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
         goto error;
     }
 
-    switch ((virDomainChrType) net->data.vhostuser->type) {
+    switch ((virDomainChrType)net->data.vhostuser->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (!(chardev = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                                net->data.vhostuser,
@@ -10140,7 +10140,7 @@ qemuBuildChannelChrDeviceStr(char **deviceStr,
     char *addr = NULL;
     int port;
 
-    switch ((virDomainChrChannelTargetType) chr->targetType) {
+    switch ((virDomainChrChannelTargetType)chr->targetType) {
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
 
         addr = virSocketAddrFormat(chr->target.addr);
@@ -10178,7 +10178,7 @@ qemuBuildConsoleChrDeviceStr(char **deviceStr,
 {
     int ret = -1;
 
-    switch ((virDomainChrConsoleTargetType) chr->targetType) {
+    switch ((virDomainChrConsoleTargetType)chr->targetType) {
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
         if (!(*deviceStr = qemuBuildSclpDevStr(chr)))
@@ -10218,7 +10218,7 @@ qemuBuildChrDeviceStr(char **deviceStr,
 {
     int ret = -1;
 
-    switch ((virDomainChrDeviceType) chr->deviceType) {
+    switch ((virDomainChrDeviceType)chr->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
         ret = qemuBuildSerialChrDeviceStr(deviceStr, vmdef, chr, qemuCaps);
         break;

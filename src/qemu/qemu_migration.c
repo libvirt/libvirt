@@ -180,7 +180,7 @@ qemuMigrationDstPrecreateDisk(virConnectPtr conn,
 
     VIR_DEBUG("Precreate disk type=%s", virStorageTypeToString(disk->src->type));
 
-    switch ((virStorageType) disk->src->type) {
+    switch ((virStorageType)disk->src->type) {
     case VIR_STORAGE_TYPE_FILE:
         if (!virDomainDiskGetSource(disk)) {
             VIR_DEBUG("Dropping sourceless disk '%s'",

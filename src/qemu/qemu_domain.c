@@ -2465,7 +2465,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         xmlNodePtr next;
 
         for (next = node->children; next; next = next->next) {
-            int ns = qemuDomainNamespaceTypeFromString((const char *) next->name);
+            int ns = qemuDomainNamespaceTypeFromString((const char *)next->name);
 
             if (ns < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3657,7 +3657,7 @@ qemuDomainChrSourceDefValidate(const virDomainChrSourceDef *def)
 static int
 qemuDomainChrSerialTargetTypeToAddressType(int targetType)
 {
-    switch ((virDomainChrSerialTargetType) targetType) {
+    switch ((virDomainChrSerialTargetType)targetType) {
     case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
         return VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
@@ -3708,11 +3708,11 @@ qemuDomainChrTargetDefValidate(const virDomainChrDef *chr)
 {
     int expected;
 
-    switch ((virDomainChrDeviceType) chr->deviceType) {
+    switch ((virDomainChrDeviceType)chr->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
 
         /* Validate target type */
-        switch ((virDomainChrSerialTargetType) chr->targetType) {
+        switch ((virDomainChrSerialTargetType)chr->targetType) {
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
@@ -4926,7 +4926,7 @@ qemuDomainDeviceDefValidateController(const virDomainControllerDef *controller,
     if (qemuDomainDeviceDefValidateControllerAttributes(controller) < 0)
         return -1;
 
-    switch ((virDomainControllerType) controller->type) {
+    switch ((virDomainControllerType)controller->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
         ret = qemuDomainDeviceDefValidateControllerIDE(controller, def);
         break;
@@ -4994,7 +4994,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                                             def->emulator)))
         return -1;
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_NET:
         ret = qemuDomainDeviceDefValidateNetwork(dev->data.net);
         break;
@@ -5337,7 +5337,7 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
          */
         if (cont->opts.pciopts.numaNode >= 0 &&
             cont->opts.pciopts.numaNode >=
-            (int) virDomainNumaGetNodeCount(def->numa)) {
+            (int)virDomainNumaGetNodeCount(def->numa)) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("%s with index %d is "
                              "configured for a NUMA node (%d) "
@@ -5393,7 +5393,7 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
     /* Set the default target model */
     if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
         chr->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE) {
-        switch ((virDomainChrSerialTargetType) chr->targetType) {
+        switch ((virDomainChrSerialTargetType)chr->targetType) {
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
             chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_SERIAL;
             break;
@@ -6334,7 +6334,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
              * towards older libvirt versions works for such guests, we switch
              * it back to the default here */
             if (flags & VIR_DOMAIN_XML_MIGRATABLE) {
-                switch ((virDomainChrSerialTargetType) serial->targetType) {
+                switch ((virDomainChrSerialTargetType)serial->targetType) {
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO:
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SYSTEM:
                     serial->targetType = VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE;
@@ -9580,7 +9580,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
 
     switch ((virDomainHostdevMode) dev->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
-        switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
+        switch ((virDomainHostdevSubsysType)dev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
                 pci = virPCIDeviceNew(pcisrc->addr.domain,
@@ -9622,7 +9622,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
             if (!usb)
                 goto cleanup;
 
-            if (!(tmpPath = (char *) virUSBDeviceGetPath(usb)))
+            if (!(tmpPath = (char *)virUSBDeviceGetPath(usb)))
                 goto cleanup;
             perm = VIR_CGROUP_DEVICE_RW;
             break;
@@ -9647,7 +9647,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
                 if (!scsi)
                     goto cleanup;
 
-                if (!(tmpPath = (char *) virSCSIDeviceGetPath(scsi)))
+                if (!(tmpPath = (char *)virSCSIDeviceGetPath(scsi)))
                     goto cleanup;
                 perm = virSCSIDeviceGetReadonly(scsi) ?
                     VIR_CGROUP_DEVICE_READ : VIR_CGROUP_DEVICE_RW;
@@ -9660,7 +9660,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
                 if (!(host = virSCSIVHostDeviceNew(hostsrc->wwpn)))
                     goto cleanup;
 
-                if (!(tmpPath = (char *) virSCSIVHostDeviceGetPath(host)))
+                if (!(tmpPath = (char *)virSCSIVHostDeviceGetPath(host)))
                     goto cleanup;
                 perm = VIR_CGROUP_DEVICE_RW;
             }
@@ -10082,7 +10082,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
     }
 
     if (tcon &&
-        lsetfilecon_raw(devicePath, (VIR_SELINUX_CTX_CONST char *) tcon) < 0) {
+        lsetfilecon_raw(devicePath, (VIR_SELINUX_CTX_CONST char *)tcon) < 0) {
         VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
         if (errno != EOPNOTSUPP && errno != ENOTSUP) {
         VIR_WARNINGS_RESET
@@ -10337,7 +10337,7 @@ qemuDomainSetupAllChardevs(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
     if (virDomainChrDefForeach(vm->def,
                                true,
                                qemuDomainSetupChardev,
-                               (void *) data) < 0)
+                               (void *)data) < 0)
         return -1;
 
     VIR_DEBUG("Setup all chardevs");
@@ -10853,7 +10853,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
 
 # ifdef WITH_SELINUX
     if (data->tcon &&
-        lsetfilecon_raw(data->file, (VIR_SELINUX_CTX_CONST char *) data->tcon) < 0) {
+        lsetfilecon_raw(data->file, (VIR_SELINUX_CTX_CONST char *)data->tcon) < 0) {
         VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
         if (errno != EOPNOTSUPP && errno != ENOTSUP) {
         VIR_WARNINGS_RESET

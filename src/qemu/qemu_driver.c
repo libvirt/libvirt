@@ -767,36 +767,36 @@ qemuStateInitialize(bool privileged,
         if (chown(cfg->libDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to user %d:%d"),
-                                 cfg->libDir, (int) cfg->user,
-                                 (int) cfg->group);
+                                 cfg->libDir, (int)cfg->user,
+                                 (int)cfg->group);
             goto error;
         }
         if (chown(cfg->cacheDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
-                                 cfg->cacheDir, (int) cfg->user,
-                                 (int) cfg->group);
+                                 cfg->cacheDir, (int)cfg->user,
+                                 (int)cfg->group);
             goto error;
         }
         if (chown(cfg->saveDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
-                                 cfg->saveDir, (int) cfg->user,
-                                 (int) cfg->group);
+                                 cfg->saveDir, (int)cfg->user,
+                                 (int)cfg->group);
             goto error;
         }
         if (chown(cfg->snapshotDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
-                                 cfg->snapshotDir, (int) cfg->user,
-                                 (int) cfg->group);
+                                 cfg->snapshotDir, (int)cfg->user,
+                                 (int)cfg->group);
             goto error;
         }
         if (chown(cfg->autoDumpPath, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
-                                 cfg->autoDumpPath, (int) cfg->user,
-                                 (int) cfg->group);
+                                 cfg->autoDumpPath, (int)cfg->user,
+                                 (int)cfg->group);
             goto error;
         }
         if (!(channeldir = mdir_name(cfg->channelTargetDir))) {
@@ -806,8 +806,8 @@ qemuStateInitialize(bool privileged,
         if (chown(channeldir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
-                                 channeldir, (int) cfg->user,
-                                 (int) cfg->group);
+                                 channeldir, (int)cfg->user,
+                                 (int)cfg->group);
             VIR_FREE(channeldir);
             goto error;
         }
@@ -815,22 +815,22 @@ qemuStateInitialize(bool privileged,
         if (chown(cfg->channelTargetDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
-                                 cfg->channelTargetDir, (int) cfg->user,
-                                 (int) cfg->group);
+                                 cfg->channelTargetDir, (int)cfg->user,
+                                 (int)cfg->group);
             goto error;
         }
         if (chown(cfg->nvramDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
-                                 cfg->nvramDir, (int) cfg->user,
-                                 (int) cfg->group);
+                                 cfg->nvramDir, (int)cfg->user,
+                                 (int)cfg->group);
             goto error;
         }
         if (chown(cfg->memoryBackingDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
-                                 cfg->memoryBackingDir, (int) cfg->user,
-                                 (int) cfg->group);
+                                 cfg->memoryBackingDir, (int)cfg->user,
+                                 (int)cfg->group);
             goto error;
         }
 
@@ -1407,9 +1407,9 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
     /* In general, we cannot assume pid_t fits in int; but /proc parsing
      * is specific to Linux where int works fine.  */
     if (tid)
-        ret = virAsprintf(&proc, "/proc/%d/task/%d/stat", (int) pid, tid);
+        ret = virAsprintf(&proc, "/proc/%d/task/%d/stat", (int)pid, tid);
     else
-        ret = virAsprintf(&proc, "/proc/%d/stat", (int) pid);
+        ret = virAsprintf(&proc, "/proc/%d/stat", (int)pid);
     if (ret < 0)
         return -1;
 
@@ -1446,7 +1446,7 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
 
 
     VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d rss=%ld",
-              (int) pid, tid, usertime, systime, cpu, rss);
+              (int)pid, tid, usertime, systime, cpu, rss);
 
     VIR_FORCE_FCLOSE(pidinfo);
 
@@ -6560,7 +6560,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     virQEMUSaveHeaderPtr header = &data->header;
     qemuDomainSaveCookiePtr cookie = NULL;
 
-    if (virSaveCookieParseString(data->cookie, (virObjectPtr *) &cookie,
+    if (virSaveCookieParseString(data->cookie, (virObjectPtr *)&cookie,
                                  virDomainXMLOptionGetSaveCookie(driver->xmlopt)) < 0)
         goto cleanup;
 
@@ -7601,7 +7601,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
     int ret = -1;
     const char *alias = NULL;
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
         ret = qemuDomainAttachDeviceDiskLive(driver, vm, dev);
@@ -7767,7 +7767,7 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
 {
     int ret = -1;
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         ret = qemuDomainDetachDeviceDiskLive(driver, vm, dev);
         break;
@@ -7906,7 +7906,7 @@ qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
     int ret = -1;
     int idx;
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
         ret = qemuDomainChangeDiskLive(vm, dev, driver, force);
@@ -7979,7 +7979,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
     virDomainRedirdevDefPtr redirdev;
     virDomainShmemDefPtr shmem;
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         disk = dev->data.disk;
         if (virDomainDiskIndexByName(vmdef, disk->dst, true) >= 0) {
@@ -8170,7 +8170,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     virDomainMemoryDefPtr mem;
     int idx;
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         disk = dev->data.disk;
         if (!(det_disk = virDomainDiskRemoveByName(vmdef, disk->dst))) {
@@ -8348,7 +8348,7 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
     virDomainDeviceDef oldDev = { .type = dev->type };
     int pos;
 
-    switch ((virDomainDeviceType) dev->type) {
+    switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         newDisk = dev->data.disk;
         if ((pos = virDomainDiskIndexByName(vmdef, newDisk->dst, false)) < 0) {
@@ -11681,7 +11681,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
         goto endjob;
 
     /* Read the memory file into buffer. */
-    if (saferead(fd, buffer, size) == (ssize_t) -1) {
+    if (saferead(fd, buffer, size) == (ssize_t)-1) {
         virReportSystemError(errno,
                              _("failed to read temporary file "
                                "created with template %s"), tmp);
@@ -14124,7 +14124,7 @@ qemuDomainSnapshotPrepareDiskExternalInactive(virDomainSnapshotDiskDefPtr snapdi
     int domDiskType = virStorageSourceGetActualType(domdisk->src);
     int snapDiskType = virStorageSourceGetActualType(snapdisk->src);
 
-    switch ((virStorageType) domDiskType) {
+    switch ((virStorageType)domDiskType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
         break;
@@ -14163,7 +14163,7 @@ qemuDomainSnapshotPrepareDiskExternalInactive(virDomainSnapshotDiskDefPtr snapdi
         return -1;
     }
 
-    switch ((virStorageType) snapDiskType) {
+    switch ((virStorageType)snapDiskType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
         break;
@@ -14199,7 +14199,7 @@ qemuDomainSnapshotPrepareDiskExternalActive(virDomainSnapshotDiskDefPtr snapdisk
         return -1;
     }
 
-    switch ((virStorageType) actualType) {
+    switch ((virStorageType)actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
         break;
@@ -14317,7 +14317,7 @@ qemuDomainSnapshotPrepareDiskInternal(virDomainDiskDefPtr disk,
 
     actualType = virStorageSourceGetActualType(disk->src);
 
-    switch ((virStorageType) actualType) {
+    switch ((virStorageType)actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
         return 0;
@@ -17510,7 +17510,7 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
          * overflow detection if this is a 32-bit server handling a
          * 64-bit client.  */
         if (STREQ(param->field, VIR_DOMAIN_BLOCK_COPY_BANDWIDTH)) {
-            if (sizeof(unsigned long) < sizeof(bandwidth) &&
+            if (sizeof(unsigned long)< sizeof(bandwidth) &&
                 param->value.ul > ULONG_MAX * (1ULL << 20)) {
                 virReportError(VIR_ERR_OVERFLOW,
                                _("bandwidth must be less than %llu bytes"),
