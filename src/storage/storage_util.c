@@ -271,19 +271,19 @@ storageBackendCreateBlockFrom(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
         goto cleanup;
     }
     uid = (vol->target.perms->uid != st.st_uid) ? vol->target.perms->uid
-        : (uid_t) -1;
+        : (uid_t)-1;
     gid = (vol->target.perms->gid != st.st_gid) ? vol->target.perms->gid
-        : (gid_t) -1;
-    if (((uid != (uid_t) -1) || (gid != (gid_t) -1))
+        : (gid_t)-1;
+    if (((uid != (uid_t)-1) || (gid != (gid_t)-1))
         && (fchown(fd, uid, gid) < 0)) {
         virReportSystemError(errno,
                              _("cannot chown '%s' to (%u, %u)"),
-                             vol->target.path, (unsigned int) uid,
-                             (unsigned int) gid);
+                             vol->target.path, (unsigned int)uid,
+                             (unsigned int)gid);
         goto cleanup;
     }
 
-    mode = (vol->target.perms->mode == (mode_t) -1 ?
+    mode = (vol->target.perms->mode == (mode_t)-1 ?
             VIR_STORAGE_DEFAULT_VOL_PERM_MODE : vol->target.perms->mode);
     if (fchmod(fd, mode) < 0) {
         virReportSystemError(errno,
@@ -433,7 +433,7 @@ storageBackendCreateRaw(virStoragePoolObjPtr pool,
     if (def->type == VIR_STORAGE_POOL_NETFS)
         operation_flags |= VIR_FILE_OPEN_FORK;
 
-    if (vol->target.perms->mode != (mode_t) -1)
+    if (vol->target.perms->mode != (mode_t)-1)
         open_mode = vol->target.perms->mode;
 
     if ((fd = virFileOpenAs(vol->target.path,
@@ -595,7 +595,7 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     struct stat st;
     gid_t gid;
     uid_t uid;
-    mode_t mode = (vol->target.perms->mode == (mode_t) -1 ?
+    mode_t mode = (vol->target.perms->mode == (mode_t)-1 ?
                    VIR_STORAGE_DEFAULT_VOL_PERM_MODE :
                    vol->target.perms->mode);
     bool filecreated = false;
@@ -603,9 +603,9 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
 
     if ((def->type == VIR_STORAGE_POOL_NETFS)
         && (((geteuid() == 0)
-             && (vol->target.perms->uid != (uid_t) -1)
+             && (vol->target.perms->uid != (uid_t)-1)
              && (vol->target.perms->uid != 0))
-            || ((vol->target.perms->gid != (gid_t) -1)
+            || ((vol->target.perms->gid != (gid_t)-1)
                 && (vol->target.perms->gid != getegid())))) {
 
         virCommandSetUID(cmd, vol->target.perms->uid);
@@ -656,15 +656,15 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
     }
 
     uid = (vol->target.perms->uid != st.st_uid) ? vol->target.perms->uid
-        : (uid_t) -1;
+        : (uid_t)-1;
     gid = (vol->target.perms->gid != st.st_gid) ? vol->target.perms->gid
-        : (gid_t) -1;
-    if (((uid != (uid_t) -1) || (gid != (gid_t) -1))
+        : (gid_t)-1;
+    if (((uid != (uid_t)-1) || (gid != (gid_t)-1))
         && (chown(vol->target.path, uid, gid) < 0)) {
         virReportSystemError(errno,
                              _("cannot chown %s to (%u, %u)"),
-                             vol->target.path, (unsigned int) uid,
-                             (unsigned int) gid);
+                             vol->target.path, (unsigned int)uid,
+                             (unsigned int)gid);
         goto cleanup;
     }
 
@@ -730,7 +730,7 @@ storageBackendCreatePloop(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
 
     if (!inputvol) {
         if ((virDirCreate(vol->target.path,
-                          (vol->target.perms->mode == (mode_t) -1 ?
+                          (vol->target.perms->mode == (mode_t)-1 ?
                            VIR_STORAGE_DEFAULT_VOL_PERM_MODE:
                            vol->target.perms->mode),
                           vol->target.perms->uid,
@@ -1354,8 +1354,8 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObjPtr pool,
     }
     VIR_FORCE_CLOSE(fd);
 
-    if ((vol->target.perms->uid != (uid_t) -1) &&
-        (vol->target.perms->gid != (gid_t) -1)) {
+    if ((vol->target.perms->uid != (uid_t)-1) &&
+        (vol->target.perms->gid != (gid_t)-1)) {
         if (chown(secretPath, vol->target.perms->uid,
                   vol->target.perms->gid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2105,7 +2105,7 @@ createFileDir(virStoragePoolObjPtr pool,
 
 
     if ((err = virDirCreate(vol->target.path,
-                            (vol->target.perms->mode == (mode_t) -1 ?
+                            (vol->target.perms->mode == (mode_t)-1 ?
                              VIR_STORAGE_DEFAULT_VOL_PERM_MODE :
                              vol->target.perms->mode),
                             vol->target.perms->uid,
@@ -2236,7 +2236,7 @@ virStorageBackendVolDeleteLocal(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
 {
     virCheckFlags(0, -1);
 
-    switch ((virStorageVolType) vol->type) {
+    switch ((virStorageVolType)vol->type) {
     case VIR_STORAGE_VOL_FILE:
     case VIR_STORAGE_VOL_DIR:
         if (virFileRemove(vol->target.path, vol->target.perms->uid,
@@ -2660,7 +2660,7 @@ storageBackendWipeLocal(const char *path,
         }
     }
 
-    VIR_DEBUG("wiping start: %zd len: %llu", (ssize_t) size, wipe_len);
+    VIR_DEBUG("wiping start: %zd len: %llu", (ssize_t)size, wipe_len);
 
     remaining = wipe_len;
     while (remaining > 0) {
@@ -2912,7 +2912,7 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
     needs_create_as_uid = (def->type == VIR_STORAGE_POOL_NETFS);
     mode = def->target.perms.mode;
 
-    if (mode == (mode_t) -1 &&
+    if (mode == (mode_t)-1 &&
         (needs_create_as_uid || !virFileExists(def->target.path)))
         mode = VIR_STORAGE_DEFAULT_POOL_PERM_MODE;
     if (needs_create_as_uid)

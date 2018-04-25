@@ -1513,7 +1513,7 @@ static bool
 storageVolLookupByKeyCallback(virStoragePoolObjPtr obj,
                               const void *opaque)
 {
-    struct storageVolLookupData *data = (struct storageVolLookupData *) opaque;
+    struct storageVolLookupData *data = (struct storageVolLookupData *)opaque;
 
     if (virStoragePoolObjIsActive(obj))
         data->voldef = virStorageVolDefFindByKey(obj, data->key);
@@ -1556,7 +1556,7 @@ static bool
 storageVolLookupByPathCallback(virStoragePoolObjPtr obj,
                                const void *opaque)
 {
-    struct storageVolLookupData *data = (struct storageVolLookupData *) opaque;
+    struct storageVolLookupData *data = (struct storageVolLookupData *)opaque;
     virStoragePoolDefPtr def;
     char *stable_path = NULL;
 
@@ -1565,7 +1565,7 @@ storageVolLookupByPathCallback(virStoragePoolObjPtr obj,
 
     def = virStoragePoolObjGetDef(obj);
 
-    switch ((virStoragePoolType) def->type) {
+    switch ((virStoragePoolType)def->type) {
         case VIR_STORAGE_POOL_DIR:
         case VIR_STORAGE_POOL_FS:
         case VIR_STORAGE_POOL_NETFS:

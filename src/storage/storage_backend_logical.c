@@ -1005,7 +1005,7 @@ virStorageBackendLogicalCreateVol(virStoragePoolObjPtr pool,
             goto error;
         }
     }
-    if (fchmod(fd, (vol->target.perms->mode == (mode_t) -1 ?
+    if (fchmod(fd, (vol->target.perms->mode == (mode_t)-1 ?
                     VIR_STORAGE_DEFAULT_VOL_PERM_MODE :
                     vol->target.perms->mode)) < 0) {
         virReportSystemError(errno,

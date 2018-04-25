@@ -45,11 +45,11 @@ virStorageBackendVzPoolStart(virStoragePoolObjPtr pool)
     char *mode = NULL;
 
     /* Check the permissions */
-    if (def->target.perms.mode == (mode_t) - 1)
+    if (def->target.perms.mode == (mode_t)-1)
         def->target.perms.mode = VIR_STORAGE_DEFAULT_POOL_PERM_MODE;
-    if (def->target.perms.uid == (uid_t) -1)
+    if (def->target.perms.uid == (uid_t)-1)
         def->target.perms.uid = geteuid();
-    if (def->target.perms.gid == (gid_t) -1)
+    if (def->target.perms.gid == (gid_t)-1)
         def->target.perms.gid = getegid();
 
     /* Convert ids to names because vstorage uses names */
