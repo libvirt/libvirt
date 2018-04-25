@@ -1390,6 +1390,8 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-backend/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-backend/*.a
+rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-file/*.la
+rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-file/*.a
 %if %{with_wireshark}
 rm -f $RPM_BUILD_ROOT%{wireshark_plugindir}/libvirt.la
 %endif
@@ -1892,6 +1894,7 @@ exit 0
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
 %{_libdir}/%{name}/connection-driver/libvirt_driver_storage.so
 %{_libdir}/%{name}/storage-backend/libvirt_storage_backend_fs.so
+%{_libdir}/%{name}/storage-file/libvirt_storage_file_fs.so
 
 %files daemon-driver-storage-disk
 %{_libdir}/%{name}/storage-backend/libvirt_storage_backend_disk.so
@@ -1911,6 +1914,7 @@ exit 0
 %if %{with_storage_gluster}
 %files daemon-driver-storage-gluster
 %{_libdir}/%{name}/storage-backend/libvirt_storage_backend_gluster.so
+%{_libdir}/%{name}/storage-file/libvirt_storage_file_gluster.so
 %endif
 
 %if %{with_storage_rbd}

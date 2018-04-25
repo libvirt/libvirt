@@ -71,11 +71,10 @@ typedef int
                               uid_t uid,
                               gid_t gid);
 
-virStorageFileBackendPtr virStorageFileBackendForType(int type, int protocol);
-virStorageFileBackendPtr virStorageFileBackendForTypeInternal(int type,
-                                                              int protocol,
-                                                              bool report);
-
+int virStorageFileBackendForType(int type,
+                                 int protocol,
+                                 bool required,
+                                 virStorageFileBackendPtr *backend);
 
 struct _virStorageFileBackend {
     int type;

@@ -4117,7 +4117,9 @@ virStorageFileGetBackendForSupportCheck(const virStorageSource *src,
 
     actualType = virStorageSourceGetActualType(src);
 
-    *backend = virStorageFileBackendForTypeInternal(actualType, src->protocol, false);
+    if (virStorageFileBackendForType(actualType, src->protocol, false, backend) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -4234,8 +4236,10 @@ virStorageFileInitAs(virStorageSourcePtr src,
     else
         src->drv->gid = gid;
 
-    if (!(src->drv->backend = virStorageFileBackendForType(actualType,
-                                                           src->protocol)))
+    if (virStorageFileBackendForType(actualType,
+                                     src->protocol,
+                                     true,
+                                     &src->drv->backend) < 0)
         goto error;
 
     if (src->drv->backend->backendInit &&
