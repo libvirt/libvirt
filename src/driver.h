@@ -110,9 +110,6 @@ int virSetSharedStorageDriver(virStorageDriverPtr driver) ATTRIBUTE_RETURN_CHECK
 int virDriverLoadModule(const char *name,
                         const char *regfunc,
                         bool required);
-int virDriverLoadModuleFull(const char *path,
-                            const char *regfunc,
-                            bool required);
 
 virConnectPtr virGetConnectInterface(void);
 virConnectPtr virGetConnectNetwork(void);

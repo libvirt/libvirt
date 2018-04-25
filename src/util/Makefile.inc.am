@@ -100,6 +100,8 @@ UTIL_SOURCES = \
 	util/virmacaddr.h \
 	util/virmacmap.c \
 	util/virmacmap.h \
+	util/virmodule.c \
+	util/virmodule.h \
 	util/virnetdev.c \
 	util/virnetdev.h \
 	util/virnetdevbandwidth.c \

@@ -2228,6 +2228,9 @@ virMediatedDeviceTypeFree;
 virMediatedDeviceTypeReadAttrs;
 
 
+# util/virmodule.h
+virModuleLoad;
+
 
 # util/virnetdev.h
 virNetDevAddMulti;

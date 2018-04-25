@@ -33,6 +33,7 @@
 #include "virstoragefile.h"
 #include "storage_backend.h"
 #include "virlog.h"
+#include "virmodule.h"
 #include "virfile.h"
 #include "configmake.h"
 
@@ -97,7 +98,7 @@ virStorageDriverLoadBackendModule(const char *name,
                                             "LIBVIRT_STORAGE_BACKEND_DIR")))
         return -1;
 
-    ret = virDriverLoadModuleFull(modfile, regfunc, forceload);
+    ret = virModuleLoad(modfile, regfunc, forceload);
 
     VIR_FREE(modfile);
 
