@@ -1338,7 +1338,7 @@ static int umlGetProcessInfo(unsigned long long *cpuTime, pid_t pid)
     FILE *pidinfo;
     unsigned long long usertime, systime;
 
-    if (virAsprintf(&proc, "/proc/%lld/stat", (long long) pid) < 0)
+    if (virAsprintf(&proc, "/proc/%lld/stat", (long long)pid) < 0)
         return -1;
 
     if (!(pidinfo = fopen(proc, "r"))) {
@@ -2434,8 +2434,8 @@ umlDomainBlockPeek(virDomainPtr dom,
     /* NB. Because we configure with AC_SYS_LARGEFILE, off_t should
      * be 64 bits on all platforms.
      */
-    if (lseek(fd, offset, SEEK_SET) == (off_t) -1 ||
-        saferead(fd, buffer, size) == (ssize_t) -1) {
+    if (lseek(fd, offset, SEEK_SET) == (off_t)-1 ||
+        saferead(fd, buffer, size) == (ssize_t)-1) {
         virReportSystemError(errno,
                              _("cannot read %s"), path);
         goto cleanup;
