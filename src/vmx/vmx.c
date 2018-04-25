@@ -1309,8 +1309,8 @@ virVMXConfigScanResultsCollector(const char* name,
             return -1;
         }
 
-        if ((int) idx > results->networks_max_index)
-            results->networks_max_index = (int) idx;
+        if ((int)idx > results->networks_max_index)
+            results->networks_max_index = (int)idx;
     }
 
     return 0;
