@@ -1112,7 +1112,7 @@ virSecuritySELinuxGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    if (strlen((char *) ctx) >= VIR_SECURITY_LABEL_BUFLEN) {
+    if (strlen((char *)ctx) >= VIR_SECURITY_LABEL_BUFLEN) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label exceeds "
                          "maximum length: %d"),
@@ -1121,7 +1121,7 @@ virSecuritySELinuxGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    strcpy(sec->label, (char *) ctx);
+    strcpy(sec->label, (char *)ctx);
     freecon(ctx);
 
     VIR_DEBUG("label=%s", sec->label);
@@ -1155,7 +1155,7 @@ virSecuritySELinuxSetFileconHelper(const char *path, const char *tcon,
 
     VIR_INFO("Setting SELinux context on '%s' to '%s'", path, tcon);
 
-    if (setfilecon_raw(path, (VIR_SELINUX_CTX_CONST char *) tcon) < 0) {
+    if (setfilecon_raw(path, (VIR_SELINUX_CTX_CONST char *)tcon) < 0) {
         int setfilecon_errno = errno;
 
         if (getfilecon_raw(path, &econ) >= 0) {
@@ -1336,7 +1336,7 @@ virSecuritySELinuxSetInputLabel(virSecurityManagerPtr mgr,
     if (seclabel == NULL)
         return 0;
 
-    switch ((virDomainInputType) input->type) {
+    switch ((virDomainInputType)input->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
         if (virSecuritySELinuxSetFilecon(mgr, input->source.evdev,
                                          seclabel->imagelabel) < 0)
@@ -1366,7 +1366,7 @@ virSecuritySELinuxRestoreInputLabel(virSecurityManagerPtr mgr,
     if (seclabel == NULL)
         return 0;
 
-    switch ((virDomainInputType) input->type) {
+    switch ((virDomainInputType)input->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
         rc = virSecuritySELinuxRestoreFileLabel(mgr, input->source.evdev);
         break;
@@ -1772,7 +1772,7 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
         scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
         return 0;
 
-    switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
+    switch ((virDomainHostdevSubsysType)dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         virUSBDevicePtr usb;
 
@@ -2014,7 +2014,7 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
         scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
         return 0;
 
-    switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
+    switch ((virDomainHostdevSubsysType)dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         virUSBDevicePtr usb;
 

@@ -768,7 +768,7 @@ AppArmorSetInputLabel(virSecurityManagerPtr mgr,
     if (input == NULL)
         return 0;
 
-    switch ((virDomainInputType) input->type) {
+    switch ((virDomainInputType)input->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
         if (input->source.evdev == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -928,7 +928,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     ptr->mgr = mgr;
     ptr->def = def;
 
-    switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
+    switch ((virDomainHostdevSubsysType)dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         virUSBDevicePtr usb =
             virUSBDeviceNew(usbsrc->bus, usbsrc->device, vroot);
@@ -1047,7 +1047,7 @@ AppArmorSetChardevLabel(virSecurityManagerPtr mgr,
     if (!secdef)
         return 0;
 
-    switch ((virDomainChrType) dev_source->type) {
+    switch ((virDomainChrType)dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_UNIX:

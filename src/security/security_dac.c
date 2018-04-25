@@ -224,8 +224,8 @@ virSecurityDACSetUserAndGroup(virSecurityManagerPtr mgr,
     priv->group = group;
 
     if (virAsprintf(&priv->baselabel, "+%u:+%u",
-                    (unsigned int) user,
-                    (unsigned int) group) < 0)
+                    (unsigned int)user,
+                    (unsigned int)group) < 0)
         return -1;
 
     return 0;
@@ -564,7 +564,7 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
         return 0;
 
     VIR_INFO("Setting DAC user and group on '%s' to '%ld:%ld'",
-             NULLSTR(src ? src->path : path), (long) uid, (long) gid);
+             NULLSTR(src ? src->path : path), (long)uid, (long)gid);
 
     if (priv && src && priv->chownCallback) {
         rc = priv->chownCallback(src, uid, gid);
@@ -604,20 +604,20 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
         if (errno == EOPNOTSUPP || errno == EINVAL) {
             VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
                      "supported by filesystem",
-                     (long) uid, (long) gid, path);
+                     (long)uid, (long)gid, path);
         } else if (errno == EPERM) {
             VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
                      "permitted",
-                     (long) uid, (long) gid, path);
+                     (long)uid, (long)gid, path);
         } else if (errno == EROFS) {
             VIR_INFO("Setting user and group to '%ld:%ld' on '%s' not "
                      "possible on readonly filesystem",
-                     (long) uid, (long) gid, path);
+                     (long)uid, (long)gid, path);
         } else {
             virReportSystemError(errno,
                                  _("unable to set user and group to '%ld:%ld' "
                                    "on '%s'"),
-                                 (long) uid, (long) gid, path);
+                                 (long)uid, (long)gid, path);
             return -1;
         }
     }
@@ -921,7 +921,7 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
     if (cbdata.secdef && !cbdata.secdef->relabel)
         return 0;
 
-    switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
+    switch ((virDomainHostdevSubsysType)dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         virUSBDevicePtr usb;
 
@@ -1094,7 +1094,7 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
         scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
         return 0;
 
-    switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
+    switch ((virDomainHostdevSubsysType)dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         virUSBDevicePtr usb;
 
@@ -1223,7 +1223,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
             return -1;
     }
 
-    switch ((virDomainChrType) dev_source->type) {
+    switch ((virDomainChrType)dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
         ret = virSecurityDACSetOwnership(priv, NULL,
@@ -1299,7 +1299,7 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr,
         chardevStdioLogd)
         return 0;
 
-    switch ((virDomainChrType) dev_source->type) {
+    switch ((virDomainChrType)dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
         ret = virSecurityDACRestoreFileLabel(priv, dev_source->data.file.path);
@@ -1465,7 +1465,7 @@ virSecurityDACSetInputLabel(virSecurityManagerPtr mgr,
     if (seclabel && !seclabel->relabel)
         return 0;
 
-    switch ((virDomainInputType) input->type) {
+    switch ((virDomainInputType)input->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
         if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
             return -1;
@@ -1492,7 +1492,7 @@ virSecurityDACRestoreInputLabel(virSecurityManagerPtr mgr,
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     int ret = -1;
 
-    switch ((virDomainInputType) input->type) {
+    switch ((virDomainInputType)input->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
         ret = virSecurityDACRestoreFileLabel(priv, input->source.evdev);
         break;
@@ -1810,7 +1810,7 @@ virSecurityDACSetProcessLabel(virSecurityManagerPtr mgr,
         return -1;
 
     VIR_DEBUG("Dropping privileges to %u:%u, %d supplemental groups",
-              (unsigned int) user, (unsigned int) group, ngroups);
+              (unsigned int)user, (unsigned int)group, ngroups);
 
     if (virSetUIDGID(user, group, groups, ngroups) < 0)
         return -1;
@@ -1835,7 +1835,7 @@ virSecurityDACSetChildProcessLabel(virSecurityManagerPtr mgr,
         return -1;
 
     VIR_DEBUG("Setting child to drop privileges to %u:%u",
-              (unsigned int) user, (unsigned int) group);
+              (unsigned int)user, (unsigned int)group);
 
     virCommandSetUID(cmd, user);
     virCommandSetGID(cmd, group);
@@ -1878,7 +1878,7 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
             return rc;
     }
 
-    switch ((virDomainSeclabelType) seclabel->type) {
+    switch ((virDomainSeclabelType)seclabel->type) {
     case VIR_DOMAIN_SECLABEL_STATIC:
         if (seclabel->label == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1889,8 +1889,8 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
         break;
     case VIR_DOMAIN_SECLABEL_DYNAMIC:
         if (virAsprintf(&seclabel->label, "+%u:+%u",
-                        (unsigned int) priv->user,
-                        (unsigned int) priv->group) < 0)
+                        (unsigned int)priv->user,
+                        (unsigned int)priv->group) < 0)
             return rc;
         if (seclabel->label == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1945,7 +1945,7 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
 
     VIR_DEBUG("Getting DAC user and group on process '%d'", pid);
 
-    if (virAsprintf(&path, "/proc/%d", (int) pid) < 0)
+    if (virAsprintf(&path, "/proc/%d", (int)pid) < 0)
         goto cleanup;
 
     if (lstat(path, &sb) < 0) {
@@ -1956,7 +1956,7 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
     }
 
     snprintf(seclabel->label, VIR_SECURITY_LABEL_BUFLEN,
-             "+%u:+%u", (unsigned int) sb.st_uid, (unsigned int) sb.st_gid);
+             "+%u:+%u", (unsigned int)sb.st_uid, (unsigned int)sb.st_gid);
     ret = 0;
 
  cleanup:
@@ -1985,7 +1985,7 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
     }
 
     snprintf(seclabel->label, VIR_SECURITY_LABEL_BUFLEN,
-             "+%u:+%u", (unsigned int) p.ki_uid, (unsigned int) p.ki_groups[0]);
+             "+%u:+%u", (unsigned int)p.ki_uid, (unsigned int)p.ki_groups[0]);
 
     return 0;
 }

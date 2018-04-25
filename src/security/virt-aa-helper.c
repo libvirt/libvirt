@@ -1276,7 +1276,7 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
             case 'u':
                 if (strlen(optarg) > PROFILE_NAME_SIZE - 1)
                     vah_error(ctl, 1, _("invalid UUID"));
-                if (virStrcpy((char *) ctl->uuid, optarg,
+                if (virStrcpy((char *)ctl->uuid, optarg,
                     PROFILE_NAME_SIZE) == NULL)
                     vah_error(ctl, 1, _("error copying UUID"));
                 break;
