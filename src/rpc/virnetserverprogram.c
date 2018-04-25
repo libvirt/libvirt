@@ -575,7 +575,7 @@ int virNetServerProgramSendStreamHole(virNetServerProgramPtr prog,
         return -1;
 
     if (virNetMessageEncodePayload(msg,
-                                   (xdrproc_t) xdr_virNetStreamHole,
+                                   (xdrproc_t)xdr_virNetStreamHole,
                                    &data) < 0)
         return -1;
 

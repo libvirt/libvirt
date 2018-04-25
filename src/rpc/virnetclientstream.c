@@ -440,7 +440,7 @@ virNetClientStreamHandleHole(virNetClientPtr client,
     }
 
     if (virNetMessageDecodePayload(msg,
-                                   (xdrproc_t) xdr_virNetStreamHole,
+                                   (xdrproc_t)xdr_virNetStreamHole,
                                    &data) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Malformed stream hole packet"));
@@ -625,7 +625,7 @@ virNetClientStreamSendHole(virNetClientStreamPtr st,
         goto cleanup;
 
     if (virNetMessageEncodePayload(msg,
-                                   (xdrproc_t) xdr_virNetStreamHole,
+                                   (xdrproc_t)xdr_virNetStreamHole,
                                    &data) < 0)
         goto cleanup;
 

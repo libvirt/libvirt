@@ -472,7 +472,7 @@ virNetServerClientPtr virNetServerClientNew(unsigned long long id,
 #endif
         );
 
-    if ((now = time(NULL)) == (time_t) - 1) {
+    if ((now = time(NULL)) == (time_t)-1) {
         virReportSystemError(errno, "%s", _("failed to get current time"));
         return NULL;
     }

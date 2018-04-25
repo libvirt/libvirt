@@ -231,7 +231,7 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
 
     VIR_DEBUG("localAddr=%p remoteAddr=%p fd=%d errfd=%d pid=%lld",
               localAddr, remoteAddr,
-              fd, errfd, (long long) pid);
+              fd, errfd, (long long)pid);
 
     if (virSetCloseExec(fd) < 0) {
         virReportSystemError(errno, "%s",
@@ -286,7 +286,7 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
 
     PROBE(RPC_SOCKET_NEW,
           "sock=%p fd=%d errfd=%d pid=%lld localAddr=%s, remoteAddr=%s",
-          sock, fd, errfd, (long long) pid,
+          sock, fd, errfd, (long long)pid,
           NULLSTR(sock->localAddrStrSASL), NULLSTR(sock->remoteAddrStrSASL));
 
     return sock;
@@ -486,7 +486,7 @@ int virNetSocketNewListenUNIX(const char *path,
     if (grp != 0 && chown(path, user, grp)) {
         virReportSystemError(errno,
                              _("Failed to change ownership of '%s' to %d:%d"),
-                             path, (int) user, (int) grp);
+                             path, (int)user, (int)grp);
         goto error;
     }
 
