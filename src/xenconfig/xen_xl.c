@@ -1601,7 +1601,7 @@ xenFormatXLDiskSrc(virStorageSourcePtr src, char **srcstr)
     if (virStorageSourceIsEmpty(src))
         return 0;
 
-    switch ((virStorageType) actualType) {
+    switch ((virStorageType)actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:

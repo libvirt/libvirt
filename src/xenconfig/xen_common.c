@@ -268,7 +268,7 @@ xenConfigSetInt(virConfPtr conf, const char *setting, long long l)
 {
     virConfValuePtr value = NULL;
 
-    if ((long) l != l) {
+    if ((long)l != l) {
         virReportError(VIR_ERR_OVERFLOW, _("failed to store %lld to %s"),
                        l, setting);
         return -1;
@@ -1673,7 +1673,7 @@ xenFormatCPUFeatures(virConfPtr conf, virDomainDefPtr def)
     }
 
     for (i = 0; i < def->clock.ntimers; i++) {
-        switch ((virDomainTimerNameType) def->clock.timers[i]->name) {
+        switch ((virDomainTimerNameType)def->clock.timers[i]->name) {
         case VIR_DOMAIN_TIMER_NAME_TSC:
             switch (def->clock.timers[i]->mode) {
             case VIR_DOMAIN_TIMER_MODE_NATIVE:
