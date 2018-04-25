@@ -55,6 +55,8 @@ STORAGE_DRIVER_SHEEPDOG_SOURCES = \
 STORAGE_DRIVER_GLUSTER_SOURCES = \
 	storage/storage_backend_gluster.h \
 	storage/storage_backend_gluster.c \
+	storage/storage_file_gluster.h \
+	storage/storage_file_gluster.c \
 	$(NULL)
 
 STORAGE_DRIVER_ZFS_SOURCES = \
