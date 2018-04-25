@@ -907,7 +907,7 @@ hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
                 case MSVM_CONCRETEJOB_JOBSTATE_STARTING:
                 case MSVM_CONCRETEJOB_JOBSTATE_RUNNING:
                 case MSVM_CONCRETEJOB_JOBSTATE_SHUTTING_DOWN:
-                    hypervFreeObject(priv, (hypervObject *) job);
+                    hypervFreeObject(priv, (hypervObject *)job);
                     job = NULL;
                     usleep(100 * 1000); /* sleep 100 ms */
                     timeout -= 100;
@@ -955,7 +955,7 @@ hypervInvokeMethod(hypervPrivate *priv, hypervInvokeParamsListPtr params,
     VIR_FREE(returnValue);
     VIR_FREE(instanceID);
     virBufferFreeAndReset(&query);
-    hypervFreeObject(priv, (hypervObject *) job);
+    hypervFreeObject(priv, (hypervObject *)job);
     hypervFreeInvokeParams(params);
     return result;
 }
@@ -1254,7 +1254,7 @@ hypervGetMsvmComputerSystemList(hypervPrivate *priv, virBufferPtr query,
                                 Msvm_ComputerSystem **list)
 {
     return hypervGetWmiClassList(priv, Msvm_ComputerSystem_WmiInfo, query,
-                                 (hypervObject **) list);
+                                 (hypervObject **)list);
 }
 
 int
@@ -1262,7 +1262,7 @@ hypervGetMsvmConcreteJobList(hypervPrivate *priv, virBufferPtr query,
                              Msvm_ConcreteJob **list)
 {
     return hypervGetWmiClassList(priv, Msvm_ConcreteJob_WmiInfo, query,
-                                 (hypervObject **) list);
+                                 (hypervObject **)list);
 }
 
 int
@@ -1270,7 +1270,7 @@ hypervGetWin32ComputerSystemList(hypervPrivate *priv, virBufferPtr query,
                                  Win32_ComputerSystem **list)
 {
     return hypervGetWmiClassList(priv, Win32_ComputerSystem_WmiInfo, query,
-                                 (hypervObject **) list);
+                                 (hypervObject **)list);
 }
 
 int
@@ -1278,7 +1278,7 @@ hypervGetWin32ProcessorList(hypervPrivate *priv, virBufferPtr query,
                             Win32_Processor **list)
 {
     return hypervGetWmiClassList(priv, Win32_Processor_WmiInfo, query,
-                                 (hypervObject **) list);
+                                 (hypervObject **)list);
 }
 
 int
@@ -1287,7 +1287,7 @@ hypervGetMsvmVirtualSystemSettingDataList(hypervPrivate *priv,
                                           Msvm_VirtualSystemSettingData **list)
 {
     return hypervGetWmiClassList(priv, Msvm_VirtualSystemSettingData_WmiInfo, query,
-                                 (hypervObject **) list);
+                                 (hypervObject **)list);
 }
 
 int
@@ -1296,7 +1296,7 @@ hypervGetMsvmProcessorSettingDataList(hypervPrivate *priv,
                                       Msvm_ProcessorSettingData **list)
 {
     return hypervGetWmiClassList(priv, Msvm_ProcessorSettingData_WmiInfo, query,
-                                 (hypervObject **) list);
+                                 (hypervObject **)list);
 }
 
 int
@@ -1304,14 +1304,14 @@ hypervGetMsvmMemorySettingDataList(hypervPrivate *priv, virBufferPtr query,
                                    Msvm_MemorySettingData **list)
 {
     return hypervGetWmiClassList(priv, Msvm_MemorySettingData_WmiInfo, query,
-                                 (hypervObject **) list);
+                                 (hypervObject **)list);
 }
 
 int hypervGetMsvmKeyboardList(hypervPrivate *priv, virBufferPtr query,
                               Msvm_Keyboard **list)
 {
     return hypervGetWmiClassList(priv, Msvm_Keyboard_WmiInfo, query,
-                                 (hypervObject **) list);
+                                 (hypervObject **)list);
 }
 
 
@@ -1621,7 +1621,7 @@ hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
             uuid_string);
 
     if (hypervGetWmiClassList(priv, Msvm_VirtualSystemSettingData_WmiInfo, &query,
-                (hypervObject **) list) < 0 || *list == NULL)
+                (hypervObject **)list) < 0 || *list == NULL)
         return -1;
 
     return 0;
@@ -1646,7 +1646,7 @@ hypervGetMsvmMemorySettingDataFromVSSD(hypervPrivate *priv,
             vssd_instanceid);
 
     if (hypervGetWmiClassList(priv, Msvm_MemorySettingData_WmiInfo, &query,
-                (hypervObject **) list) < 0 || *list == NULL)
+                (hypervObject **)list) < 0 || *list == NULL)
         return -1;
 
     return 0;

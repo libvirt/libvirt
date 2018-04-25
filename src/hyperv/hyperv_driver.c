@@ -1466,8 +1466,8 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
  cleanup:
     VIR_FREE(translatedKeycodes);
     VIR_FREE(selector);
-    hypervFreeObject(priv, (hypervObject *) keyboard);
-    hypervFreeObject(priv, (hypervObject *) computerSystem);
+    hypervFreeObject(priv, (hypervObject *)keyboard);
+    hypervFreeObject(priv, (hypervObject *)computerSystem);
     virBufferFreeAndReset(&query);
     return result;
 }
@@ -1572,8 +1572,8 @@ hypervDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
     virBufferFreeAndReset(&eprQuery);
  cleanup:
     VIR_FREE(memory_str);
-    hypervFreeObject(priv, (hypervObject *) vssd);
-    hypervFreeObject(priv, (hypervObject *) memsd);
+    hypervFreeObject(priv, (hypervObject *)vssd);
+    hypervFreeObject(priv, (hypervObject *)memsd);
     return result;
 }
 
