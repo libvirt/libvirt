@@ -5011,7 +5011,7 @@ static bool
 testStorageVolLookupByKeyCallback(virStoragePoolObjPtr obj,
                                   const void *opaque)
 {
-    struct storageVolLookupData *data = (struct storageVolLookupData *) opaque;
+    struct storageVolLookupData *data = (struct storageVolLookupData *)opaque;
 
     if (virStoragePoolObjIsActive(obj))
         data->voldef = virStorageVolDefFindByKey(obj, data->key);
@@ -5055,7 +5055,7 @@ static bool
 testStorageVolLookupByPathCallback(virStoragePoolObjPtr obj,
                                    const void *opaque)
 {
-    struct storageVolLookupData *data = (struct storageVolLookupData *) opaque;
+    struct storageVolLookupData *data = (struct storageVolLookupData *)opaque;
 
     if (virStoragePoolObjIsActive(obj))
         data->voldef = virStorageVolDefFindByPath(obj, data->path);
