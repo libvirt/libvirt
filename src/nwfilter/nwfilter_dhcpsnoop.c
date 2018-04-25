@@ -998,7 +998,7 @@ virNWFilterSnoopDHCPDecode(virNWFilterSnoopReqPtr req,
     switch (ntohs(pep->eh_type)) {
     case ETHERTYPE_IP:
         VIR_WARNINGS_NO_CAST_ALIGN
-        pip = (struct iphdr *) pep->eh_data;
+        pip = (struct iphdr *)pep->eh_data;
         VIR_WARNINGS_RESET
         len -= offsetof(virNWFilterSnoopEthHdr, eh_data);
         break;
@@ -1010,13 +1010,13 @@ virNWFilterSnoopDHCPDecode(virNWFilterSnoopReqPtr req,
         return -2;
 
     VIR_WARNINGS_NO_CAST_ALIGN
-    pup = (struct udphdr *) ((char *) pip + (pip->ihl << 2));
+    pup = (struct udphdr *)((char *)pip + (pip->ihl << 2));
     VIR_WARNINGS_RESET
     len -= pip->ihl << 2;
     if (len < 0)
         return -2;
 
-    pd = (virNWFilterSnoopDHCPHdrPtr) ((char *) pup + sizeof(*pup));
+    pd = (virNWFilterSnoopDHCPHdrPtr) ((char *)pup + sizeof(*pup));
     len -= sizeof(*pup);
     if (len < 0)
         return -2;                 /* invalid packet length */
