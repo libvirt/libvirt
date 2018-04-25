@@ -61,6 +61,7 @@ AC_DEFUN([LIBVIRT_CHECK_NLS],[
     msgfmt_is_gnu=no
   fi
   AC_MSG_RESULT([$msgfmt_is_gnu])
+  AM_CONDITIONAL([ENABLE_NLS], [test "x$enable_nls" = "xyes"])
   AM_CONDITIONAL([HAVE_GNU_GETTEXT_TOOLS],
     [test "x$XGETTEXT" != "xno" && test "x$MSGFMT" != "xno" && \
      test "x$MSGMERGE" != "xno" && test "x$msgfmt_is_gnu" != "xno"])

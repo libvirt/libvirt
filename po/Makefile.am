@@ -89,6 +89,8 @@ $(srcdir)/%.gmo: $(srcdir)/%.po
 
 endif HAVE_GNU_GETTEXT_TOOLS
 
+if ENABLE_NLS
+
 # Cannot use 'localedir' since this conflicts with autoconf.
 langinstdir = $(datadir)/locale
 
@@ -105,3 +107,5 @@ uninstall-hook:
 	  d=$(DESTDIR)$(langinstdir)/$$lang/LC_MESSAGES; \
 	  rm -f $$d/$(DOMAIN).mo; \
 	done
+
+endif ENABLE_NLS
