@@ -1038,6 +1038,35 @@ qemuBlockStorageSourceGetVvfatProps(virStorageSourcePtr src)
 }
 
 
+static int
+qemuBlockStorageSourceGetBlockdevGetCacheProps(virStorageSourcePtr src,
+                                               virJSONValuePtr props)
+{
+    virJSONValuePtr cacheobj;
+    bool direct = false;
+    bool noflush = false;
+
+    if (src->cachemode == VIR_DOMAIN_DISK_CACHE_DEFAULT)
+        return 0;
+
+    if (qemuDomainDiskCachemodeFlags(src->cachemode, NULL, &direct, &noflush) < 0)
+        return -1;
+
+    if (virJSONValueObjectCreate(&cacheobj,
+                                 "b:direct", direct,
+                                 "b:no-flush", noflush,
+                                 NULL) < 0)
+        return -1;
+
+    if (virJSONValueObjectAppend(props, "cache", cacheobj) < 0) {
+        virJSONValueFree(cacheobj);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuBlockStorageSourceGetBackendProps:
  * @src: disk source
@@ -1052,6 +1081,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
 {
     int actualType = virStorageSourceGetActualType(src);
     virJSONValuePtr fileprops = NULL;
+    virJSONValuePtr ret = NULL;
 
     switch ((virStorageType)actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
@@ -1126,10 +1156,17 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
     }
 
     if (qemuBlockNodeNameValidate(src->nodestorage) < 0 ||
-        virJSONValueObjectAdd(fileprops, "S:node-name", src->nodestorage, NULL) < 0) {
-        virJSONValueFree(fileprops);
-        return NULL;
+        virJSONValueObjectAdd(fileprops, "S:node-name", src->nodestorage, NULL) < 0)
+        goto cleanup;
+
+    if (!legacy) {
+        if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, fileprops) < 0)
+            goto cleanup;
     }
 
-    return fileprops;
+    VIR_STEAL_PTR(ret, fileprops);
+
+ cleanup:
+    virJSONValueFree(fileprops);
+    return ret;
 }
