@@ -737,7 +737,7 @@ virLXCProcessGetNsInode(pid_t pid,
     int ret = -1;
 
     if (virAsprintf(&path, "/proc/%lld/ns/%s",
-                    (long long) pid, nsname) < 0)
+                    (long long)pid, nsname) < 0)
         goto cleanup;
 
     if (stat(path, &sb) < 0) {
@@ -773,7 +773,7 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
 
     if (virLXCProcessGetNsInode(initpid, "pid", &inode) < 0) {
         VIR_WARN("Cannot obtain pid NS inode for %lld: %s",
-                 (long long) initpid,
+                 (long long)initpid,
                  virGetLastErrorMessage());
         virResetLastError();
     }

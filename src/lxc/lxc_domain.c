@@ -234,7 +234,7 @@ lxcDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
 
     for (i = 0; i < n; i++) {
         if ((feature = virLXCDomainNamespaceTypeFromString(
-                 (const char *) nodes[i]->name)) < 0) {
+                 (const char *)nodes[i]->name)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                             _("unsupported Namespace feature: %s"),
                             nodes[i]->name);
@@ -330,7 +330,7 @@ virLXCDomainObjPrivateXMLFormat(virBufferPtr buf,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
 
     virBufferAsprintf(buf, "<init pid='%lld'/>\n",
-                      (long long) priv->initpid);
+                      (long long)priv->initpid);
 
     return 0;
 }

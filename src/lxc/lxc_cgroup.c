@@ -204,7 +204,7 @@ static int virLXCCgroupGetMemUsage(virCgroupPtr cgroup,
     unsigned long memUsage;
 
     ret = virCgroupGetMemoryUsage(cgroup, &memUsage);
-    meminfo->memusage = (unsigned long long) memUsage;
+    meminfo->memusage = (unsigned long long)memUsage;
 
     return ret;
 }

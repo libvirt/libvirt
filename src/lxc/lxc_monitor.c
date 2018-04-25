@@ -102,7 +102,7 @@ virLXCMonitorHandleEventInit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     virLXCMonitorPtr mon = opaque;
     virLXCMonitorInitEventMsg *msg = evdata;
 
-    VIR_DEBUG("Event init %lld", (long long) msg->initpid);
+    VIR_DEBUG("Event init %lld", (long long)msg->initpid);
     if (mon->cb.initNotify)
         mon->cb.initNotify(mon, (pid_t)msg->initpid, mon->vm);
 }

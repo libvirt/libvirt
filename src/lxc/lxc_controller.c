@@ -1028,7 +1028,7 @@ static void virLXCControllerSignalChildIO(virNetDaemonPtr dmn,
     int status;
 
     ret = waitpid(-1, &status, WNOHANG);
-    VIR_DEBUG("Got sig child %d vs %lld", ret, (long long) ctrl->initpid);
+    VIR_DEBUG("Got sig child %d vs %lld", ret, (long long)ctrl->initpid);
     if (ret == ctrl->initpid) {
         virNetDaemonQuit(dmn);
         virMutexLock(&lock);
@@ -2307,7 +2307,7 @@ virLXCControllerEventSendInit(virLXCControllerPtr ctrl,
 {
     virLXCMonitorInitEventMsg msg;
 
-    VIR_DEBUG("Init pid %lld", (long long) initpid);
+    VIR_DEBUG("Init pid %lld", (long long)initpid);
     memset(&msg, 0, sizeof(msg));
     msg.initpid = initpid;
 
