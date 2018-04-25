@@ -135,7 +135,7 @@ virAccessDriverPolkitCheck(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
         goto cleanup;
 
     VIR_DEBUG("Check action '%s' for process '%lld' time %lld uid %d",
-              actionid, (long long) pid, startTime, uid);
+              actionid, (long long)pid, startTime, uid);
 
     rv = virPolkitCheckAuth(actionid,
                             pid,
