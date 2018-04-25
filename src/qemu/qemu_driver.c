@@ -11582,8 +11582,16 @@ qemuDomainBlockPeek(virDomainPtr dom,
     if (qemuDomainStorageFileInit(driver, vm, disk->src, NULL) < 0)
         goto cleanup;
 
-    if ((nread = virStorageFileRead(disk->src, offset, size, &tmpbuf)) < 0)
+    if ((nread = virStorageFileRead(disk->src, offset, size, &tmpbuf)) < 0) {
+        if (nread == -2) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("storage file reading is not supported for "
+                             "storage type %s (protocol: %s)"),
+                           virStorageTypeToString(disk->src->type),
+                           virStorageNetProtocolTypeToString(disk->src->protocol));
+        }
         goto cleanup;
+    }
 
     if (nread < size) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -14608,12 +14616,15 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
 
         /* relative backing store paths need to be updated so that relative
          * block commit still works */
-        if (reuse &&
-            (backingStoreStr = virStorageFileGetBackingStoreStr(dd->src))) {
-            if (virStorageIsRelative(backingStoreStr))
-                VIR_STEAL_PTR(dd->relPath, backingStoreStr);
-            else
-                VIR_FREE(backingStoreStr);
+        if (reuse) {
+            if (virStorageFileGetBackingStoreStr(dd->src, &backingStoreStr) < 0)
+                goto error;
+            if (backingStoreStr != NULL) {
+                if (virStorageIsRelative(backingStoreStr))
+                    VIR_STEAL_PTR(dd->relPath, backingStoreStr);
+                else
+                    VIR_FREE(backingStoreStr);
+            }
         }
 
         /* Note that it's unsafe to assume that the disks in the persistent

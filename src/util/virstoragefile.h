@@ -474,8 +474,9 @@ int virStorageFileGetMetadata(virStorageSourcePtr src,
                               bool report_broken)
     ATTRIBUTE_NONNULL(1);
 
-char *virStorageFileGetBackingStoreStr(virStorageSourcePtr src)
-    ATTRIBUTE_NONNULL(1);
+int virStorageFileGetBackingStoreStr(virStorageSourcePtr src,
+                                     char **backing)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void virStorageFileReportBrokenChain(int errcode,
                                      virStorageSourcePtr src,

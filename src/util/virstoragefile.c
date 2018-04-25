@@ -4357,14 +4357,8 @@ virStorageFileRead(virStorageSourcePtr src,
         return -1;
     }
 
-    if (!src->drv->backend->storageFileRead) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("storage file reading is not supported for "
-                         "storage type %s (protocol: %s)"),
-                       virStorageTypeToString(src->type),
-                       virStorageNetProtocolTypeToString(src->protocol));
+    if (!src->drv->backend->storageFileRead)
         return -2;
-    }
 
     ret = src->drv->backend->storageFileRead(src, offset, len, buf);
 
@@ -4551,8 +4545,15 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         goto cleanup;
 
     if ((headerLen = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER,
-                                        &buf)) < 0)
+                                        &buf)) < 0) {
+        if (headerLen == -2)
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("storage file reading is not supported for "
+                             "storage type %s (protocol: %s)"),
+                           virStorageTypeToString(src->type),
+                           virStorageNetProtocolTypeToString(src->protocol));
         goto cleanup;
+    }
 
     if (virStorageFileGetMetadataInternal(src, buf, headerLen,
                                           &backingFormat) < 0)
@@ -4664,24 +4665,36 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
  * In case when the string can't be retrieved or does not exist NULL is
  * returned.
  */
-char *
-virStorageFileGetBackingStoreStr(virStorageSourcePtr src)
+int
+virStorageFileGetBackingStoreStr(virStorageSourcePtr src,
+                                 char **backing)
 {
     virStorageSourcePtr tmp = NULL;
     char *buf = NULL;
     ssize_t headerLen;
-    char *ret = NULL;
+    int ret = -1;
+    int rv;
+
+    *backing = NULL;
 
     /* exit if we can't load information about the current image */
     if (!virStorageFileSupportsBackingChainTraversal(src))
-        return NULL;
+        return 0;
 
-    if (virStorageFileAccess(src, F_OK) < 0)
-        return NULL;
+    rv = virStorageFileAccess(src, F_OK);
+    if (rv == -2)
+        return 0;
+    if (rv < 0) {
+        virStorageFileReportBrokenChain(errno, src, src);
+        return -1;
+    }
 
     if ((headerLen = virStorageFileRead(src, 0, VIR_STORAGE_MAX_HEADER,
-                                        &buf)) < 0)
-        return NULL;
+                                        &buf)) < 0) {
+        if (headerLen == -2)
+            return 0;
+        return -1;
+    }
 
     if (!(tmp = virStorageSourceCopy(src, false)))
         goto cleanup;
@@ -4689,7 +4702,9 @@ virStorageFileGetBackingStoreStr(virStorageSourcePtr src)
     if (virStorageFileGetMetadataInternal(tmp, buf, headerLen, NULL) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(ret, tmp->backingStoreRaw);
+    VIR_STEAL_PTR(*backing, tmp->backingStoreRaw);
+
+    ret = 0;
 
  cleanup:
     VIR_FREE(buf);
