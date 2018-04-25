@@ -28,17 +28,15 @@
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <string.h>
 
 #include "virerror.h"
 #include "storage_backend_fs.h"
+#include "storage_file_fs.h"
 #include "storage_util.h"
 #include "storage_conf.h"
-#include "virstoragefilebackend.h"
 #include "vircommand.h"
 #include "viralloc.h"
-#include "virxml.h"
 #include "virfile.h"
 #include "virlog.h"
 #include "virstring.h"
@@ -701,198 +699,6 @@ virStorageBackend virStorageBackendNetFileSystem = {
 #endif /* WITH_STORAGE_FS */
 
 
-typedef struct _virStorageFileBackendFsPriv virStorageFileBackendFsPriv;
-typedef virStorageFileBackendFsPriv *virStorageFileBackendFsPrivPtr;
-
-struct _virStorageFileBackendFsPriv {
-    char *canonpath; /* unique file identifier (canonical path) */
-};
-
-
-static void
-virStorageFileBackendFileDeinit(virStorageSourcePtr src)
-{
-    VIR_DEBUG("deinitializing FS storage file %p (%s:%s)", src,
-              virStorageTypeToString(virStorageSourceGetActualType(src)),
-              src->path);
-
-    virStorageFileBackendFsPrivPtr priv = src->drv->priv;
-
-    VIR_FREE(priv->canonpath);
-    VIR_FREE(priv);
-}
-
-
-static int
-virStorageFileBackendFileInit(virStorageSourcePtr src)
-{
-    virStorageFileBackendFsPrivPtr priv = NULL;
-
-    VIR_DEBUG("initializing FS storage file %p (%s:%s)[%u:%u]", src,
-              virStorageTypeToString(virStorageSourceGetActualType(src)),
-              src->path,
-              (unsigned int)src->drv->uid, (unsigned int)src->drv->gid);
-
-    if (VIR_ALLOC(priv) < 0)
-        return -1;
-
-    src->drv->priv = priv;
-
-    return 0;
-}
-
-
-static int
-virStorageFileBackendFileCreate(virStorageSourcePtr src)
-{
-    int fd = -1;
-    mode_t mode = S_IRUSR;
-
-    if (!src->readonly)
-        mode |= S_IWUSR;
-
-    if ((fd = virFileOpenAs(src->path, O_WRONLY | O_TRUNC | O_CREAT, mode,
-                            src->drv->uid, src->drv->gid, 0)) < 0) {
-        errno = -fd;
-        return -1;
-    }
-
-    VIR_FORCE_CLOSE(fd);
-    return 0;
-}
-
-
-static int
-virStorageFileBackendFileUnlink(virStorageSourcePtr src)
-{
-    return unlink(src->path);
-}
-
-
-static int
-virStorageFileBackendFileStat(virStorageSourcePtr src,
-                              struct stat *st)
-{
-    return stat(src->path, st);
-}
-
-
-static ssize_t
-virStorageFileBackendFileRead(virStorageSourcePtr src,
-                              size_t offset,
-                              size_t len,
-                              char **buf)
-{
-    int fd = -1;
-    ssize_t ret = -1;
-
-    if ((fd = virFileOpenAs(src->path, O_RDONLY, 0,
-                            src->drv->uid, src->drv->gid, 0)) < 0) {
-        virReportSystemError(-fd, _("Failed to open file '%s'"),
-                             src->path);
-        return -1;
-    }
-
-    if (offset > 0) {
-        if (lseek(fd, offset, SEEK_SET) == (off_t) -1) {
-            virReportSystemError(errno, _("cannot seek into '%s'"), src->path);
-            goto cleanup;
-        }
-    }
-
-    if ((ret = virFileReadHeaderFD(fd, len, buf)) < 0) {
-        virReportSystemError(errno,
-                             _("cannot read header '%s'"), src->path);
-        goto cleanup;
-    }
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-
-    return ret;
-}
-
-
-static const char *
-virStorageFileBackendFileGetUniqueIdentifier(virStorageSourcePtr src)
-{
-    virStorageFileBackendFsPrivPtr priv = src->drv->priv;
-
-    if (!priv->canonpath) {
-        if (!(priv->canonpath = canonicalize_file_name(src->path))) {
-            virReportSystemError(errno, _("can't canonicalize path '%s'"),
-                                 src->path);
-            return NULL;
-        }
-    }
-
-    return priv->canonpath;
-}
-
-
-static int
-virStorageFileBackendFileAccess(virStorageSourcePtr src,
-                                int mode)
-{
-    return virFileAccessibleAs(src->path, mode,
-                               src->drv->uid, src->drv->gid);
-}
-
-
-static int
-virStorageFileBackendFileChown(const virStorageSource *src,
-                               uid_t uid,
-                               gid_t gid)
-{
-    return chown(src->path, uid, gid);
-}
-
-
-virStorageFileBackend virStorageFileBackendFile = {
-    .type = VIR_STORAGE_TYPE_FILE,
-
-    .backendInit = virStorageFileBackendFileInit,
-    .backendDeinit = virStorageFileBackendFileDeinit,
-
-    .storageFileCreate = virStorageFileBackendFileCreate,
-    .storageFileUnlink = virStorageFileBackendFileUnlink,
-    .storageFileStat = virStorageFileBackendFileStat,
-    .storageFileRead = virStorageFileBackendFileRead,
-    .storageFileAccess = virStorageFileBackendFileAccess,
-    .storageFileChown = virStorageFileBackendFileChown,
-
-    .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
-};
-
-
-virStorageFileBackend virStorageFileBackendBlock = {
-    .type = VIR_STORAGE_TYPE_BLOCK,
-
-    .backendInit = virStorageFileBackendFileInit,
-    .backendDeinit = virStorageFileBackendFileDeinit,
-
-    .storageFileStat = virStorageFileBackendFileStat,
-    .storageFileRead = virStorageFileBackendFileRead,
-    .storageFileAccess = virStorageFileBackendFileAccess,
-    .storageFileChown = virStorageFileBackendFileChown,
-
-    .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
-};
-
-
-virStorageFileBackend virStorageFileBackendDir = {
-    .type = VIR_STORAGE_TYPE_DIR,
-
-    .backendInit = virStorageFileBackendFileInit,
-    .backendDeinit = virStorageFileBackendFileDeinit,
-
-    .storageFileAccess = virStorageFileBackendFileAccess,
-    .storageFileChown = virStorageFileBackendFileChown,
-
-    .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
-};
-
-
 int
 virStorageBackendFsRegister(void)
 {
@@ -907,13 +713,7 @@ virStorageBackendFsRegister(void)
         return -1;
 #endif /* WITH_STORAGE_FS */
 
-    if (virStorageFileBackendRegister(&virStorageFileBackendFile) < 0)
-        return -1;
-
-    if (virStorageFileBackendRegister(&virStorageFileBackendBlock) < 0)
-        return -1;
-
-    if (virStorageFileBackendRegister(&virStorageFileBackendDir) < 0)
+    if (virStorageFileFsRegister() < 0)
         return -1;
 
     return 0;

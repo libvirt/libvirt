@@ -14,6 +14,8 @@ STORAGE_DRIVER_SOURCES = \
 STORAGE_DRIVER_FS_SOURCES = \
 	storage/storage_backend_fs.h \
 	storage/storage_backend_fs.c \
+	storage/storage_file_fs.h \
+	storage/storage_file_fs.c \
 	$(NULL)
 
 STORAGE_DRIVER_LVM_SOURCES = \
