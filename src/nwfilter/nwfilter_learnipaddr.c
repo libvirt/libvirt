@@ -279,8 +279,8 @@ virNWFilterTerminateLearnReq(const char *ifname)
 }
 
 
-virNWFilterIPAddrLearnReqPtr
-virNWFilterLookupLearnReq(int ifindex)
+bool
+virNWFilterHasLearnReq(int ifindex)
 {
     void *res;
     IFINDEX2STR(ifindex_str, ifindex);
@@ -291,7 +291,7 @@ virNWFilterLookupLearnReq(int ifindex)
 
     virMutexUnlock(&pendingLearnReqLock);
 
-    return res;
+    return res != NULL;
 }
 
 

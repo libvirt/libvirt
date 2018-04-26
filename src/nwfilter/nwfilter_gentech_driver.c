@@ -655,7 +655,7 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
                                              filter->name, vars, driver);
                 goto err_exit;
             } else if (STRCASEEQ(learning, "any")) {
-                if (virNWFilterLookupLearnReq(ifindex) == NULL) {
+                if (!virNWFilterHasLearnReq(ifindex)) {
                     rc = virNWFilterLearnIPAddress(techdriver,
                                                    ifname,
                                                    ifindex,
@@ -680,7 +680,7 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
     } else if (virHashSize(missing_vars) > 1) {
         goto err_unresolvable_vars;
     } else if (!forceWithPendingReq &&
-               virNWFilterLookupLearnReq(ifindex) != NULL) {
+               virNWFilterHasLearnReq(ifindex)) {
         goto err_exit;
     }
 
@@ -976,7 +976,7 @@ virNWFilterRollbackUpdateFilter(const virDomainNetDef *net)
     /* don't tear anything while the address is being learned */
     if (virNetDevGetIndex(net->ifname, &ifindex) < 0)
         virResetLastError();
-    else if (virNWFilterLookupLearnReq(ifindex) != NULL)
+    else if (virNWFilterHasLearnReq(ifindex))
         return 0;
 
     return techdriver->tearNewRules(net->ifname);
@@ -1002,7 +1002,7 @@ virNWFilterTearOldFilter(virDomainNetDefPtr net)
     /* don't tear anything while the address is being learned */
     if (virNetDevGetIndex(net->ifname, &ifindex) < 0)
         virResetLastError();
-    else if (virNWFilterLookupLearnReq(ifindex) != NULL)
+    else if (virNWFilterHasLearnReq(ifindex))
         return 0;
 
     return techdriver->tearOldRules(net->ifname);

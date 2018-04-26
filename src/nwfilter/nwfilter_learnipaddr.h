@@ -62,7 +62,7 @@ int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                               virNWFilterDriverStatePtr driver,
                               enum howDetect howDetect);
 
-virNWFilterIPAddrLearnReqPtr virNWFilterLookupLearnReq(int ifindex);
+bool virNWFilterHasLearnReq(int ifindex);
 int virNWFilterTerminateLearnReq(const char *ifname);
 
 int virNWFilterLockIface(const char *ifname) ATTRIBUTE_RETURN_CHECK;
