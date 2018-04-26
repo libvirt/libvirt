@@ -474,6 +474,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "query-cpus-fast",
               "disk-write-cache",
               "nbd-tls",
+              "tpm-crb",
     );
 
 
@@ -2343,6 +2344,10 @@ const struct tpmTypeToCaps virQEMUCapsTPMModelsToCaps[] = {
     {
         .type = VIR_DOMAIN_TPM_MODEL_TIS,
         .caps = QEMU_CAPS_DEVICE_TPM_TIS,
+    },
+    {
+        .type = VIR_DOMAIN_TPM_MODEL_CRB,
+        .caps = QEMU_CAPS_DEVICE_TPM_CRB,
     },
 };
 

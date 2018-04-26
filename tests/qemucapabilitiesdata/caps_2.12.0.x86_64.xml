@@ -196,6 +196,7 @@
   <flag name='query-cpus-fast'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
+  <flag name='tpm-crb'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>390060</microcodeVersion>
