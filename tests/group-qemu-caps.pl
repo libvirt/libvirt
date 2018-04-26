@@ -31,15 +31,21 @@ if (defined $ARGV[0] && $ARGV[0] eq "--check") {
     shift @ARGV;
 }
 
+my $prefix = '';
+if (defined $ARGV[0]) {
+    $prefix = $ARGV[0];
+    shift @ARGV;
+}
+
 my $ret = 0;
-if (&regroup_caps('src/qemu/qemu_capabilities.c',
+if (&regroup_caps($prefix . 'src/qemu/qemu_capabilities.c',
                   '^VIR_ENUM_IMPL\(virQEMUCaps,',
                   '\);',
                   0,
                   "              ") < 0) {
     $ret = 1;
 }
-if (&regroup_caps('src/qemu/qemu_capabilities.h',
+if (&regroup_caps($prefix . 'src/qemu/qemu_capabilities.h',
                   'virQEMUCapsFlags grouping marker',
                   'QEMU_CAPS_LAST \/\* this must',
                   1,
