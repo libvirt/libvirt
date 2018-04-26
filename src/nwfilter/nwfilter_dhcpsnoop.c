@@ -135,13 +135,9 @@ struct _virNWFilterSnoopReq {
     int                                  refctr;
 
     virNWFilterTechDriverPtr             techdriver;
-    char                                *ifname;
+    virNWFilterBindingDefPtr             binding;
     int                                  ifindex;
-    char                                *linkdev;
     char                                 ifkey[VIR_IFKEY_LEN];
-    virMacAddr                           macaddr;
-    char                                *filtername;
-    virHashTablePtr                      vars;
     virNWFilterDriverStatePtr            driver;
     /* start and end of lease list, ordered by lease time */
     virNWFilterSnoopIPLeasePtr           start;
@@ -484,10 +480,10 @@ virNWFilterSnoopIPLeaseInstallRule(virNWFilterSnoopIPLeasePtr ipl,
 
     req = ipl->snoopReq;
 
-    /* protect req->ifname */
+    /* protect req->binding->portdevname */
     virNWFilterSnoopReqLock(req);
 
-    if (virNWFilterIPAddrMapAddIPAddr(req->ifname, ipaddr) < 0)
+    if (virNWFilterIPAddrMapAddIPAddr(req->binding->portdevname, ipaddr) < 0)
         goto exit_snooprequnlock;
 
     if (!instantiate) {
@@ -497,18 +493,9 @@ virNWFilterSnoopIPLeaseInstallRule(virNWFilterSnoopIPLeasePtr ipl,
 
     /* instantiate the filters */
 
-    if (req->ifname) {
-        virNWFilterBindingDef binding = {
-            .portdevname = req->ifname,
-            .linkdevname = req->linkdev,
-            .mac = req->macaddr,
-            .filter = req->filtername,
-            .filterparams = req->vars,
-            .ownername = NULL,
-            .owneruuid = {0},
-        };
+    if (req->binding->portdevname) {
         rc = virNWFilterInstantiateFilterLate(req->driver,
-                                              &binding,
+                                              req->binding,
                                               req->ifindex);
     }
 
@@ -649,10 +636,7 @@ virNWFilterSnoopReqFree(virNWFilterSnoopReqPtr req)
         virNWFilterSnoopReqLeaseDel(req, &ipl->ipAddress, false, false);
 
     /* free all req data */
-    VIR_FREE(req->ifname);
-    VIR_FREE(req->linkdev);
-    VIR_FREE(req->filtername);
-    virHashFree(req->vars);
+    virNWFilterBindingDefFree(req->binding);
 
     virMutexDestroy(&req->lock);
     virCondDestroy(&req->threadStatusCond);
@@ -883,30 +867,23 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
     if (update_leasefile)
         virNWFilterSnoopLeaseFileSave(ipl);
 
-    ipAddrLeft = virNWFilterIPAddrMapDelIPAddr(req->ifname, ipstr);
+    ipAddrLeft = virNWFilterIPAddrMapDelIPAddr(req->binding->portdevname, ipstr);
 
     if (!req->threadkey || !instantiate)
         goto skip_instantiate;
 
     if (ipAddrLeft) {
-        virNWFilterBindingDef binding = {
-            .portdevname = req->ifname,
-            .linkdevname = req->linkdev,
-            .mac = req->macaddr,
-            .filter = req->filtername,
-            .filterparams = req->vars,
-            .ownername = NULL,
-            .owneruuid = {0},
-        };
         ret = virNWFilterInstantiateFilterLate(req->driver,
-                                               &binding,
+                                               req->binding,
                                                req->ifindex);
     } else {
         virNWFilterVarValuePtr dhcpsrvrs =
-            virHashLookup(req->vars, NWFILTER_VARNAME_DHCPSERVER);
+            virHashLookup(req->binding->filterparams,
+                          NWFILTER_VARNAME_DHCPSERVER);
 
         if (req->techdriver &&
-            req->techdriver->applyDHCPOnlyRules(req->ifname, &req->macaddr,
+            req->techdriver->applyDHCPOnlyRules(req->binding->portdevname,
+                                                &req->binding->mac,
                                                 dhcpsrvrs, false) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("virNWFilterSnoopListDel failed"));
@@ -1036,7 +1013,7 @@ virNWFilterSnoopDHCPDecode(virNWFilterSnoopReqPtr req,
      * inside the DHCP response
      */
     if (!fromVM) {
-        if (virMacAddrCmpRaw(&req->macaddr,
+        if (virMacAddrCmpRaw(&req->binding->mac,
                              (unsigned char *)&pd->d_chaddr) != 0)
             return -2;
     }
@@ -1198,7 +1175,7 @@ static void virNWFilterDHCPDecodeWorker(void *jobdata, void *opaque)
 
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Instantiation of rules failed on "
-                         "interface '%s'"), req->ifname);
+                         "interface '%s'"), req->binding->portdevname);
     }
     virAtomicIntDecAndTest(job->qCtr);
     VIR_FREE(job);
@@ -1407,13 +1384,14 @@ virNWFilterDHCPSnoopThread(void *req0)
 
     /* whoever started us increased the reference counter for the req for us */
 
-    /* protect req->ifname & req->threadkey */
+    /* protect req->binding->portdevname & req->threadkey */
     virNWFilterSnoopReqLock(req);
 
-    if (req->ifname && req->threadkey) {
+    if (req->binding->portdevname && req->threadkey) {
         for (i = 0; i < ARRAY_CARDINALITY(pcapConf); i++) {
             pcapConf[i].handle =
-                virNWFilterSnoopDHCPOpen(req->ifname, &req->macaddr,
+                virNWFilterSnoopDHCPOpen(req->binding->portdevname,
+                                         &req->binding->mac,
                                          pcapConf[i].filter,
                                          pcapConf[i].dir);
             if (!pcapConf[i].handle) {
@@ -1422,7 +1400,7 @@ virNWFilterDHCPSnoopThread(void *req0)
             }
             fds[i].fd = pcap_fileno(pcapConf[i].handle);
         }
-        tmp = virNetDevGetIndex(req->ifname, &ifindex);
+        tmp = virNetDevGetIndex(req->binding->portdevname, &ifindex);
         ignore_value(VIR_STRDUP(threadkey, req->threadkey));
         worker = virThreadPoolNew(1, 1, 0,
                                   virNWFilterDHCPDecodeWorker,
@@ -1487,11 +1465,11 @@ virNWFilterDHCPSnoopThread(void *req0)
                 /* error reading from socket */
                 tmp = -1;
 
-                /* protect req->ifname */
+                /* protect req->binding->portdevname */
                 virNWFilterSnoopReqLock(req);
 
-                if (req->ifname)
-                    tmp = virNetDevValidateConfig(req->ifname, NULL, ifindex);
+                if (req->binding->portdevname)
+                    tmp = virNetDevValidateConfig(req->binding->portdevname, NULL, ifindex);
 
                 virNWFilterSnoopReqUnlock(req);
 
@@ -1504,16 +1482,17 @@ virNWFilterDHCPSnoopThread(void *req0)
                     pcap_close(pcapConf[i].handle);
                     pcapConf[i].handle = NULL;
 
-                    /* protect req->ifname */
+                    /* protect req->binding->portdevname */
                     virNWFilterSnoopReqLock(req);
 
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("interface '%s' failing; "
                                      "reopening"),
-                                   req->ifname);
-                    if (req->ifname)
+                                   req->binding->portdevname);
+                    if (req->binding->portdevname)
                         pcapConf[i].handle =
-                            virNWFilterSnoopDHCPOpen(req->ifname, &req->macaddr,
+                            virNWFilterSnoopDHCPOpen(req->binding->portdevname,
+                                                     &req->binding->mac,
                                                      pcapConf[i].filter,
                                                      pcapConf[i].dir);
 
@@ -1539,7 +1518,7 @@ virNWFilterDHCPSnoopThread(void *req0)
                         last_displayed_queue = time(0);
                         VIR_WARN("Worker thread for interface '%s' has a "
                                  "job queue that is too long",
-                                 req->ifname);
+                                 req->binding->portdevname);
                     }
                     continue;
                 }
@@ -1552,7 +1531,7 @@ virNWFilterDHCPSnoopThread(void *req0)
                     if (time(0) - last_displayed > 10) {
                          last_displayed = time(0);
                          VIR_WARN("Too many DHCP packets on interface '%s'",
-                                  req->ifname);
+                                  req->binding->portdevname);
                     }
                     continue;
                 }
@@ -1563,7 +1542,7 @@ virNWFilterDHCPSnoopThread(void *req0)
                                                       &pcapConf[i].qCtr) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("Job submission failed on "
-                                     "interface '%s'"), req->ifname);
+                                     "interface '%s'"), req->binding->portdevname);
                     error = true;
                     break;
                 }
@@ -1574,15 +1553,15 @@ virNWFilterDHCPSnoopThread(void *req0)
     /* protect IfNameToKey */
     virNWFilterSnoopLock();
 
-    /* protect req->ifname & req->threadkey */
+    /* protect req->binding->portdevname & req->threadkey */
     virNWFilterSnoopReqLock(req);
 
     virNWFilterSnoopCancel(&req->threadkey);
 
     ignore_value(virHashRemoveEntry(virNWFilterSnoopState.ifnameToKey,
-                                    req->ifname));
+                                    req->binding->portdevname));
 
-    VIR_FREE(req->ifname);
+    VIR_FREE(req->binding->portdevname);
 
     virNWFilterSnoopReqUnlock(req);
     virNWFilterSnoopUnlock();
@@ -1615,12 +1594,7 @@ virNWFilterSnoopIFKeyFMT(char *ifkey, const unsigned char *vmuuid,
 
 int
 virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
-                        const char *ifname,
-                        const char *linkdev,
-                        const unsigned char *vmuuid,
-                        const virMacAddr *macaddr,
-                        const char *filtername,
-                        virHashTablePtr filterparams,
+                        virNWFilterBindingDefPtr binding,
                         virNWFilterDriverStatePtr driver)
 {
     virNWFilterSnoopReqPtr req;
@@ -1631,7 +1605,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
     virNWFilterVarValuePtr dhcpsrvrs;
     bool threadPuts = false;
 
-    virNWFilterSnoopIFKeyFMT(ifkey, vmuuid, macaddr);
+    virNWFilterSnoopIFKeyFMT(ifkey, binding->owneruuid, &binding->mac);
 
     req = virNWFilterSnoopReqGetByIFKey(ifkey);
     isnewreq = (req == NULL);
@@ -1640,9 +1614,8 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
             virNWFilterSnoopReqPut(req);
             return 0;
         }
-        /* a recycled req may still have filtername and vars */
-        VIR_FREE(req->filtername);
-        virHashFree(req->vars);
+        virNWFilterBindingDefFree(req->binding);
+        req->binding = NULL;
     } else {
         req = virNWFilterSnoopReqNew(ifkey);
         if (!req)
@@ -1651,17 +1624,9 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
 
     req->driver = driver;
     req->techdriver = techdriver;
-    tmp = virNetDevGetIndex(ifname, &req->ifindex);
-    virMacAddrSet(&req->macaddr, macaddr);
-    req->vars = virNWFilterHashTableCreate(0);
-    req->linkdev = NULL;
-
-    if (VIR_STRDUP(req->ifname, ifname) < 0 ||
-        VIR_STRDUP(req->filtername, filtername) < 0 ||
-        VIR_STRDUP(req->linkdev, linkdev) < 0)
+    if ((tmp = virNetDevGetIndex(binding->portdevname, &req->ifindex)) < 0)
         goto exit_snoopreqput;
-
-    if (!req->vars || tmp < 0)
+    if (!(req->binding = virNWFilterBindingDefCopy(binding)))
         goto exit_snoopreqput;
 
     /* check that all tools are available for applying the filters (late) */
@@ -1673,10 +1638,11 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
         goto exit_snoopreqput;
     }
 
-    dhcpsrvrs = virHashLookup(filterparams,
+    dhcpsrvrs = virHashLookup(binding->filterparams,
                               NWFILTER_VARNAME_DHCPSERVER);
 
-    if (techdriver->applyDHCPOnlyRules(req->ifname, &req->macaddr,
+    if (techdriver->applyDHCPOnlyRules(req->binding->portdevname,
+                                       &req->binding->mac,
                                        dhcpsrvrs, false) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("applyDHCPOnlyRules "
@@ -1684,20 +1650,14 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
         goto exit_snoopreqput;
     }
 
-    if (virNWFilterHashTablePutAll(filterparams, req->vars) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("virNWFilterDHCPSnoopReq: can't copy variables"
-                         " on if %s"), ifkey);
-        goto exit_snoopreqput;
-    }
-
     virNWFilterSnoopLock();
 
-    if (virHashAddEntry(virNWFilterSnoopState.ifnameToKey, ifname,
+    if (virHashAddEntry(virNWFilterSnoopState.ifnameToKey,
+                        req->binding->portdevname,
                         req->ifkey) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("virNWFilterDHCPSnoopReq ifname map failed"
-                         " on interface \"%s\" key \"%s\""), ifname,
+                         " on interface \"%s\" key \"%s\""), binding->portdevname,
                        ifkey);
         goto exit_snoopunlock;
     }
@@ -1706,7 +1666,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
         virHashAddEntry(virNWFilterSnoopState.snoopReqs, ifkey, req) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("virNWFilterDHCPSnoopReq req add failed on"
-                         " interface \"%s\" ifkey \"%s\""), ifname,
+                         " interface \"%s\" ifkey \"%s\""), binding->portdevname,
                        ifkey);
         goto exit_rem_ifnametokey;
     }
@@ -1718,7 +1678,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
                         req) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("virNWFilterDHCPSnoopReq virThreadCreate "
-                         "failed on interface '%s'"), ifname);
+                         "failed on interface '%s'"), binding->portdevname);
         goto exit_snoopreq_unlock;
     }
 
@@ -1730,14 +1690,14 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
     if (!req->threadkey) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Activation of snoop request failed on "
-                         "interface '%s'"), req->ifname);
+                         "interface '%s'"), req->binding->portdevname);
         goto exit_snoopreq_unlock;
     }
 
     if (virNWFilterSnoopReqRestore(req) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Restoring of leases failed on "
-                         "interface '%s'"), req->ifname);
+                         "interface '%s'"), req->binding->portdevname);
         goto exit_snoop_cancel;
     }
 
@@ -1766,7 +1726,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
  exit_snoopreq_unlock:
     virNWFilterSnoopReqUnlock(req);
  exit_rem_ifnametokey:
-    virHashRemoveEntry(virNWFilterSnoopState.ifnameToKey, ifname);
+    virHashRemoveEntry(virNWFilterSnoopState.ifnameToKey, binding->portdevname);
  exit_snoopunlock:
     virNWFilterSnoopUnlock();
  exit_snoopreqput:
@@ -2074,21 +2034,21 @@ virNWFilterSnoopRemAllReqIter(const void *payload,
 {
     virNWFilterSnoopReqPtr req = (virNWFilterSnoopReqPtr)payload;
 
-    /* protect req->ifname */
+    /* protect req->binding->portdevname */
     virNWFilterSnoopReqLock(req);
 
-    if (req->ifname) {
+    if (req->binding->portdevname) {
         ignore_value(virHashRemoveEntry(virNWFilterSnoopState.ifnameToKey,
-                                        req->ifname));
+                                        req->binding->portdevname));
 
         /*
          * Remove all IP addresses known to be associated with this
          * interface so that a new thread will be started on this
          * interface
          */
-        virNWFilterIPAddrMapDelIPAddr(req->ifname, NULL);
+        virNWFilterIPAddrMapDelIPAddr(req->binding->portdevname, NULL);
 
-        VIR_FREE(req->ifname);
+        VIR_FREE(req->binding->portdevname);
     }
 
     virNWFilterSnoopReqUnlock(req);
@@ -2191,13 +2151,13 @@ virNWFilterDHCPSnoopEnd(const char *ifname)
             goto cleanup;
         }
 
-        /* protect req->ifname & req->threadkey */
+        /* protect req->binding->portdevname & req->threadkey */
         virNWFilterSnoopReqLock(req);
 
         /* keep valid lease req; drop interface association */
         virNWFilterSnoopCancel(&req->threadkey);
 
-        VIR_FREE(req->ifname);
+        VIR_FREE(req->binding->portdevname);
 
         virNWFilterSnoopReqUnlock(req);
 
@@ -2259,12 +2219,7 @@ virNWFilterDHCPSnoopShutdown(void)
 
 int
 virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
-                        const char *ifname ATTRIBUTE_UNUSED,
-                        const char *linkdev ATTRIBUTE_UNUSED,
-                        const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                        const virMacAddr *macaddr ATTRIBUTE_UNUSED,
-                        const char *filtername ATTRIBUTE_UNUSED,
-                        virHashTablePtr filterparams ATTRIBUTE_UNUSED,
+                        virNWFilterBindingDefPtr binding ATTRIBUTE_UNUSED,
                         virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,

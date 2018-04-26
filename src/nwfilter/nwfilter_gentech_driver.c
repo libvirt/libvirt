@@ -618,10 +618,9 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
                 goto err_unresolvable_vars;
             }
             if (STRCASEEQ(learning, "dhcp")) {
-                rc = virNWFilterDHCPSnoopReq(techdriver, binding->portdevname,
-                                             binding->linkdevname,
-                                             binding->owneruuid, &binding->mac,
-                                             filter->name, binding->filterparams, driver);
+                rc = virNWFilterDHCPSnoopReq(techdriver,
+                                             binding,
+                                             driver);
                 goto err_exit;
             } else if (STRCASEEQ(learning, "any")) {
                 if (!virNWFilterHasLearnReq(ifindex)) {

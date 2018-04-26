@@ -30,12 +30,7 @@
 int virNWFilterDHCPSnoopInit(void);
 void virNWFilterDHCPSnoopShutdown(void);
 int virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
-                            const char *ifname,
-                            const char *linkdev,
-                            const unsigned char *vmuuid,
-                            const virMacAddr *macaddr,
-                            const char *filtername,
-                            virHashTablePtr filterparams,
+                            virNWFilterBindingDefPtr binding,
                             virNWFilterDriverStatePtr driver);
 void virNWFilterDHCPSnoopEnd(const char *ifname);
 #endif /* __NWFILTER_DHCPSNOOP_H */
