@@ -183,33 +183,6 @@ virNWFilterVarHashmapAddStdValues(virHashTablePtr table,
 
 
 /**
- * virNWFilterCreateVarHashmap:
- * @macaddr: pointer to string containing formatted MAC address of interface
- * @ipaddr: pointer to string containing formatted IP address used by
- *          VM on this interface; may be NULL
- *
- * Create a hashmap used for evaluating the firewall rules. Initializes
- * it with the standard variable 'MAC' and 'IP' if provided.
- *
- * Returns pointer to hashmap, NULL if an error occurred.
- */
-virHashTablePtr
-virNWFilterCreateVarHashmap(const char *macaddr,
-                            const virNWFilterVarValue *ipaddr)
-{
-    virHashTablePtr table = virNWFilterHashTableCreate(0);
-    if (!table)
-        return NULL;
-
-    if (virNWFilterVarHashmapAddStdValues(table, macaddr, ipaddr) < 0) {
-        virHashFree(table);
-        return NULL;
-    }
-    return table;
-}
-
-
-/**
  * Convert a virHashTable into a string of comma-separated
  * variable names.
  */
@@ -577,12 +550,9 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
 
 /**
  * virNWFilterDoInstantiate:
- * @vmuuid: The UUID of the VM
  * @techdriver: The driver to use for instantiation
+ * @binding: description of port to bind the filter to
  * @filter: The filter to instantiate
- * @ifname: The name of the interface to apply the rules to
- * @vars: A map holding variable names and values used for instantiating
- *  the filter and its subfilters.
  * @forceWithPendingReq: Ignore the check whether a pending learn request
  *  is active; 'true' only when the rules are applied late
  *
@@ -596,17 +566,13 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
  * Call this function while holding the NWFilter filter update lock
  */
 static int
-virNWFilterDoInstantiate(const unsigned char *vmuuid,
-                         virNWFilterTechDriverPtr techdriver,
+virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
+                         virNWFilterBindingDefPtr binding,
                          virNWFilterDefPtr filter,
-                         const char *ifname,
                          int ifindex,
-                         const char *linkdev,
-                         virHashTablePtr vars,
                          enum instCase useNewFilter,
                          bool *foundNewFilter,
                          bool teardownOld,
-                         const virMacAddr *macaddr,
                          virNWFilterDriverStatePtr driver,
                          bool forceWithPendingReq)
 {
@@ -628,14 +594,14 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
     }
 
     rc = virNWFilterDetermineMissingVarsRec(filter,
-                                            vars,
+                                            binding->filterparams,
                                             missing_vars,
                                             useNewFilter,
                                             driver);
     if (rc < 0)
         goto err_exit;
 
-    lv = virHashLookup(vars, NWFILTER_VARNAME_CTRL_IP_LEARNING);
+    lv = virHashLookup(binding->filterparams, NWFILTER_VARNAME_CTRL_IP_LEARNING);
     if (lv)
         learning = virNWFilterVarValueGetNthValue(lv, 0);
     else
@@ -652,19 +618,20 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
                 goto err_unresolvable_vars;
             }
             if (STRCASEEQ(learning, "dhcp")) {
-                rc = virNWFilterDHCPSnoopReq(techdriver, ifname, linkdev,
-                                             vmuuid, macaddr,
-                                             filter->name, vars, driver);
+                rc = virNWFilterDHCPSnoopReq(techdriver, binding->portdevname,
+                                             binding->linkdevname,
+                                             binding->owneruuid, &binding->mac,
+                                             filter->name, binding->filterparams, driver);
                 goto err_exit;
             } else if (STRCASEEQ(learning, "any")) {
                 if (!virNWFilterHasLearnReq(ifindex)) {
                     rc = virNWFilterLearnIPAddress(techdriver,
-                                                   ifname,
+                                                   binding->portdevname,
                                                    ifindex,
-                                                   linkdev,
-                                                   macaddr,
+                                                   binding->linkdevname,
+                                                   &binding->mac,
                                                    filter->name,
-                                                   vars, driver,
+                                                   binding->filterparams, driver,
                                                    DETECT_DHCP|DETECT_STATIC);
                 }
                 goto err_exit;
@@ -688,7 +655,7 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
 
     rc = virNWFilterDefToInst(driver,
                               filter,
-                              vars,
+                              binding->filterparams,
                               useNewFilter, foundNewFilter,
                               &inst);
 
@@ -705,22 +672,22 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
     }
 
     if (instantiate) {
-        if (virNWFilterLockIface(ifname) < 0)
+        if (virNWFilterLockIface(binding->portdevname) < 0)
             goto err_exit;
 
-        rc = techdriver->applyNewRules(ifname, inst.rules, inst.nrules);
+        rc = techdriver->applyNewRules(binding->portdevname, inst.rules, inst.nrules);
 
         if (teardownOld && rc == 0)
-            techdriver->tearOldRules(ifname);
+            techdriver->tearOldRules(binding->portdevname);
 
-        if (rc == 0 && (virNetDevValidateConfig(ifname, NULL, ifindex) <= 0)) {
+        if (rc == 0 && (virNetDevValidateConfig(binding->portdevname, NULL, ifindex) <= 0)) {
             virResetLastError();
             /* interface changed/disppeared */
-            techdriver->allTeardown(ifname);
+            techdriver->allTeardown(binding->portdevname);
             rc = -1;
         }
 
-        virNWFilterUnlockIface(ifname);
+        virNWFilterUnlockIface(binding->portdevname);
     }
 
  err_exit:
@@ -749,14 +716,9 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
  */
 static int
 virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
-                                   const unsigned char *vmuuid,
                                    bool teardownOld,
-                                   const char *ifname,
+                                   virNWFilterBindingDefPtr binding,
                                    int ifindex,
-                                   const char *linkdev,
-                                   const virMacAddr *macaddr,
-                                   const char *filtername,
-                                   virHashTablePtr filterparams,
                                    enum instCase useNewFilter,
                                    bool forceWithPendingReq,
                                    bool *foundNewFilter)
@@ -765,7 +727,6 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
     const char *drvname = EBIPTABLES_DRIVER_ID;
     virNWFilterTechDriverPtr techdriver;
     virNWFilterObjPtr obj;
-    virHashTablePtr vars, vars1;
     virNWFilterDefPtr filter;
     virNWFilterDefPtr newFilter;
     char vmmacaddr[VIR_MAC_STRING_BUFLEN] = {0};
@@ -781,27 +742,20 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
         return -1;
     }
 
-    VIR_DEBUG("filter name: %s", filtername);
+    VIR_DEBUG("filter name: %s", binding->filter);
 
     if (!(obj = virNWFilterObjListFindInstantiateFilter(driver->nwfilters,
-                                                        filtername)))
+                                                        binding->filter)))
         return -1;
 
-    virMacAddrFormat(macaddr, vmmacaddr);
+    virMacAddrFormat(&binding->mac, vmmacaddr);
 
-    ipaddr = virNWFilterIPAddrMapGetIPAddr(ifname);
+    ipaddr = virNWFilterIPAddrMapGetIPAddr(binding->portdevname);
 
-    vars1 = virNWFilterCreateVarHashmap(vmmacaddr, ipaddr);
-    if (!vars1) {
+    if (virNWFilterVarHashmapAddStdValues(binding->filterparams,
+                                          vmmacaddr, ipaddr) < 0) {
         rc = -1;
         goto err_exit;
-    }
-
-    vars = virNWFilterCreateVarsFrom(vars1,
-                                     filterparams);
-    if (!vars) {
-        rc = -1;
-        goto err_exit_vars1;
     }
 
     filter = virNWFilterObjGetDef(obj);
@@ -819,16 +773,10 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
         break;
     }
 
-    rc = virNWFilterDoInstantiate(vmuuid, techdriver, filter,
-                                  ifname, ifindex, linkdev,
-                                  vars, useNewFilter, foundNewFilter,
-                                  teardownOld, macaddr, driver,
+    rc = virNWFilterDoInstantiate(techdriver, binding, filter,
+                                  ifindex, useNewFilter, foundNewFilter,
+                                  teardownOld, driver,
                                   forceWithPendingReq);
-
-    virHashFree(vars);
-
- err_exit_vars1:
-    virHashFree(vars1);
 
  err_exit:
     virNWFilterObjUnlock(obj);
@@ -839,15 +787,11 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
 
 static int
 virNWFilterInstantiateFilterInternal(virNWFilterDriverStatePtr driver,
-                                     const unsigned char *vmuuid,
-                                     const virDomainNetDef *net,
+                                     virNWFilterBindingDefPtr binding,
                                      bool teardownOld,
                                      enum instCase useNewFilter,
                                      bool *foundNewFilter)
 {
-    const char *linkdev = (net->type == VIR_DOMAIN_NET_TYPE_DIRECT)
-                          ? net->data.direct.linkdev
-                          : NULL;
     int ifindex;
     int rc;
 
@@ -856,8 +800,8 @@ virNWFilterInstantiateFilterInternal(virNWFilterDriverStatePtr driver,
     /* after grabbing the filter update lock check for the interface; if
        it's not there anymore its filters will be or are being removed
        (while holding the lock) and we don't want to build new ones */
-    if (virNetDevExists(net->ifname) != 1 ||
-        virNetDevGetIndex(net->ifname, &ifindex) < 0) {
+    if (virNetDevExists(binding->portdevname) != 1 ||
+        virNetDevGetIndex(binding->portdevname, &ifindex) < 0) {
         /* interfaces / VMs can disappear during filter instantiation;
            don't mark it as an error */
         virResetLastError();
@@ -865,10 +809,10 @@ virNWFilterInstantiateFilterInternal(virNWFilterDriverStatePtr driver,
         goto cleanup;
     }
 
-    rc = virNWFilterInstantiateFilterUpdate(driver, vmuuid, teardownOld,
-                                            net->ifname, ifindex, linkdev,
-                                            &net->mac, net->filter,
-                                            net->filterparams, useNewFilter,
+    rc = virNWFilterInstantiateFilterUpdate(driver, teardownOld,
+                                            binding,
+                                            ifindex,
+                                            useNewFilter,
                                             false, foundNewFilter);
 
  cleanup:
@@ -880,13 +824,8 @@ virNWFilterInstantiateFilterInternal(virNWFilterDriverStatePtr driver,
 
 int
 virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
-                                 const unsigned char *vmuuid,
-                                 const char *ifname,
-                                 int ifindex,
-                                 const char *linkdev,
-                                 const virMacAddr *macaddr,
-                                 const char *filtername,
-                                 virHashTablePtr filterparams)
+                                 virNWFilterBindingDefPtr binding,
+                                 int ifindex)
 {
     int rc;
     bool foundNewFilter = false;
@@ -894,18 +833,17 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
     virNWFilterReadLockFilterUpdates();
     virMutexLock(&updateMutex);
 
-    rc = virNWFilterInstantiateFilterUpdate(driver, vmuuid, true,
-                                            ifname, ifindex, linkdev,
-                                            macaddr, filtername, filterparams,
+    rc = virNWFilterInstantiateFilterUpdate(driver, true,
+                                            binding, ifindex,
                                             INSTANTIATE_ALWAYS, true,
                                             &foundNewFilter);
     if (rc < 0) {
         /* something went wrong... 'DOWN' the interface */
-        if ((virNetDevValidateConfig(ifname, NULL, ifindex) <= 0) ||
-            (virNetDevSetOnline(ifname, false) < 0)) {
+        if ((virNetDevValidateConfig(binding->portdevname, NULL, ifindex) <= 0) ||
+            (virNetDevSetOnline(binding->portdevname, false) < 0)) {
             virResetLastError();
             /* assuming interface disappeared... */
-            _virNWFilterTeardownFilter(ifname);
+            _virNWFilterTeardownFilter(binding->portdevname);
         }
     }
 
@@ -918,12 +856,11 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
 
 int
 virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
-                             const unsigned char *vmuuid,
-                             const virDomainNetDef *net)
+                             virNWFilterBindingDefPtr binding)
 {
     bool foundNewFilter = false;
 
-    return virNWFilterInstantiateFilterInternal(driver, vmuuid, net,
+    return virNWFilterInstantiateFilterInternal(driver, binding,
                                                 1,
                                                 INSTANTIATE_ALWAYS,
                                                 &foundNewFilter);
@@ -932,13 +869,12 @@ virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
 
 int
 virNWFilterUpdateInstantiateFilter(virNWFilterDriverStatePtr driver,
-                                   const unsigned char *vmuuid,
-                                   const virDomainNetDef *net,
+                                   virNWFilterBindingDefPtr binding,
                                    bool *skipIface)
 {
     bool foundNewFilter = false;
 
-    int rc = virNWFilterInstantiateFilterInternal(driver, vmuuid, net,
+    int rc = virNWFilterInstantiateFilterInternal(driver, binding,
                                                   0,
                                                   INSTANTIATE_FOLLOW_NEWFILTER,
                                                   &foundNewFilter);
@@ -948,7 +884,7 @@ virNWFilterUpdateInstantiateFilter(virNWFilterDriverStatePtr driver,
 }
 
 static int
-virNWFilterRollbackUpdateFilter(const virDomainNetDef *net)
+virNWFilterRollbackUpdateFilter(virNWFilterBindingDefPtr binding)
 {
     const char *drvname = EBIPTABLES_DRIVER_ID;
     int ifindex;
@@ -964,17 +900,17 @@ virNWFilterRollbackUpdateFilter(const virDomainNetDef *net)
     }
 
     /* don't tear anything while the address is being learned */
-    if (virNetDevGetIndex(net->ifname, &ifindex) < 0)
+    if (virNetDevGetIndex(binding->portdevname, &ifindex) < 0)
         virResetLastError();
     else if (virNWFilterHasLearnReq(ifindex))
         return 0;
 
-    return techdriver->tearNewRules(net->ifname);
+    return techdriver->tearNewRules(binding->portdevname);
 }
 
 
 static int
-virNWFilterTearOldFilter(virDomainNetDefPtr net)
+virNWFilterTearOldFilter(virNWFilterBindingDefPtr binding)
 {
     const char *drvname = EBIPTABLES_DRIVER_ID;
     int ifindex;
@@ -990,12 +926,12 @@ virNWFilterTearOldFilter(virDomainNetDefPtr net)
     }
 
     /* don't tear anything while the address is being learned */
-    if (virNetDevGetIndex(net->ifname, &ifindex) < 0)
+    if (virNetDevGetIndex(binding->portdevname, &ifindex) < 0)
         virResetLastError();
     else if (virNWFilterHasLearnReq(ifindex))
         return 0;
 
-    return techdriver->tearOldRules(net->ifname);
+    return techdriver->tearOldRules(binding->portdevname);
 }
 
 
@@ -1032,11 +968,11 @@ _virNWFilterTeardownFilter(const char *ifname)
 
 
 int
-virNWFilterTeardownFilter(const virDomainNetDef *net)
+virNWFilterTeardownFilter(virNWFilterBindingDefPtr binding)
 {
     int ret;
     virMutexLock(&updateMutex);
-    ret = _virNWFilterTeardownFilter(net->ifname);
+    ret = _virNWFilterTeardownFilter(binding->portdevname);
     virMutexUnlock(&updateMutex);
     return ret;
 }
@@ -1057,12 +993,16 @@ virNWFilterDomainFWUpdateCB(virDomainObjPtr obj,
     if (virDomainObjIsActive(obj)) {
         for (i = 0; i < vm->nnets; i++) {
             virDomainNetDefPtr net = vm->nets[i];
-            if ((net->filter) && (net->ifname)) {
+            virNWFilterBindingDefPtr binding;
+
+            if ((net->filter) && (net->ifname) &&
+                (binding = virNWFilterBindingDefForNet(
+                    vm->name, vm->uuid, net))) {
+
                 switch (cb->step) {
                 case STEP_APPLY_NEW:
                     ret = virNWFilterUpdateInstantiateFilter(cb->opaque,
-                                                             vm->uuid,
-                                                             net,
+                                                             binding,
                                                              &skipIface);
                     if (ret == 0 && skipIface) {
                         /* filter tree unchanged -- no update needed */
@@ -1074,24 +1014,24 @@ virNWFilterDomainFWUpdateCB(virDomainObjPtr obj,
 
                 case STEP_TEAR_NEW:
                     if (!virHashLookup(cb->skipInterfaces, net->ifname))
-                        ret = virNWFilterRollbackUpdateFilter(net);
+                        ret = virNWFilterRollbackUpdateFilter(binding);
                     break;
 
                 case STEP_TEAR_OLD:
                     if (!virHashLookup(cb->skipInterfaces, net->ifname))
-                        ret = virNWFilterTearOldFilter(net);
+                        ret = virNWFilterTearOldFilter(binding);
                     break;
 
                 case STEP_APPLY_CURRENT:
                     ret = virNWFilterInstantiateFilter(cb->opaque,
-                                                       vm->uuid,
-                                                       net);
+                                                       binding);
                     if (ret)
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("Failure while applying current filter on "
                                          "VM %s"), vm->name);
                     break;
                 }
+                virNWFilterBindingDefFree(binding);
                 if (ret)
                     break;
             }
@@ -1100,4 +1040,46 @@ virNWFilterDomainFWUpdateCB(virDomainObjPtr obj,
 
     virObjectUnlock(obj);
     return ret;
+}
+
+
+virNWFilterBindingDefPtr
+virNWFilterBindingDefForNet(const char *vmname,
+                            const unsigned char *vmuuid,
+                            virDomainNetDefPtr net)
+{
+    virNWFilterBindingDefPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    if (VIR_STRDUP(ret->ownername, vmname) < 0)
+        goto error;
+
+    memcpy(ret->owneruuid, vmuuid, sizeof(ret->owneruuid));
+
+    if (VIR_STRDUP(ret->portdevname, net->ifname) < 0)
+        goto error;
+
+    if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT &&
+        VIR_STRDUP(ret->linkdevname, net->data.direct.linkdev) < 0)
+        goto error;
+
+    ret->mac = net->mac;
+
+    if (VIR_STRDUP(ret->filter, net->filter) < 0)
+        goto error;
+
+    if (!(ret->filterparams = virNWFilterHashTableCreate(0)))
+        goto error;
+
+    if (net->filterparams &&
+        virNWFilterHashTablePutAll(net->filterparams, ret->filterparams) < 0)
+        goto error;
+
+    return ret;
+
+ error:
+    virNWFilterBindingDefFree(ret);
+    return NULL;
 }

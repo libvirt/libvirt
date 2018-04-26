@@ -25,6 +25,7 @@
 # define __NWFILTER_GENTECH_DRIVER_H
 
 # include "virnwfilterobj.h"
+# include "virnwfilterbindingdef.h"
 # include "nwfilter_tech_driver.h"
 
 virNWFilterTechDriverPtr virNWFilterTechDriverForName(const char *name);
@@ -39,28 +40,25 @@ enum instCase {
 
 
 int virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
-                                 const unsigned char *vmuuid,
-                                 const virDomainNetDef *net);
+                                 virNWFilterBindingDefPtr binding);
 int virNWFilterUpdateInstantiateFilter(virNWFilterDriverStatePtr driver,
-                                       const unsigned char *vmuuid,
-                                       const virDomainNetDef *net,
+                                       virNWFilterBindingDefPtr binding,
                                        bool *skipIface);
 
 int virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
-                                     const unsigned char *vmuuid,
-                                     const char *ifname,
-                                     int ifindex,
-                                     const char *linkdev,
-                                     const virMacAddr *macaddr,
-                                     const char *filtername,
-                                     virHashTablePtr filterparams);
+                                     virNWFilterBindingDefPtr binding,
+                                     int ifindex);
 
-int virNWFilterTeardownFilter(const virDomainNetDef *net);
+int virNWFilterTeardownFilter(virNWFilterBindingDefPtr binding);
 
 virHashTablePtr virNWFilterCreateVarHashmap(const char *macaddr,
                                             const virNWFilterVarValue *value);
 
 int virNWFilterDomainFWUpdateCB(virDomainObjPtr vm,
                                 void *data);
+
+virNWFilterBindingDefPtr virNWFilterBindingDefForNet(const char *vmname,
+                                                     const unsigned char *vmuuid,
+                                                     virDomainNetDefPtr net);
 
 #endif

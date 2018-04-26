@@ -672,19 +672,23 @@ learnIPAddressThread(void *arg)
         virNWFilterUnlockIface(req->ifname);
 
         if ((inetaddr = virSocketAddrFormat(&sa)) != NULL) {
+            virNWFilterBindingDef binding = {
+                .portdevname = req->ifname,
+                .linkdevname = req->linkdev,
+                .mac = req->macaddr,
+                .filter = req->filtername,
+                .filterparams = req->filterparams,
+                .ownername = NULL,
+                .owneruuid = {0},
+            };
             if (virNWFilterIPAddrMapAddIPAddr(req->ifname, inetaddr) < 0) {
                 VIR_ERROR(_("Failed to add IP address %s to IP address "
                           "cache for interface %s"), inetaddr, req->ifname);
             }
 
             ret = virNWFilterInstantiateFilterLate(req->driver,
-                                                   NULL,
-                                                   req->ifname,
-                                                   req->ifindex,
-                                                   req->linkdev,
-                                                   &req->macaddr,
-                                                   req->filtername,
-                                                   req->filterparams);
+                                                   &binding,
+                                                   req->ifindex);
             VIR_DEBUG("Result from applying firewall rules on "
                       "%s with IP addr %s : %d", req->ifname, inetaddr, ret);
             VIR_FREE(inetaddr);
