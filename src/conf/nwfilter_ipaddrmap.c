@@ -61,7 +61,7 @@ virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr)
 
     virMutexLock(&ipAddressMapLock);
 
-    val = virHashLookup(ipAddressMap->hashTable, ifname);
+    val = virHashLookup(ipAddressMap, ifname);
     if (!val) {
         val = virNWFilterVarValueCreateSimple(addrCopy);
         if (!val)
@@ -109,7 +109,7 @@ virNWFilterIPAddrMapDelIPAddr(const char *ifname, const char *ipaddr)
     virMutexLock(&ipAddressMapLock);
 
     if (ipaddr != NULL) {
-        val = virHashLookup(ipAddressMap->hashTable, ifname);
+        val = virHashLookup(ipAddressMap, ifname);
         if (val) {
             if (virNWFilterVarValueGetCardinality(val) == 1 &&
                 STREQ(ipaddr,
@@ -144,7 +144,7 @@ virNWFilterIPAddrMapGetIPAddr(const char *ifname)
 
     virMutexLock(&ipAddressMapLock);
 
-    res = virHashLookup(ipAddressMap->hashTable, ifname);
+    res = virHashLookup(ipAddressMap, ifname);
 
     virMutexUnlock(&ipAddressMapLock);
 

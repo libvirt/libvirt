@@ -894,7 +894,7 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
                                                req->vars);
     } else {
         virNWFilterVarValuePtr dhcpsrvrs =
-            virHashLookup(req->vars->hashTable, NWFILTER_VARNAME_DHCPSERVER);
+            virHashLookup(req->vars, NWFILTER_VARNAME_DHCPSERVER);
 
         if (req->techdriver &&
             req->techdriver->applyDHCPOnlyRules(req->ifname, &req->macaddr,
@@ -1664,7 +1664,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
         goto exit_snoopreqput;
     }
 
-    dhcpsrvrs = virHashLookup(filterparams->hashTable,
+    dhcpsrvrs = virHashLookup(filterparams,
                               NWFILTER_VARNAME_DHCPSERVER);
 
     if (techdriver->applyDHCPOnlyRules(req->ifname, &req->macaddr,

@@ -333,7 +333,7 @@ static int testSetOneParameter(virNWFilterHashTablePtr vars,
     int ret = -1;
     virNWFilterVarValuePtr val;
 
-    if ((val = virHashLookup(vars->hashTable, name)) == NULL) {
+    if ((val = virHashLookup(vars, name)) == NULL) {
         val = virNWFilterVarValueCreateSimpleCopyValue(value);
         if (!val)
             goto cleanup;

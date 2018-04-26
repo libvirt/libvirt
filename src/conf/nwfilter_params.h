@@ -63,12 +63,8 @@ int virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value);
 int virNWFilterVarValueAddValueCopy(virNWFilterVarValuePtr val, const char *value);
 int virNWFilterVarValueDelValue(virNWFilterVarValuePtr val, const char *value);
 
-typedef struct _virNWFilterHashTable virNWFilterHashTable;
-typedef virNWFilterHashTable *virNWFilterHashTablePtr;
-struct _virNWFilterHashTable {
-    virHashTablePtr hashTable;
-};
-
+typedef virHashTable virNWFilterHashTable;
+typedef virHashTable *virNWFilterHashTablePtr;
 
 virNWFilterHashTablePtr virNWFilterParseParamAttributes(xmlNodePtr cur);
 int virNWFilterFormatParamAttributes(virBufferPtr buf,

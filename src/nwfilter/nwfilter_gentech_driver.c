@@ -153,7 +153,7 @@ virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
         if (!val)
             return -1;
 
-        if (virHashAddEntry(table->hashTable,
+        if (virHashAddEntry(table,
                             NWFILTER_STD_VAR_MAC,
                             val) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -167,7 +167,7 @@ virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
         if (!val)
             return -1;
 
-        if (virHashAddEntry(table->hashTable,
+        if (virHashAddEntry(table,
                             NWFILTER_STD_VAR_IP,
                             val) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -633,7 +633,7 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
     if (rc < 0)
         goto err_exit;
 
-    lv = virHashLookup(vars->hashTable, NWFILTER_VARNAME_CTRL_IP_LEARNING);
+    lv = virHashLookup(vars, NWFILTER_VARNAME_CTRL_IP_LEARNING);
     if (lv)
         learning = virNWFilterVarValueGetNthValue(lv, 0);
     else
@@ -642,8 +642,8 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
     if (learning == NULL)
         learning = NWFILTER_DFLT_LEARN;
 
-    if (virHashSize(missing_vars->hashTable) == 1) {
-        if (virHashLookup(missing_vars->hashTable,
+    if (virHashSize(missing_vars) == 1) {
+        if (virHashLookup(missing_vars,
                           NWFILTER_STD_VAR_IP) != NULL) {
             if (STRCASEEQ(learning, "none")) {        /* no learning */
                 reportIP = true;
@@ -677,7 +677,7 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
         } else {
             goto err_unresolvable_vars;
         }
-    } else if (virHashSize(missing_vars->hashTable) > 1) {
+    } else if (virHashSize(missing_vars) > 1) {
         goto err_unresolvable_vars;
     } else if (!forceWithPendingReq &&
                virNWFilterLookupLearnReq(ifindex) != NULL) {
@@ -729,7 +729,7 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
 
  err_unresolvable_vars:
 
-    buf = virNWFilterPrintVars(missing_vars->hashTable, ", ", false, reportIP);
+    buf = virNWFilterPrintVars(missing_vars, ", ", false, reportIP);
     if (buf) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Cannot instantiate filter due to unresolvable "

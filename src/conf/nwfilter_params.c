@@ -355,7 +355,7 @@ virNWFilterVarCombIterAddVariable(virNWFilterVarCombIterEntryPtr cie,
     unsigned int maxValue = 0, minValue = 0;
     const char *varName = virNWFilterVarAccessGetVarName(varAccess);
 
-    varValue = virHashLookup(hash->hashTable, varName);
+    varValue = virHashLookup(hash, varName);
     if (varValue == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not find value for variable '%s'"),
@@ -421,7 +421,7 @@ virNWFilterVarCombIterEntryAreUniqueEntries(virNWFilterVarCombIterEntryPtr cie,
     virNWFilterVarValuePtr varValue, tmp;
     const char *value;
 
-    varValue = virHashLookup(hash->hashTable, cie->varNames[0]);
+    varValue = virHashLookup(hash, cie->varNames[0]);
     if (!varValue) {
         /* caller's error */
         VIR_ERROR(_("hash lookup resulted in NULL pointer"));
@@ -439,7 +439,7 @@ virNWFilterVarCombIterEntryAreUniqueEntries(virNWFilterVarCombIterEntryPtr cie,
         if (STREQ(value, virNWFilterVarValueGetNthValue(varValue, i))) {
             bool isSame = true;
             for (j = 1; j < cie->nVarNames; j++) {
-                tmp = virHashLookup(hash->hashTable, cie->varNames[j]);
+                tmp = virHashLookup(hash, cie->varNames[j]);
                 if (!tmp) {
                     /* should never occur to step on a NULL here */
                     return true;
@@ -604,7 +604,7 @@ virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
         return NULL;
     }
 
-    value = virHashLookup(ci->hashTable->hashTable, varName);
+    value = virHashLookup(ci->hashTable, varName);
     if (!value) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not find value for variable '%s'"),
@@ -648,11 +648,11 @@ virNWFilterHashTablePut(virNWFilterHashTablePtr table,
                         const char *name,
                         virNWFilterVarValuePtr val)
 {
-    if (!virHashLookup(table->hashTable, name)) {
-        if (virHashAddEntry(table->hashTable, name, val) < 0)
+    if (!virHashLookup(table, name)) {
+        if (virHashAddEntry(table, name, val) < 0)
             return -1;
     } else {
-        if (virHashUpdateEntry(table->hashTable, name, val) < 0)
+        if (virHashUpdateEntry(table, name, val) < 0)
             return -1;
     }
     return 0;
@@ -671,27 +671,14 @@ virNWFilterHashTablePut(virNWFilterHashTablePtr table,
 void
 virNWFilterHashTableFree(virNWFilterHashTablePtr table)
 {
-    if (!table)
-        return;
-    virHashFree(table->hashTable);
-
-    VIR_FREE(table);
+    virHashFree(table);
 }
 
 
 virNWFilterHashTablePtr
 virNWFilterHashTableCreate(int n)
 {
-    virNWFilterHashTablePtr ret;
-
-    if (VIR_ALLOC(ret) < 0)
-        return NULL;
-    ret->hashTable = virHashCreate(n, hashDataFree);
-    if (!ret->hashTable) {
-        VIR_FREE(ret);
-        return NULL;
-    }
-    return ret;
+    return virHashCreate(n, hashDataFree);
 }
 
 
@@ -699,7 +686,7 @@ void *
 virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr ht,
                                 const char *entry)
 {
-    return virHashSteal(ht->hashTable, entry);
+    return virHashSteal(ht, entry);
 }
 
 
@@ -745,7 +732,7 @@ virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
         .errOccurred = 0,
     };
 
-    virHashForEach(src->hashTable, addToTable, &atts);
+    virHashForEach(src, addToTable, &atts);
     if (atts.errOccurred)
         goto err_exit;
 
@@ -770,11 +757,7 @@ bool
 virNWFilterHashTableEqual(virNWFilterHashTablePtr a,
                           virNWFilterHashTablePtr b)
 {
-    if (!(a || b))
-        return true;
-    if (!(a && b))
-        return false;
-    return virHashEqual(a->hashTable, b->hashTable, virNWFilterVarValueCompare);
+    return virHashEqual(a, b, virNWFilterVarValueCompare);
 }
 
 static bool
@@ -819,7 +802,7 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
                         goto skip_entry;
                     if (!isValidVarValue(val))
                         goto skip_entry;
-                    value = virHashLookup(table->hashTable, nam);
+                    value = virHashLookup(table, nam);
                     if (value) {
                         /* add value to existing value -> list */
                         if (virNWFilterVarValueAddValue(value, val) < 0) {
@@ -871,7 +854,7 @@ virNWFilterFormatParamAttributes(virBufferPtr buf,
     size_t i, j;
     int card, numKeys;
 
-    numKeys = virHashSize(table->hashTable);
+    numKeys = virHashSize(table);
 
     if (numKeys < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -879,7 +862,7 @@ virNWFilterFormatParamAttributes(virBufferPtr buf,
         return -1;
     }
 
-    items = virHashGetItems(table->hashTable,
+    items = virHashGetItems(table,
                             virNWFilterFormatParameterNameSorter);
     if (!items)
         return -1;
@@ -1103,7 +1086,7 @@ virNWFilterVarAccessIsAvailable(const virNWFilterVarAccess *varAccess,
     unsigned int idx;
     virNWFilterVarValuePtr varValue;
 
-    varValue = virHashLookup(hash->hashTable, varName);
+    varValue = virHashLookup(hash, varName);
     if (!varValue)
         return false;
 
