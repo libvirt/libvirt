@@ -4115,7 +4115,10 @@
     <element name="tpm">
       <optional>
         <attribute name="model">
-          <value>tpm-tis</value>
+          <choice>
+            <value>tpm-tis</value>
+            <value>tpm-crb</value>
+          </choice>
         </attribute>
       </optional>
       <ref name="tpm-backend"/>

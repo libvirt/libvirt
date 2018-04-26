@@ -7625,7 +7625,8 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       The TPM device enables a QEMU guest to have access to TPM
-      functionality.
+      functionality. The TPM device may either be a TPM 1.2 or
+      a TPM 2.
     </p>
     <p>
       The TPM passthrough device type provides access to the host's TPM
@@ -7655,6 +7656,9 @@ qemu-kvm -net nic,model=? /dev/null
           The <code>model</code> attribute specifies what device
           model QEMU provides to the guest. If no model name is provided,
           <code>tpm-tis</code> will automatically be chosen.
+          <span class="since">Since 4.4.0</span>, another available choice
+          is the <code>tpm-crb</code>, which should only be used when the
+          backend device is a TPM 2.
         </p>
       </dd>
       <dt><code>backend</code></dt>
