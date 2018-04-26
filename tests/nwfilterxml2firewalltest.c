@@ -147,11 +147,11 @@ static const char *commonRules[] = {
 };
 
 
-static virNWFilterHashTablePtr
-virNWFilterCreateVarsFrom(virNWFilterHashTablePtr vars1,
-                          virNWFilterHashTablePtr vars2)
+static virHashTablePtr
+virNWFilterCreateVarsFrom(virHashTablePtr vars1,
+                          virHashTablePtr vars2)
 {
-    virNWFilterHashTablePtr res = virNWFilterHashTableCreate(0);
+    virHashTablePtr res = virNWFilterHashTableCreate(0);
     if (!res)
         return NULL;
 
@@ -199,13 +199,13 @@ virNWFilterInstReset(virNWFilterInstPtr inst)
 
 static int
 virNWFilterDefToInst(const char *xml,
-                     virNWFilterHashTablePtr vars,
+                     virHashTablePtr vars,
                      virNWFilterInstPtr inst);
 
 static int
 virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
                              virNWFilterRuleDefPtr rule,
-                             virNWFilterHashTablePtr vars,
+                             virHashTablePtr vars,
                              virNWFilterInstPtr inst)
 {
     virNWFilterRuleInstPtr ruleinst;
@@ -238,10 +238,10 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
 
 static int
 virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDefPtr inc,
-                                virNWFilterHashTablePtr vars,
+                                virHashTablePtr vars,
                                 virNWFilterInstPtr inst)
 {
-    virNWFilterHashTablePtr tmpvars = NULL;
+    virHashTablePtr tmpvars = NULL;
     int ret = -1;
     char *xml;
 
@@ -270,7 +270,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDefPtr inc,
 
 static int
 virNWFilterDefToInst(const char *xml,
-                     virNWFilterHashTablePtr vars,
+                     virHashTablePtr vars,
                      virNWFilterInstPtr inst)
 {
     size_t i;
@@ -326,7 +326,7 @@ static void testRemoveCommonRules(char *rules)
 }
 
 
-static int testSetOneParameter(virNWFilterHashTablePtr vars,
+static int testSetOneParameter(virHashTablePtr vars,
                                const char *name,
                                const char *value)
 {
@@ -350,7 +350,7 @@ static int testSetOneParameter(virNWFilterHashTablePtr vars,
     return ret;
 }
 
-static int testSetDefaultParameters(virNWFilterHashTablePtr vars)
+static int testSetDefaultParameters(virHashTablePtr vars)
 {
     if (testSetOneParameter(vars, "IPSETNAME", "tck_test") < 0 ||
         testSetOneParameter(vars, "A", "1.1.1.1") ||
@@ -374,7 +374,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 {
     char *actualargv = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virNWFilterHashTablePtr vars = virNWFilterHashTableCreate(0);
+    virHashTablePtr vars = virNWFilterHashTableCreate(0);
     virNWFilterInst inst;
     int ret = -1;
 

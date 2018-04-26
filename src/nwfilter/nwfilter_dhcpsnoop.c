@@ -141,7 +141,7 @@ struct _virNWFilterSnoopReq {
     char                                 ifkey[VIR_IFKEY_LEN];
     virMacAddr                           macaddr;
     char                                *filtername;
-    virNWFilterHashTablePtr              vars;
+    virHashTablePtr                      vars;
     virNWFilterDriverStatePtr            driver;
     /* start and end of lease list, ordered by lease time */
     virNWFilterSnoopIPLeasePtr           start;
@@ -1611,7 +1611,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
                         const unsigned char *vmuuid,
                         const virMacAddr *macaddr,
                         const char *filtername,
-                        virNWFilterHashTablePtr filterparams,
+                        virHashTablePtr filterparams,
                         virNWFilterDriverStatePtr driver)
 {
     virNWFilterSnoopReqPtr req;
@@ -2255,7 +2255,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
                         const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                         const virMacAddr *macaddr ATTRIBUTE_UNUSED,
                         const char *filtername ATTRIBUTE_UNUSED,
-                        virNWFilterHashTablePtr filterparams ATTRIBUTE_UNUSED,
+                        virHashTablePtr filterparams ATTRIBUTE_UNUSED,
                         virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,

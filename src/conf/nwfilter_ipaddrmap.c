@@ -36,7 +36,7 @@
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 static virMutex ipAddressMapLock = VIR_MUTEX_INITIALIZER;
-static virNWFilterHashTablePtr ipAddressMap;
+static virHashTablePtr ipAddressMap;
 
 
 /* Add an IP address to the list of IP addresses an interface is

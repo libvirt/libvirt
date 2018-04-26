@@ -142,7 +142,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
  * Adds a couple of standard keys (MAC, IP) to the hash table.
  */
 static int
-virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
+virNWFilterVarHashmapAddStdValues(virHashTablePtr table,
                                   char *macaddr,
                                   const virNWFilterVarValue *ipaddr)
 {
@@ -191,11 +191,11 @@ virNWFilterVarHashmapAddStdValues(virNWFilterHashTablePtr table,
  *
  * Returns pointer to hashmap, NULL if an error occurred.
  */
-virNWFilterHashTablePtr
+virHashTablePtr
 virNWFilterCreateVarHashmap(char *macaddr,
                             const virNWFilterVarValue *ipaddr)
 {
-    virNWFilterHashTablePtr table = virNWFilterHashTableCreate(0);
+    virHashTablePtr table = virNWFilterHashTableCreate(0);
     if (!table)
         return NULL;
 
@@ -208,7 +208,7 @@ virNWFilterCreateVarHashmap(char *macaddr,
 
 
 /**
- * Convert a virNWFilterHashTable into a string of comma-separated
+ * Convert a virHashTable into a string of comma-separated
  * variable names.
  */
 struct printString
@@ -278,11 +278,11 @@ virNWFilterPrintVars(virHashTablePtr vars,
  * Creates a new hash table with contents of var1 and var2 added where
  * contents of var2 will overwrite those of var1.
  */
-static virNWFilterHashTablePtr
-virNWFilterCreateVarsFrom(virNWFilterHashTablePtr vars1,
-                          virNWFilterHashTablePtr vars2)
+static virHashTablePtr
+virNWFilterCreateVarsFrom(virHashTablePtr vars1,
+                          virHashTablePtr vars2)
 {
-    virNWFilterHashTablePtr res = virNWFilterHashTableCreate(0);
+    virHashTablePtr res = virNWFilterHashTableCreate(0);
     if (!res)
         return NULL;
 
@@ -330,7 +330,7 @@ virNWFilterInstReset(virNWFilterInstPtr inst)
 static int
 virNWFilterDefToInst(virNWFilterDriverStatePtr driver,
                      virNWFilterDefPtr def,
-                     virNWFilterHashTablePtr vars,
+                     virHashTablePtr vars,
                      enum instCase useNewFilter,
                      bool *foundNewFilter,
                      virNWFilterInstPtr inst);
@@ -338,7 +338,7 @@ virNWFilterDefToInst(virNWFilterDriverStatePtr driver,
 static int
 virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
                              virNWFilterRuleDefPtr rule,
-                             virNWFilterHashTablePtr vars,
+                             virHashTablePtr vars,
                              virNWFilterInstPtr inst)
 {
     virNWFilterRuleInstPtr ruleinst;
@@ -371,13 +371,13 @@ virNWFilterRuleDefToRuleInst(virNWFilterDefPtr def,
 static int
 virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
                                 virNWFilterIncludeDefPtr inc,
-                                virNWFilterHashTablePtr vars,
+                                virHashTablePtr vars,
                                 enum instCase useNewFilter,
                                 bool *foundNewFilter,
                                 virNWFilterInstPtr inst)
 {
     virNWFilterObjPtr obj;
-    virNWFilterHashTablePtr tmpvars = NULL;
+    virHashTablePtr tmpvars = NULL;
     virNWFilterDefPtr childdef;
     virNWFilterDefPtr newChilddef;
     int ret = -1;
@@ -452,7 +452,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
 static int
 virNWFilterDefToInst(virNWFilterDriverStatePtr driver,
                      virNWFilterDefPtr def,
-                     virNWFilterHashTablePtr vars,
+                     virHashTablePtr vars,
                      enum instCase useNewFilter,
                      bool *foundNewFilter,
                      virNWFilterInstPtr inst)
@@ -487,8 +487,8 @@ virNWFilterDefToInst(virNWFilterDriverStatePtr driver,
 
 static int
 virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
-                                   virNWFilterHashTablePtr vars,
-                                   virNWFilterHashTablePtr missing_vars,
+                                   virHashTablePtr vars,
+                                   virHashTablePtr missing_vars,
                                    int useNewFilter,
                                    virNWFilterDriverStatePtr driver)
 {
@@ -498,7 +498,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
     virNWFilterDefPtr next_filter;
     virNWFilterDefPtr newNext_filter;
     virNWFilterVarValuePtr val;
-    virNWFilterHashTablePtr tmpvars;
+    virHashTablePtr tmpvars;
 
     for (i = 0; i < filter->nentries; i++) {
         virNWFilterRuleDefPtr    rule = filter->filterEntries[i]->rule;
@@ -600,7 +600,7 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
                          const char *ifname,
                          int ifindex,
                          const char *linkdev,
-                         virNWFilterHashTablePtr vars,
+                         virHashTablePtr vars,
                          enum instCase useNewFilter,
                          bool *foundNewFilter,
                          bool teardownOld,
@@ -616,7 +616,7 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
     const char *learning;
     bool reportIP = false;
 
-    virNWFilterHashTablePtr missing_vars = virNWFilterHashTableCreate(0);
+    virHashTablePtr missing_vars = virNWFilterHashTableCreate(0);
 
     memset(&inst, 0, sizeof(inst));
 
@@ -754,7 +754,7 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
                                    const char *linkdev,
                                    const virMacAddr *macaddr,
                                    const char *filtername,
-                                   virNWFilterHashTablePtr filterparams,
+                                   virHashTablePtr filterparams,
                                    enum instCase useNewFilter,
                                    bool forceWithPendingReq,
                                    bool *foundNewFilter)
@@ -763,7 +763,7 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
     const char *drvname = EBIPTABLES_DRIVER_ID;
     virNWFilterTechDriverPtr techdriver;
     virNWFilterObjPtr obj;
-    virNWFilterHashTablePtr vars, vars1;
+    virHashTablePtr vars, vars1;
     virNWFilterDefPtr filter;
     virNWFilterDefPtr newFilter;
     char vmmacaddr[VIR_MAC_STRING_BUFLEN] = {0};
@@ -896,7 +896,7 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
                                  const char *linkdev,
                                  const virMacAddr *macaddr,
                                  const char *filtername,
-                                 virNWFilterHashTablePtr filterparams)
+                                 virHashTablePtr filterparams)
 {
     int rc;
     bool foundNewFilter = false;

@@ -10869,7 +10869,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *vhostuser_type = NULL;
     char *trustGuestRxFilters = NULL;
     char *vhost_path = NULL;
-    virNWFilterHashTablePtr filterparams = NULL;
+    virHashTablePtr filterparams = NULL;
     virDomainActualNetDefPtr actual = NULL;
     xmlNodePtr oldnode = ctxt->node;
     virDomainChrSourceReconnectDef reconnect = {0};

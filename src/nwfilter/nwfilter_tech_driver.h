@@ -39,7 +39,7 @@ struct _virNWFilterRuleInst {
     virNWFilterChainPriority chainPriority;
     virNWFilterRuleDefPtr def;
     virNWFilterRulePriority priority;
-    virNWFilterHashTablePtr vars;
+    virHashTablePtr vars;
 };
 
 

@@ -63,19 +63,16 @@ int virNWFilterVarValueAddValue(virNWFilterVarValuePtr val, char *value);
 int virNWFilterVarValueAddValueCopy(virNWFilterVarValuePtr val, const char *value);
 int virNWFilterVarValueDelValue(virNWFilterVarValuePtr val, const char *value);
 
-typedef virHashTable virNWFilterHashTable;
-typedef virHashTable *virNWFilterHashTablePtr;
-
-virNWFilterHashTablePtr virNWFilterParseParamAttributes(xmlNodePtr cur);
+virHashTablePtr virNWFilterParseParamAttributes(xmlNodePtr cur);
 int virNWFilterFormatParamAttributes(virBufferPtr buf,
-                                     virNWFilterHashTablePtr table,
+                                     virHashTablePtr table,
                                      const char *filterref);
 
-virNWFilterHashTablePtr virNWFilterHashTableCreate(int n);
-int virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
-                               virNWFilterHashTablePtr dest);
-bool virNWFilterHashTableEqual(virNWFilterHashTablePtr a,
-                               virNWFilterHashTablePtr b);
+virHashTablePtr virNWFilterHashTableCreate(int n);
+int virNWFilterHashTablePutAll(virHashTablePtr src,
+                               virHashTablePtr dest);
+bool virNWFilterHashTableEqual(virHashTablePtr a,
+                               virHashTablePtr b);
 
 # define VALID_VARNAME \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
@@ -123,7 +120,7 @@ virNWFilterVarAccessType virNWFilterVarAccessGetType(
 unsigned int virNWFilterVarAccessGetIterId(const virNWFilterVarAccess *vap);
 unsigned int virNWFilterVarAccessGetIndex(const virNWFilterVarAccess *vap);
 bool virNWFilterVarAccessIsAvailable(const virNWFilterVarAccess *vap,
-                                     const virNWFilterHashTable *hash);
+                                     const virHashTable *hash);
 
 typedef struct _virNWFilterVarCombIterEntry virNWFilterVarCombIterEntry;
 typedef virNWFilterVarCombIterEntry *virNWFilterVarCombIterEntryPtr;
@@ -139,12 +136,12 @@ struct _virNWFilterVarCombIterEntry {
 typedef struct _virNWFilterVarCombIter virNWFilterVarCombIter;
 typedef virNWFilterVarCombIter *virNWFilterVarCombIterPtr;
 struct _virNWFilterVarCombIter {
-    virNWFilterHashTablePtr hashTable;
+    virHashTablePtr hashTable;
     size_t nIter;
     virNWFilterVarCombIterEntry iter[0];
 };
 virNWFilterVarCombIterPtr virNWFilterVarCombIterCreate(
-                             virNWFilterHashTablePtr hash,
+                             virHashTablePtr hash,
                              virNWFilterVarAccessPtr *vars,
                              size_t nVars);
 

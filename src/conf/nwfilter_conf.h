@@ -501,7 +501,7 @@ typedef struct _virNWFilterIncludeDef virNWFilterIncludeDef;
 typedef virNWFilterIncludeDef *virNWFilterIncludeDefPtr;
 struct _virNWFilterIncludeDef {
     char *filterref;
-    virNWFilterHashTablePtr params;
+    virHashTablePtr params;
 };
 
 

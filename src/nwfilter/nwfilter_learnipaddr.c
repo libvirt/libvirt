@@ -692,14 +692,14 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                           const char *linkdev,
                           const virMacAddr *macaddr,
                           const char *filtername,
-                          virNWFilterHashTablePtr filterparams,
+                          virHashTablePtr filterparams,
                           virNWFilterDriverStatePtr driver,
                           enum howDetect howDetect)
 {
     int rc;
     virThread thread;
     virNWFilterIPAddrLearnReqPtr req = NULL;
-    virNWFilterHashTablePtr ht = NULL;
+    virHashTablePtr ht = NULL;
 
     if (howDetect == 0)
         return -1;
@@ -781,7 +781,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
                           const char *linkdev ATTRIBUTE_UNUSED,
                           const virMacAddr *macaddr ATTRIBUTE_UNUSED,
                           const char *filtername ATTRIBUTE_UNUSED,
-                          virNWFilterHashTablePtr filterparams ATTRIBUTE_UNUSED,
+                          virHashTablePtr filterparams ATTRIBUTE_UNUSED,
                           virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED,
                           enum howDetect howDetect ATTRIBUTE_UNUSED)
 {
