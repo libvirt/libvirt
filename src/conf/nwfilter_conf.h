@@ -2,7 +2,7 @@
  * nwfilter_conf.h: network filter XML processing
  *                  (derived from storage_conf.h)
  *
- * Copyright (C) 2006-2010, 2012-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2010, 2012-2018 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * Copyright (C) 2010 IBM Corporation
@@ -545,6 +545,19 @@ struct _virNWFilterDef {
     virNWFilterEntryPtr *filterEntries;
 };
 
+typedef struct virNWFilterBinding virNWFilterBinding;
+typedef virNWFilterBinding *virNWFilterBindingPtr;
+
+struct virNWFilterBinding {
+    char *ownername;
+    unsigned char owneruuid[VIR_UUID_BUFLEN];
+    char *portdevname;
+    char *linkdevname;
+    virMacAddr mac;
+    char *filter;
+    virHashTablePtr filterparams;
+};
+
 
 typedef enum {
     STEP_APPLY_NEW,
@@ -649,6 +662,11 @@ virNWFilterRuleIsProtocolIPv6(virNWFilterRuleDefPtr rule);
 
 bool
 virNWFilterRuleIsProtocolEthernet(virNWFilterRuleDefPtr rule);
+
+void
+virNWFilterBindingFree(virNWFilterBindingPtr binding);
+virNWFilterBindingPtr
+virNWFilterBindingCopy(virNWFilterBindingPtr src);
 
 VIR_ENUM_DECL(virNWFilterRuleAction);
 VIR_ENUM_DECL(virNWFilterRuleDirection);

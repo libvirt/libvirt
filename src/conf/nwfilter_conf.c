@@ -2,7 +2,7 @@
  * nwfilter_conf.c: network filter XML processing
  *                  (derived from storage_conf.c)
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2018 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * Copyright (C) 2010-2011 IBM Corporation
@@ -3264,4 +3264,58 @@ virNWFilterRuleIsProtocolEthernet(virNWFilterRuleDefPtr rule)
     if (rule->prtclType <= VIR_NWFILTER_RULE_PROTOCOL_IPV6)
         return true;
     return false;
+}
+
+
+void
+virNWFilterBindingFree(virNWFilterBindingPtr binding)
+{
+    if (!binding)
+        return;
+
+    VIR_FREE(binding->ownername);
+    VIR_FREE(binding->portdevname);
+    VIR_FREE(binding->linkdevname);
+    VIR_FREE(binding->filter);
+    virHashFree(binding->filterparams);
+
+    VIR_FREE(binding);
+}
+
+
+virNWFilterBindingPtr
+virNWFilterBindingCopy(virNWFilterBindingPtr src)
+{
+    virNWFilterBindingPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    if (VIR_STRDUP(ret->ownername, src->ownername) < 0)
+        goto error;
+
+    memcpy(ret->owneruuid, src->owneruuid, sizeof(ret->owneruuid));
+
+    if (VIR_STRDUP(ret->portdevname, src->portdevname) < 0)
+        goto error;
+
+    if (VIR_STRDUP(ret->linkdevname, src->linkdevname) < 0)
+        goto error;
+
+    ret->mac = src->mac;
+
+    if (VIR_STRDUP(ret->filter, src->filter) < 0)
+        goto error;
+
+    if (!(ret->filterparams = virNWFilterHashTableCreate(0)))
+        goto error;
+
+    if (virNWFilterHashTablePutAll(src->filterparams, ret->filterparams) < 0)
+        goto error;
+
+    return ret;
+
+ error:
+    virNWFilterBindingFree(ret);
+    return NULL;
 }

@@ -780,6 +780,8 @@ virDomainNumatuneSpecifiedMaxNode;
 
 
 # conf/nwfilter_conf.h
+virNWFilterBindingCopy;
+virNWFilterBindingFree;
 virNWFilterCallbackDriversLock;
 virNWFilterCallbackDriversUnlock;
 virNWFilterChainSuffixTypeToString;
