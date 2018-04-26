@@ -143,19 +143,20 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
  */
 static int
 virNWFilterVarHashmapAddStdValues(virHashTablePtr table,
-                                  char *macaddr,
+                                  const char *macaddr,
                                   const virNWFilterVarValue *ipaddr)
 {
     virNWFilterVarValue *val;
 
     if (macaddr) {
-        val = virNWFilterVarValueCreateSimple(macaddr);
+        val = virNWFilterVarValueCreateSimpleCopyValue(macaddr);
         if (!val)
             return -1;
 
         if (virHashAddEntry(table,
                             NWFILTER_STD_VAR_MAC,
                             val) < 0) {
+            virNWFilterVarValueFree(val);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Could not add variable 'MAC' to hashmap"));
             return -1;
@@ -170,6 +171,7 @@ virNWFilterVarHashmapAddStdValues(virHashTablePtr table,
         if (virHashAddEntry(table,
                             NWFILTER_STD_VAR_IP,
                             val) < 0) {
+            virNWFilterVarValueFree(val);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Could not add variable 'IP' to hashmap"));
             return -1;
@@ -192,7 +194,7 @@ virNWFilterVarHashmapAddStdValues(virHashTablePtr table,
  * Returns pointer to hashmap, NULL if an error occurred.
  */
 virHashTablePtr
-virNWFilterCreateVarHashmap(char *macaddr,
+virNWFilterCreateVarHashmap(const char *macaddr,
                             const virNWFilterVarValue *ipaddr)
 {
     virHashTablePtr table = virNWFilterHashTableCreate(0);
@@ -767,9 +769,7 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
     virNWFilterDefPtr filter;
     virNWFilterDefPtr newFilter;
     char vmmacaddr[VIR_MAC_STRING_BUFLEN] = {0};
-    char *str_macaddr = NULL;
     virNWFilterVarValuePtr ipaddr;
-    char *str_ipaddr = NULL;
 
     techdriver = virNWFilterTechDriverForName(drvname);
 
@@ -788,21 +788,14 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
         return -1;
 
     virMacAddrFormat(macaddr, vmmacaddr);
-    if (VIR_STRDUP(str_macaddr, vmmacaddr) < 0) {
-        rc = -1;
-        goto err_exit;
-    }
 
     ipaddr = virNWFilterIPAddrMapGetIPAddr(ifname);
 
-    vars1 = virNWFilterCreateVarHashmap(str_macaddr, ipaddr);
+    vars1 = virNWFilterCreateVarHashmap(vmmacaddr, ipaddr);
     if (!vars1) {
         rc = -1;
         goto err_exit;
     }
-
-    str_macaddr = NULL;
-    str_ipaddr = NULL;
 
     vars = virNWFilterCreateVarsFrom(vars1,
                                      filterparams);
@@ -839,9 +832,6 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
 
  err_exit:
     virNWFilterObjUnlock(obj);
-
-    VIR_FREE(str_ipaddr);
-    VIR_FREE(str_macaddr);
 
     return rc;
 }

@@ -57,7 +57,7 @@ int virNWFilterInstantiateFilterLate(virNWFilterDriverStatePtr driver,
 
 int virNWFilterTeardownFilter(const virDomainNetDef *net);
 
-virHashTablePtr virNWFilterCreateVarHashmap(char *macaddr,
+virHashTablePtr virNWFilterCreateVarHashmap(const char *macaddr,
                                             const virNWFilterVarValue *value);
 
 int virNWFilterDomainFWUpdateCB(virDomainObjPtr vm,
