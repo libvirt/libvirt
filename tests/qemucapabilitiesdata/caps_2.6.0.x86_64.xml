@@ -171,6 +171,7 @@
   <flag name='virtio-gpu.max_outputs'/>
   <flag name='isa-serial'/>
   <flag name='dump-completed'/>
+  <flag name='nbd-tls'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>227332</microcodeVersion>

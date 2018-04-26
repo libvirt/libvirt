@@ -473,6 +473,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               /* 290 */
               "query-cpus-fast",
               "disk-write-cache",
+              "nbd-tls",
     );
 
 
@@ -1247,6 +1248,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+vxhs", QEMU_CAPS_VXHS},
     { "blockdev-add/arg-type/+iscsi/password-secret", QEMU_CAPS_ISCSI_PASSWORD_SECRET },
     { "blockdev-add/arg-type/+qcow2/encrypt/+luks/key-secret", QEMU_CAPS_QCOW2_LUKS },
+    { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;

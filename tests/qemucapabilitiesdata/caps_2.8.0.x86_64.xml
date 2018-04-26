@@ -178,6 +178,7 @@
   <flag name='isa-serial'/>
   <flag name='dump-completed'/>
   <flag name='disk-write-cache'/>
+  <flag name='nbd-tls'/>
   <version>2008000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>255684</microcodeVersion>

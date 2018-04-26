@@ -195,6 +195,7 @@
   <flag name='seccomp-blacklist'/>
   <flag name='query-cpus-fast'/>
   <flag name='disk-write-cache'/>
+  <flag name='nbd-tls'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>390060</microcodeVersion>

@@ -153,6 +153,7 @@
   <flag name='dump-completed'/>
   <flag name='qcow2-luks'/>
   <flag name='disk-write-cache'/>
+  <flag name='nbd-tls'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>303541</microcodeVersion>

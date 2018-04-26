@@ -118,6 +118,7 @@
   <flag name='qcow2-luks'/>
   <flag name='seccomp-blacklist'/>
   <flag name='disk-write-cache'/>
+  <flag name='nbd-tls'/>
   <version>2011000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>342058</microcodeVersion>
