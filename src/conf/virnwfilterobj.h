@@ -38,7 +38,6 @@ struct _virNWFilterDriverState {
     virNWFilterObjListPtr nwfilters;
 
     char *configDir;
-    bool watchingFirewallD;
 };
 
 virNWFilterDefPtr

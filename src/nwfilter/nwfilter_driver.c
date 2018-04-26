@@ -186,8 +186,6 @@ nwfilterStateInitialize(bool privileged,
     if (virMutexInit(&driver->lock) < 0)
         goto err_free_driverstate;
 
-    /* remember that we are going to use firewalld */
-    driver->watchingFirewallD = (sysbus != NULL);
     driver->privileged = privileged;
     if (!(driver->nwfilters = virNWFilterObjListNew()))
         goto error;
@@ -310,22 +308,6 @@ nwfilterStateReload(void)
     return 0;
 }
 
-
-/**
- * virNWFilterIsWatchingFirewallD:
- *
- * Checks if the nwfilter has the DBus watches for FirewallD installed.
- *
- * Returns true if it is watching firewalld, false otherwise
- */
-bool
-virNWFilterDriverIsWatchingFirewallD(void)
-{
-    if (!driver)
-        return false;
-
-    return driver->watchingFirewallD;
-}
 
 /**
  * nwfilterStateCleanup:

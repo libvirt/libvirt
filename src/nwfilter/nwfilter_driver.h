@@ -33,6 +33,4 @@
 
 int nwfilterRegister(void);
 
-bool virNWFilterDriverIsWatchingFirewallD(void);
-
 #endif /* __VIR_NWFILTER_DRIVER_H__ */
