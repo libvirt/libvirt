@@ -647,7 +647,7 @@ virNWFilterSnoopReqFree(virNWFilterSnoopReqPtr req)
     VIR_FREE(req->ifname);
     VIR_FREE(req->linkdev);
     VIR_FREE(req->filtername);
-    virNWFilterHashTableFree(req->vars);
+    virHashFree(req->vars);
 
     virMutexDestroy(&req->lock);
     virCondDestroy(&req->threadStatusCond);
@@ -1633,7 +1633,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
         }
         /* a recycled req may still have filtername and vars */
         VIR_FREE(req->filtername);
-        virNWFilterHashTableFree(req->vars);
+        virHashFree(req->vars);
     } else {
         req = virNWFilterSnoopReqNew(ifkey);
         if (!req)

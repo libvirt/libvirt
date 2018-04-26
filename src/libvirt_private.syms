@@ -820,10 +820,7 @@ virNWFilterIPAddrMapShutdown;
 # conf/nwfilter_params.h
 virNWFilterHashTableCreate;
 virNWFilterHashTableEqual;
-virNWFilterHashTableFree;
-virNWFilterHashTablePut;
 virNWFilterHashTablePutAll;
-virNWFilterHashTableRemoveEntry;
 virNWFilterVarAccessGetVarName;
 virNWFilterVarAccessIsAvailable;
 virNWFilterVarAccessPrint;

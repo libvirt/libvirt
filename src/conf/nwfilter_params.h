@@ -72,12 +72,6 @@ int virNWFilterFormatParamAttributes(virBufferPtr buf,
                                      const char *filterref);
 
 virNWFilterHashTablePtr virNWFilterHashTableCreate(int n);
-void virNWFilterHashTableFree(virNWFilterHashTablePtr table);
-int virNWFilterHashTablePut(virNWFilterHashTablePtr table,
-                            const char *name,
-                            virNWFilterVarValuePtr val);
-void *virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr table,
-                                      const char *name);
 int virNWFilterHashTablePutAll(virNWFilterHashTablePtr src,
                                virNWFilterHashTablePtr dest);
 bool virNWFilterHashTableEqual(virNWFilterHashTablePtr a,

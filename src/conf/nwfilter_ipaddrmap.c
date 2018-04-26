@@ -67,7 +67,7 @@ virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr)
         if (!val)
             goto cleanup;
         addrCopy = NULL;
-        ret = virNWFilterHashTablePut(ipAddressMap, ifname, val);
+        ret = virHashUpdateEntry(ipAddressMap, ifname, val);
         if (ret < 0)
             virNWFilterVarValueFree(val);
         goto cleanup;
@@ -121,8 +121,7 @@ virNWFilterIPAddrMapDelIPAddr(const char *ifname, const char *ipaddr)
     } else {
  remove_entry:
         /* remove whole entry */
-        val = virNWFilterHashTableRemoveEntry(ipAddressMap, ifname);
-        virNWFilterVarValueFree(val);
+        virHashRemoveEntry(ipAddressMap, ifname);
         ret = 0;
     }
 
@@ -164,6 +163,6 @@ virNWFilterIPAddrMapInit(void)
 void
 virNWFilterIPAddrMapShutdown(void)
 {
-    virNWFilterHashTableFree(ipAddressMap);
+    virHashFree(ipAddressMap);
     ipAddressMap = NULL;
 }

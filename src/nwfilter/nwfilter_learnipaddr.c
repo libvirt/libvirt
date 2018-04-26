@@ -216,7 +216,7 @@ virNWFilterIPAddrLearnReqFree(virNWFilterIPAddrLearnReqPtr req)
         return;
 
     VIR_FREE(req->filtername);
-    virNWFilterHashTableFree(req->filterparams);
+    virHashFree(req->filterparams);
 
     VIR_FREE(req);
 }
@@ -765,7 +765,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
  err_dereg_req:
     virNWFilterDeregisterLearnReq(ifindex);
  err_free_ht:
-    virNWFilterHashTableFree(ht);
+    virHashFree(ht);
  err_free_req:
     virNWFilterIPAddrLearnReqFree(req);
  err_no_req:

@@ -123,7 +123,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
     if (!inst)
         return;
 
-    virNWFilterHashTableFree(inst->vars);
+    virHashFree(inst->vars);
     VIR_FREE(inst);
 }
 
@@ -200,7 +200,7 @@ virNWFilterCreateVarHashmap(char *macaddr,
         return NULL;
 
     if (virNWFilterVarHashmapAddStdValues(table, macaddr, ipaddr) < 0) {
-        virNWFilterHashTableFree(table);
+        virHashFree(table);
         return NULL;
     }
     return table;
@@ -295,7 +295,7 @@ virNWFilterCreateVarsFrom(virNWFilterHashTablePtr vars1,
     return res;
 
  err_exit:
-    virNWFilterHashTableFree(res);
+    virHashFree(res);
     return NULL;
 }
 
@@ -424,7 +424,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
  cleanup:
     if (ret < 0)
         virNWFilterInstReset(inst);
-    virNWFilterHashTableFree(tmpvars);
+    virHashFree(tmpvars);
     if (obj)
         virNWFilterObjUnlock(obj);
     return ret;
@@ -524,7 +524,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                     }
 
                     varAccess = virBufferContentAndReset(&buf);
-                    rc = virNWFilterHashTablePut(missing_vars, varAccess, val);
+                    rc = virHashUpdateEntry(missing_vars, varAccess, val);
                     VIR_FREE(varAccess);
                     if (rc < 0) {
                         virNWFilterVarValueFree(val);
@@ -562,7 +562,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                                                     useNewFilter,
                                                     driver);
 
-            virNWFilterHashTableFree(tmpvars);
+            virHashFree(tmpvars);
 
             virNWFilterObjUnlock(obj);
             if (rc < 0)
@@ -723,7 +723,7 @@ virNWFilterDoInstantiate(const unsigned char *vmuuid,
 
  err_exit:
     virNWFilterInstReset(&inst);
-    virNWFilterHashTableFree(missing_vars);
+    virHashFree(missing_vars);
 
     return rc;
 
@@ -832,10 +832,10 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverStatePtr driver,
                                   teardownOld, macaddr, driver,
                                   forceWithPendingReq);
 
-    virNWFilterHashTableFree(vars);
+    virHashFree(vars);
 
  err_exit_vars1:
-    virNWFilterHashTableFree(vars1);
+    virHashFree(vars1);
 
  err_exit:
     virNWFilterObjUnlock(obj);

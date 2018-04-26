@@ -2094,7 +2094,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
     virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def->filter);
-    virNWFilterHashTableFree(def->filterparams);
+    virHashFree(def->filterparams);
     def->filterparams = NULL;
 
     virNetDevBandwidthFree(def->bandwidth);
@@ -11047,7 +11047,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     goto error;
                 }
                 filter = virXMLPropString(cur, "filter");
-                virNWFilterHashTableFree(filterparams);
+                virHashFree(filterparams);
                 filterparams = virNWFilterParseParamAttributes(cur);
             } else if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
                        virXMLNodeNameEqual(cur, "state")) {
@@ -11680,7 +11680,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(vhost_path);
     VIR_FREE(localaddr);
     VIR_FREE(localport);
-    virNWFilterHashTableFree(filterparams);
+    virHashFree(filterparams);
 
     return def;
 

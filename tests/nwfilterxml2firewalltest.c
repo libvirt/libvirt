@@ -164,7 +164,7 @@ virNWFilterCreateVarsFrom(virNWFilterHashTablePtr vars1,
     return res;
 
  err_exit:
-    virNWFilterHashTableFree(res);
+    virHashFree(res);
     return NULL;
 }
 
@@ -175,7 +175,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInstPtr inst)
     if (!inst)
         return;
 
-    virNWFilterHashTableFree(inst->vars);
+    virHashFree(inst->vars);
     VIR_FREE(inst);
 }
 
@@ -263,7 +263,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDefPtr inc,
  cleanup:
     if (ret < 0)
         virNWFilterInstReset(inst);
-    virNWFilterHashTableFree(tmpvars);
+    virHashFree(tmpvars);
     VIR_FREE(xml);
     return ret;
 }
@@ -337,7 +337,7 @@ static int testSetOneParameter(virNWFilterHashTablePtr vars,
         val = virNWFilterVarValueCreateSimpleCopyValue(value);
         if (!val)
             goto cleanup;
-        if (virNWFilterHashTablePut(vars, name, val) < 0) {
+        if (virHashUpdateEntry(vars, name, val) < 0) {
             virNWFilterVarValueFree(val);
             goto cleanup;
         }
@@ -414,7 +414,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virBufferFreeAndReset(&buf);
     VIR_FREE(actualargv);
     virNWFilterInstReset(&inst);
-    virNWFilterHashTableFree(vars);
+    virHashFree(vars);
     return ret;
 }
 

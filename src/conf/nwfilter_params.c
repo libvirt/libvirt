@@ -631,64 +631,11 @@ hashDataFree(void *payload, const void *name ATTRIBUTE_UNUSED)
 }
 
 
-/**
- * virNWFilterHashTablePut:
- * @table: Pointer to a virNWFilterHashTable
- * @name: name of the key to enter
- * @val: The value associated with the key
- * @freeName: Whether the name must be freed on table destruction
- *
- * Returns 0 on success, -1 on failure.
- *
- * Put an entry into the hashmap replacing and freeing an existing entry
- * if one existed.
- */
-int
-virNWFilterHashTablePut(virNWFilterHashTablePtr table,
-                        const char *name,
-                        virNWFilterVarValuePtr val)
-{
-    if (!virHashLookup(table, name)) {
-        if (virHashAddEntry(table, name, val) < 0)
-            return -1;
-    } else {
-        if (virHashUpdateEntry(table, name, val) < 0)
-            return -1;
-    }
-    return 0;
-}
-
-
-/**
- * virNWFilterHashTableFree:
- * @table: Pointer to virNWFilterHashTable
- *
- * Free a hashtable de-allocating memory for all its entries.
- *
- * All hash tables within the NWFilter driver must use this
- * function to deallocate and free their content.
- */
-void
-virNWFilterHashTableFree(virNWFilterHashTablePtr table)
-{
-    virHashFree(table);
-}
-
-
 virNWFilterHashTablePtr
 virNWFilterHashTableCreate(int n)
 {
     return virHashCreate(n, hashDataFree);
 }
-
-
-void *
-virNWFilterHashTableRemoveEntry(virNWFilterHashTablePtr ht,
-                                const char *entry)
-{
-    return virHashSteal(ht, entry);
-}
-
 
 struct addToTableStruct {
     virNWFilterHashTablePtr target;
@@ -711,10 +658,7 @@ addToTable(void *payload, const void *name, void *data)
         return 0;
     }
 
-    if (virNWFilterHashTablePut(atts->target, (const char *)name, val) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not put variable '%s' into hashmap"),
-                       (const char *)name);
+    if (virHashUpdateEntry(atts->target, (const char *)name, val) < 0) {
         atts->errOccurred = 1;
         virNWFilterVarValueFree(val);
     }
@@ -814,7 +758,7 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
                         value = virNWFilterParseVarValue(val);
                         if (!value)
                             goto skip_entry;
-                        if (virNWFilterHashTablePut(table, nam, value) < 0)
+                        if (virHashUpdateEntry(table, nam, value) < 0)
                             goto err_exit;
                     }
                     value = NULL;
@@ -833,7 +777,7 @@ virNWFilterParseParamAttributes(xmlNodePtr cur)
     VIR_FREE(nam);
     VIR_FREE(val);
     virNWFilterVarValueFree(value);
-    virNWFilterHashTableFree(table);
+    virHashFree(table);
     return NULL;
 }
 

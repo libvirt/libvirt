@@ -312,7 +312,7 @@ virNWFilterIncludeDefFree(virNWFilterIncludeDefPtr inc)
 {
     if (!inc)
         return;
-    virNWFilterHashTableFree(inc->params);
+    virHashFree(inc->params);
     VIR_FREE(inc->filterref);
     VIR_FREE(inc);
 }
