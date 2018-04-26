@@ -35,23 +35,6 @@ enum howDetect {
   DETECT_STATIC = 2,
 };
 
-typedef struct _virNWFilterIPAddrLearnReq virNWFilterIPAddrLearnReq;
-typedef virNWFilterIPAddrLearnReq *virNWFilterIPAddrLearnReqPtr;
-struct _virNWFilterIPAddrLearnReq {
-    virNWFilterTechDriverPtr techdriver;
-    char ifname[IF_NAMESIZE];
-    int ifindex;
-    char linkdev[IF_NAMESIZE];
-    virMacAddr macaddr;
-    char *filtername;
-    virHashTablePtr filterparams;
-    virNWFilterDriverStatePtr driver;
-    enum howDetect howDetect;
-
-    int status;
-    volatile bool terminate;
-};
-
 int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                               const char *ifname,
                               int ifindex,
