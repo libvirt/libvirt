@@ -28,6 +28,9 @@
 #include "datatypes.h"
 #include "domain_conf.h"
 #include "domain_nwfilter.h"
+#include "virerror.h"
+
+#define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 static virDomainConfNWFilterDriverPtr nwfilterDriver;
 
@@ -44,8 +47,10 @@ virDomainConfNWFilterInstantiate(const char *vmname,
 {
     if (nwfilterDriver != NULL)
         return nwfilterDriver->instantiateFilter(vmname, vmuuid, net);
-    /* driver module not available -- don't indicate failure */
-    return 0;
+
+    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                   _("No network filter driver available"));
+    return -1;
 }
 
 void
