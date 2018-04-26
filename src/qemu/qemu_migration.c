@@ -3339,6 +3339,16 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     if (migrate_flags & (QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
                          QEMU_MONITOR_MIGRATE_NON_SHARED_INC)) {
         if (mig->nbd) {
+            /* Currently libvirt does not support setting up of the NBD
+             * non-shared storage migration with TLS. As we need to honour the
+             * VIR_MIGRATE_TLS flag, we need to reject such migration until
+             * we implement TLS for NBD. */
+            if (flags & VIR_MIGRATE_TLS) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("NBD migration with TLS is not supported"));
+                goto error;
+            }
+
             /* This will update migrate_flags on success */
             if (qemuMigrationSrcDriveMirror(driver, vm, mig,
                                             spec->dest.host.name,
