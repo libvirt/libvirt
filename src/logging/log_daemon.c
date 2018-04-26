@@ -128,6 +128,12 @@ virLogDaemonInhibitor(bool inhibit, void *opaque)
 {
     virLogDaemonPtr dmn = opaque;
 
+    /* virtlogd uses inhibition only to stop session daemon being killed after
+     * the specified timeout, for the system daemon this is taken care of by
+     * libvirtd and the dependencies between the services. */
+    if (virNetDaemonIsPrivileged(dmn->dmn))
+        return;
+
     if (inhibit)
         virNetDaemonAddShutdownInhibition(dmn->dmn);
     else
