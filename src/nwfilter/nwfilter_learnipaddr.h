@@ -28,6 +28,7 @@
 
 # include "conf/nwfilter_params.h"
 # include "nwfilter_tech_driver.h"
+# include "virnwfilterbindingdef.h"
 # include <net/if.h>
 
 enum howDetect {
@@ -36,12 +37,8 @@ enum howDetect {
 };
 
 int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
-                              const char *ifname,
+                              virNWFilterBindingDefPtr binding,
                               int ifindex,
-                              const char *linkdev,
-                              const virMacAddr *macaddr,
-                              const char *filtername,
-                              virHashTablePtr filterparams,
                               virNWFilterDriverStatePtr driver,
                               int howDetect);
 

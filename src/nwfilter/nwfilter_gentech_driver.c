@@ -626,12 +626,9 @@ virNWFilterDoInstantiate(virNWFilterTechDriverPtr techdriver,
             } else if (STRCASEEQ(learning, "any")) {
                 if (!virNWFilterHasLearnReq(ifindex)) {
                     rc = virNWFilterLearnIPAddress(techdriver,
-                                                   binding->portdevname,
+                                                   binding,
                                                    ifindex,
-                                                   binding->linkdevname,
-                                                   &binding->mac,
-                                                   filter->name,
-                                                   binding->filterparams, driver,
+                                                   driver,
                                                    DETECT_DHCP|DETECT_STATIC);
                 }
                 goto err_exit;
