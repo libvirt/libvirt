@@ -38,7 +38,6 @@
 #include "domain_conf.h"
 #include "domain_nwfilter.h"
 #include "nwfilter_driver.h"
-#include "virnwfilterbindingdef.h"
 #include "nwfilter_gentech_driver.h"
 #include "configmake.h"
 #include "virfile.h"
@@ -174,7 +173,6 @@ nwfilterStateInitialize(bool privileged,
                         virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                         void *opaque ATTRIBUTE_UNUSED)
 {
-    char *base = NULL;
     DBusConnection *sysbus = NULL;
 
     if (virDBusHasSystemBus() &&
@@ -189,6 +187,9 @@ nwfilterStateInitialize(bool privileged,
 
     driver->privileged = privileged;
     if (!(driver->nwfilters = virNWFilterObjListNew()))
+        goto error;
+
+    if (!(driver->bindings = virNWFilterBindingObjListNew()))
         goto error;
 
     if (!privileged)
@@ -230,14 +231,8 @@ nwfilterStateInitialize(bool privileged,
         goto error;
     }
 
-    if (VIR_STRDUP(base, SYSCONFDIR "/libvirt") < 0)
+    if (VIR_STRDUP(driver->configDir, SYSCONFDIR "/libvirt/nwfilter") < 0)
         goto error;
-
-    if (virAsprintf(&driver->configDir,
-                    "%s/nwfilter", base) == -1)
-        goto error;
-
-    VIR_FREE(base);
 
     if (virFileMakePathWithMode(driver->configDir, S_IRWXU) < 0) {
         virReportSystemError(errno, _("cannot create config directory '%s'"),
@@ -245,7 +240,19 @@ nwfilterStateInitialize(bool privileged,
         goto error;
     }
 
+    if (VIR_STRDUP(driver->bindingDir, LOCALSTATEDIR "/run/libvirt/nwfilter-binding") < 0)
+        goto error;
+
+    if (virFileMakePathWithMode(driver->bindingDir, S_IRWXU) < 0) {
+        virReportSystemError(errno, _("cannot create config directory '%s'"),
+                             driver->bindingDir);
+        goto error;
+    }
+
     if (virNWFilterObjListLoadAllConfigs(driver->nwfilters, driver->configDir) < 0)
+        goto error;
+
+    if (virNWFilterBindingObjListLoadAllConfigs(driver->bindings, driver->bindingDir) < 0)
         goto error;
 
     nwfilterDriverUnlock();
@@ -253,7 +260,6 @@ nwfilterStateInitialize(bool privileged,
     return 0;
 
  error:
-    VIR_FREE(base);
     nwfilterDriverUnlock();
     nwfilterStateCleanup();
 
@@ -333,8 +339,11 @@ nwfilterStateCleanup(void)
         nwfilterDriverRemoveDBusMatches();
 
         VIR_FREE(driver->configDir);
+        VIR_FREE(driver->bindingDir);
         nwfilterDriverUnlock();
     }
+
+    virObjectUnref(driver->bindings);
 
     /* free inactive nwfilters */
     virNWFilterObjListFree(driver->nwfilters);
@@ -647,13 +656,35 @@ nwfilterInstantiateFilter(const char *vmname,
                           const unsigned char *vmuuid,
                           virDomainNetDefPtr net)
 {
-    virNWFilterBindingDefPtr binding;
+    virNWFilterBindingObjPtr obj;
+    virNWFilterBindingDefPtr def;
     int ret;
 
-    if (!(binding = virNWFilterBindingDefForNet(vmname, vmuuid, net)))
+    obj = virNWFilterBindingObjListFindByPortDev(driver->bindings, net->ifname);
+    if (obj) {
+        virNWFilterBindingObjEndAPI(&obj);
+        return 0;
+    }
+
+    if (!(def = virNWFilterBindingDefForNet(vmname, vmuuid, net)))
         return -1;
-    ret = virNWFilterInstantiateFilter(driver, binding);
-    virNWFilterBindingDefFree(binding);
+
+    obj = virNWFilterBindingObjListAdd(driver->bindings,
+                                       def);
+    if (!obj) {
+        virNWFilterBindingDefFree(def);
+        return -1;
+    }
+
+    ret = virNWFilterInstantiateFilter(driver, def);
+
+    if (ret >= 0)
+        virNWFilterBindingObjSave(obj, driver->bindingDir);
+    else
+        virNWFilterBindingObjListRemove(driver->bindings, obj);
+
+    virNWFilterBindingObjEndAPI(&obj);
+
     return ret;
 }
 
@@ -661,18 +692,21 @@ nwfilterInstantiateFilter(const char *vmname,
 static void
 nwfilterTeardownFilter(virDomainNetDefPtr net)
 {
-    virNWFilterBindingDef binding = {
-        .portdevname = net->ifname,
-        .linkdevname = (net->type == VIR_DOMAIN_NET_TYPE_DIRECT ?
-                        net->data.direct.linkdev : NULL),
-        .mac = net->mac,
-        .filter = net->filter,
-        .filterparams = net->filterparams,
-        .ownername = NULL,
-        .owneruuid = {0},
-    };
-    if ((net->ifname) && (net->filter))
-        virNWFilterTeardownFilter(&binding);
+    virNWFilterBindingObjPtr obj;
+    virNWFilterBindingDefPtr def;
+    if (!net->ifname)
+        return;
+
+    obj = virNWFilterBindingObjListFindByPortDev(driver->bindings, net->ifname);
+    if (!obj)
+        return;
+
+    def = virNWFilterBindingObjGetDef(obj);
+    virNWFilterTeardownFilter(def);
+    virNWFilterBindingObjDelete(obj, driver->bindingDir);
+
+    virNWFilterBindingObjListRemove(driver->bindings, obj);
+    virNWFilterBindingObjEndAPI(&obj);
 }
 
 
