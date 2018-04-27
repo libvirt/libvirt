@@ -777,6 +777,15 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuMigrationParamsSetString:
+ * @migrParams: migration parameter object
+ * @param: parameter to set
+ * @value: new value
+ *
+ * Enables and sets the migration parameter @param in @migrParams. Returns 0 on
+ * success and -1 on error. Libvirt error is reported.
+ */
 static int
 qemuMigrationParamsSetString(qemuMigrationParamsPtr migParams,
                              qemuMigrationParam param,
@@ -787,6 +796,8 @@ qemuMigrationParamsSetString(qemuMigrationParamsPtr migParams,
 
     if (VIR_STRDUP(migParams->params[param].value.s, value) < 0)
         return -1;
+
+    migParams->params[param].set = true;
 
     return 0;
 }
