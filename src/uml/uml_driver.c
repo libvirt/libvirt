@@ -55,7 +55,6 @@
 #include "datatypes.h"
 #include "virlog.h"
 #include "domain_nwfilter.h"
-#include "nwfilter_conf.h"
 #include "virfile.h"
 #include "virfdstream.h"
 #include "configmake.h"
@@ -143,25 +142,6 @@ static int umlMonitorCommand(const struct uml_driver *driver,
 
 static struct uml_driver *uml_driver;
 
-static int
-umlVMFilterRebuild(virDomainObjListIterator iter, void *data)
-{
-    return virDomainObjListForEach(uml_driver->domains, iter, data);
-}
-
-static void
-umlVMDriverLock(void)
-{
-    umlDriverLock(uml_driver);
-}
-
-static void
-umlVMDriverUnlock(void)
-{
-    umlDriverUnlock(uml_driver);
-}
-
-
 static virDomainObjPtr
 umlDomObjFromDomainLocked(struct uml_driver *driver,
                           const unsigned char *uuid)
@@ -193,13 +173,6 @@ umlDomObjFromDomain(struct uml_driver *driver,
     return vm;
 }
 
-
-static virNWFilterCallbackDriver umlCallbackDriver = {
-    .name = "UML",
-    .vmFilterRebuild = umlVMFilterRebuild,
-    .vmDriverLock = umlVMDriverLock,
-    .vmDriverUnlock = umlVMDriverUnlock,
-};
 
 struct umlAutostartData {
     struct uml_driver *driver;
@@ -604,7 +577,6 @@ umlStateInitialize(bool privileged,
 
     VIR_FREE(userdir);
 
-    virNWFilterRegisterCallbackDriver(&umlCallbackDriver);
     return 0;
 
  out_of_memory:
@@ -697,7 +669,6 @@ umlStateCleanup(void)
         return -1;
 
     umlDriverLock(uml_driver);
-    virNWFilterRegisterCallbackDriver(&umlCallbackDriver);
     if (uml_driver->inotifyWatch != -1)
         virEventRemoveHandle(uml_driver->inotifyWatch);
     VIR_FORCE_CLOSE(uml_driver->inotifyFD);

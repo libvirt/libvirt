@@ -787,8 +787,6 @@ virDomainNumatuneSpecifiedMaxNode;
 
 
 # conf/nwfilter_conf.h
-virNWFilterCallbackDriversLock;
-virNWFilterCallbackDriversUnlock;
 virNWFilterChainSuffixTypeToString;
 virNWFilterConfLayerInit;
 virNWFilterConfLayerShutdown;
@@ -797,12 +795,10 @@ virNWFilterDefFree;
 virNWFilterDefParseFile;
 virNWFilterDefParseString;
 virNWFilterDeleteDef;
-virNWFilterInstFiltersOnAllVMs;
 virNWFilterJumpTargetTypeToString;
 virNWFilterPrintStateMatchFlags;
 virNWFilterPrintTCPFlags;
 virNWFilterReadLockFilterUpdates;
-virNWFilterRegisterCallbackDriver;
 virNWFilterRuleActionTypeToString;
 virNWFilterRuleDirectionTypeToString;
 virNWFilterRuleIsProtocolEthernet;
@@ -810,9 +806,8 @@ virNWFilterRuleIsProtocolIPv4;
 virNWFilterRuleIsProtocolIPv6;
 virNWFilterRuleProtocolTypeToString;
 virNWFilterSaveConfig;
-virNWFilterTriggerVMFilterRebuild;
+virNWFilterTriggerRebuild;
 virNWFilterUnlockFilterUpdates;
-virNWFilterUnRegisterCallbackDriver;
 virNWFilterWriteLockFilterUpdates;
 
 

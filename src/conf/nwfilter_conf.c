@@ -2819,121 +2819,6 @@ virNWFilterSaveConfig(const char *configDir,
 }
 
 
-int nCallbackDriver;
-#define MAX_CALLBACK_DRIVER 10
-static virNWFilterCallbackDriverPtr callbackDrvArray[MAX_CALLBACK_DRIVER];
-
-void
-virNWFilterRegisterCallbackDriver(virNWFilterCallbackDriverPtr cbd)
-{
-    if (nCallbackDriver < MAX_CALLBACK_DRIVER)
-        callbackDrvArray[nCallbackDriver++] = cbd;
-}
-
-
-void
-virNWFilterUnRegisterCallbackDriver(virNWFilterCallbackDriverPtr cbd)
-{
-    size_t i = 0;
-
-    while (i < nCallbackDriver && callbackDrvArray[i] != cbd)
-        i++;
-
-    if (i < nCallbackDriver) {
-        memmove(&callbackDrvArray[i], &callbackDrvArray[i+1],
-                (nCallbackDriver - i - 1) * sizeof(callbackDrvArray[i]));
-        callbackDrvArray[i] = 0;
-        nCallbackDriver--;
-    }
-}
-
-
-void
-virNWFilterCallbackDriversLock(void)
-{
-    size_t i;
-
-    for (i = 0; i < nCallbackDriver; i++)
-        callbackDrvArray[i]->vmDriverLock();
-}
-
-
-void
-virNWFilterCallbackDriversUnlock(void)
-{
-    size_t i;
-
-    for (i = 0; i < nCallbackDriver; i++)
-        callbackDrvArray[i]->vmDriverUnlock();
-}
-
-
-static virDomainObjListIterator virNWFilterDomainFWUpdateCB;
-static void *virNWFilterDomainFWUpdateOpaque;
-
-/**
- * virNWFilterInstFiltersOnAllVMs:
- * Apply all filters on all running VMs. Don't terminate in case of an
- * error. This should be called upon reloading of the driver.
- */
-int
-virNWFilterInstFiltersOnAllVMs(void)
-{
-    size_t i;
-    struct domUpdateCBStruct cb = {
-        .opaque = virNWFilterDomainFWUpdateOpaque,
-        .step = STEP_APPLY_CURRENT,
-        .skipInterfaces = NULL, /* not needed */
-    };
-
-    for (i = 0; i < nCallbackDriver; i++)
-        callbackDrvArray[i]->vmFilterRebuild(virNWFilterDomainFWUpdateCB,
-                                             &cb);
-
-    return 0;
-}
-
-
-int
-virNWFilterTriggerVMFilterRebuild(void)
-{
-    size_t i;
-    int ret = 0;
-    struct domUpdateCBStruct cb = {
-        .opaque = virNWFilterDomainFWUpdateOpaque,
-        .step = STEP_APPLY_NEW,
-        .skipInterfaces = virHashCreate(0, NULL),
-    };
-
-    if (!cb.skipInterfaces)
-        return -1;
-
-    for (i = 0; i < nCallbackDriver; i++) {
-        if (callbackDrvArray[i]->vmFilterRebuild(virNWFilterDomainFWUpdateCB,
-                                                 &cb) < 0)
-            ret = -1;
-    }
-
-    if (ret < 0) {
-        cb.step = STEP_TEAR_NEW; /* rollback */
-
-        for (i = 0; i < nCallbackDriver; i++)
-            callbackDrvArray[i]->vmFilterRebuild(virNWFilterDomainFWUpdateCB,
-                                                 &cb);
-    } else {
-        cb.step = STEP_TEAR_OLD; /* switch over */
-
-        for (i = 0; i < nCallbackDriver; i++)
-            callbackDrvArray[i]->vmFilterRebuild(virNWFilterDomainFWUpdateCB,
-                                                 &cb);
-    }
-
-    virHashFree(cb.skipInterfaces);
-
-    return ret;
-}
-
-
 int
 virNWFilterDeleteDef(const char *configDir,
                      virNWFilterDefPtr def)
@@ -3204,16 +3089,18 @@ virNWFilterDefFormat(const virNWFilterDef *def)
     return NULL;
 }
 
+static virNWFilterTriggerRebuildCallback rebuildCallback;
+static void *rebuildOpaque;
 
 int
-virNWFilterConfLayerInit(virDomainObjListIterator domUpdateCB,
+virNWFilterConfLayerInit(virNWFilterTriggerRebuildCallback cb,
                          void *opaque)
 {
     if (initialized)
         return -1;
 
-    virNWFilterDomainFWUpdateCB = domUpdateCB;
-    virNWFilterDomainFWUpdateOpaque = opaque;
+    rebuildCallback = cb;
+    rebuildOpaque = opaque;
 
     initialized = true;
 
@@ -3233,8 +3120,17 @@ virNWFilterConfLayerShutdown(void)
     virRWLockDestroy(&updateLock);
 
     initialized = false;
-    virNWFilterDomainFWUpdateOpaque = NULL;
-    virNWFilterDomainFWUpdateCB = NULL;
+    rebuildCallback = NULL;
+    rebuildOpaque = NULL;
+}
+
+
+int
+virNWFilterTriggerRebuild(void)
+{
+    if (rebuildCallback)
+        return rebuildCallback(rebuildOpaque);
+    return 0;
 }
 
 

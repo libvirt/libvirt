@@ -66,7 +66,6 @@
 #include "virfdstream.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
-#include "nwfilter_conf.h"
 #include "virinitctl.h"
 #include "virnetdev.h"
 #include "virnetdevtap.h"
@@ -95,31 +94,6 @@ static int lxcStateInitialize(bool privileged,
 static int lxcStateCleanup(void);
 virLXCDriverPtr lxc_driver = NULL;
 
-/* callbacks for nwfilter */
-static int
-lxcVMFilterRebuild(virDomainObjListIterator iter, void *data)
-{
-    return virDomainObjListForEach(lxc_driver->domains, iter, data);
-}
-
-static void
-lxcVMDriverLock(void)
-{
-    lxcDriverLock(lxc_driver);
-}
-
-static void
-lxcVMDriverUnlock(void)
-{
-    lxcDriverUnlock(lxc_driver);
-}
-
-static virNWFilterCallbackDriver lxcCallbackDriver = {
-    .name = "LXC",
-    .vmFilterRebuild = lxcVMFilterRebuild,
-    .vmDriverLock = lxcVMDriverLock,
-    .vmDriverUnlock = lxcVMDriverUnlock,
-};
 
 /**
  * lxcDomObjFromDomain:
@@ -1672,7 +1646,6 @@ static int lxcStateInitialize(bool privileged,
                                        NULL, NULL) < 0)
         goto cleanup;
 
-    virNWFilterRegisterCallbackDriver(&lxcCallbackDriver);
     virObjectUnref(caps);
     return 0;
 
@@ -1744,7 +1717,6 @@ static int lxcStateCleanup(void)
     if (lxc_driver == NULL)
         return -1;
 
-    virNWFilterUnRegisterCallbackDriver(&lxcCallbackDriver);
     virObjectUnref(lxc_driver->domains);
     virObjectUnref(lxc_driver->domainEventState);
 

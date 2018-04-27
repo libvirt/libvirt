@@ -276,7 +276,7 @@ virNWFilterObjTestUnassignDef(virNWFilterObjPtr obj)
 
     obj->wantRemoved = true;
     /* trigger the update on VMs referencing the filter */
-    if (virNWFilterTriggerVMFilterRebuild() < 0)
+    if (virNWFilterTriggerRebuild() < 0)
         rc = -1;
 
     obj->wantRemoved = false;
@@ -358,7 +358,7 @@ virNWFilterObjListAssignDef(virNWFilterObjListPtr nwfilters,
 
         obj->newDef = def;
         /* trigger the update on VMs referencing the filter */
-        if (virNWFilterTriggerVMFilterRebuild() < 0) {
+        if (virNWFilterTriggerRebuild() < 0) {
             obj->newDef = NULL;
             virNWFilterObjUnlock(obj);
             return NULL;

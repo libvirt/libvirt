@@ -546,20 +546,6 @@ struct _virNWFilterDef {
 };
 
 
-typedef enum {
-    STEP_APPLY_NEW,
-    STEP_TEAR_NEW,
-    STEP_TEAR_OLD,
-    STEP_APPLY_CURRENT,
-} UpdateStep;
-
-struct domUpdateCBStruct {
-    void *opaque;
-    UpdateStep step;
-    virHashTablePtr skipInterfaces;
-};
-
-
 void
 virNWFilterRuleDefFree(virNWFilterRuleDefPtr def);
 
@@ -567,7 +553,7 @@ void
 virNWFilterDefFree(virNWFilterDefPtr def);
 
 int
-virNWFilterTriggerVMFilterRebuild(void);
+virNWFilterTriggerRebuild(void);
 
 int
 virNWFilterDeleteDef(const char *configDir,
@@ -599,44 +585,15 @@ virNWFilterReadLockFilterUpdates(void);
 void
 virNWFilterUnlockFilterUpdates(void);
 
+typedef int (*virNWFilterTriggerRebuildCallback)(void *opaque);
+
 int
-virNWFilterConfLayerInit(virDomainObjListIterator domUpdateCB,
+virNWFilterConfLayerInit(virNWFilterTriggerRebuildCallback cb,
                          void *opaque);
 
 void
 virNWFilterConfLayerShutdown(void);
 
-int
-virNWFilterInstFiltersOnAllVMs(void);
-
-typedef int
-(*virNWFilterRebuild)(virDomainObjListIterator domUpdateCB,
-                      void *data);
-
-typedef void
-(*virNWFilterVoidCall)(void);
-
-typedef struct _virNWFilterCallbackDriver virNWFilterCallbackDriver;
-typedef virNWFilterCallbackDriver *virNWFilterCallbackDriverPtr;
-struct _virNWFilterCallbackDriver {
-    const char *name;
-
-    virNWFilterRebuild vmFilterRebuild;
-    virNWFilterVoidCall vmDriverLock;
-    virNWFilterVoidCall vmDriverUnlock;
-};
-
-void
-virNWFilterRegisterCallbackDriver(virNWFilterCallbackDriverPtr);
-
-void
-virNWFilterUnRegisterCallbackDriver(virNWFilterCallbackDriverPtr);
-
-void
-virNWFilterCallbackDriversLock(void);
-
-void
-virNWFilterCallbackDriversUnlock(void);
 
 char *
 virNWFilterPrintTCPFlags(uint8_t flags);

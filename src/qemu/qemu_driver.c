@@ -84,7 +84,6 @@
 #include "cpu/cpu.h"
 #include "virsysinfo.h"
 #include "domain_nwfilter.h"
-#include "nwfilter_conf.h"
 #include "virhook.h"
 #include "virstoragefile.h"
 #include "virfile.h"
@@ -163,28 +162,6 @@ static int qemuARPGetInterfaces(virDomainObjPtr vm,
                                 virDomainInterfacePtr **ifaces);
 
 static virQEMUDriverPtr qemu_driver;
-
-
-static void
-qemuVMDriverLock(void)
-{}
-static void
-qemuVMDriverUnlock(void)
-{}
-
-static int
-qemuVMFilterRebuild(virDomainObjListIterator iter, void *data)
-{
-    return virDomainObjListForEach(qemu_driver->domains, iter, data);
-}
-
-static virNWFilterCallbackDriver qemuCallbackDriver = {
-    .name = QEMU_DRIVER_NAME,
-    .vmFilterRebuild = qemuVMFilterRebuild,
-    .vmDriverLock = qemuVMDriverLock,
-    .vmDriverUnlock = qemuVMDriverUnlock,
-};
-
 
 /**
  * qemuDomObjFromDomain:
@@ -941,7 +918,6 @@ qemuStateInitialize(bool privileged,
 
     qemuProcessReconnectAll(qemu_driver);
 
-    virNWFilterRegisterCallbackDriver(&qemuCallbackDriver);
     return 0;
 
  error:
@@ -1081,7 +1057,6 @@ qemuStateCleanup(void)
     if (!qemu_driver)
         return -1;
 
-    virNWFilterUnRegisterCallbackDriver(&qemuCallbackDriver);
     virThreadPoolFree(qemu_driver->workerPool);
     virObjectUnref(qemu_driver->config);
     virObjectUnref(qemu_driver->hostdevMgr);

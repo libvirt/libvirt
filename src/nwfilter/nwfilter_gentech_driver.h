@@ -54,8 +54,8 @@ int virNWFilterTeardownFilter(virNWFilterBindingDefPtr binding);
 virHashTablePtr virNWFilterCreateVarHashmap(const char *macaddr,
                                             const virNWFilterVarValue *value);
 
-int virNWFilterDomainFWUpdateCB(virDomainObjPtr vm,
-                                void *data);
+int virNWFilterBuildAll(virNWFilterDriverStatePtr driver,
+                        bool newFilters);
 
 virNWFilterBindingDefPtr virNWFilterBindingDefForNet(const char *vmname,
                                                      const unsigned char *vmuuid,

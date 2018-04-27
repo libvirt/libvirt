@@ -163,6 +163,15 @@ nwfilterDriverInstallDBusMatches(DBusConnection *sysbus ATTRIBUTE_UNUSED)
 
 #endif /* HAVE_FIREWALLD */
 
+static int
+virNWFilterTriggerRebuildImpl(void *opaque)
+{
+    virNWFilterDriverStatePtr nwdriver = opaque;
+
+    return virNWFilterBuildAll(nwdriver, true);
+}
+
+
 /**
  * nwfilterStateInitialize:
  *
@@ -207,7 +216,7 @@ nwfilterStateInitialize(bool privileged,
     if (virNWFilterTechDriversInit(privileged) < 0)
         goto err_dhcpsnoop_shutdown;
 
-    if (virNWFilterConfLayerInit(virNWFilterDomainFWUpdateCB,
+    if (virNWFilterConfLayerInit(virNWFilterTriggerRebuildImpl,
                                  driver) < 0)
         goto err_techdrivers_shutdown;
 
@@ -302,15 +311,14 @@ nwfilterStateReload(void)
 
     nwfilterDriverLock();
     virNWFilterWriteLockFilterUpdates();
-    virNWFilterCallbackDriversLock();
 
     virNWFilterObjListLoadAllConfigs(driver->nwfilters, driver->configDir);
 
-    virNWFilterCallbackDriversUnlock();
     virNWFilterUnlockFilterUpdates();
-    nwfilterDriverUnlock();
 
-    virNWFilterInstFiltersOnAllVMs();
+    virNWFilterBuildAll(driver, false);
+
+    nwfilterDriverUnlock();
 
     return 0;
 }
@@ -547,7 +555,6 @@ nwfilterDefineXML(virConnectPtr conn,
 
     nwfilterDriverLock();
     virNWFilterWriteLockFilterUpdates();
-    virNWFilterCallbackDriversLock();
 
     if (!(def = virNWFilterDefParseString(xml)))
         goto cleanup;
@@ -572,7 +579,6 @@ nwfilterDefineXML(virConnectPtr conn,
     if (obj)
         virNWFilterObjUnlock(obj);
 
-    virNWFilterCallbackDriversUnlock();
     virNWFilterUnlockFilterUpdates();
     nwfilterDriverUnlock();
     return nwfilter;
@@ -588,7 +594,6 @@ nwfilterUndefine(virNWFilterPtr nwfilter)
 
     nwfilterDriverLock();
     virNWFilterWriteLockFilterUpdates();
-    virNWFilterCallbackDriversLock();
 
     if (!(obj = nwfilterObjFromNWFilter(nwfilter->uuid)))
         goto cleanup;
@@ -615,7 +620,6 @@ nwfilterUndefine(virNWFilterPtr nwfilter)
     if (obj)
         virNWFilterObjUnlock(obj);
 
-    virNWFilterCallbackDriversUnlock();
     virNWFilterUnlockFilterUpdates();
     nwfilterDriverUnlock();
     return ret;

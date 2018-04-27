@@ -153,9 +153,9 @@ virNWFilterVarHashmapAddStdValues(virHashTablePtr table,
         if (!val)
             return -1;
 
-        if (virHashAddEntry(table,
-                            NWFILTER_STD_VAR_MAC,
-                            val) < 0) {
+        if (virHashUpdateEntry(table,
+                               NWFILTER_STD_VAR_MAC,
+                               val) < 0) {
             virNWFilterVarValueFree(val);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Could not add variable 'MAC' to hashmap"));
@@ -168,9 +168,9 @@ virNWFilterVarHashmapAddStdValues(virHashTablePtr table,
         if (!val)
             return -1;
 
-        if (virHashAddEntry(table,
-                            NWFILTER_STD_VAR_IP,
-                            val) < 0) {
+        if (virHashUpdateEntry(table,
+                               NWFILTER_STD_VAR_IP,
+                               val) < 0) {
             virNWFilterVarValueFree(val);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Could not add variable 'IP' to hashmap"));
@@ -973,68 +973,113 @@ virNWFilterTeardownFilter(virNWFilterBindingDefPtr binding)
     return ret;
 }
 
+enum {
+    STEP_APPLY_NEW,
+    STEP_ROLLBACK,
+    STEP_SWITCH,
+    STEP_APPLY_CURRENT,
+};
 
-int
-virNWFilterDomainFWUpdateCB(virDomainObjPtr obj,
-                            void *data)
+static int
+virNWFilterBuildOne(virNWFilterDriverStatePtr driver,
+                    virNWFilterBindingDefPtr binding,
+                    virHashTablePtr skipInterfaces,
+                    int step)
 {
-    virDomainDefPtr vm = obj->def;
-    struct domUpdateCBStruct *cb = data;
-    size_t i;
     bool skipIface;
     int ret = 0;
+    VIR_DEBUG("Building filter for portdev=%s step=%d", binding->portdevname, step);
 
-    virObjectLock(obj);
-
-    if (virDomainObjIsActive(obj)) {
-        for (i = 0; i < vm->nnets; i++) {
-            virDomainNetDefPtr net = vm->nets[i];
-            virNWFilterBindingDefPtr binding;
-
-            if ((net->filter) && (net->ifname) &&
-                (binding = virNWFilterBindingDefForNet(
-                    vm->name, vm->uuid, net))) {
-
-                switch (cb->step) {
-                case STEP_APPLY_NEW:
-                    ret = virNWFilterUpdateInstantiateFilter(cb->opaque,
-                                                             binding,
-                                                             &skipIface);
-                    if (ret == 0 && skipIface) {
-                        /* filter tree unchanged -- no update needed */
-                        ret = virHashAddEntry(cb->skipInterfaces,
-                                              net->ifname,
-                                              (void *)~0);
-                    }
-                    break;
-
-                case STEP_TEAR_NEW:
-                    if (!virHashLookup(cb->skipInterfaces, net->ifname))
-                        ret = virNWFilterRollbackUpdateFilter(binding);
-                    break;
-
-                case STEP_TEAR_OLD:
-                    if (!virHashLookup(cb->skipInterfaces, net->ifname))
-                        ret = virNWFilterTearOldFilter(binding);
-                    break;
-
-                case STEP_APPLY_CURRENT:
-                    ret = virNWFilterInstantiateFilter(cb->opaque,
-                                                       binding);
-                    if (ret)
-                        virReportError(VIR_ERR_INTERNAL_ERROR,
-                                       _("Failure while applying current filter on "
-                                         "VM %s"), vm->name);
-                    break;
-                }
-                virNWFilterBindingDefFree(binding);
-                if (ret)
-                    break;
-            }
+    switch (step) {
+    case STEP_APPLY_NEW:
+        ret = virNWFilterUpdateInstantiateFilter(driver,
+                                                 binding,
+                                                 &skipIface);
+        if (ret == 0 && skipIface) {
+            /* filter tree unchanged -- no update needed */
+            ret = virHashAddEntry(skipInterfaces,
+                                  binding->portdevname,
+                                  (void *)~0);
         }
+        break;
+
+    case STEP_ROLLBACK:
+        if (!virHashLookup(skipInterfaces, binding->portdevname))
+            ret = virNWFilterRollbackUpdateFilter(binding);
+        break;
+
+    case STEP_SWITCH:
+        if (!virHashLookup(skipInterfaces, binding->portdevname))
+            ret = virNWFilterTearOldFilter(binding);
+        break;
+
+    case STEP_APPLY_CURRENT:
+        ret = virNWFilterInstantiateFilter(driver,
+                                           binding);
+        break;
     }
 
-    virObjectUnlock(obj);
+    return ret;
+}
+
+
+struct virNWFilterBuildData {
+    virNWFilterDriverStatePtr driver;
+    virHashTablePtr skipInterfaces;
+    int step;
+};
+
+static int
+virNWFilterBuildIter(virNWFilterBindingObjPtr binding, void *opaque)
+{
+    struct virNWFilterBuildData *data = opaque;
+    virNWFilterBindingDefPtr def = virNWFilterBindingObjGetDef(binding);
+
+    return virNWFilterBuildOne(data->driver, def,
+                               data->skipInterfaces, data->step);
+}
+
+int
+virNWFilterBuildAll(virNWFilterDriverStatePtr driver,
+                    bool newFilters)
+{
+    struct virNWFilterBuildData data = {
+        .driver = driver,
+    };
+    int ret = 0;
+
+    VIR_DEBUG("Build all filters newFilters=%d", newFilters);
+
+    if (newFilters) {
+        if (!(data.skipInterfaces = virHashCreate(0, NULL)))
+            return -1;
+
+        data.step = STEP_APPLY_NEW;
+        if (virNWFilterBindingObjListForEach(driver->bindings,
+                                             virNWFilterBuildIter,
+                                             &data) < 0)
+            ret = -1;
+
+        if (ret == -1) {
+            data.step = STEP_ROLLBACK;
+            virNWFilterBindingObjListForEach(driver->bindings,
+                                             virNWFilterBuildIter,
+                                             &data);
+        } else  {
+            data.step = STEP_SWITCH;
+            virNWFilterBindingObjListForEach(driver->bindings,
+                                             virNWFilterBuildIter,
+                                             &data);
+        }
+
+        virHashFree(data.skipInterfaces);
+    } else {
+        data.step = STEP_APPLY_CURRENT;
+        if (virNWFilterBindingObjListForEach(driver->bindings,
+                                             virNWFilterBuildIter,
+                                             &data) < 0)
+            ret = -1;
+    }
     return ret;
 }
 
