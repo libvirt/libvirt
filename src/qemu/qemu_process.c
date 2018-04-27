@@ -2952,7 +2952,7 @@ qemuProcessFiltersInstantiate(virDomainDefPtr def)
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
         if ((net->filter) && (net->ifname)) {
-            if (virDomainConfNWFilterInstantiate(def->uuid, net) < 0)
+            if (virDomainConfNWFilterInstantiate(def->name, def->uuid, net) < 0)
                 return 1;
         }
     }

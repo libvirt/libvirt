@@ -304,7 +304,7 @@ virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
     }
 
     if (net->filter &&
-        virDomainConfNWFilterInstantiate(vm->uuid, net) < 0)
+        virDomainConfNWFilterInstantiate(vm->name, vm->uuid, net) < 0)
         goto cleanup;
 
     ret = containerVeth;

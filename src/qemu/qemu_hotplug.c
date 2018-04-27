@@ -3016,7 +3016,8 @@ qemuDomainChangeNetFilter(virDomainObjPtr vm,
     virDomainConfNWFilterTeardown(olddev);
 
     if (newdev->filter &&
-        virDomainConfNWFilterInstantiate(vm->def->uuid, newdev) < 0) {
+        virDomainConfNWFilterInstantiate(vm->def->name,
+                                         vm->def->uuid, newdev) < 0) {
         virErrorPtr errobj;
 
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -3024,7 +3025,8 @@ qemuDomainChangeNetFilter(virDomainObjPtr vm,
                          "- attempting to restore old rules"),
                        olddev->ifname);
         virErrorPreserveLast(&errobj);
-        ignore_value(virDomainConfNWFilterInstantiate(vm->def->uuid, olddev));
+        ignore_value(virDomainConfNWFilterInstantiate(vm->def->name,
+                                                      vm->def->uuid, olddev));
         virErrorRestore(&errobj);
         return -1;
     }

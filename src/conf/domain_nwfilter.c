@@ -38,11 +38,12 @@ virDomainConfNWFilterRegister(virDomainConfNWFilterDriverPtr driver)
 }
 
 int
-virDomainConfNWFilterInstantiate(const unsigned char *vmuuid,
+virDomainConfNWFilterInstantiate(const char *vmname,
+                                 const unsigned char *vmuuid,
                                  virDomainNetDefPtr net)
 {
     if (nwfilterDriver != NULL)
-        return nwfilterDriver->instantiateFilter(vmuuid, net);
+        return nwfilterDriver->instantiateFilter(vmname, vmuuid, net);
     /* driver module not available -- don't indicate failure */
     return 0;
 }

@@ -642,7 +642,8 @@ nwfilterGetXMLDesc(virNWFilterPtr nwfilter,
 
 
 static int
-nwfilterInstantiateFilter(const unsigned char *vmuuid,
+nwfilterInstantiateFilter(const char *vmname ATTRIBUTE_UNUSED,
+                          const unsigned char *vmuuid,
                           virDomainNetDefPtr net)
 {
     return virNWFilterInstantiateFilter(driver, vmuuid, net);

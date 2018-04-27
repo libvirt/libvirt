@@ -137,7 +137,7 @@ umlConnectTapDevice(virDomainDefPtr vm,
     }
 
     if (net->filter) {
-        if (virDomainConfNWFilterInstantiate(vm->uuid, net) < 0) {
+        if (virDomainConfNWFilterInstantiate(vm->name, vm->uuid, net) < 0) {
             if (template_ifname)
                 VIR_FREE(net->ifname);
             goto error;
