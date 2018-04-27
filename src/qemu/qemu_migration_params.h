@@ -113,11 +113,6 @@ qemuMigrationParamsFetch(virQEMUDriverPtr driver,
                          qemuMigrationParamsPtr *migParams);
 
 int
-qemuMigrationParamsSetString(qemuMigrationParamsPtr migParams,
-                             qemuMigrationParam param,
-                             const char *value);
-
-int
 qemuMigrationParamsGetULL(qemuMigrationParamsPtr migParams,
                           qemuMigrationParam param,
                           unsigned long long *value);

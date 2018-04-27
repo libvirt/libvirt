@@ -777,6 +777,21 @@ qemuMigrationParamsApply(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuMigrationParamsSetString(qemuMigrationParamsPtr migParams,
+                             qemuMigrationParam param,
+                             const char *value)
+{
+    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_STRING) < 0)
+        return -1;
+
+    if (VIR_STRDUP(migParams->params[param].value.s, value) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /* qemuMigrationParamsEnableTLS
  * @driver: pointer to qemu driver
  * @vm: domain object
@@ -964,21 +979,6 @@ qemuMigrationParamsFetch(virQEMUDriverPtr driver,
  cleanup:
     virJSONValueFree(jsonParams);
     return ret;
-}
-
-
-int
-qemuMigrationParamsSetString(qemuMigrationParamsPtr migParams,
-                             qemuMigrationParam param,
-                             const char *value)
-{
-    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_STRING) < 0)
-        return -1;
-
-    if (VIR_STRDUP(migParams->params[param].value.s, value) < 0)
-        return -1;
-
-    return 0;
 }
 
 
