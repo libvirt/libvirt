@@ -125,5 +125,6 @@
   <features>
     <gic supported='no'/>
     <vmcoreinfo supported='no'/>
+    <genid supported='yes'/>
   </features>
 </domainCapabilities>

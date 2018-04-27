@@ -159,6 +159,7 @@ struct _virDomainCaps {
 
     virDomainCapsFeatureGIC gic;
     bool vmcoreinfo;
+    bool genid;
     /* add new domain features here */
 };
 

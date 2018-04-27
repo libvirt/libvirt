@@ -586,6 +586,9 @@ virDomainCapsFormat(virDomainCapsPtr const caps)
     virBufferAsprintf(&buf, "<vmcoreinfo supported='%s'/>\n",
                       caps->vmcoreinfo ? "yes" : "no");
 
+    virBufferAsprintf(&buf, "<genid supported='%s'/>\n",
+                      caps->genid ? "yes" : "no");
+
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</features>\n");
 

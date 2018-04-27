@@ -114,5 +114,6 @@
       </enum>
     </gic>
     <vmcoreinfo supported='no'/>
+    <genid supported='no'/>
   </features>
 </domainCapabilities>

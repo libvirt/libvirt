@@ -4943,6 +4943,8 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
     domCaps->vmcoreinfo = virQEMUCapsGet(qemuCaps,
                                          QEMU_CAPS_DEVICE_VMCOREINFO);
 
+    domCaps->genid = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMGENID);
+
     if (virQEMUCapsFillDomainOSCaps(os, firmwares, nfirmwares) < 0 ||
         virQEMUCapsFillDomainCPUCaps(caps, qemuCaps, domCaps) < 0 ||
         virQEMUCapsFillDomainIOThreadCaps(qemuCaps, domCaps) < 0 ||

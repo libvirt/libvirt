@@ -184,6 +184,7 @@
       <interleave>
         <ref name='gic'/>
         <ref name='vmcoreinfo'/>
+        <ref name='vmgenid'/>
       </interleave>
     </element>
   </define>
@@ -197,6 +198,12 @@
 
   <define name='vmcoreinfo'>
     <element name='vmcoreinfo'>
+      <ref name='supported'/>
+    </element>
+  </define>
+
+  <define name='vmgenid'>
+    <element name='genid'>
       <ref name='supported'/>
     </element>
   </define>

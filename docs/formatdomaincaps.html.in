@@ -434,6 +434,7 @@
       &lt;/enum&gt;
     &lt;/gic&gt;
     &lt;vmcoreinfo supported='yes'/&gt;
+    &lt;genid supported='yes'/&gt;
   &lt;/features&gt;
 &lt;/domainCapabilities&gt;
 </pre>
@@ -460,7 +461,11 @@
 
     <h4><a id="elementsvmcoreinfo">vmcoreinfo</a></h4>
 
-    <p>Reports whether the vmcoreinfo feature can be enabled</p>
+    <p>Reports whether the vmcoreinfo feature can be enabled.</p>
+
+    <h4><a id="elementsgenid">genid</a></h4>
+
+    <p>Reports whether the genid feature can be used by the domain.</p>
 
   </body>
 </html>
