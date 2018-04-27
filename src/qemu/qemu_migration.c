@@ -3561,26 +3561,27 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
  error:
     orig_err = virSaveLastError();
 
-    if (cancel &&
-        priv->job.current->status != QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED &&
-        virDomainObjIsActive(vm) &&
-        qemuDomainObjEnterMonitorAsync(driver, vm,
-                                       QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
-        qemuMonitorMigrateCancel(priv->mon);
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    }
+    if (virDomainObjIsActive(vm)) {
+        if (cancel &&
+            priv->job.current->status != QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED &&
+            qemuDomainObjEnterMonitorAsync(driver, vm,
+                                           QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
+            qemuMonitorMigrateCancel(priv->mon);
+            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        }
 
-    /* cancel any outstanding NBD jobs */
-    if (mig && mig->nbd)
-        qemuMigrationSrcCancelDriveMirror(driver, vm, false,
-                                          QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                          dconn);
+        /* cancel any outstanding NBD jobs */
+        if (mig && mig->nbd)
+            qemuMigrationSrcCancelDriveMirror(driver, vm, false,
+                                              QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                              dconn);
+
+        if (priv->job.current->status != QEMU_DOMAIN_JOB_STATUS_CANCELED)
+            priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
+    }
 
     if (iothread)
         qemuMigrationSrcStopTunnel(iothread, true);
-
-    if (priv->job.current->status != QEMU_DOMAIN_JOB_STATUS_CANCELED)
-        priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_FAILED;
 
     goto cleanup;
 
