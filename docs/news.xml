@@ -80,28 +80,6 @@
           supported. In fact, kernel has been supporting this since 4.10.
         </description>
       </change>
-      <change>
-        <summary>
-          logging: Introduce wildcard to log filters
-        </summary>
-        <description>
-          In an effort to deprecate the log_level variable in favour of the log
-          filters, introduce a wildcard filter, e.g. '1:*'. This change is most
-          noticeable during runtime using virt-admin, where the only way to
-          mimic the log_level's functionality has been to specify a number of
-          filters which can be a bit painful.
-        </description>
-      </change>
-      <change>
-        <summary>
-          qemu: Optionally disable ROM loading for PCI devices
-        </summary>
-        <description>
-          The <code>enabled</code> attribute of the <code>rom</code>
-          sub-element, usable for PCI devices, can be used for situations
-          where loading a PCI ROM is not desiderable.
-        </description>
-      </change>
     </section>
     <section title="Bug fixes">
       <change>
