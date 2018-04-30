@@ -1111,6 +1111,72 @@ cmdURI(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     return true;
 }
 
+
+/* Extracts the CPU definition XML strings from a file which may contain either
+ *  - just the CPU definitions,
+ *  - domain XMLs, or
+ *  - capabilities XMLs.
+ *
+ * Returns NULL terminated string list.
+ */
+static char **
+vshExtractCPUDefXMLs(vshControl *ctl,
+                     const char *xmlFile)
+{
+    char **cpus = NULL;
+    char *buffer = NULL;
+    char *xmlStr = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr *nodes = NULL;
+    size_t i;
+    int n;
+
+    if (virFileReadAll(xmlFile, VSH_MAX_XML_FILE, &buffer) < 0)
+        goto error;
+
+    if (virAsprintf(&xmlStr, "<container>%s</container>", buffer) < 0)
+        goto error;
+
+    if (!(xml = virXMLParseStringCtxt(xmlStr, xmlFile, &ctxt)))
+        goto error;
+
+    n = virXPathNodeSet("/container/cpu|"
+                        "/container/domain/cpu|"
+                        "/container/capabilities/host/cpu",
+                        ctxt, &nodes);
+    if (n < 0)
+        goto error;
+
+    if (n == 0) {
+        vshError(ctl, _("File '%s' does not contain any <cpu> element or "
+                        "valid domain or capabilities XML"), xmlFile);
+        goto error;
+    }
+
+    cpus = vshCalloc(ctl, n + 1, sizeof(const char *));
+
+    for (i = 0; i < n; i++) {
+        if (!(cpus[i] = virXMLNodeToString(xml, nodes[i]))) {
+            vshSaveLibvirtError();
+            goto error;
+        }
+    }
+
+ cleanup:
+    VIR_FREE(buffer);
+    VIR_FREE(xmlStr);
+    xmlFreeDoc(xml);
+    xmlXPathFreeContext(ctxt);
+    VIR_FREE(nodes);
+    return cpus;
+
+ error:
+    virStringListFree(cpus);
+    goto cleanup;
+}
+
+
 /*
  * "cpu-compare" command
  */
@@ -1138,13 +1204,9 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
 {
     const char *from = NULL;
     bool ret = false;
-    char *buffer;
     int result;
-    char *snippet = NULL;
+    char **cpus = NULL;
     unsigned int flags = 0;
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    xmlNodePtr node;
     virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "error"))
@@ -1153,27 +1215,10 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
-    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
+    if (!(cpus = vshExtractCPUDefXMLs(ctl, from)))
         return false;
 
-    /* try to extract the CPU element from as it would appear in a domain XML*/
-    if (!(xml = virXMLParseStringCtxt(buffer, from, &ctxt)))
-        goto cleanup;
-
-    if ((node = virXPathNode("/cpu|"
-                             "/domain/cpu|"
-                              "/capabilities/host/cpu", ctxt))) {
-        if (!(snippet = virXMLNodeToString(xml, node))) {
-            vshSaveLibvirtError();
-            goto cleanup;
-        }
-    } else {
-        vshError(ctl, _("File '%s' does not contain a <cpu> element or is not "
-                        "a valid domain or capabilities XML"), from);
-        goto cleanup;
-    }
-
-    result = virConnectCompareCPU(priv->conn, snippet, flags);
+    result = virConnectCompareCPU(priv->conn, cpus[0], flags);
 
     switch (result) {
     case VIR_CPU_COMPARE_INCOMPATIBLE:
@@ -1201,10 +1246,7 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(buffer);
-    VIR_FREE(snippet);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
+    virStringListFree(cpus);
 
     return ret;
 }
@@ -1240,17 +1282,9 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
 {
     const char *from = NULL;
     bool ret = false;
-    char *buffer;
     char *result = NULL;
     char **list = NULL;
     unsigned int flags = 0;
-    int count = 0;
-
-    xmlDocPtr xml = NULL;
-    xmlNodePtr *node_list = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    size_t i;
     virshControlPtr priv = ctl->privData;
 
     if (vshCommandOptBool(cmd, "features"))
@@ -1261,65 +1295,21 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
 
-    if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
+    if (!(list = vshExtractCPUDefXMLs(ctl, from)))
         return false;
 
-    /* add a separate container around the xml */
-    virBufferStrcat(&buf, "<container>", buffer, "</container>", NULL);
-    if (virBufferError(&buf))
-        goto no_memory;
-
-    VIR_FREE(buffer);
-    buffer = virBufferContentAndReset(&buf);
-
-
-    if (!(xml = virXMLParseStringCtxt(buffer, from, &ctxt)))
-        goto cleanup;
-
-    if ((count = virXPathNodeSet("//cpu[not(ancestor::cpus)]",
-                                 ctxt, &node_list)) == -1)
-        goto cleanup;
-
-    if (count == 0) {
-        vshError(ctl, _("No host CPU specified in '%s'"), from);
-        goto cleanup;
-    }
-
-    list = vshCalloc(ctl, count, sizeof(const char *));
-
-    for (i = 0; i < count; i++) {
-        if (!(list[i] = virXMLNodeToString(xml, node_list[i]))) {
-            vshSaveLibvirtError();
-            goto cleanup;
-        }
-    }
-
-    result = virConnectBaselineCPU(priv->conn,
-                                   (const char **)list, count, flags);
+    result = virConnectBaselineCPU(priv->conn, (const char **)list,
+                                   virStringListLength((const char **)list),
+                                   flags);
 
     if (result) {
         vshPrint(ctl, "%s", result);
         ret = true;
     }
 
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
     VIR_FREE(result);
-    if (list != NULL && count > 0) {
-        for (i = 0; i < count; i++)
-            VIR_FREE(list[i]);
-    }
-    VIR_FREE(list);
-    VIR_FREE(buffer);
-    VIR_FREE(node_list);
-
+    virStringListFree(list);
     return ret;
-
- no_memory:
-    vshError(ctl, "%s", _("Out of memory"));
-    ret = false;
-    goto cleanup;
 }
 
 /*
