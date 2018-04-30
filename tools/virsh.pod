@@ -585,7 +585,9 @@ features that block migration will not be included in the resulting CPU.
 
 =item B<cpu-compare> I<FILE> [I<--error>]
 
-Compare CPU definition from XML <file> with host CPU. The XML <file> may
+Compare CPU definition from XML <file> with host CPU. (See
+B<hypervisor-cpu-compare> command for comparing the CPU definition with the CPU
+which a specific hypervisor is able to provide on the host.) The XML <file> may
 contain either host or guest CPU definition. The host CPU definition is the
 <cpu> element and its contents as printed by B<capabilities> command. The
 guest CPU definition is the <cpu> element and its contents from domain XML
@@ -616,6 +618,31 @@ Echo back each I<arg>, separated by space.  If I<--shell> is
 specified, then the output will be single-quoted where needed, so that
 it is suitable for reuse in a shell context.  If I<--xml> is
 specified, then the output will be escaped for use in XML.
+
+=item B<hypervisor-cpu-compare> I<FILE> [I<virttype>] [I<emulator>] [I<arch>]
+[I<machine>] [I<--error>]
+
+Compare CPU definition from XML <file> with the CPU the hypervisor is able to
+provide on the host. (This is different from B<cpu-compare> which compares the
+CPU definition with the host CPU without considering any specific hypervisor
+and its abilities.)
+
+The XML I<FILE> may contain either a host or guest CPU definition. The host CPU
+definition is the <cpu> element and its contents as printed by the
+B<capabilities> command. The guest CPU definition is the <cpu> element and its
+contents from the domain XML definition or the CPU definition created from the
+host CPU model found in the domain capabilities XML (printed by the
+B<domcapabilities> command). In addition to the <cpu> element itself, this
+command accepts full domain XML, capabilities XML, or domain capabilities XML
+containing the CPU definition. For more information on guest CPU definition
+see: L<https://libvirt.org/formatdomain.html#elementsCPU>.
+
+The I<virttype> option specifies the virtualization type (usable in the 'type'
+attribute of the <domain> top level element from the domain XML). I<emulator>
+specifies the path to the emulator, I<arch> specifies the CPU architecture, and
+I<machine> specifies the machine type. If I<--error> is specified, the command
+will return an error when the given CPU is incompatible with the host CPU and a
+message providing more details about the incompatibility will be printed out.
 
 =back
 

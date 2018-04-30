@@ -1600,6 +1600,113 @@ cmdNodeMemoryTune(vshControl *ctl, const vshCmd *cmd)
     goto cleanup;
 }
 
+
+/*
+ * "hypervisor-cpu-compare" command
+ */
+static const vshCmdInfo info_hypervisor_cpu_compare[] = {
+    {.name = "help",
+     .data = N_("compare a CPU with the CPU created by a hypervisor on the host")
+    },
+    {.name = "desc",
+     .data = N_("compare CPU with hypervisor CPU")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_hypervisor_cpu_compare[] = {
+    VIRSH_COMMON_OPT_FILE(N_("file containing an XML CPU description")),
+    {.name = "virttype",
+     .type = VSH_OT_STRING,
+     .help = N_("virtualization type (/domain/@type)"),
+    },
+    {.name = "emulator",
+     .type = VSH_OT_STRING,
+     .help = N_("path to emulator binary (/domain/devices/emulator)"),
+    },
+    {.name = "arch",
+     .type = VSH_OT_STRING,
+     .help = N_("CPU architecture (/domain/os/type/@arch)"),
+    },
+    {.name = "machine",
+     .type = VSH_OT_STRING,
+     .help = N_("machine type (/domain/os/type/@machine)"),
+    },
+    {.name = "error",
+     .type = VSH_OT_BOOL,
+     .help = N_("report error if CPUs are incompatible")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdHypervisorCPUCompare(vshControl *ctl,
+                        const vshCmd *cmd)
+{
+    const char *from = NULL;
+    const char *virttype = NULL;
+    const char *emulator = NULL;
+    const char *arch = NULL;
+    const char *machine = NULL;
+    bool ret = false;
+    int result;
+    char **cpus = NULL;
+    unsigned int flags = 0;
+    virshControlPtr priv = ctl->privData;
+
+    if (vshCommandOptBool(cmd, "error"))
+        flags |= VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE;
+
+    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "emulator", &emulator) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0)
+        return false;
+
+    if (!(cpus = vshExtractCPUDefXMLs(ctl, from)))
+        return false;
+
+    result = virConnectCompareHypervisorCPU(priv->conn, emulator, arch,
+                                            machine, virttype, cpus[0], flags);
+
+    switch (result) {
+    case VIR_CPU_COMPARE_INCOMPATIBLE:
+        vshPrint(ctl,
+                 _("CPU described in %s is incompatible with the CPU provided "
+                   "by hypervisor on the host\n"),
+                 from);
+        goto cleanup;
+        break;
+
+    case VIR_CPU_COMPARE_IDENTICAL:
+        vshPrint(ctl,
+                 _("CPU described in %s is identical to the CPU provided by "
+                   "hypervisor on the host\n"),
+                 from);
+        break;
+
+    case VIR_CPU_COMPARE_SUPERSET:
+        vshPrint(ctl,
+                 _("The CPU provided by hypervisor on the host is a superset "
+                   "of CPU described in %s\n"),
+                 from);
+        break;
+
+    case VIR_CPU_COMPARE_ERROR:
+    default:
+        vshError(ctl, _("Failed to compare hypervisor CPU with %s"), from);
+        goto cleanup;
+    }
+
+    ret = true;
+
+ cleanup:
+    virStringListFree(cpus);
+    return ret;
+}
+
+
 const vshCmdDef hostAndHypervisorCmds[] = {
     {.name = "allocpages",
      .handler = cmdAllocpages,
@@ -1653,6 +1760,12 @@ const vshCmdDef hostAndHypervisorCmds[] = {
      .handler = cmdHostname,
      .opts = NULL,
      .info = info_hostname,
+     .flags = 0
+    },
+    {.name = "hypervisor-cpu-compare",
+     .handler = cmdHypervisorCPUCompare,
+     .opts = opts_hypervisor_cpu_compare,
+     .info = info_hypervisor_cpu_compare,
      .flags = 0
     },
     {.name = "maxvcpus",
