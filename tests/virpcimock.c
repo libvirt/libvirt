@@ -39,7 +39,6 @@ static int (*real_lstat)(const char *path, struct stat *sb);
 static int (*real___lxstat)(int ver, const char *path, struct stat *sb);
 static int (*real_stat)(const char *path, struct stat *sb);
 static int (*real___xstat)(int ver, const char *path, struct stat *sb);
-static char *(*real_canonicalize_file_name)(const char *path);
 static int (*real_open)(const char *path, int flags, ...);
 static int (*real_close)(int fd);
 static DIR * (*real_opendir)(const char *name);
@@ -811,7 +810,6 @@ init_syms(void)
     VIR_MOCK_REAL_INIT(access);
     VIR_MOCK_REAL_INIT_ALT(lstat, __lxstat);
     VIR_MOCK_REAL_INIT_ALT(stat, __xstat);
-    VIR_MOCK_REAL_INIT(canonicalize_file_name);
     VIR_MOCK_REAL_INIT(open);
     VIR_MOCK_REAL_INIT(close);
     VIR_MOCK_REAL_INIT(opendir);
@@ -965,25 +963,6 @@ stat(const char *path, struct stat *sb)
         VIR_FREE(newpath);
     } else {
         ret = real_stat(path, sb);
-    }
-    return ret;
-}
-
-char *
-canonicalize_file_name(const char *path)
-{
-    char *ret;
-
-    init_syms();
-
-    if (STRPREFIX(path, SYSFS_PCI_PREFIX)) {
-        char *newpath;
-        if (getrealpath(&newpath, path) < 0)
-            return NULL;
-        ret = real_canonicalize_file_name(newpath);
-        VIR_FREE(newpath);
-    } else {
-        ret = real_canonicalize_file_name(path);
     }
     return ret;
 }
