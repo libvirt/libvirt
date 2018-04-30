@@ -462,6 +462,13 @@ sc_prohibit_ctype_h:
 	halt='use c-ctype.h instead of ctype.h' \
 	  $(_sc_search_regexp)
 
+# We have our own wrapper for mocking purposes
+sc_prohibit_canonicalize_file_name:
+	@prohibit='\<canonicalize_file_name\(' \
+	exclude='exempt from syntax-check' \
+	halt='use virFileCanonicalizePath() instead of canonicalize_file_name()' \
+	  $(_sc_search_regexp)
+
 # Insist on correct types for [pug]id.
 sc_correct_id_types:
 	@prohibit='\<(int|long) *[pug]id\>' \
@@ -1207,6 +1214,9 @@ exclude_file_name_regexp--sc_prohibit_nonreentrant = \
 
 exclude_file_name_regexp--sc_prohibit_select = \
 	^cfg\.mk$$
+
+exclude_file_name_regexp--sc_prohibit_canonicalize_file_name = \
+  ^cfg\.mk$$
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
   ^(docs/hacking\.html\.in|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|(vircgroup|nss)mock|commandhelper)\.c|tools/wireshark/src/packet-libvirt\.c)$$

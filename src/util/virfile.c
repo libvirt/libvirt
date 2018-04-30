@@ -3309,7 +3309,7 @@ virFileSanitizePath(const char *path)
 char *
 virFileCanonicalizePath(const char *path)
 {
-    return canonicalize_file_name(path);
+    return canonicalize_file_name(path); /* exempt from syntax-check */
 }
 
 /**
