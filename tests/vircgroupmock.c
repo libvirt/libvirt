@@ -731,7 +731,7 @@ int open(const char *path, int flags, ...)
         va_list ap;
         mode_t mode;
         va_start(ap, flags);
-        mode = va_arg(ap, mode_t);
+        mode = (mode_t) va_arg(ap, int);
         va_end(ap);
         ret = real_open(newpath ? newpath : path, flags, mode);
     } else {
