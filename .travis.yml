@@ -118,8 +118,11 @@ script:
 
 after_failure:
   - echo '============================================================================'
-  - 'if [ -f $(pwd)/tests/test-suite.log ]; then
+  - 'ver=$(sed -n "s/AC_INIT(\[libvirt\], \[\([0-9.]*\)\],.*/\1/p" configure.ac);
+    if [ -f $(pwd)/tests/test-suite.log ]; then
         cat $(pwd)/tests/test-suite.log;
+    elif [ -f libvirt-$ver/_build/tests/test-suite.log ]; then
+        cat libvirt-$ver/_build/tests/test-suite.log;
     else
         echo "=== NO LOG FILE FOUND ===";
     fi'
