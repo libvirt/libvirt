@@ -2638,6 +2638,12 @@ testDomainRenameCallback(virDomainObjPtr privdom,
 
     virCheckFlags(0, -1);
 
+    if (strchr(new_name, '/')) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("name %s cannot contain '/'"), new_name);
+        return -1;
+    }
+
     if (VIR_STRDUP(new_dom_name, new_name) < 0)
         goto cleanup;
 
