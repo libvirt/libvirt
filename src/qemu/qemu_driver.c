@@ -20765,6 +20765,12 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
 
     virCheckFlags(0, ret);
 
+    if (strchr(new_name, '/')) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("name %s cannot contain '/'"), new_name);
+        return -1;
+    }
+
     cfg = virQEMUDriverGetConfig(driver);
 
     if (VIR_STRDUP(new_dom_name, new_name) < 0)
