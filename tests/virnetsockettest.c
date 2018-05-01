@@ -116,38 +116,67 @@ checkProtocols(bool *hasIPv4, bool *hasIPv6,
 }
 
 
-struct testTCPData {
+struct testSocketData {
     const char *lnode;
     int port;
     const char *cnode;
 };
 
-static int testSocketTCPAccept(const void *opaque)
+static int testSocketAccept(const void *opaque)
 {
     virNetSocketPtr *lsock = NULL; /* Listen socket */
     size_t nlsock = 0, i;
     virNetSocketPtr ssock = NULL; /* Server socket */
     virNetSocketPtr csock = NULL; /* Client socket */
-    const struct testTCPData *data = opaque;
+    const struct testSocketData *data = opaque;
     int ret = -1;
     char portstr[100];
+    char *tmpdir = NULL;
+    char *path = NULL;
+    char template[] = "/tmp/libvirt_XXXXXX";
 
-    snprintf(portstr, sizeof(portstr), "%d", data->port);
+    if (!data) {
+        virNetSocketPtr usock;
+        tmpdir = mkdtemp(template);
+        if (tmpdir == NULL) {
+            VIR_WARN("Failed to create temporary directory");
+            goto cleanup;
+        }
+        if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0)
+            goto cleanup;
 
-    if (virNetSocketNewListenTCP(data->lnode, portstr,
-                                 AF_UNSPEC,
-                                 &lsock, &nlsock) < 0)
-        goto cleanup;
+        if (virNetSocketNewListenUNIX(path, 0700, -1, getegid(), &usock) < 0)
+            goto cleanup;
+
+        if (VIR_ALLOC_N(lsock, 1) < 0) {
+            virObjectUnref(usock);
+            goto cleanup;
+        }
+
+        lsock[0] = usock;
+        nlsock = 1;
+    } else {
+        snprintf(portstr, sizeof(portstr), "%d", data->port);
+        if (virNetSocketNewListenTCP(data->lnode, portstr,
+                                     AF_UNSPEC,
+                                     &lsock, &nlsock) < 0)
+            goto cleanup;
+    }
 
     for (i = 0; i < nlsock; i++) {
         if (virNetSocketListen(lsock[i], 0) < 0)
             goto cleanup;
     }
 
-    if (virNetSocketNewConnectTCP(data->cnode, portstr,
-                                  AF_UNSPEC,
-                                  &csock) < 0)
-        goto cleanup;
+    if (!data) {
+        if (virNetSocketNewConnectUNIX(path, false, NULL, &csock) < 0)
+            goto cleanup;
+    } else {
+        if (virNetSocketNewConnectTCP(data->cnode, portstr,
+                                      AF_UNSPEC,
+                                      &csock) < 0)
+            goto cleanup;
+    }
 
     virObjectUnref(csock);
 
@@ -171,62 +200,15 @@ static int testSocketTCPAccept(const void *opaque)
     for (i = 0; i < nlsock; i++)
         virObjectUnref(lsock[i]);
     VIR_FREE(lsock);
+    VIR_FREE(path);
+    if (tmpdir)
+        rmdir(tmpdir);
     return ret;
 }
 #endif
 
 
 #ifndef WIN32
-static int testSocketUNIXAccept(const void *data ATTRIBUTE_UNUSED)
-{
-    virNetSocketPtr lsock = NULL; /* Listen socket */
-    virNetSocketPtr ssock = NULL; /* Server socket */
-    virNetSocketPtr csock = NULL; /* Client socket */
-    int ret = -1;
-
-    char *path = NULL;
-    char *tmpdir;
-    char template[] = "/tmp/libvirt_XXXXXX";
-
-    tmpdir = mkdtemp(template);
-    if (tmpdir == NULL) {
-        VIR_WARN("Failed to create temporary directory");
-        goto cleanup;
-    }
-    if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0)
-        goto cleanup;
-
-    if (virNetSocketNewListenUNIX(path, 0700, -1, getegid(), &lsock) < 0)
-        goto cleanup;
-
-    if (virNetSocketListen(lsock, 0) < 0)
-        goto cleanup;
-
-    if (virNetSocketNewConnectUNIX(path, false, NULL, &csock) < 0)
-        goto cleanup;
-
-    virObjectUnref(csock);
-
-    if (virNetSocketAccept(lsock, &ssock) != -1) {
-        char c = 'a';
-        if (virNetSocketWrite(ssock, &c, 1) != -1) {
-            VIR_DEBUG("Unexpected client socket present");
-            goto cleanup;
-        }
-    }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(path);
-    virObjectUnref(lsock);
-    virObjectUnref(ssock);
-    if (tmpdir)
-        rmdir(tmpdir);
-    return ret;
-}
-
-
 static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
 {
     virNetSocketPtr lsock = NULL; /* Listen socket */
@@ -456,28 +438,28 @@ mymain(void)
     }
 
     if (hasIPv4) {
-        struct testTCPData tcpData = { "127.0.0.1", freePort, "127.0.0.1" };
-        if (virTestRun("Socket TCP/IPv4 Accept", testSocketTCPAccept, &tcpData) < 0)
+        struct testSocketData tcpData = { "127.0.0.1", freePort, "127.0.0.1" };
+        if (virTestRun("Socket TCP/IPv4 Accept", testSocketAccept, &tcpData) < 0)
             ret = -1;
     }
     if (hasIPv6) {
-        struct testTCPData tcpData = { "::1", freePort, "::1" };
-        if (virTestRun("Socket TCP/IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
+        struct testSocketData tcpData = { "::1", freePort, "::1" };
+        if (virTestRun("Socket TCP/IPv6 Accept", testSocketAccept, &tcpData) < 0)
             ret = -1;
     }
     if (hasIPv6 && hasIPv4) {
-        struct testTCPData tcpData = { NULL, freePort, "127.0.0.1" };
-        if (virTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
+        struct testSocketData tcpData = { NULL, freePort, "127.0.0.1" };
+        if (virTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketAccept, &tcpData) < 0)
             ret = -1;
 
         tcpData.cnode = "::1";
-        if (virTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
+        if (virTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketAccept, &tcpData) < 0)
             ret = -1;
     }
 #endif
 
 #ifndef WIN32
-    if (virTestRun("Socket UNIX Accept", testSocketUNIXAccept, NULL) < 0)
+    if (virTestRun("Socket UNIX Accept", testSocketAccept, NULL) < 0)
         ret = -1;
 
     if (virTestRun("Socket UNIX Addrs", testSocketUNIXAddrs, NULL) < 0)
