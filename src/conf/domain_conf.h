@@ -875,9 +875,6 @@ typedef enum {
     VIR_DOMAIN_FS_WRPOLICY_LAST
 } virDomainFSWrpolicy;
 
-/* Allow 2 MB ram usage */
-# define VIR_DOMAIN_FS_RAM_DEFAULT_USAGE (1024 * 2)
-
 struct _virDomainFSDef {
     int type;
     int fsdriver; /* enum virDomainFSDriverType */
