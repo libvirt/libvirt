@@ -55,25 +55,45 @@ time_t time(time_t *t)
     return ret;
 }
 
+bool
+virNumaIsAvailable(void)
+{
+    return true;
+}
+
 int
 virNumaGetMaxNode(void)
 {
-   const int maxnodesNum = 7;
-
-   return maxnodesNum;
+   return 7;
 }
 
-#if WITH_NUMACTL && HAVE_NUMA_BITMASK_ISBITSET
-/*
- * In case libvirt is compiled with full NUMA support, we need to mock
- * this function in order to fake what numa nodes are available.
- */
+/* We shouldn't need to mock virNumaNodeIsAvailable() and *definitely* not
+ * virNumaNodesetIsAvailable(), but it seems to be the only way to get
+ * mocking to work with Clang on FreeBSD, so keep these duplicates around
+ * until we figure out a cleaner solution */
 bool
 virNumaNodeIsAvailable(int node)
 {
     return node >= 0 && node <= virNumaGetMaxNode();
 }
-#endif /* WITH_NUMACTL && HAVE_NUMA_BITMASK_ISBITSET */
+
+bool
+virNumaNodesetIsAvailable(virBitmapPtr nodeset)
+{
+    ssize_t bit = -1;
+
+    if (!nodeset)
+        return true;
+
+    while ((bit = virBitmapNextSetBit(nodeset, bit)) >= 0) {
+        if (virNumaNodeIsAvailable(bit))
+            continue;
+
+        return false;
+    }
+
+    return true;
+}
 
 char *
 virTPMCreateCancelPath(const char *devpath)
