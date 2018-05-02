@@ -22,7 +22,7 @@
 
 #include <config.h>
 
-#if defined(WITH_LIBXL) && defined(WITH_YAJL)
+#if defined(WITH_LIBXL) && defined(WITH_JANSSON)
 # include "virmock.h"
 # include <sys/stat.h>
 # include <unistd.h>
@@ -136,4 +136,4 @@ VIR_MOCK_IMPL_RET_ARGS(stat, int,
     return real_stat(path, sb);
 }
 
-#endif /* WITH_LIBXL && WITH_YAJL */
+#endif /* WITH_LIBXL && WITH_JANSSON */

@@ -544,7 +544,7 @@ libvirt_admin_la_CFLAGS = \
 libvirt_admin_la_CFLAGS += \
 		$(XDR_CFLAGS) \
 		$(CAPNG_CFLAGS) \
-		$(YAJL_CFLAGS) \
+		$(JANSSON_CFLAGS) \
 		$(SSH2_CFLAGS) \
 		$(SASL_CFLAGS) \
 		$(GNUTLS_CFLAGS) \
@@ -552,7 +552,7 @@ libvirt_admin_la_CFLAGS += \
 
 libvirt_admin_la_LIBADD += \
 		$(CAPNG_LIBS) \
-		$(YAJL_LIBS) \
+		$(JANSSON_LIBS) \
 		$(DEVMAPPER_LIBS) \
 		$(LIBXML_LIBS) \
 		$(SSH2_LIBS) \
@@ -994,14 +994,14 @@ libvirt_nss_la_SOURCES = \
 libvirt_nss_la_CFLAGS = \
 		-DLIBVIRT_NSS \
 		$(AM_CFLAGS) \
-		$(YAJL_CFLAGS) \
+		$(JANSSON_CFLAGS) \
 		$(NULL)
 libvirt_nss_la_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(NULL)
 
 libvirt_nss_la_LIBADD = \
-		$(YAJL_LIBS) \
+		$(JANSSON_LIBS) \
 		$(NULL)
 endif WITH_NSS
 

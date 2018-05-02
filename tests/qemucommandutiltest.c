@@ -76,7 +76,7 @@ mymain(void)
     int ret = 0;
     testQemuCommandBuildObjectFromJSONData data1;
 
-#if !WITH_YAJL
+#if !WITH_JANSSON
     fputs("libvirt not compiled with JSON support, skipping this test\n", stderr);
     return EXIT_AM_SKIP;
 #endif

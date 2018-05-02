@@ -330,7 +330,7 @@ BuildRequires: systemd-devel >= 185
 BuildRequires: libudev-devel >= 145
 %endif
 BuildRequires: libpciaccess-devel >= 0.10.9
-BuildRequires: yajl-devel
+BuildRequires: jansson-devel
 %if %{with_sanlock}
 BuildRequires: sanlock-devel >= 2.4
 %endif
@@ -1321,7 +1321,7 @@ rm -f po/stamp-po
            --without-apparmor \
            --without-hal \
            --with-udev \
-           --with-yajl \
+           --with-jansson \
            %{?arg_sanlock} \
            --with-libpcap \
            --with-macvtap \

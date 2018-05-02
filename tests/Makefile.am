@@ -46,7 +46,7 @@ AM_CFLAGS = \
 	$(SASL_CFLAGS) \
 	$(SELINUX_CFLAGS) \
 	$(APPARMOR_CFLAGS) \
-	$(YAJL_CFLAGS) \
+	$(JANSSON_CFLAGS) \
 	$(COVERAGE_CFLAGS) \
 	$(XDR_CFLAGS) \
 	$(WARN_CFLAGS)
@@ -331,9 +331,9 @@ if WITH_CIL
 test_programs += objectlocking
 endif WITH_CIL
 
-if WITH_YAJL
+if WITH_JANSSON
 test_programs += virjsontest
-endif WITH_YAJL
+endif WITH_JANSSON
 
 test_programs += \
 		networkxml2xmltest \
@@ -1219,15 +1219,15 @@ virdeterministichashmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 test_libraries += virdeterministichashmock.la
 
-if WITH_YAJL
+if WITH_JANSSON
 virmacmaptest_SOURCES = \
 	virmacmaptest.c testutils.h testutils.c
 virmacmaptest_LDADD = $(LDADDS)
 
 test_programs += virmacmaptest
-else ! WITH_YAJL
+else ! WITH_JANSSON
 EXTRA_DIST +=  virmacmaptest.c
-endif ! WITH_YAJL
+endif ! WITH_JANSSON
 
 virnetdevtest_SOURCES = \
 	virnetdevtest.c testutils.h testutils.c

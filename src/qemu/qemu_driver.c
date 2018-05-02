@@ -2092,7 +2092,7 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
      */
     if ((!useAgent) ||
         (ret < 0 && (acpiRequested || !flags))) {
-#if !WITH_YAJL
+#if !WITH_JANSSON
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("ACPI reboot is not supported without the JSON monitor"));
         goto endjob;
