@@ -157,6 +157,18 @@
       </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: TLS migration now enforces use of TLS for the NBD connection
+        </summary>
+        <description>
+          When the VIR_MIGRATE_TLS flag was used with the migration API libvirt
+          did not ensure that the NBD connection was using TLS as well. The code
+          now rejects such migration as the TLS transport for NBD is not ready
+          yet, but prevents a false sense of security that TLS would be used.
+          The support TLS for NBD will be added soon.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v4.1.0" date="2018-03-05">
