@@ -45,7 +45,9 @@ VIR_LOG_INIT("storage.storage_source_backend");
 static virStorageFileBackendPtr virStorageFileBackends[VIR_STORAGE_BACKENDS_MAX];
 static size_t virStorageFileBackendsCount;
 
-#define STORAGE_FILE_MODULE_DIR LIBDIR "/libvirt/storage-file"
+#if WITH_STORAGE_DIR || WITH_STORAGE_FS || WITH_STORAGE_GLUSTER
+
+# define STORAGE_FILE_MODULE_DIR LIBDIR "/libvirt/storage-file"
 
 static int
 virStorageFileLoadBackendModule(const char *name,
@@ -69,7 +71,7 @@ virStorageFileLoadBackendModule(const char *name,
 
     return ret;
 }
-
+#endif /* WITH_STORAGE_DIR || WITH_STORAGE_FS || WITH_STORAGE_GLUSTER */
 
 static int virStorageFileBackendOnceInit(void)
 {
