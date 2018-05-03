@@ -43,6 +43,7 @@ static char *(*real_canonicalize_file_name)(const char *path);
 static int (*real_open)(const char *path, int flags, ...);
 static int (*real_close)(int fd);
 static DIR * (*real_opendir)(const char *name);
+static char *(*real_virFileCanonicalizePath)(const char *path);
 
 /* Don't make static, since it causes problems with clang
  * when passed as an arg to virAsprintf()
@@ -814,6 +815,7 @@ init_syms(void)
     VIR_MOCK_REAL_INIT(open);
     VIR_MOCK_REAL_INIT(close);
     VIR_MOCK_REAL_INIT(opendir);
+    VIR_MOCK_REAL_INIT(virFileCanonicalizePath);
 }
 
 static void
@@ -1045,6 +1047,28 @@ close(int fd)
     if (remove_fd(fd) < 0)
         return -1;
     return real_close(fd);
+}
+
+char *
+virFileCanonicalizePath(const char *path)
+{
+    char *ret;
+
+    init_syms();
+
+    if (STRPREFIX(path, SYSFS_PCI_PREFIX)) {
+        char *newpath;
+
+        if (getrealpath(&newpath, path) < 0)
+            return NULL;
+
+        ret = real_virFileCanonicalizePath(newpath);
+        VIR_FREE(newpath);
+    } else {
+        ret = real_virFileCanonicalizePath(path);
+    }
+
+    return ret;
 }
 #else
 /* Nothing to override on non-__linux__ platforms */
