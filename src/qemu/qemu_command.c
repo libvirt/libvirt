@@ -6638,7 +6638,6 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
 {
     virArch hostarch = virArchFromHost();
     char *cpu = NULL, *cpu_flags = NULL;
-    bool hasHwVirt = false;
     int ret = -1;
     virBuffer cpu_buf = VIR_BUFFER_INITIALIZER;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -6648,26 +6647,6 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
         (def->cpu->mode != VIR_CPU_MODE_CUSTOM || def->cpu->model)) {
         if (qemuBuildCpuModelArgStr(driver, def, &cpu_buf, qemuCaps) < 0)
             goto cleanup;
-
-        /* Only 'svm' requires --enable-nesting. The nested 'vmx' patches now
-         * simply hook off the CPU features. */
-        if (ARCH_IS_X86(def->os.arch) &&
-            def->virtType == VIR_DOMAIN_VIRT_KVM) {
-            virCPUDefPtr cpuDef = NULL;
-
-            if (def->cpu->mode == VIR_CPU_MODE_CUSTOM)
-                cpuDef = def->cpu;
-            else if (def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
-                cpuDef = virQEMUCapsGetHostModel(qemuCaps, def->virtType,
-                                                 VIR_QEMU_CAPS_HOST_CPU_REPORTED);
-
-            if (cpuDef) {
-                int svm = virCPUCheckFeature(def->os.arch, cpuDef, "svm");
-                if (svm < 0)
-                    goto cleanup;
-                hasHwVirt = svm > 0;
-            }
-        }
     } else {
         /*
          * Need to force a 32-bit guest CPU type if
@@ -6856,9 +6835,6 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
     if (cpu) {
         virCommandAddArg(cmd, "-cpu");
         virCommandAddArgFormat(cmd, "%s%s", cpu, cpu_flags ? cpu_flags : "");
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NESTING) && hasHwVirt)
-            virCommandAddArg(cmd, "-enable-nesting");
     }
 
     ret = 0;

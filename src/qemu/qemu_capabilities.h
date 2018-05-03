@@ -105,7 +105,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 40 */
     X_QEMU_CAPS_FSDEV, /* -fstype filesystem passthrough */
-    QEMU_CAPS_NESTING, /* -enable-nesting (SVM/VMX) */
+    X_QEMU_CAPS_NESTING, /* -enable-nesting (SVM/VMX) */
     X_QEMU_CAPS_NAME_PROCESS, /* Is -name process= available */
     X_QEMU_CAPS_DRIVE_READONLY, /* -drive readonly=on|off */
     X_QEMU_CAPS_SMBIOS_TYPE, /* Is -smbios type= available */
