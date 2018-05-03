@@ -6147,11 +6147,8 @@ qemuBuildClockCommandLine(virCommandPtr cmd,
             case VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP:
                 if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM_PIT_TICK_POLICY)) {
                     /* do nothing - this is default for kvm-pit */
-                } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_TDF)) {
-                    /* -tdf switches to 'catchup' with userspace pit. */
-                    virCommandAddArg(cmd, "-tdf");
                 } else {
-                    /* can't catchup if we have neither pit mode */
+                    /* can't catchup if we don't have kvm-pit */
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("unsupported pit tickpolicy '%s'"),
                                    virDomainTimerTickpolicyTypeToString(def->clock.timers[i]->tickpolicy));
