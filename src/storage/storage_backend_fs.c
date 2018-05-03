@@ -31,10 +31,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-
 #include "virerror.h"
 #include "storage_backend_fs.h"
 #include "storage_util.h"
