@@ -759,7 +759,7 @@
       This provides a pool based on Virtuozzo storage. Virtuozzo Storage is
       a highly available distributed software-defined storage with built-in
       replication and disaster recovery. More detailed information about
-      Virtuozzo storage and its managment can be found here:
+      Virtuozzo storage and its management can be found here:
 
       <a href="https://openvz.org/Virtuozzo_Storage">Virtuozzo Storage</a>).
     </p>

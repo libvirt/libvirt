@@ -457,7 +457,7 @@
       (first release in the middle of Jan, then skip the Feb release), giving
       a total of 11 releases a year. The Python and Perl modules will aim to
       release at the same time as the core libvirt module. Other modules have
-      independant ad-hoc releases with no fixed time schedle.
+      independent ad-hoc releases with no fixed time schedule.
     </p>
 
     <h2><a id="numbering">Release numbering</a></h2>

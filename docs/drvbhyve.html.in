@@ -239,7 +239,7 @@ to let a guest boot or start a guest using:</p>
 
 <pre>start --console domname</pre>
 
-<p><b>NB:</b> An bootloader configured to require user interaction will prevent
+<p><b>NB:</b> A bootloader configured to require user interaction will prevent
 the domain from starting (and thus <code>virsh console</code> or <code>start
 --console</code> from functioning) until the user interacts with it manually on
 the VM host. Because users typically do not have access to the VM host,

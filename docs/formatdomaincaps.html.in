@@ -81,7 +81,7 @@
 
     <h3><a id="elementsCPUAllocation">CPU Allocation</a></h3>
 
-    <p>Before any devices capability occurs, there might be a info on domain
+    <p>Before any devices capability occurs, there might be info on domain
     wide capabilities, e.g. virtual CPUs:</p>
 
 <pre>

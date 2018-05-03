@@ -133,7 +133,7 @@
       </dd>
       <dt><code>serial</code></dt>
       <dd>
-        This is an number that starts from 1 and increases
+        This is a number that starts from 1 and increases
         each time a method call packet is sent. A reply or
         stream packet will have a serial number matching the
         original method call packet serial. Events always

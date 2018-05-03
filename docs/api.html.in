@@ -155,7 +155,7 @@
           </ul>
       </li>
       <li><b>Enumeration</b> [virConnectList..., virConnectNumOf...]
-      <p>Used to enumerate a set of object available to an given
+      <p>Used to enumerate a set of object available to a given
       hypervisor connection such as:</p>
           <ul>
             <li>

@@ -199,7 +199,7 @@
       return an error indicating it is not supported. Likewise libvirt will
       make reasonable efforts to keep API calls working across hypervisor
       releases even if the underlying implementation changes. In cases where
-      this is impossible, an suitable error will be reported. The list of
+      this is impossible, a suitable error will be reported. The list of
       APIs which have implementations <a href="hvsupport.html">is detailed separately</a>.
     </p>
 

@@ -11,7 +11,7 @@
     <ul>
       <li>The virtual network driver
           <br /><br />
-          This provides a isolated bridge device (ie no physical NICs
+          This provides an isolated bridge device (ie no physical NICs
           enslaved). Guest TAP devices are attached to this bridge.
           Guests can talk to each other and the host, and optionally the
           wider world.

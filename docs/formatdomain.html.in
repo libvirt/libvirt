@@ -622,7 +622,7 @@
 
         <code>order</code> allows to specify the order to add the online vcpus.
         For hypervisors/platforms that require to insert multiple vcpus at once
-        the order may be duplicated accross all vcpus that need to be
+        the order may be duplicated across all vcpus that need to be
         enabled at once. Specifying order is not necessary, vcpus are then
         added in an arbitrary order. If order info is used, it must be used for
         all online vcpus. Hypervisors may clear or update ordering information
@@ -4058,7 +4058,7 @@
           pcie-switch-upstream-port, and of course for this to work
           properly, you will need to decrease the pcie-expander-bus'
           busNr accordingly so that there are enough unused bus
-          numbers above it to accomodate giving out one bus number for
+          numbers above it to accommodate giving out one bus number for
           the upstream-port and one for each downstream-port (in
           addition to the pcie-root-port and the pcie-expander-bus
           itself).
@@ -4212,7 +4212,7 @@
       <dd>This is the fully qualified path of the file associated
         with the lockspace. The offset specifies where the lease
         is stored within the file. If the lock manager does not
-        require a offset, just pass 0.
+        require an offset, just pass 0.
       </dd>
     </dl>
 
@@ -4867,7 +4867,7 @@
       (<span class="since">Since 0.10.0</span>). For example, in order
       to work properly with both an 802.1Qbh switch and an Open vSwitch
       switch, you may choose to specify no type, but both
-      an <code>profileid</code> (in case the switch is 802.1Qbh) and
+      a <code>profileid</code> (in case the switch is 802.1Qbh) and
       an <code>interfaceid</code> (in case the switch is Open vSwitch)
       (you may also omit the other attributes, such as managerid,
       typeid, or profileid, to be filled in from the
@@ -6174,7 +6174,7 @@ qemu-kvm -net nic,model=? /dev/null
               set to an empty string, then VNC access is disabled. The
               <code>keymap</code> attribute specifies the keymap to use. It is
               possible to set a limit on the validity of the password by giving
-              an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
+              a timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
               assumed to be in UTC. The <code>connected</code> attribute allows
               control of connected client during password changes. VNC accepts
               <code>keep</code> value only <span class="since">since 0.9.3</span>.
@@ -6216,7 +6216,7 @@ qemu-kvm -net nic,model=? /dev/null
               <code>passwd</code> attribute is set to an empty string, then
               SPICE access is disabled. The <code>keymap</code> attribute
               specifies the keymap to use. It is possible to set a limit on
-              the validity of the password by giving an timestamp
+              the validity of the password by giving a timestamp
               <code>passwdValidTo='2010-04-09T15:51:00'</code> assumed to be
               in UTC.
             </p>

@@ -429,7 +429,7 @@ be considered secure against exploits of the host OS. The sVirt SELinux
 driver provides a way to secure containers even when the "user" namespace
 is not used. The cost is that writing a policy to allow execution of
 arbitrary OS is not practical. The SELinux sVirt policy is typically
-tailored to work with an simpler application confinement use case,
+tailored to work with a simpler application confinement use case,
 as provided by the "libvirt-sandbox" project.
 </p>
 

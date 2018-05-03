@@ -76,7 +76,7 @@ SANLOCKOPTS="-w 0"
       configuration file for each libvirt driver that is using
       sanlock. For QEMU, we will edit <code>/etc/libvirt/qemu-sanlock.conf</code>
       There is one mandatory parameter that needs to be set,
-      the <code>host_id</code>. This is a integer between
+      the <code>host_id</code>. This is an integer between
       1 and 2000, which must be set to a <strong>unique</strong>
       value on each host running virtual machines.
     </p>

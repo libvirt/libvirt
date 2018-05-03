@@ -437,7 +437,7 @@ ethernet0.checkMACAddress = "false"
     <dl>
         <dt><code>auto</code></dt>
         <dd>
-            This isn't a actual controller model. If specified the ESX driver
+            This isn't an actual controller model. If specified the ESX driver
             tries to detect the SCSI controller model referenced in the
             <code>.vmdk</code> file and use it. Autodetection fails when a
             SCSI controller has multiple disks attached and the SCSI controller

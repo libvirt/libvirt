@@ -396,7 +396,7 @@ polkit.addRule(function(action, subject) {
       To achieve this we need to write a rule which checks
       whether the <code>connect_driver</code> attribute
       is <code>LXC</code> and the <code>domain_name</code>
-      attribute is <code>demo</code>, and match on a action
+      attribute is <code>demo</code>, and match on an action
       name of <code>org.libvirt.api.domain.getattr</code>. Using
       the javascript rules format, this ends up written as
     </p>
