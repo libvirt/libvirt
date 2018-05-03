@@ -3300,6 +3300,19 @@ virFileSanitizePath(const char *path)
 }
 
 /**
+ * virFileCanonicalizePath:
+ *
+ * Returns the canonical representation of @path.
+ *
+ * The returned string must be freed after use.
+ */
+char *
+virFileCanonicalizePath(const char *path)
+{
+    return canonicalize_file_name(path);
+}
+
+/**
  * virFileRemoveLastComponent:
  *
  * For given path cut off the last component. If there's no dir

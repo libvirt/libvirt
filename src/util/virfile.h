@@ -218,6 +218,7 @@ int virFileGetMountReverseSubtree(const char *mtabpath,
                                   size_t *nmountsret) ATTRIBUTE_RETURN_CHECK;
 
 char *virFileSanitizePath(const char *path);
+char *virFileCanonicalizePath(const char *path) ATTRIBUTE_NOINLINE;
 
 enum {
     VIR_FILE_OPEN_NONE        = 0,
