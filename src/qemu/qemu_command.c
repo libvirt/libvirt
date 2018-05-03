@@ -6894,50 +6894,6 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
 }
 
 
-static int
-qemuBuildObsoleteAccelArg(virCommandPtr cmd,
-                          const virDomainDef *def,
-                          virQEMUCapsPtr qemuCaps)
-{
-    bool disableKVM = false;
-    bool enableKVM = false;
-
-    switch ((int)def->virtType) {
-    case VIR_DOMAIN_VIRT_QEMU:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-            disableKVM = true;
-        break;
-
-    case VIR_DOMAIN_VIRT_KQEMU:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("the QEMU binary does not support kqemu"));
-        break;
-
-    case VIR_DOMAIN_VIRT_KVM:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KVM)) {
-            enableKVM = true;
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("the QEMU binary does not support kvm"));
-            return -1;
-        }
-        break;
-
-    default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("the QEMU binary does not support %s"),
-                       virDomainVirtTypeToString(def->virtType));
-        return -1;
-    }
-
-    if (disableKVM)
-        virCommandAddArg(cmd, "-no-kvm");
-    if (enableKVM)
-        virCommandAddArg(cmd, "-enable-kvm");
-
-    return 0;
-}
-
 static bool
 qemuAppendKeyWrapMachineParm(virBuffer *buf, virQEMUCapsPtr qemuCaps,
                              int flag, const char *pname, int pstate)
@@ -7036,7 +6992,6 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     virTristateSwitch smm = def->features[VIR_DOMAIN_FEATURE_SMM];
     virCPUDefPtr cpu = def->cpu;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    bool obsoleteAccel = false;
     size_t i;
     int ret = -1;
 
@@ -7050,12 +7005,16 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     virCommandAddArg(cmd, "-machine");
     virBufferAdd(&buf, def->os.machine, -1);
 
-    if (def->virtType == VIR_DOMAIN_VIRT_QEMU)
+    if (def->virtType == VIR_DOMAIN_VIRT_QEMU) {
         virBufferAddLit(&buf, ",accel=tcg");
-    else if (def->virtType == VIR_DOMAIN_VIRT_KVM)
+    } else if (def->virtType == VIR_DOMAIN_VIRT_KVM) {
         virBufferAddLit(&buf, ",accel=kvm");
-    else
-        obsoleteAccel = true;
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("the QEMU binary does not support %s"),
+                       virDomainVirtTypeToString(def->virtType));
+        return -1;
+    }
 
     /* To avoid the collision of creating USB controllers when calling
      * machine->init in QEMU, it needs to set usb=off
@@ -7234,10 +7193,6 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         qemuAppendLoadparmMachineParm(&buf, def);
 
     virCommandAddArgBuffer(cmd, &buf);
-
-    if (obsoleteAccel &&
-        qemuBuildObsoleteAccelArg(cmd, def, qemuCaps) < 0)
-        goto cleanup;
 
     ret = 0;
  cleanup:
