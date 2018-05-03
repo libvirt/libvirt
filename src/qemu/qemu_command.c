@@ -7005,14 +7005,37 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     virCommandAddArg(cmd, "-machine");
     virBufferAdd(&buf, def->os.machine, -1);
 
-    if (def->virtType == VIR_DOMAIN_VIRT_QEMU) {
+    switch (def->virtType) {
+    case VIR_DOMAIN_VIRT_QEMU:
         virBufferAddLit(&buf, ",accel=tcg");
-    } else if (def->virtType == VIR_DOMAIN_VIRT_KVM) {
+        break;
+
+    case VIR_DOMAIN_VIRT_KVM:
         virBufferAddLit(&buf, ",accel=kvm");
-    } else {
+        break;
+
+    case VIR_DOMAIN_VIRT_KQEMU:
+    case VIR_DOMAIN_VIRT_XEN:
+    case VIR_DOMAIN_VIRT_LXC:
+    case VIR_DOMAIN_VIRT_UML:
+    case VIR_DOMAIN_VIRT_OPENVZ:
+    case VIR_DOMAIN_VIRT_TEST:
+    case VIR_DOMAIN_VIRT_VMWARE:
+    case VIR_DOMAIN_VIRT_HYPERV:
+    case VIR_DOMAIN_VIRT_VBOX:
+    case VIR_DOMAIN_VIRT_PHYP:
+    case VIR_DOMAIN_VIRT_PARALLELS:
+    case VIR_DOMAIN_VIRT_BHYVE:
+    case VIR_DOMAIN_VIRT_VZ:
+    case VIR_DOMAIN_VIRT_NONE:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("the QEMU binary does not support %s"),
                        virDomainVirtTypeToString(def->virtType));
+        return -1;
+
+    case VIR_DOMAIN_VIRT_LAST:
+    default:
+        virReportEnumRangeError(virDomainVirtType, def->virtType);
         return -1;
     }
 
