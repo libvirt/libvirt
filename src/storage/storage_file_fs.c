@@ -160,7 +160,7 @@ virStorageFileBackendFileGetUniqueIdentifier(virStorageSourcePtr src)
     virStorageFileBackendFsPrivPtr priv = src->drv->priv;
 
     if (!priv->canonpath) {
-        if (!(priv->canonpath = canonicalize_file_name(src->path))) {
+        if (!(priv->canonpath = virFileCanonicalizePath(src->path))) {
             virReportSystemError(errno, _("can't canonicalize path '%s'"),
                                  src->path);
             return NULL;

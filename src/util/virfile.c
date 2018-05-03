@@ -1597,7 +1597,7 @@ virFileResolveLinkHelper(const char *linkpath,
             return VIR_STRDUP_QUIET(*resultpath, linkpath) < 0 ? -1 : 0;
     }
 
-    *resultpath = canonicalize_file_name(linkpath);
+    *resultpath = virFileCanonicalizePath(linkpath);
 
     return *resultpath == NULL ? -1 : 0;
 }
