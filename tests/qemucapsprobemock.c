@@ -37,6 +37,7 @@
         } \
     } while (0)
 
+static bool first = true;
 
 static void
 printLineSkipEmpty(const char *line,
@@ -60,9 +61,22 @@ int
 qemuMonitorSend(qemuMonitorPtr mon,
                 qemuMonitorMessagePtr msg)
 {
+    char *reformatted;
+
     REAL_SYM(realQemuMonitorSend);
 
-    fprintf(stderr, "%s", msg->txBuffer);
+    if (!(reformatted = virJSONStringReformat(msg->txBuffer, true))) {
+        fprintf(stderr, "Failed to reformat command string '%s'\n", msg->txBuffer);
+        abort();
+    }
+
+    if (first)
+        first = false;
+    else
+        printLineSkipEmpty("\n", stdout);
+
+    printLineSkipEmpty(reformatted, stdout);
+    VIR_FREE(reformatted);
 
     return realQemuMonitorSend(mon, msg);
 }
@@ -77,7 +91,6 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
                              const char *line,
                              qemuMonitorMessagePtr msg)
 {
-    static bool first = true;
     virJSONValuePtr value = NULL;
     char *json = NULL;
     int ret;
@@ -93,14 +106,14 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
             abort();
         }
 
-        if (first) {
+        /* Ignore QMP greeting */
+        if (virJSONValueObjectHasKey(value, "QMP"))
+            goto cleanup;
+
+        if (first)
             first = false;
-        } else {
-            /* Ignore QMP greeting if it's not the first one */
-            if (virJSONValueObjectHasKey(value, "QMP"))
-                goto cleanup;
-            putchar('\n');
-        }
+        else
+            printLineSkipEmpty("\n", stdout);
 
         printLineSkipEmpty(json, stdout);
     }
