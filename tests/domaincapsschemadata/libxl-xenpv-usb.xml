@@ -4,6 +4,7 @@
   <machine>xenpv</machine>
   <arch>x86_64</arch>
   <vcpu max='512'/>
+  <iothreads supported='no'/>
   <os supported='yes'>
     <loader supported='no'/>
   </os>

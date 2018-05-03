@@ -2,6 +2,7 @@
   <path>/usr/sbin/bhyve</path>
   <domain>bhyve</domain>
   <arch>x86_64</arch>
+  <iothreads supported='no'/>
   <os supported='yes'>
     <loader supported='yes'>
       <value>/foo/bar</value>
