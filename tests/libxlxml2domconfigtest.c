@@ -211,6 +211,8 @@ mymain(void)
     DO_TEST("multiple-ip");
     DO_TEST("fullvirt-cpuid");
 
+    unlink("libxl-driver.log");
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
