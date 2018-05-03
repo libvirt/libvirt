@@ -841,6 +841,7 @@ VirtualBox
 Summary: Libxl driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
+Obsoletes: libvirt-daemon-driver-xen < 4.3.0
 
 %description daemon-driver-libxl
 The Libxl driver plugin for the libvirtd daemon, providing
