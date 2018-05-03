@@ -734,8 +734,6 @@ if test "$enable_test_locking" = "yes"; then
 fi
 AM_CONDITIONAL([WITH_CIL],[test "$enable_test_locking" = "yes"])
 
-LIBVIRT_GETTEXT
-
 dnl Cygwin, MinGW and MSVC checks
 LIBVIRT_WIN_CHECK_COMMON
 LIBVIRT_WIN_CHECK_CYGWIN
