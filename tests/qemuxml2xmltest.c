@@ -824,7 +824,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     DO_TEST("q35-virt-manager-basic",
             QEMU_CAPS_KVM,
-            QEMU_CAPS_NO_KVM_PIT,
             QEMU_CAPS_ICH9_DISABLE_S3,
             QEMU_CAPS_ICH9_DISABLE_S4,
             QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,

@@ -3710,11 +3710,9 @@ virQEMUCapsInitQMPBasicArch(virQEMUCapsPtr qemuCaps)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
     }
 
-    /* HPET and KVM PIT are x86 specific */
-    if (ARCH_IS_X86(qemuCaps->arch)) {
+    /* HPET is x86 specific */
+    if (ARCH_IS_X86(qemuCaps->arch))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_HPET);
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
-    }
 }
 
 

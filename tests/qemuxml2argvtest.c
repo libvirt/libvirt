@@ -873,7 +873,7 @@ mymain(void)
     DO_TEST("clock-variable", NONE);
     DO_TEST("clock-france", NONE);
     DO_TEST("clock-hpet-off", NONE);
-    DO_TEST("clock-catchup", NONE);
+    DO_TEST("clock-catchup", QEMU_CAPS_KVM_PIT_TICK_POLICY);
     DO_TEST("cpu-kvmclock", QEMU_CAPS_ENABLE_KVM);
     DO_TEST("cpu-host-kvmclock", QEMU_CAPS_ENABLE_KVM);
     DO_TEST("kvmclock", QEMU_CAPS_KVM);
@@ -2519,7 +2519,6 @@ mymain(void)
 
     DO_TEST("kvm-pit-delay", QEMU_CAPS_KVM_PIT_TICK_POLICY);
     DO_TEST("kvm-pit-discard", QEMU_CAPS_KVM_PIT_TICK_POLICY);
-    DO_TEST("no-kvm-pit-device", NONE);
 
     DO_TEST("panic",
             QEMU_CAPS_DEVICE_PANIC);

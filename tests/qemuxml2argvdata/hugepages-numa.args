@@ -24,7 +24,6 @@ host-nodes=1-3,policy=bind \
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc,driftfix=slew \
--no-kvm-pit-reinjection \
 -no-hpet \
 -no-shutdown \
 -global PIIX4_PM.disable_s3=1 \

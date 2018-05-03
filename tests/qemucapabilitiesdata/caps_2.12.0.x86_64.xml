@@ -5,7 +5,6 @@
   <usedQMP/>
   <flag name='kvm'/>
   <flag name='no-hpet'/>
-  <flag name='no-kvm-pit'/>
   <flag name='spice'/>
   <flag name='boot-index'/>
   <flag name='hda-duplex'/>

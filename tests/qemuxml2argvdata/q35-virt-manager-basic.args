@@ -17,7 +17,6 @@ QEMU_AUDIO_DRV=spice \
 path=/tmp/lib/domain--1-virt-manager-basic/monitor.sock,server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc,driftfix=slew \
--no-kvm-pit-reinjection \
 -no-hpet \
 -no-shutdown \
 -global ICH9-LPC.disable_s3=1 \
