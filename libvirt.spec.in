@@ -184,6 +184,11 @@
 %if 0%{?fedora}
     %define with_wireshark 0%{!?_without_wireshark:1}
 %endif
+%if 0%{?fedora} || 0%{?rhel} > 7
+    %define wireshark_plugindir %(pkg-config --variable plugindir wireshark)
+%else
+    %define wireshark_plugindir %{_libdir}/wireshark/plugins
+%endif
 
 # Enable libssh transport for new enough distros
 %if 0%{?fedora}
@@ -1386,7 +1391,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-backend/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-backend/*.a
 %if %{with_wireshark}
-rm -f $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/libvirt.la
+rm -f $RPM_BUILD_ROOT%{wireshark_plugindir}/libvirt.la
 %endif
 
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
@@ -2097,7 +2102,7 @@ exit 0
 
 %if %{with_wireshark}
 %files wireshark
-%{_libdir}/wireshark/plugins/libvirt.so
+%{wireshark_plugindir}/libvirt.so
 %endif
 
 %files nss
