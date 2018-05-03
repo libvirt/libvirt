@@ -38,6 +38,21 @@
     } while (0)
 
 
+static void
+printLineSkipEmpty(const char *line,
+                   FILE *fp)
+{
+    const char *p;
+
+    for (p = line; *p; p++) {
+        if (p[0] == '\n' && p[1] == '\n')
+            continue;
+
+        fputc(*p, fp);
+    }
+}
+
+
 static int (*realQemuMonitorSend)(qemuMonitorPtr mon,
                                   qemuMonitorMessagePtr msg);
 
@@ -74,8 +89,6 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
     if (ret == 0 &&
         (value = virJSONValueFromString(line)) &&
         (json = virJSONValueToString(value, 1))) {
-        char *p;
-        bool skip = false;
 
         if (first) {
             first = false;
@@ -86,14 +99,7 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
             putchar('\n');
         }
 
-        for (p = json; *p; p++) {
-            if (skip && *p == '\n') {
-                continue;
-            } else {
-                skip = *p == '\n';
-                putchar(*p);
-            }
-        }
+        printLineSkipEmpty(json, stdout);
     }
 
  cleanup:
