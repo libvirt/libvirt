@@ -1423,30 +1423,32 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
         if (!tmp[1])
             break;
 
+        /* concatenate block which was broken up for readability */
         if (*(tmp + 1) != '\n') {
             *tmp = ' ';
             tmp++;
+            continue;
+        }
+
+        /* Cut off a single reply. */
+        *(tmp + 1) = '\0';
+
+        if (response) {
+            if (qemuMonitorTestFullAddItem(ret, fileName, command,
+                                           response, commandln) < 0)
+                goto error;
+            command = NULL;
+            response = NULL;
+        }
+
+        /* Move the @tmp and @singleReply. */
+        tmp += 2;
+
+        if (!command) {
+            commandln = line;
+            command = tmp;
         } else {
-            /* Cut off a single reply. */
-            *(tmp + 1) = '\0';
-
-            if (response) {
-                if (qemuMonitorTestFullAddItem(ret, fileName, command,
-                                               response, commandln) < 0)
-                    goto error;
-                command = NULL;
-                response = NULL;
-            }
-
-            /* Move the @tmp and @singleReply. */
-            tmp += 2;
-
-            if (!command) {
-                commandln = line;
-                command = tmp;
-            } else {
-                response = tmp;
-            }
+            response = tmp;
         }
     }
 
