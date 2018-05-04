@@ -86,9 +86,12 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
 
     ret = realQemuMonitorJSONIOProcessLine(mon, line, msg);
 
-    if (ret == 0 &&
-        (value = virJSONValueFromString(line)) &&
-        (json = virJSONValueToString(value, 1))) {
+    if (ret == 0) {
+        if (!(value = virJSONValueFromString(line)) ||
+            !(json = virJSONValueToString(value, true))) {
+            fprintf(stderr, "Failed to reformat reply string '%s'\n", line);
+            abort();
+        }
 
         if (first) {
             first = false;
