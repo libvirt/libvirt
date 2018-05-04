@@ -9661,7 +9661,9 @@ cmdQemuMonitorEvent(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptBool(cmd, "domain"))
-        dom = virshCommandOptDomain(ctl, cmd, NULL);
+        if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+            goto cleanup;
+
     if (vshEventStart(ctl, timeout) < 0)
         goto cleanup;
 
