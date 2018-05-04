@@ -1114,8 +1114,9 @@ cmdURI(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
 /* Extracts the CPU definition XML strings from a file which may contain either
  *  - just the CPU definitions,
- *  - domain XMLs, or
- *  - capabilities XMLs.
+ *  - domain XMLs,
+ *  - capabilities XMLs, or
+ *  - domain capabilities XMLs.
  *
  * Returns NULL terminated string list.
  */
@@ -1143,20 +1144,37 @@ vshExtractCPUDefXMLs(vshControl *ctl,
 
     n = virXPathNodeSet("/container/cpu|"
                         "/container/domain/cpu|"
-                        "/container/capabilities/host/cpu",
+                        "/container/capabilities/host/cpu|"
+                        "/container/domainCapabilities/cpu/"
+                            "mode[@name='host-model' and @supported='yes']",
                         ctxt, &nodes);
     if (n < 0)
         goto error;
 
     if (n == 0) {
         vshError(ctl, _("File '%s' does not contain any <cpu> element or "
-                        "valid domain or capabilities XML"), xmlFile);
+                        "valid domain XML, host capabilities XML, or "
+                        "domain capabilities XML"), xmlFile);
         goto error;
     }
 
     cpus = vshCalloc(ctl, n + 1, sizeof(const char *));
 
     for (i = 0; i < n; i++) {
+        /* If the user provided domain capabilities XML, we need to replace
+         * <mode ...> element with <cpu>. */
+        if (xmlStrEqual(nodes[i]->name, BAD_CAST "mode")) {
+            xmlNodeSetName(nodes[i], (const xmlChar *)"cpu");
+            while (nodes[i]->properties) {
+                if (xmlRemoveProp(nodes[i]->properties) < 0) {
+                    vshError(ctl,
+                             _("Cannot extract CPU definition from domain "
+                               "capabilities XML"));
+                    goto error;
+                }
+            }
+        }
+
         if (!(cpus[i] = virXMLNodeToString(xml, nodes[i]))) {
             vshSaveLibvirtError();
             goto error;
