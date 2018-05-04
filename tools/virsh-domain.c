@@ -13445,7 +13445,9 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (vshCommandOptBool(cmd, "domain"))
-        dom = virshCommandOptDomain(ctl, cmd, NULL);
+        if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+            goto cleanup;
+
     if (vshEventStart(ctl, timeout) < 0)
         goto cleanup;
 
