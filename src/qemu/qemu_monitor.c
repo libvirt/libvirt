@@ -48,6 +48,9 @@
 # include "libvirt_qemu_probes.h"
 #endif
 
+#define __QEMU_MONITOR_PRIV_H_ALLOW__
+#include "qemu_monitor_priv.h"
+
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.qemu_monitor");
@@ -1043,6 +1046,14 @@ qemuMonitorNextCommandID(qemuMonitorPtr mon)
 
     ignore_value(virAsprintf(&id, "libvirt-%d", ++mon->nextSerial));
     return id;
+}
+
+
+/* for use only in the test suite */
+void
+qemuMonitorResetCommandID(qemuMonitorPtr mon)
+{
+    mon->nextSerial = 0;
 }
 
 
