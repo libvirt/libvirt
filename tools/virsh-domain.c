@@ -9796,19 +9796,17 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     const vshCmdOpt *opt = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    bool pad = false;
     virJSONValuePtr pretty = NULL;
 
     dom = virshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
 
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        if (pad)
-            virBufferAddChar(&buf, ' ');
-        pad = true;
-        virBufferAdd(&buf, opt->data, -1);
-    }
+    while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
+        virBufferAsprintf(&buf, "%s ", opt->data);
+
+    virBufferTrim(&buf, " ", -1);
+
     if (virBufferError(&buf)) {
         vshError(ctl, "%s", _("Failed to collect command"));
         goto cleanup;
