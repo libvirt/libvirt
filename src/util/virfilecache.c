@@ -157,9 +157,8 @@ virFileCacheLoad(virFileCachePtr cache,
     }
 
     if (!(loadData = cache->handlers.loadFile(file, name, cache->priv))) {
-        virErrorPtr err = virGetLastError();
         VIR_WARN("Failed to load cached data from '%s' for '%s': %s",
-                 file, name, err ? NULLSTR(err->message) : "unknown error");
+                 file, name, virGetLastErrorMessage());
         virResetLastError();
         ret = 0;
         goto cleanup;
