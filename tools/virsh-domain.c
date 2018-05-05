@@ -91,9 +91,7 @@ virshDomainDefine(virConnectPtr conn, const char *xml, unsigned int flags)
          * try again.
          */
         if (!dom) {
-            virErrorPtr err = virGetLastError();
-            if (err &&
-                (err->code == VIR_ERR_NO_SUPPORT) &&
+            if ((virGetLastErrorCode() == VIR_ERR_NO_SUPPORT) &&
                 (flags == VIR_DOMAIN_DEFINE_VALIDATE))
                 dom = virDomainDefineXML(conn, xml);
         }

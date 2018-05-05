@@ -123,8 +123,7 @@ virshDomainState(vshControl *ctl,
     if (!priv->useGetInfo) {
         int state;
         if (virDomainGetState(dom, &state, reason, 0) < 0) {
-            virErrorPtr err = virGetLastError();
-            if (err && err->code == VIR_ERR_NO_SUPPORT)
+            if (virGetLastErrorCode() == VIR_ERR_NO_SUPPORT)
                 priv->useGetInfo = true;
             else
                 return -1;

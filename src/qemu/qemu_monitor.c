@@ -748,8 +748,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque)
             /* Already have an error, so clear any new error */
             virResetLastError();
         } else {
-            virErrorPtr err = virGetLastError();
-            if (!err)
+            if (virGetLastErrorCode() == VIR_ERR_OK)
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Error while processing monitor IO"));
             virCopyLastError(&mon->lastError);
@@ -1029,7 +1028,7 @@ qemuMonitorClose(qemuMonitorPtr mon)
     /* Propagate existing monitor error in case the current thread has no
      * error set.
      */
-    if (mon->lastError.code != VIR_ERR_OK && !virGetLastError())
+    if (mon->lastError.code != VIR_ERR_OK && virGetLastErrorCode() == VIR_ERR_OK)
         virSetError(&mon->lastError);
 
     virObjectUnlock(mon);

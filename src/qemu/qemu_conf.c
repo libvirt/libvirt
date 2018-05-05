@@ -298,8 +298,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     if (privileged &&
         virFileFindHugeTLBFS(&cfg->hugetlbfs, &cfg->nhugetlbfs) < 0) {
         /* This however is not implemented on all platforms. */
-        virErrorPtr err = virGetLastError();
-        if (err && err->code != VIR_ERR_NO_SUPPORT)
+        if (virGetLastErrorCode() != VIR_ERR_NO_SUPPORT)
             goto error;
     }
 

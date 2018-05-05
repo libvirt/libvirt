@@ -49,7 +49,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
                                        &nodeinfo.nodes, &nodeinfo.sockets,
                                        &nodeinfo.cores, &nodeinfo.threads) < 0) {
         if (virTestGetDebug()) {
-            if (virGetLastError())
+            if (virGetLastErrorCode())
                 VIR_TEST_DEBUG("\n%s\n", virGetLastErrorMessage());
         }
         VIR_FORCE_FCLOSE(cpuinfo);

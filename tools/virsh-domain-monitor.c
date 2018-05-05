@@ -60,7 +60,6 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
                           unsigned int flags)
 {
     char *desc = NULL;
-    virErrorPtr err = NULL;
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     int type;
@@ -73,15 +72,15 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
     if ((desc = virDomainGetMetadata(dom, type, NULL, flags))) {
         return desc;
     } else {
-        err = virGetLastError();
+        int errCode = virGetLastErrorCode();
 
-        if (err && err->code == VIR_ERR_NO_DOMAIN_METADATA) {
+        if (errCode == VIR_ERR_NO_DOMAIN_METADATA) {
             desc = vshStrdup(ctl, "");
             vshResetLibvirtError();
             return desc;
         }
 
-        if (err && err->code != VIR_ERR_NO_SUPPORT)
+        if (errCode != VIR_ERR_NO_SUPPORT)
             return desc;
     }
 

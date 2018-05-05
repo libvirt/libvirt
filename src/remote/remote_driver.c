@@ -3672,8 +3672,7 @@ remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
                (xdrproc_t) xdr_void, (char *) NULL,
                (xdrproc_t) xdr_remote_auth_list_ret, (char *) &ret);
     if (err < 0) {
-        virErrorPtr verr = virGetLastError();
-        if (verr && verr->code == VIR_ERR_NO_SUPPORT) {
+        if (virGetLastErrorCode() == VIR_ERR_NO_SUPPORT) {
             /* Missing RPC - old server - ignore */
             virResetLastError();
             return 0;

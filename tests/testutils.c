@@ -178,8 +178,7 @@ virTestRun(const char *title,
 
     virResetLastError();
     ret = body(data);
-    virErrorPtr err = virGetLastError();
-    if (err) {
+    if (virGetLastErrorCode()) {
         if (virTestGetVerbose() || virTestGetDebug())
             virDispatchError(NULL);
     }
@@ -258,8 +257,7 @@ virTestRun(const char *title,
                 fprintf(stderr, " alloc %zu failed but no err status\n", i + 1);
 # endif
             } else {
-                virErrorPtr lerr = virGetLastError();
-                if (!lerr) {
+                if (virGetLastErrorCode() == VIR_ERR_OK) {
 # if 0
                     fprintf(stderr, " alloc %zu failed but no error report\n", i + 1);
 # endif

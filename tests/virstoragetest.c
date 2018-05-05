@@ -333,7 +333,7 @@ testStorageChain(const void *args)
         goto cleanup;
     }
     if (data->flags & EXP_WARN) {
-        if (!virGetLastError()) {
+        if (virGetLastErrorCode() == VIR_ERR_OK) {
             fprintf(stderr, "call should have warned\n");
             goto cleanup;
         }
@@ -343,7 +343,7 @@ testStorageChain(const void *args)
             goto cleanup;
         }
     } else {
-        if (virGetLastError()) {
+        if (virGetLastErrorCode()) {
             fprintf(stderr, "call should not have warned\n");
             goto cleanup;
         }
@@ -449,13 +449,13 @@ testStorageLookup(const void *args)
                                        idx, NULL);
 
     if (!data->expResult) {
-        if (!virGetLastError()) {
+        if (virGetLastErrorCode() == VIR_ERR_OK) {
             fprintf(stderr, "call should have failed\n");
             ret = -1;
         }
         virResetLastError();
     } else {
-        if (virGetLastError()) {
+        if (virGetLastErrorCode()) {
             fprintf(stderr, "call should not have warned\n");
             ret = -1;
         }

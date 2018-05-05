@@ -123,8 +123,7 @@ virModuleLoad(const char *path,
     if ((*regsym)() < 0) {
         /* regsym() should report an error itself, but lets
          * just make sure */
-        virErrorPtr err = virGetLastError();
-        if (err == NULL) {
+        if (virGetLastErrorCode() == VIR_ERR_OK) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to execute symbol '%s' in module '%s'"),
                            regfunc, path);

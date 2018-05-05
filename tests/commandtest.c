@@ -127,7 +127,7 @@ static int test0(const void *unused ATTRIBUTE_UNUSED)
     if (virCommandRun(cmd, NULL) == 0)
         goto cleanup;
 
-    if (virGetLastError() == NULL)
+    if (virGetLastErrorCode() == VIR_ERR_OK)
         goto cleanup;
 
     virResetLastError();

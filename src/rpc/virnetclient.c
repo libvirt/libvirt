@@ -1958,7 +1958,7 @@ static int virNetClientIO(virNetClientPtr client,
         virNetClientIOUpdateCallback(client, true);
 
     if (rv == 0 &&
-        virGetLastError())
+        virGetLastErrorCode())
         rv = -1;
 
  cleanup:

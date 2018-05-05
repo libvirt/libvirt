@@ -708,7 +708,7 @@ catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 
     /* conditions for error printing */
     if (!ctxt ||
-        (virGetLastError() != NULL) ||
+        (virGetLastErrorCode()) ||
         ctxt->input == NULL ||
         ctxt->lastError.level != XML_ERR_FATAL ||
         ctxt->lastError.message == NULL)
@@ -845,7 +845,7 @@ virXMLParseHelper(int domcode,
     xmlFreeDoc(xml);
     xml = NULL;
 
-    if (virGetLastError() == NULL) {
+    if (virGetLastErrorCode() == VIR_ERR_OK) {
         virGenericReportError(domcode, VIR_ERR_XML_ERROR,
                               "%s", _("failed to parse xml document"));
     }

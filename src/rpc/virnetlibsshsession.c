@@ -499,9 +499,7 @@ virNetLibsshImportPrivkey(virNetLibsshSessionPtr sess,
         err = SSH_AUTH_ERROR;
         goto error;
     } else if (ret == SSH_ERROR) {
-        virErrorPtr vir_err = virGetLastError();
-
-        if (!vir_err || !vir_err->code) {
+        if (virGetLastErrorCode() == VIR_ERR_OK) {
             virReportError(VIR_ERR_AUTH_FAILED,
                            _("error while opening private key '%s', wrong "
                              "passphrase?"),

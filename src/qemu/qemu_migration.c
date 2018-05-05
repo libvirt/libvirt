@@ -5057,7 +5057,7 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
                                  inPostCopy ? VIR_DOMAIN_RUNNING_POSTCOPY
                                             : VIR_DOMAIN_RUNNING_MIGRATED,
                                  QEMU_ASYNC_JOB_MIGRATION_IN) < 0) {
-            if (virGetLastError() == NULL)
+            if (virGetLastErrorCode() == VIR_ERR_OK)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("resume operation failed"));
             /* Need to save the current error, in case shutting
@@ -5196,7 +5196,7 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
     /* Set a special error if Finish is expected to return NULL as a result of
      * successful call with retcode != 0
      */
-    if (retcode != 0 && !dom && !virGetLastError())
+    if (retcode != 0 && !dom && virGetLastErrorCode() == VIR_ERR_OK)
         virReportError(VIR_ERR_MIGRATE_FINISH_OK, NULL);
     return dom;
 }

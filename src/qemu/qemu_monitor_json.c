@@ -4352,7 +4352,7 @@ qemuMonitorJSONDiskNameLookup(qemuMonitorPtr mon,
     }
     /* Guarantee an error when returning NULL, but don't override a
      * more specific error if one was already generated.  */
-    if (!ret && !virGetLastError())
+    if (!ret && virGetLastErrorCode() == VIR_ERR_OK)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to find backing name for device %s"),
                        device);

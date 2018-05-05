@@ -266,7 +266,7 @@ vshSaveLibvirtHelperError(void)
     if (last_error)
         return;
 
-    if (!virGetLastError())
+    if (virGetLastErrorCode() == VIR_ERR_OK)
         return;
 
     vshSaveLibvirtError();
