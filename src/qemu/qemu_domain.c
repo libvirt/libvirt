@@ -6483,35 +6483,6 @@ qemuDomainDefFormatLive(virQEMUDriverPtr driver,
 }
 
 
-/* qemuDomainFilePathIsHostCDROM
- * @path: Supplied path.
- *
- * Determine if the path is a host CD-ROM path. Typically this is
- * either /dev/cdrom[n] or /dev/srN, so those are easy checks, but
- * it's also possible that @path resolves to /dev/srN, so check for
- * those conditions on @path in order to emit the tainted message.
- *
- * Returns true if the path is a CDROM, false otherwise or on error.
- */
-static bool
-qemuDomainFilePathIsHostCDROM(const char *path)
-{
-    bool ret = false;
-    char *linkpath = NULL;
-
-    if (virFileResolveLink(path, &linkpath) < 0)
-        goto cleanup;
-
-    if (STRPREFIX(path, "/dev/cdrom") || STRPREFIX(path, "/dev/sr") ||
-        STRPREFIX(linkpath, "/dev/sr"))
-        ret = true;
-
- cleanup:
-    VIR_FREE(linkpath);
-    return ret;
-}
-
-
 void qemuDomainObjTaint(virQEMUDriverPtr driver,
                         virDomainObjPtr obj,
                         virDomainTaintFlags taint,
@@ -6630,7 +6601,7 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
         virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_BLOCK &&
-        disk->src->path && qemuDomainFilePathIsHostCDROM(disk->src->path))
+        disk->src->path && virFileIsCDROM(disk->src->path) == 1)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CDROM_PASSTHROUGH,
                            logCtxt);
 
