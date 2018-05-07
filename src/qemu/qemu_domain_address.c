@@ -282,6 +282,23 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
 
 
 static void
+qemuDomainPrimeVfioDeviceAddresses(virDomainDefPtr def,
+                                   virDomainDeviceAddressType type)
+{
+    size_t i;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevSubsysPtr subsys = &def->hostdevs[i]->source.subsys;
+
+        if (virHostdevIsMdevDevice(def->hostdevs[i]) &&
+            subsys->u.mdev.model == VIR_MDEV_MODEL_TYPE_VFIO_CCW &&
+            def->hostdevs[i]->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+            def->hostdevs[i]->info->type = type;
+    }
+}
+
+
+static void
 qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
                                      virDomainDeviceAddressType type)
 {
@@ -397,6 +414,9 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
 
     if (qemuDomainIsS390CCW(def) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW)) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_CCW))
+            qemuDomainPrimeVfioDeviceAddresses(
+                def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW);
         qemuDomainPrimeVirtioDeviceAddresses(
             def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW);
 

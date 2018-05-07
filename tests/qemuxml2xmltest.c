@@ -962,6 +962,11 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_LSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC);
 
+    DO_TEST("hostdev-subsys-mdev-vfio-ccw",
+            QEMU_CAPS_CCW,
+            QEMU_CAPS_CCW_CSSID_UNRESTRICTED,
+            QEMU_CAPS_DEVICE_VFIO_CCW);
+
     DO_TEST("s390-defaultconsole",
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("s390-panic",

@@ -48,7 +48,8 @@ struct _virMediatedDeviceList {
 };
 
 VIR_ENUM_IMPL(virMediatedDeviceModel, VIR_MDEV_MODEL_TYPE_LAST,
-              "vfio-pci")
+              "vfio-pci",
+              "vfio-ccw")
 
 static virClassPtr virMediatedDeviceListClass;
 
