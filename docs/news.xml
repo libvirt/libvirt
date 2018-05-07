@@ -45,6 +45,15 @@
           element.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Provide VFIO channel I/O passthrough support
+        </summary>
+        <description>
+          Support passthrough devices that use channel I/O based mechanism in
+          a QEMU virtual machine.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
