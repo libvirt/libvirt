@@ -335,8 +335,27 @@
 $ ls /sys/class/mdev_bus/&lt;device&gt;/mdev_supported_types</pre>
 
     <p>
+      Before creating a mediated device, unbind the device from the respective
+      device driver, eg. subchannel I/O driver for a CCW device. Then bind the
+      device to the respective VFIO driver. For a CCW device, also unbind the
+      corresponding subchannel of the CCW device from the subchannel I/O driver
+      and then bind the subchannel (instead of the CCW device) to the vfio_ccw
+      driver. The below example shows the unbinding and binding steps for a CCW
+      device.
+    </p>
+
+    <pre>
+device="0.0.1234"
+subchannel="0.0.0123"
+echo $device &gt; /sys/bus/ccw/devices/$device/driver/unbind
+echo $subchannel &gt; /sys/bus/css/devices/$subchannel/driver/unbind
+echo $subchannel &gt; /sys/bus/css/drivers/vfio_ccw/bind
+    </pre>
+
+    <p>
       To manually instantiate a mediated device, use one of the following as a
-      reference:
+      reference. For a CCW device, use the subchannel ID instead of the device
+      ID.
     </p>
 
     <pre>
