@@ -831,12 +831,13 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr enc,
     } else {
         if (info.encryption)
             virBufferAddLit(&buf, "encryption=on,");
-        if (info.preallocate) {
-            if (info.size_arg > info.allocation)
-                virBufferAddLit(&buf, "preallocation=metadata,");
-            else
-                virBufferAddLit(&buf, "preallocation=falloc,");
-        }
+    }
+
+    if (info.preallocate) {
+        if (info.size_arg > info.allocation)
+            virBufferAddLit(&buf, "preallocation=metadata,");
+        else
+            virBufferAddLit(&buf, "preallocation=falloc,");
     }
 
     if (info.nocow)
