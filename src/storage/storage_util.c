@@ -1355,6 +1355,31 @@ storageBackendGenerateSecretData(virStoragePoolObjPtr pool,
 
 
 static int
+storageBackendDoCreateQemuImg(virStoragePoolObjPtr pool,
+                              virStorageVolDefPtr vol,
+                              virStorageVolDefPtr inputvol,
+                              unsigned int flags,
+                              const char *create_tool,
+                              const char *secretPath)
+{
+    int ret;
+    virCommandPtr cmd;
+
+    cmd = virStorageBackendCreateQemuImgCmdFromVol(pool, vol, inputvol,
+                                                   flags, create_tool,
+                                                   secretPath);
+    if (!cmd)
+        return -1;
+
+    ret = virStorageBackendCreateExecCommand(pool, vol, cmd);
+
+    virCommandFree(cmd);
+
+    return ret;
+}
+
+
+static int
 storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
                             virStorageVolDefPtr vol,
                             virStorageVolDefPtr inputvol,
@@ -1362,7 +1387,6 @@ storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
 {
     int ret = -1;
     char *create_tool;
-    virCommandPtr cmd;
     char *secretPath = NULL;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
@@ -1378,15 +1402,8 @@ storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
     if (storageBackendGenerateSecretData(pool, vol, &secretPath) < 0)
         goto cleanup;
 
-    cmd = virStorageBackendCreateQemuImgCmdFromVol(pool, vol, inputvol,
-                                                   flags, create_tool,
-                                                   secretPath);
-    if (!cmd)
-        goto cleanup;
-
-    ret = virStorageBackendCreateExecCommand(pool, vol, cmd);
-
-    virCommandFree(cmd);
+    ret = storageBackendDoCreateQemuImg(pool, vol, inputvol, flags,
+                                        create_tool, secretPath);
  cleanup:
     if (secretPath) {
         unlink(secretPath);
