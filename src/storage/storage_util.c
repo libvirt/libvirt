@@ -794,6 +794,7 @@ storagePloopResize(virStorageVolDefPtr vol,
  */
 struct _virStorageBackendQemuImgInfo {
     int format;
+    const char *type;
     const char *path;
     unsigned long long size_arg;
     unsigned long long allocation;
@@ -1125,9 +1126,9 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
                                          const char *secretPath)
 {
     virCommandPtr cmd = NULL;
-    const char *type;
     struct _virStorageBackendQemuImgInfo info = {
         .format = vol->target.format,
+        .type = NULL,
         .path = vol->target.path,
         .allocation = vol->target.allocation,
         .encryption = !!vol->target.encryption,
@@ -1149,7 +1150,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
     if (info.format == VIR_STORAGE_FILE_ISO)
         info.format = VIR_STORAGE_FILE_RAW;
 
-    if (!(type = virStorageFileFormatTypeToString(info.format))) {
+    if (!(info.type = virStorageFileFormatTypeToString(info.format))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown storage vol type %d"),
                        info.format);
@@ -1178,7 +1179,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
             return NULL;
         }
         if (vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
-            type = "luks";
+            info.type = "luks";
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Only luks encryption is supported for raw files"));
@@ -1195,7 +1196,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
         return NULL;
 
     if (info.encryption &&
-        storageBackendCreateQemuImgCheckEncryption(info.format, type, vol) < 0)
+        storageBackendCreateQemuImgCheckEncryption(info.format, info.type, vol) < 0)
         return NULL;
 
     /* Size in KB */
@@ -1209,9 +1210,9 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
 
     if (info.inputPath)
         virCommandAddArgList(cmd, "convert", "-f", info.inputFormatStr,
-                             "-O", type, NULL);
+                             "-O", info.type, NULL);
     else
-        virCommandAddArgList(cmd, "create", "-f", type, NULL);
+        virCommandAddArgList(cmd, "create", "-f", info.type, NULL);
 
     if (info.backingPath)
         virCommandAddArgList(cmd, "-b", info.backingPath, NULL);
