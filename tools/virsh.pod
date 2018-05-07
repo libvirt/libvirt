@@ -574,12 +574,13 @@ I<--all> which executes the modification on all NUMA cells.
 =item B<cpu-baseline> I<FILE> [I<--features>] [I<--migratable>]
 
 Compute baseline CPU which will be supported by all host CPUs given in <file>.
-The list of host CPUs is built by extracting all <cpu> elements from the
-<file>. Thus, the <file> can contain either a set of <cpu> elements separated
-by new lines or even a set of complete <capabilities> elements printed by
-B<capabilities> command.  If I<--features> is specified then the
-resulting XML description will explicitly include all features that make
-up the CPU, without this option features that are part of the CPU model
+(See B<hypervisor-cpu-baseline> command to get a CPU which can be provided by a
+specific hypervisor.) The list of host CPUs is built by extracting all <cpu>
+elements from the <file>. Thus, the <file> can contain either a set of <cpu>
+elements separated by new lines or even a set of complete <capabilities>
+elements printed by B<capabilities> command.  If I<--features> is specified,
+then the resulting XML description will explicitly include all features that
+make up the CPU, without this option features that are part of the CPU model
 will not be listed in the XML description.   If I<--migratable> is specified,
 features that block migration will not be included in the resulting CPU.
 
@@ -643,6 +644,40 @@ specifies the path to the emulator, I<arch> specifies the CPU architecture, and
 I<machine> specifies the machine type. If I<--error> is specified, the command
 will return an error when the given CPU is incompatible with the host CPU and a
 message providing more details about the incompatibility will be printed out.
+
+=item B<hypervisor-cpu-baseline> I<FILE> [I<virttype>] [I<emulator>] [I<arch>]
+[I<machine>] [I<--features>] [I<--migratable>]
+
+Compute a baseline CPU which will be compatible with all CPUs defined in an XML
+I<file> and with the CPU the hypervisor is able to provide on the host. (This
+is different from B<cpu-baseline> which does not consider any hypervisor
+abilities when computing the baseline CPU.)
+
+The XML I<FILE> may contain either host or guest CPU definitions describing the
+host CPU model. The host CPU definition is the <cpu> element and its contents
+as printed by B<capabilities> command. The guest CPU definition may be created
+from the host CPU model found in domain capabilities XML (printed by
+B<domcapabilities> command). In addition to the <cpu> elements, this command
+accepts full capabilities XMLs, or domain capabilities XMLs containing the CPU
+definitions. For best results, use only the CPU definitions from domain
+capabilities.
+
+When I<FILE> contains only a single CPU definition, the command will print the
+same CPU with restrictions imposed by the capabilities of the hypervisor.
+Specifically, running th B<virsh hypervisor-cpu-baseline> command with no
+additional options on the result of B<virsh domcapabilities> will transform the
+host CPU model from domain capabilities XML to a form directly usable in domain
+XML.
+
+The I<virttype> option specifies the virtualization type (usable in the 'type'
+attribute of the <domain> top level element from the domain XML). I<emulator>
+specifies the path to the emulator, I<arch> specifies the CPU architecture, and
+I<machine> specifies the machine type. If I<--features> is specified, then the
+resulting XML description will explicitly include all features that make up the
+CPU, without this option features that are part of the CPU model will not be
+listed in the XML description. If I<--migratable> is specified, features that
+block migration will not be included in the resulting CPU.
+
 
 =back
 

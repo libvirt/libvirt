@@ -1707,6 +1707,96 @@ cmdHypervisorCPUCompare(vshControl *ctl,
 }
 
 
+/*
+ * "hypervisor-cpu-baseline" command
+ */
+static const vshCmdInfo info_hypervisor_cpu_baseline[] = {
+    {.name = "help",
+     .data = N_("compute baseline CPU usable by a specific hypervisor")
+    },
+    {.name = "desc",
+     .data = N_("Compute baseline CPU for a set of given CPUs. The result "
+                "will be tailored to the specified hypervisor.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_hypervisor_cpu_baseline[] = {
+    VIRSH_COMMON_OPT_FILE(N_("file containing XML CPU descriptions")),
+    {.name = "virttype",
+     .type = VSH_OT_STRING,
+     .help = N_("virtualization type (/domain/@type)"),
+    },
+    {.name = "emulator",
+     .type = VSH_OT_STRING,
+     .help = N_("path to emulator binary (/domain/devices/emulator)"),
+    },
+    {.name = "arch",
+     .type = VSH_OT_STRING,
+     .help = N_("CPU architecture (/domain/os/type/@arch)"),
+    },
+    {.name = "machine",
+     .type = VSH_OT_STRING,
+     .help = N_("machine type (/domain/os/type/@machine)"),
+    },
+    {.name = "features",
+     .type = VSH_OT_BOOL,
+     .help = N_("Show features that are part of the CPU model type")
+    },
+    {.name = "migratable",
+     .type = VSH_OT_BOOL,
+     .help = N_("Do not include features that block migration")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdHypervisorCPUBaseline(vshControl *ctl,
+                         const vshCmd *cmd)
+{
+    const char *from = NULL;
+    const char *virttype = NULL;
+    const char *emulator = NULL;
+    const char *arch = NULL;
+    const char *machine = NULL;
+    bool ret = false;
+    char *result = NULL;
+    char **list = NULL;
+    unsigned int flags = 0;
+    virshControlPtr priv = ctl->privData;
+
+    if (vshCommandOptBool(cmd, "features"))
+        flags |= VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES;
+    if (vshCommandOptBool(cmd, "migratable"))
+        flags |= VIR_CONNECT_BASELINE_CPU_MIGRATABLE;
+
+    if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "virttype", &virttype) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "emulator", &emulator) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "arch", &arch) < 0 ||
+        vshCommandOptStringReq(ctl, cmd, "machine", &machine) < 0)
+        return false;
+
+    if (!(list = vshExtractCPUDefXMLs(ctl, from)))
+        return false;
+
+    result = virConnectBaselineHypervisorCPU(priv->conn, emulator, arch,
+                                             machine, virttype,
+                                             (const char **)list,
+                                             virStringListLength((const char **)list),
+                                             flags);
+
+    if (result) {
+        vshPrint(ctl, "%s", result);
+        ret = true;
+    }
+
+    VIR_FREE(result);
+    virStringListFree(list);
+    return ret;
+}
+
+
 const vshCmdDef hostAndHypervisorCmds[] = {
     {.name = "allocpages",
      .handler = cmdAllocpages,
@@ -1760,6 +1850,12 @@ const vshCmdDef hostAndHypervisorCmds[] = {
      .handler = cmdHostname,
      .opts = NULL,
      .info = info_hostname,
+     .flags = 0
+    },
+    {.name = "hypervisor-cpu-baseline",
+     .handler = cmdHypervisorCPUBaseline,
+     .opts = opts_hypervisor_cpu_baseline,
+     .info = info_hypervisor_cpu_baseline,
      .flags = 0
     },
     {.name = "hypervisor-cpu-compare",
