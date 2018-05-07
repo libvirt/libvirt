@@ -339,8 +339,7 @@ qemuHostdevPrepareMediatedDevices(virQEMUDriverPtr driver,
     supportsVFIO = virFileExists("/dev/vfio/vfio");
 
     for (i = 0; i < nhostdevs; i++) {
-        if (hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV) {
+        if (virHostdevIsMdevDevice(hostdevs[i])) {
             if (!supportsVFIO) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Mediated host device assignment requires "

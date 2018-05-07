@@ -5326,9 +5326,7 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
         }
 
         /* MDEV */
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV) {
-
+        if (virHostdevIsMdevDevice(hostdev)) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("VFIO PCI device assignment is not "

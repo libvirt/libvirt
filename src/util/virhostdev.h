@@ -191,6 +191,9 @@ virHostdevReAttachDomainDevices(virHostdevManagerPtr mgr,
 bool
 virHostdevIsSCSIDevice(virDomainHostdevDefPtr hostdev)
     ATTRIBUTE_NONNULL(1);
+bool
+virHostdevIsMdevDevice(virDomainHostdevDefPtr hostdev)
+    ATTRIBUTE_NONNULL(1);
 
 /* functions used by NodeDevDetach/Reattach/Reset */
 int virHostdevPCINodeDeviceDetach(virHostdevManagerPtr mgr,

@@ -372,6 +372,20 @@ virHostdevIsSCSIDevice(virDomainHostdevDefPtr hostdev)
 }
 
 
+/**
+ * virHostdevIsMdevDevice:
+ * @hostdev: host device to check
+ *
+ * Returns true if @hostdev is a Mediated device, false otherwise.
+ */
+bool
+virHostdevIsMdevDevice(virDomainHostdevDefPtr hostdev)
+{
+    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV;
+}
+
+
 static int
 virHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
                                    virNetDevVPortProfilePtr virtPort,
@@ -1330,10 +1344,8 @@ virHostdevUpdateActiveMediatedDevices(virHostdevManagerPtr mgr,
 
         mdevsrc = &hostdev->source.subsys.u.mdev;
 
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV) {
+        if (!virHostdevIsMdevDevice(hostdev))
             continue;
-        }
 
         if (!(mdev = virMediatedDeviceNew(mdevsrc->uuidstr, mdevsrc->model)))
             goto cleanup;
@@ -1828,9 +1840,7 @@ virHostdevPrepareMediatedDevices(virHostdevManagerPtr mgr,
         virDomainHostdevSubsysMediatedDevPtr src = &hostdev->source.subsys.u.mdev;
         virMediatedDevicePtr mdev;
 
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-            continue;
-        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV)
+        if (!virHostdevIsMdevDevice(hostdev))
             continue;
 
         if (!(mdev = virMediatedDeviceNew(src->uuidstr, src->model)))
@@ -2087,10 +2097,8 @@ virHostdevReAttachMediatedDevices(virHostdevManagerPtr mgr,
 
         mdevsrc = &hostdev->source.subsys.u.mdev;
 
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV) {
+        if (!virHostdevIsMdevDevice(hostdev))
             continue;
-        }
 
         if (!(mdev = virMediatedDeviceNew(mdevsrc->uuidstr,
                                           mdevsrc->model)))
