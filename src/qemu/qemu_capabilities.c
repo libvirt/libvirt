@@ -481,6 +481,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "qom-list-properties",
               "memory-backend-file.discard-data",
               "virtual-css-bridge",
+              "virtual-css-bridge.cssid-unrestricted",
+              "vfio-ccw",
     );
 
 
@@ -1110,6 +1112,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "pcie-pci-bridge", QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE },
     { "pr-manager-helper", QEMU_CAPS_PR_MANAGER_HELPER },
     { "virtual-css-bridge", QEMU_CAPS_CCW },
+    { "vfio-ccw", QEMU_CAPS_DEVICE_VFIO_CCW },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {
@@ -1251,6 +1254,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
     { "device-iotlb", QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtualCSSBridge[] = {
+    { "cssid-unrestricted", QEMU_CAPS_CCW_CSSID_UNRESTRICTED },
+};
+
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/options/+gluster/debug-level", QEMU_CAPS_GLUSTER_DEBUG_LEVEL},
@@ -1376,6 +1383,9 @@ static virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
     { "virtio-gpu-ccw", virQEMUCapsDevicePropsVirtioGpu,
       ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioGpu),
       QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW },
+    { "virtual-css-bridge", virQEMUCapsObjectPropsVirtualCSSBridge,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtualCSSBridge),
+      QEMU_CAPS_CCW },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {
@@ -3937,6 +3947,8 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW) &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_CCW);
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW_CSSID_UNRESTRICTED))
+            virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_VFIO_CCW);
     }
 
     ret = 0;

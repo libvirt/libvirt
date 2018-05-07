@@ -2823,6 +2823,16 @@
 {
   "return": [
     {
+      "name": "css_dev_path",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-34"
+}
+
+{
+  "return": [
+    {
       "hotpluggable-cpus": false,
       "name": "s390-ccw-virtio-2.7",
       "cpu-max": 248
@@ -2855,7 +2865,7 @@
       "alias": "s390-ccw-virtio"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -3181,12 +3191,6 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-35"
-}
-
-{
-  "return": [
-  ],
   "id": "libvirt-36"
 }
 
@@ -3194,6 +3198,12 @@
   "return": [
   ],
   "id": "libvirt-37"
+}
+
+{
+  "return": [
+  ],
+  "id": "libvirt-38"
 }
 
 {
@@ -4154,7 +4164,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -4192,7 +4202,7 @@
       "capability": "x-colo"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -12962,7 +12972,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -12988,11 +12998,11 @@
       }
     }
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
-  "id": "libvirt-42",
+  "id": "libvirt-43",
   "error": {
     "class": "GenericError",
     "desc": "Property '.migratable' not found"

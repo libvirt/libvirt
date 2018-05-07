@@ -109,7 +109,7 @@
   <flag name='virtual-css-bridge'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>241633</microcodeVersion>
+  <microcodeVersion>241741</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='zEC12.2-base' migratability='no'>

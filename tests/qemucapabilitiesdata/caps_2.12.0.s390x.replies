@@ -3617,6 +3617,21 @@
 {
   "return": [
     {
+      "name": "cssid-unrestricted",
+      "description": "A css device can use any cssid, regardless whether virtual or not (read only, always true)",
+      "type": "bool"
+    },
+    {
+      "name": "css_dev_path",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-35"
+}
+
+{
+  "return": [
+    {
       "name": "policy",
       "type": "HostMemPolicy"
     },
@@ -3665,7 +3680,7 @@
       "type": "string"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -3723,7 +3738,7 @@
       "alias": "s390-ccw-virtio"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -6378,20 +6393,20 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "return": [
     "emulator"
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -7547,7 +7562,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -7609,7 +7624,7 @@
       "capability": "dirty-bitmaps"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -18977,11 +18992,11 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
-  "id": "libvirt-43",
+  "id": "libvirt-44",
   "error": {
     "class": "GenericError",
     "desc": "The CPU definition 'max' is unknown."
