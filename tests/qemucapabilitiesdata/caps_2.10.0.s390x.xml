@@ -114,6 +114,7 @@
   <flag name='qcow2-luks'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
+  <flag name='virtual-css-bridge'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>303326</microcodeVersion>

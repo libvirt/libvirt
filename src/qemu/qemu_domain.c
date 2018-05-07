@@ -11838,7 +11838,7 @@ qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
                              "'%s' using machine type '%s'"),
                        devicename, def->os.machine);
             return false;
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
+        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCW)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("CCW address type is not supported by "
                              "this QEMU"));

@@ -504,11 +504,11 @@ mymain(void)
     DO_TEST("cputune-iothreads", NONE);
     DO_TEST("iothreads-disk", NONE);
     DO_TEST("iothreads-disk-virtio-ccw",
-            QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("iothreads-virtio-scsi-pci",
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("iothreads-virtio-scsi-ccw",
-            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_VIRTIO_CCW,
+            QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST("lease", NONE);
     DO_TEST("event_idx", NONE);
@@ -912,7 +912,7 @@ mymain(void)
 
     DO_TEST("hostdev-scsi-vhost-scsi-ccw",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_VHOST_SCSI,
-            QEMU_CAPS_DEVICE_SCSI_GENERIC, QEMU_CAPS_VIRTIO_CCW);
+            QEMU_CAPS_DEVICE_SCSI_GENERIC, QEMU_CAPS_CCW);
     DO_TEST("hostdev-scsi-vhost-scsi-pci",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_VHOST_SCSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC);
@@ -963,19 +963,19 @@ mymain(void)
             QEMU_CAPS_DEVICE_SCSI_GENERIC);
 
     DO_TEST("s390-defaultconsole",
-            QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("s390-panic",
-            QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("s390-panic-missing",
-            QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("s390-panic-no-address",
-            QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("s390-serial",
-            QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("s390-serial-2",
-            QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("s390-serial-console",
-            QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+            QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
 
     DO_TEST("pcihole64", NONE);
     DO_TEST("pcihole64-gib", NONE);
@@ -1118,14 +1118,14 @@ mymain(void)
     DO_TEST("video-qxl-noheads", NONE);
     DO_TEST("video-virtio-gpu-secondary", NONE);
     DO_TEST("video-virtio-gpu-ccw",
-            QEMU_CAPS_VIRTIO_CCW,
+            QEMU_CAPS_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS,
             QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
     DO_TEST("video-virtio-gpu-ccw-auto",
-            QEMU_CAPS_VIRTIO_CCW,
+            QEMU_CAPS_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS,
@@ -1167,7 +1167,7 @@ mymain(void)
 
     DO_TEST("user-aliases", NONE);
     DO_TEST("input-virtio-ccw",
-            QEMU_CAPS_VIRTIO_CCW,
+            QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_KEYBOARD,
             QEMU_CAPS_VIRTIO_MOUSE,
             QEMU_CAPS_VIRTIO_TABLET,
