@@ -1116,6 +1116,76 @@ storageBackendResizeQemuImgImageOpts(virCommandPtr cmd,
 }
 
 
+static int
+virStorageBackendCreateQemuImgSetInfo(virStoragePoolObjPtr pool,
+                                      virStorageVolDefPtr vol,
+                                      virStorageVolDefPtr inputvol,
+                                      struct _virStorageBackendQemuImgInfo *info)
+{
+    /* Treat output block devices as 'raw' format */
+    if (vol->type == VIR_STORAGE_VOL_BLOCK)
+        info->format = VIR_STORAGE_FILE_RAW;
+
+    if (info->format == VIR_STORAGE_FILE_ISO)
+        info->format = VIR_STORAGE_FILE_RAW;
+
+    if (!(info->type = virStorageFileFormatTypeToString(info->format))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown storage vol type %d"),
+                       info->format);
+        return -1;
+    }
+
+    if (info->preallocate && info->format != VIR_STORAGE_FILE_QCOW2) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("metadata preallocation only available with qcow2"));
+        return -1;
+    }
+    if (info->compat && info->format != VIR_STORAGE_FILE_QCOW2) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("compatibility option only available with qcow2"));
+        return -1;
+    }
+    if (info->features && info->format != VIR_STORAGE_FILE_QCOW2) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("format features only available with qcow2"));
+        return -1;
+    }
+    if (info->format == VIR_STORAGE_FILE_RAW && vol->target.encryption) {
+        if (inputvol) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("cannot use inputvol with encrypted raw volume"));
+            return -1;
+        }
+        if (vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+            info->type = "luks";
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only luks encryption is supported for raw files"));
+            return -1;
+        }
+    }
+
+    if (inputvol &&
+        storageBackendCreateQemuImgSetInput(inputvol, info) < 0)
+        return -1;
+
+    if (virStorageSourceHasBacking(&vol->target) &&
+        storageBackendCreateQemuImgSetBacking(pool, vol, inputvol, info) < 0)
+        return -1;
+
+    if (info->encryption &&
+        storageBackendCreateQemuImgCheckEncryption(info->format, info->type,
+                                                   vol) < 0)
+        return -1;
+
+    /* Size in KB */
+    info->size_arg = VIR_DIV_UP(vol->target.capacity, 1024);
+
+    return 0;
+}
+
+
 /* Create a qemu-img virCommand from the supplied arguments */
 virCommandPtr
 virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
@@ -1143,64 +1213,8 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
-    /* Treat output block devices as 'raw' format */
-    if (vol->type == VIR_STORAGE_VOL_BLOCK)
-        info.format = VIR_STORAGE_FILE_RAW;
-
-    if (info.format == VIR_STORAGE_FILE_ISO)
-        info.format = VIR_STORAGE_FILE_RAW;
-
-    if (!(info.type = virStorageFileFormatTypeToString(info.format))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown storage vol type %d"),
-                       info.format);
-        return NULL;
-    }
-
-    if (info.preallocate && info.format != VIR_STORAGE_FILE_QCOW2) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("metadata preallocation only available with qcow2"));
-        return NULL;
-    }
-    if (info.compat && info.format != VIR_STORAGE_FILE_QCOW2) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("compatibility option only available with qcow2"));
-        return NULL;
-    }
-    if (info.features && info.format != VIR_STORAGE_FILE_QCOW2) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("format features only available with qcow2"));
-        return NULL;
-    }
-    if (info.format == VIR_STORAGE_FILE_RAW && vol->target.encryption) {
-        if (inputvol) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("cannot use inputvol with encrypted raw volume"));
-            return NULL;
-        }
-        if (vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
-            info.type = "luks";
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Only luks encryption is supported for raw files"));
-            return NULL;
-        }
-    }
-
-    if (inputvol &&
-        storageBackendCreateQemuImgSetInput(inputvol, &info) < 0)
-        return NULL;
-
-    if (virStorageSourceHasBacking(&vol->target) &&
-        storageBackendCreateQemuImgSetBacking(pool, vol, inputvol, &info) < 0)
-        return NULL;
-
-    if (info.encryption &&
-        storageBackendCreateQemuImgCheckEncryption(info.format, info.type, vol) < 0)
-        return NULL;
-
-    /* Size in KB */
-    info.size_arg = VIR_DIV_UP(vol->target.capacity, 1024);
+    if (virStorageBackendCreateQemuImgSetInfo(pool, vol, inputvol, &info) < 0)
+        goto error;
 
     cmd = virCommandNew(create_tool);
 
