@@ -563,6 +563,14 @@ virQEMUCapsPtr virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
                                           const char *machineType);
 virQEMUCapsPtr virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
                                             virArch arch);
+virQEMUCapsPtr virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
+                                             const char *binary,
+                                             const char *archStr,
+                                             const char *virttypeStr,
+                                             const char *machine,
+                                             virArch *retArch,
+                                             virDomainVirtType *retVirttype,
+                                             const char **retMachine);
 
 virCapsPtr virQEMUCapsInit(virFileCachePtr cache);
 

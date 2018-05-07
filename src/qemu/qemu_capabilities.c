@@ -4555,6 +4555,124 @@ virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
 }
 
 
+/**
+ * virQEMUCapsCacheLookupDefault:
+ * @cache: QEMU capabilities cache
+ * @binary: optional path to QEMU binary
+ * @archStr: optional guest architecture
+ * @virttypeStr: optional virt type
+ * @machine: optional machine type
+ * @retArch: if non-NULL, guest architecture will be returned here
+ * @retVirttype: if non-NULL, domain virt type will be returned here
+ * @retMachine: if non-NULL, canonical machine type will be returned here
+ *
+ * Looks up the QEMU binary specified by @binary and @archStr, checks it can
+ * provide the required @virttypeStr and @machine and returns its capabilities.
+ * Sensible defaults are used for any argument which is NULL (the function can
+ * even be called with all NULL arguments).
+ *
+ * Returns QEMU capabilities matching the requirements, NULL on error.
+ */
+virQEMUCapsPtr
+virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
+                              const char *binary,
+                              const char *archStr,
+                              const char *virttypeStr,
+                              const char *machine,
+                              virArch *retArch,
+                              virDomainVirtType *retVirttype,
+                              const char **retMachine)
+{
+    int virttype = VIR_DOMAIN_VIRT_NONE;
+    int arch = virArchFromHost();
+    virDomainVirtType capsType;
+    virQEMUCapsPtr qemuCaps = NULL;
+    virQEMUCapsPtr ret = NULL;
+
+    if (virttypeStr &&
+        (virttype = virDomainVirtTypeFromString(virttypeStr)) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown virttype: %s"), virttypeStr);
+        goto cleanup;
+    }
+
+    if (archStr &&
+        (arch = virArchFromString(archStr)) == VIR_ARCH_NONE) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown architecture: %s"), archStr);
+        goto cleanup;
+    }
+
+    if (binary) {
+        virArch arch_from_caps;
+
+        if (!(qemuCaps = virQEMUCapsCacheLookup(cache, binary)))
+            goto cleanup;
+
+        arch_from_caps = virQEMUCapsGetArch(qemuCaps);
+
+        if (arch_from_caps != arch &&
+            !((ARCH_IS_X86(arch) && ARCH_IS_X86(arch_from_caps)) ||
+              (ARCH_IS_PPC(arch) && ARCH_IS_PPC(arch_from_caps)) ||
+              (ARCH_IS_ARM(arch) && ARCH_IS_ARM(arch_from_caps)) ||
+              (ARCH_IS_S390(arch) && ARCH_IS_S390(arch_from_caps)))) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("architecture from emulator '%s' doesn't "
+                             "match given architecture '%s'"),
+                           virArchToString(arch_from_caps),
+                           virArchToString(arch));
+            goto cleanup;
+        }
+    } else {
+        if (!(qemuCaps = virQEMUCapsCacheLookupByArch(cache, arch)))
+            goto cleanup;
+
+        binary = virQEMUCapsGetBinary(qemuCaps);
+    }
+
+    if (machine) {
+        /* Turn @machine into canonical name */
+        machine = virQEMUCapsGetCanonicalMachine(qemuCaps, machine);
+
+        if (!virQEMUCapsIsMachineSupported(qemuCaps, machine)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("the machine '%s' is not supported by emulator '%s'"),
+                           machine, binary);
+            goto cleanup;
+        }
+    } else {
+        machine = virQEMUCapsGetDefaultMachine(qemuCaps);
+    }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
+        capsType = VIR_DOMAIN_VIRT_KVM;
+    else
+        capsType = VIR_DOMAIN_VIRT_QEMU;
+
+    if (virttype == VIR_DOMAIN_VIRT_NONE)
+        virttype = capsType;
+
+    if (virttype == VIR_DOMAIN_VIRT_KVM && capsType == VIR_DOMAIN_VIRT_QEMU) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("KVM is not supported by '%s' on this host"),
+                       binary);
+        goto cleanup;
+    }
+
+    if (retArch)
+        *retArch = arch;
+    if (retVirttype)
+        *retVirttype = virttype;
+    if (retMachine)
+        *retMachine = machine;
+
+    VIR_STEAL_PTR(ret, qemuCaps);
+
+ cleanup:
+    virObjectUnref(qemuCaps);
+    return ret;
+}
+
 bool
 virQEMUCapsSupportsVmport(virQEMUCapsPtr qemuCaps,
                           const virDomainDef *def)

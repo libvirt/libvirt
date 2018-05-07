@@ -19393,10 +19393,9 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     char *ret = NULL;
     virQEMUDriverPtr driver = conn->privateData;
     virQEMUCapsPtr qemuCaps = NULL;
-    int virttype = VIR_DOMAIN_VIRT_NONE;
-    virDomainVirtType capsType;
+    virArch arch;
+    virDomainVirtType virttype;
     virDomainCapsPtr domCaps = NULL;
-    int arch = virArchFromHost(); /* virArch */
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
 
@@ -19410,80 +19409,17 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (virttype_str &&
-        (virttype = virDomainVirtTypeFromString(virttype_str)) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("unknown virttype: %s"),
-                       virttype_str);
+    qemuCaps = virQEMUCapsCacheLookupDefault(driver->qemuCapsCache,
+                                             emulatorbin,
+                                             arch_str,
+                                             virttype_str,
+                                             machine,
+                                             &arch, &virttype, &machine);
+    if (!qemuCaps)
         goto cleanup;
-    }
 
-    if (arch_str && (arch = virArchFromString(arch_str)) == VIR_ARCH_NONE) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("unknown architecture: %s"),
-                       arch_str);
-        goto cleanup;
-    }
-
-    if (emulatorbin) {
-        virArch arch_from_caps;
-
-        if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
-                                                emulatorbin)))
-            goto cleanup;
-
-        arch_from_caps = virQEMUCapsGetArch(qemuCaps);
-
-        if (arch_from_caps != arch &&
-            !((ARCH_IS_X86(arch) && ARCH_IS_X86(arch_from_caps)) ||
-              (ARCH_IS_PPC(arch) && ARCH_IS_PPC(arch_from_caps)) ||
-              (ARCH_IS_ARM(arch) && ARCH_IS_ARM(arch_from_caps)) ||
-              (ARCH_IS_S390(arch) && ARCH_IS_S390(arch_from_caps)))) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("architecture from emulator '%s' doesn't "
-                             "match given architecture '%s'"),
-                           virArchToString(arch_from_caps),
-                           virArchToString(arch));
-            goto cleanup;
-        }
-    } else {
-        if (!(qemuCaps = virQEMUCapsCacheLookupByArch(driver->qemuCapsCache,
-                                                      arch)))
-            goto cleanup;
-
-        emulatorbin = virQEMUCapsGetBinary(qemuCaps);
-    }
-
-    if (machine) {
-        /* Turn @machine into canonical name */
-        machine = virQEMUCapsGetCanonicalMachine(qemuCaps, machine);
-
-        if (!virQEMUCapsIsMachineSupported(qemuCaps, machine)) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("the machine '%s' is not supported by emulator '%s'"),
-                           machine, emulatorbin);
-            goto cleanup;
-        }
-    } else {
-        machine = virQEMUCapsGetDefaultMachine(qemuCaps);
-    }
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-        capsType = VIR_DOMAIN_VIRT_KVM;
-    else
-        capsType = VIR_DOMAIN_VIRT_QEMU;
-
-    if (virttype == VIR_DOMAIN_VIRT_NONE)
-        virttype = capsType;
-
-    if (virttype == VIR_DOMAIN_VIRT_KVM && capsType == VIR_DOMAIN_VIRT_QEMU) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("KVM is not supported by '%s' on this host"),
-                       emulatorbin);
-        goto cleanup;
-    }
-
-    if (!(domCaps = virDomainCapsNew(emulatorbin, machine, arch, virttype)))
+    if (!(domCaps = virDomainCapsNew(virQEMUCapsGetBinary(qemuCaps), machine,
+                                     arch, virttype)))
         goto cleanup;
 
     if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,
