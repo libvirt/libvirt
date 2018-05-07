@@ -5103,11 +5103,17 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
     virDomainHostdevSubsysMediatedDevPtr mdevsrc = &dev->source.subsys.u.mdev;
     char *ret = NULL;
     char *mdevPath = NULL;
+    const char *dev_str = NULL;
 
     if (!(mdevPath = virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr)))
         goto cleanup;
 
-    virBufferAddLit(&buf, "vfio-pci");
+    dev_str = virMediatedDeviceModelTypeToString(mdevsrc->model);
+
+    if (!dev_str)
+        goto cleanup;
+
+    virBufferAdd(&buf, dev_str, -1);
     virBufferAsprintf(&buf, ",id=%s,sysfsdev=%s", dev->info->alias, mdevPath);
 
     if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
@@ -5327,11 +5333,28 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
 
         /* MDEV */
         if (virHostdevIsMdevDevice(hostdev)) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("VFIO PCI device assignment is not "
-                                 "supported by this version of qemu"));
+            switch ((virMediatedDeviceModelType) subsys->u.mdev.model) {
+            case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("VFIO PCI device assignment is not "
+                                     "supported by this version of QEMU"));
+                    return -1;
+                }
+                break;
+            case VIR_MDEV_MODEL_TYPE_VFIO_CCW:
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_CCW)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("VFIO CCW device assignment is not "
+                                     "supported by this version of QEMU"));
+                    return -1;
+                }
+                break;
+            case VIR_MDEV_MODEL_TYPE_LAST:
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected vfio type '%d'"), subsys->u.mdev.model);
                 return -1;
+                break;
             }
 
             virCommandAddArg(cmd, "-device");
