@@ -822,12 +822,13 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr enc,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
+    if (info.backingPath)
+        virBufferAsprintf(&buf, "backing_fmt=%s,",
+                          virStorageFileFormatTypeToString(info.backingFormat));
+
     if (info.format == VIR_STORAGE_FILE_RAW && enc) {
         virQEMUBuildQemuImgKeySecretOpts(&buf, enc, info.secretAlias);
     } else {
-        if (info.backingPath)
-            virBufferAsprintf(&buf, "backing_fmt=%s,",
-                              virStorageFileFormatTypeToString(info.backingFormat));
         if (info.encryption)
             virBufferAddLit(&buf, "encryption=on,");
         if (info.preallocate) {
