@@ -1982,8 +1982,8 @@ virFileIsCDROM(const char *path)
 int
 virFileIsCDROM(const char *path)
 {
-    if (STRPREFIX(path, "/dev/cd", NULL) ||
-        STRPREFIX(path, "/dev/acd", NULL))
+    if (STRPREFIX(path, "/dev/cd") ||
+        STRPREFIX(path, "/dev/acd"))
         return 1;
 
     return 0;
