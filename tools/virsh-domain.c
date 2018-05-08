@@ -9592,10 +9592,8 @@ static const vshCmdInfo info_qemu_monitor_event[] = {
 };
 
 static const vshCmdOptDef opts_qemu_monitor_event[] = {
-    {.name = "domain",
-     .type = VSH_OT_STRING,
-     .help = N_("filter by domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_OT_STRING(N_("filter by domain name, id or uuid"),
+                                      0),
     {.name = "event",
      .type = VSH_OT_STRING,
      .help = N_("filter by event name")
@@ -10148,11 +10146,7 @@ static const vshCmdOptDef opts_domxmltonative[] = {
      .flags = VSH_OFLAG_REQ,
      .help = N_("target config data type format")
     },
-    {.name = "domain",
-     .type = VSH_OT_STRING,
-     .flags = VSH_OFLAG_REQ_OPT,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_OT_STRING_FULL(0),
     {.name = "xml",
      .type = VSH_OT_STRING,
      .help = N_("xml data file to export from")
@@ -13339,10 +13333,8 @@ static const vshCmdInfo info_event[] = {
 };
 
 static const vshCmdOptDef opts_event[] = {
-    {.name = "domain",
-     .type = VSH_OT_STRING,
-     .help = N_("filter by domain name, id, or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_OT_STRING(N_("filter by domain name, id or uuid"),
+                                      0),
     {.name = "event",
      .type = VSH_OT_STRING,
      .help = N_("which event type to wait for")
