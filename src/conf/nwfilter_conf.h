@@ -545,10 +545,10 @@ struct _virNWFilterDef {
     virNWFilterEntryPtr *filterEntries;
 };
 
-typedef struct virNWFilterBinding virNWFilterBinding;
-typedef virNWFilterBinding *virNWFilterBindingPtr;
+typedef struct _virNWFilterBindingDef virNWFilterBindingDef;
+typedef virNWFilterBindingDef *virNWFilterBindingDefPtr;
 
-struct virNWFilterBinding {
+struct _virNWFilterBindingDef {
     char *ownername;
     unsigned char owneruuid[VIR_UUID_BUFLEN];
     char *portdevname;
@@ -664,9 +664,9 @@ bool
 virNWFilterRuleIsProtocolEthernet(virNWFilterRuleDefPtr rule);
 
 void
-virNWFilterBindingFree(virNWFilterBindingPtr binding);
-virNWFilterBindingPtr
-virNWFilterBindingCopy(virNWFilterBindingPtr src);
+virNWFilterBindingDefFree(virNWFilterBindingDefPtr binding);
+virNWFilterBindingDefPtr
+virNWFilterBindingDefCopy(virNWFilterBindingDefPtr src);
 
 VIR_ENUM_DECL(virNWFilterRuleAction);
 VIR_ENUM_DECL(virNWFilterRuleDirection);

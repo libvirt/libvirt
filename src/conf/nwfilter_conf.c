@@ -3268,25 +3268,25 @@ virNWFilterRuleIsProtocolEthernet(virNWFilterRuleDefPtr rule)
 
 
 void
-virNWFilterBindingFree(virNWFilterBindingPtr binding)
+virNWFilterBindingDefFree(virNWFilterBindingDefPtr def)
 {
-    if (!binding)
+    if (!def)
         return;
 
-    VIR_FREE(binding->ownername);
-    VIR_FREE(binding->portdevname);
-    VIR_FREE(binding->linkdevname);
-    VIR_FREE(binding->filter);
-    virHashFree(binding->filterparams);
+    VIR_FREE(def->ownername);
+    VIR_FREE(def->portdevname);
+    VIR_FREE(def->linkdevname);
+    VIR_FREE(def->filter);
+    virHashFree(def->filterparams);
 
-    VIR_FREE(binding);
+    VIR_FREE(def);
 }
 
 
-virNWFilterBindingPtr
-virNWFilterBindingCopy(virNWFilterBindingPtr src)
+virNWFilterBindingDefPtr
+virNWFilterBindingDefCopy(virNWFilterBindingDefPtr src)
 {
-    virNWFilterBindingPtr ret;
+    virNWFilterBindingDefPtr ret;
 
     if (VIR_ALLOC(ret) < 0)
         return NULL;
@@ -3316,6 +3316,6 @@ virNWFilterBindingCopy(virNWFilterBindingPtr src)
     return ret;
 
  error:
-    virNWFilterBindingFree(ret);
+    virNWFilterBindingDefFree(ret);
     return NULL;
 }
