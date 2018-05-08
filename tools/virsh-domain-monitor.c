@@ -1991,11 +1991,7 @@ static const vshCmdOptDef opts_domstats[] = {
      .type = VSH_OT_BOOL,
      .help = N_("add backing chain information to block stats"),
     },
-    {.name = "domain",
-     .type = VSH_OT_ARGV,
-     .flags = VSH_OFLAG_NONE,
-     .help = N_("list of domains to get stats for"),
-    },
+    VIRSH_COMMON_OPT_DOMAIN_OT_ARGV(N_("list of domains to get stats for"), 0),
     {.name = NULL}
 };
 
