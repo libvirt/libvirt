@@ -2685,7 +2685,7 @@ vshReadlineOptionsGenerator(const char *text,
         }
 
         while (opt) {
-            if (STREQ(opt->def->name, name)) {
+            if (STREQ(opt->def->name, name) && opt->def->type != VSH_OT_ARGV) {
                 exists = true;
                 break;
             }
