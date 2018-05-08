@@ -11213,11 +11213,7 @@ static const vshCmdInfo info_migrate_postcopy[] = {
 };
 
 static const vshCmdOptDef opts_migrate_postcopy[] = {
-    {.name = "domain",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("domain name, id or uuid")
-    },
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = NULL}
 };
 
