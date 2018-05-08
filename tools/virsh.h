@@ -121,6 +121,18 @@
 # define VIRSH_COMMON_OPT_DOMAIN_OT_STRING_FULL(cflags) \
     VIRSH_COMMON_OPT_DOMAIN_OT_STRING(N_("domain name, id or uuid"), cflags)
 
+# define VIRSH_COMMON_OPT_DOMAIN_OT_ARGV(_helpstr, cflags) \
+    {.name = "domain", \
+     .type = VSH_OT_ARGV, \
+     .flags = VSH_OFLAG_NONE, \
+     .help = _helpstr, \
+     .completer = virshDomainNameCompleter, \
+     .completer_flags = cflags, \
+    }
+
+# define VIRSH_COMMON_OPT_DOMAIN_OT_ARGV_FULL(cflags) \
+    VIRSH_COMMON_OPT_DOMAIN_OT_ARGV(N_("domain name, id or uuid"), cflags)
+
 typedef struct _virshControl virshControl;
 typedef virshControl *virshControlPtr;
 
