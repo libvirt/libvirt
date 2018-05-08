@@ -42,9 +42,6 @@
 #include "virxml.h"
 #include "conf/snapshot_conf.h"
 
-#define VIRSH_COMMON_OPT_DOMAIN_FULL(cflags) \
-    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid"), cflags)
-
 /* Helper for snapshot-create and snapshot-create-as */
 static bool
 virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,

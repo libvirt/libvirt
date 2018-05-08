@@ -65,9 +65,6 @@
 # define SA_SIGINFO 0
 #endif
 
-#define VIRSH_COMMON_OPT_DOMAIN_FULL(cflags) \
-    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid"), cflags)
-
 #define VIRSH_COMMON_OPT_DOMAIN_PERSISTENT \
     {.name = "persistent", \
      .type = VSH_OT_BOOL, \

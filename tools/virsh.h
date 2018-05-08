@@ -82,6 +82,9 @@
      .completer_flags = cflags, \
     }
 
+# define VIRSH_COMMON_OPT_DOMAIN_FULL(cflags) \
+    VIRSH_COMMON_OPT_DOMAIN(N_("domain name, id or uuid"), cflags)
+
 # define VIRSH_COMMON_OPT_CONFIG(_helpstr) \
     {.name = "config", \
      .type = VSH_OT_BOOL, \
