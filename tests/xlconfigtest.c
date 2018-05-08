@@ -19,7 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  *
  * Author: Daniel P. Berrange <berrange@redhat.com>
- * Author: Kiarie Kahurani <davidkiarie4@gmail.com>
  *
  */
 

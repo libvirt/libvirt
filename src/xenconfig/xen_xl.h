@@ -17,7 +17,6 @@
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
  *
- * Author: Kiarie Kahurani<davidkiarie4@gmail.com>
  */
 
 #ifndef __VIR_XEN_XL_H__
