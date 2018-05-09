@@ -474,6 +474,9 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
     virCommandAddArgFormat(cmd, "%llu",
                            VIR_DIV_UP(virDomainDefGetMemoryInitial(def), 1024));
 
+    if (def->mem.locked)
+        virCommandAddArg(cmd, "-S"); /* Wire guest memory */
+
     /* Options */
     if (def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_TRISTATE_SWITCH_ON)
         virCommandAddArg(cmd, "-A"); /* Create an ACPI table */

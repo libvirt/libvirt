@@ -721,6 +721,9 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
                 goto error;
             }
             break;
+        case 'S':
+            def->mem.locked = true;
+            break;
         }
     }
 
