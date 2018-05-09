@@ -474,6 +474,51 @@ virshNWFilterNameCompleter(vshControl *ctl,
 
 
 char **
+virshNWFilterBindingNameCompleter(vshControl *ctl,
+                                  const vshCmd *cmd ATTRIBUTE_UNUSED,
+                                  unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    virNWFilterBindingPtr *bindings = NULL;
+    int nbindings = 0;
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if ((nbindings = virConnectListAllNWFilterBindings(priv->conn, &bindings, flags)) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(ret, nbindings + 1) < 0)
+        goto error;
+
+    for (i = 0; i < nbindings; i++) {
+        const char *name = virNWFilterBindingGetPortDev(bindings[i]);
+
+        if (VIR_STRDUP(ret[i], name) < 0)
+            goto error;
+
+        virNWFilterBindingFree(bindings[i]);
+    }
+    VIR_FREE(bindings);
+
+    return ret;
+
+ error:
+    for (; i < nbindings; i++)
+        virNWFilterBindingFree(bindings[i]);
+    VIR_FREE(bindings);
+    for (i = 0; i < nbindings; i++)
+        VIR_FREE(ret[i]);
+    VIR_FREE(ret);
+    return NULL;
+}
+
+
+char **
 virshSecretUUIDCompleter(vshControl *ctl,
                          const vshCmd *cmd ATTRIBUTE_UNUSED,
                          unsigned int flags)
