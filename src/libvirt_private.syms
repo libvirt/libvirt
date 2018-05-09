@@ -547,6 +547,7 @@ virDomainStateReasonToString;
 virDomainStateTypeFromString;
 virDomainStateTypeToString;
 virDomainStorageSourceFormat;
+virDomainStorageSourceParse;
 virDomainTaintTypeFromString;
 virDomainTaintTypeToString;
 virDomainTimerModeTypeFromString;
