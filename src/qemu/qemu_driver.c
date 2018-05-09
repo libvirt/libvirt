@@ -13235,6 +13235,66 @@ qemuConnectCompareCPU(virConnectPtr conn,
 }
 
 
+static int
+qemuConnectCompareHypervisorCPU(virConnectPtr conn,
+                                const char *emulator,
+                                const char *archStr,
+                                const char *machine,
+                                const char *virttypeStr,
+                                const char *xmlCPU,
+                                unsigned int flags)
+{
+    int ret = VIR_CPU_COMPARE_ERROR;
+    virQEMUDriverPtr driver = conn->privateData;
+    virQEMUCapsPtr qemuCaps = NULL;
+    bool failIncompatible;
+    virCPUDefPtr hvCPU;
+    virArch arch;
+    virDomainVirtType virttype;
+
+    virCheckFlags(VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE,
+                  VIR_CPU_COMPARE_ERROR);
+
+    if (virConnectCompareHypervisorCPUEnsureACL(conn) < 0)
+        goto cleanup;
+
+    failIncompatible = !!(flags & VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE);
+
+    qemuCaps = virQEMUCapsCacheLookupDefault(driver->qemuCapsCache,
+                                             emulator,
+                                             archStr,
+                                             virttypeStr,
+                                             machine,
+                                             &arch, &virttype, NULL);
+    if (!qemuCaps)
+        goto cleanup;
+
+    hvCPU = virQEMUCapsGetHostModel(qemuCaps, virttype,
+                                    VIR_QEMU_CAPS_HOST_CPU_REPORTED);
+
+    if (!hvCPU || hvCPU->fallback != VIR_CPU_FALLBACK_FORBID) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("QEMU '%s' does not support reporting CPU model for "
+                         "virttype '%s'"),
+                       virQEMUCapsGetBinary(qemuCaps),
+                       virDomainVirtTypeToString(virttype));
+        goto cleanup;
+    }
+
+    if (ARCH_IS_X86(arch)) {
+        ret = virCPUCompareXML(arch, hvCPU, xmlCPU, failIncompatible);
+    } else {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("comparing with the hypervisor CPU is not supported "
+                         "for arch %s"), virArchToString(arch));
+    }
+
+ cleanup:
+    virObjectUnref(qemuCaps);
+    return ret;
+}
+
+
 static char *
 qemuConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
                        const char **xmlCPUs,
@@ -21471,6 +21531,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainSetVcpu = qemuDomainSetVcpu, /* 3.1.0 */
     .domainSetBlockThreshold = qemuDomainSetBlockThreshold, /* 3.2.0 */
     .domainSetLifecycleAction = qemuDomainSetLifecycleAction, /* 3.9.0 */
+    .connectCompareHypervisorCPU = qemuConnectCompareHypervisorCPU, /* 4.4.0 */
 };
 
 
