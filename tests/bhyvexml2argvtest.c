@@ -179,6 +179,7 @@ mymain(void)
                        BHYVE_CAP_FBUF | BHYVE_CAP_XHCI;
 
     DO_TEST("base");
+    DO_TEST("wired");
     DO_TEST("acpiapic");
     DO_TEST("disk-cdrom");
     DO_TEST("disk-virtio");

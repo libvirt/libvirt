@@ -163,6 +163,7 @@ mymain(void)
     driver.bhyvecaps = BHYVE_CAP_RTC_UTC;
 
     DO_TEST("base");
+    DO_TEST("wired");
     DO_TEST("oneline");
     DO_TEST("name");
     DO_TEST("console");
