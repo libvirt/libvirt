@@ -29,6 +29,7 @@
 # include "conf/storage_conf.h"
 # include "conf/secret_conf.h"
 # include "conf/interface_conf.h"
+# include "conf/virnwfilterbindingdef.h"
 # include "access/viraccessperm.h"
 
 typedef struct _virAccessManager virAccessManager;
@@ -73,6 +74,10 @@ int virAccessManagerCheckNWFilter(virAccessManagerPtr manager,
                                   const char *driverName,
                                   virNWFilterDefPtr nwfilter,
                                   virAccessPermNWFilter perm);
+int virAccessManagerCheckNWFilterBinding(virAccessManagerPtr manager,
+                                         const char *driverName,
+                                         virNWFilterBindingDefPtr binding,
+                                         virAccessPermNWFilterBinding perm);
 int virAccessManagerCheckSecret(virAccessManagerPtr manager,
                                 const char *driverName,
                                 virSecretDefPtr secret,

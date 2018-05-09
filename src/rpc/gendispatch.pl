@@ -2033,7 +2033,8 @@ elsif ($mode eq "client") {
             "storage_conf.h",
             "nwfilter_conf.h",
             "node_device_conf.h",
-            "interface_conf.h"
+            "interface_conf.h",
+            "virnwfilterbindingdef.h",
             );
         foreach my $hdr (@headers) {
             print "#include \"$hdr\"\n";

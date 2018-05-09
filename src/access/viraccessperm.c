@@ -29,7 +29,7 @@ VIR_ENUM_IMPL(virAccessPermConnect,
               "search_domains", "search_networks",
               "search_storage_pools", "search_node_devices",
               "search_interfaces", "search_secrets",
-              "search_nwfilters",
+              "search_nwfilters", "search_nwfilter_bindings",
               "detect_storage_pools", "pm_control",
               "interface_transaction");
 
@@ -65,6 +65,11 @@ VIR_ENUM_IMPL(virAccessPermNWFilter,
               VIR_ACCESS_PERM_NWFILTER_LAST,
               "getattr", "read", "write",
               "save", "delete");
+
+VIR_ENUM_IMPL(virAccessPermNWFilterBinding,
+              VIR_ACCESS_PERM_NWFILTER_BINDING_LAST,
+              "getattr", "read",
+              "create", "delete");
 
 VIR_ENUM_IMPL(virAccessPermSecret,
               VIR_ACCESS_PERM_SECRET_LAST,

@@ -277,6 +277,26 @@ virAccessDriverPolkitCheckNWFilter(virAccessManagerPtr manager,
 }
 
 static int
+virAccessDriverPolkitCheckNWFilterBinding(virAccessManagerPtr manager,
+                                          const char *driverName,
+                                          virNWFilterBindingDefPtr binding,
+                                          virAccessPermNWFilterBinding perm)
+{
+    const char *attrs[] = {
+        "connect_driver", driverName,
+        "nwfilter_binding_portdev", binding->portdevname,
+        "nwfilter_binding_linkdev", binding->linkdevname,
+        "nwfilter_binding_filter", binding->filter,
+        NULL,
+    };
+
+    return virAccessDriverPolkitCheck(manager,
+                                      "nwfilter_binding",
+                                      virAccessPermNWFilterBindingTypeToString(perm),
+                                      attrs);
+}
+
+static int
 virAccessDriverPolkitCheckSecret(virAccessManagerPtr manager,
                                  const char *driverName,
                                  virSecretDefPtr secret,
@@ -409,6 +429,7 @@ virAccessDriver accessDriverPolkit = {
     .checkNetwork = virAccessDriverPolkitCheckNetwork,
     .checkNodeDevice = virAccessDriverPolkitCheckNodeDevice,
     .checkNWFilter = virAccessDriverPolkitCheckNWFilter,
+    .checkNWFilterBinding = virAccessDriverPolkitCheckNWFilterBinding,
     .checkSecret = virAccessDriverPolkitCheckSecret,
     .checkStoragePool = virAccessDriverPolkitCheckStoragePool,
     .checkStorageVol = virAccessDriverPolkitCheckStorageVol,

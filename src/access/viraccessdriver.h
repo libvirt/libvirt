@@ -47,6 +47,10 @@ typedef int (*virAccessDriverCheckNWFilterDrv)(virAccessManagerPtr manager,
                                                const char *driverName,
                                                virNWFilterDefPtr nwfilter,
                                                virAccessPermNWFilter av);
+typedef int (*virAccessDriverCheckNWFilterBindingDrv)(virAccessManagerPtr manager,
+                                                      const char *driverName,
+                                                      virNWFilterBindingDefPtr binding,
+                                                      virAccessPermNWFilterBinding av);
 typedef int (*virAccessDriverCheckSecretDrv)(virAccessManagerPtr manager,
                                              const char *driverName,
                                              virSecretDefPtr secret,
@@ -80,6 +84,7 @@ struct _virAccessDriver {
     virAccessDriverCheckNetworkDrv checkNetwork;
     virAccessDriverCheckNodeDeviceDrv checkNodeDevice;
     virAccessDriverCheckNWFilterDrv checkNWFilter;
+    virAccessDriverCheckNWFilterBindingDrv checkNWFilterBinding;
     virAccessDriverCheckSecretDrv checkSecret;
     virAccessDriverCheckStoragePoolDrv checkStoragePool;
     virAccessDriverCheckStorageVolDrv checkStorageVol;

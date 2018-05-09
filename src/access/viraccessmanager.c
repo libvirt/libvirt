@@ -296,6 +296,21 @@ int virAccessManagerCheckNWFilter(virAccessManagerPtr manager,
     return virAccessManagerSanitizeError(ret);
 }
 
+int virAccessManagerCheckNWFilterBinding(virAccessManagerPtr manager,
+                                         const char *driverName,
+                                         virNWFilterBindingDefPtr binding,
+                                         virAccessPermNWFilterBinding perm)
+{
+    int ret = 0;
+    VIR_DEBUG("manager=%p(name=%s) driver=%s binding=%p perm=%d",
+              manager, manager->drv->name, driverName, binding, perm);
+
+    if (manager->drv->checkNWFilterBinding)
+        ret = manager->drv->checkNWFilterBinding(manager, driverName, binding, perm);
+
+    return virAccessManagerSanitizeError(ret);
+}
+
 int virAccessManagerCheckSecret(virAccessManagerPtr manager,
                                 const char *driverName,
                                 virSecretDefPtr secret,
