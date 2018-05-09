@@ -35,6 +35,16 @@
 <libvirt>
   <release version="v4.4.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          bhyve: Support locking guest memory
+        </summary>
+        <description>
+          Bhyve's guest memory may be wired using the
+          <code>&lt;memoryBacking&gt;&lt;locked/&gt;&lt;/memoryBacking&gt;</code>
+          element.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>

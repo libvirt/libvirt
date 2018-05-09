@@ -432,5 +432,19 @@ supports Intel e1000 network adapter emulation. It's supported in libvirt
 ...
 </pre>
 
+<h3><a id="wired">Wiring guest memory</a></h3>
+
+<p><span class="since">Since 4.4.0</span>, it's possible to specify that guest memory should
+be wired and cannot be swapped out as follows:</p>
+<pre>
+&lt;domain type="bhyve"&gt;
+    ...
+    &lt;memoryBacking&gt;
+      &lt;locked/&gt;
+    &lt;/memoryBacking&gt;
+    ...
+&lt;/domain&gt;
+</pre>
+
   </body>
 </html>
