@@ -1494,6 +1494,18 @@ virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("device not found: %s");
             break;
+        case VIR_ERR_INVALID_NWFILTER_BINDING:
+            if (info == NULL)
+                errmsg = _("Invalid network filter binding");
+            else
+                errmsg = _("Invalid network filter binding: %s");
+            break;
+        case VIR_ERR_NO_NWFILTER_BINDING:
+            if (info == NULL)
+                errmsg = _("Network filter binding not found");
+            else
+                errmsg = _("Network filter binding not found: %s");
+            break;
     }
     return errmsg;
 }

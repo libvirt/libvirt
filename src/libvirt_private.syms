@@ -1199,6 +1199,7 @@ virGetInterface;
 virGetNetwork;
 virGetNodeDevice;
 virGetNWFilter;
+virGetNWFilterBinding;
 virGetSecret;
 virGetStoragePool;
 virGetStorageVol;

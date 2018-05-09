@@ -43,6 +43,23 @@ typedef struct _virNWFilter virNWFilter;
  */
 typedef virNWFilter *virNWFilterPtr;
 
+/**
+ * virNWFilterBinding:
+ *
+ * a virNWFilterBinding is a private structure representing a network
+ * filter binding to a port
+ */
+typedef struct _virNWFilterBinding virNWFilterBinding;
+
+/**
+ * virNWFilterBindingPtr:
+ *
+ * a virNWFilterBindingPtr is pointer to a virNWFilterBinding private
+ * structure, this is the type used to reference a network filter
+ * port binding in the API.
+ */
+typedef virNWFilterBinding *virNWFilterBindingPtr;
+
 
 /*
  * List NWFilters
@@ -91,5 +108,27 @@ int                     virNWFilterGetUUIDString (virNWFilterPtr nwfilter,
                                                   char *buf);
 char *                  virNWFilterGetXMLDesc    (virNWFilterPtr nwfilter,
                                                   unsigned int flags);
+
+
+virNWFilterBindingPtr   virNWFilterBindingLookupByPortDev(virConnectPtr conn,
+                                                          const char *portdev);
+
+const char *            virNWFilterBindingGetPortDev(virNWFilterBindingPtr binding);
+const char *            virNWFilterBindingGetFilterName(virNWFilterBindingPtr binding);
+
+int                     virConnectListAllNWFilterBindings(virConnectPtr conn,
+                                                          virNWFilterBindingPtr **bindings,
+                                                          unsigned int flags);
+
+virNWFilterBindingPtr   virNWFilterBindingCreateXML(virConnectPtr conn,
+                                                    const char *xml,
+                                                    unsigned int flags);
+
+char *                  virNWFilterBindingGetXMLDesc(virNWFilterBindingPtr binding,
+                                                     unsigned int flags);
+
+int                     virNWFilterBindingDelete(virNWFilterBindingPtr binding);
+int                     virNWFilterBindingRef(virNWFilterBindingPtr binding);
+int                     virNWFilterBindingFree(virNWFilterBindingPtr binding);
 
 #endif /* __VIR_LIBVIRT_NWFILTER_H__ */

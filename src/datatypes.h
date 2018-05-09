@@ -36,6 +36,7 @@ extern virClassPtr virInterfaceClass;
 extern virClassPtr virNetworkClass;
 extern virClassPtr virNodeDeviceClass;
 extern virClassPtr virNWFilterClass;
+extern virClassPtr virNWFilterBindingClass;
 extern virClassPtr virSecretClass;
 extern virClassPtr virStreamClass;
 extern virClassPtr virStorageVolClass;
@@ -270,6 +271,20 @@ extern virClassPtr virAdmClientClass;
             !virObjectIsClass(_nw->conn, virConnectClass)) { \
             virReportErrorHelper(VIR_FROM_NWFILTER, \
                                  VIR_ERR_INVALID_NWFILTER, \
+                                 __FILE__, __FUNCTION__, __LINE__, \
+                                 __FUNCTION__); \
+            virDispatchError(NULL); \
+            return retval; \
+        } \
+    } while (0)
+
+# define virCheckNWFilterBindingReturn(obj, retval) \
+    do { \
+        virNWFilterBindingPtr _nw = (obj); \
+        if (!virObjectIsClass(_nw, virNWFilterBindingClass) || \
+            !virObjectIsClass(_nw->conn, virConnectClass)) { \
+            virReportErrorHelper(VIR_FROM_NWFILTER, \
+                                 VIR_ERR_INVALID_NWFILTER_BINDING, \
                                  __FILE__, __FUNCTION__, __LINE__, \
                                  __FUNCTION__); \
             virDispatchError(NULL); \
@@ -676,6 +691,19 @@ struct _virNWFilter {
 };
 
 
+/**
+* _virNWFilterBinding:
+*
+* Internal structure associated to a network filter port binding
+*/
+struct _virNWFilterBinding {
+    virObject parent;
+    virConnectPtr conn;                  /* pointer back to the connection */
+    char *portdev;                       /* the network filter port device name */
+    char *filtername;                    /* the network filter name */
+};
+
+
 /*
  * Helper APIs for allocating new object instances
  */
@@ -712,6 +740,9 @@ virStreamPtr virGetStream(virConnectPtr conn);
 virNWFilterPtr virGetNWFilter(virConnectPtr conn,
                               const char *name,
                               const unsigned char *uuid);
+virNWFilterBindingPtr virGetNWFilterBinding(virConnectPtr conn,
+                                            const char *portdev,
+                                            const char *filtername);
 virDomainSnapshotPtr virGetDomainSnapshot(virDomainPtr domain,
                                           const char *name);
 

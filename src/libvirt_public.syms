@@ -798,6 +798,15 @@ LIBVIRT_4.5.0 {
         virGetLastErrorDomain;
         virNodeGetSEVInfo;
         virDomainGetLaunchSecurityInfo;
+        virNWFilterBindingLookupByPortDev;
+        virConnectListAllNWFilterBindings;
+        virNWFilterBindingCreateXML;
+        virNWFilterBindingGetXMLDesc;
+        virNWFilterBindingDelete;
+        virNWFilterBindingRef;
+        virNWFilterBindingFree;
+        virNWFilterBindingGetPortDev;
+        virNWFilterBindingGetFilterName;
 } LIBVIRT_4.4.0;
 
 # .... define new API here using predicted next version number ....

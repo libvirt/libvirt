@@ -41,6 +41,7 @@ virClassPtr virInterfaceClass;
 virClassPtr virNetworkClass;
 virClassPtr virNodeDeviceClass;
 virClassPtr virNWFilterClass;
+virClassPtr virNWFilterBindingClass;
 virClassPtr virSecretClass;
 virClassPtr virStreamClass;
 virClassPtr virStorageVolClass;
@@ -54,6 +55,7 @@ static void virInterfaceDispose(void *obj);
 static void virNetworkDispose(void *obj);
 static void virNodeDeviceDispose(void *obj);
 static void virNWFilterDispose(void *obj);
+static void virNWFilterBindingDispose(void *obj);
 static void virSecretDispose(void *obj);
 static void virStreamDispose(void *obj);
 static void virStorageVolDispose(void *obj);
@@ -89,6 +91,7 @@ virDataTypesOnceInit(void)
     DECLARE_CLASS(virNetwork);
     DECLARE_CLASS(virNodeDevice);
     DECLARE_CLASS(virNWFilter);
+    DECLARE_CLASS(virNWFilterBinding);
     DECLARE_CLASS(virSecret);
     DECLARE_CLASS(virStream);
     DECLARE_CLASS(virStorageVol);
@@ -827,6 +830,70 @@ virNWFilterDispose(void *obj)
 
     VIR_FREE(nwfilter->name);
     virObjectUnref(nwfilter->conn);
+}
+
+
+/**
+ * virGetNWFilterBinding:
+ * @conn: the hypervisor connection
+ * @portdev: pointer to the network filter port device name
+ * @filtername: name of the network filter
+ *
+ * Allocates a new network filter binding object. When the object is no longer
+ * needed, virObjectUnref() must be called in order to not leak data.
+ *
+ * Returns a pointer to the network filter binding object, or NULL on error.
+ */
+virNWFilterBindingPtr
+virGetNWFilterBinding(virConnectPtr conn, const char *portdev,
+                      const char *filtername)
+{
+    virNWFilterBindingPtr ret = NULL;
+
+    if (virDataTypesInitialize() < 0)
+        return NULL;
+
+    virCheckConnectGoto(conn, error);
+    virCheckNonNullArgGoto(portdev, error);
+
+    if (!(ret = virObjectNew(virNWFilterBindingClass)))
+        goto error;
+
+    if (VIR_STRDUP(ret->portdev, portdev) < 0)
+        goto error;
+
+    if (VIR_STRDUP(ret->filtername, filtername) < 0)
+        goto error;
+
+    ret->conn = virObjectRef(conn);
+
+    return ret;
+
+ error:
+    virObjectUnref(ret);
+    return NULL;
+}
+
+
+/**
+ * virNWFilterBindingDispose:
+ * @obj: the network filter binding to release
+ *
+ * Unconditionally release all memory associated with a nwfilter binding.
+ * The nwfilter binding object must not be used once this method returns.
+ *
+ * It will also unreference the associated connection object,
+ * which may also be released if its ref count hits zero.
+ */
+static void
+virNWFilterBindingDispose(void *obj)
+{
+    virNWFilterBindingPtr binding = obj;
+
+    VIR_DEBUG("release binding %p %s", binding, binding->portdev);
+
+    VIR_FREE(binding->portdev);
+    virObjectUnref(binding->conn);
 }
 
 

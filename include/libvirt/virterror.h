@@ -321,6 +321,8 @@ typedef enum {
                                            to guest-sync command (DEPRECATED)*/
     VIR_ERR_LIBSSH = 98,                /* error in libssh transport driver */
     VIR_ERR_DEVICE_MISSING = 99,        /* fail to find the desired device */
+    VIR_ERR_INVALID_NWFILTER_BINDING = 100,  /* invalid nwfilter binding */
+    VIR_ERR_NO_NWFILTER_BINDING = 101,  /* no nwfilter binding */
 } virErrorNumber;
 
 /**
