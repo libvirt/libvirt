@@ -36,6 +36,7 @@
 # undef WITH_DEVMAPPER
 # undef WITH_DTRACE_PROBES
 # undef WITH_GNUTLS
+# undef WITH_JANSSON
 # undef WITH_LIBSSH
 # undef WITH_MACVTAP
 # undef WITH_NUMACTL
