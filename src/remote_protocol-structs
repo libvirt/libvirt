@@ -21,6 +21,10 @@ struct remote_nonnull_nwfilter {
         remote_nonnull_string      name;
         remote_uuid                uuid;
 };
+struct remote_nonnull_nwfilter_binding {
+        remote_nonnull_string      portdev;
+        remote_nonnull_string      filtername;
+};
 struct remote_nonnull_interface {
         remote_nonnull_string      name;
         remote_nonnull_string      mac;
@@ -2928,6 +2932,40 @@ struct remote_domain_get_launch_security_info_ret {
                 remote_typed_param * params_val;
         } params;
 };
+struct remote_nwfilter_binding_lookup_by_port_dev_args {
+        remote_nonnull_string      name;
+};
+struct remote_nwfilter_binding_lookup_by_port_dev_ret {
+        remote_nonnull_nwfilter_binding nwfilter;
+};
+struct remote_nwfilter_binding_create_xml_args {
+        remote_nonnull_string      xml;
+        u_int                      flags;
+};
+struct remote_nwfilter_binding_create_xml_ret {
+        remote_nonnull_nwfilter_binding nwfilter;
+};
+struct remote_nwfilter_binding_delete_args {
+        remote_nonnull_nwfilter_binding nwfilter;
+};
+struct remote_nwfilter_binding_get_xml_desc_args {
+        remote_nonnull_nwfilter_binding nwfilter;
+        u_int                      flags;
+};
+struct remote_nwfilter_binding_get_xml_desc_ret {
+        remote_nonnull_string      xml;
+};
+struct remote_connect_list_all_nwfilter_bindings_args {
+        int                        need_results;
+        u_int                      flags;
+};
+struct remote_connect_list_all_nwfilter_bindings_ret {
+        struct {
+                u_int              bindings_len;
+                remote_nonnull_nwfilter_binding * bindings_val;
+        } bindings;
+        u_int                      ret;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3325,4 +3363,9 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_BASELINE_HYPERVISOR_CPU = 394,
         REMOTE_PROC_NODE_GET_SEV_INFO = 395,
         REMOTE_PROC_DOMAIN_GET_LAUNCH_SECURITY_INFO = 396,
+        REMOTE_PROC_NWFILTER_BINDING_LOOKUP_BY_PORT_DEV = 397,
+        REMOTE_PROC_NWFILTER_BINDING_GET_XML_DESC = 398,
+        REMOTE_PROC_NWFILTER_BINDING_CREATE_XML = 399,
+        REMOTE_PROC_NWFILTER_BINDING_DELETE = 400,
+        REMOTE_PROC_CONNECT_LIST_ALL_NWFILTER_BINDINGS = 401,
 };

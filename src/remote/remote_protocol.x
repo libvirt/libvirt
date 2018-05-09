@@ -94,6 +94,9 @@ const REMOTE_NODE_DEVICE_CAPS_LIST_MAX = 65536;
 /* Upper limit on lists of network filters. */
 const REMOTE_NWFILTER_LIST_MAX = 16384;
 
+/* Upper limit on lists of network filter bindings. */
+const REMOTE_NWFILTER_BINDING_LIST_MAX = 16384;
+
 /* Upper limit on list of scheduler parameters. */
 const REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX = 16;
 
@@ -281,6 +284,12 @@ struct remote_nonnull_nwfilter {
     remote_uuid uuid;
 };
 
+/* A network filter binding which may not be NULL. */
+struct remote_nonnull_nwfilter_binding {
+    remote_nonnull_string portdev;
+    remote_nonnull_string filtername;
+};
+
 /* An interface which may not be NULL. */
 struct remote_nonnull_interface {
     remote_nonnull_string name;
@@ -322,6 +331,7 @@ struct remote_nonnull_domain_snapshot {
 typedef remote_nonnull_domain *remote_domain;
 typedef remote_nonnull_network *remote_network;
 typedef remote_nonnull_nwfilter *remote_nwfilter;
+typedef remote_nonnull_nwfilter_binding *remote_nwfilter_binding;
 typedef remote_nonnull_storage_pool *remote_storage_pool;
 typedef remote_nonnull_storage_vol *remote_storage_vol;
 typedef remote_nonnull_node_device *remote_node_device;
@@ -3505,6 +3515,48 @@ struct remote_domain_get_launch_security_info_ret {
     remote_typed_param params<REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX>;
 };
 
+/* nwfilter binding */
+
+struct remote_nwfilter_binding_lookup_by_port_dev_args {
+    remote_nonnull_string name;
+};
+
+struct remote_nwfilter_binding_lookup_by_port_dev_ret {
+    remote_nonnull_nwfilter_binding nwfilter;
+};
+
+struct remote_nwfilter_binding_create_xml_args {
+    remote_nonnull_string xml;
+    unsigned int flags;
+};
+
+struct remote_nwfilter_binding_create_xml_ret {
+    remote_nonnull_nwfilter_binding nwfilter;
+};
+
+struct remote_nwfilter_binding_delete_args {
+    remote_nonnull_nwfilter_binding nwfilter;
+};
+
+struct remote_nwfilter_binding_get_xml_desc_args {
+    remote_nonnull_nwfilter_binding nwfilter;
+    unsigned int flags;
+};
+
+struct remote_nwfilter_binding_get_xml_desc_ret {
+    remote_nonnull_string xml;
+};
+
+struct remote_connect_list_all_nwfilter_bindings_args {
+    int need_results;
+    unsigned int flags;
+};
+
+struct remote_connect_list_all_nwfilter_bindings_ret { /* insert@1 */
+    remote_nonnull_nwfilter_binding bindings<REMOTE_NWFILTER_BINDING_LIST_MAX>;
+    unsigned int ret;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6224,5 +6276,41 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:read
      */
-    REMOTE_PROC_DOMAIN_GET_LAUNCH_SECURITY_INFO = 396
+    REMOTE_PROC_DOMAIN_GET_LAUNCH_SECURITY_INFO = 396,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: nwfilter_binding:getattr
+     */
+    REMOTE_PROC_NWFILTER_BINDING_LOOKUP_BY_PORT_DEV = 397,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: nwfilter_binding:read
+     */
+    REMOTE_PROC_NWFILTER_BINDING_GET_XML_DESC = 398,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: nwfilter_binding:create
+     */
+    REMOTE_PROC_NWFILTER_BINDING_CREATE_XML = 399,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: nwfilter_binding:delete
+     */
+    REMOTE_PROC_NWFILTER_BINDING_DELETE = 400,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: connect:search_nwfilter_bindings
+     * @aclfilter: nwfilter_binding:getattr
+     */
+    REMOTE_PROC_CONNECT_LIST_ALL_NWFILTER_BINDINGS = 401
 };
