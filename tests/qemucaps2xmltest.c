@@ -166,7 +166,7 @@ mymain(void)
     testQemuData data;
 
 #if !WITH_YAJL
-    fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
+    fputs("libvirt not compiled with JSON support, skipping this test\n", stderr);
     return EXIT_AM_SKIP;
 #endif
 
