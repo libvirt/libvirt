@@ -24,6 +24,7 @@
 # include "internal.h"
 # include "virmacaddr.h"
 # include "virhash.h"
+# include "virbuffer.h"
 
 typedef struct _virNWFilterBindingDef virNWFilterBindingDef;
 typedef virNWFilterBindingDef *virNWFilterBindingDefPtr;
@@ -43,5 +44,22 @@ void
 virNWFilterBindingDefFree(virNWFilterBindingDefPtr binding);
 virNWFilterBindingDefPtr
 virNWFilterBindingDefCopy(virNWFilterBindingDefPtr src);
+
+virNWFilterBindingDefPtr
+virNWFilterBindingDefParseNode(xmlDocPtr xml,
+                               xmlNodePtr root);
+
+virNWFilterBindingDefPtr
+virNWFilterBindingDefParseString(const char *xml);
+
+virNWFilterBindingDefPtr
+virNWFilterBindingDefParseFile(const char *filename);
+
+char *
+virNWFilterBindingDefFormat(const virNWFilterBindingDef *def);
+
+int
+virNWFilterBindingDefFormatBuf(virBufferPtr buf,
+                               const virNWFilterBindingDef *def);
 
 #endif /* VIR_NWFILTER_BINDING_DEF_H */

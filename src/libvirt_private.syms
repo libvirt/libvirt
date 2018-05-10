@@ -1049,7 +1049,12 @@ virNodeDeviceObjListRemove;
 
 # conf/virnwfilterbindingdef.h
 virNWFilterBindingDefCopy;
+virNWFilterBindingDefFormat;
+virNWFilterBindingDefFormatBuf;
 virNWFilterBindingDefFree;
+virNWFilterBindingDefParseFile;
+virNWFilterBindingDefParseNode;
+virNWFilterBindingDefParseString;
 
 
 # conf/virnwfilterobj.h

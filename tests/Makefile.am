@@ -157,6 +157,7 @@ EXTRA_DIST = \
 	virmock.h \
 	virnetdaemondata \
 	virnetdevtestdata \
+	virnwfilterbindingxml2xmldata \
 	virpcitestdata \
 	virscsidata \
 	virsh-uriprecedence \
@@ -352,6 +353,7 @@ test_programs += storagebackendsheepdogtest
 endif WITH_STORAGE_SHEEPDOG
 
 test_programs += nwfilterxml2xmltest
+test_programs += virnwfilterbindingxml2xmltest
 
 if WITH_NWFILTER
 test_programs += nwfilterebiptablestest
@@ -847,6 +849,11 @@ nwfilterxml2xmltest_SOURCES = \
 	nwfilterxml2xmltest.c \
 	testutils.c testutils.h
 nwfilterxml2xmltest_LDADD = $(LDADDS)
+
+virnwfilterbindingxml2xmltest_SOURCES = \
+	virnwfilterbindingxml2xmltest.c \
+	testutils.c testutils.h
+virnwfilterbindingxml2xmltest_LDADD = $(LDADDS)
 
 if WITH_NWFILTER
 nwfilterebiptablestest_SOURCES = \

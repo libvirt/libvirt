@@ -1,0 +1,9 @@
+<filterbinding>
+  <owner>
+    <name>memtest</name>
+    <uuid>d54df46f-1ab5-4a22-8618-4560ef5fac2c</uuid>
+  </owner>
+  <portdev name='vnet0'/>
+  <mac address='52:54:00:7b:35:93'/>
+  <filterref filter='clean-traffic'/>
+</filterbinding>
