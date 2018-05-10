@@ -214,7 +214,7 @@ virLibsshServerKeyAsString(virNetLibsshSessionPtr sess)
     size_t keyhashlen;
     char *str;
 
-    if (ssh_get_publickey(sess->session, &key) != SSH_OK) {
+    if (ssh_get_server_publickey(sess->session, &key) != SSH_OK) {
         virReportError(VIR_ERR_LIBSSH, "%s",
                        _("failed to get the key of the current "
                          "session"));
