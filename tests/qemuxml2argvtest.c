@@ -1029,16 +1029,22 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hugepages-nvdimm");
     DO_TEST("nosharepages", QEMU_CAPS_MEM_MERGE);
     DO_TEST("disk-cdrom", NONE);
+    DO_TEST_CAPS_VER("disk-cdrom", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom");
     DO_TEST("disk-iscsi", NONE);
     DO_TEST("disk-cdrom-network", QEMU_CAPS_KVM);
+    DO_TEST_CAPS_VER("disk-cdrom-network", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom-network");
     DO_TEST("disk-cdrom-tray",
             QEMU_CAPS_VIRTIO_TX_ALG);
+    DO_TEST_CAPS_VER("disk-cdrom-tray", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom-tray");
     DO_TEST("disk-floppy", NONE);
+    DO_TEST_CAPS_VER("disk-floppy", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-floppy");
+    DO_TEST_CAPS_VER("disk-floppy-q35-2_9", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-floppy-q35-2_9");
+    DO_TEST_CAPS_VER("disk-floppy-q35-2_11", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-floppy-q35-2_11");
     DO_TEST_FAILURE("disk-floppy-pseries",
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
@@ -1058,49 +1064,61 @@ mymain(void)
     DO_TEST("disk-boot-disk", NONE);
     DO_TEST("disk-boot-cdrom", NONE);
     DO_TEST("floppy-drive-fat", NONE);
+    DO_TEST_CAPS_VER("floppy-drive-fat", "2.12.0");
     DO_TEST_CAPS_LATEST("floppy-drive-fat");
     DO_TEST("disk-readonly-disk", NONE);
+    DO_TEST_CAPS_VER("disk-readonly-disk", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-readonly-disk");
     DO_TEST("disk-fmt-qcow", NONE);
     DO_TEST_PARSE_ERROR("disk-fmt-cow", NONE);
     DO_TEST_PARSE_ERROR("disk-fmt-dir", NONE);
     DO_TEST_PARSE_ERROR("disk-fmt-iso", NONE);
     DO_TEST("disk-shared", NONE);
+    DO_TEST_CAPS_VER("disk-shared", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-shared");
     DO_TEST_PARSE_ERROR("disk-shared-qcow", NONE);
     DO_TEST("disk-shared-locking",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DISK_SHARE_RW);
     DO_TEST("disk-error-policy", NONE);
+    DO_TEST_CAPS_VER("disk-error-policy", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-error-policy");
     DO_TEST("disk-cache", QEMU_CAPS_SCSI_LSI, QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST_CAPS_VER("disk-cache", "2.6.0");
     DO_TEST_CAPS_VER("disk-cache", "2.7.0");
+    DO_TEST_CAPS_VER("disk-cache", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cache");
     DO_TEST("disk-network-nbd", NONE);
+    DO_TEST_CAPS_VER("disk-network-nbd", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-nbd");
     DO_TEST("disk-network-iscsi", QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_BLOCK);
     DO_TEST("disk-network-iscsi-modern",
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_BLOCK,
             QEMU_CAPS_ISCSI_PASSWORD_SECRET);
+    DO_TEST_CAPS_VER("disk-network-iscsi", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-iscsi");
     DO_TEST_PARSE_ERROR("disk-network-iscsi-auth-secrettype-invalid", NONE);
     DO_TEST_PARSE_ERROR("disk-network-iscsi-auth-wrong-secrettype", NONE);
     DO_TEST_PARSE_ERROR("disk-network-source-auth-both", NONE);
     DO_TEST("disk-network-gluster",
             QEMU_CAPS_GLUSTER_DEBUG_LEVEL);
+    DO_TEST_CAPS_VER("disk-network-gluster", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-gluster");
     DO_TEST_CAPS_VER("disk-network-rbd", "2.5.0");
+    DO_TEST_CAPS_VER("disk-network-rbd", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd");
     DO_TEST_FAILURE("disk-network-rbd-no-colon", NONE);
     DO_TEST("disk-network-sheepdog", NONE);
+    DO_TEST_CAPS_VER("disk-network-sheepdog", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-sheepdog");
     DO_TEST("disk-network-source-auth", NONE);
+    DO_TEST_CAPS_VER("disk-network-source-auth", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-source-auth");
     DO_TEST("disk-network-vxhs", QEMU_CAPS_VXHS);
     driver.config->vxhsTLS = 1;
     DO_TEST("disk-network-tlsx509", QEMU_CAPS_VXHS,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509, QEMU_CAPS_NBD_TLS);
+    DO_TEST_CAPS_VER("disk-network-tlsx509", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509");
     driver.config->vxhsTLS = 0;
     VIR_FREE(driver.config->vxhsTLSx509certdir);
@@ -1149,6 +1167,7 @@ mymain(void)
     DO_TEST("disk-sata-device",
             QEMU_CAPS_ICH9_AHCI);
     DO_TEST("disk-aio", NONE);
+    DO_TEST_CAPS_VER("disk-aio", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-aio");
     DO_TEST("disk-source-pool", NONE);
     DO_TEST("disk-source-pool-mode", NONE);
@@ -1159,12 +1178,14 @@ mymain(void)
     DO_TEST("disk-copy_on_read",
             QEMU_CAPS_VIRTIO_TX_ALG,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
+    DO_TEST_CAPS_VER("disk-copy_on_read", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-copy_on_read");
     DO_TEST("disk-discard",
             QEMU_CAPS_DRIVE_DISCARD);
     DO_TEST("disk-detect-zeroes",
             QEMU_CAPS_DRIVE_DISCARD,
             QEMU_CAPS_DRIVE_DETECT_ZEROES);
+    DO_TEST_CAPS_VER("disk-detect-zeroes", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-detect-zeroes");
     DO_TEST("disk-snapshot", NONE);
     DO_TEST_PARSE_ERROR("disk-same-targets",
@@ -2925,6 +2946,7 @@ mymain(void)
             QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4,
             QEMU_CAPS_ICH9_USB_EHCI1);
 
+    DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-virtio-scsi-reservations");
 
     DO_TEST_CAPS_LATEST("tseg-explicit-size");
