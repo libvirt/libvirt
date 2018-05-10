@@ -714,6 +714,79 @@ nwfilterTeardownFilter(virDomainNetDefPtr net)
 }
 
 
+static virNWFilterBindingPtr
+nwfilterBindingLookupByPortDev(virConnectPtr conn,
+                               const char *portdev)
+{
+    virNWFilterBindingPtr ret = NULL;
+    virNWFilterBindingObjPtr obj;
+    virNWFilterBindingDefPtr def;
+
+    obj = virNWFilterBindingObjListFindByPortDev(driver->bindings,
+                                                 portdev);
+    if (!obj)
+        goto cleanup;
+
+    def = virNWFilterBindingObjGetDef(obj);
+    if (virNWFilterBindingLookupByPortDevEnsureACL(conn, def) < 0)
+        goto cleanup;
+
+    ret = virGetNWFilterBinding(conn, def->portdevname, def->filter);
+
+ cleanup:
+    virNWFilterBindingObjEndAPI(&obj);
+    return ret;
+}
+
+
+static int
+nwfilterConnectListAllNWFilterBindings(virConnectPtr conn,
+                                       virNWFilterBindingPtr **bindings,
+                                       unsigned int flags)
+{
+    int ret;
+
+    virCheckFlags(0, -1);
+
+    if (virConnectListAllNWFilterBindingsEnsureACL(conn) < 0)
+        return -1;
+
+    ret = virNWFilterBindingObjListExport(driver->bindings,
+                                          conn,
+                                          bindings,
+                                          virConnectListAllNWFilterBindingsCheckACL);
+
+    return ret;
+}
+
+
+static char *
+nwfilterBindingGetXMLDesc(virNWFilterBindingPtr binding,
+                          unsigned int flags)
+{
+    virNWFilterBindingObjPtr obj;
+    virNWFilterBindingDefPtr def;
+    char *ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    obj = virNWFilterBindingObjListFindByPortDev(driver->bindings,
+                                                 binding->portdev);
+    if (!obj)
+        goto cleanup;
+
+    def = virNWFilterBindingObjGetDef(obj);
+    if (virNWFilterBindingGetXMLDescEnsureACL(binding->conn, def) < 0)
+        goto cleanup;
+
+    ret = virNWFilterBindingDefFormat(def);
+
+ cleanup:
+    virNWFilterBindingObjEndAPI(&obj);
+    return ret;
+}
+
+
 static virNWFilterDriver nwfilterDriver = {
     .name = "nwfilter",
     .connectNumOfNWFilters = nwfilterConnectNumOfNWFilters, /* 0.8.0 */
@@ -724,6 +797,9 @@ static virNWFilterDriver nwfilterDriver = {
     .nwfilterDefineXML = nwfilterDefineXML, /* 0.8.0 */
     .nwfilterUndefine = nwfilterUndefine, /* 0.8.0 */
     .nwfilterGetXMLDesc = nwfilterGetXMLDesc, /* 0.8.0 */
+    .nwfilterBindingLookupByPortDev = nwfilterBindingLookupByPortDev, /* 4.5.0 */
+    .connectListAllNWFilterBindings = nwfilterConnectListAllNWFilterBindings, /* 4.5.0 */
+    .nwfilterBindingGetXMLDesc = nwfilterBindingGetXMLDesc, /* 4.5.0 */
 };
 
 
