@@ -19898,6 +19898,19 @@ virDomainDefParseXML(xmlDocPtr xml,
         VIR_FREE(nodes);
     }
 
+    if (def->features[VIR_DOMAIN_FEATURE_SMM] == VIR_TRISTATE_SWITCH_ON) {
+        int rv = virDomainParseScaledValue("string(./features/smm/tseg)",
+                                           "string(./features/smm/tseg/@unit)",
+                                           ctxt,
+                                           &def->tseg_size,
+                                           1024 * 1024, /* Defaults to mebibytes */
+                                           ULLONG_MAX,
+                                           false);
+        if (rv < 0)
+            goto error;
+        def->tseg_specified = rv;
+    }
+
     if ((n = virXPathNodeSet("./features/capabilities/*", ctxt, &nodes)) < 0)
         goto error;
 
@@ -22017,6 +22030,33 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
             case VIR_DOMAIN_KVM_LAST:
                 break;
             }
+        }
+    }
+
+    /* smm */
+    if (src->features[VIR_DOMAIN_FEATURE_SMM] == VIR_TRISTATE_SWITCH_ON) {
+        if (src->tseg_specified != dst->tseg_specified) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("SMM TSEG differs: source: %s, destination: '%s'"),
+                           src->tseg_specified ? _("specified") : _("not specified"),
+                           dst->tseg_specified ? _("specified") : _("not specified"));
+            return false;
+        }
+
+        if (src->tseg_specified &&
+            src->tseg_size != dst->tseg_size) {
+            const char *unit_src, *unit_dst;
+            unsigned long long short_size_src = virFormatIntPretty(src->tseg_size,
+                                                                   &unit_src);
+            unsigned long long short_size_dst = virFormatIntPretty(dst->tseg_size,
+                                                                   &unit_dst);
+
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Size of SMM TSEG size differs: "
+                             "source: '%llu %s', destination: '%llu %s'"),
+                           short_size_src, unit_src,
+                           short_size_dst, unit_dst);
+            return false;
         }
     }
 
@@ -27446,7 +27486,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             case VIR_DOMAIN_FEATURE_PMU:
             case VIR_DOMAIN_FEATURE_PVSPINLOCK:
             case VIR_DOMAIN_FEATURE_VMPORT:
-            case VIR_DOMAIN_FEATURE_SMM:
                 switch ((virTristateSwitch) def->features[i]) {
                 case VIR_TRISTATE_SWITCH_LAST:
                 case VIR_TRISTATE_SWITCH_ABSENT:
@@ -27459,6 +27498,31 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 case VIR_TRISTATE_SWITCH_OFF:
                    virBufferAsprintf(buf, "<%s state='off'/>\n", name);
                    break;
+                }
+
+                break;
+
+            case VIR_DOMAIN_FEATURE_SMM:
+                if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT) {
+                    virTristateSwitch state = def->features[i];
+                    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
+                    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+
+                    virBufferAsprintf(&attrBuf, " state='%s'",
+                                      virTristateSwitchTypeToString(state));
+
+                    if (state == VIR_TRISTATE_SWITCH_ON &&
+                        def->tseg_specified) {
+                        const char *unit;
+                        unsigned long long short_size = virFormatIntPretty(def->tseg_size,
+                                                                           &unit);
+
+                        virBufferSetChildIndent(&childBuf, buf);
+                        virBufferAsprintf(&childBuf, "<tseg unit='%s'>%llu</tseg>\n",
+                                          unit, short_size);
+                    }
+
+                    virXMLFormatElement(buf, "smm", &attrBuf, &childBuf);
                 }
 
                 break;

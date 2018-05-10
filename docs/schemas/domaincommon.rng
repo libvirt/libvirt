@@ -4846,6 +4846,11 @@
                 <attribute name="state">
                   <ref name="virOnOff"/>
                 </attribute>
+                <optional>
+                  <element name="tseg">
+                    <ref name="scaledInteger"/>
+                  </element>
+                </optional>
               </optional>
             </element>
           </optional>

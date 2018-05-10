@@ -1924,6 +1924,9 @@
   &lt;ioapic driver='qemu'/&gt;
   &lt;hpt resizing='required'/&gt;
   &lt;vmcoreinfo state='on'/&gt;
+  &lt;smm state='on'&gt;
+    &lt;tseg unit='MiB'&gt;48&lt;/tseg&gt;
+  &lt;/smm&gt;
 &lt;/features&gt;
 ...</pre>
 
@@ -2079,10 +2082,55 @@
           <span class="since">Since 1.2.16</span>
       </dd>
       <dt><code>smm</code></dt>
-      <dd>Depending on the <code>state</code> attribute (values <code>on</code>,
+      <dd>
+        <p>
+          Depending on the <code>state</code> attribute (values <code>on</code>,
           <code>off</code>, default <code>on</code>) enable or disable
           System Management Mode.
           <span class="since">Since 2.1.0</span>
+        </p><p> Optional sub-element <code>tseg</code> can be used to specify
+          the amount of memory dedicated to SMM's extended TSEG. That offers a
+          fourth option size apart from the existing ones (1 MiB, 2 MiB and 8
+          MiB) that the guest OS (or rather loader) can choose from. The size
+          can be specified as a value of that element, optional attribute
+          <code>unit</code> can be used to specify the unit of the
+          aforementioned value (defaults to 'MiB').  If set to 0 the extended
+          size is not advertised and only the default ones (see above) are
+          available.
+        </p><p>
+          <b>If the VM is booting you should leave this option alone, unless you
+          are very certain you know what you are doing.</b>
+        </p><p>
+          This value is configurable due to the fact that the calculation cannot
+          be done right with the guarantee that it will work correctly.  In
+          QEMU, the user-configurable extended TSEG feature was unavailable up
+          to and including <code>pc-q35-2.9</code>. Starting with
+          <code>pc-q35-2.10</code> the feature is available, with default size
+          16 MiB.  That should suffice for up to roughly 272 VCPUs, 5 GiB guest
+          RAM in total, no hotplug memory range, and 32 GiB of 64-bit PCI MMIO
+          aperture.  Or for 48 VCPUs, with 1TB of guest RAM, no hotplug DIMM
+          range, and 32GB of 64-bit PCI MMIO aperture. The values may also vary
+          based on the loader the VM is using.
+        </p><p>
+          Additional size might be needed for significantly higher VCPU counts
+          or increased address space (that can be memory, maxMemory, 64-bit PCI
+          MMIO aperture size; roughly 8 MiB of TSEG per 1 TiB of address space)
+          which can also be rounded up.
+        </p><p>
+          Due to the nature of this setting being similar to "how much RAM
+          should the guest have" users are advised to either consult the
+          documentation of the guest OS or loader (if there is any), or test
+          this by trial-and-error changing the value until the VM boots
+          successfully.  Yet another guiding value for users might be the fact
+          that 48 MiB should be enough for pretty large guests (240 VCPUs and
+          4TB guest RAM), but it is on purpose not set as default as 48 MiB of
+          unavailable RAM might be too much for small guests (e.g. with 512 MiB
+          of RAM).
+        </p><p>
+          See <a href="#elementsMemoryAllocation">Memory Allocation</a>
+          for more details about the <code>unit</code> attribute.
+          <span class="since">Since 4.5.0</span> (QEMU only)
+        </p>
       </dd>
       <dt><code>ioapic</code></dt>
       <dd>Tune the I/O APIC. Possible values for the

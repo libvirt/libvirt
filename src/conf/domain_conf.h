@@ -2421,6 +2421,9 @@ struct _virDomainDef {
     char *hyperv_vendor_id;
     int apic_eoi;
 
+    bool tseg_specified;
+    unsigned long long tseg_size;
+
     virDomainClockDef clock;
 
     size_t ngraphics;
