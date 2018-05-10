@@ -545,19 +545,6 @@ struct _virNWFilterDef {
     virNWFilterEntryPtr *filterEntries;
 };
 
-typedef struct _virNWFilterBindingDef virNWFilterBindingDef;
-typedef virNWFilterBindingDef *virNWFilterBindingDefPtr;
-
-struct _virNWFilterBindingDef {
-    char *ownername;
-    unsigned char owneruuid[VIR_UUID_BUFLEN];
-    char *portdevname;
-    char *linkdevname;
-    virMacAddr mac;
-    char *filter;
-    virHashTablePtr filterparams;
-};
-
 
 typedef enum {
     STEP_APPLY_NEW,
@@ -663,10 +650,6 @@ virNWFilterRuleIsProtocolIPv6(virNWFilterRuleDefPtr rule);
 bool
 virNWFilterRuleIsProtocolEthernet(virNWFilterRuleDefPtr rule);
 
-void
-virNWFilterBindingDefFree(virNWFilterBindingDefPtr binding);
-virNWFilterBindingDefPtr
-virNWFilterBindingDefCopy(virNWFilterBindingDefPtr src);
 
 VIR_ENUM_DECL(virNWFilterRuleAction);
 VIR_ENUM_DECL(virNWFilterRuleDirection);
