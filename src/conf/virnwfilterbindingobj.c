@@ -207,7 +207,7 @@ virNWFilterBindingObjParseXML(xmlDocPtr doc,
     if (!(ret = virNWFilterBindingObjNew()))
         return NULL;
 
-    if (!(node = virXPathNode("./filterbindingstatus", ctxt))) {
+    if (!(node = virXPathNode("./filterbinding", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("filter binding status missing content"));
         goto cleanup;
@@ -231,9 +231,10 @@ virNWFilterBindingObjParseNode(xmlDocPtr doc,
     xmlXPathContextPtr ctxt = NULL;
     virNWFilterBindingObjPtr obj = NULL;
 
-    if (STRNEQ((const char *)root->name, "filterbinding")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("unknown root element for filter binding"));
+    if (STRNEQ((const char *)root->name, "filterbindingstatus")) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown root element '%s' for filter binding"),
+                       root->name);
         goto cleanup;
     }
 
