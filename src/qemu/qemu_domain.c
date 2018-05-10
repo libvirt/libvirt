@@ -3633,6 +3633,38 @@ qemuDomainDefCPUPostParse(virDomainDefPtr def)
 
 
 static int
+qemuDomainDefTsegPostParse(virDomainDefPtr def,
+                           virQEMUCapsPtr qemuCaps)
+{
+    if (def->features[VIR_DOMAIN_FEATURE_SMM] != VIR_TRISTATE_SWITCH_ON)
+        return 0;
+
+    if (!def->tseg_specified)
+        return 0;
+
+    if (!qemuDomainIsQ35(def)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("SMM TSEG is only supported with q35 machine type"));
+        return -1;
+    }
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting TSEG size is not supported with this QEMU binary"));
+        return -1;
+    }
+
+    if (def->tseg_size & ((1 << 20) - 1)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("SMM TSEG size must be divisible by 1 MiB"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefPostParseBasic(virDomainDefPtr def,
                             virCapsPtr caps,
                             void *opaque ATTRIBUTE_UNUSED)
@@ -3700,6 +3732,9 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         goto cleanup;
 
     if (qemuDomainDefCPUPostParse(def) < 0)
+        goto cleanup;
+
+    if (qemuDomainDefTsegPostParse(def, qemuCaps) < 0)
         goto cleanup;
 
     ret = 0;

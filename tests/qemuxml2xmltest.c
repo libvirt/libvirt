@@ -1184,6 +1184,15 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW);
 
+    DO_TEST("tseg-explicit-size",
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_ICH9_AHCI,
+            QEMU_CAPS_MACHINE_SMM_OPT,
+            QEMU_CAPS_VIRTIO_SCSI,
+            QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES);
+
 # define DO_TEST_STATUS(name) \
     do { \
         if (testInfoSetStatus(&info, name, GIC_NONE) < 0) { \
