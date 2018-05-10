@@ -114,9 +114,10 @@
   <flag name='kernel-irqchip'/>
   <flag name='isa-serial'/>
   <flag name='hda-output'/>
+  <flag name='mch'/>
   <version>1007000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>50196</microcodeVersion>
+  <microcodeVersion>50562</microcodeVersion>
   <package></package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='Opteron_G5'/>

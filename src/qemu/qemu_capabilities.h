@@ -479,6 +479,8 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_VHOST_VSOCK, /* -device vhost-vsock-* */
     QEMU_CAPS_CHARDEV_FD_PASS, /* Passing pre-opened FDs for chardevs */
     QEMU_CAPS_DEVICE_TPM_EMULATOR, /* -tpmdev emulator */
+    QEMU_CAPS_DEVICE_MCH, /* Northbridge in q35 machine types */
+    QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES, /* -global mch.extended-tseg-mbytes */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

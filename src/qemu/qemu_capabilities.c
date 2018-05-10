@@ -495,6 +495,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "vhost-vsock",
               "chardev-fd-pass",
               "tpm-emulator",
+              "mch",
+              "mch.extended-tseg-mbytes",
     );
 
 
@@ -1132,6 +1134,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "hda-output", QEMU_CAPS_HDA_OUTPUT },
     { "vmgenid", QEMU_CAPS_DEVICE_VMGENID },
     { "vhost-vsock-device", QEMU_CAPS_DEVICE_VHOST_VSOCK },
+    { "mch", QEMU_CAPS_DEVICE_MCH },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {
@@ -1277,6 +1280,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtualCSSBridge[] = 
     { "cssid-unrestricted", QEMU_CAPS_CCW_CSSID_UNRESTRICTED },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsMCH[] = {
+    { "extended-tseg-mbytes", QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES },
+};
+
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/options/+gluster/debug-level", QEMU_CAPS_GLUSTER_DEBUG_LEVEL},
@@ -1406,6 +1413,9 @@ static virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
     { "virtual-css-bridge", virQEMUCapsObjectPropsVirtualCSSBridge,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtualCSSBridge),
       QEMU_CAPS_CCW },
+    { "mch", virQEMUCapsDevicePropsMCH,
+      ARRAY_CARDINALITY(virQEMUCapsDevicePropsMCH),
+      QEMU_CAPS_DEVICE_MCH },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {

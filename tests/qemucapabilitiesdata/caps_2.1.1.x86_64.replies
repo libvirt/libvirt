@@ -2526,6 +2526,32 @@
 {
   "return": [
     {
+      "name": "command_serr_enable",
+      "type": "on/off"
+    },
+    {
+      "name": "multifunction",
+      "type": "on/off"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "string"
+    },
+    {
+      "name": "addr",
+      "type": "pci-devfn"
+    }
+  ],
+  "id": "libvirt-37"
+}
+
+{
+  "return": [
+    {
       "name": "pc-1.3",
       "cpu-max": 255
     },
@@ -2625,7 +2651,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -2706,21 +2732,21 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -3580,7 +3606,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -3602,7 +3628,7 @@
       "capability": "zero-blocks"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {

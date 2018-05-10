@@ -3699,6 +3699,32 @@
 {
   "return": [
     {
+      "name": "command_serr_enable",
+      "type": "on/off"
+    },
+    {
+      "name": "multifunction",
+      "type": "on/off"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "string"
+    },
+    {
+      "name": "addr",
+      "type": "pci-devfn"
+    }
+  ],
+  "id": "libvirt-40"
+}
+
+{
+  "return": [
+    {
       "hotpluggable-cpus": true,
       "name": "pc-0.12",
       "cpu-max": 255
@@ -3862,7 +3888,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -4068,21 +4094,21 @@
       "static": false
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -5205,7 +5231,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -5243,7 +5269,7 @@
       "capability": "x-colo"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -14013,7 +14039,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
