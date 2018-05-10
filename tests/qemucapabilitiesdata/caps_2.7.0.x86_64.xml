@@ -176,6 +176,7 @@
   <flag name='dump-completed'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
+  <flag name='sdl-gl'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>239029</microcodeVersion>

@@ -158,6 +158,7 @@
   <flag name='pr-manager-helper'/>
   <flag name='qom-list-properties'/>
   <flag name='memory-backend-file.discard-data'/>
+  <flag name='sdl-gl'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>419968</microcodeVersion>

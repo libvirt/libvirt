@@ -115,6 +115,7 @@
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
   <flag name='virtual-css-bridge'/>
+  <flag name='sdl-gl'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>303434</microcodeVersion>

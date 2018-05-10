@@ -483,6 +483,9 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "virtual-css-bridge",
               "virtual-css-bridge.cssid-unrestricted",
               "vfio-ccw",
+
+              /* 300 */
+              "sdl-gl",
     );
 
 
@@ -3861,6 +3864,10 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     /* smm option is supported from v2.4.0 */
     if (qemuCaps->version >= 2004000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT);
+
+    /* sdl -gl option is supported from v2.4.0 (qemu commit id 0b71a5d5) */
+    if (qemuCaps->version >= 2004000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL_GL);
 
     /* Since 2.4.50 ARM virt machine supports gic-version option */
     if (qemuCaps->version >= 2004050)

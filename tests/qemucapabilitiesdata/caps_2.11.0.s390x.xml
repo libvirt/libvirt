@@ -121,6 +121,7 @@
   <flag name='nbd-tls'/>
   <flag name='pr-manager-helper'/>
   <flag name='virtual-css-bridge'/>
+  <flag name='sdl-gl'/>
   <version>2011000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>342166</microcodeVersion>

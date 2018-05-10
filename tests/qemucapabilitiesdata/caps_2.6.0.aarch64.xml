@@ -141,6 +141,7 @@
   <flag name='pl011'/>
   <flag name='dump-completed'/>
   <flag name='nbd-tls'/>
+  <flag name='sdl-gl'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>228241</microcodeVersion>
