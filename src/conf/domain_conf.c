@@ -13511,10 +13511,17 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
 
 static int
 virDomainGraphicsDefParseXMLSDL(virDomainGraphicsDefPtr def,
-                                xmlNodePtr node)
+                                xmlNodePtr node,
+                                xmlXPathContextPtr ctxt)
 {
+    xmlNodePtr save = ctxt->node;
+    char *enable = NULL;
+    int enableVal;
+    xmlNodePtr glNode;
     char *fullscreen = virXMLPropString(node, "fullscreen");
     int ret = -1;
+
+    ctxt->node = node;
 
     if (fullscreen != NULL) {
         if (STREQ(fullscreen, "yes")) {
@@ -13533,9 +13540,29 @@ virDomainGraphicsDefParseXMLSDL(virDomainGraphicsDefPtr def,
     def->data.sdl.xauth = virXMLPropString(node, "xauth");
     def->data.sdl.display = virXMLPropString(node, "display");
 
+    glNode = virXPathNode("./gl", ctxt);
+    if (glNode) {
+        enable = virXMLPropString(glNode, "enable");
+        if (!enable) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("sdl gl element missing enable"));
+            goto cleanup;
+        }
+
+        enableVal = virTristateBoolTypeFromString(enable);
+        if (enableVal < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown enable value '%s'"), enable);
+            goto cleanup;
+        }
+        def->data.sdl.gl = enableVal;
+    }
+
     ret = 0;
  cleanup:
     VIR_FREE(fullscreen);
+    VIR_FREE(enable);
+    ctxt->node = save;
     return ret;
 }
 
@@ -13964,7 +13991,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
             goto error;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        if (virDomainGraphicsDefParseXMLSDL(def, node) < 0)
+        if (virDomainGraphicsDefParseXMLSDL(def, node, ctxt) < 0)
             goto error;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
@@ -25735,6 +25762,18 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                                   def->data.sdl.xauth);
         if (def->data.sdl.fullscreen)
             virBufferAddLit(buf, " fullscreen='yes'");
+
+        if (!children && def->data.sdl.gl != VIR_TRISTATE_BOOL_ABSENT) {
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+            children = true;
+        }
+
+        if (def->data.sdl.gl != VIR_TRISTATE_BOOL_ABSENT) {
+            virBufferAsprintf(buf, "<gl enable='%s'",
+                              virTristateBoolTypeToString(def->data.sdl.gl));
+            virBufferAddLit(buf, "/>\n");
+        }
 
         break;
 

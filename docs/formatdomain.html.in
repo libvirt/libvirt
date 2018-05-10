@@ -6211,6 +6211,12 @@ qemu-kvm -net nic,model=? /dev/null
               and an optional <code>fullscreen</code> attribute accepting values
               <code>yes</code> or <code>no</code>.
             </p>
+
+            <p>
+              You can use a <code>gl</code> with the <code>enable="yes"</code>
+              property to enable OpenGL support in SDL. Likewise you can
+              explicitly disable OpenGL support with <code>enable="no"</code>.
+            </p>
           </dd>
           <dt><code>vnc</code></dt>
           <dd>

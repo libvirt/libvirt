@@ -1599,6 +1599,7 @@ struct _virDomainGraphicsDef {
             char *display;
             char *xauth;
             bool fullscreen;
+            virTristateBool gl;
         } sdl;
         struct {
             int port;
