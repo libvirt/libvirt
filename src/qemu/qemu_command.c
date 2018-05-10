@@ -7136,16 +7136,8 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                           virTristateSwitchTypeToString(vmport));
     }
 
-    if (smm) {
-        if (!virQEMUCapsSupportsSMM(qemuCaps, def)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("smm is not available with this QEMU binary"));
-            goto cleanup;
-        }
-
-        virBufferAsprintf(&buf, ",smm=%s",
-                          virTristateSwitchTypeToString(smm));
-    }
+    if (smm)
+        virBufferAsprintf(&buf, ",smm=%s", virTristateSwitchTypeToString(smm));
 
     if (def->mem.dump_core) {
         virBufferAsprintf(&buf, ",dump-guest-core=%s",

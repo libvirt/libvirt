@@ -4774,17 +4774,6 @@ virQEMUCapsSupportsVmport(virQEMUCapsPtr qemuCaps,
 
 
 bool
-virQEMUCapsSupportsSMM(virQEMUCapsPtr qemuCaps,
-                       const virDomainDef *def)
-{
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT))
-        return false;
-
-    return qemuDomainIsQ35(def);
-}
-
-
-bool
 virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
                               const char *canonical_machine)
 {
