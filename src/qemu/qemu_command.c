@@ -7630,9 +7630,6 @@ qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
     virCommandAddEnvPassBlockSUID(cmd, "QEMU_AUDIO_DRV", NULL);
     virCommandAddEnvPassBlockSUID(cmd, "SDL_AUDIODRIVER", NULL);
 
-    /* New QEMU has this flag to let us explicitly ask for
-     * SDL graphics. This is better than relying on the
-     * default, since the default changes :-( */
     virCommandAddArg(cmd, "-sdl");
     return 0;
 }
