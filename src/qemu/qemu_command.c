@@ -7611,6 +7611,34 @@ qemuBuildMemoryDeviceCommandLine(virCommandPtr cmd,
 
 
 static int
+qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+                                virCommandPtr cmd,
+                                virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
+                                virDomainGraphicsDefPtr graphics)
+{
+    if (graphics->data.sdl.xauth)
+        virCommandAddEnvPair(cmd, "XAUTHORITY", graphics->data.sdl.xauth);
+    if (graphics->data.sdl.display)
+        virCommandAddEnvPair(cmd, "DISPLAY", graphics->data.sdl.display);
+    if (graphics->data.sdl.fullscreen)
+        virCommandAddArg(cmd, "-full-screen");
+
+    /* If using SDL for video, then we should just let it
+     * use QEMU's host audio drivers, possibly SDL too
+     * User can set these two before starting libvirtd
+     */
+    virCommandAddEnvPassBlockSUID(cmd, "QEMU_AUDIO_DRV", NULL);
+    virCommandAddEnvPassBlockSUID(cmd, "SDL_AUDIODRIVER", NULL);
+
+    /* New QEMU has this flag to let us explicitly ask for
+     * SDL graphics. This is better than relying on the
+     * default, since the default changes :-( */
+    virCommandAddArg(cmd, "-sdl");
+    return 0;
+}
+
+
+static int
 qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                                 virCommandPtr cmd,
                                 virQEMUCapsPtr qemuCaps,
@@ -7989,26 +8017,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
 {
     switch (graphics->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        if (graphics->data.sdl.xauth)
-            virCommandAddEnvPair(cmd, "XAUTHORITY", graphics->data.sdl.xauth);
-        if (graphics->data.sdl.display)
-            virCommandAddEnvPair(cmd, "DISPLAY", graphics->data.sdl.display);
-        if (graphics->data.sdl.fullscreen)
-            virCommandAddArg(cmd, "-full-screen");
-
-        /* If using SDL for video, then we should just let it
-         * use QEMU's host audio drivers, possibly SDL too
-         * User can set these two before starting libvirtd
-         */
-        virCommandAddEnvPassBlockSUID(cmd, "QEMU_AUDIO_DRV", NULL);
-        virCommandAddEnvPassBlockSUID(cmd, "SDL_AUDIODRIVER", NULL);
-
-        /* New QEMU has this flag to let us explicitly ask for
-         * SDL graphics. This is better than relying on the
-         * default, since the default changes :-( */
-        virCommandAddArg(cmd, "-sdl");
-
-        break;
+        return qemuBuildGraphicsSDLCommandLine(cfg, cmd, qemuCaps, graphics);
 
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         return qemuBuildGraphicsVNCCommandLine(cfg, cmd, qemuCaps, graphics);
