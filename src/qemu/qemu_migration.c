@@ -464,7 +464,6 @@ qemuMigrationDstStopNBDServer(virQEMUDriverPtr driver,
 
 /**
  * qemuMigrationSrcDriveMirrorReady:
- * @driver: qemu driver
  * @vm: domain
  *
  * Check the status of all drive-mirrors started by
@@ -476,8 +475,7 @@ qemuMigrationDstStopNBDServer(virQEMUDriverPtr driver,
  *        -1 on error.
  */
 static int
-qemuMigrationSrcDriveMirrorReady(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
+qemuMigrationSrcDriveMirrorReady(virDomainObjPtr vm,
                                  qemuDomainAsyncJob asyncJob)
 {
     size_t i;
@@ -492,7 +490,7 @@ qemuMigrationSrcDriveMirrorReady(virQEMUDriverPtr driver,
         if (!diskPriv->migrating)
             continue;
 
-        status = qemuBlockJobUpdate(driver, vm, asyncJob, disk, &error);
+        status = qemuBlockJobUpdate(vm, asyncJob, disk, &error);
         if (status == VIR_DOMAIN_BLOCK_JOB_FAILED) {
             if (error) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
@@ -532,8 +530,7 @@ qemuMigrationSrcDriveMirrorReady(virQEMUDriverPtr driver,
  *         -2 all mirrors are gone but some of them failed.
  */
 static int
-qemuMigrationDriveMirrorCancelled(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
+qemuMigrationDriveMirrorCancelled(virDomainObjPtr vm,
                                   qemuDomainAsyncJob asyncJob,
                                   bool check)
 {
@@ -552,7 +549,7 @@ qemuMigrationDriveMirrorCancelled(virQEMUDriverPtr driver,
         if (!diskPriv->migrating)
             continue;
 
-        status = qemuBlockJobUpdate(driver, vm, asyncJob, disk, &error);
+        status = qemuBlockJobUpdate(vm, asyncJob, disk, &error);
         switch (status) {
         case VIR_DOMAIN_BLOCK_JOB_FAILED:
             if (check) {
@@ -569,7 +566,7 @@ qemuMigrationDriveMirrorCancelled(virQEMUDriverPtr driver,
             ATTRIBUTE_FALLTHROUGH;
         case VIR_DOMAIN_BLOCK_JOB_CANCELED:
         case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
-            qemuBlockJobSyncEnd(driver, vm, asyncJob, disk);
+            qemuBlockJobSyncEnd(vm, asyncJob, disk);
             diskPriv->migrating = false;
             break;
 
@@ -633,7 +630,7 @@ qemuMigrationSrcCancelOneDriveMirror(virQEMUDriverPtr driver,
     int status;
     int rv;
 
-    status = qemuBlockJobUpdate(driver, vm, asyncJob, disk, &error);
+    status = qemuBlockJobUpdate(vm, asyncJob, disk, &error);
     switch (status) {
     case VIR_DOMAIN_BLOCK_JOB_FAILED:
     case VIR_DOMAIN_BLOCK_JOB_CANCELED:
@@ -716,12 +713,12 @@ qemuMigrationSrcCancelDriveMirror(virQEMUDriverPtr driver,
                     err = virSaveLastError();
                 failed = true;
             }
-            qemuBlockJobSyncEnd(driver, vm, asyncJob, disk);
+            qemuBlockJobSyncEnd(vm, asyncJob, disk);
             diskPriv->migrating = false;
         }
     }
 
-    while ((rv = qemuMigrationDriveMirrorCancelled(driver, vm, asyncJob,
+    while ((rv = qemuMigrationDriveMirrorCancelled(vm, asyncJob,
                                                    check)) != 1) {
         if (check && !failed &&
             dconn && virConnectIsAlive(dconn) <= 0) {
@@ -848,7 +845,7 @@ qemuMigrationSrcDriveMirror(virQEMUDriverPtr driver,
         VIR_FREE(nbd_dest);
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0 || mon_ret < 0) {
-            qemuBlockJobSyncEnd(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT, disk);
+            qemuBlockJobSyncEnd(vm, QEMU_ASYNC_JOB_MIGRATION_OUT, disk);
             goto cleanup;
         }
         diskPriv->migrating = true;
@@ -859,7 +856,7 @@ qemuMigrationSrcDriveMirror(virQEMUDriverPtr driver,
         }
     }
 
-    while ((rv = qemuMigrationSrcDriveMirrorReady(driver, vm,
+    while ((rv = qemuMigrationSrcDriveMirrorReady(vm,
                                                   QEMU_ASYNC_JOB_MIGRATION_OUT)) != 1) {
         if (rv < 0)
             goto cleanup;
@@ -1366,7 +1363,7 @@ qemuMigrationAnyCompleted(virQEMUDriverPtr driver,
 
     /* This flag should only be set when run on src host */
     if (flags & QEMU_MIGRATION_COMPLETED_CHECK_STORAGE &&
-        qemuMigrationSrcDriveMirrorReady(driver, vm, asyncJob) < 0)
+        qemuMigrationSrcDriveMirrorReady(vm, asyncJob) < 0)
         goto error;
 
     if (flags & QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR &&
@@ -5273,7 +5270,7 @@ qemuMigrationSrcCancel(virQEMUDriverPtr driver,
             VIR_DEBUG("Drive mirror on disk %s is still running", disk->dst);
         } else {
             VIR_DEBUG("Drive mirror on disk %s is gone", disk->dst);
-            qemuBlockJobSyncEnd(driver, vm, QEMU_ASYNC_JOB_NONE, disk);
+            qemuBlockJobSyncEnd(vm, QEMU_ASYNC_JOB_NONE, disk);
             diskPriv->migrating = false;
         }
     }
@@ -5295,7 +5292,7 @@ qemuMigrationSrcCancel(virQEMUDriverPtr driver,
             qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
             if (diskPriv->migrating) {
-                qemuBlockJobSyncEnd(driver, vm, QEMU_ASYNC_JOB_NONE, disk);
+                qemuBlockJobSyncEnd(vm, QEMU_ASYNC_JOB_NONE, disk);
                 diskPriv->migrating = false;
             }
         }

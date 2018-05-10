@@ -44,7 +44,6 @@ VIR_LOG_INIT("qemu.qemu_blockjob");
 
 /**
  * qemuBlockJobUpdate:
- * @driver: qemu driver
  * @vm: domain
  * @disk: domain disk
  * @error: error (output parameter)
@@ -55,20 +54,20 @@ VIR_LOG_INIT("qemu.qemu_blockjob");
  * Returns the block job event processed or -1 if there was no pending event.
  */
 int
-qemuBlockJobUpdate(virQEMUDriverPtr driver,
-                   virDomainObjPtr vm,
+qemuBlockJobUpdate(virDomainObjPtr vm,
                    qemuDomainAsyncJob asyncJob,
                    virDomainDiskDefPtr disk,
                    char **error)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int status = diskPriv->blockJobStatus;
 
     if (error)
         *error = NULL;
 
     if (status != -1) {
-        qemuBlockJobEventProcess(driver, vm, disk, asyncJob,
+        qemuBlockJobEventProcess(priv->driver, vm, disk, asyncJob,
                                  diskPriv->blockJobType,
                                  diskPriv->blockJobStatus);
         diskPriv->blockJobStatus = -1;
@@ -244,7 +243,6 @@ qemuBlockJobSyncBegin(virDomainDiskDefPtr disk)
 
 /**
  * qemuBlockJobSyncEnd:
- * @driver: qemu driver
  * @vm: domain
  * @disk: domain disk
  *
@@ -252,12 +250,11 @@ qemuBlockJobSyncBegin(virDomainDiskDefPtr disk)
  * for the disk is processed.
  */
 void
-qemuBlockJobSyncEnd(virQEMUDriverPtr driver,
-                    virDomainObjPtr vm,
+qemuBlockJobSyncEnd(virDomainObjPtr vm,
                     qemuDomainAsyncJob asyncJob,
                     virDomainDiskDefPtr disk)
 {
     VIR_DEBUG("disk=%s", disk->dst);
-    qemuBlockJobUpdate(driver, vm, asyncJob, disk, NULL);
+    qemuBlockJobUpdate(vm, asyncJob, disk, NULL);
     QEMU_DOMAIN_DISK_PRIVATE(disk)->blockJobSync = false;
 }

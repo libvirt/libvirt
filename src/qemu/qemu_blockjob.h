@@ -26,8 +26,7 @@
 # include "qemu_conf.h"
 # include "qemu_domain.h"
 
-int qemuBlockJobUpdate(virQEMUDriverPtr driver,
-                       virDomainObjPtr vm,
+int qemuBlockJobUpdate(virDomainObjPtr vm,
                        qemuDomainAsyncJob asyncJob,
                        virDomainDiskDefPtr disk,
                        char **error);
@@ -39,8 +38,7 @@ void qemuBlockJobEventProcess(virQEMUDriverPtr driver,
                               int status);
 
 void qemuBlockJobSyncBegin(virDomainDiskDefPtr disk);
-void qemuBlockJobSyncEnd(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm,
+void qemuBlockJobSyncEnd(virDomainObjPtr vm,
                          qemuDomainAsyncJob asyncJob,
                          virDomainDiskDefPtr disk);
 
