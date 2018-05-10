@@ -87,6 +87,8 @@ NWFILTER_CONF_SOURCES = \
 	conf/virnwfilterobj.h \
 	conf/virnwfilterbindingdef.c \
 	conf/virnwfilterbindingdef.h \
+	conf/virnwfilterbindingobj.c \
+	conf/virnwfilterbindingobj.h \
 	$(NULL)
 
 STORAGE_CONF_SOURCES = \
