@@ -484,7 +484,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
         goto error;
 
-    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
+    if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks + 1) < 0)
         goto error;
 
     qemuDomainObjEnterMonitor(driver, vm);
