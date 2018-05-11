@@ -395,6 +395,9 @@ qemuMaybeBuildPRManagerInfoProps(virDomainObjPtr vm,
     *propsret = NULL;
     *aliasret = NULL;
 
+    if (!disk->src->pr)
+        return 0;
+
     if (virStoragePRDefIsManaged(disk->src->pr) &&
         priv->prDaemonRunning) {
         /* @disk requires qemu-pr-helper but there's already one running. */
