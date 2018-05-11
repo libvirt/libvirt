@@ -3495,11 +3495,11 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
     if (!(matches = vshReadlineCompletion(arg, 0, 0)))
         goto cleanup;
 
-    /* According to rl_completion_matches documentation, the
-     * first entry in @matches array is some dummy substitution
-     * string for @arg. Skip it. */
-    for (iter = &matches[1]; *iter; iter++)
+    for (iter = matches; *iter; iter++) {
+        if (iter == matches && matches[1])
+            continue;
         printf("%s\n", *iter);
+    }
 
     ret = true;
  cleanup:
