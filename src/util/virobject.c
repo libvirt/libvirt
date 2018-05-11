@@ -408,7 +408,7 @@ virObjectGetRWLockableObj(void *anyobj)
 
 /**
  * virObjectLock:
- * @anyobj: any instance of virObjectLockable or virObjectRWLockable
+ * @anyobj: any instance of virObjectLockable
  *
  * Acquire a lock on @anyobj. The lock must be released by
  * virObjectUnlock.
