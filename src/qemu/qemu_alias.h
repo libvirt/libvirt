@@ -94,6 +94,6 @@ char *qemuAliasChardevFromDevAlias(const char *devAlias)
 
 const char *qemuDomainGetManagedPRAlias(void);
 
-char *qemuDomainGetUnmanagedPRAlias(const virDomainDiskDef *disk);
+char *qemuDomainGetUnmanagedPRAlias(const char *parentalias);
 
 #endif /* __QEMU_ALIAS_H__*/

@@ -1482,7 +1482,7 @@ qemuBuildDriveSourcePR(virBufferPtr buf,
 
     if (virStoragePRDefIsManaged(disk->src->pr))
         defaultAlias = qemuDomainGetManagedPRAlias();
-    else if (!(alias = qemuDomainGetUnmanagedPRAlias(disk)))
+    else if (!(alias = qemuDomainGetUnmanagedPRAlias(disk->info.alias)))
         return -1;
 
 
@@ -9755,7 +9755,7 @@ qemuBuildPRManagerInfoProps(virDomainObjPtr vm,
         if (VIR_STRDUP(alias, qemuDomainGetManagedPRAlias()) < 0)
             goto cleanup;
     } else {
-        if (!(alias = qemuDomainGetUnmanagedPRAlias(disk)))
+        if (!(alias = qemuDomainGetUnmanagedPRAlias(disk->info.alias)))
             goto cleanup;
     }
 

@@ -3842,7 +3842,7 @@ qemuDomainDiskNeedRemovePR(virDomainObjPtr vm,
         return 0;
 
     if (!virStoragePRDefIsManaged(disk->src->pr)) {
-        *aliasret = qemuDomainGetUnmanagedPRAlias(disk);
+        *aliasret = qemuDomainGetUnmanagedPRAlias(disk->info.alias);
         return *aliasret ? 0 : -1;
     }
 

@@ -783,11 +783,11 @@ qemuDomainGetManagedPRAlias(void)
 
 
 char *
-qemuDomainGetUnmanagedPRAlias(const virDomainDiskDef *disk)
+qemuDomainGetUnmanagedPRAlias(const char *parentalias)
 {
     char *ret;
 
-    ignore_value(virAsprintf(&ret, "pr-helper-%s", disk->info.alias));
+    ignore_value(virAsprintf(&ret, "pr-helper-%s", parentalias));
 
     return ret;
 }
