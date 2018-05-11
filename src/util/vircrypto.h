@@ -23,6 +23,9 @@
 
 # include "internal.h"
 
+# define VIR_CRYPTO_HASH_SIZE_MD5 16
+# define VIR_CRYPTO_HASH_SIZE_SHA256 32
+
 typedef enum {
     VIR_CRYPTO_HASH_MD5, /* Don't use this except for historic compat */
     VIR_CRYPTO_HASH_SHA256,
