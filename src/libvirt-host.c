@@ -1003,7 +1003,13 @@ virConnectCompareCPU(virConnectPtr conn,
  *          NULL if only the list length is needed.
  * @flags: extra flags; not used yet, so callers should always pass 0.
  *
- * Get the list of supported CPU models for a specific architecture.
+ * Get the list of CPU models supported by libvirt for a specific architecture.
+ *
+ * The returned list limits CPU models usable with libvirt (empty list means
+ * there's no limit imposed by libvirt) and it does not reflect capabilities of
+ * any particular hypervisor. See the XML returned by
+ * virConnectGetDomainCapabilities() for a list of CPU models supported by
+ * libvirt for domains created on a specific hypervisor.
  *
  * Returns -1 on error, number of elements in @models on success (0 means
  * libvirt accepts any CPU model).
