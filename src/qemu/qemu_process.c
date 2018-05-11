@@ -2566,7 +2566,7 @@ qemuProcessBuildPRHelperPidfilePath(virDomainObjPtr vm)
 
 
 void
-qemuProcessKillPRDaemon(virDomainObjPtr vm)
+qemuProcessKillManagedPRDaemon(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virErrorPtr orig_err;
@@ -2624,8 +2624,7 @@ qemuProcessStartPRDaemonHook(void *opaque)
 
 
 int
-qemuProcessStartPRDaemon(virDomainObjPtr vm,
-                         const virDomainDiskDef *disk)
+qemuProcessStartManagedPRDaemon(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
@@ -2639,10 +2638,6 @@ qemuProcessStartPRDaemon(virDomainObjPtr vm,
     virTimeBackOffVar timebackoff;
     const unsigned long long timeout = 500000; /* ms */
     int ret = -1;
-
-    if (!virStoragePRDefIsManaged(disk->src->pr) ||
-        priv->prDaemonRunning)
-        return 0;
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -2734,7 +2729,7 @@ qemuProcessStartPRDaemon(virDomainObjPtr vm,
         goto cleanup;
 
     priv->prDaemonRunning = true;
-    ret = 1;
+    ret = 0;
  cleanup:
     if (ret < 0) {
         virCommandAbort(cmd);
@@ -2754,22 +2749,22 @@ qemuProcessStartPRDaemon(virDomainObjPtr vm,
 
 
 static int
-qemuProcessMaybeStartPRDaemon(virDomainObjPtr vm)
+qemuProcessMaybeStartManagedPRDaemon(virDomainObjPtr vm)
 {
+    bool hasManaged = false;
     size_t i;
-    int rv;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        const virDomainDiskDef *disk = vm->def->disks[i];
-
-        if ((rv = qemuProcessStartPRDaemon(vm, disk)) < 0)
-            return -1;
-
-        if (rv > 0)
-            return 1;
+        if (virStoragePRDefIsManaged(vm->def->disks[i]->src->pr)) {
+            hasManaged = true;
+            break;
+        }
     }
 
-    return 0;
+    if (!hasManaged)
+        return 0;
+
+    return qemuProcessStartManagedPRDaemon(vm);
 }
 
 
@@ -6289,8 +6284,8 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessResctrlCreate(driver, vm) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Setting up PR daemon");
-    if (qemuProcessMaybeStartPRDaemon(vm) < 0)
+    VIR_DEBUG("Setting up managed PR daemon");
+    if (qemuProcessMaybeStartManagedPRDaemon(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting domain security labels");
@@ -6821,7 +6816,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     qemuDomainMasterKeyRemove(priv);
 
     /* Do this before we delete the tree and remove pidfile. */
-    qemuProcessKillPRDaemon(vm);
+    qemuProcessKillManagedPRDaemon(vm);
 
     virFileDeleteTree(priv->libDir);
     virFileDeleteTree(priv->channelTargetDir);

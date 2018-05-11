@@ -377,7 +377,7 @@ qemuDomainMaybeStartPRDaemon(virDomainObjPtr vm,
 
     /* @disk requires qemu-pr-helper but none is running.
      * Start it now. */
-    if (qemuProcessStartPRDaemon(vm, disk) < 0)
+    if (qemuProcessStartManagedPRDaemon(vm) < 0)
         return -1;
 
     return 1;
@@ -567,7 +567,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     qemuDomainDelDiskSrcTLSObject(driver, vm, disk->src);
     ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true));
     if (prdStarted)
-        qemuProcessKillPRDaemon(vm);
+        qemuProcessKillManagedPRDaemon(vm);
     goto cleanup;
 }
 
@@ -3963,7 +3963,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     }
 
     if (stopPRDaemon)
-        qemuProcessKillPRDaemon(vm);
+        qemuProcessKillManagedPRDaemon(vm);
 
     qemuDomainReleaseDeviceAddress(vm, &disk->info, src);
 

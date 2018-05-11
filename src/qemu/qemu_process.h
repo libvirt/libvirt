@@ -205,9 +205,8 @@ int qemuProcessRefreshDisks(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             qemuDomainAsyncJob asyncJob);
 
-int qemuProcessStartPRDaemon(virDomainObjPtr vm,
-                             const virDomainDiskDef *disk);
+int qemuProcessStartManagedPRDaemon(virDomainObjPtr vm);
 
-void qemuProcessKillPRDaemon(virDomainObjPtr vm);
+void qemuProcessKillManagedPRDaemon(virDomainObjPtr vm);
 
 #endif /* __QEMU_PROCESS_H__ */
