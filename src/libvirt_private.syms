@@ -651,7 +651,6 @@ virDomainQemuMonitorEventStateRegisterID;
 
 # conf/domain_nwfilter.h
 virDomainConfNWFilterInstantiate;
-virDomainConfNWFilterRegister;
 virDomainConfNWFilterTeardown;
 virDomainConfVMNWFilterTeardown;
 

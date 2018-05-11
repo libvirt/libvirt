@@ -3018,14 +3018,14 @@ qemuProcessNotifyNets(virDomainDefPtr def)
 }
 
 static int
-qemuProcessFiltersInstantiate(virDomainDefPtr def)
+qemuProcessFiltersInstantiate(virDomainDefPtr def, bool ignoreExists)
 {
     size_t i;
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
         if ((net->filter) && (net->ifname)) {
-            if (virDomainConfNWFilterInstantiate(def->name, def->uuid, net) < 0)
+            if (virDomainConfNWFilterInstantiate(def->name, def->uuid, net, ignoreExists) < 0)
                 return 1;
         }
     }
@@ -7650,7 +7650,7 @@ qemuProcessReconnect(void *opaque)
 
     qemuProcessNotifyNets(obj->def);
 
-    if (qemuProcessFiltersInstantiate(obj->def))
+    if (qemuProcessFiltersInstantiate(obj->def, true))
         goto error;
 
     if (qemuProcessRefreshDisks(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)

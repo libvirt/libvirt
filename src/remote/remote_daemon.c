@@ -283,6 +283,7 @@ static int daemonErrorLogFilter(virErrorPtr err, int priority)
     case VIR_ERR_NO_NODE_DEVICE:
     case VIR_ERR_NO_INTERFACE:
     case VIR_ERR_NO_NWFILTER:
+    case VIR_ERR_NO_NWFILTER_BINDING:
     case VIR_ERR_NO_SECRET:
     case VIR_ERR_NO_DOMAIN_SNAPSHOT:
     case VIR_ERR_OPERATION_INVALID:

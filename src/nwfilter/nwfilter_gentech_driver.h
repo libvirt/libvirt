@@ -57,8 +57,4 @@ virHashTablePtr virNWFilterCreateVarHashmap(const char *macaddr,
 int virNWFilterBuildAll(virNWFilterDriverStatePtr driver,
                         bool newFilters);
 
-virNWFilterBindingDefPtr virNWFilterBindingDefForNet(const char *vmname,
-                                                     const unsigned char *vmuuid,
-                                                     virDomainNetDefPtr net);
-
 #endif
