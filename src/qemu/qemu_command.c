@@ -9717,8 +9717,10 @@ qemuBuildPanicCommandLine(virCommandPtr cmd,
 
 /**
  * qemuBuildPRManagerInfoProps:
- * @prd: disk PR runtime info
- * @propsret: JSON properties to return
+ * @vm: domain object
+ * @disk: disk definition
+ * @propsret: Returns JSON object containing properties of the pr-manager-helper object
+ * @aliasret: alias of the pr-manager-helper object
  *
  * Build the JSON properties for the pr-manager object.
  *
