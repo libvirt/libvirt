@@ -27,7 +27,6 @@
 #include <unistd.h>
 
 #include "internal.h"
-#include "md5.h"
 #include "viralloc.h"
 #include "viruuid.h"
 #include "storage_conf.h"
@@ -46,7 +45,7 @@
  * The UUID of a storage pool is the MD5 sum of its mount path. Therefore,
  * verify that UUID and MD5 sum match in size, because we rely on that.
  */
-verify(MD5_DIGEST_SIZE == VIR_UUID_BUFLEN);
+verify(VIR_CRYPTO_HASH_SIZE_MD5 == VIR_UUID_BUFLEN);
 
 
 
@@ -157,8 +156,8 @@ esxStoragePoolLookupByName(virConnectPtr conn,
 {
     esxPrivate *priv = conn->privateData;
     esxVI_HostInternetScsiHbaStaticTarget *target = NULL;
-    /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
-    unsigned char md5[MD5_DIGEST_SIZE];
+    /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
+    unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5];
     virStoragePoolPtr pool = NULL;
 
     /*
@@ -202,8 +201,8 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
     esxPrivate *priv = conn->privateData;
     esxVI_HostInternetScsiHba *hostInternetScsiHba = NULL;
     esxVI_HostInternetScsiHbaStaticTarget *target;
-    /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
-    unsigned char md5[MD5_DIGEST_SIZE];
+    /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
+    unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5];
 
     if (esxVI_LookupHostInternetScsiHba(priv->primary,
                                         &hostInternetScsiHba) < 0) {
@@ -443,8 +442,8 @@ esxStorageVolLookupByName(virStoragePoolPtr pool,
     esxPrivate *priv = pool->conn->privateData;
     esxVI_ScsiLun *scsiLunList = NULL;
     esxVI_ScsiLun *scsiLun;
-    /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
-    unsigned char md5[MD5_DIGEST_SIZE];
+    /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
+    unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5];
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
 
     if (esxVI_LookupScsiLunList(priv->primary, &scsiLunList) < 0)
@@ -491,8 +490,8 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
     esxVI_ScsiLun *scsiLun;
     esxVI_HostScsiDisk *hostScsiDisk = NULL;
     char *poolName = NULL;
-    /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
-    unsigned char md5[MD5_DIGEST_SIZE];
+    /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
+    unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5];
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
 
     if (esxVI_LookupScsiLunList(priv->primary, &scsiLunList) < 0)
@@ -538,8 +537,8 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
     char *poolName = NULL;
     esxVI_ScsiLun *scsiLunList = NULL;
     esxVI_ScsiLun *scsiLun;
-    /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
-    unsigned char md5[MD5_DIGEST_SIZE];
+    /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
+    unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5];
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
 
     /* key may be LUN device path */
@@ -671,8 +670,8 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
     esxVI_ScsiLun *scsiLun;
     esxVI_HostScsiDisk *hostScsiDisk = NULL;
     virStorageVolDef def;
-    /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
-    unsigned char md5[MD5_DIGEST_SIZE];
+    /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
+    unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5];
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
 
     virCheckFlags(0, NULL);

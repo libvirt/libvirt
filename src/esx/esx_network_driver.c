@@ -23,7 +23,6 @@
 
 #include <config.h>
 
-#include "md5.h"
 #include "internal.h"
 #include "viralloc.h"
 #include "viruuid.h"
@@ -42,7 +41,7 @@
  * The UUID of a network is the MD5 sum of its key. Therefore, verify that
  * UUID and MD5 sum match in size, because we rely on that.
  */
-verify(MD5_DIGEST_SIZE == VIR_UUID_BUFLEN);
+verify(VIR_CRYPTO_HASH_SIZE_MD5 == VIR_UUID_BUFLEN);
 
 
 static int
@@ -142,7 +141,7 @@ esxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     esxPrivate *priv = conn->privateData;
     esxVI_HostVirtualSwitch *hostVirtualSwitchList = NULL;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
-    unsigned char md5[MD5_DIGEST_SIZE]; /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
+    unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5]; /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
 
     if (esxVI_EnsureSession(priv->primary) < 0 ||
@@ -186,7 +185,7 @@ esxNetworkLookupByName(virConnectPtr conn, const char *name)
     virNetworkPtr network = NULL;
     esxPrivate *priv = conn->privateData;
     esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
-    unsigned char md5[MD5_DIGEST_SIZE]; /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
+    unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5]; /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
 
     if (esxVI_EnsureSession(priv->primary) < 0 ||
         esxVI_LookupHostVirtualSwitchByName(priv->primary, name,
@@ -296,7 +295,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
     esxVI_HostPortGroupSpec *hostPortGroupSpec = NULL;
     size_t i;
 
-    unsigned char md5[MD5_DIGEST_SIZE]; /* MD5_DIGEST_SIZE = VIR_UUID_BUFLEN = 16 */
+    unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5]; /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return NULL;
