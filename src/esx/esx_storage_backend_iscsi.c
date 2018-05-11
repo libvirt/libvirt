@@ -37,6 +37,7 @@
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
+#include "vircrypto.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
@@ -180,7 +181,8 @@ esxStoragePoolLookupByName(virConnectPtr conn,
      * but iScsiName (or widely known as IQN) is unique across the multiple
      * hosts, using it to compute key
      */
-    md5_buffer(target->iScsiName, strlen(target->iScsiName), md5);
+    if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, target->iScsiName, md5) < 0)
+        goto cleanup;
 
     pool = virGetStoragePool(conn, name, md5, &esxStorageBackendISCSI, NULL);
 
@@ -218,7 +220,8 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
 
     for (target = hostInternetScsiHba->configuredStaticTarget;
          target; target = target->_next) {
-        md5_buffer(target->iScsiName, strlen(target->iScsiName), md5);
+        if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, target->iScsiName, md5) < 0)
+            goto cleanup;
 
         if (memcmp(uuid, md5, VIR_UUID_BUFLEN) == 0)
             break;
@@ -456,7 +459,8 @@ esxStorageVolLookupByName(virStoragePoolPtr pool,
              * compute MD5 hash to transform it to an acceptable
              * libvirt format
              */
-            md5_buffer(scsiLun->uuid, strlen(scsiLun->uuid), md5);
+            if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, scsiLun->uuid, md5) < 0)
+                goto cleanup;
             virUUIDFormat(md5, uuid_string);
 
             /*
@@ -507,7 +511,8 @@ esxStorageVolLookupByPath(virConnectPtr conn, const char *path)
                 goto cleanup;
             }
 
-            md5_buffer(scsiLun->uuid, strlen(scsiLun->uuid), md5);
+            if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, scsiLun->uuid, md5) < 0)
+                goto cleanup;
             virUUIDFormat(md5, uuid_string);
 
             volume = virGetStorageVol(conn, poolName, path, uuid_string,
@@ -549,7 +554,8 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
         memset(uuid_string, '\0', sizeof(uuid_string));
         memset(md5, '\0', sizeof(md5));
 
-        md5_buffer(scsiLun->uuid, strlen(scsiLun->uuid), md5);
+        if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, scsiLun->uuid, md5) < 0)
+            goto cleanup;
         virUUIDFormat(md5, uuid_string);
 
         if (STREQ(key, uuid_string)) {
@@ -697,7 +703,8 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 
     def.name = volume->name;
 
-    md5_buffer(scsiLun->uuid, strlen(scsiLun->uuid), md5);
+    if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, scsiLun->uuid,  md5) < 0)
+        goto cleanup;
 
     virUUIDFormat(md5, uuid_string);
 

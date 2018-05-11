@@ -33,6 +33,7 @@
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
+#include "vircrypto.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
@@ -152,7 +153,8 @@ esxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     for (hostVirtualSwitch = hostVirtualSwitchList; hostVirtualSwitch;
          hostVirtualSwitch = hostVirtualSwitch->_next) {
-        md5_buffer(hostVirtualSwitch->key, strlen(hostVirtualSwitch->key), md5);
+        if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, hostVirtualSwitch->key, md5) < 0)
+            goto cleanup;
 
         if (memcmp(uuid, md5, VIR_UUID_BUFLEN) == 0)
             break;
@@ -201,7 +203,8 @@ esxNetworkLookupByName(virConnectPtr conn, const char *name)
      * The MD5 sum of the key can be used as UUID, assuming MD5 is considered
      * to be collision-free enough for this use case.
      */
-    md5_buffer(hostVirtualSwitch->key, strlen(hostVirtualSwitch->key), md5);
+    if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, hostVirtualSwitch->key, md5) < 0)
+        return NULL;
 
     network = virGetNetwork(conn, hostVirtualSwitch->name, md5);
 
@@ -464,7 +467,8 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
         goto cleanup;
     }
 
-    md5_buffer(hostVirtualSwitch->key, strlen(hostVirtualSwitch->key), md5);
+    if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, hostVirtualSwitch->key, md5) < 0)
+        goto cleanup;
 
     network = virGetNetwork(conn, hostVirtualSwitch->name, md5);
 
@@ -655,7 +659,8 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
         goto cleanup;
     }
 
-    md5_buffer(hostVirtualSwitch->key, strlen(hostVirtualSwitch->key), def->uuid);
+    if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, hostVirtualSwitch->key, def->uuid) < 0)
+        goto cleanup;
 
     if (VIR_STRDUP(def->name, hostVirtualSwitch->name) < 0)
         goto cleanup;

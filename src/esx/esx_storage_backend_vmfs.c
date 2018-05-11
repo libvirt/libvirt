@@ -41,6 +41,7 @@
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
+#include "vircrypto.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
@@ -236,8 +237,8 @@ esxStoragePoolLookupByName(virConnectPtr conn,
         goto cleanup;
     }
 
-    md5_buffer(hostMount->mountInfo->path,
-               strlen(hostMount->mountInfo->path), md5);
+    if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, hostMount->mountInfo->path, md5) < 0)
+        goto cleanup;
 
     pool = virGetStoragePool(conn, name, md5, &esxStorageBackendVMFS, NULL);
 
@@ -289,8 +290,8 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
             goto cleanup;
         }
 
-        md5_buffer(hostMount->mountInfo->path,
-                   strlen(hostMount->mountInfo->path), md5);
+        if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, hostMount->mountInfo->path, md5) < 0)
+            goto cleanup;
 
         if (memcmp(uuid, md5, VIR_UUID_BUFLEN) == 0)
             break;
