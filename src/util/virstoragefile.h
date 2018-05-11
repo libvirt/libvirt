@@ -219,7 +219,6 @@ struct _virStorageAuthDef {
 typedef struct _virStoragePRDef virStoragePRDef;
 typedef virStoragePRDef *virStoragePRDefPtr;
 struct _virStoragePRDef {
-    int enabled; /* enum virTristateBool */
     int managed; /* enum virTristateBool */
     char *path;
 };

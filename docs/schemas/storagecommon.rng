@@ -75,9 +75,6 @@
 
   <define name='reservations'>
     <element name='reservations'>
-      <attribute name='enabled'>
-        <ref name='virYesNo'/>
-      </attribute>
       <optional>
         <attribute name='managed'>
           <ref name='virYesNo'/>
