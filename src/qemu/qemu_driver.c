@@ -13342,6 +13342,96 @@ qemuConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static char *
+qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
+                                 const char *emulator,
+                                 const char *archStr,
+                                 const char *machine,
+                                 const char *virttypeStr,
+                                 const char **xmlCPUs,
+                                 unsigned int ncpus,
+                                 unsigned int flags)
+{
+    virQEMUDriverPtr driver = conn->privateData;
+    virCPUDefPtr *cpus = NULL;
+    virQEMUCapsPtr qemuCaps = NULL;
+    virArch arch;
+    virDomainVirtType virttype;
+    virDomainCapsCPUModelsPtr cpuModels;
+    bool migratable;
+    virCPUDefPtr cpu = NULL;
+    char *cpustr = NULL;
+    char **features = NULL;
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
+                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
+
+    if (virConnectBaselineHypervisorCPUEnsureACL(conn) < 0)
+        goto cleanup;
+
+    migratable = !!(flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE);
+
+    if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_AUTO)))
+        goto cleanup;
+
+    qemuCaps = virQEMUCapsCacheLookupDefault(driver->qemuCapsCache,
+                                             emulator,
+                                             archStr,
+                                             virttypeStr,
+                                             machine,
+                                             &arch, &virttype, NULL);
+    if (!qemuCaps)
+        goto cleanup;
+
+    if (!(cpuModels = virQEMUCapsGetCPUDefinitions(qemuCaps, virttype)) ||
+        cpuModels->nmodels == 0) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("QEMU '%s' does not support any CPU models for "
+                         "virttype '%s'"),
+                       virQEMUCapsGetBinary(qemuCaps),
+                       virDomainVirtTypeToString(virttype));
+        goto cleanup;
+    }
+
+    if (ARCH_IS_X86(arch)) {
+        int rc = virQEMUCapsGetCPUFeatures(qemuCaps, virttype,
+                                           migratable, &features);
+        if (rc < 0)
+            goto cleanup;
+        if (features && rc == 0) {
+            /* We got only migratable features from QEMU if we asked for them,
+             * no further filtering in virCPUBaseline is desired. */
+            migratable = false;
+        }
+
+        if (!(cpu = virCPUBaseline(arch, cpus, ncpus, cpuModels,
+                                   (const char **)features, migratable)))
+            goto cleanup;
+    } else {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("computing baseline hypervisor CPU is not supported "
+                         "for arch %s"), virArchToString(arch));
+        goto cleanup;
+    }
+
+    cpu->fallback = VIR_CPU_FALLBACK_FORBID;
+
+    if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
+        virCPUExpandFeatures(arch, cpu) < 0)
+        goto cleanup;
+
+    cpustr = virCPUDefFormat(cpu, NULL);
+
+ cleanup:
+    virCPUDefListFree(cpus);
+    virCPUDefFree(cpu);
+    virObjectUnref(qemuCaps);
+    virStringListFree(features);
+
+    return cpustr;
+}
+
+
 static int
 qemuDomainGetJobInfoMigrationStats(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
@@ -21532,6 +21622,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainSetBlockThreshold = qemuDomainSetBlockThreshold, /* 3.2.0 */
     .domainSetLifecycleAction = qemuDomainSetLifecycleAction, /* 3.9.0 */
     .connectCompareHypervisorCPU = qemuConnectCompareHypervisorCPU, /* 4.4.0 */
+    .connectBaselineHypervisorCPU = qemuConnectBaselineHypervisorCPU, /* 4.4.0 */
 };
 
 
