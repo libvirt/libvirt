@@ -837,7 +837,7 @@ typedef enum {
  * the destination host has multiple interfaces and a specific interface is
  * required to transmit migration data.
  *
- * This filed may not be used when VIR_MIGRATE_TUNNELLED flag is set.
+ * This field may not be used when VIR_MIGRATE_TUNNELLED flag is set.
  */
 # define VIR_MIGRATE_PARAM_URI               "migrate_uri"
 
