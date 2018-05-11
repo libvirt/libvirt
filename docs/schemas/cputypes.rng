@@ -130,6 +130,11 @@
         </attribute>
       </optional>
       <optional>
+        <attribute name="discard">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
+      <optional>
         <element name="distances">
           <oneOrMore>
             <ref name="numaDistance"/>

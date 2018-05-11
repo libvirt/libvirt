@@ -102,6 +102,9 @@ virBitmapPtr virDomainNumaGetNodeCpumask(virDomainNumaPtr numa,
 virDomainMemoryAccess virDomainNumaGetNodeMemoryAccessMode(virDomainNumaPtr numa,
                                                       size_t node)
     ATTRIBUTE_NONNULL(1);
+virTristateBool virDomainNumaGetNodeDiscard(virDomainNumaPtr numa,
+                                            size_t node)
+    ATTRIBUTE_NONNULL(1);
 unsigned long long virDomainNumaGetNodeMemorySize(virDomainNumaPtr numa,
                                                   size_t node)
     ATTRIBUTE_NONNULL(1);

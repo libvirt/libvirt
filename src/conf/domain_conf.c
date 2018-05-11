@@ -5517,6 +5517,20 @@ virDomainVideoDefValidate(const virDomainVideoDef *video)
 
 
 static int
+virDomainMemoryDefValidate(const virDomainMemoryDef *mem)
+{
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        mem->discard == VIR_TRISTATE_BOOL_YES) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("discard is not supported for nvdimms"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
                                    const virDomainDef *def)
 {
@@ -5548,6 +5562,9 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_VIDEO:
         return virDomainVideoDefValidate(dev->data.video);
 
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        return virDomainMemoryDefValidate(dev->data.memory);
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -5560,7 +5577,6 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
-    case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
@@ -15673,6 +15689,16 @@ virDomainMemoryDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
     VIR_FREE(tmp);
 
+    if ((tmp = virXMLPropString(memdevNode, "discard"))) {
+        if ((val = virTristateBoolTypeFromString(tmp)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid discard value '%s'"), tmp);
+            goto error;
+        }
+
+        def->discard = val;
+    }
+
     /* source */
     if ((node = virXPathNode("./source", ctxt)) &&
         virDomainMemorySourceDefParseXML(node, ctxt, def) < 0)
@@ -18998,6 +19024,9 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     if (virXPathBoolean("boolean(./memoryBacking/locked)", ctxt))
         def->mem.locked = true;
+
+    if (virXPathBoolean("boolean(./memoryBacking/discard)", ctxt))
+        def->mem.discard = VIR_TRISTATE_BOOL_YES;
 
     /* Extract blkio cgroup tunables */
     if (virXPathUInt("string(./blkiotune/weight)", ctxt,
@@ -25259,6 +25288,9 @@ virDomainMemoryDefFormat(virBufferPtr buf,
     if (def->access)
         virBufferAsprintf(buf, " access='%s'",
                           virDomainMemoryAccessTypeToString(def->access));
+    if (def->discard)
+        virBufferAsprintf(buf, " discard='%s'",
+                          virTristateBoolTypeToString(def->discard));
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
@@ -26605,6 +26637,8 @@ virDomainMemtuneFormat(virBufferPtr buf,
     if (mem->allocation)
         virBufferAsprintf(&childBuf, "<allocation mode='%s'/>\n",
                           virDomainMemoryAllocationTypeToString(mem->allocation));
+    if (mem->discard)
+        virBufferAddLit(&childBuf, "<discard/>\n");
 
     if (virXMLFormatElement(buf, "memoryBacking", NULL, &childBuf) < 0)
         goto cleanup;

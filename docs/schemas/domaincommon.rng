@@ -633,6 +633,11 @@
                 </attribute>
               </element>
             </optional>
+            <optional>
+              <element name="discard">
+                <empty/>
+              </element>
+            </optional>
           </interleave>
         </element>
       </optional>
@@ -5122,6 +5127,11 @@
             <value>shared</value>
             <value>private</value>
           </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="discard">
+          <ref name="virYesNo"/>
         </attribute>
       </optional>
       <interleave>

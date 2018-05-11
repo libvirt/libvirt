@@ -43,7 +43,7 @@
     <memballoon model='virtio'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </memballoon>
-    <memory model='dimm'>
+    <memory model='dimm' discard='no'>
       <source>
         <nodemask>1-3</nodemask>
         <pagesize unit='KiB'>1048576</pagesize>
@@ -54,7 +54,7 @@
       </target>
       <address type='dimm' slot='0'/>
     </memory>
-    <memory model='dimm' access='private'>
+    <memory model='dimm' access='private' discard='yes'>
       <target>
         <size unit='KiB'>524287</size>
         <node>0</node>

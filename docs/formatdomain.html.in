@@ -1016,6 +1016,7 @@
     &lt;source type="file|anonymous"/&gt;
     &lt;access mode="shared|private"/&gt;
     &lt;allocation mode="immediate|ondemand"/&gt;
+    &lt;discard/&gt;
   &lt;/memoryBacking&gt;
   ...
 &lt;/domain&gt;
@@ -1070,6 +1071,14 @@
          numa node by <code>memAccess</code></dd>
        <dt><code>allocation</code></dt>
        <dd>Specify when allocate the memory</dd>
+       <dt><code>discard</code></dt>
+       <dd>When set and supported by hypervisor the memory
+         content is discarded just before guest shuts down (or
+         when DIMM module is unplugged). Please note that this is
+         just an optimization and is not guaranteed to work in
+         all cases (e.g. when hypervisor crashes).
+         <span class="since">Since 4.4.0</span> (QEMU/KVM only)
+       </dd>
     </dl>
 
 
@@ -1608,7 +1617,7 @@
 &lt;cpu&gt;
   ...
   &lt;numa&gt;
-    &lt;cell id='0' cpus='0-3' memory='512000' unit='KiB'/&gt;
+    &lt;cell id='0' cpus='0-3' memory='512000' unit='KiB' discard='yes'/&gt;
     &lt;cell id='1' cpus='4-7' memory='512000' unit='KiB' memAccess='shared'/&gt;
   &lt;/numa&gt;
   ...
@@ -1634,6 +1643,13 @@
       <code>memAccess</code> can control whether the memory is to be
       mapped as "shared" or "private".  This is valid only for
       hugepages-backed memory and nvdimm modules.
+
+      Each <code>cell</code> element can have an optional
+      <code>discard</code> attribute which fine tunes the discard
+      feature for given numa node as described under
+      <a href="#elementsMemoryBacking">Memory Backing</a>.
+      Accepted values are <code>yes</code> and <code>no</code>.
+      <span class='since'>Since 4.4.0</span>
     </p>
 
     <p>
@@ -7883,7 +7899,7 @@ qemu-kvm -net nic,model=? /dev/null
 <pre>
 ...
 &lt;devices&gt;
-  &lt;memory model='dimm' access='private'&gt;
+  &lt;memory model='dimm' access='private' discard='yes'&gt;
     &lt;target&gt;
       &lt;size unit='KiB'&gt;524287&lt;/size&gt;
       &lt;node&gt;0&lt;/node&gt;
@@ -7934,6 +7950,20 @@ qemu-kvm -net nic,model=? /dev/null
           module basis. Values are the same as
           <a href="#elementsMemoryBacking">Memory Backing</a>:
           <code>shared</code> and <code>private</code>.
+        </p>
+      </dd>
+
+      <dt><code>discard</code></dt>
+      <dd>
+        <p>
+          An optional attribute <code>discard</code>
+          (<span class="since">since 4.4.0</span>) that provides
+          capability to fine tune discard of data on per module
+          basis. Accepted values are <code>yes</code> and
+          <code>no</code>. The feature is described here:
+          <a href="#elementsMemoryBacking">Memory Backing</a>.
+          This attribute is allowed only for
+          <code>model='dimm'</code>.
         </p>
       </dd>
 
