@@ -221,6 +221,9 @@ typedef virStoragePRDef *virStoragePRDefPtr;
 struct _virStoragePRDef {
     int managed; /* enum virTristateBool */
     char *path;
+
+    /* manager object alias */
+    char *mgralias;
 };
 
 typedef struct _virStorageDriverData virStorageDriverData;

@@ -9719,7 +9719,6 @@ qemuBuildPanicCommandLine(virCommandPtr cmd,
  * qemuBuildPRManagerInfoProps:
  * @disk: disk definition
  * @propsret: Returns JSON object containing properties of the pr-manager-helper object
- * @aliasret: alias of the pr-manager-helper object
  *
  * Build the JSON properties for the pr-manager object.
  *
@@ -9728,32 +9727,19 @@ qemuBuildPanicCommandLine(virCommandPtr cmd,
  */
 int
 qemuBuildPRManagerInfoProps(const virDomainDiskDef *disk,
-                            virJSONValuePtr *propsret,
-                            char **aliasret)
+                            virJSONValuePtr *propsret)
 {
-    char *alias = NULL;
     int ret = -1;
 
     *propsret = NULL;
-    *aliasret = NULL;
-
-    if (virStoragePRDefIsManaged(disk->src->pr)) {
-        if (VIR_STRDUP(alias, qemuDomainGetManagedPRAlias()) < 0)
-            goto cleanup;
-    } else {
-        if (!(alias = qemuDomainGetUnmanagedPRAlias(disk->info.alias)))
-            goto cleanup;
-    }
 
     if (virJSONValueObjectCreate(propsret,
                                  "s:path", disk->src->pr->path,
                                  NULL) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(*aliasret, alias);
     ret = 0;
  cleanup:
-    VIR_FREE(alias);
     return ret;
 }
 
@@ -9765,7 +9751,6 @@ qemuBuildMasterPRCommandLine(virCommandPtr cmd,
     size_t i;
     bool managedAdded = false;
     virJSONValuePtr props = NULL;
-    char *alias = NULL;
     char *tmp = NULL;
     int ret = -1;
 
@@ -9782,14 +9767,13 @@ qemuBuildMasterPRCommandLine(virCommandPtr cmd,
             managedAdded = true;
         }
 
-        if (qemuBuildPRManagerInfoProps(disk, &props, &alias) < 0)
+        if (qemuBuildPRManagerInfoProps(disk, &props) < 0)
             goto cleanup;
 
         if (!(tmp = virQEMUBuildObjectCommandlineFromJSON("pr-manager-helper",
-                                                          alias,
+                                                          disk->src->pr->mgralias,
                                                           props)))
             goto cleanup;
-        VIR_FREE(alias);
         virJSONValueFree(props);
         props = NULL;
 
@@ -9799,7 +9783,6 @@ qemuBuildMasterPRCommandLine(virCommandPtr cmd,
 
     ret = 0;
  cleanup:
-    VIR_FREE(alias);
     virJSONValueFree(props);
     return ret;
 }

@@ -56,8 +56,7 @@ virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
 
 /* Generate the object properties for pr-manager */
 int qemuBuildPRManagerInfoProps(const virDomainDiskDef *disk,
-                                virJSONValuePtr *propsret,
-                                char **alias);
+                                virJSONValuePtr *propsret);
 
 /* Generate the object properties for a secret */
 int qemuBuildSecretInfoProps(qemuDomainSecretInfoPtr secinfo,

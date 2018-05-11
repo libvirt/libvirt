@@ -387,13 +387,11 @@ qemuDomainMaybeStartPRDaemon(virDomainObjPtr vm,
 static int
 qemuMaybeBuildPRManagerInfoProps(virDomainObjPtr vm,
                                  const virDomainDiskDef *disk,
-                                 virJSONValuePtr *propsret,
-                                 char **aliasret)
+                                 virJSONValuePtr *propsret)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
     *propsret = NULL;
-    *aliasret = NULL;
 
     if (!disk->src->pr)
         return 0;
@@ -404,7 +402,7 @@ qemuMaybeBuildPRManagerInfoProps(virDomainObjPtr vm,
         return 0;
     }
 
-    return qemuBuildPRManagerInfoProps(disk, propsret, aliasret);
+    return qemuBuildPRManagerInfoProps(disk, propsret);
 }
 
 
@@ -425,7 +423,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     char *devstr = NULL;
     char *drivestr = NULL;
     char *drivealias = NULL;
-    char *prmgrAlias = NULL;
     bool driveAdded = false;
     bool secobjAdded = false;
     bool encobjAdded = false;
@@ -462,7 +459,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (encinfo && qemuBuildSecretInfoProps(encinfo, &encobjProps) < 0)
         goto error;
 
-    if (qemuMaybeBuildPRManagerInfoProps(vm, disk, &prmgrProps, &prmgrAlias) < 0)
+    if (qemuMaybeBuildPRManagerInfoProps(vm, disk, &prmgrProps) < 0)
         goto error;
 
     /* Start daemon only after prmgrProps is built. Otherwise
@@ -511,7 +508,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     }
 
     if (prmgrProps) {
-        rv = qemuMonitorAddObject(priv->mon, "pr-manager-helper", prmgrAlias,
+        rv = qemuMonitorAddObject(priv->mon, "pr-manager-helper",
+                                  disk->src->pr->mgralias,
                                   prmgrProps);
         prmgrProps = NULL; /* qemuMonitorAddObject consumes */
         if (rv < 0)
@@ -541,7 +539,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     virJSONValueFree(encobjProps);
     virJSONValueFree(secobjProps);
     qemuDomainSecretDiskDestroy(disk);
-    VIR_FREE(prmgrAlias);
     VIR_FREE(drivealias);
     VIR_FREE(drivestr);
     VIR_FREE(devstr);
@@ -559,7 +556,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (encobjAdded)
         ignore_value(qemuMonitorDelObject(priv->mon, encinfo->s.aes.alias));
     if (prmgrAdded)
-        ignore_value(qemuMonitorDelObject(priv->mon, prmgrAlias));
+        ignore_value(qemuMonitorDelObject(priv->mon, disk->src->pr->mgralias));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -2;
     virErrorRestore(&orig_err);
@@ -3832,22 +3829,18 @@ static bool qemuIsMultiFunctionDevice(virDomainDefPtr def,
 static int
 qemuDomainDiskNeedRemovePR(virDomainObjPtr vm,
                            virDomainDiskDefPtr disk,
-                           char **aliasret,
                            bool *stopDaemon)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     size_t i;
 
-    *aliasret = NULL;
     *stopDaemon = false;
 
     if (!disk->src->pr)
         return 0;
 
-    if (!virStoragePRDefIsManaged(disk->src->pr)) {
-        *aliasret = qemuDomainGetUnmanagedPRAlias(disk->info.alias);
-        return *aliasret ? 0 : -1;
-    }
+    if (!virStoragePRDefIsManaged(disk->src->pr))
+        return 0;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         const virDomainDiskDef *domainDisk = vm->def->disks[i];
@@ -3861,9 +3854,6 @@ qemuDomainDiskNeedRemovePR(virDomainObjPtr vm,
 
     if (i != vm->def->ndisks)
         return 0;
-
-    if (VIR_STRDUP(*aliasret, qemuDomainGetManagedPRAlias()) < 0)
-        return -1;
 
     if (priv->prDaemonRunning)
         *stopDaemon = true;
@@ -3885,7 +3875,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     char *drivestr;
     char *objAlias = NULL;
     char *encAlias = NULL;
-    char *prmgrAlias = NULL;
     bool stopPRDaemon = false;
 
     VIR_DEBUG("Removing disk %s from domain %p %s",
@@ -3924,7 +3913,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
         }
     }
 
-    if (qemuDomainDiskNeedRemovePR(vm, disk, &prmgrAlias, &stopPRDaemon) < 0)
+    if (qemuDomainDiskNeedRemovePR(vm, disk, &stopPRDaemon) < 0)
         return -1;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -3943,9 +3932,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     VIR_FREE(encAlias);
 
     /* If it fails, then so be it - it was a best shot */
-    if (prmgrAlias)
-        ignore_value(qemuMonitorDelObject(priv->mon, prmgrAlias));
-    VIR_FREE(prmgrAlias);
+    if (disk->src->pr)
+        ignore_value(qemuMonitorDelObject(priv->mon, disk->src->pr->mgralias));
 
     if (disk->src->haveTLS)
         ignore_value(qemuMonitorDelObject(priv->mon, disk->src->tlsAlias));

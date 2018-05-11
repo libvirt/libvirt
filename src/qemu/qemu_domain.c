@@ -1941,6 +1941,9 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
     src->nodestorage = virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt);
     src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
 
+    if (src->pr)
+        src->pr->mgralias = virXPathString("string(./reservations/@mgralias)", ctxt);
+
     if (virStorageSourcePrivateDataParseRelPath(ctxt, src) < 0)
         return -1;
 
@@ -1960,6 +1963,9 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</nodenames>\n");
     }
+
+    if (src->pr)
+        virBufferAsprintf(buf, "<reservations mgralias='%s'/>\n", src->pr->mgralias);
 
     if (virStorageSourcePrivateDataFormatRelPath(src, buf) < 0)
         return -1;
@@ -11932,13 +11938,19 @@ qemuDomainPrepareDiskCachemode(virDomainDiskDefPtr disk)
 
 static int
 qemuDomainPrepareStorageSourcePR(virStorageSourcePtr src,
-                                 qemuDomainObjPrivatePtr priv)
+                                 qemuDomainObjPrivatePtr priv,
+                                 const char *parentalias)
 {
     if (!src->pr)
         return 0;
 
     if (virStoragePRDefIsManaged(src->pr)) {
         if (!(src->pr->path = qemuDomainGetManagedPRSocketPath(priv)))
+            return -1;
+        if (VIR_STRDUP(src->pr->mgralias, qemuDomainGetManagedPRAlias()) < 0)
+            return -1;
+    } else {
+        if (!(src->pr->mgralias = qemuDomainGetUnmanagedPRAlias(parentalias)))
             return -1;
     }
 
@@ -11962,7 +11974,7 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
     if (qemuDomainPrepareDiskSourceChain(disk, NULL, cfg, priv->qemuCaps) < 0)
         return -1;
 
-    if (qemuDomainPrepareStorageSourcePR(disk->src, priv) < 0)
+    if (qemuDomainPrepareStorageSourcePR(disk->src, priv, disk->info.alias) < 0)
         return -1;
 
     return 0;

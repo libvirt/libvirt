@@ -1899,6 +1899,7 @@ virStoragePRDefFree(virStoragePRDefPtr prd)
         return;
 
     VIR_FREE(prd->path);
+    VIR_FREE(prd->mgralias);
     VIR_FREE(prd);
 }
 

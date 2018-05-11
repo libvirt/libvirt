@@ -308,11 +308,15 @@
         <backingStore type='file' index='1'>
           <format type='qcow2'/>
           <source file='/var/lib/libvirt/images/base.qcow2'>
+            <reservations managed='yes'>
+              <source type='unix' path='/somepath/ux.sck' mode='client'/>
+            </reservations>
             <privateData>
               <nodenames>
                 <nodename type='storage' name='test-storage'/>
                 <nodename type='format' name='test-format'/>
               </nodenames>
+              <reservations mgralias='test-alias'/>
               <relPath>base.qcow2</relPath>
             </privateData>
           </source>
