@@ -112,7 +112,7 @@ void virBufferSetIndent(virBufferPtr, int indent);
  * child buffer.
  */
 # define virBufferSetChildIndent(childBuf_, parentBuf_) \
-    virBufferAdjustIndent(childBuf_, virBufferGetIndent(parentBuf_, false) + 2)
+    virBufferSetIndent(childBuf_, virBufferGetIndent(parentBuf_, false) + 2)
 
 int virBufferGetIndent(const virBuffer *buf, bool dynamic);
 
