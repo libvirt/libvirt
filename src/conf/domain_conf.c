@@ -26555,6 +26555,67 @@ virDomainIOMMUDefFormat(virBufferPtr buf,
 }
 
 
+static int
+virDomainMemtuneFormat(virBufferPtr buf,
+                       const virDomainMemtune *mem)
+{
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+
+    virBufferSetChildIndent(&childBuf, buf);
+
+    if (virMemoryLimitIsSet(mem->hard_limit)) {
+        virBufferAsprintf(&childBuf,
+                          "<hard_limit unit='KiB'>%llu</hard_limit>\n",
+                          mem->hard_limit);
+    }
+    if (virMemoryLimitIsSet(mem->soft_limit)) {
+        virBufferAsprintf(&childBuf,
+                          "<soft_limit unit='KiB'>%llu</soft_limit>\n",
+                          mem->soft_limit);
+    }
+    if (mem->min_guarantee) {
+        virBufferAsprintf(&childBuf,
+                          "<min_guarantee unit='KiB'>%llu</min_guarantee>\n",
+                          mem->min_guarantee);
+    }
+    if (virMemoryLimitIsSet(mem->swap_hard_limit)) {
+        virBufferAsprintf(&childBuf,
+                          "<swap_hard_limit unit='KiB'>%llu</swap_hard_limit>\n",
+                          mem->swap_hard_limit);
+    }
+
+    if (virXMLFormatElement(buf, "memtune", NULL, &childBuf) < 0)
+        goto cleanup;
+
+    virBufferSetChildIndent(&childBuf, buf);
+
+    if (mem->nhugepages)
+        virDomainHugepagesFormat(&childBuf, mem->hugepages, mem->nhugepages);
+    if (mem->nosharepages)
+        virBufferAddLit(&childBuf, "<nosharepages/>\n");
+    if (mem->locked)
+        virBufferAddLit(&childBuf, "<locked/>\n");
+    if (mem->source)
+        virBufferAsprintf(&childBuf, "<source type='%s'/>\n",
+                          virDomainMemorySourceTypeToString(mem->source));
+    if (mem->access)
+        virBufferAsprintf(&childBuf, "<access mode='%s'/>\n",
+                          virDomainMemoryAccessTypeToString(mem->access));
+    if (mem->allocation)
+        virBufferAsprintf(&childBuf, "<allocation mode='%s'/>\n",
+                          virDomainMemoryAllocationTypeToString(mem->allocation));
+
+    if (virXMLFormatElement(buf, "memoryBacking", NULL, &childBuf) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virBufferFreeAndReset(&childBuf);
+    return ret;
+}
+
+
 /* This internal version appends to an existing buffer
  * (possibly with auto-indent), rather than flattening
  * to string.
@@ -26693,57 +26754,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     }
     virBufferFreeAndReset(&childrenBuf);
 
-    /* add memtune only if there are any */
-    if (virMemoryLimitIsSet(def->mem.hard_limit) ||
-        virMemoryLimitIsSet(def->mem.soft_limit) ||
-        virMemoryLimitIsSet(def->mem.swap_hard_limit) ||
-        def->mem.min_guarantee) {
-        virBufferAddLit(buf, "<memtune>\n");
-        virBufferAdjustIndent(buf, 2);
-        if (virMemoryLimitIsSet(def->mem.hard_limit)) {
-            virBufferAsprintf(buf, "<hard_limit unit='KiB'>"
-                              "%llu</hard_limit>\n", def->mem.hard_limit);
-        }
-        if (virMemoryLimitIsSet(def->mem.soft_limit)) {
-            virBufferAsprintf(buf, "<soft_limit unit='KiB'>"
-                              "%llu</soft_limit>\n", def->mem.soft_limit);
-        }
-        if (def->mem.min_guarantee) {
-            virBufferAsprintf(buf, "<min_guarantee unit='KiB'>"
-                              "%llu</min_guarantee>\n", def->mem.min_guarantee);
-        }
-        if (virMemoryLimitIsSet(def->mem.swap_hard_limit)) {
-            virBufferAsprintf(buf, "<swap_hard_limit unit='KiB'>"
-                              "%llu</swap_hard_limit>\n", def->mem.swap_hard_limit);
-        }
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</memtune>\n");
-    }
-
-    if (def->mem.nhugepages || def->mem.nosharepages || def->mem.locked
-        || def->mem.source || def->mem.access || def->mem.allocation)
-    {
-        virBufferAddLit(buf, "<memoryBacking>\n");
-        virBufferAdjustIndent(buf, 2);
-        if (def->mem.nhugepages)
-            virDomainHugepagesFormat(buf, def->mem.hugepages, def->mem.nhugepages);
-        if (def->mem.nosharepages)
-            virBufferAddLit(buf, "<nosharepages/>\n");
-        if (def->mem.locked)
-            virBufferAddLit(buf, "<locked/>\n");
-        if (def->mem.source)
-            virBufferAsprintf(buf, "<source type='%s'/>\n",
-                virDomainMemorySourceTypeToString(def->mem.source));
-        if (def->mem.access)
-            virBufferAsprintf(buf, "<access mode='%s'/>\n",
-                virDomainMemoryAccessTypeToString(def->mem.access));
-        if (def->mem.allocation)
-            virBufferAsprintf(buf, "<allocation mode='%s'/>\n",
-                virDomainMemoryAllocationTypeToString(def->mem.allocation));
-
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</memoryBacking>\n");
-    }
+    if (virDomainMemtuneFormat(buf, &def->mem) < 0)
+        goto error;
 
     if (virDomainCpuDefFormat(buf, def) < 0)
         goto error;
