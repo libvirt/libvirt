@@ -54,6 +54,26 @@ struct virHashInfo {
 verify(ARRAY_CARDINALITY(hashinfo) == VIR_CRYPTO_HASH_LAST);
 
 int
+virCryptoHashBuf(virCryptoHash hash,
+                 const char *input,
+                 unsigned char *output)
+{
+    if (hash >= VIR_CRYPTO_HASH_LAST) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Unknown crypto hash %d"), hash);
+        return -1;
+    }
+
+    if (!(hashinfo[hash].func(input, strlen(input), output))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to compute hash of data"));
+        return -1;
+    }
+
+    return 0;
+}
+
+int
 virCryptoHashString(virCryptoHash hash,
                     const char *input,
                     char **output)
@@ -62,19 +82,10 @@ virCryptoHashString(virCryptoHash hash,
     size_t hashstrlen;
     size_t i;
 
-    if (hash >= VIR_CRYPTO_HASH_LAST) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Unknown crypto hash %d"), hash);
+    if (virCryptoHashBuf(hash, input, buf) < 0)
         return -1;
-    }
 
     hashstrlen = (hashinfo[hash].hashlen * 2) + 1;
-
-    if (!(hashinfo[hash].func(input, strlen(input), buf))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to compute hash of data"));
-        return -1;
-    }
 
     if (VIR_ALLOC_N(*output, hashstrlen) < 0)
         return -1;

@@ -42,6 +42,13 @@ typedef enum {
 } virCryptoCipher;
 
 int
+virCryptoHashBuf(virCryptoHash hash,
+                 const char *input,
+                 unsigned char *output)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_RETURN_CHECK;
+
+int
 virCryptoHashString(virCryptoHash hash,
                     const char *input,
                     char **output)
