@@ -56,6 +56,15 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Add suport for OpenGL rendering with SDL
+        </summary>
+        <description>
+          Domains using SDL as a graphics backend will now be able to use
+          OpenGL accelerated rendering.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
