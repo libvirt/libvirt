@@ -26,8 +26,6 @@
 #include "viralloc.h"
 #include "virrandom.h"
 
-#include "md5.h"
-#include "sha256.h"
 #ifdef WITH_GNUTLS
 # include <gnutls/gnutls.h>
 # if HAVE_GNUTLS_CRYPTO_H
@@ -41,15 +39,18 @@ VIR_LOG_INIT("util.crypto");
 
 static const char hex[] = "0123456789abcdef";
 
+#define VIR_CRYPTO_LARGEST_DIGEST_SIZE VIR_CRYPTO_HASH_SIZE_SHA256
+
+#if WITH_GNUTLS
+
 struct virHashInfo {
-    void *(*func)(const char *buf, size_t len, void *res);
+    gnutls_digest_algorithm_t algorithm;
     size_t hashlen;
 } hashinfo[] = {
-    { md5_buffer, MD5_DIGEST_SIZE },
-    { sha256_buffer, SHA256_DIGEST_SIZE },
+    { GNUTLS_DIG_MD5, VIR_CRYPTO_HASH_SIZE_MD5 },
+    { GNUTLS_DIG_SHA256, VIR_CRYPTO_HASH_SIZE_SHA256 },
 };
 
-#define VIR_CRYPTO_LARGEST_DIGEST_SIZE SHA256_DIGEST_SIZE
 
 verify(ARRAY_CARDINALITY(hashinfo) == VIR_CRYPTO_HASH_LAST);
 
@@ -58,20 +59,33 @@ virCryptoHashBuf(virCryptoHash hash,
                  const char *input,
                  unsigned char *output)
 {
+    int rc;
     if (hash >= VIR_CRYPTO_HASH_LAST) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Unknown crypto hash %d"), hash);
         return -1;
     }
 
-    if (!(hashinfo[hash].func(input, strlen(input), output))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to compute hash of data"));
+    rc = gnutls_hash_fast(hashinfo[hash].algorithm, input, strlen(input), output);
+    if (rc < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to compute hash of data: %s"),
+                       gnutls_strerror(rc));
         return -1;
     }
 
     return 0;
 }
+#else
+int
+virCryptoHashBuf(virCryptoHash hash,
+                 const char *input ATTRIBUTE_UNUSED,
+                 unsigned char *output ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("algorithm=%d is not supported"), hash);
+}
+#endif
 
 int
 virCryptoHashString(virCryptoHash hash,
