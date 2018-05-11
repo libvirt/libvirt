@@ -4204,6 +4204,13 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         }
     }
 
+    if (virStoragePRDefIsEnabled(src->pr) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("reservations not supported with this QEMU binary"));
+        return -1;
+    }
+
     return 0;
 }
 

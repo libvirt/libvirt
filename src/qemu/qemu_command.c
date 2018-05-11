@@ -9733,7 +9733,6 @@ qemuBuildPRManagerInfoProps(virDomainObjPtr vm,
                             virJSONValuePtr *propsret,
                             char **aliasret)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     char *socketPath = NULL;
     char *alias = NULL;
     int ret = -1;
@@ -9743,12 +9742,6 @@ qemuBuildPRManagerInfoProps(virDomainObjPtr vm,
 
     if (!virStoragePRDefIsEnabled(disk->src->pr))
         return 0;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("reservations not supported with this QEMU binary"));
-        return ret;
-    }
 
     if (!(socketPath = qemuDomainGetPRSocketPath(vm, disk->src->pr)))
         return ret;
