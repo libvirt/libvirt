@@ -91,10 +91,13 @@ xenParseXMOS(virConfPtr conf, virDomainDefPtr def)
         if (xenConfigGetString(conf, "root", &root, NULL) < 0)
             return -1;
 
-        if (root) {
+        if (root && extra) {
             if (virAsprintf(&def->os.cmdline, "root=%s %s", root, extra) < 0)
                 return -1;
-        } else {
+        } else if (root) {
+            if (virAsprintf(&def->os.cmdline, "root=%s", root) < 0)
+                return -1;
+        } else if (extra) {
             if (VIR_STRDUP(def->os.cmdline, extra) < 0)
                 return -1;
         }
