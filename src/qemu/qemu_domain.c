@@ -8730,11 +8730,8 @@ qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
         if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
             return -1;
 
-        if (!virDomainObjIsActive(vm)) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("domain is not running"));
+        if (virDomainObjCheckActive(vm) < 0)
             goto endjob;
-        }
 
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorGetBalloonInfo(priv->mon, &balloon);

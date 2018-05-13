@@ -1996,11 +1996,8 @@ qemuMigrationSrcBegin(virConnectPtr conn,
 
     qemuMigrationSrcStoreDomainState(vm);
 
-    if (!virDomainObjIsActive(vm) && !(flags & VIR_MIGRATE_OFFLINE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
+    if (!(flags & VIR_MIGRATE_OFFLINE) && virDomainObjCheckActive(vm) < 0)
         goto endjob;
-    }
 
     /* Check if there is any ejected media.
      * We don't want to require them on the destination.
@@ -4455,11 +4452,8 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
                               flags) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive(vm) && !(flags & VIR_MIGRATE_OFFLINE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
+    if (!(flags & VIR_MIGRATE_OFFLINE) && virDomainObjCheckActive(vm) < 0)
         goto endjob;
-    }
 
     if (!qemuMigrationSrcIsAllowed(driver, vm, true, flags))
         goto endjob;
