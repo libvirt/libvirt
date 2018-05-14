@@ -1477,7 +1477,7 @@ qemuBuildDriveSourcePR(virBufferPtr buf,
     char *alias = NULL;
     const char *defaultAlias = NULL;
 
-    if (!virStoragePRDefIsEnabled(disk->src->pr))
+    if (!disk->src->pr)
         return 0;
 
     if (virStoragePRDefIsManaged(disk->src->pr))
@@ -9740,7 +9740,7 @@ qemuBuildPRManagerInfoProps(virDomainObjPtr vm,
     *propsret = NULL;
     *aliasret = NULL;
 
-    if (!virStoragePRDefIsEnabled(disk->src->pr))
+    if (!disk->src->pr)
         return 0;
 
     if (!(socketPath = qemuDomainGetPRSocketPath(vm, disk->src->pr)))

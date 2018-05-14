@@ -4204,7 +4204,7 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         }
     }
 
-    if (virStoragePRDefIsEnabled(src->pr) &&
+    if (src->pr &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("reservations not supported with this QEMU binary"));
@@ -10240,7 +10240,7 @@ qemuDomainSetupDisk(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
     }
 
     /* qemu-pr-helper might require access to /dev/mapper/control. */
-    if (virStoragePRDefIsEnabled(disk->src->pr) &&
+    if (disk->src->pr &&
         qemuDomainCreateDevice(DEVICE_MAPPER_CONTROL_PATH, data, true) < 0)
         goto cleanup;
 
@@ -11273,7 +11273,7 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
     }
 
     /* qemu-pr-helper might require access to /dev/mapper/control. */
-    if (virStoragePRDefIsEnabled(src->pr) &&
+    if (src->pr &&
         (VIR_STRDUP(dmPath, DEVICE_MAPPER_CONTROL_PATH) < 0 ||
          VIR_APPEND_ELEMENT_COPY(paths, npaths, dmPath) < 0))
         goto cleanup;
@@ -12050,7 +12050,7 @@ qemuDomainGetPRSocketPath(virDomainObjPtr vm,
     const char *defaultAlias = NULL;
     char *ret = NULL;
 
-    if (!virStoragePRDefIsEnabled(pr))
+    if (!pr)
         return NULL;
 
     if (virStoragePRDefIsManaged(pr)) {

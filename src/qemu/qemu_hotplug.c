@@ -3838,7 +3838,7 @@ qemuDomainDiskNeedRemovePR(virDomainObjPtr vm,
     *aliasret = NULL;
     *stopDaemon = false;
 
-    if (!virStoragePRDefIsEnabled(disk->src->pr))
+    if (!disk->src->pr)
         return 0;
 
     if (!virStoragePRDefIsManaged(disk->src->pr)) {
