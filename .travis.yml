@@ -21,10 +21,10 @@ matrix:
     - compiler: clang
       os: osx
       before_install:
+        - brew uninstall python mercurial postgis sfcgal cgal gdal
         - brew update
-        - brew unlink python
         - brew upgrade
-        - brew install rpcgen yajl
+        - brew install python rpcgen yajl
       script:
         # We can't run make distcheck/syntax-check because they
         # fail on macOS, but doing 'install' and 'dist' gives us
