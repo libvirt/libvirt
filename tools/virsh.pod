@@ -599,7 +599,14 @@ incompatibility will be printed out.
 
 =item B<cpu-models> I<arch>
 
-Print the list of CPU models known for the specified architecture.
+Print the list of CPU models known by libvirt for the specified architecture.
+Whether a specific hypervisor is able to create a domain which uses any of
+the printed CPU models is a separate question which can be answered by
+looking at the domain capabilities XML returned by B<domcapabilities> command.
+Moreover, for some architectures libvirt does not know any CPU models and
+the usable CPU models are only limited by the hypervisor. This command will
+print that all CPU models are accepted for these architectures and the actual
+list of supported CPU models can be checked in the domain capabilities XML.
 
 =item B<echo> [I<--shell>] [I<--xml>] [I<arg>...]
 
