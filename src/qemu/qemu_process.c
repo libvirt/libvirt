@@ -2749,26 +2749,6 @@ qemuProcessStartManagedPRDaemon(virDomainObjPtr vm)
 
 
 static int
-qemuProcessMaybeStartManagedPRDaemon(virDomainObjPtr vm)
-{
-    bool hasManaged = false;
-    size_t i;
-
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (virStoragePRDefIsManaged(vm->def->disks[i]->src->pr)) {
-            hasManaged = true;
-            break;
-        }
-    }
-
-    if (!hasManaged)
-        return 0;
-
-    return qemuProcessStartManagedPRDaemon(vm);
-}
-
-
-static int
 qemuProcessInitPasswords(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          int asyncJob)
@@ -6285,7 +6265,8 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting up managed PR daemon");
-    if (qemuProcessMaybeStartManagedPRDaemon(vm) < 0)
+    if (virDomainDefHasManagedPR(vm->def) &&
+        qemuProcessStartManagedPRDaemon(vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting domain security labels");

@@ -3544,4 +3544,7 @@ int
 virDomainDiskGetDetectZeroesMode(virDomainDiskDiscard discard,
                                  virDomainDiskDetectZeroes detect_zeroes);
 
+bool
+virDomainDefHasManagedPR(const virDomainDef *def);
+
 #endif /* __DOMAIN_CONF_H */
