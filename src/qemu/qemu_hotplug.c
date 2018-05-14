@@ -3827,42 +3827,6 @@ static bool qemuIsMultiFunctionDevice(virDomainDefPtr def,
 
 
 static int
-qemuDomainDiskNeedRemovePR(virDomainObjPtr vm,
-                           virDomainDiskDefPtr disk,
-                           bool *stopDaemon)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    size_t i;
-
-    *stopDaemon = false;
-
-    if (!disk->src->pr)
-        return 0;
-
-    if (!virStoragePRDefIsManaged(disk->src->pr))
-        return 0;
-
-    for (i = 0; i < vm->def->ndisks; i++) {
-        const virDomainDiskDef *domainDisk = vm->def->disks[i];
-
-        if (domainDisk == disk)
-            continue;
-
-        if (virStoragePRDefIsManaged(domainDisk->src->pr))
-            break;
-    }
-
-    if (i != vm->def->ndisks)
-        return 0;
-
-    if (priv->prDaemonRunning)
-        *stopDaemon = true;
-
-    return 0;
-}
-
-
-static int
 qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virDomainDiskDefPtr disk)
@@ -3875,7 +3839,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     char *drivestr;
     char *objAlias = NULL;
     char *encAlias = NULL;
-    bool stopPRDaemon = false;
 
     VIR_DEBUG("Removing disk %s from domain %p %s",
               disk->info.alias, vm, vm->def->name);
@@ -3912,9 +3875,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
             return -1;
         }
     }
-
-    if (qemuDomainDiskNeedRemovePR(vm, disk, &stopPRDaemon) < 0)
-        return -1;
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -3953,7 +3913,9 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
         }
     }
 
-    if (stopPRDaemon)
+    /* check if the last disk with managed PR was just removed */
+    if (priv->prDaemonRunning &&
+        !virDomainDefHasManagedPR(vm->def))
         qemuProcessKillManagedPRDaemon(vm);
 
     qemuDomainReleaseDeviceAddress(vm, &disk->info, src);
