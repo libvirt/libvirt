@@ -6,16 +6,17 @@
     "no-flush": false
   },
   "driver": "raw",
-  "file": {
-    "driver": "file",
-    "filename": "/path/to/i.img",
-    "aio": "native",
-    "node-name": "test2",
-    "cache": {
-      "direct": true,
-      "no-flush": false
-    },
-    "read-only": false,
-    "discard": "unmap"
-  }
+  "file": "test2"
+}
+{
+  "driver": "file",
+  "filename": "/path/to/i.img",
+  "aio": "native",
+  "node-name": "test2",
+  "cache": {
+    "direct": true,
+    "no-flush": false
+  },
+  "read-only": false,
+  "discard": "unmap"
 }

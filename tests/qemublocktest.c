@@ -191,7 +191,8 @@ testQemuDiskXMLToProps(const void *opaque)
     struct testQemuDiskXMLToJSONData *data = (void *) opaque;
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr n;
-    virJSONValuePtr props = NULL;
+    virJSONValuePtr formatProps = NULL;
+    virJSONValuePtr storageProps = NULL;
     char *xmlpath = NULL;
     char *xmlstr = NULL;
     int ret = -1;
@@ -221,7 +222,8 @@ testQemuDiskXMLToProps(const void *opaque)
         if (testQemuDiskXMLToJSONFakeSecrets(n) < 0)
             goto cleanup;
 
-        if (!(props = qemuBlockStorageSourceGetBlockdevProps(n))) {
+        if (!(formatProps = qemuBlockStorageSourceGetBlockdevProps(n)) ||
+            !(storageProps = qemuBlockStorageSourceGetBackendProps(n, false))) {
             if (!data->fail) {
                 VIR_TEST_VERBOSE("failed to generate qemu blockdev props\n");
                 goto cleanup;
@@ -231,13 +233,16 @@ testQemuDiskXMLToProps(const void *opaque)
             goto cleanup;
         }
 
-        if (VIR_APPEND_ELEMENT(data->props, data->nprops, props) < 0)
+        if (VIR_APPEND_ELEMENT(data->props, data->nprops, formatProps) < 0 ||
+            VIR_APPEND_ELEMENT(data->props, data->nprops, storageProps) < 0)
             goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
+    virJSONValueFree(formatProps);
+    virJSONValueFree(storageProps);
     virDomainDiskDefFree(disk);
     VIR_FREE(xmlpath);
     VIR_FREE(xmlstr);

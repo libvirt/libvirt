@@ -2,11 +2,12 @@
   "node-name": "test1",
   "read-only": false,
   "driver": "cloop",
-  "file": {
-    "driver": "file",
-    "filename": "/path/to/i.img",
-    "node-name": "test2",
-    "read-only": false,
-    "discard": "unmap"
-  }
+  "file": "test2"
+}
+{
+  "driver": "file",
+  "filename": "/path/to/i.img",
+  "node-name": "test2",
+  "read-only": false,
+  "discard": "unmap"
 }

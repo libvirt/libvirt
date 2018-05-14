@@ -6,18 +6,19 @@
     "no-flush": false
   },
   "driver": "qcow2",
-  "file": {
-    "driver": "file",
-    "filename": "/var/lib/libvirt/images/a",
-    "node-name": "node-a-s",
-    "cache": {
-      "direct": true,
-      "no-flush": false
-    },
-    "read-only": false,
-    "discard": "unmap"
-  },
+  "file": "node-a-s",
   "backing": "node-b-f"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/a",
+  "node-name": "node-a-s",
+  "cache": {
+    "direct": true,
+    "no-flush": false
+  },
+  "read-only": false,
+  "discard": "unmap"
 }
 {
   "node-name": "node-b-f",
@@ -27,18 +28,19 @@
     "no-flush": false
   },
   "driver": "qcow2",
-  "file": {
-    "driver": "file",
-    "filename": "/var/lib/libvirt/images/b",
-    "node-name": "node-b-s",
-    "cache": {
-      "direct": true,
-      "no-flush": false
-    },
-    "read-only": true,
-    "discard": "unmap"
-  },
+  "file": "node-b-s",
   "backing": "node-c-f"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/b",
+  "node-name": "node-b-s",
+  "cache": {
+    "direct": true,
+    "no-flush": false
+  },
+  "read-only": true,
+  "discard": "unmap"
 }
 {
   "node-name": "node-c-f",
@@ -48,26 +50,27 @@
     "no-flush": false
   },
   "driver": "qcow2",
-  "file": {
-    "driver": "gluster",
-    "volume": "images",
-    "path": "c",
-    "server": [
-      {
-        "type": "inet",
-        "host": "test.org",
-        "port": "24007"
-      }
-    ],
-    "node-name": "node-c-s",
-    "cache": {
-      "direct": true,
-      "no-flush": false
-    },
-    "read-only": true,
-    "discard": "unmap"
-  },
+  "file": "node-c-s",
   "backing": "node-d-f"
+}
+{
+  "driver": "gluster",
+  "volume": "images",
+  "path": "c",
+  "server": [
+    {
+      "type": "inet",
+      "host": "test.org",
+      "port": "24007"
+    }
+  ],
+  "node-name": "node-c-s",
+  "cache": {
+    "direct": true,
+    "no-flush": false
+  },
+  "read-only": true,
+  "discard": "unmap"
 }
 {
   "node-name": "node-d-f",
@@ -77,15 +80,16 @@
     "no-flush": false
   },
   "driver": "raw",
-  "file": {
-    "driver": "file",
-    "filename": "/var/lib/libvirt/images/d",
-    "node-name": "node-d-s",
-    "cache": {
-      "direct": true,
-      "no-flush": false
-    },
-    "read-only": true,
-    "discard": "unmap"
-  }
+  "file": "node-d-s"
+}
+{
+  "driver": "file",
+  "filename": "/var/lib/libvirt/images/d",
+  "node-name": "node-d-s",
+  "cache": {
+    "direct": true,
+    "no-flush": false
+  },
+  "read-only": true,
+  "discard": "unmap"
 }

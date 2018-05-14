@@ -1432,7 +1432,6 @@ virJSONValuePtr
 qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src)
 {
     bool backingSupported = src->format >= VIR_STORAGE_FILE_BACKING;
-    virJSONValuePtr storage = NULL;
     virJSONValuePtr props = NULL;
     virJSONValuePtr ret = NULL;
 
@@ -1446,12 +1445,8 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src)
     if (!(props = qemuBlockStorageSourceGetBlockdevFormatProps(src)))
         goto cleanup;
 
-    if (!(storage = qemuBlockStorageSourceGetBackendProps(src, false)))
+    if (virJSONValueObjectAppendString(props, "file", src->nodestorage) < 0)
         goto cleanup;
-
-    if (virJSONValueObjectAppend(props, "file", storage) < 0)
-        goto cleanup;
-    storage = NULL;
 
     if (src->backingStore && backingSupported) {
         if (virStorageSourceHasBacking(src)) {
@@ -1469,7 +1464,6 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src)
     VIR_STEAL_PTR(ret, props);
 
  cleanup:
-    virJSONValueFree(storage);
     virJSONValueFree(props);
     return ret;
 }

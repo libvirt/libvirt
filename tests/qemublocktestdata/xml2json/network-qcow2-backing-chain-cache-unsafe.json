@@ -6,30 +6,31 @@
     "no-flush": true
   },
   "driver": "qcow2",
-  "file": {
-    "driver": "rbd",
-    "pool": "rbdpool",
-    "image": "rbdimg",
-    "server": [
-      {
-        "host": "host1.example.com",
-        "port": "0"
-      },
-      {
-        "host": "host2.example.com",
-        "port": "0"
-      }
-    ],
-    "user": "testuser-rbd",
-    "node-name": "node-a-s",
-    "cache": {
-      "direct": false,
-      "no-flush": true
-    },
-    "read-only": false,
-    "discard": "unmap"
-  },
+  "file": "node-a-s",
   "backing": "node-b-f"
+}
+{
+  "driver": "rbd",
+  "pool": "rbdpool",
+  "image": "rbdimg",
+  "server": [
+    {
+      "host": "host1.example.com",
+      "port": "0"
+    },
+    {
+      "host": "host2.example.com",
+      "port": "0"
+    }
+  ],
+  "user": "testuser-rbd",
+  "node-name": "node-a-s",
+  "cache": {
+    "direct": false,
+    "no-flush": true
+  },
+  "read-only": false,
+  "discard": "unmap"
 }
 {
   "node-name": "node-b-f",
@@ -39,19 +40,20 @@
     "no-flush": true
   },
   "driver": "qcow2",
-  "file": {
-    "driver": "iscsi",
-    "portal": "example.org:3260",
-    "target": "iscsitarget",
-    "lun": 1,
-    "transport": "tcp",
-    "node-name": "node-b-s",
-    "cache": {
-      "direct": false,
-      "no-flush": true
-    },
-    "read-only": true,
-    "discard": "unmap"
-  },
+  "file": "node-b-s",
   "backing": null
+}
+{
+  "driver": "iscsi",
+  "portal": "example.org:3260",
+  "target": "iscsitarget",
+  "lun": 1,
+  "transport": "tcp",
+  "node-name": "node-b-s",
+  "cache": {
+    "direct": false,
+    "no-flush": true
+  },
+  "read-only": true,
+  "discard": "unmap"
 }
