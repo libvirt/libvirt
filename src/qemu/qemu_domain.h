@@ -1006,7 +1006,6 @@ qemuDomainDiskCachemodeFlags(int cachemode,
                              bool *direct,
                              bool *noflush);
 
-char * qemuDomainGetPRSocketPath(virDomainObjPtr vm,
-                                 virStoragePRDefPtr pr);
+char * qemuDomainGetManagedPRSocketPath(qemuDomainObjPrivatePtr priv);
 
 #endif /* __QEMU_DOMAIN_H__ */

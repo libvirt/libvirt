@@ -9717,7 +9717,6 @@ qemuBuildPanicCommandLine(virCommandPtr cmd,
 
 /**
  * qemuBuildPRManagerInfoProps:
- * @vm: domain object
  * @disk: disk definition
  * @propsret: Returns JSON object containing properties of the pr-manager-helper object
  * @aliasret: alias of the pr-manager-helper object
@@ -9728,12 +9727,10 @@ qemuBuildPanicCommandLine(virCommandPtr cmd,
  *         -1 on failure (with error message set).
  */
 int
-qemuBuildPRManagerInfoProps(virDomainObjPtr vm,
-                            const virDomainDiskDef *disk,
+qemuBuildPRManagerInfoProps(const virDomainDiskDef *disk,
                             virJSONValuePtr *propsret,
                             char **aliasret)
 {
-    char *socketPath = NULL;
     char *alias = NULL;
     int ret = -1;
 
@@ -9742,9 +9739,6 @@ qemuBuildPRManagerInfoProps(virDomainObjPtr vm,
 
     if (!disk->src->pr)
         return 0;
-
-    if (!(socketPath = qemuDomainGetPRSocketPath(vm, disk->src->pr)))
-        return ret;
 
     if (virStoragePRDefIsManaged(disk->src->pr)) {
         if (VIR_STRDUP(alias, qemuDomainGetManagedPRAlias()) < 0)
@@ -9755,7 +9749,7 @@ qemuBuildPRManagerInfoProps(virDomainObjPtr vm,
     }
 
     if (virJSONValueObjectCreate(propsret,
-                                 "s:path", socketPath,
+                                 "s:path", disk->src->pr->path,
                                  NULL) < 0)
         goto cleanup;
 
@@ -9763,14 +9757,12 @@ qemuBuildPRManagerInfoProps(virDomainObjPtr vm,
     ret = 0;
  cleanup:
     VIR_FREE(alias);
-    VIR_FREE(socketPath);
     return ret;
 }
 
 
 static int
-qemuBuildMasterPRCommandLine(virDomainObjPtr vm,
-                             virCommandPtr cmd,
+qemuBuildMasterPRCommandLine(virCommandPtr cmd,
                              const virDomainDef *def)
 {
     size_t i;
@@ -9790,7 +9782,7 @@ qemuBuildMasterPRCommandLine(virDomainObjPtr vm,
             managedAdded = true;
         }
 
-        if (qemuBuildPRManagerInfoProps(vm, disk, &props, &alias) < 0)
+        if (qemuBuildPRManagerInfoProps(disk, &props, &alias) < 0)
             goto cleanup;
 
         if (!props)
@@ -9984,7 +9976,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildMasterKeyCommandLine(cmd, priv) < 0)
         goto error;
 
-    if (qemuBuildMasterPRCommandLine(vm, cmd, def) < 0)
+    if (qemuBuildMasterPRCommandLine(cmd, def) < 0)
         goto error;
 
     if (enableFips)

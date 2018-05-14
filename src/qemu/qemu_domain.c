@@ -11930,6 +11930,22 @@ qemuDomainPrepareDiskCachemode(virDomainDiskDefPtr disk)
 }
 
 
+static int
+qemuDomainPrepareStorageSourcePR(virStorageSourcePtr src,
+                                 qemuDomainObjPrivatePtr priv)
+{
+    if (!src->pr)
+        return 0;
+
+    if (virStoragePRDefIsManaged(src->pr)) {
+        if (!(src->pr->path = qemuDomainGetManagedPRSocketPath(priv)))
+            return -1;
+    }
+
+    return 0;
+}
+
+
 int
 qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
                             qemuDomainObjPrivatePtr priv,
@@ -11944,6 +11960,9 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
         return -1;
 
     if (qemuDomainPrepareDiskSourceChain(disk, NULL, cfg, priv->qemuCaps) < 0)
+        return -1;
+
+    if (qemuDomainPrepareStorageSourcePR(disk->src, priv) < 0)
         return -1;
 
     return 0;
@@ -12051,22 +12070,12 @@ qemuProcessEventFree(struct qemuProcessEvent *event)
 
 
 char *
-qemuDomainGetPRSocketPath(virDomainObjPtr vm,
-                          virStoragePRDefPtr pr)
+qemuDomainGetManagedPRSocketPath(qemuDomainObjPrivatePtr priv)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    const char *defaultAlias = NULL;
     char *ret = NULL;
 
-    if (!pr)
-        return NULL;
-
-    if (virStoragePRDefIsManaged(pr)) {
-        defaultAlias = qemuDomainGetManagedPRAlias();
-        ignore_value(virAsprintf(&ret, "%s/%s.sock", priv->libDir, defaultAlias));
-    } else {
-        ignore_value(VIR_STRDUP(ret, pr->path));
-    }
+    ignore_value(virAsprintf(&ret, "%s/%s.sock", priv->libDir,
+                             qemuDomainGetManagedPRAlias()));
 
     return ret;
 }

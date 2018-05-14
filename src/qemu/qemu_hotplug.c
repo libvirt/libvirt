@@ -401,7 +401,7 @@ qemuMaybeBuildPRManagerInfoProps(virDomainObjPtr vm,
         return 0;
     }
 
-    return qemuBuildPRManagerInfoProps(vm, disk, propsret, aliasret);
+    return qemuBuildPRManagerInfoProps(disk, propsret, aliasret);
 }
 
 

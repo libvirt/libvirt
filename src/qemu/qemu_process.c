@@ -2659,7 +2659,7 @@ qemuProcessStartPRDaemon(virDomainObjPtr vm,
     if ((pidfd = virPidFileAcquirePath(pidfile, false, -1)) < 0)
         goto cleanup;
 
-    if (!(socketPath = qemuDomainGetPRSocketPath(vm, disk->src->pr)))
+    if (!(socketPath = qemuDomainGetManagedPRSocketPath(priv)))
         goto cleanup;
 
     /* Remove stale socket */
