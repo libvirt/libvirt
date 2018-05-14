@@ -1653,8 +1653,10 @@ libxlDomainGetState(virDomainPtr dom,
  * virDomainObjPtr must be locked on invocation
  */
 static int
-libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
-                  const char *to)
+libxlDoDomainSave(libxlDriverPrivatePtr driver,
+                  virDomainObjPtr vm,
+                  const char *to,
+                  bool managed)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     libxlSavefileHeader hdr;
@@ -1725,7 +1727,7 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     }
 
     libxlDomainCleanup(driver, vm);
-    vm->hasManagedSave = true;
+    vm->hasManagedSave = managed;
     ret = 0;
 
  cleanup:
@@ -1772,7 +1774,7 @@ libxlDomainSaveFlags(virDomainPtr dom, const char *to, const char *dxml,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (libxlDoDomainSave(driver, vm, to) < 0)
+    if (libxlDoDomainSave(driver, vm, to, false) < 0)
         goto endjob;
 
     if (!vm->persistent)
@@ -1989,7 +1991,7 @@ libxlDomainManagedSave(virDomainPtr dom, unsigned int flags)
 
     VIR_INFO("Saving state to %s", name);
 
-    if (libxlDoDomainSave(driver, vm, name) < 0)
+    if (libxlDoDomainSave(driver, vm, name, true) < 0)
         goto endjob;
 
     if (!vm->persistent)
