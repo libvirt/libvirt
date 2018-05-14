@@ -4204,11 +4204,19 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         }
     }
 
-    if (src->pr &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("reservations not supported with this QEMU binary"));
-        return -1;
+    if (src->pr) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("reservations not supported with this QEMU binary"));
+            return -1;
+        }
+
+        if (virStoragePRDefIsManaged(src->pr) && src->pr->path) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'path' attribute should not be provided for "
+                             "managed reservations"));
+            return -1;
+        }
     }
 
     return 0;

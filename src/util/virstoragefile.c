@@ -1928,11 +1928,11 @@ virStoragePRDefParseXML(xmlXPathContextPtr ctxt)
         goto cleanup;
     }
 
-    if (prd->managed == VIR_TRISTATE_BOOL_NO) {
-        type = virXPathString("string(./source[1]/@type)", ctxt);
-        path = virXPathString("string(./source[1]/@path)", ctxt);
-        mode = virXPathString("string(./source[1]/@mode)", ctxt);
+    type = virXPathString("string(./source[1]/@type)", ctxt);
+    path = virXPathString("string(./source[1]/@path)", ctxt);
+    mode = virXPathString("string(./source[1]/@mode)", ctxt);
 
+    if (prd->managed == VIR_TRISTATE_BOOL_NO || type || path || mode) {
         if (!type) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing connection type for <reservations/>"));
@@ -1950,24 +1950,23 @@ virStoragePRDefParseXML(xmlXPathContextPtr ctxt)
                            _("missing connection mode for <reservations/>"));
             goto cleanup;
         }
-
-        if (STRNEQ(type, "unix")) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unsupported connection type for <reservations/>: %s"),
-                           type);
-            goto cleanup;
-        }
-
-        if (STRNEQ(mode, "client")) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unsupported connection mode for <reservations/>: %s"),
-                           mode);
-            goto cleanup;
-        }
-
-        VIR_STEAL_PTR(prd->path, path);
     }
 
+    if (type && STRNEQ(type, "unix")) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unsupported connection type for <reservations/>: %s"),
+                       type);
+        goto cleanup;
+    }
+
+    if (mode && STRNEQ(mode, "client")) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unsupported connection mode for <reservations/>: %s"),
+                       mode);
+        goto cleanup;
+    }
+
+    VIR_STEAL_PTR(prd->path, path);
     VIR_STEAL_PTR(ret, prd);
 
  cleanup:
@@ -1986,7 +1985,7 @@ virStoragePRDefFormat(virBufferPtr buf,
 {
     virBufferAsprintf(buf, "<reservations managed='%s'",
                       virTristateBoolTypeToString(prd->managed));
-    if (prd->managed == VIR_TRISTATE_BOOL_NO) {
+    if (prd->path) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         virBufferAddLit(buf, "<source type='unix'");
