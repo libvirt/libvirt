@@ -182,15 +182,6 @@ qemuDomainAddDiskSrcTLSObject(virQEMUDriverPtr driver,
 }
 
 
-static void
-qemuDomainDelDiskSrcTLSObject(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              virStorageSourcePtr src)
-{
-    qemuDomainDelTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE, NULL, src->tlsAlias);
-}
-
-
 static int
 qemuHotplugWaitForTrayEject(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
@@ -529,6 +520,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         ignore_value(qemuMonitorDelObject(priv->mon, unmanagedPrmgrAlias));
     if (managedPrmgrAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, managedPrmgrAlias));
+    if (disk->src->tlsAlias)
+        ignore_value(qemuMonitorDelObject(priv->mon, disk->src->tlsAlias));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -2;
     virErrorRestore(&orig_err);
@@ -536,7 +529,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
 
  error:
-    qemuDomainDelDiskSrcTLSObject(driver, vm, disk->src);
     ignore_value(qemuHotplugPrepareDiskAccess(driver, vm, disk, NULL, true));
     if (priv->prDaemonRunning &&
         !virDomainDefHasManagedPR(vm->def))
