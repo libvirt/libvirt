@@ -1409,6 +1409,7 @@ virLogFilterNew(const char *match,
 {
     virLogFilterPtr ret = NULL;
     char *mdup = NULL;
+    size_t mlen = strlen(match);
 
     virCheckFlags(VIR_LOG_STACK_TRACE, NULL);
 
@@ -1418,8 +1419,15 @@ virLogFilterNew(const char *match,
         return NULL;
     }
 
-    if (VIR_STRDUP_QUIET(mdup, match) < 0)
+    /* We must treat 'foo' as equiv to '*foo*' for fnmatch
+     * todo substring matches, so add 2 extra bytes
+     */
+    if (VIR_ALLOC_N_QUIET(mdup, mlen + 3) < 0)
         return NULL;
+
+    mdup[0] = '*';
+    memcpy(mdup + 1, match, mlen);
+    mdup[mlen + 1] = '*';
 
     if (VIR_ALLOC_QUIET(ret) < 0) {
         VIR_FREE(mdup);
