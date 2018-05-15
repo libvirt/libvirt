@@ -132,9 +132,9 @@ virCryptoHaveCipher(virCryptoCipher algorithm)
 
     case VIR_CRYPTO_CIPHER_AES256CBC:
 #ifdef WITH_GNUTLS
-    return true;
+        return true;
 #else
-    return false;
+        return false;
 #endif
 
     case VIR_CRYPTO_CIPHER_NONE:
