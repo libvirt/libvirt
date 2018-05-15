@@ -515,14 +515,14 @@ virCPUBaseline(virArch arch,
             VIR_DEBUG("models[%zu]=%s", i, models->models[i].name);
     }
 
-    if (cpus == NULL && ncpus != 0) {
+    if (!cpus && ncpus != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("nonzero ncpus doesn't match with NULL cpus"));
         return NULL;
     }
 
     if (ncpus < 1) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s", _("No CPUs given"));
+        virReportError(VIR_ERR_INVALID_ARG, "%s", _("no CPUs given"));
         return NULL;
     }
 
@@ -542,10 +542,10 @@ virCPUBaseline(virArch arch,
     if (arch == VIR_ARCH_NONE)
         arch = cpus[0]->arch;
 
-    if ((driver = cpuGetSubDriver(arch)) == NULL)
+    if (!(driver = cpuGetSubDriver(arch)))
         return NULL;
 
-    if (driver->baseline == NULL) {
+    if (!driver->baseline) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("cannot compute baseline CPU of %s architecture"),
                        virArchToString(arch));
