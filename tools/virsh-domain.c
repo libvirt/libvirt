@@ -1882,7 +1882,7 @@ static const vshCmdInfo info_blockcommit[] = {
 };
 
 static const vshCmdOptDef opts_blockcommit[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -2107,7 +2107,7 @@ static const vshCmdInfo info_blockcopy[] = {
 };
 
 static const vshCmdOptDef opts_blockcopy[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -2423,7 +2423,7 @@ static const vshCmdInfo info_blockjob[] = {
 };
 
 static const vshCmdOptDef opts_blockjob[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -2666,7 +2666,7 @@ static const vshCmdInfo info_blockpull[] = {
 };
 
 static const vshCmdOptDef opts_blockpull[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -2812,7 +2812,7 @@ static const vshCmdInfo info_blockresize[] = {
 };
 
 static const vshCmdOptDef opts_blockresize[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
