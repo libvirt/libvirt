@@ -2375,6 +2375,58 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
     return ret;
 }
 
+
+/**
+ * Get NULL terminated list of features supported by QEMU.
+ *
+ * Returns -1 on error,
+ *          0 on success (@features will be NULL if QEMU does not support this),
+ *          1 when @features is filled in, but migratability info is not available.
+ */
+int
+virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
+                          virDomainVirtType virtType,
+                          bool migratable,
+                          char ***features)
+{
+    virQEMUCapsHostCPUDataPtr data;
+    char **list;
+    size_t i;
+    size_t n;
+    int ret = -1;
+
+    *features = NULL;
+    data = virQEMUCapsGetHostCPUData(qemuCaps, virtType);
+
+    if (!data->info)
+        return 0;
+
+    if (VIR_ALLOC_N(list, data->info->nprops + 1) < 0)
+        return -1;
+
+    n = 0;
+    for (i = 0; i < data->info->nprops; i++) {
+        qemuMonitorCPUPropertyPtr prop = data->info->props + i;
+
+        if (migratable && prop->migratable == VIR_TRISTATE_BOOL_NO)
+            continue;
+
+        if (VIR_STRDUP(list[n++], prop->name) < 0)
+            goto cleanup;
+    }
+
+    VIR_STEAL_PTR(*features, list);
+    if (migratable && !data->info->migratability)
+        ret = 1;
+    else
+        ret = 0;
+
+ cleanup:
+    virStringListFree(list);
+    return ret;
+}
+
+
 struct tpmTypeToCaps {
     int type;
     virQEMUCapsFlags caps;

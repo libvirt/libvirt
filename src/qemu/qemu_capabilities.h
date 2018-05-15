@@ -533,6 +533,10 @@ typedef enum {
 virCPUDefPtr virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps,
                                      virDomainVirtType type,
                                      virQEMUCapsHostCPUType cpuType);
+int virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
+                              virDomainVirtType virtType,
+                              bool migratable,
+                              char ***features);
 
 bool virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                                    virCapsPtr caps,
