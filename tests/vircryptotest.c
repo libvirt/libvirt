@@ -20,12 +20,13 @@
 
 #include <config.h>
 
-#include "vircrypto.h"
-#include "virrandom.h"
-
 #include "testutils.h"
 
-#define VIR_FROM_THIS VIR_FROM_NONE
+#if WITH_GNUTLS
+# include "vircrypto.h"
+# include "virrandom.h"
+
+# define VIR_FROM_THIS VIR_FROM_NONE
 
 struct testCryptoHashData {
     virCryptoHash hash;
@@ -129,7 +130,7 @@ mymain(void)
                                        0x1b, 0x8c, 0x3f, 0x48,
                                        0x27, 0xae, 0xb6, 0x7a};
 
-#define VIR_CRYPTO_HASH(h, i, o) \
+# define VIR_CRYPTO_HASH(h, i, o) \
     do { \
         struct testCryptoHashData data = { \
             .hash = h, \
@@ -152,9 +153,9 @@ mymain(void)
     VIR_CRYPTO_HASH(VIR_CRYPTO_HASH_MD5, "The quick brown fox", "a2004f37730b9445670a738fa0fc9ee5");
     VIR_CRYPTO_HASH(VIR_CRYPTO_HASH_SHA256, "The quick brown fox", "5cac4f980fedc3d3f1f99b4be3472c9b30d56523e632d151237ec9309048bda9");
 
-#undef VIR_CRYPTO_HASH
+# undef VIR_CRYPTO_HASH
 
-#define VIR_CRYPTO_ENCRYPT(a, n, i, il, c, cl) \
+# define VIR_CRYPTO_ENCRYPT(a, n, i, il, c, cl) \
     do { \
         struct testCryptoEncryptData data = { \
             .algorithm = a, \
@@ -173,10 +174,19 @@ mymain(void)
     VIR_CRYPTO_ENCRYPT(VIR_CRYPTO_CIPHER_AES256CBC, "aes265cbc",
                        secretdata, 7, expected_ciphertext, 16);
 
-#undef VIR_CRYPTO_ENCRYPT
+# undef VIR_CRYPTO_ENCRYPT
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* Forces usage of not so random virRandomBytes */
 VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virrandommock.so")
+#else
+static int
+mymain(void)
+{
+    return EXIT_AM_SKIP;
+}
+
+VIR_TEST_MAIN(mymain);
+#endif /* WITH_GNUTLS */

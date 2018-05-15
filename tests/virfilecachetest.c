@@ -20,11 +20,13 @@
 #include <config.h>
 
 #include "testutils.h"
-#include "virfile.h"
-#include "virfilecache.h"
+
+#if WITH_GNUTLS
+# include "virfile.h"
+# include "virfilecache.h"
 
 
-#define VIR_FROM_THIS VIR_FROM_NONE
+# define VIR_FROM_THIS VIR_FROM_NONE
 
 
 struct _testFileCacheObj {
@@ -212,7 +214,7 @@ mymain(void)
 
     virFileCacheSetPriv(cache, &testPriv);
 
-#define TEST_RUN(name, newData, expectData, expectSave) \
+# define TEST_RUN(name, newData, expectData, expectSave) \
     do { \
         testFileCacheData data = { \
             cache, name, newData, expectData, expectSave \
@@ -233,3 +235,12 @@ mymain(void)
 }
 
 VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virfilecachemock.so")
+#else
+static int
+mymain(void)
+{
+    return EXIT_AM_SKIP;
+}
+
+VIR_TEST_MAIN(mymain);
+#endif /* WITH_GNUTLS */
