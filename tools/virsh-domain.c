@@ -1090,6 +1090,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     {.name = "device",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainDiskTargetCompleter,
      .help = N_("block device")
     },
     {.name = "total_bytes_sec",
@@ -1886,6 +1887,7 @@ static const vshCmdOptDef opts_blockcommit[] = {
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of disk")
     },
     {.name = "bandwidth",
@@ -2111,6 +2113,7 @@ static const vshCmdOptDef opts_blockcopy[] = {
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of source disk")
     },
     {.name = "dest",
@@ -2427,6 +2430,7 @@ static const vshCmdOptDef opts_blockjob[] = {
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of disk")
     },
     {.name = "abort",
@@ -2670,6 +2674,7 @@ static const vshCmdOptDef opts_blockpull[] = {
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainDiskTargetCompleter,
      .help = N_("fully-qualified path of disk")
     },
     {.name = "bandwidth",
@@ -2816,6 +2821,7 @@ static const vshCmdOptDef opts_blockresize[] = {
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainDiskTargetCompleter,
      .help = N_("Fully-qualified path of block device")
     },
     {.name = "size",
@@ -7346,6 +7352,7 @@ static const vshCmdOptDef opts_domblkthreshold[] = {
     {.name = "dev",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainDiskTargetCompleter,
      .help = N_("device to set threshold for")
     },
     {.name = "threshold",
@@ -13497,6 +13504,7 @@ static const vshCmdOptDef opts_change_media[] = {
     {.name = "path",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainDiskTargetCompleter,
      .help = N_("Fully-qualified path or target of disk device")
     },
     {.name = "source",

@@ -391,6 +391,7 @@ static const vshCmdOptDef opts_domblkinfo[] = {
     {.name = "device",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainDiskTargetCompleter,
      .help = N_("block device")
     },
     {.name = "human",
@@ -807,6 +808,7 @@ static const vshCmdOptDef opts_domblkstat[] = {
     {.name = "device",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_EMPTY_OK,
+     .completer = virshDomainDiskTargetCompleter,
      .help = N_("block device")
     },
     {.name = "human",
