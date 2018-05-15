@@ -27,19 +27,6 @@ AC_DEFUN([LIBVIRT_CHECK_GNUTLS],[
   dnl Require gnutls >= 3.2.0 because of 3.2.11 in Ubuntu 14.04
   dnl That should have all the functions we use (in >= 2.12)
   dnl and also use nettle, because it's >= 3.0
-
-  if test "$with_gnutls" = "yes" ; then
-    OLD_CFLAGS="$CFLAGS"
-    OLD_LIBS="$LIBS"
-    CFLAGS="$CFLAGS $GNUTLS_CFLAGS"
-    LIBS="$LIBS $GNUTLS_LIBS"
-    AC_CHECK_HEADERS([gnutls/crypto.h], [], [], [[
-      #include <gnutls/gnutls.h>
-    ]])
-
-    CFLAGS="$OLD_CFLAGS"
-    LIBS="$OLD_LIBS"
-  fi
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_GNUTLS],[

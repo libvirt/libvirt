@@ -28,9 +28,7 @@
 
 #ifdef WITH_GNUTLS
 # include <gnutls/gnutls.h>
-# if HAVE_GNUTLS_CRYPTO_H
-#  include <gnutls/crypto.h>
-# endif
+# include <gnutls/crypto.h>
 #endif
 
 VIR_LOG_INIT("util.crypto");

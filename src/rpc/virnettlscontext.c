@@ -25,9 +25,7 @@
 #include <stdlib.h>
 
 #include <gnutls/gnutls.h>
-#if HAVE_GNUTLS_CRYPTO_H
-# include <gnutls/crypto.h>
-#endif
+#include <gnutls/crypto.h>
 #include <gnutls/x509.h>
 
 #include "virnettlscontext.h"
