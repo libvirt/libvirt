@@ -10251,7 +10251,8 @@ static const vshCmdInfo info_domrename[] = {
 };
 
 static const vshCmdOptDef opts_domrename[] = {
-    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_INACTIVE),
+    VIRSH_COMMON_OPT_DOMAIN(N_("domain name or uuid"),
+                            VIR_CONNECT_LIST_DOMAINS_INACTIVE),
     {.name = "new-name",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
