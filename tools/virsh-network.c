@@ -43,6 +43,17 @@
      .completer_flags = cflags, \
     }
 
+#define VIRSH_COMMON_OPT_NETWORK_OT_STRING(_helpstr, cflags) \
+    {.name = "network", \
+     .type = VSH_OT_STRING, \
+     .help = _helpstr, \
+     .completer = virshNetworkNameCompleter, \
+     .completer_flags = cflags, \
+    }
+
+#define VIRSH_COMMON_OPT_NETWORK_OT_STRING_FULL(cflags) \
+    VIRSH_COMMON_OPT_NETWORK_OT_STRING(N_("network name or uuid"), cflags)
+
 virNetworkPtr
 virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
                          const char **name, unsigned int flags)
