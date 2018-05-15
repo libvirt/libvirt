@@ -41,7 +41,7 @@ typedef enum {
     VIR_CRYPTO_CIPHER_LAST
 } virCryptoCipher;
 
-int
+ssize_t
 virCryptoHashBuf(virCryptoHash hash,
                  const char *input,
                  unsigned char *output)

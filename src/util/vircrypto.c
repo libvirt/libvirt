@@ -54,7 +54,7 @@ struct virHashInfo {
 
 verify(ARRAY_CARDINALITY(hashinfo) == VIR_CRYPTO_HASH_LAST);
 
-int
+ssize_t
 virCryptoHashBuf(virCryptoHash hash,
                  const char *input,
                  unsigned char *output)
@@ -74,16 +74,17 @@ virCryptoHashBuf(virCryptoHash hash,
         return -1;
     }
 
-    return 0;
+    return hashinfo[hash].hashlen;
 }
 #else
-int
+ssize_t
 virCryptoHashBuf(virCryptoHash hash,
                  const char *input ATTRIBUTE_UNUSED,
                  unsigned char *output ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INVALID_ARG,
                    _("algorithm=%d is not supported"), hash);
+    return -1;
 }
 #endif
 
@@ -93,18 +94,19 @@ virCryptoHashString(virCryptoHash hash,
                     char **output)
 {
     unsigned char buf[VIR_CRYPTO_LARGEST_DIGEST_SIZE];
+    ssize_t rc;
     size_t hashstrlen;
     size_t i;
 
-    if (virCryptoHashBuf(hash, input, buf) < 0)
+    if ((rc = virCryptoHashBuf(hash, input, buf)) < 0)
         return -1;
 
-    hashstrlen = (hashinfo[hash].hashlen * 2) + 1;
+    hashstrlen = (rc * 2) + 1;
 
     if (VIR_ALLOC_N(*output, hashstrlen) < 0)
         return -1;
 
-    for (i = 0; i < hashinfo[hash].hashlen; i++) {
+    for (i = 0; i < rc; i++) {
         (*output)[i * 2] = hex[(buf[i] >> 4) & 0xf];
         (*output)[(i * 2) + 1] = hex[buf[i] & 0xf];
     }
