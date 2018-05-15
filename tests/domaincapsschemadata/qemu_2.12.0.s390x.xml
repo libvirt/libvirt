@@ -22,8 +22,103 @@
   </os>
   <cpu>
     <mode name='host-passthrough' supported='yes'/>
-    <mode name='host-model' supported='no'/>
-    <mode name='custom' supported='no'/>
+    <mode name='host-model' supported='yes'>
+      <model fallback='forbid'>z14-base</model>
+      <feature policy='require' name='aen'/>
+      <feature policy='require' name='aefsi'/>
+      <feature policy='require' name='msa8'/>
+      <feature policy='require' name='msa7'/>
+      <feature policy='require' name='msa6'/>
+      <feature policy='require' name='msa5'/>
+      <feature policy='require' name='msa4'/>
+      <feature policy='require' name='msa3'/>
+      <feature policy='require' name='msa2'/>
+      <feature policy='require' name='msa1'/>
+      <feature policy='require' name='sthyi'/>
+      <feature policy='require' name='edat'/>
+      <feature policy='require' name='ri'/>
+      <feature policy='require' name='edat2'/>
+      <feature policy='require' name='vx'/>
+      <feature policy='require' name='ipter'/>
+      <feature policy='require' name='vxeh'/>
+      <feature policy='require' name='vxpd'/>
+      <feature policy='require' name='esop'/>
+      <feature policy='require' name='iep'/>
+      <feature policy='require' name='cte'/>
+      <feature policy='require' name='gs'/>
+      <feature policy='require' name='ppa15'/>
+      <feature policy='require' name='zpci'/>
+      <feature policy='require' name='sea_esop2'/>
+      <feature policy='require' name='te'/>
+      <feature policy='require' name='cmm'/>
+    </mode>
+    <mode name='custom' supported='yes'>
+      <model usable='yes'>z890.2</model>
+      <model usable='yes'>z990.4</model>
+      <model usable='yes'>z10BC.2</model>
+      <model usable='yes'>z196.2</model>
+      <model usable='yes'>z14</model>
+      <model usable='yes'>z9BC-base</model>
+      <model usable='yes'>zEC12-base</model>
+      <model usable='yes'>z196-base</model>
+      <model usable='yes'>z13-base</model>
+      <model usable='yes'>z990.3</model>
+      <model usable='yes'>z9EC</model>
+      <model usable='yes'>zBC12</model>
+      <model usable='yes'>z9EC.3</model>
+      <model usable='yes'>z196.2-base</model>
+      <model usable='no'>qemu</model>
+      <model usable='yes'>zEC12.2-base</model>
+      <model usable='yes'>z800-base</model>
+      <model usable='yes'>z9EC.2</model>
+      <model usable='yes'>z900.2-base</model>
+      <model usable='yes'>z900.3</model>
+      <model usable='yes'>z890-base</model>
+      <model usable='yes'>z890</model>
+      <model usable='yes'>z990.4-base</model>
+      <model usable='yes'>z10BC.2-base</model>
+      <model usable='yes'>z900.2</model>
+      <model usable='yes'>z9BC.2-base</model>
+      <model usable='yes'>z800</model>
+      <model usable='yes'>z114</model>
+      <model usable='yes'>z13</model>
+      <model usable='yes'>z13s-base</model>
+      <model usable='yes'>z990</model>
+      <model usable='yes'>z990.2</model>
+      <model usable='yes'>z14-base</model>
+      <model usable='yes'>z890.2-base</model>
+      <model usable='yes'>z196</model>
+      <model usable='yes'>z10EC</model>
+      <model usable='yes'>z13s</model>
+      <model usable='yes'>z900</model>
+      <model usable='yes'>z10EC.3</model>
+      <model usable='yes'>z10EC.2-base</model>
+      <model usable='yes'>z114-base</model>
+      <model usable='yes'>z990.2-base</model>
+      <model usable='yes'>z9EC.2-base</model>
+      <model usable='yes'>z890.3</model>
+      <model usable='yes'>z900.3-base</model>
+      <model usable='yes'>z9BC.2</model>
+      <model usable='yes'>z10BC</model>
+      <model usable='yes'>z990.5</model>
+      <model usable='yes'>zEC12.2</model>
+      <model usable='yes'>z10EC-base</model>
+      <model usable='yes'>z9EC-base</model>
+      <model usable='yes'>z9EC.3-base</model>
+      <model usable='yes'>zEC12</model>
+      <model usable='yes'>z990.5-base</model>
+      <model usable='yes'>z10BC-base</model>
+      <model usable='yes'>z900-base</model>
+      <model usable='yes'>z13.2</model>
+      <model usable='yes'>z890.3-base</model>
+      <model usable='yes'>zBC12-base</model>
+      <model usable='yes'>z13.2-base</model>
+      <model usable='yes'>z990-base</model>
+      <model usable='yes'>z10EC.2</model>
+      <model usable='yes'>z9BC</model>
+      <model usable='yes'>z10EC.3-base</model>
+      <model usable='yes'>z990.3-base</model>
+    </mode>
   </cpu>
   <devices>
     <disk supported='yes'>
