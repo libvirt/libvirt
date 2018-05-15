@@ -5,6 +5,7 @@
   <include href='storagecommon.rng'/>
   <include href='networkcommon.rng'/>
   <include href='cputypes.rng'/>
+  <include href='nwfilter_params.rng'/>
 
   <!--
     description and title element, may be placed anywhere under the root
@@ -5407,22 +5408,6 @@
     </element>
   </define>
 
-  <define name="filterref-node-attributes">
-    <attribute name="filter">
-      <data type="NCName"/>
-    </attribute>
-    <zeroOrMore>
-      <element name="parameter">
-        <attribute name="name">
-          <ref name="filter-param-name"/>
-        </attribute>
-        <attribute name="value">
-          <ref name="filter-param-value"/>
-        </attribute>
-      </element>
-    </zeroOrMore>
-  </define>
-
   <define name="deviceBoot">
     <element name="boot">
       <attribute name="order">
@@ -6147,16 +6132,6 @@
   <define name="timeZone">
     <data type="string">
       <param name="pattern">[a-zA-Z0-9_\.\+\-/]+</param>
-    </data>
-  </define>
-  <define name="filter-param-name">
-    <data type="string">
-      <param name="pattern">[a-zA-Z0-9_]+</param>
-    </data>
-  </define>
-  <define name="filter-param-value">
-    <data type="string">
-      <param name="pattern">[a-zA-Z0-9_\.:]+</param>
     </data>
   </define>
   <define name="spaprvioReg">
