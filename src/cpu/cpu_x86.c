@@ -2482,13 +2482,12 @@ virCPUx86Baseline(virCPUDefPtr *cpus,
     if (!(map = virCPUx86GetMap()))
         goto error;
 
-    if (!(base_model = x86ModelFromCPU(cpus[0], map, VIR_CPU_FEATURE_REQUIRE)))
+    if (!(base_model = x86ModelFromCPU(cpus[0], map, -1)))
         goto error;
 
     if (VIR_ALLOC(cpu) < 0)
         goto error;
 
-    cpu->arch = cpus[0]->arch;
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;
 
@@ -2513,7 +2512,7 @@ virCPUx86Baseline(virCPUDefPtr *cpus,
             }
         }
 
-        if (!(model = x86ModelFromCPU(cpus[i], map, VIR_CPU_FEATURE_REQUIRE)))
+        if (!(model = x86ModelFromCPU(cpus[i], map, -1)))
             goto error;
 
         if (cpus[i]->vendor && model->vendor &&
@@ -2569,8 +2568,6 @@ virCPUx86Baseline(virCPUDefPtr *cpus,
 
     if (!outputVendor)
         VIR_FREE(cpu->vendor);
-
-    cpu->arch = VIR_ARCH_NONE;
 
  cleanup:
     x86ModelFree(base_model);
