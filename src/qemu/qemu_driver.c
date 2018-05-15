@@ -13315,7 +13315,7 @@ qemuConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_HOST)))
         goto cleanup;
 
-    if (!(baseline = virCPUBaseline(cpus, ncpus, NULL,
+    if (!(baseline = virCPUBaseline(VIR_ARCH_NONE, cpus, ncpus, NULL,
                                     !!(flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE))))
         goto cleanup;
 

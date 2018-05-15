@@ -194,7 +194,8 @@ virCPUDefPtr
 virCPUProbeHost(virArch arch);
 
 virCPUDefPtr
-virCPUBaseline(virCPUDefPtr *cpus,
+virCPUBaseline(virArch arch,
+               virCPUDefPtr *cpus,
                unsigned int ncpus,
                virDomainCapsCPUModelsPtr models,
                bool migratable);

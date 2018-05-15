@@ -481,20 +481,22 @@ virCPUProbeHost(virArch arch)
 /**
  * virCPUBaseline:
  *
+ * @arch: CPU architecture, use VIR_ARCH_NONE to autodetect from @cpus
  * @cpus: list of host CPU definitions
  * @ncpus: number of CPUs in @cpus
  * @models: list of CPU models that can be considered for the baseline CPU
  * @migratable: requests non-migratable features to be removed from the result
  *
  * Computes the most feature-rich CPU which is compatible with all given
- * host CPUs. If @models is NULL, all models supported by libvirt will
+ * CPUs. If @models is NULL, all models supported by libvirt will
  * be considered when computing the baseline CPU model, otherwise the baseline
  * CPU model will be one of the provided CPU @models.
  *
  * Returns baseline CPU definition or NULL on error.
  */
 virCPUDefPtr
-virCPUBaseline(virCPUDefPtr *cpus,
+virCPUBaseline(virArch arch,
+               virCPUDefPtr *cpus,
                unsigned int ncpus,
                virDomainCapsCPUModelsPtr models,
                bool migratable)
@@ -502,7 +504,8 @@ virCPUBaseline(virCPUDefPtr *cpus,
     struct cpuArchDriver *driver;
     size_t i;
 
-    VIR_DEBUG("ncpus=%u, models=%p, migratable=%d", ncpus, models, migratable);
+    VIR_DEBUG("arch=%s, ncpus=%u, models=%p, migratable=%d",
+              virArchToString(arch), ncpus, models, migratable);
     if (cpus) {
         for (i = 0; i < ncpus; i++)
             VIR_DEBUG("cpus[%zu]=%p", i, cpus[i]);
@@ -536,13 +539,16 @@ virCPUBaseline(virCPUDefPtr *cpus,
         }
     }
 
-    if ((driver = cpuGetSubDriver(cpus[0]->arch)) == NULL)
+    if (arch == VIR_ARCH_NONE)
+        arch = cpus[0]->arch;
+
+    if ((driver = cpuGetSubDriver(arch)) == NULL)
         return NULL;
 
     if (driver->baseline == NULL) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("cannot compute baseline CPU of %s architecture"),
-                       virArchToString(cpus[0]->arch));
+                       virArchToString(arch));
         return NULL;
     }
 
