@@ -81,7 +81,8 @@ LDADDS = \
 	../src/libvirt.la
 
 MOCKLIBS_LIBS = \
-	$(GNULIB_LIBS)
+	$(GNULIB_LIBS) \
+	../src/libvirt.la
 
 EXTRA_DIST = \
 	.valgrind.supp \
