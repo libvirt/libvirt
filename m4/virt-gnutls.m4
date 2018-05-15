@@ -18,11 +18,15 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_GNUTLS],[
-  LIBVIRT_ARG_WITH_FEATURE([GNUTLS], [gnutls], [check], [2.2.0])
+  LIBVIRT_ARG_WITH_FEATURE([GNUTLS], [gnutls], [check], [3.2.0])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_GNUTLS],[
-  LIBVIRT_CHECK_PKG([GNUTLS], [gnutls], [2.2.0])
+  LIBVIRT_CHECK_PKG([GNUTLS], [gnutls], [3.2.0])
+
+  dnl Require gnutls >= 3.2.0 because of 3.2.11 in Ubuntu 14.04
+  dnl That should have all the functions we use (in >= 2.12)
+  dnl and also use nettle, because it's >= 3.0
 
   if test "$with_gnutls" = "yes" ; then
     dnl Double probe: gnutls >= 2.12 had a configure option for gcrypt and
