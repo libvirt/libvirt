@@ -1398,7 +1398,7 @@ bhyveConnectBaselineCPU(virConnectPtr conn,
     if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_HOST)))
         goto cleanup;
 
-    if (!(cpu = virCPUBaseline(VIR_ARCH_NONE, cpus, ncpus, NULL,
+    if (!(cpu = virCPUBaseline(VIR_ARCH_NONE, cpus, ncpus, NULL, NULL,
                                !!(flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE))))
         goto cleanup;
 

@@ -2467,6 +2467,7 @@ static virCPUDefPtr
 virCPUx86Baseline(virCPUDefPtr *cpus,
                   unsigned int ncpus,
                   virDomainCapsCPUModelsPtr models,
+                  const char **features,
                   bool migratable)
 {
     virCPUx86MapPtr map = NULL;
@@ -2478,6 +2479,7 @@ virCPUx86Baseline(virCPUDefPtr *cpus,
     bool outputVendor = true;
     const char *modelName;
     bool matchingNames = true;
+    virCPUDataPtr featData = NULL;
 
     if (!(map = virCPUx86GetMap()))
         goto error;
@@ -2550,6 +2552,21 @@ virCPUx86Baseline(virCPUDefPtr *cpus,
         model = NULL;
     }
 
+    if (features) {
+        virCPUx86FeaturePtr feat;
+
+        if (!(featData = virCPUDataNew(archs[0])))
+            goto cleanup;
+
+        for (i = 0; features[i]; i++) {
+            if ((feat = x86FeatureFind(map, features[i])) &&
+                x86DataAdd(&featData->data.x86, &feat->data) < 0)
+                goto cleanup;
+        }
+
+        x86DataIntersect(&base_model->data, &featData->data.x86);
+    }
+
     if (x86DataIsEmpty(&base_model->data)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("CPUs are incompatible"));
@@ -2571,6 +2588,7 @@ virCPUx86Baseline(virCPUDefPtr *cpus,
 
  cleanup:
     x86ModelFree(base_model);
+    virCPUx86DataFree(featData);
 
     return cpu;
 

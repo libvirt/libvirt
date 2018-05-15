@@ -485,6 +485,7 @@ virCPUProbeHost(virArch arch)
  * @cpus: list of host CPU definitions
  * @ncpus: number of CPUs in @cpus
  * @models: list of CPU models that can be considered for the baseline CPU
+ * @features: optional NULL terminated list of allowed features
  * @migratable: requests non-migratable features to be removed from the result
  *
  * Computes the most feature-rich CPU which is compatible with all given
@@ -499,13 +500,14 @@ virCPUBaseline(virArch arch,
                virCPUDefPtr *cpus,
                unsigned int ncpus,
                virDomainCapsCPUModelsPtr models,
+               const char **features,
                bool migratable)
 {
     struct cpuArchDriver *driver;
     size_t i;
 
-    VIR_DEBUG("arch=%s, ncpus=%u, models=%p, migratable=%d",
-              virArchToString(arch), ncpus, models, migratable);
+    VIR_DEBUG("arch=%s, ncpus=%u, models=%p, features=%p, migratable=%d",
+              virArchToString(arch), ncpus, models, features, migratable);
     if (cpus) {
         for (i = 0; i < ncpus; i++)
             VIR_DEBUG("cpus[%zu]=%p", i, cpus[i]);
@@ -552,7 +554,7 @@ virCPUBaseline(virArch arch,
         return NULL;
     }
 
-    return driver->baseline(cpus, ncpus, models, migratable);
+    return driver->baseline(cpus, ncpus, models, features, migratable);
 }
 
 

@@ -770,6 +770,7 @@ static virCPUDefPtr
 virCPUppc64Baseline(virCPUDefPtr *cpus,
                     unsigned int ncpus,
                     virDomainCapsCPUModelsPtr models ATTRIBUTE_UNUSED,
+                    const char **features ATTRIBUTE_UNUSED,
                     bool migratable ATTRIBUTE_UNUSED)
 {
     struct ppc64_map *map;

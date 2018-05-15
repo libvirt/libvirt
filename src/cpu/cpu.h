@@ -76,6 +76,7 @@ typedef virCPUDefPtr
 (*virCPUArchBaseline)(virCPUDefPtr *cpus,
                       unsigned int ncpus,
                       virDomainCapsCPUModelsPtr models,
+                      const char **features,
                       bool migratable);
 
 typedef int
@@ -198,6 +199,7 @@ virCPUBaseline(virArch arch,
                virCPUDefPtr *cpus,
                unsigned int ncpus,
                virDomainCapsCPUModelsPtr models,
+               const char **features,
                bool migratable);
 
 int
