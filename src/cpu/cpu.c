@@ -479,7 +479,7 @@ virCPUProbeHost(virArch arch)
 
 
 /**
- * cpuBaseline:
+ * virCPUBaseline:
  *
  * @cpus: list of host CPU definitions
  * @ncpus: number of CPUs in @cpus
@@ -494,10 +494,10 @@ virCPUProbeHost(virArch arch)
  * Returns baseline CPU definition or NULL on error.
  */
 virCPUDefPtr
-cpuBaseline(virCPUDefPtr *cpus,
-            unsigned int ncpus,
-            virDomainCapsCPUModelsPtr models,
-            bool migratable)
+virCPUBaseline(virCPUDefPtr *cpus,
+               unsigned int ncpus,
+               virDomainCapsCPUModelsPtr models,
+               bool migratable)
 {
     struct cpuArchDriver *driver;
     size_t i;

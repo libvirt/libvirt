@@ -73,10 +73,10 @@ typedef int
                      virDomainCapsCPUModelsPtr models);
 
 typedef virCPUDefPtr
-(*cpuArchBaseline)  (virCPUDefPtr *cpus,
-                     unsigned int ncpus,
-                     virDomainCapsCPUModelsPtr models,
-                     bool migratable);
+(*virCPUArchBaseline)(virCPUDefPtr *cpus,
+                      unsigned int ncpus,
+                      virDomainCapsCPUModelsPtr models,
+                      bool migratable);
 
 typedef int
 (*virCPUArchUpdate)(virCPUDefPtr guest,
@@ -129,7 +129,7 @@ struct cpuArchDriver {
     cpuArchEncode       encode;
     cpuArchDataFree     dataFree;
     virCPUArchGetHost   getHost;
-    cpuArchBaseline     baseline;
+    virCPUArchBaseline baseline;
     virCPUArchUpdate    update;
     virCPUArchUpdateLive updateLive;
     virCPUArchCheckFeature checkFeature;
@@ -194,10 +194,10 @@ virCPUDefPtr
 virCPUProbeHost(virArch arch);
 
 virCPUDefPtr
-cpuBaseline (virCPUDefPtr *cpus,
-             unsigned int ncpus,
-             virDomainCapsCPUModelsPtr models,
-             bool migratable);
+virCPUBaseline(virCPUDefPtr *cpus,
+               unsigned int ncpus,
+               virDomainCapsCPUModelsPtr models,
+               bool migratable);
 
 int
 virCPUUpdate(virArch arch,

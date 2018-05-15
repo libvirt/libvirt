@@ -321,8 +321,8 @@ cpuTestBaseline(const void *arg)
     if (!(cpus = cpuTestLoadMultiXML(data->arch, data->name, &ncpus)))
         goto cleanup;
 
-    baseline = cpuBaseline(cpus, ncpus, NULL,
-                           !!(data->flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE));
+    baseline = virCPUBaseline(cpus, ncpus, NULL,
+                              !!(data->flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE));
 
     if (baseline &&
         (data->flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
@@ -337,7 +337,7 @@ cpuTestBaseline(const void *arg)
             ret = 0;
         } else {
             VIR_TEST_VERBOSE("\n%-70s... ",
-                    "cpuBaseline was expected to fail but it succeeded");
+                    "virCPUBaseline was expected to fail but it succeeded");
         }
         goto cleanup;
     }

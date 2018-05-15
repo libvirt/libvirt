@@ -2464,10 +2464,10 @@ virCPUx86GetHost(virCPUDefPtr cpu,
 
 
 static virCPUDefPtr
-x86Baseline(virCPUDefPtr *cpus,
-            unsigned int ncpus,
-            virDomainCapsCPUModelsPtr models,
-            bool migratable)
+virCPUx86Baseline(virCPUDefPtr *cpus,
+                  unsigned int ncpus,
+                  virDomainCapsCPUModelsPtr models,
+                  bool migratable)
 {
     virCPUx86MapPtr map = NULL;
     virCPUx86ModelPtr base_model = NULL;
@@ -3050,7 +3050,7 @@ struct cpuArchDriver cpuDriverX86 = {
 #if defined(__i386__) || defined(__x86_64__)
     .getHost    = virCPUx86GetHost,
 #endif
-    .baseline   = x86Baseline,
+    .baseline   = virCPUx86Baseline,
     .update     = virCPUx86Update,
     .updateLive = virCPUx86UpdateLive,
     .checkFeature = virCPUx86CheckFeature,

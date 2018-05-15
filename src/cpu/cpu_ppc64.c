@@ -767,7 +767,7 @@ virCPUppc64Update(virCPUDefPtr guest,
 }
 
 static virCPUDefPtr
-ppc64DriverBaseline(virCPUDefPtr *cpus,
+virCPUppc64Baseline(virCPUDefPtr *cpus,
                     unsigned int ncpus,
                     virDomainCapsCPUModelsPtr models ATTRIBUTE_UNUSED,
                     bool migratable ATTRIBUTE_UNUSED)
@@ -901,7 +901,7 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .encode     = NULL,
     .dataFree   = virCPUppc64DataFree,
     .getHost    = virCPUppc64GetHost,
-    .baseline   = ppc64DriverBaseline,
+    .baseline   = virCPUppc64Baseline,
     .update     = virCPUppc64Update,
     .getModels  = virCPUppc64DriverGetModels,
     .convertLegacy = virCPUppc64ConvertLegacy,

@@ -73,10 +73,10 @@ virCPUarmUpdate(virCPUDefPtr guest,
 
 
 static virCPUDefPtr
-armBaseline(virCPUDefPtr *cpus,
-            unsigned int ncpus ATTRIBUTE_UNUSED,
-            virDomainCapsCPUModelsPtr models ATTRIBUTE_UNUSED,
-            bool migratable ATTRIBUTE_UNUSED)
+virCPUarmBaseline(virCPUDefPtr *cpus,
+                  unsigned int ncpus ATTRIBUTE_UNUSED,
+                  virDomainCapsCPUModelsPtr models ATTRIBUTE_UNUSED,
+                  bool migratable ATTRIBUTE_UNUSED)
 {
     virCPUDefPtr cpu = NULL;
 
@@ -107,6 +107,6 @@ struct cpuArchDriver cpuDriverArm = {
     .compare = virCPUarmCompare,
     .decode = NULL,
     .encode = NULL,
-    .baseline = armBaseline,
+    .baseline = virCPUarmBaseline,
     .update = virCPUarmUpdate,
 };
