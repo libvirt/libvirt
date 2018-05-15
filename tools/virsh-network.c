@@ -34,14 +34,17 @@
 #include "virtime.h"
 #include "conf/network_conf.h"
 
-#define VIRSH_COMMON_OPT_NETWORK(cflags) \
+#define VIRSH_COMMON_OPT_NETWORK(_helpstr, cflags) \
     {.name = "network", \
      .type = VSH_OT_DATA, \
      .flags = VSH_OFLAG_REQ, \
-     .help = N_("network name or uuid"), \
+     .help = _helpstr, \
      .completer = virshNetworkNameCompleter, \
      .completer_flags = cflags, \
     }
+
+#define VIRSH_COMMON_OPT_NETWORK_FULL(cflags) \
+    VIRSH_COMMON_OPT_NETWORK(N_("network name or uuid"), cflags)
 
 #define VIRSH_COMMON_OPT_NETWORK_OT_STRING(_helpstr, cflags) \
     {.name = "network", \
@@ -106,7 +109,7 @@ static const vshCmdInfo info_network_autostart[] = {
 };
 
 static const vshCmdOptDef opts_network_autostart[] = {
-    VIRSH_COMMON_OPT_NETWORK(VIR_CONNECT_LIST_NETWORKS_PERSISTENT),
+    VIRSH_COMMON_OPT_NETWORK_FULL(VIR_CONNECT_LIST_NETWORKS_PERSISTENT),
     {.name = "disable",
      .type = VSH_OT_BOOL,
      .help = N_("disable autostarting")
@@ -253,7 +256,7 @@ static const vshCmdInfo info_network_destroy[] = {
 };
 
 static const vshCmdOptDef opts_network_destroy[] = {
-    VIRSH_COMMON_OPT_NETWORK(VIR_CONNECT_LIST_NETWORKS_ACTIVE),
+    VIRSH_COMMON_OPT_NETWORK_FULL(VIR_CONNECT_LIST_NETWORKS_ACTIVE),
     {.name = NULL}
 };
 
@@ -292,7 +295,7 @@ static const vshCmdInfo info_network_dumpxml[] = {
 };
 
 static const vshCmdOptDef opts_network_dumpxml[] = {
-    VIRSH_COMMON_OPT_NETWORK(0),
+    VIRSH_COMMON_OPT_NETWORK_FULL(0),
     {.name = "inactive",
      .type = VSH_OT_BOOL,
      .help = N_("show inactive defined XML")
@@ -343,7 +346,7 @@ static const vshCmdInfo info_network_info[] = {
 };
 
 static const vshCmdOptDef opts_network_info[] = {
-    VIRSH_COMMON_OPT_NETWORK(0),
+    VIRSH_COMMON_OPT_NETWORK_FULL(0),
     {.name = NULL}
 };
 
@@ -792,7 +795,7 @@ static const vshCmdInfo info_network_start[] = {
 };
 
 static const vshCmdOptDef opts_network_start[] = {
-    VIRSH_COMMON_OPT_NETWORK(VIR_CONNECT_LIST_NETWORKS_INACTIVE),
+    VIRSH_COMMON_OPT_NETWORK_FULL(VIR_CONNECT_LIST_NETWORKS_INACTIVE),
     {.name = NULL}
 };
 
@@ -830,7 +833,7 @@ static const vshCmdInfo info_network_undefine[] = {
 };
 
 static const vshCmdOptDef opts_network_undefine[] = {
-    VIRSH_COMMON_OPT_NETWORK(VIR_CONNECT_LIST_NETWORKS_PERSISTENT),
+    VIRSH_COMMON_OPT_NETWORK_FULL(VIR_CONNECT_LIST_NETWORKS_PERSISTENT),
     {.name = NULL}
 };
 
@@ -869,7 +872,7 @@ static const vshCmdInfo info_network_update[] = {
 };
 
 static const vshCmdOptDef opts_network_update[] = {
-    VIRSH_COMMON_OPT_NETWORK(0),
+    VIRSH_COMMON_OPT_NETWORK_FULL(0),
     {.name = "command",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
@@ -1070,7 +1073,7 @@ static const vshCmdInfo info_network_edit[] = {
 };
 
 static const vshCmdOptDef opts_network_edit[] = {
-    VIRSH_COMMON_OPT_NETWORK(0),
+    VIRSH_COMMON_OPT_NETWORK_FULL(0),
     {.name = NULL}
 };
 
@@ -1314,7 +1317,7 @@ static const vshCmdInfo info_network_dhcp_leases[] = {
 };
 
 static const vshCmdOptDef opts_network_dhcp_leases[] = {
-    VIRSH_COMMON_OPT_NETWORK(0),
+    VIRSH_COMMON_OPT_NETWORK_FULL(0),
     {.name = "mac",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_NONE,
