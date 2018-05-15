@@ -54,9 +54,6 @@
 #include "configmake.h"
 #include "virconf.h"
 #if WITH_GNUTLS
-# if WITH_GNUTLS_GCRYPT
-#  include <gcrypt.h>
-# endif
 # include "rpc/virnettlscontext.h"
 #endif
 #include "vircommand.h"
@@ -243,70 +240,6 @@ virWinsockInit(void)
 #endif
 
 
-#ifdef WITH_GNUTLS_GCRYPT
-static int
-virTLSMutexInit(void **priv)
-{
-    virMutexPtr lock = NULL;
-
-    if (VIR_ALLOC_QUIET(lock) < 0)
-        return ENOMEM;
-
-    if (virMutexInit(lock) < 0) {
-        VIR_FREE(lock);
-        return errno;
-    }
-
-    *priv = lock;
-    return 0;
-}
-
-
-static int
-virTLSMutexDestroy(void **priv)
-{
-    virMutexPtr lock = *priv;
-    virMutexDestroy(lock);
-    VIR_FREE(lock);
-    return 0;
-}
-
-
-static int
-virTLSMutexLock(void **priv)
-{
-    virMutexPtr lock = *priv;
-    virMutexLock(lock);
-    return 0;
-}
-
-
-static int
-virTLSMutexUnlock(void **priv)
-{
-    virMutexPtr lock = *priv;
-    virMutexUnlock(lock);
-    return 0;
-}
-
-
-static struct gcry_thread_cbs virTLSThreadImpl = {
-    /* GCRY_THREAD_OPTION_VERSION was added in gcrypt 1.4.2 */
-# ifdef GCRY_THREAD_OPTION_VERSION
-    (GCRY_THREAD_OPTION_PTHREAD | (GCRY_THREAD_OPTION_VERSION << 8)),
-# else
-    GCRY_THREAD_OPTION_PTHREAD,
-# endif
-    NULL,
-    virTLSMutexInit,
-    virTLSMutexDestroy,
-    virTLSMutexLock,
-    virTLSMutexUnlock,
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
-};
-#endif /* WITH_GNUTLS_GCRYPT */
-
-
 static bool virGlobalError;
 static virOnceControl virGlobalOnce = VIR_ONCE_CONTROL_INITIALIZER;
 
@@ -327,22 +260,6 @@ virGlobalInit(void)
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("libvirt.so is not safe to use from setuid programs"));
         goto error;
-    }
-#endif
-
-#ifdef WITH_GNUTLS_GCRYPT
-    /*
-     * This sequence of API calls it copied exactly from
-     * gnutls 2.12.23 source lib/gcrypt/init.c, with
-     * exception that GCRYCTL_ENABLE_QUICK_RANDOM, is
-     * dropped
-     */
-    if (gcry_control(GCRYCTL_ANY_INITIALIZATION_P) == 0) {
-        gcry_control(GCRYCTL_SET_THREAD_CBS, &virTLSThreadImpl);
-        gcry_check_version(NULL);
-
-        gcry_control(GCRYCTL_DISABLE_SECMEM, NULL, 0);
-        gcry_control(GCRYCTL_INITIALIZATION_FINISHED, NULL, 0);
     }
 #endif
 
