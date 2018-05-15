@@ -2096,7 +2096,6 @@ virJSONValueNewNumberUint;
 virJSONValueNewNumberUlong;
 virJSONValueNewObject;
 virJSONValueNewString;
-virJSONValueNewStringLen;
 virJSONValueObjectAdd;
 virJSONValueObjectAddVArgs;
 virJSONValueObjectAppend;
