@@ -1032,11 +1032,7 @@ static const vshCmdInfo info_network_uuid[] = {
 };
 
 static const vshCmdOptDef opts_network_uuid[] = {
-    {.name = "network",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("network name")
-    },
+    VIRSH_COMMON_OPT_NETWORK(N_("network name"), 0),
     {.name = NULL}
 };
 
