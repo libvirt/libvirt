@@ -38,6 +38,10 @@ char ** virshDomainInterfaceCompleter(vshControl *ctl,
                                       const vshCmd *cmd,
                                       unsigned int flags);
 
+char ** virshDomainDiskTargetCompleter(vshControl *ctl,
+                                       const vshCmd *cmd,
+                                       unsigned int flags);
+
 char ** virshStoragePoolNameCompleter(vshControl *ctl,
                                       const vshCmd *cmd,
                                       unsigned int flags);

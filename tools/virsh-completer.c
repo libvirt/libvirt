@@ -144,6 +144,54 @@ virshDomainInterfaceCompleter(vshControl *ctl,
 
 
 char **
+virshDomainDiskTargetCompleter(vshControl *ctl,
+                               const vshCmd *cmd,
+                               unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    xmlDocPtr xmldoc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr *disks = NULL;
+    int ndisks;
+    size_t i;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (virshDomainGetXML(ctl, cmd, 0, &xmldoc, &ctxt) < 0)
+        goto error;
+
+    ndisks = virXPathNodeSet("./devices/disk", ctxt, &disks);
+    if (ndisks < 0)
+        goto error;
+
+    if (VIR_ALLOC_N(ret, ndisks + 1) < 0)
+        goto error;
+
+    for (i = 0; i < ndisks; i++) {
+        ctxt->node = disks[i];
+        if (!(ret[i] = virXPathString("string(./target/@dev)", ctxt)))
+            goto error;
+    }
+
+    VIR_FREE(disks);
+    xmlFreeDoc(xmldoc);
+    xmlXPathFreeContext(ctxt);
+    return ret;
+
+ error:
+    VIR_FREE(disks);
+    xmlFreeDoc(xmldoc);
+    xmlXPathFreeContext(ctxt);
+    virStringListFree(ret);
+    return NULL;
+}
+
+
+char **
 virshStoragePoolNameCompleter(vshControl *ctl,
                               const vshCmd *cmd ATTRIBUTE_UNUSED,
                               unsigned int flags)
