@@ -336,7 +336,7 @@ virCryptoGenerateRandom(size_t nbytes)
     if (VIR_ALLOC_N(buf, nbytes) < 0)
         return NULL;
 
-#if HAVE_GNUTLS_RND
+#if WITH_GNUTLS
     /* Generate the byte stream using gnutls_rnd() if possible */
     if ((ret = gnutls_rnd(GNUTLS_RND_RANDOM, buf, nbytes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
