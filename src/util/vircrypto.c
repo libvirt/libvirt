@@ -131,7 +131,7 @@ virCryptoHaveCipher(virCryptoCipher algorithm)
     switch (algorithm) {
 
     case VIR_CRYPTO_CIPHER_AES256CBC:
-#ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
+#ifdef WITH_GNUTLS
     return true;
 #else
     return false;
@@ -146,7 +146,7 @@ virCryptoHaveCipher(virCryptoCipher algorithm)
 }
 
 
-#ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
+#ifdef WITH_GNUTLS
 /* virCryptoEncryptDataAESgntuls:
  *
  * Performs the AES gnutls encryption

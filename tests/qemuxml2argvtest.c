@@ -1024,7 +1024,7 @@ mymain(void)
     DO_TEST("disk-drive-network-sheepdog", NONE);
     DO_TEST("disk-drive-network-rbd-auth", NONE);
     DO_TEST("disk-drive-network-source-auth", NONE);
-# ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
+# ifdef WITH_GNUTLS
     DO_TEST("disk-drive-network-rbd-auth-AES",
             QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_VIRTIO_SCSI);
 # endif
@@ -1320,7 +1320,7 @@ mymain(void)
     if (VIR_STRDUP_QUIET(driver.config->chardevTLSx509secretUUID,
                          "6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea") < 0)
         return EXIT_FAILURE;
-# ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
+# ifdef WITH_GNUTLS
     DO_TEST("serial-tcp-tlsx509-secret-chardev",
             QEMU_CAPS_OBJECT_SECRET,
             QEMU_CAPS_DEVICE_ISA_SERIAL,
@@ -1633,7 +1633,7 @@ mymain(void)
 
     DO_TEST("encrypted-disk", NONE);
     DO_TEST("encrypted-disk-usage", NONE);
-# ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
+# ifdef WITH_GNUTLS
     DO_TEST("luks-disks", QEMU_CAPS_OBJECT_SECRET);
     DO_TEST("luks-disks-source", QEMU_CAPS_OBJECT_SECRET);
     DO_TEST_PARSE_ERROR("luks-disks-source-qcow2", QEMU_CAPS_OBJECT_SECRET);
@@ -2331,7 +2331,7 @@ mymain(void)
     DO_TEST("hostdev-scsi-virtio-iscsi-auth",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC);
-# ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
+# ifdef WITH_GNUTLS
     DO_TEST("disk-hostdev-scsi-virtio-iscsi-auth-AES",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC, QEMU_CAPS_OBJECT_SECRET,

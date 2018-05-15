@@ -37,7 +37,6 @@ AC_DEFUN([LIBVIRT_CHECK_GNUTLS],[
       #include <gnutls/gnutls.h>
     ]])
 
-    AC_CHECK_FUNCS([gnutls_cipher_encrypt])
     CFLAGS="$OLD_CFLAGS"
     LIBS="$OLD_LIBS"
   fi
