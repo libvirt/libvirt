@@ -1644,7 +1644,7 @@ qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
 }
 
 
-char *
+static char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
                   bool bootable,
                   virQEMUCapsPtr qemuCaps)
@@ -10457,4 +10457,31 @@ qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
  error:
     virJSONValueFree(ret);
     return NULL;
+}
+
+
+/**
+ * qemuBuildStorageSourceAttachPrepareDrive:
+ * @disk: disk object to prepare
+ * @qemuCaps: qemu capabilities object
+ *
+ * Prepare qemuBlockStorageSourceAttachDataPtr for use with the old approach
+ * using -drive/drive_add. See qemuBlockStorageSourceAttachPrepareBlockdev.
+ */
+qemuBlockStorageSourceAttachDataPtr
+qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
+                                         virQEMUCapsPtr qemuCaps)
+{
+    qemuBlockStorageSourceAttachDataPtr data = NULL;
+
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    if (!(data->driveCmd = qemuBuildDriveStr(disk, false, qemuCaps)) ||
+        !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk))) {
+        qemuBlockStorageSourceAttachDataFree(data);
+        return NULL;
+    }
+
+    return data;
 }

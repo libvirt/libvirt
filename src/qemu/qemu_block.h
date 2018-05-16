@@ -78,6 +78,10 @@ struct qemuBlockStorageSourceAttachData {
     virJSONValuePtr formatProps;
     const char *formatNodeName;
     bool formatAttached;
+
+    char *driveCmd;
+    char *driveAlias;
+    bool driveAdded;
 };
 
 

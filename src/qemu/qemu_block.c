@@ -24,8 +24,11 @@
 
 #include "viralloc.h"
 #include "virstring.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
+
+VIR_LOG_INIT("qemu.qemu_block");
 
 /* qemu declares the buffer for node names as a 32 byte array */
 static const size_t qemuBlockNodeNameBufSize = 32;
@@ -1482,6 +1485,8 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
 
     virJSONValueFree(data->storageProps);
     virJSONValueFree(data->formatProps);
+    VIR_FREE(data->driveCmd);
+    VIR_FREE(data->driveAlias);
     VIR_FREE(data);
 }
 
@@ -1563,6 +1568,13 @@ qemuBlockStorageSourceAttachApply(qemuMonitorPtr mon,
         data->formatAttached = true;
     }
 
+    if (data->driveCmd) {
+        if (qemuMonitorAddDrive(mon, data->driveCmd) < 0)
+            return -1;
+
+        data->driveAdded = true;
+    }
+
     return 0;
 }
 
@@ -1584,6 +1596,12 @@ qemuBlockStorageSourceAttachRollback(qemuMonitorPtr mon,
     virErrorPtr orig_err;
 
     virErrorPreserveLast(&orig_err);
+
+    if (data->driveAdded) {
+        if (qemuMonitorDriveDel(mon, data->driveAlias) < 0)
+            VIR_WARN("Unable to remove drive %s (%s) after failed "
+                     "qemuMonitorAddDevice", data->driveAlias, data->driveCmd);
+    }
 
     if (data->formatAttached)
         ignore_value(qemuMonitorBlockdevDel(mon, data->formatNodeName));

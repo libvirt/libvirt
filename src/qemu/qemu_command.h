@@ -28,6 +28,7 @@
 # include "domain_conf.h"
 # include "vircommand.h"
 # include "capabilities.h"
+# include "qemu_block.h"
 # include "qemu_conf.h"
 # include "qemu_domain.h"
 # include "qemu_domain_address.h"
@@ -102,10 +103,9 @@ char *qemuBuildNicDevStr(virDomainDefPtr def,
 
 char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk);
 
-/* Both legacy & current support */
-char *qemuBuildDriveStr(virDomainDiskDefPtr disk,
-                        bool bootable,
-                        virQEMUCapsPtr qemuCaps);
+qemuBlockStorageSourceAttachDataPtr
+qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
+                                         virQEMUCapsPtr qemuCaps);
 
 /* Current, best practice */
 char *qemuBuildDriveDevStr(const virDomainDef *def,

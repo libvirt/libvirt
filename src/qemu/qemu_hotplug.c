@@ -35,6 +35,7 @@
 #include "qemu_interface.h"
 #include "qemu_process.h"
 #include "qemu_security.h"
+#include "qemu_block.h"
 #include "domain_audit.h"
 #include "netdev_bandwidth_conf.h"
 #include "domain_nwfilter.h"
@@ -390,15 +391,13 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuBlockStorageSourceAttachDataPtr data = NULL;
     virErrorPtr orig_err;
     char *devstr = NULL;
-    char *drivestr = NULL;
-    char *drivealias = NULL;
     char *unmanagedPrmgrAlias = NULL;
     char *managedPrmgrAlias = NULL;
     char *encobjAlias = NULL;
     char *secobjAlias = NULL;
-    bool driveAdded = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virJSONValuePtr secobjProps = NULL;
     virJSONValuePtr encobjProps = NULL;
@@ -439,14 +438,11 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         !(unmanagedPrmgrProps = qemuBuildPRManagerInfoProps(disk->src)))
         goto error;
 
+    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, priv->qemuCaps)))
+        goto error;
+
     if (disk->src->haveTLS == VIR_TRISTATE_BOOL_YES &&
         qemuDomainAddDiskSrcTLSObject(driver, vm, disk->src) < 0)
-        goto error;
-
-    if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))
-        goto error;
-
-    if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
         goto error;
 
     if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
@@ -473,9 +469,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         qemuMonitorAddObject(priv->mon, &unmanagedPrmgrProps, &unmanagedPrmgrAlias) < 0)
         goto exit_monitor;
 
-    if (qemuMonitorAddDrive(priv->mon, drivestr) < 0)
+    if (qemuBlockStorageSourceAttachApply(priv->mon, data) < 0)
         goto exit_monitor;
-    driveAdded = true;
 
     if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
         goto exit_monitor;
@@ -491,6 +486,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
+    qemuBlockStorageSourceAttachDataFree(data);
     virJSONValueFree(managedPrmgrProps);
     virJSONValueFree(unmanagedPrmgrProps);
     virJSONValueFree(encobjProps);
@@ -500,18 +496,14 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     VIR_FREE(unmanagedPrmgrAlias);
     VIR_FREE(secobjAlias);
     VIR_FREE(encobjAlias);
-    VIR_FREE(drivealias);
-    VIR_FREE(drivestr);
     VIR_FREE(devstr);
     virObjectUnref(cfg);
     return ret;
 
  exit_monitor:
+    qemuBlockStorageSourceAttachRollback(priv->mon, data);
+
     virErrorPreserveLast(&orig_err);
-    if (driveAdded && qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
-        VIR_WARN("Unable to remove drive %s (%s) after failed "
-                 "qemuMonitorAddDevice", drivealias, drivestr);
-    }
     if (secobjAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, secobjAlias));
     if (encobjAlias)
