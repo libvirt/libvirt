@@ -1071,7 +1071,7 @@ qemuMonitorSend(qemuMonitorPtr mon,
           "mon=%p msg=%s fd=%d",
           mon, mon->msg->txBuffer, mon->msg->txFD);
 
-    while (!mon->msg->finished) {
+    while (mon->msg && !mon->msg->finished) {
         if (virCondWait(&mon->notify, &mon->parent.lock) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unable to wait on monitor condition"));
