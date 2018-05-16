@@ -85,6 +85,15 @@
           This new API enables users to detach device using only its alias.
         </description>
       </change>
+      <change>
+        <summary>
+          Introduce new virConnectCompareHypervisorCPU and virConnectBaselineHypervisorCPU APIs
+        </summary>
+        <description>
+          Unlike the old virConnectCompareCPU and virConnectBaselineCPU APIs,
+          both new APIs consider capabilities of a specific hypervisor.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
