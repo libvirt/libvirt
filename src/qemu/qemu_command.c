@@ -712,35 +712,21 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
                              virQEMUCapsPtr qemuCaps,
                              virJSONValuePtr *propsret)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *path = NULL;
-    int ret = -1;
-
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_TLS_CREDS_X509)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("tls-creds-x509 not supported in this QEMU binary"));
         return -1;
     }
 
-    virQEMUBuildBufferEscapeComma(&buf, tlspath);
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-    path = virBufferContentAndReset(&buf);
-
     if (virJSONValueObjectCreate(propsret,
-                                 "s:dir", path,
+                                 "s:dir", tlspath,
                                  "s:endpoint", (isListen ? "server": "client"),
                                  "b:verify-peer", (isListen ? verifypeer : true),
                                  "S:passwordid", secalias,
                                  NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virBufferFreeAndReset(&buf);
-    VIR_FREE(path);
-    return ret;
+    return 0;
 }
 
 
