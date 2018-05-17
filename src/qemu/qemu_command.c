@@ -176,19 +176,6 @@ VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
 
 
 /**
- * qemuBuildHasMasterKey:
- * @qemuCaps: QEMU binary capabilities
- *
- * Return true if this binary supports the secret -object, false otherwise.
- */
-static bool
-qemuBuildHasMasterKey(virQEMUCapsPtr qemuCaps)
-{
-    return virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_SECRET);
-}
-
-
-/**
  * qemuBuildMasterKeyCommandLine:
  * @cmd: the command to modify
  * @qemuCaps qemu capabilities object
@@ -211,7 +198,7 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
      * means the domain won't be able to use a secret master key and is
      * not a failure.
      */
-    if (!qemuBuildHasMasterKey(priv->qemuCaps)) {
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET)) {
         VIR_INFO("secret object is not supported by this QEMU binary");
         return 0;
     }
