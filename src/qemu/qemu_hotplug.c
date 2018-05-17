@@ -487,28 +487,28 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (secobjProps) {
-        rv = qemuMonitorAddObject(priv->mon, "secret", secinfo->s.aes.alias,
-                                  secobjProps);
-        secobjProps = NULL; /* qemuMonitorAddObject consumes */
+        rv = qemuMonitorAddObjectType(priv->mon, "secret", secinfo->s.aes.alias,
+                                      secobjProps);
+        secobjProps = NULL; /* qemuMonitorAddObjectType consumes */
         if (rv < 0)
             goto exit_monitor;
         secobjAdded = true;
     }
 
     if (encobjProps) {
-        rv = qemuMonitorAddObject(priv->mon, "secret", encinfo->s.aes.alias,
-                                  encobjProps);
-        encobjProps = NULL; /* qemuMonitorAddObject consumes */
+        rv = qemuMonitorAddObjectType(priv->mon, "secret", encinfo->s.aes.alias,
+                                      encobjProps);
+        encobjProps = NULL; /* qemuMonitorAddObjectType consumes */
         if (rv < 0)
             goto exit_monitor;
         encobjAdded = true;
     }
 
     if (prmgrProps) {
-        rv = qemuMonitorAddObject(priv->mon, "pr-manager-helper",
-                                  disk->src->pr->mgralias,
-                                  prmgrProps);
-        prmgrProps = NULL; /* qemuMonitorAddObject consumes */
+        rv = qemuMonitorAddObjectType(priv->mon, "pr-manager-helper",
+                                      disk->src->pr->mgralias,
+                                      prmgrProps);
+        prmgrProps = NULL; /* qemuMonitorAddObjectType consumes */
         if (rv < 0)
             goto exit_monitor;
         prmgrAdded = true;
@@ -1465,17 +1465,17 @@ qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
         return -1;
 
     if (secAlias) {
-        rc = qemuMonitorAddObject(priv->mon, "secret",
-                                  secAlias, *secProps);
-        *secProps = NULL; /* qemuMonitorAddObject consumes */
+        rc = qemuMonitorAddObjectType(priv->mon, "secret",
+                                      secAlias, *secProps);
+        *secProps = NULL; /* qemuMonitorAddObjectType consumes */
         if (rc < 0)
             goto error;
     }
 
     if (tlsAlias) {
-        rc = qemuMonitorAddObject(priv->mon, "tls-creds-x509",
-                                  tlsAlias, *tlsProps);
-        *tlsProps = NULL; /* qemuMonitorAddObject consumes */
+        rc = qemuMonitorAddObjectType(priv->mon, "tls-creds-x509",
+                                      tlsAlias, *tlsProps);
+        *tlsProps = NULL; /* qemuMonitorAddObjectType consumes */
         if (rc < 0)
             goto error;
     }
@@ -2037,8 +2037,8 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
         goto exit_monitor;
     chardevAdded = true;
 
-    rv = qemuMonitorAddObject(priv->mon, type, objAlias, props);
-    props = NULL; /* qemuMonitorAddObject consumes */
+    rv = qemuMonitorAddObjectType(priv->mon, type, objAlias, props);
+    props = NULL; /* qemuMonitorAddObjectType consumes */
     if (rv < 0)
         goto exit_monitor;
     objAdded = true;
@@ -2168,8 +2168,8 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
         goto removedef;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    rv = qemuMonitorAddObject(priv->mon, backendType, objalias, props);
-    props = NULL; /* qemuMonitorAddObject consumes */
+    rv = qemuMonitorAddObjectType(priv->mon, backendType, objalias, props);
+    props = NULL; /* qemuMonitorAddObjectType consumes */
     if (rv < 0)
         goto exit_monitor;
     objAdded = true;
@@ -2407,9 +2407,9 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (secobjProps) {
-        rv = qemuMonitorAddObject(priv->mon, "secret", secinfo->s.aes.alias,
-                                  secobjProps);
-        secobjProps = NULL; /* qemuMonitorAddObject consumes */
+        rv = qemuMonitorAddObjectType(priv->mon, "secret", secinfo->s.aes.alias,
+                                      secobjProps);
+        secobjProps = NULL; /* qemuMonitorAddObjectType consumes */
         if (rv < 0)
             goto exit_monitor;
         secobjAdded = true;
@@ -2780,8 +2780,8 @@ qemuDomainAttachShmemDevice(virQEMUDriverPtr driver,
                                      &shmem->server.chr) < 0)
             goto exit_monitor;
     } else {
-        if (qemuMonitorAddObject(priv->mon, "memory-backend-file",
-                                 memAlias, props) < 0) {
+        if (qemuMonitorAddObjectType(priv->mon, "memory-backend-file",
+                                     memAlias, props) < 0) {
             props = NULL;
             goto exit_monitor;
         }

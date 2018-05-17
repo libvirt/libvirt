@@ -2992,7 +2992,7 @@ qemuMonitorAddDeviceArgs(qemuMonitorPtr mon,
 
 
 /**
- * qemuMonitorAddObject:
+ * qemuMonitorAddObjectType:
  * @mon: Pointer to monitor object
  * @type: Type name of object to add
  * @objalias: Alias of the new object
@@ -3002,10 +3002,10 @@ qemuMonitorAddDeviceArgs(qemuMonitorPtr mon,
  * Returns 0 on success -1 on error.
  */
 int
-qemuMonitorAddObject(qemuMonitorPtr mon,
-                     const char *type,
-                     const char *objalias,
-                     virJSONValuePtr props)
+qemuMonitorAddObjectType(qemuMonitorPtr mon,
+                         const char *type,
+                         const char *objalias,
+                         virJSONValuePtr props)
 {
     VIR_DEBUG("type=%s objalias=%s props=%p", type, objalias, props);
 

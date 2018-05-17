@@ -5819,7 +5819,7 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    rc = qemuMonitorAddObject(priv->mon, "iothread", alias, NULL);
+    rc = qemuMonitorAddObjectType(priv->mon, "iothread", alias, NULL);
     exp_niothreads++;
     if (rc < 0)
         goto exit_monitor;
