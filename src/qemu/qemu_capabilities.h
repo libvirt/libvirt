@@ -567,7 +567,8 @@ int virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                  virDomainCapsCPUUsable usable);
 virDomainCapsCPUModelsPtr virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                                        virDomainVirtType type);
-virDomainCapsCPUModelsPtr virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon);
+virDomainCapsCPUModelsPtr virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
+                                                         virArch arch);
 
 typedef enum {
     /* Host CPU definition reported in domain capabilities. */

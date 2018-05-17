@@ -29,7 +29,11 @@
     <mode name='host-model' supported='yes'>
       <model fallback='allow'>POWER8</model>
     </mode>
-    <mode name='custom' supported='no'/>
+    <mode name='custom' supported='yes'>
+      <model usable='unknown'>POWER9</model>
+      <model usable='unknown'>POWER8</model>
+      <model usable='unknown'>POWER7</model>
+    </mode>
   </cpu>
   <devices>
     <disk supported='yes'>

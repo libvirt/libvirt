@@ -164,12 +164,12 @@
   <cpu type='kvm' name='970mp'/>
   <cpu type='kvm' name='970fx'/>
   <cpu type='kvm' name='970'/>
-  <cpu type='kvm' name='power9'/>
+  <cpu type='kvm' name='POWER9'/>
   <cpu type='kvm' name='power8nvl'/>
-  <cpu type='kvm' name='power8'/>
+  <cpu type='kvm' name='POWER8'/>
   <cpu type='kvm' name='power8e'/>
   <cpu type='kvm' name='power7+'/>
-  <cpu type='kvm' name='power7'/>
+  <cpu type='kvm' name='POWER7'/>
   <cpu type='kvm' name='power5gs'/>
   <cpu type='kvm' name='power5+'/>
   <cpu type='kvm' name='apollo7pm'/>
@@ -602,12 +602,12 @@
   <cpu type='tcg' name='970mp'/>
   <cpu type='tcg' name='970fx'/>
   <cpu type='tcg' name='970'/>
-  <cpu type='tcg' name='power9'/>
+  <cpu type='tcg' name='POWER9'/>
   <cpu type='tcg' name='power8nvl'/>
-  <cpu type='tcg' name='power8'/>
+  <cpu type='tcg' name='POWER8'/>
   <cpu type='tcg' name='power8e'/>
   <cpu type='tcg' name='power7+'/>
-  <cpu type='tcg' name='power7'/>
+  <cpu type='tcg' name='POWER7'/>
   <cpu type='tcg' name='power5gs'/>
   <cpu type='tcg' name='power5+'/>
   <cpu type='tcg' name='apollo7pm'/>
