@@ -2991,6 +2991,109 @@ qemuMonitorAddDeviceArgs(qemuMonitorPtr mon,
 }
 
 
+virJSONValuePtr
+qemuMonitorCreateObjectPropsWrap(const char *type,
+                                 const char *alias,
+                                 virJSONValuePtr *props)
+{
+    virJSONValuePtr ret;
+
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:qom-type", type,
+                                          "s:id", alias,
+                                          "A:props", props,
+                                          NULL));
+    return ret;
+}
+
+
+
+/**
+ * qemuMonitorCreateObjectProps:
+ * @propsret: returns full object properties
+ * @type: Type name of object to add
+ * @objalias: Alias of the new object
+ * @...: Optional arguments for the given object. See virJSONValueObjectAddVArgs.
+ *
+ * Returns a JSONValue containing everything on success and NULL on error.
+ */
+int
+qemuMonitorCreateObjectProps(virJSONValuePtr *propsret,
+                             const char *type,
+                             const char *alias,
+                             ...)
+{
+    virJSONValuePtr props = NULL;
+    int ret = -1;
+    va_list args;
+
+    *propsret = NULL;
+
+    va_start(args, alias);
+
+    if (!(virJSONValueObjectCreateVArgs(&props, args)))
+        goto cleanup;
+
+    if (!(*propsret = qemuMonitorCreateObjectPropsWrap(type, alias, &props)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(props);
+    va_end(args);
+    return ret;
+}
+
+
+/**
+ * qemuMonitorAddObject:
+ * @mon: Pointer to monitor object
+ * @props: Optional arguments for the given type. The object is consumed and
+ *         the pointer is cleared.
+ * @alias: If not NULL, returns the alias of the added object if it was added
+ *         successfully to qemu. Caller should free the returned pointer.
+ *
+ * Returns 0 on success -1 on error.
+ */
+int
+qemuMonitorAddObject(qemuMonitorPtr mon,
+                     virJSONValuePtr *props,
+                     char **alias)
+{
+    const char *type = virJSONValueObjectGetString(*props, "qom-type");
+    const char *id = virJSONValueObjectGetString(*props, "id");
+    char *tmp = NULL;
+    int ret = -1;
+
+    VIR_DEBUG("type=%s id=%s", NULLSTR(type), NULLSTR(id));
+
+    QEMU_CHECK_MONITOR_GOTO(mon, cleanup);
+
+    if (!id) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing alias for qemu object '%s'"), NULLSTR(type));
+        goto cleanup;
+    }
+
+    if (alias && VIR_STRDUP(tmp, id) < 0)
+        goto cleanup;
+
+    ret = qemuMonitorJSONAddObject(mon, *props);
+    *props = NULL;
+
+    if (alias)
+        VIR_STEAL_PTR(*alias, tmp);
+
+ cleanup:
+    VIR_FREE(tmp);
+    virJSONValueFree(*props);
+    *props = NULL;
+    return ret;
+}
+
+
+
 /**
  * qemuMonitorAddObjectType:
  * @mon: Pointer to monitor object
@@ -3007,15 +3110,20 @@ qemuMonitorAddObjectType(qemuMonitorPtr mon,
                          const char *objalias,
                          virJSONValuePtr props)
 {
+    virJSONValuePtr tmpprops = NULL;
+    int ret = -1;
+
     VIR_DEBUG("type=%s objalias=%s props=%p", type, objalias, props);
 
-    QEMU_CHECK_MONITOR_GOTO(mon, error);
+    if (!(tmpprops = qemuMonitorCreateObjectPropsWrap(type, objalias, &props)))
+        goto cleanup;
 
-    return qemuMonitorJSONAddObject(mon, type, objalias, props);
+    ret = qemuMonitorAddObject(mon, &tmpprops, NULL);
 
- error:
+ cleanup:
     virJSONValueFree(props);
-    return -1;
+    virJSONValueFree(tmpprops);
+    return ret;
 }
 
 

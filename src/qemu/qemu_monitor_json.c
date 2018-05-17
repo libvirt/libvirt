@@ -4003,21 +4003,15 @@ qemuMonitorJSONAddDevice(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorJSONAddObject(qemuMonitorPtr mon,
-                             const char *type,
-                             const char *objalias,
-                             virJSONValuePtr props)
+int
+qemuMonitorJSONAddObject(qemuMonitorPtr mon,
+                         virJSONValuePtr props)
 {
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
-    cmd = qemuMonitorJSONMakeCommand("object-add",
-                                     "s:qom-type", type,
-                                     "s:id", objalias,
-                                     "A:props", &props,
-                                     NULL);
-    if (!cmd)
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("object-add", props, false)))
         goto cleanup;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
@@ -4030,7 +4024,6 @@ int qemuMonitorJSONAddObject(qemuMonitorPtr mon,
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
-    virJSONValueFree(props);
     return ret;
 }
 
