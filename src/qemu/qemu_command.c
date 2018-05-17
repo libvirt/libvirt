@@ -10499,10 +10499,23 @@ int
 qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
                                           qemuBlockStorageSourceAttachDataPtr data)
 {
+    qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
     if (src->pr &&
         !virStoragePRDefIsManaged(src->pr) &&
         !(data->prmgrProps = qemuBuildPRManagerInfoProps(src)))
         return -1;
+
+    if (srcpriv) {
+        if (srcpriv->secinfo &&
+            srcpriv->secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES &&
+            qemuBuildSecretInfoProps(srcpriv->secinfo, &data->authsecretProps) < 0)
+            return -1;
+
+        if (srcpriv->encinfo &&
+            qemuBuildSecretInfoProps(srcpriv->encinfo, &data->encryptsecretProps) < 0)
+            return -1;
+    }
 
     return 0;
 }
