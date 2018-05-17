@@ -162,6 +162,7 @@
   <flag name='qom-list-properties'/>
   <flag name='memory-backend-file.discard-data'/>
   <flag name='sdl-gl'/>
+  <flag name='screendump_device'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>343099</microcodeVersion>

@@ -486,6 +486,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               /* 300 */
               "sdl-gl",
+              "screendump_device",
     );
 
 
@@ -1269,6 +1270,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+iscsi/password-secret", QEMU_CAPS_ISCSI_PASSWORD_SECRET },
     { "blockdev-add/arg-type/+qcow2/encrypt/+luks/key-secret", QEMU_CAPS_QCOW2_LUKS },
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
+    { "screendump/arg-type/device", QEMU_CAPS_SCREENDUMP_DEVICE },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;

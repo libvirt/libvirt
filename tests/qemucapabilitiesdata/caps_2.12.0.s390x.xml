@@ -127,6 +127,7 @@
   <flag name='virtual-css-bridge.cssid-unrestricted'/>
   <flag name='vfio-ccw'/>
   <flag name='sdl-gl'/>
+  <flag name='screendump_device'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>371055</microcodeVersion>
