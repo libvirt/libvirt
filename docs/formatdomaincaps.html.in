@@ -208,7 +208,7 @@
       </dd>
     </dl>
 
-    <h3><a id="elementsIothread">CPU configuration</a></h3>
+    <h3><a id="elementsIothreads">I/O Threads</a></h3>
 
     <p>
       The <code>iothread</code> elements indicates whether or not
