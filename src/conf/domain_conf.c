@@ -2030,7 +2030,7 @@ virDomainActualNetDefFree(virDomainActualNetDefPtr def)
 
 
 virDomainVsockDefPtr
-virDomainVsockDefNew(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED)
+virDomainVsockDefNew(virDomainXMLOptionPtr xmlopt)
 {
     virDomainVsockDefPtr ret = NULL;
     virDomainVsockDefPtr vsock;
@@ -2038,7 +2038,14 @@ virDomainVsockDefNew(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED)
     if (VIR_ALLOC(vsock) < 0)
         return NULL;
 
+    if (xmlopt &&
+        xmlopt->privateData.vsockNew &&
+        !(vsock->privateData = xmlopt->privateData.vsockNew()))
+        goto cleanup;
+
     VIR_STEAL_PTR(ret, vsock);
+ cleanup:
+    virDomainVsockDefFree(vsock);
     return ret;
 }
 
@@ -2046,6 +2053,10 @@ virDomainVsockDefNew(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED)
 void
 virDomainVsockDefFree(virDomainVsockDefPtr vsock)
 {
+    if (!vsock)
+        return;
+
+    virObjectUnref(vsock->privateData);
     VIR_FREE(vsock);
 }
 

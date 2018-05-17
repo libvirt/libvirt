@@ -2315,6 +2315,7 @@ struct _virDomainIOMMUDef {
 };
 
 struct _virDomainVsockDef {
+    virObjectPtr privateData;
 };
 
 struct _virDomainVirtioOptions {
@@ -2687,6 +2688,7 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataNewFunc    diskNew;
     virDomainXMLPrivateDataNewFunc    vcpuNew;
     virDomainXMLPrivateDataNewFunc    chrSourceNew;
+    virDomainXMLPrivateDataNewFunc    vsockNew;
     virDomainXMLPrivateDataFormatFunc format;
     virDomainXMLPrivateDataParseFunc  parse;
     /* following function shall return a pointer which will be used as the
