@@ -639,7 +639,7 @@ mymain(void)
     if (VIR_STRDUP_QUIET(driver.config->chardevTLSx509certdir, "/etc/pki/libvirt-chardev") < 0)
         return EXIT_FAILURE;
     VIR_FREE(driver.config->vxhsTLSx509certdir);
-    if (VIR_STRDUP_QUIET(driver.config->vxhsTLSx509certdir, "/etc/pki/libvirt-vxhs") < 0)
+    if (VIR_STRDUP_QUIET(driver.config->vxhsTLSx509certdir, "/etc/pki/libvirt-vxhs/dummy,path") < 0)
         return EXIT_FAILURE;
 
     VIR_FREE(driver.config->hugetlbfs);
