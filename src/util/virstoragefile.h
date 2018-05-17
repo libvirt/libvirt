@@ -400,6 +400,9 @@ bool virStoragePRDefIsEqual(virStoragePRDefPtr a,
                             virStoragePRDefPtr b);
 bool virStoragePRDefIsManaged(virStoragePRDefPtr prd);
 
+bool
+virStorageSourceChainHasManagedPR(virStorageSourcePtr src);
+
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
                                     const char *model);

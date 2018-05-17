@@ -29946,7 +29946,7 @@ virDomainDefHasManagedPR(const virDomainDef *def)
     size_t i;
 
     for (i = 0; i < def->ndisks; i++) {
-        if (virStoragePRDefIsManaged(def->disks[i]->src->pr))
+        if (virStorageSourceChainHasManagedPR(def->disks[i]->src))
             return true;
     }
 

@@ -2025,6 +2025,20 @@ virStoragePRDefIsManaged(virStoragePRDefPtr prd)
 }
 
 
+bool
+virStorageSourceChainHasManagedPR(virStorageSourcePtr src)
+{
+    virStorageSourcePtr n;
+
+    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (virStoragePRDefIsManaged(src->pr))
+            return true;
+    }
+
+    return false;
+}
+
+
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
                                     const char *model)
