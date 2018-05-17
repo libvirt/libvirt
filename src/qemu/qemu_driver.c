@@ -3999,6 +3999,8 @@ qemuDomainScreenshot(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     char *tmp = NULL;
     int tmp_fd = -1;
+    size_t i;
+    const char *videoAlias = NULL;
     char *ret = NULL;
     bool unlink_tmp = false;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -4020,13 +4022,35 @@ qemuDomainScreenshot(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    /* Well, even if qemu allows multiple graphic cards, heads, whatever,
-     * screenshot command does not */
-    if (screen) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       "%s", _("currently is supported only taking "
-                               "screenshots of screen ID 0"));
+    if (!vm->def->nvideos) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                      _("no screens to take screenshot from"));
         goto endjob;
+    }
+
+    if (screen) {
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SCREENDUMP_DEVICE)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("qemu does not allow specifying screen ID"));
+            goto endjob;
+        }
+
+        for (i = 0; i < vm->def->nvideos; i++) {
+            const virDomainVideoDef *video = vm->def->videos[i];
+
+            if (screen < video->heads) {
+                videoAlias = video->info.alias;
+                break;
+            }
+
+            screen -= video->heads;
+        }
+
+        if (i == vm->def->nvideos) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("no such screen ID"));
+            goto endjob;
+        }
     }
 
     if (virAsprintf(&tmp, "%s/qemu.screendump.XXXXXX", cfg->cacheDir) < 0)
@@ -4041,7 +4065,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     qemuSecuritySetSavedStateLabel(driver->securityManager, vm->def, tmp);
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (qemuMonitorScreendump(priv->mon, tmp) < 0) {
+    if (qemuMonitorScreendump(priv->mon, videoAlias, screen, tmp) < 0) {
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto endjob;
     }

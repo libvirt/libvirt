@@ -886,6 +886,8 @@ int qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
 int qemuMonitorInjectNMI(qemuMonitorPtr mon);
 
 int qemuMonitorScreendump(qemuMonitorPtr mon,
+                          const char *device,
+                          unsigned int head,
                           const char *file);
 
 int qemuMonitorSendKey(qemuMonitorPtr mon,

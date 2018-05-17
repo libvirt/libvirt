@@ -296,6 +296,8 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
                            unsigned int nkeycodes);
 
 int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
+                              const char *device,
+                              unsigned int head,
                               const char *file);
 
 int qemuMonitorJSONBlockStream(qemuMonitorPtr mon,

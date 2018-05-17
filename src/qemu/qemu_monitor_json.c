@@ -4483,6 +4483,8 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
 }
 
 int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
+                              const char *device,
+                              unsigned int head,
                               const char *file)
 {
     int ret = -1;
@@ -4490,6 +4492,8 @@ int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
 
     cmd = qemuMonitorJSONMakeCommand("screendump",
                                      "s:filename", file,
+                                     "S:device", device,
+                                     "p:head", head,
                                      NULL);
 
     if (!cmd)

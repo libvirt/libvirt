@@ -3477,6 +3477,8 @@ qemuMonitorSendKey(qemuMonitorPtr mon,
 
 int
 qemuMonitorScreendump(qemuMonitorPtr mon,
+                      const char *device,
+                      unsigned int head,
                       const char *file)
 {
     VIR_DEBUG("file=%s", file);
@@ -3484,7 +3486,7 @@ qemuMonitorScreendump(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR(mon);
 
     if (mon->json)
-        return qemuMonitorJSONScreendump(mon, file);
+        return qemuMonitorJSONScreendump(mon, device, head, file);
     else
         return qemuMonitorTextScreendump(mon, file);
 }

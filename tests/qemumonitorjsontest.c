@@ -1348,7 +1348,7 @@ GEN_TEST_FUNC(qemuMonitorJSONDriveMirror, "vdb", "/foo/bar", NULL, 1024, 0, 0,
               VIR_DOMAIN_BLOCK_REBASE_SHALLOW | VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)
 GEN_TEST_FUNC(qemuMonitorJSONBlockCommit, "vdb", "/foo/bar1", "/foo/bar2", NULL, 1024)
 GEN_TEST_FUNC(qemuMonitorJSONDrivePivot, "vdb")
-GEN_TEST_FUNC(qemuMonitorJSONScreendump, "/foo/bar")
+GEN_TEST_FUNC(qemuMonitorJSONScreendump, NULL, 0, "/foo/bar")
 GEN_TEST_FUNC(qemuMonitorJSONOpenGraphics, "spice", "spicefd", false)
 GEN_TEST_FUNC(qemuMonitorJSONNBDServerStart, "localhost", 12345, "test-alias")
 GEN_TEST_FUNC(qemuMonitorJSONNBDServerAdd, "vda", true)
