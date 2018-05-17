@@ -731,11 +731,8 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
                                  "s:dir", path,
                                  "s:endpoint", (isListen ? "server": "client"),
                                  "b:verify-peer", (isListen ? verifypeer : true),
+                                 "S:passwordid", secalias,
                                  NULL) < 0)
-        goto cleanup;
-
-    if (secalias &&
-        virJSONValueObjectAdd(*propsret, "s:passwordid", secalias, NULL) < 0)
         goto cleanup;
 
     ret = 0;
