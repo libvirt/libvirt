@@ -242,9 +242,9 @@ virQEMUBuildCommandLineJSON(virJSONValuePtr value,
 
 
 char *
-virQEMUBuildObjectCommandlineFromJSON(const char *type,
-                                      const char *alias,
-                                      virJSONValuePtr props)
+virQEMUBuildObjectCommandlineFromJSONType(const char *type,
+                                          const char *alias,
+                                          virJSONValuePtr props)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *ret = NULL;

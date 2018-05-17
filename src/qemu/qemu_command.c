@@ -550,9 +550,9 @@ qemuBuildObjectSecretCommandLine(virCommandPtr cmd,
     if (qemuBuildSecretInfoProps(secinfo, &props) < 0)
         return -1;
 
-    if (!(tmp = virQEMUBuildObjectCommandlineFromJSON("secret",
-                                                      secinfo->s.aes.alias,
-                                                      props)))
+    if (!(tmp = virQEMUBuildObjectCommandlineFromJSONType("secret",
+                                                          secinfo->s.aes.alias,
+                                                          props)))
         goto cleanup;
 
     virCommandAddArgList(cmd, "-object", tmp, NULL);
@@ -750,8 +750,8 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
                                      qemuCaps, &props) < 0)
         goto cleanup;
 
-    if (!(tmp = virQEMUBuildObjectCommandlineFromJSON("tls-creds-x509",
-                                                      alias, props)))
+    if (!(tmp = virQEMUBuildObjectCommandlineFromJSONType("tls-creds-x509",
+                                                          alias, props)))
         goto cleanup;
 
     virCommandAddArgList(cmd, "-object", tmp, NULL);
@@ -3224,9 +3224,9 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
                                           def, &mem, priv->autoNodeset, false)) < 0)
         goto cleanup;
 
-    if (!(*backendStr = virQEMUBuildObjectCommandlineFromJSON(backendType,
-                                                              alias,
-                                                              props)))
+    if (!(*backendStr = virQEMUBuildObjectCommandlineFromJSONType(backendType,
+                                                                  alias,
+                                                                  props)))
         goto cleanup;
 
     ret = rc;
@@ -3263,7 +3263,7 @@ qemuBuildMemoryDimmBackendStr(virDomainMemoryDefPtr mem,
                                     def, mem, priv->autoNodeset, true) < 0)
         goto cleanup;
 
-    ret = virQEMUBuildObjectCommandlineFromJSON(backendType, alias, props);
+    ret = virQEMUBuildObjectCommandlineFromJSONType(backendType, alias, props);
 
  cleanup:
     VIR_FREE(alias);
@@ -5560,7 +5560,7 @@ qemuBuildRNGBackendStr(virDomainRNGDefPtr rng,
     if (qemuBuildRNGBackendProps(rng, qemuCaps, &type, &props) < 0)
         goto cleanup;
 
-    ret = virQEMUBuildObjectCommandlineFromJSON(type, alias, props);
+    ret = virQEMUBuildObjectCommandlineFromJSONType(type, alias, props);
 
  cleanup:
     VIR_FREE(alias);
@@ -8826,9 +8826,9 @@ qemuBuildShmemBackendMemStr(virDomainShmemDefPtr shmem)
     if (virAsprintf(&alias, "shmmem-%s", shmem->info.alias) < 0)
         goto cleanup;
 
-    ret = virQEMUBuildObjectCommandlineFromJSON("memory-backend-file",
-                                                alias,
-                                                props);
+    ret = virQEMUBuildObjectCommandlineFromJSONType("memory-backend-file",
+                                                    alias,
+                                                    props);
  cleanup:
     VIR_FREE(alias);
     virJSONValueFree(props);
@@ -9766,9 +9766,9 @@ qemuBuildMasterPRCommandLine(virCommandPtr cmd,
         if (qemuBuildPRManagerInfoProps(disk, &props) < 0)
             goto cleanup;
 
-        if (!(tmp = virQEMUBuildObjectCommandlineFromJSON("pr-manager-helper",
-                                                          disk->src->pr->mgralias,
-                                                          props)))
+        if (!(tmp = virQEMUBuildObjectCommandlineFromJSONType("pr-manager-helper",
+                                                              disk->src->pr->mgralias,
+                                                              props)))
             goto cleanup;
         virJSONValueFree(props);
         props = NULL;

@@ -43,9 +43,9 @@ int virQEMUBuildCommandLineJSON(virJSONValuePtr value,
                                 virBufferPtr buf,
                                 virQEMUBuildCommandLineJSONArrayFormatFunc array);
 
-char *virQEMUBuildObjectCommandlineFromJSON(const char *type,
-                                            const char *alias,
-                                            virJSONValuePtr props);
+char *virQEMUBuildObjectCommandlineFromJSONType(const char *type,
+                                                const char *alias,
+                                                virJSONValuePtr props);
 
 char *virQEMUBuildDriveCommandlineFromJSON(virJSONValuePtr src);
 
