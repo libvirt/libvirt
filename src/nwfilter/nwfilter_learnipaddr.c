@@ -144,7 +144,7 @@ struct _virNWFilterIPAddrLearnReq {
     char *filtername;
     virHashTablePtr filterparams;
     virNWFilterDriverStatePtr driver;
-    enum howDetect howDetect;
+    int howDetect; /* bitmask of enum howDetect */
 
     int status;
     volatile bool terminate;
@@ -437,28 +437,24 @@ learnIPAddressThread(void *arg)
 
     virMacAddrFormat(&req->macaddr, macaddr);
 
-    switch (req->howDetect) {
-    case DETECT_DHCP:
+    if (req->howDetect == DETECT_DHCP) {
         if (techdriver->applyDHCPOnlyRules(req->ifname,
                                            &req->macaddr,
                                            NULL, false) < 0) {
+            VIR_DEBUG("Unable to apply DHCP only rules");
             req->status = EINVAL;
             goto done;
         }
         virBufferAddLit(&buf, "src port 67 and dst port 68");
-        break;
-    case DETECT_STATIC:
+    } else {
         if (techdriver->applyBasicRules(req->ifname,
                                         &req->macaddr) < 0) {
+            VIR_DEBUG("Unable to apply basic rules");
             req->status = EINVAL;
             goto done;
         }
         virBufferAsprintf(&buf, "ether host %s or ether dst ff:ff:ff:ff:ff:ff",
                           macaddr);
-        break;
-    default:
-        req->status = EINVAL;
-        goto done;
     }
 
     if (virBufferError(&buf)) {
@@ -693,7 +689,7 @@ learnIPAddressThread(void *arg)
  *               once its IP address has been detected
  * @driver : the network filter driver
  * @howDetect : the method on how the thread is supposed to detect the
- *              IP address; must choose any of the available flags
+ *              IP address; bitmask of "enum howDetect" flags.
  *
  * Instruct to learn the IP address being used on a given interface (ifname).
  * Unless there already is a thread attempting to learn the IP address
@@ -711,7 +707,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                           const char *filtername,
                           virHashTablePtr filterparams,
                           virNWFilterDriverStatePtr driver,
-                          enum howDetect howDetect)
+                          int howDetect)
 {
     int rc;
     virThread thread;

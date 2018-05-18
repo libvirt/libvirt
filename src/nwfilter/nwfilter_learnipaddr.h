@@ -43,7 +43,7 @@ int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
                               const char *filtername,
                               virHashTablePtr filterparams,
                               virNWFilterDriverStatePtr driver,
-                              enum howDetect howDetect);
+                              int howDetect);
 
 bool virNWFilterHasLearnReq(int ifindex);
 int virNWFilterTerminateLearnReq(const char *ifname);
