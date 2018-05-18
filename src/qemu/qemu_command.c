@@ -3546,7 +3546,6 @@ qemuBuildNicDevStr(virDomainDefPtr def,
 char *
 qemuBuildHostNetStr(virDomainNetDefPtr net,
                     virQEMUDriverPtr driver,
-                    char type_sep,
                     int vlan,
                     char **tapfd,
                     size_t tapfdSize,
@@ -3578,7 +3577,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        virBufferAsprintf(&buf, "tap%c", type_sep);
+        virBufferAddLit(&buf, "tap,");
         /* for one tapfd 'fd=' shall be used,
          * for more than one 'fds=' is the right choice */
         if (tapfdSize == 1) {
@@ -3596,30 +3595,26 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
-        virBufferAsprintf(&buf, "socket%cconnect=%s:%d,",
-                          type_sep,
+        virBufferAsprintf(&buf, "socket,connect=%s:%d,",
                           net->data.socket.address,
                           net->data.socket.port);
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
-        virBufferAsprintf(&buf, "socket%clisten=%s:%d,",
-                          type_sep,
+        virBufferAsprintf(&buf, "socket,listen=%s:%d,",
                           net->data.socket.address ? net->data.socket.address
                           : "",
                           net->data.socket.port);
         break;
 
     case VIR_DOMAIN_NET_TYPE_MCAST:
-        virBufferAsprintf(&buf, "socket%cmcast=%s:%d,",
-                          type_sep,
+        virBufferAsprintf(&buf, "socket,mcast=%s:%d,",
                           net->data.socket.address,
                           net->data.socket.port);
         break;
 
     case VIR_DOMAIN_NET_TYPE_UDP:
-        virBufferAsprintf(&buf, "socket%cudp=%s:%d,localaddr=%s:%d,",
-                          type_sep,
+        virBufferAsprintf(&buf, "socket,udp=%s:%d,localaddr=%s:%d,",
                           net->data.socket.address,
                           net->data.socket.port,
                           net->data.socket.localaddr,
@@ -3627,7 +3622,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
-        virBufferAsprintf(&buf, "user%c", type_sep);
+        virBufferAddLit(&buf, "user,");
         for (i = 0; i < net->guestIP.nips; i++) {
             const virNetDevIPAddr *ip = net->guestIP.ips[i];
             const char *prefix = "";
@@ -3649,12 +3644,11 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         break;
 
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        virBufferAsprintf(&buf, "user%c", type_sep);
+        virBufferAddLit(&buf, "user,");
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        virBufferAsprintf(&buf, "vhost-user%cchardev=char%s,",
-                          type_sep,
+        virBufferAsprintf(&buf, "vhost-user,chardev=char%s,",
                           net->info.alias);
         if (net->driver.virtio.queues > 1)
             virBufferAsprintf(&buf, "queues=%u,",
@@ -8086,7 +8080,7 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
     }
 
     if (!(netdev = qemuBuildHostNetStr(net, driver,
-                                       ',', -1,
+                                       -1,
                                        NULL, 0, NULL, 0)))
         goto error;
 
@@ -8387,7 +8381,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
 
     if (qemuDomainSupportsNicdev(def, net)) {
         if (!(host = qemuBuildHostNetStr(net, driver,
-                                         ',', vlan,
+                                         vlan,
                                          tapfdName, tapfdSize,
                                          vhostfdName, vhostfdSize)))
             goto cleanup;
@@ -8403,7 +8397,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         virCommandAddArgList(cmd, "-net", nic, NULL);
 
         if (!(host = qemuBuildHostNetStr(net, driver,
-                                         ',', vlan,
+                                         vlan,
                                          tapfdName, tapfdSize,
                                          vhostfdName, vhostfdSize)))
             goto cleanup;

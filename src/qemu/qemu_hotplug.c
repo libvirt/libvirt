@@ -1120,7 +1120,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     }
 
     if (!(netstr = qemuBuildHostNetStr(net, driver,
-                                       ',', -1,
+                                       -1,
                                        tapfdName, tapfdSize,
                                        vhostfdName, vhostfdSize)))
         goto cleanup;

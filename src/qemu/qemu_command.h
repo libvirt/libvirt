@@ -80,7 +80,6 @@ qemuBuildChrDeviceStr(char **deviceStr,
 /* With vlan == -1, use netdev syntax, else old hostnet */
 char *qemuBuildHostNetStr(virDomainNetDefPtr net,
                           virQEMUDriverPtr driver,
-                          char type_sep,
                           int vlan,
                           char **tapfd,
                           size_t tapfdSize,
