@@ -5490,11 +5490,14 @@ qemuBuildRNGBackendChrdevStr(virLogManagerPtr logManager,
 int
 qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
                          virQEMUCapsPtr qemuCaps,
-                         const char **type,
                          virJSONValuePtr *props)
 {
+    char *objAlias = NULL;
     char *charBackendAlias = NULL;
     int ret = -1;
+
+    if (virAsprintf(&objAlias, "obj%s", rng->info.alias) < 0)
+        goto cleanup;
 
     switch ((virDomainRNGBackend) rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
@@ -5505,11 +5508,11 @@ qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
             goto cleanup;
         }
 
-        *type = "rng-random";
-
-        if (virJSONValueObjectCreate(props, "s:filename", rng->source.file,
-                                     NULL) < 0)
+        if (qemuMonitorCreateObjectProps(props, "rng-random", objAlias,
+                                         "s:filename", rng->source.file,
+                                         NULL) < 0)
             goto cleanup;
+
         break;
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:
@@ -5520,13 +5523,12 @@ qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
             goto cleanup;
         }
 
-        *type = "rng-egd";
-
         if (!(charBackendAlias = qemuAliasChardevFromDevAlias(rng->info.alias)))
             goto cleanup;
 
-        if (virJSONValueObjectCreate(props, "s:chardev", charBackendAlias,
-                                     NULL) < 0)
+        if (qemuMonitorCreateObjectProps(props, "rng-egd", objAlias,
+                                         "s:chardev", charBackendAlias,
+                                         NULL) < 0)
             goto cleanup;
 
         break;
@@ -5540,31 +5542,8 @@ qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
     ret = 0;
 
  cleanup:
+    VIR_FREE(objAlias);
     VIR_FREE(charBackendAlias);
-    return ret;
-}
-
-
-static char *
-qemuBuildRNGBackendStr(virDomainRNGDefPtr rng,
-                       virQEMUCapsPtr qemuCaps)
-{
-    const char *type = NULL;
-    char *alias = NULL;
-    virJSONValuePtr props = NULL;
-    char *ret = NULL;
-
-    if (virAsprintf(&alias, "obj%s", rng->info.alias) < 0)
-        goto cleanup;
-
-    if (qemuBuildRNGBackendProps(rng, qemuCaps, &type, &props) < 0)
-        goto cleanup;
-
-    ret = virQEMUBuildObjectCommandlineFromJSONType(type, alias, props);
-
- cleanup:
-    VIR_FREE(alias);
-    virJSONValueFree(props);
     return ret;
 }
 
@@ -5636,8 +5615,11 @@ qemuBuildRNGCommandLine(virLogManagerPtr logManager,
     size_t i;
 
     for (i = 0; i < def->nrngs; i++) {
+        virJSONValuePtr props;
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
         virDomainRNGDefPtr rng = def->rngs[i];
         char *tmp;
+        int rc;
 
         if (!rng->info.alias) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -5656,12 +5638,17 @@ qemuBuildRNGCommandLine(virLogManagerPtr logManager,
             VIR_FREE(tmp);
         }
 
-        /* add the RNG source backend */
-        if (!(tmp = qemuBuildRNGBackendStr(rng, qemuCaps)))
+        if (qemuBuildRNGBackendProps(rng, qemuCaps, &props) < 0)
             return -1;
 
-        virCommandAddArgList(cmd, "-object", tmp, NULL);
-        VIR_FREE(tmp);
+        rc = virQEMUBuildObjectCommandlineFromJSON(&buf, props);
+        virJSONValueFree(props);
+
+        if (rc < 0)
+            return -1;
+
+        virCommandAddArg(cmd, "-object");
+        virCommandAddArgBuffer(cmd, &buf);
 
         /* add the device */
         if (!(tmp = qemuBuildRNGDevStr(def, rng, qemuCaps)))

@@ -1979,11 +1979,8 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     bool teardowncgroup = false;
     bool teardowndevice = false;
     bool chardevAdded = false;
-    bool objAdded = false;
     virJSONValuePtr props = NULL;
-    const char *type;
     int ret = -1;
-    int rv;
 
     if (qemuAssignDeviceRNGAlias(vm->def, rng) < 0)
         goto cleanup;
@@ -2007,10 +2004,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildRNGDevStr(vm->def, rng, priv->qemuCaps)))
         goto cleanup;
 
-    if (qemuBuildRNGBackendProps(rng, priv->qemuCaps, &type, &props) < 0)
-        goto cleanup;
-
-    if (virAsprintf(&objAlias, "obj%s", rng->info.alias) < 0)
+    if (qemuBuildRNGBackendProps(rng, priv->qemuCaps, &props) < 0)
         goto cleanup;
 
     if (!(charAlias = qemuAliasChardevFromDevAlias(rng->info.alias)))
@@ -2032,11 +2026,8 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
         goto exit_monitor;
     chardevAdded = true;
 
-    rv = qemuMonitorAddObjectType(priv->mon, type, objAlias, props);
-    props = NULL; /* qemuMonitorAddObjectType consumes */
-    if (rv < 0)
+    if (qemuMonitorAddObject(priv->mon, &props, &objAlias) < 0)
         goto exit_monitor;
-    objAdded = true;
 
     if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
         goto exit_monitor;
@@ -2071,7 +2062,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
 
  exit_monitor:
     virErrorPreserveLast(&orig_err);
-    if (objAdded)
+    if (objAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, objAlias));
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD && chardevAdded)
         ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
