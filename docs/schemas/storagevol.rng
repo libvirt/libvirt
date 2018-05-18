@@ -56,6 +56,11 @@
           <ref name='scaledInteger'/>
         </element>
       </optional>
+      <optional>
+        <element name='physical'>
+          <ref name='scaledInteger'/>
+        </element>
+      </optional>
     </interleave>
   </define>
 
