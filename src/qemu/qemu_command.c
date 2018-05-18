@@ -8787,43 +8787,25 @@ qemuBuildShmemDevStr(virDomainDefPtr def,
 virJSONValuePtr
 qemuBuildShmemBackendMemProps(virDomainShmemDefPtr shmem)
 {
+    char *mem_alias = NULL;
     char *mem_path = NULL;
     virJSONValuePtr ret = NULL;
 
     if (virAsprintf(&mem_path, "/dev/shm/%s", shmem->name) < 0)
         return NULL;
 
-    virJSONValueObjectCreate(&ret,
-                             "s:mem-path", mem_path,
-                             "U:size", shmem->size,
-                             "b:share", true,
-                             NULL);
-
-    VIR_FREE(mem_path);
-    return ret;
-}
-
-
-static char *
-qemuBuildShmemBackendMemStr(virDomainShmemDefPtr shmem)
-{
-    char *ret = NULL;
-    char *alias = NULL;
-    virJSONValuePtr props = qemuBuildShmemBackendMemProps(shmem);
-
-    if (!props)
-        return NULL;
-
-    if (virAsprintf(&alias, "shmmem-%s", shmem->info.alias) < 0)
+    if (virAsprintf(&mem_alias, "shmmem-%s", shmem->info.alias) < 0)
         goto cleanup;
 
-    ret = virQEMUBuildObjectCommandlineFromJSONType("memory-backend-file",
-                                                    alias,
-                                                    props);
- cleanup:
-    VIR_FREE(alias);
-    virJSONValueFree(props);
+    qemuMonitorCreateObjectProps(&ret, "memory-backend-file", mem_alias,
+                                 "s:mem-path", mem_path,
+                                 "U:size", shmem->size,
+                                 "b:share", true,
+                                 NULL);
 
+ cleanup:
+    VIR_FREE(mem_alias);
+    VIR_FREE(mem_path);
     return ret;
 }
 
@@ -8837,7 +8819,10 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
                           virQEMUCapsPtr qemuCaps,
                           bool chardevStdioLogd)
 {
+    virJSONValuePtr memProps = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *devstr = NULL;
+    int rc;
 
     if (shmem->size) {
         /*
@@ -8871,11 +8856,17 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN:
-        if (!(devstr = qemuBuildShmemBackendMemStr(shmem)))
+        if (!(memProps = qemuBuildShmemBackendMemProps(shmem)))
             return -1;
 
-        virCommandAddArgList(cmd, "-object", devstr, NULL);
-        VIR_FREE(devstr);
+        rc = virQEMUBuildObjectCommandlineFromJSON(&buf, memProps);
+        virJSONValueFree(memProps);
+
+        if (rc < 0)
+            return -1;
+
+        virCommandAddArg(cmd, "-object");
+        virCommandAddArgBuffer(cmd, &buf);
 
         ATTRIBUTE_FALLTHROUGH;
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:

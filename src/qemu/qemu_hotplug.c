@@ -2751,8 +2751,6 @@ qemuDomainAttachShmemDevice(virQEMUDriverPtr driver,
         if (!(props = qemuBuildShmemBackendMemProps(shmem)))
             goto cleanup;
 
-        if (virAsprintf(&memAlias, "shmmem-%s", shmem->info.alias) < 0)
-            goto cleanup;
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -2762,12 +2760,8 @@ qemuDomainAttachShmemDevice(virQEMUDriverPtr driver,
                                      &shmem->server.chr) < 0)
             goto exit_monitor;
     } else {
-        if (qemuMonitorAddObjectType(priv->mon, "memory-backend-file",
-                                     memAlias, props) < 0) {
-            props = NULL;
+        if (qemuMonitorAddObject(priv->mon, &props, &memAlias) < 0)
             goto exit_monitor;
-        }
-        props = NULL;
     }
 
     release_backing = true;
