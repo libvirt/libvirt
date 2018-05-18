@@ -8,6 +8,7 @@
       <live/>
       <uri_transports>
         <uri_transport>tcp</uri_transport>
+        <uri_transport>rdma</uri_transport>
       </uri_transports>
     </migration_features>
     <topology>
