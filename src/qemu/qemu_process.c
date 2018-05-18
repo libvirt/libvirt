@@ -32,6 +32,8 @@
 # include <sys/cpuset.h>
 #endif
 
+#include <sys/utsname.h>
+
 #include "qemu_process.h"
 #include "qemu_processpriv.h"
 #include "qemu_alias.h"
@@ -4283,17 +4285,21 @@ qemuLogOperation(virDomainObjPtr vm,
     int qemuVersion = virQEMUCapsGetVersion(priv->qemuCaps);
     const char *package = virQEMUCapsGetPackage(priv->qemuCaps);
     char *hostname = virGetHostname();
+    struct utsname uts;
+
+    uname(&uts);
 
     if ((timestamp = virTimeStringNow()) == NULL)
         goto cleanup;
 
     if (qemuDomainLogContextWrite(logCtxt,
-                                  "%s: %s %s, qemu version: %d.%d.%d%s, hostname: %s\n",
+                                  "%s: %s %s, qemu version: %d.%d.%d%s, kernel: %s, hostname: %s\n",
                                   timestamp, msg, VIR_LOG_VERSION_STRING,
                                   (qemuVersion / 1000000) % 1000,
                                   (qemuVersion / 1000) % 1000,
                                   qemuVersion % 1000,
                                   package ? package : "",
+                                  uts.release,
                                   hostname ? hostname : "") < 0)
         goto cleanup;
 
