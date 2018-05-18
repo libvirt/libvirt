@@ -421,10 +421,10 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     char *devstr = NULL;
     char *drivestr = NULL;
     char *drivealias = NULL;
+    char *prmgrAlias = NULL;
     bool driveAdded = false;
     bool secobjAdded = false;
     bool encobjAdded = false;
-    bool prmgrAdded = false;
     bool prdStarted = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virJSONValuePtr secobjProps = NULL;
@@ -504,15 +504,9 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         encobjAdded = true;
     }
 
-    if (prmgrProps) {
-        rv = qemuMonitorAddObjectType(priv->mon, "pr-manager-helper",
-                                      disk->src->pr->mgralias,
-                                      prmgrProps);
-        prmgrProps = NULL; /* qemuMonitorAddObjectType consumes */
-        if (rv < 0)
-            goto exit_monitor;
-        prmgrAdded = true;
-    }
+    if (prmgrProps &&
+        qemuMonitorAddObject(priv->mon, &prmgrProps, &prmgrAlias) < 0)
+        goto exit_monitor;
 
     if (qemuMonitorAddDrive(priv->mon, drivestr) < 0)
         goto exit_monitor;
@@ -536,6 +530,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     virJSONValueFree(encobjProps);
     virJSONValueFree(secobjProps);
     qemuDomainSecretDiskDestroy(disk);
+    VIR_FREE(prmgrAlias);
     VIR_FREE(drivealias);
     VIR_FREE(drivestr);
     VIR_FREE(devstr);
@@ -552,8 +547,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         ignore_value(qemuMonitorDelObject(priv->mon, secinfo->s.aes.alias));
     if (encobjAdded)
         ignore_value(qemuMonitorDelObject(priv->mon, encinfo->s.aes.alias));
-    if (prmgrAdded)
-        ignore_value(qemuMonitorDelObject(priv->mon, disk->src->pr->mgralias));
+    if (prmgrAlias)
+        ignore_value(qemuMonitorDelObject(priv->mon, prmgrAlias));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -2;
     virErrorRestore(&orig_err);

@@ -9725,18 +9725,11 @@ int
 qemuBuildPRManagerInfoProps(const virDomainDiskDef *disk,
                             virJSONValuePtr *propsret)
 {
-    int ret = -1;
-
-    *propsret = NULL;
-
-    if (virJSONValueObjectCreate(propsret,
-                                 "s:path", disk->src->pr->path,
-                                 NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    return ret;
+    return qemuMonitorCreateObjectProps(propsret,
+                                        "pr-manager-helper",
+                                        disk->src->pr->mgralias,
+                                        "s:path", disk->src->pr->path,
+                                        NULL);
 }
 
 
@@ -9744,10 +9737,10 @@ static int
 qemuBuildMasterPRCommandLine(virCommandPtr cmd,
                              const virDomainDef *def)
 {
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     bool managedAdded = false;
     virJSONValuePtr props = NULL;
-    char *tmp = NULL;
     int ret = -1;
 
     for (i = 0; i < def->ndisks; i++) {
@@ -9766,19 +9759,16 @@ qemuBuildMasterPRCommandLine(virCommandPtr cmd,
         if (qemuBuildPRManagerInfoProps(disk, &props) < 0)
             goto cleanup;
 
-        if (!(tmp = virQEMUBuildObjectCommandlineFromJSONType("pr-manager-helper",
-                                                              disk->src->pr->mgralias,
-                                                              props)))
+        if (virQEMUBuildObjectCommandlineFromJSON(&buf, props) < 0)
             goto cleanup;
-        virJSONValueFree(props);
-        props = NULL;
 
-        virCommandAddArgList(cmd, "-object", tmp, NULL);
-        VIR_FREE(tmp);
+        virCommandAddArg(cmd, "-object");
+        virCommandAddArgBuffer(cmd, &buf);
     }
 
     ret = 0;
  cleanup:
+    virBufferFreeAndReset(&buf);
     virJSONValueFree(props);
     return ret;
 }
