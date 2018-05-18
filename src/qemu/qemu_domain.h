@@ -442,6 +442,15 @@ struct _qemuDomainChrSourcePrivate {
 };
 
 
+typedef struct _qemuDomainVsockPrivate qemuDomainVsockPrivate;
+typedef qemuDomainVsockPrivate *qemuDomainVsockPrivatePtr;
+struct _qemuDomainVsockPrivate {
+    virObject parent;
+
+    virTristateBool maybe;
+};
+
+
 typedef enum {
     QEMU_PROCESS_EVENT_WATCHDOG = 0,
     QEMU_PROCESS_EVENT_GUESTPANIC,
