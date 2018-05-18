@@ -1412,8 +1412,11 @@ mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version} libvirt-docs
 %ifarch %{power64} s390x x86_64 ia64 alpha sparc64
 mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes.stp \
    $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes-64.stp
+
+    %if %{with_qemu}
 mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
    $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes-64.stp
+    %endif
 %endif
 
 %check
@@ -1994,8 +1997,10 @@ exit 0
 %{_bindir}/virt-host-validate
 
 %{_datadir}/systemtap/tapset/libvirt_probes*.stp
-%{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
 %{_datadir}/systemtap/tapset/libvirt_functions.stp
+%if %{with_qemu}
+%{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
+%endif
 
 %if %{with_bash_completion}
 %{_datadir}/bash-completion/completions/virsh
