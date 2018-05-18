@@ -2936,7 +2936,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
 
 
 /**
- * qemuBuildMemoryBackendStr:
+ * qemuBuildMemoryBackendProps:
  * @backendProps: [out] constructed object
  * @backendType: [out] type of the backennd used
  * @cfg: qemu driver config object
@@ -2962,14 +2962,14 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
  *         -1 on error.
  */
 int
-qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
-                          const char **backendType,
-                          virQEMUDriverConfigPtr cfg,
-                          virQEMUCapsPtr qemuCaps,
-                          virDomainDefPtr def,
-                          virDomainMemoryDefPtr mem,
-                          virBitmapPtr autoNodeset,
-                          bool force)
+qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
+                            const char **backendType,
+                            virQEMUDriverConfigPtr cfg,
+                            virQEMUCapsPtr qemuCaps,
+                            virDomainDefPtr def,
+                            virDomainMemoryDefPtr mem,
+                            virBitmapPtr autoNodeset,
+                            bool force)
 {
     virDomainNumatuneMemMode mode;
     const long system_page_size = virGetSystemPageSizeKB();
@@ -3220,8 +3220,8 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
     mem.targetNode = cell;
     mem.info.alias = alias;
 
-    if ((rc = qemuBuildMemoryBackendStr(&props, &backendType, cfg, priv->qemuCaps,
-                                        def, &mem, priv->autoNodeset, false)) < 0)
+    if ((rc = qemuBuildMemoryBackendProps(&props, &backendType, cfg, priv->qemuCaps,
+                                          def, &mem, priv->autoNodeset, false)) < 0)
         goto cleanup;
 
     if (!(*backendStr = virQEMUBuildObjectCommandlineFromJSON(backendType,
@@ -3259,8 +3259,8 @@ qemuBuildMemoryDimmBackendStr(virDomainMemoryDefPtr mem,
     if (virAsprintf(&alias, "mem%s", mem->info.alias) < 0)
         goto cleanup;
 
-    if (qemuBuildMemoryBackendStr(&props, &backendType, cfg, priv->qemuCaps,
-                                  def, mem, priv->autoNodeset, true) < 0)
+    if (qemuBuildMemoryBackendProps(&props, &backendType, cfg, priv->qemuCaps,
+                                    def, mem, priv->autoNodeset, true) < 0)
         goto cleanup;
 
     ret = virQEMUBuildObjectCommandlineFromJSON(backendType, alias, props);

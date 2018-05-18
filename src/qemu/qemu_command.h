@@ -119,14 +119,14 @@ int qemuBuildControllerDevStr(const virDomainDef *domainDef,
                               char **devstr,
                               int *nusbcontroller);
 
-int qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
-                              const char **backendType,
-                              virQEMUDriverConfigPtr cfg,
-                              virQEMUCapsPtr qemuCaps,
-                              virDomainDefPtr def,
-                              virDomainMemoryDefPtr mem,
-                              virBitmapPtr autoNodeset,
-                              bool force);
+int qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
+                                const char **backendType,
+                                virQEMUDriverConfigPtr cfg,
+                                virQEMUCapsPtr qemuCaps,
+                                virDomainDefPtr def,
+                                virDomainMemoryDefPtr mem,
+                                virBitmapPtr autoNodeset,
+                                bool force);
 
 char *qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem);
 
