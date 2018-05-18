@@ -2938,7 +2938,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
 /**
  * qemuBuildMemoryBackendProps:
  * @backendProps: [out] constructed object
- * @backendType: [out] type of the backennd used
+ * @alias: alias of the device
  * @cfg: qemu driver config object
  * @qemuCaps: qemu capabilities object
  * @def: domain definition object
@@ -2963,7 +2963,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
  */
 int
 qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
-                            const char **backendType,
+                            const char *alias,
                             virQEMUDriverConfigPtr cfg,
                             virQEMUCapsPtr qemuCaps,
                             virDomainDefPtr def,
@@ -2971,6 +2971,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
                             virBitmapPtr autoNodeset,
                             bool force)
 {
+    const char *backendType = "memory-backend-file";
     virDomainNumatuneMemMode mode;
     const long system_page_size = virGetSystemPageSizeKB();
     virDomainMemoryAccess memAccess = mem->access;
@@ -2993,7 +2994,6 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
      * @useHugepage. */
 
     *backendProps = NULL;
-    *backendType = NULL;
 
     if (mem->targetNode >= 0) {
         /* memory devices could provide a invalid guest node */
@@ -3082,7 +3082,6 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
 
     if (useHugepage || mem->nvdimmPath || memAccess ||
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
-        *backendType = "memory-backend-file";
 
         if (useHugepage) {
             if (qemuGetDomainHupageMemPath(def, cfg, pagesize, &memPath) < 0)
@@ -3135,7 +3134,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
             break;
         }
     } else {
-        *backendType = "memory-backend-ram";
+        backendType = "memory-backend-ram";
     }
 
     if (virJSONValueObjectAdd(props, "U:size", mem->size * 1024, NULL) < 0)
@@ -3169,13 +3168,13 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         ret = 1;
     } else {
         /* otherwise check the required capability */
-        if (STREQ(*backendType, "memory-backend-file") &&
+        if (STREQ(backendType, "memory-backend-file") &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
                              "memory-backend-file object"));
             goto cleanup;
-        } else if (STREQ(*backendType, "memory-backend-ram") &&
+        } else if (STREQ(backendType, "memory-backend-ram") &&
                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
@@ -3186,8 +3185,9 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         ret = 0;
     }
 
-    *backendProps = props;
-    props = NULL;
+    if (!(*backendProps = qemuMonitorCreateObjectPropsWrap(backendType, alias,
+                                                           &props)))
+        ret = -1;
 
  cleanup:
     virJSONValueFree(props);
@@ -3201,11 +3201,10 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
                               virQEMUDriverConfigPtr cfg,
                               size_t cell,
                               qemuDomainObjPrivatePtr priv,
-                              char **backendStr)
+                              virBufferPtr buf)
 {
     virJSONValuePtr props = NULL;
     char *alias = NULL;
-    const char *backendType;
     int ret = -1;
     int rc;
     virDomainMemoryDef mem = { 0 };
@@ -3215,18 +3214,15 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
     if (virAsprintf(&alias, "ram-node%zu", cell) < 0)
         goto cleanup;
 
-    *backendStr = NULL;
     mem.size = memsize;
     mem.targetNode = cell;
     mem.info.alias = alias;
 
-    if ((rc = qemuBuildMemoryBackendProps(&props, &backendType, cfg, priv->qemuCaps,
+    if ((rc = qemuBuildMemoryBackendProps(&props, alias, cfg, priv->qemuCaps,
                                           def, &mem, priv->autoNodeset, false)) < 0)
         goto cleanup;
 
-    if (!(*backendStr = virQEMUBuildObjectCommandlineFromJSONType(backendType,
-                                                                  alias,
-                                                                  props)))
+    if (virQEMUBuildObjectCommandlineFromJSON(buf, props) < 0)
         goto cleanup;
 
     ret = rc;
@@ -3239,31 +3235,34 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
 }
 
 
-static char *
-qemuBuildMemoryDimmBackendStr(virDomainMemoryDefPtr mem,
+static int
+qemuBuildMemoryDimmBackendStr(virBufferPtr buf,
+                              virDomainMemoryDefPtr mem,
                               virDomainDefPtr def,
                               virQEMUDriverConfigPtr cfg,
                               qemuDomainObjPrivatePtr priv)
 {
     virJSONValuePtr props = NULL;
     char *alias = NULL;
-    const char *backendType;
-    char *ret = NULL;
+    int ret = -1;
 
     if (!mem->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("memory device alias is not assigned"));
-        return NULL;
+        return -1;
     }
 
     if (virAsprintf(&alias, "mem%s", mem->info.alias) < 0)
         goto cleanup;
 
-    if (qemuBuildMemoryBackendProps(&props, &backendType, cfg, priv->qemuCaps,
+    if (qemuBuildMemoryBackendProps(&props, alias, cfg, priv->qemuCaps,
                                     def, mem, priv->autoNodeset, true) < 0)
         goto cleanup;
 
-    ret = virQEMUBuildObjectCommandlineFromJSONType(backendType, alias, props);
+    if (virQEMUBuildObjectCommandlineFromJSON(buf, props) < 0)
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
     VIR_FREE(alias);
@@ -7392,7 +7391,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *cpumask = NULL, *tmpmask = NULL, *next = NULL;
-    char **nodeBackends = NULL;
+    virBufferPtr *nodeBackends = NULL;
     bool needBackend = false;
     int rc;
     int ret = -1;
@@ -7453,8 +7452,12 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     for (i = 0; i < ncells; i++) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
+
+            if (VIR_ALLOC(nodeBackends[i]) < 0)
+                goto cleanup;
+
             if ((rc = qemuBuildMemoryCellBackendStr(def, cfg, i, priv,
-                                                    &nodeBackends[i])) < 0)
+                                                    nodeBackends[i])) < 0)
                 goto cleanup;
 
             if (rc == 0)
@@ -7486,8 +7489,10 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
             goto cleanup;
         }
 
-        if (needBackend)
-            virCommandAddArgList(cmd, "-object", nodeBackends[i], NULL);
+        if (needBackend) {
+            virCommandAddArg(cmd, "-object");
+            virCommandAddArgBuffer(cmd, nodeBackends[i]);
+        }
 
         virCommandAddArg(cmd, "-numa");
         virBufferAsprintf(&buf, "node,nodeid=%zu", i);
@@ -7550,7 +7555,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
     if (nodeBackends) {
         for (i = 0; i < ncells; i++)
-            VIR_FREE(nodeBackends[i]);
+            virBufferFreeAndReset(nodeBackends[i]);
 
         VIR_FREE(nodeBackends);
     }
@@ -7571,21 +7576,20 @@ qemuBuildMemoryDeviceCommandLine(virCommandPtr cmd,
     /* memory hotplug requires NUMA to be enabled - we already checked
      * that memory devices are present only when NUMA is */
     for (i = 0; i < def->nmems; i++) {
-        char *backStr;
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
         char *dimmStr;
 
-        if (!(backStr = qemuBuildMemoryDimmBackendStr(def->mems[i], def,
-                                                      cfg, priv)))
+        if (qemuBuildMemoryDimmBackendStr(&buf, def->mems[i], def, cfg, priv) < 0)
             return -1;
 
-        if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i]))) {
-            VIR_FREE(backStr);
+        virCommandAddArg(cmd, "-object");
+        virCommandAddArgBuffer(cmd, &buf);
+
+        if (!(dimmStr = qemuBuildMemoryDeviceStr(def->mems[i])))
             return -1;
-        }
 
-        virCommandAddArgList(cmd, "-object", backStr, "-device", dimmStr, NULL);
+        virCommandAddArgList(cmd, "-device", dimmStr, NULL);
 
-        VIR_FREE(backStr);
         VIR_FREE(dimmStr);
     }
 

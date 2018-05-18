@@ -2098,7 +2098,6 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     unsigned long long newmem = oldmem + mem->size;
     char *devstr = NULL;
     char *objalias = NULL;
-    const char *backendType;
     bool objAdded = false;
     bool teardownlabel = false;
     bool teardowncgroup = false;
@@ -2107,7 +2106,6 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     virObjectEventPtr event;
     int id;
     int ret = -1;
-    int rv;
 
     qemuDomainMemoryDeviceAlignSize(vm->def, mem);
 
@@ -2128,7 +2126,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildMemoryDeviceStr(mem)))
         goto cleanup;
 
-    if (qemuBuildMemoryBackendProps(&props, &backendType, cfg,
+    if (qemuBuildMemoryBackendProps(&props, objalias, cfg,
                                     priv->qemuCaps, vm->def, mem, NULL, true) < 0)
         goto cleanup;
 
@@ -2154,9 +2152,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
         goto removedef;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    rv = qemuMonitorAddObjectType(priv->mon, backendType, objalias, props);
-    props = NULL; /* qemuMonitorAddObjectType consumes */
-    if (rv < 0)
+    if (qemuMonitorAddObject(priv->mon, &props, NULL) < 0)
         goto exit_monitor;
     objAdded = true;
 

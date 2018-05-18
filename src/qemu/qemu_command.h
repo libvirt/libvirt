@@ -120,7 +120,7 @@ int qemuBuildControllerDevStr(const virDomainDef *domainDef,
                               int *nusbcontroller);
 
 int qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
-                                const char **backendType,
+                                const char *alias,
                                 virQEMUDriverConfigPtr cfg,
                                 virQEMUCapsPtr qemuCaps,
                                 virDomainDefPtr def,
