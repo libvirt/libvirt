@@ -241,6 +241,29 @@ virQEMUBuildCommandLineJSON(virJSONValuePtr value,
 }
 
 
+static int
+virQEMUBuildObjectCommandlineFromJSONInternal(virBufferPtr buf,
+                                              const char *type,
+                                              const char *alias,
+                                              virJSONValuePtr props)
+{
+    if (!type || !alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing 'type' or 'alias' field of QOM 'object'"));
+        return -1;
+    }
+
+    virBufferAsprintf(buf, "%s,id=%s,", type, alias);
+
+    if (props &&
+        virQEMUBuildCommandLineJSON(props, buf,
+                                    virQEMUBuildCommandLineJSONArrayBitmap) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 char *
 virQEMUBuildObjectCommandlineFromJSONType(const char *type,
                                           const char *alias,
@@ -249,10 +272,7 @@ virQEMUBuildObjectCommandlineFromJSONType(const char *type,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *ret = NULL;
 
-    virBufferAsprintf(&buf, "%s,id=%s,", type, alias);
-
-    if (virQEMUBuildCommandLineJSON(props, &buf,
-                                    virQEMUBuildCommandLineJSONArrayBitmap) < 0)
+    if (virQEMUBuildObjectCommandlineFromJSONInternal(&buf, type, alias, props) < 0)
         goto cleanup;
 
     if (virBufferCheckError(&buf) < 0)
@@ -263,6 +283,18 @@ virQEMUBuildObjectCommandlineFromJSONType(const char *type,
  cleanup:
     virBufferFreeAndReset(&buf);
     return ret;
+}
+
+
+int
+virQEMUBuildObjectCommandlineFromJSON(virBufferPtr buf,
+                                      virJSONValuePtr objprops)
+{
+    const char *type = virJSONValueObjectGetString(objprops, "qom-type");
+    const char *alias = virJSONValueObjectGetString(objprops, "id");
+    virJSONValuePtr props = virJSONValueObjectGetObject(objprops, "props");
+
+    return virQEMUBuildObjectCommandlineFromJSONInternal(buf, type, alias, props);
 }
 
 
