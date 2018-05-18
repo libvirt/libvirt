@@ -30,7 +30,7 @@ testCapsInit(void)
     if (caps == NULL)
         return;
 
-    virCapabilitiesAddHostMigrateTransport(caps, "esx");
+    virCapabilitiesAddHostMigrateTransport(caps, "vpxmigr");
 
     /* i686 guest */
     guest =

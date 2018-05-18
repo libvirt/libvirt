@@ -160,7 +160,7 @@
           <oneOrMore>
             <element name='uri_transport'>
               <choice>
-                <value>esx</value>
+                <value>vpxmigr</value>
                 <value>tcp</value>
               </choice>
             </element>
