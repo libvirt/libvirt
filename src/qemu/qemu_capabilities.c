@@ -2496,6 +2496,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "loadparm", QEMU_CAPS_LOADPARM },
     { "vnc", "vnc", QEMU_CAPS_VNC_MULTI_SERVERS },
     { "chardev", "reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
+    { "sandbox", "enable", QEMU_CAPS_SECCOMP_SANDBOX },
     { "sandbox", "elevateprivileges", QEMU_CAPS_SECCOMP_BLACKLIST },
 };
 
