@@ -1181,6 +1181,51 @@ get_files(vahControl * ctl)
         }
     }
 
+    if (ctl->def->tpm) {
+        char *shortName = NULL;
+        const char *tpmpath = NULL;
+
+        switch (ctl->def->tpm->type) {
+        case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+            shortName = virDomainDefGetShortName(ctl->def);
+
+            switch (ctl->def->tpm->version) {
+            case VIR_DOMAIN_TPM_VERSION_1_2:
+                tpmpath = "tpm1.2";
+                break;
+            case VIR_DOMAIN_TPM_VERSION_2_0:
+                tpmpath = "tpm2";
+                break;
+            case VIR_DOMAIN_TPM_VERSION_DEFAULT:
+            case VIR_DOMAIN_TPM_VERSION_LAST:
+                break;
+            }
+
+            /* Unix socket for QEMU and swtpm to use */
+            virBufferAsprintf(&buf,
+                "  \"/run/libvirt/qemu/swtpm/%s-swtpm.sock\" rw,\n",
+                shortName);
+            /* Paths for swtpm to use: give it access to its state
+             * directory, log, and PID files.
+             */
+            virBufferAsprintf(&buf,
+                "  \"%s/lib/libvirt/swtpm/%s/%s/**\" rw,\n",
+                LOCALSTATEDIR, uuidstr, tpmpath);
+            virBufferAsprintf(&buf,
+                "  \"%s/log/swtpm/libvirt/qemu/%s-swtpm.log\" a,\n",
+                LOCALSTATEDIR, ctl->def->name);
+            virBufferAsprintf(&buf,
+                "  \"/run/libvirt/qemu/swtpm/%s-swtpm.pid\" rw,\n",
+                shortName);
+
+            VIR_FREE(shortName);
+            break;
+        case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        case VIR_DOMAIN_TPM_TYPE_LAST:
+            break;
+        }
+    }
+
     if (ctl->def->virtType == VIR_DOMAIN_VIRT_KVM) {
         for (i = 0; i < ctl->def->nnets; i++) {
             virDomainNetDefPtr net = ctl->def->nets[i];

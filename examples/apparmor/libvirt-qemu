@@ -158,6 +158,11 @@
   /usr/{lib,lib64}/qemu/*.so mr,
   /usr/lib/@{multiarch}/qemu/*.so mr,
 
+  # swtpm
+  /{usr/,}bin/swtpm rmix,
+  /usr/{lib,lib64}/libswtpm_libtpms.so mr,
+  /usr/lib/@{multiarch}/libswtpm_libtpms.so mr,
+
   # for save and resume
   /{usr/,}bin/dash rmix,
   /{usr/,}bin/dd rmix,
