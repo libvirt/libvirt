@@ -129,7 +129,7 @@
       </element>
     </zeroOrMore>
     <zeroOrMore>
-      <ref name='pagesElem'/>
+      <ref name='pagesHost'/>
     </zeroOrMore>
   </define>
 
@@ -203,7 +203,7 @@
       </optional>
 
       <zeroOrMore>
-        <ref name='pagesElem'/>
+        <ref name='pagesNuma'/>
       </zeroOrMore>
 
       <optional>
@@ -484,17 +484,25 @@
     </data>
   </define>
 
-  <define name='pagesElem'>
+  <define name='pagesHost'>
     <element name='pages'>
-      <optional>
-        <attribute name='unit'>
-          <ref name='unit'/>
-        </attribute>
-      </optional>
-      <attribute name='size'>
-        <ref name='unsignedInt'/>
-      </attribute>
+      <ref name='pagesElem'/>
+    </element>
+  </define>
+  <define name='pagesNuma'>
+    <element name='pages'>
+      <ref name='pagesElem'/>
       <ref name='unsignedInt'/>
     </element>
+  </define>
+  <define name='pagesElem'>
+    <optional>
+      <attribute name='unit'>
+        <ref name='unit'/>
+      </attribute>
+    </optional>
+    <attribute name='size'>
+      <ref name='unsignedInt'/>
+    </attribute>
   </define>
 </grammar>

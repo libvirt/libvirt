@@ -24,6 +24,9 @@
       <feature name='acpi'/>
       <feature name='ds'/>
       <feature name='vme'/>
+      <pages unit='KiB' size='4'/>
+      <pages unit='KiB' size='2048'/>
+      <pages unit='KiB' size='1048576'/>
     </cpu>
     <power_management>
       <suspend_mem/>
