@@ -578,6 +578,7 @@
           <text/>
         </element>
       </optional>
+      <ref name='blockData'/>
     </element>
   </define>
 
@@ -585,6 +586,18 @@
     <element name='size'>
       <ref name='unsignedLong'/>
     </element>
+    <ref name='blockData'/>
+  </define>
+
+  <define name='blockData'>
+    <optional>
+      <element name='logical_block_size'>
+        <ref name='unsignedLong'/>
+      </element>
+      <element name='num_blocks'>
+        <ref name='unsignedLong'/>
+      </element>
+    </optional>
   </define>
 
   <define name='capdrm'>

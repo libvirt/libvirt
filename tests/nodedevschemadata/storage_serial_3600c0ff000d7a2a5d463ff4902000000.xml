@@ -13,5 +13,7 @@
     <vendor>HP</vendor>
     <serial>3600c0ff000d7a2a5d463ff4902000000</serial>
     <size>15626928128</size>
+    <logical_block_size>512</logical_block_size>
+    <num_blocks>30521344</num_blocks>
   </capability>
 </device>

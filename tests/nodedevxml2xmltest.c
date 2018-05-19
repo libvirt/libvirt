@@ -23,12 +23,34 @@ testCompareXMLToXMLFiles(const char *xml)
     char *actual = NULL;
     int ret = -1;
     virNodeDeviceDefPtr dev = NULL;
+    virNodeDevCapsDefPtr caps;
 
     if (virTestLoadFile(xml, &xmlData) < 0)
         goto fail;
 
     if (!(dev = virNodeDeviceDefParseString(xmlData, EXISTING_DEVICE, NULL)))
         goto fail;
+
+    /* Calculate some things that are not read in */
+    for (caps = dev->caps; caps; caps = caps->next) {
+        virNodeDevCapDataPtr data = &caps->data;
+
+        if (caps->data.type == VIR_NODE_DEV_CAP_STORAGE) {
+            if (data->storage.flags & VIR_NODE_DEV_CAP_STORAGE_REMOVABLE) {
+                if (data->storage.flags &
+                    VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE) {
+                    data->storage.logical_block_size = 2048;
+                    data->storage.num_blocks =
+                        data->storage.removable_media_size /
+                        data->storage.logical_block_size;
+                }
+            } else {
+                data->storage.logical_block_size = 512;
+                data->storage.num_blocks = data->storage.size /
+                                           data->storage.logical_block_size;
+            }
+        }
+    }
 
     if (!(actual = virNodeDeviceDefFormat(dev)))
         goto fail;

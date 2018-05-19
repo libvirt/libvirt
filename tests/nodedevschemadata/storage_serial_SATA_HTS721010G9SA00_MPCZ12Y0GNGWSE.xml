@@ -8,5 +8,7 @@
     <model>HTS721010G9SA00</model>
     <vendor>ATA</vendor>
     <size>100030242816</size>
+    <logical_block_size>512</logical_block_size>
+    <num_blocks>195371568</num_blocks>
   </capability>
 </device>
