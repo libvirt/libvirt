@@ -5,6 +5,7 @@
       <arch>x86_64</arch>
       <model>SandyBridge</model>
       <vendor>Intel</vendor>
+      <microcode version='36'/>
       <topology sockets='1' cores='2' threads='2'/>
       <feature name='osxsave'/>
       <feature name='pdcm'/>
