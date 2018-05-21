@@ -442,6 +442,11 @@ typedef int
                                  unsigned int flags);
 
 typedef int
+(*virDrvDomainDetachDeviceAlias)(virDomainPtr domain,
+                                 const char *alias,
+                                 unsigned int flags);
+
+typedef int
 (*virDrvDomainGetAutostart)(virDomainPtr domain,
                             int *autostart);
 
@@ -1392,6 +1397,7 @@ struct _virHypervisorDriver {
     virDrvDomainDetachDevice domainDetachDevice;
     virDrvDomainDetachDeviceFlags domainDetachDeviceFlags;
     virDrvDomainUpdateDeviceFlags domainUpdateDeviceFlags;
+    virDrvDomainDetachDeviceAlias domainDetachDeviceAlias;
     virDrvDomainGetAutostart domainGetAutostart;
     virDrvDomainSetAutostart domainSetAutostart;
     virDrvDomainGetSchedulerType domainGetSchedulerType;

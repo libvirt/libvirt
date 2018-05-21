@@ -785,4 +785,9 @@ LIBVIRT_4.1.0 {
         virStoragePoolLookupByTargetPath;
 } LIBVIRT_3.9.0;
 
+LIBVIRT_4.4.0 {
+    global:
+        virDomainDetachDeviceAlias;
+} LIBVIRT_4.1.0;
+
 # .... define new API here using predicted next version number ....

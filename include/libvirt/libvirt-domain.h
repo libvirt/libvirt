@@ -2022,6 +2022,9 @@ int virDomainDetachDeviceFlags(virDomainPtr domain,
 int virDomainUpdateDeviceFlags(virDomainPtr domain,
                                const char *xml, unsigned int flags);
 
+int virDomainDetachDeviceAlias(virDomainPtr domain,
+                               const char *alias, unsigned int flags);
+
 typedef struct _virDomainStatsRecord virDomainStatsRecord;
 typedef virDomainStatsRecord *virDomainStatsRecordPtr;
 struct _virDomainStatsRecord {
