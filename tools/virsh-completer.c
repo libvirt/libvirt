@@ -27,6 +27,7 @@
 #include "virsh-pool.h"
 #include "virsh-util.h"
 #include "internal.h"
+#include "virutil.h"
 #include "viralloc.h"
 #include "virstring.h"
 #include "virxml.h"
@@ -569,4 +570,74 @@ virshSnapshotNameCompleter(vshControl *ctl,
     VIR_FREE(ret);
     virshDomainFree(dom);
     return NULL;
+}
+
+char **
+virshAllocpagesPagesizeCompleter(vshControl *ctl,
+                        const vshCmd *cmd ATTRIBUTE_UNUSED,
+                        unsigned int flags)
+{
+    unsigned long long byteval = 0;
+    xmlXPathContextPtr ctxt = NULL;
+    virshControlPtr priv = ctl->privData;
+    unsigned int npages = 0;
+    xmlNodePtr *pages = NULL;
+    double size = 0;
+    size_t i = 0;
+    const char *suffix = NULL;
+    char *pagesize = NULL;
+    char *cap_xml = NULL;
+    char **ret = NULL;
+    char *unit = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        goto error;
+
+    if (!(cap_xml = virConnectGetCapabilities(priv->conn)))
+        goto error;
+
+    if (!(virXMLParseStringCtxt(cap_xml, _("capabilities"), &ctxt)))
+        goto error;
+
+    npages = virXPathNodeSet("/capabilities/host/cpu/pages", ctxt, &pages);
+    if (npages <= 0)
+        goto error;
+
+    if (VIR_ALLOC_N(ret, npages + 1) < 0)
+        goto error;
+
+    for (i = 0; i < npages; i++) {
+        VIR_FREE(pagesize);
+        VIR_FREE(unit);
+        pagesize = virXMLPropString(pages[i], "size");
+        unit = virXMLPropString(pages[i], "unit");
+        if (virStrToLong_ull(pagesize, NULL, 10, &byteval) < 0)
+            goto error;
+        if (virScaleInteger(&byteval, unit, 1024, UINT_MAX) < 0)
+            goto error;
+        size = vshPrettyCapacity(byteval, &suffix);
+        if (virAsprintf(&ret[i], "%.0f%s", size, suffix) < 0)
+            goto error;
+    }
+
+ cleanup:
+    xmlXPathFreeContext(ctxt);
+    for (i = 0; i < npages; i++)
+        VIR_FREE(pages[i]);
+    VIR_FREE(pages);
+    VIR_FREE(cap_xml);
+    VIR_FREE(pagesize);
+    VIR_FREE(unit);
+
+    return ret;
+
+ error:
+    if (ret) {
+        for (i = 0; i < npages; i++)
+            VIR_FREE(ret[i]);
+    }
+    VIR_FREE(ret);
+    goto cleanup;
 }

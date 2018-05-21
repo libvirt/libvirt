@@ -74,4 +74,8 @@ char ** virshSnapshotNameCompleter(vshControl *ctl,
                                    const vshCmd *cmd,
                                    unsigned int flags);
 
+char ** virshAllocpagesPagesizeCompleter(vshControl *ctl,
+                                    const vshCmd *cmd,
+                                    unsigned int flags);
+
 #endif
