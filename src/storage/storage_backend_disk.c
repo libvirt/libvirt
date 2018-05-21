@@ -879,16 +879,17 @@ virStorageBackendDiskCreateVol(virStoragePoolObjPtr pool,
     char *partFormat = NULL;
     unsigned long long startOffset = 0, endOffset = 0;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+    virErrorPtr save_err;
     virCommandPtr cmd = virCommandNewArgList(PARTED,
                                              def->source.devices[0].path,
                                              "mkpart",
                                              "--script",
                                              NULL);
 
-    if (vol->target.encryption != NULL) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("storage pool does not support encrypted "
-                               "volumes"));
+    if (vol->target.encryption &&
+        vol->target.encryption->format != VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("storage pool only supports LUKS encrypted volumes"));
         goto cleanup;
     }
 
@@ -896,11 +897,14 @@ virStorageBackendDiskCreateVol(virStoragePoolObjPtr pool,
         goto cleanup;
     virCommandAddArg(cmd, partFormat);
 
-    if (virStorageBackendDiskPartBoundaries(pool, &startOffset,
-                                            &endOffset,
-                                            vol->target.capacity) != 0) {
+    /* If we're going to encrypt using LUKS, then we could need up to
+     * an extra 2MB for the LUKS header - so account for that now */
+    if (vol->target.encryption)
+        vol->target.capacity += 2 * 1024 * 1024;
+
+    if (virStorageBackendDiskPartBoundaries(pool, &startOffset, &endOffset,
+                                            vol->target.capacity) < 0)
         goto cleanup;
-    }
 
     virCommandAddArgFormat(cmd, "%lluB", startOffset);
     virCommandAddArgFormat(cmd, "%lluB", endOffset);
@@ -919,15 +923,15 @@ virStorageBackendDiskCreateVol(virStoragePoolObjPtr pool,
     VIR_FREE(vol->target.path);
 
     /* Fetch actual extent info, generate key */
-    if (virStorageBackendDiskReadPartitions(pool, vol) < 0) {
-        /* Best effort to remove the partition. Ignore any errors
-         * since we could be calling this with vol->target.path == NULL
-         */
-        virErrorPtr save_err = virSaveLastError();
-        ignore_value(virStorageBackendDiskDeleteVol(pool, vol, 0));
-        virSetError(save_err);
-        virFreeError(save_err);
-        goto cleanup;
+    if (virStorageBackendDiskReadPartitions(pool, vol) < 0)
+        goto error;
+
+    if (vol->target.encryption) {
+        /* Adjust the sizes to account for the LUKS header */
+        vol->target.capacity -= 2 * 1024 * 1024;
+        vol->target.allocation -= 2 * 1024 * 1024;
+        if (virStorageBackendCreateVolUsingQemuImg(pool, vol, NULL, 0) < 0)
+            goto error;
     }
 
     res = 0;
@@ -936,7 +940,18 @@ virStorageBackendDiskCreateVol(virStoragePoolObjPtr pool,
     VIR_FREE(partFormat);
     virCommandFree(cmd);
     return res;
+
+ error:
+    /* Best effort to remove the partition. Ignore any errors
+     * since we could be calling this with vol->target.path == NULL
+     */
+    save_err = virSaveLastError();
+    ignore_value(virStorageBackendDiskDeleteVol(pool, vol, 0));
+    virSetError(save_err);
+    virFreeError(save_err);
+    goto cleanup;
 }
+
 
 static int
 virStorageBackendDiskBuildVolFrom(virStoragePoolObjPtr pool,
