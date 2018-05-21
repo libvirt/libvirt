@@ -3112,6 +3112,17 @@ an offline domain, and like I<--live> I<--config> for a running domain.
 Note that older versions of virsh used I<--config> as an alias for
 I<--persistent>.
 
+=item B<detach-device-alias> I<domain> I<alias>
+[[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
+
+Detach a device with given I<alias> from the I<domain>.
+
+If I<--live> is specified, affect a running domain.
+If I<--config> is specified, affect the next startup of a persistent domain.
+If I<--current> is specified, affect the current domain state.
+Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive.
+
 =item B<detach-disk> I<domain> I<target>
 [[[I<--live>] [I<--config>] | [I<--current>]] | [I<--persistent>]]
 [I<--print-xml>]

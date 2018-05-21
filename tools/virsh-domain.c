@@ -11878,6 +11878,72 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
     return funcRet;
 }
 
+
+/*
+ * "detach-device-alias" command
+ */
+static const vshCmdInfo info_detach_device_alias[] = {
+    {.name = "help",
+     .data = N_("detach device from an alias")
+    },
+    {.name = "desc",
+     .data = N_("Detach device identified by the given alias from a domain")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_detach_device_alias[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "alias",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("device alias")
+    },
+    VIRSH_COMMON_OPT_DOMAIN_CONFIG,
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
+    VIRSH_COMMON_OPT_DOMAIN_CURRENT,
+    {.name = NULL}
+};
+
+static bool
+cmdDetachDeviceAlias(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    const char *alias = NULL;
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    bool ret = false;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "alias", &alias) < 0)
+        goto cleanup;
+
+    if (virDomainDetachDeviceAlias(dom, alias, flags) < 0) {
+        vshError(ctl, _("Failed to detach device with alias %s"), alias);
+        goto cleanup;
+    }
+
+    vshPrintExtra(ctl, "%s", _("Device detach request sent successfully\n"));
+    ret = true;
+
+ cleanup:
+    virshDomainFree(dom);
+    return ret;
+}
+
+
 /*
  * "update-device" command
  */
@@ -13992,6 +14058,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdDetachDevice,
      .opts = opts_detach_device,
      .info = info_detach_device,
+     .flags = 0
+    },
+    {.name = "detach-device-alias",
+     .handler = cmdDetachDeviceAlias,
+     .opts = opts_detach_device_alias,
+     .info = info_detach_device_alias,
      .flags = 0
     },
     {.name = "detach-disk",
