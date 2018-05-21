@@ -915,6 +915,11 @@ struct remote_domain_update_device_flags_args {
         remote_nonnull_string      xml;
         u_int                      flags;
 };
+struct remote_domain_detach_device_alias_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      alias;
+        u_int                      flags;
+};
 struct remote_domain_get_autostart_args {
         remote_nonnull_domain      dom;
 };
@@ -3269,4 +3274,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_MANAGED_SAVE_DEFINE_XML = 389,
         REMOTE_PROC_DOMAIN_SET_LIFECYCLE_ACTION = 390,
         REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_TARGET_PATH = 391,
+        REMOTE_PROC_DOMAIN_DETACH_DEVICE_ALIAS = 392,
 };

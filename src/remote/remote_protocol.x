@@ -1284,6 +1284,12 @@ struct remote_domain_update_device_flags_args {
     unsigned int flags;
 };
 
+struct remote_domain_detach_device_alias_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string alias;
+    unsigned int flags;
+};
+
 struct remote_domain_get_autostart_args {
     remote_nonnull_domain dom;
 };
@@ -6135,5 +6141,13 @@ enum remote_procedure {
      * @priority: high
      * @acl: storage_pool:getattr
      */
-    REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_TARGET_PATH = 391
+    REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_TARGET_PATH = 391,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_DETACH_DEVICE_ALIAS = 392
 };

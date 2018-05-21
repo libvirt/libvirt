@@ -8308,6 +8308,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainDetachDevice = remoteDomainDetachDevice, /* 0.3.0 */
     .domainDetachDeviceFlags = remoteDomainDetachDeviceFlags, /* 0.7.7 */
     .domainUpdateDeviceFlags = remoteDomainUpdateDeviceFlags, /* 0.8.0 */
+    .domainDetachDeviceAlias = remoteDomainDetachDeviceAlias, /* 4.4.0 */
     .domainGetAutostart = remoteDomainGetAutostart, /* 0.3.0 */
     .domainSetAutostart = remoteDomainSetAutostart, /* 0.3.0 */
     .domainGetSchedulerType = remoteDomainGetSchedulerType, /* 0.3.0 */
