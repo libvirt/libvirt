@@ -799,6 +799,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
 
         case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
         case VIR_DOMAIN_VIDEO_TYPE_GOP:
+        case VIR_DOMAIN_VIDEO_TYPE_NONE:
         case VIR_DOMAIN_VIDEO_TYPE_LAST:
             return 0;
         }
@@ -1510,7 +1511,8 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
             goto cleanup;
     }
 
-    if (def->nvideos > 0) {
+    if (def->nvideos > 0 &&
+        def->videos[0]->type != VIR_DOMAIN_VIDEO_TYPE_NONE) {
         /* Because the PIIX3 integrated IDE/USB controllers are
          * already at slot 1, when qemu looks for the first free slot
          * to place the VGA controller (which is always the first
@@ -1518,6 +1520,7 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
          * at slot 2.
          */
         virDomainVideoDefPtr primaryVideo = def->videos[0];
+
         if (virDeviceInfoPCIAddressWanted(&primaryVideo->info)) {
             memset(&tmp_addr, 0, sizeof(tmp_addr));
             tmp_addr.slot = 2;
@@ -2083,6 +2086,8 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
 
     /* Video devices */
     for (i = 0; i < def->nvideos; i++) {
+        if (def->videos[i]->type == VIR_DOMAIN_VIDEO_TYPE_NONE)
+            continue;
 
         if (!virDeviceInfoPCIAddressWanted(&def->videos[i]->info))
             continue;

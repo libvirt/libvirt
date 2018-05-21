@@ -590,7 +590,8 @@ VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "qxl",
               "parallels",
               "virtio",
-              "gop")
+              "gop",
+              "none")
 
 VIR_ENUM_IMPL(virDomainVideoVGAConf, VIR_DOMAIN_VIDEO_VGACONF_LAST,
               "io",
@@ -5096,22 +5097,30 @@ virDomainDefPostParseVideo(virDomainDefPtr def,
     if (def->nvideos == 0)
         return 0;
 
-    virDomainDeviceDef device = {
-        .type = VIR_DOMAIN_DEVICE_VIDEO,
-        .data.video = def->videos[0],
-    };
+    if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_NONE) {
+        /* we don't want to format any values we automatically fill in for
+         * videos into the XML, so clear them
+         */
+        virDomainVideoDefClear(def->videos[0]);
+        def->videos[0]->type = VIR_DOMAIN_VIDEO_TYPE_NONE;
+    } else {
+        virDomainDeviceDef device = {
+            .type = VIR_DOMAIN_DEVICE_VIDEO,
+            .data.video = def->videos[0],
+        };
 
-    /* Mark the first video as primary. If the user specified
-     * primary="yes", the parser already inserted the device at
-     * def->videos[0]
-     */
-    def->videos[0]->primary = true;
+        /* Mark the first video as primary. If the user specified
+         * primary="yes", the parser already inserted the device at
+         * def->videos[0]
+         */
+        def->videos[0]->primary = true;
 
-    /* videos[0] might have been added in AddImplicitDevices, after we've
-     * done the per-device post-parse */
-    if (virDomainDefPostParseDeviceIterator(def, &device,
-                                            NULL, opaque) < 0)
-        return -1;
+        /* videos[0] might have been added in AddImplicitDevices, after we've
+         * done the per-device post-parse */
+        if (virDomainDefPostParseDeviceIterator(def, &device,
+                                                NULL, opaque) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -5660,13 +5669,30 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
 
 
 static int
-virDomainVideoDefValidate(const virDomainVideoDef *video)
+virDomainVideoDefValidate(const virDomainVideoDef *video,
+                          const virDomainDef *def)
 {
+    size_t i;
+
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing video model and cannot determine default"));
         return -1;
     }
+
+    /* it doesn't make sense to pair video device type 'none' with any other
+     * types, there can be only a single video device in such case
+     */
+    for (i = 0; i < def->nvideos; i++) {
+        if (def->videos[i]->type == VIR_DOMAIN_VIDEO_TYPE_NONE &&
+            def->nvideos > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("a '%s' video type must be the only video device "
+                             "defined for the domain"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
@@ -5728,7 +5754,7 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
         return virDomainHostdevDefValidate(dev->data.hostdev);
 
     case VIR_DOMAIN_DEVICE_VIDEO:
-        return virDomainVideoDefValidate(dev->data.video);
+        return virDomainVideoDefValidate(dev->data.video, def);
 
     case VIR_DOMAIN_DEVICE_MEMORY:
         return virDomainMemoryDefValidate(dev->data.memory);
@@ -15038,6 +15064,7 @@ virDomainVideoDefaultRAM(const virDomainDef *def,
     case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
     case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
     case VIR_DOMAIN_VIDEO_TYPE_GOP:
+    case VIR_DOMAIN_VIDEO_TYPE_NONE:
     case VIR_DOMAIN_VIDEO_TYPE_LAST:
     default:
         return 0;

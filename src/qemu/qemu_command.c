@@ -105,7 +105,8 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "qxl",
               "", /* don't support parallels */
               "", /* no need for virtio */
-              "" /* don't support gop */);
+              "" /* don't support gop */,
+              "" /* 'none' doesn't make sense here */);
 
 VIR_ENUM_DECL(qemuDeviceVideo)
 
@@ -119,7 +120,8 @@ VIR_ENUM_IMPL(qemuDeviceVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "qxl-vga",
               "", /* don't support parallels */
               "virtio-vga",
-              "" /* don't support gop */);
+              "" /* don't support gop */,
+              "" /* 'none' doesn't make sense here */);
 
 VIR_ENUM_DECL(qemuDeviceVideoSecondary)
 
@@ -133,7 +135,8 @@ VIR_ENUM_IMPL(qemuDeviceVideoSecondary, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "qxl",
               "", /* don't support parallels */
               "virtio-gpu",
-              "" /* don't support gop */);
+              "" /* don't support gop */,
+              "" /* 'none' doesn't make sense here */);
 
 VIR_ENUM_DECL(qemuSoundCodec)
 
@@ -4450,6 +4453,9 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
     for (i = 0; i < def->nvideos; i++) {
         char *str = NULL;
         virDomainVideoDefPtr video = def->videos[i];
+
+        if (video->type == VIR_DOMAIN_VIDEO_TYPE_NONE)
+            continue;
 
         if (video->primary) {
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY)) {

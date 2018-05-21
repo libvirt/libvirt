@@ -3454,6 +3454,7 @@
                 <value>vbox</value>
                 <value>virtio</value>
                 <value>gop</value>
+                <value>none</value>
               </choice>
             </attribute>
             <group>
