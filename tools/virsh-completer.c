@@ -98,6 +98,7 @@ virshDomainInterfaceCompleter(vshControl *ctl,
     size_t i;
     unsigned int domainXMLFlags = 0;
     char **ret = NULL;
+    char **tmp = NULL;
 
     virCheckFlags(VIRSH_DOMAIN_INTERFACE_COMPLETER_MAC, NULL);
 
@@ -108,39 +109,35 @@ virshDomainInterfaceCompleter(vshControl *ctl,
         domainXMLFlags = VIR_DOMAIN_XML_INACTIVE;
 
     if (virshDomainGetXML(ctl, cmd, domainXMLFlags, &xmldoc, &ctxt) < 0)
-        goto error;
+        goto cleanup;
 
     ninterfaces = virXPathNodeSet("./devices/interface", ctxt, &interfaces);
     if (ninterfaces < 0)
-        goto error;
+        goto cleanup;
 
-    if (VIR_ALLOC_N(ret, ninterfaces + 1) < 0)
-        goto error;
+    if (VIR_ALLOC_N(tmp, ninterfaces + 1) < 0)
+        goto cleanup;
 
     for (i = 0; i < ninterfaces; i++) {
         ctxt->node = interfaces[i];
 
         if (!(flags & VIRSH_DOMAIN_INTERFACE_COMPLETER_MAC) &&
-            (ret[i] = virXPathString("string(./target/@dev)", ctxt)))
+            (tmp[i] = virXPathString("string(./target/@dev)", ctxt)))
             continue;
 
         /* In case we are dealing with inactive domain XML there's no
          * <target dev=''/>. Offer MAC addresses then. */
-        if (!(ret[i] = virXPathString("string(./mac/@address)", ctxt)))
-            goto error;
+        if (!(tmp[i] = virXPathString("string(./mac/@address)", ctxt)))
+            goto cleanup;
     }
 
+    VIR_STEAL_PTR(ret, tmp);
+ cleanup:
     VIR_FREE(interfaces);
     xmlFreeDoc(xmldoc);
     xmlXPathFreeContext(ctxt);
+    virStringListFree(tmp);
     return ret;
-
- error:
-    VIR_FREE(interfaces);
-    xmlFreeDoc(xmldoc);
-    xmlXPathFreeContext(ctxt);
-    virStringListFree(ret);
-    return NULL;
 }
 
 
@@ -155,6 +152,7 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
     xmlNodePtr *disks = NULL;
     int ndisks;
     size_t i;
+    char **tmp = NULL;
     char **ret = NULL;
 
     virCheckFlags(0, NULL);
@@ -163,32 +161,28 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
         return NULL;
 
     if (virshDomainGetXML(ctl, cmd, 0, &xmldoc, &ctxt) < 0)
-        goto error;
+        goto cleanup;
 
     ndisks = virXPathNodeSet("./devices/disk", ctxt, &disks);
     if (ndisks < 0)
-        goto error;
+        goto cleanup;
 
-    if (VIR_ALLOC_N(ret, ndisks + 1) < 0)
-        goto error;
+    if (VIR_ALLOC_N(tmp, ndisks + 1) < 0)
+        goto cleanup;
 
     for (i = 0; i < ndisks; i++) {
         ctxt->node = disks[i];
-        if (!(ret[i] = virXPathString("string(./target/@dev)", ctxt)))
-            goto error;
+        if (!(tmp[i] = virXPathString("string(./target/@dev)", ctxt)))
+            goto cleanup;
     }
 
+    VIR_STEAL_PTR(ret, tmp);
+ cleanup:
     VIR_FREE(disks);
     xmlFreeDoc(xmldoc);
     xmlXPathFreeContext(ctxt);
+    virStringListFree(tmp);
     return ret;
-
- error:
-    VIR_FREE(disks);
-    xmlFreeDoc(xmldoc);
-    xmlXPathFreeContext(ctxt);
-    virStringListFree(ret);
-    return NULL;
 }
 
 
