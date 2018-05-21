@@ -49,6 +49,7 @@ typedef enum {
     BHYVE_CAP_LPC_BOOTROM = 1 << 3,
     BHYVE_CAP_FBUF = 1 << 4,
     BHYVE_CAP_XHCI = 1 << 5,
+    BHYVE_CAP_CPUTOPOLOGY = 1 << 6,
 } virBhyveCapsFlags;
 
 int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);

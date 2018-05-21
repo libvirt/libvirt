@@ -244,6 +244,12 @@ bhyveProbeCapsFromHelp(unsigned int *caps, char *binary)
     if (strstr(help, "-u:") != NULL)
         *caps |= BHYVE_CAP_RTC_UTC;
 
+    /* "-c vcpus" was there before CPU topology support was introduced,
+     * then it became
+     * "-c [[cpus=]numcpus][,sockets=n][,cores=n][,threads=n] */
+    if (strstr(help, "-c vcpus") == NULL)
+        *caps |= BHYVE_CAP_CPUTOPOLOGY;
+
  out:
     VIR_FREE(help);
     virCommandFree(cmd);

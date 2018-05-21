@@ -462,12 +462,36 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
     size_t i;
     bool add_lpc = false;
     int nusbcontrollers = 0;
+    unsigned int nvcpus = virDomainDefGetVcpus(def);
 
     virCommandPtr cmd = virCommandNew(BHYVE);
 
     /* CPUs */
     virCommandAddArg(cmd, "-c");
-    virCommandAddArgFormat(cmd, "%d", virDomainDefGetVcpus(def));
+    if (def->cpu && def->cpu->sockets) {
+        if (nvcpus != def->cpu->sockets * def->cpu->cores * def->cpu->threads) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid CPU topology: total number of vCPUs "
+                             "must equal the product of sockets, cores, "
+                             "and threads"));
+            goto error;
+        }
+
+        if ((bhyveDriverGetCaps(conn) & BHYVE_CAP_CPUTOPOLOGY) != 0) {
+            virCommandAddArgFormat(cmd, "cpus=%d,sockets=%d,cores=%d,threads=%d",
+                                   nvcpus,
+                                   def->cpu->sockets,
+                                   def->cpu->cores,
+                                   def->cpu->threads);
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Installed bhyve binary does not support "
+                             "defining CPU topology"));
+            goto error;
+        }
+    } else {
+        virCommandAddArgFormat(cmd, "%d", nvcpus);
+    }
 
     /* Memory */
     virCommandAddArg(cmd, "-m");

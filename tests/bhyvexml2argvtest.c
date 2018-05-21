@@ -176,7 +176,8 @@ mymain(void)
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
     driver.bhyvecaps = BHYVE_CAP_RTC_UTC | BHYVE_CAP_AHCI32SLOT | \
                        BHYVE_CAP_NET_E1000 | BHYVE_CAP_LPC_BOOTROM | \
-                       BHYVE_CAP_FBUF | BHYVE_CAP_XHCI;
+                       BHYVE_CAP_FBUF | BHYVE_CAP_XHCI | \
+                       BHYVE_CAP_CPUTOPOLOGY;
 
     DO_TEST("base");
     DO_TEST("wired");
@@ -207,6 +208,8 @@ mymain(void)
     DO_TEST("vnc-vgaconf-off");
     DO_TEST("vnc-vgaconf-io");
     DO_TEST("vnc-autoport");
+    DO_TEST("cputopology");
+    DO_TEST_FAILURE("cputopology-nvcpu-mismatch");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");
@@ -242,6 +245,9 @@ mymain(void)
 
     driver.bhyvecaps &= ~BHYVE_CAP_FBUF;
     DO_TEST_FAILURE("vnc");
+
+    driver.bhyvecaps &= ~BHYVE_CAP_CPUTOPOLOGY;
+    DO_TEST_FAILURE("cputopology");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

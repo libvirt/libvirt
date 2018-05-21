@@ -446,5 +446,21 @@ be wired and cannot be swapped out as follows:</p>
 &lt;/domain&gt;
 </pre>
 
+<h3><a id="cputopology">CPU topology</a></h3>
+
+<p><span class="since">Since 4.5.0</span>, it's possible to specify guest CPU topology, if bhyve
+supports that. Support for specifying guest CPU topology was added to bhyve in
+<a href="http://svnweb.freebsd.org/changeset/base/332298">r332298</a> for <i>-CURRENT</i>.
+Example:</p>
+<pre>
+&lt;domain type="bhyve"&gt;
+    ...
+    &lt;cpu&gt;
+      &lt;topology sockets='1' cores='2' threads='1'/&gt;
+    &lt;/cpu&gt;
+    ...
+&lt;/domain&gt;
+</pre>
+
   </body>
 </html>
