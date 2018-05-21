@@ -31,6 +31,7 @@
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <poll.h>
 
 #include <arpa/inet.h>
 #include <net/ethernet.h>
@@ -414,6 +415,7 @@ learnIPAddressThread(void *arg)
     bool showError = true;
     enum howDetect howDetected = 0;
     virNWFilterTechDriverPtr techdriver = req->techdriver;
+    struct pollfd fds[1];
 
     if (virNWFilterLockIface(req->ifname) < 0)
        goto err_no_lock;
@@ -434,6 +436,9 @@ learnIPAddressThread(void *arg)
         req->status = ENODEV;
         goto done;
     }
+
+    fds[0].fd = pcap_fileno(handle);
+    fds[0].events = POLLIN | POLLERR;
 
     virMacAddrFormat(&req->macaddr, macaddr);
 
@@ -480,17 +485,45 @@ learnIPAddressThread(void *arg)
     pcap_freecode(&fp);
 
     while (req->status == 0 && vmaddr == 0) {
+        int n = poll(fds, ARRAY_CARDINALITY(fds), PKT_TIMEOUT_MS);
+
+        if (n < 0) {
+            if (errno == EAGAIN || errno == EINTR)
+                continue;
+
+            req->status = errno;
+            showError = true;
+            break;
+        }
+
+        if (n == 0) {
+            if (threadsTerminate || req->terminate) {
+                VIR_DEBUG("Terminate request seen, cancelling pcap");
+                req->status = ECANCELED;
+                showError = false;
+                break;
+            }
+            continue;
+        }
+
+        if (fds[0].revents & (POLLHUP | POLLERR)) {
+            VIR_DEBUG("Error from FD probably dev deleted");
+            req->status = ENODEV;
+            showError = false;
+            break;
+        }
+
         packet = pcap_next(handle, &header);
 
         if (!packet) {
-
+            /* Already handled with poll, but lets be sure */
             if (threadsTerminate || req->terminate) {
                 req->status = ECANCELED;
                 showError = false;
                 break;
             }
 
-            /* check whether VM's dev is still there */
+            /* Again, already handled above, but lets be sure */
             if (virNetDevValidateConfig(req->ifname, NULL, req->ifindex) <= 0) {
                 virResetLastError();
                 req->status = ENODEV;
