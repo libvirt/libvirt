@@ -32,11 +32,13 @@
     <sound model='ich6'>
       <codec type='micro'/>
       <codec type='duplex'/>
+      <codec type='output'/>
     </sound>
     <sound model='ich9'/>
     <sound model='ich9'>
       <codec type='micro'/>
       <codec type='duplex'/>
+      <codec type='output'/>
     </sound>
     <sound model='usb'/>
     <memballoon model='virtio'/>

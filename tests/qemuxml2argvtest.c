@@ -1518,6 +1518,7 @@ mymain(void)
     DO_TEST("sound", NONE);
     DO_TEST("sound-device",
             QEMU_CAPS_HDA_DUPLEX, QEMU_CAPS_HDA_MICRO,
+            QEMU_CAPS_HDA_OUTPUT,
             QEMU_CAPS_DEVICE_ICH9_INTEL_HDA,
             QEMU_CAPS_OBJECT_USB_AUDIO);
     DO_TEST("fs9p", NONE);

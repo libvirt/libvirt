@@ -236,6 +236,7 @@
     <flag name='iscsi.password-secret'/>
     <flag name='isa-serial'/>
     <flag name='dump-completed'/>
+    <flag name='hda-output'/>
   </qemuCaps>
   <job type='none' async='migration in' phase='prepare' flags='0x900'>
     <migParams>

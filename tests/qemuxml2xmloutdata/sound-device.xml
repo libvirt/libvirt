@@ -43,6 +43,7 @@
     <sound model='ich6'>
       <codec type='micro'/>
       <codec type='duplex'/>
+      <codec type='output'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </sound>
     <sound model='ich9'>
@@ -51,6 +52,7 @@
     <sound model='ich9'>
       <codec type='micro'/>
       <codec type='duplex'/>
+      <codec type='output'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
     </sound>
     <sound model='usb'/>

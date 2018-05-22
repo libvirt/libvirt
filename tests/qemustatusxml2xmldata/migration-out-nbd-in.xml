@@ -229,6 +229,7 @@
     <flag name='iscsi.password-secret'/>
     <flag name='isa-serial'/>
     <flag name='dump-completed'/>
+    <flag name='hda-output'/>
   </qemuCaps>
   <job type='none' async='migration out' phase='perform3'>
     <disk dev='vdb' migrating='yes'/>

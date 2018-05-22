@@ -33,10 +33,12 @@ server,nowait \
 -device intel-hda,id=sound5,bus=pci.0,addr=0x6 \
 -device hda-micro,id=sound5-codec0,bus=sound5.0,cad=0 \
 -device hda-duplex,id=sound5-codec1,bus=sound5.0,cad=1 \
+-device hda-output,id=sound5-codec2,bus=sound5.0,cad=2 \
 -device ich9-intel-hda,id=sound6,bus=pci.0,addr=0x7 \
 -device hda-duplex,id=sound6-codec0,bus=sound6.0,cad=0 \
 -device ich9-intel-hda,id=sound7,bus=pci.0,addr=0x8 \
 -device hda-micro,id=sound7-codec0,bus=sound7.0,cad=0 \
 -device hda-duplex,id=sound7-codec1,bus=sound7.0,cad=1 \
+-device hda-output,id=sound7-codec2,bus=sound7.0,cad=2 \
 -device usb-audio,id=sound8,bus=usb.0,port=1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x9
