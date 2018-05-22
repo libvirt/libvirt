@@ -106,6 +106,7 @@
   <flag name='query-cpu-definitions'/>
   <flag name='kernel-irqchip'/>
   <flag name='isa-serial'/>
+  <flag name='hda-output'/>
   <version>1005003</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>46523</microcodeVersion>

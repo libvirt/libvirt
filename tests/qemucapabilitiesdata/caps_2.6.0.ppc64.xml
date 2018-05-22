@@ -138,6 +138,7 @@
   <flag name='dump-completed'/>
   <flag name='nbd-tls'/>
   <flag name='sdl-gl'/>
+  <flag name='hda-output'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>263005</microcodeVersion>

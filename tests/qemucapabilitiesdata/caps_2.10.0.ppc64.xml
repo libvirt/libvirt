@@ -155,6 +155,7 @@
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
   <flag name='sdl-gl'/>
+  <flag name='hda-output'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>382824</microcodeVersion>

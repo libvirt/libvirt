@@ -4137,6 +4137,8 @@ qemuSoundCodecTypeToCaps(int type)
         return QEMU_CAPS_HDA_DUPLEX;
     case VIR_DOMAIN_SOUND_CODEC_TYPE_MICRO:
         return QEMU_CAPS_HDA_MICRO;
+    case VIR_DOMAIN_SOUND_CODEC_TYPE_OUTPUT:
+        return QEMU_CAPS_HDA_OUTPUT;
     default:
         return -1;
     }

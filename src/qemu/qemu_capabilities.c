@@ -487,6 +487,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               /* 300 */
               "sdl-gl",
               "screendump_device",
+              "hda-output",
     );
 
 
@@ -1117,6 +1118,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "pr-manager-helper", QEMU_CAPS_PR_MANAGER_HELPER },
     { "virtual-css-bridge", QEMU_CAPS_CCW },
     { "vfio-ccw", QEMU_CAPS_DEVICE_VFIO_CCW },
+    { "hda-output", QEMU_CAPS_HDA_OUTPUT },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {
