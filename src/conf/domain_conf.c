@@ -256,7 +256,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "tpm",
               "panic",
               "memory",
-              "iommu")
+              "iommu",
+              "vsock")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
@@ -869,6 +870,10 @@ VIR_ENUM_IMPL(virDomainTPMBackend, VIR_DOMAIN_TPM_TYPE_LAST,
 
 VIR_ENUM_IMPL(virDomainIOMMUModel, VIR_DOMAIN_IOMMU_MODEL_LAST,
               "intel")
+
+VIR_ENUM_IMPL(virDomainVsockModel, VIR_DOMAIN_VSOCK_MODEL_LAST,
+              "default",
+              "virtio")
 
 VIR_ENUM_IMPL(virDomainDiskDiscard, VIR_DOMAIN_DISK_DISCARD_LAST,
               "default",
@@ -2778,6 +2783,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     case VIR_DOMAIN_DEVICE_IOMMU:
         VIR_FREE(def->data.iommu);
         break;
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        virDomainVsockDefFree(def->data.vsock);
+        break;
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
         break;
@@ -3642,6 +3650,8 @@ virDomainDeviceGetInfo(virDomainDeviceDefPtr device)
         return &device->data.panic->info;
     case VIR_DOMAIN_DEVICE_MEMORY:
         return &device->data.memory->info;
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        return &device->data.vsock->info;
 
     /* The following devices do not contain virDomainDeviceInfo */
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -3839,6 +3849,13 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
             return rc;
     }
 
+    device.type = VIR_DOMAIN_DEVICE_VSOCK;
+    if (def->vsock) {
+        device.data.vsock = def->vsock;
+        if ((rc = cb(def, &device, &def->vsock->info, opaque)) != 0)
+            return rc;
+    }
+
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
     /* This switch statement is here to trigger compiler warning when adding
@@ -3873,6 +3890,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
     case VIR_DOMAIN_DEVICE_RNG:
     case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
         break;
     }
 #endif
@@ -4552,6 +4570,20 @@ virDomainCheckVirtioOptions(virDomainVirtioOptionsPtr virtio)
 
 
 static int
+virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
+{
+    if (vsock->auto_cid == VIR_TRISTATE_BOOL_ABSENT) {
+        if (vsock->guest_cid != 0)
+            vsock->auto_cid = VIR_TRISTATE_BOOL_NO;
+        else
+            vsock->auto_cid = VIR_TRISTATE_BOOL_YES;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
                                   const virDomainDef *def,
                                   virCapsPtr caps ATTRIBUTE_UNUSED,
@@ -4664,6 +4696,10 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
             virDomainCheckVirtioOptions(net->virtio) < 0)
             return -1;
     }
+
+    if (dev->type == VIR_DOMAIN_DEVICE_VSOCK &&
+        virDomainVsockDefPostParse(dev->data.vsock) < 0)
+        return -1;
 
     return 0;
 }
@@ -5620,6 +5656,19 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem)
 
 
 static int
+virDomainVsockDefValidate(const virDomainVsockDef *vsock)
+{
+    if (vsock->guest_cid > 0 && vsock->guest_cid <= 2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("guest CIDs must be >= 3"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
                                    const virDomainDef *def)
 {
@@ -5653,6 +5702,9 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_DEVICE_MEMORY:
         return virDomainMemoryDefValidate(dev->data.memory);
+
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        return virDomainVsockDefValidate(dev->data.vsock);
 
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
@@ -15904,6 +15956,70 @@ virDomainIOMMUDefParseXML(xmlNodePtr node,
 }
 
 
+static virDomainVsockDefPtr
+virDomainVsockDefParseXML(virDomainXMLOptionPtr xmlopt,
+                          xmlNodePtr node,
+                          xmlXPathContextPtr ctxt,
+                          unsigned int flags)
+{
+    virDomainVsockDefPtr vsock = NULL, ret = NULL;
+    xmlNodePtr save = ctxt->node;
+    xmlNodePtr source;
+    char *tmp = NULL;
+    int val;
+
+    ctxt->node = node;
+
+    if (!(vsock = virDomainVsockDefNew(xmlopt)))
+        goto cleanup;
+
+    if ((tmp = virXMLPropString(node, "model"))) {
+        if ((val = virDomainVsockModelTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, _("unknown vsock model: %s"), tmp);
+            goto cleanup;
+        }
+        vsock->model = val;
+    }
+
+    source = virXPathNode("./source", ctxt);
+
+    VIR_FREE(tmp);
+    if (source) {
+        if ((tmp = virXMLPropString(source, "cid"))) {
+            if (virStrToLong_uip(tmp, NULL, 10, &vsock->guest_cid) < 0 ||
+                vsock->guest_cid == 0) {
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("'cid' attribute must be a positive number: %s"),
+                               tmp);
+                goto cleanup;
+            }
+        }
+
+        VIR_FREE(tmp);
+        if ((tmp = virXMLPropString(source, "auto"))) {
+            val = virTristateBoolTypeFromString(tmp);
+            if (val <= 0) {
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("'auto' attribute can be 'yes' or 'no': %s"),
+                               tmp);
+                goto cleanup;
+            }
+            vsock->auto_cid = val;
+        }
+    }
+
+    if (virDomainDeviceInfoParseXML(xmlopt, node, &vsock->info, flags) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret, vsock);
+
+ cleanup:
+    ctxt->node = save;
+    VIR_FREE(vsock);
+    VIR_FREE(tmp);
+    return ret;
+}
+
 virDomainDeviceDefPtr
 virDomainDeviceDefParse(const char *xmlStr,
                         const virDomainDef *def,
@@ -16057,6 +16173,11 @@ virDomainDeviceDefParse(const char *xmlStr,
         break;
     case VIR_DOMAIN_DEVICE_IOMMU:
         if (!(dev->data.iommu = virDomainIOMMUDefParseXML(node, ctxt)))
+            goto error;
+        break;
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        if (!(dev->data.vsock = virDomainVsockDefParseXML(xmlopt, node, ctxt,
+                                                          flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_NONE:
@@ -20482,6 +20603,22 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
+    if ((n = virXPathNodeSet("./devices/vsock", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only a single vsock device is supported"));
+        goto error;
+    }
+
+    if (n > 0) {
+        if (!(def->vsock = virDomainVsockDefParseXML(xmlopt, nodes[0],
+                                                     ctxt, flags)))
+            goto error;
+    }
+    VIR_FREE(nodes);
+
     /* analysis of the user namespace mapping */
     if ((n = virXPathNodeSet("./idmap/uid", ctxt, &nodes)) < 0)
         goto error;
@@ -22058,6 +22195,26 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDefPtr src,
 
 
 static bool
+virDomainVsockDefCheckABIStability(virDomainVsockDefPtr src,
+                                   virDomainVsockDefPtr dst)
+{
+    if (src->model != dst->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain vsock device model '%s' "
+                         "does not match source '%s'"),
+                       virDomainVsockModelTypeToString(dst->model),
+                       virDomainVsockModelTypeToString(src->model));
+        return false;
+    }
+
+    if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
+        return false;
+
+    return true;
+}
+
+
+static bool
 virDomainDefVcpuCheckAbiStability(virDomainDefPtr src,
                                   virDomainDefPtr dst)
 {
@@ -22521,6 +22678,17 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
         !virDomainIOMMUDefCheckABIStability(src->iommu, dst->iommu))
         goto error;
 
+    if (!!src->vsock != !!dst->vsock) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target domain vsock device count "
+                         "does not match source"));
+        goto error;
+    }
+
+    if (src->vsock &&
+        !virDomainVsockDefCheckABIStability(src->vsock, dst->vsock))
+        goto error;
+
     if (xmlopt && xmlopt->abi.domain &&
         !xmlopt->abi.domain(src, dst))
         goto error;
@@ -22558,6 +22726,7 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
         break;
     }
 #endif
@@ -26815,6 +26984,46 @@ virDomainMemtuneFormat(virBufferPtr buf,
 }
 
 
+static int
+virDomainVsockDefFormat(virBufferPtr buf,
+                        virDomainVsockDefPtr vsock)
+{
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer sourceAttrBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+
+    if (vsock->model) {
+        virBufferAsprintf(&attrBuf, " model='%s'",
+                          virDomainVsockModelTypeToString(vsock->model));
+    }
+
+    virBufferSetChildIndent(&childBuf, buf);
+
+    if (vsock->auto_cid != VIR_TRISTATE_BOOL_ABSENT) {
+        virBufferAsprintf(&sourceAttrBuf, " auto='%s'",
+                          virTristateBoolTypeToString(vsock->auto_cid));
+    }
+    if (vsock->guest_cid != 0)
+        virBufferAsprintf(&sourceAttrBuf, " cid='%u'", vsock->guest_cid);
+    if (virXMLFormatElement(&childBuf, "source", &sourceAttrBuf, NULL) < 0)
+        goto cleanup;
+
+    virDomainDeviceInfoFormat(&childBuf, &vsock->info, 0);
+
+    if (virXMLFormatElement(buf, "vsock", &attrBuf, &childBuf) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&childBuf);
+    virBufferFreeAndReset(&attrBuf);
+    virBufferFreeAndReset(&sourceAttrBuf);
+    return ret;
+}
+
+
 /* This internal version appends to an existing buffer
  * (possibly with auto-indent), rather than flattening
  * to string.
@@ -27554,6 +27763,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 
     if (def->iommu &&
         virDomainIOMMUDefFormat(buf, def->iommu) < 0)
+        goto error;
+
+    if (def->vsock &&
+        virDomainVsockDefFormat(buf, def->vsock) < 0)
         goto error;
 
     virBufferAdjustIndent(buf, -2);
@@ -28675,6 +28888,9 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         break;
     case VIR_DOMAIN_DEVICE_SHMEM:
         rc = virDomainShmemDefFormat(&buf, src->data.shmem, flags);
+        break;
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        rc = virDomainVsockDefFormat(&buf, src->data.vsock);
         break;
 
     case VIR_DOMAIN_DEVICE_NONE:

@@ -4149,6 +4149,34 @@
     </optional>
   </define>
 
+  <define name="vsock">
+    <element name="vsock">
+      <optional>
+        <attribute name="model">
+          <value>virtio</value>
+        </attribute>
+      </optional>
+      <interleave>
+        <optional>
+          <element name="source">
+            <optional>
+              <attribute name="auto">
+                <ref name="virYesNo"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="cid">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
   <define name="iommu">
     <element name="iommu">
       <attribute name="model">
@@ -4695,6 +4723,9 @@
         </zeroOrMore>
         <optional>
           <ref name="iommu"/>
+        </optional>
+        <optional>
+          <ref name="vsock"/>
         </optional>
       </interleave>
     </element>

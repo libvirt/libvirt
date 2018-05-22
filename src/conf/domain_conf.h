@@ -189,6 +189,7 @@ typedef enum {
     VIR_DOMAIN_DEVICE_PANIC,
     VIR_DOMAIN_DEVICE_MEMORY,
     VIR_DOMAIN_DEVICE_IOMMU,
+    VIR_DOMAIN_DEVICE_VSOCK,
 
     VIR_DOMAIN_DEVICE_LAST
 } virDomainDeviceType;
@@ -221,6 +222,7 @@ struct _virDomainDeviceDef {
         virDomainPanicDefPtr panic;
         virDomainMemoryDefPtr memory;
         virDomainIOMMUDefPtr iommu;
+        virDomainVsockDefPtr vsock;
     } data;
 };
 
@@ -2314,8 +2316,21 @@ struct _virDomainIOMMUDef {
     virTristateSwitch iotlb;
 };
 
+typedef enum {
+    VIR_DOMAIN_VSOCK_MODEL_DEFAULT,
+    VIR_DOMAIN_VSOCK_MODEL_VIRTIO,
+
+    VIR_DOMAIN_VSOCK_MODEL_LAST
+} virDomainVsockModel;
+
 struct _virDomainVsockDef {
     virObjectPtr privateData;
+
+    virDomainVsockModel model;
+    unsigned int guest_cid;
+    virTristateBool auto_cid;
+
+    virDomainDeviceInfo info;
 };
 
 struct _virDomainVirtioOptions {
@@ -2468,6 +2483,7 @@ struct _virDomainDef {
     virSysinfoDefPtr sysinfo;
     virDomainRedirFilterDefPtr redirfilter;
     virDomainIOMMUDefPtr iommu;
+    virDomainVsockDefPtr vsock;
 
     void *namespaceData;
     virDomainXMLNamespace ns;
@@ -3378,6 +3394,7 @@ VIR_ENUM_DECL(virDomainMemoryBackingModel)
 VIR_ENUM_DECL(virDomainMemorySource)
 VIR_ENUM_DECL(virDomainMemoryAllocation)
 VIR_ENUM_DECL(virDomainIOMMUModel)
+VIR_ENUM_DECL(virDomainVsockModel)
 VIR_ENUM_DECL(virDomainShmemModel)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)

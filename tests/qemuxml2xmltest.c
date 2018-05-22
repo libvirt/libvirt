@@ -1212,6 +1212,9 @@ mymain(void)
     DO_TEST_STATUS("migration-out-params");
     DO_TEST_STATUS("migration-out-nbd-tls");
 
+    DO_TEST("vhost-vsock", NONE);
+    DO_TEST("vhost-vsock-auto", NONE);
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 

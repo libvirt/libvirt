@@ -5313,6 +5313,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
         break;
@@ -5793,6 +5794,16 @@ qemuDomainDevicePanicDefPostParse(virDomainPanicDefPtr panic,
 
 
 static int
+qemuDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
+{
+    if (vsock->model == VIR_DOMAIN_VSOCK_MODEL_DEFAULT)
+        vsock->model = VIR_DOMAIN_VSOCK_MODEL_VIRTIO;
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
                              virCapsPtr caps ATTRIBUTE_UNUSED,
@@ -5836,6 +5847,10 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
     case VIR_DOMAIN_DEVICE_CHR:
         ret = qemuDomainChrDefPostParse(dev->data.chr, def, driver, parseFlags);
+        break;
+
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        ret = qemuDomainVsockDefPostParse(dev->data.vsock);
         break;
 
     case VIR_DOMAIN_DEVICE_LEASE:

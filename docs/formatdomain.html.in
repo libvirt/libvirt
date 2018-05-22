@@ -8169,6 +8169,26 @@ qemu-kvm -net nic,model=? /dev/null
       </dd>
     </dl>
 
+    <h3><a id="vsock">Vsock</a></h3>
+
+    <p>A vsock host/guest interface. The <code>model</code> attribute
+    defaults to <code>virtio</code>.
+    The optional attribute <code>cid</code> of the source element
+    specifies the CID assigned to the guest. If the attribute
+    <code>auto</code> is set to <code>yes</code>, libvirt
+    will assign a free CID automatically on domain startup.
+    <span class="since">Since 4.4.0</span></p>
+
+<pre>
+...
+&lt;devices&gt;
+  &lt;vsock model='virtio'&gt;
+    &lt;source auto='no' cid='3'/&gt;
+  &lt;/vsock&gt;
+&lt;/devices&gt;
+...</pre>
+
+
     <h3><a id="seclabel">Security label</a></h3>
 
     <p>

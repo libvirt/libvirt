@@ -859,6 +859,9 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         }
         break;
 
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        return virtioFlags;
+
         /* These devices don't ever connect with PCI */
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_TPM:
@@ -2150,6 +2153,14 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
     }
     for (i = 0; i < def->nhubs; i++) {
         /* Nada - none are PCI based (yet) */
+    }
+
+    if (def->vsock &&
+        virDeviceInfoPCIAddressWanted(&def->vsock->info)) {
+
+        if (qemuDomainPCIAddressReserveNextAddr(addrs,
+                                                &def->vsock->info) < 0)
+            goto error;
     }
 
     return 0;
