@@ -532,6 +532,17 @@ testCompareXMLToArgv(const void *data)
         }
     }
 
+    if (vm->def->vsock) {
+        virDomainVsockDefPtr vsock = vm->def->vsock;
+        qemuDomainVsockPrivatePtr vsockPriv =
+            (qemuDomainVsockPrivatePtr)vsock->privateData;
+
+        if (vsock->auto_cid == VIR_TRISTATE_BOOL_YES)
+            vsock->guest_cid = 42;
+
+        vsockPriv->vhostfd = 6789;
+    }
+
     if (!(cmd = qemuProcessCreatePretendCmd(&driver, vm, migrateURI,
                                             (flags & FLAG_FIPS), false,
                                             VIR_QEMU_PROCESS_START_COLD))) {
@@ -2855,6 +2866,9 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_KEYBOARD_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW);
+
+    DO_TEST_CAPS_LATEST("vhost-vsock");
+    DO_TEST_CAPS_LATEST("vhost-vsock-auto");
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);

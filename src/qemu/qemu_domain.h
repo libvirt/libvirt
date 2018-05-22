@@ -447,7 +447,7 @@ typedef qemuDomainVsockPrivate *qemuDomainVsockPrivatePtr;
 struct _qemuDomainVsockPrivate {
     virObject parent;
 
-    virTristateBool maybe;
+    int vhostfd;
 };
 
 

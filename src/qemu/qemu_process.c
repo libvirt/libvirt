@@ -79,6 +79,7 @@
 #include "nwfilter_conf.h"
 #include "netdev_bandwidth_conf.h"
 #include "virresctrl.h"
+#include "virvsock.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -5947,6 +5948,36 @@ qemuProcessPrepareHostStorage(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessOpenVhostVsock(virDomainVsockDefPtr vsock)
+{
+    qemuDomainVsockPrivatePtr priv = (qemuDomainVsockPrivatePtr)vsock->privateData;
+    const char *vsock_path = "/dev/vhost-vsock";
+    int fd;
+
+    if ((fd = open(vsock_path, O_RDWR)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("unable to open vhost-vsock device"));
+        return -1;
+    }
+
+    if (vsock->auto_cid == VIR_TRISTATE_BOOL_YES) {
+        if (virVsockAcquireGuestCid(fd, &vsock->guest_cid) < 0)
+            goto error;
+    } else {
+        if (virVsockSetGuestCid(fd, vsock->guest_cid) < 0)
+            goto error;
+    }
+
+    priv->vhostfd = fd;
+    return 0;
+
+ error:
+    VIR_FORCE_CLOSE(fd);
+    return -1;
+}
+
+
 /**
  * qemuProcessPrepareHost:
  * @driver: qemu driver
@@ -5972,6 +6003,10 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
     if (qemuPrepareNVRAM(cfg, vm) < 0)
         goto cleanup;
 
+    if (vm->def->vsock) {
+        if (qemuProcessOpenVhostVsock(vm->def->vsock) < 0)
+            goto cleanup;
+    }
     /* network devices must be "prepared" before hostdevs, because
      * setting up a network device might create a new hostdev that
      * will need to be setup.

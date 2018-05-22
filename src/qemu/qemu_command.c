@@ -9912,6 +9912,42 @@ qemuBuildSeccompSandboxCommandLine(virCommandPtr cmd,
 }
 
 
+static int
+qemuBuildVsockCommandLine(virCommandPtr cmd,
+                          virDomainDefPtr def,
+                          virDomainVsockDefPtr vsock,
+                          virQEMUCapsPtr qemuCaps)
+{
+    qemuDomainVsockPrivatePtr priv = (qemuDomainVsockPrivatePtr)vsock->privateData;
+    const char *device = "vhost-vsock-pci";
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *devstr = NULL;
+    int ret = -1;
+
+    virBufferAsprintf(&buf, "%s", device);
+    virBufferAsprintf(&buf, ",id=%s", vsock->info.alias);
+    virBufferAsprintf(&buf, ",guest-cid=%u", vsock->guest_cid);
+    virBufferAsprintf(&buf, ",vhostfd=%u", priv->vhostfd);
+    if (qemuBuildDeviceAddressStr(&buf, def, &vsock->info, qemuCaps) < 0)
+        goto cleanup;
+
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
+
+    devstr = virBufferContentAndReset(&buf);
+
+    virCommandPassFD(cmd, priv->vhostfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+    priv->vhostfd = -1;
+    virCommandAddArgList(cmd, "-device", devstr, NULL);
+
+    ret = 0;
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    VIR_FREE(devstr);
+    return ret;
+}
+
+
 /*
  * Constructs a argv suitable for launching qemu with config defined
  * for a given virtual machine.
@@ -10160,6 +10196,10 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
                                       chardevStdioLogd))
             goto error;
     }
+
+    if (def->vsock &&
+        qemuBuildVsockCommandLine(cmd, def, def->vsock, qemuCaps) < 0)
+        goto error;
 
     /* In some situations, eg. VFIO passthrough, QEMU might need to lock a
      * significant amount of memory, so we need to set the limit accordingly */

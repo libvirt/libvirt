@@ -1160,6 +1160,8 @@ qemuDomainVsockPrivateNew(void)
     if (!(priv = virObjectNew(qemuDomainVsockPrivateClass)))
         return NULL;
 
+    priv->vhostfd = -1;
+
     return (virObjectPtr) priv;
 }
 
@@ -1167,6 +1169,9 @@ qemuDomainVsockPrivateNew(void)
 static void
 qemuDomainVsockPrivateDispose(void *obj ATTRIBUTE_UNUSED)
 {
+    qemuDomainVsockPrivatePtr priv = obj;
+
+    VIR_FORCE_CLOSE(priv->vhostfd);
 }
 
 

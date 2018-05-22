@@ -533,6 +533,18 @@ qemuAssignDeviceInputAlias(virDomainDefPtr def,
 }
 
 
+static int
+qemuAssignDeviceVsockAlias(virDomainVsockDefPtr vsock)
+{
+    if (vsock->info.alias)
+        return 0;
+    if (VIR_STRDUP(vsock->info.alias, "vsock0") < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 {
@@ -627,6 +639,10 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
     }
     for (i = 0; i < def->nmems; i++) {
         if (qemuAssignDeviceMemoryAlias(NULL, def->mems[i], false) < 0)
+            return -1;
+    }
+    if (def->vsock) {
+        if (qemuAssignDeviceVsockAlias(def->vsock) < 0)
             return -1;
     }
 
