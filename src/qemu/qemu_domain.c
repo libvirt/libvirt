@@ -1600,22 +1600,11 @@ qemuDomainSecretHostdevPrepare(qemuDomainObjPrivatePtr priv,
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
         virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
         virStorageSourcePtr src = iscsisrc->src;
-        qemuDomainStorageSourcePrivatePtr srcPriv;
 
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
             src->auth) {
-
-            if (!(src->privateData = qemuDomainStorageSourcePrivateNew()))
-                return -1;
-
-            srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
-
-            if (!(srcPriv->secinfo =
-                  qemuDomainSecretInfoNew(priv, hostdev->info->alias,
-                                          VIR_SECRET_USAGE_TYPE_ISCSI,
-                                          src->auth->username,
-                                          &src->auth->seclookupdef,
-                                          false)))
+            if (qemuDomainSecretStorageSourcePrepare(priv, src,
+                                                     hostdev->info->alias, NULL) < 0)
                 return -1;
         }
     }
