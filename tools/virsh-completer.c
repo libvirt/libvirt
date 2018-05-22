@@ -579,6 +579,9 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     double size = 0;
     size_t i = 0;
     const char *suffix = NULL;
+    const char *cellnum = NULL;
+    bool cellno = vshCommandOptBool(cmd, "cellno");
+    char *path = NULL;
     char *pagesize = NULL;
     char *cap_xml = NULL;
     char **ret = NULL;
@@ -595,7 +598,17 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     if (!(virXMLParseStringCtxt(cap_xml, _("capabilities"), &ctxt)))
         goto error;
 
-    npages = virXPathNodeSet("/capabilities/host/cpu/pages", ctxt, &pages);
+    if (cellno && vshCommandOptStringQuiet(ctl, cmd, "cellno", &cellnum) > 0) {
+        if (virAsprintf(&path,
+                        "/capabilities/host/topology/cells/cell[@id=\"%s\"]/pages",
+                        cellnum) < 0)
+            goto error;
+    } else {
+        if (virAsprintf(&path, "/capabilities/host/cpu/pages") < 0)
+            goto error;
+    }
+
+    npages = virXPathNodeSet(path, ctxt, &pages);
     if (npages <= 0)
         goto error;
 
@@ -622,6 +635,7 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
         VIR_FREE(pages[i]);
     VIR_FREE(pages);
     VIR_FREE(cap_xml);
+    VIR_FREE(path);
     VIR_FREE(pagesize);
     VIR_FREE(unit);
 
