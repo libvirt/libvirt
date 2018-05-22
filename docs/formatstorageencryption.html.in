@@ -53,9 +53,8 @@
       The <code>qcow</code> format specifies that the built-in encryption
       support in <code>qcow</code>- or <code>qcow2</code>-formatted volume
       images should be used.  A single
-      <code>&lt;secret type='passphrase'&gt;</code> element is expected.  If
-      the <code>secret</code> element is not present during volume creation,
-      a secret is automatically generated and attached to the volume.
+      <code>&lt;secret type='passphrase'&gt;</code> element is expected.  Note
+      that this encryption is inherently broken and should not be used any more.
     </p>
     <h3><a id="StorageEncryptionLuks">"luks" format</a></h3>
     <p>

@@ -1651,8 +1651,8 @@ mymain(void)
     DO_TEST("cpu-tsc-frequency", QEMU_CAPS_KVM);
     qemuTestSetHostCPU(driver.caps, NULL);
 
-    DO_TEST("encrypted-disk", NONE);
-    DO_TEST("encrypted-disk-usage", NONE);
+    DO_TEST("encrypted-disk", QEMU_CAPS_QCOW2_LUKS, QEMU_CAPS_OBJECT_SECRET);
+    DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS, QEMU_CAPS_OBJECT_SECRET);
 # ifdef WITH_GNUTLS
     DO_TEST("luks-disks", QEMU_CAPS_OBJECT_SECRET);
     DO_TEST("luks-disks-source", QEMU_CAPS_OBJECT_SECRET);

@@ -4483,6 +4483,16 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         return -1;
     }
 
+    if ((src->format == VIR_STORAGE_FILE_QCOW ||
+         src->format == VIR_STORAGE_FILE_QCOW2) &&
+        src->encryption &&
+        (src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT ||
+         src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_QCOW)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("old qcow/qcow2 encryption is not supported"));
+            return -1;
+    }
+
     if (src->format == VIR_STORAGE_FILE_QCOW2 &&
         src->encryption &&
         src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&

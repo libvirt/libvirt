@@ -2974,6 +2974,10 @@
             See the
             <a href="formatstorageencryption.html">Storage Encryption</a>
             page for more information.
+            <p/>
+            Note that the 'qcow' format of encryption is broken and thus is no
+            longer supported for use with disk images.
+            (<span class="since">Since libvirt 4.5.0</span>)
           </dd>
           <dt><code>reservations</code></dt>
           <dd><span class="since">Since libvirt 4.4.0</span>, the
