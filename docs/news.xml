@@ -35,6 +35,15 @@
 <libvirt>
   <release version="v4.5.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: Provide TPM emulator support
+        </summary>
+        <description>
+          Support QEMU's TPM emulator based on swtpm. Each QEMU guest gets
+          its own virtual TPM.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
