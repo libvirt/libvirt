@@ -45,7 +45,6 @@ int qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
                             qemuDomainAsyncJob asyncJob,
                             const char *secAlias,
                             virJSONValuePtr *secProps,
-                            const char *tlsAlias,
                             virJSONValuePtr *tlsProps);
 
 int qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
@@ -53,6 +52,7 @@ int qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
                             const char *tlsCertdir,
                             bool tlsListen,
                             bool tlsVerify,
+                            const char *alias,
                             virJSONValuePtr *tlsProps,
                             virJSONValuePtr *secProps);
 

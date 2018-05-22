@@ -166,11 +166,12 @@ qemuDomainAddDiskSrcTLSObject(virQEMUDriverPtr driver,
                                 src->tlsCertdir,
                                 false,
                                 src->tlsVerify,
+                                src->tlsAlias,
                                 &tlsProps, NULL) < 0)
         goto cleanup;
 
     if (qemuDomainAddTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
-                                NULL, NULL, src->tlsAlias, &tlsProps) < 0)
+                                NULL, NULL, &tlsProps) < 0)
         goto cleanup;
 
     ret = 0;
@@ -1446,14 +1447,13 @@ qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
                         qemuDomainAsyncJob asyncJob,
                         const char *secAlias,
                         virJSONValuePtr *secProps,
-                        const char *tlsAlias,
                         virJSONValuePtr *tlsProps)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rc;
     virErrorPtr orig_err;
 
-    if (!tlsAlias && !secAlias)
+    if (!tlsProps && !secAlias)
         return 0;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -1467,13 +1467,9 @@ qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
             goto error;
     }
 
-    if (tlsAlias) {
-        rc = qemuMonitorAddObjectType(priv->mon, "tls-creds-x509",
-                                      tlsAlias, *tlsProps);
-        *tlsProps = NULL; /* qemuMonitorAddObjectType consumes */
-        if (rc < 0)
-            goto error;
-    }
+    if (tlsProps &&
+        qemuMonitorAddObject(priv->mon, tlsProps, NULL) < 0)
+        goto error;
 
     return qemuDomainObjExitMonitor(driver, vm);
 
@@ -1481,7 +1477,7 @@ qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
     virErrorPreserveLast(&orig_err);
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
     virErrorRestore(&orig_err);
-    qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
+    qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, NULL);
 
     return -1;
 }
@@ -1493,6 +1489,7 @@ qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
                         const char *tlsCertdir,
                         bool tlsListen,
                         bool tlsVerify,
+                        const char *alias,
                         virJSONValuePtr *tlsProps,
                         virJSONValuePtr *secProps)
 {
@@ -1506,7 +1503,7 @@ qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
     }
 
     if (qemuBuildTLSx509BackendProps(tlsCertdir, tlsListen, tlsVerify,
-                                     secAlias, qemuCaps, tlsProps) < 0)
+                                     alias, secAlias, qemuCaps, tlsProps) < 0)
         return -1;
 
     return 0;
@@ -1555,12 +1552,12 @@ qemuDomainAddChardevTLSObjects(virQEMUDriverPtr driver,
                                 cfg->chardevTLSx509certdir,
                                 dev->data.tcp.listen,
                                 cfg->chardevTLSx509verify,
-                                &tlsProps, &secProps) < 0)
+                                *tlsAlias, &tlsProps, &secProps) < 0)
         goto cleanup;
     dev->data.tcp.tlscreds = true;
 
     if (qemuDomainAddTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
-                                *secAlias, &secProps, *tlsAlias, &tlsProps) < 0)
+                                *secAlias, &secProps, &tlsProps) < 0)
         goto cleanup;
 
     ret = 0;

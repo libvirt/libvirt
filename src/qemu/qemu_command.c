@@ -684,6 +684,7 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
  * @tlspath: path to the TLS credentials
  * @listen: boolen listen for client or server setting
  * @verifypeer: boolean to enable peer verification (form of authorization)
+ * @alias: alias for the TLS credentials object
  * @secalias: if one exists, the alias of the security object for passwordid
  * @qemuCaps: capabilities
  * @propsret: json properties to return
@@ -696,6 +697,7 @@ int
 qemuBuildTLSx509BackendProps(const char *tlspath,
                              bool isListen,
                              bool verifypeer,
+                             const char *alias,
                              const char *secalias,
                              virQEMUCapsPtr qemuCaps,
                              virJSONValuePtr *propsret)
@@ -706,12 +708,12 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
         return -1;
     }
 
-    if (virJSONValueObjectCreate(propsret,
-                                 "s:dir", tlspath,
-                                 "s:endpoint", (isListen ? "server": "client"),
-                                 "b:verify-peer", (isListen ? verifypeer : true),
-                                 "S:passwordid", secalias,
-                                 NULL) < 0)
+    if (qemuMonitorCreateObjectProps(propsret, "tls-creds-x509", alias,
+                                     "s:dir", tlspath,
+                                     "s:endpoint", (isListen ? "server": "client"),
+                                     "b:verify-peer", (isListen ? verifypeer : true),
+                                     "S:passwordid", secalias,
+                                     NULL) < 0)
         return -1;
 
     return 0;
@@ -741,26 +743,25 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
                             const char *alias,
                             virQEMUCapsPtr qemuCaps)
 {
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
     virJSONValuePtr props = NULL;
-    char *tmp = NULL;
 
-    if (qemuBuildTLSx509BackendProps(tlspath, isListen, verifypeer,
-                                     certEncSecretAlias,
-                                     qemuCaps, &props) < 0)
+    if (qemuBuildTLSx509BackendProps(tlspath, isListen, verifypeer, alias,
+                                     certEncSecretAlias, qemuCaps, &props) < 0)
         goto cleanup;
 
-    if (!(tmp = virQEMUBuildObjectCommandlineFromJSONType("tls-creds-x509",
-                                                          alias, props)))
+    if (virQEMUBuildObjectCommandlineFromJSON(&buf, props) < 0)
         goto cleanup;
 
-    virCommandAddArgList(cmd, "-object", tmp, NULL);
+    virCommandAddArg(cmd, "-object");
+    virCommandAddArgBuffer(cmd, &buf);
 
     ret = 0;
 
  cleanup:
+    virBufferFreeAndReset(&buf);
     virJSONValueFree(props);
-    VIR_FREE(tmp);
     return ret;
 }
 
