@@ -4463,14 +4463,8 @@ int qemuMonitorJSONInjectNMI(qemuMonitorPtr mon)
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        VIR_DEBUG("inject-nmi command not found, trying HMP");
-        if (qemuMonitorTextInjectNMI(mon) < 0)
-            goto cleanup;
-    } else {
-        if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-            goto cleanup;
-    }
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
