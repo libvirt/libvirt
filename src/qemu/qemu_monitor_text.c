@@ -1650,60 +1650,6 @@ int qemuMonitorTextCloseFileHandle(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorTextAddHostNetwork(qemuMonitorPtr mon,
-                                  const char *netstr)
-{
-    char *cmd;
-    char *reply = NULL;
-    int ret = -1;
-
-    if (virAsprintf(&cmd, "host_net_add %s", netstr) < 0)
-        return -1;
-
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (STRNEQ(reply, "")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to add host net: %s"),
-                       reply);
-        goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(cmd);
-    VIR_FREE(reply);
-    return ret;
-}
-
-
-int qemuMonitorTextRemoveHostNetwork(qemuMonitorPtr mon,
-                                     int vlan,
-                                     const char *netname)
-{
-    char *cmd;
-    char *reply = NULL;
-    int ret = -1;
-
-    if (virAsprintf(&cmd, "host_net_remove %d %s", vlan, netname) < 0)
-        return -1;
-
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    /* XXX error messages here ? */
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(cmd);
-    VIR_FREE(reply);
-    return ret;
-}
-
-
 int qemuMonitorTextAddNetdev(qemuMonitorPtr mon,
                              const char *netdevstr)
 {

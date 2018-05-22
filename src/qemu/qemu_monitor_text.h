@@ -126,13 +126,6 @@ int qemuMonitorTextSendFileHandle(qemuMonitorPtr mon,
 int qemuMonitorTextCloseFileHandle(qemuMonitorPtr mon,
                                    const char *fdname);
 
-int qemuMonitorTextAddHostNetwork(qemuMonitorPtr mon,
-                                  const char *netstr);
-
-int qemuMonitorTextRemoveHostNetwork(qemuMonitorPtr mon,
-                                     int vlan,
-                                     const char *netname);
-
 int qemuMonitorTextAddNetdev(qemuMonitorPtr mon,
                              const char *netdevstr);
 

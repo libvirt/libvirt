@@ -771,18 +771,6 @@ int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
                                const char *fdname);
 int qemuMonitorRemoveFd(qemuMonitorPtr mon, int fdset, int fd);
 
-/* XXX do we really want to hardcode 'netstr' as the
- * sendable item here
- */
-int qemuMonitorAddHostNetwork(qemuMonitorPtr mon,
-                              const char *netstr,
-                              int *tapfd, char **tapfdName, int tapfdSize,
-                              int *vhostfd, char **vhostfdName, int vhostfdSize);
-
-int qemuMonitorRemoveHostNetwork(qemuMonitorPtr mon,
-                                 int vlan,
-                                 const char *netname);
-
 int qemuMonitorAddNetdev(qemuMonitorPtr mon,
                          const char *netdevstr,
                          int *tapfd, char **tapfdName, int tapfdSize,
