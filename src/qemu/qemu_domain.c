@@ -1308,94 +1308,33 @@ qemuDomainSupportsEncryptedSecret(qemuDomainObjPrivatePtr priv)
 }
 
 
-/* qemuDomainSecretSetup:
- * @priv: pointer to domain private object
- * @secinfo: Pointer to secret info
- * @srcalias: Alias of the disk/hostdev used to generate the secret alias
- * @usageType: The virSecretUsageType
- * @username: username to use for authentication (may be NULL)
- * @seclookupdef: Pointer to seclookupdef data
- * @isLuks: True when is luks (generates different alias)
- *
- * If we have the encryption API present and can support a secret object, then
- * build the AES secret; otherwise, build the Plain secret. This is the magic
- * decision point for utilizing the AES secrets for an RBD disk. For now iSCSI
- * disks and hostdevs will not be able to utilize this mechanism.
- *
- * Returns 0 on success, -1 on failure
- */
-static int
-qemuDomainSecretSetup(qemuDomainObjPrivatePtr priv,
-                      qemuDomainSecretInfoPtr secinfo,
-                      const char *srcalias,
-                      virSecretUsageType usageType,
-                      const char *username,
-                      virSecretLookupTypeDefPtr seclookupdef,
-                      bool isLuks)
-{
-    bool iscsiHasPS = virQEMUCapsGet(priv->qemuCaps,
-                                     QEMU_CAPS_ISCSI_PASSWORD_SECRET);
-
-    if (qemuDomainSupportsEncryptedSecret(priv) &&
-        (usageType == VIR_SECRET_USAGE_TYPE_CEPH ||
-         (usageType == VIR_SECRET_USAGE_TYPE_ISCSI && iscsiHasPS) ||
-         usageType == VIR_SECRET_USAGE_TYPE_VOLUME ||
-         usageType == VIR_SECRET_USAGE_TYPE_TLS)) {
-        if (qemuDomainSecretAESSetup(priv, secinfo, srcalias,
-                                     usageType, username,
-                                     seclookupdef, isLuks) < 0)
-            return -1;
-    } else {
-        if (qemuDomainSecretPlainSetup(secinfo, usageType,
-                                       username, seclookupdef) < 0)
-            return -1;
-    }
-    return 0;
-}
-
-
 /* qemuDomainSecretInfoNewPlain:
- * @priv: pointer to domain private object
- * @srcAlias: Alias base to use for TLS object
  * @usageType: Secret usage type
- * @username: username for plain secrets (only)
- * @looupdef: lookup def describing secret
- * @isLuks: boolean for luks lookup
+ * @username: username
+ * @lookupDef: lookup def describing secret
  *
  * Helper function to create a secinfo to be used for secinfo consumers. This
- * possibly sets up a 'plain' (unencrypted) secret for legacy consumers.
+ * sets up a 'plain' (unencrypted) secret for legacy consumers.
  *
  * Returns @secinfo on success, NULL on failure. Caller is responsible
  * to eventually free @secinfo.
  */
 static qemuDomainSecretInfoPtr
-qemuDomainSecretInfoNewPlain(qemuDomainObjPrivatePtr priv,
-                             const char *srcAlias,
-                             virSecretUsageType usageType,
+qemuDomainSecretInfoNewPlain(virSecretUsageType usageType,
                              const char *username,
-                             virSecretLookupTypeDefPtr lookupDef,
-                             bool isLuks)
+                             virSecretLookupTypeDefPtr lookupDef)
 {
     qemuDomainSecretInfoPtr secinfo = NULL;
 
     if (VIR_ALLOC(secinfo) < 0)
         return NULL;
 
-    if (qemuDomainSecretSetup(priv, secinfo, srcAlias, usageType,
-                              username, lookupDef, isLuks) < 0)
-        goto error;
-
-    if (!username && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("encrypted secrets are not supported"));
-        goto error;
+    if (qemuDomainSecretPlainSetup(secinfo, usageType, username, lookupDef) < 0) {
+        qemuDomainSecretInfoFree(&secinfo);
+        return NULL;
     }
 
     return secinfo;
-
- error:
-    qemuDomainSecretInfoFree(&secinfo);
-    return NULL;
 }
 
 
@@ -1549,6 +1488,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
                                      const char *encalias)
 {
     qemuDomainStorageSourcePrivatePtr srcPriv;
+    bool iscsiHasPS = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET);
     bool hasAuth = qemuDomainStorageSourceHasAuth(src);
     bool hasEnc = qemuDomainDiskHasEncryptionSecret(src);
 
@@ -1566,11 +1506,21 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
         if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
             usageType = VIR_SECRET_USAGE_TYPE_CEPH;
 
-        if (!(srcPriv->secinfo =
-              qemuDomainSecretInfoNewPlain(priv, authalias,
-                                           usageType, src->auth->username,
-                                           &src->auth->seclookupdef, false)))
-              return -1;
+        if (!qemuDomainSupportsEncryptedSecret(priv) ||
+            (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI && !iscsiHasPS)) {
+            srcPriv->secinfo = qemuDomainSecretInfoNewPlain(usageType,
+                                                            src->auth->username,
+                                                            &src->auth->seclookupdef);
+        } else {
+            srcPriv->secinfo = qemuDomainSecretInfoNew(priv, authalias,
+                                                       usageType,
+                                                       src->auth->username,
+                                                       &src->auth->seclookupdef,
+                                                       false);
+        }
+
+        if (!srcPriv->secinfo)
+            return -1;
     }
 
     if (hasEnc) {
