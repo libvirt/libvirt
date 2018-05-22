@@ -241,10 +241,6 @@ int qemuMonitorJSONSetDrivePassphrase(qemuMonitorPtr mon,
                                       const char *alias,
                                       const char *passphrase);
 
-int qemuMonitorJSONCreateSnapshot(qemuMonitorPtr mon, const char *name);
-int qemuMonitorJSONLoadSnapshot(qemuMonitorPtr mon, const char *name);
-int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name);
-
 int qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon,
                                 virJSONValuePtr actions,
                                 const char *device,

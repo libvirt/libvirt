@@ -3218,10 +3218,8 @@ qemuMonitorCreateSnapshot(qemuMonitorPtr mon, const char *name)
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (mon->json)
-        return qemuMonitorJSONCreateSnapshot(mon, name);
-    else
-        return qemuMonitorTextCreateSnapshot(mon, name);
+    /* there won't ever be a direct QMP replacement for this function */
+    return qemuMonitorTextCreateSnapshot(mon, name);
 }
 
 int
@@ -3231,10 +3229,8 @@ qemuMonitorLoadSnapshot(qemuMonitorPtr mon, const char *name)
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (mon->json)
-        return qemuMonitorJSONLoadSnapshot(mon, name);
-    else
-        return qemuMonitorTextLoadSnapshot(mon, name);
+    /* there won't ever be a direct QMP replacement for this function */
+    return qemuMonitorTextLoadSnapshot(mon, name);
 }
 
 
@@ -3245,10 +3241,8 @@ qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name)
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (mon->json)
-        return qemuMonitorJSONDeleteSnapshot(mon, name);
-    else
-        return qemuMonitorTextDeleteSnapshot(mon, name);
+    /* there won't ever be a direct QMP replacement for this function */
+    return qemuMonitorTextDeleteSnapshot(mon, name);
 }
 
 

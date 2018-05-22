@@ -4090,27 +4090,6 @@ int qemuMonitorJSONSetDrivePassphrase(qemuMonitorPtr mon,
     return ret;
 }
 
-int qemuMonitorJSONCreateSnapshot(qemuMonitorPtr mon, const char *name)
-{
-    /* XXX Update to use QMP, if QMP ever adds support for savevm */
-    VIR_DEBUG("savevm command not found, trying HMP");
-    return qemuMonitorTextCreateSnapshot(mon, name);
-}
-
-int qemuMonitorJSONLoadSnapshot(qemuMonitorPtr mon, const char *name)
-{
-    /* XXX Update to use QMP, if QMP ever adds support for loadvm */
-    VIR_DEBUG("loadvm command not found, trying HMP");
-    return qemuMonitorTextLoadSnapshot(mon, name);
-}
-
-int qemuMonitorJSONDeleteSnapshot(qemuMonitorPtr mon, const char *name)
-{
-    /* XXX Update to use QMP, if QMP ever adds support for delvm */
-    VIR_DEBUG("delvm command not found, trying HMP");
-    return qemuMonitorTextDeleteSnapshot(mon, name);
-}
-
 int
 qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
                             const char *device, const char *file,
