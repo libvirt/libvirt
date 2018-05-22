@@ -2028,6 +2028,28 @@ virDomainActualNetDefFree(virDomainActualNetDefPtr def)
     VIR_FREE(def);
 }
 
+
+virDomainVsockDefPtr
+virDomainVsockDefNew(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED)
+{
+    virDomainVsockDefPtr ret = NULL;
+    virDomainVsockDefPtr vsock;
+
+    if (VIR_ALLOC(vsock) < 0)
+        return NULL;
+
+    VIR_STEAL_PTR(ret, vsock);
+    return ret;
+}
+
+
+void
+virDomainVsockDefFree(virDomainVsockDefPtr vsock)
+{
+    VIR_FREE(vsock);
+}
+
+
 void
 virDomainNetDefClear(virDomainNetDefPtr def)
 {

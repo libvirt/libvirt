@@ -157,6 +157,9 @@ typedef virDomainTPMDef *virDomainTPMDefPtr;
 typedef struct _virDomainIOMMUDef virDomainIOMMUDef;
 typedef virDomainIOMMUDef *virDomainIOMMUDefPtr;
 
+typedef struct _virDomainVsockDef virDomainVsockDef;
+typedef virDomainVsockDef *virDomainVsockDefPtr;
+
 typedef struct _virDomainVirtioOptions virDomainVirtioOptions;
 typedef virDomainVirtioOptions *virDomainVirtioOptionsPtr;
 
@@ -2311,6 +2314,9 @@ struct _virDomainIOMMUDef {
     virTristateSwitch iotlb;
 };
 
+struct _virDomainVsockDef {
+};
+
 struct _virDomainVirtioOptions {
     virTristateSwitch iommu;
     virTristateSwitch ats;
@@ -2800,6 +2806,8 @@ bool virDomainControllerIsPSeriesPHB(const virDomainControllerDef *cont);
 virDomainFSDefPtr virDomainFSDefNew(void);
 void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainActualNetDefFree(virDomainActualNetDefPtr def);
+virDomainVsockDefPtr virDomainVsockDefNew(virDomainXMLOptionPtr xmlopt);
+void virDomainVsockDefFree(virDomainVsockDefPtr vsock);
 void virDomainNetDefClear(virDomainNetDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);
 void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def);
