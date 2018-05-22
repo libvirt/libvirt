@@ -204,6 +204,8 @@ UTIL_SOURCES = \
 	util/viruuid.h \
 	util/virvhba.c \
 	util/virvhba.h \
+	util/virvsock.c \
+	util/virvsock.h \
 	util/virxdrdefs.h \
 	util/virxml.c \
 	util/virxml.h \

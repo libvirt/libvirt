@@ -641,6 +641,14 @@ if test "$with_linux" = "yes"; then
                    [[#include <linux/devlink.h>]])
 fi
 
+dnl
+dnl check for VHOST_VSOCK_SET_GUEST_CID
+dnl
+if test "$with_linux" = "yes"; then
+    AC_CHECK_DECLS([VHOST_VSOCK_SET_GUEST_CID], [], [],
+                   [[#include <linux/vhost.h>]])
+fi
+
 dnl Allow perl/python overrides
 AC_PATH_PROGS([PYTHON], [python3 python2 python])
 if test -z "$PYTHON"; then

@@ -3122,6 +3122,11 @@ virVHBAManageVport;
 virVHBAPathExists;
 
 
+# util/virvsock.h
+virVsockAcquireGuestCid;
+virVsockSetGuestCid;
+
+
 # util/virxml.h
 virXMLCheckIllegalChars;
 virXMLChildElementCount;
