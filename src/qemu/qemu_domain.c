@@ -1292,6 +1292,22 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
 }
 
 
+/**
+ * qemuDomainSupportsEncryptedSecret:
+ * @priv: qemu domain private data
+ *
+ * Returns true if libvirt can use encrypted 'secret' objects with VM which
+ * @priv belongs to.
+ */
+bool
+qemuDomainSupportsEncryptedSecret(qemuDomainObjPrivatePtr priv)
+{
+    return virCryptoHaveCipher(VIR_CRYPTO_CIPHER_AES256CBC) &&
+           virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
+           priv->masterKey;
+}
+
+
 /* qemuDomainSecretSetup:
  * @priv: pointer to domain private object
  * @secinfo: Pointer to secret info
@@ -1320,8 +1336,7 @@ qemuDomainSecretSetup(qemuDomainObjPrivatePtr priv,
     bool iscsiHasPS = virQEMUCapsGet(priv->qemuCaps,
                                      QEMU_CAPS_ISCSI_PASSWORD_SECRET);
 
-    if (virCryptoHaveCipher(VIR_CRYPTO_CIPHER_AES256CBC) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
+    if (qemuDomainSupportsEncryptedSecret(priv) &&
         (usageType == VIR_SECRET_USAGE_TYPE_CEPH ||
          (usageType == VIR_SECRET_USAGE_TYPE_ISCSI && iscsiHasPS) ||
          usageType == VIR_SECRET_USAGE_TYPE_VOLUME ||

@@ -831,6 +831,8 @@ int qemuDomainMasterKeyCreate(virDomainObjPtr vm);
 
 void qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv);
 
+bool qemuDomainSupportsEncryptedSecret(qemuDomainObjPrivatePtr priv);
+
 void qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
     ATTRIBUTE_NONNULL(1);
 
