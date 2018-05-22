@@ -26,7 +26,7 @@
           <nodename type='format' name='node-b-f'/>
         </nodenames>
       </privateData>
-      <encryption format='qcow'>
+      <encryption format='luks'>
         <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
       </encryption>
       <auth username='testuser-iscsi'>

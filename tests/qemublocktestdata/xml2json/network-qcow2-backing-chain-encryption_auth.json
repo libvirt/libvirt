@@ -33,7 +33,7 @@
   "read-only": true,
   "driver": "qcow2",
   "encrypt": {
-    "format": "aes",
+    "format": "luks",
     "key-secret": "node-b-f-encalias"
   },
   "file": "node-b-s",
