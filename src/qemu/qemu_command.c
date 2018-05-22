@@ -139,7 +139,8 @@ VIR_ENUM_DECL(qemuSoundCodec)
 
 VIR_ENUM_IMPL(qemuSoundCodec, VIR_DOMAIN_SOUND_CODEC_TYPE_LAST,
               "hda-duplex",
-              "hda-micro");
+              "hda-micro",
+              "hda-output");
 
 VIR_ENUM_DECL(qemuControllerModelUSB)
 

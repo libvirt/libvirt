@@ -3824,6 +3824,7 @@
         <choice>
           <value>duplex</value>
           <value>micro</value>
+          <value>output</value>
         </choice>
       </attribute>
     </element>
