@@ -1459,7 +1459,7 @@ qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
 
 
 bool
-qemuDomainSecretDiskCapable(virStorageSourcePtr src)
+qemuDomainStorageSourceHasAuth(virStorageSourcePtr src)
 {
     if (!virStorageSourceIsEmpty(src) &&
         virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_NETWORK &&
@@ -1505,7 +1505,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
                                      const char *encalias)
 {
     qemuDomainStorageSourcePrivatePtr srcPriv;
-    bool hasAuth = qemuDomainSecretDiskCapable(src);
+    bool hasAuth = qemuDomainStorageSourceHasAuth(src);
     bool hasEnc = qemuDomainDiskHasEncryptionSecret(src);
 
     if (!hasAuth && !hasEnc)

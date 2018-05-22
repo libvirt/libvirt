@@ -3925,7 +3925,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
      * been removed during cleanup of qemuProcessLaunch. Likewise, libvirtd
      * restart wouldn't have them, so no assumption can be made. */
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
-        qemuDomainSecretDiskCapable(disk->src)) {
+        qemuDomainStorageSourceHasAuth(disk->src)) {
 
         if (!(objAlias =
               qemuDomainGetSecretAESAlias(disk->info.alias, false))) {
@@ -4185,7 +4185,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
          * attempt to remove the object as well. */
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI &&
             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET) &&
-            qemuDomainSecretDiskCapable(iscsisrc->src)) {
+            qemuDomainStorageSourceHasAuth(iscsisrc->src)) {
             if (!(objAlias = qemuDomainGetSecretAESAlias(hostdev->info->alias, false)))
                 goto cleanup;
         }
