@@ -4525,14 +4525,8 @@ int qemuMonitorJSONSendKey(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        VIR_DEBUG("send-key command not found, trying HMP");
-        if (qemuMonitorTextSendKey(mon, holdtime, keycodes, nkeycodes) < 0)
-            goto cleanup;
-    } else {
-        if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-            goto cleanup;
-    }
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
