@@ -43,7 +43,6 @@ void qemuDomainDelTLSObjects(virQEMUDriverPtr driver,
 int qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             qemuDomainAsyncJob asyncJob,
-                            const char *secAlias,
                             virJSONValuePtr *secProps,
                             virJSONValuePtr *tlsProps);
 

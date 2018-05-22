@@ -871,8 +871,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
      * some other error path between now and perform . */
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, *tlsAlias);
 
-    if (qemuDomainAddTLSObjects(driver, vm, asyncJob, secAlias, &secProps,
-                                &tlsProps) < 0)
+    if (qemuDomainAddTLSObjects(driver, vm, asyncJob, &secProps, &tlsProps) < 0)
         goto error;
 
     if (qemuMigrationParamsSetString(migParams,

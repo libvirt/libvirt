@@ -171,7 +171,7 @@ qemuDomainAddDiskSrcTLSObject(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (qemuDomainAddTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
-                                NULL, NULL, &tlsProps) < 0)
+                                NULL, &tlsProps) < 0)
         goto cleanup;
 
     ret = 0;
@@ -423,9 +423,9 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     char *drivestr = NULL;
     char *drivealias = NULL;
     char *prmgrAlias = NULL;
+    char *encobjAlias = NULL;
+    char *secobjAlias = NULL;
     bool driveAdded = false;
-    bool secobjAdded = false;
-    bool encobjAdded = false;
     bool prdStarted = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virJSONValuePtr secobjProps = NULL;
@@ -487,23 +487,13 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (secobjProps) {
-        rv = qemuMonitorAddObjectType(priv->mon, "secret", secinfo->s.aes.alias,
-                                      secobjProps);
-        secobjProps = NULL; /* qemuMonitorAddObjectType consumes */
-        if (rv < 0)
-            goto exit_monitor;
-        secobjAdded = true;
-    }
+    if (secobjProps &&
+        qemuMonitorAddObject(priv->mon, &secobjProps, &secobjAlias) < 0)
+        goto exit_monitor;
 
-    if (encobjProps) {
-        rv = qemuMonitorAddObjectType(priv->mon, "secret", encinfo->s.aes.alias,
-                                      encobjProps);
-        encobjProps = NULL; /* qemuMonitorAddObjectType consumes */
-        if (rv < 0)
-            goto exit_monitor;
-        encobjAdded = true;
-    }
+    if (encobjProps &&
+        qemuMonitorAddObject(priv->mon, &encobjProps, &encobjAlias) < 0)
+        goto exit_monitor;
 
     if (prmgrProps &&
         qemuMonitorAddObject(priv->mon, &prmgrProps, &prmgrAlias) < 0)
@@ -532,6 +522,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     virJSONValueFree(secobjProps);
     qemuDomainSecretDiskDestroy(disk);
     VIR_FREE(prmgrAlias);
+    VIR_FREE(secobjAlias);
+    VIR_FREE(encobjAlias);
     VIR_FREE(drivealias);
     VIR_FREE(drivestr);
     VIR_FREE(devstr);
@@ -544,10 +536,10 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         VIR_WARN("Unable to remove drive %s (%s) after failed "
                  "qemuMonitorAddDevice", drivealias, drivestr);
     }
-    if (secobjAdded)
-        ignore_value(qemuMonitorDelObject(priv->mon, secinfo->s.aes.alias));
-    if (encobjAdded)
-        ignore_value(qemuMonitorDelObject(priv->mon, encinfo->s.aes.alias));
+    if (secobjAlias)
+        ignore_value(qemuMonitorDelObject(priv->mon, secobjAlias));
+    if (encobjAlias)
+        ignore_value(qemuMonitorDelObject(priv->mon, encobjAlias));
     if (prmgrAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, prmgrAlias));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
@@ -1445,31 +1437,28 @@ int
 qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         qemuDomainAsyncJob asyncJob,
-                        const char *secAlias,
                         virJSONValuePtr *secProps,
                         virJSONValuePtr *tlsProps)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc;
     virErrorPtr orig_err;
+    char *secAlias = NULL;
 
-    if (!tlsProps && !secAlias)
+    if (!tlsProps && !secProps)
         return 0;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    if (secAlias) {
-        rc = qemuMonitorAddObjectType(priv->mon, "secret",
-                                      secAlias, *secProps);
-        *secProps = NULL; /* qemuMonitorAddObjectType consumes */
-        if (rc < 0)
-            goto error;
-    }
+    if (secProps &&
+        qemuMonitorAddObject(priv->mon, secProps, &secAlias) < 0)
+        goto error;
 
     if (tlsProps &&
         qemuMonitorAddObject(priv->mon, tlsProps, NULL) < 0)
         goto error;
+
+    VIR_FREE(secAlias);
 
     return qemuDomainObjExitMonitor(driver, vm);
 
@@ -1478,6 +1467,7 @@ qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
     virErrorRestore(&orig_err);
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, NULL);
+    VIR_FREE(secAlias);
 
     return -1;
 }
@@ -1557,7 +1547,7 @@ qemuDomainAddChardevTLSObjects(virQEMUDriverPtr driver,
     dev->data.tcp.tlscreds = true;
 
     if (qemuDomainAddTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
-                                *secAlias, &secProps, &tlsProps) < 0)
+                                &secProps, &tlsProps) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2305,18 +2295,17 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
                                virDomainHostdevDefPtr hostdev)
 {
     size_t i;
-    int rv;
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virErrorPtr orig_err;
     char *devstr = NULL;
     char *drvstr = NULL;
     char *drivealias = NULL;
+    char *secobjAlias = NULL;
     bool teardowncgroup = false;
     bool teardownlabel = false;
     bool teardowndevice = false;
     bool driveAdded = false;
-    bool secobjAdded = false;
     virJSONValuePtr secobjProps = NULL;
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
     qemuDomainSecretInfoPtr secinfo = NULL;
@@ -2385,14 +2374,9 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (secobjProps) {
-        rv = qemuMonitorAddObjectType(priv->mon, "secret", secinfo->s.aes.alias,
-                                      secobjProps);
-        secobjProps = NULL; /* qemuMonitorAddObjectType consumes */
-        if (rv < 0)
-            goto exit_monitor;
-        secobjAdded = true;
-    }
+    if (secobjProps &&
+        qemuMonitorAddObject(priv->mon, &secobjProps, &secobjAlias) < 0)
+        goto exit_monitor;
 
     if (qemuMonitorAddDrive(priv->mon, drvstr) < 0)
         goto exit_monitor;
@@ -2424,6 +2408,7 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
     }
     qemuDomainSecretHostdevDestroy(hostdev);
     virJSONValueFree(secobjProps);
+    VIR_FREE(secobjAlias);
     VIR_FREE(drivealias);
     VIR_FREE(drvstr);
     VIR_FREE(devstr);
@@ -2436,8 +2421,8 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
                  "qemuMonitorAddDevice",
                  drvstr, devstr);
     }
-    if (secobjAdded)
-        ignore_value(qemuMonitorDelObject(priv->mon, secinfo->s.aes.alias));
+    if (secobjAlias)
+        ignore_value(qemuMonitorDelObject(priv->mon, secobjAlias));
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
     virErrorRestore(&orig_err);
 

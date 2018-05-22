@@ -511,18 +511,14 @@ qemuBuildSecretInfoProps(qemuDomainSecretInfoPtr secinfo,
     if (!(keyid = qemuDomainGetMasterKeyAlias()))
         return -1;
 
-    if (virJSONValueObjectCreate(propsret,
-                                 "s:data", secinfo->s.aes.ciphertext,
-                                 "s:keyid", keyid,
-                                 "s:iv", secinfo->s.aes.iv,
-                                 "s:format", "base64", NULL) < 0)
-        goto cleanup;
+    ret = qemuMonitorCreateObjectProps(propsret,
+                                       "secret", secinfo->s.aes.alias,
+                                       "s:data", secinfo->s.aes.ciphertext,
+                                       "s:keyid", keyid,
+                                       "s:iv", secinfo->s.aes.iv,
+                                       "s:format", "base64", NULL);
 
-    ret = 0;
-
- cleanup:
     VIR_FREE(keyid);
-
     return ret;
 }
 
@@ -543,25 +539,24 @@ static int
 qemuBuildObjectSecretCommandLine(virCommandPtr cmd,
                                  qemuDomainSecretInfoPtr secinfo)
 {
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
     virJSONValuePtr props = NULL;
-    char *tmp = NULL;
 
     if (qemuBuildSecretInfoProps(secinfo, &props) < 0)
         return -1;
 
-    if (!(tmp = virQEMUBuildObjectCommandlineFromJSONType("secret",
-                                                          secinfo->s.aes.alias,
-                                                          props)))
+    if (virQEMUBuildObjectCommandlineFromJSON(&buf, props) < 0)
         goto cleanup;
 
-    virCommandAddArgList(cmd, "-object", tmp, NULL);
-    ret = 0;
+    virCommandAddArg(cmd, "-object");
+    virCommandAddArgBuffer(cmd, &buf);
+
+    ret  = 0;
 
  cleanup:
+    virBufferFreeAndReset(&buf);
     virJSONValueFree(props);
-    VIR_FREE(tmp);
-
     return ret;
 }
 
