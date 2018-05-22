@@ -372,74 +372,6 @@ qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
 }
 
 static int
-qemuProcessGetVolumeQcowPassphrase(virDomainDiskDefPtr disk,
-                                   char **secretRet,
-                                   size_t *secretLen)
-{
-    virConnectPtr conn = NULL;
-    char *passphrase;
-    unsigned char *data;
-    size_t size;
-    int ret = -1;
-    virStorageEncryptionPtr enc;
-
-    if (!disk->src->encryption) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("disk %s does not have any encryption information"),
-                       disk->src->path);
-        return -1;
-    }
-    enc = disk->src->encryption;
-
-    if (!(conn = virGetConnectSecret()))
-        goto cleanup;
-
-    if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_QCOW ||
-        enc->nsecrets != 1 ||
-        enc->secrets[0]->type !=
-        VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid <encryption> for volume %s"),
-                       virDomainDiskGetSource(disk));
-        goto cleanup;
-    }
-
-    if (virSecretGetSecretString(conn, &enc->secrets[0]->seclookupdef,
-                                 VIR_SECRET_USAGE_TYPE_VOLUME,
-                                 &data, &size) < 0)
-        goto cleanup;
-
-    if (memchr(data, '\0', size) != NULL) {
-        memset(data, 0, size);
-        VIR_FREE(data);
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("format='qcow' passphrase for %s must not contain a "
-                         "'\\0'"), virDomainDiskGetSource(disk));
-        goto cleanup;
-    }
-
-    if (VIR_ALLOC_N(passphrase, size + 1) < 0) {
-        memset(data, 0, size);
-        VIR_FREE(data);
-        goto cleanup;
-    }
-    memcpy(passphrase, data, size);
-    passphrase[size] = '\0';
-
-    memset(data, 0, size);
-    VIR_FREE(data);
-
-    *secretRet = passphrase;
-    *secretLen = size;
-
-    ret = 0;
-
- cleanup:
-    virObjectUnref(conn);
-    return ret;
-}
-
-static int
 qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                        virDomainObjPtr vm,
                        void *opaque)
@@ -2729,11 +2661,8 @@ qemuProcessInitPasswords(virQEMUDriverPtr driver,
                          int asyncJob)
 {
     int ret = 0;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     size_t i;
-    char *alias = NULL;
-    char *secret = NULL;
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
@@ -2755,39 +2684,7 @@ qemuProcessInitPasswords(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    for (i = 0; i < vm->def->ndisks; i++) {
-        size_t secretLen;
-
-        if (!vm->def->disks[i]->src->encryption ||
-            !virDomainDiskGetSource(vm->def->disks[i]))
-            continue;
-
-        if (vm->def->disks[i]->src->encryption->format !=
-            VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT &&
-            vm->def->disks[i]->src->encryption->format !=
-            VIR_STORAGE_ENCRYPTION_FORMAT_QCOW)
-            continue;
-
-        VIR_FREE(secret);
-        if (qemuProcessGetVolumeQcowPassphrase(vm->def->disks[i],
-                                               &secret, &secretLen) < 0)
-            goto cleanup;
-
-        VIR_FREE(alias);
-        if (!(alias = qemuAliasFromDisk(vm->def->disks[i])))
-            goto cleanup;
-        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-            goto cleanup;
-        ret = qemuMonitorSetDrivePassphrase(priv->mon, alias, secret);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            ret = -1;
-        if (ret < 0)
-            goto cleanup;
-    }
-
  cleanup:
-    VIR_FREE(alias);
-    VIR_FREE(secret);
     virObjectUnref(cfg);
     return ret;
 }

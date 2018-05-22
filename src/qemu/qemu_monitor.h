@@ -819,10 +819,6 @@ int qemuMonitorAddDrive(qemuMonitorPtr mon,
 int qemuMonitorDriveDel(qemuMonitorPtr mon,
                         const char *drivestr);
 
-int qemuMonitorSetDrivePassphrase(qemuMonitorPtr mon,
-                                  const char *alias,
-                                  const char *passphrase);
-
 int qemuMonitorCreateSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorLoadSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name);

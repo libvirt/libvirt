@@ -3119,19 +3119,6 @@ qemuMonitorAddDrive(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorSetDrivePassphrase(qemuMonitorPtr mon,
-                              const char *alias,
-                              const char *passphrase)
-{
-    VIR_DEBUG("alias=%s passphrase=%p(value hidden)", alias, passphrase);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONSetDrivePassphrase(mon, alias, passphrase);
-}
-
-
-int
 qemuMonitorCreateSnapshot(qemuMonitorPtr mon, const char *name)
 {
     VIR_DEBUG("name=%s", name);

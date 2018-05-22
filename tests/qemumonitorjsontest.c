@@ -1343,7 +1343,6 @@ GEN_TEST_FUNC(qemuMonitorJSONAddNetdev, "id=net0,type=test")
 GEN_TEST_FUNC(qemuMonitorJSONRemoveNetdev, "net0")
 GEN_TEST_FUNC(qemuMonitorJSONDelDevice, "ide0")
 GEN_TEST_FUNC(qemuMonitorJSONAddDevice, "some_dummy_devicestr")
-GEN_TEST_FUNC(qemuMonitorJSONSetDrivePassphrase, "drive-vda", "secret_passhprase")
 GEN_TEST_FUNC(qemuMonitorJSONDriveMirror, "vdb", "/foo/bar", NULL, 1024, 0, 0,
               VIR_DOMAIN_BLOCK_REBASE_SHALLOW | VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)
 GEN_TEST_FUNC(qemuMonitorJSONBlockCommit, "vdb", "/foo/bar1", "/foo/bar2", NULL, 1024)
@@ -2967,7 +2966,6 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONRemoveNetdev);
     DO_TEST_GEN(qemuMonitorJSONDelDevice);
     DO_TEST_GEN(qemuMonitorJSONAddDevice);
-    DO_TEST_GEN(qemuMonitorJSONSetDrivePassphrase);
     DO_TEST_GEN(qemuMonitorJSONDriveMirror);
     DO_TEST_GEN(qemuMonitorJSONBlockCommit);
     DO_TEST_GEN(qemuMonitorJSONDrivePivot);

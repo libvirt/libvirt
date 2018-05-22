@@ -235,10 +235,6 @@ int qemuMonitorJSONAddObject(qemuMonitorPtr mon,
 int qemuMonitorJSONDelObject(qemuMonitorPtr mon,
                              const char *objalias);
 
-int qemuMonitorJSONSetDrivePassphrase(qemuMonitorPtr mon,
-                                      const char *alias,
-                                      const char *passphrase);
-
 int qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon,
                                 virJSONValuePtr actions,
                                 const char *device,
