@@ -1399,6 +1399,49 @@ qemuDomainSecretInfoNewPlain(qemuDomainObjPrivatePtr priv,
 }
 
 
+/* qemuDomainSecretInfoNew:
+ * @priv: pointer to domain private object
+ * @srcAlias: Alias base to use for TLS object
+ * @usageType: Secret usage type
+ * @username: username
+ * @looupDef: lookup def describing secret
+ * @isLuks: boolean for luks lookup
+ *
+ * Helper function to create a secinfo to be used for secinfo consumers. This
+ * sets up encrypted data to be used with qemu's 'secret' object.
+ *
+ * Returns @secinfo on success, NULL on failure. Caller is responsible
+ * to eventually free @secinfo.
+ */
+static qemuDomainSecretInfoPtr
+qemuDomainSecretInfoNew(qemuDomainObjPrivatePtr priv,
+                        const char *srcAlias,
+                        virSecretUsageType usageType,
+                        const char *username,
+                        virSecretLookupTypeDefPtr lookupDef,
+                        bool isLuks)
+{
+    qemuDomainSecretInfoPtr secinfo = NULL;
+
+    if (!qemuDomainSupportsEncryptedSecret(priv)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("encrypted secrets are not supported"));
+        return NULL;
+    }
+
+    if (VIR_ALLOC(secinfo) < 0)
+        return NULL;
+
+    if (qemuDomainSecretAESSetup(priv, secinfo, srcAlias, usageType, username,
+                                 lookupDef, isLuks) < 0) {
+        qemuDomainSecretInfoFree(&secinfo);
+        return NULL;
+    }
+
+    return secinfo;
+}
+
+
 /**
  * qemuDomainSecretInfoTLSNew:
  * @priv: pointer to domain private object
@@ -1425,9 +1468,9 @@ qemuDomainSecretInfoTLSNew(qemuDomainObjPrivatePtr priv,
     }
     seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
 
-    return qemuDomainSecretInfoNewPlain(priv, srcAlias,
-                                        VIR_SECRET_USAGE_TYPE_TLS, NULL,
-                                        &seclookupdef, false);
+    return qemuDomainSecretInfoNew(priv, srcAlias,
+                                   VIR_SECRET_USAGE_TYPE_TLS, NULL,
+                                   &seclookupdef, false);
 }
 
 
