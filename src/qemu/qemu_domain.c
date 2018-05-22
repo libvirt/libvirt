@@ -1575,10 +1575,10 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
 
     if (hasEnc) {
         if (!(srcPriv->encinfo =
-              qemuDomainSecretInfoNewPlain(priv, encalias,
-                                           VIR_SECRET_USAGE_TYPE_VOLUME, NULL,
-                                           &src->encryption->secrets[0]->seclookupdef,
-                                           true)))
+              qemuDomainSecretInfoNew(priv, encalias,
+                                      VIR_SECRET_USAGE_TYPE_VOLUME, NULL,
+                                      &src->encryption->secrets[0]->seclookupdef,
+                                      true)))
               return -1;
     }
 
