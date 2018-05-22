@@ -65,6 +65,15 @@
           OpenGL accelerated rendering.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for 'output' audio codec
+        </summary>
+        <description>
+          Support QEMU's 'hda-output' codec advertising only a line-out for ich6
+          and ich9 sound devices.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
