@@ -439,33 +439,6 @@ qemuProcessGetVolumeQcowPassphrase(virDomainDiskDefPtr disk,
 }
 
 static int
-qemuProcessFindVolumeQcowPassphrase(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                    virDomainObjPtr vm,
-                                    const char *path,
-                                    char **secretRet,
-                                    size_t *secretLen,
-                                    void *opaque ATTRIBUTE_UNUSED)
-{
-    virDomainDiskDefPtr disk;
-    int ret = -1;
-
-    virObjectLock(vm);
-    if (!(disk = virDomainDiskByName(vm->def, path, true))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("no disk found with path %s"),
-                       path);
-        goto cleanup;
-    }
-
-    ret = qemuProcessGetVolumeQcowPassphrase(disk, secretRet, secretLen);
-
- cleanup:
-    virObjectUnlock(vm);
-    return ret;
-}
-
-
-static int
 qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                        virDomainObjPtr vm,
                        void *opaque)
@@ -1711,7 +1684,6 @@ qemuProcessHandleDumpCompleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 static qemuMonitorCallbacks monitorCallbacks = {
     .eofNotify = qemuProcessHandleMonitorEOF,
     .errorNotify = qemuProcessHandleMonitorError,
-    .diskSecretLookup = qemuProcessFindVolumeQcowPassphrase,
     .domainEvent = qemuProcessHandleEvent,
     .domainShutdown = qemuProcessHandleShutdown,
     .domainStop = qemuProcessHandleStop,

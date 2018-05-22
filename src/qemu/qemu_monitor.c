@@ -1293,22 +1293,6 @@ qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
-                         const char *path,
-                         char **secret,
-                         size_t *secretLen)
-{
-    int ret = -1;
-    *secret = NULL;
-    *secretLen = 0;
-
-    QEMU_MONITOR_CALLBACK(mon, ret, diskSecretLookup, mon->vm,
-                          path, secret, secretLen);
-    return ret;
-}
-
-
-int
 qemuMonitorEmitEvent(qemuMonitorPtr mon, const char *event,
                      long long seconds, unsigned int micros,
                      const char *details)

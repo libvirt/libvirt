@@ -121,12 +121,6 @@ typedef void (*qemuMonitorEofNotifyCallback)(qemuMonitorPtr mon,
 typedef void (*qemuMonitorErrorNotifyCallback)(qemuMonitorPtr mon,
                                                virDomainObjPtr vm,
                                                void *opaque);
-typedef int (*qemuMonitorDiskSecretLookupCallback)(qemuMonitorPtr mon,
-                                                   virDomainObjPtr vm,
-                                                   const char *path,
-                                                   char **secret,
-                                                   size_t *secretLen,
-                                                   void *opaque);
 typedef int (*qemuMonitorDomainEventCallback)(qemuMonitorPtr mon,
                                               virDomainObjPtr vm,
                                               const char *event,
@@ -285,7 +279,6 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDestroyCallback destroy;
     qemuMonitorEofNotifyCallback eofNotify;
     qemuMonitorErrorNotifyCallback errorNotify;
-    qemuMonitorDiskSecretLookupCallback diskSecretLookup;
     qemuMonitorDomainEventCallback domainEvent;
     qemuMonitorDomainShutdownCallback domainShutdown;
     qemuMonitorDomainResetCallback domainReset;
@@ -368,11 +361,6 @@ int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
                                 char **reply);
 # define qemuMonitorHMPCommand(mon, cmd, reply) \
     qemuMonitorHMPCommandWithFd(mon, cmd, -1, reply)
-
-int qemuMonitorGetDiskSecret(qemuMonitorPtr mon,
-                             const char *path,
-                             char **secret,
-                             size_t *secretLen);
 
 int qemuMonitorEmitEvent(qemuMonitorPtr mon, const char *event,
                          long long seconds, unsigned int micros,
