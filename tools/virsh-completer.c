@@ -26,6 +26,7 @@
 #include "virsh.h"
 #include "virsh-pool.h"
 #include "virsh-util.h"
+#include "virsh-secret.h"
 #include "internal.h"
 #include "virutil.h"
 #include "viralloc.h"
@@ -648,4 +649,30 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     }
     VIR_FREE(ret);
     goto cleanup;
+}
+
+
+char **
+virshSecretEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
+                              const vshCmd *cmd ATTRIBUTE_UNUSED,
+                              unsigned int flags)
+{
+    size_t i;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (VIR_ALLOC_N(ret, VIR_SECRET_EVENT_ID_LAST) < 0)
+        goto error;
+
+    for (i = 0; i < VIR_SECRET_EVENT_ID_LAST; i++) {
+        if (VIR_STRDUP(ret[i], virshSecretEventCallbacks[i].name) < 0)
+            goto error;
+    }
+
+    return ret;
+
+ error:
+    virStringListFree(ret);
+    return NULL;
 }

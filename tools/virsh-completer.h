@@ -78,4 +78,8 @@ char ** virshAllocpagesPagesizeCompleter(vshControl *ctl,
                                     const vshCmd *cmd,
                                     unsigned int flags);
 
+char ** virshSecretEventNameCompleter(vshControl *ctl,
+                                      const vshCmd *cmd,
+                                      unsigned int flags);
+
 #endif

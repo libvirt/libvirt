@@ -671,6 +671,7 @@ static const vshCmdOptDef opts_secret_event[] = {
     },
     {.name = "event",
      .type = VSH_OT_STRING,
+     .completer = virshSecretEventNameCompleter,
      .help = N_("which event type to wait for")
     },
     {.name = "loop",
