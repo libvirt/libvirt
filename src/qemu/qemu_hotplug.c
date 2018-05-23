@@ -5291,10 +5291,8 @@ qemuDomainDetachShmemDevice(virQEMUDriverPtr driver,
         ret = -1;
 
     if (ret == 0) {
-        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1) {
-            qemuDomainReleaseDeviceAddress(vm, &shmem->info, NULL);
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
             ret = qemuDomainRemoveShmemDevice(driver, vm, shmem);
-        }
     }
     qemuDomainResetDeviceRemoval(vm);
 
