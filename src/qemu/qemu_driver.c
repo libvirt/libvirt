@@ -7727,14 +7727,15 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
 static int
 qemuDomainDetachDeviceControllerLive(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
-                                     virDomainDeviceDefPtr dev)
+                                     virDomainDeviceDefPtr dev,
+                                     bool async)
 {
     virDomainControllerDefPtr cont = dev->data.controller;
     int ret = -1;
 
     switch (cont->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        ret = qemuDomainDetachControllerDevice(driver, vm, dev);
+        ret = qemuDomainDetachControllerDevice(driver, vm, dev, async);
         break;
     default :
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -7747,46 +7748,47 @@ qemuDomainDetachDeviceControllerLive(virQEMUDriverPtr driver,
 static int
 qemuDomainDetachDeviceLive(virDomainObjPtr vm,
                            virDomainDeviceDefPtr dev,
-                           virQEMUDriverPtr driver)
+                           virQEMUDriverPtr driver,
+                           bool async)
 {
     int ret = -1;
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = qemuDomainDetachDeviceDiskLive(driver, vm, dev);
+        ret = qemuDomainDetachDeviceDiskLive(driver, vm, dev, async);
         break;
     case VIR_DOMAIN_DEVICE_CONTROLLER:
-        ret = qemuDomainDetachDeviceControllerLive(driver, vm, dev);
+        ret = qemuDomainDetachDeviceControllerLive(driver, vm, dev, async);
         break;
     case VIR_DOMAIN_DEVICE_LEASE:
         ret = qemuDomainDetachLease(driver, vm, dev->data.lease);
         break;
     case VIR_DOMAIN_DEVICE_NET:
-        ret = qemuDomainDetachNetDevice(driver, vm, dev);
+        ret = qemuDomainDetachNetDevice(driver, vm, dev, async);
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-        ret = qemuDomainDetachHostDevice(driver, vm, dev);
+        ret = qemuDomainDetachHostDevice(driver, vm, dev, async);
         break;
     case VIR_DOMAIN_DEVICE_CHR:
-        ret = qemuDomainDetachChrDevice(driver, vm, dev->data.chr);
+        ret = qemuDomainDetachChrDevice(driver, vm, dev->data.chr, async);
         break;
     case VIR_DOMAIN_DEVICE_RNG:
-        ret = qemuDomainDetachRNGDevice(driver, vm, dev->data.rng);
+        ret = qemuDomainDetachRNGDevice(driver, vm, dev->data.rng, async);
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
-        ret = qemuDomainDetachMemoryDevice(driver, vm, dev->data.memory);
+        ret = qemuDomainDetachMemoryDevice(driver, vm, dev->data.memory, async);
         break;
     case VIR_DOMAIN_DEVICE_SHMEM:
-        ret = qemuDomainDetachShmemDevice(driver, vm, dev->data.shmem);
+        ret = qemuDomainDetachShmemDevice(driver, vm, dev->data.shmem, async);
         break;
     case VIR_DOMAIN_DEVICE_WATCHDOG:
-        ret = qemuDomainDetachWatchdog(driver, vm, dev->data.watchdog);
+        ret = qemuDomainDetachWatchdog(driver, vm, dev->data.watchdog, async);
         break;
     case VIR_DOMAIN_DEVICE_INPUT:
-        ret = qemuDomainDetachInputDevice(vm, dev->data.input);
+        ret = qemuDomainDetachInputDevice(vm, dev->data.input, async);
         break;
     case VIR_DOMAIN_DEVICE_REDIRDEV:
-        ret = qemuDomainDetachRedirdevDevice(driver, vm, dev->data.redirdev);
+        ret = qemuDomainDetachRedirdevDevice(driver, vm, dev->data.redirdev, async);
         break;
 
     case VIR_DOMAIN_DEVICE_FS:
@@ -8717,7 +8719,7 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (qemuDomainDetachDeviceLive(vm, dev_copy, driver) < 0)
+        if (qemuDomainDetachDeviceLive(vm, dev_copy, driver, false) < 0)
             goto cleanup;
         /*
          * update domain status forcibly because the domain status may be

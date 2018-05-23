@@ -87,7 +87,8 @@ int qemuDomainAttachMemory(virQEMUDriverPtr driver,
                            virDomainMemoryDefPtr mem);
 int qemuDomainDetachMemoryDevice(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
-                                 virDomainMemoryDefPtr memdef);
+                                 virDomainMemoryDefPtr memdef,
+                                 bool async);
 int qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainGraphicsDefPtr dev);
@@ -106,26 +107,33 @@ int qemuDomainChangeNetLinkState(virQEMUDriverPtr driver,
                                  int linkstate);
 int qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
-                                   virDomainDeviceDefPtr dev);
+                                   virDomainDeviceDefPtr dev,
+                                   bool async);
 int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
-                                     virDomainDeviceDefPtr dev);
+                                     virDomainDeviceDefPtr dev,
+                                     bool async);
 int qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              virDomainDeviceDefPtr dev);
+                              virDomainDeviceDefPtr dev,
+                              bool async);
 int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virDomainDeviceDefPtr dev);
+                               virDomainDeviceDefPtr dev,
+                               bool async);
 int qemuDomainDetachShmemDevice(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
-                                virDomainShmemDefPtr dev);
+                                virDomainShmemDefPtr dev,
+                                bool async);
 int qemuDomainDetachWatchdog(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
-                             virDomainWatchdogDefPtr watchdog);
+                             virDomainWatchdogDefPtr watchdog,
+                             bool async);
 
 int qemuDomainDetachRedirdevDevice(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
-                                   virDomainRedirdevDefPtr dev);
+                                   virDomainRedirdevDefPtr dev,
+                                   bool async);
 
 int qemuDomainAttachInputDevice(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
@@ -142,13 +150,15 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
                               virDomainChrDefPtr chr);
 int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              virDomainChrDefPtr chr);
+                              virDomainChrDefPtr chr,
+                              bool async);
 int qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainRNGDefPtr rng);
 int qemuDomainDetachRNGDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              virDomainRNGDefPtr rng);
+                              virDomainRNGDefPtr rng,
+                              bool async);
 
 void qemuDomainRemoveVcpuAlias(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
@@ -184,6 +194,7 @@ int qemuDomainSetVcpuInternal(virQEMUDriverPtr driver,
                               bool state);
 
 int qemuDomainDetachInputDevice(virDomainObjPtr vm,
-                                virDomainInputDefPtr def);
+                                virDomainInputDefPtr def,
+                                bool async);
 
 #endif /* __QEMU_HOTPLUG_H__ */

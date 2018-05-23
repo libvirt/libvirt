@@ -4740,7 +4740,8 @@ qemuDomainSignalDeviceRemoval(virDomainObjPtr vm,
 static int
 qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
-                                 virDomainDiskDefPtr detach)
+                                 virDomainDiskDefPtr detach,
+                                 bool async)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -4757,7 +4758,8 @@ qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, &detach->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
@@ -4769,18 +4771,24 @@ qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-        ret = qemuDomainRemoveDiskDevice(driver, vm, detach);
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveDiskDevice(driver, vm, detach);
+    }
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
 static int
 qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
-                           virDomainDiskDefPtr detach)
+                           virDomainDiskDefPtr detach,
+                           bool async)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -4788,7 +4796,8 @@ qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
     if (qemuDomainDiskBlockJobIsActive(detach))
         goto cleanup;
 
-    qemuDomainMarkDeviceForRemoval(vm, &detach->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
@@ -4800,11 +4809,16 @@ qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-        ret = qemuDomainRemoveDiskDevice(driver, vm, detach);
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveDiskDevice(driver, vm, detach);
+    }
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
@@ -4824,7 +4838,8 @@ qemuFindDisk(virDomainDefPtr def, const char *dst)
 int
 qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virDomainDeviceDefPtr dev)
+                               virDomainDeviceDefPtr dev,
+                               bool async)
 {
     virDomainDiskDefPtr disk;
     int ret = -1;
@@ -4841,10 +4856,10 @@ qemuDomainDetachDeviceDiskLive(virQEMUDriverPtr driver,
     case VIR_DOMAIN_DISK_DEVICE_DISK:
     case VIR_DOMAIN_DISK_DEVICE_LUN:
         if (disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO)
-            ret = qemuDomainDetachVirtioDiskDevice(driver, vm, disk);
+            ret = qemuDomainDetachVirtioDiskDevice(driver, vm, disk, async);
         else if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI ||
                  disk->bus == VIR_DOMAIN_DISK_BUS_USB)
-            ret = qemuDomainDetachDiskDevice(driver, vm, disk);
+            ret = qemuDomainDetachDiskDevice(driver, vm, disk, async);
         else
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("This type of disk cannot be hot unplugged"));
@@ -4922,7 +4937,8 @@ static bool qemuDomainControllerIsBusy(virDomainObjPtr vm,
 
 int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
-                                     virDomainDeviceDefPtr dev)
+                                     virDomainDeviceDefPtr dev,
+                                     bool async)
 {
     int idx, ret = -1;
     virDomainControllerDefPtr detach = NULL;
@@ -4974,7 +4990,8 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, &detach->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, detach->info.alias)) {
@@ -4984,18 +5001,24 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-        ret = qemuDomainRemoveControllerDevice(driver, vm, detach);
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveControllerDevice(driver, vm, detach);
+    }
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
 static int
 qemuDomainDetachHostPCIDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              virDomainHostdevDefPtr detach)
+                              virDomainHostdevDefPtr detach,
+                              bool async)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainHostdevSubsysPCIPtr pcisrc = &detach->source.subsys.u.pci;
@@ -5009,7 +5032,8 @@ qemuDomainDetachHostPCIDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, detach->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorDelDevice(priv->mon, detach->info->alias);
@@ -5022,7 +5046,8 @@ qemuDomainDetachHostPCIDevice(virQEMUDriverPtr driver,
 static int
 qemuDomainDetachHostUSBDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              virDomainHostdevDefPtr detach)
+                              virDomainHostdevDefPtr detach,
+                              bool async)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
@@ -5033,7 +5058,8 @@ qemuDomainDetachHostUSBDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, detach->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorDelDevice(priv->mon, detach->info->alias);
@@ -5046,7 +5072,8 @@ qemuDomainDetachHostUSBDevice(virQEMUDriverPtr driver,
 static int
 qemuDomainDetachHostSCSIDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virDomainHostdevDefPtr detach)
+                               virDomainHostdevDefPtr detach,
+                               bool async)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -5057,7 +5084,8 @@ qemuDomainDetachHostSCSIDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, detach->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorDelDevice(priv->mon, detach->info->alias);
@@ -5071,7 +5099,8 @@ qemuDomainDetachHostSCSIDevice(virQEMUDriverPtr driver,
 static int
 qemuDomainDetachSCSIVHostDevice(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
-                                virDomainHostdevDefPtr detach)
+                                virDomainHostdevDefPtr detach,
+                                bool async)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
@@ -5082,7 +5111,8 @@ qemuDomainDetachSCSIVHostDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, detach->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorDelDevice(priv->mon, detach->info->alias);
@@ -5097,7 +5127,8 @@ qemuDomainDetachSCSIVHostDevice(virQEMUDriverPtr driver,
 static int
 qemuDomainDetachMediatedDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virDomainHostdevDefPtr detach)
+                               virDomainHostdevDefPtr detach,
+                               bool async)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -5108,7 +5139,8 @@ qemuDomainDetachMediatedDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, detach->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorDelDevice(priv->mon, detach->info->alias);
@@ -5122,7 +5154,8 @@ qemuDomainDetachMediatedDevice(virQEMUDriverPtr driver,
 static int
 qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virDomainHostdevDefPtr detach)
+                               virDomainHostdevDefPtr detach,
+                               bool async)
 {
     int ret = -1;
 
@@ -5131,19 +5164,19 @@ qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
 
     switch (detach->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        ret = qemuDomainDetachHostPCIDevice(driver, vm, detach);
+        ret = qemuDomainDetachHostPCIDevice(driver, vm, detach, async);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        ret = qemuDomainDetachHostUSBDevice(driver, vm, detach);
+        ret = qemuDomainDetachHostUSBDevice(driver, vm, detach, async);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-        ret = qemuDomainDetachHostSCSIDevice(driver, vm, detach);
+        ret = qemuDomainDetachHostSCSIDevice(driver, vm, detach, async);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
-        ret = qemuDomainDetachSCSIVHostDevice(driver, vm, detach);
+        ret = qemuDomainDetachSCSIVHostDevice(driver, vm, detach, async);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
-        ret = qemuDomainDetachMediatedDevice(driver, vm, detach);
+        ret = qemuDomainDetachMediatedDevice(driver, vm, detach, async);
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -5155,11 +5188,13 @@ qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
     if (ret < 0) {
         if (virDomainObjIsActive(vm))
             virDomainAuditHostdev(vm, detach, "detach", false);
-    } else if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1) {
+    } else if (!async &&
+               (ret = qemuDomainWaitForDeviceRemoval(vm)) == 1) {
         ret = qemuDomainRemoveHostDevice(driver, vm, detach);
     }
 
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
 
     return ret;
 }
@@ -5167,7 +5202,8 @@ qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
 /* search for a hostdev matching dev and detach it */
 int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virDomainDeviceDefPtr dev)
+                               virDomainDeviceDefPtr dev,
+                               bool async)
 {
     virDomainHostdevDefPtr hostdev = dev->data.hostdev;
     virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
@@ -5242,16 +5278,17 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
      * function so that mac address / virtualport are reset
      */
     if (detach->parent.type == VIR_DOMAIN_DEVICE_NET)
-        return qemuDomainDetachNetDevice(driver, vm, &detach->parent);
+        return qemuDomainDetachNetDevice(driver, vm, &detach->parent, async);
     else
-        return qemuDomainDetachThisHostDevice(driver, vm, detach);
+        return qemuDomainDetachThisHostDevice(driver, vm, detach, async);
 }
 
 
 int
 qemuDomainDetachShmemDevice(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
-                            virDomainShmemDefPtr dev)
+                            virDomainShmemDefPtr dev,
+                            bool async)
 {
     int ret = -1;
     ssize_t idx = -1;
@@ -5282,7 +5319,8 @@ qemuDomainDetachShmemDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, &shmem->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &shmem->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, shmem->info.alias) < 0) {
@@ -5304,7 +5342,8 @@ qemuDomainDetachShmemDevice(virQEMUDriverPtr driver,
 int
 qemuDomainDetachWatchdog(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
-                         virDomainWatchdogDefPtr dev)
+                         virDomainWatchdogDefPtr dev,
+                         bool async)
 {
     int ret = -1;
     virDomainWatchdogDefPtr watchdog = vm->def->watchdog;
@@ -5336,7 +5375,8 @@ qemuDomainDetachWatchdog(virQEMUDriverPtr driver,
         return -1;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, &watchdog->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &watchdog->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, watchdog->info.alias) < 0) {
@@ -5346,11 +5386,16 @@ qemuDomainDetachWatchdog(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-        ret = qemuDomainRemoveWatchdog(driver, vm, watchdog);
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveWatchdog(driver, vm, watchdog);
+    }
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
@@ -5358,7 +5403,8 @@ qemuDomainDetachWatchdog(virQEMUDriverPtr driver,
 int
 qemuDomainDetachRedirdevDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               virDomainRedirdevDefPtr dev)
+                               virDomainRedirdevDefPtr dev,
+                               bool async)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -5379,7 +5425,8 @@ qemuDomainDetachRedirdevDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, &tmpRedirdevDef->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &tmpRedirdevDef->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, tmpRedirdevDef->info.alias) < 0) {
@@ -5389,11 +5436,16 @@ qemuDomainDetachRedirdevDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-        ret = qemuDomainRemoveRedirdevDevice(driver, vm, tmpRedirdevDef);
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveRedirdevDevice(driver, vm, tmpRedirdevDef);
+    }
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
@@ -5401,7 +5453,8 @@ qemuDomainDetachRedirdevDevice(virQEMUDriverPtr driver,
 int
 qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
-                          virDomainDeviceDefPtr dev)
+                          virDomainDeviceDefPtr dev,
+                          bool async)
 {
     int detachidx, ret = -1;
     virDomainNetDefPtr detach = NULL;
@@ -5414,7 +5467,8 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
 
     if (virDomainNetGetActualType(detach) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         ret = qemuDomainDetachThisHostDevice(driver, vm,
-                                             virDomainNetGetActualHostdev(detach));
+                                             virDomainNetGetActualHostdev(detach),
+                                             async);
         goto cleanup;
     }
 
@@ -5442,7 +5496,8 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
      */
     ignore_value(qemuInterfaceStopDevice(detach));
 
-    qemuDomainMarkDeviceForRemoval(vm, &detach->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
@@ -5454,11 +5509,16 @@ qemuDomainDetachNetDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-        ret = qemuDomainRemoveNetDevice(driver, vm, detach);
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveNetDevice(driver, vm, detach);
+    }
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
@@ -5585,7 +5645,8 @@ int qemuDomainDetachLease(virQEMUDriverPtr driver,
 
 int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              virDomainChrDefPtr chr)
+                              virDomainChrDefPtr chr,
+                              bool async)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -5609,7 +5670,8 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
     if (qemuBuildChrDeviceStr(&devstr, vmdef, chr, priv->qemuCaps) < 0)
         goto cleanup;
 
-    qemuDomainMarkDeviceForRemoval(vm, &tmpChr->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &tmpChr->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (devstr && qemuMonitorDelDevice(priv->mon, tmpChr->info.alias) < 0) {
@@ -5619,11 +5681,16 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-        ret = qemuDomainRemoveChrDevice(driver, vm, tmpChr);
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveChrDevice(driver, vm, tmpChr);
+    }
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
     VIR_FREE(devstr);
     return ret;
 }
@@ -5632,7 +5699,8 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
 int
 qemuDomainDetachRNGDevice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
-                          virDomainRNGDefPtr rng)
+                          virDomainRNGDefPtr rng,
+                          bool async)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     ssize_t idx;
@@ -5656,18 +5724,24 @@ qemuDomainDetachRNGDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, &tmpRNG->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &tmpRNG->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorDelDevice(priv->mon, tmpRNG->info.alias);
     if (qemuDomainObjExitMonitor(driver, vm) || rc < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-        ret = qemuDomainRemoveRNGDevice(driver, vm, tmpRNG);
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveRNGDevice(driver, vm, tmpRNG);
+    }
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
@@ -5675,7 +5749,8 @@ qemuDomainDetachRNGDevice(virQEMUDriverPtr driver,
 int
 qemuDomainDetachMemoryDevice(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
-                             virDomainMemoryDefPtr memdef)
+                             virDomainMemoryDefPtr memdef,
+                             bool async)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainMemoryDefPtr mem;
@@ -5701,18 +5776,24 @@ qemuDomainDetachMemoryDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, &mem->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &mem->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorDelDevice(priv->mon, mem->info.alias);
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-        ret = qemuDomainRemoveMemoryDevice(driver, vm, mem);
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveMemoryDevice(driver, vm, mem);
+    }
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
@@ -6380,7 +6461,8 @@ qemuDomainSetVcpuInternal(virQEMUDriverPtr driver,
 
 int
 qemuDomainDetachInputDevice(virDomainObjPtr vm,
-                            virDomainInputDefPtr def)
+                            virDomainInputDefPtr def,
+                            bool async)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
@@ -6410,7 +6492,8 @@ qemuDomainDetachInputDevice(virDomainObjPtr vm,
         break;
     }
 
-    qemuDomainMarkDeviceForRemoval(vm, &input->info);
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &input->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorDelDevice(priv->mon, input->info.alias)) {
@@ -6420,10 +6503,15 @@ qemuDomainDetachInputDevice(virDomainObjPtr vm,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-        ret = qemuDomainRemoveInputDevice(vm, input);
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveInputDevice(vm, input);
+    }
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
