@@ -7,6 +7,7 @@
   <bootloader>/usr/bin/pygrub</bootloader>
   <os>
     <type arch='x86_64' machine='xenpv'>linux</type>
+    <cmdline>console=hvc0</cmdline>
   </os>
   <clock offset='utc' adjustment='reset'/>
   <on_poweroff>destroy</on_poweroff>

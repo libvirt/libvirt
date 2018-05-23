@@ -200,6 +200,8 @@ mymain(void)
     DO_TEST("paravirt-net-vifname");
     DO_TEST("paravirt-vcpu");
     DO_TEST("paravirt-maxvcpus");
+    DO_TEST_FORMAT("paravirt-root");
+    DO_TEST_FORMAT("paravirt-extra-root");
     DO_TEST("fullvirt-new-cdrom");
     DO_TEST("fullvirt-utc");
     DO_TEST("fullvirt-localtime");
