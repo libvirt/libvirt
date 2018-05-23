@@ -2081,15 +2081,9 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             goto error;
     }
 
-    /* Assign a PCI slot to the primary video card if there is not an
-     * assigned address. */
-    if (def->nvideos > 0 &&
-        virDeviceInfoPCIAddressWanted(&def->videos[0]->info)) {
-        if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->videos[0]->info) < 0)
-            goto error;
-    }
+    /* Video devices */
+    for (i = 0; i < def->nvideos; i++) {
 
-    for (i = 1; i < def->nvideos; i++) {
         if (!virDeviceInfoPCIAddressWanted(&def->videos[i]->info))
             continue;
 
