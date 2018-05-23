@@ -53,9 +53,6 @@
       <driver name='qemu' type='qcow2'/>
       <source file='/var/lib/libvirt/images/OtherDemo.img'/>
       <target dev='vdb' bus='virtio'/>
-      <encryption format='qcow'>
-        <secret type='passphrase' uuid='e78d4b51-a2af-485f-b0f5-afca709a80f4'/>
-      </encryption>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </disk>
     <disk type='file' device='cdrom'>
