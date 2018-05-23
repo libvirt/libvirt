@@ -27258,6 +27258,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     const char *type = NULL;
     int n;
     size_t i;
+    virBuffer attributeBuf = VIR_BUFFER_INITIALIZER;
     virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
     char *netprefix = NULL;
 
@@ -27773,12 +27774,21 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 break;
 
             case VIR_DOMAIN_FEATURE_HPT:
-                if (def->features[i] != VIR_TRISTATE_SWITCH_ON ||
-                    def->hpt_resizing == VIR_DOMAIN_HPT_RESIZING_NONE)
+                if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
                     break;
 
-                virBufferAsprintf(buf, "<hpt resizing='%s'/>\n",
-                                  virDomainHPTResizingTypeToString(def->hpt_resizing));
+                virBufferFreeAndReset(&attributeBuf);
+
+                if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE) {
+                    virBufferAsprintf(&attributeBuf,
+                                      " resizing='%s'",
+                                      virDomainHPTResizingTypeToString(def->hpt_resizing));
+                }
+
+                if (virXMLFormatElement(buf, "hpt",
+                                        &attributeBuf, NULL) < 0) {
+                    goto error;
+                }
                 break;
 
             /* coverity[dead_error_begin] */
@@ -28040,6 +28050,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
  error:
     virBufferFreeAndReset(buf);
     virBufferFreeAndReset(&childrenBuf);
+    virBufferFreeAndReset(&attributeBuf);
     return -1;
 }
 
