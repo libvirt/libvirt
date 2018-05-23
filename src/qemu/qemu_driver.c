@@ -8724,7 +8724,7 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
          * changed even if we failed to attach the device. For example,
          * a new controller may be created.
          */
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, caps) < 0) {
             ret = -1;
             goto cleanup;
         }
@@ -8732,7 +8732,7 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
+        ret = virDomainSaveConfig(cfg->configDir, caps, vmdef);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
