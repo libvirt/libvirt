@@ -1173,7 +1173,7 @@ mymain(void)
     DO_TEST("pseries-cpu-exact",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
 
-    DO_TEST("user-aliases", NONE);
+    DO_TEST("user-aliases", QEMU_CAPS_QCOW2_LUKS);
     DO_TEST("input-virtio-ccw",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_KEYBOARD,

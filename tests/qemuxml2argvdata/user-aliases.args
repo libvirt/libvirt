@@ -7,6 +7,8 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name gentoo \
 -S \
+-object secret,id=masterKey0,format=raw,\
+file=/tmp/lib/domain--1-gentoo/master-key.aes \
 -machine pc-i440fx-1.4,accel=kvm,usb=off,dump-guest-core=off \
 -m 4096 \
 -smp 4,sockets=4,cores=1,threads=1 \
@@ -43,7 +45,11 @@ id=drive-ua-myDisk1,cache=none \
 -drive file=/var/lib/libvirt/images/gentoo.qcow2,format=qcow2,if=none,\
 id=drive-ua-myDisk2 \
 -device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-ua-myDisk2,id=ua-myDisk2 \
--drive file=/var/lib/libvirt/images/OtherDemo.img,format=qcow2,if=none,\
+-object secret,id=ua-myEncryptedDisk1-luks-secret0,\
+data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,\
+keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
+-drive file=/var/lib/libvirt/images/OtherDemo.img,encrypt.format=luks,\
+encrypt.key-secret=ua-myEncryptedDisk1-luks-secret0,format=qcow2,if=none,\
 id=drive-ua-myEncryptedDisk1 \
 -device virtio-blk-pci,bus=pci.0,addr=0x7,drive=drive-ua-myEncryptedDisk1,\
 id=ua-myEncryptedDisk1 \
