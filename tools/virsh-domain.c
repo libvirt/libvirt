@@ -12832,18 +12832,12 @@ virshDomainEventTrayChangeToString(int reason)
     return str ? _(str) : _("unknown");
 }
 
-struct vshEventCallback {
-    const char *name;
-    virConnectDomainEventGenericCallback cb;
-};
-typedef struct vshEventCallback vshEventCallback;
-
 struct virshDomEventData {
     vshControl *ctl;
     bool loop;
     int *count;
     bool timestamp;
-    vshEventCallback *cb;
+    virshDomainEventCallback *cb;
     int id;
 };
 typedef struct virshDomEventData virshDomEventData;
@@ -13278,7 +13272,7 @@ virshEventBlockThresholdPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-static vshEventCallback vshEventCallbacks[] = {
+virshDomainEventCallback virshDomainEventCallbacks[] = {
     { "lifecycle",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventLifecyclePrint), },
     { "reboot", virshEventGenericPrint, },
@@ -13328,7 +13322,7 @@ static vshEventCallback vshEventCallbacks[] = {
     { "block-threshold",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventBlockThresholdPrint), },
 };
-verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
+verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(virshDomainEventCallbacks));
 
 static const vshCmdInfo info_event[] = {
     {.name = "help",
@@ -13388,7 +13382,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "list")) {
         for (event = 0; event < VIR_DOMAIN_EVENT_ID_LAST; event++)
-            vshPrint(ctl, "%s\n", vshEventCallbacks[event].name);
+            vshPrint(ctl, "%s\n", virshDomainEventCallbacks[event].name);
         return true;
     }
 
@@ -13396,7 +13390,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         return false;
     if (eventName) {
         for (event = 0; event < VIR_DOMAIN_EVENT_ID_LAST; event++)
-            if (STREQ(eventName, vshEventCallbacks[event].name))
+            if (STREQ(eventName, virshDomainEventCallbacks[event].name))
                 break;
         if (event == VIR_DOMAIN_EVENT_ID_LAST) {
             vshError(ctl, _("unknown event type %s"), eventName);
@@ -13416,7 +13410,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
             data[i].loop = loop;
             data[i].count = &count;
             data[i].timestamp = timestamp;
-            data[i].cb = &vshEventCallbacks[i];
+            data[i].cb = &virshDomainEventCallbacks[i];
             data[i].id = -1;
         }
     } else {
@@ -13426,7 +13420,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         data[0].loop = vshCommandOptBool(cmd, "loop");
         data[0].count = &count;
         data[0].timestamp = timestamp;
-        data[0].cb = &vshEventCallbacks[event];
+        data[0].cb = &virshDomainEventCallbacks[event];
         data[0].id = -1;
     }
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
