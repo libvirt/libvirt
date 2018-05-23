@@ -870,6 +870,7 @@ static const vshCmdOptDef opts_node_device_event[] = {
     },
     {.name = "event",
      .type = VSH_OT_STRING,
+     .completer = virshNodedevEventNameCompleter,
      .help = N_("which event type to wait for")
     },
     {.name = "loop",
