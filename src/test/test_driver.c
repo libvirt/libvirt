@@ -322,30 +322,35 @@ testBuildCapabilities(virConnectPtr conn)
     if (virCapabilitiesAddHostFeature(caps, "nonpae") < 0)
         goto error;
 
-    if (VIR_ALLOC_N(caps->host.pagesSize, 2) < 0)
+    if (VIR_ALLOC_N(caps->host.pagesSize, 4) < 0)
         goto error;
 
     caps->host.pagesSize[caps->host.nPagesSize++] = 4;
+    caps->host.pagesSize[caps->host.nPagesSize++] = 8;
     caps->host.pagesSize[caps->host.nPagesSize++] = 2048;
+    caps->host.pagesSize[caps->host.nPagesSize++] = 1024 * 1024;
 
     for (i = 0; i < privconn->numCells; i++) {
         virCapsHostNUMACellCPUPtr cpu_cells;
         virCapsHostNUMACellPageInfoPtr pages;
-        size_t nPages;
+        size_t nPages = caps->host.nPagesSize - 1;
 
         if (VIR_ALLOC_N(cpu_cells, privconn->cells[i].numCpus) < 0 ||
-            VIR_ALLOC_N(pages, caps->host.nPagesSize) < 0) {
+            VIR_ALLOC_N(pages, nPages) < 0) {
                 VIR_FREE(cpu_cells);
                 goto error;
             }
 
-        nPages = caps->host.nPagesSize;
-
         memcpy(cpu_cells, privconn->cells[i].cpus,
                sizeof(*cpu_cells) * privconn->cells[i].numCpus);
 
-        for (j = 0; j < nPages; j++)
-            pages[j].size = caps->host.pagesSize[j];
+        if (i == 1)
+            pages[0].size = caps->host.pagesSize[1];
+        else
+            pages[0].size = caps->host.pagesSize[0];
+
+        for (j = 1; j < nPages; j++)
+            pages[j].size = caps->host.pagesSize[j + 1];
 
         pages[0].avail = privconn->cells[i].mem / pages[0].size;
 
