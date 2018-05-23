@@ -8751,6 +8751,77 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
     return ret;
 }
 
+
+static int
+qemuDomainDetachDeviceAliasLiveAndConfig(virQEMUDriverPtr driver,
+                                         virDomainObjPtr vm,
+                                         const char *alias,
+                                         unsigned int flags)
+{
+    virCapsPtr caps = NULL;
+    virQEMUDriverConfigPtr cfg = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainDefPtr persistentDef = NULL;
+    virDomainDefPtr vmdef = NULL;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto cleanup;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) &&
+        !(flags & VIR_DOMAIN_AFFECT_LIVE))
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
+
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto cleanup;
+
+    if (persistentDef) {
+        virDomainDeviceDef dev;
+
+        vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
+        if (!vmdef)
+            goto cleanup;
+
+        if (virDomainDefFindDevice(persistentDef, alias, &dev, true) < 0)
+            goto cleanup;
+
+        if (qemuDomainDetachDeviceConfig(persistentDef, &dev, caps,
+                                         parse_flags, driver->xmlopt) < 0)
+            goto cleanup;
+    }
+
+    if (def) {
+        virDomainDeviceDef dev;
+
+        if (virDomainDefFindDevice(def, alias, &dev, true) < 0)
+            goto cleanup;
+
+        if (qemuDomainDetachDeviceLive(vm, &dev, driver, true) < 0)
+            goto cleanup;
+    }
+
+    if (vmdef) {
+        if (virDomainSaveConfig(cfg->configDir, caps, vmdef) < 0)
+            goto cleanup;
+        virDomainObjAssignDef(vm, vmdef, false, NULL);
+        vmdef = NULL;
+    }
+
+    ret = 0;
+ cleanup:
+    virDomainDefFree(vmdef);
+    virObjectUnref(cfg);
+    virObjectUnref(caps);
+    return ret;
+}
+
+
 static int
 qemuDomainDetachDeviceFlags(virDomainPtr dom,
                             const char *xml,
@@ -8784,6 +8855,42 @@ qemuDomainDetachDeviceFlags(virDomainPtr dom,
     virDomainObjEndAPI(&vm);
     return ret;
 }
+
+
+static int
+qemuDomainDetachDeviceAlias(virDomainPtr dom,
+                            const char *alias,
+                            unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainDetachDeviceAliasEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto endjob;
+
+    if (qemuDomainDetachDeviceAliasLiveAndConfig(driver, vm, alias, flags) < 0)
+        goto endjob;
+
+    ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 
 static int qemuDomainDetachDevice(virDomainPtr dom, const char *xml)
 {
@@ -21290,6 +21397,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainDetachDevice = qemuDomainDetachDevice, /* 0.5.0 */
     .domainDetachDeviceFlags = qemuDomainDetachDeviceFlags, /* 0.7.7 */
     .domainUpdateDeviceFlags = qemuDomainUpdateDeviceFlags, /* 0.8.0 */
+    .domainDetachDeviceAlias = qemuDomainDetachDeviceAlias, /* 4.4.0 */
     .domainGetAutostart = qemuDomainGetAutostart, /* 0.2.1 */
     .domainSetAutostart = qemuDomainSetAutostart, /* 0.2.1 */
     .domainGetSchedulerType = qemuDomainGetSchedulerType, /* 0.7.0 */
