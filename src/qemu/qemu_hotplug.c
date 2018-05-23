@@ -5344,10 +5344,8 @@ qemuDomainDetachWatchdog(virQEMUDriverPtr driver,
         ret = -1;
 
     if (ret == 0) {
-        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1) {
-            qemuDomainReleaseDeviceAddress(vm, &watchdog->info, NULL);
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
             ret = qemuDomainRemoveWatchdog(driver, vm, watchdog);
-        }
     }
     qemuDomainResetDeviceRemoval(vm);
 
