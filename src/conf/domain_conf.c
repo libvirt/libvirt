@@ -19807,8 +19807,24 @@ virDomainDefParseXML(xmlDocPtr xml,
                 VIR_FREE(tmp);
             }
 
-            if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE)
+            if (virDomainParseScaledValue("./features/hpt/maxpagesize",
+                                          NULL,
+                                          ctxt,
+                                          &def->hpt_maxpagesize,
+                                          1024,
+                                          ULLONG_MAX,
+                                          false) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s",
+                               _("Unable to parse HPT maxpagesize setting"));
+                goto error;
+            }
+            def->hpt_maxpagesize = VIR_DIV_UP(def->hpt_maxpagesize, 1024);
+
+            if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE ||
+                def->hpt_maxpagesize > 0) {
                 def->features[val] = VIR_TRISTATE_SWITCH_ON;
+            }
             break;
 
         /* coverity[dead_error_begin] */
@@ -21987,15 +22003,18 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
 
         case VIR_DOMAIN_FEATURE_HPT:
             if (src->features[i] != dst->features[i] ||
-                src->hpt_resizing != dst->hpt_resizing) {
+                src->hpt_resizing != dst->hpt_resizing ||
+                src->hpt_maxpagesize != dst->hpt_maxpagesize) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("State of feature '%s' differs: "
-                                 "source: '%s,%s=%s', destination: '%s,%s=%s'"),
+                                 "source: '%s,%s=%s,%s=%llu', destination: '%s,%s=%s,%s=%llu'"),
                                featureName,
                                virTristateSwitchTypeToString(src->features[i]),
                                "resizing", virDomainHPTResizingTypeToString(src->hpt_resizing),
+                               "maxpagesize", src->hpt_maxpagesize,
                                virTristateSwitchTypeToString(dst->features[i]),
-                               "resizing", virDomainHPTResizingTypeToString(dst->hpt_resizing));
+                               "resizing", virDomainHPTResizingTypeToString(dst->hpt_resizing),
+                               "maxpagesize", dst->hpt_maxpagesize);
                 return false;
             }
             break;
@@ -27778,15 +27797,22 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                     break;
 
                 virBufferFreeAndReset(&attributeBuf);
+                virBufferFreeAndReset(&childrenBuf);
 
                 if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE) {
                     virBufferAsprintf(&attributeBuf,
                                       " resizing='%s'",
                                       virDomainHPTResizingTypeToString(def->hpt_resizing));
                 }
+                if (def->hpt_maxpagesize > 0) {
+                    virBufferSetChildIndent(&childrenBuf, buf);
+                    virBufferAsprintf(&childrenBuf,
+                                      "<maxpagesize unit='KiB'>%llu</maxpagesize>\n",
+                                      def->hpt_maxpagesize);
+                }
 
                 if (virXMLFormatElement(buf, "hpt",
-                                        &attributeBuf, NULL) < 0) {
+                                        &attributeBuf, &childrenBuf) < 0) {
                     goto error;
                 }
                 break;

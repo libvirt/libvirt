@@ -9,7 +9,9 @@
     <boot dev='hd'/>
   </os>
   <features>
-    <hpt resizing='required'/>
+    <hpt resizing='required'>
+      <maxpagesize unit='KiB'>1048576</maxpagesize>
+    </hpt>
   </features>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

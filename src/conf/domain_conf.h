@@ -2439,6 +2439,7 @@ struct _virDomainDef {
     unsigned int hyperv_spinlocks;
     virGICVersion gic_version;
     virDomainHPTResizing hpt_resizing;
+    unsigned long long hpt_maxpagesize; /* Stored in KiB */
     char *hyperv_vendor_id;
     int apic_eoi;
 

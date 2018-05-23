@@ -5127,13 +5127,20 @@
 
   <define name="hpt">
     <element name="hpt">
-      <attribute name="resizing">
-        <choice>
-          <value>enabled</value>
-          <value>disabled</value>
-          <value>required</value>
-        </choice>
-      </attribute>
+      <optional>
+        <attribute name="resizing">
+          <choice>
+            <value>enabled</value>
+            <value>disabled</value>
+            <value>required</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <element name="maxpagesize">
+          <ref name='scaledInteger'/>
+        </element>
+      </optional>
     </element>
   </define>
 

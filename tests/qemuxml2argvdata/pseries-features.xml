@@ -7,7 +7,9 @@
     <type arch='ppc64' machine='pseries'>hvm</type>
   </os>
   <features>
-    <hpt resizing='required'/>
+    <hpt resizing='required'>
+      <maxpagesize unit='GiB'>1</maxpagesize>
+    </hpt>
   </features>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>

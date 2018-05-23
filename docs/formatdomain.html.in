@@ -1922,7 +1922,9 @@
   &lt;pvspinlock state='on'/&gt;
   &lt;gic version='2'/&gt;
   &lt;ioapic driver='qemu'/&gt;
-  &lt;hpt resizing='required'/&gt;
+  &lt;hpt resizing='required'&gt;
+    &lt;maxpagesize unit='MiB'&gt;16&lt;/maxpagesize&gt;
+  &lt;/hpt&gt;
   &lt;vmcoreinfo state='on'/&gt;
   &lt;smm state='on'&gt;
     &lt;tseg unit='MiB'&gt;48&lt;/tseg&gt;
@@ -2149,7 +2151,12 @@
           support; and <code>required</code>, which prevents the guest from
           starting unless both the guest and the host support HPT resizing. If
           the attribute is not defined, the hypervisor default will be used.
-          <span class="since">Since 3.10.0</span> (QEMU/KVM only)
+          <span class="since">Since 3.10.0</span> (QEMU/KVM only).
+
+          <p>The optional <code>maxpagesize</code> subelement can be used to
+          limit the usable page size for HPT guests. Common values are 64 KiB,
+          16 MiB and 16 GiB; when not specified, the hypervisor default will
+          be used. <span class="since">Since 4.5.0</span> (QEMU/KVM only).</p>
       </dd>
       <dt><code>vmcoreinfo</code></dt>
       <dd>Enable QEMU vmcoreinfo device to let the guest kernel save debug
