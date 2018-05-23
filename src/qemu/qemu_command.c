@@ -7256,17 +7256,18 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         }
     }
 
-    if (def->features[VIR_DOMAIN_FEATURE_HPT] != VIR_DOMAIN_HPT_RESIZING_NONE) {
+    if (def->features[VIR_DOMAIN_FEATURE_HPT] == VIR_TRISTATE_SWITCH_ON) {
         const char *str;
 
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT)) {
+        if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("HTP resizing is not supported by this "
                              "QEMU binary"));
             goto cleanup;
         }
 
-        str = virDomainHPTResizingTypeToString(def->features[VIR_DOMAIN_FEATURE_HPT]);
+        str = virDomainHPTResizingTypeToString(def->hpt_resizing);
         if (!str) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Invalid setting for HPT resizing"));

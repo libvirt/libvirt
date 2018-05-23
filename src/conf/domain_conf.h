@@ -2438,6 +2438,7 @@ struct _virDomainDef {
     int kvm_features[VIR_DOMAIN_KVM_LAST];
     unsigned int hyperv_spinlocks;
     virGICVersion gic_version;
+    virDomainHPTResizing hpt_resizing;
     char *hyperv_vendor_id;
     int apic_eoi;
 

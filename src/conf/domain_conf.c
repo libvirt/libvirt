@@ -19803,9 +19803,12 @@ virDomainDefParseXML(xmlDocPtr xml,
                                    tmp);
                     goto error;
                 }
-                def->features[val] = value;
+                def->hpt_resizing = (virDomainHPTResizing) value;
                 VIR_FREE(tmp);
             }
+
+            if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE)
+                def->features[val] = VIR_TRISTATE_SWITCH_ON;
             break;
 
         /* coverity[dead_error_begin] */
@@ -21983,13 +21986,16 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
             break;
 
         case VIR_DOMAIN_FEATURE_HPT:
-            if (src->features[i] != dst->features[i]) {
+            if (src->features[i] != dst->features[i] ||
+                src->hpt_resizing != dst->hpt_resizing) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("State of feature '%s' differs: "
-                                 "source: '%s=%s', destination: '%s=%s'"),
+                                 "source: '%s,%s=%s', destination: '%s,%s=%s'"),
                                featureName,
-                               "resizing", virDomainHPTResizingTypeToString(src->features[i]),
-                               "resizing", virDomainHPTResizingTypeToString(dst->features[i]));
+                               virTristateSwitchTypeToString(src->features[i]),
+                               "resizing", virDomainHPTResizingTypeToString(src->hpt_resizing),
+                               virTristateSwitchTypeToString(dst->features[i]),
+                               "resizing", virDomainHPTResizingTypeToString(dst->hpt_resizing));
                 return false;
             }
             break;
@@ -27767,11 +27773,12 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                 break;
 
             case VIR_DOMAIN_FEATURE_HPT:
-                if (def->features[i] == VIR_DOMAIN_HPT_RESIZING_NONE)
+                if (def->features[i] != VIR_TRISTATE_SWITCH_ON ||
+                    def->hpt_resizing == VIR_DOMAIN_HPT_RESIZING_NONE)
                     break;
 
                 virBufferAsprintf(buf, "<hpt resizing='%s'/>\n",
-                                  virDomainHPTResizingTypeToString(def->features[i]));
+                                  virDomainHPTResizingTypeToString(def->hpt_resizing));
                 break;
 
             /* coverity[dead_error_begin] */
