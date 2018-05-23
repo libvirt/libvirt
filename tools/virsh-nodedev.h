@@ -28,6 +28,14 @@
 
 # include "virsh.h"
 
+struct virshNodedevEventCallback {
+    const char *name;
+    virConnectNodeDeviceEventGenericCallback cb;
+};
+typedef struct virshNodedevEventCallback virshNodedevEventCallback;
+
+extern virshNodedevEventCallback virshNodedevEventCallbacks[];
+
 extern const vshCmdDef nodedevCmds[];
 
 #endif /* VIRSH_NODEDEV_H */
