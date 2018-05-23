@@ -576,6 +576,7 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     virshControlPtr priv = ctl->privData;
     unsigned int npages = 0;
     xmlNodePtr *pages = NULL;
+    xmlDocPtr doc = NULL;
     double size = 0;
     size_t i = 0;
     const char *suffix = NULL;
@@ -595,7 +596,7 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
     if (!(cap_xml = virConnectGetCapabilities(priv->conn)))
         goto error;
 
-    if (!(virXMLParseStringCtxt(cap_xml, _("capabilities"), &ctxt)))
+    if (!(doc = virXMLParseStringCtxt(cap_xml, _("capabilities"), &ctxt)))
         goto error;
 
     if (cellno && vshCommandOptStringQuiet(ctl, cmd, "cellno", &cellnum) > 0) {
@@ -631,12 +632,11 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
 
  cleanup:
     xmlXPathFreeContext(ctxt);
-    for (i = 0; i < npages; i++)
-        VIR_FREE(pages[i]);
     VIR_FREE(pages);
-    VIR_FREE(cap_xml);
+    xmlFreeDoc(doc);
     VIR_FREE(path);
     VIR_FREE(pagesize);
+    VIR_FREE(cap_xml);
     VIR_FREE(unit);
 
     return ret;
