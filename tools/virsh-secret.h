@@ -28,6 +28,14 @@
 
 # include "virsh.h"
 
+struct virshSecretEventCallback {
+    const char *name;
+    virConnectSecretEventGenericCallback cb;
+};
+typedef struct virshSecretEventCallback virshSecretEventCallback;
+
+extern virshSecretEventCallback virshSecretEventCallbacks[];
+
 extern const vshCmdDef secretCmds[];
 
 #endif /* VIRSH_SECRET_H */
