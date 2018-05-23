@@ -4337,6 +4337,7 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
     event = virDomainEventDeviceRemovedNewFromObj(vm, chr->info.alias);
     qemuDomainEventQueue(driver, event);
 
+    qemuDomainReleaseDeviceAddress(vm, &chr->info, NULL);
     qemuDomainChrRemove(vm->def, chr);
     virDomainChrDefFree(chr);
     ret = 0;
@@ -5620,10 +5621,8 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1) {
-        qemuDomainReleaseDeviceAddress(vm, &tmpChr->info, NULL);
+    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
         ret = qemuDomainRemoveChrDevice(driver, vm, tmpChr);
-    }
 
  cleanup:
     qemuDomainResetDeviceRemoval(vm);
