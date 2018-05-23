@@ -7277,6 +7277,18 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
 
             virBufferAsprintf(&buf, ",resize-hpt=%s", str);
         }
+
+        if (def->hpt_maxpagesize > 0) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Configuring the page size for HPT guests "
+                                 "is not supported by this QEMU binary"));
+                goto cleanup;
+            }
+
+            virBufferAsprintf(&buf, ",cap-hpt-max-page-size=%lluk",
+                              def->hpt_maxpagesize);
+        }
     }
 
     if (cpu && cpu->model &&

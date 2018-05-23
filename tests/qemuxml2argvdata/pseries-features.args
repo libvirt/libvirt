@@ -7,7 +7,8 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc64 \
 -name guest \
 -S \
--machine pseries,accel=tcg,usb=off,dump-guest-core=off,resize-hpt=required \
+-machine pseries,accel=tcg,usb=off,dump-guest-core=off,resize-hpt=required,\
+cap-hpt-max-page-size=1048576k \
 -m 512 \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
