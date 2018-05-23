@@ -5283,19 +5283,20 @@ qemuDomainDetachShmemDevice(virQEMUDriverPtr driver,
     }
 
     qemuDomainMarkDeviceForRemoval(vm, &shmem->info);
+
     qemuDomainObjEnterMonitor(driver, vm);
-
-    ret = qemuMonitorDelDevice(priv->mon, shmem->info.alias);
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-
-    if (ret == 0) {
-        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-            ret = qemuDomainRemoveShmemDevice(driver, vm, shmem);
+    if (qemuMonitorDelDevice(priv->mon, shmem->info.alias) < 0) {
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        goto cleanup;
     }
-    qemuDomainResetDeviceRemoval(vm);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto cleanup;
 
+    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+        ret = qemuDomainRemoveShmemDevice(driver, vm, shmem);
+
+ cleanup:
+    qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
@@ -5336,19 +5337,20 @@ qemuDomainDetachWatchdog(virQEMUDriverPtr driver,
     }
 
     qemuDomainMarkDeviceForRemoval(vm, &watchdog->info);
+
     qemuDomainObjEnterMonitor(driver, vm);
-
-    ret = qemuMonitorDelDevice(priv->mon, watchdog->info.alias);
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
-
-    if (ret == 0) {
-        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
-            ret = qemuDomainRemoveWatchdog(driver, vm, watchdog);
+    if (qemuMonitorDelDevice(priv->mon, watchdog->info.alias) < 0) {
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        goto cleanup;
     }
-    qemuDomainResetDeviceRemoval(vm);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto cleanup;
 
+    if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+        ret = qemuDomainRemoveWatchdog(driver, vm, watchdog);
+
+ cleanup:
+    qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
