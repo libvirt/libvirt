@@ -82,4 +82,8 @@ char ** virshSecretEventNameCompleter(vshControl *ctl,
                                       const vshCmd *cmd,
                                       unsigned int flags);
 
+char ** virshDomainEventNameCompleter(vshControl *ctl,
+                                      const vshCmd *cmd,
+                                      unsigned int flags);
+
 #endif

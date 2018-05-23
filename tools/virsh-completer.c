@@ -23,6 +23,7 @@
 #include <config.h>
 
 #include "virsh-completer.h"
+#include "virsh-domain.h"
 #include "virsh.h"
 #include "virsh-pool.h"
 #include "virsh-util.h"
@@ -667,6 +668,32 @@ virshSecretEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     for (i = 0; i < VIR_SECRET_EVENT_ID_LAST; i++) {
         if (VIR_STRDUP(ret[i], virshSecretEventCallbacks[i].name) < 0)
+            goto error;
+    }
+
+    return ret;
+
+ error:
+    virStringListFree(ret);
+    return NULL;
+}
+
+
+char **
+virshDomainEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
+                              const vshCmd *cmd ATTRIBUTE_UNUSED,
+                              unsigned int flags)
+{
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (VIR_ALLOC_N(ret, VIR_DOMAIN_EVENT_ID_LAST + 1) < 0)
+        goto error;
+
+    for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++) {
+        if (VIR_STRDUP(ret[i], virshDomainEventCallbacks[i].name) < 0)
             goto error;
     }
 
