@@ -54,6 +54,16 @@
           a QEMU virtual machine.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for migration of VMs with non-shared storage over TLS
+        </summary>
+        <description>
+          It's now possible to use the VIR_MIGRATE_TLS flag together with
+          VIR_MIGRATE_NON_SHARED_DISK. The connection is then secured using the
+          TLS environment which is setup for the migration connection.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
