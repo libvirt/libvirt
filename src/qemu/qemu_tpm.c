@@ -475,11 +475,11 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
     char uuid[VIR_UUID_STRING_BUFLEN];
     char *vmid = NULL;
 
-    if (!privileged)
+    if (!privileged && tpmversion == VIR_DOMAIN_TPM_VERSION_1_2)
         return virFileWriteStr(logfile,
                                _("Did not create EK and certificates since "
-                               "this requires privileged mode\n"),
-                               0600);
+                                 "this requires privileged mode for a "
+                                 "TPM 1.2\n"), 0600);
 
     cmd = virCommandNew(swtpm_setup);
     if (!cmd)
