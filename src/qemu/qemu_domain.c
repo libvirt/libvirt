@@ -5687,6 +5687,46 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
     return 0;
 }
 
+
+static int
+qemuDomainDeviceDiskDefPostParse(virDomainDiskDefPtr disk,
+                                 virQEMUDriverConfigPtr cfg)
+{
+    /* set default disk types and drivers */
+    /* assign default storage format and driver according to config */
+    if (cfg->allowDiskFormatProbing) {
+        /* default disk format for drives */
+        if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
+            (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
+             virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
+            virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_AUTO);
+
+        /* default disk format for mirrored drive */
+        if (disk->mirror &&
+            disk->mirror->format == VIR_STORAGE_FILE_NONE)
+            disk->mirror->format = VIR_STORAGE_FILE_AUTO;
+    } else {
+        /* default driver if probing is forbidden */
+        if (!virDomainDiskGetDriver(disk) &&
+            virDomainDiskSetDriver(disk, "qemu") < 0)
+            return -1;
+
+        /* default disk format for drives */
+        if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
+            (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
+             virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
+            virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
+
+        /* default disk format for mirrored drive */
+        if (disk->mirror &&
+            disk->mirror->format == VIR_STORAGE_FILE_NONE)
+            disk->mirror->format = VIR_STORAGE_FILE_RAW;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
@@ -5711,40 +5751,9 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             goto cleanup;
     }
 
-    /* set default disk types and drivers */
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-        virDomainDiskDefPtr disk = dev->data.disk;
-
-        /* assign default storage format and driver according to config */
-        if (cfg->allowDiskFormatProbing) {
-            /* default disk format for drives */
-            if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
-                (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
-                 virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
-                virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_AUTO);
-
-            /* default disk format for mirrored drive */
-            if (disk->mirror &&
-                disk->mirror->format == VIR_STORAGE_FILE_NONE)
-                disk->mirror->format = VIR_STORAGE_FILE_AUTO;
-        } else {
-            /* default driver if probing is forbidden */
-            if (!virDomainDiskGetDriver(disk) &&
-                virDomainDiskSetDriver(disk, "qemu") < 0)
-                goto cleanup;
-
-            /* default disk format for drives */
-            if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
-                (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
-                 virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
-                virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
-
-            /* default disk format for mirrored drive */
-            if (disk->mirror &&
-                disk->mirror->format == VIR_STORAGE_FILE_NONE)
-                disk->mirror->format = VIR_STORAGE_FILE_RAW;
-        }
-    }
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
+        qemuDomainDeviceDiskDefPostParse(dev->data.disk, cfg) < 0)
+        goto cleanup;
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
         if (dev->data.video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
