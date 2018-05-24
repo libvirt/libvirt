@@ -571,8 +571,8 @@ virshSnapshotNameCompleter(vshControl *ctl,
 
 char **
 virshAllocpagesPagesizeCompleter(vshControl *ctl,
-                        const vshCmd *cmd ATTRIBUTE_UNUSED,
-                        unsigned int flags)
+                                 const vshCmd *cmd ATTRIBUTE_UNUSED,
+                                 unsigned int flags)
 {
     unsigned long long byteval = 0;
     xmlXPathContextPtr ctxt = NULL;
