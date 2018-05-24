@@ -5728,6 +5728,22 @@ qemuDomainDeviceDiskDefPostParse(virDomainDiskDefPtr disk,
 
 
 static int
+qemuDomainDeviceNetDefPostParse(virDomainNetDefPtr net,
+                                const virDomainDef *def,
+                                virQEMUCapsPtr qemuCaps)
+{
+    if (net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+        !net->model) {
+        if (VIR_STRDUP(net->model,
+                       qemuDomainDefaultNetModel(def, qemuCaps)) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
                              virCapsPtr caps ATTRIBUTE_UNUSED,
@@ -5744,12 +5760,8 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     int ret = -1;
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
-        dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-        !dev->data.net->model) {
-        if (VIR_STRDUP(dev->data.net->model,
-                       qemuDomainDefaultNetModel(def, qemuCaps)) < 0)
-            goto cleanup;
-    }
+        qemuDomainDeviceNetDefPostParse(dev->data.net, def, qemuCaps) < 0)
+        goto cleanup;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
         qemuDomainDeviceDiskDefPostParse(dev->data.disk, cfg) < 0)
