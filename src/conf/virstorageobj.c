@@ -438,6 +438,12 @@ virStoragePoolObjListForEachCb(void *payload,
  * not as it's being used for Autostart and UpdateAllState callers
  * that want to iterate over all the @pools objects not stopping if
  * one happens to fail.
+ *
+ * NB: We cannot take the Storage Pool lock here because it's possible
+ *     that some action as part of Autostart or UpdateAllState will need
+ *     to modify/destroy a transient pool. Since these paths only occur
+ *     during periods in which the storageDriverLock is held (Initialization,
+ *     AutoStart, or Reload) this is OK.
  */
 void
 virStoragePoolObjListForEach(virStoragePoolObjListPtr pools,
@@ -447,9 +453,7 @@ virStoragePoolObjListForEach(virStoragePoolObjListPtr pools,
     struct _virStoragePoolObjListForEachData data = { .iter = iter,
                                                       .opaque = opaque };
 
-    virObjectRWLockRead(pools);
     virHashForEach(pools->objs, virStoragePoolObjListForEachCb, &data);
-    virObjectRWUnlock(pools);
 }
 
 
