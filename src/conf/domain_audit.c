@@ -593,7 +593,7 @@ virDomainAuditTPM(virDomainObjPtr vm, virDomainTPMDefPtr tpm,
         }
 
         VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
-                  "virt=%s resrc=dev reason=%s %s uuid=%s %s",
+                  "virt=%s resrc=tpm reason=%s %s uuid=%s %s",
                   virt, reason, vmname, uuidstr, device);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
