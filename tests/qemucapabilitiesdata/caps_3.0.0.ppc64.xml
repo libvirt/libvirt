@@ -168,6 +168,7 @@
   <flag name='machine.pseries.cap-hpt-max-page-size'/>
   <flag name='machine.pseries.cap-htm'/>
   <flag name='egl-headless'/>
+  <flag name='vfio-pci.display'/>
   <version>2012050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>446771</microcodeVersion>

@@ -215,6 +215,7 @@
   <flag name='sev-guest'/>
   <flag name='usb-storage.werror'/>
   <flag name='egl-headless'/>
+  <flag name='vfio-pci.display'/>
   <version>2012090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>438109</microcodeVersion>

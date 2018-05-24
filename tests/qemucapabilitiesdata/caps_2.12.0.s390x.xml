@@ -134,6 +134,7 @@
   <flag name='chardev-fd-pass'/>
   <flag name='tpm-emulator'/>
   <flag name='egl-headless'/>
+  <flag name='vfio-pci.display'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>375999</microcodeVersion>
