@@ -319,6 +319,10 @@
               </nodenames>
               <reservations mgralias='test-alias'/>
               <relPath>base.qcow2</relPath>
+              <objects>
+                <secret type='auth' alias='test-auth-alias'/>
+                <secret type='encryption' alias='test-encryption-alias'/>
+              </objects>
             </privateData>
           </source>
           <backingStore/>

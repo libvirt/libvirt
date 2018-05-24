@@ -1992,19 +1992,83 @@ qemuDomainObjPrivateFree(void *data)
 
 
 static int
+qemuStorageSourcePrivateDataAssignSecinfo(qemuDomainSecretInfoPtr *secinfo,
+                                          char **alias)
+{
+    if (!*alias)
+        return 0;
+
+    if (!*secinfo) {
+        if (VIR_ALLOC(*secinfo) < 0)
+            return -1;
+
+        (*secinfo)->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
+    }
+
+    if ((*secinfo)->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
+        VIR_STEAL_PTR((*secinfo)->s.aes.alias, *alias);
+
+    return 0;
+}
+
+
+static int
 qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
                                   virStorageSourcePtr src)
 {
+    qemuDomainStorageSourcePrivatePtr priv;
+    char *authalias = NULL;
+    char *encalias = NULL;
+    int ret = -1;
+
     src->nodestorage = virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt);
     src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
 
     if (src->pr)
         src->pr->mgralias = virXPathString("string(./reservations/@mgralias)", ctxt);
 
-    if (virStorageSourcePrivateDataParseRelPath(ctxt, src) < 0)
-        return -1;
+    authalias = virXPathString("string(./objects/secret[@type='auth']/@alias)", ctxt);
+    encalias = virXPathString("string(./objects/secret[@type='encryption']/@alias)", ctxt);
 
-    return 0;
+    if (authalias || encalias) {
+        if (!src->privateData &&
+            !(src->privateData = qemuDomainStorageSourcePrivateNew()))
+            goto cleanup;
+
+        priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
+        if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->secinfo, &authalias) < 0)
+            goto cleanup;
+
+        if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->encinfo, &encalias) < 0)
+            goto cleanup;
+    }
+
+    if (virStorageSourcePrivateDataParseRelPath(ctxt, src) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(authalias);
+    VIR_FREE(encalias);
+
+    return ret;
+}
+
+
+static void
+qemuStorageSourcePrivateDataFormatSecinfo(virBufferPtr buf,
+                                          qemuDomainSecretInfoPtr secinfo,
+                                          const char *type)
+{
+    if (!secinfo ||
+        secinfo->type != VIR_DOMAIN_SECRET_INFO_TYPE_AES ||
+        !secinfo->s.aes.alias)
+        return;
+
+    virBufferAsprintf(buf, "<secret type='%s' alias='%s'/>\n",
+                      type, secinfo->s.aes.alias);
 }
 
 
@@ -2012,6 +2076,10 @@ static int
 qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
                                    virBufferPtr buf)
 {
+    virBuffer tmp = VIR_BUFFER_INITIALIZER;
+    qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+    int ret = -1;
+
     if (src->nodestorage || src->nodeformat) {
         virBufferAddLit(buf, "<nodenames>\n");
         virBufferAdjustIndent(buf, 2);
@@ -2025,9 +2093,23 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
         virBufferAsprintf(buf, "<reservations mgralias='%s'/>\n", src->pr->mgralias);
 
     if (virStorageSourcePrivateDataFormatRelPath(src, buf) < 0)
-        return -1;
+        goto cleanup;
 
-    return 0;
+    virBufferSetChildIndent(&tmp, buf);
+
+    if (srcPriv) {
+        qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->secinfo, "auth");
+        qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->encinfo, "encryption");
+    }
+
+    if (virXMLFormatElement(buf, "objects", NULL, &tmp) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&tmp);
+    return ret;
 }
 
 
