@@ -183,7 +183,16 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
      * after an extended partition is created an open on the extended
      * partition will fail, so pass the NOERROR flag and only error if a
      * -1 was returned indicating some other error than an open error.
+     *
+     * NB: A small window exists in some cases where the just created
+     * partition disappears, but then reappears. Since we were given
+     * vol->target.path from parthelper, let's just be sure that any
+     * kernel magic that occurs as a result of parthelper doesn't cause
+     * us to fail with some sort of ENOENT failure since that would be
+     * quite "unexpected". So rather than just fail, let's use the
+     * virWaitForDevices to ensure everything has settled properly.
      */
+    virWaitForDevices();
     if (vol->source.partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
         if (virStorageBackendUpdateVolInfo(vol, false,
                                            VIR_STORAGE_VOL_OPEN_DEFAULT |
