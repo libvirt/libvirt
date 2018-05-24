@@ -317,6 +317,11 @@
           <encryption format='luks'>
             <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
           </encryption>
+          <privateData>
+            <objects>
+              <secret type='encryption' alias='virtio-disk1-luks-secret0'/>
+            </objects>
+          </privateData>
         </source>
         <backingStore/>
         <target dev='vdb' bus='virtio'/>
@@ -350,6 +355,12 @@
           <encryption format='luks'>
             <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
           </encryption>
+          <privateData>
+            <objects>
+              <secret type='auth' alias='virtio-disk3-secret0'/>
+              <secret type='encryption' alias='virtio-disk3-luks-secret0'/>
+            </objects>
+          </privateData>
         </source>
         <backingStore/>
         <target dev='vdd' bus='virtio'/>
@@ -381,6 +392,11 @@
           <auth username='testuser-rbd'>
             <secret type='ceph' usage='testuser-rbd-secret'/>
           </auth>
+          <privateData>
+            <objects>
+              <secret type='auth' alias='virtio-disk5-secret0'/>
+            </objects>
+          </privateData>
         </source>
         <backingStore/>
         <target dev='vdf' bus='virtio'/>

@@ -5856,8 +5856,91 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
 }
 
 
+/**
+ * qemuDomainDeviceDiskDefPostParseRestoreSecAlias:
+ *
+ * Re-generate aliases for objects related to the storage source if they
+ * were not stored in the status XML by an older libvirt.
+ *
+ * Note that qemuCaps should be always present for a status XML.
+ */
+static int
+qemuDomainDeviceDiskDefPostParseRestoreSecAlias(virDomainDiskDefPtr disk,
+                                                virQEMUCapsPtr qemuCaps,
+                                                unsigned int parseFlags)
+{
+    qemuDomainStorageSourcePrivatePtr priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
+    bool restoreAuthSecret = false;
+    bool restoreEncSecret = false;
+    char *authalias = NULL;
+    char *encalias = NULL;
+    int ret = -1;
+
+    if (!(parseFlags & VIR_DOMAIN_DEF_PARSE_STATUS) ||
+        !qemuCaps ||
+        virStorageSourceIsEmpty(disk->src) ||
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_SECRET))
+        return 0;
+
+    /* network storage authentication secret */
+    if (disk->src->auth &&
+        (!priv || !priv->secinfo)) {
+
+        /* only RBD and iSCSI (with capability) were supporting authentication
+         * using secret object at the time we did not format the alias into the
+         * status XML */
+        if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_NETWORK &&
+            (disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD ||
+             (disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI &&
+              virQEMUCapsGet(qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET))))
+            restoreAuthSecret = true;
+    }
+
+    /* disk encryption secret */
+    if (disk->src->encryption &&
+        disk->src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
+        (!priv || !priv->encinfo))
+        restoreEncSecret = true;
+
+    if (!restoreAuthSecret && !restoreEncSecret)
+        return 0;
+
+    if (!priv) {
+        if (!(disk->src->privateData = qemuDomainStorageSourcePrivateNew()))
+            return -1;
+
+        priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
+    }
+
+    if (restoreAuthSecret) {
+        if (!(authalias = qemuDomainGetSecretAESAlias(disk->info.alias, false)))
+            goto cleanup;
+
+        if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->secinfo, &authalias) < 0)
+            goto cleanup;
+    }
+
+    if (restoreEncSecret) {
+        if (!(encalias = qemuDomainGetSecretAESAlias(disk->info.alias, true)))
+            goto cleanup;
+
+        if (qemuStorageSourcePrivateDataAssignSecinfo(&priv->encinfo, &encalias) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(authalias);
+    VIR_FREE(encalias);
+    return ret;
+}
+
+
 static int
 qemuDomainDeviceDiskDefPostParse(virDomainDiskDefPtr disk,
+                                 virQEMUCapsPtr qemuCaps,
+                                 unsigned int parseFlags,
                                  virQEMUDriverConfigPtr cfg)
 {
     /* set default disk types and drivers */
@@ -5890,6 +5973,10 @@ qemuDomainDeviceDiskDefPostParse(virDomainDiskDefPtr disk,
             disk->mirror->format == VIR_STORAGE_FILE_NONE)
             disk->mirror->format = VIR_STORAGE_FILE_RAW;
     }
+
+    if (qemuDomainDeviceDiskDefPostParseRestoreSecAlias(disk, qemuCaps,
+                                                        parseFlags) < 0)
+        return -1;
 
     return 0;
 }
@@ -5982,7 +6069,8 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         break;
 
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = qemuDomainDeviceDiskDefPostParse(dev->data.disk, cfg);
+        ret = qemuDomainDeviceDiskDefPostParse(dev->data.disk, qemuCaps,
+                                               parseFlags, cfg);
         break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:
