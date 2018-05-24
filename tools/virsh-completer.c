@@ -703,3 +703,29 @@ virshDomainEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
     virStringListFree(ret);
     return NULL;
 }
+
+
+char **
+virshPoolEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
+                            const vshCmd *cmd ATTRIBUTE_UNUSED,
+                            unsigned int flags)
+{
+    size_t i = 0;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (VIR_ALLOC_N(ret, VIR_STORAGE_POOL_EVENT_ID_LAST) < 0)
+        goto error;
+
+    for (i = 0; i < VIR_STORAGE_POOL_EVENT_ID_LAST; i++) {
+        if (VIR_STRDUP(ret[i], virshPoolEventCallbacks[i].name) < 0)
+            goto error;
+    }
+
+    return ret;
+
+ error:
+    virStringListFree(ret);
+    return NULL;
+}

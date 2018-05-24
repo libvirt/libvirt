@@ -2098,6 +2098,7 @@ static const vshCmdOptDef opts_pool_event[] = {
     },
     {.name = "event",
      .type = VSH_OT_STRING,
+     .completer = virshPoolEventNameCompleter,
      .help = N_("which event type to wait for")
     },
     {.name = "loop",
