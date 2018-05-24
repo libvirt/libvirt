@@ -555,12 +555,13 @@ virDomainAuditRedirdev(virDomainObjPtr vm, virDomainRedirdevDefPtr redirdev,
 
 /**
  * virDomainAuditTPM:
- * @vm: domain making a change in pass-through host device
+ * @vm: domain making a change in pass-through host device or emulator
  * @tpm: TPM device being attached or removed
  * @reason: one of "start", "attach", or "detach"
- * @success: true if the device passthrough operation succeeded
+ * @success: true if the device operation succeeded
  *
- * Log an audit message about an attempted device passthrough change.
+ * Log an audit message about an attempted device passthrough or emulator
+ * change.
  */
 static void
 virDomainAuditTPM(virDomainObjPtr vm, virDomainTPMDefPtr tpm,
@@ -596,6 +597,15 @@ virDomainAuditTPM(virDomainObjPtr vm, virDomainTPMDefPtr tpm,
                   virt, reason, vmname, uuidstr, device);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        path = tpm->data.emulator.source.data.nix.path;
+        if (!(device = virAuditEncode("device", VIR_AUDIT_STR(path)))) {
+            VIR_WARN("OOM while encoding audit message");
+            goto cleanup;
+        }
+
+        VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+                  "virt=%s resrc=tpm-emulator reason=%s %s uuid=%s %s",
+                  virt, reason, vmname, uuidstr, device);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
     default:

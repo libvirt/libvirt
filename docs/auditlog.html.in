@@ -264,7 +264,7 @@
       <dt><code>reason</code></dt>
       <dd>The reason which caused the resource to be assigned to happen</dd>
       <dt><code>resrc</code></dt>
-      <dd>The type of resource assigned. Set to <code>tpm</code></dd>
+      <dd>The type of resource assigned. Set to <code>tpm</code> or <code>tpm-emulator</code></dd>
       <dt><code>device</code></dt>
       <dd>The path of the host TPM device assigned to the guest</dd>
     </dl>
