@@ -5798,39 +5798,66 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_NET &&
-        qemuDomainDeviceNetDefPostParse(dev->data.net, def, qemuCaps) < 0)
-        goto cleanup;
+    switch ((virDomainDeviceType) dev->type) {
+    case VIR_DOMAIN_DEVICE_NET:
+        ret = qemuDomainDeviceNetDefPostParse(dev->data.net, def, qemuCaps);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
-        qemuDomainDeviceDiskDefPostParse(dev->data.disk, cfg) < 0)
-        goto cleanup;
+    case VIR_DOMAIN_DEVICE_DISK:
+        ret = qemuDomainDeviceDiskDefPostParse(dev->data.disk, cfg);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_VIDEO &&
-        qemuDomainDeviceVideoDefPostParse(dev->data.video, def) < 0)
-        goto cleanup;
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        ret = qemuDomainDeviceVideoDefPostParse(dev->data.video, def);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_PANIC &&
-        qemuDomainDevicePanicDefPostParse(dev->data.panic, def) < 0)
-        goto cleanup;
+    case VIR_DOMAIN_DEVICE_PANIC:
+        ret = qemuDomainDevicePanicDefPostParse(dev->data.panic, def);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
-        qemuDomainControllerDefPostParse(dev->data.controller, def,
-                                         qemuCaps, parseFlags) < 0)
-        goto cleanup;
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        ret = qemuDomainControllerDefPostParse(dev->data.controller, def,
+                                               qemuCaps, parseFlags);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_SHMEM &&
-        qemuDomainShmemDefPostParse(dev->data.shmem) < 0)
-        goto cleanup;
+    case VIR_DOMAIN_DEVICE_SHMEM:
+        ret = qemuDomainShmemDefPostParse(dev->data.shmem);
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
-        qemuDomainChrDefPostParse(dev->data.chr, def, driver, parseFlags) < 0) {
-        goto cleanup;
+    case VIR_DOMAIN_DEVICE_CHR:
+        ret = qemuDomainChrDefPostParse(dev->data.chr, def, driver, parseFlags);
+        break;
+
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        ret = 0;
+        break;
+
+    case VIR_DOMAIN_DEVICE_NONE:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unexpected VIR_DOMAIN_DEVICE_NONE"));
+        break;
+
+    case VIR_DOMAIN_DEVICE_LAST:
+    default:
+        virReportEnumRangeError(virDomainDeviceType, dev->type);
+        break;
     }
 
-    ret = 0;
-
- cleanup:
     virObjectUnref(cfg);
     return ret;
 }
