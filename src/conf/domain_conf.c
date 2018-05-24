@@ -2645,7 +2645,7 @@ void virDomainTPMDefFree(virDomainTPMDefPtr def)
 
     switch (def->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        VIR_FREE(def->data.passthrough.source.data.file.path);
+        virDomainChrSourceDefClear(&def->data.passthrough.source);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         virDomainChrSourceDefClear(&def->data.emulator.source);
