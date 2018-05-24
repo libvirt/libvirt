@@ -4532,9 +4532,23 @@
           guest. Currently, <code>model='vfio-pci'</code> and
           <code>model='vfio-ccw'</code> (<span class="since">Since 4.4.0</span>)
           is supported. Refer <a href="drvnodedev.html#MDEV">MDEV</a> to create
-          a mediated device on the host. There are also some implications on the
-          usage of guest's address type depending on the <code>model</code>
-          attribute, see the <code>address</code> element below.
+          a mediated device on the host.
+          <span class="since">Since 4.6.0 (QEMU 2.12)</span> an optional
+          <code>display</code> attribute may be used to enable or disable
+          support for an accelerated remote desktop backed by a mediated
+          device (such as NVIDIA vGPU or Intel GVT-g) as an alternative to
+          emulated <a href="#elementsVideo">video devices</a>. This attribute
+          is limited to <code>model='vfio-pci'</code> only. Supported values
+          are either <code>on</code> or <code>off</code> (default is 'off').
+          It is required to use a
+          <a href="#elementsGraphics">graphical framebuffer</a> in order to
+          use this attribute, currently only supported with VNC, Spice and
+          egl-headless graphics devices.
+          <p>
+            Note: There are also some implications on the usage of guest's
+            address type depending on the <code>model</code> attribute,
+            see the <code>address</code> element below.
+          </p>
           </dd>
         </dl>
         <p>

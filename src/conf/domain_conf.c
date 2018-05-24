@@ -7646,6 +7646,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     char *rawio = NULL;
     char *backendStr = NULL;
     char *model = NULL;
+    char *display = NULL;
     int backend;
     int ret = -1;
     virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
@@ -7665,6 +7666,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     sgio = virXMLPropString(node, "sgio");
     rawio = virXMLPropString(node, "rawio");
     model = virXMLPropString(node, "model");
+    display = virXMLPropString(node, "display");
 
     /* @type is passed in from the caller rather than read from the
      * xml document, because it is specified in different places for
@@ -7752,6 +7754,15 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                            model);
             goto cleanup;
         }
+
+        if (display &&
+            (mdevsrc->display = virTristateSwitchTypeFromString(display)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown value '%s' for <hostdev> attribute "
+                             "'display'"),
+                           display);
+            goto cleanup;
+        }
     }
 
     switch (def->source.subsys.type) {
@@ -7805,6 +7816,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     VIR_FREE(rawio);
     VIR_FREE(backendStr);
     VIR_FREE(model);
+    VIR_FREE(display);
     return ret;
 }
 
@@ -26558,9 +26570,14 @@ virDomainHostdevDefFormat(virBufferPtr buf,
                               virTristateBoolTypeToString(scsisrc->rawio));
         }
 
-        if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV)
+        if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV) {
             virBufferAsprintf(buf, " model='%s'",
                               virMediatedDeviceModelTypeToString(mdevsrc->model));
+            if (mdevsrc->display != VIR_TRISTATE_SWITCH_ABSENT)
+                virBufferAsprintf(buf, " display='%s'",
+                                  virTristateSwitchTypeToString(mdevsrc->display));
+        }
+
     }
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);

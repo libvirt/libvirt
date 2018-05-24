@@ -4579,6 +4579,11 @@
         <value>vfio-ccw</value>
       </choice>
     </attribute>
+    <optional>
+      <attribute name="display">
+        <ref name="virOnOff"/>
+      </attribute>
+    </optional>
     <element name="source">
       <ref name="mdevaddress"/>
     </element>

@@ -4451,9 +4451,48 @@ qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net)
 
 
 static int
-qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
-                                   const virDomainDef *def)
+qemuDomainMdevDefValidate(const virDomainHostdevSubsysMediatedDev *mdevsrc,
+                          const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
 {
+    if (mdevsrc->display == VIR_TRISTATE_SWITCH_ABSENT)
+        return 0;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VFIO_PCI_DISPLAY)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("display property of device vfio-pci is "
+                         "not supported by this version of QEMU"));
+        return -1;
+    }
+
+    if (mdevsrc->model != VIR_MDEV_MODEL_TYPE_VFIO_PCI) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("<hostdev> attribute 'display' is only supported"
+                         " with model='vfio-pci'"));
+
+        return -1;
+    }
+
+    if (mdevsrc->display == VIR_TRISTATE_SWITCH_ON) {
+        if (def->ngraphics == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("graphics device is needed for attribute value "
+                             "'display=on' in <hostdev>"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
+                                   const virDomainDef *def,
+                                   virQEMUCapsPtr qemuCaps)
+{
+    const virDomainHostdevSubsysMediatedDev *mdevsrc;
+
     /* forbid capabilities mode hostdev in this kind of hypervisor */
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -4461,6 +4500,24 @@ qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
                          "supported in %s"),
                        virDomainVirtTypeToString(def->virtType));
         return -1;
+    }
+
+    if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+        switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+            mdevsrc = &hostdev->source.subsys.u.mdev;
+            return qemuDomainMdevDefValidate(mdevsrc, def, qemuCaps);
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+        default:
+            virReportEnumRangeError(virDomainHostdevSubsysType,
+                                    hostdev->source.subsys.type);
+            return -1;
+        }
     }
 
     return 0;
@@ -5621,7 +5678,8 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-        ret = qemuDomainDeviceDefValidateHostdev(dev->data.hostdev, def);
+        ret = qemuDomainDeviceDefValidateHostdev(dev->data.hostdev, def,
+                                                 qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:
@@ -6232,6 +6290,35 @@ qemuDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 
 
 static int
+qemuDomainHostdevDefMdevPostParse(virDomainHostdevSubsysMediatedDevPtr mdevsrc,
+                                  virQEMUCapsPtr qemuCaps)
+{
+    /* QEMU 2.12 added support for vfio-pci display type, we default to
+     * 'display=off' to stay safe from future changes */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VFIO_PCI_DISPLAY) &&
+        mdevsrc->display == VIR_TRISTATE_SWITCH_ABSENT)
+        mdevsrc->display = VIR_TRISTATE_SWITCH_OFF;
+
+    return 0;
+}
+
+
+static int
+qemuDomainHostdevDefPostParse(virDomainHostdevDefPtr hostdev,
+                              virQEMUCapsPtr qemuCaps)
+{
+    virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
+
+    if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV &&
+        qemuDomainHostdevDefMdevPostParse(&subsys->u.mdev, qemuCaps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
                              virCapsPtr caps ATTRIBUTE_UNUSED,
@@ -6281,11 +6368,14 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         ret = qemuDomainVsockDefPostParse(dev->data.vsock);
         break;
 
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+        ret = qemuDomainHostdevDefPostParse(dev->data.hostdev, qemuCaps);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
-    case VIR_DOMAIN_DEVICE_HOSTDEV:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:

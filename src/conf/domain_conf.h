@@ -382,6 +382,7 @@ typedef struct _virDomainHostdevSubsysMediatedDev virDomainHostdevSubsysMediated
 typedef virDomainHostdevSubsysMediatedDev *virDomainHostdevSubsysMediatedDevPtr;
 struct _virDomainHostdevSubsysMediatedDev {
     int model;                          /* enum virMediatedDeviceModelType */
+    int display; /* virTristateSwitch */
     char uuidstr[VIR_UUID_STRING_BUFLEN];   /* mediated device's uuid string */
 };
 
