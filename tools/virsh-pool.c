@@ -1999,18 +1999,12 @@ virshPoolEventToString(int event)
     return str ? _(str) : _("unknown");
 }
 
-struct vshEventCallback {
-    const char *name;
-    virConnectStoragePoolEventGenericCallback cb;
-};
-typedef struct vshEventCallback vshEventCallback;
-
 struct virshPoolEventData {
     vshControl *ctl;
     bool loop;
     bool timestamp;
     int count;
-    vshEventCallback *cb;
+    virshPoolEventCallback *cb;
 };
 typedef struct virshPoolEventData virshPoolEventData;
 
@@ -2079,12 +2073,12 @@ vshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
         vshEventDone(data->ctl);
 }
 
-static vshEventCallback vshEventCallbacks[] = {
+virshPoolEventCallback virshPoolEventCallbacks[] = {
     { "lifecycle",
       VIR_STORAGE_POOL_EVENT_CALLBACK(vshEventLifecyclePrint), },
     { "refresh", vshEventGenericPrint, }
 };
-verify(VIR_STORAGE_POOL_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
+verify(VIR_STORAGE_POOL_EVENT_ID_LAST == ARRAY_CARDINALITY(virshPoolEventCallbacks));
 
 
 static const vshCmdInfo info_pool_event[] = {
@@ -2141,7 +2135,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
         size_t i;
 
         for (i = 0; i < VIR_STORAGE_POOL_EVENT_ID_LAST; i++)
-            vshPrint(ctl, "%s\n", vshEventCallbacks[i].name);
+            vshPrint(ctl, "%s\n", virshPoolEventCallbacks[i].name);
         return true;
     }
 
@@ -2153,7 +2147,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
     }
 
     for (event = 0; event < VIR_STORAGE_POOL_EVENT_ID_LAST; event++)
-        if (STREQ(eventName, vshEventCallbacks[event].name))
+        if (STREQ(eventName, virshPoolEventCallbacks[event].name))
             break;
     if (event == VIR_STORAGE_POOL_EVENT_ID_LAST) {
         vshError(ctl, _("unknown event type %s"), eventName);
@@ -2164,7 +2158,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
     data.loop = vshCommandOptBool(cmd, "loop");
     data.timestamp = vshCommandOptBool(cmd, "timestamp");
     data.count = 0;
-    data.cb = &vshEventCallbacks[event];
+    data.cb = &virshPoolEventCallbacks[event];
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
         return false;
 
