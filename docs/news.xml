@@ -77,6 +77,14 @@
           and a domain capabilities feature.
         </description>
       </change>
+      <change>
+        <summary>
+          Introduce virDomainDetachDeviceAlias
+        </summary>
+        <description>
+          This new API enables users to detach device using only its alias.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
