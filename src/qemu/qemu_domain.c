@@ -5766,6 +5766,23 @@ qemuDomainDeviceVideoDefPostParse(virDomainVideoDefPtr video,
 
 
 static int
+qemuDomainDevicePanicDefPostParse(virDomainPanicDefPtr panic,
+                                  const virDomainDef *def)
+{
+    if (panic->model == VIR_DOMAIN_PANIC_MODEL_DEFAULT) {
+        if (qemuDomainIsPSeries(def))
+            panic->model = VIR_DOMAIN_PANIC_MODEL_PSERIES;
+        else if (ARCH_IS_S390(def->os.arch))
+            panic->model = VIR_DOMAIN_PANIC_MODEL_S390;
+        else
+            panic->model = VIR_DOMAIN_PANIC_MODEL_ISA;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
                              virCapsPtr caps ATTRIBUTE_UNUSED,
@@ -5794,14 +5811,8 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         goto cleanup;
 
     if (dev->type == VIR_DOMAIN_DEVICE_PANIC &&
-        dev->data.panic->model == VIR_DOMAIN_PANIC_MODEL_DEFAULT) {
-        if (qemuDomainIsPSeries(def))
-            dev->data.panic->model = VIR_DOMAIN_PANIC_MODEL_PSERIES;
-        else if (ARCH_IS_S390(def->os.arch))
-            dev->data.panic->model = VIR_DOMAIN_PANIC_MODEL_S390;
-        else
-            dev->data.panic->model = VIR_DOMAIN_PANIC_MODEL_ISA;
-    }
+        qemuDomainDevicePanicDefPostParse(dev->data.panic, def) < 0)
+        goto cleanup;
 
     if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
         qemuDomainControllerDefPostParse(dev->data.controller, def,
