@@ -94,4 +94,7 @@ char ** virshNodedevEventNameCompleter(vshControl *ctl,
                                        const vshCmd *cmd,
                                        unsigned int flags);
 
+char ** virshCellnoCompleter(vshControl *ctl,
+                             const vshCmd *cmd,
+                             unsigned int flags);
 #endif

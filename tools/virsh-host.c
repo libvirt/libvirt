@@ -149,6 +149,7 @@ static const vshCmdInfo info_freecell[] = {
 static const vshCmdOptDef opts_freecell[] = {
     {.name = "cellno",
      .type = VSH_OT_INT,
+     .completer = virshCellnoCompleter,
      .help = N_("NUMA cell number")
     },
     {.name = "all",
@@ -274,6 +275,7 @@ static const vshCmdInfo info_freepages[] = {
 static const vshCmdOptDef opts_freepages[] = {
     {.name = "cellno",
      .type = VSH_OT_INT,
+     .completer = virshCellnoCompleter,
      .help = N_("NUMA cell number")
     },
     {.name = "pagesize",
@@ -483,6 +485,7 @@ static const vshCmdOptDef opts_allocpages[] = {
     },
     {.name = "cellno",
      .type = VSH_OT_INT,
+     .completer = virshCellnoCompleter,
      .help = N_("NUMA cell number")
     },
     {.name = "add",

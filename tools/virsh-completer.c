@@ -756,3 +756,58 @@ virshNodedevEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
     virStringListFree(ret);
     return NULL;
 }
+
+
+char **
+virshCellnoCompleter(vshControl *ctl,
+                     const vshCmd *cmd ATTRIBUTE_UNUSED,
+                     unsigned int flags)
+{
+    xmlXPathContextPtr ctxt = NULL;
+    virshControlPtr priv = ctl->privData;
+    unsigned int ncells = 0;
+    xmlNodePtr *cells = NULL;
+    xmlDocPtr doc = NULL;
+    size_t i = 0;
+    char *cap_xml = NULL;
+    char **ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        goto error;
+
+    if (!(cap_xml = virConnectGetCapabilities(priv->conn)))
+        goto error;
+
+    if (!(doc = virXMLParseStringCtxt(cap_xml, _("capabilities"), &ctxt)))
+        goto error;
+
+    ncells = virXPathNodeSet("/capabilities/host/topology/cells/cell", ctxt, &cells);
+    if (ncells <= 0)
+        goto error;
+
+    if (VIR_ALLOC_N(ret, ncells + 1))
+        goto error;
+
+    for (i = 0; i < ncells; i++) {
+        if (!(ret[i] = virXMLPropString(cells[i], "id")))
+            goto error;
+    }
+
+ cleanup:
+    xmlXPathFreeContext(ctxt);
+    VIR_FREE(cells);
+    xmlFreeDoc(doc);
+    VIR_FREE(cap_xml);
+
+    return ret;
+
+ error:
+    if (ret) {
+        for (i = 0; i < ncells; i++)
+            VIR_FREE(ret[i]);
+    }
+    VIR_FREE(ret);
+    goto cleanup;
+}
