@@ -84,6 +84,15 @@
           and ich9 sound devices.
         </description>
       </change>
+      <change>
+        <summary>
+          virsh: Enhance event name completion
+        </summary>
+        <description>
+          Implement event name completion for some commands (e.g. event,
+          secret-event, pool-event and nodedev-event)
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
