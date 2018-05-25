@@ -8184,26 +8184,44 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
 static int
 qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
                              virCommandPtr cmd,
-                             virQEMUCapsPtr qemuCaps,
-                             virDomainGraphicsDefPtr graphics)
+                             virDomainDefPtr def,
+                             virQEMUCapsPtr qemuCaps)
 {
-    switch (graphics->type) {
-    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        return qemuBuildGraphicsSDLCommandLine(cfg, cmd, qemuCaps, graphics);
+    size_t i;
 
-    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        return qemuBuildGraphicsVNCCommandLine(cfg, cmd, qemuCaps, graphics);
+    for (i = 0; i < def->ngraphics; i++) {
+        virDomainGraphicsDefPtr graphics = def->graphics[i];
 
-    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-        return qemuBuildGraphicsSPICECommandLine(cfg, cmd, qemuCaps, graphics);
+        switch (graphics->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+            if (qemuBuildGraphicsSDLCommandLine(cfg, cmd,
+                                                qemuCaps, graphics) < 0)
+                return -1;
 
-    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unsupported graphics type '%s'"),
-                       virDomainGraphicsTypeToString(graphics->type));
-        return -1;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            if (qemuBuildGraphicsVNCCommandLine(cfg, cmd,
+                                                qemuCaps, graphics) < 0)
+                return -1;
+
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            if (qemuBuildGraphicsSPICECommandLine(cfg, cmd,
+                                                  qemuCaps, graphics) < 0)
+                return -1;
+
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported graphics type '%s'"),
+                           virDomainGraphicsTypeToString(graphics->type));
+            return -1;
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+        default:
+            virReportEnumRangeError(virDomainGraphicsType, graphics->type);
+            return -1;
+        }
     }
 
     return 0;
@@ -10354,11 +10372,8 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildInputCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    for (i = 0; i < def->ngraphics; ++i) {
-        if (qemuBuildGraphicsCommandLine(cfg, cmd, qemuCaps,
-                                         def->graphics[i]) < 0)
-            goto error;
-    }
+    if (qemuBuildGraphicsCommandLine(cfg, cmd, def, qemuCaps) < 0)
+        goto error;
 
     if (qemuBuildVideoCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
