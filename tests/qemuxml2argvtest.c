@@ -1592,6 +1592,13 @@ mymain(void)
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_PARSE_ERROR("hostdev-mdev-invalid-target-address",
             QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_CAPS_LATEST("hostdev-mdev-display-spice-opengl");
+    DO_TEST_CAPS_LATEST("hostdev-mdev-display-spice-egl-headless");
+    DO_TEST_CAPS_LATEST("hostdev-mdev-display-vnc");
+    DO_TEST_CAPS_LATEST("hostdev-mdev-display-vnc-egl-headless");
+    DO_TEST_PARSE_ERROR("hostdev-mdev-display-missing-graphics",
+            QEMU_CAPS_DEVICE_VFIO_PCI,
+            QEMU_CAPS_VFIO_PCI_DISPLAY);
     DO_TEST("pci-rom", NONE);
     DO_TEST("pci-rom-disabled", NONE);
     DO_TEST("pci-rom-disabled-invalid", NONE);
