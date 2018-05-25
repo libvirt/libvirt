@@ -4524,20 +4524,10 @@ virDomainHostdevDefPostParse(virDomainHostdevDefPtr dev,
         if (dev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
             return 0;
 
-        if (model == VIR_MDEV_MODEL_TYPE_VFIO_PCI &&
-            dev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Unsupported address type '%s' with mediated "
-                             "device model '%s'"),
-                           virDomainDeviceAddressTypeToString(dev->info->type),
-                           virMediatedDeviceModelTypeToString(model));
-            return -1;
-        }
-
         if ((model == VIR_MDEV_MODEL_TYPE_VFIO_PCI &&
-            dev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) ||
+             dev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) ||
             (model == VIR_MDEV_MODEL_TYPE_VFIO_CCW &&
-            dev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
+             dev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Unsupported address type '%s' with mediated "
                              "device model '%s'"),
