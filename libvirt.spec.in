@@ -191,7 +191,7 @@
 %endif
 
 # Enable libssh transport for new enough distros
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} > 7
     %define with_libssh 0%{!?_without_libssh:1}
 %endif
 
