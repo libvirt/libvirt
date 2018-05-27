@@ -263,20 +263,20 @@ xenParseXMDisk(char *entry, int hvm)
 static int
 xenParseXMDiskList(virConfPtr conf, virDomainDefPtr def)
 {
+    char **disks = NULL, **entries;
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
-    virConfValuePtr list = virConfGetValue(conf, "disk");
+    int ret = -1;
+    int rc;
 
-    if (!list || list->type != VIR_CONF_LIST)
-        return 0;
+    rc = virConfGetValueStringList(conf, "disk", false, &disks);
+    if (rc <= 0)
+        return rc;
 
-    for (list = list->list; list; list = list->next) {
+    for (entries = disks; *entries; entries++) {
         virDomainDiskDefPtr disk;
-        int rc;
+        char *entry = *entries;
 
-        if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
-            continue;
-
-        if (!(disk = xenParseXMDisk(list->str, hvm)))
+        if (!(disk = xenParseXMDisk(entry, hvm)))
             continue;
 
         /* Maintain list in sorted order according to target device name */
@@ -284,10 +284,14 @@ xenParseXMDiskList(virConfPtr conf, virDomainDefPtr def)
         virDomainDiskDefFree(disk);
 
         if (rc < 0)
-            return -1;
+            goto cleanup;
     }
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    virStringListFree(disks);
+    return ret;
 }
 
 
