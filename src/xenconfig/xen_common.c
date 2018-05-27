@@ -389,92 +389,103 @@ xenParseEventsActions(virConfPtr conf, virDomainDefPtr def)
 }
 
 
+static virDomainHostdevDefPtr
+xenParsePCI(char *entry)
+{
+    virDomainHostdevDefPtr hostdev = NULL;
+    char domain[5];
+    char bus[3];
+    char slot[3];
+    char func[2];
+    char *key, *nextkey;
+    int domainID;
+    int busID;
+    int slotID;
+    int funcID;
+
+    domain[0] = bus[0] = slot[0] = func[0] = '\0';
+
+    /* pci=['0000:00:1b.0','0000:00:13.0'] */
+    if (!(key = entry))
+        return NULL;
+    if (!(nextkey = strchr(key, ':')))
+        return NULL;
+    if (virStrncpy(domain, key, (nextkey - key), sizeof(domain)) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Domain %s too big for destination"), key);
+        return NULL;
+    }
+
+    key = nextkey + 1;
+    if (!(nextkey = strchr(key, ':')))
+        return NULL;
+    if (virStrncpy(bus, key, (nextkey - key), sizeof(bus)) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Bus %s too big for destination"), key);
+        return NULL;
+    }
+
+    key = nextkey + 1;
+    if (!(nextkey = strchr(key, '.')))
+        return NULL;
+    if (virStrncpy(slot, key, (nextkey - key), sizeof(slot)) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Slot %s too big for destination"), key);
+        return NULL;
+    }
+
+    key = nextkey + 1;
+    if (strlen(key) != 1)
+        return NULL;
+    if (virStrncpy(func, key, 1, sizeof(func)) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Function %s too big for destination"), key);
+        return NULL;
+    }
+
+    if (virStrToLong_i(domain, NULL, 16, &domainID) < 0)
+        return NULL;
+    if (virStrToLong_i(bus, NULL, 16, &busID) < 0)
+        return NULL;
+    if (virStrToLong_i(slot, NULL, 16, &slotID) < 0)
+        return NULL;
+    if (virStrToLong_i(func, NULL, 16, &funcID) < 0)
+        return NULL;
+
+    if (!(hostdev = virDomainHostdevDefNew()))
+       return NULL;
+
+    hostdev->managed = false;
+    hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
+    hostdev->source.subsys.u.pci.addr.domain = domainID;
+    hostdev->source.subsys.u.pci.addr.bus = busID;
+    hostdev->source.subsys.u.pci.addr.slot = slotID;
+    hostdev->source.subsys.u.pci.addr.function = funcID;
+
+    return hostdev;
+}
+
+
 static int
-xenParsePCI(virConfPtr conf, virDomainDefPtr def)
+xenParsePCIList(virConfPtr conf, virDomainDefPtr def)
 {
     virConfValuePtr list = virConfGetValue(conf, "pci");
-    virDomainHostdevDefPtr hostdev = NULL;
 
-    if (list && list->type == VIR_CONF_LIST) {
-        list = list->list;
-        while (list) {
-            char domain[5];
-            char bus[3];
-            char slot[3];
-            char func[2];
-            char *key, *nextkey;
-            int domainID;
-            int busID;
-            int slotID;
-            int funcID;
+    if (!list || list->type != VIR_CONF_LIST)
+        return 0;
 
-            domain[0] = bus[0] = slot[0] = func[0] = '\0';
+    for (list = list->list; list; list = list->next) {
+        virDomainHostdevDefPtr hostdev;
 
-            if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
-                goto skippci;
-            /* pci=['0000:00:1b.0','0000:00:13.0'] */
-            if (!(key = list->str))
-                goto skippci;
-            if (!(nextkey = strchr(key, ':')))
-                goto skippci;
-            if (virStrncpy(domain, key, (nextkey - key), sizeof(domain)) == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Domain %s too big for destination"), key);
-                goto skippci;
-            }
+        if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
+            continue;
 
-            key = nextkey + 1;
-            if (!(nextkey = strchr(key, ':')))
-                goto skippci;
-            if (virStrncpy(bus, key, (nextkey - key), sizeof(bus)) == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Bus %s too big for destination"), key);
-                goto skippci;
-            }
+        if (!(hostdev = xenParsePCI(list->str)))
+            return -1;
 
-            key = nextkey + 1;
-            if (!(nextkey = strchr(key, '.')))
-                goto skippci;
-            if (virStrncpy(slot, key, (nextkey - key), sizeof(slot)) == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Slot %s too big for destination"), key);
-                goto skippci;
-            }
-
-            key = nextkey + 1;
-            if (strlen(key) != 1)
-                goto skippci;
-            if (virStrncpy(func, key, 1, sizeof(func)) == NULL) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Function %s too big for destination"), key);
-                goto skippci;
-            }
-
-            if (virStrToLong_i(domain, NULL, 16, &domainID) < 0)
-                goto skippci;
-            if (virStrToLong_i(bus, NULL, 16, &busID) < 0)
-                goto skippci;
-            if (virStrToLong_i(slot, NULL, 16, &slotID) < 0)
-                goto skippci;
-            if (virStrToLong_i(func, NULL, 16, &funcID) < 0)
-                goto skippci;
-            if (!(hostdev = virDomainHostdevDefNew()))
-               return -1;
-
-            hostdev->managed = false;
-            hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
-            hostdev->source.subsys.u.pci.addr.domain = domainID;
-            hostdev->source.subsys.u.pci.addr.bus = busID;
-            hostdev->source.subsys.u.pci.addr.slot = slotID;
-            hostdev->source.subsys.u.pci.addr.function = funcID;
-
-            if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev) < 0) {
-                virDomainHostdevDefFree(hostdev);
-                return -1;
-            }
-
-        skippci:
-            list = list->next;
+        if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev) < 0) {
+            virDomainHostdevDefFree(hostdev);
+            return -1;
         }
     }
 
@@ -1126,7 +1137,7 @@ xenParseConfigCommon(virConfPtr conf,
         return -1;
     }
 
-    if (xenParsePCI(conf, def) < 0)
+    if (xenParsePCIList(conf, def) < 0)
         return -1;
 
     if (xenParseEmulatedDevices(conf, def) < 0)
