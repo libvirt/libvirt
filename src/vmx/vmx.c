@@ -723,39 +723,36 @@ virVMXConvertToUTF8(const char *encoding, const char *string)
 
 
 static int
+virVMXGetConfigStringHelper(virConfPtr conf, const char *name, char **string,
+                            bool optional)
+{
+    int rc;
+    *string = NULL;
+
+    rc = virConfGetValueString(conf, name, string);
+    if (rc == 1 && *string != NULL)
+        return 1;
+
+    if (optional)
+        return 0;
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Missing essential config entry '%s'"), name);
+    return -1;
+}
+
+
+
+static int
 virVMXGetConfigString(virConfPtr conf, const char *name, char **string,
                       bool optional)
 {
-    virConfValuePtr value;
-
     *string = NULL;
-    value = virConfGetValue(conf, name);
 
-    if (value == NULL) {
-        if (optional)
-            return 0;
-
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing essential config entry '%s'"), name);
+    if (virVMXGetConfigStringHelper(conf, name, string, optional) < 0)
         return -1;
-    }
 
-    if (value->type != VIR_CONF_STRING) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Config entry '%s' must be a string"), name);
-        return -1;
-    }
-
-    if (value->str == NULL) {
-        if (optional)
-            return 0;
-
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing essential config entry '%s'"), name);
-        return -1;
-    }
-
-    return VIR_STRDUP(*string, value->str);
+    return 0;
 }
 
 
@@ -764,43 +761,26 @@ static int
 virVMXGetConfigUUID(virConfPtr conf, const char *name, unsigned char *uuid,
                     bool optional)
 {
-    virConfValuePtr value;
+    char *string = NULL;
+    int ret = -1;
+    int rc;
 
-    value = virConfGetValue(conf, name);
+    rc = virVMXGetConfigStringHelper(conf, name, &string, optional);
+    if (rc <= 0)
+        return rc;
 
-    if (value == NULL) {
-        if (optional) {
-            return 0;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Missing essential config entry '%s'"), name);
-            return -1;
-        }
-    }
-
-    if (value->type != VIR_CONF_STRING) {
+    rc = virUUIDParse(string, uuid);
+    if (rc < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Config entry '%s' must be a string"), name);
-        return -1;
+                       _("Could not parse UUID from string '%s'"), string);
+        goto cleanup;
     }
 
-    if (value->str == NULL) {
-        if (optional) {
-            return 0;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Missing essential config entry '%s'"), name);
-            return -1;
-        }
-    }
+    ret = 0;
 
-    if (virUUIDParse(value->str, uuid) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not parse UUID from string '%s'"), value->str);
-        return -1;
-    }
-
-    return 0;
+ cleanup:
+    VIR_FREE(string);
+    return ret;
 }
 
 
@@ -809,47 +789,30 @@ static int
 virVMXGetConfigLong(virConfPtr conf, const char *name, long long *number,
                     long long default_, bool optional)
 {
-    virConfValuePtr value;
+    char *string = NULL;
+    int ret = -1;
+    int rc;
 
     *number = default_;
-    value = virConfGetValue(conf, name);
 
-    if (value == NULL) {
-        if (optional) {
-            return 0;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Missing essential config entry '%s'"), name);
-            return -1;
-        }
-    }
+    rc = virVMXGetConfigStringHelper(conf, name, &string, optional);
+    if (rc <= 0)
+        return rc;
 
-    if (value->type == VIR_CONF_STRING) {
-        if (value->str == NULL) {
-            if (optional) {
-                return 0;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Missing essential config entry '%s'"), name);
-                return -1;
-            }
-        }
-
-        if (STRCASEEQ(value->str, "unlimited")) {
-            *number = -1;
-        } else if (virStrToLong_ll(value->str, NULL, 10, number) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Config entry '%s' must represent an integer value"),
-                           name);
-            return -1;
-        }
-    } else {
+    if (STRCASEEQ(string, "unlimited")) {
+        *number = -1;
+    } else if (virStrToLong_ll(string, NULL, 10, number) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Config entry '%s' must be a string"), name);
-        return -1;
+                _("Config entry '%s' must represent an integer value"),
+                name);
+        goto cleanup;
     }
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(string);
+    return ret;
 }
 
 
@@ -858,49 +821,32 @@ static int
 virVMXGetConfigBoolean(virConfPtr conf, const char *name, bool *boolean_,
                        bool default_, bool optional)
 {
-    virConfValuePtr value;
+    char *string = NULL;
+    int ret = -1;
+    int rc;
 
     *boolean_ = default_;
-    value = virConfGetValue(conf, name);
 
-    if (value == NULL) {
-        if (optional) {
-            return 0;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Missing essential config entry '%s'"), name);
-            return -1;
-        }
-    }
+    rc = virVMXGetConfigStringHelper(conf, name, &string, optional);
+    if (rc <= 0)
+        return rc;
 
-    if (value->type == VIR_CONF_STRING) {
-        if (value->str == NULL) {
-            if (optional) {
-                return 0;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Missing essential config entry '%s'"), name);
-                return -1;
-            }
-        }
-
-        if (STRCASEEQ(value->str, "true")) {
-            *boolean_ = 1;
-        } else if (STRCASEEQ(value->str, "false")) {
-            *boolean_ = 0;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Config entry '%s' must represent a boolean value "
-                             "(true|false)"), name);
-            return -1;
-        }
+    if (STRCASEEQ(string, "true")) {
+        *boolean_ = 1;
+    } else if (STRCASEEQ(string, "false")) {
+        *boolean_ = 0;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Config entry '%s' must be a string"), name);
-        return -1;
+                       _("Config entry '%s' must represent a boolean value "
+                         "(true|false)"), name);
+        goto cleanup;
     }
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(string);
+    return ret;
 }
 
 
