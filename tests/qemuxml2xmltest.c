@@ -1211,6 +1211,7 @@ mymain(void)
     DO_TEST_STATUS("migration-in-params");
     DO_TEST_STATUS("migration-out-params");
     DO_TEST_STATUS("migration-out-nbd-tls");
+    DO_TEST_STATUS("disk-secinfo-upgrade");
 
     DO_TEST("vhost-vsock", QEMU_CAPS_DEVICE_VHOST_VSOCK);
     DO_TEST("vhost-vsock-auto", QEMU_CAPS_DEVICE_VHOST_VSOCK);
