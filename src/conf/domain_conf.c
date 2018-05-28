@@ -20547,6 +20547,7 @@ virDomainObjParseXML(xmlDocPtr xml,
     int n;
     int state;
     int reason = 0;
+    void *parseOpaque = NULL;
 
     if (!(obj = virDomainObjNew(xmlopt)))
         return NULL;
@@ -20618,8 +20619,11 @@ virDomainObjParseXML(xmlDocPtr xml,
         xmlopt->privateData.parse(ctxt, obj, &xmlopt->config) < 0)
         goto error;
 
+    if (xmlopt->privateData.getParseOpaque)
+        parseOpaque = xmlopt->privateData.getParseOpaque(obj);
+
     /* callback to fill driver specific domain aspects */
-    if (virDomainDefPostParse(obj->def, caps, flags, xmlopt, NULL) < 0)
+    if (virDomainDefPostParse(obj->def, caps, flags, xmlopt, parseOpaque) < 0)
         goto error;
 
     /* valdiate configuration */
