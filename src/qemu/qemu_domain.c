@@ -1440,31 +1440,23 @@ qemuDomainSecretInfoTLSNew(qemuDomainObjPrivatePtr priv,
 }
 
 
-static void
-qemuDomainSecretStorageSourceDestroy(virStorageSourcePtr src)
-{
-    qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
-
-    if (srcPriv && srcPriv->secinfo)
-        qemuDomainSecretInfoFree(&srcPriv->secinfo);
-
-    if (srcPriv && srcPriv->encinfo)
-        qemuDomainSecretInfoFree(&srcPriv->encinfo);
-}
-
-
 /* qemuDomainSecretDiskDestroy:
  * @disk: Pointer to a disk definition
  *
- * Clear and destroy memory associated with the secret
+ * Clears unnecessary data associated with disk secret objects.
  */
 void
 qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
 {
-    virStorageSourcePtr next;
+    qemuDomainStorageSourcePrivatePtr srcPriv;
+    virStorageSourcePtr n;
 
-    for (next = disk->src; virStorageSourceIsBacking(next); next = next->backingStore)
-        qemuDomainSecretStorageSourceDestroy(next);
+    for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if ((srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(n))) {
+            qemuDomainSecretInfoDestroy(srcPriv->secinfo);
+            qemuDomainSecretInfoDestroy(srcPriv->encinfo);
+        }
+    }
 }
 
 
@@ -1698,8 +1690,7 @@ qemuDomainSecretChardevPrepare(virQEMUDriverConfigPtr cfg,
 /* qemuDomainSecretDestroy:
  * @vm: Domain object
  *
- * Once completed with the generation of the command line it is
- * expect to remove the secrets
+ * Removes all unnecessary data which was needed to generate 'secret' objects.
  */
 void
 qemuDomainSecretDestroy(virDomainObjPtr vm)
