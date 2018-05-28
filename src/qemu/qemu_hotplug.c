@@ -3900,16 +3900,17 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
                            virDomainDiskDefPtr disk)
 {
+    qemuDomainStorageSourcePrivatePtr diskPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
     virDomainDeviceDef dev;
     virObjectEventPtr event;
     size_t i;
     const char *src = virDomainDiskGetSource(disk);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *drivestr;
-    char *objAlias = NULL;
-    char *encAlias = NULL;
     bool prManaged = priv->prDaemonRunning;
     bool prUsed = false;
+    const char *authAlias = NULL;
+    const char *encAlias = NULL;
 
     VIR_DEBUG("Removing disk %s from domain %p %s",
               disk->info.alias, vm, vm->def->name);
@@ -3919,32 +3920,14 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     if (!(drivestr = qemuAliasFromDisk(disk)))
         return -1;
 
-    /* Let's look for some markers for a secret object and create an alias
-     * object to be used to attempt to delete the object that was created.
-     * We cannot just use the disk private secret info since it would have
-     * been removed during cleanup of qemuProcessLaunch. Likewise, libvirtd
-     * restart wouldn't have them, so no assumption can be made. */
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
-        qemuDomainStorageSourceHasAuth(disk->src)) {
+    if (diskPriv) {
+        if (diskPriv->secinfo &&
+            diskPriv->secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
+            authAlias = diskPriv->secinfo->s.aes.alias;
 
-        if (!(objAlias =
-              qemuDomainGetSecretAESAlias(disk->info.alias, false))) {
-            VIR_FREE(drivestr);
-            return -1;
-        }
-    }
-
-    /* Similarly, if this is possible a device using LUKS encryption, we
-     * can remove the luks object password too
-     */
-    if (qemuDomainDiskHasEncryptionSecret(disk->src)) {
-
-        if (!(encAlias =
-              qemuDomainGetSecretAESAlias(disk->info.alias, true))) {
-            VIR_FREE(objAlias);
-            VIR_FREE(drivestr);
-            return -1;
-        }
+        if (diskPriv->encinfo &&
+            diskPriv->encinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
+            encAlias = diskPriv->encinfo->s.aes.alias;
     }
 
     for (i = 0; i < vm->def->ndisks; i++) {
@@ -3963,14 +3946,12 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     VIR_FREE(drivestr);
 
     /* If it fails, then so be it - it was a best shot */
-    if (objAlias)
-        ignore_value(qemuMonitorDelObject(priv->mon, objAlias));
-    VIR_FREE(objAlias);
+    if (authAlias)
+        ignore_value(qemuMonitorDelObject(priv->mon, authAlias));
 
     /* If it fails, then so be it - it was a best shot */
     if (encAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, encAlias));
-    VIR_FREE(encAlias);
 
     /* If it fails, then so be it - it was a best shot */
     if (disk->src->pr &&
