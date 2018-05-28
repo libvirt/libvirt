@@ -1824,6 +1824,11 @@ qemuBuildDriveDevCacheStr(virDomainDiskDefPtr disk,
     if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DEFAULT)
         return 0;
 
+    /* VIR_DOMAIN_DISK_DEVICE_LUN translates into 'scsi-block'
+     * where any caching setting makes no sense. */
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN)
+        return 0;
+
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_WRITE_CACHE))
         return 0;
 
