@@ -268,7 +268,7 @@ testTextMetadata(const void *data)
 static int
 mymain(void)
 {
-    struct metadataTest test;
+    struct metadataTest test = { 0 };
     int ret = EXIT_SUCCESS;
 
     if (!(test.conn = virConnectOpen("test:///default")))

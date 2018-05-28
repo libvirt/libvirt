@@ -835,7 +835,7 @@ timeout(int id ATTRIBUTE_UNUSED, void *opaque ATTRIBUTE_UNUSED)
 static int
 mymain(void)
 {
-    objecteventTest test;
+    objecteventTest test = { 0 };
     int ret = EXIT_SUCCESS;
     int timer;
 
