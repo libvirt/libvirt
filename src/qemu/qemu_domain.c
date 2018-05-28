@@ -2801,6 +2801,15 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 }
 
 
+static void *
+qemuDomainObjPrivateXMLGetParseOpaque(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    return priv->qemuCaps;
+}
+
+
 virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .alloc = qemuDomainObjPrivateAlloc,
     .free = qemuDomainObjPrivateFree,
@@ -2809,6 +2818,7 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .chrSourceNew = qemuDomainChrSourcePrivateNew,
     .parse = qemuDomainObjPrivateXMLParse,
     .format = qemuDomainObjPrivateXMLFormat,
+    .getParseOpaque = qemuDomainObjPrivateXMLGetParseOpaque,
     .storageParse = qemuStorageSourcePrivateDataParse,
     .storageFormat = qemuStorageSourcePrivateDataFormat,
 };
