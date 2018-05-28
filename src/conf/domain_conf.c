@@ -4940,9 +4940,75 @@ virDomainDefPostParseCPU(virDomainDefPtr def)
 
 
 static int
+virDomainDefCollectBootOrder(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                             virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                             virDomainDeviceInfoPtr info,
+                             void *data)
+{
+    virHashTablePtr bootHash = data;
+    char *order = NULL;
+    int ret = -1;
+
+    if (info->bootIndex == 0)
+        return 0;
+
+    if (virAsprintf(&order, "%u", info->bootIndex) < 0)
+        goto cleanup;
+
+    if (virHashLookup(bootHash, order)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("boot order '%s' used for more than one device"),
+                       order);
+        goto cleanup;
+    }
+
+    if (virHashAddEntry(bootHash, order, (void *) 1) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(order);
+    return ret;
+}
+
+
+static int
+virDomainDefBootOrderPostParse(virDomainDefPtr def)
+{
+    virHashTablePtr bootHash = NULL;
+    int ret = -1;
+
+    if (!(bootHash = virHashCreate(5, NULL)))
+        goto cleanup;
+
+    if (virDomainDeviceInfoIterate(def, virDomainDefCollectBootOrder, bootHash) < 0)
+        goto cleanup;
+
+    if (def->os.nBootDevs > 0 && virHashSize(bootHash) > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("per-device boot elements cannot be used"
+                         " together with os/boot elements"));
+        goto cleanup;
+    }
+
+    if (def->os.nBootDevs == 0 && virHashSize(bootHash) == 0) {
+        def->os.nBootDevs = 1;
+        def->os.bootDevs[0] = VIR_DOMAIN_BOOT_DISK;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virHashFree(bootHash);
+    return ret;
+}
+
+
+static int
 virDomainDefPostParseCommon(virDomainDefPtr def,
                             struct virDomainDefPostParseDeviceIteratorData *data,
-                            virHashTablePtr bootHash)
+                            virHashTablePtr bootHash ATTRIBUTE_UNUSED)
 {
     size_t i;
 
@@ -4951,20 +5017,6 @@ virDomainDefPostParseCommon(virDomainDefPtr def,
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("init binary must be specified"));
         return -1;
-    }
-
-    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM && bootHash) {
-        if (def->os.nBootDevs > 0 && virHashSize(bootHash) > 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("per-device boot elements cannot be used"
-                             " together with os/boot elements"));
-            return -1;
-        }
-
-        if (def->os.nBootDevs == 0 && virHashSize(bootHash) == 0) {
-            def->os.nBootDevs = 1;
-            def->os.bootDevs[0] = VIR_DOMAIN_BOOT_DISK;
-        }
     }
 
     if (virDomainVcpuDefPostParse(def) < 0)
@@ -4977,6 +5029,11 @@ virDomainDefPostParseCommon(virDomainDefPtr def,
         return -1;
 
     if (virDomainDefRejectDuplicatePanics(def) < 0)
+        return -1;
+
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
+        !(data->xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_NO_BOOT_ORDER) &&
+        virDomainDefBootOrderPostParse(def) < 0)
         return -1;
 
     if (virDomainDefPostParseTimer(def) < 0)

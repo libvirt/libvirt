@@ -6,6 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='aarch64' machine='virt'>hvm</type>
+    <boot dev='hd'/>
   </os>
   <features>
     <gic version='2'/>

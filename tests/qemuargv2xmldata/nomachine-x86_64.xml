@@ -6,6 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='pc-0.11'>hvm</type>
+    <boot dev='hd'/>
   </os>
   <features>
     <acpi/>
