@@ -44,6 +44,15 @@
           its own virtual TPM.
         </description>
       </change>
+      <change>
+        <summary>
+          bhyve: Support specifying guest CPU topology
+        </summary>
+        <description>
+          Bhyve's guest CPU topology could be specified using the
+          <code>&lt;cpu&gt;&lt;topology ../&gt;&lt;/cpu&gt;</code> element.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
