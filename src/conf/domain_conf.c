@@ -18796,7 +18796,6 @@ virDomainDefParseXML(xmlDocPtr xml,
                      xmlXPathContextPtr ctxt,
                      virCapsPtr caps,
                      virDomainXMLOptionPtr xmlopt,
-                     void *parseOpaque,
                      unsigned int flags)
 {
     xmlNodePtr *nodes = NULL, node = NULL;
@@ -20521,14 +20520,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         (def->ns.parse)(xml, root, ctxt, &def->namespaceData) < 0)
         goto error;
 
-    /* callback to fill driver specific domain aspects */
-    if (virDomainDefPostParse(def, caps, flags, xmlopt, parseOpaque) < 0)
-        goto error;
-
-    /* valdiate configuration */
-    if (virDomainDefValidate(def, caps, flags, xmlopt) < 0)
-        goto error;
-
     return def;
 
  error:
@@ -20568,7 +20559,7 @@ virDomainObjParseXML(xmlDocPtr xml,
 
     oldnode = ctxt->node;
     ctxt->node = config;
-    obj->def = virDomainDefParseXML(xml, config, ctxt, caps, xmlopt, NULL, flags);
+    obj->def = virDomainDefParseXML(xml, config, ctxt, caps, xmlopt, flags);
     ctxt->node = oldnode;
     if (!obj->def)
         goto error;
@@ -20625,6 +20616,14 @@ virDomainObjParseXML(xmlDocPtr xml,
 
     if (xmlopt->privateData.parse &&
         xmlopt->privateData.parse(ctxt, obj, &xmlopt->config) < 0)
+        goto error;
+
+    /* callback to fill driver specific domain aspects */
+    if (virDomainDefPostParse(obj->def, caps, flags, xmlopt, NULL) < 0)
+        goto error;
+
+    /* valdiate configuration */
+    if (virDomainDefValidate(obj->def, caps, flags, xmlopt) < 0)
         goto error;
 
     return obj;
@@ -20689,6 +20688,7 @@ virDomainDefParseNode(xmlDocPtr xml,
 {
     xmlXPathContextPtr ctxt = NULL;
     virDomainDefPtr def = NULL;
+    virDomainDefPtr ret = NULL;
 
     if (!virXMLNodeNameEqual(root, "domain")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -20705,11 +20705,24 @@ virDomainDefParseNode(xmlDocPtr xml,
     }
 
     ctxt->node = root;
-    def = virDomainDefParseXML(xml, root, ctxt, caps, xmlopt, parseOpaque, flags);
+
+    if (!(def = virDomainDefParseXML(xml, root, ctxt, caps, xmlopt, flags)))
+        goto cleanup;
+
+    /* callback to fill driver specific domain aspects */
+    if (virDomainDefPostParse(def, caps, flags, xmlopt, parseOpaque) < 0)
+        goto cleanup;
+
+    /* valdiate configuration */
+    if (virDomainDefValidate(def, caps, flags, xmlopt) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(ret, def);
 
  cleanup:
+    virDomainDefFree(def);
     xmlXPathFreeContext(ctxt);
-    return def;
+    return ret;
 }
 
 
