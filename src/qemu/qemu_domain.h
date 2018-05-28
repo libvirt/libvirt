@@ -836,6 +836,8 @@ bool qemuDomainSupportsEncryptedSecret(qemuDomainObjPrivatePtr priv);
 void qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
     ATTRIBUTE_NONNULL(1);
 
+void qemuDomainSecretInfoDestroy(qemuDomainSecretInfoPtr secinfo);
+
 void qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
     ATTRIBUTE_NONNULL(1);
 

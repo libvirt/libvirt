@@ -949,12 +949,37 @@ qemuDomainSecretPlainClear(qemuDomainSecretPlain secret)
 
 
 static void
-qemuDomainSecretAESClear(qemuDomainSecretAES secret)
+qemuDomainSecretAESClear(qemuDomainSecretAES secret,
+                         bool keepAlias)
 {
+    if (!keepAlias)
+        VIR_FREE(secret.alias);
+
     VIR_FREE(secret.username);
-    VIR_FREE(secret.alias);
     VIR_FREE(secret.iv);
     VIR_FREE(secret.ciphertext);
+}
+
+
+static void
+qemuDomainSecretInfoClear(qemuDomainSecretInfoPtr secinfo,
+                          bool keepAlias)
+{
+    if (!secinfo)
+        return;
+
+    switch ((qemuDomainSecretInfoType) secinfo->type) {
+    case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
+        qemuDomainSecretPlainClear(secinfo->s.plain);
+        break;
+
+    case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
+        qemuDomainSecretAESClear(secinfo->s.aes, keepAlias);
+        break;
+
+    case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
+        break;
+    }
 }
 
 
@@ -964,20 +989,22 @@ qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
     if (!*secinfo)
         return;
 
-    switch ((qemuDomainSecretInfoType) (*secinfo)->type) {
-    case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
-        qemuDomainSecretPlainClear((*secinfo)->s.plain);
-        break;
-
-    case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
-        qemuDomainSecretAESClear((*secinfo)->s.aes);
-        break;
-
-    case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
-        break;
-    }
+    qemuDomainSecretInfoClear(*secinfo, false);
 
     VIR_FREE(*secinfo);
+}
+
+
+/**
+ * qemuDomainSecretInfoDestroy:
+ * @secinfo: object to destroy
+ *
+ * Removes any data unnecessary for further use, but keeps alias allocated.
+ */
+void
+qemuDomainSecretInfoDestroy(qemuDomainSecretInfoPtr secinfo)
+{
+    qemuDomainSecretInfoClear(secinfo, true);
 }
 
 
