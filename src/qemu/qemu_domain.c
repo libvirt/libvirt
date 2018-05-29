@@ -930,11 +930,14 @@ qemuDomainMasterKeyCreate(virDomainObjPtr vm)
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET))
         return 0;
 
-    if (!(priv->masterKey =
-          virCryptoGenerateRandom(QEMU_DOMAIN_MASTER_KEY_LEN)))
+    if (VIR_ALLOC_N(priv->masterKey, QEMU_DOMAIN_MASTER_KEY_LEN) < 0)
         return -1;
-
     priv->masterKeyLen = QEMU_DOMAIN_MASTER_KEY_LEN;
+
+    if (virCryptoGenerateRandom(priv->masterKey, priv->masterKeyLen) < 0) {
+        VIR_DISPOSE_N(priv->masterKey, priv->masterKeyLen);
+        return -1;
+    }
 
     return 0;
 }
@@ -1281,8 +1284,11 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
     if (!(secinfo->s.aes.alias = qemuDomainGetSecretAESAlias(srcalias, isLuks)))
         goto cleanup;
 
+    if (VIR_ALLOC_N(raw_iv, ivlen) < 0)
+        goto cleanup;
+
     /* Create a random initialization vector */
-    if (!(raw_iv = virCryptoGenerateRandom(ivlen)))
+    if (virCryptoGenerateRandom(raw_iv, ivlen) < 0)
         goto cleanup;
 
     /* Encode the IV and save that since qemu will need it */

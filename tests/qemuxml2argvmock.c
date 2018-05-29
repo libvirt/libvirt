@@ -190,17 +190,11 @@ virCommandPassFD(virCommandPtr cmd ATTRIBUTE_UNUSED,
     /* nada */
 }
 
-uint8_t *
-virCryptoGenerateRandom(size_t nbytes)
+int
+virCryptoGenerateRandom(unsigned char *buf,
+                        size_t buflen)
 {
-    uint8_t *buf;
-
-    if (VIR_ALLOC_N(buf, nbytes) < 0)
-        return NULL;
-
-    ignore_value(virRandomBytes(buf, nbytes));
-
-    return buf;
+    return virRandomBytes(buf, buflen);
 }
 
 int

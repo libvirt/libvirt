@@ -316,44 +316,39 @@ virCryptoEncryptData(virCryptoCipher algorithm,
 #endif
 
 /* virCryptoGenerateRandom:
- * @nbytes: Size in bytes of random byte stream to generate
+ * @buf: Pointer to location to store bytes
+ * @buflen: Number of bytes to store
  *
- * Generate a random stream of nbytes length and return it.
+ * Generate a random stream of @buflen length and store it into @buf.
  *
  * Since the gnutls_rnd could be missing, provide an alternate less
  * secure mechanism to at least have something.
  *
- * Returns pointer memory containing byte stream on success,
- * NULL on failure (with error reported)
+ * Returns 0 on success or -1 on failure (with error reported)
  */
-uint8_t *
-virCryptoGenerateRandom(size_t nbytes)
+int
+virCryptoGenerateRandom(unsigned char *buf,
+                        size_t buflen)
 {
-    uint8_t *buf;
     int rv;
-
-    if (VIR_ALLOC_N(buf, nbytes) < 0)
-        return NULL;
 
 #if WITH_GNUTLS
     /* Generate the byte stream using gnutls_rnd() if possible */
-    if ((rv = gnutls_rnd(GNUTLS_RND_RANDOM, buf, nbytes)) < 0) {
+    if ((rv = gnutls_rnd(GNUTLS_RND_RANDOM, buf, buflen)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to generate byte stream: %s"),
                        gnutls_strerror(rv));
-        VIR_FREE(buf);
-        return NULL;
+        return -1;
     }
 #else
     /* If we don't have gnutls_rnd(), we will generate a less cryptographically
      * strong master buf from /dev/urandom.
      */
-    if ((rv = virRandomBytes(buf, nbytes)) < 0) {
+    if ((rv = virRandomBytes(buf, buflen)) < 0) {
         virReportSystemError(-rv, "%s", _("failed to generate byte stream"));
-        VIR_FREE(buf);
-        return NULL;
+        return -1;
     }
 #endif
 
-    return buf;
+    return 0;
 }
