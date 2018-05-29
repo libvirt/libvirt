@@ -323,7 +323,8 @@ virCryptoEncryptData(virCryptoCipher algorithm,
  * Since the gnutls_rnd could be missing, provide an alternate less
  * secure mechanism to at least have something.
  *
- * Returns pointer memory containing byte stream on success, NULL on failure
+ * Returns pointer memory containing byte stream on success,
+ * NULL on failure (with error reported)
  */
 uint8_t *
 virCryptoGenerateRandom(size_t nbytes)
@@ -338,7 +339,8 @@ virCryptoGenerateRandom(size_t nbytes)
     /* Generate the byte stream using gnutls_rnd() if possible */
     if ((rv = gnutls_rnd(GNUTLS_RND_RANDOM, buf, nbytes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to generate byte stream, rv=%d"), rv);
+                       _("failed to generate byte stream: %s"),
+                       gnutls_strerror(rv));
         VIR_FREE(buf);
         return NULL;
     }
