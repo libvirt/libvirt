@@ -314,21 +314,3 @@ virCryptoEncryptData(virCryptoCipher algorithm,
     return -1;
 }
 #endif
-
-/* virCryptoGenerateRandom:
- * @buf: Pointer to location to store bytes
- * @buflen: Number of bytes to store
- *
- * Generate a random stream of @buflen length and store it into @buf.
- *
- * Since the gnutls_rnd could be missing, provide an alternate less
- * secure mechanism to at least have something.
- *
- * Returns 0 on success or -1 on failure (with error reported)
- */
-int
-virCryptoGenerateRandom(unsigned char *buf,
-                        size_t buflen)
-{
-    return virRandomBytes(buf, buflen);
-}

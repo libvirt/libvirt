@@ -51,6 +51,7 @@
 #include "viratomic.h"
 #include "virprocess.h"
 #include "vircrypto.h"
+#include "virrandom.h"
 #include "virsystemd.h"
 #include "secret_util.h"
 #include "logging/log_manager.h"
@@ -934,7 +935,7 @@ qemuDomainMasterKeyCreate(virDomainObjPtr vm)
         return -1;
     priv->masterKeyLen = QEMU_DOMAIN_MASTER_KEY_LEN;
 
-    if (virCryptoGenerateRandom(priv->masterKey, priv->masterKeyLen) < 0) {
+    if (virRandomBytes(priv->masterKey, priv->masterKeyLen) < 0) {
         VIR_DISPOSE_N(priv->masterKey, priv->masterKeyLen);
         return -1;
     }
@@ -1288,7 +1289,7 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
         goto cleanup;
 
     /* Create a random initialization vector */
-    if (virCryptoGenerateRandom(raw_iv, ivlen) < 0)
+    if (virRandomBytes(raw_iv, ivlen) < 0)
         goto cleanup;
 
     /* Encode the IV and save that since qemu will need it */

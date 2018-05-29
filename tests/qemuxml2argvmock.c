@@ -191,13 +191,6 @@ virCommandPassFD(virCommandPtr cmd ATTRIBUTE_UNUSED,
 }
 
 int
-virCryptoGenerateRandom(unsigned char *buf,
-                        size_t buflen)
-{
-    return virRandomBytes(buf, buflen);
-}
-
-int
 virNetDevOpenvswitchGetVhostuserIfname(const char *path ATTRIBUTE_UNUSED,
                                        char **ifname)
 {
