@@ -49,53 +49,6 @@ VIR_LOG_INIT("util.random");
 
 #define RANDOM_SOURCE "/dev/urandom"
 
-/* The algorithm of virRandomBits relies on gnulib's guarantee that
- * 'random_r' matches the POSIX requirements on 'random' of being
- * evenly distributed among exactly [0, 2**31) (that is, we always get
- * exactly 31 bits).  While this happens to be the value of RAND_MAX
- * on glibc, note that POSIX only requires RAND_MAX to be tied to the
- * weaker 'rand', so there are platforms where RAND_MAX is smaller
- * than the range of 'random_r'.  For the results to be evenly
- * distributed among up to 64 bits, we also rely on the period of
- * 'random_r' to be at least 2**64, which POSIX only guarantees for
- * 'random' if you use 256 bytes of state.  */
-enum {
-    RANDOM_BITS_PER_ITER = 31,
-    RANDOM_BITS_MASK = (1U << RANDOM_BITS_PER_ITER) - 1,
-    RANDOM_STATE_SIZE = 256,
-};
-
-static char randomState[RANDOM_STATE_SIZE];
-static struct random_data randomData;
-static virMutex randomLock = VIR_MUTEX_INITIALIZER;
-
-
-static int
-virRandomOnceInit(void)
-{
-    unsigned int seed = time(NULL) ^ getpid();
-
-#if 0
-    /* Normally we want a decent seed.  But if reproducible debugging
-     * of a fixed pseudo-random sequence is ever required, uncomment
-     * this block to let an environment variable force the seed.  */
-    const char *debug = virGetEnvBlockSUID("VIR_DEBUG_RANDOM_SEED");
-
-    if (debug && virStrToLong_ui(debug, NULL, 0, &seed) < 0)
-        return -1;
-#endif
-
-    if (initstate_r(seed,
-                    randomState,
-                    sizeof(randomState),
-                    &randomData) < 0)
-        return -1;
-
-    return 0;
-}
-
-VIR_ONCE_GLOBAL_INIT(virRandom)
-
 /**
  * virRandomBits:
  * @nbits: Number of bits of randommess required
@@ -108,26 +61,14 @@ VIR_ONCE_GLOBAL_INIT(virRandom)
 uint64_t virRandomBits(int nbits)
 {
     uint64_t ret = 0;
-    int32_t bits;
 
-    if (virRandomInitialize() < 0) {
+    if (virRandomBytes((unsigned char *) &ret, sizeof(ret)) < 0) {
         /* You're already hosed, so this particular non-random value
          * isn't any worse.  */
         return 0;
     }
 
-    virMutexLock(&randomLock);
-
-    while (nbits > RANDOM_BITS_PER_ITER) {
-        random_r(&randomData, &bits);
-        ret = (ret << RANDOM_BITS_PER_ITER) | (bits & RANDOM_BITS_MASK);
-        nbits -= RANDOM_BITS_PER_ITER;
-    }
-
-    random_r(&randomData, &bits);
-    ret = (ret << nbits) | (bits & ((1 << nbits) - 1));
-
-    virMutexUnlock(&randomLock);
+    ret &= (1U << nbits) - 1;
     return ret;
 }
 
