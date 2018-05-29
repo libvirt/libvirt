@@ -1706,6 +1706,11 @@
       <optional>
         <attribute name="name"/>
       </optional>
+      <optional>
+        <attribute name="tls">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
       <ref name="diskSourceNetworkHost"/>
       <optional>
         <ref name="encryption"/>

@@ -1388,6 +1388,11 @@ qemuDiskSourceNeedsProps(virStorageSourcePtr src,
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET))
         return true;
 
+    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_NBD &&
+        src->haveTLS == VIR_TRISTATE_BOOL_YES)
+        return true;
+
     return false;
 }
 

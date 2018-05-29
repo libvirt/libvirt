@@ -2786,7 +2786,13 @@
               is mandatory to specify which volume/image will be used.
               </p>
 
-              <p>For "nbd", the <code>name</code> attribute is optional.
+              <p>For "nbd", the <code>name</code> attribute is optional. TLS
+              transport for NBD can be enabled by setting the <code>tls</code>
+              attribute to <code>yes</code>. For the QEMU hypervisor, usage of
+              a TLS environment can also be globally controlled on the host by
+              the <code>nbd_tls</code> and <code>nbd_tls_x509_cert_dir</code> in
+              /etc/libvirt/qemu.conf.
+              ('tls' <span class="since">Since 4.5.0</span>)
               </p>
 
               <p>For "iscsi" (<span class="since">since 1.0.4</span>), the
