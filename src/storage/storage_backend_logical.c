@@ -938,6 +938,13 @@ virStorageBackendLogicalLVCreate(virStorageVolDefPtr vol,
     unsigned long long capacity = vol->target.capacity;
     virCommandPtr cmd = NULL;
 
+    if (vol->target.encryption &&
+        vol->target.encryption->format != VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("storage pool only supports LUKS encrypted volumes"));
+        return -1;
+    }
+
     cmd = virCommandNewArgList(LVCREATE,
                                "--name", vol->name,
                                NULL);
@@ -953,8 +960,7 @@ virStorageBackendLogicalLVCreate(virStorageVolDefPtr vol,
 
     /* If we're going to encrypt using LUKS, then we could need up to
      * an extra 2MB for the LUKS header - so account for that now */
-    if (vol->target.encryption &&
-        vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS)
+    if (vol->target.encryption)
         capacity += 2 * 1024 * 1024;
     virCommandAddArgFormat(cmd, "%lluK", VIR_DIV_UP(capacity, 1024));
 
