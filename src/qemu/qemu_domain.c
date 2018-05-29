@@ -1555,25 +1555,6 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivatePtr priv,
 }
 
 
-/* qemuDomainSecretDiskPrepare:
- * @priv: pointer to domain private object
- * @disk: Pointer to a disk definition
- *
- * For the right disk, generate the qemuDomainSecretInfo structure.
- *
- * Returns 0 on success, -1 on failure
- */
-
-static int
-qemuDomainSecretDiskPrepare(qemuDomainObjPrivatePtr priv,
-                            virDomainDiskDefPtr disk)
-{
-    return qemuDomainSecretStorageSourcePrepare(priv, disk->src,
-                                                disk->info.alias,
-                                                disk->info.alias);
-}
-
-
 /* qemuDomainSecretHostdevDestroy:
  * @disk: Pointer to a hostdev definition
  *
@@ -12475,6 +12456,37 @@ qemuDomainPrepareStorageSourcePR(virStorageSourcePtr src,
 }
 
 
+/**
+ * qemuDomainPrepareDiskSourceLegacy:
+ * @disk: disk to prepare
+ * @priv: VM private data
+ * @cfg: qemu driver config
+ *
+ * Prepare any disk source relevant data for use with the -drive command line.
+ */
+static int
+qemuDomainPrepareDiskSourceLegacy(virDomainDiskDefPtr disk,
+                                  qemuDomainObjPrivatePtr priv,
+                                  virQEMUDriverConfigPtr cfg)
+{
+    if (qemuDomainValidateStorageSource(disk->src, priv->qemuCaps) < 0)
+        return -1;
+
+    if (qemuDomainPrepareDiskSourceData(disk, disk->src, cfg, priv->qemuCaps) < 0)
+        return -1;
+
+    if (qemuDomainSecretStorageSourcePrepare(priv, disk->src,
+                                             disk->info.alias,
+                                             disk->info.alias) < 0)
+        return -1;
+
+    if (qemuDomainPrepareStorageSourcePR(disk->src, priv, disk->info.alias) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
                             qemuDomainObjPrivatePtr priv,
@@ -12482,19 +12494,10 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
 {
     qemuDomainPrepareDiskCachemode(disk);
 
-    if (qemuDomainValidateStorageSource(disk->src, priv->qemuCaps) < 0)
+    if (qemuDomainPrepareDiskSourceLegacy(disk, priv, cfg) < 0)
         return -1;
 
     if (qemuDomainPrepareDiskSourceTLS(disk->src, cfg) < 0)
-        return -1;
-
-    if (qemuDomainSecretDiskPrepare(priv, disk) < 0)
-        return -1;
-
-    if (qemuDomainPrepareDiskSourceData(disk, disk->src, cfg, priv->qemuCaps) < 0)
-        return -1;
-
-    if (qemuDomainPrepareStorageSourcePR(disk->src, priv, disk->info.alias) < 0)
         return -1;
 
     return 0;
