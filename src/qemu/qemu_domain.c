@@ -12421,7 +12421,8 @@ qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
         src = disk->src;
 
     /* transfer properties valid only for the top level image */
-    src->detect_zeroes = disk->detect_zeroes;
+    if (src == disk->src)
+        src->detect_zeroes = disk->detect_zeroes;
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (cfg &&
