@@ -1003,10 +1003,10 @@ bool qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
                                     const char *devicename);
 
 int
-qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
-                                 virStorageSourcePtr src,
-                                 virQEMUDriverConfigPtr cfg,
-                                 virQEMUCapsPtr qemuCaps)
+qemuDomainPrepareDiskSourceData(virDomainDiskDefPtr disk,
+                                virStorageSourcePtr src,
+                                virQEMUDriverConfigPtr cfg,
+                                virQEMUCapsPtr qemuCaps)
     ATTRIBUTE_RETURN_CHECK;
 
 int

@@ -8034,6 +8034,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virStorageSourcePtr src = disk->src;
+    virStorageSourcePtr n;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
     uid_t uid;
@@ -8116,9 +8117,10 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                                   report_broken) < 0)
         goto cleanup;
 
-    /* fill in data for the rest of the chain */
-    if (qemuDomainPrepareDiskSourceChain(disk, src, cfg, priv->qemuCaps) < 0)
-        goto cleanup;
+    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (qemuDomainPrepareDiskSourceData(disk, n, cfg, priv->qemuCaps) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
 
@@ -12399,51 +12401,44 @@ qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
 
 
 /**
- * qemuDomainPrepareDiskSourceChain:
+ * qemuDomainPrepareDiskSourceData:
  *
  * @disk: Disk config object
  * @src: source to start from
  * @cfg: qemu driver config object
  *
- * Prepares various aspects of the disk source and it's backing chain. This
- * function should be also called for detected backing chains. If @src is NULL
- * the root source is used.
+ * Prepares various aspects of a storage source belonging to a disk backing
+ * chain. This function should be also called for detected backing chain
+ * members.
  */
 int
-qemuDomainPrepareDiskSourceChain(virDomainDiskDefPtr disk,
-                                 virStorageSourcePtr src,
-                                 virQEMUDriverConfigPtr cfg,
-                                 virQEMUCapsPtr qemuCaps)
+qemuDomainPrepareDiskSourceData(virDomainDiskDefPtr disk,
+                                virStorageSourcePtr src,
+                                virQEMUDriverConfigPtr cfg,
+                                virQEMUCapsPtr qemuCaps)
 {
-    virStorageSourcePtr n;
-
-    if (!src)
-        src = disk->src;
-
     /* transfer properties valid only for the top level image */
     if (src == disk->src)
         src->detect_zeroes = disk->detect_zeroes;
 
-    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (cfg &&
-            n->type == VIR_STORAGE_TYPE_NETWORK &&
-            n->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_GLUSTER_DEBUG_LEVEL)) {
-            n->debug = true;
-            n->debugLevel = cfg->glusterDebugLevel;
-        }
-
-        if (qemuDomainValidateStorageSource(n, qemuCaps) < 0)
-            return -1;
-
-        /* transfer properties valid for the full chain */
-        n->iomode = disk->iomode;
-        n->cachemode = disk->cachemode;
-        n->discard = disk->discard;
-
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-            n->floppyimg = true;
+    if (cfg &&
+        src->type == VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_GLUSTER_DEBUG_LEVEL)) {
+        src->debug = true;
+        src->debugLevel = cfg->glusterDebugLevel;
     }
+
+    if (qemuDomainValidateStorageSource(src, qemuCaps) < 0)
+        return -1;
+
+    /* transfer properties valid for the full chain */
+    src->iomode = disk->iomode;
+    src->cachemode = disk->cachemode;
+    src->discard = disk->discard;
+
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+        src->floppyimg = true;
 
     return 0;
 }
@@ -12493,7 +12488,7 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
     if (qemuDomainSecretDiskPrepare(priv, disk) < 0)
         return -1;
 
-    if (qemuDomainPrepareDiskSourceChain(disk, NULL, cfg, priv->qemuCaps) < 0)
+    if (qemuDomainPrepareDiskSourceData(disk, disk->src, cfg, priv->qemuCaps) < 0)
         return -1;
 
     if (qemuDomainPrepareStorageSourcePR(disk->src, priv, disk->info.alias) < 0)

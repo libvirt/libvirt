@@ -215,11 +215,11 @@ testQemuDiskXMLToProps(const void *opaque)
         goto cleanup;
     }
 
-    if (qemuDomainPrepareDiskSourceChain(disk, NULL, NULL, data->qemuCaps) < 0)
-        goto cleanup;
-
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (testQemuDiskXMLToJSONFakeSecrets(n) < 0)
+            goto cleanup;
+
+        if (qemuDomainPrepareDiskSourceData(disk, n, NULL, data->qemuCaps) < 0)
             goto cleanup;
 
         if (!(formatProps = qemuBlockStorageSourceGetBlockdevProps(n)) ||
