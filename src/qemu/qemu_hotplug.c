@@ -1523,7 +1523,8 @@ qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
                                      tlsProps) < 0)
         return -1;
 
-    if (!(*tlsAlias = qemuAliasTLSObjFromSrcAlias(srcAlias)))
+    if (tlsAlias &&
+        !(*tlsAlias = qemuAliasTLSObjFromSrcAlias(srcAlias)))
         return -1;
 
     return 0;
