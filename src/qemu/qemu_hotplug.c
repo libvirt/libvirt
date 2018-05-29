@@ -1536,7 +1536,7 @@ qemuDomainAddChardevTLSObjects(virQEMUDriverPtr driver,
                                char *devAlias,
                                char *charAlias,
                                char **tlsAlias,
-                               char **secAlias)
+                               const char **secAlias)
 {
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -1561,12 +1561,15 @@ qemuDomainAddChardevTLSObjects(virQEMUDriverPtr driver,
     if ((chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev)))
         secinfo = chrSourcePriv->secinfo;
 
+    if (secinfo)
+        *secAlias = secinfo->s.aes.alias;
+
     if (qemuDomainGetTLSObjects(priv->qemuCaps, secinfo,
                                 cfg->chardevTLSx509certdir,
                                 dev->data.tcp.listen,
                                 cfg->chardevTLSx509verify,
                                 charAlias, &tlsProps, tlsAlias,
-                                &secProps, secAlias) < 0)
+                                &secProps, NULL) < 0)
         goto cleanup;
     dev->data.tcp.tlscreds = true;
 
@@ -1644,7 +1647,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     char *devstr = NULL;
     bool chardevAdded = false;
     char *tlsAlias = NULL;
-    char *secAlias = NULL;
+    const char *secAlias = NULL;
     bool need_release = false;
     virErrorPtr orig_err;
 
@@ -1691,7 +1694,6 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     if (ret < 0 && need_release)
         qemuDomainReleaseDeviceAddress(vm, &redirdev->info, NULL);
     VIR_FREE(tlsAlias);
-    VIR_FREE(secAlias);
     VIR_FREE(charAlias);
     VIR_FREE(devstr);
     return ret;
@@ -1885,7 +1887,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     bool teardowndevice = false;
     bool teardownlabel = false;
     char *tlsAlias = NULL;
-    char *secAlias = NULL;
+    const char *secAlias = NULL;
     bool need_release = false;
 
     if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
@@ -1956,7 +1958,6 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
             VIR_WARN("Unable to remove chr device from /dev");
     }
     VIR_FREE(tlsAlias);
-    VIR_FREE(secAlias);
     VIR_FREE(charAlias);
     VIR_FREE(devstr);
     return ret;
@@ -1987,7 +1988,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     char *charAlias = NULL;
     char *objAlias = NULL;
     char *tlsAlias = NULL;
-    char *secAlias = NULL;
+    const char *secAlias = NULL;
     bool releaseaddr = false;
     bool teardowncgroup = false;
     bool teardowndevice = false;
@@ -2077,7 +2078,6 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     }
 
     VIR_FREE(tlsAlias);
-    VIR_FREE(secAlias);
     VIR_FREE(charAlias);
     VIR_FREE(objAlias);
     VIR_FREE(devstr);
