@@ -166,8 +166,7 @@ qemuDomainAddDiskSrcTLSObject(virQEMUDriverPtr driver,
                                 src->tlsCertdir,
                                 false,
                                 src->tlsVerify,
-                                NULL, &tlsProps, NULL,
-                                NULL, NULL) < 0)
+                                NULL, &tlsProps, NULL, NULL) < 0)
         goto cleanup;
 
     if (qemuDomainAddTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
@@ -1502,21 +1501,19 @@ qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
                         const char *srcAlias,
                         virJSONValuePtr *tlsProps,
                         char **tlsAlias,
-                        virJSONValuePtr *secProps,
-                        char **secAlias)
+                        virJSONValuePtr *secProps)
 {
+    const char *secAlias = NULL;
+
     if (secinfo) {
         if (qemuBuildSecretInfoProps(secinfo, secProps) < 0)
             return -1;
 
-        if (secAlias &&
-            !(*secAlias = qemuDomainGetSecretAESAlias(srcAlias, false)))
-            return -1;
+        secAlias = secinfo->s.aes.alias;
     }
 
     if (qemuBuildTLSx509BackendProps(tlsCertdir, tlsListen, tlsVerify,
-                                     secAlias ? *secAlias : NULL, qemuCaps,
-                                     tlsProps) < 0)
+                                     secAlias, qemuCaps, tlsProps) < 0)
         return -1;
 
     if (tlsAlias &&
@@ -1567,7 +1564,7 @@ qemuDomainAddChardevTLSObjects(virQEMUDriverPtr driver,
                                 dev->data.tcp.listen,
                                 cfg->chardevTLSx509verify,
                                 charAlias, &tlsProps, tlsAlias,
-                                &secProps, NULL) < 0)
+                                &secProps) < 0)
         goto cleanup;
     dev->data.tcp.tlscreds = true;
 

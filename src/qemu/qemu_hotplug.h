@@ -56,8 +56,7 @@ int qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
                             const char *srcAlias,
                             virJSONValuePtr *tlsProps,
                             char **tlsAlias,
-                            virJSONValuePtr *secProps,
-                            char **secAlias);
+                            virJSONValuePtr *secProps);
 
 int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,

@@ -860,7 +860,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                                 cfg->migrateTLSx509certdir, tlsListen,
                                 cfg->migrateTLSx509verify,
                                 QEMU_MIGRATION_TLS_ALIAS_BASE,
-                                &tlsProps, tlsAlias, &secProps, NULL) < 0)
+                                &tlsProps, tlsAlias, &secProps) < 0)
         goto error;
 
     /* Ensure the domain doesn't already have the TLS objects defined...
