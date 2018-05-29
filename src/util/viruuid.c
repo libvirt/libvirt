@@ -48,18 +48,6 @@ VIR_LOG_INIT("util.uuid");
 
 static unsigned char host_uuid[VIR_UUID_BUFLEN];
 
-static int
-virUUIDGeneratePseudoRandomBytes(unsigned char *buf,
-                                 int buflen)
-{
-    while (buflen > 0) {
-        *buf++ = virRandomBits(8);
-        buflen--;
-    }
-
-    return 0;
-}
-
 /**
  * virUUIDGenerate:
  * @uuid: array of VIR_UUID_BUFLEN bytes to store the new UUID
@@ -71,18 +59,11 @@ virUUIDGeneratePseudoRandomBytes(unsigned char *buf,
 int
 virUUIDGenerate(unsigned char *uuid)
 {
-    int err;
-
     if (uuid == NULL)
         return -1;
 
-    if ((err = virRandomBytes(uuid, VIR_UUID_BUFLEN)) < 0) {
-        char ebuf[1024];
-        VIR_WARN("Falling back to pseudorandom UUID,"
-                 " failed to generate random bytes: %s",
-                 virStrerror(-err, ebuf, sizeof(ebuf)));
-        err = virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_BUFLEN);
-    }
+    if (virRandomBytes(uuid, VIR_UUID_BUFLEN) < 0)
+        return -1;
 
     /*
      * Make UUID RFC 4122 compliant. Following form will be used:
@@ -103,7 +84,7 @@ virUUIDGenerate(unsigned char *uuid)
     uuid[6] = (uuid[6] & 0x0F) | (4 << 4);
     uuid[8] = (uuid[8] & 0x3F) | (2 << 6);
 
-    return err;
+    return 0;
 }
 
 /**
