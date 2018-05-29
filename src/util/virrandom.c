@@ -43,6 +43,8 @@
 
 VIR_LOG_INIT("util.random");
 
+#define RANDOM_SOURCE "/dev/urandom"
+
 /* The algorithm of virRandomBits relies on gnulib's guarantee that
  * 'random_r' matches the POSIX requirements on 'random' of being
  * evenly distributed among exactly [0, 2**31) (that is, we always get
@@ -107,7 +109,6 @@ uint64_t virRandomBits(int nbits)
     if (virRandomInitialize() < 0) {
         /* You're already hosed, so this particular non-random value
          * isn't any worse.  */
-        VIR_WARN("random number generation is broken");
         return 0;
     }
 
@@ -165,10 +166,10 @@ uint32_t virRandomInt(uint32_t max)
  * @buf: Pointer to location to store bytes
  * @buflen: Number of bytes to store
  *
- * Generate a stream of random bytes from /dev/urandom
+ * Generate a stream of random bytes from RANDOM_SOURCE
  * into @buf of size @buflen
  *
- * Returns 0 on success or -errno on failure
+ * Returns 0 on success or -1 (with error reported)
  */
 int
 virRandomBytes(unsigned char *buf,
@@ -176,13 +177,20 @@ virRandomBytes(unsigned char *buf,
 {
     int fd;
 
-    if ((fd = open("/dev/urandom", O_RDONLY)) < 0)
-        return -errno;
+    if ((fd = open(RANDOM_SOURCE, O_RDONLY)) < 0) {
+        virReportSystemError(errno,
+                             _("unable to open %s"),
+                             RANDOM_SOURCE);
+        return -1;
+    }
 
     while (buflen > 0) {
         ssize_t n;
 
         if ((n = saferead(fd, buf, buflen)) <= 0) {
+            virReportSystemError(errno,
+                                 _("unable to read from %s"),
+                                 RANDOM_SOURCE);
             VIR_FORCE_CLOSE(fd);
             return n < 0 ? -errno : -ENODATA;
         }
