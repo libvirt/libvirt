@@ -725,7 +725,7 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
  * @verifypeer: boolean to enable peer verification (form of authorization)
  * @certEncSecretAlias: alias of a 'secret' object for decrypting TLS private key
  *                      (optional)
- * @inalias: Alias for the parent to generate object alias
+ * @alias: TLS object alias
  * @qemuCaps: capabilities
  *
  * Create the command line for a TLS object
@@ -738,11 +738,10 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
                             bool isListen,
                             bool verifypeer,
                             const char *certEncSecretAlias,
-                            const char *inalias,
+                            const char *alias,
                             virQEMUCapsPtr qemuCaps)
 {
     int ret = -1;
-    char *objalias = NULL;
     virJSONValuePtr props = NULL;
     char *tmp = NULL;
 
@@ -751,11 +750,8 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
                                      qemuCaps, &props) < 0)
         goto cleanup;
 
-    if (!(objalias = qemuAliasTLSObjFromSrcAlias(inalias)))
-        goto cleanup;
-
     if (!(tmp = virQEMUBuildObjectCommandlineFromJSON("tls-creds-x509",
-                                                      objalias, props)))
+                                                      alias, props)))
         goto cleanup;
 
     virCommandAddArgList(cmd, "-object", tmp, NULL);
@@ -764,7 +760,6 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
 
  cleanup:
     virJSONValueFree(props);
-    VIR_FREE(objalias);
     VIR_FREE(tmp);
     return ret;
 }
@@ -779,7 +774,6 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
 static int
 qemuBuildDiskSrcTLSx509CommandLine(virCommandPtr cmd,
                                    virStorageSourcePtr src,
-                                   const char *srcalias,
                                    virQEMUCapsPtr qemuCaps)
 {
 
@@ -789,7 +783,7 @@ qemuBuildDiskSrcTLSx509CommandLine(virCommandPtr cmd,
         src->haveTLS == VIR_TRISTATE_BOOL_YES) {
         return qemuBuildTLSx509CommandLine(cmd, src->tlsCertdir,
                                            false, src->tlsVerify,
-                                           NULL, srcalias, qemuCaps);
+                                           NULL, src->tlsAlias, qemuCaps);
     }
 
     return 0;
@@ -2291,8 +2285,7 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         if (qemuBuildDiskSecinfoCommandLine(cmd, encinfo) < 0)
             return -1;
 
-        if (qemuBuildDiskSrcTLSx509CommandLine(cmd, disk->src, disk->info.alias,
-                                               qemuCaps) < 0)
+        if (qemuBuildDiskSrcTLSx509CommandLine(cmd, disk->src, qemuCaps) < 0)
             return -1;
 
         virCommandAddArg(cmd, "-drive");
@@ -4996,15 +4989,18 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                 tlsCertEncSecAlias = chrSourcePriv->secinfo->s.aes.alias;
             }
 
+            if (!(objalias = qemuAliasTLSObjFromSrcAlias(charAlias)))
+                goto cleanup;
+
             if (qemuBuildTLSx509CommandLine(cmd, cfg->chardevTLSx509certdir,
                                             dev->data.tcp.listen,
                                             cfg->chardevTLSx509verify,
                                             tlsCertEncSecAlias,
-                                            charAlias, qemuCaps) < 0)
+                                            objalias, qemuCaps) < 0) {
+                VIR_FREE(objalias);
                 goto cleanup;
+            }
 
-            if (!(objalias = qemuAliasTLSObjFromSrcAlias(charAlias)))
-                goto cleanup;
             virBufferAsprintf(&buf, ",tls-creds=%s", objalias);
             VIR_FREE(objalias);
         }
