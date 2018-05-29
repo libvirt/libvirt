@@ -168,7 +168,7 @@ uint32_t virRandomInt(uint32_t max)
  * Generate a stream of random bytes from /dev/urandom
  * into @buf of size @buflen
  *
- * Returns 0 on success or an errno on failure
+ * Returns 0 on success or -errno on failure
  */
 int
 virRandomBytes(unsigned char *buf,
@@ -177,7 +177,7 @@ virRandomBytes(unsigned char *buf,
     int fd;
 
     if ((fd = open("/dev/urandom", O_RDONLY)) < 0)
-        return errno;
+        return -errno;
 
     while (buflen > 0) {
         ssize_t n;
@@ -186,7 +186,7 @@ virRandomBytes(unsigned char *buf,
             if (errno == EINTR)
                 continue;
             VIR_FORCE_CLOSE(fd);
-            return n < 0 ? errno : ENODATA;
+            return n < 0 ? -errno : -ENODATA;
         }
 
         buf += n;

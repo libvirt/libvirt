@@ -76,11 +76,11 @@ virUUIDGenerate(unsigned char *uuid)
     if (uuid == NULL)
         return -1;
 
-    if ((err = virRandomBytes(uuid, VIR_UUID_BUFLEN))) {
+    if ((err = virRandomBytes(uuid, VIR_UUID_BUFLEN)) < 0) {
         char ebuf[1024];
         VIR_WARN("Falling back to pseudorandom UUID,"
                  " failed to generate random bytes: %s",
-                 virStrerror(err, ebuf, sizeof(ebuf)));
+                 virStrerror(-err, ebuf, sizeof(ebuf)));
         err = virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_BUFLEN);
     }
 
