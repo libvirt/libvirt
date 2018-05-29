@@ -219,6 +219,9 @@ testQemuDiskXMLToProps(const void *opaque)
         if (testQemuDiskXMLToJSONFakeSecrets(n) < 0)
             goto cleanup;
 
+        if (qemuDomainValidateStorageSource(n, data->qemuCaps) < 0)
+            goto cleanup;
+
         if (qemuDomainPrepareDiskSourceData(disk, n, NULL, data->qemuCaps) < 0)
             goto cleanup;
 

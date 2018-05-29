@@ -4476,7 +4476,7 @@ qemuDomainDeviceDefValidateVideo(const virDomainVideoDef *video)
 }
 
 
-static int
+int
 qemuDomainValidateStorageSource(virStorageSourcePtr src,
                                 virQEMUCapsPtr qemuCaps)
 {
@@ -8118,6 +8118,9 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
         goto cleanup;
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (qemuDomainValidateStorageSource(n, priv->qemuCaps) < 0)
+            goto cleanup;
+
         if (qemuDomainPrepareDiskSourceData(disk, n, cfg, priv->qemuCaps) < 0)
             goto cleanup;
     }
@@ -12429,9 +12432,6 @@ qemuDomainPrepareDiskSourceData(virDomainDiskDefPtr disk,
         src->debugLevel = cfg->glusterDebugLevel;
     }
 
-    if (qemuDomainValidateStorageSource(src, qemuCaps) < 0)
-        return -1;
-
     /* transfer properties valid for the full chain */
     src->iomode = disk->iomode;
     src->cachemode = disk->cachemode;
@@ -12481,6 +12481,9 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
                             virQEMUDriverConfigPtr cfg)
 {
     qemuDomainPrepareDiskCachemode(disk);
+
+    if (qemuDomainValidateStorageSource(disk->src, priv->qemuCaps) < 0)
+        return -1;
 
     if (qemuDomainPrepareDiskSourceTLS(disk->src, cfg) < 0)
         return -1;

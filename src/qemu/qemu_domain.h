@@ -1009,6 +1009,12 @@ qemuDomainPrepareDiskSourceData(virDomainDiskDefPtr disk,
                                 virQEMUCapsPtr qemuCaps)
     ATTRIBUTE_RETURN_CHECK;
 
+
+int
+qemuDomainValidateStorageSource(virStorageSourcePtr src,
+                                virQEMUCapsPtr qemuCaps);
+
+
 int
 qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
                             qemuDomainObjPrivatePtr priv,
