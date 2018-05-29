@@ -29,6 +29,10 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#ifdef WITH_GNUTLS
+# include <gnutls/gnutls.h>
+# include <gnutls/crypto.h>
+#endif
 
 #include "virrandom.h"
 #include "virthread.h"
@@ -175,6 +179,19 @@ int
 virRandomBytes(unsigned char *buf,
                size_t buflen)
 {
+#if WITH_GNUTLS
+    int rv;
+
+    /* Generate the byte stream using gnutls_rnd() if possible */
+    if ((rv = gnutls_rnd(GNUTLS_RND_RANDOM, buf, buflen)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to generate byte stream: %s"),
+                       gnutls_strerror(rv));
+        return -1;
+    }
+
+#else /* !WITH_GNUTLS */
+
     int fd;
 
     if ((fd = open(RANDOM_SOURCE, O_RDONLY)) < 0) {
@@ -200,6 +217,7 @@ virRandomBytes(unsigned char *buf,
     }
 
     VIR_FORCE_CLOSE(fd);
+#endif /* !WITH_GNUTLS */
 
     return 0;
 }
