@@ -767,8 +767,6 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
 
 /* qemuBuildDiskSrcTLSx509CommandLine:
  *
- * Add TLS object if the disk src uses a secure communication channel
- *
  * Returns 0 on success, -1 w/ error on some sort of failure.
  */
 static int
@@ -776,17 +774,12 @@ qemuBuildDiskSrcTLSx509CommandLine(virCommandPtr cmd,
                                    virStorageSourcePtr src,
                                    virQEMUCapsPtr qemuCaps)
 {
+    if (src->haveTLS != VIR_TRISTATE_BOOL_YES)
+        return 0;
 
-
-    /* other protocols may be added later */
-    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
-        src->haveTLS == VIR_TRISTATE_BOOL_YES) {
-        return qemuBuildTLSx509CommandLine(cmd, src->tlsCertdir,
-                                           false, src->tlsVerify,
-                                           NULL, src->tlsAlias, qemuCaps);
-    }
-
-    return 0;
+    return qemuBuildTLSx509CommandLine(cmd, src->tlsCertdir,
+                                       false, src->tlsVerify,
+                                       NULL, src->tlsAlias, qemuCaps);
 }
 
 
