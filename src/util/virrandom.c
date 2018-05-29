@@ -182,9 +182,7 @@ virRandomBytes(unsigned char *buf,
     while (buflen > 0) {
         ssize_t n;
 
-        if ((n = read(fd, buf, buflen)) <= 0) {
-            if (errno == EINTR)
-                continue;
+        if ((n = saferead(fd, buf, buflen)) <= 0) {
             VIR_FORCE_CLOSE(fd);
             return n < 0 ? -errno : -ENODATA;
         }
