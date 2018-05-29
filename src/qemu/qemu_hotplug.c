@@ -1513,7 +1513,7 @@ qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
         if (qemuBuildSecretInfoProps(secinfo, secProps) < 0)
             return -1;
 
-        if (!secAlias ||
+        if (secAlias &&
             !(*secAlias = qemuDomainGetSecretAESAlias(srcAlias, false)))
             return -1;
     }
