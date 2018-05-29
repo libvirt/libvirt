@@ -1505,8 +1505,6 @@ qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
                         virJSONValuePtr *secProps,
                         char **secAlias)
 {
-    /* Add a secret object in order to access the TLS environment.
-     * The secinfo will only be created for serial TCP device. */
     if (secinfo) {
         if (qemuBuildSecretInfoProps(secinfo, secProps) < 0)
             return -1;
