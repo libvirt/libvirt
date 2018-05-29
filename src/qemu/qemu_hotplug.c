@@ -156,8 +156,7 @@ qemuHotplugPrepareDiskAccess(virQEMUDriverPtr driver,
 static int
 qemuDomainAddDiskSrcTLSObject(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              virStorageSourcePtr src,
-                              const char *srcalias)
+                              virStorageSourcePtr src)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -167,7 +166,7 @@ qemuDomainAddDiskSrcTLSObject(virQEMUDriverPtr driver,
                                 src->tlsCertdir,
                                 false,
                                 src->tlsVerify,
-                                srcalias, &tlsProps, &src->tlsAlias,
+                                NULL, &tlsProps, NULL,
                                 NULL, NULL) < 0)
         goto cleanup;
 
@@ -471,8 +470,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         prdStarted = true;
 
     if (disk->src->haveTLS &&
-        qemuDomainAddDiskSrcTLSObject(driver, vm, disk->src,
-                                      disk->info.alias) < 0)
+        qemuDomainAddDiskSrcTLSObject(driver, vm, disk->src) < 0)
         goto error;
 
     if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))

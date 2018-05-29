@@ -9957,6 +9957,7 @@ qemuProcessPrepareStorageSourceTLSVxhs(virStorageSourcePtr src,
 /* qemuProcessPrepareStorageSourceTLS:
  * @source: source for a disk
  * @cfg: driver configuration
+ * @parentAlias: alias of the parent device
  *
  * Updates host interface TLS encryption setting based on qemu.conf
  * for disk devices.  This will be presented as "tls='yes|no'" in
@@ -9966,7 +9967,8 @@ qemuProcessPrepareStorageSourceTLSVxhs(virStorageSourcePtr src,
  */
 static int
 qemuDomainPrepareStorageSourceTLS(virStorageSourcePtr src,
-                                  virQEMUDriverConfigPtr cfg)
+                                  virQEMUDriverConfigPtr cfg,
+                                  const char *parentAlias)
 {
     if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK)
         return 0;
@@ -10002,6 +10004,10 @@ qemuDomainPrepareStorageSourceTLS(virStorageSourcePtr src,
         virReportEnumRangeError(virStorageNetProtocol, src->protocol);
         return -1;
     }
+
+    if (src->haveTLS == VIR_TRISTATE_BOOL_YES &&
+        !(src->tlsAlias = qemuAliasTLSObjFromSrcAlias(parentAlias)))
+        return -1;
 
     return 0;
 }
@@ -12516,6 +12522,9 @@ qemuDomainPrepareDiskSourceLegacy(virDomainDiskDefPtr disk,
     if (qemuDomainPrepareStorageSourcePR(disk->src, priv, disk->info.alias) < 0)
         return -1;
 
+    if (qemuDomainPrepareStorageSourceTLS(disk->src, cfg, disk->info.alias) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -12528,9 +12537,6 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
     qemuDomainPrepareDiskCachemode(disk);
 
     if (qemuDomainPrepareDiskSourceLegacy(disk, priv, cfg) < 0)
-        return -1;
-
-    if (qemuDomainPrepareStorageSourceTLS(disk->src, cfg) < 0)
         return -1;
 
     return 0;

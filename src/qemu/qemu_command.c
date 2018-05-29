@@ -791,9 +791,6 @@ qemuBuildDiskSrcTLSx509CommandLine(virCommandPtr cmd,
     /* other protocols may be added later */
     if (src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
         src->haveTLS == VIR_TRISTATE_BOOL_YES) {
-        if (!(src->tlsAlias = qemuAliasTLSObjFromSrcAlias(srcalias)))
-            return -1;
-
         return qemuBuildTLSx509CommandLine(cmd, src->tlsCertdir,
                                            false, src->tlsVerify,
                                            false, srcalias, qemuCaps);
