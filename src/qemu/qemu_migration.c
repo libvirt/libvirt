@@ -2296,7 +2296,6 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     bool relabel = false;
     int rv;
     char *tlsAlias = NULL;
-    char *secAlias = NULL;
 
     virNWFilterReadLockFilterUpdates();
 
@@ -2505,7 +2504,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     if (flags & VIR_MIGRATE_TLS) {
         if (qemuMigrationParamsEnableTLS(driver, vm, true,
                                          QEMU_ASYNC_JOB_MIGRATION_IN,
-                                         &tlsAlias, &secAlias, NULL,
+                                         &tlsAlias, NULL,
                                          migParams) < 0)
             goto stopjob;
     } else {
@@ -2596,7 +2595,6 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
 
  cleanup:
     VIR_FREE(tlsAlias);
-    VIR_FREE(secAlias);
     qemuProcessIncomingDefFree(incoming);
     VIR_FREE(xmlout);
     VIR_FORCE_CLOSE(dataFD[0]);
@@ -3371,7 +3369,6 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuMigrationCookiePtr mig = NULL;
     char *tlsAlias = NULL;
-    char *secAlias = NULL;
     qemuMigrationIOThreadPtr iothread = NULL;
     int fd = -1;
     unsigned long migrate_speed = resource ? resource : priv->migMaxBandwidth;
@@ -3455,7 +3452,7 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
 
         if (qemuMigrationParamsEnableTLS(driver, vm, false,
                                          QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                         &tlsAlias, &secAlias, hostname,
+                                         &tlsAlias, hostname,
                                          migParams) < 0)
             goto error;
     } else {
@@ -3675,7 +3672,6 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
 
  cleanup:
     VIR_FREE(tlsAlias);
-    VIR_FREE(secAlias);
     VIR_FORCE_CLOSE(fd);
     virDomainDefFree(persistDef);
     qemuMigrationCookieFree(mig);

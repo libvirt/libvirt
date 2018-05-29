@@ -809,7 +809,6 @@ qemuMigrationParamsSetString(qemuMigrationParamsPtr migParams,
  * @tlsListen: server or client
  * @asyncJob: Migration job to join
  * @tlsAlias: alias to be generated for TLS object
- * @secAlias: alias to be generated for a secinfo object
  * @hostname: hostname of the migration destination
  * @migParams: migration parameters to set
  *
@@ -825,7 +824,6 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
                              bool tlsListen,
                              int asyncJob,
                              char **tlsAlias,
-                             char **secAlias,
                              const char *hostname,
                              qemuMigrationParamsPtr migParams)
 {
@@ -833,6 +831,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
     virJSONValuePtr tlsProps = NULL;
     virJSONValuePtr secProps = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    const char *secAlias = NULL;
     int ret = -1;
 
     if (!cfg->migrateTLSx509certdir) {
@@ -849,26 +848,28 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
     }
 
     /* If there's a secret, then grab/store it now using the connection */
-    if (cfg->migrateTLSx509secretUUID &&
-        !(priv->migSecinfo =
-          qemuDomainSecretInfoTLSNew(priv, QEMU_MIGRATION_TLS_ALIAS_BASE,
-                                     cfg->migrateTLSx509secretUUID)))
-        goto error;
+    if (cfg->migrateTLSx509secretUUID) {
+        if (!(priv->migSecinfo =
+              qemuDomainSecretInfoTLSNew(priv, QEMU_MIGRATION_TLS_ALIAS_BASE,
+                                         cfg->migrateTLSx509secretUUID)))
+            goto error;
+        secAlias = priv->migSecinfo->s.aes.alias;
+    }
 
     if (qemuDomainGetTLSObjects(priv->qemuCaps, priv->migSecinfo,
                                 cfg->migrateTLSx509certdir, tlsListen,
                                 cfg->migrateTLSx509verify,
                                 QEMU_MIGRATION_TLS_ALIAS_BASE,
-                                &tlsProps, tlsAlias, &secProps, secAlias) < 0)
+                                &tlsProps, tlsAlias, &secProps, NULL) < 0)
         goto error;
 
     /* Ensure the domain doesn't already have the TLS objects defined...
      * This should prevent any issues just in case some cleanup wasn't
      * properly completed (both src and dst use the same alias) or
      * some other error path between now and perform . */
-    qemuDomainDelTLSObjects(driver, vm, asyncJob, *secAlias, *tlsAlias);
+    qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, *tlsAlias);
 
-    if (qemuDomainAddTLSObjects(driver, vm, asyncJob, *secAlias, &secProps,
+    if (qemuDomainAddTLSObjects(driver, vm, asyncJob, secAlias, &secProps,
                                 *tlsAlias, &tlsProps) < 0)
         goto error;
 
