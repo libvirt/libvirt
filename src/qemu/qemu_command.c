@@ -723,7 +723,8 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
  * @tlspath: path to the TLS credentials
  * @listen: boolen listen for client or server setting
  * @verifypeer: boolean to enable peer verification (form of authorization)
- * @addpasswordid: boolean to handle adding passwordid to object
+ * @certEncSecretAlias: alias of a 'secret' object for decrypting TLS private key
+ *                      (optional)
  * @inalias: Alias for the parent to generate object alias
  * @qemuCaps: capabilities
  *
@@ -736,7 +737,7 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
                             const char *tlspath,
                             bool isListen,
                             bool verifypeer,
-                            bool addpasswordid,
+                            const char *certEncSecretAlias,
                             const char *inalias,
                             virQEMUCapsPtr qemuCaps)
 {
@@ -744,13 +745,9 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
     char *objalias = NULL;
     virJSONValuePtr props = NULL;
     char *tmp = NULL;
-    char *secalias = NULL;
 
-    if (addpasswordid &&
-        !(secalias = qemuDomainGetSecretAESAlias(inalias, false)))
-        return -1;
-
-    if (qemuBuildTLSx509BackendProps(tlspath, isListen, verifypeer, secalias,
+    if (qemuBuildTLSx509BackendProps(tlspath, isListen, verifypeer,
+                                     certEncSecretAlias,
                                      qemuCaps, &props) < 0)
         goto cleanup;
 
@@ -769,7 +766,6 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
     virJSONValueFree(props);
     VIR_FREE(objalias);
     VIR_FREE(tmp);
-    VIR_FREE(secalias);
     return ret;
 }
 
@@ -793,7 +789,7 @@ qemuBuildDiskSrcTLSx509CommandLine(virCommandPtr cmd,
         src->haveTLS == VIR_TRISTATE_BOOL_YES) {
         return qemuBuildTLSx509CommandLine(cmd, src->tlsCertdir,
                                            false, src->tlsVerify,
-                                           false, srcalias, qemuCaps);
+                                           NULL, srcalias, qemuCaps);
     }
 
     return 0;
@@ -4986,20 +4982,24 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
             qemuDomainChrSourcePrivatePtr chrSourcePriv =
                 QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
             char *objalias = NULL;
+            const char *tlsCertEncSecAlias = NULL;
 
             /* Add the secret object first if necessary. The
              * secinfo is added only to a TCP serial device during
              * qemuDomainSecretChardevPrepare. Subsequently called
              * functions can just check the config fields */
-            if (chrSourcePriv && chrSourcePriv->secinfo &&
-                qemuBuildObjectSecretCommandLine(cmd,
-                                                 chrSourcePriv->secinfo) < 0)
-                goto cleanup;
+            if (chrSourcePriv && chrSourcePriv->secinfo) {
+                if (qemuBuildObjectSecretCommandLine(cmd,
+                                                     chrSourcePriv->secinfo) < 0)
+                    goto cleanup;
+
+                tlsCertEncSecAlias = chrSourcePriv->secinfo->s.aes.alias;
+            }
 
             if (qemuBuildTLSx509CommandLine(cmd, cfg->chardevTLSx509certdir,
                                             dev->data.tcp.listen,
                                             cfg->chardevTLSx509verify,
-                                            !!cfg->chardevTLSx509secretUUID,
+                                            tlsCertEncSecAlias,
                                             charAlias, qemuCaps) < 0)
                 goto cleanup;
 
