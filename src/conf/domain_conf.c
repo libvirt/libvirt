@@ -19120,6 +19120,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                                "%s", _("malformed genid element"));
                 goto error;
             }
+            VIR_FREE(tmp);
         }
     }
     VIR_FREE(nodes);
