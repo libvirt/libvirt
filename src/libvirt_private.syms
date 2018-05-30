@@ -574,6 +574,7 @@ virDomainVideoVGAConfTypeFromString;
 virDomainVideoVGAConfTypeToString;
 virDomainVirtTypeFromString;
 virDomainVirtTypeToString;
+virDomainVsockDefFree;
 virDomainVsockDefNew;
 virDomainWatchdogActionTypeFromString;
 virDomainWatchdogActionTypeToString;

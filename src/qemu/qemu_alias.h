@@ -70,6 +70,8 @@ int qemuAssignDeviceInputAlias(virDomainDefPtr def,
                                virDomainInputDefPtr input,
                                int idx);
 
+int qemuAssignDeviceVsockAlias(virDomainVsockDefPtr vsock);
+
 int qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps);
 
 int qemuDomainDeviceAliasIndex(const virDomainDeviceInfo *info,

@@ -3015,6 +3015,75 @@ qemuDomainAttachInputDevice(virQEMUDriverPtr driver,
 }
 
 
+int
+qemuDomainAttachVsockDevice(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainVsockDefPtr vsock)
+{
+    qemuDomainVsockPrivatePtr vsockPriv = (qemuDomainVsockPrivatePtr)vsock->privateData;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_VSOCK,
+                               { .vsock = vsock } };
+    virErrorPtr originalError = NULL;
+    const char *fdprefix = "vsockfd";
+    bool releaseaddr = false;
+    char *fdname = NULL;
+    char *devstr = NULL;
+    int ret = -1;
+
+    if (vm->def->vsock) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("the domain already has a vsock device"));
+        return -1;
+    }
+
+    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, "vsock") < 0)
+        return -1;
+
+    if (qemuAssignDeviceVsockAlias(vsock) < 0)
+        goto cleanup;
+
+    if (qemuProcessOpenVhostVsock(vsock) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&fdname, "%s%u", fdprefix, vsockPriv->vhostfd) < 0)
+        goto cleanup;
+
+    if (!(devstr = qemuBuildVsockDevStr(vm->def, vsock, priv->qemuCaps, fdprefix)))
+        goto cleanup;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuMonitorAddDeviceWithFd(priv->mon, devstr, vsockPriv->vhostfd, fdname) < 0)
+        goto exit_monitor;
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        releaseaddr = false;
+        goto cleanup;
+    }
+
+    VIR_STEAL_PTR(vm->def->vsock, vsock);
+
+    ret = 0;
+
+ cleanup:
+    if (ret < 0) {
+        virErrorPreserveLast(&originalError);
+        if (releaseaddr)
+            qemuDomainReleaseDeviceAddress(vm, &vsock->info, NULL);
+        virErrorRestore(&originalError);
+    }
+
+    VIR_FREE(devstr);
+    VIR_FREE(fdname);
+    return ret;
+
+ exit_monitor:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        releaseaddr = false;
+    goto cleanup;
+}
+
+
 static int
 qemuDomainChangeNetBridge(virDomainObjPtr vm,
                           virDomainNetDefPtr olddev,

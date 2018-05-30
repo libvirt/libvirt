@@ -533,7 +533,7 @@ qemuAssignDeviceInputAlias(virDomainDefPtr def,
 }
 
 
-static int
+int
 qemuAssignDeviceVsockAlias(virDomainVsockDefPtr vsock)
 {
     if (vsock->info.alias)

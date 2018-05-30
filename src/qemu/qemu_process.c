@@ -5948,7 +5948,7 @@ qemuProcessPrepareHostStorage(virQEMUDriverPtr driver,
 }
 
 
-static int
+int
 qemuProcessOpenVhostVsock(virDomainVsockDefPtr vsock)
 {
     qemuDomainVsockPrivatePtr priv = (qemuDomainVsockPrivatePtr)vsock->privateData;

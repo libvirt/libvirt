@@ -7690,6 +7690,14 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         }
         break;
 
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        ret = qemuDomainAttachVsockDevice(driver, vm, dev->data.vsock);
+        if (ret == 0) {
+            alias = dev->data.vsock->info.alias;
+            dev->data.vsock = NULL;
+        }
+        break;
+
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_SOUND:
@@ -7702,7 +7710,6 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_IOMMU:
-    case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("live attach of device '%s' is not supported"),

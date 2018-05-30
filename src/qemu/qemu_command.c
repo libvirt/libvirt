@@ -9912,7 +9912,7 @@ qemuBuildSeccompSandboxCommandLine(virCommandPtr cmd,
 }
 
 
-static char *
+char *
 qemuBuildVsockDevStr(virDomainDefPtr def,
                      virDomainVsockDefPtr vsock,
                      virQEMUCapsPtr qemuCaps,
