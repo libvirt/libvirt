@@ -3093,40 +3093,6 @@ qemuMonitorAddObject(qemuMonitorPtr mon,
 }
 
 
-
-/**
- * qemuMonitorAddObjectType:
- * @mon: Pointer to monitor object
- * @type: Type name of object to add
- * @objalias: Alias of the new object
- * @props: Optional arguments for the given type. The object is consumed and
- *         should not be referenced by the caller after this function returns.
- *
- * Returns 0 on success -1 on error.
- */
-int
-qemuMonitorAddObjectType(qemuMonitorPtr mon,
-                         const char *type,
-                         const char *objalias,
-                         virJSONValuePtr props)
-{
-    virJSONValuePtr tmpprops = NULL;
-    int ret = -1;
-
-    VIR_DEBUG("type=%s objalias=%s props=%p", type, objalias, props);
-
-    if (!(tmpprops = qemuMonitorCreateObjectPropsWrap(type, objalias, &props)))
-        goto cleanup;
-
-    ret = qemuMonitorAddObject(mon, &tmpprops, NULL);
-
- cleanup:
-    virJSONValueFree(props);
-    virJSONValueFree(tmpprops);
-    return ret;
-}
-
-
 int
 qemuMonitorDelObject(qemuMonitorPtr mon,
                      const char *objalias)

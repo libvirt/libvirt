@@ -264,28 +264,6 @@ virQEMUBuildObjectCommandlineFromJSONInternal(virBufferPtr buf,
 }
 
 
-char *
-virQEMUBuildObjectCommandlineFromJSONType(const char *type,
-                                          const char *alias,
-                                          virJSONValuePtr props)
-{
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *ret = NULL;
-
-    if (virQEMUBuildObjectCommandlineFromJSONInternal(&buf, type, alias, props) < 0)
-        goto cleanup;
-
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-
-    ret = virBufferContentAndReset(&buf);
-
- cleanup:
-    virBufferFreeAndReset(&buf);
-    return ret;
-}
-
-
 int
 virQEMUBuildObjectCommandlineFromJSON(virBufferPtr buf,
                                       virJSONValuePtr objprops)
