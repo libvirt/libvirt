@@ -20,6 +20,8 @@ matrix:
         - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=systemd"
     - compiler: clang
       os: osx
+      env:
+        - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/rpcgen/bin:$PATH"
       before_install:
         - brew uninstall python mercurial postgis sfcgal cgal gdal
         - brew update
@@ -105,9 +107,6 @@ git:
 
 env:
   global:
-    # The custom $PATH is just to pick up some extra binaries installed
-    # through homebrew on macOS and it's completely harmless on Linux
-    - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/rpcgen/bin:$PATH"
     - VIR_TEST_DEBUG=1
 
 before_script:
