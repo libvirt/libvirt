@@ -8684,17 +8684,11 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
         goto cleanup;
     }
 
-    /* Check tls=yes|no domain setting for the block device
-     * At present only VxHS. Other block devices may be added later */
-    if (src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
-        (haveTLS = virXMLPropString(node, "tls"))) {
-        if ((src->haveTLS =
-            virTristateBoolTypeFromString(haveTLS)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                       _("unknown disk source 'tls' setting '%s'"),
-                       haveTLS);
+    if ((haveTLS = virXMLPropString(node, "tls")) &&
+        (src->haveTLS = virTristateBoolTypeFromString(haveTLS)) <= 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                   _("unknown disk source 'tls' setting '%s'"), haveTLS);
             goto cleanup;
-        }
     }
 
     if ((flags & VIR_DOMAIN_DEF_PARSE_STATUS) &&
