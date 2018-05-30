@@ -2062,6 +2062,7 @@ virDomainVsockDefFree(virDomainVsockDefPtr vsock)
         return;
 
     virObjectUnref(vsock->privateData);
+    virDomainDeviceInfoClear(&vsock->info);
     VIR_FREE(vsock);
 }
 
@@ -3092,6 +3093,7 @@ void virDomainDefFree(virDomainDefPtr def)
 
     virDomainMemballoonDefFree(def->memballoon);
     virDomainNVRAMDefFree(def->nvram);
+    virDomainVsockDefFree(def->vsock);
 
     for (i = 0; i < def->mem.nhugepages; i++)
         virBitmapFree(def->mem.hugepages[i].nodemask);
