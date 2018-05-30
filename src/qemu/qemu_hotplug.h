@@ -201,4 +201,7 @@ int qemuDomainDetachInputDevice(virDomainObjPtr vm,
                                 virDomainInputDefPtr def,
                                 bool async);
 
+int qemuDomainDetachVsockDevice(virDomainObjPtr vm,
+                                virDomainVsockDefPtr dev,
+                                bool async);
 #endif /* __QEMU_HOTPLUG_H__ */

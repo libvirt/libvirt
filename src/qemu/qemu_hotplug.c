@@ -4597,6 +4597,26 @@ qemuDomainRemoveInputDevice(virDomainObjPtr vm,
 
 
 static int
+qemuDomainRemoveVsockDevice(virDomainObjPtr vm,
+                            virDomainVsockDefPtr dev)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    virObjectEventPtr event = NULL;
+
+    VIR_DEBUG("Removing vsock device %s from domain %p %s",
+              dev->info.alias, vm, vm->def->name);
+
+    event = virDomainEventDeviceRemovedNewFromObj(vm, dev->info.alias);
+    qemuDomainEventQueue(driver, event);
+    qemuDomainReleaseDeviceAddress(vm, &dev->info, NULL);
+    virDomainVsockDefFree(vm->def->vsock);
+    vm->def->vsock = NULL;
+    return 0;
+}
+
+
+static int
 qemuDomainRemoveRedirdevDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainRedirdevDefPtr dev)
@@ -4690,6 +4710,10 @@ qemuDomainRemoveDevice(virQEMUDriverPtr driver,
         ret = qemuDomainRemoveWatchdog(driver, vm, dev->data.watchdog);
         break;
 
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        ret = qemuDomainRemoveVsockDevice(vm, dev->data.vsock);
+        break;
+
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
@@ -4703,7 +4727,6 @@ qemuDomainRemoveDevice(virQEMUDriverPtr driver,
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_IOMMU:
-    case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("don't know how to remove a %s device"),
@@ -6585,6 +6608,49 @@ qemuDomainDetachInputDevice(virDomainObjPtr vm,
     } else {
         if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
             ret = qemuDomainRemoveInputDevice(vm, input);
+    }
+
+ cleanup:
+    if (!async)
+        qemuDomainResetDeviceRemoval(vm);
+    return ret;
+}
+
+
+int
+qemuDomainDetachVsockDevice(virDomainObjPtr vm,
+                            virDomainVsockDefPtr dev,
+                            bool async)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    virDomainVsockDefPtr vsock = vm->def->vsock;
+    int ret = -1;
+
+
+    if (!vsock ||
+        !virDomainVsockDefEquals(dev, vsock)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("matching vsock device not found"));
+        return -1;
+    }
+
+    if (!async)
+        qemuDomainMarkDeviceForRemoval(vm, &vsock->info);
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuMonitorDelDevice(priv->mon, vsock->info.alias)) {
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        goto cleanup;
+    }
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto cleanup;
+
+    if (async) {
+        ret = 0;
+    } else {
+        if ((ret = qemuDomainWaitForDeviceRemoval(vm)) == 1)
+            ret = qemuDomainRemoveVsockDevice(vm, vsock);
     }
 
  cleanup:
