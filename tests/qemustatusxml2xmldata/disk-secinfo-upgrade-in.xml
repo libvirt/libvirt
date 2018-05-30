@@ -387,6 +387,16 @@
         <alias name='virtio-disk5'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x0f' function='0x0'/>
       </disk>
+      <disk type='network' device='disk'>
+        <driver name='qemu' type='raw'/>
+        <source protocol='vxhs' name='rbdpool/rbdimg' tls='yes' tlsFromConfig='0'>
+          <host name='example.org'/>
+        </source>
+        <backingStore/>
+        <target dev='vdg' bus='virtio'/>
+        <alias name='virtio-disk6'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x10' function='0x0'/>
+      </disk>
       <controller type='usb' index='0' model='ich9-ehci1'>
         <alias name='usb'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x7'/>

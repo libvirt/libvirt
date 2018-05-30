@@ -5982,6 +5982,13 @@ qemuDomainDeviceDiskDefPostParse(virDomainDiskDefPtr disk,
                                                         parseFlags) < 0)
         return -1;
 
+    /* regenerate TLS alias for old status XMLs */
+    if (parseFlags & VIR_DOMAIN_DEF_PARSE_STATUS &&
+        disk->src->haveTLS == VIR_TRISTATE_BOOL_YES &&
+        !disk->src->tlsAlias &&
+        !(disk->src->tlsAlias = qemuAliasTLSObjFromSrcAlias(disk->info.alias)))
+        return -1;
+
     return 0;
 }
 
