@@ -9955,7 +9955,7 @@ qemuProcessPrepareStorageSourceTLSVxhs(virStorageSourcePtr src,
 
 
 /* qemuProcessPrepareDiskSourceTLS:
- * @source: pointer to host interface data for disk device
+ * @source: source for a disk
  * @cfg: driver configuration
  *
  * Updates host interface TLS encryption setting based on qemu.conf
@@ -9965,17 +9965,14 @@ qemuProcessPrepareStorageSourceTLSVxhs(virStorageSourcePtr src,
  * Returns 0 on success, -1 on bad config/failure
  */
 static int
-qemuDomainPrepareDiskSourceTLS(virStorageSourcePtr src,
-                               virQEMUDriverConfigPtr cfg)
+qemuDomainPrepareStorageSourceTLS(virStorageSourcePtr src,
+                                  virQEMUDriverConfigPtr cfg)
 {
-    virStorageSourcePtr next;
 
-    for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
-        if (next->type == VIR_STORAGE_TYPE_NETWORK &&
-            next->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
-            qemuProcessPrepareStorageSourceTLSVxhs(next, cfg) < 0)
-            return -1;
-    }
+    if (src->type == VIR_STORAGE_TYPE_NETWORK &&
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS &&
+        qemuProcessPrepareStorageSourceTLSVxhs(src, cfg) < 0)
+        return -1;
 
     return 0;
 }
@@ -12504,7 +12501,7 @@ qemuDomainPrepareDiskSource(virDomainDiskDefPtr disk,
     if (qemuDomainPrepareDiskSourceLegacy(disk, priv, cfg) < 0)
         return -1;
 
-    if (qemuDomainPrepareDiskSourceTLS(disk->src, cfg) < 0)
+    if (qemuDomainPrepareStorageSourceTLS(disk->src, cfg) < 0)
         return -1;
 
     return 0;
