@@ -53,9 +53,7 @@ int qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
                             const char *tlsCertdir,
                             bool tlsListen,
                             bool tlsVerify,
-                            const char *srcAlias,
                             virJSONValuePtr *tlsProps,
-                            char **tlsAlias,
                             virJSONValuePtr *secProps);
 
 int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
