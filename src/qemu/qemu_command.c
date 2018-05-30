@@ -9915,7 +9915,8 @@ qemuBuildSeccompSandboxCommandLine(virCommandPtr cmd,
 static char *
 qemuBuildVsockDevStr(virDomainDefPtr def,
                      virDomainVsockDefPtr vsock,
-                     virQEMUCapsPtr qemuCaps)
+                     virQEMUCapsPtr qemuCaps,
+                     const char *fdprefix)
 {
     qemuDomainVsockPrivatePtr priv = (qemuDomainVsockPrivatePtr)vsock->privateData;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -9925,7 +9926,7 @@ qemuBuildVsockDevStr(virDomainDefPtr def,
     virBufferAsprintf(&buf, "%s", device);
     virBufferAsprintf(&buf, ",id=%s", vsock->info.alias);
     virBufferAsprintf(&buf, ",guest-cid=%u", vsock->guest_cid);
-    virBufferAsprintf(&buf, ",vhostfd=%u", priv->vhostfd);
+    virBufferAsprintf(&buf, ",vhostfd=%s%u", fdprefix, priv->vhostfd);
     if (qemuBuildDeviceAddressStr(&buf, def, &vsock->info, qemuCaps) < 0)
         goto cleanup;
 
@@ -9950,7 +9951,7 @@ qemuBuildVsockCommandLine(virCommandPtr cmd,
     char *devstr = NULL;
     int ret = -1;
 
-    if (!(devstr = qemuBuildVsockDevStr(def, vsock, qemuCaps)))
+    if (!(devstr = qemuBuildVsockDevStr(def, vsock, qemuCaps, "")))
         goto cleanup;
 
     virCommandPassFD(cmd, priv->vhostfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
