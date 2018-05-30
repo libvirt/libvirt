@@ -17592,6 +17592,24 @@ virDomainInputDefFind(const virDomainDef *def,
 }
 
 
+bool
+virDomainVsockDefEquals(const virDomainVsockDef *a,
+                        const virDomainVsockDef *b)
+{
+    if (a->model != b->model)
+        return false;
+
+    if (a->auto_cid != b->auto_cid)
+        return false;
+
+    if (a->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        !virDomainDeviceInfoAddressIsEqual(&a->info, &b->info))
+        return false;
+
+    return true;
+}
+
+
 char *
 virDomainDefGetDefaultEmulator(virDomainDefPtr def,
                                virCapsPtr caps)
