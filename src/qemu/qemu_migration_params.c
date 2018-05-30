@@ -1343,6 +1343,7 @@ qemuMigrationCapsCheck(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
+    virBitmapFree(migEvent);
     virJSONValueFree(json);
     virStringListFree(caps);
     return ret;
