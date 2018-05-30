@@ -322,6 +322,7 @@
               <objects>
                 <secret type='auth' alias='test-auth-alias'/>
                 <secret type='encryption' alias='test-encryption-alias'/>
+                <TLSx509 alias='transport-alias'/>
               </objects>
             </privateData>
           </source>

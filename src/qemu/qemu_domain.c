@@ -2023,6 +2023,7 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
 
     src->nodestorage = virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt);
     src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
+    src->tlsAlias = virXPathString("string(./objects/TLSx509/@alias)", ctxt);
 
     if (src->pr)
         src->pr->mgralias = virXPathString("string(./reservations/@mgralias)", ctxt);
@@ -2101,6 +2102,9 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
         qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->secinfo, "auth");
         qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->encinfo, "encryption");
     }
+
+    if (src->tlsAlias)
+        virBufferAsprintf(&tmp, "<TLSx509 alias='%s'/>\n", src->tlsAlias);
 
     if (virXMLFormatElement(buf, "objects", NULL, &tmp) < 0)
         goto cleanup;
