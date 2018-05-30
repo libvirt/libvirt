@@ -3958,7 +3958,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
         !virStoragePRDefIsManaged(disk->src->pr))
         ignore_value(qemuMonitorDelObject(priv->mon, disk->src->pr->mgralias));
 
-    if (disk->src->haveTLS)
+    if (disk->src->tlsAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, disk->src->tlsAlias));
 
     if (prManaged && !prUsed)
