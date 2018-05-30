@@ -5806,23 +5806,26 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *alias = NULL;
     size_t idx;
-    int rc = -1;
     int ret = -1;
     unsigned int orig_niothreads = vm->def->niothreadids;
     unsigned int exp_niothreads = vm->def->niothreadids;
     int new_niothreads = 0;
     qemuMonitorIOThreadInfoPtr *new_iothreads = NULL;
     virDomainIOThreadIDDefPtr iothrid;
+    virJSONValuePtr props = NULL;
 
     if (virAsprintf(&alias, "iothread%u", iothread_id) < 0)
         return -1;
 
+    if (qemuMonitorCreateObjectProps(&props, "iothread", alias, NULL) < 0)
+        goto cleanup;
+
     qemuDomainObjEnterMonitor(driver, vm);
 
-    rc = qemuMonitorAddObjectType(priv->mon, "iothread", alias, NULL);
-    exp_niothreads++;
-    if (rc < 0)
+    if (qemuMonitorAddObject(priv->mon, &props, NULL) < 0)
         goto exit_monitor;
+
+    exp_niothreads++;
 
     /* After hotplugging the IOThreads we need to re-detect the
      * IOThreads thread_id's, adjust the cgroups, thread affinity,
@@ -5876,8 +5879,9 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
         VIR_FREE(new_iothreads);
     }
     virDomainAuditIOThread(vm, orig_niothreads, new_niothreads,
-                           "update", rc == 0);
+                           "update", ret == 0);
     VIR_FREE(alias);
+    virJSONValueFree(props);
     return ret;
 
  exit_monitor:
