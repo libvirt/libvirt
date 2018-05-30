@@ -9912,17 +9912,15 @@ qemuBuildSeccompSandboxCommandLine(virCommandPtr cmd,
 }
 
 
-static int
-qemuBuildVsockCommandLine(virCommandPtr cmd,
-                          virDomainDefPtr def,
-                          virDomainVsockDefPtr vsock,
-                          virQEMUCapsPtr qemuCaps)
+static char *
+qemuBuildVsockDevStr(virDomainDefPtr def,
+                     virDomainVsockDefPtr vsock,
+                     virQEMUCapsPtr qemuCaps)
 {
     qemuDomainVsockPrivatePtr priv = (qemuDomainVsockPrivatePtr)vsock->privateData;
-    const char *device = "vhost-vsock-pci";
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *devstr = NULL;
-    int ret = -1;
+    const char *device = "vhost-vsock-pci";
+    char *ret = NULL;
 
     virBufferAsprintf(&buf, "%s", device);
     virBufferAsprintf(&buf, ",id=%s", vsock->info.alias);
@@ -9934,7 +9932,26 @@ qemuBuildVsockCommandLine(virCommandPtr cmd,
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
 
-    devstr = virBufferContentAndReset(&buf);
+    ret = virBufferContentAndReset(&buf);
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
+}
+
+
+static int
+qemuBuildVsockCommandLine(virCommandPtr cmd,
+                          virDomainDefPtr def,
+                          virDomainVsockDefPtr vsock,
+                          virQEMUCapsPtr qemuCaps)
+{
+    qemuDomainVsockPrivatePtr priv = (qemuDomainVsockPrivatePtr)vsock->privateData;
+    char *devstr = NULL;
+    int ret = -1;
+
+    if (!(devstr = qemuBuildVsockDevStr(def, vsock, qemuCaps)))
+        goto cleanup;
 
     virCommandPassFD(cmd, priv->vhostfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
     priv->vhostfd = -1;
@@ -9942,7 +9959,6 @@ qemuBuildVsockCommandLine(virCommandPtr cmd,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&buf);
     VIR_FREE(devstr);
     return ret;
 }
