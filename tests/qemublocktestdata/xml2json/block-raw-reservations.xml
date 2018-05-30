@@ -1,0 +1,14 @@
+<disk device='disk' type='block'>
+  <driver name='qemu' type='raw'/>
+  <source dev='/dev/blah'>
+    <reservations enabled='yes' managed='yes'/>
+    <privateData>
+      <nodenames>
+        <nodename type='storage' name='node-a-st'/>
+        <nodename type='format' name='node-a-fo'/>
+      </nodenames>
+      <reservations mgralias='node-a-st-pr-alias'/>
+    </privateData>
+  </source>
+  <target dev='vda'/>
+</disk>

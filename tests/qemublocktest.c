@@ -488,6 +488,7 @@ mymain(void)
     TEST_DISK_TO_JSON("dir-fat-cache");
 
     TEST_DISK_TO_JSON("block-raw-noopts");
+    TEST_DISK_TO_JSON("block-raw-reservations");
 
  cleanup:
     virHashFree(diskxmljsondata.schema);

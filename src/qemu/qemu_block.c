@@ -998,6 +998,7 @@ qemuBlockStorageSourceGetFileProps(virStorageSourcePtr src)
 {
     const char *driver = "file";
     const char *iomode = NULL;
+    const char *prManagerAlias = NULL;
     virJSONValuePtr ret = NULL;
 
     if (src->iomode != VIR_DOMAIN_DISK_IO_DEFAULT)
@@ -1010,10 +1011,14 @@ qemuBlockStorageSourceGetFileProps(virStorageSourcePtr src)
             driver = "host_device";
     }
 
+    if (src->pr)
+        prManagerAlias = src->pr->mgralias;
+
     ignore_value(virJSONValueObjectCreate(&ret,
                                           "s:driver", driver,
                                           "s:filename", src->path,
                                           "S:aio", iomode,
+                                          "S:pr-manager", prManagerAlias,
                                           NULL) < 0);
     return ret;
 }
