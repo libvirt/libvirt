@@ -692,15 +692,13 @@ mymain(void)
  * version.
  */
 # define DO_TEST_CAPS_INTERNAL(name, suffix, migrateFrom, flags, parseFlags, \
-                               gic, arch, capsfile) \
+                               arch, capsfile) \
     do { \
         static struct testInfo info = { \
             name, "." suffix, NULL, migrateFrom, migrateFrom ? 7 : -1,\
             (flags), parseFlags, false, NULL \
         }; \
         info.skipLegacyCPUs = skipLegacyCPUs; \
-        if (testInitQEMUCaps(&info, gic) < 0) \
-            return EXIT_FAILURE; \
         if (!(info.qemuCaps = qemuTestParseCapabilitiesArch(virArchFromString(arch), \
                                                             capsfile))) \
             return EXIT_FAILURE; \
@@ -713,18 +711,18 @@ mymain(void)
 
 # define TEST_CAPS_PATH abs_srcdir "/qemucapabilitiesdata/caps_"
 
-# define DO_TEST_CAPS_ARCH_VER_FULL(name, flags, parseFlags, gic, arch, ver) \
-    DO_TEST_CAPS_INTERNAL(name, arch "-" ver, NULL, flags, parseFlags, gic, \
+# define DO_TEST_CAPS_ARCH_VER_FULL(name, flags, parseFlags, arch, ver) \
+    DO_TEST_CAPS_INTERNAL(name, arch "-" ver, NULL, flags, parseFlags, \
                           arch, TEST_CAPS_PATH ver "." arch ".xml")
 
-# define DO_TEST_CAPS_ARCH_VER(name, gic, arch, ver) \
-    DO_TEST_CAPS_ARCH_VER_FULL(name, 0, 0, gic, arch, ver)
+# define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
+    DO_TEST_CAPS_ARCH_VER_FULL(name, 0, 0, arch, ver)
 
 # define DO_TEST_CAPS_VER(name, ver) \
-    DO_TEST_CAPS_ARCH_VER(name, GIC_NONE, "x86_64", ver)
+    DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
 # define DO_TEST_CAPS_LATEST(name) \
-    DO_TEST_CAPS_INTERNAL(name, "x86_64-latest", NULL, 0, 0, GIC_NONE, "x86_64", \
+    DO_TEST_CAPS_INTERNAL(name, "x86_64-latest", NULL, 0, 0, "x86_64", \
                           capslatest_x86_64)
 
 /**
