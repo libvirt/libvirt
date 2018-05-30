@@ -8127,6 +8127,15 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         break;
 
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        if (vmdef->vsock) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain already has a vsock device"));
+            return -1;
+        }
+        VIR_STEAL_PTR(vmdef->vsock, dev->data.vsock);
+        break;
+
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
@@ -8138,7 +8147,6 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_IOMMU:
-    case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_LAST:
          virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                         _("persistent attach of device '%s' is not supported"),
@@ -8311,6 +8319,17 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         VIR_DELETE_ELEMENT(vmdef->inputs, idx, vmdef->ninputs);
         break;
 
+    case VIR_DOMAIN_DEVICE_VSOCK:
+        if (!vmdef->vsock ||
+            !virDomainVsockDefEquals(dev->data.vsock, vmdef->vsock)) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("matching vsock device not found"));
+            return -1;
+        }
+        virDomainVsockDefFree(vmdef->vsock);
+        vmdef->vsock = NULL;
+        break;
+
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
@@ -8322,7 +8341,6 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_IOMMU:
-    case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("persistent detach of device '%s' is not supported"),
