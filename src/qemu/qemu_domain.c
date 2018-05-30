@@ -9988,6 +9988,12 @@ qemuDomainPrepareStorageSourceTLS(virStorageSourcePtr src,
     case VIR_STORAGE_NET_PROTOCOL_FTPS:
     case VIR_STORAGE_NET_PROTOCOL_TFTP:
     case VIR_STORAGE_NET_PROTOCOL_SSH:
+        if (src->haveTLS == VIR_TRISTATE_BOOL_YES) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("TLS transport is not supported for disk protocol '%s'"),
+                           virStorageNetProtocolTypeToString(src->protocol));
+            return -1;
+        }
         break;
 
     case VIR_STORAGE_NET_PROTOCOL_NONE:
