@@ -381,7 +381,7 @@ mymain(void)
     DO_TEST("disk-drive-network-source-auth", NONE);
     DO_TEST("disk-drive-network-sheepdog", NONE);
     DO_TEST("disk-drive-network-vxhs", NONE);
-    DO_TEST("disk-drive-network-tlsx509-vxhs", NONE);
+    DO_TEST("disk-drive-network-tlsx509", NONE);
     DO_TEST("disk-scsi-device",
             QEMU_CAPS_SCSI_LSI);
     DO_TEST("disk-scsi-vscsi", NONE);

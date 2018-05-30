@@ -1051,7 +1051,7 @@ mymain(void)
     DO_TEST_FAILURE("disk-drive-network-rbd-no-colon", NONE);
     DO_TEST("disk-drive-network-vxhs", QEMU_CAPS_VXHS);
     driver.config->vxhsTLS = 1;
-    DO_TEST("disk-drive-network-tlsx509-vxhs", QEMU_CAPS_VXHS,
+    DO_TEST("disk-drive-network-tlsx509", QEMU_CAPS_VXHS,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
     driver.config->vxhsTLS = 0;
     VIR_FREE(driver.config->vxhsTLSx509certdir);
