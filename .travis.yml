@@ -21,12 +21,12 @@ matrix:
     - compiler: clang
       os: osx
       env:
-        - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/rpcgen/bin:$PATH"
+        - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/ccache/libexec:/usr/local/opt/rpcgen/bin:$PATH"
       before_install:
         - brew uninstall python mercurial postgis sfcgal cgal gdal
         - brew update
         - brew upgrade
-        - brew install python rpcgen yajl
+        - brew install python ccache rpcgen yajl
       script:
         # We can't run make distcheck/syntax-check because they
         # fail on macOS, but doing 'install' and 'dist' gives us
