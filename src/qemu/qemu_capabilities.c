@@ -1516,12 +1516,19 @@ virQEMUCapsHostCPUDataCopy(virQEMUCapsHostCPUDataPtr dst,
 
 
 static void
-virQEMUCapsHostCPUDataClear(virQEMUCapsHostCPUDataPtr cpuData)
+virQEMUCapsHostCPUDataClearModels(virQEMUCapsHostCPUDataPtr cpuData)
 {
-    qemuMonitorCPUModelInfoFree(cpuData->info);
     virCPUDefFree(cpuData->reported);
     virCPUDefFree(cpuData->migratable);
     virCPUDefFree(cpuData->full);
+}
+
+
+static void
+virQEMUCapsHostCPUDataClear(virQEMUCapsHostCPUDataPtr cpuData)
+{
+    qemuMonitorCPUModelInfoFree(cpuData->info);
+    virQEMUCapsHostCPUDataClearModels(cpuData);
 
     memset(cpuData, 0, sizeof(*cpuData));
 }
@@ -2831,6 +2838,16 @@ virQEMUCapsNewHostCPUModel(void)
     cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
 
     return cpu;
+}
+
+
+void
+virQEMUCapsFreeHostCPUModel(virQEMUCapsPtr qemuCaps,
+                            virDomainVirtType type)
+{
+    virQEMUCapsHostCPUDataPtr cpuData = virQEMUCapsGetHostCPUData(qemuCaps, type);
+
+    virQEMUCapsHostCPUDataClearModels(cpuData);
 }
 
 
