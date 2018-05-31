@@ -207,6 +207,9 @@ struct _virQEMUDriverConfig {
 
     bool vxhsTLS;
     char *vxhsTLSx509certdir;
+
+    bool nbdTLS;
+    char *nbdTLSx509certdir;
 };
 
 /* Main driver state */

@@ -279,6 +279,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     SET_TLS_X509_CERT_DEFAULT(chardev);
     SET_TLS_X509_CERT_DEFAULT(migrate);
     SET_TLS_X509_CERT_DEFAULT(vxhs);
+    SET_TLS_X509_CERT_DEFAULT(nbd);
 
 #undef SET_TLS_X509_CERT_DEFAULT
 
@@ -378,6 +379,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->chardevTLSx509secretUUID);
 
     VIR_FREE(cfg->vxhsTLSx509certdir);
+    VIR_FREE(cfg->nbdTLSx509certdir);
 
     VIR_FREE(cfg->migrateTLSx509certdir);
     VIR_FREE(cfg->migrateTLSx509secretUUID);
@@ -458,6 +460,7 @@ virQEMUDriverConfigTLSDirResetDefaults(virQEMUDriverConfigPtr cfg)
     CHECK_RESET_CERT_DIR_DEFAULT(chardev);
     CHECK_RESET_CERT_DIR_DEFAULT(migrate);
     CHECK_RESET_CERT_DIR_DEFAULT(vxhs);
+    CHECK_RESET_CERT_DIR_DEFAULT(nbd);
 
     return 0;
 }
@@ -560,6 +563,10 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueBool(conf, "vxhs_tls", &cfg->vxhsTLS) < 0)
         goto cleanup;
     if (virConfGetValueString(conf, "vxhs_tls_x509_cert_dir", &cfg->vxhsTLSx509certdir) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "nbd_tls", &cfg->nbdTLS) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "nbd_tls_x509_cert_dir", &cfg->nbdTLSx509certdir) < 0)
         goto cleanup;
 
 #define GET_CONFIG_TLS_CERTINFO(val) \
@@ -989,6 +996,14 @@ virQEMUDriverConfigValidate(virQEMUDriverConfigPtr cfg)
         virReportError(VIR_ERR_CONF_SYNTAX,
                        _("vxhs_tls_x509_cert_dir directory '%s' does not exist"),
                        cfg->vxhsTLSx509certdir);
+        return -1;
+    }
+
+    if (STRNEQ(cfg->nbdTLSx509certdir, SYSCONFDIR "/pki/qemu") &&
+        !virFileExists(cfg->nbdTLSx509certdir)) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("nbd_tls_x509_cert_dir directory '%s' does not exist"),
+                       cfg->nbdTLSx509certdir);
         return -1;
     }
 
