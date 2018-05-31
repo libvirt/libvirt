@@ -27879,7 +27879,7 @@ virDomainDeviceIsUSB(virDomainDeviceDefPtr dev)
     if ((t == VIR_DOMAIN_DEVICE_DISK &&
          dev->data.disk->bus == VIR_DOMAIN_DISK_BUS_USB) ||
         (t == VIR_DOMAIN_DEVICE_INPUT &&
-         dev->data.input->type == VIR_DOMAIN_INPUT_BUS_USB) ||
+         dev->data.input->bus == VIR_DOMAIN_INPUT_BUS_USB) ||
         (t == VIR_DOMAIN_DEVICE_HOSTDEV &&
          dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
          dev->data.hostdev->source.subsys.type ==
