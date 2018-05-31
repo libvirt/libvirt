@@ -164,8 +164,7 @@ qemuDomainAddDiskSrcTLSObject(virQEMUDriverPtr driver,
 
     if (qemuDomainGetTLSObjects(priv->qemuCaps, NULL,
                                 src->tlsCertdir,
-                                false,
-                                src->tlsVerify,
+                                false, true,
                                 src->tlsAlias,
                                 &tlsProps, NULL) < 0)
         goto cleanup;

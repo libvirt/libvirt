@@ -774,7 +774,7 @@ qemuBuildDiskSrcTLSx509CommandLine(virCommandPtr cmd,
         return 0;
 
     return qemuBuildTLSx509CommandLine(cmd, src->tlsCertdir,
-                                       false, src->tlsVerify,
+                                       false, true,
                                        NULL, src->tlsAlias, qemuCaps);
 }
 

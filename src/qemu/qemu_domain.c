@@ -9946,8 +9946,6 @@ qemuProcessPrepareStorageSourceTLSVxhs(virStorageSourcePtr src,
     if (src->haveTLS == VIR_TRISTATE_BOOL_YES) {
         if (VIR_STRDUP(src->tlsCertdir, cfg->vxhsTLSx509certdir) < 0)
             return -1;
-
-        src->tlsVerify = true;
     }
 
     return 0;

@@ -2171,7 +2171,6 @@ virStorageSourceCopy(const virStorageSource *src,
     ret->shared = src->shared;
     ret->haveTLS = src->haveTLS;
     ret->tlsFromConfig = src->tlsFromConfig;
-    ret->tlsVerify = src->tlsVerify;
     ret->detected = src->detected;
     ret->debugLevel = src->debugLevel;
     ret->debug = src->debug;
