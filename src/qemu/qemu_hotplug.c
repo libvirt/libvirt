@@ -3839,6 +3839,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     char *drivestr;
     char *objAlias = NULL;
     char *encAlias = NULL;
+    bool prManaged = priv->prDaemonRunning;
+    bool prUsed = false;
 
     VIR_DEBUG("Removing disk %s from domain %p %s",
               disk->info.alias, vm, vm->def->name);
@@ -3876,6 +3878,16 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
         }
     }
 
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (vm->def->disks[i] == disk) {
+            virDomainDiskRemove(vm->def, i);
+            break;
+        }
+    }
+
+    /* check if the last disk with managed PR was just removed */
+    prUsed = virDomainDefHasManagedPR(vm->def);
+
     qemuDomainObjEnterMonitor(driver, vm);
 
     qemuMonitorDriveDel(priv->mon, drivestr);
@@ -3892,11 +3904,15 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     VIR_FREE(encAlias);
 
     /* If it fails, then so be it - it was a best shot */
-    if (disk->src->pr)
+    if (disk->src->pr &&
+        !virStoragePRDefIsManaged(disk->src->pr))
         ignore_value(qemuMonitorDelObject(priv->mon, disk->src->pr->mgralias));
 
     if (disk->src->haveTLS)
         ignore_value(qemuMonitorDelObject(priv->mon, disk->src->tlsAlias));
+
+    if (prManaged && !prUsed)
+        ignore_value(qemuMonitorDelObject(priv->mon, qemuDomainGetManagedPRAlias()));
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return -1;
@@ -3906,16 +3922,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     event = virDomainEventDeviceRemovedNewFromObj(vm, disk->info.alias);
     qemuDomainEventQueue(driver, event);
 
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (vm->def->disks[i] == disk) {
-            virDomainDiskRemove(vm->def, i);
-            break;
-        }
-    }
-
-    /* check if the last disk with managed PR was just removed */
-    if (priv->prDaemonRunning &&
-        !virDomainDefHasManagedPR(vm->def))
+    if (prManaged && !prUsed)
         qemuProcessKillManagedPRDaemon(vm);
 
     qemuDomainReleaseDeviceAddress(vm, &disk->info, src);
