@@ -650,7 +650,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 }
 
 
-/* qemuAliasFromDisk
+/* qemuAliasDiskDriveFromDisk
  * @disk: Pointer to a disk definition
  *
  * Generate and return an alias for the device disk '-drive'
@@ -658,7 +658,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
  * Returns NULL with error or a string containing the alias
  */
 char *
-qemuAliasFromDisk(const virDomainDiskDef *disk)
+qemuAliasDiskDriveFromDisk(const virDomainDiskDef *disk)
 {
     char *ret;
 

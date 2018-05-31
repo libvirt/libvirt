@@ -1657,7 +1657,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         goto error;
 
     if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
-        char *drivealias = qemuAliasFromDisk(disk);
+        char *drivealias = qemuAliasDiskDriveFromDisk(disk);
         if (!drivealias)
             goto error;
 
@@ -2092,7 +2092,7 @@ qemuBuildDriveDevStr(const virDomainDef *def,
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_SHARE_RW))
         virBufferAddLit(&opt, ",share-rw=on");
 
-    if (!(drivealias = qemuAliasFromDisk(disk)))
+    if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
         goto error;
     virBufferAsprintf(&opt, ",drive=%s,id=%s", drivealias, disk->info.alias);
     VIR_FREE(drivealias);

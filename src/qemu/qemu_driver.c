@@ -10988,7 +10988,7 @@ qemuDomainBlockResize(virDomainPtr dom,
         disk->src->format == VIR_STORAGE_FILE_QED)
         size = VIR_ROUND_UP(size, 512);
 
-    if (!(device = qemuAliasFromDisk(disk)))
+    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
         goto endjob;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -14956,7 +14956,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     const char *formatStr = NULL;
     int ret = -1, rc;
 
-    if (!(device = qemuAliasFromDisk(dd->disk)))
+    if (!(device = qemuAliasDiskDriveFromDisk(dd->disk)))
         goto cleanup;
 
     if (qemuGetDriveSourceString(dd->src, NULL, &source) < 0)
@@ -17004,7 +17004,7 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
 
-    if (!(device = qemuAliasFromDisk(disk)))
+    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
         goto endjob;
 
     if (qemuDomainDiskBlockJobIsActive(disk))
@@ -17117,7 +17117,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
 
-    if (!(device = qemuAliasFromDisk(disk)))
+    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
         goto endjob;
 
     if (disk->mirrorState != VIR_DOMAIN_DISK_MIRROR_STATE_NONE &&
@@ -17348,7 +17348,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
 
-    if (!(device = qemuAliasFromDisk(disk)))
+    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
         goto endjob;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -17480,7 +17480,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
 
-    if (!(device = qemuAliasFromDisk(disk)))
+    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
         goto endjob;
 
     if (qemuDomainDiskBlockJobIsActive(disk))
@@ -17860,7 +17860,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
 
-    if (!(device = qemuAliasFromDisk(disk)))
+    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
         goto endjob;
 
     if (!disk->src->path) {
@@ -18491,7 +18491,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         if (!(disk = qemuDomainDiskByName(def, path)))
             goto endjob;
 
-        if (!(device = qemuAliasFromDisk(disk)))
+        if (!(device = qemuAliasDiskDriveFromDisk(disk)))
             goto endjob;
 
         if (qemuDomainSetBlockIoTuneDefaults(&info, &disk->blkdeviotune,
@@ -18664,7 +18664,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         if (!(disk = qemuDomainDiskByName(def, path)))
             goto endjob;
 
-        if (!(device = qemuAliasFromDisk(disk)))
+        if (!(device = qemuAliasDiskDriveFromDisk(disk)))
             goto endjob;
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorGetBlockIoThrottle(priv->mon, device, &reply);

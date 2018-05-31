@@ -297,7 +297,7 @@ qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
     if (src->nodeformat || src->nodestorage)
         return 0;
 
-    if (!(alias = qemuAliasFromDisk(disk)))
+    if (!(alias = qemuAliasDiskDriveFromDisk(disk)))
         goto cleanup;
 
     if (!(entry = virHashLookup(disktable, alias))) {

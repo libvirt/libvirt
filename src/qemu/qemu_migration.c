@@ -400,7 +400,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
         }
 
         VIR_FREE(diskAlias);
-        if (!(diskAlias = qemuAliasFromDisk(disk)))
+        if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
             goto cleanup;
 
         if (qemuDomainObjEnterMonitorAsync(driver, vm,
@@ -651,7 +651,7 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (!(diskAlias = qemuAliasFromDisk(disk)))
+    if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
         return -1;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -951,7 +951,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
         if (!qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks))
             continue;
 
-        if (!(diskAlias = qemuAliasFromDisk(disk)))
+        if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
             goto cleanup;
 
         qemuBlockJobSyncBegin(disk);

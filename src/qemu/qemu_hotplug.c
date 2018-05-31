@@ -270,7 +270,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (qemuHotplugPrepareDiskAccess(driver, vm, disk, newsrc, false) < 0)
         goto cleanup;
 
-    if (!(driveAlias = qemuAliasFromDisk(disk)))
+    if (!(driveAlias = qemuAliasDiskDriveFromDisk(disk)))
         goto error;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -446,7 +446,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))
         goto error;
 
-    if (!(drivealias = qemuAliasFromDisk(disk)))
+    if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
         goto error;
 
     if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
@@ -3845,7 +3845,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
     /* build the actual drive id string as the disk->info.alias doesn't
      * contain the QEMU_DRIVE_HOST_PREFIX that is passed to qemu */
-    if (!(drivestr = qemuAliasFromDisk(disk)))
+    if (!(drivestr = qemuAliasDiskDriveFromDisk(disk)))
         return -1;
 
     if (diskPriv) {
