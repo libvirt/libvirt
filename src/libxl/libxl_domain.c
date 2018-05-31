@@ -769,6 +769,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
         VIR_WARN("Unable to release lease on %s", vm->def->name);
     VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
+    libxlLoggerCloseFile(cfg->logger, vm->def->id);
     vm->def->id = -1;
 
     if (priv->deathW) {
@@ -821,8 +822,6 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
                                  NULL, xml, NULL));
         VIR_FREE(xml);
     }
-
-    libxlLoggerCloseFile(cfg->logger, vm->def->id);
 
     virDomainObjRemoveTransientDef(vm);
     virObjectUnref(cfg);
