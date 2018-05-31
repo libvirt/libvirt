@@ -9697,20 +9697,20 @@ qemuBuildPanicCommandLine(virCommandPtr cmd,
 /**
  * qemuBuildPRManagerInfoProps:
  * @src: storage source
- * @propsret: Returns JSON object containing properties of the pr-manager-helper object
  *
  * Build the JSON properties for the pr-manager object.
- *
- * Returns: 0 on success (@propsret is NULL if no properties are needed),
- *         -1 on failure (with error message set).
  */
-int
-qemuBuildPRManagerInfoProps(virStorageSourcePtr src,
-                            virJSONValuePtr *propsret)
+virJSONValuePtr
+qemuBuildPRManagerInfoProps(virStorageSourcePtr src)
 {
-    return qemuMonitorCreateObjectProps(propsret,
-                                        "pr-manager-helper", src->pr->mgralias,
-                                        "s:path", src->pr->path, NULL);
+    virJSONValuePtr ret = NULL;
+
+    if (qemuMonitorCreateObjectProps(&ret,
+                                     "pr-manager-helper", src->pr->mgralias,
+                                     "s:path", src->pr->path, NULL) < 0)
+        return NULL;
+
+    return ret;
 }
 
 
@@ -9737,7 +9737,7 @@ qemuBuildMasterPRCommandLine(virCommandPtr cmd,
             managedAdded = true;
         }
 
-        if (qemuBuildPRManagerInfoProps(disk->src, &props) < 0)
+        if (!(props = qemuBuildPRManagerInfoProps(disk->src)))
             goto cleanup;
 
         if (virQEMUBuildObjectCommandlineFromJSON(&buf, props) < 0)

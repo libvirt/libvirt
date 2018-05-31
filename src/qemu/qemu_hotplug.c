@@ -400,7 +400,10 @@ qemuMaybeBuildPRManagerInfoProps(virDomainObjPtr vm,
         return 0;
     }
 
-    return qemuBuildPRManagerInfoProps(disk->src, propsret);
+    if (!(*propsret = qemuBuildPRManagerInfoProps(disk->src)))
+        return -1;
+
+    return 0;
 }
 
 
