@@ -361,6 +361,7 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
     virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &hostdev->source.subsys.u.scsi_host;
+    virDomainHostdevSubsysMediatedDevPtr mdevsrc = &hostdev->source.subsys.u.mdev;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
@@ -373,9 +374,9 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
         virt = "?";
     }
 
-    switch (hostdev->mode) {
+    switch ((virDomainHostdevMode) hostdev->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
-        switch (hostdev->source.subsys.type) {
+        switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (virAsprintfQuiet(&address, "%.4x:%.2x:%.2x.%.1x",
                                  pcisrc->addr.domain,
@@ -419,6 +420,13 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
                 goto cleanup;
             }
             break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+            if (VIR_STRDUP_QUIET(address, mdevsrc->uuidstr) < 0) {
+                VIR_WARN("OOM while enconding audit message");
+                goto cleanup;
+            }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         default:
             VIR_WARN("Unexpected hostdev type while encoding audit message: %d",
                      hostdev->source.subsys.type);
@@ -470,6 +478,7 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
         }
         break;
 
+    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
     default:
         VIR_WARN("Unexpected hostdev mode while encoding audit message: %d",
                  hostdev->mode);
