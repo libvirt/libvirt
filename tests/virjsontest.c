@@ -12,6 +12,7 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 struct testInfo {
+    const char *name;
     const char *doc;
     const char *expect;
     bool pass;
@@ -481,7 +482,7 @@ mymain(void)
 
 #define DO_TEST_FULL(name, cmd, doc, expect, pass) \
     do { \
-        struct testInfo info = { doc, expect, pass }; \
+        struct testInfo info = { name, doc, expect, pass }; \
         if (virTestRun(name, testJSON ## cmd, &info) < 0) \
             ret = -1; \
     } while (0)
