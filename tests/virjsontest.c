@@ -78,7 +78,7 @@ testJSONAddRemove(const void *data)
 
     json = virJSONValueFromString(info->doc);
     if (!json) {
-        VIR_TEST_VERBOSE("Fail to parse %s\n", info->doc);
+        VIR_TEST_VERBOSE("Fail to parse %s\n", info->name);
         ret = -1;
         goto cleanup;
     }
@@ -87,7 +87,7 @@ testJSONAddRemove(const void *data)
     case 1:
         if (!info->pass) {
             VIR_TEST_VERBOSE("should not remove from non-object %s\n",
-                             info->doc);
+                             info->name);
             goto cleanup;
         }
         break;
@@ -95,11 +95,11 @@ testJSONAddRemove(const void *data)
         if (!info->pass)
             ret = 0;
         else
-            VIR_TEST_VERBOSE("Fail to recognize non-object %s\n", info->doc);
+            VIR_TEST_VERBOSE("Fail to recognize non-object %s\n", info->name);
         goto cleanup;
     default:
         VIR_TEST_VERBOSE("unexpected result when removing from %s\n",
-                         info->doc);
+                         info->name);
         goto cleanup;
     }
     if (STRNEQ_NULLABLE(virJSONValueGetString(name), "sample")) {
