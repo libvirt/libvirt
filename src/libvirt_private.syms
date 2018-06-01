@@ -58,6 +58,7 @@ virCapabilitiesFreeMachines;
 virCapabilitiesFreeNUMAInfo;
 virCapabilitiesGetCpusForNodemask;
 virCapabilitiesGetNodeInfo;
+virCapabilitiesHostInitIOMMU;
 virCapabilitiesHostSecModelAddBaseLabel;
 virCapabilitiesInitCaches;
 virCapabilitiesInitNUMA;

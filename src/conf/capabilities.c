@@ -1025,6 +1025,9 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         virBufferAddLit(&buf, "<power_management/>\n");
     }
 
+    virBufferAsprintf(&buf, "<iommu support='%s'/>\n",
+                      caps->host.iommu  ? "yes" : "no");
+
     if (caps->host.offlineMigrate) {
         virBufferAddLit(&buf, "<migration_features>\n");
         virBufferAdjustIndent(&buf, 2);
@@ -1742,4 +1745,11 @@ virCapabilitiesInitCaches(virCapsPtr caps)
     virCapsHostCacheBankFree(bank);
     virBitmapFree(cpus);
     return ret;
+}
+
+
+void
+virCapabilitiesHostInitIOMMU(virCapsPtr caps)
+{
+    caps->host.iommu = virHostHasIOMMU();
 }

@@ -40,6 +40,9 @@
         <ref name='power_management'/>
       </optional>
       <optional>
+        <ref name='iommu_support'/>
+      </optional>
+      <optional>
         <ref name='migration'/>
       </optional>
       <optional>
@@ -152,6 +155,16 @@
           </element>
         </optional>
       </interleave>
+    </element>
+  </define>
+
+  <define name='iommu_support'>
+    <element name='iommu'>
+      <optional>
+        <attribute name='support'>
+          <ref name='virYesNo'/>
+        </attribute>
+      </optional>
     </element>
   </define>
 

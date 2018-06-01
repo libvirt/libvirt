@@ -5,6 +5,7 @@
       <arch>i686</arch>
     </cpu>
     <power_management/>
+    <iommu support='no'/>
   </host>
 
   <guest>

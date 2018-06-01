@@ -5,6 +5,7 @@
       <arch>aarch64</arch>
     </cpu>
     <power_management/>
+    <iommu support='no'/>
     <migration_features>
     </migration_features>
     <topology>

@@ -948,6 +948,9 @@ virQEMUCapsInit(virFileCachePtr cache)
     if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
         VIR_WARN("Failed to get host power management capabilities");
 
+    /* Add IOMMU info */
+    virCapabilitiesHostInitIOMMU(caps);
+
     /* Add huge pages info */
     if (virCapabilitiesInitPages(caps) < 0)
         VIR_WARN("Failed to get pages info");

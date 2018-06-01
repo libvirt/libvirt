@@ -5,6 +5,7 @@
       <arch>x86_64</arch>
     </cpu>
     <power_management/>
+    <iommu support='no'/>
     <migration_features>
       <live/>
     </migration_features>

@@ -322,6 +322,8 @@ testBuildCapabilities(virConnectPtr conn)
     if (virCapabilitiesAddHostFeature(caps, "nonpae") < 0)
         goto error;
 
+    virCapabilitiesHostInitIOMMU(caps);
+
     if (VIR_ALLOC_N(caps->host.pagesSize, 4) < 0)
         goto error;
 
