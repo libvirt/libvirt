@@ -2090,3 +2090,28 @@ virMemoryMaxValue(bool capped)
     else
         return LLONG_MAX;
 }
+
+
+bool
+virHostHasIOMMU(void)
+{
+    DIR *iommuDir = NULL;
+    struct dirent *iommuGroup = NULL;
+    bool ret = false;
+    int direrr;
+
+    if (virDirOpenQuiet(&iommuDir, "/sys/kernel/iommu_groups/") < 0)
+        goto cleanup;
+
+    while ((direrr = virDirRead(iommuDir, &iommuGroup, NULL)) > 0)
+        break;
+
+    if (direrr < 0 || !iommuGroup)
+        goto cleanup;
+
+    ret = true;
+
+ cleanup:
+    VIR_DIR_CLOSE(iommuDir);
+    return ret;
+}

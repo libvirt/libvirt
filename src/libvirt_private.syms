@@ -3076,6 +3076,7 @@ virGetUserName;
 virGetUserRuntimeDirectory;
 virGetUserShell;
 virHexToBin;
+virHostHasIOMMU;
 virIndexToDiskName;
 virIsDevMapperDevice;
 virIsSUID;

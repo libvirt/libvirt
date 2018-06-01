@@ -216,6 +216,8 @@ unsigned long long virMemoryLimitTruncate(unsigned long long value);
 bool virMemoryLimitIsSet(unsigned long long value);
 unsigned long long virMemoryMaxValue(bool ulong) ATTRIBUTE_NOINLINE;
 
+bool virHostHasIOMMU(void);
+
 /**
  * VIR_ASSIGN_IS_OVERFLOW:
  * @rvalue: value that is checked (evaluated twice)
