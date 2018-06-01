@@ -2236,6 +2236,64 @@ qemuBuildDiskUnmanagedPRCommandLine(virCommandPtr cmd,
 
 
 static int
+qemuBuildDiskCommandLine(virCommandPtr cmd,
+                         const virDomainDef *def,
+                         virDomainDiskDefPtr disk,
+                         virQEMUCapsPtr qemuCaps,
+                         unsigned int bootindex,
+                         bool driveBoot)
+{
+    char *optstr;
+    qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
+    qemuDomainSecretInfoPtr secinfo = NULL;
+    qemuDomainSecretInfoPtr encinfo = NULL;
+
+    if (srcPriv) {
+        secinfo = srcPriv->secinfo;
+        encinfo = srcPriv->encinfo;
+    }
+
+    if (qemuBuildDiskUnmanagedPRCommandLine(cmd, disk->src) < 0)
+        return -1;
+
+    if (qemuBuildDiskSecinfoCommandLine(cmd, secinfo) < 0)
+        return -1;
+
+    if (qemuBuildDiskSecinfoCommandLine(cmd, encinfo) < 0)
+        return -1;
+
+    if (qemuBuildDiskSrcTLSx509CommandLine(cmd, disk->src, qemuCaps) < 0)
+        return -1;
+
+    virCommandAddArg(cmd, "-drive");
+
+    if (!(optstr = qemuBuildDriveStr(disk, driveBoot, qemuCaps)))
+        return -1;
+
+    virCommandAddArg(cmd, optstr);
+    VIR_FREE(optstr);
+
+    if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
+            if (qemuBulildFloppyCommandLineOptions(cmd, def, disk,
+                                                   bootindex) < 0)
+                return -1;
+        } else {
+            virCommandAddArg(cmd, "-device");
+
+            if (!(optstr = qemuBuildDriveDevStr(def, disk, bootindex,
+                                                qemuCaps)))
+                return -1;
+            virCommandAddArg(cmd, optstr);
+            VIR_FREE(optstr);
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildDisksCommandLine(virCommandPtr cmd,
                           const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
@@ -2265,18 +2323,9 @@ qemuBuildDisksCommandLine(virCommandPtr cmd,
     }
 
     for (i = 0; i < def->ndisks; i++) {
-        char *optstr;
+        virDomainDiskDefPtr disk = def->disks[i];
         unsigned int bootindex = 0;
         bool driveBoot = false;
-        virDomainDiskDefPtr disk = def->disks[i];
-        qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
-        qemuDomainSecretInfoPtr secinfo = NULL;
-        qemuDomainSecretInfoPtr encinfo = NULL;
-
-        if (srcPriv) {
-            secinfo = srcPriv->secinfo;
-            encinfo = srcPriv->encinfo;
-        }
 
         if (disk->info.bootIndex) {
             bootindex = disk->info.bootIndex;
@@ -2302,42 +2351,11 @@ qemuBuildDisksCommandLine(virCommandPtr cmd,
             }
         }
 
-        if (qemuBuildDiskUnmanagedPRCommandLine(cmd, disk->src) < 0)
+        if (qemuBuildDiskCommandLine(cmd, def, disk, qemuCaps,
+                                     bootindex, driveBoot) < 0)
             return -1;
-
-        if (qemuBuildDiskSecinfoCommandLine(cmd, secinfo) < 0)
-            return -1;
-
-        if (qemuBuildDiskSecinfoCommandLine(cmd, encinfo) < 0)
-            return -1;
-
-        if (qemuBuildDiskSrcTLSx509CommandLine(cmd, disk->src, qemuCaps) < 0)
-            return -1;
-
-        virCommandAddArg(cmd, "-drive");
-
-        if (!(optstr = qemuBuildDriveStr(disk, driveBoot, qemuCaps)))
-            return -1;
-
-        virCommandAddArg(cmd, optstr);
-        VIR_FREE(optstr);
-
-        if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
-            if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
-                if (qemuBulildFloppyCommandLineOptions(cmd, def, disk,
-                                                       bootindex) < 0)
-                    return -1;
-            } else {
-                virCommandAddArg(cmd, "-device");
-
-                if (!(optstr = qemuBuildDriveDevStr(def, disk, bootindex,
-                                                    qemuCaps)))
-                    return -1;
-                virCommandAddArg(cmd, optstr);
-                VIR_FREE(optstr);
-            }
-        }
     }
+
     return 0;
 }
 
