@@ -326,9 +326,9 @@ testJSONDeflatten(const void *data)
     int ret = -1;
 
     if (virAsprintf(&infile, "%s/virjsondata/deflatten-%s-in.json",
-                    abs_srcdir, info->doc) < 0 ||
+                    abs_srcdir, info->name) < 0 ||
         virAsprintf(&outfile, "%s/virjsondata/deflatten-%s-out.json",
-                    abs_srcdir, info->doc) < 0)
+                    abs_srcdir, info->name) < 0)
         goto cleanup;
 
     if (virTestLoadFile(infile, &indata) < 0)
@@ -339,7 +339,7 @@ testJSONDeflatten(const void *data)
 
     if ((deflattened = virJSONValueObjectDeflatten(injson))) {
         if (!info->pass) {
-            VIR_TEST_VERBOSE("%s: deflattening should have failed\n", info->doc);
+            VIR_TEST_VERBOSE("%s: deflattening should have failed\n", info->name);
             goto cleanup;
         }
     } else {
@@ -638,7 +638,7 @@ mymain(void)
                  ObjectFormatSteal, NULL, NULL, true);
 
 #define DO_TEST_DEFLATTEN(name, pass) \
-    DO_TEST_FULL(name, Deflatten, name, NULL, pass)
+    DO_TEST_FULL(name, Deflatten, NULL, NULL, pass)
 
     DO_TEST_DEFLATTEN("unflattened", true);
     DO_TEST_DEFLATTEN("basic-file", true);
