@@ -5160,6 +5160,7 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
         if (jobInfo) {
             VIR_STEAL_PTR(priv->job.completed, jobInfo);
             priv->job.completed->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
+            priv->job.completed->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION;
         }
 
         if (qemuMigrationBakeCookie(mig, driver, vm,
