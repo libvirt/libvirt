@@ -15966,7 +15966,7 @@ virDomainVsockDefParseXML(virDomainXMLOptionPtr xmlopt,
 {
     virDomainVsockDefPtr vsock = NULL, ret = NULL;
     xmlNodePtr save = ctxt->node;
-    xmlNodePtr source;
+    xmlNodePtr cid;
     char *tmp = NULL;
     int val;
 
@@ -15983,11 +15983,11 @@ virDomainVsockDefParseXML(virDomainXMLOptionPtr xmlopt,
         vsock->model = val;
     }
 
-    source = virXPathNode("./source", ctxt);
+    cid = virXPathNode("./cid", ctxt);
 
     VIR_FREE(tmp);
-    if (source) {
-        if ((tmp = virXMLPropString(source, "cid"))) {
+    if (cid) {
+        if ((tmp = virXMLPropString(cid, "address"))) {
             if (virStrToLong_uip(tmp, NULL, 10, &vsock->guest_cid) < 0 ||
                 vsock->guest_cid == 0) {
                 virReportError(VIR_ERR_XML_DETAIL,
@@ -15998,7 +15998,7 @@ virDomainVsockDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
 
         VIR_FREE(tmp);
-        if ((tmp = virXMLPropString(source, "auto"))) {
+        if ((tmp = virXMLPropString(cid, "auto"))) {
             val = virTristateBoolTypeFromString(tmp);
             if (val <= 0) {
                 virReportError(VIR_ERR_XML_DETAIL,
@@ -26993,7 +26993,7 @@ virDomainVsockDefFormat(virBufferPtr buf,
 {
     virBuffer childBuf = VIR_BUFFER_INITIALIZER;
     virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer sourceAttrBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer cidAttrBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     if (vsock->model) {
@@ -27004,12 +27004,12 @@ virDomainVsockDefFormat(virBufferPtr buf,
     virBufferSetChildIndent(&childBuf, buf);
 
     if (vsock->auto_cid != VIR_TRISTATE_BOOL_ABSENT) {
-        virBufferAsprintf(&sourceAttrBuf, " auto='%s'",
+        virBufferAsprintf(&cidAttrBuf, " auto='%s'",
                           virTristateBoolTypeToString(vsock->auto_cid));
     }
     if (vsock->guest_cid != 0)
-        virBufferAsprintf(&sourceAttrBuf, " cid='%u'", vsock->guest_cid);
-    if (virXMLFormatElement(&childBuf, "source", &sourceAttrBuf, NULL) < 0)
+        virBufferAsprintf(&cidAttrBuf, " address='%u'", vsock->guest_cid);
+    if (virXMLFormatElement(&childBuf, "cid", &cidAttrBuf, NULL) < 0)
         goto cleanup;
 
     virDomainDeviceInfoFormat(&childBuf, &vsock->info, 0);
@@ -27022,7 +27022,7 @@ virDomainVsockDefFormat(virBufferPtr buf,
  cleanup:
     virBufferFreeAndReset(&childBuf);
     virBufferFreeAndReset(&attrBuf);
-    virBufferFreeAndReset(&sourceAttrBuf);
+    virBufferFreeAndReset(&cidAttrBuf);
     return ret;
 }
 

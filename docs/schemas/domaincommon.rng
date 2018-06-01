@@ -4158,14 +4158,14 @@
       </optional>
       <interleave>
         <optional>
-          <element name="source">
+          <element name="cid">
             <optional>
               <attribute name="auto">
                 <ref name="virYesNo"/>
               </attribute>
             </optional>
             <optional>
-              <attribute name="cid">
+              <attribute name="address">
                 <ref name="unsignedInt"/>
               </attribute>
             </optional>

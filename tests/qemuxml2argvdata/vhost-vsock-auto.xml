@@ -29,7 +29,7 @@
     <input type='keyboard' bus='ps2'/>
     <memballoon model='none'/>
     <vsock>
-      <source auto='yes'/>
+      <cid auto='yes'/>
     </vsock>
   </devices>
 </domain>
