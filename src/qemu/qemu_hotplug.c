@@ -468,7 +468,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     else if (rv > 0)
         prdStarted = true;
 
-    if (disk->src->haveTLS &&
+    if (disk->src->haveTLS == VIR_TRISTATE_BOOL_YES &&
         qemuDomainAddDiskSrcTLSObject(driver, vm, disk->src) < 0)
         goto error;
 
