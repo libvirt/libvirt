@@ -68,12 +68,24 @@ static int
 testJSONAddRemove(const void *data)
 {
     const struct testInfo *info = data;
-    virJSONValuePtr json;
+    virJSONValuePtr json = NULL;
     virJSONValuePtr name = NULL;
-    char *result = NULL;
+    VIR_AUTOFREE(char *) infile = NULL;
+    VIR_AUTOFREE(char *) indata = NULL;
+    VIR_AUTOFREE(char *) outfile = NULL;
+    VIR_AUTOFREE(char *) actual = NULL;
     int ret = -1;
 
-    json = virJSONValueFromString(info->doc);
+    if (virAsprintf(&infile, "%s/virjsondata/add-remove-%s-in.json",
+                    abs_srcdir, info->name) < 0 ||
+        virAsprintf(&outfile, "%s/virjsondata/add-remove-%s-out.json",
+                    abs_srcdir, info->name) < 0)
+        goto cleanup;
+
+    if (virTestLoadFile(infile, &indata) < 0)
+        goto cleanup;
+
+    json = virJSONValueFromString(indata);
     if (!json) {
         VIR_TEST_VERBOSE("Fail to parse %s\n", info->name);
         ret = -1;
@@ -113,20 +125,18 @@ testJSONAddRemove(const void *data)
         VIR_TEST_VERBOSE("%s", "unexpected failure adding new key\n");
         goto cleanup;
     }
-    if (!(result = virJSONValueToString(json, false))) {
+    if (!(actual = virJSONValueToString(json, false))) {
         VIR_TEST_VERBOSE("%s", "failed to stringize result\n");
         goto cleanup;
     }
-    if (STRNEQ(info->expect, result)) {
-        virTestDifference(stderr, info->expect, result);
+    if (virTestCompareToFile(actual, outfile) < 0)
         goto cleanup;
-    }
+
     ret = 0;
 
  cleanup:
     virJSONValueFree(json);
     virJSONValueFree(name);
-    VIR_FREE(result);
     return ret;
 }
 
@@ -543,12 +553,8 @@ mymain(void)
                   "\"query-uuid\"},{\"name\":\"query-migrate\"},{\"name\":"
                   "\"query-balloon\"}],\"id\":\"libvirt-2\"}", NULL);
 
-    DO_TEST_FULL("add and remove", AddRemove,
-                 "{\"name\": \"sample\", \"value\": true}",
-                 "{\"value\":true,\"newname\":\"foo\"}",
-                 true);
-    DO_TEST_FULL("add and remove", AddRemove,
-                 "[ 1 ]", NULL, false);
+    DO_TEST_FULL("success", AddRemove, NULL, NULL, true);
+    DO_TEST_FULL("failure", AddRemove, NULL, NULL, false);
 
     DO_TEST_FULL("copy and free", Copy,
                  "{\"return\": [{\"name\": \"quit\"}, {\"name\": \"eject\"},"
