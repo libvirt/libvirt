@@ -113,6 +113,15 @@
           libvirt has done as well.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: add support for vhost-vsock-device
+        </summary>
+        <description>
+          A new vsock device was introduced, allowing communication between
+          the guest and the host via the AF_VSOCK family.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
