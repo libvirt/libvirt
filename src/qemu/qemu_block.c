@@ -1488,6 +1488,8 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
     virJSONValueFree(data->prmgrProps);
     virJSONValueFree(data->authsecretProps);
     virJSONValueFree(data->encryptsecretProps);
+    virJSONValueFree(data->tlsProps);
+    VIR_FREE(data->tlsAlias);
     VIR_FREE(data->authsecretAlias);
     VIR_FREE(data->encryptsecretAlias);
     VIR_FREE(data->driveCmd);
@@ -1567,6 +1569,10 @@ qemuBlockStorageSourceAttachApply(qemuMonitorPtr mon,
                              &data->encryptsecretAlias) < 0)
         return -1;
 
+    if (data->tlsProps &&
+        qemuMonitorAddObject(mon, &data->tlsProps, &data->tlsAlias) < 0)
+        return -1;
+
     if (data->storageProps) {
         rv = qemuMonitorBlockdevAdd(mon, data->storageProps);
         data->storageProps = NULL;
@@ -1636,6 +1642,9 @@ qemuBlockStorageSourceAttachRollback(qemuMonitorPtr mon,
 
     if (data->encryptsecretAlias)
         ignore_value(qemuMonitorDelObject(mon, data->encryptsecretAlias));
+
+    if (data->tlsAlias)
+        ignore_value(qemuMonitorDelObject(mon, data->tlsAlias));
 
 
     virErrorRestore(&orig_err);

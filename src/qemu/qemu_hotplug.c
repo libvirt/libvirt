@@ -155,35 +155,6 @@ qemuHotplugPrepareDiskAccess(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainAddDiskSrcTLSObject(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              virStorageSourcePtr src)
-{
-    int ret = -1;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virJSONValuePtr tlsProps = NULL;
-
-    if (qemuDomainGetTLSObjects(priv->qemuCaps, NULL,
-                                src->tlsCertdir,
-                                false, true,
-                                src->tlsAlias,
-                                &tlsProps, NULL) < 0)
-        goto cleanup;
-
-    if (qemuDomainAddTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
-                                NULL, &tlsProps) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(tlsProps);
-
-    return ret;
-}
-
-
-static int
 qemuHotplugWaitForTrayEject(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             virDomainDiskDefPtr disk,
@@ -413,11 +384,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, priv->qemuCaps)))
         goto error;
 
-    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, data) < 0)
-        goto error;
-
-    if (disk->src->haveTLS == VIR_TRISTATE_BOOL_YES &&
-        qemuDomainAddDiskSrcTLSObject(driver, vm, disk->src) < 0)
+    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, data, priv->qemuCaps) < 0)
         goto error;
 
     if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
@@ -463,8 +430,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     virErrorPreserveLast(&orig_err);
     if (managedPrmgrAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, managedPrmgrAlias));
-    if (disk->src->tlsAlias)
-        ignore_value(qemuMonitorDelObject(priv->mon, disk->src->tlsAlias));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -2;
     virErrorRestore(&orig_err);

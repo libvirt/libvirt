@@ -10491,13 +10491,15 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
  * qemuBuildStorageSourceAttachPrepareCommon:
  * @src: storage source
  * @data: already initialized data for disk source addition
+ * @qemuCaps: qemu capabilities object
  *
  * Prepare data for configuration associated with the disk source such as
  * secrets/TLS/pr objects etc ...
  */
 int
 qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
-                                          qemuBlockStorageSourceAttachDataPtr data)
+                                          qemuBlockStorageSourceAttachDataPtr data,
+                                          virQEMUCapsPtr qemuCaps)
 {
     qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
 
@@ -10516,6 +10518,11 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
             qemuBuildSecretInfoProps(srcpriv->encinfo, &data->encryptsecretProps) < 0)
             return -1;
     }
+
+    if (src->haveTLS == VIR_TRISTATE_BOOL_YES &&
+        qemuBuildTLSx509BackendProps(src->tlsCertdir, false, true, src->tlsAlias,
+                                     NULL, qemuCaps, &data->tlsProps) < 0)
+        return -1;
 
     return 0;
 }
