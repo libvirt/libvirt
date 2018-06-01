@@ -17,6 +17,51 @@ struct testInfo {
 
 
 static int
+testJSONFromFile(const void *data)
+{
+    const struct testInfo *info = data;
+    VIR_AUTOPTR(virJSONValue) injson = NULL;
+    VIR_AUTOFREE(char *) infile = NULL;
+    VIR_AUTOFREE(char *) indata = NULL;
+    VIR_AUTOFREE(char *) actual = NULL;
+
+    if (virAsprintf(&infile, "%s/virjsondata/parse-%s-in.json",
+                    abs_srcdir, info->name) < 0)
+        return -1;
+
+    if (virTestLoadFile(infile, &indata) < 0)
+        return -1;
+
+    injson = virJSONValueFromString(indata);
+
+    if (!injson) {
+        if (info->pass) {
+            VIR_TEST_VERBOSE("Failed to parse %s\n", info->doc);
+            return -1;
+        } else {
+            VIR_TEST_DEBUG("As expected, failed to parse %s\n", info->doc);
+            return 0;
+        }
+    } else {
+        if (!info->pass) {
+            VIR_TEST_VERBOSE("Unexpected success while parsing %s\n", info->doc);
+            return -1;
+        }
+    }
+
+    if (!(actual = virJSONValueToString(injson, false)))
+        return -1;
+
+    if (STRNEQ(info->expect, actual)) {
+        virTestDifference(stderr, info->expect, actual);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 testJSONFromString(const void *data)
 {
     const struct testInfo *info = data;
@@ -454,49 +499,47 @@ mymain(void)
 #define DO_TEST_PARSE_FAIL(name, doc) \
     DO_TEST_FULL(name, FromString, doc, NULL, false)
 
+#define DO_TEST_PARSE_FILE(name, expect) \
+    DO_TEST_FULL(name, FromFile, NULL, expect, true)
 
-    DO_TEST_PARSE("Simple", "{\"return\": {}, \"id\": \"libvirt-1\"}",
-                  "{\"return\":{},\"id\":\"libvirt-1\"}");
-    DO_TEST_PARSE("NotSoSimple", "{\"QMP\": {\"version\": {\"qemu\":"
-                  "{\"micro\": 91, \"minor\": 13, \"major\": 0},"
-                  "\"package\": \" (qemu-kvm-devel)\"}, \"capabilities\": []}}",
-                  "{\"QMP\":{\"version\":{\"qemu\":"
-                  "{\"micro\":91,\"minor\":13,\"major\":0},"
-                  "\"package\":\" (qemu-kvm-devel)\"},\"capabilities\":[]}}");
 
-    DO_TEST_PARSE("Harder", "{\"return\": [{\"filename\": "
-                  "\"unix:/home/berrange/.libvirt/qemu/lib/tck.monitor,server\","
-                  "\"label\": \"charmonitor\"}, {\"filename\": \"pty:/dev/pts/158\","
-                  "\"label\": \"charserial0\"}], \"id\": \"libvirt-3\"}",
-                  "{\"return\":[{\"filename\":"
-                  "\"unix:/home/berrange/.libvirt/qemu/lib/tck.monitor,server\","
-                  "\"label\":\"charmonitor\"},{\"filename\":\"pty:/dev/pts/158\","
-                  "\"label\":\"charserial0\"}],\"id\":\"libvirt-3\"}");
+    DO_TEST_PARSE_FILE("Simple",
+                       "{\"return\":{},\"id\":\"libvirt-1\"}");
+    DO_TEST_PARSE_FILE("NotSoSimple",
+                       "{\"QMP\":{\"version\":{\"qemu\":"
+                       "{\"micro\":91,\"minor\":13,\"major\":0},"
+                       "\"package\":\" (qemu-kvm-devel)\"},\"capabilities\":[]}}");
 
-    DO_TEST_PARSE("VeryHard", "{\"return\":[{\"name\":\"quit\"},{\"name\":"
-                  "\"eject\"},{\"name\":\"change\"},{\"name\":\"screendump\"},"
-                  "{\"name\":\"stop\"},{\"name\":\"cont\"},{\"name\":"
-                  "\"system_reset\"},{\"name\":\"system_powerdown\"},"
-                  "{\"name\":\"device_add\"},{\"name\":\"device_del\"},"
-                  "{\"name\":\"cpu\"},{\"name\":\"memsave\"},{\"name\":"
-                  "\"pmemsave\"},{\"name\":\"migrate\"},{\"name\":"
-                  "\"migrate_cancel\"},{\"name\":\"migrate_set_speed\"},"
-                  "{\"name\":\"client_migrate_info\"},{\"name\":"
-                  "\"migrate_set_downtime\"},{\"name\":\"netdev_add\"},"
-                  "{\"name\":\"netdev_del\"},{\"name\":\"block_resize\"},"
-                  "{\"name\":\"balloon\"},{\"name\":\"set_link\"},{\"name\":"
-                  "\"getfd\"},{\"name\":\"closefd\"},{\"name\":\"block_passwd\"},"
-                  "{\"name\":\"set_password\"},{\"name\":\"expire_password\"},"
-                  "{\"name\":\"qmp_capabilities\"},{\"name\":"
-                  "\"human-monitor-command\"},{\"name\":\"query-version\"},"
-                  "{\"name\":\"query-commands\"},{\"name\":\"query-chardev\"},"
-                  "{\"name\":\"query-block\"},{\"name\":\"query-blockstats\"},"
-                  "{\"name\":\"query-cpus\"},{\"name\":\"query-pci\"},{\"name\":"
-                  "\"query-kvm\"},{\"name\":\"query-status\"},{\"name\":"
-                  "\"query-mice\"},{\"name\":\"query-vnc\"},{\"name\":"
-                  "\"query-spice\"},{\"name\":\"query-name\"},{\"name\":"
-                  "\"query-uuid\"},{\"name\":\"query-migrate\"},{\"name\":"
-                  "\"query-balloon\"}],\"id\":\"libvirt-2\"}", NULL);
+    DO_TEST_PARSE_FILE("Harder",
+                       "{\"return\":[{\"filename\":"
+                       "\"unix:/home/berrange/.libvirt/qemu/lib/tck.monitor,server\","
+                       "\"label\":\"charmonitor\"},{\"filename\":\"pty:/dev/pts/158\","
+                       "\"label\":\"charserial0\"}],\"id\":\"libvirt-3\"}");
+
+    DO_TEST_PARSE_FILE("VeryHard", "{\"return\":[{\"name\":\"quit\"},{\"name\":"
+                       "\"eject\"},{\"name\":\"change\"},{\"name\":\"screendump\"},"
+                       "{\"name\":\"stop\"},{\"name\":\"cont\"},{\"name\":"
+                       "\"system_reset\"},{\"name\":\"system_powerdown\"},"
+                       "{\"name\":\"device_add\"},{\"name\":\"device_del\"},"
+                       "{\"name\":\"cpu\"},{\"name\":\"memsave\"},{\"name\":"
+                       "\"pmemsave\"},{\"name\":\"migrate\"},{\"name\":"
+                       "\"migrate_cancel\"},{\"name\":\"migrate_set_speed\"},"
+                       "{\"name\":\"client_migrate_info\"},{\"name\":"
+                       "\"migrate_set_downtime\"},{\"name\":\"netdev_add\"},"
+                       "{\"name\":\"netdev_del\"},{\"name\":\"block_resize\"},"
+                       "{\"name\":\"balloon\"},{\"name\":\"set_link\"},{\"name\":"
+                       "\"getfd\"},{\"name\":\"closefd\"},{\"name\":\"block_passwd\"},"
+                       "{\"name\":\"set_password\"},{\"name\":\"expire_password\"},"
+                       "{\"name\":\"qmp_capabilities\"},{\"name\":"
+                       "\"human-monitor-command\"},{\"name\":\"query-version\"},"
+                       "{\"name\":\"query-commands\"},{\"name\":\"query-chardev\"},"
+                       "{\"name\":\"query-block\"},{\"name\":\"query-blockstats\"},"
+                       "{\"name\":\"query-cpus\"},{\"name\":\"query-pci\"},{\"name\":"
+                       "\"query-kvm\"},{\"name\":\"query-status\"},{\"name\":"
+                       "\"query-mice\"},{\"name\":\"query-vnc\"},{\"name\":"
+                       "\"query-spice\"},{\"name\":\"query-name\"},{\"name\":"
+                       "\"query-uuid\"},{\"name\":\"query-migrate\"},{\"name\":"
+                       "\"query-balloon\"}],\"id\":\"libvirt-2\"}");
 
     DO_TEST_FULL("success", AddRemove, NULL, NULL, true);
     DO_TEST_FULL("failure", AddRemove, NULL, NULL, false);
