@@ -482,8 +482,14 @@ Requires: %{name}-libs = %{version}-%{release}
 
 # for modprobe of pci devices
 Requires: module-init-tools
+
 # for /sbin/ip & /sbin/tc
 Requires: iproute
+# tc is provided by iproute-tc since at least Fedora 26
+%if 0%{?fedora} || 0%{?rhel} > 7
+Requires: iproute-tc
+%endif
+
 Requires: avahi-libs
 %if 0%{?fedora} || 0%{?rhel} >= 7
 Requires: polkit >= 0.112
