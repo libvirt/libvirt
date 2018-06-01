@@ -32,7 +32,7 @@
 typedef struct _testQemuData testQemuData;
 typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
-    virDomainXMLOptionPtr xmlopt;
+    virQEMUDriver driver;
     const char *archName;
     const char *base;
 };
@@ -42,7 +42,7 @@ static int
 testQemuCaps(const void *opaque)
 {
     int ret = -1;
-    const testQemuData *data = opaque;
+    testQemuData *data = (void *) opaque;
     char *repliesFile = NULL;
     char *capsFile = NULL;
     qemuMonitorTestPtr mon = NULL;
@@ -55,7 +55,7 @@ testQemuCaps(const void *opaque)
                     abs_srcdir, data->base, data->archName) < 0)
         goto cleanup;
 
-    if (!(mon = qemuMonitorTestNewFromFile(repliesFile, data->xmlopt, false)))
+    if (!(mon = qemuMonitorTestNewFromFileFull(repliesFile, &data->driver, NULL)))
         goto cleanup;
 
     if (!(capsActual = virQEMUCapsNew()) ||
@@ -139,7 +139,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-    virQEMUDriver driver;
     testQemuData data;
 
 #if !WITH_YAJL
@@ -148,12 +147,10 @@ mymain(void)
 #endif
 
     if (virThreadInitialize() < 0 ||
-        qemuTestDriverInit(&driver) < 0)
+        qemuTestDriverInit(&data.driver) < 0)
         return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();
-
-    data.xmlopt = driver.xmlopt;
 
 #define DO_TEST(arch, name) \
     do { \
@@ -200,7 +197,7 @@ mymain(void)
      * "tests/qemucapsfixreplies foo.replies" to fix the replies ids.
      */
 
-    qemuTestDriverFree(&driver);
+    qemuTestDriverFree(&data.driver);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

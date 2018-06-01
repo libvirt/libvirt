@@ -168,7 +168,7 @@
   <flag name='tpm-emulator'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>419968</microcodeVersion>
+  <microcodeVersion>424244</microcodeVersion>
   <package>v2.12.0-rc0</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>

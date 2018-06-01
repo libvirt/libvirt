@@ -109,7 +109,7 @@
   <flag name='sdl-gl'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>216840</microcodeVersion>
+  <microcodeVersion>220792</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <cpu type='kvm' name='host'/>

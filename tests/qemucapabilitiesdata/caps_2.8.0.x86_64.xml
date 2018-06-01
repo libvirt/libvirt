@@ -185,7 +185,7 @@
   <flag name='mch'/>
   <version>2008000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>256050</microcodeVersion>
+  <microcodeVersion>260660</microcodeVersion>
   <package> (v2.8.0)</package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='host' usable='yes'/>
