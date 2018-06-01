@@ -730,6 +730,12 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
         return qemuDomainDumpJobInfoToParams(jobInfo, type, params, nparams);
 
     case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid job statistics type"));
+        break;
+
+    default:
+        virReportEnumRangeError(qemuDomainJobStatsType, jobInfo->statsType);
         break;
     }
 
