@@ -71,6 +71,9 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src);
 typedef struct qemuBlockStorageSourceAttachData qemuBlockStorageSourceAttachData;
 typedef qemuBlockStorageSourceAttachData *qemuBlockStorageSourceAttachDataPtr;
 struct qemuBlockStorageSourceAttachData {
+    virJSONValuePtr prmgrProps;
+    char *prmgrAlias;
+
     virJSONValuePtr storageProps;
     const char *storageNodeName;
     bool storageAttached;

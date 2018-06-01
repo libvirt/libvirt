@@ -10485,3 +10485,24 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
 
     return data;
 }
+
+
+/**
+ * qemuBuildStorageSourceAttachPrepareCommon:
+ * @src: storage source
+ * @data: already initialized data for disk source addition
+ *
+ * Prepare data for configuration associated with the disk source such as
+ * secrets/TLS/pr objects etc ...
+ */
+int
+qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
+                                          qemuBlockStorageSourceAttachDataPtr data)
+{
+    if (src->pr &&
+        !virStoragePRDefIsManaged(src->pr) &&
+        !(data->prmgrProps = qemuBuildPRManagerInfoProps(src)))
+        return -1;
+
+    return 0;
+}

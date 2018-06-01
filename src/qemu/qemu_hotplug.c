@@ -394,14 +394,12 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     qemuBlockStorageSourceAttachDataPtr data = NULL;
     virErrorPtr orig_err;
     char *devstr = NULL;
-    char *unmanagedPrmgrAlias = NULL;
     char *managedPrmgrAlias = NULL;
     char *encobjAlias = NULL;
     char *secobjAlias = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virJSONValuePtr secobjProps = NULL;
     virJSONValuePtr encobjProps = NULL;
-    virJSONValuePtr unmanagedPrmgrProps = NULL;
     virJSONValuePtr managedPrmgrProps = NULL;
     qemuDomainStorageSourcePrivatePtr srcPriv;
     qemuDomainSecretInfoPtr secinfo = NULL;
@@ -433,12 +431,10 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (qemuDomainDiskAttachManagedPR(vm, disk, &managedPrmgrProps) < 0)
         goto error;
 
-    if (disk->src->pr &&
-        !virStoragePRDefIsManaged(disk->src->pr) &&
-        !(unmanagedPrmgrProps = qemuBuildPRManagerInfoProps(disk->src)))
+    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, priv->qemuCaps)))
         goto error;
 
-    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, priv->qemuCaps)))
+    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, data) < 0)
         goto error;
 
     if (disk->src->haveTLS == VIR_TRISTATE_BOOL_YES &&
@@ -465,10 +461,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         qemuMonitorAddObject(priv->mon, &managedPrmgrProps, &managedPrmgrAlias) < 0)
         goto exit_monitor;
 
-    if (unmanagedPrmgrProps &&
-        qemuMonitorAddObject(priv->mon, &unmanagedPrmgrProps, &unmanagedPrmgrAlias) < 0)
-        goto exit_monitor;
-
     if (qemuBlockStorageSourceAttachApply(priv->mon, data) < 0)
         goto exit_monitor;
 
@@ -488,12 +480,10 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
  cleanup:
     qemuBlockStorageSourceAttachDataFree(data);
     virJSONValueFree(managedPrmgrProps);
-    virJSONValueFree(unmanagedPrmgrProps);
     virJSONValueFree(encobjProps);
     virJSONValueFree(secobjProps);
     qemuDomainSecretDiskDestroy(disk);
     VIR_FREE(managedPrmgrAlias);
-    VIR_FREE(unmanagedPrmgrAlias);
     VIR_FREE(secobjAlias);
     VIR_FREE(encobjAlias);
     VIR_FREE(devstr);
@@ -508,8 +498,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
         ignore_value(qemuMonitorDelObject(priv->mon, secobjAlias));
     if (encobjAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, encobjAlias));
-    if (unmanagedPrmgrAlias)
-        ignore_value(qemuMonitorDelObject(priv->mon, unmanagedPrmgrAlias));
     if (managedPrmgrAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, managedPrmgrAlias));
     if (disk->src->tlsAlias)

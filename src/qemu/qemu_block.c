@@ -1485,6 +1485,7 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
 
     virJSONValueFree(data->storageProps);
     virJSONValueFree(data->formatProps);
+    virJSONValueFree(data->prmgrProps);
     VIR_FREE(data->driveCmd);
     VIR_FREE(data->driveAlias);
     VIR_FREE(data);
@@ -1548,6 +1549,10 @@ qemuBlockStorageSourceAttachApply(qemuMonitorPtr mon,
 {
     int rv;
 
+    if (data->prmgrProps &&
+        qemuMonitorAddObject(mon, &data->prmgrProps, &data->prmgrAlias) < 0)
+        return -1;
+
     if (data->storageProps) {
         rv = qemuMonitorBlockdevAdd(mon, data->storageProps);
         data->storageProps = NULL;
@@ -1608,6 +1613,9 @@ qemuBlockStorageSourceAttachRollback(qemuMonitorPtr mon,
 
     if (data->storageAttached)
         ignore_value(qemuMonitorBlockdevDel(mon, data->storageNodeName));
+
+    if (data->prmgrAlias)
+        ignore_value(qemuMonitorDelObject(mon, data->prmgrAlias));
 
     virErrorRestore(&orig_err);
 }
