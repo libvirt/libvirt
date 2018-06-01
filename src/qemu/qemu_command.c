@@ -761,24 +761,6 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
 }
 
 
-/* qemuBuildDiskSrcTLSx509CommandLine:
- *
- * Returns 0 on success, -1 w/ error on some sort of failure.
- */
-static int
-qemuBuildDiskSrcTLSx509CommandLine(virCommandPtr cmd,
-                                   virStorageSourcePtr src,
-                                   virQEMUCapsPtr qemuCaps)
-{
-    if (src->haveTLS != VIR_TRISTATE_BOOL_YES)
-        return 0;
-
-    return qemuBuildTLSx509CommandLine(cmd, src->tlsCertdir,
-                                       false, true,
-                                       NULL, src->tlsAlias, qemuCaps);
-}
-
-
 static char *
 qemuBuildNetworkDriveURI(virStorageSourcePtr src,
                          qemuDomainSecretInfoPtr secinfo)
@@ -2207,31 +2189,40 @@ qemuBulildFloppyCommandLineOptions(virCommandPtr cmd,
 
 
 static int
-qemuBuildDiskUnmanagedPRCommandLine(virCommandPtr cmd,
-                                    virStorageSourcePtr src)
+qemuBuildObjectCommandline(virCommandPtr cmd,
+                           virJSONValuePtr objProps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virJSONValuePtr props = NULL;
-    int ret = -1;
 
-    if (!src->pr ||
-        virStoragePRDefIsManaged(src->pr))
+    if (!objProps)
         return 0;
 
-    if (!(props = qemuBuildPRManagerInfoProps(src)))
+    if (virQEMUBuildObjectCommandlineFromJSON(&buf, objProps) < 0) {
+        virBufferFreeAndReset(&buf);
         return -1;
-
-    if (virQEMUBuildObjectCommandlineFromJSON(&buf, props) < 0)
-        goto cleanup;
+    }
 
     virCommandAddArg(cmd, "-object");
     virCommandAddArgBuffer(cmd, &buf);
 
-    ret = 0;
- cleanup:
-    virBufferFreeAndReset(&buf);
-    virJSONValueFree(props);
-    return ret;
+    return 0;
+}
+
+
+static int
+qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
+                                                 qemuBlockStorageSourceAttachDataPtr data)
+{
+    if (qemuBuildObjectCommandline(cmd, data->prmgrProps) < 0 ||
+        qemuBuildObjectCommandline(cmd, data->authsecretProps) < 0 ||
+        qemuBuildObjectCommandline(cmd, data->encryptsecretProps) < 0 ||
+        qemuBuildObjectCommandline(cmd, data->tlsProps) < 0)
+        return -1;
+
+    if (data->driveCmd)
+        virCommandAddArgList(cmd, "-drive", data->driveCmd, NULL);
+
+    return 0;
 }
 
 
@@ -2243,35 +2234,20 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
                          unsigned int bootindex,
                          bool driveBoot)
 {
+    qemuBlockStorageSourceAttachDataPtr data = NULL;
     char *optstr;
-    qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
-    qemuDomainSecretInfoPtr secinfo = NULL;
-    qemuDomainSecretInfoPtr encinfo = NULL;
 
-    if (srcPriv) {
-        secinfo = srcPriv->secinfo;
-        encinfo = srcPriv->encinfo;
+    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps,
+                                                          driveBoot)))
+        return -1;
+
+    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, data, qemuCaps) < 0 ||
+        qemuBuildBlockStorageSourceAttachDataCommandline(cmd, data) < 0) {
+        qemuBlockStorageSourceAttachDataFree(data);
+        return -1;
     }
 
-    if (qemuBuildDiskUnmanagedPRCommandLine(cmd, disk->src) < 0)
-        return -1;
-
-    if (qemuBuildDiskSecinfoCommandLine(cmd, secinfo) < 0)
-        return -1;
-
-    if (qemuBuildDiskSecinfoCommandLine(cmd, encinfo) < 0)
-        return -1;
-
-    if (qemuBuildDiskSrcTLSx509CommandLine(cmd, disk->src, qemuCaps) < 0)
-        return -1;
-
-    virCommandAddArg(cmd, "-drive");
-
-    if (!(optstr = qemuBuildDriveStr(disk, driveBoot, qemuCaps)))
-        return -1;
-
-    virCommandAddArg(cmd, optstr);
-    VIR_FREE(optstr);
+    qemuBlockStorageSourceAttachDataFree(data);
 
     if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
         if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
@@ -10482,20 +10458,22 @@ qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
  * qemuBuildStorageSourceAttachPrepareDrive:
  * @disk: disk object to prepare
  * @qemuCaps: qemu capabilities object
+ * @driveBoot: bootable flag for disks which don't have -device part
  *
  * Prepare qemuBlockStorageSourceAttachDataPtr for use with the old approach
  * using -drive/drive_add. See qemuBlockStorageSourceAttachPrepareBlockdev.
  */
 qemuBlockStorageSourceAttachDataPtr
 qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
-                                         virQEMUCapsPtr qemuCaps)
+                                         virQEMUCapsPtr qemuCaps,
+                                         bool driveBoot)
 {
     qemuBlockStorageSourceAttachDataPtr data = NULL;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if (!(data->driveCmd = qemuBuildDriveStr(disk, false, qemuCaps)) ||
+    if (!(data->driveCmd = qemuBuildDriveStr(disk, driveBoot, qemuCaps)) ||
         !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk))) {
         qemuBlockStorageSourceAttachDataFree(data);
         return NULL;

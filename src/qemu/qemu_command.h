@@ -105,7 +105,8 @@ char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk);
 
 qemuBlockStorageSourceAttachDataPtr
 qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
-                                         virQEMUCapsPtr qemuCaps);
+                                         virQEMUCapsPtr qemuCaps,
+                                         bool driveBoot);
 int
 qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
                                           qemuBlockStorageSourceAttachDataPtr data,

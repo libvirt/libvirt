@@ -381,7 +381,8 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (qemuDomainDiskAttachManagedPR(vm, disk, &managedPrmgrProps) < 0)
         goto error;
 
-    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, priv->qemuCaps)))
+    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, priv->qemuCaps,
+                                                          false)))
         goto error;
 
     if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, data, priv->qemuCaps) < 0)
