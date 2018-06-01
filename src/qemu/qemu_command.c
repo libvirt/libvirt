@@ -2236,9 +2236,9 @@ qemuBuildDiskUnmanagedPRCommandLine(virCommandPtr cmd,
 
 
 static int
-qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
-                              const virDomainDef *def,
-                              virQEMUCapsPtr qemuCaps)
+qemuBuildDisksCommandLine(virCommandPtr cmd,
+                          const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
 {
     size_t i;
     unsigned int bootCD = 0;
@@ -10118,7 +10118,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildHubCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildDiskDriveCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildDisksCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildFSDevCommandLine(cmd, def, qemuCaps) < 0)
