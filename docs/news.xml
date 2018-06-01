@@ -37,6 +37,14 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          capabilities: Provide info about host IOMMU support
+        </summary>
+        <description>
+          Capabilities XML now provide information about host IOMMU support.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
