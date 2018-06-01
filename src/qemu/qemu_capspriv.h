@@ -58,6 +58,7 @@ virQEMUCapsSetArch(virQEMUCapsPtr qemuCaps,
 
 void
 virQEMUCapsFreeHostCPUModel(virQEMUCapsPtr qemuCaps,
+                            virArch hostArch,
                             virDomainVirtType type);
 
 void
