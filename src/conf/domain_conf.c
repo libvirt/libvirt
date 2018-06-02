@@ -19057,7 +19057,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     def->os.machine = virXPathString("string(./os/type[1]/@machine)", ctxt);
     def->emulator = virXPathString("string(./devices/emulator[1])", ctxt);
 
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)) {
+    if ((!def->os.arch || !def->os.machine) &&
+        !(flags & VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)) {
         /* If the logic here seems fairly arbitrary, that's because it is :)
          * This is duplicating how the code worked before
          * CapabilitiesDomainDataLookup was added. We can simplify this,
@@ -28409,7 +28410,8 @@ virDomainDefCopy(virDomainDefPtr src,
     virDomainDefPtr ret;
     unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                               VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
+                               VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
+                               VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS;
 
     if (migratable)
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE | VIR_DOMAIN_DEF_FORMAT_MIGRATABLE;
