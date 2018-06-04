@@ -24,6 +24,8 @@
 #include "qemumonitortestutils.h"
 #define __QEMU_CAPSPRIV_H_ALLOW__
 #include "qemu/qemu_capspriv.h"
+#define __QEMU_MONITOR_PRIV_H_ALLOW__
+#include "qemu/qemu_monitor_priv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -62,6 +64,7 @@ testQemuCaps(const void *opaque)
         goto cleanup;
 
     if (virQEMUCapsGet(capsActual, QEMU_CAPS_KVM)) {
+        qemuMonitorResetCommandID(qemuMonitorTestGetMonitor(mon));
         if (virQEMUCapsInitQMPMonitorTCG(capsActual,
                                          qemuMonitorTestGetMonitor(mon)) < 0)
             goto cleanup;
