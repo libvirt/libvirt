@@ -4678,7 +4678,6 @@ static int
 virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
                                  virStorageSourcePtr parent,
                                  uid_t uid, gid_t gid,
-                                 bool allow_probe,
                                  bool report_broken,
                                  virHashTablePtr cycle,
                                  unsigned int depth)
@@ -4691,9 +4690,9 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     int backingFormat;
     int rv;
 
-    VIR_DEBUG("path=%s format=%d uid=%u gid=%u probe=%d",
+    VIR_DEBUG("path=%s format=%d uid=%u gid=%u",
               src->path, src->format,
-              (unsigned int)uid, (unsigned int)gid, allow_probe);
+              (unsigned int)uid, (unsigned int)gid);
 
     /* exit if we can't load information about the current image */
     rv = virStorageFileSupportsBackingChainTraversal(src);
@@ -4740,7 +4739,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         if (!(backingStore = virStorageSourceNewFromBacking(src)))
             goto cleanup;
 
-        if (backingFormat == VIR_STORAGE_FILE_AUTO && !allow_probe)
+        if (backingFormat == VIR_STORAGE_FILE_AUTO)
             backingStore->format = VIR_STORAGE_FILE_RAW;
         else if (backingFormat == VIR_STORAGE_FILE_AUTO_SAFE)
             backingStore->format = VIR_STORAGE_FILE_AUTO;
@@ -4749,7 +4748,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
 
         if ((ret = virStorageFileGetMetadataRecurse(backingStore, parent,
                                                     uid, gid,
-                                                    allow_probe, report_broken,
+                                                    report_broken,
                                                     cycle, depth + 1)) < 0) {
             if (report_broken)
                 goto cleanup;
@@ -4802,12 +4801,11 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
 int
 virStorageFileGetMetadata(virStorageSourcePtr src,
                           uid_t uid, gid_t gid,
-                          bool allow_probe,
                           bool report_broken)
 {
-    VIR_DEBUG("path=%s format=%d uid=%u gid=%u probe=%d, report_broken=%d",
+    VIR_DEBUG("path=%s format=%d uid=%u gid=%u report_broken=%d",
               src->path, src->format, (unsigned int)uid, (unsigned int)gid,
-              allow_probe, report_broken);
+              report_broken);
 
     virHashTablePtr cycle = NULL;
     virStorageType actualType = virStorageSourceGetActualType(src);
@@ -4819,14 +4817,12 @@ virStorageFileGetMetadata(virStorageSourcePtr src,
     if (src->format <= VIR_STORAGE_FILE_NONE) {
         if (actualType == VIR_STORAGE_TYPE_DIR)
             src->format = VIR_STORAGE_FILE_DIR;
-        else if (allow_probe)
-            src->format = VIR_STORAGE_FILE_AUTO;
         else
             src->format = VIR_STORAGE_FILE_RAW;
     }
 
     ret = virStorageFileGetMetadataRecurse(src, src, uid, gid,
-                                           allow_probe, report_broken, cycle, 1);
+                                           report_broken, cycle, 1);
 
     virHashFree(cycle);
     return ret;

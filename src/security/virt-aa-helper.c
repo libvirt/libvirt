@@ -974,7 +974,7 @@ get_files(vahControl * ctl)
          *        so that the open could be re-tried as that user:group.
          */
         if (!virStorageSourceHasBacking(disk->src))
-            virStorageFileGetMetadata(disk->src, -1, -1, false, false);
+            virStorageFileGetMetadata(disk->src, -1, -1, false);
 
         /* XXX passing ignoreOpenFailure = true to get back to the behavior
          * from before using virDomainDiskDefForeachPath. actually we should
