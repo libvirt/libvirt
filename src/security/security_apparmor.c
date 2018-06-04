@@ -170,7 +170,7 @@ profile_status_file(const char *str)
  * load (add) a profile. Will create one if necessary
  */
 static int
-load_profile(virSecurityManagerPtr mgr,
+load_profile(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
              const char *profile,
              virDomainDefPtr def,
              const char *fn,
@@ -180,8 +180,6 @@ load_profile(virSecurityManagerPtr mgr,
     bool create = true;
     char *xml = NULL;
     virCommandPtr cmd = NULL;
-    const char *probe = virSecurityManagerGetAllowDiskFormatProbing(mgr)
-        ? "1" : "0";
 
     xml = virDomainDefFormat(def, NULL, VIR_DOMAIN_DEF_FORMAT_SECURE);
     if (!xml)
@@ -190,7 +188,7 @@ load_profile(virSecurityManagerPtr mgr,
     if (profile_status_file(profile) >= 0)
         create = false;
 
-    cmd = virCommandNewArgList(VIRT_AA_HELPER, "-p", probe,
+    cmd = virCommandNewArgList(VIRT_AA_HELPER,
                                create ? "-c" : "-r",
                                "-u", profile, NULL);
     if (!create && fn) {

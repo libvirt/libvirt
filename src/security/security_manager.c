@@ -366,13 +366,6 @@ virSecurityManagerGetBaseLabel(virSecurityManagerPtr mgr,
 
 
 bool
-virSecurityManagerGetAllowDiskFormatProbing(virSecurityManagerPtr mgr)
-{
-    return mgr->flags & VIR_SECURITY_MANAGER_ALLOW_DISK_PROBE;
-}
-
-
-bool
 virSecurityManagerGetDefaultConfined(virSecurityManagerPtr mgr)
 {
     return mgr->flags & VIR_SECURITY_MANAGER_DEFAULT_CONFINED;
