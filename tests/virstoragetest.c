@@ -95,8 +95,7 @@ testCleanupImages(void)
 static virStorageSourcePtr
 testStorageFileGetMetadata(const char *path,
                            int format,
-                           uid_t uid, gid_t gid,
-                           bool allow_probe)
+                           uid_t uid, gid_t gid)
 {
     struct stat st;
     virStorageSourcePtr ret = NULL;
@@ -118,7 +117,7 @@ testStorageFileGetMetadata(const char *path,
     if (VIR_STRDUP(ret->path, path) < 0)
         goto error;
 
-    if (virStorageFileGetMetadata(ret, uid, gid, allow_probe, false) < 0)
+    if (virStorageFileGetMetadata(ret, uid, gid, false, false) < 0)
         goto error;
 
     return ret;
@@ -320,8 +319,7 @@ testStorageChain(const void *args)
     size_t i = 0;
     char *broken = NULL;
 
-    meta = testStorageFileGetMetadata(data->start, data->format, -1, -1,
-                                      (data->flags & ALLOW_PROBE) != 0);
+    meta = testStorageFileGetMetadata(data->start, data->format, -1, -1);
     if (!meta) {
         if (data->flags & EXP_FAIL) {
             virResetLastError();
@@ -757,7 +755,7 @@ mymain(void)
 #define TEST_CHAIN(path, format, chain1, flags1, chain2, flags2) \
     do { \
         TEST_ONE_CHAIN(path, format, flags1, VIR_FLATTEN_1(chain1)); \
-        TEST_ONE_CHAIN(path, format, ALLOW_PROBE | flags2, VIR_FLATTEN_1(chain2)); \
+        TEST_ONE_CHAIN(path, format, flags2, VIR_FLATTEN_1(chain2)); \
     } while (0)
 
     /* The actual tests, in several groups. */
@@ -798,7 +796,7 @@ mymain(void)
                (&qcow2, &raw), EXP_PASS);
     TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_AUTO,
                (&qcow2_as_raw), EXP_PASS,
-               (&qcow2, &raw), EXP_PASS);
+               (&qcow2_as_raw), EXP_PASS);
 
     /* Rewrite qcow2 file to use absolute backing name */
     virCommandFree(cmd);
@@ -815,7 +813,7 @@ mymain(void)
                (&qcow2, &raw), EXP_PASS);
     TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_AUTO,
                (&qcow2_as_raw), EXP_PASS,
-               (&qcow2, &raw), EXP_PASS);
+               (&qcow2_as_raw), EXP_PASS);
 
     /* Wrapped file access */
     testFileData wrap = {
@@ -852,7 +850,7 @@ mymain(void)
     };
     TEST_CHAIN(abswrap, VIR_STORAGE_FILE_QCOW2,
                (&wrap_as_raw, &qcow2_as_raw), EXP_PASS,
-               (&wrap, &qcow2, &raw), EXP_PASS);
+               (&wrap_as_raw, &qcow2_as_raw), EXP_PASS);
 
     /* Rewrite qcow2 to a missing backing file, with backing type */
     virCommandFree(cmd);
@@ -954,7 +952,7 @@ mymain(void)
                (&qed, &raw), EXP_PASS);
     TEST_CHAIN(absqed, VIR_STORAGE_FILE_AUTO,
                (&qed_as_raw), EXP_PASS,
-               (&qed, &raw), EXP_PASS);
+               (&qed_as_raw), EXP_PASS);
 
     /* directory */
     testFileData dir = {
@@ -1101,7 +1099,7 @@ mymain(void)
 
     /* Test behavior of chain lookups, absolute backing from relative start */
     chain = testStorageFileGetMetadata("wrap", VIR_STORAGE_FILE_QCOW2,
-                                       -1, -1, false);
+                                       -1, -1);
     if (!chain) {
         ret = -1;
         goto cleanup;
@@ -1166,8 +1164,7 @@ mymain(void)
 
     /* Test behavior of chain lookups, relative backing from absolute start */
     virStorageSourceFree(chain);
-    chain = testStorageFileGetMetadata(abswrap, VIR_STORAGE_FILE_QCOW2,
-                                       -1, -1, false);
+    chain = testStorageFileGetMetadata(abswrap, VIR_STORAGE_FILE_QCOW2, -1, -1);
     if (!chain) {
         ret = -1;
         goto cleanup;
@@ -1214,7 +1211,7 @@ mymain(void)
     /* Test behavior of chain lookups, relative backing */
     virStorageSourceFree(chain);
     chain = testStorageFileGetMetadata("sub/link2", VIR_STORAGE_FILE_QCOW2,
-                                       -1, -1, false);
+                                       -1, -1);
     if (!chain) {
         ret = -1;
         goto cleanup;
