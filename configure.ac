@@ -216,7 +216,6 @@ fi
 # RPC, we don't need several libraries.
 if test "$with_remote" = "no" ; then
   with_libvirtd=no
-  with_gnutls=no
   with_ssh2=no
   with_sasl=no
   with_libssh=no
@@ -250,7 +249,6 @@ LIBVIRT_ARG_DBUS
 LIBVIRT_ARG_FIREWALLD
 LIBVIRT_ARG_FUSE
 LIBVIRT_ARG_GLUSTER
-LIBVIRT_ARG_GNUTLS
 LIBVIRT_ARG_HAL
 LIBVIRT_ARG_LIBPCAP
 LIBVIRT_ARG_LIBSSH

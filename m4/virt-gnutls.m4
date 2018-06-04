@@ -17,10 +17,6 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_ARG_GNUTLS],[
-  LIBVIRT_ARG_WITH_FEATURE([GNUTLS], [gnutls], [check], [3.2.0])
-])
-
 AC_DEFUN([LIBVIRT_CHECK_GNUTLS],[
   LIBVIRT_CHECK_PKG([GNUTLS], [gnutls], [3.2.0])
 
