@@ -63,7 +63,6 @@
 static char *progname;
 
 typedef struct {
-    bool allowDiskFormatProbing;
     char uuid[PROFILE_NAME_SIZE];       /* UUID of vm */
     bool dryrun;                /* dry run */
     char cmd;                   /* 'c'   create
@@ -115,7 +114,6 @@ vah_usage(void)
             "    -r | --replace                 reload profile\n"
             "    -R | --remove                  unload profile\n"
             "    -h | --help                    this help\n"
-            "    -p | --probing [0|1]           allow disk format probing\n"
             "    -u | --uuid <uuid>             uuid (profile name)\n"
             "\n"), progname);
 
@@ -975,10 +973,8 @@ get_files(vahControl * ctl)
         /* XXX - if we knew the qemu user:group here we could send it in
          *        so that the open could be re-tried as that user:group.
          */
-        if (!virStorageSourceHasBacking(disk->src)) {
-            bool probe = ctl->allowDiskFormatProbing;
-            virStorageFileGetMetadata(disk->src, -1, -1, probe, false);
-        }
+        if (!virStorageSourceHasBacking(disk->src))
+            virStorageFileGetMetadata(disk->src, -1, -1, false, false);
 
         /* XXX passing ignoreOpenFailure = true to get back to the behavior
          * from before using virDomainDiskDefForeachPath. actually we should
@@ -1228,7 +1224,6 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
 {
     int arg, idx = 0;
     struct option opt[] = {
-        {"probing", 1, 0, 'p' },
         {"add", 0, 0, 'a'},
         {"create", 0, 0, 'c'},
         {"dryrun", 0, 0, 'd'},
@@ -1279,12 +1274,6 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
                 if (virStrcpy((char *)ctl->uuid, optarg,
                     PROFILE_NAME_SIZE) == NULL)
                     vah_error(ctl, 1, _("error copying UUID"));
-                break;
-            case 'p':
-                if (STREQ(optarg, "1"))
-                    ctl->allowDiskFormatProbing = true;
-                else
-                    ctl->allowDiskFormatProbing = false;
                 break;
             default:
                 vah_error(ctl, 1, _("unsupported option"));
