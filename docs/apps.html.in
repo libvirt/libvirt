@@ -466,6 +466,21 @@
         minutes. The only requirements for the users are a Web browser and
         a lightweight remote viewer.
       </dd>
+      <dt><a href="https://github.com/cutelyst/Virtlyst">Virtlyst</a></dt>
+      <dd>
+        Virtlyst is an open source web application built with C++11, Cutelyst and Qt.
+        It features:
+        <ul>
+          <li>Low memory usage (around 5 MiB of RAM)</li>
+          <li>Look and feel easily customized with HTML templates that use the Django syntax</li>
+          <li>VNC/Spice console directly in the browser using websockets on the same HTTP port</li>
+          <li>Host and Domain statistics graphs (CPU, Memory, IO, Network)</li>
+          <li>Connect to multiple libvirtd instances (over local Unix domain socket, SSH, TCP and TLS)</li>
+          <li>Manage Storage Pools, Storage Volumes, Networks, Interfaces, and Secrets</li>
+          <li>Create and launch VMs</li>
+          <li>Configure VMs with easy panels or go pro and edit the VM's XML</li>
+        </ul>
+      </dd>
     </dl>
 
     <h2><a id="mobile">Mobile applications</a></h2>
