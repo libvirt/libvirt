@@ -14187,18 +14187,10 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
                                          NULL)))
             goto cleanup;
 
-        if (defdisk->src->format > 0) {
-            /* adds cmd line arg: backing_file=/path/to/backing/file,backing_fmd=format */
-            virCommandAddArgFormat(cmd, "backing_file=%s,backing_fmt=%s",
-                                   defdisk->src->path,
-                                   virStorageFileFormatTypeToString(defdisk->src->format));
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown image format of '%s' and "
-                             "format probing is disabled"),
-                           defdisk->src->path);
-            goto cleanup;
-        }
+        /* adds cmd line arg: backing_file=/path/to/backing/file,backing_fmd=format */
+        virCommandAddArgFormat(cmd, "backing_file=%s,backing_fmt=%s",
+                               defdisk->src->path,
+                               virStorageFileFormatTypeToString(defdisk->src->format));
 
         /* adds cmd line args: /path/to/target/file */
         virCommandAddArg(cmd, snapdisk->src->path);
