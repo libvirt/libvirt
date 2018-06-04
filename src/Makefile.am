@@ -453,12 +453,6 @@ else ! WITH_SASL
 SYM_FILES += $(srcdir)/libvirt_sasl.syms
 endif ! WITH_SASL
 
-if WITH_GNUTLS
-USED_SYM_FILES += $(srcdir)/libvirt_gnutls.syms
-else ! WITH_GNUTLS
-SYM_FILES += $(srcdir)/libvirt_gnutls.syms
-endif ! WITH_GNUTLS
-
 if WITH_SSH2
 USED_SYM_FILES += $(srcdir)/libvirt_libssh2.syms
 else ! WITH_SSH2

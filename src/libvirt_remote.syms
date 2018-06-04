@@ -20,6 +20,7 @@ virNetClientAddStream;
 virNetClientClose;
 virNetClientDupFD;
 virNetClientGetFD;
+virNetClientGetTLSKeySize;
 virNetClientHasPassFD;
 virNetClientIsEncrypted;
 virNetClientIsOpen;
@@ -41,6 +42,7 @@ virNetClientSendNoReply;
 virNetClientSendWithReply;
 virNetClientSendWithReplyStream;
 virNetClientSetCloseCallback;
+virNetClientSetTLSSession;
 
 
 # rpc/virnetclientprogram.h
@@ -130,6 +132,7 @@ virNetServerProcessClients;
 virNetServerSetClientAuthenticated;
 virNetServerSetClientLimits;
 virNetServerSetThreadPoolParameters;
+virNetServerSetTLSContext;
 virNetServerStart;
 virNetServerUpdateServices;
 
@@ -148,8 +151,11 @@ virNetServerClientGetPrivateData;
 virNetServerClientGetReadonly;
 virNetServerClientGetSELinuxContext;
 virNetServerClientGetTimestamp;
+virNetServerClientGetTLSKeySize;
+virNetServerClientGetTLSSession;
 virNetServerClientGetTransport;
 virNetServerClientGetUNIXIdentity;
+virNetServerClientHasTLSSession;
 virNetServerClientImmediateClose;
 virNetServerClientInit;
 virNetServerClientInitKeepAlive;
@@ -207,6 +213,7 @@ virNetServerServiceClose;
 virNetServerServiceGetAuth;
 virNetServerServiceGetMaxRequests;
 virNetServerServiceGetPort;
+virNetServerServiceGetTLSContext;
 virNetServerServiceIsReadonly;
 virNetServerServiceNewFD;
 virNetServerServiceNewFDOrUNIX;
@@ -253,6 +260,7 @@ virNetSocketRemoteAddrStringURI;
 virNetSocketRemoveIOCallback;
 virNetSocketSendFD;
 virNetSocketSetBlocking;
+virNetSocketSetTLSSession;
 virNetSocketUpdateIOCallback;
 virNetSocketWrite;
 
