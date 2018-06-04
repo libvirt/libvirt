@@ -1212,8 +1212,8 @@ mymain(void)
     DO_TEST_STATUS("migration-out-params");
     DO_TEST_STATUS("migration-out-nbd-tls");
 
-    DO_TEST("vhost-vsock", NONE);
-    DO_TEST("vhost-vsock-auto", NONE);
+    DO_TEST("vhost-vsock", QEMU_CAPS_DEVICE_VHOST_VSOCK);
+    DO_TEST("vhost-vsock-auto", QEMU_CAPS_DEVICE_VHOST_VSOCK);
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
