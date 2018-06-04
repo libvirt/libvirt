@@ -2852,12 +2852,6 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("disk-virtio-scsi-reservations");
 
-    /* Test disks with format probing enabled for legacy reasons.
-     * New tests should not go in this section. */
-    driver.config->allowDiskFormatProbing = true;
-    DO_TEST("disk-many-format-probing", QEMU_CAPS_DRIVE_BOOT);
-    driver.config->allowDiskFormatProbing = false;
-
     DO_TEST("video-virtio-gpu-ccw", QEMU_CAPS_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,

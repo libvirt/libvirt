@@ -1184,12 +1184,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW);
 
-    /* Test disks with format probing enabled for legacy reasons.
-     * New tests should not go in this section. */
-    driver.config->allowDiskFormatProbing = true;
-    DO_TEST("disk-many-format-probing", NONE);
-    driver.config->allowDiskFormatProbing = false;
-
 # define DO_TEST_STATUS(name) \
     do { \
         if (testInfoSetStatus(&info, name, GIC_NONE) < 0) { \
