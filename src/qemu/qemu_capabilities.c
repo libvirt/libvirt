@@ -5170,3 +5170,20 @@ virQEMUCapsSetMicrocodeVersion(virQEMUCapsPtr qemuCaps,
 {
     qemuCaps->microcodeVersion = microcodeVersion;
 }
+
+
+/**
+ * virQEMUCapsStripMachineAliases:
+ * @qemuCaps: capabilities object to process
+ *
+ * Remove all aliases so that the tests depending on the latest capabilities
+ * file can be stable when new files are added.
+ */
+void
+virQEMUCapsStripMachineAliases(virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < qemuCaps->nmachineTypes; i++)
+        VIR_FREE(qemuCaps->machineTypes[i].alias);
+}

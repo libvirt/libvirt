@@ -98,4 +98,7 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
 void
 virQEMUCapsSetMicrocodeVersion(virQEMUCapsPtr qemuCaps,
                                unsigned int microcodeVersion);
+
+void
+virQEMUCapsStripMachineAliases(virQEMUCapsPtr qemuCaps);
 #endif

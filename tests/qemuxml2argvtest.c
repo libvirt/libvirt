@@ -713,7 +713,7 @@ mymain(void)
  * version.
  */
 # define DO_TEST_CAPS_INTERNAL(name, suffix, migrateFrom, flags, parseFlags, \
-                               arch, capsfile) \
+                               arch, capsfile, stripmachinealiases) \
     do { \
         static struct testInfo info = { \
             name, "." suffix, NULL, migrateFrom, migrateFrom ? 7 : -1,\
@@ -723,6 +723,8 @@ mymain(void)
         if (!(info.qemuCaps = qemuTestParseCapabilitiesArch(virArchFromString(arch), \
                                                             capsfile))) \
             return EXIT_FAILURE; \
+        if (stripmachinealiases) \
+            virQEMUCapsStripMachineAliases(info.qemuCaps); \
         if (virTestRun("QEMU XML-2-ARGV " name "." suffix, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
@@ -734,7 +736,7 @@ mymain(void)
 
 # define DO_TEST_CAPS_ARCH_VER_FULL(name, flags, parseFlags, arch, ver) \
     DO_TEST_CAPS_INTERNAL(name, arch "-" ver, NULL, flags, parseFlags, \
-                          arch, TEST_CAPS_PATH ver "." arch ".xml")
+                          arch, TEST_CAPS_PATH ver "." arch ".xml", false)
 
 # define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, 0, 0, arch, ver)
@@ -744,7 +746,7 @@ mymain(void)
 
 # define DO_TEST_CAPS_LATEST(name) \
     DO_TEST_CAPS_INTERNAL(name, "x86_64-latest", NULL, 0, 0, "x86_64", \
-                          capslatest_x86_64)
+                          capslatest_x86_64, true)
 
 /**
  * The following test macros should be used only in cases when the tests require
