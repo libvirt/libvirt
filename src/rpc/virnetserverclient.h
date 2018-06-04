@@ -69,18 +69,12 @@ virNetServerClientPtr virNetServerClientNew(unsigned long long id,
                                             int auth,
                                             bool readonly,
                                             size_t nrequests_max,
-# ifdef WITH_GNUTLS
                                             virNetTLSContextPtr tls,
-# endif
                                             virNetServerClientPrivNew privNew,
                                             virNetServerClientPrivPreExecRestart privPreExecRestart,
                                             virFreeCallback privFree,
                                             void *privOpaque)
-# ifdef WITH_GNUTLS
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(7) ATTRIBUTE_NONNULL(9);
-# else
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6) ATTRIBUTE_NONNULL(8);
-# endif
 
 virNetServerClientPtr virNetServerClientNewPostExecRestart(virNetServerPtr srv,
                                                            virJSONValuePtr object,
@@ -107,11 +101,9 @@ void virNetServerClientSetReadonly(virNetServerClientPtr client, bool readonly);
 unsigned long long virNetServerClientGetID(virNetServerClientPtr client);
 long long virNetServerClientGetTimestamp(virNetServerClientPtr client);
 
-# ifdef WITH_GNUTLS
 bool virNetServerClientHasTLSSession(virNetServerClientPtr client);
 virNetTLSSessionPtr virNetServerClientGetTLSSession(virNetServerClientPtr client);
 int virNetServerClientGetTLSKeySize(virNetServerClientPtr client);
-# endif
 
 # ifdef WITH_SASL
 bool virNetServerClientHasSASLSession(virNetServerClientPtr client);

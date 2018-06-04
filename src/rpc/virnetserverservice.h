@@ -41,9 +41,7 @@ virNetServerServicePtr virNetServerServiceNewFDOrUNIX(const char *path,
                                                       mode_t mask,
                                                       gid_t grp,
                                                       int auth,
-# if WITH_GNUTLS
                                                       virNetTLSContextPtr tls,
-# endif
                                                       bool readonly,
                                                       size_t max_queued_clients,
                                                       size_t nrequests_client_max,
@@ -53,9 +51,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int family,
                                                  int auth,
-# if WITH_GNUTLS
                                                  virNetTLSContextPtr tls,
-# endif
                                                  bool readonly,
                                                  size_t max_queued_clients,
                                                  size_t nrequests_client_max);
@@ -63,17 +59,13 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   mode_t mask,
                                                   gid_t grp,
                                                   int auth,
-# if WITH_GNUTLS
                                                   virNetTLSContextPtr tls,
-# endif
                                                   bool readonly,
                                                   size_t max_queued_clients,
                                                   size_t nrequests_client_max);
 virNetServerServicePtr virNetServerServiceNewFD(int fd,
                                                 int auth,
-# if WITH_GNUTLS
                                                 virNetTLSContextPtr tls,
-# endif
                                                 bool readonly,
                                                 size_t max_queued_clients,
                                                 size_t nrequests_client_max);
@@ -87,9 +79,7 @@ int virNetServerServiceGetPort(virNetServerServicePtr svc);
 int virNetServerServiceGetAuth(virNetServerServicePtr svc);
 bool virNetServerServiceIsReadonly(virNetServerServicePtr svc);
 size_t virNetServerServiceGetMaxRequests(virNetServerServicePtr svc);
-# ifdef WITH_GNUTLS
 virNetTLSContextPtr virNetServerServiceGetTLSContext(virNetServerServicePtr svc);
-# endif
 
 void virNetServerServiceSetDispatcher(virNetServerServicePtr svc,
                                       virNetServerServiceDispatchFunc func,

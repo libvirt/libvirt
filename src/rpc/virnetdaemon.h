@@ -25,9 +25,7 @@
 
 # include <signal.h>
 
-# ifdef WITH_GNUTLS
-#  include "virnettlscontext.h"
-# endif
+# include "virnettlscontext.h"
 # include "virobject.h"
 # include "virjson.h"
 # include "virnetserverprogram.h"

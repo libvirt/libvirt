@@ -117,9 +117,7 @@ testCreateServer(const char *server_name, const char *host, int family)
                                            NULL,
                                            family,
                                            VIR_NET_SERVER_SERVICE_AUTH_NONE,
-# ifdef WITH_GNUTLS
                                            NULL,
-# endif
                                            true,
                                            5,
                                            2)))
@@ -129,9 +127,7 @@ testCreateServer(const char *server_name, const char *host, int family)
                                            NULL,
                                            family,
                                            VIR_NET_SERVER_SERVICE_AUTH_POLKIT,
-# ifdef WITH_GNUTLS
                                            NULL,
-# endif
                                            false,
                                            25,
                                            5)))
@@ -152,9 +148,7 @@ testCreateServer(const char *server_name, const char *host, int family)
                                        VIR_NET_SERVER_SERVICE_AUTH_SASL,
                                        true,
                                        15,
-# ifdef WITH_GNUTLS
                                        NULL,
-# endif
                                        testClientNew,
                                        testClientPreExec,
                                        testClientFree,
@@ -166,9 +160,7 @@ testCreateServer(const char *server_name, const char *host, int family)
                                        VIR_NET_SERVER_SERVICE_AUTH_POLKIT,
                                        true,
                                        66,
-# ifdef WITH_GNUTLS
                                        NULL,
-# endif
                                        testClientNew,
                                        testClientPreExec,
                                        testClientFree,

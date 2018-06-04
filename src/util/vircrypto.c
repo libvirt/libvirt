@@ -26,10 +26,8 @@
 #include "viralloc.h"
 #include "virrandom.h"
 
-#ifdef WITH_GNUTLS
-# include <gnutls/gnutls.h>
-# include <gnutls/crypto.h>
-#endif
+#include <gnutls/gnutls.h>
+#include <gnutls/crypto.h>
 
 VIR_LOG_INIT("util.crypto");
 
@@ -39,7 +37,6 @@ static const char hex[] = "0123456789abcdef";
 
 #define VIR_CRYPTO_LARGEST_DIGEST_SIZE VIR_CRYPTO_HASH_SIZE_SHA256
 
-#if WITH_GNUTLS
 
 struct virHashInfo {
     gnutls_digest_algorithm_t algorithm;
@@ -74,17 +71,7 @@ virCryptoHashBuf(virCryptoHash hash,
 
     return hashinfo[hash].hashlen;
 }
-#else
-ssize_t
-virCryptoHashBuf(virCryptoHash hash,
-                 const char *input ATTRIBUTE_UNUSED,
-                 unsigned char *output ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INVALID_ARG,
-                   _("algorithm=%d is not supported"), hash);
-    return -1;
-}
-#endif
+
 
 int
 virCryptoHashString(virCryptoHash hash,
@@ -129,11 +116,7 @@ virCryptoHaveCipher(virCryptoCipher algorithm)
     switch (algorithm) {
 
     case VIR_CRYPTO_CIPHER_AES256CBC:
-#ifdef WITH_GNUTLS
         return true;
-#else
-        return false;
-#endif
 
     case VIR_CRYPTO_CIPHER_NONE:
     case VIR_CRYPTO_CIPHER_LAST:
@@ -144,7 +127,6 @@ virCryptoHaveCipher(virCryptoCipher algorithm)
 }
 
 
-#ifdef WITH_GNUTLS
 /* virCryptoEncryptDataAESgntuls:
  *
  * Performs the AES gnutls encryption
@@ -295,22 +277,3 @@ virCryptoEncryptData(virCryptoCipher algorithm,
                    _("algorithm=%d is not supported"), algorithm);
     return -1;
 }
-
-#else
-
-int
-virCryptoEncryptData(virCryptoCipher algorithm,
-                     uint8_t *enckey ATTRIBUTE_UNUSED,
-                     size_t enckeylen ATTRIBUTE_UNUSED,
-                     uint8_t *iv ATTRIBUTE_UNUSED,
-                     size_t ivlen ATTRIBUTE_UNUSED,
-                     uint8_t *data ATTRIBUTE_UNUSED,
-                     size_t datalen ATTRIBUTE_UNUSED,
-                     uint8_t **ciphertext ATTRIBUTE_UNUSED,
-                     size_t *ciphertextlen ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INVALID_ARG,
-                   _("algorithm=%d is not supported"), algorithm);
-    return -1;
-}
-#endif

@@ -1043,10 +1043,8 @@ mymain(void)
     DO_TEST("disk-drive-network-sheepdog", NONE);
     DO_TEST("disk-drive-network-rbd-auth", NONE);
     DO_TEST("disk-drive-network-source-auth", NONE);
-# ifdef WITH_GNUTLS
     DO_TEST("disk-drive-network-rbd-auth-AES",
             QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_VIRTIO_SCSI);
-# endif
     DO_TEST("disk-drive-network-rbd-ipv6", NONE);
     DO_TEST_FAILURE("disk-drive-network-rbd-no-colon", NONE);
     DO_TEST("disk-drive-network-vxhs", QEMU_CAPS_VXHS);
@@ -1339,17 +1337,10 @@ mymain(void)
     if (VIR_STRDUP_QUIET(driver.config->chardevTLSx509secretUUID,
                          "6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea") < 0)
         return EXIT_FAILURE;
-# ifdef WITH_GNUTLS
     DO_TEST("serial-tcp-tlsx509-secret-chardev",
             QEMU_CAPS_OBJECT_SECRET,
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
-# else
-    DO_TEST_FAILURE("serial-tcp-tlsx509-secret-chardev",
-                    QEMU_CAPS_OBJECT_SECRET,
-                    QEMU_CAPS_DEVICE_ISA_SERIAL,
-                    QEMU_CAPS_OBJECT_TLS_CREDS_X509);
-# endif
     driver.config->chardevTLS = 0;
     VIR_FREE(driver.config->chardevTLSx509certdir);
     DO_TEST("serial-many-chardev",
@@ -1653,14 +1644,10 @@ mymain(void)
 
     DO_TEST("encrypted-disk", QEMU_CAPS_QCOW2_LUKS, QEMU_CAPS_OBJECT_SECRET);
     DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS, QEMU_CAPS_OBJECT_SECRET);
-# ifdef WITH_GNUTLS
     DO_TEST("luks-disks", QEMU_CAPS_OBJECT_SECRET);
     DO_TEST("luks-disks-source", QEMU_CAPS_OBJECT_SECRET);
     DO_TEST_PARSE_ERROR("luks-disks-source-qcow2", QEMU_CAPS_OBJECT_SECRET);
     DO_TEST("luks-disks-source-qcow2", QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_QCOW2_LUKS);
-# else
-    DO_TEST_FAILURE("luks-disks", QEMU_CAPS_OBJECT_SECRET);
-# endif
     DO_TEST_PARSE_ERROR("luks-disk-invalid", NONE);
     DO_TEST_PARSE_ERROR("luks-disks-source-both", QEMU_CAPS_OBJECT_SECRET);
 
@@ -2351,12 +2338,10 @@ mymain(void)
     DO_TEST("hostdev-scsi-virtio-iscsi-auth",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC);
-# ifdef WITH_GNUTLS
     DO_TEST("disk-hostdev-scsi-virtio-iscsi-auth-AES",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC, QEMU_CAPS_OBJECT_SECRET,
             QEMU_CAPS_ISCSI_PASSWORD_SECRET);
-# endif
     DO_TEST("hostdev-scsi-vhost-scsi-ccw",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_VHOST_SCSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC, QEMU_CAPS_CCW);

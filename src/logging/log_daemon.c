@@ -554,9 +554,7 @@ virLogDaemonSetupNetworkingSystemD(virNetServerPtr logSrv, virNetServerPtr admin
         /* Systemd passes FDs, starting immediately after stderr,
          * so the first FD we'll get is '3'. */
         if (!(svc = virNetServerServiceNewFD(3 + i, 0,
-#if WITH_GNUTLS
                                              NULL,
-#endif
                                              false, 0, 1)))
             return -1;
 
@@ -577,9 +575,7 @@ virLogDaemonSetupNetworkingNative(virNetServerPtr srv, const char *sock_path)
     VIR_DEBUG("Setting up networking natively");
 
     if (!(svc = virNetServerServiceNewUNIX(sock_path, 0700, 0, 0,
-#if WITH_GNUTLS
                                            NULL,
-#endif
                                            false, 0, 1)))
         return -1;
 

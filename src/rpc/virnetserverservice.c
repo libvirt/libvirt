@@ -43,9 +43,7 @@ struct _virNetServerService {
     bool readonly;
     size_t nrequests_client_max;
 
-#if WITH_GNUTLS
     virNetTLSContextPtr tls;
-#endif
 
     virNetServerServiceDispatchFunc dispatchFunc;
     void *dispatchOpaque;
@@ -94,9 +92,7 @@ virNetServerServiceNewFDOrUNIX(const char *path,
                                mode_t mask,
                                gid_t grp,
                                int auth,
-#if WITH_GNUTLS
                                virNetTLSContextPtr tls,
-#endif
                                bool readonly,
                                size_t max_queued_clients,
                                size_t nrequests_client_max,
@@ -112,9 +108,7 @@ virNetServerServiceNewFDOrUNIX(const char *path,
                                           mask,
                                           grp,
                                           auth,
-#if WITH_GNUTLS
                                           tls,
-#endif
                                           readonly,
                                           max_queued_clients,
                                           nrequests_client_max);
@@ -128,9 +122,7 @@ virNetServerServiceNewFDOrUNIX(const char *path,
          */
         return virNetServerServiceNewFD((*cur_fd)++,
                                         auth,
-#if WITH_GNUTLS
                                         tls,
-#endif
                                         readonly,
                                         max_queued_clients,
                                         nrequests_client_max);
@@ -142,9 +134,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int family,
                                                  int auth,
-#if WITH_GNUTLS
                                                  virNetTLSContextPtr tls,
-#endif
                                                  bool readonly,
                                                  size_t max_queued_clients,
                                                  size_t nrequests_client_max)
@@ -161,9 +151,7 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
     svc->auth = auth;
     svc->readonly = readonly;
     svc->nrequests_client_max = nrequests_client_max;
-#if WITH_GNUTLS
     svc->tls = virObjectRef(tls);
-#endif
 
     if (virNetSocketNewListenTCP(nodename,
                                  service,
@@ -202,9 +190,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   mode_t mask,
                                                   gid_t grp,
                                                   int auth,
-#if WITH_GNUTLS
                                                   virNetTLSContextPtr tls,
-#endif
                                                   bool readonly,
                                                   size_t max_queued_clients,
                                                   size_t nrequests_client_max)
@@ -221,9 +207,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
     svc->auth = auth;
     svc->readonly = readonly;
     svc->nrequests_client_max = nrequests_client_max;
-#if WITH_GNUTLS
     svc->tls = virObjectRef(tls);
-#endif
 
     if (VIR_ALLOC_N(svc->socks, 1) < 0)
         goto error;
@@ -263,9 +247,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
 
 virNetServerServicePtr virNetServerServiceNewFD(int fd,
                                                 int auth,
-#if WITH_GNUTLS
                                                 virNetTLSContextPtr tls,
-#endif
                                                 bool readonly,
                                                 size_t max_queued_clients,
                                                 size_t nrequests_client_max)
@@ -282,9 +264,7 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
     svc->auth = auth;
     svc->readonly = readonly;
     svc->nrequests_client_max = nrequests_client_max;
-#if WITH_GNUTLS
     svc->tls = virObjectRef(tls);
-#endif
 
     if (VIR_ALLOC_N(svc->socks, 1) < 0)
         goto error;
@@ -469,12 +449,10 @@ size_t virNetServerServiceGetMaxRequests(virNetServerServicePtr svc)
     return svc->nrequests_client_max;
 }
 
-#if WITH_GNUTLS
 virNetTLSContextPtr virNetServerServiceGetTLSContext(virNetServerServicePtr svc)
 {
     return svc->tls;
 }
-#endif
 
 void virNetServerServiceSetDispatcher(virNetServerServicePtr svc,
                                       virNetServerServiceDispatchFunc func,
@@ -494,9 +472,7 @@ void virNetServerServiceDispose(void *obj)
        virObjectUnref(svc->socks[i]);
     VIR_FREE(svc->socks);
 
-#if WITH_GNUTLS
     virObjectUnref(svc->tls);
-#endif
 }
 
 void virNetServerServiceToggle(virNetServerServicePtr svc,

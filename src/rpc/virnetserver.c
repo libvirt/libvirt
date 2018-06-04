@@ -73,9 +73,7 @@ struct _virNetServer {
     int keepaliveInterval;
     unsigned int keepaliveCount;
 
-#ifdef WITH_GNUTLS
     virNetTLSContextPtr tls;
-#endif
 
     virNetServerClientPrivNew clientPrivNew;
     virNetServerClientPrivPreExecRestart clientPrivPreExecRestart;
@@ -320,9 +318,7 @@ static int virNetServerDispatchNewClient(virNetServerServicePtr svc,
                                          virNetServerServiceGetAuth(svc),
                                          virNetServerServiceIsReadonly(svc),
                                          virNetServerServiceGetMaxRequests(svc),
-#if WITH_GNUTLS
                                          virNetServerServiceGetTLSContext(svc),
-#endif
                                          srv->clientPrivNew,
                                          srv->clientPrivPreExecRestart,
                                          srv->clientPrivFree,
@@ -728,14 +724,12 @@ int virNetServerAddProgram(virNetServerPtr srv,
     return -1;
 }
 
-#if WITH_GNUTLS
 int virNetServerSetTLSContext(virNetServerPtr srv,
                               virNetTLSContextPtr tls)
 {
     srv->tls = virObjectRef(tls);
     return 0;
 }
-#endif
 
 
 /**

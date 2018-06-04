@@ -18,10 +18,8 @@
 
 #include <config.h>
 
-#ifdef WITH_GNUTLS
-# include <gnutls/gnutls.h>
-# include <gnutls/x509.h>
-#endif
+#include <gnutls/gnutls.h>
+#include <gnutls/x509.h>
 
 #include "locking/domain_lock.h"
 #include "viralloc.h"
@@ -131,7 +129,6 @@ qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
 }
 
 
-#ifdef WITH_GNUTLS
 static char *
 qemuDomainExtractTLSSubject(const char *certdir)
 {
@@ -188,7 +185,7 @@ qemuDomainExtractTLSSubject(const char *certdir)
     VIR_FREE(pemdata);
     return NULL;
 }
-#endif
+
 
 static qemuMigrationCookieGraphicsPtr
 qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
@@ -212,11 +209,10 @@ qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
     if (!glisten || !(listenAddr = glisten->address))
         listenAddr = cfg->spiceListen;
 
-#ifdef WITH_GNUTLS
     if (cfg->spiceTLS &&
         !(mig->tlsSubject = qemuDomainExtractTLSSubject(cfg->spiceTLSx509certdir)))
         goto error;
-#endif
+
     if (VIR_STRDUP(mig->listen, listenAddr) < 0)
         goto error;
 

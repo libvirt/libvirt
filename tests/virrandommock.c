@@ -22,6 +22,9 @@
 
 #ifndef WIN32
 
+# include <stdio.h>
+# include <gnutls/gnutls.h>
+
 # include "internal.h"
 # include "virstring.h"
 # include "virrandom.h"
@@ -49,10 +52,6 @@ int virRandomGenerateWWN(char **wwn,
                        (unsigned long long)virRandomBits(36));
 }
 
-
-# ifdef WITH_GNUTLS
-#  include <stdio.h>
-#  include <gnutls/gnutls.h>
 
 static int (*real_gnutls_dh_params_generate2)(gnutls_dh_params_t dparams,
                                               unsigned int bits);
@@ -87,7 +86,6 @@ gnutls_dh_params_generate2(gnutls_dh_params_t dparams,
 
     return gnutls_dh_params_cpy(dparams, params_cache);
 }
-# endif
 #else /* WIN32 */
 /* Can't mock on WIN32 */
 #endif
