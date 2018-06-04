@@ -511,6 +511,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     char **nvram = NULL;
     char *corestr = NULL;
     char **namespaces = NULL;
+    bool tmp;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -803,8 +804,13 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     if (virConfGetValueBool(conf, "clear_emulator_capabilities", &cfg->clearEmulatorCapabilities) < 0)
         goto cleanup;
-    if (virConfGetValueBool(conf, "allow_disk_format_probing", &cfg->allowDiskFormatProbing) < 0)
+    if (virConfGetValueBool(conf, "allow_disk_format_probing", &tmp) < 0)
         goto cleanup;
+    if (tmp) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("allow_disk_format_probing is no longer supported"));
+        goto cleanup;
+    }
     if (virConfGetValueBool(conf, "set_process_name", &cfg->setProcessName) < 0)
         goto cleanup;
     if (virConfGetValueUInt(conf, "max_processes", &cfg->maxProcesses) < 0)

@@ -5973,39 +5973,23 @@ qemuDomainDeviceDiskDefPostParseRestoreSecAlias(virDomainDiskDefPtr disk,
 static int
 qemuDomainDeviceDiskDefPostParse(virDomainDiskDefPtr disk,
                                  virQEMUCapsPtr qemuCaps,
-                                 unsigned int parseFlags,
-                                 virQEMUDriverConfigPtr cfg)
+                                 unsigned int parseFlags)
 {
     /* set default disk types and drivers */
-    /* assign default storage format and driver according to config */
-    if (cfg->allowDiskFormatProbing) {
-        /* default disk format for drives */
-        if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
-            (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
-             virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
-            virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_AUTO);
+    if (!virDomainDiskGetDriver(disk) &&
+        virDomainDiskSetDriver(disk, "qemu") < 0)
+        return -1;
 
-        /* default disk format for mirrored drive */
-        if (disk->mirror &&
-            disk->mirror->format == VIR_STORAGE_FILE_NONE)
-            disk->mirror->format = VIR_STORAGE_FILE_AUTO;
-    } else {
-        /* default driver if probing is forbidden */
-        if (!virDomainDiskGetDriver(disk) &&
-            virDomainDiskSetDriver(disk, "qemu") < 0)
-            return -1;
+    /* default disk format for drives */
+    if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
+        (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
+         virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
+        virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
 
-        /* default disk format for drives */
-        if (virDomainDiskGetFormat(disk) == VIR_STORAGE_FILE_NONE &&
-            (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE ||
-             virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK))
-            virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
-
-        /* default disk format for mirrored drive */
-        if (disk->mirror &&
-            disk->mirror->format == VIR_STORAGE_FILE_NONE)
-            disk->mirror->format = VIR_STORAGE_FILE_RAW;
-    }
+    /* default disk format for mirrored drive */
+    if (disk->mirror &&
+        disk->mirror->format == VIR_STORAGE_FILE_NONE)
+        disk->mirror->format = VIR_STORAGE_FILE_RAW;
 
     if (qemuDomainDeviceDiskDefPostParseRestoreSecAlias(disk, qemuCaps,
                                                         parseFlags) < 0)
@@ -6100,7 +6084,6 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
      * function shall not fail in that case. It will be re-run on VM startup
      * with the capabilities populated. */
     virQEMUCapsPtr qemuCaps = parseOpaque;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
 
     switch ((virDomainDeviceType) dev->type) {
@@ -6110,7 +6093,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
     case VIR_DOMAIN_DEVICE_DISK:
         ret = qemuDomainDeviceDiskDefPostParse(dev->data.disk, qemuCaps,
-                                               parseFlags, cfg);
+                                               parseFlags);
         break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:
@@ -6168,7 +6151,6 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         break;
     }
 
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -7182,11 +7164,6 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
                                  qemuDomainLogContextPtr logCtxt)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    int format = virDomainDiskGetFormat(disk);
-
-    if ((!format || format == VIR_STORAGE_FILE_AUTO) &&
-        cfg->allowDiskFormatProbing)
-        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_DISK_PROBING, logCtxt);
 
     if (disk->rawio == VIR_TRISTATE_BOOL_YES)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,
@@ -8142,8 +8119,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     qemuDomainGetImageIds(cfg, vm, src, disk->src, &uid, &gid);
 
     if (virStorageFileGetMetadata(src,
-                                  uid, gid,
-                                  cfg->allowDiskFormatProbing,
+                                  uid, gid, false,
                                   report_broken) < 0)
         goto cleanup;
 

@@ -365,8 +365,6 @@ qemuSecurityInit(virQEMUDriverPtr driver)
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned int flags = 0;
 
-    if (cfg->allowDiskFormatProbing)
-        flags |= VIR_SECURITY_MANAGER_ALLOW_DISK_PROBE;
     if (cfg->securityDefaultConfined)
         flags |= VIR_SECURITY_MANAGER_DEFAULT_CONFINED;
     if (cfg->securityRequireConfined)
@@ -11966,8 +11964,7 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
     if (virStorageSourceUpdateBackingSizes(src, fd, &sb) < 0)
         goto cleanup;
 
-    if (virStorageSourceUpdateCapacity(src, buf, len,
-                                       cfg->allowDiskFormatProbing) < 0)
+    if (virStorageSourceUpdateCapacity(src, buf, len, false) < 0)
         goto cleanup;
 
     /* If guest is not using raw disk format and is on a host block
@@ -14196,16 +14193,11 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
                                    defdisk->src->path,
                                    virStorageFileFormatTypeToString(defdisk->src->format));
         } else {
-            if (!cfg->allowDiskFormatProbing) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown image format of '%s' and "
-                                 "format probing is disabled"),
-                               defdisk->src->path);
-                goto cleanup;
-            }
-
-            /* adds cmd line arg: backing_file=/path/to/backing/file */
-            virCommandAddArgFormat(cmd, "backing_file=%s", defdisk->src->path);
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown image format of '%s' and "
+                             "format probing is disabled"),
+                           defdisk->src->path);
+            goto cleanup;
         }
 
         /* adds cmd line args: /path/to/target/file */

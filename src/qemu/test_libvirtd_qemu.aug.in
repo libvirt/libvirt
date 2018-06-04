@@ -79,7 +79,6 @@ module Test_libvirtd_qemu =
 { "dump_guest_core" = "1" }
 { "mac_filter" = "1" }
 { "relaxed_acs_check" = "1" }
-{ "allow_disk_format_probing" = "1" }
 { "lock_manager" = "lockd" }
 { "max_queued" = "0" }
 { "keepalive_interval" = "5" }
