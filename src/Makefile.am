@@ -768,7 +768,7 @@ install-sysconfig:
 	for f in $(SYSCONF_FILES:%.sysconf=%) ; \
 	do \
 	  tgt=`basename $$f`; \
-	  $(INSTALL_SCRIPT) $(srcdir)/$$f.sysconf \
+	  $(INSTALL_DATA) $(srcdir)/$$f.sysconf \
 	      $(DESTDIR)$(sysconfdir)/sysconfig/$$tgt; \
 	done
 
