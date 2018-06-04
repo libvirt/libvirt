@@ -949,6 +949,9 @@ mymain(void)
         .type = VIR_STORAGE_TYPE_FILE,
         .format = VIR_STORAGE_FILE_RAW,
     };
+    TEST_CHAIN(absqed, VIR_STORAGE_FILE_QED,
+               (&qed, &raw), EXP_PASS,
+               (&qed, &raw), ALLOW_PROBE | EXP_PASS);
     TEST_CHAIN(absqed, VIR_STORAGE_FILE_AUTO,
                (&qed_as_raw), EXP_PASS,
                (&qed, &raw), ALLOW_PROBE | EXP_PASS);
