@@ -227,10 +227,9 @@ test_programs += \
 	virnetsockettest \
 	virnetdaemontest \
 	virnetserverclienttest \
+	virnettlscontexttest \
+	virnettlssessiontest \
 	$(NULL)
-if WITH_GNUTLS
-test_programs += virnettlscontexttest virnettlssessiontest
-endif WITH_GNUTLS
 endif WITH_REMOTE
 
 if WITH_LINUX
@@ -1027,7 +1026,6 @@ virnetserverclientmock_la_SOURCES = \
 virnetserverclientmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virnetserverclientmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
-if WITH_GNUTLS
 virnettlscontexttest_SOURCES = \
 	virnettlscontexttest.c \
 	virnettlshelpers.h virnettlshelpers.c \
@@ -1046,12 +1044,6 @@ virnettlssessiontest_LDADD += -ltasn1
 else ! HAVE_LIBTASN1
 EXTRA_DIST += pkix_asn1_tab.c
 endif ! HAVE_LIBTASN1
-else ! WITH_GNUTLS
-EXTRA_DIST += \
-	virnettlscontexttest.c virnettlssessiontest.c \
-	virnettlshelpers.h virnettlshelpers.c \
-	testutils.h testutils.c pkix_asn1_tab.c
-endif ! WITH_GNUTLS
 
 virtimetest_SOURCES = \
 	virtimetest.c testutils.h testutils.c
