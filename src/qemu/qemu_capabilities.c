@@ -959,7 +959,6 @@ struct virQEMUCapsStringFlags {
 
 struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "transaction", QEMU_CAPS_TRANSACTION },
-    { "block-stream", QEMU_CAPS_BLOCKJOB_ASYNC },
     { "dump-guest-memory", QEMU_CAPS_DUMP_GUEST_MEMORY },
     { "query-spice", QEMU_CAPS_SPICE },
     { "block-commit", QEMU_CAPS_BLOCK_COMMIT },

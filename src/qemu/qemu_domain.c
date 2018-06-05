@@ -9863,17 +9863,8 @@ qemuDomainGetMonitor(virDomainObjPtr vm)
  * returns 0.
  */
 int
-qemuDomainSupportsBlockJobs(virDomainObjPtr vm)
+qemuDomainSupportsBlockJobs(virDomainObjPtr vm ATTRIBUTE_UNUSED)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    bool asynchronous = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC);
-
-    if (!asynchronous) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("block jobs not supported with this QEMU binary"));
-        return -1;
-    }
-
     return 0;
 }
 

@@ -11,7 +11,6 @@
   <flag name='scsi-disk.channel'/>
   <flag name='scsi-block'/>
   <flag name='transaction'/>
-  <flag name='block-job-async'/>
   <flag name='dump-guest-memory'/>
   <flag name='virtio-scsi-pci'/>
   <flag name='blockio'/>

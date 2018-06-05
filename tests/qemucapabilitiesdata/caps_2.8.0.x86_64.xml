@@ -27,7 +27,6 @@
   <flag name='scsi-disk.channel'/>
   <flag name='scsi-block'/>
   <flag name='transaction'/>
-  <flag name='block-job-async'/>
   <flag name='hda-micro'/>
   <flag name='dump-guest-memory'/>
   <flag name='nec-usb-xhci'/>

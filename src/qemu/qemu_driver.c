@@ -17695,8 +17695,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         qemuDomainDefValidateDiskLunSource(mirror) < 0)
         goto endjob;
 
-    if (!(virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_MIRROR) &&
-          virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC))) {
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_MIRROR)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("block copy is not supported with this QEMU binary"));
         goto endjob;
@@ -18078,10 +18077,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
-    /* Ensure that no one backports commit to RHEL 6.2, where cancel
-     * behaved differently */
-    if (!(virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCK_COMMIT) &&
-          virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC))) {
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCK_COMMIT)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("online commit not supported with this QEMU binary"));
         goto endjob;
