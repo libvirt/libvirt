@@ -15395,14 +15395,6 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     char *compressedpath = NULL;
     virQEMUSaveDataPtr data = NULL;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DISK_SNAPSHOT) ||
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("live disk snapshot not supported with this "
-                         "QEMU binary"));
-        return -1;
-    }
-
     /* If quiesce was requested, then issue a freeze command, and a
      * counterpart thaw command when it is actually sent to agent.
      * The command will fail if the guest is paused or the guest agent

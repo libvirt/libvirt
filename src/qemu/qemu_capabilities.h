@@ -169,7 +169,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_WAKEUP, /* system_wakeup monitor command */
     QEMU_CAPS_SCSI_DISK_CHANNEL, /* Is scsi-disk.channel available? */
     QEMU_CAPS_SCSI_BLOCK, /* -device scsi-block */
-    QEMU_CAPS_TRANSACTION, /* transaction monitor command */
+    X_QEMU_CAPS_TRANSACTION, /* transaction monitor command */
 
     /* 90 */
     X_QEMU_CAPS_BLOCKJOB_SYNC, /* old block_job_cancel, block_stream */
@@ -210,7 +210,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_DRIVE_MIRROR, /* drive-mirror monitor command */
     X_QEMU_CAPS_USB_REDIR_BOOTINDEX, /* usb-redir.bootindex */
     X_QEMU_CAPS_USB_HOST_BOOTINDEX, /* usb-host.bootindex */
-    QEMU_CAPS_DISK_SNAPSHOT, /* blockdev-snapshot-sync command */
+    X_QEMU_CAPS_DISK_SNAPSHOT, /* blockdev-snapshot-sync command */
     QEMU_CAPS_DEVICE_QXL, /* -device qxl */
 
     /* 120 */

@@ -801,7 +801,6 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
     virCapsGuestMachinePtr *machines = NULL;
     size_t nmachines = 0;
     int ret = -1;
-    bool hasdisksnapshot = false;
 
     if (!binary)
         return 0;
@@ -831,11 +830,7 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
     if (!virCapabilitiesAddGuestFeature(guest, "deviceboot", true, false))
         goto cleanup;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_SNAPSHOT))
-        hasdisksnapshot = true;
-
-    if (!virCapabilitiesAddGuestFeature(guest, "disksnapshot", hasdisksnapshot,
-                                        false))
+    if (!virCapabilitiesAddGuestFeature(guest, "disksnapshot", true, false))
         goto cleanup;
 
     if (virCapabilitiesAddGuestDomain(guest,
@@ -958,11 +953,9 @@ struct virQEMUCapsStringFlags {
 
 
 struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
-    { "transaction", QEMU_CAPS_TRANSACTION },
     { "dump-guest-memory", QEMU_CAPS_DUMP_GUEST_MEMORY },
     { "query-spice", QEMU_CAPS_SPICE },
     { "query-vnc", QEMU_CAPS_VNC },
-    { "blockdev-snapshot-sync", QEMU_CAPS_DISK_SNAPSHOT },
     { "nbd-server-start", QEMU_CAPS_NBD_SERVER },
     { "change-backing-file", QEMU_CAPS_CHANGE_BACKING_FILE },
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
