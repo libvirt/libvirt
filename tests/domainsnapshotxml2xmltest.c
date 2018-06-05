@@ -183,6 +183,7 @@ mymain(void)
     DO_TEST_INOUT("external_vm", NULL, 1555419243, 0);
     DO_TEST_INOUT("disk_snapshot", NULL, 1555419243, 0);
     DO_TEST_INOUT("disk_driver_name_null", NULL, 1555419243, 0);
+    DO_TEST_INOUT("disk-seclabel", "9d37b878-a7cc-9f9a-b78f-49b3abad25a8", 581484660, 0);
 
     DO_TEST_IN("name_and_description", NULL);
     DO_TEST_IN("description_only", NULL);
