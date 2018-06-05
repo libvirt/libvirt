@@ -655,6 +655,9 @@ mymain(void)
     VIR_FREE(driver.config->vxhsTLSx509certdir);
     if (VIR_STRDUP_QUIET(driver.config->vxhsTLSx509certdir, "/etc/pki/libvirt-vxhs/dummy,path") < 0)
         return EXIT_FAILURE;
+    VIR_FREE(driver.config->nbdTLSx509certdir);
+    if (VIR_STRDUP_QUIET(driver.config->nbdTLSx509certdir, "/etc/pki/libvirt-nbd/dummy,path") < 0)
+        return EXIT_FAILURE;
 
     VIR_FREE(driver.config->hugetlbfs);
     if (VIR_ALLOC_N(driver.config->hugetlbfs, 2) < 0)
@@ -2860,6 +2863,7 @@ mymain(void)
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
+    VIR_FREE(driver.config->nbdTLSx509certdir);
     qemuTestDriverFree(&driver);
     VIR_FREE(fakerootdir);
     VIR_FREE(capslatest_x86_64);

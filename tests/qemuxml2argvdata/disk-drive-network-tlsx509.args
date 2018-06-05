@@ -44,8 +44,8 @@ file.server.host=192.168.0.3,file.server.port=9999,format=raw,if=none,\
 id=drive-virtio-disk2,serial=eb90327c-8302-4725-9e1b-4e85ed4dc252,cache=none \
 -device virtio-blk-pci,bus=pci.0,addr=0x6,drive=drive-virtio-disk2,\
 id=virtio-disk2 \
--object tls-creds-x509,id=objvirtio-disk3_tls0,dir=/etc/pki/qemu,\
-endpoint=client,verify-peer=yes \
+-object tls-creds-x509,id=objvirtio-disk3_tls0,dir=/etc/pki/libvirt-nbd/dummy,,\
+path,endpoint=client,verify-peer=yes \
 -drive file.driver=nbd,file.server.type=inet,file.server.host=example.com,\
 file.server.port=1234,file.tls-creds=objvirtio-disk3_tls0,format=raw,if=none,\
 id=drive-virtio-disk3,cache=none \
