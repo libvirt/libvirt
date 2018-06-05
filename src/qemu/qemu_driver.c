@@ -8822,14 +8822,13 @@ qemuDomainDetachDeviceAliasLiveAndConfig(virQEMUDriverPtr driver,
     if (persistentDef) {
         virDomainDeviceDef dev;
 
-        vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
-        if (!vmdef)
+        if (!(vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt)))
             goto cleanup;
 
-        if (virDomainDefFindDevice(persistentDef, alias, &dev, true) < 0)
+        if (virDomainDefFindDevice(vmdef, alias, &dev, true) < 0)
             goto cleanup;
 
-        if (qemuDomainDetachDeviceConfig(persistentDef, &dev, caps,
+        if (qemuDomainDetachDeviceConfig(vmdef, &dev, caps,
                                          parse_flags, driver->xmlopt) < 0)
             goto cleanup;
     }
