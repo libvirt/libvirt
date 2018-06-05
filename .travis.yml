@@ -1,6 +1,5 @@
-sudo: false
-language: c
-cache: ccache
+sudo: required
+language: generic
 
 branches:
   except:
@@ -8,17 +7,38 @@ branches:
 
 matrix:
   include:
-    - compiler: gcc
-      dist: trusty
+    - services:
+        - docker
       env:
-        - PYTHON=$(which python2)
-        - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=upstart"
-    - compiler: clang
-      dist: trusty
-      env:
-        - PYTHON=$(which python3)
+        - IMAGE=ubuntu:18.04
         - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=systemd"
+      script:
+        - docker run
+            --privileged
+            -v $(pwd):/build
+            -w /build
+            -e VIR_TEST_DEBUG="$VIR_TEST_DEBUG"
+            -e PACKAGES="$PACKAGES"
+            -e DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS"
+            "$IMAGE"
+            /bin/sh -xc "$DOCKER_CMD"
+    - services:
+        - docker
+      env:
+        - IMAGE=ubuntu:16.04
+        - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=upstart"
+      script:
+        - docker run
+            --privileged
+            -v $(pwd):/build
+            -w /build
+            -e VIR_TEST_DEBUG="$VIR_TEST_DEBUG"
+            -e PACKAGES="$PACKAGES"
+            -e DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS"
+            "$IMAGE"
+            /bin/sh -xc "$DOCKER_CMD"
     - compiler: clang
+      language: c
       os: osx
       env:
         - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/ccache/libexec:/usr/local/opt/rpcgen/bin:$PATH"
@@ -27,80 +47,18 @@ matrix:
         - brew update
         - brew upgrade
         - brew install python ccache rpcgen yajl
+      before_script:
+        - ./autogen.sh --prefix=$(pwd)/install-root
       script:
         # We can't run make distcheck/syntax-check because they
         # fail on macOS, but doing 'install' and 'dist' gives us
         # some useful coverage
         - make -j3 && make -j3 install && make -j3 dist
+      after_failure:
+        - echo '=== LOG FILE(S) START ==='
+        - find -name test-suite.log | xargs cat
+        - echo '=== LOG FILE(S) END ==='
 
-addons:
-  apt:
-    # Please keep this list sorted alphabetically
-    packages:
-      - augeas-tools
-      - autoconf
-      - automake
-      - autopoint
-      - bash-completion
-      - ccache
-      - dnsmasq-base
-      - dwarves
-      - ebtables
-      - gcc
-      - gettext
-      - glusterfs-client
-      - libacl1-dev
-      - libapparmor-dev
-      - libattr1-dev
-      - libaudit-dev
-      - libavahi-client-dev
-      - libblkid-dev
-      - libc6-dev
-      - libcap-ng-dev
-      - libc-dev-bin
-      - libcurl4-gnutls-dev
-      - libdbus-1-dev
-      - libdevmapper-dev
-      - libfuse-dev
-      - libgnutls-dev
-      - libnetcf-dev
-      - libnl-3-dev
-      - libnl-route-3-dev
-      - libnuma-dev
-      - libopenwsman-dev
-      - libparted-dev
-      - libpcap-dev
-      - libpciaccess-dev
-      - librbd-dev
-      - libreadline-dev
-      - libsanlock-dev
-      - libsasl2-dev
-      - libselinux1-dev
-      - libssh2-1-dev
-      - libssh-dev
-      - libtirpc-dev
-      - libtool
-      - libudev-dev
-      - libxen-dev
-      - libxml2-dev
-      - libxml2-utils
-      - libyajl-dev
-      - lvm2
-      - make
-#     - nfs-common    # broken on trusty since build #807 (2018-01-09)
-      - open-iscsi
-      - parted
-      - patch
-      - perl
-      - pkgconf
-      - policykit-1
-      - qemu-utils
-      - radvd
-      - scrub
-      - sheepdog
-      - systemtap-sdt-dev
-      - xsltproc
-      - zfs-fuse
 
 git:
   submodules: true
@@ -108,23 +66,87 @@ git:
 env:
   global:
     - VIR_TEST_DEBUG=1
-
-before_script:
-  - ./autogen.sh --prefix=$(pwd)/install-root
-
-script:
-  - make -j3 && make -j3 syntax-check && make -j3 distcheck DISTCHECK_CONFIGURE_FLAGS=$DISTCHECK_CONFIGURE_FLAGS
-
-after_failure:
-  - echo '============================================================================'
-  - 'ver=$(sed -n "s/AC_INIT(\[libvirt\], \[\([0-9.]*\)\],.*/\1/p" configure.ac);
-    if [ -f $(pwd)/tests/test-suite.log ]; then
-        cat $(pwd)/tests/test-suite.log;
-    elif [ -f libvirt-$ver/_build/tests/test-suite.log ]; then
-        cat libvirt-$ver/_build/tests/test-suite.log;
-    else
-        echo "=== NO LOG FILE FOUND ===";
-    fi'
+    - DOCKER_CMD="
+        apt-get update &&
+        apt-get install -y \$PACKAGES &&
+        ./autogen.sh &&
+        make -j3 &&
+        make -j3 syntax-check &&
+        make -j3 distcheck DISTCHECK_CONFIGURE_FLAGS=\"\$DISTCHECK_CONFIGURE_FLAGS\" ||
+        (
+          echo '=== LOG FILE(S) START ==='
+          find -name test-suite.log | xargs cat
+          echo '=== LOG FILE(S) END ==='
+          exit 1
+        )
+      "
+    # Please keep this list sorted alphabetically
+    - PACKAGES="
+        augeas-tools
+        autoconf
+        automake
+        autopoint
+        bash-completion
+        ccache
+        dnsmasq-base
+        dwarves
+        ebtables
+        gcc
+        gettext
+        git
+        glusterfs-client
+        libacl1-dev
+        libapparmor-dev
+        libattr1-dev
+        libaudit-dev
+        libavahi-client-dev
+        libblkid-dev
+        libc6-dev
+        libcap-ng-dev
+        libc-dev-bin
+        libdbus-1-dev
+        libdevmapper-dev
+        libfuse-dev
+        libgnutls28-dev
+        libnetcf-dev
+        libnl-3-dev
+        libnl-route-3-dev
+        libnuma-dev
+        libopenwsman-dev
+        libparted-dev
+        libpcap-dev
+        libpciaccess-dev
+        librbd-dev
+        libreadline-dev
+        libsanlock-dev
+        libsasl2-dev
+        libselinux1-dev
+        libssh2-1-dev
+        libssh-dev
+        libtirpc-dev
+        libtool
+        libudev-dev
+        libxen-dev
+        libxml2-dev
+        libxml2-utils
+        libyajl-dev
+        lvm2
+        make
+        nfs-common
+        open-iscsi
+        parted
+        patch
+        perl
+        pkgconf
+        policykit-1
+        qemu-utils
+        radvd
+        scrub
+        sheepdog
+        systemtap-sdt-dev
+        xsltproc
+        zfs-fuse
+      "
 
 notifications:
   irc:
