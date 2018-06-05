@@ -14928,14 +14928,12 @@ qemuDomainSnapshotUpdateDiskSources(qemuDomainSnapshotDiskDataPtr dd,
 }
 
 
-/* The domain is expected to hold monitor lock.  */
 static int
 qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,
                                          qemuDomainSnapshotDiskDataPtr dd,
                                          virJSONValuePtr actions,
-                                         bool reuse,
-                                         qemuDomainAsyncJob asyncJob)
+                                         bool reuse)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *device = NULL;
@@ -14967,23 +14965,10 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
 
     dd->prepared = true;
 
-    /* create the actual snapshot */
     formatStr = virStorageFileFormatTypeToString(dd->src->format);
-
-    /* The monitor is only accessed if qemu doesn't support transactions.
-     * Otherwise the following monitor command only constructs the command.
-     */
-    if (!actions &&
-        qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        goto cleanup;
 
     ret = rc = qemuMonitorDiskSnapshot(priv->mon, actions, device, source,
                                        formatStr, reuse);
-    if (!actions) {
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            ret = -1;
-    }
-
     virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", rc >= 0);
 
  cleanup:
@@ -15035,11 +15020,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
         ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
                                                        &diskdata[i],
-                                                       actions, reuse, asyncJob);
-
-        /* without transaction support the change can't be rolled back */
-        if (!actions)
-            qemuDomainSnapshotUpdateDiskSources(&diskdata[i], &persist);
+                                                       actions, reuse);
 
         if (ret < 0)
             goto error;
@@ -15047,7 +15028,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         do_transaction = true;
     }
 
-    if (actions && do_transaction) {
+    if (do_transaction) {
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             goto cleanup;
 
