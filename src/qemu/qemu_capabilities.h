@@ -207,7 +207,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_VNC, /* Is -vnc available? */
 
     /* 115 */
-    QEMU_CAPS_DRIVE_MIRROR, /* drive-mirror monitor command */
+    X_QEMU_CAPS_DRIVE_MIRROR, /* drive-mirror monitor command */
     X_QEMU_CAPS_USB_REDIR_BOOTINDEX, /* usb-redir.bootindex */
     X_QEMU_CAPS_USB_HOST_BOOTINDEX, /* usb-host.bootindex */
     QEMU_CAPS_DISK_SNAPSHOT, /* blockdev-snapshot-sync command */

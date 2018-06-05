@@ -962,7 +962,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "dump-guest-memory", QEMU_CAPS_DUMP_GUEST_MEMORY },
     { "query-spice", QEMU_CAPS_SPICE },
     { "query-vnc", QEMU_CAPS_VNC },
-    { "drive-mirror", QEMU_CAPS_DRIVE_MIRROR },
     { "blockdev-snapshot-sync", QEMU_CAPS_DISK_SNAPSHOT },
     { "nbd-server-start", QEMU_CAPS_NBD_SERVER },
     { "change-backing-file", QEMU_CAPS_CHANGE_BACKING_FILE },

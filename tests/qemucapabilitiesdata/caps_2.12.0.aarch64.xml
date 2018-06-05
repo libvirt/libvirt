@@ -32,7 +32,6 @@
   <flag name='seccomp-sandbox'/>
   <flag name='reboot-timeout'/>
   <flag name='vnc'/>
-  <flag name='drive-mirror'/>
   <flag name='blockdev-snapshot-sync'/>
   <flag name='VGA'/>
   <flag name='device-video-primary'/>

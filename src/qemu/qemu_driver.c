@@ -17683,11 +17683,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         qemuDomainDefValidateDiskLunSource(mirror) < 0)
         goto endjob;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_MIRROR)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("block copy is not supported with this QEMU binary"));
-        goto endjob;
-    }
     if (!(flags & VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB) &&
         vm->persistent) {
         /* XXX if qemu ever lets us start a new domain with mirroring
