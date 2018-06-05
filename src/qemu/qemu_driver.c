@@ -17194,9 +17194,6 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (qemuDomainSupportsBlockJobs(vm) < 0)
-        goto endjob;
-
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
 
@@ -17308,9 +17305,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
-        goto endjob;
-
-    if (qemuDomainSupportsBlockJobs(vm) < 0)
         goto endjob;
 
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
@@ -17461,9 +17455,6 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (qemuDomainSupportsBlockJobs(vm) < 0)
-        goto endjob;
-
     if (!(disk = virDomainDiskByName(vm->def, path, true))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("disk %s not found in the domain"), path);
@@ -17543,9 +17534,6 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
-        goto endjob;
-
-    if (qemuDomainSupportsBlockJobs(vm) < 0)
         goto endjob;
 
     if (!(disk = qemuDomainDiskByName(vm->def, path)))

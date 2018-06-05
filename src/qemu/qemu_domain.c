@@ -9856,20 +9856,6 @@ qemuDomainGetMonitor(virDomainObjPtr vm)
 
 
 /**
- * qemuDomainSupportsBlockJobs:
- * @vm: domain object
- *
- * Returns -1 in case when qemu does not support block jobs at all. Otherwise
- * returns 0.
- */
-int
-qemuDomainSupportsBlockJobs(virDomainObjPtr vm ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-
-/**
  * qemuFindAgentConfig:
  * @def: domain definition
  *
