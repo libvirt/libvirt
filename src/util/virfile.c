@@ -2117,7 +2117,6 @@ virFileAccessibleAs(const char *path, int mode,
 {
     pid_t pid = 0;
     int status, ret = 0;
-    int forkRet = 0;
     gid_t *groups;
     int ngroups;
 
@@ -2150,15 +2149,6 @@ virFileAccessibleAs(const char *path, int mode,
         }
 
         return 0;
-    }
-
-    /* child.
-     * Return positive value here. Parent
-     * will change it to negative one. */
-
-    if (forkRet < 0) {
-        ret = errno;
-        goto childerror;
     }
 
     if (virSetUIDGID(uid, gid, groups, ngroups) < 0) {
