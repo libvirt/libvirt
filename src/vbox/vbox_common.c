@@ -4629,6 +4629,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
     unsigned char snapshotUuid[VIR_UUID_BUFLEN];
     virVBoxSnapshotConfHardDiskPtr *hardDiskToOpen = NULL;
     size_t hardDiskToOpenSize = 0;
+    virVBoxSnapshotConfHardDiskPtr newHardDisk = NULL;
     char **searchResultTab = NULL;
     ssize_t resultSize = 0;
     int it = 0;
@@ -5236,7 +5237,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
             PRUnichar *newLocation = NULL;
             char *newLocationUtf8 = NULL;
             resultCodeUnion resultCode;
-            virVBoxSnapshotConfHardDiskPtr disk = NULL;
             char *uuid = NULL;
             char *format = NULL;
             char *tmp = NULL;
@@ -5301,11 +5301,11 @@ vboxSnapshotRedefine(virDomainPtr dom,
             }
             VBOX_RELEASE(progress);
             /*
-             * The differential disk is created, we add it to the media registry and the
-             * machine storage controllers.
+             * The differential newHardDisk is created, we add it to the
+             * media registry and the machine storage controllers.
              */
 
-            if (VIR_ALLOC(disk) < 0)
+            if (VIR_ALLOC(newHardDisk) < 0)
                 goto cleanup;
 
             rc = gVBoxAPI.UIMedium.GetId(newMedium, &iid);
@@ -5316,24 +5316,25 @@ vboxSnapshotRedefine(virDomainPtr dom,
                 goto cleanup;
             }
             gVBoxAPI.UIID.vboxIIDToUtf8(data, &iid, &uuid);
-            disk->uuid = uuid;
+            newHardDisk->uuid = uuid;
             vboxIIDUnalloc(&iid);
 
-            if (VIR_STRDUP(disk->location, newLocationUtf8) < 0)
+            if (VIR_STRDUP(newHardDisk->location, newLocationUtf8) < 0)
                 goto cleanup;
 
             rc = gVBoxAPI.UIMedium.GetFormat(newMedium, &formatUtf16);
             VBOX_UTF16_TO_UTF8(formatUtf16, &format);
-            disk->format = format;
+            newHardDisk->format = format;
             VBOX_UTF16_FREE(formatUtf16);
 
-            if (virVBoxSnapshotConfAddHardDiskToMediaRegistry(disk,
+            if (virVBoxSnapshotConfAddHardDiskToMediaRegistry(newHardDisk,
                                            snapshotMachineDesc->mediaRegistry,
                                            parentUuid) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Unable to add hard disk to the media registry"));
                 goto cleanup;
             }
+            newHardDisk = NULL;  /* Consumed by above */
             /*Adding the fake disk to the machine storage controllers*/
 
             resultSize = virStringSearch(snapshotMachineDesc->storageController,
@@ -5348,7 +5349,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
 
             tmp = virStringReplace(snapshotMachineDesc->storageController,
                                    searchResultTab[it],
-                                   disk->uuid);
+                                   uuid);
             VIR_FREE(snapshotMachineDesc->storageController);
             if (!tmp)
                 goto cleanup;
@@ -5458,6 +5459,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
     virStringListFree(realReadOnlyDisksPath);
     virStringListFree(realReadWriteDisksPath);
     virStringListFree(searchResultTab);
+    virVboxSnapshotConfHardDiskFree(newHardDisk);
     VIR_FREE(hardDiskToOpen);
     VIR_FREE(newSnapshotPtr);
     VIR_FREE(machineLocationPath);
