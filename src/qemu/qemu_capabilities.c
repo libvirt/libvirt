@@ -961,7 +961,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "transaction", QEMU_CAPS_TRANSACTION },
     { "dump-guest-memory", QEMU_CAPS_DUMP_GUEST_MEMORY },
     { "query-spice", QEMU_CAPS_SPICE },
-    { "block-commit", QEMU_CAPS_BLOCK_COMMIT },
     { "query-vnc", QEMU_CAPS_VNC },
     { "drive-mirror", QEMU_CAPS_DRIVE_MIRROR },
     { "blockdev-snapshot-sync", QEMU_CAPS_DISK_SNAPSHOT },
@@ -2125,7 +2124,6 @@ virQEMUCapsProbeQMPCommands(virQEMUCapsPtr qemuCaps,
     /* Probe for active commit of qemu 2.1. We don't need to query directly
      * if we have QMP schema support */
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCK_COMMIT) &&
         qemuMonitorSupportsActiveCommit(mon))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_ACTIVE_COMMIT);
 

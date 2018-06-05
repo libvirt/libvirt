@@ -203,7 +203,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_REBOOT_TIMEOUT, /* -boot reboot-timeout */
     X_QEMU_CAPS_DUMP_GUEST_CORE, /* dump-guest-core-parameter */
     X_QEMU_CAPS_SEAMLESS_MIGRATION, /* seamless-migration for SPICE */
-    QEMU_CAPS_BLOCK_COMMIT, /* block-commit */
+    X_QEMU_CAPS_BLOCK_COMMIT, /* block-commit */
     QEMU_CAPS_VNC, /* Is -vnc available? */
 
     /* 115 */
