@@ -4627,6 +4627,8 @@ vboxSnapshotRedefine(virDomainPtr dom,
     int realReadOnlyDisksPathSize = 0;
     virVBoxSnapshotConfSnapshotPtr newSnapshotPtr = NULL;
     unsigned char snapshotUuid[VIR_UUID_BUFLEN];
+    virVBoxSnapshotConfHardDiskPtr *hardDiskToOpen = NULL;
+    size_t hardDiskToOpenSize = 0;
     char **searchResultTab = NULL;
     ssize_t resultSize = 0;
     int it = 0;
@@ -5080,8 +5082,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
      */
     for (it = 0; it < def->dom->ndisks; it++) {
         char *location = NULL;
-        virVBoxSnapshotConfHardDiskPtr *hardDiskToOpen = NULL;
-        size_t hardDiskToOpenSize = 0;
 
         location = def->dom->disks[it]->src->path;
         if (!location)
@@ -5394,8 +5394,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
         if (!location)
             goto cleanup;
 
-        virVBoxSnapshotConfHardDiskPtr *hardDiskToOpen = NULL;
-        size_t hardDiskToOpenSize = virVBoxSnapshotConfDiskListToOpen(snapshotMachineDesc,
+        hardDiskToOpenSize = virVBoxSnapshotConfDiskListToOpen(snapshotMachineDesc,
                                                    &hardDiskToOpen, location);
         for (jt = 0; jt < hardDiskToOpenSize; jt++) {
             IMedium *medium = NULL;
@@ -5459,6 +5458,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
     virStringListFree(realReadOnlyDisksPath);
     virStringListFree(realReadWriteDisksPath);
     virStringListFree(searchResultTab);
+    VIR_FREE(hardDiskToOpen);
     VIR_FREE(newSnapshotPtr);
     VIR_FREE(machineLocationPath);
     VIR_FREE(nameTmpUse);
