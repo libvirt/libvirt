@@ -25,23 +25,6 @@ virNetServerServiceGetTLSContext;
 virNetSocketSetTLSSession;
 
 
-# rpc/virnettlscontext.h
-virNetTLSContextCheckCertificate;
-virNetTLSContextNewClient;
-virNetTLSContextNewClientPath;
-virNetTLSContextNewServer;
-virNetTLSContextNewServerPath;
-virNetTLSInit;
-virNetTLSSessionGetHandshakeStatus;
-virNetTLSSessionGetKeySize;
-virNetTLSSessionGetX509DName;
-virNetTLSSessionHandshake;
-virNetTLSSessionNew;
-virNetTLSSessionRead;
-virNetTLSSessionSetIOCallbacks;
-virNetTLSSessionWrite;
-
-
 # Let emacs know we want case-insensitive sorting
 # Local Variables:
 # sort-fold-case: t

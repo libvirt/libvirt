@@ -31,6 +31,8 @@ libvirt_la_BUILT_LIBADD += \
 libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetmessage.h \
 	rpc/virnetmessage.c \
+	rpc/virnettlscontext.h \
+	rpc/virnettlscontext.c \
 	rpc/virnetsocket.h \
 	rpc/virnetsocket.c \
 	rpc/virkeepalive.h \
@@ -49,18 +51,6 @@ EXTRA_DIST += \
 	rpc/virnetsshsession.c \
 	$(NULL)
 endif ! WITH_SSH2
-
-if WITH_GNUTLS
-libvirt_net_rpc_la_SOURCES += \
-	rpc/virnettlscontext.h \
-	rpc/virnettlscontext.c \
-	$(NULL)
-else ! WITH_GNUTLS
-EXTRA_DIST += \
-	rpc/virnettlscontext.h \
-	rpc/virnettlscontext.c \
-	$(NULL)
-endif ! WITH_GNUTLS
 
 if WITH_SASL
 libvirt_net_rpc_la_SOURCES += \
