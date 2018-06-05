@@ -141,13 +141,17 @@
       than having the interest and ability to provide a contribution. The
       libvirt project <strong>does not require</strong> any
       <em>"Contributor License Agreement"</em>
-      to be signed prior to engagement with the community.
+      to be signed prior to engagement with the community. However for
+      contributing patches, providing a 'Signed-off-by' line with the
+      author's legal name and e-mail address to demonstrate agreement
+      and compliance with the <a href="https://developercertificate.org/">
+      Developer Certificate of Origin</a> is required.
     </p>
 
     <p>
-      In making a contribution to the project, the community member is
-      implicitly stating that they accept the terms of the license under
-      which the work they are contributing to is distributed. They are
+      In making a non-patch contribution to the project, the community
+      member is implicitly stating that they accept the terms of the license
+      under which the work they are contributing to is distributed. They are
       also implicitly stating that they have the legal right to make the
       contribution, if doing so on behalf of a broader organization /
       company. Most of the project's code is distributed under the GNU
