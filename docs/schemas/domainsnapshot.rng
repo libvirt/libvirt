@@ -157,6 +157,9 @@
                     <optional>
                       <ref name='storageStartupPolicy'/>
                     </optional>
+                    <zeroOrMore>
+                      <ref name='devSeclabel'/>
+                    </zeroOrMore>
                     <empty/>
                   </element>
                 </optional>
@@ -173,6 +176,9 @@
                     <attribute name="dev">
                       <ref name="absFilePath"/>
                     </attribute>
+                    <zeroOrMore>
+                      <ref name='devSeclabel'/>
+                    </zeroOrMore>
                     <empty/>
                   </element>
                 </optional>

@@ -170,6 +170,12 @@
               snapshots, the original file name becomes the read-only
               snapshot, and the new file name contains the read-write
               delta of all disk changes since the snapshot.
+              <p/>
+              The <code>source</code> element also may contain the
+              <code>seclabel</code> element (described in the
+              <a href="formatdomain.html#seclabel">domain XML documentation</a>)
+              which can be used to override the domain security labeling policy
+              for <code>source</code>.
               </dd>
               <dt><code>driver</code></dt>
               <dd>An optional sub-element <code>driver</code>,
@@ -177,6 +183,7 @@
               as qcow2), of the new file created by the external
               snapshot of the new file.
               </dd>
+              <dt><code>seclabel</code></dt>
             </dl>
 
             <span class="since">Since 1.2.2</span> the <code>disk</code> element
@@ -259,6 +266,11 @@
       &lt;source file='/path/to/new'/&gt;
     &lt;/disk&gt;
     &lt;disk name='vdb' snapshot='no'/&gt;
+    &lt;disk name='vdc'&gt;
+      &lt;source file='/path/to/newc'&gt;
+        &lt;seclabel model='dac' relabel='no'/&gt;
+      &lt;/source&gt;
+    &lt;/disk&gt;
   &lt;/disks&gt;
 &lt;/domainsnapshot&gt;</pre>
 
