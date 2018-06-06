@@ -1851,6 +1851,15 @@ virFileIsDir(const char *path)
     return (stat(path, &s) == 0) && S_ISDIR(s.st_mode);
 }
 
+
+bool
+virFileIsRegular(const char *path)
+{
+    struct stat s;
+    return (stat(path, &s) == 0) && S_ISREG(s.st_mode);
+}
+
+
 /**
  * virFileExists: Check for presence of file
  * @path: Path of file to check
@@ -3005,11 +3014,12 @@ int virFileChownFiles(const char *name,
         return -1;
 
     while ((direrr = virDirRead(dir, &ent, name)) > 0) {
-        if (ent->d_type != DT_REG)
-            continue;
-
+        VIR_FREE(path);
         if (virAsprintf(&path, "%s/%s", name, ent->d_name) < 0)
             goto cleanup;
+
+        if (!virFileIsRegular(path))
+            continue;
 
         if (chown(path, uid, gid) < 0) {
             virReportSystemError(errno,
@@ -3018,7 +3028,6 @@ int virFileChownFiles(const char *name,
                                  (unsigned int) gid);
             goto cleanup;
         }
-        VIR_FREE(path);
     }
 
     if (direrr < 0)

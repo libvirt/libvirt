@@ -1796,6 +1796,7 @@ virFileIsDir;
 virFileIsExecutable;
 virFileIsLink;
 virFileIsMountPoint;
+virFileIsRegular;
 virFileIsSharedFS;
 virFileIsSharedFSType;
 virFileLength;
