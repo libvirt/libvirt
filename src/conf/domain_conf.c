@@ -12795,7 +12795,7 @@ virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     model = virXMLPropString(node, "model");
     if (model != NULL &&
-        (int)(def->model = virDomainTPMModelTypeFromString(model)) < 0) {
+        (def->model = virDomainTPMModelTypeFromString(model)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unknown TPM frontend model '%s'"), model);
         goto error;
@@ -12824,7 +12824,7 @@ virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-    if ((int)(def->type = virDomainTPMBackendTypeFromString(backend)) < 0) {
+    if ((def->type = virDomainTPMBackendTypeFromString(backend)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unknown TPM backend type '%s'"),
                        backend);

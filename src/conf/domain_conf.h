@@ -1307,10 +1307,10 @@ typedef enum {
 # define VIR_DOMAIN_TPM_DEFAULT_DEVICE "/dev/tpm0"
 
 struct _virDomainTPMDef {
-    virDomainTPMBackendType type;
+    int type; /* virDomainTPMBackendType */
     virDomainDeviceInfo info;
-    virDomainTPMModel model;
-    virDomainTPMVersion version;
+    int model; /* virDomainTPMModel */
+    int version; /* virDomainTPMVersion */
     union {
         struct {
             virDomainChrSourceDef source;
