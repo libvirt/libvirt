@@ -795,8 +795,13 @@ static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
         char *buf;
 
         if (fdst->threadQuit || fdst->threadErr) {
-            virReportSystemError(EBADF, "%s",
-                                 _("cannot write to stream"));
+
+            /* virStreamSend will virResetLastError possibly set
+             * by virFDStreamEvent */
+            if (fdst->threadErr && !virGetLastError())
+                virSetError(fdst->threadErr);
+            else
+                virReportSystemError(EBADF, "%s", _("cannot write to stream"));
             goto cleanup;
         }
 
@@ -875,8 +880,13 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
         while (!(msg = fdst->msg)) {
             if (fdst->threadQuit || fdst->threadErr) {
                 if (nbytes) {
-                    virReportSystemError(EBADF, "%s",
-                                         _("stream is not open"));
+                    /* virStreamRecv will virResetLastError possibly set
+                     * by virFDStreamEvent */
+                    if (fdst->threadErr && !virGetLastError())
+                        virSetError(fdst->threadErr);
+                    else
+                        virReportSystemError(EBADF, "%s",
+                                             _("stream is not open"));
                 } else {
                     ret = 0;
                 }
@@ -976,8 +986,12 @@ virFDStreamSendHole(virStreamPtr st,
          * might mess up file position for the thread. */
 
         if (fdst->threadQuit || fdst->threadErr) {
-            virReportSystemError(EBADF, "%s",
-                                 _("stream is not open"));
+            /* virStreamSendHole will virResetLastError possibly set
+             * by virFDStreamEvent */
+            if (fdst->threadErr && !virGetLastError())
+                virSetError(fdst->threadErr);
+            else
+                virReportSystemError(EBADF, "%s", _("stream is not open"));
             goto cleanup;
         }
 
