@@ -7478,7 +7478,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *cpumask = NULL, *tmpmask = NULL, *next = NULL;
-    virBufferPtr *nodeBackends = NULL;
+    virBufferPtr nodeBackends = NULL;
     bool needBackend = false;
     int rc;
     int ret = -1;
@@ -7540,11 +7540,8 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
 
-            if (VIR_ALLOC(nodeBackends[i]) < 0)
-                goto cleanup;
-
             if ((rc = qemuBuildMemoryCellBackendStr(def, cfg, i, priv,
-                                                    nodeBackends[i])) < 0)
+                                                    &nodeBackends[i])) < 0)
                 goto cleanup;
 
             if (rc == 0)
@@ -7578,7 +7575,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
         if (needBackend) {
             virCommandAddArg(cmd, "-object");
-            virCommandAddArgBuffer(cmd, nodeBackends[i]);
+            virCommandAddArgBuffer(cmd, &nodeBackends[i]);
         }
 
         virCommandAddArg(cmd, "-numa");
@@ -7642,7 +7639,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
     if (nodeBackends) {
         for (i = 0; i < ncells; i++)
-            virBufferFreeAndReset(nodeBackends[i]);
+            virBufferFreeAndReset(&nodeBackends[i]);
 
         VIR_FREE(nodeBackends);
     }
