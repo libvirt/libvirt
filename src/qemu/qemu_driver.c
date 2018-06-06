@@ -20426,6 +20426,7 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
                   VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
                   VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE |
+                  VIR_CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT |
                   VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING |
                   VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
 
@@ -20460,9 +20461,17 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
 
         virObjectLock(vm);
 
-        if (HAVE_JOB(privflags) &&
-            qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) == 0)
-            domflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
+        if (HAVE_JOB(privflags)) {
+            int rv;
+
+            if (flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT)
+                rv = qemuDomainObjBeginJobNowait(driver, vm, QEMU_JOB_QUERY);
+            else
+                rv = qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY);
+
+            if (rv == 0)
+                domflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
+        }
         /* else: without a job it's still possible to gather some data */
 
         if (flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING)
