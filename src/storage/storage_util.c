@@ -1277,6 +1277,13 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObjPtr pool,
         return NULL;
     }
 
+    if (enc->nsecrets != 1) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("A single <secret type='passphrase'...> "
+                         "element is expected in encryption description"));
+        return NULL;
+    }
+
     conn = virGetConnectSecret();
     if (!conn)
         return NULL;
