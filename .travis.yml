@@ -22,20 +22,8 @@ matrix:
       os: osx
       env:
         - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/ccache/libexec:/usr/local/opt/rpcgen/bin:$PATH"
-      before_install:
-        - brew update
-        - brew install ccache rpcgen xz yajl
-      before_script:
-        - ./autogen.sh --prefix=$(pwd)/install-root
       script:
-        # We can't run make distcheck/syntax-check because they
-        # fail on macOS, but doing 'install' and 'dist' gives us
-        # some useful coverage
-        - make -j3 && make -j3 install && make -j3 dist
-      after_failure:
-        - echo '=== LOG FILE(S) START ==='
-        - find -name test-suite.log | xargs cat
-        - echo '=== LOG FILE(S) END ==='
+        /bin/sh -xc "$MACOS_CMD"
 
 script:
   - docker run
@@ -61,6 +49,22 @@ env:
         make -j3 &&
         make -j3 syntax-check &&
         make -j3 distcheck DISTCHECK_CONFIGURE_FLAGS=\"\$DISTCHECK_CONFIGURE_FLAGS\" ||
+        (
+          echo '=== LOG FILE(S) START ==='
+          find -name test-suite.log | xargs cat
+          echo '=== LOG FILE(S) END ==='
+          exit 1
+        )
+      "
+    # We can't run 'distcheck' or 'syntax-check' because they fail on
+    # macOS, but doing 'install' and 'dist' gives us some useful coverage
+    - MACOS_CMD="
+        brew update &&
+        brew install ccache rpcgen xz yajl &&
+        ./autogen.sh --prefix=\$(pwd)/install-root &&
+        make -j3 &&
+        make -j3 install &&
+        make -j3 dist ||
         (
           echo '=== LOG FILE(S) START ==='
           find -name test-suite.log | xargs cat
