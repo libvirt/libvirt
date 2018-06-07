@@ -2231,6 +2231,31 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
 
 
 static int
+qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
+                               virDomainDiskDefPtr disk,
+                               virQEMUCapsPtr qemuCaps,
+                               bool driveBoot)
+{
+    qemuBlockStorageSourceAttachDataPtr data = NULL;
+    int ret = -1;
+
+    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps,
+                                                          driveBoot)))
+        return -1;
+
+    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, data, qemuCaps) < 0 ||
+        qemuBuildBlockStorageSourceAttachDataCommandline(cmd, data) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    qemuBlockStorageSourceAttachDataFree(data);
+    return ret;
+}
+
+
+static int
 qemuBuildDiskCommandLine(virCommandPtr cmd,
                          const virDomainDef *def,
                          virDomainDiskDefPtr disk,
@@ -2238,20 +2263,10 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
                          unsigned int bootindex,
                          bool driveBoot)
 {
-    qemuBlockStorageSourceAttachDataPtr data = NULL;
     char *optstr;
 
-    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps,
-                                                          driveBoot)))
+    if (qemuBuildDiskSourceCommandLine(cmd, disk, qemuCaps, driveBoot) < 0)
         return -1;
-
-    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, data, qemuCaps) < 0 ||
-        qemuBuildBlockStorageSourceAttachDataCommandline(cmd, data) < 0) {
-        qemuBlockStorageSourceAttachDataFree(data);
-        return -1;
-    }
-
-    qemuBlockStorageSourceAttachDataFree(data);
 
     if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
         if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
