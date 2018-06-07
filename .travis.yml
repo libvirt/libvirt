@@ -12,31 +12,11 @@ matrix:
       env:
         - IMAGE=ubuntu:18.04
         - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=systemd"
-      script:
-        - docker run
-            --privileged
-            -v $(pwd):/build
-            -w /build
-            -e VIR_TEST_DEBUG="$VIR_TEST_DEBUG"
-            -e PACKAGES="$PACKAGES"
-            -e DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS"
-            "$IMAGE"
-            /bin/sh -xc "$DOCKER_CMD"
     - services:
         - docker
       env:
         - IMAGE=ubuntu:16.04
         - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=upstart"
-      script:
-        - docker run
-            --privileged
-            -v $(pwd):/build
-            -w /build
-            -e VIR_TEST_DEBUG="$VIR_TEST_DEBUG"
-            -e PACKAGES="$PACKAGES"
-            -e DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS"
-            "$IMAGE"
-            /bin/sh -xc "$DOCKER_CMD"
     - compiler: clang
       language: c
       os: osx
@@ -56,6 +36,17 @@ matrix:
         - echo '=== LOG FILE(S) START ==='
         - find -name test-suite.log | xargs cat
         - echo '=== LOG FILE(S) END ==='
+
+script:
+  - docker run
+      --privileged
+      -v $(pwd):/build
+      -w /build
+      -e VIR_TEST_DEBUG="$VIR_TEST_DEBUG"
+      -e PACKAGES="$PACKAGES"
+      -e DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS"
+      "$IMAGE"
+      /bin/sh -xc "$DOCKER_CMD"
 
 git:
   submodules: true
