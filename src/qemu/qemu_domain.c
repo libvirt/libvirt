@@ -6353,8 +6353,22 @@ qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv, qemuDomainJob job)
 /* Give up waiting for mutex after 30 seconds */
 #define QEMU_JOB_WAIT_TIME (1000ull * 30)
 
-/*
- * obj must be locked before calling
+/**
+ * qemuDomainObjBeginJobInternal:
+ * @driver: qemu driver
+ * @obj: domain object
+ * @job: qemuDomainJob to start
+ * @asyncJob: qemuDomainAsyncJob to start
+ *
+ * Acquires job for a domain object which must be locked before
+ * calling. If there's already a job running waits up to
+ * QEMU_JOB_WAIT_TIME after which the functions fails reporting
+ * an error.
+ *
+ * Returns: 0 on success,
+ *         -2 if unable to start job because of timeout or
+ *            maxQueuedJobs limit,
+ *         -1 otherwise.
  */
 static int ATTRIBUTE_NONNULL(1)
 qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
