@@ -433,21 +433,6 @@
       <li><a href="https://libvirt.org/sources/">libvirt.org HTTPS server</a></li>
     </ul>
 
-    <h2><a id="hourly">Hourly development snapshots</a></h2>
-
-    <p>
-      Once an hour, an automated snapshot is made from the git server
-      source tree. These snapshots should be usable, but we make no guarantees
-      about their stability; furthermore, they should NOT be
-      considered formal releases, and they may have transient security
-      problems that will not be assigned a CVE.
-    </p>
-
-    <ul>
-      <li><a href="ftp://libvirt.org/libvirt/libvirt-git-snapshot.tar.xz">libvirt.org FTP server</a></li>
-      <li><a href="https://libvirt.org/sources/libvirt-git-snapshot.tar.xz">libvirt.org HTTP server</a></li>
-    </ul>
-
     <h2><a id="schedule">Primary release schedule</a></h2>
 
     <p>
