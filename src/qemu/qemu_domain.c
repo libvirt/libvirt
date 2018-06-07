@@ -6359,11 +6359,16 @@ qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv, qemuDomainJob job)
  * @obj: domain object
  * @job: qemuDomainJob to start
  * @asyncJob: qemuDomainAsyncJob to start
+ * @nowait: don't wait trying to acquire @job
  *
  * Acquires job for a domain object which must be locked before
  * calling. If there's already a job running waits up to
  * QEMU_JOB_WAIT_TIME after which the functions fails reporting
- * an error.
+ * an error unless @nowait is set.
+ *
+ * If @nowait is true this function tries to acquire job and if
+ * it fails, then it returns immediately without waiting. No
+ * error is reported in this case.
  *
  * Returns: 0 on success,
  *         -2 if unable to start job because of timeout or
@@ -6374,7 +6379,8 @@ static int ATTRIBUTE_NONNULL(1)
 qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
                               virDomainObjPtr obj,
                               qemuDomainJob job,
-                              qemuDomainAsyncJob asyncJob)
+                              qemuDomainAsyncJob asyncJob,
+                              bool nowait)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
     unsigned long long now;
@@ -6414,12 +6420,18 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     }
 
     while (!nested && !qemuDomainNestedJobAllowed(priv, job)) {
+        if (nowait)
+            goto cleanup;
+
         VIR_DEBUG("Waiting for async job (vm=%p name=%s)", obj, obj->def->name);
         if (virCondWaitUntil(&priv->job.asyncCond, &obj->parent.lock, then) < 0)
             goto error;
     }
 
     while (priv->job.active) {
+        if (nowait)
+            goto cleanup;
+
         VIR_DEBUG("Waiting for job (vm=%p name=%s)", obj, obj->def->name);
         if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0)
             goto error;
@@ -6536,7 +6548,7 @@ int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
                           qemuDomainJob job)
 {
     if (qemuDomainObjBeginJobInternal(driver, obj, job,
-                                      QEMU_ASYNC_JOB_NONE) < 0)
+                                      QEMU_ASYNC_JOB_NONE, false) < 0)
         return -1;
     else
         return 0;
@@ -6551,7 +6563,7 @@ int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv;
 
     if (qemuDomainObjBeginJobInternal(driver, obj, QEMU_JOB_ASYNC,
-                                      asyncJob) < 0)
+                                      asyncJob, false) < 0)
         return -1;
 
     priv = obj->privateData;
@@ -6580,9 +6592,31 @@ qemuDomainObjBeginNestedJob(virQEMUDriverPtr driver,
 
     return qemuDomainObjBeginJobInternal(driver, obj,
                                          QEMU_JOB_ASYNC_NESTED,
-                                         QEMU_ASYNC_JOB_NONE);
+                                         QEMU_ASYNC_JOB_NONE,
+                                         false);
 }
 
+/**
+ * qemuDomainObjBeginJobNowait:
+ *
+ * @driver: qemu driver
+ * @obj: domain object
+ * @job: qemuDomainJob to start
+ *
+ * Acquires job for a domain object which must be locked before
+ * calling. If there's already a job running it returns
+ * immediately without any error reported.
+ *
+ * Returns: see qemuDomainObjBeginJobInternal
+ */
+int
+qemuDomainObjBeginJobNowait(virQEMUDriverPtr driver,
+                            virDomainObjPtr obj,
+                            qemuDomainJob job)
+{
+    return qemuDomainObjBeginJobInternal(driver, obj, job,
+                                         QEMU_ASYNC_JOB_NONE, true);
+}
 
 /*
  * obj must be locked and have a reference before calling
