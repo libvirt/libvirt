@@ -1330,15 +1330,18 @@ qemuCheckFips(void)
 }
 
 
-/* Unfortunately it is not possible to use
-   -device for floppies, or SD
-   devices. Fortunately, those don't need
-   static PCI addresses, so we don't really
-   care that we can't use -device */
-static bool
-qemuDiskBusNeedsDeviceArg(int bus)
+/**
+ * qemuDiskBusNeedsDriveArg:
+ * @bus: disk bus
+ *
+ * Unfortunately it is not possible to use -device for SD devices.
+ * Fortunately, those don't need static PCI addresses, so we can use -drive
+ * without -device.
+ */
+bool
+qemuDiskBusNeedsDriveArg(int bus)
 {
-    return bus != VIR_DOMAIN_DISK_BUS_SD;
+    return bus == VIR_DOMAIN_DISK_BUS_SD;
 }
 
 
@@ -1636,7 +1639,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     if (qemuBuildDriveSourceStr(disk, qemuCaps, &opt) < 0)
         goto error;
 
-    if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
+    if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
         char *drivealias = qemuAliasDiskDriveFromDisk(disk);
         if (!drivealias)
             goto error;
@@ -2250,7 +2253,7 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
 
     qemuBlockStorageSourceAttachDataFree(data);
 
-    if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
+    if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
         if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
             if (qemuBuildFloppyCommandLineOptions(cmd, def, disk,
                                                   bootindex) < 0)
