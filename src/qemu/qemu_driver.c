@@ -8040,8 +8040,9 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         if (controller->idx != -1 &&
             virDomainControllerFind(vmdef, controller->type,
                                     controller->idx) >= 0) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Target already exists"));
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("controller index='%d' already exists"),
+                           controller->idx);
             return -1;
         }
 
