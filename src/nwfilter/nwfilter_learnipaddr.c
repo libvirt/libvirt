@@ -829,7 +829,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
                           const char *filtername ATTRIBUTE_UNUSED,
                           virHashTablePtr filterparams ATTRIBUTE_UNUSED,
                           virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED,
-                          enum howDetect howDetect ATTRIBUTE_UNUSED)
+                          int howDetect ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("IP parameter must be given since libvirt "
