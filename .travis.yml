@@ -3,7 +3,7 @@ language: generic
 
 branches:
   except:
-  - /^.*-maint$/
+    - /^.*-maint$/
 
 matrix:
   include:
@@ -58,7 +58,6 @@ matrix:
         - echo '=== LOG FILE(S) START ==='
         - find -name test-suite.log | xargs cat
         - echo '=== LOG FILE(S) END ==='
-
 
 git:
   submodules: true
