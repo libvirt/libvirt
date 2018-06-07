@@ -6490,7 +6490,6 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     else
         blocker = priv->job.asyncOwnerAPI;
 
-    ret = -1;
     if (errno == ETIMEDOUT) {
         if (blocker) {
             virReportError(VIR_ERR_OPERATION_TIMEOUT,
