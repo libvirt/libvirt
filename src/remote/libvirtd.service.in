@@ -15,6 +15,7 @@ After=iscsid.service
 After=apparmor.service
 After=local-fs.target
 After=remote-fs.target
+After=systemd-logind.service
 After=systemd-machined.service
 Documentation=man:libvirtd(8)
 Documentation=https://libvirt.org
