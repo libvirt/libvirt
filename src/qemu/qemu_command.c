@@ -2262,6 +2262,8 @@ static int
 qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
                                                  qemuBlockStorageSourceAttachDataPtr data)
 {
+    char *tmp;
+
     if (qemuBuildObjectCommandline(cmd, data->prmgrProps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->authsecretProps) < 0 ||
         qemuBuildObjectCommandline(cmd, data->encryptsecretProps) < 0 ||
@@ -2270,6 +2272,22 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
 
     if (data->driveCmd)
         virCommandAddArgList(cmd, "-drive", data->driveCmd, NULL);
+
+    if (data->storageProps) {
+        if (!(tmp = virJSONValueToString(data->storageProps, false)))
+            return -1;
+
+        virCommandAddArgList(cmd, "-blockdev", tmp, NULL);
+        VIR_FREE(tmp);
+    }
+
+    if (data->formatProps) {
+        if (!(tmp = virJSONValueToString(data->formatProps, false)))
+            return -1;
+
+        virCommandAddArgList(cmd, "-blockdev", tmp, NULL);
+        VIR_FREE(tmp);
+    }
 
     return 0;
 }
@@ -2280,20 +2298,70 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
                                virDomainDiskDefPtr disk,
                                virQEMUCapsPtr qemuCaps)
 {
-    qemuBlockStorageSourceAttachDataPtr data = NULL;
+    qemuBlockStorageSourceAttachDataPtr *data = NULL;
+    size_t ndata = 0;
+    qemuBlockStorageSourceAttachDataPtr tmp = NULL;
+    virJSONValuePtr copyOnReadProps = NULL;
+    virStorageSourcePtr n;
+    char *str = NULL;
+    size_t i;
     int ret = -1;
 
-    if (!(data = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
-        return -1;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if (virStorageSourceIsEmpty(disk->src)) {
+            ret = 0;
+            goto cleanup;
+        }
 
-    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, data, qemuCaps) < 0 ||
-        qemuBuildBlockStorageSourceAttachDataCommandline(cmd, data) < 0)
-        goto cleanup;
+        for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+            if (!(tmp = qemuBlockStorageSourceAttachPrepareBlockdev(n)))
+                goto cleanup;
+
+            if (qemuBuildStorageSourceAttachPrepareCommon(n, tmp, qemuCaps) < 0)
+                goto cleanup;
+
+            if (VIR_APPEND_ELEMENT(data, ndata, tmp) < 0)
+                goto cleanup;
+        }
+
+        if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON &&
+            !(copyOnReadProps = qemuBlockStorageGetCopyOnReadProps(disk)))
+            goto cleanup;
+    } else {
+        if (!(tmp = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
+            goto cleanup;
+
+        if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, tmp,
+                                                      qemuCaps) < 0)
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(data, ndata, tmp) < 0)
+            goto cleanup;
+    }
+
+    for (i = ndata; i > 0; i--) {
+        if (qemuBuildBlockStorageSourceAttachDataCommandline(cmd,
+                                                             data[i - 1]) < 0)
+            goto cleanup;
+    }
+
+    if (copyOnReadProps) {
+        if (!(str = virJSONValueToString(copyOnReadProps, false)))
+            goto cleanup;
+
+        virCommandAddArgList(cmd, "-blockdev", str, NULL);
+        VIR_FREE(str);
+    }
 
     ret = 0;
 
  cleanup:
-    qemuBlockStorageSourceAttachDataFree(data);
+    for (i = 0; i < ndata; i++)
+        qemuBlockStorageSourceAttachDataFree(data[i]);
+    VIR_FREE(data);
+    qemuBlockStorageSourceAttachDataFree(tmp);
+    virJSONValueFree(copyOnReadProps);
+    VIR_FREE(str);
     return ret;
 }
 
