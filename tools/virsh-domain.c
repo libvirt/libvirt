@@ -12296,7 +12296,7 @@ static const vshCmdOptDef opts_detach_disk[] = {
     VIRSH_COMMON_OPT_DOMAIN_CURRENT,
     {.name = "print-xml",
      .type = VSH_OT_BOOL,
-     .help = N_("print XML document rather than attach the interface")
+     .help = N_("print XML document rather than detach the disk")
     },
     {.name = NULL}
 };
