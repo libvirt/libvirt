@@ -968,11 +968,11 @@ that require a block device name (such as I<domblkinfo> or
 I<snapshot-create> for disk snapshots) will accept either target
 or unique source names printed by this command.
 
-=item B<domstats> [I<--raw>] [I<--enforce>] [I<--backing>] [I<--state>]
-[I<--cpu-total>] [I<--balloon>] [I<--vcpu>] [I<--interface>] [I<--block>]
-[I<--perf>] [[I<--list-active>] [I<--list-inactive>] [I<--list-persistent>]
-[I<--list-transient>] [I<--list-running>] [I<--list-paused>]
-[I<--list-shutoff>] [I<--list-other>]] | [I<domain> ...]
+=item B<domstats> [I<--raw>] [I<--enforce>] [I<--backing>] [I<--nowait>]
+[I<--state>] [I<--cpu-total>] [I<--balloon>] [I<--vcpu>] [I<--interface>]
+[I<--block>] [I<--perf>] [[I<--list-active>] [I<--list-inactive>]
+[I<--list-persistent>] [I<--list-transient>] [I<--list-running>]
+[I<--list-paused>] [I<--list-shutoff>] [I<--list-other>]] | [I<domain> ...]
 
 Get statistics for multiple or all domains. Without any argument this
 command prints all available statistics for all domains.
@@ -1122,6 +1122,12 @@ Selecting a specific statistics groups doesn't guarantee that the
 daemon supports the selected group of stats. Flag I<--enforce>
 forces the command to fail if the daemon doesn't support the
 selected group.
+
+When collecting stats libvirtd may wait for some time if there's
+already another job running on given domain for it to finish.
+This may cause unnecessary delay in delivering stats. Using
+I<--nowait> suppresses this behaviour. On the other hand
+some statistics might be missing for such domain.
 
 =item B<domiflist> I<domain> [I<--inactive>]
 

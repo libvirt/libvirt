@@ -1992,6 +1992,10 @@ static const vshCmdOptDef opts_domstats[] = {
      .type = VSH_OT_BOOL,
      .help = N_("add backing chain information to block stats"),
     },
+    {.name = "nowait",
+     .type = VSH_OT_BOOL,
+     .help = N_("report only stats that are accessible instantly"),
+    },
     VIRSH_COMMON_OPT_DOMAIN_OT_ARGV(N_("list of domains to get stats for"), 0),
     {.name = NULL}
 };
@@ -2086,6 +2090,9 @@ cmdDomstats(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "backing"))
         flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING;
+
+    if (vshCommandOptBool(cmd, "nowait"))
+        flags |= VIR_CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT;
 
     if (vshCommandOptBool(cmd, "domain")) {
         if (VIR_ALLOC_N(domlist, 1) < 0)
