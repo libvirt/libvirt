@@ -3793,8 +3793,7 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
 
         case VIR_DOMAIN_FEATURE_SMM:
             if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
-                (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT) ||
-                 !qemuDomainIsQ35(def))) {
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_SMM_OPT)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("smm is not available with this QEMU binary"));
                 return -1;
