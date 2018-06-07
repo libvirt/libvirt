@@ -53,6 +53,14 @@
           <code>&lt;cpu&gt;&lt;topology ../&gt;&lt;/cpu&gt;</code> element.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for extended TSEG size
+        </summary>
+        <description>
+          Support specifying extended TSEG size for SMM in QEMU.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
