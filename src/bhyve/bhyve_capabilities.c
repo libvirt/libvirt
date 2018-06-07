@@ -227,7 +227,7 @@ bhyveProbeCapsDeviceHelper(unsigned int *caps,
 }
 
 static int
-bhyveProbeCapsRTC_UTC(unsigned int *caps, char *binary)
+bhyveProbeCapsFromHelp(unsigned int *caps, char *binary)
 {
     char *help;
     virCommandPtr cmd = NULL;
@@ -314,7 +314,7 @@ virBhyveProbeCaps(unsigned int *caps)
     if (binary == NULL)
         goto out;
 
-    if ((ret = bhyveProbeCapsRTC_UTC(caps, binary)))
+    if ((ret = bhyveProbeCapsFromHelp(caps, binary)))
         goto out;
 
     if ((ret = bhyveProbeCapsAHCI32Slot(caps, binary)))
