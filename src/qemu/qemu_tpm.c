@@ -25,7 +25,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <cap-ng.h>
 
 #include "qemu_extdevice.h"
 #include "qemu_domain.h"
