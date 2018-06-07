@@ -43,10 +43,8 @@ matrix:
       env:
         - PATH="/usr/local/opt/gettext/bin:/usr/local/opt/ccache/libexec:/usr/local/opt/rpcgen/bin:$PATH"
       before_install:
-        - brew uninstall python mercurial postgis sfcgal cgal gdal
         - brew update
-        - brew upgrade
-        - brew install python ccache rpcgen yajl
+        - brew install ccache rpcgen xz yajl
       before_script:
         - ./autogen.sh --prefix=$(pwd)/install-root
       script:
