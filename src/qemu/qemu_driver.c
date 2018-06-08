@@ -932,11 +932,14 @@ qemuStateInitialize(bool privileged,
                             qemuDomainManagedSaveLoad,
                             qemu_driver);
 
-    qemuProcessReconnectAll(qemu_driver);
-
+    /* must be initialized before trying to reconnect to all the
+     * running domains since there might occur some QEMU monitor
+     * events that will be dispatched to the worker pool */
     qemu_driver->workerPool = virThreadPoolNew(0, 1, 0, qemuProcessEventHandler, qemu_driver);
     if (!qemu_driver->workerPool)
         goto error;
+
+    qemuProcessReconnectAll(qemu_driver);
 
     virNWFilterRegisterCallbackDriver(&qemuCallbackDriver);
     return 0;
