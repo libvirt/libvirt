@@ -73,6 +73,17 @@
       </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: Fix a potential libvirtd crash on VM reconnect
+        </summary>
+        <description>
+          Initialization of the driver worker pool needs to come before libvirtd
+          trying to reconnect to all machines, since one of the QEMU processes
+          migh have already emitted events which need to be handled prior to
+          us getting to the worker pool initialization.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v4.4.0" date="2018-06-04">
