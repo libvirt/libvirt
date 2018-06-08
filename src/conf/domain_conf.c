@@ -27522,7 +27522,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
                                           unit, short_size);
                     }
 
-                    virXMLFormatElement(buf, "smm", &attrBuf, &childBuf);
+                    if (virXMLFormatElement(buf, "smm", &attrBuf, &childBuf) < 0)
+                        goto error;
                 }
 
                 break;
