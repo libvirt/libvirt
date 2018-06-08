@@ -5413,10 +5413,10 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                 }
                 break;
             case VIR_MDEV_MODEL_TYPE_LAST:
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected vfio type '%d'"), subsys->u.mdev.model);
+            default:
+                virReportEnumRangeError(virMediatedDeviceModelType,
+                                        subsys->u.mdev.model);
                 return -1;
-                break;
             }
 
             virCommandAddArg(cmd, "-device");
