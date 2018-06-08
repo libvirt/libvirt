@@ -256,6 +256,9 @@ const REMOTE_DOMAIN_GUEST_VCPU_PARAMS_MAX = 64;
 /* Upper limit on number of SEV parameters */
 const REMOTE_NODE_SEV_INFO_MAX = 64;
 
+/* Upper limit on number of launch security information entries */
+const REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX = 64;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -3493,6 +3496,14 @@ struct remote_node_get_sev_info_ret {
     int nparams;
 };
 
+struct remote_domain_get_launch_security_info_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_get_launch_security_info_ret {
+    remote_typed_param params<REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX>;
+};
 
 /*----- Protocol. -----*/
 
@@ -6207,5 +6218,11 @@ enum remote_procedure {
      * @generate: none
      * @acl: connect:read
      */
-    REMOTE_PROC_NODE_GET_SEV_INFO = 395
+    REMOTE_PROC_NODE_GET_SEV_INFO = 395,
+
+    /**
+     * @generate: none
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_GET_LAUNCH_SECURITY_INFO = 396
 };

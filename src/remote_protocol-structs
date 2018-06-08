@@ -2918,6 +2918,16 @@ struct remote_node_get_sev_info_ret {
         } params;
         int                        nparams;
 };
+struct remote_domain_get_launch_security_info_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_get_launch_security_info_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3314,4 +3324,5 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_COMPARE_HYPERVISOR_CPU = 393,
         REMOTE_PROC_CONNECT_BASELINE_HYPERVISOR_CPU = 394,
         REMOTE_PROC_NODE_GET_SEV_INFO = 395,
+        REMOTE_PROC_DOMAIN_GET_LAUNCH_SECURITY_INFO = 396,
 };

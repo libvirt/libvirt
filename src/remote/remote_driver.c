@@ -1966,6 +1966,45 @@ remoteDomainGetNumaParameters(virDomainPtr domain,
 }
 
 static int
+remoteDomainGetLaunchSecurityInfo(virDomainPtr domain,
+                                  virTypedParameterPtr *params,
+                                  int *nparams,
+                                  unsigned int flags)
+{
+    int rv = -1;
+    remote_domain_get_launch_security_info_args args;
+    remote_domain_get_launch_security_info_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_LAUNCH_SECURITY_INFO,
+             (xdrproc_t) xdr_remote_domain_get_launch_security_info_args, (char *) &args,
+             (xdrproc_t) xdr_remote_domain_get_launch_security_info_ret, (char *) &ret) == -1)
+        goto done;
+
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX,
+                                  params,
+                                  nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+ cleanup:
+    xdr_free((xdrproc_t) xdr_remote_domain_get_launch_security_info_ret,
+             (char *) &ret);
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
 remoteDomainGetPerfEvents(virDomainPtr domain,
                           virTypedParameterPtr *params,
                           int *nparams,
@@ -8482,6 +8521,7 @@ static virHypervisorDriver hypervisor_driver = {
     .connectCompareHypervisorCPU = remoteConnectCompareHypervisorCPU, /* 4.4.0 */
     .connectBaselineHypervisorCPU = remoteConnectBaselineHypervisorCPU, /* 4.4.0 */
     .nodeGetSEVInfo = remoteNodeGetSEVInfo, /* 4.5.0 */
+    .domainGetLaunchSecurityInfo = remoteDomainGetLaunchSecurityInfo /* 4.5.0 */
 };
 
 static virNetworkDriver network_driver = {

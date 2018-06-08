@@ -3110,6 +3110,53 @@ remoteDispatchNodeGetMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 static int
+remoteDispatchDomainGetLaunchSecurityInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                          virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                          virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                          virNetMessageErrorPtr rerr,
+                                          remote_domain_get_launch_security_info_args *args,
+                                          remote_domain_get_launch_security_info_ret *ret)
+{
+    virDomainPtr dom = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+        goto cleanup;
+
+    if (virDomainGetLaunchSecurityInfo(dom, &params, &nparams, args->flags) < 0)
+        goto cleanup;
+
+    if (nparams > REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
+        goto cleanup;
+    }
+
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &ret->params.params_val,
+                                &ret->params.params_len,
+                                args->flags) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virTypedParamsFree(params, nparams);
+    virObjectUnref(dom);
+    return rv;
+}
+
+static int
 remoteDispatchDomainGetPerfEvents(virNetServerPtr server ATTRIBUTE_UNUSED,
                                   virNetServerClientPtr client ATTRIBUTE_UNUSED,
                                   virNetMessagePtr msg ATTRIBUTE_UNUSED,
