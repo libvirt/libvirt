@@ -482,6 +482,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_MCH, /* Northbridge in q35 machine types */
     QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES, /* -global mch.extended-tseg-mbytes */
 
+    /* 310 */
+    QEMU_CAPS_SEV_GUEST, /* -object sev-guest,... */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
@@ -615,5 +618,4 @@ bool virQEMUCapsGuestIsNative(virArch host,
 
 bool virQEMUCapsCPUFilterFeatures(const char *name,
                                   void *opaque);
-
 #endif /* __QEMU_CAPABILITIES_H__*/

@@ -3850,6 +3850,16 @@ qemuMonitorGetGICCapabilities(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorGetSEVCapabilities(qemuMonitorPtr mon,
+                              virSEVCapability **capabilities)
+{
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONGetSEVCapabilities(mon, capabilities);
+}
+
+
+int
 qemuMonitorNBDServerStart(qemuMonitorPtr mon,
                           const char *host,
                           unsigned int port,

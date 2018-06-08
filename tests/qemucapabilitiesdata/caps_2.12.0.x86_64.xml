@@ -210,9 +210,10 @@
   <flag name='tpm-emulator'/>
   <flag name='mch'/>
   <flag name='mch.extended-tseg-mbytes'/>
+  <flag name='sev-guest'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>391586</microcodeVersion>
+  <microcodeVersion>391832</microcodeVersion>
   <package>v2.12.0-rc0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>

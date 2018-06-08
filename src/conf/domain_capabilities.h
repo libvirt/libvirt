@@ -137,6 +137,15 @@ struct _virDomainCapsCPU {
     virDomainCapsCPUModelsPtr custom;
 };
 
+typedef struct _virSEVCapability virSEVCapability;
+typedef virSEVCapability *virSEVCapabilityPtr;
+struct _virSEVCapability {
+    char *pdh;
+    char *cert_chain;
+    unsigned int cbitpos;
+    unsigned int reduced_phys_bits;
+};
+
 struct _virDomainCaps {
     virObjectLockable parent;
 
@@ -202,4 +211,7 @@ int virDomainCapsEnumSet(virDomainCapsEnumPtr capsEnum,
 void virDomainCapsEnumClear(virDomainCapsEnumPtr capsEnum);
 
 char * virDomainCapsFormat(virDomainCapsPtr const caps);
+
+void
+virSEVCapabilitiesFree(virSEVCapability *capabilities);
 #endif /* __DOMAIN_CAPABILITIES_H__ */

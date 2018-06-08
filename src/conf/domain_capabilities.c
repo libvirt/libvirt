@@ -67,6 +67,18 @@ virDomainCapsStringValuesFree(virDomainCapsStringValuesPtr values)
 }
 
 
+void
+virSEVCapabilitiesFree(virSEVCapability *cap)
+{
+    if (!cap)
+        return;
+
+    VIR_FREE(cap->pdh);
+    VIR_FREE(cap->cert_chain);
+    VIR_FREE(cap);
+}
+
+
 static void
 virDomainCapsDispose(void *obj)
 {

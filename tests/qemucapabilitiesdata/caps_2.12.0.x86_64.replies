@@ -19039,6 +19039,16 @@
 }
 
 {
+  "return" : {
+   "reduced-phys-bits": 1,
+   "cbitpos": 47,
+   "cert-chain": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA",
+   "pdh": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA"
+  },
+  "id": "libvirt-52"
+}
+
+{
   "return": {
   },
   "id": "libvirt-1"
