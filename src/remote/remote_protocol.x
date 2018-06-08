@@ -253,6 +253,9 @@ const REMOTE_DOMAIN_IP_ADDR_MAX = 2048;
 /* Upper limit on number of guest vcpu information entries */
 const REMOTE_DOMAIN_GUEST_VCPU_PARAMS_MAX = 64;
 
+/* Upper limit on number of SEV parameters */
+const REMOTE_NODE_SEV_INFO_MAX = 64;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -3480,6 +3483,17 @@ struct remote_connect_baseline_hypervisor_cpu_ret {
     remote_nonnull_string cpu;
 };
 
+struct remote_node_get_sev_info_args {
+    int nparams;
+    unsigned int flags;
+};
+
+struct remote_node_get_sev_info_ret {
+    remote_typed_param params<REMOTE_NODE_SEV_INFO_MAX>;
+    int nparams;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6187,5 +6201,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: connect:write
      */
-    REMOTE_PROC_CONNECT_BASELINE_HYPERVISOR_CPU = 394
+    REMOTE_PROC_CONNECT_BASELINE_HYPERVISOR_CPU = 394,
+
+    /**
+     * @generate: none
+     * @acl: connect:read
+     */
+    REMOTE_PROC_NODE_GET_SEV_INFO = 395
 };

@@ -6766,6 +6766,45 @@ remoteNodeGetMemoryParameters(virConnectPtr conn,
     return rv;
 }
 
+
+static int
+remoteNodeGetSEVInfo(virConnectPtr conn,
+                     virTypedParameterPtr *params,
+                     int *nparams,
+                     unsigned int flags)
+{
+    int rv = -1;
+    remote_node_get_sev_info_args args;
+    remote_node_get_sev_info_ret ret;
+    struct private_data *priv = conn->privateData;
+
+    remoteDriverLock(priv);
+
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (call(conn, priv, 0, REMOTE_PROC_NODE_GET_SEV_INFO,
+             (xdrproc_t) xdr_remote_node_get_sev_info_args, (char *) &args,
+             (xdrproc_t) xdr_remote_node_get_sev_info_ret, (char *) &ret) == -1)
+        goto done;
+
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  REMOTE_NODE_SEV_INFO_MAX,
+                                  params,
+                                  nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+ cleanup:
+    xdr_free((xdrproc_t) xdr_remote_node_get_sev_info_ret, (char *) &ret);
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 static int
 remoteNodeGetCPUMap(virConnectPtr conn,
                     unsigned char **cpumap,
@@ -8442,6 +8481,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainSetLifecycleAction = remoteDomainSetLifecycleAction, /* 3.9.0 */
     .connectCompareHypervisorCPU = remoteConnectCompareHypervisorCPU, /* 4.4.0 */
     .connectBaselineHypervisorCPU = remoteConnectBaselineHypervisorCPU, /* 4.4.0 */
+    .nodeGetSEVInfo = remoteNodeGetSEVInfo, /* 4.5.0 */
 };
 
 static virNetworkDriver network_driver = {

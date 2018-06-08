@@ -5001,6 +5001,50 @@ remoteDispatchDomainGetDiskErrors(virNetServerPtr server ATTRIBUTE_UNUSED,
 
 
 static int
+remoteDispatchNodeGetSevInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
+                             virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                             virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                             virNetMessageErrorPtr rerr,
+                             remote_node_get_sev_info_args *args,
+                             remote_node_get_sev_info_ret *ret)
+{
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int rv = -1;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (virNodeGetSEVInfo(priv->conn, &params, &nparams, args->flags) < 0)
+        goto cleanup;
+
+    if (nparams > REMOTE_NODE_SEV_INFO_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
+        goto cleanup;
+    }
+
+
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &ret->params.params_val,
+                                &ret->params.params_len,
+                                args->flags) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virTypedParamsFree(params, nparams);
+    return rv;
+}
+
+
+static int
 remoteDispatchNodeGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
                                       virNetServerClientPtr client ATTRIBUTE_UNUSED,
                                       virNetMessagePtr msg ATTRIBUTE_UNUSED,
