@@ -4767,4 +4767,21 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
                                 unsigned int action,
                                 unsigned int flags);
 
+/**
+ * Launch Security API
+ */
+
+/**
+ * VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT:
+ *
+ * Macro represents the launch measurement of the SEV guest,
+ * as VIR_TYPED_PARAM_STRING.
+ */
+# define VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT "sev-measurement"
+
+int virDomainGetLaunchSecurityInfo(virDomainPtr domain,
+                                   virTypedParameterPtr *params,
+                                   int *nparams,
+                                   unsigned int flags);
+
 #endif /* __VIR_LIBVIRT_DOMAIN_H__ */

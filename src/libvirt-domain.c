@@ -12154,3 +12154,51 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
     virDispatchError(domain->conn);
     return -1;
 }
+
+/**
+ * virDomainGetLaunchSecurityInfo:
+ * @domain: a domain object
+ * @params: where to store security info
+ * @nparams: number of items in @params
+ * @flags: currently used, set to 0.
+ *
+ * Get the launch security info. In case of the SEV guest, this will
+ * return the launch measurement.
+ *
+ * Returns -1 in case of failure, 0 in case of success.
+ */
+int virDomainGetLaunchSecurityInfo(virDomainPtr domain,
+                                   virTypedParameterPtr *params,
+                                   int *nparams,
+                                   unsigned int flags)
+{
+    virConnectPtr conn = domain->conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%p flags=0x%x",
+                     params, nparams, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckNonNullArgGoto(params, error);
+    virCheckNonNullArgGoto(nparams, error);
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
+                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+        flags |= VIR_TYPED_PARAM_STRING_OKAY;
+
+    if (conn->driver->domainGetLaunchSecurityInfo) {
+        int ret;
+        ret = conn->driver->domainGetLaunchSecurityInfo(domain, params,
+                                                        nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
