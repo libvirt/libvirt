@@ -343,6 +343,8 @@ int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
 
 int qemuMonitorJSONSystemWakeup(qemuMonitorPtr mon);
 
+char *qemuMonitorJSONGetSEVMeasurement(qemuMonitorPtr mon);
+
 int qemuMonitorJSONGetVersion(qemuMonitorPtr mon,
                               int *major,
                               int *minor,

@@ -1142,4 +1142,7 @@ int qemuMonitorBlockdevAdd(qemuMonitorPtr mon,
 int qemuMonitorBlockdevDel(qemuMonitorPtr mon,
                            const char *nodename);
 
+char *
+qemuMonitorGetSEVMeasurement(qemuMonitorPtr mon);
+
 #endif /* QEMU_MONITOR_H */

@@ -21501,6 +21501,74 @@ qemuNodeGetSEVInfo(virConnectPtr conn,
 }
 
 
+static int
+qemuDomainGetSEVMeasurement(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virTypedParameterPtr *params,
+                            int *nparams,
+                            unsigned int flags)
+{
+    int ret = -1;
+    char *tmp;
+    int maxpar = 0;
+
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        return -1;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
+        goto endjob;
+
+    tmp = qemuMonitorGetSEVMeasurement(QEMU_DOMAIN_PRIVATE(vm)->mon);
+    if (tmp == NULL)
+        goto endjob;
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto endjob;
+
+    if (virTypedParamsAddString(params, nparams, &maxpar,
+                                VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT,
+                                tmp) < 0)
+        goto endjob;
+
+    VIR_FREE(tmp);
+    ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+    return ret;
+}
+
+
+static int
+qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
+                                virTypedParameterPtr *params,
+                                int *nparams,
+                                unsigned int flags)
+{
+    virQEMUDriverPtr driver = domain->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    if (!(vm = qemuDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainGetLaunchSecurityInfoEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (vm->def->sev) {
+        if (qemuDomainGetSEVMeasurement(driver, vm, params, nparams, flags) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectURIProbe = qemuConnectURIProbe,
@@ -21725,6 +21793,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .connectCompareHypervisorCPU = qemuConnectCompareHypervisorCPU, /* 4.4.0 */
     .connectBaselineHypervisorCPU = qemuConnectBaselineHypervisorCPU, /* 4.4.0 */
     .nodeGetSEVInfo = qemuNodeGetSEVInfo, /* 4.5.0 */
+    .domainGetLaunchSecurityInfo = qemuDomainGetLaunchSecurityInfo, /* 4.5.0 */
 };
 
 

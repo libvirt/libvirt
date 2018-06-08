@@ -4297,3 +4297,11 @@ qemuMonitorBlockdevDel(qemuMonitorPtr mon,
 
     return qemuMonitorJSONBlockdevDel(mon, nodename);
 }
+
+char *
+qemuMonitorGetSEVMeasurement(qemuMonitorPtr mon)
+{
+    QEMU_CHECK_MONITOR_NULL(mon);
+
+    return qemuMonitorJSONGetSEVMeasurement(mon);
+}

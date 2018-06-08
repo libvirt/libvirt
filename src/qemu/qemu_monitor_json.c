@@ -7994,3 +7994,45 @@ qemuMonitorJSONBlockdevDel(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+/**
+ * The function is used to retrieve the measurement of a SEV guest.
+ * The measurement is signature of the memory contents that was encrypted
+ * through the SEV launch flow.
+ *
+ * A example JSON output:
+ *
+ * { "execute" : "query-sev-launch-measure" }
+ * { "return" : { "data" : "4l8LXeNlSPUDlXPJG5966/8%YZ" } }
+ */
+char *
+qemuMonitorJSONGetSEVMeasurement(qemuMonitorPtr mon)
+{
+    const char *tmp;
+    char *measurement = NULL;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-sev-launch-measure", NULL)))
+         return NULL;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+        goto cleanup;
+
+    data = virJSONValueObjectGetObject(reply, "return");
+
+    if (!(tmp = virJSONValueObjectGetString(data, "data")))
+        goto cleanup;
+
+    if (VIR_STRDUP(measurement, tmp) < 0)
+        goto cleanup;
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return measurement;
+}
