@@ -2897,6 +2897,10 @@ mymain(void)
     DO_TEST_CAPS_LATEST("vhost-vsock");
     DO_TEST_CAPS_LATEST("vhost-vsock-auto");
 
+    DO_TEST("launch-security-sev",
+            QEMU_CAPS_KVM,
+            QEMU_CAPS_SEV_GUEST);
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 

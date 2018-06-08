@@ -5826,6 +5826,65 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
 
 
 static int
+qemuBuildSevCreateFile(const char *configDir,
+                       const char *name,
+                       const char *data)
+{
+    char *configFile;
+
+    if (!(configFile = virFileBuildPath(configDir, name, ".base64")))
+        return -1;
+
+    if (virFileRewriteStr(configFile, S_IRUSR | S_IWUSR, data) < 0) {
+        virReportSystemError(errno, _("failed to write data to config '%s'"),
+                             configFile);
+        goto error;
+    }
+
+    VIR_FREE(configFile);
+    return 0;
+
+ error:
+    VIR_FREE(configFile);
+    return -1;
+}
+
+
+static int
+qemuProcessPrepareSevGuestInput(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr def = vm->def;
+    virQEMUCapsPtr qemuCaps = priv->qemuCaps;
+    virDomainSevDefPtr sev = def->sev;
+
+    if (!sev)
+        return 0;
+
+    VIR_DEBUG("Prepare SEV guest");
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Domain %s asked for 'sev' launch but this "
+                          "QEMU does not support SEV feature"), vm->def->name);
+        return -1;
+    }
+
+    if (sev->dh_cert) {
+        if (qemuBuildSevCreateFile(priv->libDir, "dh_cert", sev->dh_cert) < 0)
+            return -1;
+    }
+
+    if (sev->session) {
+        if (qemuBuildSevCreateFile(priv->libDir, "session", sev->session) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuProcessPrepareHostStorage(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               unsigned int flags)
@@ -5985,6 +6044,9 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Preparing external devices");
     if (qemuExtDevicesPrepareHost(driver, vm->def) < 0)
+        goto cleanup;
+
+    if (qemuProcessPrepareSevGuestInput(vm) < 0)
         goto cleanup;
 
     ret = 0;

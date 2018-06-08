@@ -7287,6 +7287,9 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_LOADPARM))
         qemuAppendLoadparmMachineParm(&buf, def);
 
+    if (def->sev)
+        virBufferAddLit(&buf, ",memory-encryption=sev0");
+
     virCommandAddArgBuffer(cmd, &buf);
 
     ret = 0;
@@ -9687,6 +9690,41 @@ qemuBuildTPMCommandLine(virCommandPtr cmd,
     return 0;
 }
 
+static int
+qemuBuildSevCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
+                        virDomainSevDefPtr sev)
+{
+    virBuffer obj = VIR_BUFFER_INITIALIZER;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *path = NULL;
+
+    if (!sev)
+        return 0;
+
+    VIR_DEBUG("policy=0x%x cbitpos=%d reduced_phys_bits=%d",
+              sev->policy, sev->cbitpos, sev->reduced_phys_bits);
+
+    virBufferAsprintf(&obj, "sev-guest,id=sev0,cbitpos=%d", sev->cbitpos);
+    virBufferAsprintf(&obj, ",reduced-phys-bits=%d", sev->reduced_phys_bits);
+    virBufferAsprintf(&obj, ",policy=0x%x", sev->policy);
+
+    if (sev->dh_cert) {
+        if (virAsprintf(&path, "%s/dh_cert.base64", priv->libDir) < 0)
+            return -1;
+        virBufferAsprintf(&obj, ",dh-cert-file=%s", path);
+        VIR_FREE(path);
+    }
+
+    if (sev->session) {
+        if (virAsprintf(&path, "%s/session.base64", priv->libDir) < 0)
+            return -1;
+        virBufferAsprintf(&obj, ",session-file=%s", path);
+        VIR_FREE(path);
+    }
+
+    virCommandAddArgList(cmd, "-object", virBufferContentAndReset(&obj), NULL);
+    return 0;
+}
 
 static int
 qemuBuildVMCoreInfoCommandLine(virCommandPtr cmd,
@@ -10281,6 +10319,9 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         goto error;
 
     if (qemuBuildVMCoreInfoCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
+
+    if (qemuBuildSevCommandLine(vm, cmd, def->sev) < 0)
         goto error;
 
     if (snapshot)
