@@ -435,6 +435,10 @@
     &lt;/gic&gt;
     &lt;vmcoreinfo supported='yes'/&gt;
     &lt;genid supported='yes'/&gt;
+    &lt;sev&gt;
+      &lt;cbitpos&gt;47&lt;/cbitpos&gt;
+      &lt;reduced-phys-bits&gt;1&lt;/reduced-phys-bits&gt;
+    &lt;/sev&gt;
   &lt;/features&gt;
 &lt;/domainCapabilities&gt;
 </pre>
@@ -466,6 +470,32 @@
     <h4><a id="elementsgenid">genid</a></h4>
 
     <p>Reports whether the genid feature can be used by the domain.</p>
+
+    <h4><a id="elementsSEV">SEV capabilities</a></h4>
+
+    <p>AMD Secure Encrypted Virtualization (SEV) capabilities are exposed under
+    the <code>sev</code> element.
+    SEV is an extension to the AMD-V architecture which supports running
+    virtual machines (VMs) under the control of a hypervisor. When supported,
+    guest owner can create a VM whose memory contents will be transparently
+    encrypted with a key unique to that VM.</p>
+
+    <p>
+    For more details on SEV feature see:
+      <a href="https://support.amd.com/TechDocs/55766_SEV-KM%20API_Specification.pdf">
+        SEV API spec</a> and <a href="http://amd-dev.wpengine.netdna-cdn.com/wordpress/media/2013/12/AMD_Memory_Encryption_Whitepaper_v7-Public.pdf">
+        SEV White Paper</a>
+    </p>
+
+    <dl>
+      <dt><code>cbitpos</code></dt>
+      <dd>When memory encryption is enabled, one of the physical address bits
+      (aka the C-bit) is utilized to mark if a memory page is protected. The
+      C-bit position is Hypervisor dependent.</dd>
+      <dt><code>reduced-phys-bits</code></dt>
+      <dd>When memory encryption is enabled, we lose certain bits in physical
+      address space. The number of bits we lose is hypervisor dependent.</dd>
+    </dl>
 
   </body>
 </html>

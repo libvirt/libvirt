@@ -185,6 +185,9 @@
         <ref name='gic'/>
         <ref name='vmcoreinfo'/>
         <ref name='vmgenid'/>
+        <optional>
+          <ref name='sev'/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -205,6 +208,17 @@
   <define name='vmgenid'>
     <element name='genid'>
       <ref name='supported'/>
+    </element>
+  </define>
+
+  <define name='sev'>
+    <element name='sev'>
+      <element name='cbitpos'>
+        <data type='unsignedInt'/>
+      </element>
+      <element name='reduced-phys-bits'>
+        <data type='unsignedInt'/>
+      </element>
     </element>
   </define>
 

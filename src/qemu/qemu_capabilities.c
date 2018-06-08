@@ -5157,6 +5157,48 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
 }
 
 
+/**
+ * virQEMUCapsFillDomainFeatureSEVCaps:
+ * @qemuCaps: QEMU capabilities
+ * @domCaps: domain capabilities
+ *
+ * Take the information about SEV capabilities that has been obtained
+ * using the 'query-sev-capabilities' QMP command and stored in @qemuCaps
+ * and convert it to a form suitable for @domCaps.
+ *
+ * Returns: 0 on success, -1 on failure
+ */
+static int
+virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCapsPtr qemuCaps,
+                                    virDomainCapsPtr domCaps)
+{
+    virSEVCapability *sev;
+    virSEVCapability *cap = qemuCaps->sevCapabilities;
+    int ret = -1;
+
+    if (!cap)
+        return 0;
+
+    if (VIR_ALLOC(sev) < 0)
+        return -1;
+
+    if (VIR_STRDUP(sev->pdh, cap->pdh) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(sev->cert_chain, cap->cert_chain) < 0)
+        goto cleanup;
+
+    sev->cbitpos = cap->cbitpos;
+    sev->reduced_phys_bits = cap->reduced_phys_bits;
+    VIR_STEAL_PTR(domCaps->sev, sev);
+
+    ret = 0;
+ cleanup:
+    virSEVCapabilitiesFree(sev);
+    return ret;
+}
+
+
 int
 virQEMUCapsFillDomainCaps(virCapsPtr caps,
                           virDomainCapsPtr domCaps,
@@ -5194,8 +5236,10 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
         virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics) < 0 ||
         virQEMUCapsFillDomainDeviceVideoCaps(qemuCaps, video) < 0 ||
         virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev) < 0 ||
-        virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps) < 0)
+        virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps) < 0 ||
+        virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps) < 0)
         return -1;
+
     return 0;
 }
 

@@ -88,6 +88,7 @@ virDomainCapsDispose(void *obj)
     VIR_FREE(caps->machine);
     virObjectUnref(caps->cpu.custom);
     virCPUDefFree(caps->cpu.hostModel);
+    virSEVCapabilitiesFree(caps->sev);
 
     virDomainCapsStringValuesFree(&caps->os.loader.values);
 }
@@ -554,6 +555,22 @@ virDomainCapsFeatureGICFormat(virBufferPtr buf,
     FORMAT_EPILOGUE(gic);
 }
 
+static void
+virDomainCapsFeatureSEVFormat(virBufferPtr buf,
+                              virSEVCapabilityPtr const sev)
+{
+    if (!sev)
+        return;
+
+    virBufferAddLit(buf, "<sev supported='yes'>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferAsprintf(buf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
+    virBufferAsprintf(buf, "<reduced-phys-bits>%d</reduced-phys-bits>\n",
+                          sev->reduced_phys_bits);
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</sev>\n");
+}
+
 
 char *
 virDomainCapsFormat(virDomainCapsPtr const caps)
@@ -600,6 +617,7 @@ virDomainCapsFormat(virDomainCapsPtr const caps)
 
     virBufferAsprintf(&buf, "<genid supported='%s'/>\n",
                       caps->genid ? "yes" : "no");
+    virDomainCapsFeatureSEVFormat(&buf, caps->sev);
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</features>\n");
