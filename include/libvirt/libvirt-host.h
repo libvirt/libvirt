@@ -432,6 +432,48 @@ typedef virNodeCPUStats *virNodeCPUStatsPtr;
 
 typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
 
+
+/**
+ *
+ * SEV Parameters
+ */
+
+/**
+ * VIR_NODE_SEV_PDH:
+ *
+ * Macro represents the Platform Diffie-Hellman key, as VIR_TYPED_PARAMS_STRING.
+ */
+# define VIR_NODE_SEV_PDH "pdh"
+
+/**
+ * VIR_NODE_SEV_CERT_CHAIN:
+ *
+ * Macro represents the platform certificate chain that includes the platform
+ * endorsement key (PEK), owner certificate authority (OCD) and chip
+ * endorsement key (CEK), as VIR_TYPED_PARAMS_STRING.
+ */
+# define VIR_NODE_SEV_CERT_CHAIN "cert-chain"
+
+/**
+ * VIR_NODE_SEV_CBITPOS:
+ *
+ * Macro represents the CBit Position used by hypervisor when SEV is enabled.
+ */
+# define VIR_NODE_SEV_CBITPOS "cbitpos"
+
+/**
+ * VIR_NODE_SEV_REDUCED_PHYS_BITS:
+ *
+ * Macro represents the number of bits we lose in physical address space
+ * when SEV is enabled in the guest.
+ */
+# define VIR_NODE_SEV_REDUCED_PHYS_BITS "reduced-phys-bits"
+
+int virNodeGetSEVInfo (virConnectPtr conn,
+                       virTypedParameterPtr *params,
+                       int *nparams,
+                       unsigned int flags);
+
 /**
  * virConnectFlags
  *

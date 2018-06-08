@@ -1639,3 +1639,52 @@ virNodeAllocPages(virConnectPtr conn,
     virDispatchError(conn);
     return -1;
 }
+
+
+/*
+ * virNodeGetSEVInfo:
+ * @conn: pointer to the hypervisor connection
+ * @params: where to store  SEV information
+ * @nparams: pointer to number of SEV parameters returned in @params
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * If hypervisor supports AMD's SEV feature, then @params will contain various
+ * platform specific information like PDH and certificate chain. Caller is
+ * responsible for freeing @params.
+ *
+ * Returns 0 in case of success, and -1 in case of failure.
+ */
+int
+virNodeGetSEVInfo(virConnectPtr conn,
+                  virTypedParameterPtr *params,
+                  int *nparams,
+                  unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, params=%p, nparams=%p, flags=0x%x",
+              conn, params, nparams, flags);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonNullArgGoto(nparams, error);
+    virCheckNonNegativeArgGoto(*nparams, error);
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
+                                 VIR_DRV_FEATURE_TYPED_PARAM_STRING))
+        flags |= VIR_TYPED_PARAM_STRING_OKAY;
+
+    if (conn->driver->nodeGetSEVInfo) {
+        int ret;
+        ret = conn->driver->nodeGetSEVInfo(conn, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}

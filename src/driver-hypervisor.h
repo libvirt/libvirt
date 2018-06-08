@@ -1309,6 +1309,11 @@ typedef int
                                   unsigned int action,
                                   unsigned int flags);
 
+typedef int
+(*virDrvNodeGetSEVInfo)(virConnectPtr conn,
+                        virTypedParameterPtr *params,
+                        int *nparams,
+                        unsigned int flags);
 
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
@@ -1558,6 +1563,7 @@ struct _virHypervisorDriver {
     virDrvDomainSetLifecycleAction domainSetLifecycleAction;
     virDrvConnectCompareHypervisorCPU connectCompareHypervisorCPU;
     virDrvConnectBaselineHypervisorCPU connectBaselineHypervisorCPU;
+    virDrvNodeGetSEVInfo nodeGetSEVInfo;
 };
 
 
