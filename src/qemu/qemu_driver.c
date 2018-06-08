@@ -21425,6 +21425,82 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
 }
 
 
+static int
+qemuGetSEVInfoToParams(virQEMUCapsPtr qemuCaps,
+                       virTypedParameterPtr *params,
+                       int *nparams,
+                       unsigned int flags)
+{
+    int maxpar = 0;
+    int n = 0;
+    virSEVCapabilityPtr sev = virQEMUCapsGetSEVCapabilities(qemuCaps);
+    virTypedParameterPtr sevParams = NULL;
+
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    if (virTypedParamsAddString(&sevParams, &n, &maxpar,
+                    VIR_NODE_SEV_PDH, sev->pdh) < 0)
+        return -1;
+
+    if (virTypedParamsAddString(&sevParams, &n, &maxpar,
+                    VIR_NODE_SEV_CERT_CHAIN, sev->cert_chain) < 0)
+        goto cleanup;
+
+    if (virTypedParamsAddUInt(&sevParams, &n, &maxpar,
+                    VIR_NODE_SEV_CBITPOS, sev->cbitpos) < 0)
+        goto cleanup;
+
+    if (virTypedParamsAddUInt(&sevParams, &n, &maxpar,
+                    VIR_NODE_SEV_REDUCED_PHYS_BITS,
+                    sev->reduced_phys_bits) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(*params, sevParams);
+    *nparams = n;
+    return 0;
+
+ cleanup:
+    virTypedParamsFree(sevParams, n);
+    return -1;
+}
+
+
+static int
+qemuNodeGetSEVInfo(virConnectPtr conn,
+                   virTypedParameterPtr *params,
+                   int *nparams,
+                   unsigned int flags)
+{
+    virQEMUDriverPtr driver = conn->privateData;
+    virQEMUCapsPtr qemucaps = NULL;
+    int ret = -1;
+
+    if (virNodeGetSevInfoEnsureACL(conn) < 0)
+        return ret;
+
+    qemucaps = virQEMUCapsCacheLookupByArch(driver->qemuCapsCache,
+                                            virArchFromHost());
+    if (!qemucaps)
+        goto cleanup;
+
+    if (!virQEMUCapsGet(qemucaps, QEMU_CAPS_SEV_GUEST)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("QEMU does not support SEV guest"));
+        goto cleanup;
+    }
+
+    if (qemuGetSEVInfoToParams(qemucaps, params, nparams, flags) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(qemucaps);
+
+    return ret;
+}
+
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectURIProbe = qemuConnectURIProbe,
@@ -21648,6 +21724,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainSetLifecycleAction = qemuDomainSetLifecycleAction, /* 3.9.0 */
     .connectCompareHypervisorCPU = qemuConnectCompareHypervisorCPU, /* 4.4.0 */
     .connectBaselineHypervisorCPU = qemuConnectBaselineHypervisorCPU, /* 4.4.0 */
+    .nodeGetSEVInfo = qemuNodeGetSEVInfo, /* 4.5.0 */
 };
 
 
