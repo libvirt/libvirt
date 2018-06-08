@@ -143,6 +143,8 @@ mymain(void)
 
     DO_TEST("tseg");
 
+    DO_TEST("launch-security-sev");
+
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
 

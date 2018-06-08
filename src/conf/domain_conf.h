@@ -142,6 +142,9 @@ typedef virDomainPanicDef *virDomainPanicDefPtr;
 typedef struct _virDomainMemoryDef virDomainMemoryDef;
 typedef virDomainMemoryDef *virDomainMemoryDefPtr;
 
+typedef struct _virDomainSevDef virDomainSevDef;
+typedef virDomainSevDef *virDomainSevDefPtr;
+
 /* forward declarations virDomainChrSourceDef, required by
  * virDomainNetDef
  */
@@ -2318,6 +2321,26 @@ struct _virDomainKeyWrapDef {
 };
 
 typedef enum {
+    VIR_DOMAIN_LAUNCH_SECURITY_NONE,
+    VIR_DOMAIN_LAUNCH_SECURITY_SEV,
+
+    VIR_DOMAIN_LAUNCH_SECURITY_LAST,
+} virDomainLaunchSecurity;
+
+typedef struct _virDomainSevDef virDomainSevDef;
+typedef virDomainSevDef *virDomainSevDefPtr;
+
+struct _virDomainSevDef {
+    int sectype; /* enum virDomainLaunchSecurity */
+    char *dh_cert;
+    char *session;
+    unsigned int policy;
+    unsigned int cbitpos;
+    unsigned int reduced_phys_bits;
+};
+
+
+typedef enum {
     VIR_DOMAIN_IOMMU_MODEL_INTEL,
 
     VIR_DOMAIN_IOMMU_MODEL_LAST
@@ -2507,6 +2530,9 @@ struct _virDomainDef {
     virDomainXMLNamespace ns;
 
     virDomainKeyWrapDefPtr keywrap;
+
+    /* SEV-specific domain */
+    virDomainSevDefPtr sev;
 
     /* Application-specific custom metadata */
     xmlNodePtr metadata;
@@ -3418,6 +3444,7 @@ VIR_ENUM_DECL(virDomainMemoryAllocation)
 VIR_ENUM_DECL(virDomainIOMMUModel)
 VIR_ENUM_DECL(virDomainVsockModel)
 VIR_ENUM_DECL(virDomainShmemModel)
+VIR_ENUM_DECL(virDomainLaunchSecurity)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainNostateReason)

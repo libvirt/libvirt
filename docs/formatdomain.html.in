@@ -8458,6 +8458,121 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>Note: DEA/TDEA is synonymous with DES/TDES.</p>
 
+    <h3><a id="sev">Secure Encrypted Virtualization (SEV)</a></h3>
+
+    <p>
+       The contents of the <code>&lt;launch-security type='sev'&gt;</code> element
+       is used to provide the guest owners input used for creating an encrypted
+       VM using the AMD SEV feature.
+
+       SEV is an extension to the AMD-V architecture which supports running
+       encrypted virtual machine (VMs) under the control of KVM. Encrypted
+       VMs have their pages (code and data) secured such that only the guest
+       itself has access to the unencrypted version. Each encrypted VM is
+       associated with a unique encryption key; if its data is accessed to a
+       different entity using a different key the encrypted guests data will
+       be incorrectly decrypted, leading to unintelligible data.
+
+       For more information see various input parameters and its format see the SEV API spec
+       <a href="https://support.amd.com/TechDocs/55766_SEV-KM%20API_Specification.pdf"> https://support.amd.com/TechDocs/55766_SEV-KM%20API_Specification.pdf </a>
+       <span class="since">Since 4.4.0</span>
+       </p>
+    <pre>
+&lt;domain&gt;
+  ...
+  &lt;launch-security type='sev'&gt;
+    &lt;policy&gt; 0x0001 &lt;/policy&gt;
+    &lt;cbitpos&gt; 47 &lt;/cbitpos&gt;
+    &lt;reduced-phys-bits&gt; 1 &lt;/reduced-phys-bits&gt;
+    &lt;session&gt; AAACCCDD=FFFCCCDSDS &lt;/session&gt;
+    &lt;dh-cert&gt; RBBBSDDD=FDDCCCDDDG &lt;/dh&gt;
+  &lt;/sev&gt;
+  ...
+&lt;/domain&gt;
+</pre>
+
+    <dl>
+      <dt><code>cbitpos</code></dt>
+      <dd>The required <code>cbitpos</code> element provides the C-bit (aka encryption bit)
+      location in guest page table entry. The value of <code>cbitpos</code> is
+      hypervisor dependent and can be obtained through the <code>sev</code> element
+      from the domain capabilities.
+      </dd>
+      <dt><code>reduced-phys-bits</code></dt>
+      <dd>The required <code>reduced-phys-bits</code> element provides the physical
+      address bit reducation. Similar to <code>cbitpos</code> the value of <code>
+      reduced-phys-bit</code> is hypervisor dependent and can be obtained
+      through the <code>sev</code> element from the domain capabilities.
+      </dd>
+      <dt><code>policy</code></dt>
+      <dd>The required <code>policy</code> element provides the guest policy
+      which must be maintained by the SEV firmware. This policy is enforced by
+      the firmware and restricts what configuration and operational commands
+      can be performed on this guest by the hypervisor. The guest policy
+      provided during guest launch is bound to the guest and cannot be changed
+      throughout the lifetime of the guest. The policy is also transmitted
+      during snapshot and migration flows and enforced on the destination platform.
+
+      The guest policy is a 4 unsigned byte with the fields shown in Table:
+
+      <table class="top_table">
+        <tr>
+          <th> Bit(s) </th>
+          <th> Description </th>
+        </tr>
+        <tr>
+          <td> 0 </td>
+          <td> Debugging of the guest is disallowed when set </td>
+        </tr>
+        <tr>
+          <td> 1 </td>
+          <td> Sharing keys with other guests is disallowed when set </td>
+        </tr>
+        <tr>
+          <td> 2 </td>
+          <td> SEV-ES is required when set</td>
+        </tr>
+        <tr>
+          <td> 3 </td>
+          <td> Sending the guest to another platform is disallowed when set</td>
+        </tr>
+        <tr>
+          <td> 4 </td>
+          <td> The guest must not be transmitted to another platform that is
+               not in the domain when set. </td>
+        </tr>
+        <tr>
+          <td> 5 </td>
+          <td> The guest must not be transmitted to another platform that is
+               not SEV capable when set. </td>
+        </tr>
+        <tr>
+          <td> 6:15 </td>
+          <td> reserved </td>
+        </tr>
+        <tr>
+          <td> 16:32 </td>
+          <td> The guest must not be transmitted to another platform with a
+               lower firmware version. </td>
+        </tr>
+      </table>
+
+      </dd>
+      <dt><code>dh-cert</code></dt>
+      <dd>The optional <code>dh-cert</code> element provides the guest owners
+      base64 encoded Diffie-Hellman (DH) key. The key is used to negotiate a
+      master secret key between the SEV firmware and guest owner. This master
+      secret key is then used to establish a trusted channel between SEV
+      firmware and guest owner.
+      </dd>
+      <dt><code>session</code></dt>
+      <dd>The optional <code>session</code> element provides the guest owners
+      base64 encoded session blob defined in the SEV API spec.
+
+      See SEV spec LAUNCH_START section for the session blob format.
+      </dd>
+    </dl>
+
     <h2><a id="examples">Example configs</a></h2>
 
     <p>
