@@ -50,6 +50,7 @@ profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
   @{HOME}/** r,
   /var/lib/libvirt/images/ r,
   /var/lib/libvirt/images/** r,
+  /var/lib/nova/instances/_base/* r
   /{media,mnt,opt,srv}/** r,
   # For virt-sandbox
   /{,var/}run/libvirt/**/[sv]d[a-z] r,
