@@ -9679,6 +9679,33 @@ virDomainDiskDefDriverParseXML(virDomainDiskDefPtr def,
 }
 
 
+static int
+virDomainDiskDefParsePrivateData(xmlXPathContextPtr ctxt,
+                                 virDomainDiskDefPtr disk,
+                                 virDomainXMLOptionPtr xmlopt)
+{
+    xmlNodePtr private_node = virXPathNode("./privateData", ctxt);
+    xmlNodePtr save_node = ctxt->node;
+    int ret = -1;
+
+    if (!xmlopt ||
+        !xmlopt->privateData.diskParse ||
+        !private_node)
+        return 0;
+
+    ctxt->node = private_node;
+
+    if (xmlopt->privateData.diskParse(ctxt, disk) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    ctxt->node = save_node;
+    return ret;
+}
+
+
 #define VENDOR_LEN  8
 #define PRODUCT_LEN 16
 
@@ -10093,6 +10120,10 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (virDomainDiskBackingStoreParse(ctxt, def->src, flags, xmlopt) < 0)
             goto error;
     }
+
+    if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
+        virDomainDiskDefParsePrivateData(ctxt, def, xmlopt) < 0)
+        goto error;
 
     if (virDomainDiskDefParseValidate(def, vmSeclabels, nvmSeclabels) < 0)
         goto error;
@@ -24207,6 +24238,35 @@ virDomainDiskDefFormatMirror(virBufferPtr buf,
 
 
 static int
+virDomainDiskDefFormatPrivateData(virBufferPtr buf,
+                                  virDomainDiskDefPtr disk,
+                                  unsigned int flags,
+                                  virDomainXMLOptionPtr xmlopt)
+{
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+
+    if (!(flags & VIR_DOMAIN_DEF_FORMAT_STATUS) ||
+        !xmlopt ||
+        !xmlopt->privateData.diskFormat)
+        return 0;
+
+    virBufferSetChildIndent(&childBuf, buf);
+
+    if (xmlopt->privateData.diskFormat(disk, &childBuf) < 0)
+        goto error;
+
+    if (virXMLFormatElement(buf, "privateData", NULL, &childBuf) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    virBufferFreeAndReset(&childBuf);
+    return -1;
+}
+
+
+static int
 virDomainDiskDefFormat(virBufferPtr buf,
                        virDomainDiskDefPtr def,
                        unsigned int flags,
@@ -24318,6 +24378,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
         return -1;
     virDomainDeviceInfoFormat(buf, &def->info,
                               flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT);
+
+    if (virDomainDiskDefFormatPrivateData(buf, def, flags, xmlopt) < 0)
+        return -1;
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</disk>\n");
