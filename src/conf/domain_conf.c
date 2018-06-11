@@ -23757,6 +23757,54 @@ virDomainDiskDefFormatDriver(virBufferPtr buf,
 
 
 static int
+virDomainDiskDefFormatMirror(virBufferPtr buf,
+                             virDomainDiskDefPtr disk,
+                             unsigned int flags,
+                             virDomainXMLOptionPtr xmlopt)
+{
+    const char *formatStr = NULL;
+
+    /* For now, mirroring is currently output-only: we only output it
+     * for live domains, therefore we ignore it on input except for
+     * the internal parse on libvirtd restart.  We prefer to output
+     * the new style similar to backingStore, but for back-compat on
+     * blockcopy files we also have to output old style attributes.
+     * The parser accepts either style across libvirtd upgrades. */
+
+    if (!disk->mirror ||
+        (flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
+        return 0;
+
+    if (disk->mirror->format)
+        formatStr = virStorageFileFormatTypeToString(disk->mirror->format);
+    virBufferAsprintf(buf, "<mirror type='%s'",
+                      virStorageTypeToString(disk->mirror->type));
+    if (disk->mirror->type == VIR_STORAGE_TYPE_FILE &&
+        disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
+        virBufferEscapeString(buf, " file='%s'", disk->mirror->path);
+        virBufferEscapeString(buf, " format='%s'", formatStr);
+    }
+    virBufferEscapeString(buf, " job='%s'",
+                          virDomainBlockJobTypeToString(disk->mirrorJob));
+    if (disk->mirrorState) {
+        const char *mirror;
+
+        mirror = virDomainDiskMirrorStateTypeToString(disk->mirrorState);
+        virBufferEscapeString(buf, " ready='%s'", mirror);
+    }
+    virBufferAddLit(buf, ">\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferEscapeString(buf, "<format type='%s'/>\n", formatStr);
+    if (virDomainDiskSourceFormat(buf, disk->mirror, 0, 0, xmlopt) < 0)
+        return -1;
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</mirror>\n");
+
+    return 0;
+}
+
+
+static int
 virDomainDiskDefFormat(virBufferPtr buf,
                        virDomainDiskDefPtr def,
                        unsigned int flags,
@@ -23831,40 +23879,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virDomainDiskGeometryDefFormat(buf, def);
     virDomainDiskBlockIoDefFormat(buf, def);
 
-    /* For now, mirroring is currently output-only: we only output it
-     * for live domains, therefore we ignore it on input except for
-     * the internal parse on libvirtd restart.  We prefer to output
-     * the new style similar to backingStore, but for back-compat on
-     * blockcopy files we also have to output old style attributes.
-     * The parser accepts either style across libvirtd upgrades. */
-    if (def->mirror && !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
-        const char *formatStr = NULL;
-
-        if (def->mirror->format)
-            formatStr = virStorageFileFormatTypeToString(def->mirror->format);
-        virBufferAsprintf(buf, "<mirror type='%s'",
-                          virStorageTypeToString(def->mirror->type));
-        if (def->mirror->type == VIR_STORAGE_TYPE_FILE &&
-            def->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
-            virBufferEscapeString(buf, " file='%s'", def->mirror->path);
-            virBufferEscapeString(buf, " format='%s'", formatStr);
-        }
-        virBufferEscapeString(buf, " job='%s'",
-                              virDomainBlockJobTypeToString(def->mirrorJob));
-        if (def->mirrorState) {
-            const char *mirror;
-
-            mirror = virDomainDiskMirrorStateTypeToString(def->mirrorState);
-            virBufferEscapeString(buf, " ready='%s'", mirror);
-        }
-        virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
-        virBufferEscapeString(buf, "<format type='%s'/>\n", formatStr);
-        if (virDomainDiskSourceFormat(buf, def->mirror, 0, 0, xmlopt) < 0)
-            return -1;
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</mirror>\n");
-    }
+    if (virDomainDiskDefFormatMirror(buf, def, flags, xmlopt) < 0)
+        return -1;
 
     virBufferAsprintf(buf, "<target dev='%s' bus='%s'",
                       def->dst, bus);
