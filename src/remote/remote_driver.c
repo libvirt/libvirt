@@ -4432,14 +4432,6 @@ remoteConnectDomainEventDeregister(virConnectPtr conn,
 
 
 static void
-remoteEventQueue(struct private_data *priv, virObjectEventPtr event,
-                 int remoteID)
-{
-    virObjectEventStateQueueRemote(priv->eventState, event, remoteID);
-}
-
-
-static void
 remoteDomainBuildEventLifecycleHelper(virConnectPtr conn,
                                       remote_domain_event_lifecycle_msg *msg,
                                       int callbackID)
@@ -4455,7 +4447,7 @@ remoteDomainBuildEventLifecycleHelper(virConnectPtr conn,
     event = virDomainEventLifecycleNewFromDom(dom, msg->event, msg->detail);
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -4493,7 +4485,7 @@ remoteDomainBuildEventRebootHelper(virConnectPtr conn,
     event = virDomainEventRebootNewFromDom(dom);
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventReboot(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -4530,7 +4522,7 @@ remoteDomainBuildEventRTCChangeHelper(virConnectPtr conn,
     event = virDomainEventRTCChangeNewFromDom(dom, msg->offset);
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventRTCChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -4567,7 +4559,7 @@ remoteDomainBuildEventWatchdogHelper(virConnectPtr conn,
     event = virDomainEventWatchdogNewFromDom(dom, msg->action);
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventWatchdog(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -4607,7 +4599,7 @@ remoteDomainBuildEventIOErrorHelper(virConnectPtr conn,
                                             msg->action);
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventIOError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -4649,7 +4641,7 @@ remoteDomainBuildEventIOErrorReasonHelper(virConnectPtr conn,
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventIOErrorReason(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -4688,7 +4680,7 @@ remoteDomainBuildEventBlockJobHelper(virConnectPtr conn,
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventBlockJob(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -4728,7 +4720,7 @@ remoteDomainBuildEventBlockJob2(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 static void
@@ -4782,7 +4774,7 @@ remoteDomainBuildEventGraphicsHelper(virConnectPtr conn,
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
     return;
 
  error:
@@ -4843,7 +4835,7 @@ remoteDomainBuildEventControlErrorHelper(virConnectPtr conn,
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventControlError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -4886,7 +4878,7 @@ remoteDomainBuildEventDiskChangeHelper(virConnectPtr conn,
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventDiskChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -4927,7 +4919,7 @@ remoteDomainBuildEventTrayChangeHelper(virConnectPtr conn,
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventTrayChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -4966,7 +4958,7 @@ remoteDomainBuildEventPMWakeupHelper(virConnectPtr conn,
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventPMWakeup(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -5006,7 +4998,7 @@ remoteDomainBuildEventPMSuspendHelper(virConnectPtr conn,
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventPMSuspend(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -5045,7 +5037,7 @@ remoteDomainBuildEventBalloonChangeHelper(virConnectPtr conn,
     event = virDomainEventBalloonChangeNewFromDom(dom, msg->actual);
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventBalloonChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -5085,7 +5077,7 @@ remoteDomainBuildEventPMSuspendDiskHelper(virConnectPtr conn,
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventPMSuspendDisk(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -5125,7 +5117,7 @@ remoteDomainBuildEventDeviceRemovedHelper(virConnectPtr conn,
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
 remoteDomainBuildEventDeviceRemoved(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -5165,7 +5157,7 @@ remoteDomainBuildEventCallbackDeviceAdded(virNetClientProgramPtr prog ATTRIBUTE_
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 
@@ -5187,7 +5179,7 @@ remoteDomainBuildEventCallbackDeviceRemovalFailed(virNetClientProgramPtr prog AT
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 static void
@@ -5219,7 +5211,7 @@ remoteDomainBuildEventCallbackTunable(virNetClientProgramPtr prog ATTRIBUTE_UNUS
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 
@@ -5242,7 +5234,7 @@ remoteDomainBuildEventCallbackAgentLifecycle(virNetClientProgramPtr prog ATTRIBU
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 
@@ -5265,7 +5257,7 @@ remoteDomainBuildEventCallbackMigrationIteration(virNetClientProgramPtr prog ATT
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 
@@ -5298,7 +5290,7 @@ remoteDomainBuildEventCallbackJobCompleted(virNetClientProgramPtr prog ATTRIBUTE
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 
@@ -5320,7 +5312,7 @@ remoteDomainBuildEventCallbackMetadataChange(virNetClientProgramPtr prog ATTRIBU
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 
@@ -5343,7 +5335,7 @@ remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                         msg->detail);
     virObjectUnref(net);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 static void
@@ -5365,7 +5357,7 @@ remoteStoragePoolBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSE
                                             msg->detail);
     virObjectUnref(pool);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 static void
@@ -5386,7 +5378,7 @@ remoteStoragePoolBuildEventRefresh(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     event = virStoragePoolEventRefreshNew(pool->name, pool->uuid);
     virObjectUnref(pool);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 static void
@@ -5408,7 +5400,7 @@ remoteNodeDeviceBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
                                            msg->detail);
     virObjectUnref(dev);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 static void
@@ -5429,7 +5421,7 @@ remoteNodeDeviceBuildEventUpdate(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     event = virNodeDeviceEventUpdateNew(dev->name);
     virObjectUnref(dev);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 static void
@@ -5451,7 +5443,7 @@ remoteSecretBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                        msg->event, msg->detail);
     virObjectUnref(secret);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 static void
@@ -5472,7 +5464,7 @@ remoteSecretBuildEventValueChanged(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     event = virSecretEventValueChangedNew(secret->uuid, secret->usageType, secret->usageID);
     virObjectUnref(secret);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 static void
@@ -5496,7 +5488,7 @@ remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                          msg->details ? *msg->details : NULL);
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 
@@ -5555,7 +5547,7 @@ remoteDomainBuildEventBlockThreshold(virNetClientProgramPtr prog ATTRIBUTE_UNUSE
 
     virObjectUnref(dom);
 
-    remoteEventQueue(priv, event, msg->callbackID);
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
 }
 
 
