@@ -1421,7 +1421,7 @@ static const vshCmdOptDef opts_snapshot_list[] = {
     },
     {.name = "active",
      .type = VSH_OT_BOOL,
-     .help = N_("filter by snapshots taken while active (system checkpoints)")
+     .help = N_("filter by snapshots taken while active (full system snapshots)")
     },
     {.name = "disk-only",
      .type = VSH_OT_BOOL,

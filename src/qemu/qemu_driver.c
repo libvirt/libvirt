@@ -2148,7 +2148,7 @@ qemuDomainReset(virDomainPtr dom, unsigned int flags)
 }
 
 
-/* Count how many snapshots in a set are external snapshots or checkpoints.  */
+/* Count how many snapshots in a set are external snapshots.  */
 static int
 qemuDomainSnapshotCountExternal(void *payload,
                                 const void *name ATTRIBUTE_UNUSED,
@@ -15093,7 +15093,7 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm,
     if ((def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL && !found_internal) ||
         (found_internal && forbid_internal)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("internal snapshots and checkpoints require all "
+                       _("internal and full system snapshots require all "
                          "disks to be selected for snapshot"));
         goto cleanup;
     }
@@ -15543,7 +15543,7 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PMSUSPENDED) {
         pmsuspended = true;
     } else if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        /* For external checkpoints (those with memory), the guest
+        /* For full system external snapshots (those with memory), the guest
          * must pause (either by libvirt up front, or by qemu after
          * _LIVE converges). */
         if (memory)
@@ -15771,7 +15771,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
          redefine)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("live snapshot creation is supported only "
-                         "with external checkpoints"));
+                         "during full system snapshots"));
         goto cleanup;
     }
 
@@ -15891,12 +15891,12 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     } else if (virDomainObjIsActive(vm)) {
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY ||
             snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
-            /* external checkpoint or disk snapshot */
+            /* external full system or disk snapshot */
             if (qemuDomainSnapshotCreateActiveExternal(driver,
                                                        vm, snap, flags) < 0)
                 goto endjob;
         } else {
-            /* internal checkpoint */
+            /* internal full system */
             if (qemuDomainSnapshotCreateActiveInternal(driver,
                                                        vm, snap, flags) < 0)
                 goto endjob;

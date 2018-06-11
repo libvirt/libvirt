@@ -105,8 +105,9 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * contained in xmlDesc.
  *
  * If @flags is 0, the domain can be active, in which case the
- * snapshot will be a system checkpoint (both disk state and runtime
- * VM state such as RAM contents), where reverting to the snapshot is
+ * snapshot will be a full system snapshot (capturing both disk state,
+ * and runtime VM state such as RAM contents), where reverting to the
+ * snapshot is
  * the same as resuming from hibernation (TCP connections may have
  * timed out, but everything else picks up where it left off); or
  * the domain can be inactive, in which case the snapshot includes
@@ -149,7 +150,7 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * is not paused while creating the snapshot. This increases the size
  * of the memory dump file, but reduces downtime of the guest while
  * taking the snapshot. Some hypervisors only support this flag during
- * external checkpoints.
+ * external snapshots.
  *
  * If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY, then the
  * snapshot will be limited to the disks described in @xmlDesc, and no
