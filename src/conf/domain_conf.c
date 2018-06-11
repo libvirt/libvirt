@@ -23693,6 +23693,70 @@ virDomainDiskDefFormatIotune(virBufferPtr buf,
 
 
 static int
+virDomainDiskDefFormatDriver(virBufferPtr buf,
+                             virDomainDiskDefPtr disk)
+{
+    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+
+    virBufferEscapeString(&driverBuf, " name='%s'", virDomainDiskGetDriver(disk));
+
+    if (disk->src->format > 0)
+        virBufferAsprintf(&driverBuf, " type='%s'",
+                          virStorageFileFormatTypeToString(disk->src->format));
+
+    if (disk->cachemode)
+        virBufferAsprintf(&driverBuf, " cache='%s'",
+                          virDomainDiskCacheTypeToString(disk->cachemode));
+
+    if (disk->error_policy)
+        virBufferAsprintf(&driverBuf, " error_policy='%s'",
+                          virDomainDiskErrorPolicyTypeToString(disk->error_policy));
+
+    if (disk->rerror_policy)
+        virBufferAsprintf(&driverBuf, " rerror_policy='%s'",
+                          virDomainDiskErrorPolicyTypeToString(disk->rerror_policy));
+
+    if (disk->iomode)
+        virBufferAsprintf(&driverBuf, " io='%s'",
+                          virDomainDiskIoTypeToString(disk->iomode));
+
+    if (disk->ioeventfd)
+        virBufferAsprintf(&driverBuf, " ioeventfd='%s'",
+                          virTristateSwitchTypeToString(disk->ioeventfd));
+
+    if (disk->event_idx)
+        virBufferAsprintf(&driverBuf, " event_idx='%s'",
+                          virTristateSwitchTypeToString(disk->event_idx));
+
+    if (disk->copy_on_read)
+        virBufferAsprintf(&driverBuf, " copy_on_read='%s'",
+                          virTristateSwitchTypeToString(disk->copy_on_read));
+
+    if (disk->discard)
+        virBufferAsprintf(&driverBuf, " discard='%s'",
+                          virDomainDiskDiscardTypeToString(disk->discard));
+
+    if (disk->iothread)
+        virBufferAsprintf(&driverBuf, " iothread='%u'", disk->iothread);
+
+    if (disk->detect_zeroes)
+        virBufferAsprintf(&driverBuf, " detect_zeroes='%s'",
+                          virDomainDiskDetectZeroesTypeToString(disk->detect_zeroes));
+
+    if (disk->queues)
+        virBufferAsprintf(&driverBuf, " queues='%u'", disk->queues);
+
+    virDomainVirtioOptionsFormat(&driverBuf, disk->virtio);
+
+    ret = virXMLFormatElement(buf, "driver", &driverBuf, NULL);
+
+    virBufferFreeAndReset(&driverBuf);
+    return ret;
+}
+
+
+static int
 virDomainDiskDefFormat(virBufferPtr buf,
                        virDomainDiskDefPtr def,
                        unsigned int flags,
@@ -23701,17 +23765,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     const char *type = virStorageTypeToString(def->src->type);
     const char *device = virDomainDiskDeviceTypeToString(def->device);
     const char *bus = virDomainDiskBusTypeToString(def->bus);
-    const char *cachemode = virDomainDiskCacheTypeToString(def->cachemode);
-    const char *error_policy = virDomainDiskErrorPolicyTypeToString(def->error_policy);
-    const char *rerror_policy = virDomainDiskErrorPolicyTypeToString(def->rerror_policy);
-    const char *iomode = virDomainDiskIoTypeToString(def->iomode);
-    const char *ioeventfd = virTristateSwitchTypeToString(def->ioeventfd);
-    const char *event_idx = virTristateSwitchTypeToString(def->event_idx);
-    const char *copy_on_read = virTristateSwitchTypeToString(def->copy_on_read);
     const char *sgio = virDomainDeviceSGIOTypeToString(def->sgio);
-    const char *discard = virDomainDiskDiscardTypeToString(def->discard);
-    const char *detect_zeroes = virDomainDiskDetectZeroesTypeToString(def->detect_zeroes);
-    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
 
     if (!type || !def->src->type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -23726,16 +23780,6 @@ virDomainDiskDefFormat(virBufferPtr buf,
     if (!bus) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected disk bus %d"), def->bus);
-        return -1;
-    }
-    if (!cachemode) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected disk cache mode %d"), def->cachemode);
-        return -1;
-    }
-    if (!iomode) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected disk io mode %d"), def->iomode);
         return -1;
     }
     if (!sgio) {
@@ -23763,43 +23807,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 
-    virBufferEscapeString(&driverBuf, " name='%s'", virDomainDiskGetDriver(def));
-    if (def->src->format > 0)
-        virBufferAsprintf(&driverBuf, " type='%s'",
-                          virStorageFileFormatTypeToString(def->src->format));
-    if (def->cachemode)
-        virBufferAsprintf(&driverBuf, " cache='%s'", cachemode);
-    if (def->error_policy)
-        virBufferAsprintf(&driverBuf, " error_policy='%s'", error_policy);
-    if (def->rerror_policy)
-        virBufferAsprintf(&driverBuf, " rerror_policy='%s'", rerror_policy);
-    if (def->iomode)
-        virBufferAsprintf(&driverBuf, " io='%s'", iomode);
-    if (def->ioeventfd)
-        virBufferAsprintf(&driverBuf, " ioeventfd='%s'", ioeventfd);
-    if (def->event_idx)
-        virBufferAsprintf(&driverBuf, " event_idx='%s'", event_idx);
-    if (def->copy_on_read)
-        virBufferAsprintf(&driverBuf, " copy_on_read='%s'", copy_on_read);
-    if (def->discard)
-        virBufferAsprintf(&driverBuf, " discard='%s'", discard);
-    if (def->iothread)
-        virBufferAsprintf(&driverBuf, " iothread='%u'", def->iothread);
-    if (def->detect_zeroes)
-        virBufferAsprintf(&driverBuf, " detect_zeroes='%s'", detect_zeroes);
-    if (def->queues)
-        virBufferAsprintf(&driverBuf, " queues='%u'", def->queues);
-
-    virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
-
-    if (virBufferCheckError(&driverBuf) < 0)
+    if (virDomainDiskDefFormatDriver(buf, def) < 0)
         return -1;
-
-    if (virBufferUse(&driverBuf)) {
-        virBufferAddLit(buf, "<driver");
-        virBufferAddBuffer(buf, &driverBuf);
-        virBufferAddLit(buf, "/>\n");
-    }
 
     /* Format as child of <disk> if defined there; otherwise,
      * if defined as child of <source>, then format later */
