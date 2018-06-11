@@ -1745,3 +1745,25 @@ qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
     VIR_FREE(source);
     return ret;
 }
+
+
+/**
+ * qemuBlockStorageGetCopyOnReadProps:
+ * @disk: disk with copy-on-read enabled
+ *
+ * Creates blockdev properties for a disk copy-on-read layer.
+ */
+virJSONValuePtr
+qemuBlockStorageGetCopyOnReadProps(virDomainDiskDefPtr disk)
+{
+    qemuDomainDiskPrivatePtr priv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    virJSONValuePtr ret = NULL;
+
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:driver", "copy-on-read",
+                                          "s:node-name", priv->nodeCopyOnRead,
+                                          "s:file", disk->src->nodeformat,
+                                          NULL));
+
+    return ret;
+}

@@ -67,6 +67,8 @@ qemuBlockStorageSourceGetURI(virStorageSourcePtr src);
 virJSONValuePtr
 qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src);
 
+virJSONValuePtr
+qemuBlockStorageGetCopyOnReadProps(virDomainDiskDefPtr disk);
 
 typedef struct qemuBlockStorageSourceAttachData qemuBlockStorageSourceAttachData;
 typedef qemuBlockStorageSourceAttachData *qemuBlockStorageSourceAttachDataPtr;
