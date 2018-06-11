@@ -3579,8 +3579,7 @@ networkCreateXML(virConnectPtr conn,
 
  cleanup:
     virNetworkDefFree(newDef);
-    if (event)
-        virObjectEventStateQueue(driver->networkEventState, event);
+    virObjectEventStateQueue(driver->networkEventState, event);
     virNetworkObjEndAPI(&obj);
     return net;
 }
@@ -3633,8 +3632,7 @@ networkDefineXML(virConnectPtr conn,
     net = virGetNetwork(conn, def->name, def->uuid);
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->networkEventState, event);
+    virObjectEventStateQueue(driver->networkEventState, event);
     if (freeDef)
         virNetworkDefFree(def);
     virNetworkObjEndAPI(&obj);
@@ -3694,8 +3692,7 @@ networkUndefine(virNetworkPtr net)
     ret = 0;
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->networkEventState, event);
+    virObjectEventStateQueue(driver->networkEventState, event);
     virNetworkObjEndAPI(&obj);
     return ret;
 }
@@ -3905,8 +3902,7 @@ networkCreate(virNetworkPtr net)
                                         0);
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->networkEventState, event);
+    virObjectEventStateQueue(driver->networkEventState, event);
     virNetworkObjEndAPI(&obj);
     return ret;
 }
@@ -3952,8 +3948,7 @@ networkDestroy(virNetworkPtr net)
     }
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->networkEventState, event);
+    virObjectEventStateQueue(driver->networkEventState, event);
     virNetworkObjEndAPI(&obj);
     return ret;
 }

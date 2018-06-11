@@ -776,6 +776,9 @@ void
 virObjectEventStateQueue(virObjectEventStatePtr state,
                          virObjectEventPtr event)
 {
+   if (!event)
+       return;
+
     virObjectEventStateQueueRemote(state, event, -1);
 }
 

@@ -1297,8 +1297,7 @@ udevRemoveOneDevice(struct udev_device *device)
     virNodeDeviceObjListRemove(driver->devs, obj);
     virObjectUnref(obj);
 
-    if (event)
-        virObjectEventStateQueue(driver->nodeDeviceEventState, event);
+    virObjectEventStateQueue(driver->nodeDeviceEventState, event);
     return 0;
 }
 
@@ -1410,8 +1409,7 @@ udevAddOneDevice(struct udev_device *device)
     ret = 0;
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->nodeDeviceEventState, event);
+    virObjectEventStateQueue(driver->nodeDeviceEventState, event);
 
     if (ret != 0) {
         VIR_DEBUG("Discarding device %d %p %s", ret, def,

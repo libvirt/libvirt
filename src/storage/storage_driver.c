@@ -772,8 +772,7 @@ storagePoolCreateXML(virConnectPtr conn,
  cleanup:
     VIR_FREE(stateFile);
     virStoragePoolDefFree(newDef);
-    if (event)
-        virObjectEventStateQueue(driver->storageEventState, event);
+    virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return pool;
 }
@@ -829,8 +828,7 @@ storagePoolDefineXML(virConnectPtr conn,
     pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->storageEventState, event);
+    virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolDefFree(newDef);
     virStoragePoolObjEndAPI(&obj);
     return pool;
@@ -889,8 +887,7 @@ storagePoolUndefine(virStoragePoolPtr pool)
     ret = 0;
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->storageEventState, event);
+    virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return ret;
 }
@@ -971,8 +968,7 @@ storagePoolCreate(virStoragePoolPtr pool,
 
  cleanup:
     VIR_FREE(stateFile);
-    if (event)
-        virObjectEventStateQueue(driver->storageEventState, event);
+    virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return ret;
 }
@@ -1016,8 +1012,7 @@ storagePoolBuild(virStoragePoolPtr pool,
     ret = 0;
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->storageEventState, event);
+    virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return ret;
 }
@@ -1082,8 +1077,7 @@ storagePoolDestroy(virStoragePoolPtr pool)
     ret = 0;
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->storageEventState, event);
+    virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return ret;
 }
@@ -1147,8 +1141,7 @@ storagePoolDelete(virStoragePoolPtr pool,
     ret = 0;
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->storageEventState, event);
+    virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return ret;
 }
@@ -1210,8 +1203,7 @@ storagePoolRefresh(virStoragePoolPtr pool,
     ret = 0;
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->storageEventState, event);
+    virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return ret;
 }
@@ -2301,8 +2293,7 @@ virStorageVolPoolRefreshThread(void *opaque)
     event = virStoragePoolEventRefreshNew(def->name, def->uuid);
 
  cleanup:
-    if (event)
-        virObjectEventStateQueue(driver->storageEventState, event);
+    virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     virStorageVolPoolRefreshDataFree(cbdata);
 }

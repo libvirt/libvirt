@@ -566,8 +566,7 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     virDomainDefFree(def);
     virDomainDefFree(oldDef);
     virDomainObjEndAPI(&vm);
-    if (event)
-        virObjectEventStateQueue(privconn->domainEventState, event);
+    virObjectEventStateQueue(privconn->domainEventState, event);
 
     return dom;
 }
@@ -616,8 +615,7 @@ bhyveDomainUndefine(virDomainPtr domain)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    if (event)
-        virObjectEventStateQueue(privconn->domainEventState, event);
+    virObjectEventStateQueue(privconn->domainEventState, event);
     return ret;
 }
 
@@ -896,8 +894,7 @@ bhyveDomainCreateWithFlags(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    if (event)
-        virObjectEventStateQueue(privconn->domainEventState, event);
+    virObjectEventStateQueue(privconn->domainEventState, event);
     return ret;
 }
 
@@ -969,8 +966,7 @@ bhyveDomainCreateXML(virConnectPtr conn,
     virObjectUnref(caps);
     virDomainDefFree(def);
     virDomainObjEndAPI(&vm);
-    if (event)
-        virObjectEventStateQueue(privconn->domainEventState, event);
+    virObjectEventStateQueue(privconn->domainEventState, event);
 
     return dom;
 }
@@ -1002,8 +998,7 @@ bhyveDomainDestroy(virDomainPtr dom)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    if (event)
-        virObjectEventStateQueue(privconn->domainEventState, event);
+    virObjectEventStateQueue(privconn->domainEventState, event);
     return ret;
 }
 

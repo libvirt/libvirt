@@ -278,8 +278,7 @@ secretDefineXML(virConnectPtr conn,
  cleanup:
     virSecretDefFree(def);
     virSecretObjEndAPI(&obj);
-    if (event)
-        virObjectEventStateQueue(driver->secretEventState, event);
+    virObjectEventStateQueue(driver->secretEventState, event);
 
     return ret;
 }
@@ -341,8 +340,7 @@ secretSetValue(virSecretPtr secret,
 
  cleanup:
     virSecretObjEndAPI(&obj);
-    if (event)
-        virObjectEventStateQueue(driver->secretEventState, event);
+    virObjectEventStateQueue(driver->secretEventState, event);
 
     return ret;
 }
@@ -420,8 +418,7 @@ secretUndefine(virSecretPtr secret)
 
  cleanup:
     virSecretObjEndAPI(&obj);
-    if (event)
-        virObjectEventStateQueue(driver->secretEventState, event);
+    virObjectEventStateQueue(driver->secretEventState, event);
 
     return ret;
 }

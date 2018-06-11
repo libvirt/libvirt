@@ -82,8 +82,7 @@ lxcProcessAutoDestroy(virDomainObjPtr dom,
     if (!dom->persistent)
         virDomainObjListRemove(driver->domains, dom);
 
-    if (event)
-        virObjectEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 /*
@@ -692,8 +691,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
      * before adding monitorCallbacks. Since we are now done with the @vm
      * we can Unref/Unlock */
     virDomainObjEndAPI(&vm);
-    if (event)
-        virObjectEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
@@ -1607,8 +1605,7 @@ virLXCProcessAutostartDomain(virDomainObjPtr vm,
                 virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED);
-            if (event)
-                virObjectEventStateQueue(data->driver->domainEventState, event);
+            virObjectEventStateQueue(data->driver->domainEventState, event);
         }
     }
     virObjectUnlock(vm);

@@ -2093,8 +2093,7 @@ prlsdkSendEvent(vzDriverPtr driver,
     event = virDomainEventLifecycleNewFromObj(dom,
                                               lvEventType,
                                               lvEventTypeDetails);
-    if (event)
-        virObjectEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 static void

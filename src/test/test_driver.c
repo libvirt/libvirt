@@ -177,9 +177,6 @@ static void testDriverUnlock(testDriverPtr driver)
 static void testObjectEventQueue(testDriverPtr driver,
                                  virObjectEventPtr event)
 {
-    if (!event)
-        return;
-
     virObjectEventStateQueue(driver->eventState, event);
 }
 
