@@ -193,6 +193,9 @@
   deny /dev/shm/lttng-ust-wait-* r,
   deny /run/shm/lttng-ust-wait-* r,
 
+  # for vfio hotplug on systems without static vfio (LP: #1775777)
+  /dev/vfio/vfio rw,
+
   # required for sasl GSSAPI plugin
   /etc/gss/mech.d/ r,
   /etc/gss/mech.d/* r,
