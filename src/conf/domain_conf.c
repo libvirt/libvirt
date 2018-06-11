@@ -23638,10 +23638,59 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
 
 
 #define FORMAT_IOTUNE(val) \
-        if (def->blkdeviotune.val) { \
-            virBufferAsprintf(buf, "<" #val ">%llu</" #val ">\n", \
-                              def->blkdeviotune.val); \
+        if (disk->blkdeviotune.val) { \
+            virBufferAsprintf(&childBuf, "<" #val ">%llu</" #val ">\n", \
+                              disk->blkdeviotune.val); \
         }
+
+static int
+virDomainDiskDefFormatIotune(virBufferPtr buf,
+                             virDomainDiskDefPtr disk)
+{
+    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+
+    virBufferSetChildIndent(&childBuf, buf);
+
+    FORMAT_IOTUNE(total_bytes_sec);
+    FORMAT_IOTUNE(read_bytes_sec);
+    FORMAT_IOTUNE(write_bytes_sec);
+    FORMAT_IOTUNE(total_iops_sec);
+    FORMAT_IOTUNE(read_iops_sec);
+    FORMAT_IOTUNE(write_iops_sec);
+
+    FORMAT_IOTUNE(total_bytes_sec_max);
+    FORMAT_IOTUNE(read_bytes_sec_max);
+    FORMAT_IOTUNE(write_bytes_sec_max);
+    FORMAT_IOTUNE(total_iops_sec_max);
+    FORMAT_IOTUNE(read_iops_sec_max);
+    FORMAT_IOTUNE(write_iops_sec_max);
+
+    if (disk->blkdeviotune.size_iops_sec) {
+        virBufferAsprintf(&childBuf, "<size_iops_sec>%llu</size_iops_sec>\n",
+                          disk->blkdeviotune.size_iops_sec);
+    }
+
+    if (disk->blkdeviotune.group_name) {
+        virBufferEscapeString(&childBuf, "<group_name>%s</group_name>\n",
+                              disk->blkdeviotune.group_name);
+    }
+
+    FORMAT_IOTUNE(total_bytes_sec_max_length);
+    FORMAT_IOTUNE(read_bytes_sec_max_length);
+    FORMAT_IOTUNE(write_bytes_sec_max_length);
+    FORMAT_IOTUNE(total_iops_sec_max_length);
+    FORMAT_IOTUNE(read_iops_sec_max_length);
+    FORMAT_IOTUNE(write_iops_sec_max_length);
+
+    ret = virXMLFormatElement(buf, "iotune", NULL, &childBuf);
+
+    virBufferFreeAndReset(&childBuf);
+    return ret;
+}
+
+#undef FORMAT_IOTUNE
+
 
 static int
 virDomainDiskDefFormat(virBufferPtr buf,
@@ -23822,64 +23871,8 @@ virDomainDiskDefFormat(virBufferPtr buf,
     }
     virBufferAddLit(buf, "/>\n");
 
-    /*disk I/O throttling*/
-    if (def->blkdeviotune.total_bytes_sec ||
-        def->blkdeviotune.read_bytes_sec ||
-        def->blkdeviotune.write_bytes_sec ||
-        def->blkdeviotune.total_iops_sec ||
-        def->blkdeviotune.read_iops_sec ||
-        def->blkdeviotune.write_iops_sec ||
-        def->blkdeviotune.total_bytes_sec_max ||
-        def->blkdeviotune.read_bytes_sec_max ||
-        def->blkdeviotune.write_bytes_sec_max ||
-        def->blkdeviotune.total_iops_sec_max ||
-        def->blkdeviotune.read_iops_sec_max ||
-        def->blkdeviotune.write_iops_sec_max ||
-        def->blkdeviotune.size_iops_sec ||
-        def->blkdeviotune.group_name ||
-        def->blkdeviotune.total_bytes_sec_max_length ||
-        def->blkdeviotune.read_bytes_sec_max_length ||
-        def->blkdeviotune.write_bytes_sec_max_length ||
-        def->blkdeviotune.total_iops_sec_max_length ||
-        def->blkdeviotune.read_iops_sec_max_length ||
-        def->blkdeviotune.write_iops_sec_max_length) {
-        virBufferAddLit(buf, "<iotune>\n");
-        virBufferAdjustIndent(buf, 2);
-
-        FORMAT_IOTUNE(total_bytes_sec);
-        FORMAT_IOTUNE(read_bytes_sec);
-        FORMAT_IOTUNE(write_bytes_sec);
-        FORMAT_IOTUNE(total_iops_sec);
-        FORMAT_IOTUNE(read_iops_sec);
-        FORMAT_IOTUNE(write_iops_sec);
-
-        FORMAT_IOTUNE(total_bytes_sec_max);
-        FORMAT_IOTUNE(read_bytes_sec_max);
-        FORMAT_IOTUNE(write_bytes_sec_max);
-        FORMAT_IOTUNE(total_iops_sec_max);
-        FORMAT_IOTUNE(read_iops_sec_max);
-        FORMAT_IOTUNE(write_iops_sec_max);
-
-        if (def->blkdeviotune.size_iops_sec) {
-            virBufferAsprintf(buf, "<size_iops_sec>%llu</size_iops_sec>\n",
-                              def->blkdeviotune.size_iops_sec);
-        }
-
-        if (def->blkdeviotune.group_name) {
-            virBufferEscapeString(buf, "<group_name>%s</group_name>\n",
-                                  def->blkdeviotune.group_name);
-        }
-
-        FORMAT_IOTUNE(total_bytes_sec_max_length);
-        FORMAT_IOTUNE(read_bytes_sec_max_length);
-        FORMAT_IOTUNE(write_bytes_sec_max_length);
-        FORMAT_IOTUNE(total_iops_sec_max_length);
-        FORMAT_IOTUNE(read_iops_sec_max_length);
-        FORMAT_IOTUNE(write_iops_sec_max_length);
-
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</iotune>\n");
-    }
+    if (virDomainDiskDefFormatIotune(buf, def) < 0)
+        return -1;
 
     if (def->src->readonly)
         virBufferAddLit(buf, "<readonly/>\n");
@@ -23904,7 +23897,6 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "</disk>\n");
     return 0;
 }
-#undef FORMAT_IOTUNE
 
 
 static void
