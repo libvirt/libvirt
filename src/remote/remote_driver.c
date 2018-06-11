@@ -4435,8 +4435,7 @@ static void
 remoteEventQueue(struct private_data *priv, virObjectEventPtr event,
                  int remoteID)
 {
-    if (event)
-        virObjectEventStateQueueRemote(priv->eventState, event, remoteID);
+    virObjectEventStateQueueRemote(priv->eventState, event, remoteID);
 }
 
 
