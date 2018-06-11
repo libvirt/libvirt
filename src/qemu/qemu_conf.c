@@ -804,9 +804,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     if (virConfGetValueBool(conf, "clear_emulator_capabilities", &cfg->clearEmulatorCapabilities) < 0)
         goto cleanup;
-    if (virConfGetValueBool(conf, "allow_disk_format_probing", &tmp) < 0)
+    if ((rv = virConfGetValueBool(conf, "allow_disk_format_probing", &tmp)) < 0)
         goto cleanup;
-    if (tmp) {
+    if (rv == 1 && tmp) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("allow_disk_format_probing is no longer supported"));
         goto cleanup;
