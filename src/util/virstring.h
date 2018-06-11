@@ -248,7 +248,7 @@ size_t virStringListLength(const char * const *strings);
  * @strp: variable to hold result (char **)
  * @fmt: printf format
  *
- * Like glibc's_asprintf but makes sure *strp == NULL on failure, in which case
+ * Like glibc's asprintf but makes sure *strp == NULL on failure, in which case
  * the OOM error is reported too.
  *
  * Returns -1 on failure (with OOM error reported), number of bytes printed
@@ -264,7 +264,7 @@ size_t virStringListLength(const char * const *strings);
  * @strp: variable to hold result (char **)
  * @fmt: printf format
  *
- * Like glibc's_asprintf but makes sure *strp == NULL on failure.
+ * Like glibc's asprintf but makes sure *strp == NULL on failure.
  *
  * Returns -1 on failure, number of bytes printed on success.
  */
