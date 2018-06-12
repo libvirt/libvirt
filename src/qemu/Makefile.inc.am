@@ -40,6 +40,7 @@ QEMU_DRIVER_SOURCES = \
         qemu/qemu_migration_paramspriv.h \
 	qemu/qemu_monitor.c \
 	qemu/qemu_monitor.h \
+	qemu/qemu_monitor_priv.h \
 	qemu/qemu_monitor_text.c \
 	qemu/qemu_monitor_text.h \
 	qemu/qemu_monitor_json.c \
