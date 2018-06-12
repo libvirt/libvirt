@@ -125,8 +125,6 @@ static int umlOpenMonitor(struct uml_driver *driver,
                           virDomainObjPtr vm);
 static int umlReadPidFile(struct uml_driver *driver,
                           virDomainObjPtr vm);
-static void umlDomainEventQueue(struct uml_driver *driver,
-                                virObjectEventPtr event);
 
 static int umlStartVMDaemon(virConnectPtr conn,
                             struct uml_driver *driver,
@@ -228,8 +226,7 @@ umlAutostartDomain(virDomainObjPtr vm,
                 virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED);
-            if (event)
-                umlDomainEventQueue(data->driver, event);
+            virObjectEventStateQueue(data->driver->domainEventState, event);
         }
     }
     virObjectUnlock(vm);
@@ -425,10 +422,8 @@ umlInotifyEvent(int watch,
             }
         }
         virDomainObjEndAPI(&dom);
-        if (event) {
-            umlDomainEventQueue(driver, event);
-            event = NULL;
-        }
+        virObjectEventStateQueue(driver->domainEventState, event);
+        event = NULL;
     }
 
  cleanup:
@@ -646,8 +641,7 @@ static void umlNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
             virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_DEFINED,
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED);
-        if (event)
-            umlDomainEventQueue(driver, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     }
 }
 
@@ -783,8 +777,7 @@ static int umlProcessAutoDestroyDom(void *payload,
         virDomainObjListRemove(data->driver->domains, dom);
 
     virDomainObjEndAPI(&dom);
-    if (event)
-        umlDomainEventQueue(data->driver, event);
+    virObjectEventStateQueue(data->driver->domainEventState, event);
     virHashRemoveEntry(data->driver->autodestroy, uuidstr);
     return 0;
 }
@@ -1615,8 +1608,7 @@ static virDomainPtr umlDomainCreateXML(virConnectPtr conn, const char *xml,
  cleanup:
     virDomainDefFree(def);
     virDomainObjEndAPI(&vm);
-    if (event)
-        umlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     umlDriverUnlock(driver);
     virNWFilterUnlockFilterUpdates();
     return dom;
@@ -1689,8 +1681,7 @@ umlDomainDestroyFlags(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    if (event)
-        umlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     umlDriverUnlock(driver);
     return ret;
 }
@@ -1949,8 +1940,7 @@ static int umlDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    if (event)
-        umlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     umlDriverUnlock(driver);
     virNWFilterUnlockFilterUpdates();
     return ret;
@@ -2586,13 +2576,6 @@ umlConnectDomainEventDeregisterAny(virConnectPtr conn,
     return ret;
 }
 
-
-/* driver must be locked before calling */
-static void umlDomainEventQueue(struct uml_driver *driver,
-                                virObjectEventPtr event)
-{
-    virObjectEventStateQueue(driver->domainEventState, event);
-}
 
 static int umlConnectListAllDomains(virConnectPtr conn,
                                     virDomainPtr **domains,
