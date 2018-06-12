@@ -142,9 +142,6 @@ typedef virDomainPanicDef *virDomainPanicDefPtr;
 typedef struct _virDomainMemoryDef virDomainMemoryDef;
 typedef virDomainMemoryDef *virDomainMemoryDefPtr;
 
-typedef struct _virDomainSevDef virDomainSevDef;
-typedef virDomainSevDef *virDomainSevDefPtr;
-
 /* forward declarations virDomainChrSourceDef, required by
  * virDomainNetDef
  */
