@@ -5826,9 +5826,9 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
 
 
 static int
-qemuBuildSevCreateFile(const char *configDir,
-                       const char *name,
-                       const char *data)
+qemuProcessSEVCreateFile(const char *configDir,
+                         const char *name,
+                         const char *data)
 {
     char *configFile;
 
@@ -5871,12 +5871,12 @@ qemuProcessPrepareSevGuestInput(virDomainObjPtr vm)
     }
 
     if (sev->dh_cert) {
-        if (qemuBuildSevCreateFile(priv->libDir, "dh_cert", sev->dh_cert) < 0)
+        if (qemuProcessSEVCreateFile(priv->libDir, "dh_cert", sev->dh_cert) < 0)
             return -1;
     }
 
     if (sev->session) {
-        if (qemuBuildSevCreateFile(priv->libDir, "session", sev->session) < 0)
+        if (qemuProcessSEVCreateFile(priv->libDir, "session", sev->session) < 0)
             return -1;
     }
 
