@@ -5849,7 +5849,7 @@ qemuProcessSEVCreateFile(const char *configDir,
 
 
 static int
-qemuProcessPrepareSevGuestInput(virDomainObjPtr vm)
+qemuProcessPrepareSEVGuestInput(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
@@ -6044,7 +6044,7 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
     if (qemuExtDevicesPrepareHost(driver, vm->def) < 0)
         goto cleanup;
 
-    if (qemuProcessPrepareSevGuestInput(vm) < 0)
+    if (qemuProcessPrepareSEVGuestInput(vm) < 0)
         goto cleanup;
 
     ret = 0;
