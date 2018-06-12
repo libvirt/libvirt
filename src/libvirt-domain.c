@@ -11780,6 +11780,10 @@ virDomainFSInfoFree(virDomainFSInfoPtr info)
  * be unreachable. Depending on the route table config of the
  * guest, the returned mac address may be duplicated.
  *
+ * Note that for some @source values some pieces of returned @ifaces
+ * might be unset (e.g. VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP does not
+ * set IP address prefix as ARP table does not have any notion of that).
+ *
  * @ifaces->name and @ifaces->hwaddr are never NULL.
  *
  * The caller *must* free @ifaces when no longer needed. Usual use case
