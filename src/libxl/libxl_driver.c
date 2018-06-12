@@ -1179,8 +1179,7 @@ libxlDomainSuspend(virDomainPtr dom)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    if (event)
-        libxlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -1234,8 +1233,7 @@ libxlDomainResume(virDomainPtr dom)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    if (event)
-        libxlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -1394,8 +1392,7 @@ libxlDomainDestroyFlags(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    if (event)
-        libxlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -1734,8 +1731,7 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver,
     VIR_FREE(xml);
     if (VIR_CLOSE(fd) < 0)
         virReportSystemError(errno, "%s", _("cannot close file"));
-    if (event)
-        libxlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -1950,8 +1946,7 @@ libxlDomainCoreDump(virDomainPtr dom, const char *to, unsigned int flags)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    if (event)
-        libxlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -2755,8 +2750,7 @@ libxlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     virDomainDefFree(def);
     virDomainDefFree(oldDef);
     virDomainObjEndAPI(&vm);
-    if (event)
-        libxlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return dom;
 }
@@ -2827,8 +2821,7 @@ libxlDomainUndefineFlags(virDomainPtr dom,
  cleanup:
     VIR_FREE(name);
     virDomainObjEndAPI(&vm);
-    if (event)
-        libxlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }

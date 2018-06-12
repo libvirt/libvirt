@@ -1284,10 +1284,8 @@ libxlDomainMigrationDstFinish(virConnectPtr dconn,
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     }
 
-    if (event) {
-        libxlDomainEventQueue(driver, event);
-        event = NULL;
-    }
+    virObjectEventStateQueue(driver->domainEventState, event);
+    event = NULL;
 
     if (flags & VIR_MIGRATE_PERSIST_DEST) {
         unsigned int oldPersist = vm->persistent;
@@ -1306,10 +1304,8 @@ libxlDomainMigrationDstFinish(virConnectPtr dconn,
                                          oldPersist ?
                                          VIR_DOMAIN_EVENT_DEFINED_UPDATED :
                                          VIR_DOMAIN_EVENT_DEFINED_ADDED);
-        if (event) {
-            libxlDomainEventQueue(driver, event);
-            event = NULL;
-        }
+        virObjectEventStateQueue(driver->domainEventState, event);
+        event = NULL;
     }
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, cfg->caps) < 0)
@@ -1329,8 +1325,7 @@ libxlDomainMigrationDstFinish(virConnectPtr dconn,
             virDomainObjListRemove(driver->domains, vm);
     }
 
-    if (event)
-        libxlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return dom;
 }
@@ -1384,8 +1379,7 @@ libxlDomainMigrationSrcConfirm(libxlDriverPrivatePtr driver,
     ret = 0;
 
  cleanup:
-    if (event)
-        libxlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }

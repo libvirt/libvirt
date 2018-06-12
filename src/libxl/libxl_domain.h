@@ -95,10 +95,6 @@ int
 libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
     ATTRIBUTE_RETURN_CHECK;
 
-void
-libxlDomainEventQueue(libxlDriverPrivatePtr driver,
-                      virObjectEventPtr event);
-
 char *
 libxlDomainManagedSavePath(libxlDriverPrivatePtr driver,
                            virDomainObjPtr vm);

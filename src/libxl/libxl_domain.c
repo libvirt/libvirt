@@ -526,10 +526,8 @@ libxlDomainShutdownThread(void *opaque)
     }
 
  destroy:
-    if (dom_event) {
-        libxlDomainEventQueue(driver, dom_event);
-        dom_event = NULL;
-    }
+    virObjectEventStateQueue(driver->domainEventState, dom_event);
+    dom_event = NULL;
     libxlDomainDestroyInternal(driver, vm);
     libxlDomainCleanup(driver, vm);
     if (!vm->persistent)
@@ -538,10 +536,8 @@ libxlDomainShutdownThread(void *opaque)
     goto endjob;
 
  restart:
-    if (dom_event) {
-        libxlDomainEventQueue(driver, dom_event);
-        dom_event = NULL;
-    }
+    virObjectEventStateQueue(driver->domainEventState, dom_event);
+    dom_event = NULL;
     libxlDomainDestroyInternal(driver, vm);
     libxlDomainCleanup(driver, vm);
     if (libxlDomainStartNew(driver, vm, false) < 0) {
@@ -554,8 +550,7 @@ libxlDomainShutdownThread(void *opaque)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    if (dom_event)
-        libxlDomainEventQueue(driver, dom_event);
+    virObjectEventStateQueue(driver->domainEventState, dom_event);
     libxl_event_free(cfg->ctx, ev);
     VIR_FREE(shutdown_info);
     virObjectUnref(cfg);
@@ -614,12 +609,6 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     libxl_event_free(cfg->ctx, (libxl_event *)event);
     virObjectUnref(cfg);
     VIR_FREE(shutdown_info);
-}
-
-void
-libxlDomainEventQueue(libxlDriverPrivatePtr driver, virObjectEventPtr event)
-{
-    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 char *
@@ -1394,8 +1383,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
                                      restore_fd < 0 ?
                                          VIR_DOMAIN_EVENT_STARTED_BOOTED :
                                          VIR_DOMAIN_EVENT_STARTED_RESTORED);
-    if (event)
-        libxlDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     ret = 0;
     goto cleanup;
