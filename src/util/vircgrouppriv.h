@@ -41,11 +41,13 @@ struct _virCgroupController {
     char *linkPoint;
     char *placement;
 };
+typedef struct _virCgroupController virCgroupController;
+typedef virCgroupController *virCgroupControllerPtr;
 
 struct _virCgroup {
     char *path;
 
-    struct _virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
+    virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
 };
 
 int virCgroupDetectMountsFromFile(virCgroupPtr group,
