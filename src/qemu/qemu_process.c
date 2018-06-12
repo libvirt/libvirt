@@ -5831,6 +5831,7 @@ qemuProcessSEVCreateFile(const char *configDir,
                          const char *data)
 {
     char *configFile;
+    int ret = -1;
 
     if (!(configFile = virFileBuildPath(configDir, name, ".base64")))
         return -1;
@@ -5838,15 +5839,12 @@ qemuProcessSEVCreateFile(const char *configDir,
     if (virFileRewriteStr(configFile, S_IRUSR | S_IWUSR, data) < 0) {
         virReportSystemError(errno, _("failed to write data to config '%s'"),
                              configFile);
-        goto error;
+        goto cleanup;
     }
 
+ cleanup:
     VIR_FREE(configFile);
-    return 0;
-
- error:
-    VIR_FREE(configFile);
-    return -1;
+    return ret;
 }
 
 
