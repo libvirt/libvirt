@@ -15862,7 +15862,7 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
 
     if (!(type = virXMLPropString(sevNode, "type"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing launch-security type"));
+                       _("missing launch security type"));
         goto error;
     }
 
@@ -15874,33 +15874,33 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
     default:
         virReportError(VIR_ERR_XML_ERROR,
-                       _("unsupported launch-security type '%s'"),
+                       _("unsupported launch security type '%s'"),
                        type);
         goto error;
     }
 
     if (virXPathUInt("string(./cbitpos)", ctxt, &def->cbitpos) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("failed to get launch-security cbitpos"));
+                       _("failed to get launch security cbitpos"));
         goto error;
     }
 
-    if (virXPathUInt("string(./reduced-phys-bits)", ctxt,
+    if (virXPathUInt("string(./reducedPhysBits)", ctxt,
                      &def->reduced_phys_bits) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("failed to get launch-security reduced-phys-bits"));
+                       _("failed to get launch security reduced-phys-bits"));
         goto error;
     }
 
     if (virXPathULongHex("string(./policy)", ctxt, &policy) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("failed to get launch-security policy"));
+                       _("failed to get launch security policy"));
         goto error;
     }
 
     def->policy = policy;
 
-    if ((tmp = virXPathString("string(./dh-cert)", ctxt))) {
+    if ((tmp = virXPathString("string(./dhCert)", ctxt))) {
         if (VIR_STRDUP(def->dh_cert, tmp) < 0)
             goto error;
 
@@ -20730,7 +20730,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     VIR_FREE(nodes);
 
     /* Check for SEV feature */
-    if ((node = virXPathNode("./launch-security", ctxt)) != NULL) {
+    if ((node = virXPathNode("./launchSecurity", ctxt)) != NULL) {
         def->sev = virDomainSEVDefParseXML(node, ctxt);
         if (!def->sev)
             goto error;
@@ -26771,22 +26771,22 @@ virDomainSEVDefFormat(virBufferPtr buf, virDomainSevDefPtr sev)
     if (!sev)
         return;
 
-    virBufferAsprintf(buf, "<launch-security type='%s'>\n",
+    virBufferAsprintf(buf, "<launchSecurity type='%s'>\n",
                       virDomainLaunchSecurityTypeToString(sev->sectype));
     virBufferAdjustIndent(buf, 2);
 
     virBufferAsprintf(buf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
-    virBufferAsprintf(buf, "<reduced-phys-bits>%d</reduced-phys-bits>\n",
+    virBufferAsprintf(buf, "<reducedPhysBits>%d</reducedPhysBits>\n",
                       sev->reduced_phys_bits);
     virBufferAsprintf(buf, "<policy>0x%04x</policy>\n", sev->policy);
     if (sev->dh_cert)
-        virBufferEscapeString(buf, "<dh-cert>%s</dh-cert>\n", sev->dh_cert);
+        virBufferEscapeString(buf, "<dhCert>%s</dhCert>\n", sev->dh_cert);
 
     if (sev->session)
         virBufferEscapeString(buf, "<session>%s</session>\n", sev->session);
 
     virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</launch-security>\n");
+    virBufferAddLit(buf, "</launchSecurity>\n");
 }
 
 

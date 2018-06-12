@@ -78,7 +78,7 @@
           <ref name='keywrap'/>
         </optional>
         <optional>
-          <ref name='launch-security'/>
+          <ref name='launchSecurity'/>
         </optional>
       </interleave>
     </element>
@@ -439,8 +439,8 @@
     </element>
   </define>
 
-  <define name="launch-security">
-    <element name="launch-security">
+  <define name="launchSecurity">
+    <element name="launchSecurity">
       <attribute name="type">
         <value>sev</value>
       </attribute>
@@ -448,7 +448,7 @@
         <element name="cbitpos">
           <data type='unsignedInt'/>
         </element>
-        <element name="reduced-phys-bits">
+        <element name="reducedPhysBits">
           <data type='unsignedInt'/>
         </element>
         <element name="policy">
@@ -460,7 +460,7 @@
           </element>
         </optional>
         <optional>
-          <element name="dh-cert">
+          <element name="dhCert">
             <data type="string"/>
           </element>
         </optional>

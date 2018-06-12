@@ -14,11 +14,11 @@
   <on_crash>destroy</on_crash>
   <devices>
   </devices>
-  <launch-security type='sev'>
+  <launchSecurity type='sev'>
     <cbitpos>47</cbitpos>
-    <reduced-phys-bits>1</reduced-phys-bits>
+    <reducedPhysBits>1</reducedPhysBits>
     <policy>0x0001</policy>
-    <dh-cert>AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA</dh-cert>
+    <dhCert>AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA</dhCert>
     <session>IHAVENOIDEABUTJUSTPROVIDINGASTRING</session>
-  </launch-security>
+  </launchSecurity>
 </domain>

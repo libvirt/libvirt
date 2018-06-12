@@ -8458,12 +8458,12 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>Note: DEA/TDEA is synonymous with DES/TDES.</p>
 
-    <h3><a id="sev">Secure Encrypted Virtualization (SEV)</a></h3>
+    <h3><a id="sev">Launch Security</a></h3>
 
     <p>
-       The contents of the <code>&lt;launch-security type='sev'&gt;</code> element
+       The contents of the <code>&lt;launchSecurity type='sev'&gt;</code> element
        is used to provide the guest owners input used for creating an encrypted
-       VM using the AMD SEV feature.
+       VM using the AMD SEV feature (Secure Encrypted Virtualization).
 
        SEV is an extension to the AMD-V architecture which supports running
        encrypted virtual machine (VMs) under the control of KVM. Encrypted
@@ -8480,13 +8480,13 @@ qemu-kvm -net nic,model=? /dev/null
     <pre>
 &lt;domain&gt;
   ...
-  &lt;launch-security type='sev'&gt;
+  &lt;launchSecurity type='sev'&gt;
     &lt;policy&gt; 0x0001 &lt;/policy&gt;
     &lt;cbitpos&gt; 47 &lt;/cbitpos&gt;
-    &lt;reduced-phys-bits&gt; 1 &lt;/reduced-phys-bits&gt;
+    &lt;reducedPhysBits&gt; 1 &lt;/reducedPhysBits&gt;
+    &lt;dhCert&gt; RBBBSDDD=FDDCCCDDDG &lt;/dhCert&gt;
     &lt;session&gt; AAACCCDD=FFFCCCDSDS &lt;/session&gt;
-    &lt;dh-cert&gt; RBBBSDDD=FDDCCCDDDG &lt;/dh&gt;
-  &lt;/sev&gt;
+  &lt;/launchSecurity&gt;
   ...
 &lt;/domain&gt;
 </pre>
@@ -8498,8 +8498,8 @@ qemu-kvm -net nic,model=? /dev/null
       hypervisor dependent and can be obtained through the <code>sev</code> element
       from the domain capabilities.
       </dd>
-      <dt><code>reduced-phys-bits</code></dt>
-      <dd>The required <code>reduced-phys-bits</code> element provides the physical
+      <dt><code>reducedPhysBits</code></dt>
+      <dd>The required <code>reducedPhysBits</code> element provides the physical
       address bit reducation. Similar to <code>cbitpos</code> the value of <code>
       reduced-phys-bit</code> is hypervisor dependent and can be obtained
       through the <code>sev</code> element from the domain capabilities.
@@ -8558,8 +8558,8 @@ qemu-kvm -net nic,model=? /dev/null
       </table>
 
       </dd>
-      <dt><code>dh-cert</code></dt>
-      <dd>The optional <code>dh-cert</code> element provides the guest owners
+      <dt><code>dhCert</code></dt>
+      <dd>The optional <code>dhCert</code> element provides the guest owners
       base64 encoded Diffie-Hellman (DH) key. The key is used to negotiate a
       master secret key between the SEV firmware and guest owner. This master
       secret key is then used to establish a trusted channel between SEV
