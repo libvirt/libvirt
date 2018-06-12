@@ -2084,16 +2084,6 @@ virQEMUCapsSetGICCapabilities(virQEMUCapsPtr qemuCaps,
 }
 
 
-void
-virQEMUCapsSetSEVCapabilities(virQEMUCapsPtr qemuCaps,
-                              virSEVCapability *capabilities)
-{
-    virSEVCapabilitiesFree(qemuCaps->sevCapabilities);
-
-    qemuCaps->sevCapabilities = capabilities;
-}
-
-
 virSEVCapabilityPtr
 virQEMUCapsGetSEVCapabilities(virQEMUCapsPtr qemuCaps)
 {
@@ -2697,8 +2687,8 @@ virQEMUCapsProbeQMPSEVCapabilities(virQEMUCapsPtr qemuCaps,
     if (qemuMonitorGetSEVCapabilities(mon, &caps) < 0)
         return -1;
 
-    virQEMUCapsSetSEVCapabilities(qemuCaps, caps);
-
+    virSEVCapabilitiesFree(qemuCaps->sevCapabilities);
+    qemuCaps->sevCapabilities = caps;
     return 0;
 }
 
