@@ -385,7 +385,7 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
             const char *typestr = virCgroupControllerTypeToString(i);
             int typelen = strlen(typestr);
             char *tmp = entry.mnt_opts;
-            struct virCgroupController *controller = &group->controllers[i];
+            struct _virCgroupController *controller = &group->controllers[i];
             while (tmp) {
                 char *next = strchr(tmp, ',');
                 int len;

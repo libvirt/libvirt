@@ -31,7 +31,7 @@
 
 # include "vircgroup.h"
 
-struct virCgroupController {
+struct _virCgroupController {
     int type;
     char *mountPoint;
     /* If mountPoint holds several controllers co-mounted,
@@ -42,10 +42,10 @@ struct virCgroupController {
     char *placement;
 };
 
-struct virCgroup {
+struct _virCgroup {
     char *path;
 
-    struct virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
+    struct _virCgroupController controllers[VIR_CGROUP_CONTROLLER_LAST];
 };
 
 int virCgroupDetectMountsFromFile(virCgroupPtr group,

@@ -28,8 +28,8 @@
 # include "virutil.h"
 # include "virbitmap.h"
 
-struct virCgroup;
-typedef struct virCgroup *virCgroupPtr;
+struct _virCgroup;
+typedef struct _virCgroup *virCgroupPtr;
 
 enum {
     VIR_CGROUP_CONTROLLER_CPU,
