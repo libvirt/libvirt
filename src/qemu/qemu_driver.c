@@ -21503,7 +21503,7 @@ qemuDomainGetSEVMeasurement(virQEMUDriverPtr driver,
                             unsigned int flags)
 {
     int ret = -1;
-    char *tmp;
+    char *tmp = NULL;
     int maxpar = 0;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
@@ -21526,10 +21526,10 @@ qemuDomainGetSEVMeasurement(virQEMUDriverPtr driver,
                                 tmp) < 0)
         goto endjob;
 
-    VIR_FREE(tmp);
     ret = 0;
 
  endjob:
+    VIR_FREE(tmp);
     qemuDomainObjEndJob(driver, vm);
     return ret;
 }
