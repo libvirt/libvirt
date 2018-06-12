@@ -2324,10 +2324,10 @@ typedef enum {
     VIR_DOMAIN_LAUNCH_SECURITY_LAST,
 } virDomainLaunchSecurity;
 
-typedef struct _virDomainSevDef virDomainSevDef;
-typedef virDomainSevDef *virDomainSevDefPtr;
+typedef struct _virDomainSEVDef virDomainSEVDef;
+typedef virDomainSEVDef *virDomainSEVDefPtr;
 
-struct _virDomainSevDef {
+struct _virDomainSEVDef {
     int sectype; /* enum virDomainLaunchSecurity */
     char *dh_cert;
     char *session;
@@ -2529,7 +2529,7 @@ struct _virDomainDef {
     virDomainKeyWrapDefPtr keywrap;
 
     /* SEV-specific domain */
-    virDomainSevDefPtr sev;
+    virDomainSEVDefPtr sev;
 
     /* Application-specific custom metadata */
     xmlNodePtr metadata;

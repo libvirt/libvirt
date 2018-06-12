@@ -2962,7 +2962,7 @@ virDomainCachetuneDefFree(virDomainCachetuneDefPtr cachetune)
 
 
 static void
-virDomainSEVDefFree(virDomainSevDefPtr def)
+virDomainSEVDefFree(virDomainSEVDefPtr def)
 {
     if (!def)
         return;
@@ -15845,13 +15845,13 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
 }
 
 
-static virDomainSevDefPtr
+static virDomainSEVDefPtr
 virDomainSEVDefParseXML(xmlNodePtr sevNode,
                         xmlXPathContextPtr ctxt)
 {
     char *type = NULL;
     xmlNodePtr save = ctxt->node;
-    virDomainSevDefPtr def;
+    virDomainSEVDefPtr def;
     unsigned long policy;
 
     if (VIR_ALLOC(def) < 0)
@@ -26754,7 +26754,7 @@ virDomainKeyWrapDefFormat(virBufferPtr buf, virDomainKeyWrapDefPtr keywrap)
 
 
 static void
-virDomainSEVDefFormat(virBufferPtr buf, virDomainSevDefPtr sev)
+virDomainSEVDefFormat(virBufferPtr buf, virDomainSEVDefPtr sev)
 {
     if (!sev)
         return;
