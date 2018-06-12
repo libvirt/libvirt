@@ -565,7 +565,7 @@ virDomainCapsFeatureSEVFormat(virBufferPtr buf,
     virBufferAddLit(buf, "<sev supported='yes'>\n");
     virBufferAdjustIndent(buf, 2);
     virBufferAsprintf(buf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
-    virBufferAsprintf(buf, "<reduced-phys-bits>%d</reduced-phys-bits>\n",
+    virBufferAsprintf(buf, "<reducedPhysBits>%d</reducedPhysBits>\n",
                           sev->reduced_phys_bits);
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</sev>\n");

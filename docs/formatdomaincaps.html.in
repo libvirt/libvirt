@@ -492,7 +492,7 @@
       <dd>When memory encryption is enabled, one of the physical address bits
       (aka the C-bit) is utilized to mark if a memory page is protected. The
       C-bit position is Hypervisor dependent.</dd>
-      <dt><code>reduced-phys-bits</code></dt>
+      <dt><code>reducedPhysBits</code></dt>
       <dd>When memory encryption is enabled, we lose certain bits in physical
       address space. The number of bits we lose is hypervisor dependent.</dd>
     </dl>

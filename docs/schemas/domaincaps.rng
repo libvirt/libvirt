@@ -216,7 +216,7 @@
       <element name='cbitpos'>
         <data type='unsignedInt'/>
       </element>
-      <element name='reduced-phys-bits'>
+      <element name='reducedPhysBits'>
         <data type='unsignedInt'/>
       </element>
     </element>
