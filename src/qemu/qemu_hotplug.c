@@ -2042,7 +2042,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     }
 
     event = virDomainEventDeviceAddedNewFromObj(vm, objalias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     /* fix the balloon size */
     ignore_value(qemuProcessRefreshBalloonState(driver, vm, QEMU_ASYNC_JOB_NONE));
@@ -3807,7 +3807,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     virDomainAuditDisk(vm, disk->src, NULL, "detach", true);
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, disk->info.alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     if (prManaged && !prUsed)
         qemuProcessKillManagedPRDaemon(vm);
@@ -3848,7 +3848,7 @@ qemuDomainRemoveControllerDevice(virQEMUDriverPtr driver,
               controller->info.alias, vm, vm->def->name);
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, controller->info.alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     for (i = 0; i < vm->def->ncontrollers; i++) {
         if (vm->def->controllers[i] == controller) {
@@ -3894,7 +3894,7 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
         return -1;
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, mem->info.alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     if ((idx = virDomainMemoryFindByDef(vm->def, mem)) >= 0)
         virDomainMemoryRemove(vm->def, idx);
@@ -4020,7 +4020,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     }
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, hostdev->info->alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     if (hostdev->parent.type == VIR_DOMAIN_DEVICE_NET) {
         net = hostdev->parent.data.net;
@@ -4146,7 +4146,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
     virDomainAuditNet(vm, net, NULL, "detach", true);
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, net->info.alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     for (i = 0; i < vm->def->nnets; i++) {
         if (vm->def->nets[i] == net) {
@@ -4229,7 +4229,7 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
         VIR_WARN("Unable to remove chr device from /dev");
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, chr->info.alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     qemuDomainReleaseDeviceAddress(vm, &chr->info, NULL);
     qemuDomainChrRemove(vm->def, chr);
@@ -4290,7 +4290,7 @@ qemuDomainRemoveRNGDevice(virQEMUDriverPtr driver,
         VIR_WARN("Unable to remove RNG device from /dev");
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, rng->info.alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     if ((idx = virDomainRNGFind(vm->def, rng)) >= 0)
         virDomainRNGRemove(vm->def, idx);
@@ -4345,7 +4345,7 @@ qemuDomainRemoveShmemDevice(virQEMUDriverPtr driver,
         goto cleanup;
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, shmem->info.alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     if ((idx = virDomainShmemDefFind(vm->def, shmem)) >= 0)
         virDomainShmemDefRemove(vm->def, idx);
@@ -4372,7 +4372,7 @@ qemuDomainRemoveWatchdog(virQEMUDriverPtr driver,
               watchdog->info.alias, vm, vm->def->name);
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, watchdog->info.alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     qemuDomainReleaseDeviceAddress(vm, &watchdog->info, NULL);
     virDomainWatchdogDefFree(vm->def->watchdog);
     vm->def->watchdog = NULL;
@@ -4393,7 +4393,7 @@ qemuDomainRemoveInputDevice(virDomainObjPtr vm,
               dev->info.alias, vm, vm->def->name);
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, dev->info.alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     for (i = 0; i < vm->def->ninputs; i++) {
         if (vm->def->inputs[i] == dev)
             break;
@@ -4426,7 +4426,7 @@ qemuDomainRemoveVsockDevice(virDomainObjPtr vm,
               dev->info.alias, vm, vm->def->name);
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, dev->info.alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     qemuDomainReleaseDeviceAddress(vm, &dev->info, NULL);
     virDomainVsockDefFree(vm->def->vsock);
     vm->def->vsock = NULL;
@@ -4466,7 +4466,7 @@ qemuDomainRemoveRedirdevDevice(virQEMUDriverPtr driver,
     virDomainAuditRedirdev(vm, dev, "detach", true);
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, dev->info.alias);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     if ((idx = virDomainRedirdevDefFind(vm->def, dev)) >= 0)
         virDomainRedirdevDefRemove(vm->def, idx);

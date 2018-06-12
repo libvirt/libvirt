@@ -975,7 +975,7 @@ static void qemuNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
             virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_DEFINED,
                                      VIR_DOMAIN_EVENT_DEFINED_ADDED);
-        qemuDomainEventQueue(driver, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     }
 }
 
@@ -1806,10 +1806,8 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
  cleanup:
     virDomainDefFree(def);
     virDomainObjEndAPI(&vm);
-    if (event) {
-        qemuDomainEventQueue(driver, event);
-        qemuDomainEventQueue(driver, event2);
-    }
+    virObjectEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, event2);
     virObjectUnref(caps);
     virNWFilterUnlockFilterUpdates();
     return dom;
@@ -1879,7 +1877,7 @@ static int qemuDomainSuspend(virDomainPtr dom)
  cleanup:
     virDomainObjEndAPI(&vm);
 
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -1942,7 +1940,7 @@ static int qemuDomainResume(virDomainPtr dom)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -2250,7 +2248,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
 }
 
@@ -3385,7 +3383,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
                                      VIR_DOMAIN_RUNNING_SAVE_CANCELED,
                                      QEMU_ASYNC_JOB_SAVE) < 0) {
                 VIR_WARN("Unable to resume guest CPUs after save failure");
-                qemuDomainEventQueue(driver,
+                virObjectEventStateQueue(driver->domainEventState,
                                      virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR));
@@ -3402,7 +3400,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
     virObjectUnref(cookie);
     VIR_FREE(xml);
     virQEMUSaveDataFree(data);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(caps);
     return ret;
 }
@@ -3973,7 +3971,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
 }
 
@@ -4251,7 +4249,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
                                               VIR_DOMAIN_EVENT_CRASHED,
                                               VIR_DOMAIN_EVENT_CRASHED_PANICKED);
 
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
         VIR_WARN("Unable to save status on vm %s after state change",
@@ -4275,7 +4273,7 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
                                                   VIR_DOMAIN_EVENT_STOPPED,
                                                   VIR_DOMAIN_EVENT_STOPPED_CRASHED);
 
-        qemuDomainEventQueue(driver, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
         virDomainAuditStop(vm, "destroyed");
         removeInactive = true;
         break;
@@ -4719,7 +4717,7 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
 
         event = virDomainEventAgentLifecycleNewFromObj(vm, newstate,
                                                        VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL);
-        qemuDomainEventQueue(driver, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     }
 
  endjob:
@@ -4793,7 +4791,7 @@ processMonitorEOFEvent(virQEMUDriverPtr driver,
                                               eventReason);
     qemuProcessStop(driver, vm, stopReason, QEMU_ASYNC_JOB_NONE, stopFlags);
     virDomainAuditStop(vm, auditReason);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
  endjob:
     qemuDomainRemoveInactive(driver, vm);
@@ -5072,7 +5070,7 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
     virBitmapFree(tmpmap);
     virCgroupFree(&cgroup_vcpu);
     VIR_FREE(str);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
 }
 
@@ -5309,7 +5307,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
  cleanup:
     if (cgroup_emulator)
         virCgroupFree(&cgroup_emulator);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     VIR_FREE(str);
     virBitmapFree(pcpumap);
     virDomainObjEndAPI(&vm);
@@ -5791,7 +5789,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
  cleanup:
     if (cgroup_iothread)
         virCgroupFree(&cgroup_iothread);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     VIR_FREE(str);
     virBitmapFree(pcpumap);
     virDomainObjEndAPI(&vm);
@@ -6622,7 +6620,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_RESTORED);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
 
     /* If it was running before, resume it now unless caller requested pause. */
@@ -6645,7 +6643,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          detail);
-        qemuDomainEventQueue(driver, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     }
 
     ret = 0;
@@ -7293,14 +7291,12 @@ qemuDomainObjStart(virConnectPtr conn,
             virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_BOOTED);
-        if (event) {
-            qemuDomainEventQueue(driver, event);
-            if (start_paused) {
-                event = virDomainEventLifecycleNewFromObj(vm,
-                                                 VIR_DOMAIN_EVENT_SUSPENDED,
-                                                 VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
-                qemuDomainEventQueue(driver, event);
-            }
+        virObjectEventStateQueue(driver->domainEventState, event);
+        if (start_paused) {
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_SUSPENDED,
+                                             VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
+            virObjectEventStateQueue(driver->domainEventState, event);
         }
     }
 
@@ -7444,7 +7440,7 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
     virDomainDefFree(oldDef);
     virDomainDefFree(def);
     virDomainObjEndAPI(&vm);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return dom;
@@ -7571,7 +7567,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
  cleanup:
     VIR_FREE(name);
     virDomainObjEndAPI(&vm);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
     virObjectUnref(cfg);
     return ret;
 }
@@ -7728,7 +7724,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
          * is in monitor */
         virObjectEventPtr event;
         event = virDomainEventDeviceAddedNewFromObj(vm, alias);
-        qemuDomainEventQueue(driver, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     }
 
     if (ret == 0)
@@ -10647,7 +10643,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     if (eventNparams) {
         event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
         eventNparams = 0;
-        qemuDomainEventQueue(driver, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     }
 
     if (persistentDef) {
@@ -14320,7 +14316,7 @@ qemuDomainSnapshotCreateActiveInternal(virQEMUDriverPtr driver,
         }
     }
 
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     return ret;
 }
@@ -15255,7 +15251,7 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
         virDomainAuditStop(vm, "from-snapshot");
         resume = false;
         thaw = 0;
-        qemuDomainEventQueue(driver, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     } else if (memory && pmsuspended) {
         /* qemu 1.3 is unable to save a domain in pm-suspended (S3)
          * state; so we must emit an event stating that it was
@@ -15264,7 +15260,7 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
                              VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT);
-        qemuDomainEventQueue(driver, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
     }
 
     ret = 0;
@@ -15277,7 +15273,7 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
-        qemuDomainEventQueue(driver, event);
+        virObjectEventStateQueue(driver->domainEventState, event);
         if (virGetLastErrorCode() == VIR_ERR_OK) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("resuming after snapshot failed"));
@@ -16165,7 +16161,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                     event = virDomainEventLifecycleNewFromObj(vm,
                                                      VIR_DOMAIN_EVENT_STOPPED,
                                                      detail);
-                    qemuDomainEventQueue(driver, event);
+                    virObjectEventStateQueue(driver->domainEventState, event);
                     goto load;
                 }
             }
@@ -16317,7 +16313,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
             start_flags |= paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
 
-            qemuDomainEventQueue(driver, event);
+            virObjectEventStateQueue(driver->domainEventState, event);
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
                                   QEMU_ASYNC_JOB_START, NULL, -1, NULL, NULL,
                                   VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
@@ -16377,15 +16373,13 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         !(ret = virDomainSaveConfig(cfg->configDir, driver->caps,
                                     vm->newDef ? vm->newDef : vm->def))) {
         detail = VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT;
-        qemuDomainEventQueue(driver,
+        virObjectEventStateQueue(driver->domainEventState,
             virDomainEventLifecycleNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_DEFINED,
                                               detail));
     }
-    if (event) {
-        qemuDomainEventQueue(driver, event);
-        qemuDomainEventQueue(driver, event2);
-    }
+    virObjectEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, event2);
     virDomainObjEndAPI(&vm);
     virObjectUnref(caps);
     virObjectUnref(cfg);
@@ -18545,7 +18539,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         if (eventNparams) {
             event = virDomainEventTunableNewFromDom(dom, eventParams, eventNparams);
             eventNparams = 0;
-            qemuDomainEventQueue(driver, event);
+            virObjectEventStateQueue(driver->domainEventState, event);
         }
     }
 
@@ -18845,7 +18839,7 @@ qemuDomainSetMetadata(virDomainPtr dom,
     if (ret == 0) {
         virObjectEventPtr ev = NULL;
         ev = virDomainEventMetadataChangeNewFromObj(vm, type, uri);
-        qemuDomainEventQueue(driver, ev);
+        virObjectEventStateQueue(driver->domainEventState, ev);
     }
 
     qemuDomainObjEndJob(driver, vm);
@@ -20908,8 +20902,8 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
     VIR_FREE(new_dom_cfg_file);
     VIR_FREE(old_dom_name);
     VIR_FREE(new_dom_name);
-    qemuDomainEventQueue(driver, event_old);
-    qemuDomainEventQueue(driver, event_new);
+    virObjectEventStateQueue(driver->domainEventState, event_old);
+    virObjectEventStateQueue(driver->domainEventState, event_new);
     virObjectUnref(cfg);
     return ret;
 

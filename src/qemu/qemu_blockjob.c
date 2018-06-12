@@ -210,8 +210,8 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
                      "after block job", vm->def->name);
     }
 
-    qemuDomainEventQueue(driver, event);
-    qemuDomainEventQueue(driver, event2);
+    virObjectEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(driver->domainEventState, event2);
 
     virObjectUnref(cfg);
 }

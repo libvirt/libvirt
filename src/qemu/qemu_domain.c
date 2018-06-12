@@ -256,13 +256,6 @@ qemuDomainDisableNamespace(virDomainObjPtr vm,
 }
 
 
-void qemuDomainEventQueue(virQEMUDriverPtr driver,
-                          virObjectEventPtr event)
-{
-    virObjectEventStateQueue(driver->domainEventState, event);
-}
-
-
 void
 qemuDomainEventEmitJobCompleted(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm)
@@ -283,7 +276,7 @@ qemuDomainEventEmitJobCompleted(virQEMUDriverPtr driver,
     }
 
     event = virDomainEventJobCompletedNewFromObj(vm, params, nparams);
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 
@@ -7872,7 +7865,7 @@ qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
         virDomainDiskDefFree(disk);
     }
 
-    qemuDomainEventQueue(driver, event);
+    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 
