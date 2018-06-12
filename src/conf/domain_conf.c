@@ -28206,7 +28206,8 @@ int
 virDomainDefCompatibleDevice(virDomainDefPtr def,
                              virDomainDeviceDefPtr dev,
                              virDomainDeviceDefPtr oldDev,
-                             virDomainDeviceAction action ATTRIBUTE_UNUSED)
+                             virDomainDeviceAction action,
+                             bool live)
 {
     virDomainCompatibleDeviceData data = {
         .newInfo = virDomainDeviceGetInfo(dev),
@@ -28215,6 +28216,16 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
 
     if (oldDev)
         data.oldInfo = virDomainDeviceGetInfo(oldDev);
+
+    if (action == VIR_DOMAIN_DEVICE_ACTION_UPDATE &&
+        live &&
+        ((!!data.newInfo != !!data.oldInfo) ||
+         (data.newInfo && data.oldInfo &&
+          STRNEQ_NULLABLE(data.newInfo->alias, data.oldInfo->alias)))) {
+        virReportError(VIR_ERR_OPERATION_DENIED, "%s",
+                       _("changing device alias is not allowed"));
+        return -1;
+    }
 
     if (!virDomainDefHasUSB(def) &&
         def->os.type != VIR_DOMAIN_OSTYPE_EXE &&

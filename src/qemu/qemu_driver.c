@@ -7861,7 +7861,8 @@ qemuDomainChangeDiskLive(virDomainObjPtr vm,
 
     oldDev.data.disk = orig_disk;
     if (virDomainDefCompatibleDevice(vm->def, dev, &oldDev,
-                                     VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
+                                     VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                     true) < 0)
         goto cleanup;
 
     if (!qemuDomainDiskChangeSupported(disk, orig_disk))
@@ -7920,7 +7921,8 @@ qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
         if ((idx = qemuDomainFindGraphicsIndex(vm->def, dev->data.graphics)) >= 0) {
             oldDev.data.graphics = vm->def->graphics[idx];
             if (virDomainDefCompatibleDevice(vm->def, dev, &oldDev,
-                                             VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
+                                             VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                             true) < 0)
                 return -1;
         }
 
@@ -7931,7 +7933,8 @@ qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
         if ((idx = virDomainNetFindIdx(vm->def, dev->data.net)) >= 0) {
             oldDev.data.net = vm->def->nets[idx];
             if (virDomainDefCompatibleDevice(vm->def, dev, &oldDev,
-                                             VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
+                                             VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                             true) < 0)
                 return -1;
         }
 
@@ -8385,7 +8388,8 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
 
         oldDev.data.disk = vmdef->disks[pos];
         if (virDomainDefCompatibleDevice(vmdef, dev, &oldDev,
-                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
+                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                         false) < 0)
             return -1;
 
         virDomainDiskDefFree(vmdef->disks[pos]);
@@ -8405,7 +8409,8 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
 
         oldDev.data.graphics = vmdef->graphics[pos];
         if (virDomainDefCompatibleDevice(vmdef, dev, &oldDev,
-                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
+                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                         false) < 0)
             return -1;
 
         virDomainGraphicsDefFree(vmdef->graphics[pos]);
@@ -8420,7 +8425,8 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
 
         oldDev.data.net = vmdef->nets[pos];
         if (virDomainDefCompatibleDevice(vmdef, dev, &oldDev,
-                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
+                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                         false) < 0)
             return -1;
 
         virDomainNetDefFree(vmdef->nets[pos]);
@@ -8512,7 +8518,8 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
             goto cleanup;
 
         if (virDomainDefCompatibleDevice(vmdef, dev, NULL,
-                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
+                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH,
+                                         false) < 0)
             goto cleanup;
         if ((ret = qemuDomainAttachDeviceConfig(vmdef, dev, caps,
                                                 parse_flags,
@@ -8522,7 +8529,8 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (virDomainDefCompatibleDevice(vm->def, dev_copy, NULL,
-                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
+                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH,
+                                         true) < 0)
             goto cleanup;
 
         if ((ret = qemuDomainAttachDeviceLive(vm, dev_copy, driver)) < 0)

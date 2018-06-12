@@ -8643,13 +8643,7 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
         return false;
     }
 
-    if (disk->info.alias &&
-        STRNEQ_NULLABLE(disk->info.alias, orig_disk->info.alias)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot modify field '%s' of the disk"),
-                       "alias");
-        return false;
-    }
+    /* device alias is checked already in virDomainDefCompatibleDevice */
 
     CHECK_EQ(info.bootIndex, "boot order", true);
     CHECK_EQ(rawio, "rawio", true);

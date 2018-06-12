@@ -3200,11 +3200,9 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     if (!newdev->info.alias &&
         VIR_STRDUP(newdev->info.alias, olddev->info.alias) < 0)
         goto cleanup;
-    if (STRNEQ_NULLABLE(olddev->info.alias, newdev->info.alias)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot modify network device alias"));
-        goto cleanup;
-    }
+
+    /* device alias is checked already in virDomainDefCompatibleDevice */
+
     if (olddev->info.rombar != newdev->info.rombar) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify network device rom bar setting"));
