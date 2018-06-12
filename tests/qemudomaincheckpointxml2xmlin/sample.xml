@@ -1,0 +1,7 @@
+<domaincheckpoint>
+  <description>Completion of updates after OS install</description>
+  <disks>
+    <disk name='vda' checkpoint='bitmap'/>
+    <disk name='vdb' checkpoint='no'/>
+  </disks>
+</domaincheckpoint>

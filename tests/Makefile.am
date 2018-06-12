@@ -110,6 +110,8 @@ EXTRA_DIST = \
 	qemublocktestdata \
 	qemucapabilitiesdata \
 	qemucaps2xmloutdata \
+	qemudomaincheckpointxml2xmlin \
+	qemudomaincheckpointxml2xmlout \
 	qemudomainsnapshotxml2xmlin \
 	qemudomainsnapshotxml2xmlout \
 	qemuhotplugtestcpus \

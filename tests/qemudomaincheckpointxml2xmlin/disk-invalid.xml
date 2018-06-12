@@ -1,0 +1,8 @@
+<domaincheckpoint>
+  <name>bogus</name>
+  <disks>
+    <!-- A disk must have a name='...'; ensure that we catch this
+         thanks to our forced RNG schema validation -->
+    <disk/>
+  </disks>
+</domaincheckpoint>

@@ -1,0 +1,4 @@
+<domaincheckpoint>
+  <!-- Our schema prevents names that can't be used as sane file names -->
+  <name>../escape</name>
+</domaincheckpoint>

@@ -26,6 +26,7 @@
       <li><a href="formatnode.html">Node devices</a></li>
       <li><a href="formatsecret.html">Secrets</a></li>
       <li><a href="formatsnapshot.html">Snapshots</a></li>
+      <li><a href="formatcheckpoint.html">Checkpoints</a></li>
     </ul>
 
     <h2>Command line validation</h2>

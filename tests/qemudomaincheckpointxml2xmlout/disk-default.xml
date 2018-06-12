@@ -1,0 +1,11 @@
+<domaincheckpoint>
+  <name>1525889631</name>
+  <description>Completion of updates after OS install</description>
+  <parent>
+    <name>1525111885</name>
+  </parent>
+  <creationTime>1525889631</creationTime>
+  <disks>
+    <disk name='vda' checkpoint='bitmap' bitmap='1525889631'/>
+  </disks>
+</domaincheckpoint>

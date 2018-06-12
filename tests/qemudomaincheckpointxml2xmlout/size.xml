@@ -1,0 +1,11 @@
+<domaincheckpoint>
+  <name>c2</name>
+  <description>something fun</description>
+  <parent>
+    <name>1525111885</name>
+  </parent>
+  <creationTime>1553648510</creationTime>
+  <disks>
+    <disk name='vda' checkpoint='bitmap' bitmap='c2' size='1048576'/>
+  </disks>
+</domaincheckpoint>
