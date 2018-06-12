@@ -10,7 +10,7 @@ matrix:
     - services:
         - docker
       env:
-        - IMAGE=ubuntu:18.04
+        - IMAGE="ubuntu-18"
         - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=systemd"
         - DOCKER_CMD="$LINUX_CMD"
     - compiler: clang
@@ -23,13 +23,11 @@ matrix:
 
 script:
   - docker run
-      --privileged
       -v $(pwd):/build
       -w /build
       -e VIR_TEST_DEBUG="$VIR_TEST_DEBUG"
-      -e PACKAGES="$PACKAGES"
       -e DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS"
-      "$IMAGE"
+      "libvirt/buildenv-$IMAGE"
       /bin/sh -xc "$DOCKER_CMD"
 
 git:
@@ -39,8 +37,6 @@ env:
   global:
     - VIR_TEST_DEBUG=1
     - LINUX_CMD="
-        apt-get update &&
-        apt-get install -y \$PACKAGES &&
         ./autogen.sh &&
         make -j3 syntax-check &&
         make -j3 distcheck DISTCHECK_CONFIGURE_FLAGS=\"\$DISTCHECK_CONFIGURE_FLAGS\" ||
@@ -66,73 +62,6 @@ env:
           echo '=== LOG FILE(S) END ===';
           exit 1
         )
-      "
-    # Please keep this list sorted alphabetically
-    - PACKAGES="
-        augeas-tools
-        autoconf
-        automake
-        autopoint
-        bash-completion
-        ccache
-        dnsmasq-base
-        dwarves
-        ebtables
-        gcc
-        gettext
-        git
-        glusterfs-client
-        libacl1-dev
-        libapparmor-dev
-        libattr1-dev
-        libaudit-dev
-        libavahi-client-dev
-        libblkid-dev
-        libc6-dev
-        libcap-ng-dev
-        libc-dev-bin
-        libdbus-1-dev
-        libdevmapper-dev
-        libfuse-dev
-        libgnutls28-dev
-        libnetcf-dev
-        libnl-3-dev
-        libnl-route-3-dev
-        libnuma-dev
-        libopenwsman-dev
-        libparted-dev
-        libpcap-dev
-        libpciaccess-dev
-        librbd-dev
-        libreadline-dev
-        libsanlock-dev
-        libsasl2-dev
-        libselinux1-dev
-        libssh2-1-dev
-        libssh-dev
-        libtirpc-dev
-        libtool
-        libudev-dev
-        libxen-dev
-        libxml2-dev
-        libxml2-utils
-        libyajl-dev
-        lvm2
-        make
-        nfs-common
-        open-iscsi
-        parted
-        patch
-        perl
-        pkgconf
-        policykit-1
-        qemu-utils
-        radvd
-        scrub
-        sheepdog
-        systemtap-sdt-dev
-        xsltproc
-        zfs-fuse
       "
 
 notifications:
