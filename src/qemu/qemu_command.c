@@ -9694,7 +9694,7 @@ static int
 qemuBuildSevCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
                         virDomainSevDefPtr sev)
 {
-    virBuffer obj = VIR_BUFFER_INITIALIZER;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *path = NULL;
 
@@ -9704,25 +9704,25 @@ qemuBuildSevCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
     VIR_DEBUG("policy=0x%x cbitpos=%d reduced_phys_bits=%d",
               sev->policy, sev->cbitpos, sev->reduced_phys_bits);
 
-    virBufferAsprintf(&obj, "sev-guest,id=sev0,cbitpos=%d", sev->cbitpos);
-    virBufferAsprintf(&obj, ",reduced-phys-bits=%d", sev->reduced_phys_bits);
-    virBufferAsprintf(&obj, ",policy=0x%x", sev->policy);
+    virBufferAsprintf(&buf, "sev-guest,id=sev0,cbitpos=%d", sev->cbitpos);
+    virBufferAsprintf(&buf, ",reduced-phys-bits=%d", sev->reduced_phys_bits);
+    virBufferAsprintf(&buf, ",policy=0x%x", sev->policy);
 
     if (sev->dh_cert) {
         if (virAsprintf(&path, "%s/dh_cert.base64", priv->libDir) < 0)
             return -1;
-        virBufferAsprintf(&obj, ",dh-cert-file=%s", path);
+        virBufferAsprintf(&buf, ",dh-cert-file=%s", path);
         VIR_FREE(path);
     }
 
     if (sev->session) {
         if (virAsprintf(&path, "%s/session.base64", priv->libDir) < 0)
             return -1;
-        virBufferAsprintf(&obj, ",session-file=%s", path);
+        virBufferAsprintf(&buf, ",session-file=%s", path);
         VIR_FREE(path);
     }
 
-    virCommandAddArgList(cmd, "-object", virBufferContentAndReset(&obj), NULL);
+    virCommandAddArgList(cmd, "-object", virBufferContentAndReset(&buf), NULL);
     return 0;
 }
 
