@@ -187,6 +187,12 @@ typedef enum {
     VIR_ACCESS_PERM_DOMAIN_MIGRATE,   /* Host migration */
 
     /**
+     * @desc: Checkpoint domain
+     * @message: Checkpointing domain requires authorization
+     */
+    VIR_ACCESS_PERM_DOMAIN_CHECKPOINT,  /* Checkpoint disks */
+
+    /**
      * @desc: Snapshot domain
      * @message: Snapshotting domain requires authorization
      */
