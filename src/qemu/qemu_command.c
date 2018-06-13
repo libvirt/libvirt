@@ -9697,6 +9697,7 @@ qemuBuildSevCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *path = NULL;
+    int ret = -1;
 
     if (!sev)
         return 0;
@@ -9710,20 +9711,24 @@ qemuBuildSevCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
 
     if (sev->dh_cert) {
         if (virAsprintf(&path, "%s/dh_cert.base64", priv->libDir) < 0)
-            return -1;
+            goto cleanup;
         virBufferAsprintf(&buf, ",dh-cert-file=%s", path);
         VIR_FREE(path);
     }
 
     if (sev->session) {
         if (virAsprintf(&path, "%s/session.base64", priv->libDir) < 0)
-            return -1;
+            goto cleanup;
         virBufferAsprintf(&buf, ",session-file=%s", path);
         VIR_FREE(path);
     }
 
-    virCommandAddArgList(cmd, "-object", virBufferContentAndReset(&buf), NULL);
-    return 0;
+    virCommandAddArg(cmd, "-object");
+    virCommandAddArgBuffer(cmd, &buf);
+    ret = 0;
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
 }
 
 static int
