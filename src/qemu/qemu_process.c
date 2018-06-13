@@ -6234,6 +6234,52 @@ qemuProcessGenID(virDomainObjPtr vm,
 
 
 /**
+ * qemuProcessSetupDiskThrottlingBlockdev:
+ *
+ * Sets up disk trottling for -blockdev via block_set_io_throttle monitor
+ * command. This hack should be replaced by proper use of the 'throttle'
+ * blockdev driver in qemu once it will support changing of the throttle group.
+ */
+static int
+qemuProcessSetupDiskThrottlingBlockdev(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm,
+                                       qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    size_t i;
+    int ret = -1;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
+        return 0;
+
+    VIR_DEBUG("Setting up disk throttling for -blockdev via block_set_io_throttle");
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+        if (!qemuDiskConfigBlkdeviotuneEnabled(disk))
+            continue;
+
+        if (qemuMonitorSetBlockIoThrottle(qemuDomainGetMonitor(vm), NULL,
+                                          diskPriv->qomName, &disk->blkdeviotune,
+                                          true, true, true) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+    return ret;
+}
+
+
+/**
  * qemuProcessLaunch:
  *
  * Launch a new QEMU process with stopped virtual CPUs.
@@ -6549,6 +6595,9 @@ qemuProcessLaunch(virConnectPtr conn,
 
     VIR_DEBUG("Setting initial memory amount");
     if (qemuProcessSetupBalloon(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
+    if (qemuProcessSetupDiskThrottlingBlockdev(driver, vm, asyncJob) < 0)
         goto cleanup;
 
     /* Since CPUs were not started yet, the balloon could not return the memory
