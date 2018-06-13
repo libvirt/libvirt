@@ -251,7 +251,6 @@ static bool
 virCgroupValidateMachineGroup(virCgroupPtr group,
                               const char *name,
                               const char *drivername,
-                              bool stripEmulatorSuffix,
                               const char *machinename)
 {
     size_t i;
@@ -303,10 +302,9 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
         if (!tmp)
             return false;
 
-        if (stripEmulatorSuffix &&
-            (i == VIR_CGROUP_CONTROLLER_CPU ||
-             i == VIR_CGROUP_CONTROLLER_CPUACCT ||
-             i == VIR_CGROUP_CONTROLLER_CPUSET)) {
+        if (i == VIR_CGROUP_CONTROLLER_CPU ||
+            i == VIR_CGROUP_CONTROLLER_CPUACCT ||
+            i == VIR_CGROUP_CONTROLLER_CPUSET) {
             if (STREQ(tmp, "/emulator"))
                 *tmp = '\0';
             tmp = strrchr(group->controllers[i].placement, '/');
@@ -1486,8 +1484,7 @@ virCgroupNewDetectMachine(const char *name,
         return -1;
     }
 
-    if (!virCgroupValidateMachineGroup(*group, name, drivername,
-                                       true, machinename)) {
+    if (!virCgroupValidateMachineGroup(*group, name, drivername, machinename)) {
         VIR_DEBUG("Failed to validate machine name for '%s' driver '%s'",
                   name, drivername);
         virCgroupFree(group);
