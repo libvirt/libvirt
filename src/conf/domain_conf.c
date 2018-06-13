@@ -15849,16 +15849,15 @@ static virDomainSevDefPtr
 virDomainSEVDefParseXML(xmlNodePtr sevNode,
                         xmlXPathContextPtr ctxt)
 {
-    char *tmp = NULL;
     char *type = NULL;
     xmlNodePtr save = ctxt->node;
     virDomainSevDefPtr def;
     unsigned long policy;
 
-    ctxt->node = sevNode;
-
     if (VIR_ALLOC(def) < 0)
         return NULL;
+
+    ctxt->node = sevNode;
 
     if (!(type = virXMLPropString(sevNode, "type"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -15899,29 +15898,18 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
     }
 
     def->policy = policy;
+    def->dh_cert = virXPathString("string(./dhCert)", ctxt);
+    def->session = virXPathString("string(./session)", ctxt);
 
-    if ((tmp = virXPathString("string(./dhCert)", ctxt))) {
-        if (VIR_STRDUP(def->dh_cert, tmp) < 0)
-            goto error;
-
-        VIR_FREE(tmp);
-    }
-
-    if ((tmp = virXPathString("string(./session)", ctxt))) {
-        if (VIR_STRDUP(def->session, tmp) < 0)
-            goto error;
-
-        VIR_FREE(tmp);
-    }
-
+ cleanup:
+    VIR_FREE(type);
     ctxt->node = save;
     return def;
 
  error:
-    VIR_FREE(tmp);
     virDomainSEVDefFree(def);
-    ctxt->node = save;
-    return NULL;
+    def = NULL;
+    goto cleanup;
 }
 
 static virDomainMemoryDefPtr
