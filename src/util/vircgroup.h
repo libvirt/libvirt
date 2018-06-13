@@ -64,21 +64,8 @@ typedef enum {
 
 bool virCgroupAvailable(void);
 
-int virCgroupNewPartition(const char *path,
-                          bool create,
-                          int controllers,
-                          virCgroupPtr *group)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
-
 int virCgroupNewSelf(virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1);
-
-int virCgroupNewDomainPartition(virCgroupPtr partition,
-                                const char *driver,
-                                const char *name,
-                                bool create,
-                                virCgroupPtr *group)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 
 int virCgroupNewThread(virCgroupPtr domain,
                        virCgroupThreadName nameval,
