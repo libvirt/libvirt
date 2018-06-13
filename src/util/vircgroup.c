@@ -399,6 +399,33 @@ virCgroupResolveMountLink(char *mntDir,
 }
 
 
+static bool
+virCgroupMountOptsMatchController(const char *mntOpts,
+                                  const char *typeStr)
+{
+    const char *tmp = mntOpts;
+    int typeLen = strlen(typeStr);
+
+    while (tmp) {
+        const char *next = strchr(tmp, ',');
+        int len;
+        if (next) {
+            len = next - tmp;
+            next++;
+        } else {
+            len = strlen(tmp);
+        }
+
+        if (typeLen == len && STREQLEN(typeStr, tmp, len))
+            return true;
+
+        tmp = next;
+    }
+
+    return false;
+}
+
+
 /*
  * Process /proc/mounts figuring out what controllers are
  * mounted and where
@@ -426,42 +453,29 @@ virCgroupDetectMountsFromFile(virCgroupPtr group,
 
         for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             const char *typestr = virCgroupControllerTypeToString(i);
-            int typelen = strlen(typestr);
-            char *tmp = entry.mnt_opts;
-            virCgroupControllerPtr controller = &group->controllers[i];
-            while (tmp) {
-                char *next = strchr(tmp, ',');
-                int len;
-                if (next) {
-                    len = next-tmp;
-                    next++;
-                } else {
-                    len = strlen(tmp);
+
+            if (virCgroupMountOptsMatchController(entry.mnt_opts, typestr)) {
+                /* Note that the lines in /proc/mounts have the same
+                 * order than the mount operations, and that there may
+                 * be duplicates due to bind mounts. This means
+                 * that the same mount point may be processed more than
+                 * once. We need to save the results of the last one,
+                 * and we need to be careful to release the memory used
+                 * by previous processing. */
+                virCgroupControllerPtr controller = &group->controllers[i];
+
+                VIR_FREE(controller->mountPoint);
+                VIR_FREE(controller->linkPoint);
+                if (VIR_STRDUP(controller->mountPoint, entry.mnt_dir) < 0)
+                    goto cleanup;
+
+                /* If it is a co-mount it has a filename like "cpu,cpuacct"
+                 * and we must identify the symlink path */
+                if (checkLinks &&
+                    virCgroupResolveMountLink(entry.mnt_dir, typestr,
+                                              controller) < 0) {
+                    goto cleanup;
                 }
-
-                if (typelen == len && STREQLEN(typestr, tmp, len)) {
-
-                    /* Note that the lines in /proc/mounts have the same
-                     * order than the mount operations, and that there may
-                     * be duplicates due to bind mounts. This means
-                     * that the same mount point may be processed more than
-                     * once. We need to save the results of the last one,
-                     * and we need to be careful to release the memory used
-                     * by previous processing. */
-                    VIR_FREE(controller->mountPoint);
-                    VIR_FREE(controller->linkPoint);
-                    if (VIR_STRDUP(controller->mountPoint, entry.mnt_dir) < 0)
-                        goto cleanup;
-
-                    /* If it is a co-mount it has a filename like "cpu,cpuacct"
-                     * and we must identify the symlink path */
-                    if (checkLinks &&
-                        virCgroupResolveMountLink(entry.mnt_dir, typestr,
-                                                  controller) < 0) {
-                            goto cleanup;
-                    }
-                }
-                tmp = next;
             }
         }
     }
