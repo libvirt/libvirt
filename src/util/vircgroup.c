@@ -1136,6 +1136,35 @@ virCgroupNew(pid_t pid,
 }
 
 
+/**
+ * virCgroupAddTaskController:
+ *
+ * @group: The cgroup to add a task to
+ * @pid: The pid of the task to add
+ * @controller: The cgroup controller to be operated on
+ *
+ * Returns: 0 on success or -1 on error
+ */
+static int
+virCgroupAddTaskController(virCgroupPtr group, pid_t pid, int controller)
+{
+    if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Controller %d out of range"), controller);
+        return -1;
+    }
+
+    if (!group->controllers[controller].mountPoint) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Controller '%s' not mounted"),
+                       virCgroupControllerTypeToString(controller));
+        return -1;
+    }
+
+    return virCgroupSetValueI64(group, controller, "tasks", pid);
+}
+
+
 static int
 virCgroupAddTaskInternal(virCgroupPtr group, pid_t pid, bool withSystemd)
 {
@@ -1194,35 +1223,6 @@ int
 virCgroupAddMachineTask(virCgroupPtr group, pid_t pid)
 {
     return virCgroupAddTaskInternal(group, pid, true);
-}
-
-
-/**
- * virCgroupAddTaskController:
- *
- * @group: The cgroup to add a task to
- * @pid: The pid of the task to add
- * @controller: The cgroup controller to be operated on
- *
- * Returns: 0 on success or -1 on error
- */
-int
-virCgroupAddTaskController(virCgroupPtr group, pid_t pid, int controller)
-{
-    if (controller < 0 || controller >= VIR_CGROUP_CONTROLLER_LAST) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Controller %d out of range"), controller);
-        return -1;
-    }
-
-    if (!group->controllers[controller].mountPoint) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Controller '%s' not mounted"),
-                       virCgroupControllerTypeToString(controller));
-        return -1;
-    }
-
-    return virCgroupSetValueI64(group, controller, "tasks", pid);
 }
 
 
@@ -4108,17 +4108,6 @@ virCgroupAddTask(virCgroupPtr group ATTRIBUTE_UNUSED,
 int
 virCgroupAddMachineTask(virCgroupPtr group ATTRIBUTE_UNUSED,
                         pid_t pid ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-
-int
-virCgroupAddTaskController(virCgroupPtr group ATTRIBUTE_UNUSED,
-                           pid_t pid ATTRIBUTE_UNUSED,
-                           int controller ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));

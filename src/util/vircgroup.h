@@ -134,10 +134,6 @@ int virCgroupPathOfController(virCgroupPtr group,
 int virCgroupAddTask(virCgroupPtr group, pid_t pid);
 int virCgroupAddMachineTask(virCgroupPtr group, pid_t pid);
 
-int virCgroupAddTaskController(virCgroupPtr group,
-                               pid_t pid,
-                               int controller);
-
 int virCgroupSetBlkioWeight(virCgroupPtr group, unsigned int weight);
 int virCgroupGetBlkioWeight(virCgroupPtr group, unsigned int *weight);
 
