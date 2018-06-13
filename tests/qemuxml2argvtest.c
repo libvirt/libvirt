@@ -551,9 +551,11 @@ testCompareXMLToArgv(const void *data)
     if (vm->def->tpm) {
         switch (vm->def->tpm->type) {
         case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+            VIR_FREE(vm->def->tpm->data.emulator.source.data.file.path);
             if (VIR_STRDUP(vm->def->tpm->data.emulator.source.data.file.path,
                            "/dev/test") < 0)
                 goto cleanup;
+            vm->def->tpm->data.emulator.source.type = VIR_DOMAIN_CHR_TYPE_FILE;
             break;
         case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         case VIR_DOMAIN_TPM_TYPE_LAST:
