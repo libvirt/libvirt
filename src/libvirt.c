@@ -1098,7 +1098,7 @@ virConnectOpenInternal(const char *name,
  * if not already running. This can be prevented by setting the
  * environment variable LIBVIRT_AUTOSTART=0
  *
- * URIs are documented at httsp://libvirt.org/uri.html
+ * URIs are documented at https://libvirt.org/uri.html
  *
  * virConnectClose should be used to release the resources after the connection
  * is no longer needed.
