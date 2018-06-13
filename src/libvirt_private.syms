@@ -1539,7 +1539,6 @@ virCgroupGetMemSwapUsage;
 virCgroupGetPercpuStats;
 virCgroupHasController;
 virCgroupHasEmptyTasks;
-virCgroupKill;
 virCgroupKillPainfully;
 virCgroupKillRecursive;
 virCgroupNewDetect;

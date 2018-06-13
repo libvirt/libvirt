@@ -280,7 +280,6 @@ int virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus);
 int virCgroupRemoveRecursively(char *grppath);
 int virCgroupRemove(virCgroupPtr group);
 
-int virCgroupKill(virCgroupPtr group, int signum);
 int virCgroupKillRecursive(virCgroupPtr group, int signum);
 int virCgroupKillPainfully(virCgroupPtr group);
 

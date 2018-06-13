@@ -3510,33 +3510,6 @@ virCgroupPidCopy(const void *name)
 }
 
 
-/*
- * Returns 1 if some PIDs are killed, 0 if none are killed, or -1 on error
- */
-int
-virCgroupKill(virCgroupPtr group, int signum)
-{
-    VIR_DEBUG("group=%p path=%s signum=%d", group, group->path, signum);
-    int ret;
-    /* The 'tasks' file in cgroups can contain duplicated
-     * pids, so we use a hash to track which we've already
-     * killed.
-     */
-    virHashTablePtr pids = virHashCreateFull(100,
-                                             NULL,
-                                             virCgroupPidCode,
-                                             virCgroupPidEqual,
-                                             virCgroupPidCopy,
-                                             NULL);
-
-    ret = virCgroupKillInternal(group, signum, pids);
-
-    virHashFree(pids);
-
-    return ret;
-}
-
-
 static int
 virCgroupKillRecursiveInternal(virCgroupPtr group,
                                int signum,
@@ -4580,16 +4553,6 @@ int
 virCgroupRemove(virCgroupPtr group ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-
-int
-virCgroupKill(virCgroupPtr group ATTRIBUTE_UNUSED,
-              int signum ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
     return -1;
 }
