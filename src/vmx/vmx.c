@@ -59,7 +59,7 @@ def->name = <value>               <=>   displayName = "<value>"
 def->mem.max_balloon = <value kilobyte>    <=>   memsize = "<value megabyte>"            # must be a multiple of 4, defaults to 32
 def->mem.cur_balloon = <value kilobyte>    <=>   sched.mem.max = "<value megabyte>"      # defaults to "unlimited" -> def->mem.cur_balloon = def->mem.max_balloon
 def->mem.min_guarantee = <value kilobyte>  <=>   sched.mem.minsize = "<value megabyte>"  # defaults to 0
-def->maxvcpus = <value>           <=>   numvcpus = "<value>"                    # must be 1 or a multiple of 2, defaults to 1
+def->maxvcpus = <value>           <=>   numvcpus = "<value>"                    # must be greater than 0, defaults to 1
 def->cpumask = <uint list>        <=>   sched.cpu.affinity = "<uint list>"
 def->cputune.shares = <value>     <=>   sched.cpu.shares = "<value>"            # with handling for special values
                                                                                 # "high", "normal", "low"
@@ -1452,10 +1452,10 @@ virVMXParseConfig(virVMXContext *ctx,
     if (virVMXGetConfigLong(conf, "numvcpus", &numvcpus, 1, true) < 0)
         goto cleanup;
 
-    if (numvcpus <= 0 || (numvcpus % 2 != 0 && numvcpus != 1)) {
+    if (numvcpus <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting VMX entry 'numvcpus' to be an unsigned "
-                         "integer (1 or a multiple of 2) but found %lld"), numvcpus);
+                         "integer greater than 0 but found %lld"), numvcpus);
         goto cleanup;
     }
 
@@ -3183,11 +3183,10 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
         goto cleanup;
     }
     maxvcpus = virDomainDefGetVcpusMax(def);
-    if (maxvcpus == 0 || (maxvcpus % 2 != 0 && maxvcpus != 1)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Expecting domain XML entry 'vcpu' to be 1 or a "
-                         "multiple of 2 but found %d"),
-                       maxvcpus);
+    if (maxvcpus == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Expecting domain XML entry 'vcpu' to be greater "
+                         "than 0"));
         goto cleanup;
     }
 
