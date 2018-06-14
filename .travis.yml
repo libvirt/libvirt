@@ -48,7 +48,6 @@ env:
         apt-get update &&
         apt-get install -y \$PACKAGES &&
         ./autogen.sh &&
-        make -j3 &&
         make -j3 syntax-check &&
         make -j3 distcheck DISTCHECK_CONFIGURE_FLAGS=\"\$DISTCHECK_CONFIGURE_FLAGS\" ||
         (
