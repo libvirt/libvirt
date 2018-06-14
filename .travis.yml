@@ -19,6 +19,18 @@ matrix:
         - IMAGE="centos-7"
         - DISTCHECK_CONFIGURE_FLAGS="--with-init-script=upstart"
         - DOCKER_CMD="$LINUX_CMD"
+    - services:
+        - docker
+      env:
+        - IMAGE="fedora-rawhide"
+        - MINGW="mingw32"
+        - DOCKER_CMD="$MINGW_CMD"
+    - services:
+        - docker
+      env:
+        - IMAGE="fedora-rawhide"
+        - MINGW="mingw64"
+        - DOCKER_CMD="$MINGW_CMD"
     - compiler: clang
       language: c
       os: osx
@@ -32,6 +44,7 @@ script:
       -v $(pwd):/build
       -w /build
       -e VIR_TEST_DEBUG="$VIR_TEST_DEBUG"
+      -e MINGW="$MINGW"
       -e DISTCHECK_CONFIGURE_FLAGS="$DISTCHECK_CONFIGURE_FLAGS"
       "libvirt/buildenv-$IMAGE"
       /bin/sh -xc "$DOCKER_CMD"
@@ -46,6 +59,17 @@ env:
         ./autogen.sh &&
         make -j3 syntax-check &&
         make -j3 distcheck DISTCHECK_CONFIGURE_FLAGS=\"\$DISTCHECK_CONFIGURE_FLAGS\" ||
+        (
+          echo '=== LOG FILE(S) START ===';
+          find -name test-suite.log | xargs cat;
+          echo '=== LOG FILE(S) END ===';
+          exit 1
+        )
+      "
+    - MINGW_CMD="
+        NOCONFIGURE=1 ./autogen.sh &&
+        \$MINGW-configure &&
+        make -j3 ||
         (
           echo '=== LOG FILE(S) START ===';
           find -name test-suite.log | xargs cat;
