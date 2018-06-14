@@ -559,16 +559,20 @@ static void
 virDomainCapsFeatureSEVFormat(virBufferPtr buf,
                               virSEVCapabilityPtr const sev)
 {
-    if (!sev)
-        return;
 
-    virBufferAddLit(buf, "<sev supported='yes'>\n");
-    virBufferAdjustIndent(buf, 2);
-    virBufferAsprintf(buf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
-    virBufferAsprintf(buf, "<reducedPhysBits>%d</reducedPhysBits>\n",
+    if (!sev) {
+        virBufferAddLit(buf, "<sev supported='no'/>\n");
+    } else {
+        virBufferAddLit(buf, "<sev supported='yes'>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferAsprintf(buf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
+        virBufferAsprintf(buf, "<reducedPhysBits>%d</reducedPhysBits>\n",
                           sev->reduced_phys_bits);
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</sev>\n");
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</sev>\n");
+    }
+
+    return;
 }
 
 

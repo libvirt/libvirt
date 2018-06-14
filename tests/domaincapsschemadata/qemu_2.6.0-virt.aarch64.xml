@@ -115,5 +115,6 @@
     </gic>
     <vmcoreinfo supported='no'/>
     <genid supported='no'/>
+    <sev supported='no'/>
   </features>
 </domainCapabilities>
