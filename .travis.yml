@@ -52,9 +52,9 @@ env:
         make -j3 syntax-check &&
         make -j3 distcheck DISTCHECK_CONFIGURE_FLAGS=\"\$DISTCHECK_CONFIGURE_FLAGS\" ||
         (
-          echo '=== LOG FILE(S) START ==='
-          find -name test-suite.log | xargs cat
-          echo '=== LOG FILE(S) END ==='
+          echo '=== LOG FILE(S) START ===';
+          find -name test-suite.log | xargs cat;
+          echo '=== LOG FILE(S) END ===';
           exit 1
         )
       "
@@ -68,9 +68,9 @@ env:
         make -j3 install &&
         make -j3 dist ||
         (
-          echo '=== LOG FILE(S) START ==='
-          find -name test-suite.log | xargs cat
-          echo '=== LOG FILE(S) END ==='
+          echo '=== LOG FILE(S) START ===';
+          find -name test-suite.log | xargs cat;
+          echo '=== LOG FILE(S) END ===';
           exit 1
         )
       "
