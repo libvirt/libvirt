@@ -433,8 +433,14 @@
     <feature name='ibpb'>
       <cpuid eax_in='0x80000008' ebx='0x00001000'/>
     </feature>
+    <feature name='amd-ssbd'>
+      <cpuid eax_in='0x80000008' ebx='0x01000000'/>
+    </feature>
     <feature name='virt-ssbd'>
       <cpuid eax_in='0x80000008' ebx='0x02000000'/>
+    </feature>
+    <feature name='amd-no-ssb'>
+      <cpuid eax_in='0x80000008' ebx='0x04000000'/>
     </feature>
 
     <!-- models -->
