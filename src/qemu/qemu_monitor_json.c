@@ -6423,6 +6423,12 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
+    /* Both -object sev-guest and query-sev-capabilities can be present
+     * even if SEV is not available */
+    if (qemuMonitorJSONHasError(reply, "GenericError")) {
+        ret = 0;
+        goto cleanup;
+    }
 
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
         goto cleanup;
