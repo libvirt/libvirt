@@ -22,7 +22,6 @@
       <target dev='vda' bus='virtio'/>
       <address type='virtio-mmio'/>
     </disk>
-    <controller type='usb' index='0'/>
     <serial type='pty'>
       <target port='0'/>
     </serial>
