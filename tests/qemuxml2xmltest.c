@@ -1163,6 +1163,7 @@ mymain(void)
 
     DO_TEST("smartcard-host", NONE);
     DO_TEST("smartcard-host-certificates", NONE);
+    DO_TEST("smartcard-host-certificates-database", NONE);
     DO_TEST("smartcard-passthrough-tcp", NONE);
     DO_TEST("smartcard-passthrough-spicevmc", NONE);
     DO_TEST("smartcard-controller", NONE);

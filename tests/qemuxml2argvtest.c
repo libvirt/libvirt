@@ -1404,6 +1404,8 @@ mymain(void)
             QEMU_CAPS_CCID_EMULATED);
     DO_TEST("smartcard-host-certificates",
             QEMU_CAPS_CCID_EMULATED);
+    DO_TEST("smartcard-host-certificates-database",
+            QEMU_CAPS_CCID_EMULATED);
     DO_TEST("smartcard-passthrough-tcp",
             QEMU_CAPS_CCID_PASSTHRU);
     DO_TEST("smartcard-passthrough-spicevmc",
