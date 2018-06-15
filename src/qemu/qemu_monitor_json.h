@@ -86,7 +86,8 @@ int qemuMonitorJSONSetMemoryStatsPeriod(qemuMonitorPtr mon,
 int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
                                 virHashTablePtr table);
 
-virJSONValuePtr qemuMonitorJSONQueryBlockstats(qemuMonitorPtr mon);
+virJSONValuePtr qemuMonitorJSONQueryBlockstats(qemuMonitorPtr mon,
+                                               bool nodenames);
 int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
                                         virHashTablePtr hash,
                                         bool backingChain);

@@ -2243,15 +2243,19 @@ qemuMonitorGetBlockInfo(qemuMonitorPtr mon)
 /**
  * qemuMonitorQueryBlockstats:
  * @mon: monitor object
+ * @nodenames: include backing chain nodes with explicitly specified name
  *
  * Returns data from a call to 'query-blockstats'.
  */
 virJSONValuePtr
-qemuMonitorQueryBlockstats(qemuMonitorPtr mon)
+qemuMonitorQueryBlockstats(qemuMonitorPtr mon,
+                           bool nodenames)
 {
     QEMU_CHECK_MONITOR_NULL(mon);
 
-    return qemuMonitorJSONQueryBlockstats(mon);
+    VIR_DEBUG("nodenames: %d", nodenames);
+
+    return qemuMonitorJSONQueryBlockstats(mon, nodenames);
 }
 
 
