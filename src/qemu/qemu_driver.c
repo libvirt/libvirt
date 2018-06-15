@@ -8241,8 +8241,6 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
 
         virDomainChrDefFree(chr);
-        virDomainChrDefFree(dev->data.chr);
-        dev->data.chr = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_FS:
