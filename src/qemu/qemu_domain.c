@@ -1065,6 +1065,7 @@ qemuDomainDiskPrivateDispose(void *obj)
 
     VIR_FREE(priv->blockJobError);
     virStorageSourceFree(priv->migrSource);
+    VIR_FREE(priv->qomName);
 }
 
 static virClassPtr qemuDomainStorageSourcePrivateClass;
@@ -2123,6 +2124,30 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
 }
 
 
+static int
+qemuDomainDiskPrivateParse(xmlXPathContextPtr ctxt,
+                           virDomainDiskDefPtr disk)
+{
+    qemuDomainDiskPrivatePtr priv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+    priv->qomName = virXPathString("string(./qom/@name)", ctxt);
+
+    return 0;
+}
+
+
+static int
+qemuDomainDiskPrivateFormat(virDomainDiskDefPtr disk,
+                            virBufferPtr buf)
+{
+    qemuDomainDiskPrivatePtr priv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+    virBufferEscapeString(buf, "<qom name='%s'/>\n", priv->qomName);
+
+    return 0;
+}
+
+
 static void
 qemuDomainObjPrivateXMLFormatVcpus(virBufferPtr buf,
                                    virDomainDefPtr def)
@@ -2973,6 +2998,8 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .alloc = qemuDomainObjPrivateAlloc,
     .free = qemuDomainObjPrivateFree,
     .diskNew = qemuDomainDiskPrivateNew,
+    .diskParse = qemuDomainDiskPrivateParse,
+    .diskFormat = qemuDomainDiskPrivateFormat,
     .vcpuNew = qemuDomainVcpuPrivateNew,
     .chrSourceNew = qemuDomainChrSourcePrivateNew,
     .vsockNew = qemuDomainVsockPrivateNew,

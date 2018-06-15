@@ -333,6 +333,9 @@
         <target dev='vdb' bus='virtio'/>
         <alias name='virtio-disk1'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+        <privateData>
+          <qom name='virtio-disk1/virtio-backend'/>
+        </privateData>
       </disk>
       <disk type='file' device='cdrom'>
         <driver name='qemu' type='raw'/>
