@@ -11063,6 +11063,7 @@ qemuDomainBlockStatsGatherTotals(void *payload,
  * @driver: driver object
  * @vm: domain object
  * @path: to gather the statistics for
+ * @capacity: refresh capacity of the backing image
  * @retstats: returns pointer to structure holding the stats
  *
  * Gathers the block statistics for use in qemuDomainBlockStats* APIs.
@@ -11073,6 +11074,7 @@ static int
 qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             const char *path,
+                            bool capacity,
                             qemuBlockStatsPtr *retstats)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -11101,6 +11103,11 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     nstats = qemuMonitorGetAllBlockStatsInfo(priv->mon, &blockstats, false);
+
+    if (capacity && nstats >= 0 &&
+        qemuMonitorBlockStatsUpdateCapacity(priv->mon, blockstats, false) < 0)
+        nstats = -1;
+
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || nstats < 0)
         goto cleanup;
 
@@ -11154,7 +11161,7 @@ qemuDomainBlockStats(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (qemuDomainBlocksStatsGather(driver, vm, path, &blockstats) < 0)
+    if (qemuDomainBlocksStatsGather(driver, vm, path, false, &blockstats) < 0)
         goto endjob;
 
     stats->rd_req = blockstats->rd_req;
@@ -11208,7 +11215,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if ((nstats = qemuDomainBlocksStatsGather(driver, vm, path,
+    if ((nstats = qemuDomainBlocksStatsGather(driver, vm, path, false,
                                               &blockstats)) < 0)
         goto endjob;
 
@@ -12021,10 +12028,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     int ret = -1;
     virDomainDiskDefPtr disk;
     virQEMUDriverConfigPtr cfg = NULL;
-    int rc;
-    virHashTablePtr stats = NULL;
-    qemuBlockStats *entry;
-    char *alias = NULL;
+    qemuBlockStatsPtr entry = NULL;
 
     virCheckFlags(0, -1);
 
@@ -12065,28 +12069,8 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         goto endjob;
     }
 
-    if (!disk->info.alias ||
-        !(alias = qemuDomainStorageAlias(disk->info.alias, 0))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing disk device alias name for %s"), disk->dst);
+    if (qemuDomainBlocksStatsGather(driver, vm, path, true, &entry) < 0)
         goto endjob;
-    }
-
-    qemuDomainObjEnterMonitor(driver, vm);
-    rc = qemuMonitorGetAllBlockStatsInfo(qemuDomainGetMonitor(vm),
-                                         &stats, false);
-    if (rc >= 0)
-        rc = qemuMonitorBlockStatsUpdateCapacity(qemuDomainGetMonitor(vm),
-                                                 stats, false);
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
-        goto endjob;
-
-    if (!(entry = virHashLookup(stats, alias))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to gather stats for disk '%s'"), disk->dst);
-        goto endjob;
-    }
 
     if (!entry->wr_highest_offset_valid) {
         info->allocation = entry->physical;
@@ -12131,8 +12115,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
  endjob:
     qemuDomainObjEndJob(driver, vm);
  cleanup:
-    VIR_FREE(alias);
-    virHashFree(stats);
+    VIR_FREE(entry);
     virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
