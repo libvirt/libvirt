@@ -20,5 +20,12 @@
     <graphics type='spice'>
       <listen type='socket'/>
     </graphics>
+    <serial type='dev'>
+      <source path='/dev/ttyS2,foo'/>
+    </serial>
+    <channel type='pipe'>
+      <source path='/tmp/guestfwd,foo'/>
+      <target type='guestfwd' address='10.0.2.1' port='4600'/>
+    </channel>
   </devices>
 </domain>

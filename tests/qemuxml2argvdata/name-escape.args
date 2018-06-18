@@ -23,6 +23,10 @@ bar=2/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
 -usb \
+-chardev tty,id=charserial0,path=/dev/ttyS2,,foo \
+-device isa-serial,chardev=charserial0,id=serial0 \
+-chardev pipe,id=charchannel0,path=/tmp/guestfwd,,foo \
+-netdev user,guestfwd=tcp:10.0.2.1:4600-chardev:charchannel0,id=user-channel0 \
 -vnc unix:/tmp/lib/domain--1-foo=1,,bar=2/vnc.sock \
 -spice unix,addr=/tmp/lib/domain--1-foo=1,,bar=2/spice.sock \
 -vga cirrus \

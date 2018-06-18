@@ -4975,9 +4975,10 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferAsprintf(&buf, "%s,id=%s,path=%s",
+        virBufferAsprintf(&buf, "%s,id=%s,path=",
                           STRPREFIX(alias, "parallel") ? "parport" : "tty",
-                          charAlias, dev->data.file.path);
+                          charAlias);
+        virQEMUBuildBufferEscapeComma(&buf, dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
@@ -4997,8 +4998,8 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        virBufferAsprintf(&buf, "pipe,id=%s,path=%s", charAlias,
-                          dev->data.file.path);
+        virBufferAsprintf(&buf, "pipe,id=%s,path=", charAlias);
+        virQEMUBuildBufferEscapeComma(&buf, dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
