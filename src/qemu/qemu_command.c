@@ -4867,7 +4867,8 @@ qemuBuildChrChardevFileStr(virLogManagerPtr logManager,
         virBufferAsprintf(buf, ",%s=%s,%s=on", filearg, fdpath, appendarg);
         VIR_FREE(fdpath);
     } else {
-        virBufferAsprintf(buf, ",%s=%s", filearg, fileval);
+        virBufferAsprintf(buf, ",%s=", filearg);
+        virQEMUBuildBufferEscapeComma(buf, fileval);
         if (appendval != VIR_TRISTATE_SWITCH_ABSENT) {
             virBufferAsprintf(buf, ",%s=%s", appendarg,
                               virTristateSwitchTypeToString(appendval));

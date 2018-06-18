@@ -2763,7 +2763,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_SPICE_UNIX,
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
+            QEMU_CAPS_DEVICE_ISA_SERIAL,
+            QEMU_CAPS_CHARDEV_FILE_APPEND);
     DO_TEST("debug-threads", QEMU_CAPS_NAME_DEBUG_THREADS);
 
     DO_TEST("master-key", QEMU_CAPS_OBJECT_SECRET);

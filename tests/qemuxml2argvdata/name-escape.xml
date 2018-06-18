@@ -23,6 +23,10 @@
     <serial type='dev'>
       <source path='/dev/ttyS2,foo'/>
     </serial>
+    <serial type='file'>
+      <source path='/tmp/serial.log,foo' append='on'/>
+      <target port='0'/>
+    </serial>
     <channel type='pipe'>
       <source path='/tmp/guestfwd,foo'/>
       <target type='guestfwd' address='10.0.2.1' port='4600'/>
