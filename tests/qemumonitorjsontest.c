@@ -1772,11 +1772,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
     if (!test)
         return -1;
 
-    /* fill in seven times - we are gonna ask seven times later on */
-    if (qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0 ||
-        qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0 ||
-        qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0 ||
-        qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0)
+    if (qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0)
         goto cleanup;
 
 #define CHECK0FULL(var, value, varformat, valformat) \
