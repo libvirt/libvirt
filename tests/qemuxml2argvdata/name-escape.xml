@@ -19,6 +19,7 @@
     </graphics>
     <graphics type='spice'>
       <listen type='socket'/>
+      <gl enable='yes' rendernode='/dev/dri/foo,bar'/>
     </graphics>
     <serial type='dev'>
       <source path='/dev/ttyS2,foo'/>

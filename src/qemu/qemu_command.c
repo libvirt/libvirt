@@ -7974,8 +7974,11 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         !cfg->spicePassword)
         virBufferAddLit(&opt, "disable-ticketing,");
 
-    if (hasSecure)
-        virBufferAsprintf(&opt, "x509-dir=%s,", cfg->spiceTLSx509certdir);
+    if (hasSecure) {
+        virBufferAddLit(&opt, "x509-dir=");
+        virQEMUBuildBufferEscapeComma(&opt, cfg->spiceTLSx509certdir);
+        virBufferAddLit(&opt, ",");
+    }
 
     switch (graphics->data.spice.defaultMode) {
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
@@ -8082,7 +8085,9 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                 goto error;
             }
 
-            virBufferAsprintf(&opt, "rendernode=%s,", graphics->data.spice.rendernode);
+            virBufferAddLit(&opt, "rendernode=");
+            virQEMUBuildBufferEscapeComma(&opt, graphics->data.spice.rendernode);
+            virBufferAddLit(&opt, ",");
         }
     }
 
