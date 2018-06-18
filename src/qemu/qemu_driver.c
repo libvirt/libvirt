@@ -21518,9 +21518,7 @@ qemuDomainGetSEVMeasurement(virQEMUDriverPtr driver,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         return -1;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
-        goto endjob;
-
+    qemuDomainObjEnterMonitor(driver, vm);
     tmp = qemuMonitorGetSEVMeasurement(QEMU_DOMAIN_PRIVATE(vm)->mon);
     if (tmp == NULL)
         goto endjob;
