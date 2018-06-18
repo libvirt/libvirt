@@ -22,7 +22,10 @@ bar=2/monitor.sock,server,nowait \
 -no-shutdown \
 -no-acpi \
 -boot c \
+-device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -usb \
+-device ccid-card-emulated,backend=certificates,cert1=cert1,,foo,cert2=cert2,\
+cert3=cert3,db=/etc/pki/nssdb,,foo,id=smartcard0,bus=ccid0.0 \
 -chardev tty,id=charserial0,path=/dev/ttyS2,,foo \
 -device isa-serial,chardev=charserial0,id=serial0 \
 -chardev file,id=charserial1,path=/tmp/serial.log,,foo,append=on \

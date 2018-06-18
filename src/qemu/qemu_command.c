@@ -8716,29 +8716,16 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
 
         virBufferAddLit(&opt, "ccid-card-emulated,backend=certificates");
         for (i = 0; i < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; i++) {
-            if (strchr(smartcard->data.cert.file[i], ',')) {
-                virBufferFreeAndReset(&opt);
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("invalid certificate name: %s"),
-                               smartcard->data.cert.file[i]);
-                return -1;
-            }
-            virBufferAsprintf(&opt, ",cert%zu=%s", i + 1,
-                              smartcard->data.cert.file[i]);
+            virBufferAsprintf(&opt, ",cert%zu=", i + 1);
+            virQEMUBuildBufferEscapeComma(&opt, smartcard->data.cert.file[i]);
         }
         if (smartcard->data.cert.database) {
-            if (strchr(smartcard->data.cert.database, ',')) {
-                virBufferFreeAndReset(&opt);
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("invalid database name: %s"),
-                               smartcard->data.cert.database);
-                return -1;
-            }
             database = smartcard->data.cert.database;
         } else {
             database = VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE;
         }
-        virBufferAsprintf(&opt, ",db=%s", database);
+        virBufferAddLit(&opt, ",db=");
+        virQEMUBuildBufferEscapeComma(&opt, database);
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:

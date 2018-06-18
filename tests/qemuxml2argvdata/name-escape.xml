@@ -31,5 +31,11 @@
       <source path='/tmp/guestfwd,foo'/>
       <target type='guestfwd' address='10.0.2.1' port='4600'/>
     </channel>
+    <smartcard mode='host-certificates'>
+      <certificate>cert1,foo</certificate>
+      <certificate>cert2</certificate>
+      <certificate>cert3</certificate>
+      <database>/etc/pki/nssdb,foo</database>
+    </smartcard>
   </devices>
 </domain>
