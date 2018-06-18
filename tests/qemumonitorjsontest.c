@@ -1674,7 +1674,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *data)
 }
 
 static int
-testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
+testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
@@ -1772,6 +1772,9 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
     if (!test)
         return -1;
 
+    if (!(blockstats = virHashCreate(10, virHashValueFree)))
+        goto cleanup;
+
     if (qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0)
         goto cleanup;
 
@@ -1805,13 +1808,13 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
     CHECK0FULL(wr_highest_offset, WR_HIGHEST_OFFSET, "%llu", "%llu") \
     CHECK0FULL(wr_highest_offset_valid, WR_HIGHEST_OFFSET_VALID, "%d", "%d")
 
-    if (qemuMonitorGetAllBlockStatsInfo(qemuMonitorTestGetMonitor(test),
-                                        &blockstats, false) < 0)
+    if (qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorTestGetMonitor(test),
+                                            blockstats, false) < 0)
         goto cleanup;
 
     if (!blockstats) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "qemuMonitorJSONGetBlockStatsInfo didn't return stats");
+                       "qemuMonitorJSONGetAllBlockStatsInfo didn't return stats");
         goto cleanup;
     }
 
@@ -2972,7 +2975,7 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONDetachCharDev);
     DO_TEST(qemuMonitorJSONGetBalloonInfo);
     DO_TEST(qemuMonitorJSONGetBlockInfo);
-    DO_TEST(qemuMonitorJSONGetBlockStatsInfo);
+    DO_TEST(qemuMonitorJSONGetAllBlockStatsInfo);
     DO_TEST(qemuMonitorJSONGetMigrationCacheSize);
     DO_TEST(qemuMonitorJSONGetMigrationStats);
     DO_TEST(qemuMonitorJSONGetChardevInfo);
