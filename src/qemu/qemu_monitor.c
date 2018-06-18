@@ -3051,7 +3051,7 @@ qemuMonitorCreateObjectProps(virJSONValuePtr *propsret,
 
     va_start(args, alias);
 
-    if (!(virJSONValueObjectCreateVArgs(&props, args)))
+    if (virJSONValueObjectCreateVArgs(&props, args) < 0)
         goto cleanup;
 
     if (!(*propsret = qemuMonitorCreateObjectPropsWrap(type, alias, &props)))
