@@ -71,6 +71,16 @@
           Capabilities XML now provide information about host IOMMU support.
         </description>
       </change>
+      <change>
+        <summary>
+          virsh: Add --all to domblkinfo command
+        </summary>
+        <description>
+          Alter the <code>domblkinfo</code> command to add the option
+          --all in order to display the size details of each domain
+          block device from one command in a output table.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
