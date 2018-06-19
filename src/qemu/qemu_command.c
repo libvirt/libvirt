@@ -7765,7 +7765,6 @@ qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
 {
     int ret = -1;
     virBuffer opt = VIR_BUFFER_INITIALIZER;
-    const char *optContent;
 
     if (graphics->data.sdl.xauth)
         virCommandAddEnvPair(cmd, "XAUTHORITY", graphics->data.sdl.xauth);
@@ -7781,22 +7780,26 @@ qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
     virCommandAddEnvPassBlockSUID(cmd, "QEMU_AUDIO_DRV", NULL);
     virCommandAddEnvPassBlockSUID(cmd, "SDL_AUDIODRIVER", NULL);
 
-    virCommandAddArg(cmd, "-sdl");
+    virCommandAddArg(cmd, "-display");
+    virBufferAddLit(&opt, "sdl");
 
-    if (graphics->data.sdl.gl == VIR_TRISTATE_BOOL_YES) {
+    if (graphics->data.sdl.gl != VIR_TRISTATE_BOOL_ABSENT) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL_GL)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("This QEMU doesn't support SDL OpenGL"));
+                           _("OpenGL for SDL is not supported with this QEMU "
+                             "binary"));
             goto cleanup;
         }
 
-        virBufferAsprintf(&opt, "gl=%s",
+        virBufferAsprintf(&opt, ",gl=%s",
                           virTristateSwitchTypeToString(graphics->data.sdl.gl));
+
     }
 
-    optContent = virBufferCurrentContent(&opt);
-    if (optContent && STRNEQ(optContent, ""))
-        virCommandAddArgBuffer(cmd, &opt);
+    if (virBufferCheckError(&opt) < 0)
+        goto cleanup;
+
+    virCommandAddArgBuffer(cmd, &opt);
 
     ret = 0;
  cleanup:
