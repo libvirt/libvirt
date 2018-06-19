@@ -165,9 +165,10 @@
   <flag name='vhost-vsock'/>
   <flag name='chardev-fd-pass'/>
   <flag name='tpm-emulator'/>
+  <flag name='machine.pseries.cap-hpt-max-page-size'/>
   <version>2012050</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>442399</microcodeVersion>
+  <microcodeVersion>446771</microcodeVersion>
   <package>v2.12.0-1689-g518d23a</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>

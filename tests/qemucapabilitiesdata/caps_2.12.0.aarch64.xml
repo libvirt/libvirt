@@ -171,7 +171,7 @@
   <flag name='tpm-emulator'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>347313</microcodeVersion>
+  <microcodeVersion>347550</microcodeVersion>
   <package>v2.12.0-rc0</package>
   <arch>aarch64</arch>
   <cpu type='kvm' name='pxa262'/>

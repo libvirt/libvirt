@@ -135,7 +135,7 @@
   <flag name='tpm-emulator'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>375762</microcodeVersion>
+  <microcodeVersion>375999</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='z14-base' migratability='no'>
