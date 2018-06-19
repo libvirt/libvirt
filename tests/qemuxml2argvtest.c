@@ -1218,6 +1218,10 @@ mymain(void)
                         QEMU_CAPS_ICH9_AHCI);
     DO_TEST_PARSE_ERROR("disk-scsi-incompatible-address",
                         QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_CAPS_VER("disk-backing-chains-index", "2.12.0");
+    DO_TEST_CAPS_LATEST("disk-backing-chains-index");
+    DO_TEST_CAPS_VER("disk-backing-chains-noindex", "2.12.0");
+    DO_TEST_CAPS_LATEST("disk-backing-chains-noindex");
 
     DO_TEST("graphics-egl-headless",
             QEMU_CAPS_EGL_HEADLESS,

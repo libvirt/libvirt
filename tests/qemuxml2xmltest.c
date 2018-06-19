@@ -990,6 +990,8 @@ mymain(void)
     DO_TEST("panic-no-address", NONE);
 
     DO_TEST("disk-backing-chains", NONE);
+    DO_TEST("disk-backing-chains-index", NONE);
+    DO_TEST("disk-backing-chains-noindex", NONE);
 
     DO_TEST("chardev-label", NONE);
 
