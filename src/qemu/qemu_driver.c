@@ -16036,6 +16036,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     bool was_stopped = false;
     qemuDomainSaveCookiePtr cookie;
     virCPUDefPtr origCPU = NULL;
+    unsigned int start_flags = VIR_QEMU_PROCESS_START_GEN_VMID;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                   VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED |
@@ -16353,7 +16354,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                      VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
             /* Flush first event, now do transition 2 or 3 */
             bool paused = (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED) != 0;
-            unsigned int start_flags = VIR_QEMU_PROCESS_START_GEN_VMID;
 
             start_flags |= paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
 
