@@ -20031,7 +20031,6 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
                            virDomainDiskDefPtr disk,
                            virStorageSourcePtr src,
                            size_t block_idx,
-                           unsigned int backing_idx,
                            virHashTablePtr stats,
                            virHashTablePtr nodedata)
 {
@@ -20040,16 +20039,16 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
     char *alias = NULL;
 
     if (disk->info.alias)
-        alias = qemuDomainStorageAlias(disk->info.alias, backing_idx);
+        alias = qemuDomainStorageAlias(disk->info.alias, src->id);
 
     QEMU_ADD_NAME_PARAM(record, maxparams, "block", "name", block_idx,
                         disk->dst);
     if (virStorageSourceIsLocalStorage(src) && src->path)
         QEMU_ADD_NAME_PARAM(record, maxparams, "block", "path",
                             block_idx, src->path);
-    if (backing_idx)
+    if (src->id)
         QEMU_ADD_BLOCK_PARAM_UI(record, maxparams, block_idx, "backingIndex",
-                                backing_idx);
+                                src->id);
 
     /* the VM is offline so we have to go and load the stast from the disk by
      * ourselves */
@@ -20166,16 +20165,14 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     for (i = 0; i < dom->def->ndisks; i++) {
         virDomainDiskDefPtr disk = dom->def->disks[i];
         virStorageSourcePtr src = disk->src;
-        unsigned int backing_idx = 0;
 
         while (virStorageSourceIsBacking(src) &&
-               (backing_idx == 0 || visitBacking)) {
+               (src == disk->src || visitBacking)) {
             if (qemuDomainGetStatsOneBlock(driver, cfg, dom, record, maxparams,
-                                           disk, src, visited, backing_idx,
+                                           disk, src, visited,
                                            stats, nodestats) < 0)
                 goto cleanup;
             visited++;
-            backing_idx++;
             src = src->backingStore;
         }
     }
