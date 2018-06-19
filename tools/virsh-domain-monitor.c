@@ -400,6 +400,30 @@ static const vshCmdOptDef opts_domblkinfo[] = {
     {.name = NULL}
 };
 
+static void
+cmdDomblkinfoPrint(vshControl *ctl,
+                   const virDomainBlockInfo *info,
+                   bool human)
+{
+    if (!human) {
+        vshPrint(ctl, "%-15s %llu\n", _("Capacity:"), info->capacity);
+        vshPrint(ctl, "%-15s %llu\n", _("Allocation:"), info->allocation);
+        vshPrint(ctl, "%-15s %llu\n", _("Physical:"), info->physical);
+    } else {
+        double val;
+        const char *unit;
+
+        val = vshPrettyCapacity(info->capacity, &unit);
+        vshPrint(ctl, "%-15s %-.3lf %s\n", _("Capacity:"), val, unit);
+        val = vshPrettyCapacity(info->allocation, &unit);
+        vshPrint(ctl, "%-15s %-.3lf %s\n", _("Allocation:"), val, unit);
+        val = vshPrettyCapacity(info->physical, &unit);
+        vshPrint(ctl, "%-15s %-.3lf %s\n", _("Physical:"), val, unit);
+    }
+
+}
+
+
 static bool
 cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
 {
@@ -420,21 +444,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
 
     human = vshCommandOptBool(cmd, "human");
 
-    if (!human) {
-        vshPrint(ctl, "%-15s %llu\n", _("Capacity:"), info.capacity);
-        vshPrint(ctl, "%-15s %llu\n", _("Allocation:"), info.allocation);
-        vshPrint(ctl, "%-15s %llu\n", _("Physical:"), info.physical);
-    } else {
-        double val;
-        const char *unit;
-
-        val = vshPrettyCapacity(info.capacity, &unit);
-        vshPrint(ctl, "%-15s %-.3lf %s\n", _("Capacity:"), val, unit);
-        val = vshPrettyCapacity(info.allocation, &unit);
-        vshPrint(ctl, "%-15s %-.3lf %s\n", _("Allocation:"), val, unit);
-        val = vshPrettyCapacity(info.physical, &unit);
-        vshPrint(ctl, "%-15s %-.3lf %s\n", _("Physical:"), val, unit);
-    }
+    cmdDomblkinfoPrint(ctl, &info, human);
 
     ret = true;
 
