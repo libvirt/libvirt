@@ -8,7 +8,7 @@ if [ "$#" -ne 1 ] || [ "$1" = "--help" ] || [ ! -f "$1" ]; then
 fi
 
 awk -i inplace \
-    'BEGIN {count=1; pattern="libvirt-[0-9]+"}
+    'BEGIN {last=0; pattern="libvirt-[0-9]+"}
     {
         if (match($0, "libvirt-1[^0-9]")) {
             count=1;
@@ -16,7 +16,11 @@ awk -i inplace \
         if (match($0, pattern)) {
             str="libvirt-" count;
             sub(pattern, str, $0);
-            count++;
+            if (last != count) {
+                last=count;
+            } else {
+                count++;
+            }
         }
         print
     }' "$1"
