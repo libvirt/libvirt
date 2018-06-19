@@ -15144,7 +15144,19 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
      * The command will fail if the guest is paused or the guest agent
      * is not running, or is already quiesced.  */
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) {
-        int freeze = qemuDomainSnapshotFSFreeze(driver, vm, NULL, 0);
+        int freeze;
+
+        if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_MODIFY) < 0)
+            goto cleanup;
+
+        if (virDomainObjCheckActive(vm) < 0) {
+            qemuDomainObjEndAgentJob(vm);
+            goto cleanup;
+        }
+
+        freeze = qemuDomainSnapshotFSFreeze(driver, vm, NULL, 0);
+        qemuDomainObjEndAgentJob(vm);
+
         if (freeze < 0) {
             /* the helper reported the error */
             if (freeze == -2)
@@ -15281,10 +15293,15 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     }
 
     if (thaw != 0 &&
-        qemuDomainSnapshotFSThaw(driver, vm, ret == 0 && thaw > 0) < 0) {
-        /* helper reported the error, if it was needed */
-        if (thaw > 0)
-            ret = -1;
+        qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_MODIFY) >= 0 &&
+        virDomainObjIsActive(vm)) {
+        if (qemuDomainSnapshotFSThaw(driver, vm, ret == 0 && thaw > 0) < 0) {
+            /* helper reported the error, if it was needed */
+            if (thaw > 0)
+                ret = -1;
+        }
+
+        qemuDomainObjEndAgentJob(vm);
     }
 
     virQEMUSaveDataFree(data);
