@@ -83,10 +83,8 @@ qemuBuildChrDeviceStr(char **deviceStr,
                       virDomainChrDefPtr chr,
                       virQEMUCapsPtr qemuCaps);
 
-/* With vlan == -1, use netdev syntax, else old hostnet */
 char *qemuBuildHostNetStr(virDomainNetDefPtr net,
                           virQEMUDriverPtr driver,
-                          int vlan,
                           char **tapfd,
                           size_t tapfdSize,
                           char **vhostfd,
@@ -95,7 +93,6 @@ char *qemuBuildHostNetStr(virDomainNetDefPtr net,
 /* Current, best practice */
 char *qemuBuildNicDevStr(virDomainDefPtr def,
                          virDomainNetDefPtr net,
-                         int vlan,
                          unsigned int bootindex,
                          size_t vhostfdSize,
                          virQEMUCapsPtr qemuCaps);

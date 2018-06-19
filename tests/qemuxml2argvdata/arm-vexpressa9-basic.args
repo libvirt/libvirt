@@ -27,7 +27,7 @@ server,nowait \
 -dtb /arm.dtb \
 -usb \
 -drive file=/arm.raw,format=raw,if=sd,index=0 \
--net nic,macaddr=52:54:00:09:a4:37,vlan=0,model=lan9118,name=net0 \
--net user,vlan=0,name=hostnet0 \
+-netdev user,id=hostnet0 \
+-net nic,macaddr=52:54:00:09:a4:37,netdev=hostnet0,model=lan9118,name=net0 \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0

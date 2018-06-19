@@ -3353,16 +3353,15 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
 
 
 static char *
-qemuBuildLegacyNicStr(virDomainNetDefPtr net,
-                      int vlan)
+qemuBuildLegacyNicStr(virDomainNetDefPtr net)
 {
     char *str;
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
     ignore_value(virAsprintf(&str,
-                             "nic,macaddr=%s,vlan=%d%s%s%s%s",
+                             "nic,macaddr=%s,netdev=host%s%s%s%s%s",
                              virMacAddrFormat(&net->mac, macaddr),
-                             vlan,
+                             net->info.alias,
                              (net->model ? ",model=" : ""),
                              (net->model ? net->model : ""),
                              (net->info.alias ? ",name=" : ""),
@@ -3374,7 +3373,6 @@ qemuBuildLegacyNicStr(virDomainNetDefPtr net,
 char *
 qemuBuildNicDevStr(virDomainDefPtr def,
                    virDomainNetDefPtr net,
-                   int vlan,
                    unsigned int bootindex,
                    size_t vhostfdSize,
                    virQEMUCapsPtr qemuCaps)
@@ -3523,10 +3521,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
         virBufferAsprintf(&buf, ",host_mtu=%u", net->mtu);
     }
 
-    if (vlan == -1)
-        virBufferAsprintf(&buf, ",netdev=host%s", net->info.alias);
-    else
-        virBufferAsprintf(&buf, ",vlan=%d", vlan);
+    virBufferAsprintf(&buf, ",netdev=host%s", net->info.alias);
     virBufferAsprintf(&buf, ",id=%s", net->info.alias);
     virBufferAsprintf(&buf, ",mac=%s",
                       virMacAddrFormat(&net->mac, macaddr));
@@ -3555,7 +3550,6 @@ qemuBuildNicDevStr(virDomainDefPtr def,
 char *
 qemuBuildHostNetStr(virDomainNetDefPtr net,
                     virQEMUDriverPtr driver,
-                    int vlan,
                     char **tapfd,
                     size_t tapfdSize,
                     char **vhostfd,
@@ -3670,13 +3664,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         break;
     }
 
-    if (vlan >= 0) {
-        virBufferAsprintf(&buf, "vlan=%d,", vlan);
-        if (net->info.alias)
-            virBufferAsprintf(&buf, "name=host%s,", net->info.alias);
-    } else {
-        virBufferAsprintf(&buf, "id=host%s,", net->info.alias);
-    }
+    virBufferAsprintf(&buf, "id=host%s,", net->info.alias);
 
     if (is_tap) {
         if (vhostfdSize) {
@@ -8203,7 +8191,6 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
     }
 
     if (!(netdev = qemuBuildHostNetStr(net, driver,
-                                       -1,
                                        NULL, 0, NULL, 0)))
         goto error;
 
@@ -8219,7 +8206,7 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
     virCommandAddArg(cmd, netdev);
     VIR_FREE(netdev);
 
-    if (!(nic = qemuBuildNicDevStr(def, net, -1, bootindex,
+    if (!(nic = qemuBuildNicDevStr(def, net, bootindex,
                                    queues, qemuCaps))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Error generating NIC -device string"));
@@ -8248,7 +8235,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
                               virDomainDefPtr def,
                               virDomainNetDefPtr net,
                               virQEMUCapsPtr qemuCaps,
-                              int vlan,
                               unsigned int bootindex,
                               virNetDevVPortProfileOp vmop,
                               bool standalone,
@@ -8494,37 +8480,27 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
+    if (!(host = qemuBuildHostNetStr(net, driver,
+                                     tapfdName, tapfdSize,
+                                     vhostfdName, vhostfdSize)))
+        goto cleanup;
+    virCommandAddArgList(cmd, "-netdev", host, NULL);
+
     /* Possible combinations:
      *
-     *  1. Old way:   -net nic,model=e1000,vlan=1 -net tap,vlan=1
-     *  2. New way:   -netdev type=tap,id=netdev1 -device e1000,id=netdev1
-     *
-     * NB: The backend and frontend are reversed above
+     *   Old way: -netdev type=tap,id=netdev1 \
+     *              -net nic,model=e1000,netdev=netdev1
+     *   New way: -netdev type=tap,id=netdev1 -device e1000,id=netdev1
      */
-
     if (qemuDomainSupportsNicdev(def, net)) {
-        if (!(host = qemuBuildHostNetStr(net, driver,
-                                         vlan,
-                                         tapfdName, tapfdSize,
-                                         vhostfdName, vhostfdSize)))
-            goto cleanup;
-        virCommandAddArgList(cmd, "-netdev", host, NULL);
-
-        if (!(nic = qemuBuildNicDevStr(def, net, vlan, bootindex,
+        if (!(nic = qemuBuildNicDevStr(def, net, bootindex,
                                        vhostfdSize, qemuCaps)))
             goto cleanup;
         virCommandAddArgList(cmd, "-device", nic, NULL);
     } else {
-        if (!(nic = qemuBuildLegacyNicStr(net, vlan)))
+        if (!(nic = qemuBuildLegacyNicStr(net)))
             goto cleanup;
         virCommandAddArgList(cmd, "-net", nic, NULL);
-
-        if (!(host = qemuBuildHostNetStr(net, driver,
-                                         vlan,
-                                         tapfdName, tapfdSize,
-                                         vhostfdName, vhostfdSize)))
-            goto cleanup;
-        virCommandAddArgList(cmd, "-net", host, NULL);
     }
 
     ret = 0;
@@ -8595,16 +8571,9 @@ qemuBuildNetCommandLine(virQEMUDriverPtr driver,
 
         for (i = 0; i < def->nnets; i++) {
             virDomainNetDefPtr net = def->nets[i];
-            int vlan;
-
-            /* VLANs are not used with -netdev and -device, so don't record them */
-            if (qemuDomainSupportsNicdev(def, net))
-                vlan = -1;
-            else
-                vlan = i;
 
             if (qemuBuildInterfaceCommandLine(driver, logManager, cmd, def, net,
-                                              qemuCaps, vlan, bootNet, vmop,
+                                              qemuCaps, bootNet, vmop,
                                               standalone, nnicindexes,
                                               nicindexes,
                                               chardevStdioLogd) < 0)

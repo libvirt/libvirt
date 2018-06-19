@@ -994,7 +994,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     }
 
     if (!(netstr = qemuBuildHostNetStr(net, driver,
-                                       -1,
                                        tapfdName, tapfdSize,
                                        vhostfdName, vhostfdSize)))
         goto cleanup;
@@ -1027,7 +1026,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     for (i = 0; i < vhostfdSize; i++)
         VIR_FORCE_CLOSE(vhostfd[i]);
 
-    if (!(nicstr = qemuBuildNicDevStr(vm->def, net, -1, 0,
+    if (!(nicstr = qemuBuildNicDevStr(vm->def, net, 0,
                                       queueSize, priv->qemuCaps)))
         goto try_remove;
 
