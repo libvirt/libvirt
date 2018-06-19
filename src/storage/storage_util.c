@@ -1233,6 +1233,11 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
 
     if (info.format == VIR_STORAGE_FILE_RAW && vol->target.encryption &&
         vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+        if (!info.secretPath) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("path to secret data file is required"));
+            goto error;
+        }
         if (virAsprintf(&info.secretAlias, "%s_encrypt0", vol->name) < 0)
             goto error;
         if (storageBackendCreateQemuImgSecretObject(cmd, info.secretPath,
