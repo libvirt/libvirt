@@ -3354,15 +3354,13 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
 
 static char *
 qemuBuildLegacyNicStr(virDomainNetDefPtr net,
-                      const char *prefix,
                       int vlan)
 {
     char *str;
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
     ignore_value(virAsprintf(&str,
-                             "%smacaddr=%s,vlan=%d%s%s%s%s",
-                             prefix ? prefix : "",
+                             "nic,macaddr=%s,vlan=%d%s%s%s%s",
                              virMacAddrFormat(&net->mac, macaddr),
                              vlan,
                              (net->model ? ",model=" : ""),
@@ -8517,7 +8515,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
             goto cleanup;
         virCommandAddArgList(cmd, "-device", nic, NULL);
     } else {
-        if (!(nic = qemuBuildLegacyNicStr(net, "nic,", vlan)))
+        if (!(nic = qemuBuildLegacyNicStr(net, vlan)))
             goto cleanup;
         virCommandAddArgList(cmd, "-net", nic, NULL);
 
