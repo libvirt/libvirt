@@ -3352,7 +3352,7 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
 }
 
 
-char *
+static char *
 qemuBuildNicStr(virDomainNetDefPtr net,
                 const char *prefix,
                 int vlan)

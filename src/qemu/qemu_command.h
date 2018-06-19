@@ -92,11 +92,6 @@ char *qemuBuildHostNetStr(virDomainNetDefPtr net,
                           char **vhostfd,
                           size_t vhostfdSize);
 
-/* Legacy, pre device support */
-char *qemuBuildNicStr(virDomainNetDefPtr net,
-                      const char *prefix,
-                      int vlan);
-
 /* Current, best practice */
 char *qemuBuildNicDevStr(virDomainDefPtr def,
                          virDomainNetDefPtr net,
