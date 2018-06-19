@@ -8147,11 +8147,12 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
     char *netdev = NULL;
     unsigned int queues = net->driver.virtio.queues;
     char *nic = NULL;
+    int ret = -1;
 
     if (!qemuDomainSupportsNicdev(def, net)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Nicdev support unavailable"));
-        goto error;
+        goto cleanup;
     }
 
     switch ((virDomainChrType)net->data.vhostuser->type) {
@@ -8160,7 +8161,7 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
                                                net->data.vhostuser,
                                                net->info.alias, qemuCaps, false,
                                                chardevStdioLogd)))
-            goto error;
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NULL:
@@ -8179,7 +8180,7 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("vhost-user type '%s' not supported"),
                        virDomainChrTypeToString(net->data.vhostuser->type));
-        goto error;
+        goto cleanup;
     }
 
     if (queues > 1 &&
@@ -8187,45 +8188,38 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("multi-queue is not supported for vhost-user "
                          "with this QEMU binary"));
-        goto error;
+        goto cleanup;
     }
 
     if (!(netdev = qemuBuildHostNetStr(net, driver,
                                        NULL, 0, NULL, 0)))
-        goto error;
+        goto cleanup;
 
     if (virNetDevOpenvswitchGetVhostuserIfname(net->data.vhostuser->data.nix.path,
                                                &net->ifname) < 0)
-        goto error;
+        goto cleanup;
 
     virCommandAddArg(cmd, "-chardev");
     virCommandAddArg(cmd, chardev);
-    VIR_FREE(chardev);
 
     virCommandAddArg(cmd, "-netdev");
     virCommandAddArg(cmd, netdev);
-    VIR_FREE(netdev);
 
     if (!(nic = qemuBuildNicDevStr(def, net, bootindex,
                                    queues, qemuCaps))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("Error generating NIC -device string"));
-        goto error;
+        goto cleanup;
     }
 
     virCommandAddArgList(cmd, "-device", nic, NULL);
-    VIR_FREE(nic);
-    virObjectUnref(cfg);
 
-    return 0;
-
- error:
+    ret = 0;
+ cleanup:
     virObjectUnref(cfg);
     VIR_FREE(netdev);
     VIR_FREE(chardev);
     VIR_FREE(nic);
 
-    return -1;
+    return ret;
 }
 
 static int
