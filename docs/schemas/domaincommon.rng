@@ -1545,6 +1545,14 @@
     </optional>
   </define>
 
+  <define name="diskSourceCommon">
+    <optional>
+      <attribute name="index">
+        <ref name="positiveInteger"/>
+      </attribute>
+    </optional>
+  </define>
+
   <define name="diskSource">
     <choice>
       <ref name="diskSourceFile"/>
@@ -1568,6 +1576,7 @@
             <ref name="absFilePath"/>
           </attribute>
         </optional>
+        <ref name="diskSourceCommon"/>
         <optional>
           <ref name="storageStartupPolicy"/>
         </optional>
@@ -1592,6 +1601,7 @@
             <ref name="absFilePath"/>
           </attribute>
         </optional>
+        <ref name="diskSourceCommon"/>
         <optional>
           <ref name="storageStartupPolicy"/>
         </optional>
@@ -1617,6 +1627,7 @@
         <attribute name="dir">
           <ref name="absFilePath"/>
         </attribute>
+        <ref name="diskSourceCommon"/>
         <optional>
           <ref name="storageStartupPolicy"/>
         </optional>
@@ -1670,6 +1681,7 @@
         <attribute name="protocol">
           <value>rbd</value>
         </attribute>
+        <ref name="diskSourceCommon"/>
         <optional>
           <attribute name="name"/>
         </optional>
@@ -1709,6 +1721,7 @@
         <value>iscsi</value>
       </attribute>
       <attribute name="name"/>
+      <ref name="diskSourceCommon"/>
       <ref name="diskSourceNetworkHost"/>
       <optional>
         <ref name="diskAuth"/>
@@ -1731,6 +1744,7 @@
         </choice>
       </attribute>
       <attribute name="name"/>
+      <ref name="diskSourceCommon"/>
       <ref name="diskSourceNetworkHost"/>
       <optional>
         <ref name="encryption"/>
@@ -1749,6 +1763,7 @@
         </choice>
       </attribute>
       <attribute name="name"/>
+      <ref name="diskSourceCommon"/>
       <ref name="diskSourceNetworkHost"/>
       <optional>
         <ref name="encryption"/>
@@ -1769,6 +1784,7 @@
           <ref name="virYesNo"/>
         </attribute>
       </optional>
+      <ref name="diskSourceCommon"/>
       <ref name="diskSourceNetworkHost"/>
       <optional>
         <ref name="encryption"/>
@@ -1782,6 +1798,7 @@
         <value>gluster</value>
       </attribute>
       <attribute name="name"/>
+      <ref name="diskSourceCommon"/>
       <oneOrMore>
         <ref name="diskSourceNetworkHost"/>
       </oneOrMore>
@@ -1799,6 +1816,7 @@
         </choice>
       </attribute>
       <attribute name="name"/>
+      <ref name="diskSourceCommon"/>
       <optional>
         <attribute name="tls">
           <ref name="virYesNo"/>
@@ -1843,6 +1861,7 @@
             </choice>
           </attribute>
         </optional>
+        <ref name="diskSourceCommon"/>
         <optional>
           <ref name="storageStartupPolicy"/>
         </optional>

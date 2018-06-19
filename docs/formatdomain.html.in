@@ -3020,6 +3020,11 @@
         is only valid when the specified storage volume is of 'file' or
         'block' type).
         <p>
+        The <code>source</code> element may also have the <code>index</code>
+        attribute with same semantics the <a href='#elementsDiskBackingStoreIndex'>
+        <code>index</code></a> attribute of <code>backingStore</code>
+        </p>
+        <p>
         The <code>source</code> element may contain the following sub elements:
         </p>
 
@@ -3228,7 +3233,7 @@
             by the backing store, see disk type attribute above for more
             details and possible values.
           </dd>
-          <dt><code>index</code></dt>
+          <dt><code><a id="elementsDiskBackingStoreIndex">index</a></code></dt>
           <dd>
             This attribute is only valid in output (and ignored on input) and
             it can be used to refer to a specific part of the disk chain when

@@ -16,7 +16,7 @@
     <emulator>/usr/bin/qemu-system-i686</emulator>
     <disk type='network' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source protocol='gluster' name='Volume2/Image'>
+      <source protocol='gluster' name='Volume2/Image' index='2'>
         <host transport='unix' socket='/path/to/sock'/>
       </source>
       <backingStore type='file' index='1'>
@@ -28,7 +28,7 @@
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source protocol='nbd' name='bar'>
+      <source protocol='nbd' name='bar' index='9'>
         <host transport='unix' socket='/var/run/nbdsock'/>
       </source>
       <backingStore type='block' index='8'>
@@ -61,7 +61,7 @@
     </disk>
     <disk type='network' device='disk'>
       <driver name='qemu' type='raw'/>
-      <source protocol='gluster' name='Volume1/Image'>
+      <source protocol='gluster' name='Volume1/Image' index='10'>
         <host name='example.org' port='6000'/>
       </source>
       <backingStore/>
@@ -73,7 +73,7 @@
       <auth username='myname'>
         <secret type='ceph' usage='mycluster_myname'/>
       </auth>
-      <source protocol='rbd' name='pool/image'>
+      <source protocol='rbd' name='pool/image' index='12'>
         <host name='mon1.example.org' port='6321'/>
         <host name='mon2.example.org' port='6322'/>
         <host name='mon3.example.org' port='6322'/>
@@ -88,13 +88,13 @@
     </disk>
     <disk type='block' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source dev='/dev/HostVG/QEMUGuest11'/>
+      <source dev='/dev/HostVG/QEMUGuest11' index='13'/>
       <target dev='vde' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </disk>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source file='/var/lib/libvirt/images/rhel7.1484071880'/>
+      <source file='/var/lib/libvirt/images/rhel7.1484071880' index='25'/>
       <backingStore type='file' index='24'>
         <format type='qcow2'/>
         <source file='/var/lib/libvirt/images/rhel7.1484071877'/>
