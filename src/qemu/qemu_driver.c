@@ -16148,6 +16148,9 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     switch ((virDomainState) snap->def->state) {
     case VIR_DOMAIN_RUNNING:
     case VIR_DOMAIN_PAUSED:
+
+        start_flags |= VIR_QEMU_PROCESS_START_PAUSED;
+
         /* Transitions 2, 3, 5, 6, 8, 9 */
         /* When using the loadvm monitor command, qemu does not know
          * whether to pause or run the reverted domain, and just stays
@@ -16267,8 +16270,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                   cookie ? cookie->cpu : NULL,
                                   QEMU_ASYNC_JOB_START, NULL, -1, NULL, snap,
                                   VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
-                                  VIR_QEMU_PROCESS_START_PAUSED |
-                                  VIR_QEMU_PROCESS_START_GEN_VMID);
+                                  start_flags);
             virDomainAuditStart(vm, "from-snapshot", rc >= 0);
             detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
             event = virDomainEventLifecycleNewFromObj(vm,
