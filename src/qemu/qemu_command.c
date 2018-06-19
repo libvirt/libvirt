@@ -3353,9 +3353,9 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
 
 
 static char *
-qemuBuildNicStr(virDomainNetDefPtr net,
-                const char *prefix,
-                int vlan)
+qemuBuildLegacyNicStr(virDomainNetDefPtr net,
+                      const char *prefix,
+                      int vlan)
 {
     char *str;
     char macaddr[VIR_MAC_STRING_BUFLEN];
@@ -8517,7 +8517,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
             goto cleanup;
         virCommandAddArgList(cmd, "-device", nic, NULL);
     } else {
-        if (!(nic = qemuBuildNicStr(net, "nic,", vlan)))
+        if (!(nic = qemuBuildLegacyNicStr(net, "nic,", vlan)))
             goto cleanup;
         virCommandAddArgList(cmd, "-net", nic, NULL);
 
