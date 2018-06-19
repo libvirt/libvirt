@@ -482,109 +482,6 @@ storageBackendCreateRaw(virStoragePoolObjPtr pool,
     return ret;
 }
 
-static int
-virStorageGenerateSecretUUID(virConnectPtr conn,
-                             unsigned char *uuid)
-{
-    unsigned attempt;
-
-    for (attempt = 0; attempt < 65536; attempt++) {
-        virSecretPtr tmp;
-        if (virUUIDGenerate(uuid) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("unable to generate uuid"));
-            return -1;
-        }
-        tmp = virSecretLookupByUUID(conn, uuid);
-        if (tmp == NULL)
-            return 0;
-
-        virObjectUnref(tmp);
-    }
-
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("too many conflicts when generating a uuid"));
-
-    return -1;
-}
-
-static int
-virStorageGenerateQcowEncryption(virStorageVolDefPtr vol)
-{
-    virSecretDefPtr def = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virStorageEncryptionPtr enc;
-    virStorageEncryptionSecretPtr enc_secret = NULL;
-    virSecretPtr secret = NULL;
-    char *xml;
-    unsigned char value[VIR_STORAGE_QCOW_PASSPHRASE_SIZE];
-    int ret = -1;
-    virConnectPtr conn = NULL;
-
-    conn = virGetConnectSecret();
-    if (!conn)
-        return -1;
-
-    enc = vol->target.encryption;
-    if (enc->nsecrets != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("secrets already defined"));
-        goto cleanup;
-    }
-
-    if (VIR_ALLOC(enc_secret) < 0 || VIR_REALLOC_N(enc->secrets, 1) < 0 ||
-        VIR_ALLOC(def) < 0)
-        goto cleanup;
-
-    def->isephemeral = false;
-    def->isprivate = false;
-    if (virStorageGenerateSecretUUID(conn, def->uuid) < 0)
-        goto cleanup;
-
-    def->usage_type = VIR_SECRET_USAGE_TYPE_VOLUME;
-    if (VIR_STRDUP(def->usage_id, vol->target.path) < 0)
-        goto cleanup;
-    xml = virSecretDefFormat(def);
-    virSecretDefFree(def);
-    def = NULL;
-    if (xml == NULL)
-        goto cleanup;
-
-    secret = virSecretDefineXML(conn, xml, 0);
-    if (secret == NULL) {
-        VIR_FREE(xml);
-        goto cleanup;
-    }
-    VIR_FREE(xml);
-
-    if (virStorageGenerateQcowPassphrase(value) < 0)
-        goto cleanup;
-
-    if (virSecretSetValue(secret, value, sizeof(value), 0) < 0)
-        goto cleanup;
-
-    enc_secret->type = VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE;
-    enc_secret->seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
-    memcpy(enc_secret->seclookupdef.u.uuid, secret->uuid, VIR_UUID_BUFLEN);
-    enc->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;
-    enc->secrets[0] = enc_secret; /* Space for secrets[0] allocated above */
-    enc_secret = NULL;
-    enc->nsecrets = 1;
-
-    ret = 0;
-
- cleanup:
-    if (secret != NULL) {
-        if (ret != 0)
-            virSecretUndefine(secret);
-        virObjectUnref(secret);
-    }
-    virObjectUnref(conn);
-    virBufferFreeAndReset(&buf);
-    virSecretDefFree(def);
-    VIR_FREE(enc_secret);
-    return ret;
-}
 
 static int
 virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
@@ -1326,34 +1223,6 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObjPtr pool,
 
 
 static int
-storageBackendGenerateSecretData(virStoragePoolObjPtr pool,
-                                 virStorageVolDefPtr vol,
-                                 char **secretPath)
-{
-    virStorageEncryptionPtr enc = vol->target.encryption;
-
-    if (!enc)
-        return 0;
-
-    if ((vol->target.format == VIR_STORAGE_FILE_QCOW ||
-         vol->target.format == VIR_STORAGE_FILE_QCOW2) &&
-        (enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT ||
-         enc->nsecrets == 0)) {
-        if (virStorageGenerateQcowEncryption(vol) < 0)
-            return -1;
-    }
-
-    if (vol->target.format == VIR_STORAGE_FILE_RAW &&
-        enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
-        if (!(*secretPath = storageBackendCreateQemuImgSecretPath(pool, vol)))
-            return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 storageBackendDoCreateQemuImg(virStoragePoolObjPtr pool,
                               virStorageVolDefPtr vol,
                               virStorageVolDefPtr inputvol,
@@ -1398,7 +1267,8 @@ storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
         return -1;
     }
 
-    if (storageBackendGenerateSecretData(pool, vol, &secretPath) < 0)
+    if (vol->target.encryption &&
+        !(secretPath = storageBackendCreateQemuImgSecretPath(pool, vol)))
         goto cleanup;
 
     ret = storageBackendDoCreateQemuImg(pool, vol, inputvol, flags,
