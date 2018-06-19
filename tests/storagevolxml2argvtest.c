@@ -232,6 +232,13 @@ mymain(void)
             "pool-dir", "vol-file-iso",
             "iso-input", 0);
 
+    DO_TEST("pool-dir", "vol-luks",
+            NULL, NULL,
+            "luks", 0);
+    DO_TEST("pool-dir", "vol-luks-cipher",
+            NULL, NULL,
+            "luks-cipher", 0);
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
