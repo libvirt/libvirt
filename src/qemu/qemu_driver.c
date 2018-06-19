@@ -11061,11 +11061,13 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
                             qemuBlockStatsPtr *retstats)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainDiskDefPtr disk;
+    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
+    virDomainDiskDefPtr disk = NULL;
     virHashTablePtr blockstats = NULL;
     qemuBlockStatsPtr stats;
     size_t i;
     int nstats;
+    int rc = 0;
     const char *entryname = NULL;
     int ret = -1;
 
@@ -11075,23 +11077,30 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (!disk->info.alias) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("missing disk device alias name for %s"), disk->dst);
-            goto cleanup;
-        }
+        if (blockdev) {
+            entryname = QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName;
+        } else {
+            if (!disk->info.alias) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("missing disk device alias name for %s"), disk->dst);
+                goto cleanup;
+            }
 
-        entryname = disk->info.alias;
+            entryname = disk->info.alias;
+        }
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
     nstats = qemuMonitorGetAllBlockStatsInfo(priv->mon, &blockstats, false);
 
-    if (capacity && nstats >= 0 &&
-        qemuMonitorBlockStatsUpdateCapacity(priv->mon, blockstats, false) < 0)
-        nstats = -1;
+    if (capacity && nstats >= 0) {
+        if (blockdev)
+            rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, blockstats);
+        else
+            rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, blockstats, false);
+    }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || nstats < 0)
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || nstats < 0 || rc < 0)
         goto cleanup;
 
     if (VIR_ALLOC(*retstats) < 0)
@@ -11104,11 +11113,28 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
+        if (blockdev) {
+            /* capacity are reported only per node-name so we need to transfer them */
+            qemuBlockStatsPtr capstats;
+
+            if (disk && disk->src &&
+                (capstats = virHashLookup(blockstats, disk->src->nodeformat))) {
+                (*retstats)->capacity = capstats->capacity;
+                (*retstats)->physical = capstats->physical;
+                (*retstats)->wr_highest_offset = capstats->wr_highest_offset;
+                (*retstats)->wr_highest_offset_valid = capstats->wr_highest_offset_valid;
+                (*retstats)->write_threshold = capstats->write_threshold;
+            }
+        }
+
         **retstats = *stats;
     } else {
         for (i = 0; i < vm->def->ndisks; i++) {
             disk = vm->def->disks[i];
             entryname = disk->info.alias;
+
+            if (blockdev)
+                entryname = QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName;
 
             if (!entryname)
                 continue;
