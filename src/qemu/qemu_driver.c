@@ -16182,12 +16182,14 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 }
 
                 /* If using VM GenID, there is no way currently to change
-                 * the genid for the running guest, so set an error and
-                 * mark as incompatible. */
+                 * the genid for the running guest, so set an error,
+                 * mark as incompatible, and don't allow change of genid
+                 * if the revert force flag would start the guest again. */
                 if (compatible && config->genidRequested) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("domain genid update requires restart"));
                     compatible = false;
+                    start_flags &= ~VIR_QEMU_PROCESS_START_GEN_VMID;
                 }
 
                 if (!compatible) {
