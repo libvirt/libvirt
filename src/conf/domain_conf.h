@@ -2919,9 +2919,6 @@ virDomainChrSourceDefNew(virDomainXMLOptionPtr xmlopt);
 virDomainChrDefPtr virDomainChrDefNew(virDomainXMLOptionPtr xmlopt);
 
 virDomainDefPtr virDomainDefNew(void);
-virDomainDefPtr virDomainDefNewFull(const char *name,
-                                    const unsigned char *uuid,
-                                    int id);
 
 void virDomainObjAssignDef(virDomainObjPtr domain,
                            virDomainDefPtr def,

@@ -3241,28 +3241,6 @@ virDomainDefNew(void)
 }
 
 
-virDomainDefPtr
-virDomainDefNewFull(const char *name,
-                    const unsigned char *uuid,
-                    int id)
-{
-    virDomainDefPtr def;
-
-    if (!(def = virDomainDefNew()))
-        return NULL;
-
-    if (VIR_STRDUP(def->name, name) < 0) {
-        VIR_FREE(def);
-        return NULL;
-    }
-
-    memcpy(def->uuid, uuid, VIR_UUID_BUFLEN);
-    def->id = id;
-
-    return def;
-}
-
-
 void virDomainObjAssignDef(virDomainObjPtr domain,
                            virDomainDefPtr def,
                            bool live,
