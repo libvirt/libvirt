@@ -82,6 +82,15 @@ typedef enum {
 } qemuDomainJob;
 VIR_ENUM_DECL(qemuDomainJob)
 
+typedef enum {
+    QEMU_AGENT_JOB_NONE = 0,    /* No agent job. */
+    QEMU_AGENT_JOB_QUERY,       /* Does not change state of domain */
+    QEMU_AGENT_JOB_MODIFY,      /* May change state of domain */
+
+    QEMU_AGENT_JOB_LAST
+} qemuDomainAgentJob;
+VIR_ENUM_DECL(qemuDomainAgentJob)
+
 /* Async job consists of a series of jobs that may change state. Independent
  * jobs that do not change state (and possibly others if explicitly allowed by
  * current async job) are allowed to be run even if async job is active.
@@ -158,11 +167,20 @@ typedef struct _qemuDomainJobObj qemuDomainJobObj;
 typedef qemuDomainJobObj *qemuDomainJobObjPtr;
 struct _qemuDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
+
+    /* The following members are for QEMU_JOB_* */
     qemuDomainJob active;               /* Currently running job */
     unsigned long long owner;           /* Thread id which set current job */
     const char *ownerAPI;               /* The API which owns the job */
     unsigned long long started;         /* When the current job started */
 
+    /* The following members are for QEMU_AGENT_JOB_* */
+    qemuDomainAgentJob agentActive;     /* Currently running agent job */
+    unsigned long long agentOwner;      /* Thread id which set current agent job */
+    const char *agentOwnerAPI;          /* The API which owns the agent job */
+    unsigned long long agentStarted;    /* When the current agent job started */
+
+    /* The following members are for QEMU_ASYNC_JOB_* */
     virCond asyncCond;                  /* Use to coordinate with async jobs */
     qemuDomainAsyncJob asyncJob;        /* Currently active async job */
     unsigned long long asyncOwner;      /* Thread which set current async job */
