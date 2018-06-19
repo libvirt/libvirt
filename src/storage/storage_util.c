@@ -817,7 +817,7 @@ struct _virStorageBackendQemuImgInfo {
 
 
 static int
-storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr enc,
+storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
                                 char **opts,
                                 struct _virStorageBackendQemuImgInfo info)
 {
@@ -827,8 +827,8 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr enc,
         virBufferAsprintf(&buf, "backing_fmt=%s,",
                           virStorageFileFormatTypeToString(info.backingFormat));
 
-    if (info.format == VIR_STORAGE_FILE_RAW && enc) {
-        virQEMUBuildQemuImgKeySecretOpts(&buf, enc, info.secretAlias);
+    if (info.format == VIR_STORAGE_FILE_RAW && encinfo) {
+        virQEMUBuildQemuImgKeySecretOpts(&buf, encinfo, info.secretAlias);
     } else {
         if (info.encryption)
             virBufferAddLit(&buf, "encryption=on,");
@@ -1037,7 +1037,7 @@ storageBackendCreateQemuImgSetBacking(virStoragePoolObjPtr pool,
 
 static int
 storageBackendCreateQemuImgSetOptions(virCommandPtr cmd,
-                                      virStorageEncryptionInfoDefPtr enc,
+                                      virStorageEncryptionInfoDefPtr encinfo,
                                       struct _virStorageBackendQemuImgInfo info)
 {
     char *opts = NULL;
@@ -1045,7 +1045,7 @@ storageBackendCreateQemuImgSetOptions(virCommandPtr cmd,
     if (info.format == VIR_STORAGE_FILE_QCOW2 && !info.compat)
         info.compat = "0.10";
 
-    if (storageBackendCreateQemuImgOpts(enc, &opts, info) < 0)
+    if (storageBackendCreateQemuImgOpts(encinfo, &opts, info) < 0)
         return -1;
     if (opts)
         virCommandAddArgList(cmd, "-o", opts, NULL);
@@ -1209,7 +1209,8 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
         .secretPath = secretPath,
         .secretAlias = NULL,
     };
-    virStorageEncryptionInfoDefPtr enc = NULL;
+    virStorageEncryptionPtr enc = vol->target.encryption;
+    virStorageEncryptionInfoDefPtr encinfo = NULL;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
@@ -1231,8 +1232,8 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
     if (info.backingPath)
         virCommandAddArgList(cmd, "-b", info.backingPath, NULL);
 
-    if (info.format == VIR_STORAGE_FILE_RAW && vol->target.encryption &&
-        vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+    if (info.format == VIR_STORAGE_FILE_RAW && enc &&
+        enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
         if (!info.secretPath) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("path to secret data file is required"));
@@ -1243,10 +1244,10 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
         if (storageBackendCreateQemuImgSecretObject(cmd, info.secretPath,
                                                     info.secretAlias) < 0)
             goto error;
-        enc = &vol->target.encryption->encinfo;
+        encinfo = &enc->encinfo;
     }
 
-    if (storageBackendCreateQemuImgSetOptions(cmd, enc, info) < 0)
+    if (storageBackendCreateQemuImgSetOptions(cmd, encinfo, info) < 0)
         goto error;
     VIR_FREE(info.secretAlias);
 

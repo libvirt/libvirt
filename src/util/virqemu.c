@@ -315,7 +315,7 @@ virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str)
 /**
  * virQEMUBuildQemuImgKeySecretOpts:
  * @buf: buffer to build the string into
- * @enc: pointer to encryption info
+ * @encinfo: pointer to encryption info
  * @alias: alias to use
  *
  * Generate the string for id=$alias and any encryption options for
@@ -334,37 +334,37 @@ virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str)
  */
 void
 virQEMUBuildQemuImgKeySecretOpts(virBufferPtr buf,
-                                 virStorageEncryptionInfoDefPtr enc,
+                                 virStorageEncryptionInfoDefPtr encinfo,
                                  const char *alias)
 {
     virBufferAsprintf(buf, "key-secret=%s,", alias);
 
-    if (!enc->cipher_name)
+    if (!encinfo->cipher_name)
         return;
 
     virBufferAddLit(buf, "cipher-alg=");
-    virQEMUBuildBufferEscapeComma(buf, enc->cipher_name);
-    virBufferAsprintf(buf, "-%u,", enc->cipher_size);
-    if (enc->cipher_mode) {
+    virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_name);
+    virBufferAsprintf(buf, "-%u,", encinfo->cipher_size);
+    if (encinfo->cipher_mode) {
         virBufferAddLit(buf, "cipher-mode=");
-        virQEMUBuildBufferEscapeComma(buf, enc->cipher_mode);
+        virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_mode);
         virBufferAddLit(buf, ",");
     }
-    if (enc->cipher_hash) {
+    if (encinfo->cipher_hash) {
         virBufferAddLit(buf, "hash-alg=");
-        virQEMUBuildBufferEscapeComma(buf, enc->cipher_hash);
+        virQEMUBuildBufferEscapeComma(buf, encinfo->cipher_hash);
         virBufferAddLit(buf, ",");
     }
-    if (!enc->ivgen_name)
+    if (!encinfo->ivgen_name)
         return;
 
     virBufferAddLit(buf, "ivgen-alg=");
-    virQEMUBuildBufferEscapeComma(buf, enc->ivgen_name);
+    virQEMUBuildBufferEscapeComma(buf, encinfo->ivgen_name);
     virBufferAddLit(buf, ",");
 
-    if (enc->ivgen_hash) {
+    if (encinfo->ivgen_hash) {
         virBufferAddLit(buf, "ivgen-hash-alg=");
-        virQEMUBuildBufferEscapeComma(buf, enc->ivgen_hash);
+        virQEMUBuildBufferEscapeComma(buf, encinfo->ivgen_hash);
         virBufferAddLit(buf, ",");
     }
 }
