@@ -6666,7 +6666,8 @@ qemuDomainObjBeginNestedJob(virQEMUDriverPtr driver,
 
     if (asyncJob != priv->job.asyncJob) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected async job %d"), asyncJob);
+                       _("unexpected async job %d type expected %d"),
+                       asyncJob, priv->job.asyncJob);
         return -1;
     }
 
