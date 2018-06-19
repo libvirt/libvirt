@@ -14,6 +14,19 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-i686</emulator>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none'/>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='hda' bus='ide'/>
+      <iotune>
+        <total_bytes_sec>5000</total_bytes_sec>
+        <total_iops_sec>6000</total_iops_sec>
+        <total_bytes_sec_max>10000</total_bytes_sec_max>
+        <total_iops_sec_max>11000</total_iops_sec_max>
+        <group_name>libvirt_iotune_group1,foo</group_name>
+      </iotune>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
     <graphics type='vnc'>
       <listen type='socket'/>
     </graphics>

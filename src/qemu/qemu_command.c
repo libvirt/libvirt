@@ -1554,8 +1554,8 @@ qemuBuildDiskThrottling(virDomainDiskDefPtr disk,
 
     IOTUNE_ADD(size_iops_sec, "iops-size");
     if (disk->blkdeviotune.group_name) {
-        virBufferEscapeString(buf, ",throttling.group=%s",
-                              disk->blkdeviotune.group_name);
+        virBufferAddLit(buf, ",throttling.group=");
+        virQEMUBuildBufferEscapeComma(buf, disk->blkdeviotune.group_name);
     }
 
     IOTUNE_ADD(total_bytes_sec_max_length, "bps-total-max-length");
