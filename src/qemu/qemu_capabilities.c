@@ -501,6 +501,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               /* 310 */
               "sev-guest",
               "machine.pseries.cap-hpt-max-page-size",
+              "machine.pseries.cap-htm",
     );
 
 
@@ -1431,6 +1432,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] =
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsSPAPRMachine[] = {
     { "cap-hpt-max-page-size", QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE },
+    { "cap-htm", QEMU_CAPS_MACHINE_PSERIES_CAP_HTM },
 };
 
 static virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {

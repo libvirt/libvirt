@@ -485,6 +485,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 310 */
     QEMU_CAPS_SEV_GUEST, /* -object sev-guest,... */
     QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE, /* -machine pseries.cap-hpt-max-page-size */
+    QEMU_CAPS_MACHINE_PSERIES_CAP_HTM, /* -machine pseries.cap-htm */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
