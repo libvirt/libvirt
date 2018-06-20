@@ -43,6 +43,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
                           unsigned long parse_flags)
 {
     char *actualCmdline = NULL;
+    virStorageVolEncryptConvertStep convertStep = VIR_STORAGE_VOL_ENCRYPT_NONE;
     int ret = -1;
 
     virCommandPtr cmd = NULL;
@@ -79,20 +80,56 @@ testCompareXMLToArgvFiles(bool shouldFail,
     testSetVolumeType(vol, def);
     testSetVolumeType(inputvol, inputpool);
 
-    cmd = virStorageBackendCreateQemuImgCmdFromVol(obj, vol,
-                                                   inputvol, flags,
-                                                   create_tool,
-                                                   "/path/to/secretFile");
-    if (!cmd) {
-        if (shouldFail) {
-            virResetLastError();
-            ret = 0;
-        }
-        goto cleanup;
-    }
+    /* Using an input file for encryption requires a multi-step process
+     * to create an image of the same size as the inputvol and then to
+     * convert the inputvol afterwards. Since we only care about the
+     * command line we have to copy code from storageBackendCreateQemuImg
+     * and adjust it for the test needs. */
+    if (inputvol && vol->target.encryption)
+        convertStep = VIR_STORAGE_VOL_ENCRYPT_CREATE;
 
-    if (!(actualCmdline = virCommandToString(cmd)))
-        goto cleanup;
+    do {
+        cmd = virStorageBackendCreateQemuImgCmdFromVol(obj, vol,
+                                                       inputvol, flags,
+                                                       create_tool,
+                                                       "/path/to/secretFile",
+                                                       convertStep);
+        if (!cmd) {
+            if (shouldFail) {
+                virResetLastError();
+                ret = 0;
+            }
+            goto cleanup;
+        }
+
+        if (convertStep != VIR_STORAGE_VOL_ENCRYPT_CONVERT) {
+            if (!(actualCmdline = virCommandToString(cmd)))
+                goto cleanup;
+        } else {
+            char *createCmdline = actualCmdline;
+            char *cvtCmdline;
+            int rc;
+
+            if (!(cvtCmdline = virCommandToString(cmd)))
+                goto cleanup;
+
+            rc = virAsprintf(&actualCmdline, "%s\n%s",
+                             createCmdline, cvtCmdline);
+
+            VIR_FREE(createCmdline);
+            VIR_FREE(cvtCmdline);
+            if (rc < 0)
+                goto cleanup;
+        }
+
+        if (convertStep == VIR_STORAGE_VOL_ENCRYPT_NONE)
+            convertStep = VIR_STORAGE_VOL_ENCRYPT_DONE;
+        else if (convertStep == VIR_STORAGE_VOL_ENCRYPT_CREATE)
+            convertStep = VIR_STORAGE_VOL_ENCRYPT_CONVERT;
+        else if (convertStep == VIR_STORAGE_VOL_ENCRYPT_CONVERT)
+            convertStep = VIR_STORAGE_VOL_ENCRYPT_DONE;
+
+    } while (convertStep != VIR_STORAGE_VOL_ENCRYPT_DONE);
 
     if (virTestCompareToFile(actualCmdline, cmdline) < 0)
         goto cleanup;
@@ -242,6 +279,10 @@ mymain(void)
     DO_TEST("pool-dir", "vol-luks-cipher",
             NULL, NULL,
             "luks-cipher", 0);
+
+    DO_TEST("pool-dir", "vol-luks-convert",
+            "pool-dir", "vol-file",
+            "luks-convert", 0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

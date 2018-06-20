@@ -153,13 +153,21 @@ char *virStorageBackendStablePath(virStoragePoolObjPtr pool,
                                   const char *devpath,
                                   bool loop);
 
+typedef enum {
+    VIR_STORAGE_VOL_ENCRYPT_NONE = 0,
+    VIR_STORAGE_VOL_ENCRYPT_CREATE,
+    VIR_STORAGE_VOL_ENCRYPT_CONVERT,
+    VIR_STORAGE_VOL_ENCRYPT_DONE,
+} virStorageVolEncryptConvertStep;
+
 virCommandPtr
 virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
                                          virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol,
                                          unsigned int flags,
                                          const char *create_tool,
-                                         const char *secretPath);
+                                         const char *secretPath,
+                                         virStorageVolEncryptConvertStep convertStep);
 
 int virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
                                  uint32_t scanhost);

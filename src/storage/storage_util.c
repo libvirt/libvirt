@@ -819,12 +819,15 @@ storageBackendCreateQemuImgCheckEncryption(int format,
 
 static int
 storageBackendCreateQemuImgSetInput(virStorageVolDefPtr inputvol,
+                                    virStorageVolEncryptConvertStep convertStep,
                                     struct _virStorageBackendQemuImgInfo *info)
 {
-    if (!(info->inputPath = inputvol->target.path)) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("missing input volume target path"));
-        return -1;
+    if (convertStep != VIR_STORAGE_VOL_ENCRYPT_CREATE) {
+        if (!(info->inputPath = inputvol->target.path)) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("missing input volume target path"));
+            return -1;
+        }
     }
 
     info->inputFormat = inputvol->target.format;
@@ -995,6 +998,7 @@ static int
 virStorageBackendCreateQemuImgSetInfo(virStoragePoolObjPtr pool,
                                       virStorageVolDefPtr vol,
                                       virStorageVolDefPtr inputvol,
+                                      virStorageVolEncryptConvertStep convertStep,
                                       struct _virStorageBackendQemuImgInfo *info)
 {
     /* Treat output block devices as 'raw' format */
@@ -1027,11 +1031,6 @@ virStorageBackendCreateQemuImgSetInfo(virStoragePoolObjPtr pool,
         return -1;
     }
     if (info->format == VIR_STORAGE_FILE_RAW && vol->target.encryption) {
-        if (inputvol) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("cannot use inputvol with encrypted raw volume"));
-            return -1;
-        }
         if (vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
             info->type = "luks";
         } else {
@@ -1042,7 +1041,7 @@ virStorageBackendCreateQemuImgSetInfo(virStoragePoolObjPtr pool,
     }
 
     if (inputvol &&
-        storageBackendCreateQemuImgSetInput(inputvol, info) < 0)
+        storageBackendCreateQemuImgSetInput(inputvol, convertStep, info) < 0)
         return -1;
 
     if (virStorageSourceHasBacking(&vol->target) &&
@@ -1068,7 +1067,8 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
                                          virStorageVolDefPtr inputvol,
                                          unsigned int flags,
                                          const char *create_tool,
-                                         const char *secretPath)
+                                         const char *secretPath,
+                                         virStorageVolEncryptConvertStep convertStep)
 {
     virCommandPtr cmd = NULL;
     struct _virStorageBackendQemuImgInfo info = {
@@ -1098,18 +1098,25 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
         goto error;
     }
 
-    if (virStorageBackendCreateQemuImgSetInfo(pool, vol, inputvol, &info) < 0)
+    if (virStorageBackendCreateQemuImgSetInfo(pool, vol, inputvol,
+                                              convertStep, &info) < 0)
         goto error;
 
     cmd = virCommandNew(create_tool);
 
-    /* ignore the backing volume when we're converting a volume */
-    if (info.inputPath)
+    /* ignore the backing volume when we're converting a volume
+     * including when we're doing a two step convert during create */
+    if (info.inputPath || convertStep == VIR_STORAGE_VOL_ENCRYPT_CREATE)
         info.backingPath = NULL;
 
-    if (info.inputPath)
+    /* Converting to use encryption is a two step process - step 1 is to
+     * create the image and step 2 is to convert it using special arguments */
+    if (info.inputPath && convertStep == VIR_STORAGE_VOL_ENCRYPT_NONE)
         virCommandAddArgList(cmd, "convert", "-f", info.inputFormatStr,
                              "-O", info.type, NULL);
+    else if (info.inputPath && convertStep == VIR_STORAGE_VOL_ENCRYPT_CONVERT)
+        virCommandAddArgList(cmd, "convert", "--image-opts", "-n",
+                             "--target-image-opts", NULL);
     else
         virCommandAddArgList(cmd, "create", "-f", info.type, NULL);
 
@@ -1130,15 +1137,24 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
         encinfo = &enc->encinfo;
     }
 
-    if (storageBackendCreateQemuImgSetOptions(cmd, encinfo, info) < 0)
-        goto error;
-    VIR_FREE(info.secretAlias);
+    if (convertStep != VIR_STORAGE_VOL_ENCRYPT_CONVERT) {
+        if (storageBackendCreateQemuImgSetOptions(cmd, encinfo, info) < 0)
+            goto error;
+        if (info.inputPath)
+            virCommandAddArg(cmd, info.inputPath);
+        virCommandAddArg(cmd, info.path);
+        if (!info.inputPath && (info.size_arg || !info.backingPath))
+            virCommandAddArgFormat(cmd, "%lluK", info.size_arg);
+    } else {
+        /* source */
+        virCommandAddArgFormat(cmd, "driver=raw,file.filename=%s",
+                               info.inputPath);
 
-    if (info.inputPath)
-        virCommandAddArg(cmd, info.inputPath);
-    virCommandAddArg(cmd, info.path);
-    if (!info.inputPath && (info.size_arg || !info.backingPath))
-        virCommandAddArgFormat(cmd, "%lluK", info.size_arg);
+        /* dest */
+        virCommandAddArgFormat(cmd, "driver=%s,file.filename=%s,key-secret=%s",
+                               info.type, info.path, info.secretAlias);
+    }
+    VIR_FREE(info.secretAlias);
 
     return cmd;
 
@@ -1228,14 +1244,15 @@ storageBackendDoCreateQemuImg(virStoragePoolObjPtr pool,
                               virStorageVolDefPtr inputvol,
                               unsigned int flags,
                               const char *create_tool,
-                              const char *secretPath)
+                              const char *secretPath,
+                              virStorageVolEncryptConvertStep convertStep)
 {
     int ret;
     virCommandPtr cmd;
 
     cmd = virStorageBackendCreateQemuImgCmdFromVol(pool, vol, inputvol,
                                                    flags, create_tool,
-                                                   secretPath);
+                                                   secretPath, convertStep);
     if (!cmd)
         return -1;
 
@@ -1256,6 +1273,7 @@ storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
     int ret = -1;
     char *create_tool;
     char *secretPath = NULL;
+    virStorageVolEncryptConvertStep convertStep = VIR_STORAGE_VOL_ENCRYPT_NONE;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, -1);
 
@@ -1271,8 +1289,32 @@ storageBackendCreateQemuImg(virStoragePoolObjPtr pool,
         !(secretPath = storageBackendCreateQemuImgSecretPath(pool, vol)))
         goto cleanup;
 
-    ret = storageBackendDoCreateQemuImg(pool, vol, inputvol, flags,
-                                        create_tool, secretPath);
+    /* Using an input file for encryption requires a multi-step process
+     * to create an image of the same size as the inputvol and then to
+     * convert the inputvol afterwards. */
+    if (secretPath && inputvol)
+        convertStep = VIR_STORAGE_VOL_ENCRYPT_CREATE;
+
+    do {
+        ret = storageBackendDoCreateQemuImg(pool, vol, inputvol, flags,
+                                            create_tool, secretPath,
+                                            convertStep);
+
+        /* Failure to convert, attempt to delete what we created */
+        if (ret < 0 && convertStep == VIR_STORAGE_VOL_ENCRYPT_CONVERT)
+            ignore_value(virFileRemove(vol->target.path,
+                                       vol->target.perms->uid,
+                                       vol->target.perms->gid));
+
+        if (ret < 0 || convertStep == VIR_STORAGE_VOL_ENCRYPT_NONE)
+            goto cleanup;
+
+        if (convertStep == VIR_STORAGE_VOL_ENCRYPT_CREATE)
+            convertStep = VIR_STORAGE_VOL_ENCRYPT_CONVERT;
+        else if (convertStep == VIR_STORAGE_VOL_ENCRYPT_CONVERT)
+            convertStep = VIR_STORAGE_VOL_ENCRYPT_DONE;
+    } while (convertStep != VIR_STORAGE_VOL_ENCRYPT_DONE);
+
  cleanup:
     if (secretPath) {
         unlink(secretPath);
@@ -2024,13 +2066,6 @@ storageBackendVolBuildLocal(virStoragePoolObjPtr pool,
     virStorageBackendBuildVolFrom create_func;
 
     if (inputvol) {
-        if (vol->target.encryption) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("storage pool does not support "
-                                   "building encrypted volumes from "
-                                   "other volumes"));
-            return -1;
-        }
         if (!(create_func =
               virStorageBackendGetBuildVolFromFunction(vol, inputvol)))
             return -1;
