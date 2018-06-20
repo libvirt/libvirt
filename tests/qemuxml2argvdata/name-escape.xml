@@ -27,6 +27,13 @@
       </iotune>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
+    <controller type='scsi' index='0' model='virtio-scsi'/>
+    <hostdev mode='subsystem' type='scsi' managed='yes'>
+        <source protocol='iscsi' name='iqn.1992-01.com.example:my,storage/1'>
+        <host name='example.foo.org' port='3260'/>
+      </source>
+      <address type='drive' controller='0' bus='0' target='0' unit='4'/>
+    </hostdev>
     <graphics type='vnc'>
       <listen type='socket'/>
     </graphics>

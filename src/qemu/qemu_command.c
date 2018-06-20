@@ -4663,7 +4663,9 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
         if (!(netsource = qemuBuildNetworkDriveStr(iscsisrc->src, srcPriv ?
                                                    srcPriv->secinfo : NULL)))
             goto cleanup;
-        virBufferAsprintf(&buf, "file=%s,if=none,format=raw", netsource);
+        virBufferAddLit(&buf, "file=");
+        virQEMUBuildBufferEscapeComma(&buf, netsource);
+        virBufferAddLit(&buf, ",if=none,format=raw");
     }
 
     if (virBufferCheckError(&buf) < 0)
