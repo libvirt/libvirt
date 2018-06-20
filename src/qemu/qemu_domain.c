@@ -6422,6 +6422,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     const char *blocker = NULL;
     int ret = -1;
     unsigned long long duration = 0;
+    unsigned long long agentDuration = 0;
     unsigned long long asyncDuration = 0;
 
     VIR_DEBUG("Starting job: job=%s agentJob=%s asyncJob=%s "
@@ -6526,22 +6527,27 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     ignore_value(virTimeMillisNow(&now));
     if (priv->job.active && priv->job.started)
         duration = now - priv->job.started;
+    if (priv->job.agentActive && priv->job.agentStarted)
+        agentDuration = now - priv->job.agentStarted;
     if (priv->job.asyncJob && priv->job.asyncStarted)
         asyncDuration = now - priv->job.asyncStarted;
 
-    VIR_WARN("Cannot start job (%s, %s) for domain %s; "
-             "current job is (%s, %s) "
-             "owned by (%llu %s, %llu %s (flags=0x%lx)) "
-             "for (%llus, %llus)",
+    VIR_WARN("Cannot start job (%s, %s, %s) for domain %s; "
+             "current job is (%s, %s, %s) "
+             "owned by (%llu %s, %llu %s, %llu %s (flags=0x%lx)) "
+             "for (%llus, %llus, %llus)",
              qemuDomainJobTypeToString(job),
+             qemuDomainAgentJobTypeToString(agentJob),
              qemuDomainAsyncJobTypeToString(asyncJob),
              obj->def->name,
              qemuDomainJobTypeToString(priv->job.active),
+             qemuDomainAgentJobTypeToString(priv->job.agentActive),
              qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
              priv->job.owner, NULLSTR(priv->job.ownerAPI),
+             priv->job.agentOwner, NULLSTR(priv->job.agentOwnerAPI),
              priv->job.asyncOwner, NULLSTR(priv->job.asyncOwnerAPI),
              priv->job.apiFlags,
-             duration / 1000, asyncDuration / 1000);
+             duration / 1000, agentDuration / 1000, asyncDuration / 1000);
 
     if (nested || qemuDomainNestedJobAllowed(priv, job))
         blocker = priv->job.ownerAPI;
