@@ -8403,7 +8403,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
     if (virStorageFileGetMetadata(src, uid, gid, report_broken) < 0)
         goto cleanup;
 
-    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+    for (n = src->backingStore; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (qemuDomainValidateStorageSource(n, priv->qemuCaps) < 0)
             goto cleanup;
 
