@@ -5860,7 +5860,7 @@ qemuProcessPrepareSEVGuestInput(virDomainObjPtr vm)
     if (!sev)
         return 0;
 
-    VIR_DEBUG("Prepare SEV guest");
+    VIR_DEBUG("Preparing SEV guest");
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
