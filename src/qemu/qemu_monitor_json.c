@@ -2447,38 +2447,49 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
 
 
 static int
+qemuMonitorJSONBlockStatsUpdateCapacityData(virJSONValuePtr image,
+                                            const char *name,
+                                            virHashTablePtr stats)
+{
+    qemuBlockStatsPtr bstats;
+
+    if (!(bstats = virHashLookup(stats, name))) {
+        if (VIR_ALLOC(bstats) < 0)
+            return -1;
+
+        if (virHashAddEntry(stats, name, bstats) < 0) {
+            VIR_FREE(bstats);
+            return -1;
+        }
+    }
+
+    /* failures can be ignored after this point */
+    if (virJSONValueObjectGetNumberUlong(image, "virtual-size",
+                                         &bstats->capacity) < 0)
+        return 0;
+
+    /* if actual-size is missing, image is not thin provisioned */
+    if (virJSONValueObjectGetNumberUlong(image, "actual-size",
+                                         &bstats->physical) < 0)
+        bstats->physical = bstats->capacity;
+
+    return 0;
+}
+
+
+static int
 qemuMonitorJSONBlockStatsUpdateCapacityOne(virJSONValuePtr image,
                                            const char *dev_name,
                                            int depth,
                                            virHashTablePtr stats,
                                            bool backingChain)
 {
-    qemuBlockStatsPtr bstats;
     int ret = -1;
     char *entry_name = qemuDomainStorageAlias(dev_name, depth);
     virJSONValuePtr backing;
 
-    if (!(bstats = virHashLookup(stats, entry_name))) {
-        if (VIR_ALLOC(bstats) < 0)
-            goto cleanup;
-
-        if (virHashAddEntry(stats, entry_name, bstats) < 0) {
-            VIR_FREE(bstats);
-            goto cleanup;
-        }
-    }
-
-    /* After this point, we ignore failures; the stats were
-     * zero-initialized when created which is a sane fallback.  */
-    ret = 0;
-    if (virJSONValueObjectGetNumberUlong(image, "virtual-size",
-                                         &bstats->capacity) < 0)
+    if (qemuMonitorJSONBlockStatsUpdateCapacityData(image, entry_name, stats) < 0)
         goto cleanup;
-
-    /* if actual-size is missing, image is not thin provisioned */
-    if (virJSONValueObjectGetNumberUlong(image, "actual-size",
-                                         &bstats->physical) < 0)
-        bstats->physical = bstats->capacity;
 
     if (backingChain &&
         (backing = virJSONValueObjectGetObject(image, "backing-image"))) {
