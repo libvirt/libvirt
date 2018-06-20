@@ -5842,6 +5842,7 @@ qemuProcessSEVCreateFile(const char *configDir,
         goto cleanup;
     }
 
+    ret = 0;
  cleanup:
     VIR_FREE(configFile);
     return ret;
