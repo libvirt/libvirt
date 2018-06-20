@@ -8481,11 +8481,11 @@ qemu-kvm -net nic,model=? /dev/null
 &lt;domain&gt;
   ...
   &lt;launchSecurity type='sev'&gt;
-    &lt;policy&gt; 0x0001 &lt;/policy&gt;
-    &lt;cbitpos&gt; 47 &lt;/cbitpos&gt;
-    &lt;reducedPhysBits&gt; 1 &lt;/reducedPhysBits&gt;
-    &lt;dhCert&gt; RBBBSDDD=FDDCCCDDDG &lt;/dhCert&gt;
-    &lt;session&gt; AAACCCDD=FFFCCCDSDS &lt;/session&gt;
+    &lt;policy&gt;0x0001&lt;/policy&gt;
+    &lt;cbitpos&gt;47&lt;/cbitpos&gt;
+    &lt;reducedPhysBits&gt;1&lt;/reducedPhysBits&gt;
+    &lt;dhCert&gt;RBBBSDDD=FDDCCCDDDG&lt;/dhCert&gt;
+    &lt;session&gt;AAACCCDD=FFFCCCDSDS&lt;/session&gt;
   &lt;/launchSecurity&gt;
   ...
 &lt;/domain&gt;
