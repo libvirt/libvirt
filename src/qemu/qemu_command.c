@@ -4643,7 +4643,8 @@ static char *
 qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                                 virQEMUCapsPtr qemuCaps)
 {
-    char *source = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
     char *netsource = NULL;
     virJSONValuePtr srcprops = NULL;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
@@ -4656,21 +4657,25 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
             goto cleanup;
         if (!(netsource = virQEMUBuildDriveCommandlineFromJSON(srcprops)))
             goto cleanup;
-        if (virAsprintf(&source, "%s,if=none,format=raw", netsource) < 0)
-            goto cleanup;
+        virBufferAsprintf(&buf, "%s,if=none,format=raw", netsource);
     } else {
         /* Rather than pull what we think we want - use the network disk code */
         if (!(netsource = qemuBuildNetworkDriveStr(iscsisrc->src, srcPriv ?
                                                    srcPriv->secinfo : NULL)))
             goto cleanup;
-        if (virAsprintf(&source, "file=%s,if=none,format=raw", netsource) < 0)
-            goto cleanup;
+        virBufferAsprintf(&buf, "file=%s,if=none,format=raw", netsource);
     }
+
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
+
+    return virBufferContentAndReset(&buf);
 
  cleanup:
     VIR_FREE(netsource);
     virJSONValueFree(srcprops);
-    return source;
+    virBufferFreeAndReset(&buf);
+    return NULL;
 }
 
 char *
