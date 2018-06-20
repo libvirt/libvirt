@@ -232,6 +232,10 @@ mymain(void)
             "pool-dir", "vol-file-iso",
             "iso-input", 0);
 
+    DO_TEST_FAIL("pool-dir", "vol-qcow2-encryption",
+                 NULL, NULL,
+                 "qcow2-encryption", 0);
+
     DO_TEST("pool-dir", "vol-luks",
             NULL, NULL,
             "luks", 0);

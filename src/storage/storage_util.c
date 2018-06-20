@@ -1214,6 +1214,15 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
+    if (enc && (enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_QCOW ||
+                enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT) &&
+        (vol->target.format == VIR_STORAGE_FILE_QCOW ||
+         vol->target.format == VIR_STORAGE_FILE_QCOW2)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("creation of qcow2 encrypted image is not supported"));
+        goto error;
+    }
+
     if (virStorageBackendCreateQemuImgSetInfo(pool, vol, inputvol, &info) < 0)
         goto error;
 
@@ -1232,8 +1241,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
     if (info.backingPath)
         virCommandAddArgList(cmd, "-b", info.backingPath, NULL);
 
-    if (info.format == VIR_STORAGE_FILE_RAW && enc &&
-        enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+    if (enc) {
         if (!info.secretPath) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("path to secret data file is required"));
@@ -2354,6 +2362,16 @@ storageBackendResizeQemuImg(virStoragePoolObjPtr pool,
     const char *type;
     char *secretPath = NULL;
     char *secretAlias = NULL;
+    virStorageEncryptionPtr enc = vol->target.encryption;
+
+    if (enc && (enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_QCOW ||
+                enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT) &&
+        (vol->target.format == VIR_STORAGE_FILE_QCOW ||
+         vol->target.format == VIR_STORAGE_FILE_QCOW2)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("resize of qcow2 encrypted image is not supported"));
+        return -1;
+    }
 
     img_tool = virFindFileInPath("qemu-img");
     if (!img_tool) {
