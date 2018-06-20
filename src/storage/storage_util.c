@@ -891,25 +891,7 @@ storageBackendCreateQemuImgCheckEncryption(int format,
 {
     virStorageEncryptionPtr enc = vol->target.encryption;
 
-    if (format == VIR_STORAGE_FILE_QCOW || format == VIR_STORAGE_FILE_QCOW2) {
-        if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_QCOW &&
-            enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported volume encryption format %d"),
-                           vol->target.encryption->format);
-            return -1;
-        }
-        if (enc->nsecrets > 1) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("too many secrets for qcow encryption"));
-            return -1;
-        }
-        if (enc->nsecrets == 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("no secret provided for qcow encryption"));
-            return -1;
-        }
-    } else if (format == VIR_STORAGE_FILE_RAW) {
+    if (format == VIR_STORAGE_FILE_RAW) {
         if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported volume encryption format %d"),
