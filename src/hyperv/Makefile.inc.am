@@ -43,7 +43,7 @@ $(HYPERV_GENERATED_STAMP): $(srcdir)/hyperv/hyperv_wmi_generator.input \
 	  $(srcdir)/hyperv/hyperv_wmi_generator.py \
 	  && touch $@
 
-MAINTAINERCLEANFILES += $(HYPERV_DRIVER_GENERATED)
+MAINTAINERCLEANFILES += $(HYPERV_DRIVER_GENERATED) $(HYPERV_GENERATED_STAMP)
 
 if WITH_HYPERV
 noinst_LTLIBRARIES += libvirt_driver_hyperv.la
