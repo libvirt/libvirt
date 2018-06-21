@@ -20,6 +20,7 @@
           <element name="rule">
             <ref name="rule-node-attributes"/>
             <choice>
+                <empty/>
                 <element name="mac">
                   <ref name="match-attribute"/>
                   <ref name="common-l2-attributes"/>

@@ -229,7 +229,7 @@ mymain(void)
     DO_TEST_DIR("network.rng", "../src/network", "networkxml2xmlin",
                 "networkxml2xmlout", "networkxml2confdata");
     DO_TEST_DIR("nodedev.rng", "nodedevschemadata");
-    DO_TEST_DIR("nwfilter.rng", "nwfilterxml2xmlout");
+    DO_TEST_DIR("nwfilter.rng", "nwfilterxml2xmlout", "../examples/xml/nwfilter");
     DO_TEST_DIR("secret.rng", "secretxml2xmlin");
     DO_TEST_DIR("storagepool.rng", "storagepoolxml2xmlin", "storagepoolxml2xmlout",
                 "storagepoolschemadata");
