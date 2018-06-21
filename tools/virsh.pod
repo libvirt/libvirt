@@ -2417,9 +2417,11 @@ the B<virsh dominfo> command.
 =item B<set-lifecycle-action> I<domain> I<type> I<action>
 [[I<--config>] [I<--live>] | [I<--current>]]
 
-Set the lifecycle I<action> for specified lifecycle I<type>. For the list of
-lifecycle types and actions and possible combinations see the documentation at
-L<https://libvirt.org/formatdomain.html#elementsEvents>.
+Set the lifecycle I<action> for specified lifecycle I<type>.
+The valid types are "poweroff", "reboot" and "crash", and for each of
+them valid I<action> is one of "destroy", "restart", "rename-restart",
+"preserve".  For I<type> "crash", additional actions "coredump-destroy"
+and "coredump-restart" are supported.
 
 =item B<set-user-password> I<domain> I<user> I<password> [I<--encrypted>]
 
