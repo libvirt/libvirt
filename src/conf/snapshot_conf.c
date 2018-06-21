@@ -331,8 +331,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                          "disk-only snapshot"));
         goto cleanup;
     }
-    def->file = memoryFile;
-    memoryFile = NULL;
+    VIR_STEAL_PTR(def->file, memoryFile);
 
     /* verify that memory path is absolute */
     if (def->file && def->file[0] != '/') {
@@ -372,7 +371,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     if (!offline && virSaveCookieParse(ctxt, &def->cookie, saveCookie) < 0)
         goto cleanup;
 
-    ret = def;
+    VIR_STEAL_PTR(ret, def);
 
  cleanup:
     VIR_FREE(creation);
@@ -380,8 +379,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     VIR_FREE(nodes);
     VIR_FREE(memorySnapshot);
     VIR_FREE(memoryFile);
-    if (ret == NULL)
-        virDomainSnapshotDefFree(def);
+    virDomainSnapshotDefFree(def);
 
     return ret;
 }
