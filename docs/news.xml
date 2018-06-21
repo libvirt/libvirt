@@ -81,6 +81,19 @@
           block device from one command in a output table.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Allow concurrent access to monitor and guest agent
+        </summary>
+        <description>
+          Historically libvirt prevented concurrent accesses to
+          the qemu monitor and the guest agent. Therefore two
+          independent calls (one querying the monitor and the
+          other querying guest agent) would serialize which hurts
+          performance. The code was reworked to allow two
+          independent calls run at the same time.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
