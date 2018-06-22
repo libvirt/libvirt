@@ -4270,51 +4270,53 @@
 
   <define name="input">
     <element name="input">
-      <optional>
-        <element name="driver">
-          <ref name="virtioOptions"/>
-        </element>
-      </optional>
-      <choice>
-        <group>
-          <attribute name="type">
-            <choice>
-              <value>tablet</value>
-              <value>mouse</value>
-              <value>keyboard</value>
-            </choice>
-          </attribute>
-          <optional>
-            <attribute name="bus">
+      <interleave>
+        <optional>
+          <element name="driver">
+            <ref name="virtioOptions"/>
+          </element>
+        </optional>
+        <choice>
+          <group>
+            <attribute name="type">
               <choice>
-                <value>ps2</value>
-                <value>usb</value>
-                <value>xen</value>
-                <value>virtio</value>
+                <value>tablet</value>
+                <value>mouse</value>
+                <value>keyboard</value>
               </choice>
             </attribute>
-          </optional>
-        </group>
-        <group>
-          <attribute name="type">
-            <value>passthrough</value>
-          </attribute>
-          <attribute name="bus">
-            <value>virtio</value>
-          </attribute>
-          <element name="source">
-            <attribute name="evdev">
-              <ref name="absFilePath"/>
+            <optional>
+              <attribute name="bus">
+                <choice>
+                  <value>ps2</value>
+                  <value>usb</value>
+                  <value>xen</value>
+                  <value>virtio</value>
+                </choice>
+              </attribute>
+            </optional>
+          </group>
+          <group>
+            <attribute name="type">
+              <value>passthrough</value>
             </attribute>
-          </element>
-        </group>
-      </choice>
-      <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
+            <attribute name="bus">
+              <value>virtio</value>
+            </attribute>
+            <element name="source">
+              <attribute name="evdev">
+                <ref name="absFilePath"/>
+              </attribute>
+            </element>
+          </group>
+        </choice>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
     </element>
   </define>
   <define name="hub">
@@ -4322,12 +4324,14 @@
       <attribute name="type">
         <value>usb</value>
       </attribute>
-      <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
+      <interleave>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
     </element>
   </define>
   <define name="redirdev">
@@ -4338,16 +4342,18 @@
       <attribute name="type">
         <ref name="qemucdevSrcTypeChoice"/>
       </attribute>
-      <ref name="qemucdevSrcDef"/>
-      <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
-      <optional>
-        <ref name="deviceBoot"/>
-      </optional>
+      <interleave>
+        <ref name="qemucdevSrcDef"/>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+        <optional>
+          <ref name="deviceBoot"/>
+        </optional>
+      </interleave>
     </element>
   </define>
   <define name="redirfilter">
