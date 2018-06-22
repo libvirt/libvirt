@@ -7738,12 +7738,16 @@ qemu-kvm -net nic,model=? /dev/null
           <dt><code>random</code></dt>
           <dd>
             <p>
-              This backend type expects a non-blocking character device as
-              input. The file name is specified as contents of the
-              <code>backend</code> element. <span class='since'>Since 1.3.4</span>
-              any path is accepted. Before that /dev/random and /dev/hwrng were
-              the only accepted paths. When no file name is specified the hypervisor
-              default is used. For qemu, the default is /dev/random
+              This backend type expects a non-blocking character device
+              as input. The file name is specified as contents of the
+              <code>backend</code> element. <span class='since'>Since
+              1.3.4</span> any path is accepted. Before that
+              <code>/dev/random</code> and <code>/dev/hwrng</code> were
+              the only accepted paths. When no file name is specified,
+              the hypervisor default is used. For QEMU, the default is
+              <code>/dev/random</code>. However, the recommended source
+              of entropy is <code>/dev/urandom</code> (as it doesn't
+              have the limitations of <code>/dev/random</code>).
             </p>
           </dd>
           <dt><code>egd</code></dt>
