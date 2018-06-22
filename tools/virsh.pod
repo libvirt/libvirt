@@ -4809,6 +4809,41 @@ variables, and defaults to C<vi>.
 
 =back
 
+=head1 NWFILTER BINDING COMMANDS
+
+The following commands manipulate network filter bindings. Network filter
+bindings track the association between a network port and a network
+filter. Generally the bindings are managed automatically by the hypervisor
+drivers when adding/removing NICs on a guest.
+
+If an admin is creating/deleting TAP devices for non-guest usage,
+however, the network filter binding commands provide a way to make use
+of the network filters directly.
+
+=over 4
+
+=item B<nwfilter-binding-create> I<xmlfile>
+
+Associate a network port with a network filter. The network filter backend
+will immediately attempt to instantiate the filter rules on the port.
+
+=item B<nwfilter-binding-undefine> I<port-name>
+
+Disassociate a network port from a network filter. The network filter
+backend will immediately tear down the filter rules that exist on the
+port.
+
+=item B<nwfilter-binding-list>
+
+List all of the network ports which have filters associated with them.
+
+=item B<nwfilter-binding-dumpxml> I<port-name>
+
+Output the network filter binding XML for the network device called
+C<port-name>.
+
+=back
+
 =head1 HYPERVISOR-SPECIFIC COMMANDS
 
 NOTE: Use of the following commands is B<strongly> discouraged.  They
