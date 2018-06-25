@@ -2148,55 +2148,53 @@ qemuBuildFloppyCommandLineOptions(virCommandPtr cmd,
 
 {
     virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
-    char *fdc_opts_str = NULL;
-    char *optstr;
+    char driveLetter;
     char *backendAlias = NULL;
+    char *backendStr = NULL;
+    char *bootindexStr = NULL;
     int ret = -1;
+
+    if (disk->info.addr.drive.unit)
+        driveLetter = 'B';
+    else
+        driveLetter = 'A';
 
     if (!(backendAlias = qemuAliasDiskDriveFromDisk(disk)))
         return -1;
 
-    if (virAsprintf(&optstr, "drive%c=%s",
-                    disk->info.addr.drive.unit ? 'B' : 'A',
-                    backendAlias) < 0)
+    if (virAsprintf(&backendStr, "drive%c=%s", driveLetter, backendAlias) < 0)
+        goto cleanup;
+
+    if (bootindex &&
+        virAsprintf(&bootindexStr, "bootindex%c=%u", driveLetter, bootindex) < 0)
         goto cleanup;
 
     if (!qemuDomainNeedsFDC(def)) {
-        virCommandAddArg(cmd, "-global");
-        virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
-    } else {
-        virBufferAsprintf(&fdc_opts, "%s,", optstr);
-    }
-    VIR_FREE(optstr);
-
-    if (bootindex) {
-        if (virAsprintf(&optstr, "bootindex%c=%u",
-                        disk->info.addr.drive.unit
-                        ? 'B' : 'A',
-                        bootindex) < 0)
-            goto cleanup;
-
-        if (!qemuDomainNeedsFDC(def)) {
+        if (backendStr) {
             virCommandAddArg(cmd, "-global");
-            virCommandAddArgFormat(cmd, "isa-fdc.%s", optstr);
-        } else {
-            virBufferAsprintf(&fdc_opts, "%s,", optstr);
+            virCommandAddArgFormat(cmd, "isa-fdc.%s", backendStr);
         }
-        VIR_FREE(optstr);
-    }
 
-    /* Newer Q35 machine types require an explicit FDC controller */
-    virBufferTrim(&fdc_opts, ",", -1);
-    if ((fdc_opts_str = virBufferContentAndReset(&fdc_opts))) {
+        if (bootindexStr) {
+            virCommandAddArg(cmd, "-global");
+            virCommandAddArgFormat(cmd, "isa-fdc.%s", bootindexStr);
+        }
+    } else {
+        /* Newer Q35 machine types require an explicit FDC controller */
+        virBufferAddLit(&fdc_opts, "isa-fdc,");
+        virBufferStrcat(&fdc_opts, backendStr, ",", NULL);
+        virBufferStrcat(&fdc_opts, bootindexStr, NULL);
+        virBufferTrim(&fdc_opts, ",", -1);
         virCommandAddArg(cmd, "-device");
-        virCommandAddArgFormat(cmd, "isa-fdc,%s", fdc_opts_str);
-        VIR_FREE(fdc_opts_str);
+        virCommandAddArgBuffer(cmd, &fdc_opts);
     }
 
     ret = 0;
 
  cleanup:
     VIR_FREE(backendAlias);
+    VIR_FREE(backendStr);
+    VIR_FREE(bootindexStr);
     return ret;
 }
 
