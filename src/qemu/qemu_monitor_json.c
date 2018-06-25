@@ -6540,7 +6540,7 @@ qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
         return ret;
 
     if (!(addr = qemuMonitorJSONBuildInetSocketAddress(host, port_str)))
-        return ret;
+        goto cleanup;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("nbd-server-start",
                                            "a:addr", &addr,
