@@ -94,6 +94,17 @@
           independent calls run at the same time.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Allow configuring the page size for HPT pSeries guests
+        </summary>
+        <description>
+          For HPT pSeries guests, the size of the host pages used to back guest
+          memory and the usable guest page sizes are connected; the new setting
+          can be used to request that a certain page size is available in the
+          guest.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
