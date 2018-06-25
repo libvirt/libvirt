@@ -2150,11 +2150,16 @@ qemuBuildFloppyCommandLineOptions(virCommandPtr cmd,
     virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
     char *fdc_opts_str = NULL;
     char *optstr;
+    char *backendAlias = NULL;
+    int ret = -1;
 
-    if (virAsprintf(&optstr, "drive%c=drive-%s",
-                    disk->info.addr.drive.unit ? 'B' : 'A',
-                    disk->info.alias) < 0)
+    if (!(backendAlias = qemuAliasDiskDriveFromDisk(disk)))
         return -1;
+
+    if (virAsprintf(&optstr, "drive%c=%s",
+                    disk->info.addr.drive.unit ? 'B' : 'A',
+                    backendAlias) < 0)
+        goto cleanup;
 
     if (!qemuDomainNeedsFDC(def)) {
         virCommandAddArg(cmd, "-global");
@@ -2169,7 +2174,7 @@ qemuBuildFloppyCommandLineOptions(virCommandPtr cmd,
                         disk->info.addr.drive.unit
                         ? 'B' : 'A',
                         bootindex) < 0)
-            return -1;
+            goto cleanup;
 
         if (!qemuDomainNeedsFDC(def)) {
             virCommandAddArg(cmd, "-global");
@@ -2188,7 +2193,11 @@ qemuBuildFloppyCommandLineOptions(virCommandPtr cmd,
         VIR_FREE(fdc_opts_str);
     }
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(backendAlias);
+    return ret;
 }
 
 
