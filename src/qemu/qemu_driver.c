@@ -17347,7 +17347,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
     virDomainDiskDefPtr disk;
     int ret = -1;
     virDomainObjPtr vm;
-    const char *device;
+    char *device = NULL;
     unsigned long long speed = bandwidth;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_JOB_SPEED_BANDWIDTH_BYTES, -1);
@@ -17395,6 +17395,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
+    VIR_FREE(device);
     virDomainObjEndAPI(&vm);
 
     return ret;
