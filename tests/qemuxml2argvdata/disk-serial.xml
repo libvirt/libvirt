@@ -29,7 +29,6 @@
     <disk type='file' device='disk'>
       <source file='/some/file'/>
       <target dev='sda' bus='sd'/>
-      <serial>sdserial</serial>
     </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>

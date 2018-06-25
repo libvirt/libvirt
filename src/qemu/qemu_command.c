@@ -1613,7 +1613,7 @@ qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
                           disk->geometry.sectors);
 
         if (disk->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT)
-            virBufferAsprintf(buf, ",trans=%s",
+            virBufferAsprintf(buf, ",bios-chs-trans=%s",
                               virDomainDiskGeometryTransTypeToString(disk->geometry.trans));
     }
 
@@ -1621,8 +1621,6 @@ qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
         virBufferAddLit(buf, ",serial=");
         virBufferEscape(buf, '\\', " ", "%s", disk->serial);
     }
-
-    qemuBuildDiskFrontendAttributeErrorPolicy(disk, buf);
 }
 
 
@@ -1664,9 +1662,10 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         virBufferAsprintf(&opt, ",index=%d", idx);
     }
 
-    /* Format attributes for the drive itself (not the storage backing it) which
-     * we've formatted historically with -drive */
-    qemuBuildDiskFrontendAttributes(disk, &opt);
+    /* werror/rerror are really frontend attributes, but older
+     * qemu requires them on -drive instead of -device */
+    qemuBuildDiskFrontendAttributeErrorPolicy(disk, &opt);
+
 
     /* While this is a frontend attribute, it only makes sense to be used when
      * legacy -drive is used. In modern qemu the 'ide-cd' or 'scsi-cd' are used.
@@ -2124,6 +2123,8 @@ qemuBuildDriveDevStr(const virDomainDef *def,
 
     if (qemuBuildDriveDevCacheStr(disk, &opt, qemuCaps) < 0)
         goto error;
+
+    qemuBuildDiskFrontendAttributes(disk, &opt);
 
     if (virBufferCheckError(&opt) < 0)
         goto error;

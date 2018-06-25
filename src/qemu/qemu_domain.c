@@ -4657,6 +4657,33 @@ qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
         }
     }
 
+    if (disk->geometry.cylinders > 0 &&
+        disk->geometry.heads > 0 &&
+        disk->geometry.sectors > 0) {
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_USB ||
+            disk->bus == VIR_DOMAIN_DISK_BUS_SD) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("CHS geometry can not be set for '%s' bus"),
+                           virDomainDiskBusTypeToString(disk->bus));
+            return -1;
+        }
+
+        if (disk->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT &&
+            disk->bus != VIR_DOMAIN_DISK_BUS_IDE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("CHS translation mode can only be set for 'ide' bus not '%s'"),
+                           virDomainDiskBusTypeToString(disk->bus));
+            return -1;
+        }
+    }
+
+    if (disk->serial && disk->bus == VIR_DOMAIN_DISK_BUS_SD) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Serial property not supported for drive bus '%s'"),
+                       virDomainDiskBusTypeToString(disk->bus));
+        return -1;
+    }
+
     if (driverName && STRNEQ(driverName, "qemu")) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported driver name '%s' for disk '%s'"),

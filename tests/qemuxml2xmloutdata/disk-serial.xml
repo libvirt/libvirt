@@ -32,7 +32,6 @@
       <driver name='qemu' type='raw'/>
       <source file='/some/file'/>
       <target dev='sda' bus='sd'/>
-      <serial>sdserial</serial>
     </disk>
     <controller type='usb' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
