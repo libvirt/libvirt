@@ -4000,11 +4000,7 @@ esxConnectIsEncrypted(virConnectPtr conn)
 {
     esxPrivate *priv = conn->privateData;
 
-    if (STRCASEEQ(priv->parsedUri->transport, "https")) {
-        return 1;
-    } else {
-        return 0;
-    }
+    return STRCASEEQ(priv->parsedUri->transport, "https");
 }
 
 
@@ -4014,11 +4010,7 @@ esxConnectIsSecure(virConnectPtr conn)
 {
     esxPrivate *priv = conn->privateData;
 
-    if (STRCASEEQ(priv->parsedUri->transport, "https")) {
-        return 1;
-    } else {
-        return 0;
-    }
+    return STRCASEEQ(priv->parsedUri->transport, "https");
 }
 
 
