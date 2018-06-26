@@ -732,6 +732,12 @@ int qemuDomainStorageFileInit(virQEMUDriverPtr driver,
                               virStorageSourcePtr parent);
 char *qemuDomainStorageAlias(const char *device, int depth);
 
+int qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
+                                  virQEMUCapsPtr qemuCaps,
+                                  char **backendAlias)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+
 void qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
                                       virDomainObjPtr vm,
                                       virStorageSourcePtr elem);

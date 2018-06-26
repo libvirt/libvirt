@@ -8600,6 +8600,34 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
 
 /**
+ * qemuDomainDiskGetBackendAlias:
+ * @disk: disk definition
+ * @qemuCaps: emulator capabilities
+ * @backendAlias: filled with the alias of the disk storage backend
+ *
+ * Returns the correct alias for the disk backend. This may be the alias of
+ * -drive for legacy setup or the correct node name for -blockdev setups.
+ *
+ * @backendAlias may be NULL on success if the backend does not exist
+ * (disk is empty). Caller is responsible for freeing @backendAlias.
+ *
+ * Returns 0 on success, -1 on error with libvirt error reported.
+ */
+int
+qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
+                              virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
+                              char **backendAlias)
+{
+    *backendAlias = NULL;
+
+    if (!(*backendAlias = qemuAliasDiskDriveFromDisk(disk)))
+        return -1;
+
+    return 0;
+}
+
+
+/**
  * qemuDomainDiskChainElementRevoke:
  *
  * Revoke access to a single backing chain element. This restores the labels,
