@@ -175,44 +175,83 @@ qemuAssignDeviceControllerAlias(virDomainDefPtr domainDef,
 }
 
 
-/* Our custom -drive naming scheme used with id= */
 int
 qemuAssignDeviceDiskAlias(virDomainDefPtr def,
-                          virDomainDiskDefPtr disk)
+                          virDomainDiskDefPtr disk,
+                          virQEMUCapsPtr qemuCaps)
 {
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     const char *prefix = virDomainDiskBusTypeToString(disk->bus);
     int controllerModel = -1;
 
     if (disk->info.alias)
         return 0;
 
-    if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
-        if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
-            controllerModel = qemuDomainFindSCSIControllerModel(def,
-                                                                &disk->info);
-            if (controllerModel < 0)
-                return -1;
-        }
+    if (!disk->info.alias) {
+        if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+                controllerModel = qemuDomainFindSCSIControllerModel(def,
+                                                                    &disk->info);
+                if (controllerModel < 0)
+                    return -1;
+            }
 
-        if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI ||
-            controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
-            if (virAsprintf(&disk->info.alias, "%s%d-%d-%d", prefix,
-                            disk->info.addr.drive.controller,
-                            disk->info.addr.drive.bus,
-                            disk->info.addr.drive.unit) < 0)
-                return -1;
+            if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI ||
+                controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
+                if (virAsprintf(&disk->info.alias, "%s%d-%d-%d", prefix,
+                                disk->info.addr.drive.controller,
+                                disk->info.addr.drive.bus,
+                                disk->info.addr.drive.unit) < 0)
+                    return -1;
+            } else {
+                if (virAsprintf(&disk->info.alias, "%s%d-%d-%d-%d", prefix,
+                                disk->info.addr.drive.controller,
+                                disk->info.addr.drive.bus,
+                                disk->info.addr.drive.target,
+                                disk->info.addr.drive.unit) < 0)
+                    return -1;
+            }
         } else {
-            if (virAsprintf(&disk->info.alias, "%s%d-%d-%d-%d", prefix,
-                            disk->info.addr.drive.controller,
-                            disk->info.addr.drive.bus,
-                            disk->info.addr.drive.target,
-                            disk->info.addr.drive.unit) < 0)
+            int idx = virDiskNameToIndex(disk->dst);
+            if (virAsprintf(&disk->info.alias, "%s-disk%d", prefix, idx) < 0)
                 return -1;
         }
-    } else {
-        int idx = virDiskNameToIndex(disk->dst);
-        if (virAsprintf(&disk->info.alias, "%s-disk%d", prefix, idx) < 0)
-            return -1;
+    }
+
+    /* For -blockdev we need to know the qom names of the disk which are based
+     * on the alias in qemu. While certain disk types use just the alias, some
+     * need the full path into /machine/peripheral as a historical artifact.
+     */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        switch ((virDomainDiskBus) disk->bus) {
+        case VIR_DOMAIN_DISK_BUS_FDC:
+        case VIR_DOMAIN_DISK_BUS_IDE:
+        case VIR_DOMAIN_DISK_BUS_SATA:
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+            if (VIR_STRDUP(diskPriv->qomName, disk->info.alias) < 0)
+                return -1;
+            break;
+
+        case VIR_DOMAIN_DISK_BUS_VIRTIO:
+            if (virAsprintf(&diskPriv->qomName,
+                            "/machine/peripheral/%s/virtio-backend",
+                            disk->info.alias) < 0)
+                return -1;
+            break;
+
+        case VIR_DOMAIN_DISK_BUS_USB:
+            if (virAsprintf(&diskPriv->qomName,
+                            "/machine/peripheral/%s/%s.0/legacy[0]",
+                            disk->info.alias, disk->info.alias) < 0)
+                return -1;
+            break;
+
+        case VIR_DOMAIN_DISK_BUS_XEN:
+        case VIR_DOMAIN_DISK_BUS_UML:
+        case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_LAST:
+            break;
+        }
     }
 
     return 0;
@@ -551,7 +590,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
     size_t i;
 
     for (i = 0; i < def->ndisks; i++) {
-        if (qemuAssignDeviceDiskAlias(def, def->disks[i]) < 0)
+        if (qemuAssignDeviceDiskAlias(def, def->disks[i], qemuCaps) < 0)
             return -1;
     }
     for (i = 0; i < def->nnets; i++) {
