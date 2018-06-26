@@ -2446,8 +2446,15 @@ qemuDomainAttachMediatedDevice(virQEMUDriverPtr driver,
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_HOSTDEV,
                                 { .hostdev = hostdev } };
 
-    if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
-        return -1;
+    switch (hostdev->source.subsys.u.mdev.model) {
+    case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
+        if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
+            return -1;
+        break;
+    case VIR_MDEV_MODEL_TYPE_VFIO_CCW:
+    case VIR_MDEV_MODEL_TYPE_LAST:
+        break;
+    }
 
     if (qemuHostdevPrepareMediatedDevices(driver,
                                           vm->def->name,
