@@ -3521,7 +3521,8 @@ lxcDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
             goto cleanup;
 
         oldDev.data.net = vmdef->nets[idx];
-        if (virDomainDefCompatibleDevice(vmdef, dev, &oldDev) < 0)
+        if (virDomainDefCompatibleDevice(vmdef, dev, &oldDev,
+                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
             return -1;
 
         virDomainNetDefFree(vmdef->nets[idx]);
@@ -4757,7 +4758,8 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
         if (!vmdef)
             goto endjob;
 
-        if (virDomainDefCompatibleDevice(vmdef, dev, NULL) < 0)
+        if (virDomainDefCompatibleDevice(vmdef, dev, NULL,
+                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
             goto endjob;
 
         if ((ret = lxcDomainAttachDeviceConfig(vmdef, dev)) < 0)
@@ -4765,7 +4767,8 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefCompatibleDevice(vm->def, dev_copy, NULL) < 0)
+        if (virDomainDefCompatibleDevice(vm->def, dev_copy, NULL,
+                                         VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
             goto endjob;
 
         if ((ret = lxcDomainAttachDeviceLive(dom->conn, driver, vm, dev_copy)) < 0)

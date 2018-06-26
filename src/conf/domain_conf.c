@@ -28205,7 +28205,8 @@ virDomainDeviceInfoCheckBootIndex(virDomainDefPtr def ATTRIBUTE_UNUSED,
 int
 virDomainDefCompatibleDevice(virDomainDefPtr def,
                              virDomainDeviceDefPtr dev,
-                             virDomainDeviceDefPtr oldDev)
+                             virDomainDeviceDefPtr oldDev,
+                             virDomainDeviceAction action ATTRIBUTE_UNUSED)
 {
     virDomainCompatibleDeviceData data = {
         .newInfo = virDomainDeviceGetInfo(dev),
