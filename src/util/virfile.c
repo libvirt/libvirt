@@ -3825,7 +3825,7 @@ virFileMoveMount(const char *src,
 {
     const unsigned long mount_flags = MS_MOVE;
 
-    if (mount(src, dst, NULL, mount_flags, NULL) < 0) {
+    if (mount(src, dst, "none", mount_flags, NULL) < 0) {
         virReportSystemError(errno,
                              _("Unable to move %s mount to %s"),
                              src, dst);

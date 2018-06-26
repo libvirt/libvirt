@@ -1181,7 +1181,7 @@ virProcessSetupPrivateMountNS(void)
         goto cleanup;
     }
 
-    if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
+    if (mount("", "/", "none", MS_SLAVE|MS_REC, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to switch root mount into slave mode"));
         goto cleanup;
