@@ -11684,6 +11684,7 @@ static const vshCmdOptDef opts_detach_device_alias[] = {
     {.name = "alias",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshDomainDeviceAliasCompleter,
      .help = N_("device alias")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,

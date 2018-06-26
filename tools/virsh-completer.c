@@ -856,3 +856,51 @@ virshCellnoCompleter(vshControl *ctl,
     VIR_FREE(ret);
     goto cleanup;
 }
+
+
+char **
+virshDomainDeviceAliasCompleter(vshControl *ctl,
+                                const vshCmd *cmd,
+                                unsigned int flags)
+{
+    virshControlPtr priv = ctl->privData;
+    xmlDocPtr xmldoc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    int naliases;
+    xmlNodePtr *aliases = NULL;
+    size_t i;
+    unsigned int domainXMLFlags = 0;
+    char **ret = NULL;
+    char **tmp = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (vshCommandOptBool(cmd, "config"))
+        domainXMLFlags = VIR_DOMAIN_XML_INACTIVE;
+
+    if (virshDomainGetXML(ctl, cmd, domainXMLFlags, &xmldoc, &ctxt) < 0)
+        goto cleanup;
+
+    naliases = virXPathNodeSet("./devices//alias/@name", ctxt, &aliases);
+    if (naliases < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(tmp, naliases + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < naliases; i++) {
+        if (!(tmp[i] = virXMLNodeContentString(aliases[i])))
+            goto cleanup;
+    }
+
+    VIR_STEAL_PTR(ret, tmp);
+ cleanup:
+    VIR_FREE(aliases);
+    xmlFreeDoc(xmldoc);
+    xmlXPathFreeContext(ctxt);
+    virStringListFree(tmp);
+    return ret;
+}
