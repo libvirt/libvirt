@@ -31,15 +31,17 @@
 /**
  * virDomainSnapshot:
  *
- * a virDomainSnapshot is a private structure representing a snapshot of
- * a domain.
+ * A virDomainSnapshot is a private structure representing a snapshot of
+ * a domain.  A snapshot captures the state of the domain at a point in
+ * time, with the intent that the guest can be reverted back to that
+ * state at a later time.
  */
 typedef struct _virDomainSnapshot virDomainSnapshot;
 
 /**
  * virDomainSnapshotPtr:
  *
- * a virDomainSnapshotPtr is pointer to a virDomainSnapshot private structure,
+ * A virDomainSnapshotPtr is pointer to a virDomainSnapshot private structure,
  * and is the type used to reference a domain snapshot in the API.
  */
 typedef virDomainSnapshot *virDomainSnapshotPtr;
