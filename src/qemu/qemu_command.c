@@ -1821,7 +1821,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     const char *contAlias;
-    char *drivealias;
+    char *backendAlias = NULL;
     int controllerModel;
 
     if (qemuCheckDiskConfig(disk, qemuCaps) < 0)
@@ -2080,10 +2080,14 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_SHARE_RW))
         virBufferAddLit(&opt, ",share-rw=on");
 
-    if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
+    if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
         goto error;
-    virBufferAsprintf(&opt, ",drive=%s,id=%s", drivealias, disk->info.alias);
-    VIR_FREE(drivealias);
+
+    if (backendAlias)
+        virBufferAsprintf(&opt, ",drive=%s", backendAlias);
+    VIR_FREE(backendAlias);
+
+    virBufferAsprintf(&opt, ",id=%s", disk->info.alias);
     if (bootindex && virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
         virBufferAsprintf(&opt, ",bootindex=%u", bootindex);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKIO)) {
@@ -2142,6 +2146,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     return virBufferContentAndReset(&opt);
 
  error:
+    VIR_FREE(backendAlias);
     virBufferFreeAndReset(&opt);
     return NULL;
 }
@@ -2151,8 +2156,8 @@ static int
 qemuBuildFloppyCommandLineOptions(virCommandPtr cmd,
                                   const virDomainDef *def,
                                   virDomainDiskDefPtr disk,
+                                  virQEMUCapsPtr qemuCaps,
                                   unsigned int bootindex)
-
 {
     virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
     char driveLetter;
@@ -2166,10 +2171,11 @@ qemuBuildFloppyCommandLineOptions(virCommandPtr cmd,
     else
         driveLetter = 'A';
 
-    if (!(backendAlias = qemuAliasDiskDriveFromDisk(disk)))
-        return -1;
+    if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
+        goto cleanup;
 
-    if (virAsprintf(&backendStr, "drive%c=%s", driveLetter, backendAlias) < 0)
+    if (backendAlias &&
+        virAsprintf(&backendStr, "drive%c=%s", driveLetter, backendAlias) < 0)
         goto cleanup;
 
     if (bootindex &&
@@ -2284,7 +2290,7 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
 
     if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
         if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
-            if (qemuBuildFloppyCommandLineOptions(cmd, def, disk,
+            if (qemuBuildFloppyCommandLineOptions(cmd, def, disk, qemuCaps,
                                                   bootindex) < 0)
                 return -1;
         } else {
