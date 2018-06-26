@@ -1348,12 +1348,12 @@ virDomainVirtioSerialAddrSetFree(virDomainVirtioSerialAddrSetPtr addrs)
 
 
 /* virDomainVirtioSerialAddrSetCreateFromDomain
-+ *
-+ * @def: Domain def to introspect
-+ *
-+ * Inspect the domain definition and return an address set containing
-+ * every virtio serial address we find
-+ */
+ *
+ * @def: Domain def to introspect
+ *
+ * Inspect the domain definition and return an address set containing
+ * every virtio serial address we find
+ */
 virDomainVirtioSerialAddrSetPtr
 virDomainVirtioSerialAddrSetCreateFromDomain(virDomainDefPtr def)
 {
