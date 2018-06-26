@@ -3185,6 +3185,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
                      unsigned int flags,
                      qemuDomainAsyncJob asyncJob)
 {
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     bool needUnlink = false;
     int ret = -1;
     int fd = -1;
@@ -3202,9 +3203,10 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
             goto cleanup;
         }
     }
-    fd = qemuOpenFile(driver, vm, path,
-                      O_WRONLY | O_TRUNC | O_CREAT | directFlag,
-                      &needUnlink);
+
+    fd = qemuOpenFileAs(cfg->user, cfg->group, false, path,
+                        O_WRONLY | O_TRUNC | O_CREAT | directFlag,
+                        &needUnlink);
     if (fd < 0)
         goto cleanup;
 
@@ -3244,6 +3246,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
  cleanup:
     VIR_FORCE_CLOSE(fd);
     virFileWrapperFdFree(wrapperFd);
+    virObjectUnref(cfg);
 
     if (ret < 0 && needUnlink)
         unlink(path);
@@ -3793,9 +3796,9 @@ doCoreDump(virQEMUDriverPtr driver,
     /* Core dumps usually imply last-ditch analysis efforts are
      * desired, so we intentionally do not unlink even if a file was
      * created.  */
-    if ((fd = qemuOpenFile(driver, vm, path,
-                           O_CREAT | O_TRUNC | O_WRONLY | directFlag,
-                           NULL)) < 0)
+    if ((fd = qemuOpenFileAs(cfg->user, cfg->group, false, path,
+                             O_CREAT | O_TRUNC | O_WRONLY | directFlag,
+                             NULL)) < 0)
         goto cleanup;
 
     if (!(wrapperFd = virFileWrapperFdNew(&fd, path, flags)))
