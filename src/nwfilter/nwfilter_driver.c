@@ -739,8 +739,8 @@ nwfilterBindingCreateXML(virConnectPtr conn,
                          const char *xml,
                          unsigned int flags)
 {
-    virNWFilterBindingObjPtr obj;
     virNWFilterBindingDefPtr def;
+    virNWFilterBindingObjPtr obj = NULL;
     virNWFilterBindingPtr ret = NULL;
 
     virCheckFlags(0, NULL);
