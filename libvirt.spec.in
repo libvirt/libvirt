@@ -2052,6 +2052,8 @@ exit 0
 %{_datadir}/libvirt/schemas/networkcommon.rng
 %{_datadir}/libvirt/schemas/nodedev.rng
 %{_datadir}/libvirt/schemas/nwfilter.rng
+%{_datadir}/libvirt/schemas/nwfilter_params.rng
+%{_datadir}/libvirt/schemas/nwfilterbinding.rng
 %{_datadir}/libvirt/schemas/secret.rng
 %{_datadir}/libvirt/schemas/storagecommon.rng
 %{_datadir}/libvirt/schemas/storagepool.rng
