@@ -91,6 +91,7 @@ static void qemuMonitorJSONHandleMigrationPass(qemuMonitorPtr mon, virJSONValueP
 static void qemuMonitorJSONHandleAcpiOstInfo(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleBlockThreshold(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleDumpCompleted(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandlePRManagerStatusChanged(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -113,6 +114,7 @@ static qemuEventHandler eventHandlers[] = {
     { "MIGRATION_PASS", qemuMonitorJSONHandleMigrationPass, },
     { "NIC_RX_FILTER_CHANGED", qemuMonitorJSONHandleNicRxFilterChanged, },
     { "POWERDOWN", qemuMonitorJSONHandlePowerdown, },
+    { "PR_MANAGER_STATUS_CHANGED", qemuMonitorJSONHandlePRManagerStatusChanged, },
     { "RESET", qemuMonitorJSONHandleReset, },
     { "RESUME", qemuMonitorJSONHandleResume, },
     { "RTC_CHANGE", qemuMonitorJSONHandleRTCChange, },
@@ -1294,6 +1296,27 @@ qemuMonitorJSONHandleDumpCompleted(qemuMonitorPtr mon,
     error = virJSONValueObjectGetString(data, "error");
 
     qemuMonitorEmitDumpCompleted(mon, status, &stats, error);
+}
+
+
+static void qemuMonitorJSONHandlePRManagerStatusChanged(qemuMonitorPtr mon,
+                                                        virJSONValuePtr data)
+{
+    const char *name;
+    bool connected;
+
+    if (!(name = virJSONValueObjectGetString(data, "id"))) {
+        VIR_WARN("missing pr-manager alias in PR_MANAGER_STATUS_CHANGED event");
+        return;
+    }
+
+    if (virJSONValueObjectGetBoolean(data, "connected", &connected) < 0) {
+        VIR_WARN("missing connected state for %s "
+                 "in PR_MANAGER_STATUS_CHANGED event", name);
+        return;
+    }
+
+    qemuMonitorEmitPRManagerStatusChanged(mon, name, connected);
 }
 
 

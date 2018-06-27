@@ -1670,6 +1670,21 @@ qemuMonitorEmitDumpCompleted(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorEmitPRManagerStatusChanged(qemuMonitorPtr mon,
+                                      const char *prManager,
+                                      bool connected)
+{
+    int ret = -1;
+    VIR_DEBUG("mon=%p, prManager='%s', connected=%d", mon, prManager, connected);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainPRManagerStatusChanged,
+                          mon->vm, prManager, connected);
+
+    return ret;
+}
+
+
+int
 qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR(mon);

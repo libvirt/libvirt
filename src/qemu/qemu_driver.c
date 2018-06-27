@@ -4778,6 +4778,20 @@ processMonitorEOFEvent(virQEMUDriverPtr driver,
 }
 
 
+static void
+processPRDisconnectEvent(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (!virDomainObjIsActive(vm))
+        return;
+
+    if (!priv->prDaemonRunning &&
+        virDomainDefHasManagedPR(vm->def))
+        qemuProcessStartManagedPRDaemon(vm);
+}
+
+
 static void qemuProcessEventHandler(void *data, void *opaque)
 {
     struct qemuProcessEvent *processEvent = data;
@@ -4814,6 +4828,9 @@ static void qemuProcessEventHandler(void *data, void *opaque)
         break;
     case QEMU_PROCESS_EVENT_MONITOR_EOF:
         processMonitorEOFEvent(driver, vm);
+        break;
+    case QEMU_PROCESS_EVENT_PR_DISCONNECT:
+        processPRDisconnectEvent(vm);
         break;
     case QEMU_PROCESS_EVENT_LAST:
         break;

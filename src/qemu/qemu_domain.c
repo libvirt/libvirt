@@ -13003,6 +13003,7 @@ qemuProcessEventFree(struct qemuProcessEvent *event)
     case QEMU_PROCESS_EVENT_MONITOR_EOF:
         VIR_FREE(event->data);
         break;
+    case QEMU_PROCESS_EVENT_PR_DISCONNECT:
     case QEMU_PROCESS_EVENT_LAST:
         break;
     }
