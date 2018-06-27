@@ -720,7 +720,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     VIR_DEBUG("Pivot via %s", root->src->path);
 
     /* root->parent must be private, so make / private. */
-    if (mount("", "/", NULL, MS_PRIVATE|MS_REC, NULL) < 0) {
+    if (mount("", "/", "none", MS_PRIVATE|MS_REC, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to make root private"));
         goto err;
@@ -757,7 +757,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     }
 
     /* ... and mount our root onto it */
-    if (mount(root->src->path, newroot, NULL, MS_BIND|MS_REC, NULL) < 0) {
+    if (mount(root->src->path, newroot, "none", MS_BIND|MS_REC, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to bind %s to new root %s"),
                              root->src->path, newroot);
@@ -765,7 +765,7 @@ static int lxcContainerPivotRoot(virDomainFSDefPtr root)
     }
 
     if (root->readonly) {
-        if (mount(root->src->path, newroot, NULL, MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
+        if (mount(root->src->path, newroot, "none", MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to make new root %s readonly"),
                                  root->src->path);
@@ -815,9 +815,9 @@ typedef struct {
 
 static const virLXCBasicMountInfo lxcBasicMounts[] = {
     { "proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, false, false, false },
-    { "/proc/sys", "/proc/sys", NULL, MS_BIND|MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false, false, false },
-    { "/.oldroot/proc/sys/net/ipv4", "/proc/sys/net/ipv4", NULL, MS_BIND, false, false, true },
-    { "/.oldroot/proc/sys/net/ipv6", "/proc/sys/net/ipv6", NULL, MS_BIND, false, false, true },
+    { "/proc/sys", "/proc/sys", "none", MS_BIND|MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false, false, false },
+    { "/.oldroot/proc/sys/net/ipv4", "/proc/sys/net/ipv4", "none", MS_BIND, false, false, true },
+    { "/.oldroot/proc/sys/net/ipv6", "/proc/sys/net/ipv6", "none", MS_BIND, false, false, true },
     { "sysfs", "/sys", "sysfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, false, false, false },
     { "securityfs", "/sys/kernel/security", "securityfs", MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY, true, true, false },
 #if WITH_SELINUX
@@ -876,7 +876,7 @@ static int lxcContainerSetReadOnly(void)
 
     for (i = 0; i < nmounts; i++) {
         VIR_DEBUG("Bind readonly %s", mounts[i]);
-        if (mount(mounts[i], mounts[i], NULL, MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
+        if (mount(mounts[i], mounts[i], "none", MS_BIND|MS_REC|MS_RDONLY|MS_REMOUNT, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to make mount %s readonly"),
                                  mounts[i]);
@@ -994,7 +994,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
         }
 
         if (bindOverReadonly &&
-            mount(mnt_src, mnt->dst, NULL,
+            mount(mnt_src, mnt->dst, "none",
                   MS_BIND|MS_REMOUNT|mnt_mflags|MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to re-mount %s on %s flags=0x%x"),
@@ -1069,7 +1069,7 @@ static int lxcContainerMountFSDev(virDomainDefPtr def,
     VIR_DEBUG("Trying to %s %s to /dev", def->idmap.nuidmap ?
               "bind" : "move", path);
 
-    if (mount(path, "/dev", NULL, flags, NULL) < 0) {
+    if (mount(path, "/dev", "none", flags, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to mount %s on /dev"),
                              path);
@@ -1105,7 +1105,7 @@ static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
     VIR_DEBUG("Trying to %s %s to /dev/pts", def->idmap.nuidmap ?
               "bind" : "move", path);
 
-    if (mount(path, "/dev/pts", NULL, flags, NULL) < 0) {
+    if (mount(path, "/dev/pts", "none", flags, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to mount %s on /dev/pts"),
                              path);
@@ -1215,7 +1215,7 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
         }
     }
 
-    if (mount(src, fs->dst, NULL, MS_BIND, NULL) < 0) {
+    if (mount(src, fs->dst, "none", MS_BIND, NULL) < 0) {
         virReportSystemError(errno,
                              _("Failed to bind mount directory %s to %s"),
                              src, fs->dst);
@@ -1224,7 +1224,7 @@ static int lxcContainerMountFSBind(virDomainFSDefPtr fs,
 
     if (fs->readonly) {
         VIR_DEBUG("Binding %s readonly", fs->dst);
-        if (mount(src, fs->dst, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
+        if (mount(src, fs->dst, "none", MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to make directory %s readonly"),
                                  fs->dst);
@@ -1549,7 +1549,7 @@ static int lxcContainerMountFSTmpfs(virDomainFSDefPtr fs,
 
     if (fs->readonly) {
         VIR_DEBUG("Binding %s readonly", fs->dst);
-        if (mount(fs->dst, fs->dst, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
+        if (mount(fs->dst, fs->dst, "none", MS_BIND|MS_REMOUNT|MS_RDONLY, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to make directory %s readonly"),
                                  fs->dst);
