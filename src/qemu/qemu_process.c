@@ -2071,6 +2071,63 @@ qemuRefreshVirtioChannelState(virQEMUDriverPtr driver,
     return ret;
 }
 
+
+static int
+qemuProcessRefreshPRManagerState(virDomainObjPtr vm,
+                                 virHashTablePtr info)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuMonitorPRManagerInfoPtr prManagerInfo;
+    const char *managedAlias = qemuDomainGetManagedPRAlias();
+    int ret = -1;
+
+    if (!(prManagerInfo = virHashLookup(info, managedAlias))) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("missing info on pr-manager %s"),
+                       managedAlias);
+        goto cleanup;
+    }
+
+    priv->prDaemonRunning = prManagerInfo->connected;
+
+    if (!priv->prDaemonRunning &&
+        qemuProcessStartManagedPRDaemon(vm) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+static int
+qemuRefreshPRManagerState(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virHashTablePtr info = NULL;
+    int ret = -1;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER) ||
+        !virDomainDefHasManagedPR(vm->def))
+        return 0;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorGetPRManagerInfo(priv->mon, &info);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+    if (ret < 0)
+        goto cleanup;
+
+    ret = qemuProcessRefreshPRManagerState(vm, info);
+
+ cleanup:
+    virHashFree(info);
+    return ret;
+}
+
+
 static void
 qemuRefreshRTC(virQEMUDriverPtr driver,
                virDomainObjPtr vm)
@@ -7734,6 +7791,9 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     if (qemuProcessUpdateDevices(driver, obj) < 0)
+        goto error;
+
+    if (qemuRefreshPRManagerState(driver, obj) < 0)
         goto error;
 
     qemuProcessReconnectCheckMemAliasOrderMismatch(obj);
