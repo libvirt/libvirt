@@ -3962,7 +3962,7 @@ virCgroupBindMount(virCgroupPtr group, const char *oldroot,
                 goto cleanup;
             }
 
-            if (mount(src, group->controllers[i].mountPoint, NULL, MS_BIND,
+            if (mount(src, group->controllers[i].mountPoint, "none", MS_BIND,
                       NULL) < 0) {
                 virReportSystemError(errno,
                                      _("Failed to bind cgroup '%s' on '%s'"),
