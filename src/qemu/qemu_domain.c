@@ -3986,6 +3986,13 @@ qemuDomainDefValidate(const virDomainDef *def,
         }
     }
 
+    if (def->ncachetunes &&
+        def->virtType != VIR_DOMAIN_VIRT_KVM) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cachetune is only supported for KVM domains"));
+        goto cleanup;
+    }
+
     if (qemuDomainDefValidateFeatures(def, qemuCaps) < 0)
         goto cleanup;
 
