@@ -752,13 +752,6 @@ nwfilterBindingCreateXML(virConnectPtr conn,
     if (virNWFilterBindingCreateXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    obj = virNWFilterBindingObjListFindByPortDev(driver->bindings, def->portdevname);
-    if (obj) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Filter already present for NIC %s"), def->portdevname);
-        goto cleanup;
-    }
-
     obj = virNWFilterBindingObjListAdd(driver->bindings,
                                        def);
     if (!obj)
