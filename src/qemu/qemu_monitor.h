@@ -599,6 +599,10 @@ int qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
                                         bool backingChain)
     ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
+                                                virHashTablePtr stats)
+    ATTRIBUTE_NONNULL(2);
+
 int qemuMonitorBlockResize(qemuMonitorPtr mon,
                            const char *device,
                            const char *nodename,

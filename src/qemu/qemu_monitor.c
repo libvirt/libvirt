@@ -2312,6 +2312,17 @@ qemuMonitorBlockStatsUpdateCapacity(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
+                                            virHashTablePtr stats)
+{
+    VIR_DEBUG("stats=%p", stats);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(mon, stats);
+}
+
+int
 qemuMonitorBlockResize(qemuMonitorPtr mon,
                        const char *device,
                        const char *nodename,
