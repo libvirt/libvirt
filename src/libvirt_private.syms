@@ -558,6 +558,7 @@ virDomainTPMModelTypeToString;
 virDomainUSBDeviceDefForeach;
 virDomainVideoDefaultRAM;
 virDomainVideoDefaultType;
+virDomainVideoDefClear;
 virDomainVideoDefFree;
 virDomainVideoDefNew;
 virDomainVideoTypeFromString;

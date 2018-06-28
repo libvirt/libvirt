@@ -2538,7 +2538,8 @@ virDomainVideoDefNew(void)
 }
 
 
-void virDomainVideoDefFree(virDomainVideoDefPtr def)
+void
+virDomainVideoDefClear(virDomainVideoDefPtr def)
 {
     if (!def)
         return;
@@ -2548,6 +2549,17 @@ void virDomainVideoDefFree(virDomainVideoDefPtr def)
     VIR_FREE(def->accel);
     VIR_FREE(def->virtio);
     VIR_FREE(def->driver);
+
+    memset(def, 0, sizeof(*def));
+}
+
+
+void virDomainVideoDefFree(virDomainVideoDefPtr def)
+{
+    if (!def)
+        return;
+
+    virDomainVideoDefClear(def);
     VIR_FREE(def);
 }
 
