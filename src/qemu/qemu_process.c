@@ -5124,6 +5124,9 @@ qemuProcessInit(virQEMUDriverPtr driver,
                                                       vm->def->os.machine)))
         goto cleanup;
 
+    if (flags & VIR_QEMU_PROCESS_START_STANDALONE)
+        virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS);
+
     if (qemuDomainUpdateCPU(vm, updatedCPU, &origCPU) < 0)
         goto cleanup;
 
@@ -6632,6 +6635,8 @@ qemuProcessCreatePretendCmd(virQEMUDriverPtr driver,
 
     flags |= VIR_QEMU_PROCESS_START_PRETEND;
     flags |= VIR_QEMU_PROCESS_START_NEW;
+    if (standalone)
+        flags |= VIR_QEMU_PROCESS_START_STANDALONE;
 
     if (qemuProcessInit(driver, vm, NULL, QEMU_ASYNC_JOB_NONE,
                         !!migrateURI, flags) < 0)
