@@ -81,6 +81,8 @@ typedef enum {
     VIR_QEMU_PROCESS_START_PRETEND      = 1 << 3,
     VIR_QEMU_PROCESS_START_NEW          = 1 << 4, /* internal, new VM is starting */
     VIR_QEMU_PROCESS_START_GEN_VMID     = 1 << 5, /* Generate a new VMID */
+    VIR_QEMU_PROCESS_START_STANDALONE   = 1 << 6, /* Require CLI args to be usable standalone,
+                                                     ie no FD passing and the like */
 } qemuProcessStartFlags;
 
 int qemuProcessStart(virConnectPtr conn,
