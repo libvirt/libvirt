@@ -4832,8 +4832,7 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
-                  VIR_DOMAIN_AFFECT_CONFIG |
-                  VIR_DOMAIN_DEVICE_MODIFY_FORCE, -1);
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
