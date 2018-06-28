@@ -4399,7 +4399,7 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
     virConnectPtr dconn = NULL;
     bool p2p;
     virErrorPtr orig_err = NULL;
-    bool offline = false;
+    bool dstOffline = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     bool useParams;
 
@@ -4469,8 +4469,8 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
     useParams = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
                                          VIR_DRV_FEATURE_MIGRATION_PARAMS);
     if (flags & VIR_MIGRATE_OFFLINE)
-        offline = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
-                                           VIR_DRV_FEATURE_MIGRATION_OFFLINE);
+        dstOffline = VIR_DRV_SUPPORTS_FEATURE(dconn->driver, dconn,
+                                              VIR_DRV_FEATURE_MIGRATION_OFFLINE);
     qemuDomainObjExitRemote(vm);
 
     if (!p2p) {
@@ -4488,7 +4488,7 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (flags & VIR_MIGRATE_OFFLINE && !offline) {
+    if (flags & VIR_MIGRATE_OFFLINE && !dstOffline) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("offline migration is not supported by "
                          "the destination host"));
