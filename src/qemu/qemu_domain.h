@@ -584,8 +584,9 @@ void qemuDomainObjExitAgent(virDomainObjPtr obj, qemuAgentPtr agent)
 
 void qemuDomainObjEnterRemote(virDomainObjPtr obj)
     ATTRIBUTE_NONNULL(1);
-void qemuDomainObjExitRemote(virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1);
+int qemuDomainObjExitRemote(virDomainObjPtr obj,
+                            bool checkActive)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 virDomainDefPtr qemuDomainDefCopy(virQEMUDriverPtr driver,
                                   virDomainDefPtr src,

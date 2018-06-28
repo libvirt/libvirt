@@ -7023,11 +7023,23 @@ void qemuDomainObjEnterRemote(virDomainObjPtr obj)
     virObjectUnlock(obj);
 }
 
-void qemuDomainObjExitRemote(virDomainObjPtr obj)
+
+int
+qemuDomainObjExitRemote(virDomainObjPtr obj,
+                        bool checkActive)
 {
     virObjectLock(obj);
     VIR_DEBUG("Exited remote (vm=%p name=%s)",
               obj, obj->def->name);
+
+    if (checkActive && !virDomainObjIsActive(obj)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("domain '%s' is not running"),
+                       obj->def->name);
+        return -1;
+    }
+
+    return 0;
 }
 
 
