@@ -20059,7 +20059,8 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
                            virDomainObjPtr dom,
                            virDomainStatsRecordPtr record,
                            int *maxparams,
-                           virDomainDiskDefPtr disk,
+                           const char *diskdst,
+                           const char *entryname,
                            virStorageSourcePtr src,
                            size_t block_idx,
                            virHashTablePtr stats,
@@ -20067,13 +20068,9 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
 {
     qemuBlockStats *entry;
     int ret = -1;
-    char *alias = NULL;
 
-    if (disk->info.alias)
-        alias = qemuDomainStorageAlias(disk->info.alias, src->id);
+    QEMU_ADD_NAME_PARAM(record, maxparams, "block", "name", block_idx, diskdst);
 
-    QEMU_ADD_NAME_PARAM(record, maxparams, "block", "name", block_idx,
-                        disk->dst);
     if (virStorageSourceIsLocalStorage(src) && src->path)
         QEMU_ADD_NAME_PARAM(record, maxparams, "block", "path",
                             block_idx, src->path);
@@ -20092,7 +20089,7 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
     /* In case where qemu didn't provide the stats we stop here rather than
      * trying to refresh the stats from the disk. Inability to provide stats is
      * usually caused by blocked storage so this would make libvirtd hang */
-    if (!stats || !alias || !(entry = virHashLookup(stats, alias))) {
+    if (!stats || !entryname || !(entry = virHashLookup(stats, entryname))) {
         ret = 0;
         goto cleanup;
     }
@@ -20138,7 +20135,6 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
-    VIR_FREE(alias);
     return ret;
 }
 
@@ -20163,6 +20159,7 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     int count_index = -1;
     size_t visited = 0;
     bool visitBacking = !!(privflags & QEMU_DOMAIN_STATS_BACKING);
+    char *alias = NULL;
 
     if (HAVE_JOB(privflags) && virDomainObjIsActive(dom)) {
         qemuDomainObjEnterMonitor(driver, dom);
@@ -20199,10 +20196,18 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
         while (virStorageSourceIsBacking(src) &&
                (src == disk->src || visitBacking)) {
+
+            /* alias may be NULL if the VM is not running */
+            if (disk->info.alias &&
+                !(alias = qemuDomainStorageAlias(disk->info.alias, src->id)))
+                goto cleanup;
+
             if (qemuDomainGetStatsOneBlock(driver, cfg, dom, record, maxparams,
-                                           disk, src, visited,
+                                           disk->dst, alias, src, visited,
                                            stats, nodestats) < 0)
                 goto cleanup;
+
+            VIR_FREE(alias);
             visited++;
             src = src->backingStore;
         }
@@ -20212,6 +20217,7 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
+    VIR_FREE(alias);
     virHashFree(stats);
     virHashFree(nodestats);
     virJSONValueFree(nodedata);
