@@ -20027,29 +20027,39 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriverPtr driver,
 }
 
 
-static int
-qemuDomainGetStatsOneBlockNode(virDomainStatsRecordPtr record,
-                               int *maxparams,
-                               virStorageSourcePtr src,
-                               size_t block_idx,
-                               virHashTablePtr nodedata)
+/**
+ * qemuDomainGetStatsOneBlockRefreshNamed:
+ * @src: disk source structure
+ * @alias: disk alias
+ * @stats: hash table containing stats for all disks
+ * @nodedata: reply containing 'query-named-block-nodes' data
+ *
+ * Refresh disk block stats data (qemuBlockStatsPtr) which are present only
+ * in the reply of 'query-named-block-nodes' in cases when the data was gathered
+ * by using query-block originally.
+ */
+static void
+qemuDomainGetStatsOneBlockRefreshNamed(virStorageSourcePtr src,
+                                       const char *alias,
+                                       virHashTablePtr stats,
+                                       virHashTablePtr nodedata)
 {
+    qemuBlockStatsPtr entry;
+
     virJSONValuePtr data;
     unsigned long long tmp;
-    int ret = -1;
 
-    if (src->nodestorage &&
-        (data = virHashLookup(nodedata, src->nodestorage))) {
-        if (virJSONValueObjectGetNumberUlong(data, "write_threshold", &tmp) == 0 &&
-            tmp > 0)
-            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
-                                     "threshold", tmp);
-    }
+    if (!nodedata || !src->nodestorage)
+        return;
 
-    ret = 0;
+    if (!(entry = virHashLookup(stats, alias)))
+        return;
 
- cleanup:
-    return ret;
+    if (!(data = virHashLookup(nodedata, src->nodestorage)))
+        return;
+
+    if (virJSONValueObjectGetNumberUlong(data, "write_threshold", &tmp) == 0)
+        entry->write_threshold = tmp;
 }
 
 
@@ -20063,8 +20073,7 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
                            const char *entryname,
                            virStorageSourcePtr src,
                            size_t block_idx,
-                           virHashTablePtr stats,
-                           virHashTablePtr nodedata)
+                           virHashTablePtr stats)
 {
     qemuBlockStats *entry;
     int ret = -1;
@@ -20129,9 +20138,9 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
         }
     }
 
-    if (qemuDomainGetStatsOneBlockNode(record, maxparams, src, block_idx,
-                                       nodedata) < 0)
-        goto cleanup;
+    if (entry->write_threshold)
+        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx, "threshold",
+                                 entry->write_threshold);
 
     ret = 0;
  cleanup:
@@ -20202,9 +20211,11 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
                 !(alias = qemuDomainStorageAlias(disk->info.alias, src->id)))
                 goto cleanup;
 
+            qemuDomainGetStatsOneBlockRefreshNamed(src, alias, stats, nodestats);
+
             if (qemuDomainGetStatsOneBlock(driver, cfg, dom, record, maxparams,
                                            disk->dst, alias, src, visited,
-                                           stats, nodestats) < 0)
+                                           stats) < 0)
                 goto cleanup;
 
             VIR_FREE(alias);

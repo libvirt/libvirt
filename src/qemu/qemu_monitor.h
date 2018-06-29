@@ -587,6 +587,9 @@ struct _qemuBlockStats {
      * if wr_highest_offset_valid is true */
     unsigned long long wr_highest_offset;
     bool wr_highest_offset_valid;
+
+    /* write_threshold is valid only if it's non-zero, conforming to qemu semantics */
+    unsigned long long write_threshold;
 };
 
 int qemuMonitorGetAllBlockStatsInfo(qemuMonitorPtr mon,
