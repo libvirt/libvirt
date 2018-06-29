@@ -106,7 +106,6 @@ virPCIDeviceAddressParseXML;
 # conf/domain_addr.h
 virDomainCCWAddressAllocate;
 virDomainCCWAddressAssign;
-virDomainCCWAddressReleaseAddr;
 virDomainCCWAddressSetCreate;
 virDomainCCWAddressSetFree;
 virDomainCCWAddressValidate;

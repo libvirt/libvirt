@@ -200,9 +200,6 @@ int virDomainCCWAddressValidate(virDomainDefPtr def,
                                 void *data)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
-int virDomainCCWAddressReleaseAddr(virDomainCCWAddressSetPtr addrs,
-                                   virDomainDeviceInfoPtr dev)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 virDomainCCWAddressSetPtr virDomainCCWAddressSetCreate(void);
 
 struct _virDomainVirtioSerialController {

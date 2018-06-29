@@ -1152,30 +1152,6 @@ virDomainCCWAddressValidate(virDomainDefPtr def ATTRIBUTE_UNUSED,
     return virDomainCCWAddressAssign(info, data, false);
 }
 
-int
-virDomainCCWAddressReleaseAddr(virDomainCCWAddressSetPtr addrs,
-                               virDomainDeviceInfoPtr dev)
-{
-    char *addr;
-    int ret;
-
-    addr = virDomainCCWAddressAsString(&(dev->addr.ccw));
-    if (!addr)
-        return -1;
-
-    if ((ret = virHashRemoveEntry(addrs->defined, addr)) == 0 &&
-        dev->addr.ccw.cssid == addrs->next.cssid &&
-        dev->addr.ccw.ssid == addrs->next.ssid &&
-        dev->addr.ccw.devno < addrs->next.devno) {
-        addrs->next.devno = dev->addr.ccw.devno;
-        addrs->next.assigned = false;
-    }
-
-    VIR_FREE(addr);
-
-    return ret;
-}
-
 void virDomainCCWAddressSetFree(virDomainCCWAddressSetPtr addrs)
 {
     if (!addrs)
