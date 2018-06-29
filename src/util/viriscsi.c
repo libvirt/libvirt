@@ -43,6 +43,7 @@ VIR_LOG_INIT("util.iscsi");
 static int
 virISCSIScanTargetsInternal(const char *portal,
                             const char *ifacename,
+                            bool persist,
                             size_t *ntargetsret,
                             char ***targetsret);
 
@@ -294,9 +295,11 @@ virISCSIConnection(const char *portal,
              * unless you've first issued a 'sendtargets' command to the
              * portal. Without the sendtargets all that is received is a
              * "iscsiadm: No records found". However, we must ensure that
-             * the command is issued over interface name we invented above.
+             * the command is issued over interface name we invented above
+             * and that targets are made persistent.
              */
-            if (virISCSIScanTargetsInternal(portal, ifacename, NULL, NULL) < 0)
+            if (virISCSIScanTargetsInternal(portal, ifacename,
+                                            true, NULL, NULL) < 0)
                 goto cleanup;
 
             break;
@@ -382,6 +385,7 @@ virISCSIGetTargets(char **const groups,
 static int
 virISCSIScanTargetsInternal(const char *portal,
                             const char *ifacename,
+                            bool persist,
                             size_t *ntargetsret,
                             char ***targetsret)
 {
@@ -406,8 +410,13 @@ virISCSIScanTargetsInternal(const char *portal,
                                              "--mode", "discovery",
                                              "--type", "sendtargets",
                                              "--portal", portal,
-                                             "--op", "nonpersistent",
                                              NULL);
+
+    if (!persist) {
+        virCommandAddArgList(cmd,
+                             "--op", "nonpersistent",
+                             NULL);
+    }
 
     if (ifacename) {
         virCommandAddArgList(cmd,
@@ -445,6 +454,7 @@ virISCSIScanTargetsInternal(const char *portal,
  * virISCSIScanTargets:
  * @portal: iSCSI portal
  * @initiatoriqn: Initiator IQN
+ * @persists: whether scanned targets should be saved
  * @ntargets: number of items in @targetsret array
  * @targets: array of targets
  *
@@ -453,12 +463,16 @@ virISCSIScanTargetsInternal(const char *portal,
  * The targets are stored into @targets array and the size of
  * the array is stored into @ntargets.
  *
+ * If @persist is true, then targets returned by iSCSI portal are
+ * made persistent on the host (their config is saved).
+ *
  * Returns: 0 on success,
  *         -1 otherwise (with error reported)
  */
 int
 virISCSIScanTargets(const char *portal,
                     const char *initiatoriqn,
+                    bool persist,
                     size_t *ntargets,
                     char ***targets)
 {
@@ -486,7 +500,8 @@ virISCSIScanTargets(const char *portal,
         }
     }
 
-    ret = virISCSIScanTargetsInternal(portal, ifacename, ntargets, targets);
+    ret = virISCSIScanTargetsInternal(portal, ifacename,
+                                      persist, ntargets, targets);
     VIR_FREE(ifacename);
     return ret;
 }
