@@ -130,21 +130,21 @@ virStorageBackendIQNFound(const char *initiatoriqn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not allocate memory for output of '%s'"),
                        ISCSIADM);
-        goto out;
+        goto cleanup;
     }
 
     memset(line, 0, LINE_SIZE);
 
     virCommandSetOutputFD(cmd, &fd);
     if (virCommandRunAsync(cmd, NULL) < 0)
-        goto out;
+        goto cleanup;
 
     if ((fp = VIR_FDOPEN(fd, "r")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open stream for file descriptor "
                          "when reading output from '%s': '%s'"),
                        ISCSIADM, virStrerror(errno, ebuf, sizeof(ebuf)));
-        goto out;
+        goto cleanup;
     }
 
     while (fgets(line, LINE_SIZE, fp) != NULL) {
@@ -154,7 +154,7 @@ virStorageBackendIQNFound(const char *initiatoriqn,
                            _("Unexpected line > %d characters "
                              "when parsing output of '%s'"),
                            LINE_SIZE, ISCSIADM);
-            goto out;
+            goto cleanup;
         }
         *newline = '\0';
 
@@ -169,11 +169,11 @@ virStorageBackendIQNFound(const char *initiatoriqn,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Missing space when parsing output "
                                  "of '%s'"), ISCSIADM);
-                goto out;
+                goto cleanup;
             }
 
             if (VIR_STRNDUP(*ifacename, line, token - line) < 0)
-                goto out;
+                goto cleanup;
 
             VIR_DEBUG("Found interface '%s' with IQN '%s'", *ifacename, iqn);
             break;
@@ -181,11 +181,11 @@ virStorageBackendIQNFound(const char *initiatoriqn,
     }
 
     if (virCommandWait(cmd, NULL) < 0)
-        goto out;
+        goto cleanup;
 
     ret = *ifacename ? IQN_FOUND : IQN_MISSING;
 
- out:
+ cleanup:
     if (ret == IQN_MISSING)
         VIR_DEBUG("Could not find interface with IQN '%s'", iqn);
 
