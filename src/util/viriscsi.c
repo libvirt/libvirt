@@ -117,15 +117,16 @@ static int
 virStorageBackendIQNFound(const char *initiatoriqn,
                           char **ifacename)
 {
-    int ret = IQN_MISSING, fd = -1;
+    int ret = IQN_ERROR, fd = -1;
     char ebuf[64];
     FILE *fp = NULL;
     char *line = NULL, *newline = NULL, *iqn = NULL, *token = NULL;
     virCommandPtr cmd = virCommandNewArgList(ISCSIADM,
                                              "--mode", "iface", NULL);
 
+    *ifacename = NULL;
+
     if (VIR_ALLOC_N(line, LINE_SIZE) != 0) {
-        ret = IQN_ERROR;
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not allocate memory for output of '%s'"),
                        ISCSIADM);
@@ -135,24 +136,20 @@ virStorageBackendIQNFound(const char *initiatoriqn,
     memset(line, 0, LINE_SIZE);
 
     virCommandSetOutputFD(cmd, &fd);
-    if (virCommandRunAsync(cmd, NULL) < 0) {
-        ret = IQN_ERROR;
+    if (virCommandRunAsync(cmd, NULL) < 0)
         goto out;
-    }
 
     if ((fp = VIR_FDOPEN(fd, "r")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open stream for file descriptor "
                          "when reading output from '%s': '%s'"),
                        ISCSIADM, virStrerror(errno, ebuf, sizeof(ebuf)));
-        ret = IQN_ERROR;
         goto out;
     }
 
     while (fgets(line, LINE_SIZE, fp) != NULL) {
         newline = strrchr(line, '\n');
         if (newline == NULL) {
-            ret = IQN_ERROR;
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unexpected line > %d characters "
                              "when parsing output of '%s'"),
@@ -169,24 +166,24 @@ virStorageBackendIQNFound(const char *initiatoriqn,
         if (STREQ(iqn, initiatoriqn)) {
             token = strchr(line, ' ');
             if (!token) {
-                ret = IQN_ERROR;
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Missing space when parsing output "
                                  "of '%s'"), ISCSIADM);
                 goto out;
             }
-            if (VIR_STRNDUP(*ifacename, line, token - line) < 0) {
-                ret = IQN_ERROR;
+
+            if (VIR_STRNDUP(*ifacename, line, token - line) < 0)
                 goto out;
-            }
+
             VIR_DEBUG("Found interface '%s' with IQN '%s'", *ifacename, iqn);
-            ret = IQN_FOUND;
             break;
         }
     }
 
     if (virCommandWait(cmd, NULL) < 0)
-        ret = IQN_ERROR;
+        goto out;
+
+    ret = *ifacename ? IQN_FOUND : IQN_MISSING;
 
  out:
     if (ret == IQN_MISSING)
