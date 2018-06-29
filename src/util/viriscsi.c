@@ -40,6 +40,13 @@
 VIR_LOG_INIT("util.iscsi");
 
 
+static int
+virISCSIScanTargetsInternal(const char *portal,
+                            const char *ifacename,
+                            size_t *ntargetsret,
+                            char ***targetsret);
+
+
 struct virISCSISessionData {
     char *session;
     const char *devpath;
@@ -286,9 +293,10 @@ virISCSIConnection(const char *portal,
              * iscsiadm doesn't let you send commands to the Interface IQN,
              * unless you've first issued a 'sendtargets' command to the
              * portal. Without the sendtargets all that is received is a
-             * "iscsiadm: No records found"
+             * "iscsiadm: No records found". However, we must ensure that
+             * the command is issued over interface name we invented above.
              */
-            if (virISCSIScanTargets(portal, NULL, NULL) < 0)
+            if (virISCSIScanTargetsInternal(portal, ifacename, NULL, NULL) < 0)
                 goto cleanup;
 
             break;
@@ -371,10 +379,11 @@ virISCSIGetTargets(char **const groups,
 }
 
 
-int
-virISCSIScanTargets(const char *portal,
-                    size_t *ntargetsret,
-                    char ***targetsret)
+static int
+virISCSIScanTargetsInternal(const char *portal,
+                            const char *ifacename,
+                            size_t *ntargetsret,
+                            char ***targetsret)
 {
     /**
      *
@@ -400,6 +409,12 @@ virISCSIScanTargets(const char *portal,
                                              "--op", "nonpersistent",
                                              NULL);
 
+    if (ifacename) {
+        virCommandAddArgList(cmd,
+                             "--interface", ifacename,
+                             NULL);
+    }
+
     memset(&list, 0, sizeof(list));
 
     if (virCommandRunRegex(cmd,
@@ -424,6 +439,58 @@ virISCSIScanTargets(const char *portal,
     virCommandFree(cmd);
     return ret;
 }
+
+
+/**
+ * virISCSIScanTargets:
+ * @portal: iSCSI portal
+ * @initiatoriqn: Initiator IQN
+ * @ntargets: number of items in @targetsret array
+ * @targets: array of targets
+ *
+ * For given @portal issue sendtargets command. Optionally,
+ * @initiatoriqn can be set to override default configuration.
+ * The targets are stored into @targets array and the size of
+ * the array is stored into @ntargets.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise (with error reported)
+ */
+int
+virISCSIScanTargets(const char *portal,
+                    const char *initiatoriqn,
+                    size_t *ntargets,
+                    char ***targets)
+{
+    char *ifacename = NULL;
+    int ret = -1;
+
+    if (ntargets)
+        *ntargets = 0;
+    if (targets)
+        *targets = NULL;
+
+    if (initiatoriqn) {
+        switch ((virStorageBackendIQNFound(initiatoriqn, &ifacename))) {
+        case IQN_FOUND:
+            break;
+
+        case IQN_MISSING:
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("no iSCSI interface defined for IQN %s"),
+                           initiatoriqn);
+            ATTRIBUTE_FALLTHROUGH;
+        case IQN_ERROR:
+        default:
+            return -1;
+        }
+    }
+
+    ret = virISCSIScanTargetsInternal(portal, ifacename, ntargets, targets);
+    VIR_FREE(ifacename);
+    return ret;
+}
+
 
 /*
  * virISCSINodeNew:

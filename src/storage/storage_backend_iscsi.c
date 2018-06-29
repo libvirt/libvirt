@@ -194,7 +194,9 @@ virStorageBackendISCSIFindPoolSources(const char *srcSpec,
     if (!(portal = virStorageBackendISCSIPortal(source)))
         goto cleanup;
 
-    if (virISCSIScanTargets(portal, &ntargets, &targets) < 0)
+    if (virISCSIScanTargets(portal,
+                            source->initiator.iqn,
+                            &ntargets, &targets) < 0)
         goto cleanup;
 
     if (VIR_ALLOC_N(list.sources, ntargets) < 0)
