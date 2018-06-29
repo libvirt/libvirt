@@ -1607,50 +1607,6 @@ virDomainVirtioSerialAddrReserve(virDomainDefPtr def ATTRIBUTE_UNUSED,
     return ret;
 }
 
-/* virDomainVirtioSerialAddrRelease
- *
- * Release the virtio serial address of the device
- */
-int
-virDomainVirtioSerialAddrRelease(virDomainVirtioSerialAddrSetPtr addrs,
-                                 virDomainDeviceInfoPtr info)
-{
-    virBitmapPtr map;
-    char *str = NULL;
-    int ret = -1;
-    ssize_t i;
-
-    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL ||
-        info->addr.vioserial.port == 0)
-        return 0;
-
-    VIR_DEBUG("Releasing virtio serial %u %u", info->addr.vioserial.controller,
-              info->addr.vioserial.port);
-
-    i = virDomainVirtioSerialAddrFindController(addrs, info->addr.vioserial.controller);
-    if (i < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("virtio serial controller %u is missing"),
-                       info->addr.vioserial.controller);
-        goto cleanup;
-    }
-
-    map = addrs->controllers[i]->ports;
-    if (virBitmapClearBit(map, info->addr.vioserial.port) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("virtio serial controller %u does not have port %u"),
-                       info->addr.vioserial.controller,
-                       info->addr.vioserial.port);
-        goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(str);
-    return ret;
-}
-
 
 bool
 virDomainUSBAddressPortIsValid(unsigned int *port)

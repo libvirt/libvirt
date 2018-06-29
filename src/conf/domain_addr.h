@@ -258,11 +258,6 @@ virDomainVirtioSerialAddrReserve(virDomainDefPtr def,
                                  void *data)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
-int
-virDomainVirtioSerialAddrRelease(virDomainVirtioSerialAddrSetPtr addrs,
-                                 virDomainDeviceInfoPtr info)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
 bool
 virDomainUSBAddressPortIsValid(unsigned int *port)
     ATTRIBUTE_NONNULL(1);
