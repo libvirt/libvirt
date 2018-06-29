@@ -108,7 +108,6 @@ virISCSIGetSession(const char *devpath,
 
 
 
-#define LINE_SIZE 4096
 #define IQN_FOUND 1
 #define IQN_MISSING 0
 #define IQN_ERROR -1
@@ -117,71 +116,56 @@ static int
 virStorageBackendIQNFound(const char *initiatoriqn,
                           char **ifacename)
 {
-    int ret = IQN_ERROR, fd = -1;
-    char ebuf[64];
-    FILE *fp = NULL;
-    char *line = NULL, *newline = NULL, *iqn = NULL, *token = NULL;
+    int ret = IQN_ERROR;
+    char *outbuf = NULL;
+    char *line = NULL;
+    char *iface = NULL;
+    char *iqn = NULL;
     virCommandPtr cmd = virCommandNewArgList(ISCSIADM,
                                              "--mode", "iface", NULL);
 
     *ifacename = NULL;
 
-    if (VIR_ALLOC_N(line, LINE_SIZE) != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not allocate memory for output of '%s'"),
-                       ISCSIADM);
-        goto cleanup;
-    }
-
-    memset(line, 0, LINE_SIZE);
-
-    virCommandSetOutputFD(cmd, &fd);
-    if (virCommandRunAsync(cmd, NULL) < 0)
+    virCommandSetOutputBuffer(cmd, &outbuf);
+    if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
-    if ((fp = VIR_FDOPEN(fd, "r")) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to open stream for file descriptor "
-                         "when reading output from '%s': '%s'"),
-                       ISCSIADM, virStrerror(errno, ebuf, sizeof(ebuf)));
-        goto cleanup;
-    }
+    /* Example of data we are dealing with:
+     * default tcp,<empty>,<empty>,<empty>,<empty>
+     * iser iser,<empty>,<empty>,<empty>,<empty>
+     * libvirt-iface-253db048 tcp,<empty>,<empty>,<empty>,iqn.2017-03.com.user:client
+     */
 
-    while (fgets(line, LINE_SIZE, fp) != NULL) {
-        newline = strrchr(line, '\n');
-        if (newline == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected line > %d characters "
-                             "when parsing output of '%s'"),
-                           LINE_SIZE, ISCSIADM);
-            goto cleanup;
-        }
+    line = outbuf;
+    while (line && *line) {
+        char *newline;
+        int num;
+
+        if (!(newline = strchr(line, '\n')))
+            break;
+
         *newline = '\0';
 
-        iqn = strrchr(line, ',');
-        if (iqn == NULL)
-            continue;
-        iqn++;
+        VIR_FREE(iface);
+        VIR_FREE(iqn);
+        num = sscanf(line, "%ms %*[^,],%*[^,],%*[^,],%*[^,],%ms", &iface, &iqn);
+
+        if (num != 2) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("malformed output of %s: %s"),
+                           ISCSIADM, line);
+            goto cleanup;
+        }
 
         if (STREQ(iqn, initiatoriqn)) {
-            token = strchr(line, ' ');
-            if (!token) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Missing space when parsing output "
-                                 "of '%s'"), ISCSIADM);
-                goto cleanup;
-            }
-
-            if (VIR_STRNDUP(*ifacename, line, token - line) < 0)
-                goto cleanup;
+            VIR_STEAL_PTR(*ifacename, iface);
 
             VIR_DEBUG("Found interface '%s' with IQN '%s'", *ifacename, iqn);
             break;
         }
-    }
 
-    if (virCommandWait(cmd, NULL) < 0)
-        goto cleanup;
+        line = newline + 1;
+    }
 
     ret = *ifacename ? IQN_FOUND : IQN_MISSING;
 
@@ -189,11 +173,10 @@ virStorageBackendIQNFound(const char *initiatoriqn,
     if (ret == IQN_MISSING)
         VIR_DEBUG("Could not find interface with IQN '%s'", iqn);
 
-    VIR_FREE(line);
-    VIR_FORCE_FCLOSE(fp);
-    VIR_FORCE_CLOSE(fd);
+    VIR_FREE(iqn);
+    VIR_FREE(iface);
+    VIR_FREE(outbuf);
     virCommandFree(cmd);
-
     return ret;
 }
 
