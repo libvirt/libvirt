@@ -6321,7 +6321,8 @@ qemu-kvm -net nic,model=? /dev/null
         <p>
           The <code>graphics</code> element has a mandatory <code>type</code>
           attribute which takes the value <code>sdl</code>, <code>vnc</code>,
-          <code>spice</code>, <code>rdp</code> or <code>desktop</code>:
+          <code>spice</code>, <code>rdp</code>, <code>desktop</code> or
+          <code>egl-headless</code>:
         </p>
         <dl>
           <dt><code>sdl</code></dt>
@@ -6379,6 +6380,11 @@ qemu-kvm -net nic,model=? /dev/null
               may be used to specify port to listen on (with -1 meaning
               auto-allocation and <code>autoport</code> having no effect due to
               security reasons) <span class="since">Since 1.0.6</span>.
+            </p>
+            <p>
+              Although VNC doesn't support OpenGL natively, it can be paired
+              with graphics type <code>egl-headless</code> (see below) which
+              will instruct QEMU to open and use drm nodes for OpenGL rendering.
             </p>
           </dd>
           <dt><code>spice</code> <span class="since">Since 0.8.6</span></dt>
@@ -6485,6 +6491,12 @@ qemu-kvm -net nic,model=? /dev/null
               You can enable or disable OpenGL support explicitly with
               the <code>gl</code> element, by setting the <code>enable</code>
               property. (QEMU only, <span class="since">since 1.3.3</span>).
+              Note that this only works locally, since this requires usage of
+              UNIX sockets, i.e. using <code>listen</code> types 'socket' or
+              'none'. For accelerated OpenGL with remote support, consider
+              pairing this element with type <code>egl-headless</code>
+              (see below). However, this will deliver weaker performance
+              compared to native Spice OpenGL support.
             </p>
             <p>
               By default, QEMU will pick the first available GPU DRM render node.
@@ -6519,6 +6531,25 @@ qemu-kvm -net nic,model=? /dev/null
               the optional attributes <code>display</code> and
               <code>fullscreen</code>.
             </p>
+          </dd>
+          <dt><code>egl-headless</code><span class="since">Since 4.6.0</span></dt>
+          <dd>
+            <p>
+              This display type provides support for an OpenGL accelerated
+              display accessible both locally and remotely (for comparison,
+              Spice's native OpenGL support only works locally using UNIX
+              sockets at the moment, but has better performance). Since this
+              display type doesn't provide any window or graphical console like
+              the other types, for practical reasons it should be paired with
+              either <code>vnc</code> or <code>spice</code> graphics types.
+              This display type is only supported by QEMU domains
+              (needs QEMU <span class="since">2.10</span> or newer) and doesn't
+              accept any attributes.
+            </p>
+            <pre>
+&lt;graphics type='spice' autoport='yes'/&gt;
+&lt;graphics type='egl-headless'/&gt;
+            </pre>
           </dd>
         </dl>
       </dd>

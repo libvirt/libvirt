@@ -1166,6 +1166,10 @@ mymain(void)
     DO_TEST_PARSE_ERROR("disk-scsi-incompatible-address",
                         QEMU_CAPS_VIRTIO_SCSI);
 
+    DO_TEST("graphics-egl-headless",
+            QEMU_CAPS_EGL_HEADLESS,
+            QEMU_CAPS_DEVICE_CIRRUS_VGA);
+
     DO_TEST("graphics-vnc", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-vnc-socket", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-vnc-websocket", QEMU_CAPS_VNC, QEMU_CAPS_VNC_WEBSOCKET,
@@ -1199,9 +1203,14 @@ mymain(void)
     driver.config->vncSASL = driver.config->vncTLSx509verify = driver.config->vncTLS = 0;
     VIR_FREE(driver.config->vncSASLdir);
     VIR_FREE(driver.config->vncTLSx509certdir);
+    DO_TEST("graphics-vnc-egl-headless",
+            QEMU_CAPS_VNC,
+            QEMU_CAPS_EGL_HEADLESS,
+            QEMU_CAPS_DEVICE_CIRRUS_VGA);
 
     DO_TEST("graphics-sdl",
             QEMU_CAPS_DEVICE_VGA);
+    DO_TEST_FAILURE("graphics-sdl-egl-headless", NONE);
     DO_TEST("graphics-sdl-fullscreen",
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-spice",
@@ -1256,6 +1265,14 @@ mymain(void)
             QEMU_CAPS_SPICE_UNIX,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     driver.config->spiceAutoUnixSocket = false;
+    DO_TEST("graphics-spice-egl-headless",
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_EGL_HEADLESS,
+            QEMU_CAPS_DEVICE_QXL);
+    DO_TEST_FAILURE("graphics-spice-invalid-egl-headless",
+                    QEMU_CAPS_SPICE,
+                    QEMU_CAPS_EGL_HEADLESS,
+                    QEMU_CAPS_DEVICE_QXL);
 
     DO_TEST("input-usbmouse", NONE);
     DO_TEST("input-usbtablet", NONE);

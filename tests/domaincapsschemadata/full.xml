@@ -59,6 +59,7 @@
         <value>rdp</value>
         <value>desktop</value>
         <value>spice</value>
+        <value>egl-headless</value>
       </enum>
     </graphics>
     <video supported='yes'>
