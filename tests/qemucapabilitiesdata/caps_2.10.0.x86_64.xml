@@ -203,6 +203,7 @@
   <flag name='vmgenid'/>
   <flag name='vhost-vsock'/>
   <flag name='mch'/>
+  <flag name='egl-headless'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>367995</microcodeVersion>

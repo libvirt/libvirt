@@ -158,6 +158,7 @@
   <flag name='hda-output'/>
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
+  <flag name='egl-headless'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>386992</microcodeVersion>

@@ -126,6 +126,7 @@
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
   <flag name='tpm-emulator'/>
+  <flag name='egl-headless'/>
   <version>2011000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>346751</microcodeVersion>

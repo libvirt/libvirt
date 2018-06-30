@@ -211,6 +211,7 @@
   <flag name='mch'/>
   <flag name='mch.extended-tseg-mbytes'/>
   <flag name='sev-guest'/>
+  <flag name='egl-headless'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>416196</microcodeVersion>

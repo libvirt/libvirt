@@ -167,6 +167,7 @@
   <flag name='chardev-fd-pass'/>
   <flag name='tpm-emulator'/>
   <flag name='machine.pseries.cap-htm'/>
+  <flag name='egl-headless'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>428334</microcodeVersion>

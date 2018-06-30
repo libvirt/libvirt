@@ -169,6 +169,7 @@
   <flag name='vhost-vsock'/>
   <flag name='chardev-fd-pass'/>
   <flag name='tpm-emulator'/>
+  <flag name='egl-headless'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>347550</microcodeVersion>

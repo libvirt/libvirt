@@ -119,6 +119,7 @@
   <flag name='sdl-gl'/>
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
+  <flag name='egl-headless'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>307899</microcodeVersion>
