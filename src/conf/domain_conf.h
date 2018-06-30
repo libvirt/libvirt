@@ -3642,4 +3642,7 @@ virDomainDiskGetDetectZeroesMode(virDomainDiskDiscard discard,
 bool
 virDomainDefHasManagedPR(const virDomainDef *def);
 
+bool
+virDomainGraphicsDefHasOpenGL(const virDomainDef *def);
+
 #endif /* __DOMAIN_CONF_H */

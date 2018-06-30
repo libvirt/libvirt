@@ -359,6 +359,7 @@ virDomainGetFilesystemForTarget;
 virDomainGraphicsAuthConnectedTypeFromString;
 virDomainGraphicsAuthConnectedTypeToString;
 virDomainGraphicsDefFree;
+virDomainGraphicsDefHasOpenGL;
 virDomainGraphicsGetListen;
 virDomainGraphicsListenAppendAddress;
 virDomainGraphicsListenAppendSocket;

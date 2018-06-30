@@ -30274,3 +30274,46 @@ virDomainDefHasManagedPR(const virDomainDef *def)
 
     return false;
 }
+
+
+/**
+ * virDomainGraphicsDefHasOpenGL:
+ * @def: domain definition
+ *
+ * Returns true if a domain config contains at least one <graphics> element
+ * with OpenGL support enabled, false otherwise.
+ */
+bool
+virDomainGraphicsDefHasOpenGL(const virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->ngraphics; i++) {
+        virDomainGraphicsDefPtr graphics = def->graphics[i];
+
+        /* we only care about OpenGL support for a given type here */
+        switch (graphics->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+            continue;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+            if (graphics->data.sdl.gl == VIR_TRISTATE_BOOL_YES)
+                return true;
+
+            continue;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            if (graphics->data.spice.gl == VIR_TRISTATE_BOOL_YES)
+                return true;
+
+            continue;
+        case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+            return true;
+
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+            break;
+        }
+    }
+
+    return false;
+}
