@@ -977,6 +977,7 @@ virNetDevGetMaster(const char *ifname, char **master)
             goto cleanup;
     }
 
+    VIR_DEBUG("IFLA_MASTER for %s is %s", ifname, *master ? *master : "(none)");
     ret = 0;
  cleanup:
     VIR_FREE(nlData);
