@@ -64,6 +64,7 @@
 #include "virnetdev.h"
 #include "virnetdevip.h"
 #include "virnetdevbridge.h"
+#include "virnetdevopenvswitch.h"
 #include "virnetdevtap.h"
 #include "virnetdevvportprofile.h"
 #include "virpci.h"
@@ -4823,19 +4824,35 @@ networkNotifyActualDevice(virDomainDefPtr dom,
 
     /* see if we're connected to the correct bridge */
     if (netdef->bridge) {
+        bool useOVS = false;
+
         if (virNetDevGetMaster(iface->ifname, &master) < 0)
             goto error;
 
+        /* IFLA_MASTER for a tap on an OVS switch is always "ovs-system" */
+        if (STREQ_NULLABLE(master, "ovs-system")) {
+            useOVS = true;
+            VIR_FREE(master);
+            if (virNetDevOpenvswitchInterfaceGetMaster(iface->ifname, &master) < 0)
+                goto error;
+        }
+
         if (STRNEQ_NULLABLE(netdef->bridge, master)) {
             /* disconnect from current (incorrect) bridge */
-            if (master)
-                ignore_value(virNetDevBridgeRemovePort(master, iface->ifname));
+            if (master) {
+                VIR_INFO("Removing %s from %s", iface->ifname, master);
+                if (useOVS)
+                    ignore_value(virNetDevOpenvswitchRemovePort(master, iface->ifname));
+                else
+                    ignore_value(virNetDevBridgeRemovePort(master, iface->ifname));
+            }
 
             /* attach/reattach to correct bridge.
              * NB: we can't notify the guest of any MTU change anyway,
              * so there is no point in trying to learn the actualMTU
              * (final arg to virNetDevTapAttachBridge())
              */
+            VIR_INFO("Attaching %s to %s", iface->ifname, netdef->bridge);
             if (virNetDevTapAttachBridge(iface->ifname, netdef->bridge,
                                          &iface->mac, dom->uuid,
                                          virDomainNetGetActualVirtPortProfile(iface),
