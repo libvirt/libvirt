@@ -2389,6 +2389,7 @@ virNetDevMidonetUnbindPort;
 virNetDevOpenvswitchAddPort;
 virNetDevOpenvswitchGetMigrateData;
 virNetDevOpenvswitchGetVhostuserIfname;
+virNetDevOpenvswitchInterfaceGetMaster;
 virNetDevOpenvswitchInterfaceStats;
 virNetDevOpenvswitchRemovePort;
 virNetDevOpenvswitchSetMigrateData;

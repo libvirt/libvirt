@@ -404,6 +404,62 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
     return ret;
 }
 
+
+/**
+ * virNetDeOpenvswitchGetMaster:
+ * @ifname: name of interface we're interested in
+ * @master: used to return a string containing the name of @ifname's "master"
+ *          (this is the bridge or bond device that this device is attached to)
+ *
+ * Returns 0 on success, -1 on failure (if @ifname has no master
+ * @master will be NULL, but return value will still be 0 (success)).
+ *
+ * NB: This function is needed because the IFLA_MASTER attribute of an
+ * interface in a netlink dump (see virNetDevGetMaster()) will always
+ * return "ovs-system" for any interface that is attached to an OVS
+ * switch. When that happens, virNetDevOpenvswitchInterfaceGetMaster()
+ * must be called to get the "real" master of the interface.
+ */
+int
+virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
+{
+    virCommandPtr cmd = NULL;
+    int ret = -1;
+    int exitstatus;
+
+    *master = NULL;
+
+    cmd = virCommandNew(OVSVSCTL);
+    virNetDevOpenvswitchAddTimeout(cmd);
+    virCommandAddArgList(cmd, "iface-to-br", ifname, NULL);
+    virCommandSetOutputBuffer(cmd, master);
+
+    if (virCommandRun(cmd, &exitstatus) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to run command to get OVS master for "
+                         "interface %s"), ifname);
+        goto cleanup;
+    }
+
+    /* non-0 exit code just means that the interface has no master in OVS */
+    if (exitstatus != 0)
+        VIR_FREE(*master);
+
+    if (*master) {
+        /* truncate at the first newline */
+        char *nl = strchr(*master, '\n');
+        if (nl)
+            *nl = '\0';
+    }
+
+    VIR_DEBUG("OVS master for %s is %s", ifname, *master ? *master : "(none)");
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
 /**
  * virNetDevOpenvswitchVhostuserGetIfname:
  * @path: the path of the unix socket
