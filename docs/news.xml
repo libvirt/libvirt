@@ -35,6 +35,15 @@
 <libvirt>
   <release version="v4.6.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: Implement the HTM pSeries feature
+        </summary>
+        <description>
+          Users can now decide whether HTM (Hardware Transactional Memory)
+          support should be available to the guest.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
