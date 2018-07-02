@@ -61,6 +61,16 @@
           Support specifying extended TSEG size for SMM in QEMU.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for SEV guests
+        </summary>
+        <description>
+          SEV (Secure Encrypted Virtualization) is a feature available on AMD
+          CPUs that encrypts the guest memory and makes it inaccessible even
+          to the host OS.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
@@ -74,6 +84,24 @@
           has been phasing out since QEMU 2.3 and by QEMU 2.9 creation
           of a qcow encrypted volume via qemu-img required usage of
           secret objects, but that support was never added to libvirt.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Make GnuTLS mandatory
+        </summary>
+        <description>
+          Building without GnuTLS is no longer possible.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Remove allow_disk_format_probing configuration option
+        </summary>
+        <description>
+          The option represented a security risk when used with malicious
+          disk images, so users were recommended against enabling it; with
+          this release, it's been removed altogether.
         </description>
       </change>
     </section>
@@ -130,6 +158,39 @@
           or virStorageVolCreateXMLFrom.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for vsock hot (un)plug and cold (un)plug
+        </summary>
+      </change>
+      <change>
+        <summary>
+          qemu: Add support for NBD over TLS
+        </summary>
+        <description>
+          NBD volumes can now be accessed securely.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Implement FD passing for Unix sockets
+        </summary>
+        <description>
+          Instead of having QEMU open the socket and then connecting to it,
+          which is inherently racy, starting with QEMU 2.12 we can open the
+          socket ourselves and pass it to QEMU, avoiding race conditions.
+        </description>
+      </change>
+      <change>
+        <summary>
+          virsh: Introduce --nowait option for domstat command
+        </summary>
+        <description>
+          When this option is specified, virsh will try to fetch the guest
+          stats but abort instead of stalling if they can't be retrieved right
+          away.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -141,6 +202,26 @@
           trying to reconnect to all machines, since one of the QEMU processes
           migh have already emitted events which need to be handled prior to
           us getting to the worker pool initialization.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Fix domain resume after failed migration
+        </summary>
+        <description>
+          Recent versions of QEMU activate block devices before the guest CPU
+          has been started, which makes it impossible to roll back a failed
+          migration. Use the <code>late-block-activate</code> migration
+          capability if supported to avoid the issue.
+        </description>
+      </change>
+      <change>
+        <summary>
+          vmx: Permit guests to have an odd number of vCPUs
+        </summary>
+        <description>
+          An odd number of vCPUs greater than 1 was forbidden in the past,
+          but current versions of ESXi have lifted that restriction.
         </description>
       </change>
     </section>
