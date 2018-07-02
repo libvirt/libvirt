@@ -7298,6 +7298,26 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         }
     }
 
+    if (def->features[VIR_DOMAIN_FEATURE_HTM] != VIR_TRISTATE_SWITCH_ABSENT) {
+        const char *str;
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_HTM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("HTM configuration is not supported by this "
+                             "QEMU binary"));
+            goto cleanup;
+        }
+
+        str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_HTM]);
+        if (!str) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid setting for HTM state"));
+            goto cleanup;
+        }
+
+        virBufferAsprintf(&buf, ",cap-htm=%s", str);
+    }
+
     if (cpu && cpu->model &&
         cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
         qemuDomainIsPSeries(def) &&
