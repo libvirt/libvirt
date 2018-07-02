@@ -366,19 +366,26 @@ virSetError(virErrorPtr newerr)
  *
  * One will need to free the result with virResetError()
  *
- * Returns 0 if no error was found and the error code otherwise and -1 in case
- *         of parameter error.
+ * Returns error code or -1 in case of parameter error.
  */
 int
 virCopyLastError(virErrorPtr to)
 {
     virErrorPtr err = virLastErrorObject();
+
+    if (!to)
+        return -1;
+
     /* We can't guarantee caller has initialized it to zero */
     memset(to, 0, sizeof(*to));
-    if (err)
+    if (err) {
         virCopyError(err, to);
-    else
+    } else {
         virResetError(to);
+        to->code = VIR_ERR_NO_MEMORY;
+        to->domain = VIR_FROM_NONE;
+        to->level = VIR_ERR_ERROR;
+    }
     return to->code;
 }
 
