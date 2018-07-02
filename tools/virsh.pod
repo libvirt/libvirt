@@ -924,6 +924,8 @@ B<Explanation of fields>:
   usable            - The amount of memory which can be reclaimed by balloon
 without causing host swapping (in KiB)
   last-update       - Timestamp of the last update of statistics (in seconds)
+  disk_caches       - The amount of memory that can be reclaimed without
+additional I/O, typically disk caches (in KiB)
 
 For QEMU/KVM with a memory balloon, setting the optional I<--period> to a
 value larger than 0 in seconds will allow the balloon driver to return
@@ -1030,6 +1032,9 @@ I<--balloon> returns:
                     balloon without causing host swapping (in KiB)
  "balloon.last-update" - timestamp of the last update of statistics
                          (in seconds)
+ "balloon.disk_caches " - the amount of memory that can be reclaimed
+                          without additional I/O, typically disk
+                          caches (in KiB)
 
 I<--vcpu> returns:
 

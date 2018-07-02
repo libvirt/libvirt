@@ -19798,6 +19798,7 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver,
         STORE_MEM_RECORD(RSS, "rss")
         STORE_MEM_RECORD(LAST_UPDATE, "last-update")
         STORE_MEM_RECORD(USABLE, "usable")
+        STORE_MEM_RECORD(DISK_CACHES, "disk_caches")
     }
 
 #undef STORE_MEM_RECORD

@@ -629,10 +629,17 @@ typedef enum {
     VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE     = 9,
 
     /*
+     * The amount of memory, that can be quickly reclaimed without
+     * additional I/O (in kB). Typically these pages are used for caching files
+     * from disk.
+     */
+    VIR_DOMAIN_MEMORY_STAT_DISK_CACHES     = 10,
+
+    /*
      * The number of statistics supported by this version of the interface.
      * To add new statistics, add them to the enum and increase this value.
      */
-    VIR_DOMAIN_MEMORY_STAT_NR              = 10,
+    VIR_DOMAIN_MEMORY_STAT_NR              = 11,
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_MEMORY_STAT_LAST = VIR_DOMAIN_MEMORY_STAT_NR

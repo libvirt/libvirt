@@ -2081,6 +2081,8 @@ int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
                       VIR_DOMAIN_MEMORY_STAT_USABLE, 1024);
     GET_BALLOON_STATS(data, "last-update",
                       VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE, 1);
+    GET_BALLOON_STATS(statsdata, "stat-disk-caches",
+                      VIR_DOMAIN_MEMORY_STAT_DISK_CACHES, 1024);
     ret = got;
  cleanup:
     virJSONValueFree(cmd);
