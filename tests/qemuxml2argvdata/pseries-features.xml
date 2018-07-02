@@ -10,6 +10,7 @@
     <hpt resizing='required'>
       <maxpagesize unit='GiB'>1</maxpagesize>
     </hpt>
+    <htm state='on'/>
   </features>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
