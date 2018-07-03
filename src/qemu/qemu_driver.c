@@ -152,7 +152,7 @@ static int qemuDomainManagedSaveLoad(virDomainObjPtr vm,
 static int qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
                           bool dynamicOwnership,
                           const char *path, int oflags,
-                          bool *needUnlink, bool *bypassSecurityDriver);
+                          bool *needUnlink);
 
 static int qemuGetDHCPInterfaces(virDomainPtr dom,
                                  virDomainObjPtr vm,
@@ -2984,9 +2984,6 @@ qemuCompressGetCommand(virQEMUSaveFormat compression)
  * @path: path to file to open
  * @oflags: flags for opening/creation of the file
  * @needUnlink: set to true if file was created by this function
- * @bypassSecurityDriver: optional pointer to a boolean that will be set to true
- *                        if security driver operations are pointless (due to
- *                        NFS mount)
  *
  * Internal function to properly create or open existing files, with
  * ownership affected by qemu driver setup and domain DAC label.
@@ -3001,8 +2998,7 @@ qemuOpenFile(virQEMUDriverPtr driver,
              virDomainObjPtr vm,
              const char *path,
              int oflags,
-             bool *needUnlink,
-             bool *bypassSecurityDriver)
+             bool *needUnlink)
 {
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -3021,7 +3017,7 @@ qemuOpenFile(virQEMUDriverPtr driver,
         goto cleanup;
 
     ret = qemuOpenFileAs(user, group, dynamicOwnership,
-                         path, oflags, needUnlink, bypassSecurityDriver);
+                         path, oflags, needUnlink);
 
  cleanup:
     return ret;
@@ -3031,12 +3027,11 @@ static int
 qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
                bool dynamicOwnership,
                const char *path, int oflags,
-               bool *needUnlink, bool *bypassSecurityDriver)
+               bool *needUnlink)
 {
     struct stat sb;
     bool is_reg = true;
     bool need_unlink = false;
-    bool bypass_security = false;
     unsigned int vfoflags = 0;
     int fd = -1;
     int path_shared = virFileIsSharedFS(path);
@@ -3134,19 +3129,11 @@ qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
                                      path);
                 goto cleanup;
             }
-
-            /* Since we had to setuid to create the file, and the fstype
-               is NFS, we assume it's a root-squashing NFS share, and that
-               the security driver stuff would have failed anyway */
-
-            bypass_security = true;
         }
     }
  cleanup:
     if (needUnlink)
         *needUnlink = need_unlink;
-    if (bypassSecurityDriver)
-        *bypassSecurityDriver = bypass_security;
     return fd;
 
  error:
@@ -3198,7 +3185,6 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
                      unsigned int flags,
                      qemuDomainAsyncJob asyncJob)
 {
-    bool bypassSecurityDriver = false;
     bool needUnlink = false;
     int ret = -1;
     int fd = -1;
@@ -3218,7 +3204,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     }
     fd = qemuOpenFile(driver, vm, path,
                       O_WRONLY | O_TRUNC | O_CREAT | directFlag,
-                      &needUnlink, &bypassSecurityDriver);
+                      &needUnlink);
     if (fd < 0)
         goto cleanup;
 
@@ -3249,7 +3235,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     if (qemuFileWrapperFDClose(vm, wrapperFd) < 0)
         goto cleanup;
 
-    if ((fd = qemuOpenFile(driver, vm, path, O_WRONLY, NULL, NULL)) < 0 ||
+    if ((fd = qemuOpenFile(driver, vm, path, O_WRONLY, NULL)) < 0 ||
         virQEMUSaveDataFinish(data, &fd, path) < 0)
         goto cleanup;
 
@@ -3809,7 +3795,7 @@ doCoreDump(virQEMUDriverPtr driver,
      * created.  */
     if ((fd = qemuOpenFile(driver, vm, path,
                            O_CREAT | O_TRUNC | O_WRONLY | directFlag,
-                           NULL, NULL)) < 0)
+                           NULL)) < 0)
         goto cleanup;
 
     if (!(wrapperFd = virFileWrapperFdNew(&fd, path, flags)))
@@ -6419,7 +6405,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto error;
 
-    if ((fd = qemuOpenFile(driver, NULL, path, oflags, NULL, NULL)) < 0)
+    if ((fd = qemuOpenFile(driver, NULL, path, oflags, NULL)) < 0)
         goto error;
     if (bypass_cache &&
         !(*wrapperFd = virFileWrapperFdNew(&fd, path,
@@ -11863,7 +11849,7 @@ qemuDomainStorageOpenStat(virQEMUDriverPtr driver,
 {
     if (virStorageSourceIsLocalStorage(src)) {
         if ((*ret_fd = qemuOpenFile(driver, vm, src->path, O_RDONLY,
-                                    NULL, NULL)) < 0)
+                                    NULL)) < 0)
             return -1;
 
         if (fstat(*ret_fd, ret_sb) < 0) {
