@@ -2522,12 +2522,14 @@ qemuProcessStartPRDaemonHook(void *opaque)
     int *fds = NULL;
     int ret = -1;
 
-    if (virProcessGetNamespaces(vm->pid, &nfds, &fds) < 0)
-        return ret;
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT)) {
+        if (virProcessGetNamespaces(vm->pid, &nfds, &fds) < 0)
+            return ret;
 
-    if (nfds > 0 &&
-        virProcessSetNamespaces(nfds, fds) < 0)
-        goto cleanup;
+        if (nfds > 0 &&
+            virProcessSetNamespaces(nfds, fds) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
  cleanup:
