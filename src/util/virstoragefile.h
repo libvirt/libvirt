@@ -395,7 +395,8 @@ void virStorageAuthDefFormat(virBufferPtr buf, virStorageAuthDefPtr authdef);
 void virStoragePRDefFree(virStoragePRDefPtr prd);
 virStoragePRDefPtr virStoragePRDefParseXML(xmlXPathContextPtr ctxt);
 void virStoragePRDefFormat(virBufferPtr buf,
-                           virStoragePRDefPtr prd);
+                           virStoragePRDefPtr prd,
+                           bool migratable);
 bool virStoragePRDefIsEqual(virStoragePRDefPtr a,
                             virStoragePRDefPtr b);
 bool virStoragePRDefIsManaged(virStoragePRDefPtr prd);

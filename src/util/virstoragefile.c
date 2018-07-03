@@ -1982,11 +1982,13 @@ virStoragePRDefParseXML(xmlXPathContextPtr ctxt)
 
 void
 virStoragePRDefFormat(virBufferPtr buf,
-                      virStoragePRDefPtr prd)
+                      virStoragePRDefPtr prd,
+                      bool migratable)
 {
     virBufferAsprintf(buf, "<reservations managed='%s'",
                       virTristateBoolTypeToString(prd->managed));
-    if (prd->path) {
+    if (prd->path &&
+        (prd->managed == VIR_TRISTATE_BOOL_NO || !migratable)) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         virBufferAddLit(buf, "<source type='unix'");
