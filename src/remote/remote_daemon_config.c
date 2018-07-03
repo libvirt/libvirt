@@ -337,6 +337,11 @@ daemonConfigLoadOptions(struct daemonConfig *data,
         goto error;
     if (virConfGetValueUInt(conf, "max_workers", &data->max_workers) < 0)
         goto error;
+    if (data->max_workers < 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("'max_workers' must be greater than 0"));
+        goto error;
+    }
     if (virConfGetValueUInt(conf, "max_clients", &data->max_clients) < 0)
         goto error;
     if (virConfGetValueUInt(conf, "max_queued_clients", &data->max_queued_clients) < 0)
