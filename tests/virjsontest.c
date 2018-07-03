@@ -479,6 +479,11 @@ mymain(void)
 {
     int ret = 0;
 
+#if !WITH_STABLE_ORDERING_JANSSON
+    fputs("libvirt not compiled with recent enough Jansson, skipping this test\n", stderr);
+    return EXIT_AM_SKIP;
+#endif
+
 #define DO_TEST_FULL(name, cmd, doc, expect, pass) \
     do { \
         struct testInfo info = { doc, expect, pass }; \

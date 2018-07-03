@@ -157,6 +157,11 @@ mymain(void)
     int ret = 0;
     virMacMapPtr mgr = NULL;
 
+#if !WITH_STABLE_ORDERING_JANSSON
+    fputs("libvirt not compiled with recent enough Jansson, skipping this test\n", stderr);
+    return EXIT_AM_SKIP;
+#endif
+
 #define DO_TEST_BASIC(f, d, ...) \
     do { \
         const char * const m[] = {__VA_ARGS__, NULL }; \
