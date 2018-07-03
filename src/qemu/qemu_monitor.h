@@ -1156,4 +1156,13 @@ int qemuMonitorBlockdevDel(qemuMonitorPtr mon,
 char *
 qemuMonitorGetSEVMeasurement(qemuMonitorPtr mon);
 
+typedef struct _qemuMonitorPRManagerInfo qemuMonitorPRManagerInfo;
+typedef qemuMonitorPRManagerInfo *qemuMonitorPRManagerInfoPtr;
+struct _qemuMonitorPRManagerInfo {
+    bool connected;
+};
+
+int qemuMonitorGetPRManagerInfo(qemuMonitorPtr mon,
+                                virHashTablePtr *retinfo);
+
 #endif /* QEMU_MONITOR_H */

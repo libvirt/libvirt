@@ -4335,3 +4335,28 @@ qemuMonitorGetSEVMeasurement(qemuMonitorPtr mon)
 
     return qemuMonitorJSONGetSEVMeasurement(mon);
 }
+
+
+int
+qemuMonitorGetPRManagerInfo(qemuMonitorPtr mon,
+                            virHashTablePtr *retinfo)
+{
+    int ret = -1;
+    virHashTablePtr info = NULL;
+
+    *retinfo = NULL;
+
+    QEMU_CHECK_MONITOR(mon);
+
+    if (!(info = virHashCreate(10, virHashValueFree)))
+        goto cleanup;
+
+    if (qemuMonitorJSONGetPRManagerInfo(mon, info) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(*retinfo, info);
+    ret = 0;
+ cleanup:
+    virHashFree(info);
+    return ret;
+}

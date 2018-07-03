@@ -8052,3 +8052,82 @@ qemuMonitorJSONGetSEVMeasurement(qemuMonitorPtr mon)
     virJSONValueFree(reply);
     return measurement;
 }
+
+
+/*
+ * Example return data
+ *
+ * "return": [
+ *   { "connected": true, "id": "pr-helper0" }
+ *  ]
+ */
+static int
+qemuMonitorJSONExtractPRManagerInfo(virJSONValuePtr reply,
+                                    virHashTablePtr info)
+{
+    qemuMonitorPRManagerInfoPtr entry = NULL;
+    virJSONValuePtr data;
+    int ret = -1;
+    size_t i;
+
+    data = virJSONValueObjectGetArray(reply, "return");
+
+    for (i = 0; i < virJSONValueArraySize(data); i++) {
+        virJSONValuePtr prManager = virJSONValueArrayGet(data, i);
+        const char *alias;
+
+        if (!(alias = virJSONValueObjectGetString(prManager, "id")))
+            goto malformed;
+
+        if (VIR_ALLOC(entry) < 0)
+            goto cleanup;
+
+        if (virJSONValueObjectGetBoolean(prManager,
+                                         "connected",
+                                         &entry->connected) < 0) {
+            goto malformed;
+        }
+
+        if (virHashAddEntry(info, alias, entry) < 0)
+            goto cleanup;
+
+        entry = NULL;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(entry);
+    return ret;
+
+ malformed:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("malformed prManager reply"));
+    goto cleanup;
+}
+
+
+int
+qemuMonitorJSONGetPRManagerInfo(qemuMonitorPtr mon,
+                                virHashTablePtr info)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-pr-managers",
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+        goto cleanup;
+
+    ret = qemuMonitorJSONExtractPRManagerInfo(reply, info);
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+
+}
