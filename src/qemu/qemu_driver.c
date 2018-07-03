@@ -14935,23 +14935,16 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
                                          virJSONValuePtr actions,
                                          bool reuse)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *device = NULL;
-    char *source = NULL;
-    const char *formatStr = NULL;
     int ret = -1;
 
-    if (!(device = qemuAliasDiskDriveFromDisk(dd->disk)))
-        goto cleanup;
-
-    if (qemuGetDriveSourceString(dd->src, NULL, &source) < 0)
+    if (qemuBlockSnapshotAddLegacy(actions, dd->disk, dd->src, reuse) < 0)
         goto cleanup;
 
     /* pre-create the image file so that we can label it before handing it to qemu */
     if (!reuse && dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
         if (virStorageFileCreate(dd->src) < 0) {
             virReportSystemError(errno, _("failed to create image file '%s'"),
-                                 source);
+                                 NULLSTR(dd->src->path));
             goto cleanup;
         }
         dd->created = true;
@@ -14965,14 +14958,9 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
 
     dd->prepared = true;
 
-    formatStr = virStorageFileFormatTypeToString(dd->src->format);
-
-    ret = qemuMonitorDiskSnapshot(priv->mon, actions, device, source,
-                                  formatStr, reuse);
+    ret = 0;
 
  cleanup:
-    VIR_FREE(device);
-    VIR_FREE(source);
     return ret;
 }
 

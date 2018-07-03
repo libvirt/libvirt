@@ -117,4 +117,10 @@ qemuBlockStorageSourceDetachOneBlockdev(virQEMUDriverPtr driver,
                                         qemuDomainAsyncJob asyncJob,
                                         virStorageSourcePtr src);
 
+int
+qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
+                           virDomainDiskDefPtr disk,
+                           virStorageSourcePtr newsrc,
+                           bool reuse);
+
 #endif /* __QEMU_BLOCK_H__ */

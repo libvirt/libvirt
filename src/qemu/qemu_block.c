@@ -19,8 +19,10 @@
 #include <config.h>
 
 #include "qemu_block.h"
+#include "qemu_command.h"
 #include "qemu_domain.h"
 #include "qemu_alias.h"
+#include "qemu_monitor_json.h"
 
 #include "viralloc.h"
 #include "virstring.h"
@@ -1705,5 +1707,39 @@ qemuBlockStorageSourceDetachOneBlockdev(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return -1;
 
+    return ret;
+}
+
+
+int
+qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
+                           virDomainDiskDefPtr disk,
+                           virStorageSourcePtr newsrc,
+                           bool reuse)
+{
+    const char *format = virStorageFileFormatTypeToString(newsrc->format);
+    char *device = NULL;
+    char *source = NULL;
+    int ret = -1;
+
+    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
+        goto cleanup;
+
+    if (qemuGetDriveSourceString(newsrc, NULL, &source) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONTransactionAdd(actions, "blockdev-snapshot-sync",
+                                      "s:device", device,
+                                      "s:snapshot-file", source,
+                                      "s:format", format,
+                                      "S:mode", reuse ? "existing" : NULL,
+                                      NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(device);
+    VIR_FREE(source);
     return ret;
 }
