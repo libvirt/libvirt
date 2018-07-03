@@ -515,48 +515,30 @@ qemuMonitorJSONTransactionAdd(virJSONValuePtr actions,
  * qemuMonitorJSONMakeCommandInternal:
  * @cmdname: QMP command name
  * @arguments: a JSON object containing command arguments or NULL
- * @transaction: format the command as arguments for the 'transaction' command
  *
- * Create a JSON object used on the QMP monitor to call a command. If
- * @transaction is true, the returned object is formatted to be used as a member
- * of the 'transaction' command.
+ * Create a JSON object used on the QMP monitor to call a command.
  *
  * Note that @arguments is always consumed and should not be referenced after
  * the call to this function.
  */
 static virJSONValuePtr
 qemuMonitorJSONMakeCommandInternal(const char *cmdname,
-                                   virJSONValuePtr arguments,
-                                   bool transaction)
+                                   virJSONValuePtr arguments)
 {
-    virJSONValuePtr cmd = NULL;
     virJSONValuePtr ret = NULL;
 
-    if (!transaction) {
-        if (virJSONValueObjectCreate(&cmd,
-                                     "s:execute", cmdname,
-                                     "A:arguments", &arguments, NULL) < 0)
-            goto cleanup;
-    } else {
-        if (virJSONValueObjectCreate(&cmd,
-                                     "s:type", cmdname,
-                                     "A:data", &arguments, NULL) < 0)
-            goto cleanup;
-    }
+    ignore_value(virJSONValueObjectCreate(&ret,
+                                          "s:execute", cmdname,
+                                          "A:arguments", &arguments, NULL));
 
-    VIR_STEAL_PTR(ret, cmd);
-
- cleanup:
     virJSONValueFree(arguments);
-    virJSONValueFree(cmd);
     return ret;
 }
 
 
 static virJSONValuePtr ATTRIBUTE_SENTINEL
-qemuMonitorJSONMakeCommandRaw(bool transaction,
-                              const char *cmdname,
-                              ...)
+qemuMonitorJSONMakeCommand(const char *cmdname,
+                           ...)
 {
     virJSONValuePtr obj = NULL;
     virJSONValuePtr jargs = NULL;
@@ -567,16 +549,13 @@ qemuMonitorJSONMakeCommandRaw(bool transaction,
     if (virJSONValueObjectCreateVArgs(&jargs, args) < 0)
         goto cleanup;
 
-    obj = qemuMonitorJSONMakeCommandInternal(cmdname, jargs, transaction);
+    obj = qemuMonitorJSONMakeCommandInternal(cmdname, jargs);
 
  cleanup:
     va_end(args);
 
     return obj;
 }
-
-#define qemuMonitorJSONMakeCommand(cmdname, ...) \
-    qemuMonitorJSONMakeCommandRaw(false, cmdname, __VA_ARGS__)
 
 
 static virJSONValuePtr
@@ -4068,7 +4047,7 @@ qemuMonitorJSONAddObject(qemuMonitorPtr mon,
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
-    if (!(cmd = qemuMonitorJSONMakeCommandInternal("object-add", props, false)))
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("object-add", props)))
         goto cleanup;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
@@ -7975,8 +7954,7 @@ qemuMonitorJSONBlockdevAdd(qemuMonitorPtr mon,
     virJSONValuePtr reply = NULL;
     int ret = -1;
 
-    if (!(cmd = qemuMonitorJSONMakeCommandInternal("blockdev-add",
-                                                   props, false)))
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("blockdev-add", props)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
