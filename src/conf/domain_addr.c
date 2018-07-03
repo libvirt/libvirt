@@ -386,7 +386,7 @@ virDomainPCIAddressBusIsFullyReserved(virDomainPCIAddressBusPtr bus)
 }
 
 
-bool
+static bool ATTRIBUTE_NONNULL(1)
 virDomainPCIAddressBusIsEmpty(virDomainPCIAddressBusPtr bus)
 {
     size_t i;
