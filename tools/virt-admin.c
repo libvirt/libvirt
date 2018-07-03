@@ -552,7 +552,8 @@ cmdSrvThreadpoolSet(vshControl *ctl, const vshCmd *cmd)
                               VIR_THREADPOOL_WORKERS_MAX, &max) &&
         virTypedParamsGetUInt(params, nparams,
                               VIR_THREADPOOL_WORKERS_MIN, &min) && min > max) {
-        vshError(ctl, "%s", _("--min-workers must be less than --max-workers"));
+        vshError(ctl, "%s", _("--min-workers must be less than or equal to "
+                              "--max-workers"));
         goto cleanup;
     }
 
@@ -952,7 +953,7 @@ cmdSrvClientsSet(vshControl *ctl, const vshCmd *cmd)
         virTypedParamsGetUInt(params, nparams,
                               VIR_SERVER_CLIENTS_UNAUTH_MAX, &unauth_max) &&
         unauth_max > max) {
-        vshError(ctl, "%s", _("--max-unauth-clients must be less than "
+        vshError(ctl, "%s", _("--max-unauth-clients must be less than or equal to "
                               "--max-clients"));
         goto cleanup;
     }
