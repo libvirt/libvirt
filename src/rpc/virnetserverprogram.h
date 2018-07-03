@@ -21,8 +21,8 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_NET_PROGRAM_H__
-# define __VIR_NET_PROGRAM_H__
+#ifndef __VIR_NET_SERVER_PROGRAM_H__
+# define __VIR_NET_SERVER_PROGRAM_H__
 
 # include "virnetmessage.h"
 # include "virnetserverclient.h"
