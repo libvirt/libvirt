@@ -14617,18 +14617,9 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm,
     size_t i;
     bool active = virDomainObjIsActive(vm);
     bool reuse = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
-    bool atomic = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC) != 0;
     bool found_internal = false;
     bool forbid_internal = false;
     int external = 0;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-
-    if (def->state == VIR_DOMAIN_DISK_SNAPSHOT &&
-        reuse && !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("reuse is not supported with this QEMU binary"));
-        goto cleanup;
-    }
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
@@ -14758,18 +14749,6 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm,
     /* Alter flags to let later users know what we learned.  */
     if (external && !active)
         *flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
-
-    if (def->state != VIR_DOMAIN_DISK_SNAPSHOT && active) {
-        if (external == 1 ||
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
-            *flags |= VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC;
-        } else if (atomic && external > 1) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("atomic live snapshot of multiple disks "
-                             "is unsupported"));
-            goto cleanup;
-        }
-    }
 
     ret = 0;
 
@@ -15036,15 +15015,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
-        if (!(actions = virJSONValueNewArray()))
-            return -1;
-    } else if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DISK_SNAPSHOT)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("live disk snapshot not supported with this "
-                         "QEMU binary"));
+    if (!(actions = virJSONValueNewArray()))
         return -1;
-    }
 
     /* prepare a list of objects to use in the vm definition so that we don't
      * have to roll back later */
@@ -15157,14 +15129,20 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     char *xml = NULL;
     bool memory = snap->def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
     bool memory_unlink = false;
-    bool atomic = !!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC);
-    bool transaction = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION);
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
     bool pmsuspended = false;
     virQEMUDriverConfigPtr cfg = NULL;
     int compressed;
     char *compressedpath = NULL;
     virQEMUSaveDataPtr data = NULL;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DISK_SNAPSHOT) ||
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("live disk snapshot not supported with this "
+                         "QEMU binary"));
+        return -1;
+    }
 
     /* If quiesce was requested, then issue a freeze command, and a
      * counterpart thaw command when it is actually sent to agent.
@@ -15200,20 +15178,11 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     } else if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         /* For external checkpoints (those with memory), the guest
          * must pause (either by libvirt up front, or by qemu after
-         * _LIVE converges).  For disk-only snapshots with multiple
-         * disks, libvirt must pause externally to get all snapshots
-         * to be at the same point in time, unless qemu supports
-         * transactions.  For a single disk, snapshot is atomic
-         * without requiring a pause.  Thanks to
-         * qemuDomainSnapshotPrepare, if we got to this point, the
-         * atomic flag now says whether we need to pause, and a
-         * capability bit says whether to use transaction.
-         */
+         * _LIVE converges). */
         if (memory)
             resume = true;
 
-        if ((memory && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE)) ||
-            (!memory && atomic && !transaction)) {
+        if (memory && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE)) {
             if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SNAPSHOT,
                                     QEMU_ASYNC_JOB_SNAPSHOT) < 0)
                 goto cleanup;
@@ -15268,13 +15237,8 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
         qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_DEFAULT_MASK);
     }
 
-    /* now the domain is now paused if:
-     * - if a memory snapshot was requested
-     * - an atomic snapshot was requested AND
-     *   qemu does not support transactions
-     *
-     * Next we snapshot the disks.
-     */
+    /* the domain is now paused if a memory snapshot was requested */
+
     if ((ret = qemuDomainSnapshotCreateDiskActive(driver, vm, snap, flags,
                                                   QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
         goto cleanup;
