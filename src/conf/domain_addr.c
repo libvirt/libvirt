@@ -1185,6 +1185,30 @@ virDomainCCWAddressSetCreate(void)
 }
 
 
+virDomainCCWAddressSetPtr
+virDomainCCWAddressSetCreateFromDomain(virDomainDefPtr def)
+{
+    virDomainCCWAddressSetPtr addrs = NULL;
+
+    if (!(addrs = virDomainCCWAddressSetCreate()))
+        goto error;
+
+    if (virDomainDeviceInfoIterate(def, virDomainCCWAddressValidate,
+                                   addrs) < 0)
+        goto error;
+
+    if (virDomainDeviceInfoIterate(def, virDomainCCWAddressAllocate,
+                                   addrs) < 0)
+        goto error;
+
+    return addrs;
+
+ error:
+    virDomainCCWAddressSetFree(addrs);
+    return NULL;
+}
+
+
 #define VIR_DOMAIN_DEFAULT_VIRTIO_SERIAL_PORTS 31
 
 

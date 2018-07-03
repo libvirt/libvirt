@@ -376,28 +376,6 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
     }
 }
 
-virDomainCCWAddressSetPtr
-qemuDomainCCWAddrSetCreateFromDomain(virDomainDefPtr def)
-{
-    virDomainCCWAddressSetPtr addrs = NULL;
-
-    if (!(addrs = virDomainCCWAddressSetCreate()))
-        goto error;
-
-    if (virDomainDeviceInfoIterate(def, virDomainCCWAddressValidate,
-                                   addrs) < 0)
-        goto error;
-
-    if (virDomainDeviceInfoIterate(def, virDomainCCWAddressAllocate,
-                                   addrs) < 0)
-        goto error;
-
-    return addrs;
-
- error:
-    virDomainCCWAddressSetFree(addrs);
-    return NULL;
-}
 
 /*
  * Three steps populating CCW devnos
@@ -420,7 +398,7 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
         qemuDomainPrimeVirtioDeviceAddresses(
             def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW);
 
-        if (!(addrs = qemuDomainCCWAddrSetCreateFromDomain(def)))
+        if (!(addrs = virDomainCCWAddressSetCreateFromDomain(def)))
             goto cleanup;
 
     } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
@@ -3027,7 +3005,7 @@ qemuDomainEnsureVirtioAddress(bool *releaseAddr,
     }
 
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-        if (!(ccwaddrs = qemuDomainCCWAddrSetCreateFromDomain(vm->def)))
+        if (!(ccwaddrs = virDomainCCWAddressSetCreateFromDomain(vm->def)))
             goto cleanup;
         if (virDomainCCWAddressAssign(info, ccwaddrs,
                                       !info->addr.ccw.assigned) < 0)

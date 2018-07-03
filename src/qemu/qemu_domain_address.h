@@ -59,10 +59,6 @@ void qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
                                     virDomainDeviceInfoPtr info,
                                     const char *devstr);
 
-virDomainCCWAddressSetPtr
-qemuDomainCCWAddrSetCreateFromDomain(virDomainDefPtr def)
-    ATTRIBUTE_NONNULL(1);
-
 int qemuDomainAssignMemoryDeviceSlot(virDomainDefPtr def,
                                      virDomainMemoryDefPtr mem);
 

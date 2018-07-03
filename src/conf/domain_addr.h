@@ -202,6 +202,10 @@ int virDomainCCWAddressValidate(virDomainDefPtr def,
 
 virDomainCCWAddressSetPtr virDomainCCWAddressSetCreate(void);
 
+virDomainCCWAddressSetPtr
+virDomainCCWAddressSetCreateFromDomain(virDomainDefPtr def)
+    ATTRIBUTE_NONNULL(1);
+
 struct _virDomainVirtioSerialController {
     unsigned int idx;
     virBitmapPtr ports;
