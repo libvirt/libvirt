@@ -133,13 +133,9 @@ virDomainUSBAddressSetAddControllers;
 virDomainUSBAddressSetAddHub;
 virDomainUSBAddressSetCreate;
 virDomainUSBAddressSetFree;
-virDomainVirtioSerialAddrAssign;
 virDomainVirtioSerialAddrAutoAssign;
 virDomainVirtioSerialAddrAutoAssignFromCache;
 virDomainVirtioSerialAddrIsComplete;
-virDomainVirtioSerialAddrReserve;
-virDomainVirtioSerialAddrSetAddControllers;
-virDomainVirtioSerialAddrSetCreate;
 virDomainVirtioSerialAddrSetCreateFromDomain;
 virDomainVirtioSerialAddrSetFree;
 
