@@ -1653,7 +1653,7 @@ virDomainUSBAddressPortFormatBuf(virBufferPtr buf,
 }
 
 
-char *
+static char * ATTRIBUTE_NONNULL(1)
 virDomainUSBAddressPortFormat(unsigned int *port)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;

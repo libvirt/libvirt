@@ -234,9 +234,6 @@ void
 virDomainUSBAddressPortFormatBuf(virBufferPtr buf,
                                  unsigned int *port)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-char *
-virDomainUSBAddressPortFormat(unsigned int *port)
-    ATTRIBUTE_NONNULL(1);
 
 # define VIR_DOMAIN_USB_HUB_PORTS 8
 
