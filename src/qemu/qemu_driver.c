@@ -14939,7 +14939,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     char *device = NULL;
     char *source = NULL;
     const char *formatStr = NULL;
-    int ret = -1, rc;
+    int ret = -1;
 
     if (!(device = qemuAliasDiskDriveFromDisk(dd->disk)))
         goto cleanup;
@@ -14967,9 +14967,8 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
 
     formatStr = virStorageFileFormatTypeToString(dd->src->format);
 
-    ret = rc = qemuMonitorDiskSnapshot(priv->mon, actions, device, source,
-                                       formatStr, reuse);
-    virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", rc >= 0);
+    ret = qemuMonitorDiskSnapshot(priv->mon, actions, device, source,
+                                  formatStr, reuse);
 
  cleanup:
     VIR_FREE(device);
@@ -15034,10 +15033,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
         ret = qemuMonitorTransaction(priv->mon, &actions);
 
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || ret < 0) {
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
             ret = -1;
-            goto error;
-        }
 
         for (i = 0; i < snap->def->ndisks; i++) {
             qemuDomainSnapshotDiskDataPtr dd = &diskdata[i];
@@ -15045,8 +15042,14 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
             if (!dd->src)
                 continue;
 
-            qemuDomainSnapshotUpdateDiskSources(dd, &persist);
+            virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", ret >= 0);
+
+            if (ret == 0)
+                qemuDomainSnapshotUpdateDiskSources(dd, &persist);
         }
+
+        if (ret < 0)
+            goto error;
     }
 
  error:
