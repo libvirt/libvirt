@@ -442,6 +442,14 @@ virThreadPoolSetParameters(virThreadPoolPtr pool,
         goto error;
     }
 
+    if ((maxWorkers == 0 && pool->maxWorkers > 0) ||
+        (maxWorkers > 0 && pool->maxWorkers == 0)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("maxWorkers must not be switched from zero to non-zero"
+                         " and vice versa"));
+        goto error;
+    }
+
     if (minWorkers >= 0) {
         if ((size_t) minWorkers > pool->nWorkers &&
             virThreadPoolExpand(pool, minWorkers - pool->nWorkers,
