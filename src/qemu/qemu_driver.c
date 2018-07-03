@@ -15015,7 +15015,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
       * VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL with a valid file name and
       * qcow2 format.  */
     for (i = 0; i < snap->def->ndisks; i++) {
-        if (snap->def->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
+        if (!diskdata[i].src)
             continue;
 
         ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
@@ -15039,8 +15039,14 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
             goto error;
         }
 
-        for (i = 0; i < snap->def->ndisks; i++)
-            qemuDomainSnapshotUpdateDiskSources(&diskdata[i], &persist);
+        for (i = 0; i < snap->def->ndisks; i++) {
+            qemuDomainSnapshotDiskDataPtr dd = &diskdata[i];
+
+            if (!dd->src)
+                continue;
+
+            qemuDomainSnapshotUpdateDiskSources(dd, &persist);
+        }
     }
 
  error:
