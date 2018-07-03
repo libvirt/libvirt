@@ -4616,19 +4616,11 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
         }
     }
 
-    if (src->pr) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("reservations not supported with this QEMU binary"));
-            return -1;
-        }
-
-        if (virStoragePRDefIsManaged(src->pr) && src->pr->path) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'path' attribute should not be provided for "
-                             "managed reservations"));
-            return -1;
-        }
+    if (src->pr &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("reservations not supported with this QEMU binary"));
+        return -1;
     }
 
     return 0;
@@ -12855,6 +12847,7 @@ qemuDomainPrepareStorageSourcePR(virStorageSourcePtr src,
         return 0;
 
     if (virStoragePRDefIsManaged(src->pr)) {
+        VIR_FREE(src->pr->path);
         if (!(src->pr->path = qemuDomainGetManagedPRSocketPath(priv)))
             return -1;
         if (VIR_STRDUP(src->pr->mgralias, qemuDomainGetManagedPRAlias()) < 0)
