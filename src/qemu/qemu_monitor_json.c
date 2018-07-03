@@ -467,6 +467,51 @@ qemuMonitorJSONHasError(virJSONValuePtr reply,
 
 
 /**
+ * qemuMonitorJSONTransactionAdd:
+ * @actions: array of actions for the 'transaction' command
+ * @cmdname: command to add to @actions
+ * @...: arguments for @cmdname (see virJSONValueObjectAddVArgs for formatting)
+ *
+ * Add a new command with arguments to the existing ones. The resulting array
+ * is intended to be used as argument for the 'transaction' command.
+ *
+ * Returns 0 on success and -1 on error.
+ */
+int
+qemuMonitorJSONTransactionAdd(virJSONValuePtr actions,
+                              const char *cmdname,
+                              ...)
+{
+    virJSONValuePtr entry = NULL;
+    virJSONValuePtr data = NULL;
+    va_list args;
+    int ret = -1;
+
+    va_start(args, cmdname);
+
+    if (virJSONValueObjectCreateVArgs(&data, args) < 0)
+        goto cleanup;
+
+    if (virJSONValueObjectCreate(&entry,
+                                 "s:type", cmdname,
+                                 "A:data", &data, NULL) < 0)
+        goto cleanup;
+
+    if (virJSONValueArrayAppend(actions, entry) < 0)
+        goto cleanup;
+
+    entry = NULL;
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(entry);
+    virJSONValueFree(data);
+    va_end(args);
+    return ret;
+}
+
+
+/**
  * qemuMonitorJSONMakeCommandInternal:
  * @cmdname: QMP command name
  * @arguments: a JSON object containing command arguments or NULL
