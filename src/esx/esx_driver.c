@@ -1577,12 +1577,7 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
                                            "config.uuid\0") < 0 ||
         esxVI_LookupVirtualMachineByName(priv->primary, name, propertyNameList,
                                          &virtualMachine,
-                                         esxVI_Occurrence_OptionalItem) < 0) {
-        goto cleanup;
-    }
-
-    if (!virtualMachine) {
-        virReportError(VIR_ERR_NO_DOMAIN, _("No domain with name '%s'"), name);
+                                         esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
 
