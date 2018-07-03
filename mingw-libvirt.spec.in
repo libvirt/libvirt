@@ -248,6 +248,8 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_datadir}/libvirt/schemas/networkcommon.rng
 %{mingw32_datadir}/libvirt/schemas/nodedev.rng
 %{mingw32_datadir}/libvirt/schemas/nwfilter.rng
+%{mingw32_datadir}/libvirt/schemas/nwfilter_params.rng
+%{mingw32_datadir}/libvirt/schemas/nwfilterbinding.rng
 %{mingw32_datadir}/libvirt/schemas/secret.rng
 %{mingw32_datadir}/libvirt/schemas/storagecommon.rng
 %{mingw32_datadir}/libvirt/schemas/storagepool.rng
@@ -333,6 +335,8 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_datadir}/libvirt/schemas/networkcommon.rng
 %{mingw64_datadir}/libvirt/schemas/nodedev.rng
 %{mingw64_datadir}/libvirt/schemas/nwfilter.rng
+%{mingw64_datadir}/libvirt/schemas/nwfilter_params.rng
+%{mingw64_datadir}/libvirt/schemas/nwfilterbinding.rng
 %{mingw64_datadir}/libvirt/schemas/secret.rng
 %{mingw64_datadir}/libvirt/schemas/storagecommon.rng
 %{mingw64_datadir}/libvirt/schemas/storagepool.rng
