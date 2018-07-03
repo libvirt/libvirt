@@ -2240,7 +2240,8 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriverPtr driver,
     if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
         qemuDomainStorageSourcePrivatePtr srcPriv =
             QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(scsisrc->u.iscsi.src);
-        secinfo = srcPriv->secinfo;
+        if (srcPriv)
+            secinfo = srcPriv->secinfo;
     }
 
     if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
