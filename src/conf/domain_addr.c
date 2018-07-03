@@ -1134,7 +1134,7 @@ virDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
     return ret;
 }
 
-int
+static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 virDomainCCWAddressAllocate(virDomainDefPtr def ATTRIBUTE_UNUSED,
                             virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
                             virDomainDeviceInfoPtr info,
@@ -1143,7 +1143,7 @@ virDomainCCWAddressAllocate(virDomainDefPtr def ATTRIBUTE_UNUSED,
     return virDomainCCWAddressAssign(info, data, true);
 }
 
-int
+static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 virDomainCCWAddressValidate(virDomainDefPtr def ATTRIBUTE_UNUSED,
                             virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
                             virDomainDeviceInfoPtr info,
@@ -1161,7 +1161,7 @@ void virDomainCCWAddressSetFree(virDomainCCWAddressSetPtr addrs)
     VIR_FREE(addrs);
 }
 
-virDomainCCWAddressSetPtr
+static virDomainCCWAddressSetPtr
 virDomainCCWAddressSetCreate(void)
 {
     virDomainCCWAddressSetPtr addrs = NULL;

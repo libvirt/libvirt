@@ -186,18 +186,6 @@ int virDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
                               bool autoassign)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void virDomainCCWAddressSetFree(virDomainCCWAddressSetPtr addrs);
-int virDomainCCWAddressAllocate(virDomainDefPtr def,
-                                virDomainDeviceDefPtr dev,
-                                virDomainDeviceInfoPtr info,
-                                void *data)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
-int virDomainCCWAddressValidate(virDomainDefPtr def,
-                                virDomainDeviceDefPtr dev,
-                                virDomainDeviceInfoPtr info,
-                                void *data)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
-
-virDomainCCWAddressSetPtr virDomainCCWAddressSetCreate(void);
 
 virDomainCCWAddressSetPtr
 virDomainCCWAddressSetCreateFromDomain(virDomainDefPtr def)

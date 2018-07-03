@@ -104,12 +104,9 @@ virPCIDeviceAddressParseXML;
 
 
 # conf/domain_addr.h
-virDomainCCWAddressAllocate;
 virDomainCCWAddressAssign;
-virDomainCCWAddressSetCreate;
 virDomainCCWAddressSetCreateFromDomain;
 virDomainCCWAddressSetFree;
-virDomainCCWAddressValidate;
 virDomainPCIAddressAsString;
 virDomainPCIAddressBusIsFullyReserved;
 virDomainPCIAddressBusSetModel;
