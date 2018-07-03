@@ -242,14 +242,6 @@ int qemuMonitorJSONAddObject(qemuMonitorPtr mon,
 int qemuMonitorJSONDelObject(qemuMonitorPtr mon,
                              const char *objalias);
 
-int qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon,
-                                virJSONValuePtr actions,
-                                const char *device,
-                                const char *file,
-                                const char *format,
-                                bool reuse)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 int qemuMonitorJSONTransaction(qemuMonitorPtr mon, virJSONValuePtr *actions)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,

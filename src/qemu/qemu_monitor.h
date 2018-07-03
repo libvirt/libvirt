@@ -839,12 +839,6 @@ int qemuMonitorCreateSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorLoadSnapshot(qemuMonitorPtr mon, const char *name);
 int qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name);
 
-int qemuMonitorDiskSnapshot(qemuMonitorPtr mon,
-                            virJSONValuePtr actions,
-                            const char *device,
-                            const char *file,
-                            const char *format,
-                            bool reuse);
 int qemuMonitorTransaction(qemuMonitorPtr mon, virJSONValuePtr *actions)
     ATTRIBUTE_NONNULL(2);
 int qemuMonitorDriveMirror(qemuMonitorPtr mon,

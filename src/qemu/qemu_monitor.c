@@ -3203,23 +3203,6 @@ qemuMonitorDeleteSnapshot(qemuMonitorPtr mon, const char *name)
 }
 
 
-/* Use the snapshot_blkdev command to convert the existing file for
- * device into a read-only backing file of a new qcow2 image located
- * at file.  */
-int
-qemuMonitorDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
-                        const char *device, const char *file,
-                        const char *format, bool reuse)
-{
-    VIR_DEBUG("actions=%p, device=%s, file=%s, format=%s, reuse=%d",
-              actions, device, file, format, reuse);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONDiskSnapshot(mon, actions, device, file, format, reuse);
-}
-
-
 /* Start a drive-mirror block job.  bandwidth is in bytes/sec.  */
 int
 qemuMonitorDriveMirror(qemuMonitorPtr mon,

@@ -4112,43 +4112,6 @@ int qemuMonitorJSONDelObject(qemuMonitorPtr mon,
 }
 
 
-int
-qemuMonitorJSONDiskSnapshot(qemuMonitorPtr mon, virJSONValuePtr actions,
-                            const char *device, const char *file,
-                            const char *format, bool reuse)
-{
-    int ret = -1;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
-
-    cmd = qemuMonitorJSONMakeCommandRaw(actions != NULL,
-                                        "blockdev-snapshot-sync",
-                                        "s:device", device,
-                                        "s:snapshot-file", file,
-                                        "s:format", format,
-                                        "S:mode", reuse ? "existing" : NULL,
-                                        NULL);
-    if (!cmd)
-        return -1;
-
-    if (actions) {
-        if (virJSONValueArrayAppend(actions, cmd) == 0) {
-            ret = 0;
-            cmd = NULL;
-        }
-    } else {
-        if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
-            goto cleanup;
-
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-    }
-
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-    return ret;
-}
-
 /* speed is in bytes/sec */
 int
 qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
