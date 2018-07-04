@@ -4938,6 +4938,7 @@ qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev)
 enum {
     QEMU_BUILD_CHARDEV_TCP_NOWAIT = (1 << 0),
     QEMU_BUILD_CHARDEV_FILE_LOGD  = (1 << 1),
+    QEMU_BUILD_CHARDEV_UNIX_FD_PASS = (1 << 2),
 };
 
 /* This function outputs a -chardev command line option which describes only the
@@ -5081,7 +5082,8 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS)) {
+        if ((flags & QEMU_BUILD_CHARDEV_UNIX_FD_PASS) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS)) {
             if (qemuSecuritySetSocketLabel(secManager, (virDomainDefPtr)def) < 0)
                 goto cleanup;
             int fd = qemuOpenChrChardevUNIXSocket(dev);
@@ -5437,7 +5439,8 @@ qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
                             qemuDomainObjPrivatePtr priv)
 {
     char *chrdev;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
+        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
     if (priv->chardevStdioLogd)
         cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
@@ -5572,7 +5575,8 @@ qemuBuildRNGBackendChrdevStr(virLogManagerPtr logManager,
                              char **chr,
                              bool chardevStdioLogd)
 {
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
+        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
     if (chardevStdioLogd)
         cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
     *chr = NULL;
@@ -8691,7 +8695,8 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *database;
     const char *contAlias = NULL;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
+        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
     if (chardevStdioLogd)
         cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
@@ -8927,7 +8932,8 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *devstr = NULL;
     int rc;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
+        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
     if (chardevStdioLogd)
         cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
@@ -9087,7 +9093,8 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
 {
     size_t i;
     bool havespice = false;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
+        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
     if (chardevStdioLogd)
         cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
@@ -9150,7 +9157,8 @@ qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
                               bool chardevStdioLogd)
 {
     size_t i;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
+        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
     if (chardevStdioLogd)
         cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
@@ -9187,7 +9195,8 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
                              bool chardevStdioLogd)
 {
     size_t i;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
+        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
     if (chardevStdioLogd)
         cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
@@ -9244,7 +9253,8 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
                             bool chardevStdioLogd)
 {
     size_t i;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
+        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
     if (chardevStdioLogd)
         cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
@@ -9424,7 +9434,8 @@ qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
                              bool chardevStdioLogd)
 {
     size_t i;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
+        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
     if (chardevStdioLogd)
         cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
