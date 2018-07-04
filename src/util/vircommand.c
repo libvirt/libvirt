@@ -2542,6 +2542,8 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
                   dryRunStatus);
         if (exitstatus)
             *exitstatus = dryRunStatus;
+        else if (dryRunStatus)
+            return -1;
         return 0;
     }
 
