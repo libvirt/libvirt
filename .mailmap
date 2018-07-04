@@ -20,7 +20,6 @@
 <jfehlig@suse.com> <jfehlig@novell.com>
 <jfehlig@suse.com> <jfehlig@linux-ypgk.site>
 <jclift@redhat.com> <justin@salasaga.org>
-<berrange@redhat.com> <dan@berrange.com>
 <soren@linux2go.dk> <soren@canonical.com>
 <cfergeau@redhat.com> <teuf@gnome.org>
 <wency@cn.fujitsu.com> <wency cn fujitsu com>
@@ -56,9 +55,12 @@ Aurelien Rougemont <beorn@binaries.fr>
 Serge E. Hallyn <serge.hallyn@canonical.com>
 Henrik Persson E <henrik.e.persson@ericsson.com>
 Philipp Hahn <hahn@univention.de>
-Marco Bozzolan <bozzolan@gmail.com>
-Marco Bozzolan <redshift@gmx.com>
 Pritesh Kothari <pritesh.kothari@sun.com>
 Wang Yufei (James) <james.wangyufei@huawei.com>
 Deepak C Shetty <dpkshetty@gmail.com>
+
+# Non-trivial consolidation:
+# see git documentation for information about the format
 Daniel P. Berrangé <berrange@redhat.com>
+Daniel P. Berrangé <berrange@redhat.com> <dan@berrange.com>
+Marco Bozzolan <bozzolan@gmail.com> <redshift@gmx.com>
