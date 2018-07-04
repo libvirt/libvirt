@@ -3088,8 +3088,9 @@ qemuMonitorCreateObjectProps(virJSONValuePtr *propsret,
 /**
  * qemuMonitorAddObject:
  * @mon: Pointer to monitor object
- * @props: Optional arguments for the given type. The object is consumed and
- *         the pointer is cleared.
+ * @props: Pointer to a JSON object holding configuration of the object to add.
+ *         The object must be non-null and contain at least the "qom-type" and
+ *         "id" field. The object is consumed and the pointer is cleared.
  * @alias: If not NULL, returns the alias of the added object if it was added
  *         successfully to qemu. Caller should free the returned pointer.
  *
@@ -3100,18 +3101,28 @@ qemuMonitorAddObject(qemuMonitorPtr mon,
                      virJSONValuePtr *props,
                      char **alias)
 {
-    const char *type = virJSONValueObjectGetString(*props, "qom-type");
-    const char *id = virJSONValueObjectGetString(*props, "id");
+    const char *type = NULL;
+    const char *id = NULL;
     char *tmp = NULL;
     int ret = -1;
+
+    if (!*props) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("object props can't be NULL"));
+        goto cleanup;
+    }
+
+    type = virJSONValueObjectGetString(*props, "qom-type");
+    id = virJSONValueObjectGetString(*props, "id");
 
     VIR_DEBUG("type=%s id=%s", NULLSTR(type), NULLSTR(id));
 
     QEMU_CHECK_MONITOR_GOTO(mon, cleanup);
 
-    if (!id) {
+    if (!id || !type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing alias for qemu object '%s'"), NULLSTR(type));
+                       _("missing alias or qom-type for qemu object '%s'"),
+                       NULLSTR(type));
         goto cleanup;
     }
 

@@ -823,7 +823,8 @@ int qemuMonitorCreateObjectProps(virJSONValuePtr *propsret,
 
 int qemuMonitorAddObject(qemuMonitorPtr mon,
                          virJSONValuePtr *props,
-                         char **alias);
+                         char **alias)
+    ATTRIBUTE_NONNULL(1);
 
 int qemuMonitorDelObject(qemuMonitorPtr mon,
                          const char *objalias);
