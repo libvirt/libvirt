@@ -319,6 +319,7 @@ enum {
     DISK_ADDR_TYPE_SCSI,
     DISK_ADDR_TYPE_IDE,
     DISK_ADDR_TYPE_CCW,
+    DISK_ADDR_TYPE_USB,
 };
 
 struct PCIAddress {
@@ -346,6 +347,11 @@ struct CCWAddress {
     unsigned int devno;
 };
 
+struct USBAddress {
+    unsigned int bus;
+    unsigned int port;
+};
+
 struct DiskAddress {
     int type;
     union {
@@ -353,6 +359,7 @@ struct DiskAddress {
         struct SCSIAddress scsi;
         struct IDEAddress ide;
         struct CCWAddress ccw;
+        struct USBAddress usb;
     } addr;
 };
 
@@ -460,10 +467,32 @@ static int str2CCWAddress(const char *str, struct CCWAddress *ccwAddr)
     return 0;
 }
 
+static int str2USBAddress(const char *str, struct USBAddress *usbAddr)
+{
+    char *bus, *port;
+
+    if (!usbAddr)
+        return -1;
+    if (!str)
+        return -1;
+
+    bus = (char *)str;
+
+    if (virStrToLong_uip(bus, &port, 10, &usbAddr->bus) != 0)
+        return -1;
+
+    port++;
+    if (virStrToLong_uip(port, NULL, 10, &usbAddr->port) != 0)
+        return -1;
+
+    return 0;
+}
+
 /* pci address pci:0000.00.0x0a.0 (domain:bus:slot:function)
  * ide disk address: ide:00.00.0 (controller:bus:unit)
  * scsi disk address: scsi:00.00.0 (controller:bus:unit)
  * ccw disk address: ccw:0xfe.0.0000 (cssid:ssid:devno)
+ * usb disk address: usb:00.00 (bus:port)
  */
 
 static int str2DiskAddress(const char *str, struct DiskAddress *diskAddr)
@@ -492,6 +521,9 @@ static int str2DiskAddress(const char *str, struct DiskAddress *diskAddr)
     } else if (STREQLEN(type, "ccw", addr - type)) {
         diskAddr->type = DISK_ADDR_TYPE_CCW;
         return str2CCWAddress(addr + 1, &diskAddr->addr.ccw);
+    } else if (STREQLEN(type, "usb", addr - type)) {
+        diskAddr->type = DISK_ADDR_TYPE_USB;
+        return str2USBAddress(addr + 1, &diskAddr->addr.usb);
     }
 
     return -1;
@@ -648,8 +680,12 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
                                   " bus='%u' unit='%llu' />\n",
                                   diskAddr.addr.scsi.controller, diskAddr.addr.scsi.bus,
                                   diskAddr.addr.scsi.unit);
+            } else if (diskAddr.type == DISK_ADDR_TYPE_USB) {
+                virBufferAsprintf(&buf,
+                                  "<address type='usb' bus='%u' port='%u' />\n",
+                                  diskAddr.addr.usb.bus, diskAddr.addr.usb.port);
             } else {
-                vshError(ctl, "%s", _("expecting a scsi:00.00.00 address."));
+                vshError(ctl, "%s", _("expecting a scsi:00.00.00 or usb:00.00 address."));
                 goto cleanup;
             }
         } else if (STRPREFIX((const char *)target, "hd")) {

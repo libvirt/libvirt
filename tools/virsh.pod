@@ -3059,11 +3059,11 @@ I<iothread> is the number within the range of domain IOThreads to which
 this disk may be attached (QEMU only).
 I<serial> is the serial of disk device. I<wwn> is the wwn of disk device.
 I<rawio> indicates the disk needs rawio capability.
-I<address> is the address of disk device in the form of pci:domain.bus.slot.function,
-scsi:controller.bus.unit, ide:controller.bus.unit or ccw:cssid.ssid.devno.
-Virtio-ccw devices must have their cssid set to 0xfe.
-I<multifunction> indicates specified pci address is a multifunction pci device
-address.
+I<address> is the address of disk device in the form of
+pci:domain.bus.slot.function, scsi:controller.bus.unit,
+ide:controller.bus.unit, usb:bus.port or ccw:cssid.ssid.devno. Virtio-ccw
+devices must have their cssid set to 0xfe.  I<multifunction> indicates
+specified pci address is a multifunction pci device address.
 
 If I<--print-xml> is specified, then the XML of the disk that would be attached
 is printed instead.
