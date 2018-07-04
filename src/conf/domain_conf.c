@@ -13498,6 +13498,7 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
 {
     char *port = virXMLPropString(node, "port");
     char *websocket = virXMLPropString(node, "websocket");
+    char *websocketGenerated = virXMLPropString(node, "websocketGenerated");
     char *sharePolicy = virXMLPropString(node, "sharePolicy");
     char *autoport = virXMLPropString(node, "autoport");
     int ret = -1;
@@ -13542,6 +13543,9 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
         }
     }
 
+    if (websocketGenerated && STREQ(websocketGenerated, "yes"))
+        def->data.vnc.websocketGenerated = true;
+
     if (sharePolicy) {
         int policy =
            virDomainGraphicsVNCSharePolicyTypeFromString(sharePolicy);
@@ -13567,6 +13571,7 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
     VIR_FREE(port);
     VIR_FREE(autoport);
     VIR_FREE(websocket);
+    VIR_FREE(websocketGenerated);
     VIR_FREE(sharePolicy);
     return ret;
 }
@@ -26398,6 +26403,10 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                 virBufferAddLit(buf, " websocket='-1'");
             else if (def->data.vnc.websocket)
                 virBufferAsprintf(buf, " websocket='%d'", def->data.vnc.websocket);
+
+            if (flags & VIR_DOMAIN_DEF_FORMAT_STATUS)
+                virBufferAsprintf(buf, " websocketGenerated='%s'",
+                                  def->data.vnc.websocketGenerated ? "yes" : "no");
 
             virDomainGraphicsListenDefFormatAddr(buf, glisten, flags);
             break;
