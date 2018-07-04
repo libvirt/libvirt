@@ -60,12 +60,6 @@ const char *iscsiadmSendtargetsOutput =
     "10.20.30.40:3260,1 iqn.2008-04.example:example1:iscsi.bar\n"
     "10.20.30.40:3260,1 iqn.2009-04.example:example1:iscsi.seven\n";
 
-struct testSessionInfo {
-    const char *device_path;
-    int output_version;
-    const char *expected_session;
-};
-
 static void testIscsiadmCb(const char *const*args,
                            const char *const*env ATTRIBUTE_UNUSED,
                            const char *input ATTRIBUTE_UNUSED,
@@ -117,6 +111,12 @@ static void testIscsiadmCb(const char *const*args,
         *status = -1;
     }
 }
+
+struct testSessionInfo {
+    const char *device_path;
+    int output_version;
+    const char *expected_session;
+};
 
 static int
 testISCSIGetSession(const void *data)
