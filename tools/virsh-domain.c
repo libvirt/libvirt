@@ -320,6 +320,7 @@ enum {
     DISK_ADDR_TYPE_IDE,
     DISK_ADDR_TYPE_CCW,
     DISK_ADDR_TYPE_USB,
+    DISK_ADDR_TYPE_SATA,
 };
 
 struct PCIAddress {
@@ -352,6 +353,12 @@ struct USBAddress {
     unsigned int port;
 };
 
+struct SATAAddress {
+    unsigned int controller;
+    unsigned int bus;
+    unsigned long long unit;
+};
+
 struct DiskAddress {
     int type;
     union {
@@ -360,6 +367,7 @@ struct DiskAddress {
         struct IDEAddress ide;
         struct CCWAddress ccw;
         struct USBAddress usb;
+        struct SATAAddress sata;
     } addr;
 };
 
@@ -488,11 +496,37 @@ static int str2USBAddress(const char *str, struct USBAddress *usbAddr)
     return 0;
 }
 
+static int str2SATAAddress(const char *str, struct SATAAddress *sataAddr)
+{
+    char *controller, *bus, *unit;
+
+    if (!sataAddr)
+        return -1;
+    if (!str)
+        return -1;
+
+    controller = (char *)str;
+
+    if (virStrToLong_uip(controller, &bus, 10, &sataAddr->controller) != 0)
+        return -1;
+
+    bus++;
+    if (virStrToLong_uip(bus, &unit, 10, &sataAddr->bus) != 0)
+        return -1;
+
+    unit++;
+    if (virStrToLong_ullp(unit, NULL, 10, &sataAddr->unit) != 0)
+        return -1;
+
+    return 0;
+}
+
 /* pci address pci:0000.00.0x0a.0 (domain:bus:slot:function)
  * ide disk address: ide:00.00.0 (controller:bus:unit)
  * scsi disk address: scsi:00.00.0 (controller:bus:unit)
  * ccw disk address: ccw:0xfe.0.0000 (cssid:ssid:devno)
  * usb disk address: usb:00.00 (bus:port)
+ * sata disk address: sata:00.00.0 (controller:bus:unit)
  */
 
 static int str2DiskAddress(const char *str, struct DiskAddress *diskAddr)
@@ -524,6 +558,9 @@ static int str2DiskAddress(const char *str, struct DiskAddress *diskAddr)
     } else if (STREQLEN(type, "usb", addr - type)) {
         diskAddr->type = DISK_ADDR_TYPE_USB;
         return str2USBAddress(addr + 1, &diskAddr->addr.usb);
+    } else if (STREQLEN(type, "sata", addr - type)) {
+        diskAddr->type = DISK_ADDR_TYPE_SATA;
+        return str2SATAAddress(addr + 1, &diskAddr->addr.sata);
     }
 
     return -1;
@@ -684,8 +721,15 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
                 virBufferAsprintf(&buf,
                                   "<address type='usb' bus='%u' port='%u' />\n",
                                   diskAddr.addr.usb.bus, diskAddr.addr.usb.port);
+            } else if (diskAddr.type == DISK_ADDR_TYPE_SATA) {
+                virBufferAsprintf(&buf,
+                                  "<address type='drive' controller='%u'"
+                                  " bus='%u' unit='%llu' />\n",
+                                  diskAddr.addr.sata.controller, diskAddr.addr.sata.bus,
+                                  diskAddr.addr.sata.unit);
             } else {
-                vshError(ctl, "%s", _("expecting a scsi:00.00.00 or usb:00.00 address."));
+                vshError(ctl, "%s",
+                _("expecting a scsi:00.00.00 or usb:00.00 or sata:00.00.00 address."));
                 goto cleanup;
             }
         } else if (STRPREFIX((const char *)target, "hd")) {
