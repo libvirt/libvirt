@@ -60,8 +60,19 @@ const char *iscsiadmSendtargetsOutput =
     "10.20.30.40:3260,1 iqn.2008-04.example:example1:iscsi.bar\n"
     "10.20.30.40:3260,1 iqn.2009-04.example:example1:iscsi.seven\n";
 
+const char *iscsiadmIfaceDefaultOutput =
+    "default tcp,<empty>,<empty>,<empty>,<empty>\n"
+    "iser iser,<empty>,<empty>,<empty>,<empty>\n";
+
+const char *iscsiadmIfaceIfaceOutput =
+    "default tcp,<empty>,<empty>,<empty>,<empty>\n"
+    "iser iser,<empty>,<empty>,<empty>,<empty>\n"
+    "libvirt-iface-03020100 tcp,<empty>,<empty>,<empty>,iqn.2004-06.example:example1:initiator\n";
+
+
 struct testIscsiadmCbData {
     bool output_version;
+    bool iface_created;
 };
 
 static void testIscsiadmCb(const char *const*args,
@@ -109,6 +120,80 @@ static void testIscsiadmCb(const char *const*args,
          *                target: iqn.2004-06.example:example1:iscsi.test, \
          *                portal: 10.20.30.40:3260,1] (multiple)
          * Login to [iface: default, \
+         *           target: iqn.2004-06.example:example1:iscsi.test, \
+         *           portal: 10.20.30.40:3260,1] successful.
+         */
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "iface") &&
+               args[3] == NULL) {
+        if (data->iface_created)
+            ignore_value(VIR_STRDUP(*output, iscsiadmIfaceIfaceOutput));
+        else
+            ignore_value(VIR_STRDUP(*output, iscsiadmIfaceDefaultOutput));
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "iface") &&
+               args[3] && STREQ(args[3], "--interface") &&
+               args[4] && STREQ(args[4], "libvirt-iface-03020100") &&
+               args[5] && STREQ(args[5], "--op") &&
+               args[6] && STREQ(args[6], "new") &&
+               args[7] == NULL) {
+        /* Mocking real environment output is not needed for now.
+         * Example output from real environment:
+         *
+         * New interface libvirt-iface-03020100 added
+         */
+        data->iface_created = true;
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "iface") &&
+               args[3] && STREQ(args[3], "--interface") &&
+               args[4] && STREQ(args[4], "libvirt-iface-03020100") &&
+               args[5] && STREQ(args[5], "--op") &&
+               args[6] && STREQ(args[6], "update") &&
+               args[7] && STREQ(args[7], "--name") &&
+               args[8] && STREQ(args[8], "iface.initiatorname") &&
+               args[9] && STREQ(args[9], "--value") &&
+               args[10] && STREQ(args[10], "iqn.2004-06.example:example1:initiator") &&
+               args[11] == NULL &&
+               data->iface_created) {
+        /* Mocking real environment output is not needed for now.
+         * Example output from real environment:
+         *
+         * libvirt-iface-03020100 updated.
+         */
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "discovery") &&
+               args[3] && STREQ(args[3], "--type") &&
+               args[4] && STREQ(args[4], "sendtargets") &&
+               args[5] && STREQ(args[5], "--portal") &&
+               args[6] && STREQ(args[6], "10.20.30.40:3260,1") &&
+               args[7] && STREQ(args[7], "--interface") &&
+               args[8] && STREQ(args[8], "libvirt-iface-03020100") &&
+               args[9] == NULL &&
+               data->iface_created) {
+        ignore_value(VIR_STRDUP(*output, iscsiadmSendtargetsOutput));
+    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+               args[1] && STREQ(args[1], "--mode") &&
+               args[2] && STREQ(args[2], "node") &&
+               args[3] && STREQ(args[3], "--portal") &&
+               args[4] && STREQ(args[4], "10.20.30.40:3260,1") &&
+               args[5] && STREQ(args[5], "--targetname") &&
+               args[6] && STREQ(args[6], "iqn.2004-06.example:example1:iscsi.test") &&
+               args[7] && STREQ(args[7], "--login") &&
+               args[8] && STREQ(args[8], "--interface") &&
+               args[9] && STREQ(args[9], "libvirt-iface-03020100") &&
+               args[10] == NULL &&
+               data->iface_created) {
+        /* Mocking real environment output is not needed for now.
+         * Example output from real environment:
+         *
+         * Logging in to [iface: libvirt-iface-03020100, \
+         *                target: iqn.2004-06.example:example1:iscsi.test, \
+         *                portal: 10.20.30.40:3260,1] (multiple)
+         * Login to [iface: libvirt-iface-03020100, \
          *           target: iqn.2004-06.example:example1:iscsi.test, \
          *           portal: 10.20.30.40:3260,1] successful.
          */
@@ -213,9 +298,10 @@ static int
 testISCSIConnectionLogin(const void *data)
 {
     const struct testConnectionInfoLogin *info = data;
+    struct testIscsiadmCbData cbData = { 0 };
     int ret = -1;
 
-    virCommandSetDryRun(NULL, testIscsiadmCb, NULL);
+    virCommandSetDryRun(NULL, testIscsiadmCb, &cbData);
 
     if (virISCSIConnectionLogin(info->portal, info->initiatoriqn, info->target) < 0)
         goto cleanup;
@@ -274,11 +360,14 @@ mymain(void)
     } while (0)
 
     DO_LOGIN_TEST("10.20.30.40:3260,1", NULL, "iqn.2004-06.example:example1:iscsi.test");
+    DO_LOGIN_TEST("10.20.30.40:3260,1", "iqn.2004-06.example:example1:initiator",
+                  "iqn.2004-06.example:example1:iscsi.test");
 
     if (rv < 0)
         return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }
 
-VIR_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain,
+                      abs_builddir "/.libs/virrandommock.so")
 #endif /* WIN32 */
