@@ -220,10 +220,7 @@ esxBandwidthToShapingPolicy(virNetDevBandwidthPtr bandwidth,
 {
     int result = -1;
 
-    if (!shapingPolicy || *shapingPolicy) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(shapingPolicy);
 
     if (!bandwidth->in || !bandwidth->out ||
         bandwidth->in->average != bandwidth->out->average ||
@@ -589,10 +586,7 @@ static int
 esxShapingPolicyToBandwidth(esxVI_HostNetworkTrafficShapingPolicy *shapingPolicy,
                             virNetDevBandwidthPtr *bandwidth)
 {
-    if (!bandwidth || *bandwidth) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(bandwidth);
 
     if (!shapingPolicy || shapingPolicy->enabled != esxVI_Boolean_True)
         return 0;

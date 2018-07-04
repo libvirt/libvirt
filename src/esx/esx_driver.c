@@ -626,10 +626,7 @@ esxConnectToHost(esxPrivate *priv,
         ? esxVI_ProductLine_ESX
         : esxVI_ProductLine_GSX;
 
-    if (!vCenterIPAddress || *vCenterIPAddress) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(vCenterIPAddress);
 
     if (esxUtil_ResolveHostname(conn->uri->server, ipAddress, NI_MAXHOST) < 0)
         return -1;

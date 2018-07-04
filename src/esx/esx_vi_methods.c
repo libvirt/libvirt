@@ -38,10 +38,7 @@
 
 
 #define ESX_VI__METHOD__CHECK_OUTPUT__NotNone \
-    if (!output || *output) { \
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument")); \
-        return -1; \
-    }
+    ESX_VI_CHECK_ARG_LIST(output);
 
 
 
@@ -232,10 +229,7 @@ esxVI_RetrieveServiceContent(esxVI_Context *ctx,
                           ESX_VI__SOAP__REQUEST_FOOTER;
     esxVI_Response *response = NULL;
 
-    if (!serviceContent || *serviceContent) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(serviceContent);
 
     if (esxVI_Context_Execute(ctx, "RetrieveServiceContent", request,
                               &response, esxVI_Occurrence_RequiredItem) < 0 ||

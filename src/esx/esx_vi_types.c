@@ -43,10 +43,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
     int \
     esxVI_##__type##_Alloc(esxVI_##__type **ptrptr) \
     { \
-        if (!ptrptr || *ptrptr) { \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument")); \
-            return -1; \
-        } \
+        ESX_VI_CHECK_ARG_LIST(ptrptr); \
  \
         if (VIR_ALLOC(*ptrptr) < 0) \
             return -1; \
@@ -101,11 +98,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
     int \
     esxVI_##_type##_DeepCopy(esxVI_##_type **dest, esxVI_##_type *src) \
     { \
-        if (!dest || *dest) { \
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
-                           _("Invalid argument")); \
-            return -1; \
-        } \
+        ESX_VI_CHECK_ARG_LIST(dest); \
  \
         if (!src) { \
             return 0; \
@@ -940,10 +933,7 @@ esxVI_AnyType_ExpectType(esxVI_AnyType *anyType, esxVI_Type type)
 int
 esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src)
 {
-    if (!dest || *dest) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(dest);
 
     if (!src)
         return 0;
@@ -1009,10 +999,7 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
 {
     long long int number;
 
-    if (!anyType || *anyType) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(anyType);
 
     if (esxVI_AnyType_Alloc(anyType) < 0)
         return -1;
@@ -1218,10 +1205,7 @@ ESX_VI__TEMPLATE__LIST__DEEP_COPY(String)
 int
 esxVI_String_DeepCopyValue(char **dest, const char *src)
 {
-    if (!dest || *dest) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(dest);
 
     if (!src)
         return 0;
@@ -1270,10 +1254,7 @@ esxVI_String_SerializeValue(const char *value, const char *element,
 int
 esxVI_String_Deserialize(xmlNodePtr node, esxVI_String **string)
 {
-    if (!string || *string) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(string);
 
     if (esxVI_String_Alloc(string) < 0 ||
         esxVI_String_DeserializeValue(node, &(*string)->value) < 0) {
@@ -1294,10 +1275,7 @@ ESX_VI__TEMPLATE__LIST__DESERIALIZE(String)
 int
 esxVI_String_DeserializeValue(xmlNodePtr node, char **value)
 {
-    if (!value || *value) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(value);
 
     *value = (char *)xmlNodeListGetString(node->doc, node->children, 1);
 
@@ -1472,10 +1450,7 @@ ESX_VI__TEMPLATE__SERIALIZE(DateTime,
 int
 esxVI_DateTime_Deserialize(xmlNodePtr node, esxVI_DateTime **dateTime)
 {
-    if (!dateTime || *dateTime) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(dateTime);
 
     if (esxVI_DateTime_Alloc(dateTime) < 0)
         return -1;
@@ -1644,10 +1619,7 @@ ESX_VI__TEMPLATE__FREE(MethodFault,
 int
 esxVI_MethodFault_Deserialize(xmlNodePtr node, esxVI_MethodFault **methodFault)
 {
-    if (!methodFault || *methodFault) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(methodFault);
 
     if (esxVI_MethodFault_Alloc(methodFault) < 0)
         return -1;
@@ -1738,10 +1710,7 @@ int
 esxVI_ManagedObjectReference_Deserialize
   (xmlNodePtr node, esxVI_ManagedObjectReference **managedObjectReference)
 {
-    if (!managedObjectReference || *managedObjectReference) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
+    ESX_VI_CHECK_ARG_LIST(managedObjectReference);
 
     if (esxVI_ManagedObjectReference_Alloc(managedObjectReference) < 0)
         return -1;
