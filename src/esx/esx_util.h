@@ -26,6 +26,14 @@
 # include "internal.h"
 # include "viruri.h"
 
+# define ESX_VI_CHECK_ARG_LIST(val) \
+    do { \
+        if (!val || *val) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument")); \
+            return -1; \
+        } \
+    } while (0)
+
 typedef struct _esxUtil_ParsedUri esxUtil_ParsedUri;
 
 struct _esxUtil_ParsedUri {
